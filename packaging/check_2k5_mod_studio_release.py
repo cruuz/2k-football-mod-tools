@@ -23,7 +23,14 @@ MAX_RELEASE_FILE_BYTES = 8 * 1024 * 1024
 # compact Crib catalog and sanitized product-inspection snapshots live with
 # product data instead of ``reports/``, but are held to the same immutable
 # contract so a release cannot silently acquire retail payloads.
-REVIEWED_METADATA: dict[str, tuple[int, str, str]] = {
+REVIEWED_METADATA: dict[str, tuple[int, str, str | int]] = {
+    # Bounded music routing evidence: names, addresses and hashes only. The
+    # all_modes_proved field explicitly excludes audible/gameplay certification.
+    "reports/music_playlist_contexts.v1.json": (
+        24_085,
+        "24a9e6b4e5d1a305ed6b1102991d87f27f6efb98de2e4c4e42246d1bcbca3f40",
+        1,
+    ),
     "reports/guardian_cap_receipt.v1.json": (
         20_105,
         "195ec69360c95520b44cfaa4af591bc25c297658d906c77da36392a0be46ea99",

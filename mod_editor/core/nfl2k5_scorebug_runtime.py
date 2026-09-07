@@ -255,4 +255,4 @@ def apply(payload):
                         code_va=hex(code["va"]), data_va=hex(data["va"]), edits=edits,
                         allocation=ar, installation=ir, scorebug=sr,
                         reservations=space.reservations(result),
-                        requires_resources="scorebug-runtime-v1; XBE alone does not install logos")
+                        requires_resources="scorebug-runtime-v2-probes; XBE alone does not install logos")

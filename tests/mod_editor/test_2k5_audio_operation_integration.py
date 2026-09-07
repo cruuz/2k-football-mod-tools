@@ -619,7 +619,10 @@ class StudioAudioOperationFenceTests(unittest.TestCase):
             self.assertEqual(self.deferred_audio_reset_states, [])
 
     def test_recovery_sha_mismatch_refreshes_new_source_only_after_release(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
+        # Windows keeps the loaded source's handle until tearDown closes the window, so the temp dir must be
+        # cleaned up after tearDown, not at the end of a with-block (WinError 32 on rmtree otherwise).
+        directory = self.enterContext(tempfile.TemporaryDirectory())
+        if True:
             root = Path(directory)
             source = root / "different.xiso"
             project = root / "recovery.2k5mod"

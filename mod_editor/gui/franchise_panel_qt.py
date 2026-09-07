@@ -62,7 +62,6 @@ from PyQt5.QtWidgets import (
 
 from mod_editor.core import nfl2k5_franchise_save as fs
 from mod_editor.core import nfl2k5_roster_records as rr
-from mod_editor.core.nfl2k5_season_cap import UI_LABEL as SEASON_CAP_LABEL
 
 # the coach numbers Finn's Statistics group edits, in his order, then the two ids and the playcalling split
 COACH_STATS: tuple[tuple[str, str], ...] = (
@@ -288,9 +287,10 @@ class FranchisePanel(QWidget):
         self.year_rule_label.setWordWrap(True)
         year_row.addWidget(self.year_rule_label, 1)
         form.addRow("Season year", year_row)
-        self.season_cap_label = QLabel("EXPERIMENTAL / UNWITNESSED. " + SEASON_CAP_LABEL +
-            " The Patch is required to pass the Retail completion gate. "
-            "Game birth dates can already be wrong in 2053. Editing this year does not simulate seasons.")
+        self.season_cap_label = QLabel(
+            "EXPERIMENTAL / UNWITNESSED. Use the calendar patch with your build's starting year "
+            "for long franchises. A save alone does not identify that patch. "
+            "Editing this year does not simulate seasons.")
         self.season_cap_label.setWordWrap(True)
         form.addRow(self.season_cap_label)
         self.stage_label = QLabel("")
@@ -340,17 +340,18 @@ class FranchisePanel(QWidget):
         page = QWidget()
         box = QVBoxLayout(page)
         top = QHBoxLayout()
-        top.addWidget(QLabel("Week"))
+        top.addWidget(QLabel("Week / round"))
         self.week_combo = QComboBox()
         self.week_combo.addItems(list(GRID_ROW_TITLES))
+        self.week_combo.addItem("All postseason")
         self.week_combo.setAccessibleName("Schedule week")
         self.week_combo.currentIndexChanged.connect(lambda _i: self._refresh_schedule())
         top.addWidget(self.week_combo)
         self.week_label = QLabel("")
         top.addWidget(self.week_label, 1)
         box.addLayout(top)
-        self.schedule_table = QTableWidget(0, 7)
-        self.schedule_table.setHorizontalHeaderLabels(["#", "Away", "Home", "Date", "Kick-off", "Played", "Score"])
+        self.schedule_table = QTableWidget(0, 8)
+        self.schedule_table.setHorizontalHeaderLabels(["#", "Away", "Home", "Date", "Kick-off", "Played", "Score", "Round"])
         self.schedule_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.schedule_table.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.schedule_table.setSelectionMode(QAbstractItemView.SingleSelection)
@@ -362,8 +363,10 @@ class FranchisePanel(QWidget):
         grid = QGridLayout(editor)
         self.away_combo = QComboBox()
         self.away_combo.setAccessibleName("Away team")
+        self.away_combo.setPlaceholderText("To be decided")
         self.home_combo = QComboBox()
         self.home_combo.setAccessibleName("Home team")
+        self.home_combo.setPlaceholderText("To be decided")
         self.month_spin = QSpinBox()
         self.month_spin.setRange(1, 12)
         self.month_spin.setAccessibleName("Month")
@@ -399,16 +402,21 @@ class FranchisePanel(QWidget):
         self.allow_played_check = QCheckBox("Allow editing played games")
         self.allow_played_check.setToolTip("A played cell carries its score and flags; the page refuses to "
                                            "change it unless you tick this")
+        self.allow_played_check.toggled.connect(lambda _checked: self._update_game_notice())
         buttons.addWidget(self.apply_game_button)
         buttons.addWidget(self.swap_button)
         buttons.addWidget(self.allow_played_check)
-        schedule_note = QLabel("Not yet tested in-game")
+        schedule_note = QLabel("EXPERIMENTAL / UNWITNESSED")
         schedule_note.setObjectName("optionBadge")
         schedule_note.setToolTip("Schedule edits write the save's grid cells (scores stay read-only); "
                                  "nobody has watched the game accept them yet.")
         buttons.addWidget(schedule_note)
         buttons.addStretch(1)
         grid.addLayout(buttons, 2, 0, 1, 4)
+        self.game_notice = QLabel("")
+        self.game_notice.setWordWrap(True)
+        self.game_notice.setAccessibleName("Selected game editing notice")
+        grid.addWidget(self.game_notice, 3, 0, 1, 4)
         box.addWidget(editor)
         return page
 
@@ -771,8 +779,16 @@ class FranchisePanel(QWidget):
                 self._coach_rows.append(coach.index)
             if self._coach_rows:
                 self.coach_list.setCurrentRow(0)
-            self.week_combo.setCurrentIndex(max(0, min(self._save.header.week, fs.GRID_ROWS - 1))
-                                            if self._save.header.stage == 8 else 0)
+            for row in range(fs.GRID_ROWS):
+                self.week_combo.setItemText(row, self._save.schedule_row_name(row).title())
+            self.allow_played_check.setChecked(False)
+            header = self._save.header
+            if header.stage == 9 or (header.stage not in (7, 8) and
+                                     self._save.games(rows=range(self._save.regular_season_weeks, fs.GRID_ROWS))):
+                self.week_combo.setCurrentIndex(fs.GRID_ROWS)  # every saved postseason round
+            else:
+                self.week_combo.setCurrentIndex(max(0, min(header.week, fs.GRID_ROWS - 1))
+                                                if header.stage in (7, 8) else 0)
         finally:
             self._quiet = False
 
@@ -859,10 +875,13 @@ class FranchisePanel(QWidget):
             if self._save is None:
                 self.schedule_table.setRowCount(0)
                 self.week_label.setText("")
+                self._fill_game_editor()
                 return
             row = self.week_combo.currentIndex()
-            games = self._save.games(rows=[row]) if row >= 0 else []
-            selected = self.schedule_table.currentRow()
+            rows = range(self._save.regular_season_weeks, fs.GRID_ROWS) if row == fs.GRID_ROWS else [row]
+            games = self._save.games(rows=rows) if row >= 0 else []
+            selected = self._selected_game()
+            selected_cell = (selected.row, selected.slot) if selected else None
             self.schedule_table.setRowCount(len(games))
             for line, game in enumerate(games):
                 score = ""
@@ -872,19 +891,25 @@ class FranchisePanel(QWidget):
                     score = f"{sum(first)} – {sum(second)}"
                     tip = (f"quarters {'-'.join(map(str, first))} / {'-'.join(map(str, second))}; which side is "
                            f"which is a HYPOTHESIS, so scores stay read-only")
-                cells = [str(game.slot + 1), self._team_short(game.away), self._team_short(game.home),
-                         f"{game.month}/{game.day}", game.kickoff(), "yes" if game.played else "", score]
+                cells = [str(game.slot + 1), self._team_short(game.away) if game.away_known else "To be decided",
+                         self._team_short(game.home) if game.home_known else "To be decided",
+                         f"{game.month}/{game.day}", game.kickoff(), "yes" if game.played else "", score,
+                         game.row_name.title()]
                 for column, text in enumerate(cells):
                     item = QTableWidgetItem(text)
                     if tip and column == 6:
                         item.setToolTip(tip)
-                    item.setData(Qt.UserRole, game.slot)
+                    elif game.played:
+                        item.setToolTip("This game has been played. Select 'Allow editing played games' to change it.")
+                    item.setData(Qt.UserRole, (game.row, game.slot))
                     self.schedule_table.setItem(line, column, item)
             self.schedule_table.resizeColumnsToContents()
             played = sum(1 for g in games if g.played)
             self.week_label.setText(f"{len(games)} games, {played} played")
-            if 0 <= selected < len(games):
-                self.schedule_table.selectRow(selected)
+            if games:
+                selected_line = next((i for i, game in enumerate(games)
+                                      if (game.row, game.slot) == selected_cell), 0)
+                self.schedule_table.selectRow(selected_line)
             self._fill_game_editor()
         finally:
             self._quiet = False
@@ -892,16 +917,30 @@ class FranchisePanel(QWidget):
     def _selected_game(self) -> fs.Game | None:
         if self._save is None:
             return None
-        row = self.week_combo.currentIndex()
         line = self.schedule_table.currentRow()
         item = self.schedule_table.item(line, 0) if line >= 0 else None
         if item is None:
             return None
-        return self._save.game(row, int(item.data(Qt.UserRole)))
+        row, slot = item.data(Qt.UserRole)
+        return self._save.game(int(row), int(slot))
 
     def _schedule_row_selected(self) -> None:
         if not self._quiet:
             self._fill_game_editor()
+
+    def _update_game_notice(self) -> None:
+        game = self._selected_game()
+        if game is None:
+            text = "Select a game to edit its date and kickoff time."
+        elif game.played:
+            text = "This game has been played. " + (
+                "Editing is allowed. Scores stay read-only." if self.allow_played_check.isChecked() else
+                "Select 'Allow editing played games' before applying changes. Scores stay read-only.")
+        elif not (game.home_known and game.away_known):
+            text = "Teams still to be decided. You can edit the date and kickoff time."
+        else:
+            text = "You can edit this game's date and kickoff time."
+        self.game_notice.setText(text)
 
     def _fill_game_editor(self) -> None:
         game = self._selected_game()
@@ -912,10 +951,14 @@ class FranchisePanel(QWidget):
             for widget in (self.home_combo, self.away_combo, self.month_spin, self.day_spin, self.hour_spin,
                            self.minute_spin, self.apply_game_button, self.swap_button):
                 widget.setEnabled(enabled)
+            self._update_game_notice()
             if game is None:
                 return
-            self.home_combo.setCurrentIndex(self.home_combo.findData(game.home))
-            self.away_combo.setCurrentIndex(self.away_combo.findData(game.away))
+            self.home_combo.setEnabled(game.home_known)
+            self.away_combo.setEnabled(game.away_known)
+            self.swap_button.setEnabled(game.home_known and game.away_known)
+            self.home_combo.setCurrentIndex(self.home_combo.findData(game.home) if game.home_known else -1)
+            self.away_combo.setCurrentIndex(self.away_combo.findData(game.away) if game.away_known else -1)
             self.month_spin.setValue(max(1, game.month))
             self.day_spin.setValue(max(1, game.day))
             self.hour_spin.setValue(game.hour)
@@ -1129,7 +1172,7 @@ class FranchisePanel(QWidget):
                 words.append(f"{name} {self._team_short(current[name])} → {self._team_short(value)}")
             else:
                 words.append(f"{name} {current[name]} → {value}")
-        label = f"{GRID_ROW_TITLES[row]} game {slot + 1}: {', '.join(words)}" + (" (played game, allowed)" if game.played else "")
+        label = f"{game.row_name.title()} game {slot + 1}: {', '.join(words)}" + (" (played game, allowed)" if game.played else "")
         return self.push(FranchiseEdit("game", label, {"row": row, "slot": slot, "fields": changes, "allow_played": allow}))
 
     def swap_home_away(self, row: int, slot: int) -> bool:
@@ -1146,7 +1189,9 @@ class FranchisePanel(QWidget):
         game = self._selected_game()
         if game is None:
             return
-        self.edit_game(game.row, game.slot, home=int(self.home_combo.currentData()), away=int(self.away_combo.currentData()),
+        self.edit_game(game.row, game.slot,
+                       home=int(self.home_combo.currentData()) if game.home_known else game.home,
+                       away=int(self.away_combo.currentData()) if game.away_known else game.away,
                        month=self.month_spin.value(), day=self.day_spin.value(),
                        hour=self.hour_spin.value(), minute=self.minute_spin.value())
 

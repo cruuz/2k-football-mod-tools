@@ -1,0 +1,137 @@
+{
+  "actual_disc_built": false,
+  "artifact_sha256": {
+    "ASTRA_SCOREBUG_FIX_REPORT.md": "f7b93ac490f8e3612e6f3f79cc941a91635ca55b306a8a44e512dc9d161441a3",
+    "WIRING.md": "c29bc669ab9d4b745e7b02c12b27b43b6c84ba850de8da3e61522e6814ab809c",
+    "docs/mod_editor/nfl2k5_scorebug_runtime_capability.json": "3e41089332c6dd36ca6f849758042c12d5be29816e70b39ec38efd2cd454f0f7",
+    "docs/scorebug_ingame/after_v8_640x480.png": "ec77121e71042b50f980a1474ea95bca23c598978b4663013ba25587d43e20a9",
+    "docs/scorebug_ingame/after_v8_wide_640x480.png": "ae06edcdecc26f8676d167c91dd994092f696ffb8332c0625aaeb82950cc1642",
+    "docs/scorebug_ingame/after_v8_widest_640x480.png": "0a0f1ced6acaaad6e1500d4757064523ec21f3f6adc6e10f156e1e23b2247ca5",
+    "docs/scorebug_ingame/before_v7_640x480.png": "91bca09849b6cefdc4ea9856ca418ebcef5743cace5d836610a232a3ebd46e4b",
+    "docs/scorebug_ingame/fix_receipts.json": "5fe836ad5350cca6aaa5f59f377726b4bda072ecfa6cf93d9140c15d85a83801",
+    "docs/scorebug_ingame/probe_capability.json": "0286f118e330d009e412237b724812b1f9d0318649421f8471f7d03c01dd64ee",
+    "docs/scorebug_ingame/projection.json": "779964c8a65d4c832a9f67d9c136dec952341525b3d263e085cd399598a486be",
+    "docs/scorebug_ingame/witness_TB_NE.png": "1f72834f059699d06f15c4eb413451ca97bfd72587a87d7c758ca8295c66cd53",
+    "docs/scorebug_ingame/witness_r61b.md": "72f89c54953b21eec261d5e6666fb886f9130eeb5a181a333542aebed38ab9e9"
+  },
+  "base_commit": "f371972f4a17cecf654c019d5c6ff3a3c32c7caa",
+  "capability_validation": "PASS: both scorebug handoff rows merged into the existing registry in memory, sorted by ID; complete semantic/schema validation. Every evidence path, backend command/module and validation command in the two scorebug rows passes local file checks. Production registry unchanged.\nLIMIT: full-registry file checking stops at pre-existing missing docs/research/apf_audio.md; no unrelated evidence was fabricated.",
+  "cli_help": [
+    "python3 -m tools.nfl2k5_scorebug_reference apply --help",
+    "python3 -m tools.nfl2k5_scorebug_reference status --help"
+  ],
+  "date": "2026-09-06",
+  "free_disk_bytes_at_validation": 108759392256,
+  "private_manifest": {
+    "base_manifest_sha256": "e72c5fff106af7df7262b28bee730abedb8a4adbab5b9173fa00414a7a4b6b0a",
+    "basis": "released reservation union plus freshly observed affected XBE writers in legacy and v3 layouts",
+    "canonical_disc_rebuilt": false,
+    "modified_sources": [
+      "mod_editor/core/nfl2k5_hud_layout.py",
+      "mod_editor/core/nfl2k5_scorebug_ingame.py",
+      "mod_editor/core/nfl2k5_scorebug_resources.py",
+      "mod_editor/core/nfl2k5_scorebug_runtime.py",
+      "tools/nfl2k5_scorebug_layout.py",
+      "tools/nfl2k5_scorebug_position_patch.py"
+    ],
+    "observed_spans": 530,
+    "production_manifest_unchanged": true,
+    "section_digests_verified": true
+  },
+  "private_manifest_sha256": "a31ebb085c0a019579ae39c04d21790b80c7a079965666d7675026447b2dddf7",
+  "production_manifest_sha256": "e72c5fff106af7df7262b28bee730abedb8a4adbab5b9173fa00414a7a4b6b0a",
+  "projection_generation": "python3 -m tools.nfl2k5_scorebug_projection --pack RETAIL_PACK --xbe RETAIL_XBE --output docs/scorebug_ingame; four PNGs, PASS",
+  "runtime_gameplay_witnessed": false,
+  "runtime_hang_reproduced": false,
+  "schema": "nfl2k5_scorebug_fix_validation/v1",
+  "source_sha256": {
+    "mod_editor/core/nfl2k5_hud_layout.py": "9953e899093daf2517adc74d101a4160353377e36e273eba5fdec7f82bbb8da3",
+    "mod_editor/core/nfl2k5_scorebug_ingame.py": "2bf9d6a042f964d924f6845595ea5715ae255049a5995e3c9df9b817df468371",
+    "mod_editor/core/nfl2k5_scorebug_resources.py": "0673e41a04a11c49a36f29ea1b434d8abdbbf2de08cc61f058240e2b7ae7a7f5",
+    "mod_editor/core/nfl2k5_scorebug_runtime.py": "483b01dd9dcd9b574cbb26387df0195e16554e4f0bf73a8077a77f24caf4396a",
+    "tests/mod_editor/test_nfl2k5_scorebug_ingame.py": "a6b7ce71c5848e1f71f37ffc37c67894da25fb0d3d6436c109b35e12c10b3634",
+    "tests/mod_editor/test_nfl2k5_scorebug_native.py": "4305bd173f71ca61f02bd9467e7a0ec29619df871284b5093fdba06c46ec8fa0",
+    "tests/mod_editor/test_nfl2k5_scorebug_projection.py": "4a3a5ac30f78eb0022d64fc10d2983c4f7b4658776d425a1d3ab73b55b8fbe51",
+    "tests/mod_editor/test_nfl2k5_scorebug_resources.py": "7a0150eceef03eda5f4ca1c398c0b5134634a15b31be2428a2b68cb73d4ca081",
+    "tests/mod_editor/test_nfl2k5_scorebug_runtime.py": "cfaa08d65dc644dae65f6f4266ab54dbcbd0b1fecdce95b0fc285ed85588dade",
+    "tools/build_softdrink_modpacks60.py": "e9d9ceda9690f4a1cedf1feacc8913f8a2c5af587a15cc804a532b59b2ca1840",
+    "tools/nfl2k5_scorebug_layout.py": "3f5361cac4c8468928397ac59aea6029b7ba2ea29535f3ee48e1a43bd7957d2b",
+    "tools/nfl2k5_scorebug_position_patch.py": "eb2b913bd4d0620dcefc4f280db1f6d73e4a5c348b0483a246bbf587506cdbff",
+    "tools/nfl2k5_scorebug_projection.py": "6da370977b7ee533e55b0c697d22542bdd5dfa92407ee5a5053c242ac2478ca1",
+    "tools/nfl2k5_scorebug_reference.py": "32ef741eb84bdf022de8cae357895eea891e6265c025e57afd4d49a37a6f4444"
+  },
+  "syntax_check": "ast.parse for all changed/new Python files",
+  "tests": [
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_ingame.py",
+      "log_sha256": "da097be89737e5bff6be9671fce838809b38c8223056f2c361e86ebb4c86687f",
+      "result": "PASS",
+      "skips": 0,
+      "tests": 11,
+      "unittest_seconds": 8.614
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+      "log_sha256": "5bd88a6e56ae58db1478029c1a6d9384223e879175c0abc8fc2b261ed72dbfb0",
+      "peak_rss_kib": 271480,
+      "result": "PASS",
+      "skips": 0,
+      "tests": 12,
+      "unittest_seconds": 96.48
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+      "log_sha256": "95f9d138fa915c5cbf6c4e8f4174feb7f4f4a2422facdefd35d4a493e0f27dda",
+      "peak_rss_kib": 161220,
+      "result": "PASS",
+      "skips": 0,
+      "tests": 6,
+      "unittest_seconds": 92.219
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_native.py",
+      "log_sha256": "9e441a57f57c1747f6ffece939c131b48d15b64a9763d380ddc8da8c88966d54",
+      "peak_rss_kib": 206672,
+      "result": "PASS",
+      "skips": 0,
+      "tests": 4,
+      "unittest_seconds": 99.368
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_projection.py",
+      "log_sha256": "ab58b9df864e83e9e6aec0e4264dd27918c2966b5bbea456ca9631273ac07e22",
+      "result": "PASS",
+      "skips": 0,
+      "tests": 4,
+      "unittest_seconds": 87.756
+    },
+    {
+      "command": "python3 tests/mod_editor/test_xbe_patch_memory_writes.py",
+      "log_sha256": "f60b2861c15d08e5109a5db728518118b581a676ed1b6769691a51c7364443fb",
+      "result": "PASS",
+      "skips": 0,
+      "tests": 59,
+      "unittest_seconds": 158.598
+    },
+    {
+      "command": "python3 tests/mod_editor/test_xbe_patch_cave_references.py",
+      "log_sha256": "bd21e6adcd3700adf4011fa3874fc2b046005702542276db742e681807c426e4",
+      "result": "PASS",
+      "skips": 0,
+      "tests": 71,
+      "unittest_seconds": 241.597
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_cave_oracle.py",
+      "environment": {
+        "NFL2K5_CAVE_MANIFEST": "$PWD/.scratch/current-cave-manifest.json"
+      },
+      "log_sha256": "169cee33ce493916de6e14f368fb24ae645abaa3648db1187f909e661a083f68",
+      "result": "PASS",
+      "skips": 0,
+      "tests": 28,
+      "unittest_seconds": 70.041
+    }
+  ],
+  "total_tests": 195
+}

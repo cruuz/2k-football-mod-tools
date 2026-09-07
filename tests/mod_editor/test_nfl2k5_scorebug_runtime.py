@@ -141,9 +141,9 @@ class Machine:
         self.play=self.alloc(512);self.put(0xe602ec,self.play);self.put(self.play+4,1)
         self.put(0xe60280,0xe5fc20);self.put(0xe602b4,4);self.put(0xa95a70,1);self.put(0xa95a00,1)
         self.uc.mem_write(0xfc9c0,b'\xc2\x04\x00')
-        self.writes=[];self.visits=[]
-        self.uc.hook_add(uc.UC_HOOK_MEM_WRITE,lambda _u,_a,addr,size,value,_d:self.writes.append((addr,size,value)))
-        self.uc.hook_add(uc.UC_HOOK_CODE,lambda _u,addr,_s,_d:self.visits.append(addr))
+        self.writes=[];self.visits=[];self.record=True
+        self.uc.hook_add(uc.UC_HOOK_MEM_WRITE,lambda _u,_a,addr,size,value,_d:self.writes.append((addr,size,value)) if self.record else None)
+        self.uc.hook_add(uc.UC_HOOK_CODE,lambda _u,addr,_s,_d:self.visits.append(addr) if self.record else None)
 
     def alloc(self,size):
         at=(self.cursor+127)&-128;self.cursor=at+size;return at
@@ -179,7 +179,8 @@ class Machine:
     def update(self,dt=1/60):self.run(self.labels['update'],(struct.unpack('<I',struct.pack('<f',dt))[0],))
 
 
-@unittest.skipUnless(XBE.is_file() and PACK.is_file() and HAVE_UC,'retail XBE/pack 0 and Unicorn required for bounded native execution')
+@unittest.skipUnless(XBE.is_file() and PACK.is_file() and HAVE_UC and importlib.util.find_spec('PIL'),
+                     'retail XBE/pack 0, Pillow and Unicorn required for bounded native execution')
 class ExecutionTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

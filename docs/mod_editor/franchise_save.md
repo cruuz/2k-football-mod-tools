@@ -163,6 +163,42 @@ in-game save/load observation. No save format or serializer changes are made.
 | `set_coach_field` | one coach field / rating / tendency | unwitnessed |
 | `set_team_record_ring` | one u16 | unwitnessed |
 
+## Postseason schedule editing (EXPERIMENTAL / UNWITNESSED)
+
+The save grid remains exactly 22 rows of 17 eight-byte records. The editor
+recognizes the shipped layouts from the regular-stage week count or the saved
+256/272-game template; it does not infer a layout from the configured year.
+Without either, it checks the occupied postseason tail and defaults to retail
+when that evidence is empty or ambiguous. Custom or conflicting layouts remain
+outside this recognition contract.
+
+| Regular weeks | Wild card | Divisional | Conference | Super Bowl | Pro Bowl |
+|---|---|---|---|---|---|
+| 17 | 17 | 18 | 19 | 20 | 21 |
+| 18 | 18 | 19 | 20 | 21 | absent |
+
+These are zero-based grid rows. Either layout can carry four or six wild-card
+games; enumeration scans all 17 slots, including records after a filler, and
+never creates an extra round or reads a nonexistent row 22. The Franchise page's
+**All postseason** view lists existing games in physical row/slot order with
+their round labels. Individual week/round filters use the same identities.
+
+The low/high bytes of a postseason cell's flags say whether its home/away
+team has qualified. A zero team byte with an unset flag means **To be decided**;
+with a set flag it means team 0 (49ers in retail). Date/kickoff edits work in
+both cases. Undecided team selections and their flags remain unchanged. The
+writer checks self-play only when both sides are known and validates the entire
+edit before replacing the single record. Empty cells and unsupported types
+cannot be made into games through this writer.
+
+A played game shows a notice immediately on selection and refuses changes
+unless **Allow editing played games** is selected. That existing override is
+reset when another save is loaded. Quarter scores, flags and all bytes outside
+the record remain untouched. Date/time controls change only month, day, hour
+and minute; the existing byte at record +5 (year minus 2000 in the calendar
+engine) is preserved, including after 2099. This does not migrate legacy dates
+or change the game's calendar generation rules.
+
 ## Not done
 
 The runtime string table (`.bss`) that names stages, stat ids and log kinds is not in the XBE, so those

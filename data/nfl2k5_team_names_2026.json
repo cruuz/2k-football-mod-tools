@@ -1,0 +1,1197 @@
+{
+  "schema": "nfl2k5_team_names_2026/v1",
+  "experimental": true,
+  "witnessed": false,
+  "season": 2026,
+  "resource_size": 593792,
+  "resource_header_hex": "524f5354600f0900600f09000000000000000000000000000000000000000000",
+  "body_prefix_hex": "000000000000000000000000524f5354110000002d000000000000000000000072006f0073007400650072000000000000000000000000000000000000000000",
+  "structure_pins": [
+    {
+      "offset": 88,
+      "hex": "340000006d410000"
+    },
+    {
+      "offset": 136,
+      "hex": "2400000025290000"
+    }
+  ],
+  "teams": [
+    {
+      "index": 0,
+      "retail": {
+        "nickname": "49ers",
+        "abbreviation": "SF",
+        "asset_code": "25",
+        "city": "San Francisco",
+        "city_abbreviation": "SF"
+      },
+      "desired": {
+        "nickname": "49ers",
+        "abbreviation": "SF",
+        "asset_code": "25",
+        "city": "San Francisco",
+        "city_abbreviation": "SF"
+      },
+      "written": {
+        "nickname": "49ers",
+        "abbreviation": "SF",
+        "asset_code": "25",
+        "city": "San Francisco",
+        "city_abbreviation": "SF"
+      }
+    },
+    {
+      "index": 1,
+      "retail": {
+        "nickname": "Bears",
+        "abbreviation": "CHI",
+        "asset_code": "05",
+        "city": "Chicago",
+        "city_abbreviation": "CHI"
+      },
+      "desired": {
+        "nickname": "Bears",
+        "abbreviation": "CHI",
+        "asset_code": "05",
+        "city": "Chicago",
+        "city_abbreviation": "CHI"
+      },
+      "written": {
+        "nickname": "Bears",
+        "abbreviation": "CHI",
+        "asset_code": "05",
+        "city": "Chicago",
+        "city_abbreviation": "CHI"
+      }
+    },
+    {
+      "index": 2,
+      "retail": {
+        "nickname": "Bengals",
+        "abbreviation": "CIN",
+        "asset_code": "06",
+        "city": "Cincinnati",
+        "city_abbreviation": "CIN"
+      },
+      "desired": {
+        "nickname": "Bengals",
+        "abbreviation": "CIN",
+        "asset_code": "06",
+        "city": "Cincinnati",
+        "city_abbreviation": "CIN"
+      },
+      "written": {
+        "nickname": "Bengals",
+        "abbreviation": "CIN",
+        "asset_code": "06",
+        "city": "Cincinnati",
+        "city_abbreviation": "CIN"
+      }
+    },
+    {
+      "index": 3,
+      "retail": {
+        "nickname": "Bills",
+        "abbreviation": "BUF",
+        "asset_code": "03",
+        "city": "Buffalo",
+        "city_abbreviation": "BUF"
+      },
+      "desired": {
+        "nickname": "Bills",
+        "abbreviation": "BUF",
+        "asset_code": "03",
+        "city": "Buffalo",
+        "city_abbreviation": "BUF"
+      },
+      "written": {
+        "nickname": "Bills",
+        "abbreviation": "BUF",
+        "asset_code": "03",
+        "city": "Buffalo",
+        "city_abbreviation": "BUF"
+      }
+    },
+    {
+      "index": 4,
+      "retail": {
+        "nickname": "Broncos",
+        "abbreviation": "DEN",
+        "asset_code": "08",
+        "city": "Denver",
+        "city_abbreviation": "DEN"
+      },
+      "desired": {
+        "nickname": "Broncos",
+        "abbreviation": "DEN",
+        "asset_code": "08",
+        "city": "Denver",
+        "city_abbreviation": "DEN"
+      },
+      "written": {
+        "nickname": "Broncos",
+        "abbreviation": "DEN",
+        "asset_code": "08",
+        "city": "Denver",
+        "city_abbreviation": "DEN"
+      }
+    },
+    {
+      "index": 5,
+      "retail": {
+        "nickname": "Browns",
+        "abbreviation": "CLE",
+        "asset_code": "30",
+        "city": "Cleveland",
+        "city_abbreviation": "CLE"
+      },
+      "desired": {
+        "nickname": "Browns",
+        "abbreviation": "CLE",
+        "asset_code": "30",
+        "city": "Cleveland",
+        "city_abbreviation": "CLE"
+      },
+      "written": {
+        "nickname": "Browns",
+        "abbreviation": "CLE",
+        "asset_code": "30",
+        "city": "Cleveland",
+        "city_abbreviation": "CLE"
+      }
+    },
+    {
+      "index": 6,
+      "retail": {
+        "nickname": "Buccaneers",
+        "abbreviation": "TB",
+        "asset_code": "27",
+        "city": "Tampa Bay",
+        "city_abbreviation": "TB"
+      },
+      "desired": {
+        "nickname": "Buccaneers",
+        "abbreviation": "TB",
+        "asset_code": "27",
+        "city": "Tampa Bay",
+        "city_abbreviation": "TB"
+      },
+      "written": {
+        "nickname": "Buccaneers",
+        "abbreviation": "TB",
+        "asset_code": "27",
+        "city": "Tampa Bay",
+        "city_abbreviation": "TB"
+      }
+    },
+    {
+      "index": 7,
+      "retail": {
+        "nickname": "Cardinals",
+        "abbreviation": "ARZ",
+        "asset_code": "00",
+        "city": "Arizona",
+        "city_abbreviation": "ARZ"
+      },
+      "desired": {
+        "nickname": "Cardinals",
+        "abbreviation": "ARI",
+        "asset_code": "00",
+        "city": "Arizona",
+        "city_abbreviation": "ARI"
+      },
+      "written": {
+        "nickname": "Cardinals",
+        "abbreviation": "ARI",
+        "asset_code": "00",
+        "city": "Arizona",
+        "city_abbreviation": "ARI"
+      }
+    },
+    {
+      "index": 8,
+      "retail": {
+        "nickname": "Chargers",
+        "abbreviation": "SD",
+        "asset_code": "24",
+        "city": "San Diego",
+        "city_abbreviation": "SD"
+      },
+      "desired": {
+        "nickname": "Chargers",
+        "abbreviation": "LAC",
+        "asset_code": "24",
+        "city": "Los Angeles",
+        "city_abbreviation": "LAC"
+      },
+      "written": {
+        "nickname": "Chargers",
+        "abbreviation": "LA",
+        "asset_code": "24",
+        "city": "L.A.",
+        "city_abbreviation": "LA"
+      }
+    },
+    {
+      "index": 9,
+      "retail": {
+        "nickname": "Chiefs",
+        "abbreviation": "KC",
+        "asset_code": "13",
+        "city": "Kansas City",
+        "city_abbreviation": "KC"
+      },
+      "desired": {
+        "nickname": "Chiefs",
+        "abbreviation": "KC",
+        "asset_code": "13",
+        "city": "Kansas City",
+        "city_abbreviation": "KC"
+      },
+      "written": {
+        "nickname": "Chiefs",
+        "abbreviation": "KC",
+        "asset_code": "13",
+        "city": "Kansas City",
+        "city_abbreviation": "KC"
+      }
+    },
+    {
+      "index": 10,
+      "retail": {
+        "nickname": "Colts",
+        "abbreviation": "IND",
+        "asset_code": "11",
+        "city": "Indianapolis",
+        "city_abbreviation": "IND"
+      },
+      "desired": {
+        "nickname": "Colts",
+        "abbreviation": "IND",
+        "asset_code": "11",
+        "city": "Indianapolis",
+        "city_abbreviation": "IND"
+      },
+      "written": {
+        "nickname": "Colts",
+        "abbreviation": "IND",
+        "asset_code": "11",
+        "city": "Indianapolis",
+        "city_abbreviation": "IND"
+      }
+    },
+    {
+      "index": 11,
+      "retail": {
+        "nickname": "Cowboys",
+        "abbreviation": "DAL",
+        "asset_code": "07",
+        "city": "Dallas",
+        "city_abbreviation": "DAL"
+      },
+      "desired": {
+        "nickname": "Cowboys",
+        "abbreviation": "DAL",
+        "asset_code": "07",
+        "city": "Dallas",
+        "city_abbreviation": "DAL"
+      },
+      "written": {
+        "nickname": "Cowboys",
+        "abbreviation": "DAL",
+        "asset_code": "07",
+        "city": "Dallas",
+        "city_abbreviation": "DAL"
+      }
+    },
+    {
+      "index": 12,
+      "retail": {
+        "nickname": "Dolphins",
+        "abbreviation": "MIA",
+        "asset_code": "14",
+        "city": "Miami",
+        "city_abbreviation": "MIA"
+      },
+      "desired": {
+        "nickname": "Dolphins",
+        "abbreviation": "MIA",
+        "asset_code": "14",
+        "city": "Miami",
+        "city_abbreviation": "MIA"
+      },
+      "written": {
+        "nickname": "Dolphins",
+        "abbreviation": "MIA",
+        "asset_code": "14",
+        "city": "Miami",
+        "city_abbreviation": "MIA"
+      }
+    },
+    {
+      "index": 13,
+      "retail": {
+        "nickname": "Eagles",
+        "abbreviation": "PHI",
+        "asset_code": "21",
+        "city": "Philadelphia",
+        "city_abbreviation": "PHI"
+      },
+      "desired": {
+        "nickname": "Eagles",
+        "abbreviation": "PHI",
+        "asset_code": "21",
+        "city": "Philadelphia",
+        "city_abbreviation": "PHI"
+      },
+      "written": {
+        "nickname": "Eagles",
+        "abbreviation": "PHI",
+        "asset_code": "21",
+        "city": "Philadelphia",
+        "city_abbreviation": "PHI"
+      }
+    },
+    {
+      "index": 14,
+      "retail": {
+        "nickname": "Falcons",
+        "abbreviation": "ATL",
+        "asset_code": "01",
+        "city": "Atlanta",
+        "city_abbreviation": "ATL"
+      },
+      "desired": {
+        "nickname": "Falcons",
+        "abbreviation": "ATL",
+        "asset_code": "01",
+        "city": "Atlanta",
+        "city_abbreviation": "ATL"
+      },
+      "written": {
+        "nickname": "Falcons",
+        "abbreviation": "ATL",
+        "asset_code": "01",
+        "city": "Atlanta",
+        "city_abbreviation": "ATL"
+      }
+    },
+    {
+      "index": 15,
+      "retail": {
+        "nickname": "Giants",
+        "abbreviation": "NYG",
+        "asset_code": "18",
+        "city": "New York",
+        "city_abbreviation": "NYG"
+      },
+      "desired": {
+        "nickname": "Giants",
+        "abbreviation": "NYG",
+        "asset_code": "18",
+        "city": "New York",
+        "city_abbreviation": "NYG"
+      },
+      "written": {
+        "nickname": "Giants",
+        "abbreviation": "NYG",
+        "asset_code": "18",
+        "city": "New York",
+        "city_abbreviation": "NYG"
+      }
+    },
+    {
+      "index": 16,
+      "retail": {
+        "nickname": "Jaguars",
+        "abbreviation": "JAX",
+        "asset_code": "12",
+        "city": "Jacksonville",
+        "city_abbreviation": "JAX"
+      },
+      "desired": {
+        "nickname": "Jaguars",
+        "abbreviation": "JAX",
+        "asset_code": "12",
+        "city": "Jacksonville",
+        "city_abbreviation": "JAX"
+      },
+      "written": {
+        "nickname": "Jaguars",
+        "abbreviation": "JAX",
+        "asset_code": "12",
+        "city": "Jacksonville",
+        "city_abbreviation": "JAX"
+      }
+    },
+    {
+      "index": 17,
+      "retail": {
+        "nickname": "Jets",
+        "abbreviation": "NYJ",
+        "asset_code": "19",
+        "city": "New York",
+        "city_abbreviation": "NYJ"
+      },
+      "desired": {
+        "nickname": "Jets",
+        "abbreviation": "NYJ",
+        "asset_code": "19",
+        "city": "New York",
+        "city_abbreviation": "NYJ"
+      },
+      "written": {
+        "nickname": "Jets",
+        "abbreviation": "NYJ",
+        "asset_code": "19",
+        "city": "New York",
+        "city_abbreviation": "NYJ"
+      }
+    },
+    {
+      "index": 18,
+      "retail": {
+        "nickname": "Lions",
+        "abbreviation": "DET",
+        "asset_code": "09",
+        "city": "Detroit",
+        "city_abbreviation": "DET"
+      },
+      "desired": {
+        "nickname": "Lions",
+        "abbreviation": "DET",
+        "asset_code": "09",
+        "city": "Detroit",
+        "city_abbreviation": "DET"
+      },
+      "written": {
+        "nickname": "Lions",
+        "abbreviation": "DET",
+        "asset_code": "09",
+        "city": "Detroit",
+        "city_abbreviation": "DET"
+      }
+    },
+    {
+      "index": 19,
+      "retail": {
+        "nickname": "Packers",
+        "abbreviation": "GB",
+        "asset_code": "10",
+        "city": "Green Bay",
+        "city_abbreviation": "GB"
+      },
+      "desired": {
+        "nickname": "Packers",
+        "abbreviation": "GB",
+        "asset_code": "10",
+        "city": "Green Bay",
+        "city_abbreviation": "GB"
+      },
+      "written": {
+        "nickname": "Packers",
+        "abbreviation": "GB",
+        "asset_code": "10",
+        "city": "Green Bay",
+        "city_abbreviation": "GB"
+      }
+    },
+    {
+      "index": 20,
+      "retail": {
+        "nickname": "Panthers",
+        "abbreviation": "CAR",
+        "asset_code": "04",
+        "city": "Carolina",
+        "city_abbreviation": "CAR"
+      },
+      "desired": {
+        "nickname": "Panthers",
+        "abbreviation": "CAR",
+        "asset_code": "04",
+        "city": "Carolina",
+        "city_abbreviation": "CAR"
+      },
+      "written": {
+        "nickname": "Panthers",
+        "abbreviation": "CAR",
+        "asset_code": "04",
+        "city": "Carolina",
+        "city_abbreviation": "CAR"
+      }
+    },
+    {
+      "index": 21,
+      "retail": {
+        "nickname": "Patriots",
+        "abbreviation": "NE",
+        "asset_code": "16",
+        "city": "New England",
+        "city_abbreviation": "NE"
+      },
+      "desired": {
+        "nickname": "Patriots",
+        "abbreviation": "NE",
+        "asset_code": "16",
+        "city": "New England",
+        "city_abbreviation": "NE"
+      },
+      "written": {
+        "nickname": "Patriots",
+        "abbreviation": "NE",
+        "asset_code": "16",
+        "city": "New England",
+        "city_abbreviation": "NE"
+      }
+    },
+    {
+      "index": 22,
+      "retail": {
+        "nickname": "Raiders",
+        "abbreviation": "OAK",
+        "asset_code": "20",
+        "city": "Oakland",
+        "city_abbreviation": "OAK"
+      },
+      "desired": {
+        "nickname": "Raiders",
+        "abbreviation": "LV",
+        "asset_code": "20",
+        "city": "Las Vegas",
+        "city_abbreviation": "LV"
+      },
+      "written": {
+        "nickname": "Raiders",
+        "abbreviation": "LV",
+        "asset_code": "20",
+        "city": "L Vegas",
+        "city_abbreviation": "LV"
+      }
+    },
+    {
+      "index": 23,
+      "retail": {
+        "nickname": "Rams",
+        "abbreviation": "STL",
+        "asset_code": "23",
+        "city": "St. Louis",
+        "city_abbreviation": "STL"
+      },
+      "desired": {
+        "nickname": "Rams",
+        "abbreviation": "LAR",
+        "asset_code": "23",
+        "city": "Los Angeles",
+        "city_abbreviation": "LAR"
+      },
+      "written": {
+        "nickname": "Rams",
+        "abbreviation": "LAR",
+        "asset_code": "23",
+        "city": "L.A.",
+        "city_abbreviation": "LAR"
+      }
+    },
+    {
+      "index": 24,
+      "retail": {
+        "nickname": "Ravens",
+        "abbreviation": "BAL",
+        "asset_code": "02",
+        "city": "Baltimore",
+        "city_abbreviation": "BAL"
+      },
+      "desired": {
+        "nickname": "Ravens",
+        "abbreviation": "BAL",
+        "asset_code": "02",
+        "city": "Baltimore",
+        "city_abbreviation": "BAL"
+      },
+      "written": {
+        "nickname": "Ravens",
+        "abbreviation": "BAL",
+        "asset_code": "02",
+        "city": "Baltimore",
+        "city_abbreviation": "BAL"
+      }
+    },
+    {
+      "index": 25,
+      "retail": {
+        "nickname": "Redskins",
+        "abbreviation": "WAS",
+        "asset_code": "29",
+        "city": "Washington",
+        "city_abbreviation": "WAS"
+      },
+      "desired": {
+        "nickname": "Commanders",
+        "abbreviation": "WAS",
+        "asset_code": "29",
+        "city": "Washington",
+        "city_abbreviation": "WAS"
+      },
+      "written": {
+        "nickname": "Cmdrs",
+        "abbreviation": "WAS",
+        "asset_code": "29",
+        "city": "Washington",
+        "city_abbreviation": "WAS"
+      }
+    },
+    {
+      "index": 26,
+      "retail": {
+        "nickname": "Saints",
+        "abbreviation": "NO",
+        "asset_code": "17",
+        "city": "New Orleans",
+        "city_abbreviation": "NO"
+      },
+      "desired": {
+        "nickname": "Saints",
+        "abbreviation": "NO",
+        "asset_code": "17",
+        "city": "New Orleans",
+        "city_abbreviation": "NO"
+      },
+      "written": {
+        "nickname": "Saints",
+        "abbreviation": "NO",
+        "asset_code": "17",
+        "city": "New Orleans",
+        "city_abbreviation": "NO"
+      }
+    },
+    {
+      "index": 27,
+      "retail": {
+        "nickname": "Seahawks",
+        "abbreviation": "SEA",
+        "asset_code": "26",
+        "city": "Seattle",
+        "city_abbreviation": "SEA"
+      },
+      "desired": {
+        "nickname": "Seahawks",
+        "abbreviation": "SEA",
+        "asset_code": "26",
+        "city": "Seattle",
+        "city_abbreviation": "SEA"
+      },
+      "written": {
+        "nickname": "Seahawks",
+        "abbreviation": "SEA",
+        "asset_code": "26",
+        "city": "Seattle",
+        "city_abbreviation": "SEA"
+      }
+    },
+    {
+      "index": 28,
+      "retail": {
+        "nickname": "Steelers",
+        "abbreviation": "PIT",
+        "asset_code": "22",
+        "city": "Pittsburgh",
+        "city_abbreviation": "PIT"
+      },
+      "desired": {
+        "nickname": "Steelers",
+        "abbreviation": "PIT",
+        "asset_code": "22",
+        "city": "Pittsburgh",
+        "city_abbreviation": "PIT"
+      },
+      "written": {
+        "nickname": "Steelers",
+        "abbreviation": "PIT",
+        "asset_code": "22",
+        "city": "Pittsburgh",
+        "city_abbreviation": "PIT"
+      }
+    },
+    {
+      "index": 29,
+      "retail": {
+        "nickname": "Texans",
+        "abbreviation": "HOU",
+        "asset_code": "37",
+        "city": "Houston",
+        "city_abbreviation": "HOU"
+      },
+      "desired": {
+        "nickname": "Texans",
+        "abbreviation": "HOU",
+        "asset_code": "37",
+        "city": "Houston",
+        "city_abbreviation": "HOU"
+      },
+      "written": {
+        "nickname": "Texans",
+        "abbreviation": "HOU",
+        "asset_code": "37",
+        "city": "Houston",
+        "city_abbreviation": "HOU"
+      }
+    },
+    {
+      "index": 30,
+      "retail": {
+        "nickname": "Titans",
+        "abbreviation": "TEN",
+        "asset_code": "28",
+        "city": "Tennessee",
+        "city_abbreviation": "TEN"
+      },
+      "desired": {
+        "nickname": "Titans",
+        "abbreviation": "TEN",
+        "asset_code": "28",
+        "city": "Tennessee",
+        "city_abbreviation": "TEN"
+      },
+      "written": {
+        "nickname": "Titans",
+        "abbreviation": "TEN",
+        "asset_code": "28",
+        "city": "Tennessee",
+        "city_abbreviation": "TEN"
+      }
+    },
+    {
+      "index": 31,
+      "retail": {
+        "nickname": "Vikings",
+        "abbreviation": "MIN",
+        "asset_code": "15",
+        "city": "Minnesota",
+        "city_abbreviation": "MIN"
+      },
+      "desired": {
+        "nickname": "Vikings",
+        "abbreviation": "MIN",
+        "asset_code": "15",
+        "city": "Minnesota",
+        "city_abbreviation": "MIN"
+      },
+      "written": {
+        "nickname": "Vikings",
+        "abbreviation": "MIN",
+        "asset_code": "15",
+        "city": "Minnesota",
+        "city_abbreviation": "MIN"
+      }
+    }
+  ],
+  "cells": [
+    {
+      "team_index": 7,
+      "domain": "team",
+      "field": "nickname",
+      "pointer_offset": 20600,
+      "body_offset": 496898,
+      "allocation_bytes": 20,
+      "retail": "Cardinals",
+      "desired": "Cardinals",
+      "written": "Cardinals"
+    },
+    {
+      "team_index": 7,
+      "domain": "team",
+      "field": "abbreviation",
+      "pointer_offset": 20604,
+      "body_offset": 496918,
+      "allocation_bytes": 8,
+      "retail": "ARZ",
+      "desired": "ARI",
+      "written": "ARI"
+    },
+    {
+      "team_index": 7,
+      "domain": "team",
+      "field": "asset_code",
+      "pointer_offset": 20608,
+      "body_offset": 496926,
+      "allocation_bytes": 6,
+      "retail": "00",
+      "desired": "00",
+      "written": "00"
+    },
+    {
+      "team_index": 7,
+      "domain": "team",
+      "field": "city",
+      "pointer_offset": 20652,
+      "body_offset": 496932,
+      "allocation_bytes": 16,
+      "retail": "Arizona",
+      "desired": "Arizona",
+      "written": "Arizona"
+    },
+    {
+      "team_index": 7,
+      "domain": "team",
+      "field": "city_abbreviation",
+      "pointer_offset": 20656,
+      "body_offset": 496948,
+      "allocation_bytes": 8,
+      "retail": "ARZ",
+      "desired": "ARI",
+      "written": "ARI"
+    },
+    {
+      "team_index": 7,
+      "domain": "team_label",
+      "field": "nickname",
+      "pointer_offset": 10728,
+      "body_offset": 490338,
+      "allocation_bytes": 20,
+      "retail": "Cardinals",
+      "desired": "Cardinals",
+      "written": "Cardinals"
+    },
+    {
+      "team_index": 7,
+      "domain": "team_label",
+      "field": "abbreviation",
+      "pointer_offset": 10732,
+      "body_offset": 490358,
+      "allocation_bytes": 8,
+      "retail": "ARZ",
+      "desired": "ARI",
+      "written": "ARI"
+    },
+    {
+      "team_index": 8,
+      "domain": "team",
+      "field": "nickname",
+      "pointer_offset": 21100,
+      "body_offset": 496956,
+      "allocation_bytes": 18,
+      "retail": "Chargers",
+      "desired": "Chargers",
+      "written": "Chargers"
+    },
+    {
+      "team_index": 8,
+      "domain": "team",
+      "field": "abbreviation",
+      "pointer_offset": 21104,
+      "body_offset": 496974,
+      "allocation_bytes": 6,
+      "retail": "SD",
+      "desired": "LAC",
+      "written": "LA"
+    },
+    {
+      "team_index": 8,
+      "domain": "team",
+      "field": "asset_code",
+      "pointer_offset": 21108,
+      "body_offset": 496980,
+      "allocation_bytes": 6,
+      "retail": "24",
+      "desired": "24",
+      "written": "24"
+    },
+    {
+      "team_index": 8,
+      "domain": "team",
+      "field": "city",
+      "pointer_offset": 21152,
+      "body_offset": 496986,
+      "allocation_bytes": 20,
+      "retail": "San Diego",
+      "desired": "Los Angeles",
+      "written": "L.A."
+    },
+    {
+      "team_index": 8,
+      "domain": "team",
+      "field": "city_abbreviation",
+      "pointer_offset": 21156,
+      "body_offset": 497006,
+      "allocation_bytes": 6,
+      "retail": "SD",
+      "desired": "LAC",
+      "written": "LA"
+    },
+    {
+      "team_index": 8,
+      "domain": "team_label",
+      "field": "nickname",
+      "pointer_offset": 10736,
+      "body_offset": 490366,
+      "allocation_bytes": 18,
+      "retail": "Chargers",
+      "desired": "Chargers",
+      "written": "Chargers"
+    },
+    {
+      "team_index": 8,
+      "domain": "team_label",
+      "field": "abbreviation",
+      "pointer_offset": 10740,
+      "body_offset": 490384,
+      "allocation_bytes": 6,
+      "retail": "SD",
+      "desired": "LAC",
+      "written": "LA"
+    },
+    {
+      "team_index": 22,
+      "domain": "team",
+      "field": "nickname",
+      "pointer_offset": 28100,
+      "body_offset": 497738,
+      "allocation_bytes": 16,
+      "retail": "Raiders",
+      "desired": "Raiders",
+      "written": "Raiders"
+    },
+    {
+      "team_index": 22,
+      "domain": "team",
+      "field": "abbreviation",
+      "pointer_offset": 28104,
+      "body_offset": 497754,
+      "allocation_bytes": 8,
+      "retail": "OAK",
+      "desired": "LV",
+      "written": "LV"
+    },
+    {
+      "team_index": 22,
+      "domain": "team",
+      "field": "asset_code",
+      "pointer_offset": 28108,
+      "body_offset": 497762,
+      "allocation_bytes": 6,
+      "retail": "20",
+      "desired": "20",
+      "written": "20"
+    },
+    {
+      "team_index": 22,
+      "domain": "team",
+      "field": "city",
+      "pointer_offset": 28152,
+      "body_offset": 497768,
+      "allocation_bytes": 16,
+      "retail": "Oakland",
+      "desired": "Las Vegas",
+      "written": "L Vegas"
+    },
+    {
+      "team_index": 22,
+      "domain": "team",
+      "field": "city_abbreviation",
+      "pointer_offset": 28156,
+      "body_offset": 497784,
+      "allocation_bytes": 8,
+      "retail": "OAK",
+      "desired": "LV",
+      "written": "LV"
+    },
+    {
+      "team_index": 22,
+      "domain": "team_label",
+      "field": "nickname",
+      "pointer_offset": 10848,
+      "body_offset": 490682,
+      "allocation_bytes": 16,
+      "retail": "Raiders",
+      "desired": "Raiders",
+      "written": "Raiders"
+    },
+    {
+      "team_index": 22,
+      "domain": "team_label",
+      "field": "abbreviation",
+      "pointer_offset": 10852,
+      "body_offset": 490698,
+      "allocation_bytes": 8,
+      "retail": "OAK",
+      "desired": "LV",
+      "written": "LV"
+    },
+    {
+      "team_index": 23,
+      "domain": "team",
+      "field": "nickname",
+      "pointer_offset": 28600,
+      "body_offset": 497792,
+      "allocation_bytes": 10,
+      "retail": "Rams",
+      "desired": "Rams",
+      "written": "Rams"
+    },
+    {
+      "team_index": 23,
+      "domain": "team",
+      "field": "abbreviation",
+      "pointer_offset": 28604,
+      "body_offset": 497802,
+      "allocation_bytes": 8,
+      "retail": "STL",
+      "desired": "LAR",
+      "written": "LAR"
+    },
+    {
+      "team_index": 23,
+      "domain": "team",
+      "field": "asset_code",
+      "pointer_offset": 28608,
+      "body_offset": 497810,
+      "allocation_bytes": 6,
+      "retail": "23",
+      "desired": "23",
+      "written": "23"
+    },
+    {
+      "team_index": 23,
+      "domain": "team",
+      "field": "city",
+      "pointer_offset": 28652,
+      "body_offset": 497816,
+      "allocation_bytes": 20,
+      "retail": "St. Louis",
+      "desired": "Los Angeles",
+      "written": "L.A."
+    },
+    {
+      "team_index": 23,
+      "domain": "team",
+      "field": "city_abbreviation",
+      "pointer_offset": 28656,
+      "body_offset": 497836,
+      "allocation_bytes": 8,
+      "retail": "STL",
+      "desired": "LAR",
+      "written": "LAR"
+    },
+    {
+      "team_index": 23,
+      "domain": "team_label",
+      "field": "nickname",
+      "pointer_offset": 10856,
+      "body_offset": 490706,
+      "allocation_bytes": 10,
+      "retail": "Rams",
+      "desired": "Rams",
+      "written": "Rams"
+    },
+    {
+      "team_index": 23,
+      "domain": "team_label",
+      "field": "abbreviation",
+      "pointer_offset": 10860,
+      "body_offset": 490716,
+      "allocation_bytes": 8,
+      "retail": "STL",
+      "desired": "LAR",
+      "written": "LAR"
+    },
+    {
+      "team_index": 25,
+      "domain": "team",
+      "field": "nickname",
+      "pointer_offset": 29600,
+      "body_offset": 497900,
+      "allocation_bytes": 18,
+      "retail": "Redskins",
+      "desired": "Commanders",
+      "written": "Cmdrs"
+    },
+    {
+      "team_index": 25,
+      "domain": "team",
+      "field": "abbreviation",
+      "pointer_offset": 29604,
+      "body_offset": 497918,
+      "allocation_bytes": 8,
+      "retail": "WAS",
+      "desired": "WAS",
+      "written": "WAS"
+    },
+    {
+      "team_index": 25,
+      "domain": "team",
+      "field": "asset_code",
+      "pointer_offset": 29608,
+      "body_offset": 497926,
+      "allocation_bytes": 6,
+      "retail": "29",
+      "desired": "29",
+      "written": "29"
+    },
+    {
+      "team_index": 25,
+      "domain": "team",
+      "field": "city",
+      "pointer_offset": 29652,
+      "body_offset": 497932,
+      "allocation_bytes": 22,
+      "retail": "Washington",
+      "desired": "Washington",
+      "written": "Washington"
+    },
+    {
+      "team_index": 25,
+      "domain": "team",
+      "field": "city_abbreviation",
+      "pointer_offset": 29656,
+      "body_offset": 497954,
+      "allocation_bytes": 8,
+      "retail": "WAS",
+      "desired": "WAS",
+      "written": "WAS"
+    },
+    {
+      "team_index": 25,
+      "domain": "team_label",
+      "field": "nickname",
+      "pointer_offset": 10872,
+      "body_offset": 490746,
+      "allocation_bytes": 18,
+      "retail": "Redskins",
+      "desired": "Commanders",
+      "written": "Cmdrs"
+    },
+    {
+      "team_index": 25,
+      "domain": "team_label",
+      "field": "abbreviation",
+      "pointer_offset": 10876,
+      "body_offset": 490764,
+      "allocation_bytes": 8,
+      "retail": "WAS",
+      "desired": "WAS",
+      "written": "WAS"
+    }
+  ],
+  "strg_audit": {
+    "allocations": 1115,
+    "team_name_hits": 0,
+    "banks": [
+      {
+        "outer_index": 23,
+        "chunk_index": 65,
+        "chunk_offset": 2320144,
+        "stored_size": 160432,
+        "allocations": 1106
+      },
+      {
+        "outer_index": 4248,
+        "chunk_index": 1,
+        "chunk_offset": 108848,
+        "stored_size": 6080,
+        "allocations": 9
+      }
+    ],
+    "note": "No relocated-city or affected-team text in either parsed retail STRG bank. Dynamic team placeholders resolve ROST names. No STRG writes."
+  }
+}

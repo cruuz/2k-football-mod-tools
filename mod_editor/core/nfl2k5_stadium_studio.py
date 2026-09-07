@@ -26,7 +26,7 @@ from pathlib import Path
 import shutil
 import tempfile
 from threading import RLock
-from typing import Protocol
+from typing import Callable, Protocol
 
 from . import platform_compat
 from .errors import ActionNotImplementedError, ValidationError
@@ -49,6 +49,7 @@ GEOMETRY_CATALOG_SCHEMA = "nfl2k5_stadium_static_target_catalog/v1"
 PREVIEW_EXPORT_ONLY = "Preview/Export-only"
 EDITABLE = "Editable"
 COPY_BLOCK = 1024 * 1024
+MAX_GLTF_BYTES = 64 * 1024 * 1024
 
 #: glTF's unit is the metre; NFL 2K5 authors stadium geometry in centimetres.
 #: Measured on real exports, a stadium spans over 23,000 authored units, which
@@ -207,6 +208,7 @@ class StadiumGltfTextureWriteBack:
     texture_index: int
     supplied_png_sha256: str
     write_result: object
+    changed: bool = True
 
 
 @dataclass(frozen=True, slots=True)
@@ -373,6 +375,8 @@ def _gltf_data_uri(uri: str, label: str) -> bytes:
     if not separator or not header.endswith(";base64"):
         raise ValidationError(f"The edited stadium glTF {label} is not a base64 data URI")
     try:
+        if len(encoded) > MAX_GLTF_BYTES * 4 // 3 + 4:
+            raise ValidationError(f"The edited stadium glTF {label} exceeds 64 MiB")
         return base64.b64decode(encoded.encode("ascii"), validate=True)
     except (ValueError, UnicodeEncodeError) as exc:
         raise ValidationError(
@@ -401,6 +405,15 @@ def _gltf_reference(value: object, limit: int, label: str) -> int:
     return value
 
 
+def _gltf_read(path: Path) -> bytes:
+    require_regular_file(path, "stadium glTF input")
+    with path.open("rb") as stream:
+        payload = stream.read(MAX_GLTF_BYTES + 1)
+    if len(payload) > MAX_GLTF_BYTES:
+        raise ValidationError("A stadium glTF input exceeds the 64 MiB limit")
+    return payload
+
+
 def _gltf_buffers(document: dict[str, object], root: Path) -> tuple[bytes, ...]:
     buffers = document.get("buffers")
     if not isinstance(buffers, list):
@@ -414,12 +427,16 @@ def _gltf_buffers(document: dict[str, object], root: Path) -> tuple[bytes, ...]:
         if isinstance(uri, str) and uri.startswith("data:"):
             resolved.append(_gltf_data_uri(uri, label))
         elif isinstance(uri, str) and uri:
-            resolved.append(_gltf_relative_file(root, uri, label).read_bytes())
+            resolved.append(_gltf_read(_gltf_relative_file(root, uri, label)))
         else:
             raise ValidationError(
                 f"The edited stadium glTF {label} has no readable URI; "
                 "GLB containers are not supported"
             )
+        if sum(map(len, resolved)) > MAX_GLTF_BYTES:
+            raise ValidationError("The stadium glTF buffers exceed 64 MiB")
+        if buffer.get("byteLength") != len(resolved[-1]):
+            raise ValidationError(f"The edited stadium glTF {label} length disagrees")
     return tuple(resolved)
 
 
@@ -440,7 +457,7 @@ def stadium_gltf_texture_slots(
 
     require_regular_file(source_gltf, "edited stadium glTF")
     try:
-        document = json.loads(source_gltf.read_text(encoding="utf-8"))
+        document = json.loads(_gltf_read(source_gltf))
     except (OSError, json.JSONDecodeError) as exc:
         raise ValidationError(f"Could not read that edited stadium glTF: {exc}") from exc
     if not isinstance(document, dict):
@@ -457,6 +474,7 @@ def stadium_gltf_texture_slots(
     materials = raw_materials if isinstance(raw_materials, list) else []
 
     slots: list[StadiumGltfTextureSlot] = []
+    image_payloads: dict[int, bytes] = {}
     for material_index, material in enumerate(materials):
         label = f"material {material_index}"
         if not isinstance(material, dict):
@@ -486,7 +504,9 @@ def stadium_gltf_texture_slots(
         buffer_view_ref = image_row.get("bufferView")
         uri = image_row.get("uri")
         image_label = f"image {image_index}"
-        if not isinstance(buffer_view_ref, bool) and isinstance(buffer_view_ref, int):
+        if image_index in image_payloads:
+            payload = image_payloads[image_index]
+        elif not isinstance(buffer_view_ref, bool) and isinstance(buffer_view_ref, int):
             view_index = _gltf_reference(buffer_view_ref, len(buffer_views), image_label)
             view = buffer_views[view_index]
             if not isinstance(view, dict):
@@ -508,18 +528,26 @@ def stadium_gltf_texture_slots(
         elif isinstance(uri, str) and uri.startswith("data:"):
             payload = _gltf_data_uri(uri, image_label)
         elif isinstance(uri, str) and uri:
-            payload = _gltf_relative_file(root, uri, image_label).read_bytes()
+            payload = _gltf_read(_gltf_relative_file(root, uri, image_label))
         else:
             raise ValidationError(
                 f"The edited stadium glTF {image_label} has no readable bytes"
             )
-        texture_id: str | None = None
+        image_payloads[image_index] = payload
+        if sum(map(len, image_payloads.values())) > MAX_GLTF_BYTES:
+            raise ValidationError("The stadium glTF images exceed 64 MiB")
+        identities: set[str] = set()
         for carrier in (material, texture_row, image_row):
             extras = carrier.get("extras")
             if isinstance(extras, dict) \
-                    and isinstance(extras.get(GLTF_TEXTURE_ID_KEY), str):
-                texture_id = extras[GLTF_TEXTURE_ID_KEY]
-                break
+                    and extras.get(GLTF_TEXTURE_ID_KEY) is not None:
+                identity = extras[GLTF_TEXTURE_ID_KEY]
+                if not isinstance(identity, str) or not identity:
+                    raise ValidationError("The stadium texture identity is invalid")
+                identities.add(identity)
+        if len(identities) > 1:
+            raise ValidationError("The material, texture and image identities disagree")
+        texture_id = next(iter(identities), None)
         raw_name = material.get("name")
         raw_image_name = image_row.get("name")
         slots.append(
@@ -552,7 +580,9 @@ class Nfl2k5StadiumStudio:
         *,
         geometry_catalog: Path | None = None,
         edit_delegate: StadiumTextureEditDelegate | None = None,
+        scene_source: Callable[[StadiumScene], tuple[bytes, dict]] | None = None,
     ) -> None:
+        self.scene_source = scene_source
         self.gltf_manifest = gltf_manifest.expanduser()
         self.texture_manifest = texture_manifest.expanduser()
         self.texture_root = texture_root.expanduser()
@@ -730,7 +760,7 @@ class Nfl2k5StadiumStudio:
         already exists, so this re-verifies it against the manifest and writes a
         copy rather than re-deriving any geometry.
 
-        Two things change on the way out.  NFL 2K5 authors stadium geometry in
+        The export adds units, embedded images and source-derived UVs. NFL 2K5 authors stadium geometry in
         centimetres and glTF's unit is the metre, so an untouched copy opens
         about a hundred times too large: a real stadium here measures over
         23,000 units across, which Blender reads as 23 km and clips away at its
@@ -750,7 +780,11 @@ class Nfl2k5StadiumStudio:
         ``nfl2k5_texture_id`` that :meth:`replace_textures_from_gltf` maps back
         to the game slot.
 
-        Returns the written ``(gltf, bin)`` pair.  Both land or neither does.
+        With the live session's source reader, the shader-proved UV lane is
+        appended after those images. Each cached position is checked against
+        the fresh SCNE before the UV is attached. No game UV bytes are written.
+
+        Returns the written ``(gltf, bin)`` pair. Both land or neither does.
         """
 
         scene = (
@@ -828,13 +862,22 @@ class Nfl2k5StadiumStudio:
             }
 
         document, binary = self._embed_textures(scene, document)
+        if self.scene_source is not None:
+            from tools.nfl_scne_gltf import append_stadium_texcoords
+
+            decoded, source_document = self.scene_source(scene)
+            binary = append_stadium_texcoords(document, binary, decoded, source_document)
+            contract = document.get("extras", {}).get("nfl2k5_texture_contract", {})
+            contract["texcoord_note"] = (
+                "TEXCOORD_0 uses the source shape's scale and offset, without a V flip. "
+                "UV editing is preview only; game UV bytes are preserved."
+            )
 
         target = destination.expanduser()
         if not target.is_absolute():
             target = Path.cwd() / target
         target.parent.mkdir(parents=True, exist_ok=True)
-        # The glTF names its buffer by filename, so the pair must keep that name
-        # and land side by side or the copy will not open.
+        # Keep the legacy companion name for compatibility with saved workflows.
         binary_target = target.with_name(scene.bin_path.name)
         if target.name == binary_target.name:
             raise ValidationError(
@@ -931,6 +974,7 @@ class Nfl2k5StadiumStudio:
         images: list[dict[str, object]] = []
         gltf_textures: list[dict[str, object]] = []
         texture_slot: dict[str, int] = {}
+        alpha_textures: set[str] = set()
         mapping_rows: list[dict[str, object]] = []
         for texture in used:
             png_path = self.preview_texture(texture.texture_id)
@@ -940,6 +984,11 @@ class Nfl2k5StadiumStudio:
                 raise ValidationError(
                     f"Could not read stadium texture PNG {png_path}: {exc}"
                 ) from exc
+            from .nfl2k5_stadium_texture_writer import decode_rgba_png
+
+            _w, _h, rgba = decode_rgba_png(payload, (texture.width, texture.height))
+            if any(alpha < 255 for alpha in rgba[3::4]):
+                alpha_textures.add(texture.texture_id)
             binary.extend(b"\0" * ((-len(binary)) & 3))
             buffer_views.append(
                 {
@@ -964,7 +1013,8 @@ class Nfl2k5StadiumStudio:
                         GLTF_TEXTURE_ID_KEY: texture.texture_id,
                         "nfl2k5_texture_index": texture.texture_index,
                         "nfl2k5_scene_id": texture.scene_id,
-                        "rgba_sha256": texture.rgba_sha256,
+                        "rgba_sha256": hashlib.sha256(rgba).hexdigest(),
+                        "source_rgba_sha256": texture.rgba_sha256,
                         "width": texture.width,
                         "height": texture.height,
                         "format_name": texture.format_name,
@@ -1009,6 +1059,7 @@ class Nfl2k5StadiumStudio:
             )
             if slot is not None:
                 pbr["baseColorTexture"] = {"index": slot, "texCoord": 0}
+                pbr["baseColorFactor"] = [1.0, 1.0, 1.0, 1.0]
                 textured_material_count += 1
             materials_out.append(
                 {
@@ -1022,6 +1073,11 @@ class Nfl2k5StadiumStudio:
                     },
                 }
             )
+            if material.texture_id in alpha_textures:
+                materials_out[-1].update(alphaMode="MASK", alphaCutoff=0.5)
+                materials_out[-1]["extras"]["alpha_note"] = (
+                    "Preview cutout at 0.5; game blend and alpha-test state remain unproved."
+                )
 
         for mesh in meshes:
             primitives = mesh.get("primitives") if isinstance(mesh, dict) else None
@@ -1163,14 +1219,13 @@ class Nfl2k5StadiumStudio:
         route the Stadiums page uses, which compiles them through the
         fixed-allocation P8 writer of ``nfl2k5_stadium_texture_writer.py``.
 
-        A Blender-side script only needs to hand over the edited ``.gltf``
-        path; image bytes may live in the glTF bufferView, an external file
-        beside it, or a data URI.  Textures are compiled and committed in
-        texture-index order, one at a time, exactly like single Replace
-        actions: a PNG that does not fit the fixed allocation stops the run
-        and leaves any earlier slots in this call replaced.  Unmapped image
-        slots are ignored; a file with no mapped slot at all is refused.
+        The Blender helper emits a texture-only glTF, so mesh re-export cannot
+        change the write-back contract. All identities and PNGs are checked
+        first. Identical current pixels are skipped; changed slots require an
+        atomic delegate for a multi-texture import. The session composes the
+        entire scene, including earlier staged edits, before publishing it.
         """
+        from .nfl2k5_stadium_texture_writer import decode_rgba_png
 
         scene = (
             self.get_scene(scene_or_id)
@@ -1186,23 +1241,38 @@ class Nfl2k5StadiumStudio:
         slots = stadium_gltf_texture_slots(path)
         details = self.scene_details(scene)
         textures_by_id = {texture.texture_id: texture for texture in details.textures}
-        materials_by_name = {material.name: material for material in details.materials}
+        materials_by_name: dict[str, list[StadiumMaterial]] = {}
+        for material in details.materials:
+            materials_by_name.setdefault(material.name, []).append(material)
         resolved: dict[str, bytes] = {}
         for slot in slots:
             texture: StadiumTexture | None = None
             if slot.texture_id is not None:
                 texture = textures_by_id.get(slot.texture_id)
-            if texture is None:
-                named = materials_by_name.get(slot.material_name)
-                if named is not None and named.texture_id is not None:
-                    texture = textures_by_id.get(named.texture_id)
+                if texture is None:
+                    raise ValidationError("That texture ID does not belong to the selected Stadium scene")
+            else:
+                names = materials_by_name.get(slot.material_name, [])
+                candidates = {row.texture_id for row in names if row.texture_id is not None}
+                if len(candidates) > 1:
+                    raise ValidationError("That material name maps to more than one Stadium texture")
+                if candidates:
+                    texture = textures_by_id.get(next(iter(candidates)))
             if texture is None:
                 continue
             existing = resolved.get(texture.texture_id)
             if existing is not None and existing != slot.payload:
-                raise ValidationError(
-                    "That edited stadium glTF disagrees with itself about one texture"
-                )
+                try:
+                    size = (texture.width, texture.height)
+                    same_pixels = (decode_rgba_png(existing, size)[2]
+                                   == decode_rgba_png(slot.payload, size)[2])
+                except ValueError as exc:
+                    raise ValidationError(f"Invalid linked Stadium PNG: {exc}") from exc
+                if not same_pixels:
+                    raise ValidationError(
+                        "That edited stadium glTF disagrees with itself about one texture"
+                    )
+                continue
             resolved[texture.texture_id] = slot.payload
         if not resolved:
             raise ValidationError(
@@ -1212,31 +1282,49 @@ class Nfl2k5StadiumStudio:
             (textures_by_id[texture_id] for texture_id in resolved),
             key=lambda texture: texture.texture_index,
         )
-        unsupported = [
-            texture.texture_id
-            for texture in selected
-            if not self._delegate_supports(texture)
-        ]
-        if unsupported:
+        changed: list[StadiumTexture] = []
+        # Preflight every image before the delegate sees any mutation.
+        for texture in selected:
+            try:
+                dimensions = (texture.width, texture.height)
+                _w, _h, rgba = decode_rgba_png(resolved[texture.texture_id], dimensions)
+                current = self.preview_texture(texture.texture_id)
+                _w, _h, current_rgba = decode_rgba_png(_gltf_read(current), dimensions)
+            except (ValueError, OSError) as exc:
+                raise ValidationError(f"Invalid Stadium PNG for {texture.texture_id}: {exc}") from exc
+            if rgba != current_rgba:
+                changed.append(texture)
+        if any(not self._delegate_supports(texture) for texture in changed):
             raise ActionNotImplementedError(TEXTURE_FINDINGS)
-        results: list[StadiumGltfTextureWriteBack] = []
+        replace_many = getattr(self.edit_delegate, "replace_many", None)
+        if len(changed) > 1 and not callable(replace_many):
+            raise ActionNotImplementedError(
+                "This editor cannot stage multiple Stadium textures together. Import one texture at a time.")
+        write_results: dict[str, object] = {}
         with tempfile.TemporaryDirectory(prefix="nfl2k5-stadium-gltf-") as staging_name:
-            staging = Path(staging_name)
-            for texture in selected:
-                payload = resolved[texture.texture_id]
+            staging = Path(staging_name).resolve()
+            replacements = []
+            for texture in changed:
                 png = staging / f"texture{texture.texture_index:04d}.png"
-                self._write_new_file(png, payload)
-                write_result = self.replace_texture(texture.texture_id, png)
-                results.append(
-                    StadiumGltfTextureWriteBack(
-                        texture_id=texture.texture_id,
-                        scene_id=texture.scene_id,
-                        texture_index=texture.texture_index,
-                        supplied_png_sha256=hashlib.sha256(payload).hexdigest(),
-                        write_result=write_result,
-                    )
-                )
-        return tuple(results)
+                self._write_new_file(png, resolved[texture.texture_id])
+                replacements.append((texture, png))
+            if replacements:
+                if callable(replace_many):
+                    results = replace_many(tuple(replacements))
+                    write_results.update((texture.texture_id, result)
+                                         for (texture, _path), result in zip(replacements, results, strict=True))
+                else:
+                    texture, png = replacements[0]
+                    write_results[texture.texture_id] = self.replace_texture(texture.texture_id, png)
+                with self._lock:
+                    self._details.pop(scene.scene_id, None)
+        return tuple(StadiumGltfTextureWriteBack(
+            texture_id=texture.texture_id, scene_id=texture.scene_id,
+            texture_index=texture.texture_index,
+            supplied_png_sha256=hashlib.sha256(resolved[texture.texture_id]).hexdigest(),
+            write_result=write_results.get(texture.texture_id),
+            changed=texture.texture_id in write_results,
+        ) for texture in selected)
 
     def runtime_manifest(self) -> dict[str, object]:
         """Return metadata-only rows suitable for a private UI model."""

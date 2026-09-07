@@ -1,0 +1,68 @@
+[
+  {
+    "backend": {
+      "module": "mod_editor/core/nfl2k5_senior_bowl.py",
+      "operation": "inspect",
+      "command": "python3 -m mod_editor.core.nfl2k5_senior_bowl capability"
+    },
+    "classification": "read-only-mapped",
+    "evidence": [
+      "ASTRA_SENIOR_BOWL_REPORT.md",
+      "docs/mod_editor/senior_bowl.md",
+      "tests/mod_editor/test_nfl2k5_senior_bowl.py",
+      "tests/mod_editor/test_nfl2k5_senior_bowl_unicorn.py"
+    ],
+    "game": "nfl2k5_xbox",
+    "gui": {
+      "default_enabled": false,
+      "expose": true,
+      "mode": "view",
+      "reason": "EXPERIMENTAL / UNWITNESSED. Host preview and project choices only. Native event activation must stay disabled; no retail hook is installed."
+    },
+    "id": "nfl2k5.franchise.senior_bowl_preview",
+    "input_constraints": [
+      "Signed, bounded franchise SAVEGAME.DAT with matching EXTRA; complete primary pool and ownership lists.",
+      "At most 4096 primary players and 512 eligible prospects. Two complete 53-player positional quotas; shortages refuse.",
+      "Kit banks 50 and 51, home or away, current era 0 only.",
+      "A dormant XBE component install does not enable an in-game event. Native simulator, save transport and menus are unavailable."
+    ],
+    "portme": [
+      "Complete the native save, simulation isolation and menu bridge proofs in docs/mod_editor/senior_bowl.md before enabling the requested MVP."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "status": "not-tested",
+      "scope": "Dormant bounded i386 policy, normalized-snapshot squad selection and envelope-copy proofs only. No native game hook, simulator execution, save I/O or screen lifecycle has been proved.",
+      "evidence": [
+        "ASTRA_SENIOR_BOWL_REPORT.md"
+      ]
+    },
+    "selectors": {
+      "fields": [
+        {
+          "name": "senior_bowl",
+          "required": true,
+          "allowed": "false in all presets; unavailable in the current revision"
+        }
+      ],
+      "notes": "Host project settings round-trip independently. Do not enable an in-game event based on component install status."
+    },
+    "source_container": {
+      "format": "Signed Xbox franchise save; optional dormant XBE components",
+      "hash_pins": [
+        "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+      ],
+      "resource": "Whole primary pool, current prospect flags, club/reserve/free-agent/IR ownership; separate development event file",
+      "retail_file": "User-owned SAVEGAME.DAT and EXTRA; pinned USA default.xbe for developer proofs"
+    },
+    "summary": "Configure kit donors and preview two 53-player rookie squads. Native simulation and game-save support are unavailable.",
+    "surface": "schedules_franchise",
+    "title": "Senior Bowl preview (experimental, unwitnessed)",
+    "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_senior_bowl"
+  }
+]

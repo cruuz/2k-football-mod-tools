@@ -20,9 +20,10 @@ Retail ``default.xbe`` (study of 2026-09-04; every address is an Xbox virtual ad
   event 0xB -> Team Select, event 1 -> record ``0x501640`` whose slot A ``cb_00148B80`` picks two
   random teams and whose slot B ``cb_00148AD0`` sets Practice Type 0 = *Special Move*, calls
   ``FUN_000E33F0`` (game-mode word ``0xE5FF80``) and forces the ``s32`` practice field).  Its
-  START handler is ``+0x30`` = ``FUN_00148B50``, which flags the game pending
-  (``[mgr[0x10C]+0xA84] = 1``) and **pops twice** before ``jmp FUN_00064B10`` -- two pops because
-  retail Practice is two pushes deep from Game Modes.
+  START handler is ``+0x30`` = ``FUN_00148B50``, which suppresses the generic Back pop
+  (``[mgr[0x10C]+0xA84] = 1``) and **pops twice** before ``jmp FUN_00064B10``.
+  This is an in-session restart: ``FUN_00064B10`` stages players and restarts the engine,
+  but never pushes the game screen. It is not the initial scene loader.
 * The teams for a game are the globals ``0xE5FE68`` (away, setter ``FUN_00077AE0``) and
   ``0xE5FE6C`` (home, setter ``FUN_00077B20``); no retail instruction compares them.
 * ``FUN_000C4D70`` is retail's own "the team the user coaches": it walks the human-controller array
@@ -51,8 +52,18 @@ The patch adds one row and one cloned settings screen; **no retail instruction b
    (``FUN_00077AE0`` and ``FUN_00077B20``, each of which also installs that side's playbook name)
    and Practice Type becomes 1 = *Full Scrimmage* through ``FUN_000E33F0`` (game-mode word 1).  With
    no coached team the stub does nothing beyond the retail defaults;
-6. the START stub is ``FUN_00148B50`` with **one** pop instead of two, because the franchise entry
-   point is one push deep from the Coach's Desk.
+6. START keeps the Back-pop suppression and **one** settings pop, then pushes retail game
+   descriptor ``0x4E7EC0`` through ``FUN_0006E390``. Its event 1 calls ``FUN_00064C70``:
+   the full scene loader ``FUN_00064590``, then engine initialization. Coach's Desk remains
+   immediately below the game screen. The old direct restart left that screen missing;
+   Noah witnessed Quit reaching Main Menu.
+
+Quit's ``FUN_0006EBE0`` unwinds to ``0x4E7EC0`` and sets game state ``0xA83A18`` to 0.
+``FUN_000650A0 -> FUN_00064CD0`` then pops the game screen for any state other than 3.
+Its event 2 runs ``FUN_00064CA0`` (scene/engine teardown); the native pop resumes the
+retained Coach's Desk. Completion states use that same pop. No post-game season commit,
+replacement Coach's Desk, new flag, or conditional global exit override is required.
+Retail practice retains its own parent and all retail instruction bytes remain unchanged.
 
 Same team on both sides is deliberate: Full Scrimmage is mode 1, so the uniform builder
 ``FUN_000615A0`` takes the real-kit branch and dresses the away side in the ``a`` kit and the home
@@ -163,6 +174,30 @@ HOOK_KIND_SLOT_C = 3                           # kind 3 -> the dispatcher calls 
 
 # ---------------------------------------------------------------------------------------------
 # Retail routines and globals the cave calls
+SCREEN_PUSH_VA = 0x0006E390
+GAME_SCREEN_VA = 0x004E7EC0
+GAME_ENTER_VA = 0x00064C70
+GAME_LOAD_VA = 0x00064590
+GAME_UPDATE_VA = 0x00064CD0
+GAME_TEARDOWN_VA = 0x00064CA0
+QUIT_VA = 0x0006EBE0
+GAME_STATE_VA = 0x00A83A18
+RETAIL_GAME_SCREEN = bytes.fromhex(
+    "00000000887e4e00a03d0f00000000000000000000000000000000000000000030004a024e00a80100000000")
+RETAIL_SCREEN_PUSH = bytes.fromhex(
+    "568bf183be0001000020578bfa7d516a0533d2e8380100008b8600010000408bce"
+    "898600010000e8c44d08008bcee8bd5208008b86000100006a0133d28bce893cc6"
+    "e80901000085c0740b6a0333d28bcee8fa000000c78608010000010000005f5ec3")
+RETAIL_GAME_ENTER = bytes.fromhex(
+    "568bf156e817f9ffff85c0740be88efaffff5ee9780a0c00e8937e0700e82edf0000e889f9ffff8bce5ee961970000")
+# The complete hook list plus its six 0x48-byte records, including terminators.
+RETAIL_GAME_HOOKS = b"".join(
+    struct.pack("<18I", kind, callback if kind == 1 else 0, 0,
+                callback if kind == 3 else 0, *([0] * 14))
+    for kind, callback in ((1, GAME_ENTER_VA), (3, 0x64620), (3, GAME_TEARDOWN_VA),
+                           (3, 0x64650), (1, 0x650A0), (3, 0x64F80))) + struct.pack(
+                               "<13I", 6, 0x4E7DF8, 9, 0x4E7E40, 1, 0x4E7CD8,
+                               3, 0x4E7D20, 2, 0x4E7D68, 5, 0x4E7DB0, 0)
 PRACTICE_DEFAULTS_VA = 0x00148AD0     # cb_00148ad0: Practice Type 0, FUN_000e33f0, s32 practice field
 RETAIL_PRACTICE_DEFAULTS_HEAD = bytes.fromhex("57e8faa7f1ffc705d401e60000000000")
 COACHED_TEAM_VA = 0x000C4D70          # FUN_000c4d70(): the first human-coached team object, else 0
@@ -178,7 +213,7 @@ PRACTICE_TYPE_APPLY_VA = 0x000E33F0   # FUN_000e33f0(): jump table on [0xe601d4]
 RETAIL_PRACTICE_TYPE_APPLY_HEAD = bytes.fromhex("b904000000e8e6ebf7ffa1d401e600")  # stops before the 7-on-7 site
 SCREEN_POP_VA = 0x0006E400            # FUN_0006e400(ecx = manager): pop one screen
 RETAIL_SCREEN_POP_HEAD = bytes.fromhex("568bf18b860001000085c07e41")
-GAME_START_VA = 0x00064B10            # FUN_00064b10(): load and start the pending game
+GAME_START_VA = 0x00064B10            # FUN_00064b10(): restart an already loaded game
 RETAIL_GAME_START_HEAD = bytes.fromhex("e83b110c00")
 FADE_VA = 0x001427A0                  # FUN_001427a0(out, in): start the menu fade, ret 8
 RETAIL_FADE_HEAD = bytes.fromhex("558bec8b4d0c8b4508890d0424aa00")
@@ -188,7 +223,7 @@ MODE_VA = 0x00E5FF80                  # game-mode word: practice is 0/1/2, Basic
 PRACTICE_TYPE_VA = 0x00E601D4         # Scrimmage Settings -> Practice Type
 PRACTICE_TYPE_FULL_SCRIMMAGE = 1
 MANAGER_STATE_OFFSET = 0x10C          # manager + 0x10c -> the screen state block
-GAME_PENDING_OFFSET = 0xA84           # state + 0xa84 = 1: "a game is pending"
+GAME_PENDING_OFFSET = 0xA84           # legacy API name: suppress generic Back's extra pop
 FADE_OUT = 0x41500000                 # 13.0f, the pair every Coach's Desk row callback passes
 FADE_IN = 0x41700000                  # 15.0f
 
@@ -271,15 +306,17 @@ def _code() -> tuple[bytes, dict[str, int]]:
     a.label("enter_done")
     a.b("c3")                                           # ret
 
-    # --- START: FUN_00148b50 with one pop (we are one push deep, not two) ----------------------
+    # --- START: one settings pop, then the normal game-screen lifecycle ----------------------
     a.label("start")                                    # __fastcall(ecx = screen manager)
     a.b("56")                                           # push esi
     a.b("8bf1")                                         # mov esi, ecx
     a.b("8b86" + struct.pack("<I", MANAGER_STATE_OFFSET).hex())              # mov eax, [esi+0x10c]
     a.b("c780" + struct.pack("<I", GAME_PENDING_OFFSET).hex() + "01000000")  # mov [eax+0xa84], 1
     a.call(SCREEN_POP_VA)                               # call FUN_0006e400  -> the Coach's Desk
+    a.b("8bce")                                         # mov ecx, esi (pop's callbacks clobber ECX)
+    a.b("ba" + _imm(GAME_SCREEN_VA))                    # mov edx, retail game descriptor
     a.b("5e")                                           # pop esi
-    a.jmp_abs(GAME_START_VA)                            # jmp FUN_00064b10
+    a.jmp_abs(SCREEN_PUSH_VA)                           # game owns loading, update and teardown
 
     code = a.assemble()
     return code, {name: CODE_VA + pos for name, pos in a.labels.items()}
@@ -373,6 +410,10 @@ RETAIL_TERMINATOR_ROW = struct.pack("<I", ROW_TYPE_TERMINATOR) + bytes(ROW_SIZE 
 # studio patch edits (notably the 7-on-7 sites in FUN_000e33f0 from 0xe33ff on), so application
 # order does not matter.
 PINS: tuple[tuple[int, bytes], ...] = (
+    (GAME_SCREEN_VA, RETAIL_GAME_SCREEN),
+    (0x4E7CD8, RETAIL_GAME_HOOKS),
+    (SCREEN_PUSH_VA, RETAIL_SCREEN_PUSH),
+    (GAME_ENTER_VA, RETAIL_GAME_ENTER),
     (COACH_DESK_DESCRIPTOR_VA, bytes.fromhex("48a8e900")),                    # title L"Coach's Desk"
     (COACH_DESK_DESCRIPTOR_VA + 0x08, bytes.fromhex("903e0f0000000000")),     # handler cb_000f3e90
     (COACH_DESK_DESCRIPTOR_VA + 0x14,
@@ -401,7 +442,15 @@ def _pins_are_retail(payload: bytes) -> bool:
             off = rdata.offset_of(payload, va)
         except (rdata.RdataSiteError, ValueError, struct.error):
             return False
-        if payload[off: off + len(expected)] != expected:
+        actual = payload[off: off + len(expected)]
+        if va == SCREEN_PUSH_VA and actual != expected:
+            # MyCareer owns only the ten-byte PUSH prologue. Validate its full
+            # sealed installation and retain the complete native tail pin.
+            from . import nfl2k5_my_career as career
+            if career.status(payload) != "applied":
+                return False
+            actual = expected[:10] + actual[10:]
+        if actual != expected:
             return False
     return True
 
@@ -411,7 +460,17 @@ def status(payload: bytes) -> str:
 
     if not _pins_are_retail(payload):
         return "foreign"
-    return rdata.status(payload, sites())
+    owned_sites = sites()
+    state = rdata.status(payload, owned_sites)
+    if state == "foreign":
+        # The native Practice Squad screen takes over this one pointer. Its
+        # sealed allocation and exact composed table must validate in full;
+        # every other Franchise Practice byte still has its original pin.
+        from . import nfl2k5_practice_squad_screen as screen
+        if screen.owns_franchise_pointer(payload):
+            return rdata.status(payload, [s for s in owned_sites
+                                         if s[1] != COACH_DESK_ROWS_PTR_VA])
+    return state
 
 
 def _read_utf16(payload: bytes, va: int) -> str:
@@ -460,6 +519,8 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     An already-applied image is returned unchanged with ``already_applied``.
     """
 
+    if status(payload) == "applied":
+        return payload, {"already_applied": True, "edits": [], "changed_bytes": 0, **code_report()}
     if not _pins_are_retail(payload):
         raise FranchisePracticeError(
             "the Coach's Desk, the Scrimmage Settings screen, the L\"Practice\" string or a routine "
@@ -489,12 +550,21 @@ def code_report() -> dict[str, object]:
         "teams": {"away_setter": f"0x{SET_TEAM_A_VA:x}", "home_setter": f"0x{SET_TEAM_B_VA:x}",
                   "source": f"FUN_000c4d70 ([0x{CONTROLLED_TEAMS_VA:x}] -> FUN_000c4c50)"},
         "pops_on_start": 1,
+        "pushes_on_start": 1,
+        "game_screen_va": hex(GAME_SCREEN_VA),
+        "game_load_va": hex(GAME_LOAD_VA),
+        "exit_destination": "retained Coach's Desk through the retail game-screen pop",
+        "new_runtime_flag": False,
+        "experimental": True,
         "retail_instruction_bytes_changed": 0,
         "runtime_verified": False,
     }
 
 
 __all__ = ["DESCRIPTOR_OFFSET", "ENTER_RECORD_OFFSET", "ENTER_RECORD_SIZE", "EVENT_ENTER",
+           "SCREEN_PUSH_VA", "GAME_SCREEN_VA", "GAME_ENTER_VA", "GAME_LOAD_VA", "GAME_UPDATE_VA",
+           "GAME_TEARDOWN_VA", "QUIT_VA", "GAME_STATE_VA", "RETAIL_GAME_SCREEN",
+           "RETAIL_GAME_HOOKS", "RETAIL_SCREEN_PUSH", "RETAIL_GAME_ENTER",
            "EVENT_TEAM_SELECT", "FADE_IN", "FADE_OUT", "GAME_PENDING_OFFSET", "HOOKS_OFFSET",
            "HOOKS_SIZE", "HOOK_KIND_SLOT_C", "MANAGER_STATE_OFFSET", "RETAIL_NEXT_ROUTINE",
            "RETAIL_ROW_COUNT", "RETAIL_TEAM_SELECT_RECORD_HEAD", "SCRIM_DESCRIPTOR_SIZE",

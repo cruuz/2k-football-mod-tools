@@ -371,6 +371,9 @@ class _SessionStadiumDelegate:
     def replace(self, texture: StadiumTexture, supplied_png: Path) -> ReplaceResult:
         return self.session.replace_stadium_texture(texture, supplied_png)
 
+    def replace_many(self, replacements: tuple) -> tuple[ReplaceResult, ...]:
+        return self.session.replace_stadium_textures(replacements)
+
     def revert(self, texture: StadiumTexture) -> bool:
         return self.session.revert_stadium_texture(texture)
 
@@ -425,6 +428,7 @@ class StudioSession:
         self._audio_edits: dict[str, AudioSessionEdit] = {}
         self._audio_undo: list[_UndoAction] = []
         self._audio_annotations: dict[str, AudioCueAnnotation] = {}
+        self._build_settings: dict[str, object] = {}
         self.crib_catalog: Nfl2k5CribCatalog | None = None
         self.crib_io: Nfl2k5CribIO | None = None
         self._crib_edits: dict[str, SessionEdit] = {}
@@ -542,13 +546,31 @@ class StudioSession:
 
     @property
     def project_metadata_count(self) -> int:
-        """Count non-build metadata stored in the shareable project."""
+        """Count annotations and saved Build preferences beside asset edits."""
 
-        return self.annotation_count
+        return self.annotation_count + bool(self._build_settings)
 
     @property
     def has_project_metadata(self) -> bool:
-        return bool(self._audio_annotations)
+        return bool(self._audio_annotations or self._build_settings)
+
+    @property
+    def build_settings(self):
+        from mod_editor.core.nfl2k5_build_settings import build_settings
+        return build_settings(self._build_settings)
+
+    def set_build_settings(self, value):
+        from mod_editor.core.nfl2k5_build_settings import build_settings
+        checked = build_settings(value)
+        if checked == self._build_settings:
+            return
+        previous = self._build_settings
+        self._build_settings = checked
+        try:
+            self._write_manifest()
+        except BaseException:
+            self._build_settings = previous
+            raise
 
     @property
     def labeled_audio_asset_ids(self) -> frozenset[str]:
@@ -1195,6 +1217,72 @@ class StudioSession:
         ))
         self._write_manifest()
         return True
+
+    def replace_stadium_textures(self, replacements: tuple) -> tuple[ReplaceResult, ...]:
+        """One composed fit and one undo action for a Blender texture bundle.
+
+        Existing edits in this scene participate in the fit. All authored and
+        preview files are staged before changing the session manifest. A failed
+        fit, write or manifest publication leaves the earlier edit set intact.
+        """
+        if not replacements:
+            return ()
+        writer = self._require_stadium_writer()
+        scene_ids = {texture.scene_id for texture, _path in replacements}
+        ids = [texture.texture_id for texture, _path in replacements]
+        if len(scene_ids) != 1 or len(ids) != len(set(ids)):
+            raise ValidationError("Choose distinct textures from one Stadium scene.")
+        scene_id = next(iter(scene_ids))
+        combined = {
+            asset_id: (self._stadium_texture_for_id(asset_id), edit.replacement_path)
+            for asset_id, edit in self._stadium_edits.items()
+            if self._stadium_texture_for_id(asset_id).scene_id == scene_id
+        }
+        combined.update({texture.texture_id: (texture, path) for texture, path in replacements})
+        geometry = getattr(self, "_stadium_geometry_edit", None)
+        geometry_recipe = (geometry.recipe_path if geometry is not None and geometry.scene_id == scene_id
+                           else None)
+        compiled = {row.texture_id: row for row in writer.compile_many(
+            tuple(combined.values()), geometry_recipe=geometry_recipe)}
+        old_edits = dict(self._stadium_edits)
+        undo_length, order_length = len(self._stadium_undo), len(self._undo_order)
+        staged, snapshots, items, results = {}, [], [], []
+        try:
+            for texture, path in replacements:
+                payload, rgba = writer.read_validated_png(path, texture)
+                proof = compiled[texture.texture_id]
+                if sha256_bytes(payload) != proof.replacement_png_sha256:
+                    raise ValidationError("Stadium PNG changed after the combined fit.")
+                previous = self._snapshot_stadium(texture.texture_id)
+                if previous is not None:
+                    snapshots.append(previous)
+                items.append(_UndoItem(texture.texture_id, previous))
+                original = sha256_bytes(rgba) == texture.rgba_sha256
+                if not original:
+                    staged[texture.texture_id] = self._stage_stadium_edit(
+                        texture, payload, rgba, proof)
+                results.append(ReplaceResult(texture.texture_id, not original,
+                    "Stadium texture restored." if original else "Stadium texture is ready to build."))
+            for texture, _path in replacements:
+                self._stadium_edits.pop(texture.texture_id, None)
+            self._stadium_edits.update(staged)
+            label = "Import Blender stadium textures"
+            self._stadium_undo.append(_UndoAction(label, tuple(items)))
+            self._undo_order.append(_SessionUndo("stadium", label))
+            self._write_manifest()
+        except BaseException:
+            self._stadium_edits = old_edits
+            del self._stadium_undo[undo_length:]
+            del self._undo_order[order_length:]
+            for edit in staged.values():
+                self._remove_stadium_edit_files(edit)
+            for snapshot in snapshots:
+                snapshot.unlink(missing_ok=True)
+            raise
+        for asset_id in ids:
+            if asset_id in old_edits:
+                self._remove_stadium_edit_files(old_edits[asset_id])
+        return tuple(results)
 
     def supports_stadium_geometry(self, scene: StadiumScene) -> bool:
         return bool(
@@ -4027,6 +4115,7 @@ class StudioSession:
             ),
             audio_edits=archive_audio_edits,
             audio_annotations=self.audio_annotations,
+            build_settings=self.build_settings,
             uniform_colors=(
                 {
                     "selector": selector,
@@ -4052,7 +4141,7 @@ class StudioSession:
     def load_shareable_project(self, source: Path) -> int:
         """Load a completely validated project into a new, empty session."""
 
-        if self.modified_count or self._audio_annotations:
+        if self.modified_count or self._audio_annotations or self._build_settings:
             raise ValidationError(
                 "Projects load into a fresh working session; save or revert current edits first."
             )
@@ -4328,7 +4417,7 @@ class StudioSession:
             previous_state = (
                 self._edits, self.text_edits, self._audio_edits,
                 self._crib_edits, self._stadium_edits,
-                self._audio_annotations, self._unif_colors,
+                self._audio_annotations, self._unif_colors, self._build_settings,
                 self._play_route_edits,
                 self._undo, self._crib_undo,
                 self._stadium_undo, self._audio_undo, self._undo_order,
@@ -4341,6 +4430,7 @@ class StudioSession:
             self._crib_edits = new_crib
             self._stadium_edits = new_stadium
             self._audio_annotations = new_annotations
+            self._build_settings = dict(loaded.build_settings or {})
             self._unif_colors = new_unif_colors
             self._play_route_edits = new_play_routes
             try:
@@ -4349,7 +4439,7 @@ class StudioSession:
                 (
                     self._edits, self.text_edits, self._audio_edits,
                     self._crib_edits, self._stadium_edits,
-                    self._audio_annotations, self._unif_colors,
+                    self._audio_annotations, self._unif_colors, self._build_settings,
                     self._play_route_edits,
                     _old_undo, _old_crib_undo, _old_stadium_undo,
                     _old_audio_undo, _old_undo_order,
@@ -4380,6 +4470,7 @@ class StudioSession:
                 self._crib_edits = new_crib
                 self._stadium_edits = new_stadium
                 self._audio_annotations = new_annotations
+                self._build_settings = dict(loaded.build_settings or {})
                 self._unif_colors = new_unif_colors
                 self._play_route_edits = new_play_routes
                 self._undo = []
@@ -4392,7 +4483,7 @@ class StudioSession:
                 (
                     self._edits, self.text_edits, self._audio_edits,
                     self._crib_edits, self._stadium_edits,
-                    self._audio_annotations, self._unif_colors,
+                    self._audio_annotations, self._unif_colors, self._build_settings,
                     self._play_route_edits,
                     self._undo, self._crib_undo,
                     self._stadium_undo, self._audio_undo, self._undo_order,
@@ -4610,6 +4701,8 @@ class StudioSession:
             "session_id": self.session_id,
             "source_sha256": self.cache.source.sha256,
         }
+        if self._build_settings:
+            document["build_settings"] = self.build_settings
         if self.text_edits is not None:
             document["text_replacements"] = self.text_edits.replacement_document()
         if self._audio_edits:

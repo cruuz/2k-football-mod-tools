@@ -2,8 +2,11 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import sys
 import struct
 import unittest
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.nfl2k5_text_catalog import (

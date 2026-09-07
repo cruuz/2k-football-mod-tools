@@ -13,11 +13,13 @@ from PyQt5.QtCore import QObject, QProcess, QRunnable, Qt, QThreadPool, pyqtSign
 from PyQt5.QtWidgets import (
     QAbstractItemView, QCheckBox, QComboBox, QDialog, QDialogButtonBox,
     QFileDialog, QHBoxLayout, QHeaderView, QLabel, QListWidget, QMessageBox,
-    QProgressBar, QPushButton, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget,
+    QProgressBar, QPushButton, QTableWidget, QTableWidgetItem, QTabWidget, QVBoxLayout, QWidget,
 )
 
 from mod_editor.core.audio_conform import file_dialog_filter, is_supported_suffix
 from mod_editor.core.nfl2k5_music_policy import MENU_TEXT
+from mod_editor.core import nfl2k5_music_playlist as playlist
+from mod_editor.core.nfl2k5_music_catalog import TRACKS
 from mod_editor.studio.music_service import PreparedMusicBatch
 
 
@@ -146,15 +148,195 @@ class FitReview(QDialog):
         self.resize(1050, 440)
 
 
+class PlaylistPage(QWidget):
+    """Personal build choices; the shell owns BuildPlan/project persistence."""
+    changed = pyqtSignal(object)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        layout = QVBoxLayout(self)
+        self.enabled = QCheckBox("Shuffle selected songs in menus, Crib and games")
+        self.outtakes = QCheckBox("Include spoken outtakes")
+        self.outtakes.setChecked(True)
+        self.beds = QCheckBox("Include 10 background music beds")
+        for widget in (self.enabled, self.outtakes, self.beds):
+            layout.addWidget(widget)
+        note = QLabel(playlist.HELP_TEXT)
+        note.setWordWrap(True)
+        layout.addWidget(note)
+        self.list = QListWidget()
+        self.list.setSelectionMode(QAbstractItemView.NoSelection)
+        self._catalog = playlist.catalog_for_counts(playlist.BANK_COUNTS)
+        self._populate(set(playlist.CORE + playlist.BEDS))
+        layout.addWidget(self.list)
+        row = QHBoxLayout()
+        for text, callback in (("Select all", lambda: self.select_all(True)),
+                               ("Clear selection", lambda: self.select_all(False)),
+                               ("Browse library image", self.browse_library),
+                               ("Save playlist choices", self.save_choices),
+                               ("Open playlist choices", self.open_choices)):
+            button = QPushButton(text)
+            button.clicked.connect(callback)
+            row.addWidget(button)
+        layout.addLayout(row)
+        self.summary = QLabel()
+        self.summary.setWordWrap(True)
+        layout.addWidget(self.summary)
+        for widget in (self.enabled, self.outtakes, self.beds):
+            widget.toggled.connect(self.refresh)
+        self.list.itemChanged.connect(self.refresh)
+        self.refresh()
+
+    def _populate(self, checked):
+        from PyQt5.QtWidgets import QListWidgetItem
+        self.list.blockSignals(True)
+        self.list.clear()
+        for row in self._catalog:
+            item = QListWidgetItem(row["title"], self.list)
+            record = (row["bank"], row["index"])
+            item.setData(Qt.UserRole, record)
+            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+            item.setCheckState(Qt.Checked if record in checked else Qt.Unchecked)
+        self.list.blockSignals(False)
+
+    def selected(self):
+        return playlist.from_options(self.options())
+
+    def options(self):
+        checked = [i for i in range(self.list.count()) if self.list.item(i).checkState() == Qt.Checked]
+        records = [(r["bank"], r["index"]) for i, r in enumerate(self._catalog) if i in checked
+                   and (self.outtakes.isChecked() or not r["spoken"])
+                   and (self.beds.isChecked() or not r["bed"])]
+        return {"schema": 2, "music_shuffle": self.enabled.isChecked(),
+                "include_outtakes": self.outtakes.isChecked(), "include_beds": self.beds.isChecked(),
+                "catalog": [dict(r) for r in self._catalog], "checked": checked,
+                "records": [list(r) for r in records], "enabled": list(range(len(records)))}
+
+    def set_options(self, value):
+        value = playlist.copy_options(value)  # validate before changing any widget
+        if value is None:
+            raise ValueError("Expected playlist choices")
+        catalog = (playlist.catalog_for_counts(playlist.BANK_COUNTS) if value["schema"] == 1
+                   else value["catalog"])
+        checked = {(catalog[i]["bank"], catalog[i]["index"]) for i in value["checked"]}
+        for widget in (self.enabled, self.outtakes, self.beds):
+            widget.blockSignals(True)
+        self.enabled.setChecked(value["music_shuffle"])
+        self.outtakes.setChecked(value["include_outtakes"])
+        self.beds.setChecked(value["include_beds"])
+        self._catalog = catalog
+        self._populate(checked)
+        for widget in (self.enabled, self.outtakes, self.beds):
+            widget.blockSignals(False)
+        self.refresh()
+
+    def set_library(self, counts, *, library_plan=None):
+        """Shell feeds a validated preview; the image browser uses actual AUSB counts."""
+        catalog = playlist.catalog_for_counts(counts, library_plan=library_plan)
+        self.set_catalog(catalog)
+
+    def set_catalog(self, catalog):
+        catalog = [dict(row) for row in playlist.validate_catalog(catalog)]
+        chosen = {tuple(self.list.item(i).data(Qt.UserRole)) for i in range(self.list.count())
+                  if self.list.item(i).checkState() == Qt.Checked}
+        visible = [r for r in catalog if (r['bank'], r['index']) in chosen
+                   and (self.outtakes.isChecked() or not r['spoken'])
+                   and (self.beds.isChecked() or not r['bed'])]
+        if len(visible) > playlist.MAX_ITEMS:
+            raise ValueError("This library would select more than 100 recordings. Clear the selection first.")
+        self._catalog = catalog
+        self._populate(chosen)
+        self.refresh()
+
+    def browse_library(self):
+        path, _ = QFileDialog.getOpenFileName(self, "Choose a music library image", "", "Disc images (*.iso)")
+        if not path:
+            return
+        try:
+            from mod_editor.core.nfl2k5_music_banks import read_playlist_catalog
+            self.set_catalog(read_playlist_catalog(path))
+        except (OSError, ValueError) as exc:
+            self.summary.setText(str(exc))
+
+    def refresh(self, changed=None):
+        if len(self.options()['records']) > playlist.MAX_ITEMS:
+            # Undo only the extra click; never emit an invalid Build document.
+            self.list.blockSignals(True)
+            if changed is not None and hasattr(changed, "setCheckState"):
+                changed.setCheckState(Qt.Unchecked)
+            self.list.blockSignals(False)
+            if not hasattr(changed, "setCheckState"):
+                self.set_options(self._last_options)
+            self.summary.setText("Choose at most 100 recordings. Clear a song before adding another.")
+            return
+        for i, row in enumerate(self._catalog):
+            self.list.item(i).setHidden((row["bed"] and not self.beds.isChecked()) or
+                                       (row["spoken"] and not self.outtakes.isChecked()))
+        n = len(self.selected().enabled)
+        state = "Shuffle selected for the next build." if self.enabled.isChecked() else "Shuffle is off."
+        self.summary.setText(f"{state} {n} recordings selected, up to 100 from {len(self._catalog)} available. " +
+            ("No background songs will play." if n == 0 else "The selected song will repeat." if n == 1
+             else "Each song plays once per cycle, with no repeat at the cycle boundary.") +
+            " Loading and shows keep their timing. Short presentation cues are excluded.")
+        self._last_options = self.options()
+        self.changed.emit(self.options())
+
+    def select_all(self, checked):
+        available = [i for i in range(self.list.count()) if not self.list.item(i).isHidden()]
+        if checked and len(available) > playlist.MAX_ITEMS:
+            self.summary.setText("Choose at most 100 recordings. Select songs individually from this library.")
+            return
+        self.list.blockSignals(True)
+        for i in available:
+            self.list.item(i).setCheckState(Qt.Checked if checked else Qt.Unchecked)
+        self.list.blockSignals(False)
+        self.refresh()
+
+    def save_choices(self):
+        path, _ = QFileDialog.getSaveFileName(self, "Save playlist choices", "playlist.json", "Playlist choices (*.json)")
+        if not path:
+            return
+        try:
+            # Atomic publication, with the writer closed before replace on Windows.
+            import os
+            from mod_editor.core.platform_compat import temporary_sibling
+            destination = Path(path).resolve()
+            temporary = temporary_sibling(destination)
+            try:
+                with temporary.open("x", encoding="utf-8") as handle:
+                    json.dump(self.options(), handle, indent=2)
+                    handle.write("\n")
+                os.replace(temporary, destination)
+            finally:
+                temporary.unlink(missing_ok=True)
+        except (OSError, ValueError) as exc:
+            self.summary.setText(str(exc))
+
+    def open_choices(self):
+        path, _ = QFileDialog.getOpenFileName(self, "Open playlist choices", "", "Playlist choices (*.json)")
+        if not path:
+            return
+        try:
+            with Path(path).open("r", encoding="utf-8") as handle:
+                text = handle.read(2097153)
+            if len(text) > 2097152:
+                raise ValueError("Playlist choices file is too large")
+            self.set_options(json.loads(text))
+        except (OSError, ValueError, TypeError) as exc:
+            self.summary.setText(str(exc))
+
+
 class MusicPanel(QWidget):
     changed = pyqtSignal()
     policy_changed = pyqtSignal(object)
+    playlist_changed = pyqtSignal(object)
     receipt_ready = pyqtSignal(object)
     operation_state_changed = pyqtSignal(bool)
 
     def __init__(self, service=None, parent=None):
         super().__init__(parent)
         self.service = None
+        self._playlist_source_ready = False
         self.operation_guard = None
         self._epoch = 0
         self._task = None
@@ -163,7 +345,7 @@ class MusicPanel(QWidget):
         self.player = QProcess(self)
         self.player.errorOccurred.connect(lambda _error: self.status.setText("Audio preview failed. Install FFplay or choose another player."))
         layout = QVBoxLayout(self)
-        warning = QLabel("Experimental, not yet tested in game. " + MENU_TEXT)
+        warning = QLabel("Experimental, not yet tested in game. Choose recordings or set up a shared shuffle playlist.")
         warning.setWordWrap(True)
         layout.addWidget(warning)
         self.controls = QWidget()
@@ -211,7 +393,13 @@ class MusicPanel(QWidget):
                 line.addWidget(button)
                 self.buttons[caption] = button
             controls.addLayout(line)
-        layout.addWidget(self.controls)
+        self.pages = QTabWidget()
+        self.pages.addTab(self.controls, "Recordings")
+        self.playlist_page = PlaylistPage()
+        self.pages.addTab(self.playlist_page, "Playlist")
+        self.playlist_page.changed.connect(self.playlist_changed.emit)
+        self.playlist_page.changed.connect(lambda _value: self.changed.emit())
+        layout.addWidget(self.pages)
         foot = QHBoxLayout()
         self.status = QLabel("Ready")
         self.status.setTextFormat(Qt.PlainText)
@@ -233,6 +421,23 @@ class MusicPanel(QWidget):
         self.userlist.toggled.connect(self._policy_changed)
         self.set_service(service)
 
+    def playlist_options(self):
+        return self.playlist_page.options()
+
+    def set_playlist_options(self, value):
+        self.playlist_page.set_options(value)
+
+    def set_playlist_library(self, counts, *, library_plan=None):
+        """A grown library can be browsed even when fixed-slot audio editing is unavailable."""
+        self.playlist_page.set_library(counts, library_plan=library_plan)
+        self._playlist_source_ready = True
+        self.refresh()
+
+    def set_playlist_catalog(self, catalog):
+        self.playlist_page.set_catalog(catalog)
+        self._playlist_source_ready = True
+        self.refresh()
+
     @property
     def operation_in_progress(self):
         return self._task is not None
@@ -251,12 +456,15 @@ class MusicPanel(QWidget):
         if self.service is not None and self.service is not service:
             self.service.invalidate()
         self.service = service
+        if service is None:
+            self._playlist_source_ready = False
         self.refresh()
 
     def refresh(self):
         selected = self.selected_id()
         self.table.setRowCount(0)
         self.controls.setEnabled(self.service is not None and self._task is None)
+        self.playlist_page.setEnabled((self.service is not None or self._playlist_source_ready) and self._task is None)
         if self.service is None:
             return
         for widget in (self.menu_policy, self.unlock, self.userlist):

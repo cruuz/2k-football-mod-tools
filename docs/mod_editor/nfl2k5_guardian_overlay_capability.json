@@ -1,0 +1,76 @@
+{
+  "backend": {
+    "command": "python3 -m mod_editor.core.nfl2k5_guardian_resources apply <private-build-copy.iso>",
+    "module": "mod_editor/core/nfl2k5_guardian_resources.py",
+    "operation": "write"
+  },
+  "classification": "offline-writer-proved",
+  "evidence": [
+    "ASTRA_GUARDIAN_OVERLAY_REPORT.md",
+    "tests/mod_editor/test_nfl2k5_guardian_overlay.py",
+    "tests/mod_editor/test_nfl2k5_guardian_resources.py",
+    "tests/mod_editor/test_nfl2k5_guardian_unicorn.py"
+  ],
+  "game": "nfl2k5_xbox",
+  "gui": {
+    "default_enabled": false,
+    "expose": true,
+    "mode": "edit",
+    "reason": "EXPERIMENTAL / UNWITNESSED. Explicit opt-in; new switches off in all presets. Protected Build/Gameplay integration is in WIRING.md."
+  },
+  "id": "nfl2k5.equipment.guardian_overlay",
+  "input_constraints": [
+    "Pinned USA XBE and supported common lo_body/hi_head model spans. Reserve the complete allocator owner union before installation.",
+    "Route A is exclusive with the older Guardian C replacement. One global neutral helmet01 texture is appended to the common resource group.",
+    "guardian_overlay is false in every preset. guardian_everyone_practice defaults true only within the enabled feature. No practice flag is written to roster records.",
+    "Per-player record +0x53 bit 5. Existing saves require their own roster edit. Optional CLI selections carry exact pool/index and normalized record SHA-256 pins."
+  ],
+  "portme": [
+    "Complete Noah's witness list in ASTRA_GUARDIAN_OVERLAY_REPORT.md, including both LODs, save lifecycles, alternate uniforms and performance."
+  ],
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+    "tooling": "source-and-schemas-only"
+  },
+  "runtime": {
+    "evidence": [
+      "ASTRA_GUARDIAN_OVERLAY_REPORT.md"
+    ],
+    "scope": "Bounded retail TXTR registration, lookup, material binder, live hook, matte refresh and native clone only; no GPU, asynchronous loader, full disc, or played save-lifecycle witness.",
+    "status": "not-tested"
+  },
+  "selectors": {
+    "fields": [
+      {
+        "allowed": "false in Basic, Advanced and Experimental; explicit opt-in",
+        "name": "guardian_overlay",
+        "required": true
+      },
+      {
+        "allowed": "boolean; true by default inside the enabled feature",
+        "name": "guardian_everyone_practice",
+        "required": false
+      },
+      {
+        "allowed": "None retains stored selections; list of pinned records replaces the selection; [] clears it",
+        "name": "guardian_players",
+        "required": false
+      }
+    ],
+    "notes": "Guardian cap is independent of Helmet, Star Tag and abilities. The cap uses existing B geometry and does not add a helmet selector value."
+  },
+  "source_container": {
+    "format": "XBE and sequential TXTR/SCNE/ROST in XDVDFS archive",
+    "hash_pins": [
+      "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+    ],
+    "resource": "Three pinned live hooks, 496 B named RX, fixed-span B shells and one 88544 B common TXTR; 88064 B sector-aligned archive growth",
+    "retail_file": "User-owned USA default.xbe and vc_53450030 archive"
+  },
+  "summary": "A per-player padded cover over either retail helmet, with optional caps for everyone in practice.",
+  "surface": "players_rosters",
+  "title": "Guardian caps (experimental, unwitnessed)",
+  "validation_command": "python3 -m mod_editor.core.nfl2k5_guardian_resources check <image.iso>"
+}

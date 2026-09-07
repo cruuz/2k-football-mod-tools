@@ -156,7 +156,7 @@ class PresetTests(unittest.TestCase):
         seed = ROOT / "data" / "playbooks" / "modern_gun_core.2k5book"
         calls: list[tuple[str, list[str]]] = []
 
-        def fake_apply(target, paths, progress=None):
+        def fake_apply(target, paths, progress=None, collector=None):
             calls.append((str(target), [Path(p).name for p in paths]))
             if progress:
                 progress("Installing “Modern Gun Core” into ATL")

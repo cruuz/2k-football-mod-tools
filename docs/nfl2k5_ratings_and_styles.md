@@ -225,18 +225,26 @@ here needs an executable patch.
 * **Power Run Style** — a **Finesse / Balanced / Power** segmented control on the Style tab writing
   the game's own 1 / 50 / 99, with the raw byte on a card beneath it (the game reads the byte as a
   blend weight, so intermediate values are legal).
-* **Signature release** — a toggle over the **low bit of Scramble** that writes
-  `value = (value & ~1) | style` and leaves the magnitude alone; the Scramble slider moves the
+* **Scramble parity: odd = scrambler**, an Even / Odd toggle over the **low bit of Scramble** that writes
+  `value = (value & ~1) | style` and changes the value by at most one; the Scramble slider moves the
   magnitude and preserves the bit (presets Pocket 10 / Balanced 50 / Scrambling 90, the template
-  values). The header card names the family the engine would pick (standard / mobile / signature).
+  values). The header card names the even, even-high or odd family. The exact motion and any
+  effect on CPU playcalling remain unverified; "odd = scrambler" names the stored style choice.
 * **Kicking Style** — the byte with the three retail values as presets, labelled EXPERIMENTAL.
 * **Best Hand** — on the Appearance tab, `+0x18` bit 1, the row the game's own editor toggles.
 * **Templates** — the 36 create-a-player templates on the toolbar, the player's three first,
   applied exactly as `FUN_00343460` applies them (−1 → 75, clamp 0..100), read from the loaded
   disc's executable when there is one.
 * **Global Attribute Editor** — the style channels are targets and conditions, so a sweep can say
-  "every QB with Speed ≥ 80 → signature release" or "every HB with Break Tackle ≥ 75 → Power".
+  "every QB with Speed ≥ 80 → Scramble odd" or "every HB with Break Tackle ≥ 75 → Power".
 * **OVR** in the grid is the studio's own position-weighted estimate, not the game's overall; the
   game's weights have not been extracted.
 
 Unwitnessed in game: the parity bit's effect has been proved in the code, not watched on the field.
+
+The codec keeps the compatible `power_run_style`, `kicking_style`, `scramble` and
+derived `throw_style` keys. CSV keeps the three raw style columns. Numeric CSV style cells contain the exact byte, so importing Scramble 97
+retains odd parity. The interactive Scramble magnitude control preserves the parity selection.
+Power style card and bulk undo restore the original raw value, including retail's unusual 38.
+Non-integer style edits are rejected; legacy byte values still round-trip and values above 99
+remain validation warnings. These are data edits, labelled EXPERIMENTAL / UNWITNESSED.

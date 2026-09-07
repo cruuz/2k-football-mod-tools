@@ -1,3 +1,1361 @@
+# r62 community stadium Blender add-ons review, 2026-09-06
+
+**Decision: DO NOT SHIP Importer v0.11.1 / Exporter v0.3.0.** Real Blender
+4.0.2 and retail Models checks are in `ASTRA_STADIUM_BLENDER_ADDONS_REPORT.md`.
+The supplied scripts remain private review inputs in `.scratch/community/`;
+there are no approved copies under `tools/blender/community/` and no version
+bump suggesting the defects were repaired.
+
+Add exactly these documentation paths to protected
+`packaging/release-allowlist.txt` (deduplicate if another handoff added one):
+
+```text
+ASTRA_STADIUM_BLENDER_ADDONS_REPORT.md
+docs/mod_editor/nfl2k5_stadium_blender_workflow.md
+docs/mod_editor/nfl2k5_stadium_community_addons_proof.json
+```
+
+The guide link is
+`docs/mod_editor/nfl2k5_stadium_blender_workflow.md#community-stadium-add-ons-withheld-from-beta-62`.
+Do not add either community `.py`, its upstream README, or a
+`tools/blender/community/` glob to the release allowlist. The new proof tool
+and standalone audit tests are developer tools, not product dependencies.
+The pre-existing Stadiums texture helper handoff remains separate.
+
+| Integration point required by the brief | This review |
+| --- | --- |
+| Dispatcher `_apply_all` tuple / kwarg / four status dictionaries | No change; no patch or dispatcher participant |
+| `BuildPlan` field / basic, advanced, experimental presets | No field; no preset enables these add-ons |
+| Gameplay Patches PATCHES text containing Retail and Patch / NEEDS_IMAGE | No row or image dependency; no Retail Patch introduced |
+| Build `_option` caption (at most 60 chars) | No checkbox |
+| Runtime closure imports | None; never import `bpy` in Mod Studio |
+| Capability registry | No new product surface or capability; no count changes |
+| XBE owners / cave manifest / both gates | No change |
+
+Do not present successful Models compilation as validation of Blender output:
+the Models writer can accept the incorrectly rotated geometry. A future
+community revision needs exact no-op bytes, correct handle axes, original-row
+preservation, ambiguity refusal and safe output publication before it can be
+reconsidered. Credit the community, not the submitted `author: OpenAI` label.
+All protected files were left unchanged in this task.
+
+# r62 calendar continuation: remaining integration, 2026-09-06
+
+**EXPERIMENTAL / UNWITNESSED.** This section updates the calendar handoff
+below against stack `288ba65`. The engine, complete allocator union, combined
+option, presets, PATCHES row, Build checkbox and closure imports are already
+landed. Do not duplicate those additions. The new deliverables are
+`ASTRA_CALENDAR_ENGINE_REPORT.md`, the completed
+`docs/mod_editor/nfl2k5_calendar_engine_capability.json`, a working bounded
+module CLI, expanded proofs and the repaired Franchise explanation.
+
+## Required registry merge and synchronized counts
+
+Merge the **one object** in the capability JSON into
+`mod_editor/capabilities/registry.v1.json`, sorted by ID. The ID is now
+`nfl2k5.schedules_franchise.calendar_engine`; `surface` is
+`schedules_franchise`, not the invalid `franchise`. Preserve the existing
+gate-only primitive row as a separate diagnostic capability. The new row is
+`offline-writer-proved` with runtime `not-tested`, never `runtime-proved`.
+Its complete source identity, selector notes, porting limits and empty played
+evidence array are present. Both commands are executable package forms:
+
+```text
+python3 -m mod_editor.core.nfl2k5_calendar_engine --xbe <source.xbe> --output <new-copy.xbe>
+python3 -m tests.mod_editor.test_nfl2k5_calendar_engine
+```
+
+The first command writes only a new extracted executable copy, retains its
+recognized 2004/2026 base, and cannot certify/install external schedule
+templates. The combined 2026 image-build control remains the product path.
+
+Apply these count changes **together with the registry merge**:
+
+| File / exact old text | Required replacement |
+| --- | --- |
+| Protected `packaging/check_2k5_mod_studio_runtime.py`: `len(registry.capabilities) == 95` | `len(registry.capabilities) == 96` |
+| Same file: `len(product_catalog.capabilities) == 57` | `len(product_catalog.capabilities) == 58` |
+| Same file's success marker: `registry=95 sections=12 nfl2k5_capabilities=57` | `registry=96 sections=12 nfl2k5_capabilities=58` |
+| `tests/mod_editor/test_phase1_packaging.py`: `registry has 95 cross-title rows` | `registry has 96 cross-title rows` |
+| Same packaging test's runtime marker | `registry=96 sections=12 nfl2k5_capabilities=58` |
+| `docs/mod_editor/2k5_mod_studio_getting_started.md`: `registry has 95 cross-title rows, including 53 Xbox NFL 2K5` | `registry has 96 cross-title rows, including 58 Xbox NFL 2K5` |
+
+The doc's 53 is already stale: current metadata is 95 total = 57 Xbox NFL 2K5
++ 37 APF + 1 PS2. The candidate is 96 = 58 + 37 + 1. Product sections stay 12.
+The packaging test also pins release labels, so it was left for this joint
+protected integration rather than edited ahead of the live counts.
+
+The new delivery suite validates the exact calendar object through the real
+validator's file-check mode in an explicit 42-row test coverage envelope.
+The full 96-row candidate passes schema and runtime catalog validation.
+Full-registry **file checks still refuse on the pre-existing missing
+`docs/research/apf_audio.md`** in this checkout, including before the merge.
+Restore the historical evidence set in the integration checkout before
+claiming that the whole registry passes file checks. Do not add dummy evidence
+or change the validator to hide that failure. The public runtime probe also
+requires the missing reviewed target metadata directory in a proper stage.
+
+## Retain the landed dispatcher, Build and UI wiring
+
+Keep import `from . import nfl2k5_calendar_engine as calendar_engine_patch`,
+the `calendar_engine: bool = False` kwarg in `_apply_all`, `write_xbe_copy`
+and `write_image_copy`, all forwarding and allocator adapters, and this final
+owners tuple after the allocator:
+
+```python
+(calendar_engine, calendar_engine_patch,
+ "calendar_engine_patch", "128-season calendar (experimental)"),
+```
+
+Keep `calendar_engine_patch.REQUESTS` in `_selected_space_requests` and the
+scorebug resource lane's full union before allocation. Keep calendar deferred
+out of early XBE passes and applied after the 2026 resource step. The four
+status dictionaries use the existing shared `_grown_status_fields` helper:
+`read_xbe(payload)`, `read_image(payload)`, `write_xbe_copy(result)` and
+`write_image_copy(after)` must each include
+`"calendar_engine": calendar_engine_patch.status(<those bytes>)`. Preserve
+both the `calendar_engine_patch` receipt and `calendar_engine` final status.
+
+Retain `BuildPlan.calendar_engine: bool = False`, its recipe/status/availability
+paths, and normalization of either public `season_cap` or `calendar_engine`
+to all four true: `season_cap`, `calendar_engine`, `season_2026`, `xbe_space`.
+Basic false/false, Advanced false/false, Experimental true/true are the landed
+cap/calendar preset values. If final integration gates fail, hold both
+Experimental values false together until repaired, as the original handoff
+requires; do not relabel the gate alone as a full repair.
+
+**Additional review finding, protected fix:** `_build` validates the calendar
+implementation flag but silently normalizes `season_cap=1` or `"yes"`. Add
+the public flag to the existing boolean validation call, before normalization:
+
+```python
+tt._validate_lever_flags(plan.music_shuffle, plan.practice_squad_screen,
+                         plan.abilities, plan.qb_spy,
+                         plan.calendar_engine, plan.season_cap)
+```
+
+Also replace the stale comment on `BuildPlan.season_cap` with
+`# combined 128-season franchise option; experimental/unwitnessed`.
+The candidate function was compiled from the actual protected `_build`
+source with only the extra argument and executed: all eight invalid cases
+(`1`, `0`, `"yes"`, `None` for each flag) refuse with `boolean` before input
+access. The live source still has the public-flag gap. Retain/add that
+regression to `test_mod_build_beta62_integration.py` when wiring the fix.
+
+Retain PATCHES text containing **Retail** and **Patch**, the exact
+`calendar_engine_patch.UI_TEXT`, and `NEEDS_IMAGE` entries for `season_cap`
+and `calendar_engine`. The landed Build option is:
+
+```python
+self.season_cap_check = self._option(
+    f, "season_cap", "128-season franchise (experimental)",
+    tt.calendar_engine_patch.UI_TEXT, badge=NOT_TESTED, needs_image=True)
+```
+
+The caption is 35 characters. The Build panel's plan already forwards both
+checkbox values; preserve Studio/recipe forwarding with default false. No
+second calendar checkbox or new Franchise save field is needed.
+
+**Franchise wording is now applied in this branch**, with its existing
+offscreen copy/reload/terminal-index regression updated:
+
+> EXPERIMENTAL / UNWITNESSED. Use the calendar patch with your build's starting
+> year for long franchises. A save alone does not identify that patch. Editing
+> this year does not simulate seasons.
+
+The separate gate-only module retains its truthful primitive limitations.
+
+## Allowlist, runtime closure, manifest and final integration
+
+Keep the already present allowlist lines for both calendar core modules and
+the capability JSON. Add the previously requested missing report line:
+
+```text
+ASTRA_CALENDAR_ENGINE_REPORT.md
+```
+
+The Franchise panel and `tools/nfl2k5_franchise_schedule.py` already have
+allowlist entries; retain their updated source. The latter's receipt now
+counts actual differing header bytes, independent of enclosing buffer size.
+No generated XBE, disc, `.scratch/`, assembler, development test or retail
+fixture belongs in the runtime artifact.
+
+Keep the landed closure imports
+`mod_editor.core.nfl2k5_calendar_engine` and
+`mod_editor.core.nfl2k5_calendar_engine_code`. The CLI adds only standard-library
+`argparse`, `json`, `pathlib` and `sys`; no compiler/Unicorn/Capstone runtime
+dependency is added. Existing preseason/playoffs14/season-length/season-cap/
+allocator/rdata/bump-strength/cave-oracle and draft assembler imports remain.
+
+Regenerate the protected cave manifest from final integrated sources with
+Claude's normal manifest command and run both XBE gates and the oracle. The
+gate/request/manifest owner lists already contain `nfl2k5_calendar`; do not
+change its budget or rename the recorder's `nfl2k5_calendar_engine` owner.
+No protected JSON or source fingerprint was manually changed here. Rebuild
+the clean release stage with its reviewed metadata, run the runtime/packaging
+checks with the new counts, and rerun the full registry file checks once
+historical evidence is present. The report gives all local passing and
+refused commands and Noah's precise outstanding witnesses.
+
+Local final gates: memory writes **59 passed**; cave references **71 passed**
+with `NFL2K5_CAVE_MANIFEST=.scratch/calendar-continuation/xbe-only-manifest-v2.json`.
+The latter is an observed executable-only fixture (83 writer calls, 9,445
+reservations, 75 checked source hashes, no image steps). It does not replace
+the protected production manifest or claim a real-disc acceptance build.
+
+---
+
+# r62 widescreen polish v3 handoff, 2026-09-06
+
+**EXPERIMENTAL / UNWITNESSED.** Backend and tests are complete in
+`mod_editor/core/nfl2k5_widescreen.py`. See
+[ASTRA_WIDESCREEN_POLISH_REPORT.md](ASTRA_WIDESCREEN_POLISH_REPORT.md) and
+[exact receipts](docs/mod_editor/widescreen_polish_receipts.json). This section
+supersedes older widescreen assumptions only; unrelated handoffs below remain.
+Protected files were not edited. The existing `widescreen` flag already
+installs all v3 fixes, and its BuildPlan path has passed a real-XBE test.
+
+## Dispatcher, existing flag and four status dictionaries
+
+In protected `mod_editor/core/nfl2k5_throw_tuning.py`, retain the import:
+
+```python
+from . import nfl2k5_widescreen as widescreen_patch
+```
+
+Retain `widescreen: bool = False` in `_apply_all`, `write_xbe_copy` and
+`write_image_copy`, every forwarding call, and the nonempty-selection checks.
+The existing owners tuple row remains:
+
+```python
+(widescreen, widescreen_patch, "widescreen_patch", "widescreen"),
+```
+
+Add `"widescreen_patch"` to the existing apply-on-applied key tuple beside
+`"chop_block_toggle_patch"` and `"flatter_deep_ball_patch"`. V3's exact replay
+returns zero edits and explicit experimental/version metadata. This retains
+that metadata on a replay receipt; the existing status guard already refuses
+mixed/foreign/old-v2 bytes. Do not add an old-version migration exception.
+
+All four dictionaries already contain the correct status reader. Keep these
+exact entries in `read_xbe`, `read_image`, `write_xbe_copy` and `write_image_copy`:
+
+```python
+# read_xbe and read_image
+"widescreen": widescreen_patch.status(payload),
+# write_xbe_copy
+"widescreen": widescreen_patch.status(result),
+# write_image_copy
+"widescreen": widescreen_patch.status(after),
+```
+
+`status` now validates eleven sites and 23 context pins. A formerly applied
+v2 image reads foreign and must be rebuilt from a clean source. Retain that
+failure rather than showing it as an applied v3 repair.
+
+## BuildPlan, presets, receipt and allocation
+
+In protected `mod_editor/core/mod_build.py`, retain the existing
+`BuildPlan.widescreen: bool = False`, `wants_xbe_patch`, availability,
+inspection and early XBE-pass forwarding. Replace the stale comment saying
+it is absent from all presets: Basic false, Advanced false, Experimental
+true, as the code already specifies. Keep `widescreen=True` as the single
+selection for the v3 family. There is no `widescreen_hud` field, separate
+fix switch or new aspect selector in this task.
+
+Add `"widescreen_patch"` beside `"widescreen"` in the XBE step's receipt-key
+projection near the existing `receipt["steps"].append` at line 959. Preserve
+the backend dictionary intact, including `version: 3`, `experimental: true`,
+`runtime_witnessed: false`, full `edits`, hashes and section IDs. The Build
+summary currently keeps only the status and drops that dictionary.
+
+Allocation is unchanged: 831 bytes of code in the existing 832-byte
+`46EE0..47220` reservation and 36 immutable bytes at `10254..10278`.
+There is no `REQUESTS` tuple, grown owner, new budget row, adapter,
+`_selected_space_requests` flag, `_xbe_space_adapter` argument,
+`_grown_status_fields` field, deferral or final allocator-pass addition.
+The complete existing owner union composes with this family in both orders.
+Do not reserve another owner's space for it.
+
+## Gameplay Patches and Build text
+
+In protected `mod_editor/gui/gameplay_patches_panel_qt.py`, expose the existing
+flag with the same tuple shape as other entries:
+
+```python
+("widescreen", "Widescreen 16:9 (experimental)", tt.widescreen_patch.HELP_TEXT),
+```
+
+`HELP_TEXT` contains both **Retail** and **Patch**, describes field width,
+marker/shadow/sky/interlace fixes in plain words, states EXPERIMENTAL /
+UNWITNESSED and requests a clean-base rebuild. `NEEDS_IMAGE` membership is
+**false**: this is a fixed-length executable patch and the tested standalone
+XBE path is valid. Standard checkbox forwarding via `BuildPlan` applies;
+preserve explicit `widescreen` forwarding wherever this panel maintains a
+manual field list. Refresh Studio's existing shared Build state in the same
+way if its integration adds a manual copy; no new GUI panel is needed.
+
+In protected `mod_editor/gui/build_panel_qt.py`, update the existing `_option`:
+
+```python
+self.widescreen_check = self._option(
+    pl, "widescreen", "Widescreen 16:9 (experimental)",
+    "Shows more of the field; keeps the HUD at its existing size.",
+    badge=NOT_TESTED, details=tt.widescreen_patch.HELP_TEXT,
+)
+```
+
+The caption is 30 characters, below 60. If the panel does not already expose
+`tt`, import the backend module directly and use its `HELP_TEXT`; no new
+runtime dependency is required. Retain the existing flag gates, plan
+construction and preset loading. Widening the regular HUD is not a new
+option here. For the exact clean-base Build recipe and scene criteria, use
+the report. The core tests did not launch Qt or xemu.
+
+## Allowlist, runtime closure, capability and manifest
+
+Protected `packaging/release-allowlist.txt` already has the backend at line
+302. Retain it and include the review/witness documentation with these exact
+lines if packaging this handoff:
+
+```text
+mod_editor/core/nfl2k5_widescreen.py
+ASTRA_WIDESCREEN_POLISH_REPORT.md
+docs/mod_editor/widescreen_polish_receipts.json
+```
+
+In protected `packaging/check_2k5_mod_studio_runtime.py`, include
+`"mod_editor.core.nfl2k5_widescreen"` explicitly in `product_modules` and
+verify `POLISH_VERSION == 3`, `EXPERIMENTAL is True`,
+`RUNTIME_WITNESSED is False`, and the public help text is present. Its only
+new import is standard-library `hashlib`; the existing section/digest helpers
+remain in `nfl2k5_bump_strength`. Unicorn and Capstone are test tools only.
+There is no new backend command, resource format or capability surface, so
+no new registry ID/schema entry is needed for this existing Build flag.
+
+Claude alone regenerates protected `data/nfl2k5_cave_reservations.json` after
+integration. The builder already discovers this module through the existing
+`tt` import and Experimental preset. Its allocator `all_requests` and three
+grown-owner lists need no new row. The backend receipt's added `file_offset`
+lets `Recorder.observe` reserve complete sites, including unchanged bytes.
+Verify the manifest owns all eleven spans in the report under
+`nfl2k5_widescreen`, retains the whole 832-byte cave, has fresh source
+fingerprints and has no overlaps. The local manifest unit test passed.
+
+Use the existing generator only when a disposable full disc and its workspace
+will leave **more than 100 GB free**; it internally uses a TemporaryDirectory:
+
+```text
+python3 tools/nfl2k5_cave_oracle.py manifest RETAIL_DEFAULT_XBE --xiso RETAIL_XISO --work-dir DISPOSABLE_WORK_DIR --json data/nfl2k5_cave_reservations.json
+```
+
+After wiring, rerun the new standalone suite, both XBE gates, protected
+Build/GUI checks and runtime closure. No runtime witness or release-status
+upgrade is implied by these CPU tests. This session did not build a full
+disc or regenerate the protected manifest.
+# r62 defensive try box score handoff, 2026-09-06
+
+This supersedes the defensive-try missing-stat handoff below. The existing
+`defensive_try` flag now installs the rules and native stat extension together.
+**EXPERIMENTAL / UNWITNESSED.** See `ASTRA_DEFENSIVE_TRY_BOXSCORE_REPORT.md`.
+No protected file was edited. The box row, player-card callbacks, season
+writer/readers and roster relocation have bounded native proofs; console
+rendering and played franchise saves remain Noah witnesses.
+
+## Dispatcher, complete union and four status dictionaries
+
+In protected `mod_editor/core/nfl2k5_throw_tuning.py`, retain the existing
+`from . import nfl2k5_defensive_try as defensive_try_patch` and exact-bool
+`defensive_try: bool = False` keyword in `_apply_all`, `write_xbe_copy`,
+`write_image_copy`, their forwarding and selection guards. No new flag or
+separate stat adapter is needed. `_selected_space_requests` already appends
+`defensive_try_patch.REQUESTS` when selected; that now means **all four** rows.
+Both `_xbe_space_adapter` and `_defensive_try_adapter` must use that union.
+Retain the existing final tuple, with its complete companion argument list:
+
+```python
+(defensive_try,
+ _defensive_try_adapter(kickoff_relocated, scorebug_runtime, momentum,
+                       defensive_try, zone_drop_cap, all_stadiums,
+                       coverage_slider, scramble_tuning, music_shuffle,
+                       practice_squad_screen, abilities, qb_spy,
+                       calendar_engine),
+ "defensive_try_patch", "experimental defensive try")
+```
+
+It currently precedes the allocator tuple because its adapter itself allocates
+the complete union before installing the try writer. Preserve this behavior.
+The later allocator entry is an idempotent replay. Retain
+`"defensive_try": defensive_try_patch.status(payload)` in `_grown_status_fields`.
+All four dictionaries already expand this helper: XBE inspection around line
+639, disc inspection around 764, XBE write result around 1489, and disc write
+result around 1765. Keep `defensive_try_patch` receipts in both write paths,
+including `stats_install`, `table_install`, limits and `runtime_witnessed=False`.
+Do not keep an old two-request snapshot in any caller.
+
+The scorebug image installer's `extra_requests`, the final grown pass and all
+other first allocators must include the extension before growth. The existing
+manifest builder's request expression and three owner/application lists use
+this single module; its Recorder emits both named owners. The two XBE gates
+use the updated complete union in `tests/nfl2k5_allocator_stack.py` and assert
+the extension is installed. There is no separate runtime Python stats module.
+
+## BuildPlan, presets and presentation
+
+Protected `mod_editor/core/mod_build.py`: retain `defensive_try: bool = False`,
+bool validation, recipe/Studio forwarding, `wants_xbe_patch`, normalization to
+grown space, early-pass `defensive_try=False`, final-pass condition and final
+`_apply_all(... defensive_try=plan.defensive_try ...)`. **Basic false, Advanced
+false, Experimental false.** Explicit witness selection enables the complete
+feature. The selected request union now automatically chooses allocator v3.
+
+Protected `mod_editor/gui/gameplay_patches_panel_qt.py`: retain the PATCHES row
+using `tt.defensive_try_patch.UI_TEXT` and retain `defensive_try` in NEEDS_IMAGE.
+Its replacement text is supplied by the backend and contains both required
+words:
+
+> Retail: Defensive possession ends a try. Patch: Allows defensive returns,
+> two points for a return score and one point for a try safety. Adds defensive
+> conversion totals to the box score and player season stats. EXPERIMENTAL /
+> UNWITNESSED. Suspended saves do not retain these game counts.
+
+The old "box-score row not implemented" limitation can now be removed from
+this surface. Retain the concrete suspended-save limitation. Do not replace
+it with an implication that reload merely needs testing. The archive of old
+per-game franchise box scores is also not extended. Protected
+`mod_editor/gui/build_panel_qt.py` keeps its existing `_option` caption,
+`Defensive two-point returns (experimental)` (42 characters), this UI_TEXT,
+`badge="EXPERIMENTAL / UNWITNESSED"`, `needs_image=True`, and existing checkbox
+load/reset/BuildPlan forwarding. Other GUI panels need no new control.
+
+## Allowlist, closure, capability and production manifest
+
+Protected `packaging/release-allowlist.txt` already contains these lines; retain
+them without duplicates:
+
+```text
+mod_editor/core/nfl2k5_defensive_try.py
+docs/mod_editor/nfl2k5_defensive_try_capability.json
+```
+
+The extension is in the same module. Its runtime imports are `hashlib`,
+`struct`, `nfl2k5_xbe_space`, `nfl2k5_bump_strength`, `nfl2k5_draft_ai` and now
+`nfl2k5_team_column` (native card definitions and recognized hook state).
+The optional module CLI uses stdlib `argparse`, `json`, `pathlib`. All imported
+core modules are already in the release closure. Protected
+`packaging/check_2k5_mod_studio_runtime.py` retains its defensive-try import and
+API checks; also require `STATS_OWNER`, all four REQUESTS, `stats_code_for`,
+`stat_tables`, and the team-column dependency. Keep runtime evidence false.
+Re-run the closure/import and protected integrated validation checks after
+integration; update any release source fingerprints through their usual flow.
+No updater, release tag, CI, or new library dependency change is required.
+
+Replace the existing canonical capability row
+`nfl2k5.gameplay_tuning_sliders.defensive_try` with the supplied
+`docs/mod_editor/nfl2k5_defensive_try_capability.json`. It is the same surface,
+with module commands that pass the registry's file-check mode:
+
+```text
+python3 -m mod_editor.core.nfl2k5_defensive_try apply <source.xbe> <new-copy.xbe>
+python3 -m tests.mod_editor.test_nfl2k5_defensive_try_stats
+```
+
+Keep classification `offline-writer-proved` and runtime `not-tested`.
+The replacement row's structure, file references and module commands pass.
+The complete registry file gate currently stops at the unrelated missing
+`docs/research/apf_audio.md`; restore that baseline evidence during integration.
+Update the integrated validation runner to include the new stats and manifest
+suites beside the existing rules suite. It is supplied as a row for Claude's
+canonical merge, not silently applied to the shared registry.
+
+Claude must regenerate protected `data/nfl2k5_cave_reservations.json` with
+`tools/nfl2k5_cave_oracle.py manifest` after integration and sufficient free
+disk space. This session's scratch manifest is explicitly a **bounded XBE
+projection**, with new hooks and all four children observed through Recorder,
+unchanged owners inherited only after checking every source fingerprint, and
+new full-union allocations replacing old child addresses. It never claims a
+new disc build. The default production source-drift guard remains intact.
+The report gives exact gate commands using `NFL2K5_CAVE_MANIFEST` for this
+projection. Re-run them against the freshly generated production manifest.
+
+Existing beta-61 applied discs lack the new owner and must be rebuilt from
+base. The original 1,440-byte RX and 1,040-byte RW allocations stay fixed.
+The new `nfl2k5_defensive_try_stats` child reserves 2,048 RX and 4,096 RO with
+16-byte alignment and zero additional RW. The brief authorizes scale-out but
+has no separate planned stat row; this is the documented budget decision,
+preserving every other committed budget. The complete plan leaves 4,096 RW
+bytes available to new owners. Do not shrink others to accommodate it.
+# r62 scorebug fix and freeze diagnostics, 2026-09-06
+
+This section supersedes earlier scorebug shipping and preset advice below.
+See `ASTRA_SCOREBUG_FIX_REPORT.md`. The static compiler is
+`espn-reference-v8`; the runtime resource compiler is
+`scorebug-runtime-v2-probes`. **EXPERIMENTAL / UNWITNESSED.** The earlier
+runtime build has a community-witnessed entry-to-game freeze. Native bounded
+tests do not reproduce that freeze; do not describe this revision as a proved
+runtime hang fix. The severe static clipping also still needs a fresh witness.
+
+The diagnostic surface is implemented in the existing CLI:
+
+```text
+python3 -m tools.nfl2k5_scorebug_reference apply SOURCE TARGET --runtime-probe PROFILE
+python3 -m tools.nfl2k5_scorebug_reference status TARGET --runtime-probe PROFILE
+```
+
+Profiles are `transport`, `hooks`, `resources`, `neutral`, `pair`, `full`.
+`--runtime` remains shorthand for `full`. Use a clean source for every
+profile. `pair` means TB/NE plus neutral, in both orientations. This chooses
+the brief's CLI option: **do not add a `scorebug_runtime_probe` BuildPlan
+field or a probe dropdown.** The five non-full controls are not cosmetic
+features. The extra transport control separates the binding scene and pack
+relocation from hooks and additional texture loading.
+
+## Dispatcher, allocation and four status dictionaries (protected)
+
+Keep the existing imports `scorebug_reference` and `scorebug_runtime_patch`.
+The `_apply_all` tuple remains:
+
+```python
+(scorebug_runtime, scorebug_runtime_patch,
+ "scorebug_runtime_patch", "experimental scorebug effects"),
+```
+
+Keep `scorebug_runtime: bool = False` in `_apply_all`, `write_xbe_copy`,
+`write_image_copy`, validation and all forwarding calls. No probe kwarg is
+added to these dispatchers. Their default calls still select `probe="full"`.
+Keep the existing `runtime` argument to `_selected_space_requests` and
+`_xbe_space_adapter`, and the contribution
+`scorebug_runtime_patch.REQUESTS if runtime else ()`. The owner is unchanged:
+1,408 bytes of RX code, 128 bytes of RW state, no new RO allocation. Both
+gate unions and all three manifest owner lists already enumerate it; do not
+add a second owner or another budget row.
+
+Keep resource installation deferred until the complete selected union is
+known. Forward the entire union as `extra_requests` to
+`runtime_apply_in_place`; realize other selected owners in the existing final
+XBE pass. Its returned lazy `PackView` objects are internal compiler values;
+receipts remain ordinary JSON dictionaries. Do not materialize a pack in a
+dispatcher. The descriptor must remain open while a view is consumed.
+
+Retain these exact entries in all four public status dictionaries:
+
+| Dictionary | Runtime entry | Placement entry |
+| --- | --- | --- |
+| `read_xbe` | `"scorebug_runtime": scorebug_runtime_patch.status(payload)` | `"scorebug_xbe": scorebug_reference.xbe_status(payload)` |
+| `read_image` | `"scorebug_runtime": scorebug_runtime_patch.status(payload)` | `"scorebug_xbe": scorebug_reference.xbe_status(payload)` |
+| `write_xbe_copy` | `"scorebug_runtime": scorebug_runtime_patch.status(result)` | `"scorebug_xbe": scorebug_reference.xbe_status(result)` |
+| `write_image_copy` | `"scorebug_runtime": scorebug_runtime_patch.status(after)` | `"scorebug_xbe": scorebug_reference.xbe_status(after)` |
+
+For the two image dictionaries, also retain
+`"scorebug_runtime_resources": scorebug_reference.runtime_image_status(path)`
+on read and `runtime_image_status(target)` after write. These are full-profile
+checks. CLI controls must use the matching `--runtime-probe` status command;
+the normal GUI may report them as foreign. An XBE-only status is never proof
+that its resource appendix was installed. Old v7/v1 or mixed bytes refuse;
+rebuild from a clean source, without an implicit migration.
+
+## BuildPlan, presets and GUI wording (protected)
+
+Keep existing fields `scorebug: bool = False` and
+`scorebug_runtime: bool = False`. Keep runtime normalization to
+`scorebug=True, xbe_space=True`, image-only eligibility, Hi-res scorebug
+conflict rejection, early-pass deferral and final receipt/status forwarding.
+Set explicit preset values:
+
+| Preset | `scorebug` | `scorebug_runtime` |
+| --- | --- | --- |
+| Basic | false | false |
+| Advanced | false | false |
+| Experimental | true | **false** |
+
+The required behavior change is clearing Experimental's current automatic
+runtime selection. Manual runtime opt-in remains available for diagnostics.
+Preset selection must clear a previously selected runtime checkbox. Keep
+Studio forwarding both existing booleans; there is no additional option.
+
+Replace the two Gameplay Patches descriptions and corresponding help maps:
+
+```python
+("scorebug", "Experimental ESPN scorebar",
+ "Retail: Uses the original scoreboard. Patch: Repositions the ESPN bar "
+ "using the game's safe area, with dark score cells and a clear clock strip. "
+ "Team names stay live; the timeout marks are decorative. Moves the kick "
+ "meter up and hides the lineup strip. EXPERIMENTAL / UNWITNESSED v8; "
+ "the previous version was clipped in a tester's game."),
+("scorebug_runtime", "Scorebug effects (diagnostic only)",
+ "Retail: Uses the original team panels and timeout display. Patch: Adds "
+ "team logos, remaining timeout marks, score flashes, down refresh and a "
+ "red play clock below five seconds. The previous version froze when a "
+ "tester entered a game. EXPERIMENTAL / UNWITNESSED v2; use the report's "
+ "CLI probes on a separate disc copy."),
+```
+
+Keep both keys in `NEEDS_IMAGE`. Build tab `_option` captions are exactly
+`"Experimental ESPN scorebar"` (26 characters) and
+`"Scorebug effects (diagnostic only)"` (34 characters), both below 60.
+Keep `badge=NOT_TESTED`; use the same descriptions for help/details. Do not
+translate offline test success into a gameplay-tested badge. The CLI profiles
+are intentionally absent from the product's everyday flow.
+
+## Allowlist, runtime closure and capability registry (protected)
+
+Existing allowlist lines that must remain, with the updated source files:
+
+```text
+mod_editor/core/nfl2k5_hud_layout.py
+mod_editor/core/nfl2k5_scorebug_ingame.py
+mod_editor/core/nfl2k5_scorebug_resources.py
+mod_editor/core/nfl2k5_scorebug_runtime.py
+tools/nfl2k5_scorebug_layout.py
+tools/nfl2k5_scorebug_position_patch.py
+tools/nfl2k5_scorebug_reference.py
+```
+
+Add these explicit documentation/capability lines:
+
+```text
+ASTRA_SCOREBUG_FIX_REPORT.md
+docs/mod_editor/nfl2k5_scorebug_runtime_capability.json
+docs/scorebug_ingame/probe_capability.json
+```
+
+Do not add the new native projection tool or its test fixtures to the product
+allowlist: `tools/nfl2k5_scorebug_projection.py` deliberately imports the
+development-only Unicorn fixture. Its PNGs, witness attachments and detailed
+receipts belong to the repository handoff, not the application runtime.
+
+Keep the protected runtime-closure import probe's existing
+`mod_editor.core.nfl2k5_scorebug_ingame`,
+`mod_editor.core.nfl2k5_scorebug_resources`,
+`mod_editor.core.nfl2k5_scorebug_runtime`,
+`mod_editor.core.nfl2k5_hud_layout`, `tools.nfl2k5_scorebug_layout`,
+`tools.nfl2k5_scorebug_position_patch` and `tools.nfl2k5_scorebug_reference`
+coverage (add any missing direct import entries). New compiler dependencies
+are standard-library `functools.lru_cache` and the existing `platform_compat`.
+Pillow remains the existing image-build dependency. Unicorn and Capstone are
+proof dependencies, never product imports.
+
+In the protected runtime probe, assert both new version strings, the six
+profile names, counts `(0, 0, 264, 8, 24, 264)`, and the documented default
+`full` behavior. Retain the existing static-source-art and runtime-owner
+checks. No resource compilation should read a whole pack into memory.
+
+Replace registry row `nfl2k5.scorebug_presentation.runtime` using
+`docs/mod_editor/nfl2k5_scorebug_runtime_capability.json`, and merge new row
+`nfl2k5.scorebug_presentation.runtime_probes` from
+`docs/scorebug_ingame/probe_capability.json`. The new row is CLI-only and
+hidden from the GUI. Both objects have exact schema keys and module-based
+`python3 -m ...` backend/validation commands. Validate the merged, ID-sorted
+registry with file checks. The handoff rows pass schema and their own file
+checks; whole-registry file checking currently stops at the pre-existing
+missing `docs/research/apf_audio.md`. Registry integration may require the usual
+capability-count/closure fingerprint refresh; preserve unrelated rows.
+
+## Protected cave manifest regeneration
+
+Both XBE gates pass with this revision's existing owner in both composition
+orders. The production manifest intentionally remains untouched and detects
+six changed source fingerprints. A private conservative candidate retained
+the released reservations, reobserved affected XBE writers in legacy and v3
+layouts (530 spans), and passed the 28-test manifest suite. That candidate is
+not a canonical disc rebuild and must not be copied into production.
+
+Claude must perform the normal regeneration after protected integration:
+
+```text
+python3 tools/nfl2k5_cave_oracle.py manifest '/path/to/retail/default.xbe' --xiso '/path/to/retail.xiso.iso' --work-dir '/path/to/disposable-work' --json data/nfl2k5_cave_reservations.json
+python3 tests/mod_editor/test_nfl2k5_cave_oracle.py
+python3 tests/mod_editor/test_xbe_patch_memory_writes.py
+python3 tests/mod_editor/test_xbe_patch_cave_references.py
+```
+
+Use a disposable temporary directory, remove all acceptance discs on every
+exit path, and preserve the main-drive 100 GB free-space floor. No real disc
+was built in this task because its required temporary copy would cross that
+floor. Do not run the historical beta-60 proof builder for this matrix: it
+requires a canonical whole-disc release baseline and retains large outputs.
+# r62 franchise 2026 handoff, 2026-09-06
+
+**The requested live feature is incomplete and must remain unavailable.** The
+backend supplies host transactions and an installed but dormant native rule
+kernel. `apply()` is for proof/owner composition only: its receipt explicitly
+has `runtime_enforced=False` and `native_hooks=[]`. Connecting it directly to a
+product checkbox would misrepresent what was built. `require_runtime_ready()`
+raises before a disc copy. See `ASTRA_FRANCHISE_2026_REPORT.md` for the measured
+save/writeback blockers and all unimplemented requirements. No protected file
+was edited. This section is additive; earlier owners' instructions remain.
+
+## Protected BuildPlan, allocator, dispatcher and four status dictionaries
+
+Reserve the intended API `franchise_2026_rules: bool = False`. Exact bool only.
+Basic, Advanced and Experimental all explicitly set false. Normalize a true
+request by calling `nfl2k5_franchise_2026.require_runtime_ready()` immediately,
+before a copy, allocation or output mutation. This currently refuses it. Keep
+this same guard in `_apply_all` so callers cannot bypass BuildPlan preflight.
+Recipe load, Studio forwarding, availability and receipts retain the false
+field; no implicit enable from practice squads, calendar or season cap.
+
+The eventual selected union integration belongs in `_selected_space_requests`
+and `_xbe_space_adapter`: add `franchise_2026_rules` to both signatures/flag
+forwarding paths and concatenate `nfl2k5_franchise_2026.REQUESTS` when selected.
+Preflight must refuse first while `RUNTIME_READY` is false. Requests are now
+**5,120 RX / 4,096 RW**, alignment 16, owner `nfl2k5_franchise_2026`; never
+hardcode a VA. The gate union and manifest owner probe already include it.
+
+Add the intended final dispatcher tuple after the allocator and existing
+practice/season owners:
+
+```python
+("franchise_2026_rules", franchise_2026_rules, _franchise_2026_adapter),
+```
+
+Use a guarded adapter; do not substitute the dormant kernel's `apply` directly:
+
+```python
+class _Franchise2026Adapter:
+    @staticmethod
+    def status(payload):
+        return "unavailable"
+
+    @staticmethod
+    def apply(payload):
+        nfl2k5_franchise_2026.require_runtime_ready()
+        return nfl2k5_franchise_2026.apply(payload)
+
+_franchise_2026_adapter = _Franchise2026Adapter()
+```
+
+The adapter must be replaced with the real guarded runtime owner when the
+missing hooks are delivered, rather than merely changing `RUNTIME_READY`.
+Add keyword `franchise_2026_rules=False` to `_apply_all` and forward it at every
+shared executable call. Add it to `wants_xbe_patch`, availability checks and
+normalization/deferral/final-pass handling only with the early readiness guard.
+Early `replace(plan, ...)` passes set it false. The eventual final pass forwards
+`franchise_2026_rules=plan.franchise_2026_rules`. Until the guard is replaced,
+a true flag has no final pass and no output. This is intentional refusal.
+
+In `_grown_status_fields` and **all four dictionaries** (extracted reader,
+image reader, extracted writer result, image writer result), expose:
+
+```python
+"franchise_2026_rules": "unavailable",
+"franchise_2026_kernel": nfl2k5_franchise_2026.status(payload),
+"franchise_2026_runtime_enforced": False,
+```
+
+Use the actual payload variable at each location. A dormant kernel reporting
+`applied` must never mark `franchise_2026_rules` as applied or make the Build
+option checked. False/off preserves the supplied executable normally.
+
+## Gameplay Patches, NEEDS_IMAGE, Build and Coach's Desk
+
+Intended PATCHES key: `franchise_2026_rules`. Caption:
+`2026 franchise rules (unavailable)`.
+
+Exact help, containing the required Retail and Patch words:
+
+> Retail: Owned players form the game roster and IR has no in-season returns. Patch: 2026 franchise rules are not available yet. Saved counters and correct player results still need integration. EXPERIMENTAL / UNWITNESSED.
+
+Include the key in NEEDS_IMAGE. The eventual complete feature requires the
+matching calendar/ROST/save transport; a standalone XBE does not establish
+those. Keep the row disabled with the above reason while unavailable. The
+Build `_option` caption is `2026 franchise rules (unavailable)` (34 characters),
+field `franchise_2026_rules`, with the same help and disabled state. Every
+preset leaves it off. Do not present a working game-rule toggle or a manual
+native roster screen in this revision.
+
+Practice Squad screen coordination: keep its existing Coach's Desk table,
+Active/Reserves tabs, native promote/demote and Free Practice behavior. The
+future Game Day/IR pages should share that destination and identity resolver.
+No additional menu row, callback, staging hook at 61730 or second promote/
+demote implementation is installed here. A future manual page must distinguish
+permanent promotion from standard elevation and charge only on acceptance.
+
+## Allowlist, runtime closure, capability and manifest
+
+Add these source lines to `packaging/release-allowlist.txt` if shipping the host
+API/inspection tooling; no game data or companion payload belongs in a release:
+
+```text
+mod_editor/core/nfl2k5_franchise_2026.py
+mod_editor/core/nfl2k5_franchise_2026_code.py
+docs/mod_editor/nfl2k5_franchise_2026_capability.json
+ASTRA_FRANCHISE_2026_REPORT.md
+```
+
+`nfl2k5_franchise_save.py` is already allowlisted. The C, .S and assembler are
+development sources, not runtime dependencies. Add both new core modules to
+the provider/runtime closure, including the explicit import list in
+`packaging/check_2k5_mod_studio_runtime.py`. Refresh its and the provider's hashes
+for changed `nfl2k5_franchise_save.py` using the existing exact-file process;
+never remove or broaden pins. No GUI import is needed. The companion transport
+uses only the Python standard library and the existing save codec.
+
+Merge the complete schema-valid object in
+`docs/mod_editor/nfl2k5_franchise_2026_capability.json` into the canonical registry.
+It registers **inspection only**, ID
+`nfl2k5.schedules_franchise.rules_2026_inspection`, `read-only-mapped`,
+`gui.mode=view`, `gui.expose=false`. Game enforcement remains unavailable;
+this classification does not certify a writer. Both backend.command and
+validation_command use `python3 -m mod_editor.core.nfl2k5_franchise_2026 ...`.
+Do not promote runtime.status from `not-tested` based on bounded instructions.
+The registry requires `unsafe/deferred` rows to have null backend fields, so a
+working inspection command cannot be classified as an unavailable writer.
+
+The shared gate union, budget fixture and all manifest-builder owner lists are
+updated. Claude alone must regenerate `data/nfl2k5_cave_reservations.json`.
+The scratch manifest is an actual disposable-disc writer observation, not a
+source-fingerprint bypass. It includes the dormant kernel's named allocations;
+it does not certify native rule enforcement or a played save lifecycle.
+
+## Hard gates before enabling the intended feature
+
+1. Implement save-buffer size/allocation, native serializer/loader, wrapper
+   integrity and migration together. No spare fields were allocated here.
+   The memo's proposed ledger is 60,872 bytes at 2,479 players and the three
+   actually unassigned player bits cannot hold the full histories.
+2. Install one shared game-day projection boundary with Practice Reserves,
+   depth/special-role remapping, launch-shortage refusal, and **every** result
+   identity adapter. C5280 and 27DBC0 currently assume matching ownership slots.
+3. Bind native IR entry, completed-team-game events, calendar day advancement,
+   return/medical checks, CPU choices and rollover to the kernel. General IR
+   capacity and all owner/cap consumers need the separate storage migration.
+4. Implement native dated cutdown and both trade predicate/pending purge plus
+   human acceptance guards; calendar predicates alone are insufficient.
+5. Add elevation pay accounting and persistent identity/generation handling,
+   complete native save/load/sim/played-result proofs, and Noah's R1-R5 witnesses.
+   A host companion tied to a save digest cannot replace these steps.
+# r62 Stadium editor handoff, 2026-09-06
+
+**EXPERIMENTAL / UNWITNESSED.** See `ASTRA_STADIUM_EDITOR_REPORT.md` and
+`docs/mod_editor/nfl2k5_stadium_blender_workflow.md`. This section precedes and
+preserves the older handoffs. No protected file was edited by this task.
+
+## Implemented integration outside protected files
+
+`Nfl2k5StudioFacade._studio_for_session` supplies `writer.scene_source` to the
+Stadium backend. Existing Export 3D model and Apply images from a 3D file calls
+therefore reach the improved export/import already. `_SessionStadiumDelegate`
+now supplies `replace_many`; the session preflights the full selected scene,
+including earlier texture edits and its bounded position recipe, publishes
+one edit set and retains one grouped undo action.
+
+No new XBE owner, allocator request, patch flag or automatic preset action is
+part of this resource editor. The existing unified Stadium texture/geometry
+writer remains the build route.
+
+| Required wiring location | Disposition for this job |
+| --- | --- |
+| Dispatcher `_apply_all` owner tuple and keyword forwarding | No addition; this is a user-authored SCNE resource edit. |
+| Four status dictionaries `read_xbe`, `read_image`, `write_xbe_copy`, `write_image_copy` | No new XBE status key; do not imply an installed texture from executable bytes. |
+| `BuildPlan` field, normalization, deferral, final pass | No new field. Existing session-to-unified-project Stadium texture edits supply the build. |
+| Basic / Advanced / Experimental presets | No enablement in any preset. A user explicitly imports artwork. |
+| Gameplay Patches `PATCHES` and `NEEDS_IMAGE` | No row/key. Suggested informational text only if needed: “Retail: Stadium artwork uses the original images. Patch: Applies the Stadium textures saved in your project. EXPERIMENTAL / UNWITNESSED.” |
+| Build `_option` caption, at most 60 characters | No checkbox. If a build summary caption is required, use `Stadium textures from project` (29 characters). |
+| Both XBE safety gates and allocator/cave union | No owner addition or manifest regeneration for this job. Existing code/data allocations are untouched. |
+
+## Stadiums page in protected `mod_editor/gui/studio_qt.py`
+
+Import:
+
+```python
+from mod_editor.gui.stadium_blender_panel_qt import (
+    StadiumBlenderPanel, texture_import_summary,
+)
+```
+
+The owned, offscreen-tested `StadiumBlenderPanel` is complete. Place it in the
+Stadiums page's existing layout, preferably in a scrollable help area so the
+477-scene list retains useful height. Its `exportRequested` signal connects
+to `_export_stadium_scene_gltf`; its `importRequested` signal connects to
+`_apply_stadium_textures_from_gltf`. Both existing slots perform the ready,
+busy and selected-scene checks. The card's Save Blender helper action copies
+the shipped Python script using the existing exclusive export writer.
+Do not make a second backend or run Blender from Mod Studio.
+
+Keep the existing bounded geometry button separately labelled. Rename the
+texture action to `Import Blender textures`. Its ready tooltip is:
+
+> Import the texture file saved by the Blender Stadium helper. Original image
+> sizes are required. Shared surfaces change together. Unchanged images are
+> skipped. The whole import must fit before any edits are staged.
+
+Replace the success callback in `_apply_stadium_textures_from_gltf`. Receipts
+now include `changed: bool`. An unchanged row has `write_result=None` and must
+not be presented as “written” or mark the project dirty:
+
+```python
+receipts = result if isinstance(result, tuple) else ()
+summary, changed = texture_import_summary(receipts)
+box = QMessageBox(self)
+box.setWindowTitle("Stadium texture import")
+box.setIcon(QMessageBox.Information)
+box.setText(summary)
+box.setInformativeText(
+    "EXPERIMENTAL / UNWITNESSED. Review the texture preview. "
+    "Save your project and build a new game copy to test it. "
+    "Undo restores the whole import."
+)
+box.addButton("Close", QMessageBox.RejectRole)
+box.exec_()
+self._set_status(summary)
+if changed:
+    self._mark_workspace_changed()
+    self._select_stadium_texture(state.texture_list.currentItem(), None)
+```
+
+Update both construction and dynamic tooltips for model export: PNGs and
+source-derived UV coordinates are appended after the unchanged position/index
+buffer prefix. The whole buffer is longer, not byte-identical. The 0.01 unit
+root is retained. After export, the success dialog should direct users to the
+helper's File > Import entry and remind them to keep `.gltf` and `.bin`
+together. All new copy uses plain words and no em dashes.
+
+## Protected release allowlist
+
+Add these exact lines to `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/gui/stadium_blender_panel_qt.py
+tools/blender/nfl2k5_stadium.py
+tools/nfl_stadium_texture_bundle.py
+tools/nfl_stadium_editor_proof.py
+docs/mod_editor/nfl2k5_stadium_blender_workflow.md
+docs/mod_editor/nfl2k5_stadium_blender_capability.json
+docs/mod_editor/nfl2k5_stadium_part_ownership.json
+docs/mod_editor/nfl2k5_stadium_editor_retail_proof.json
+ASTRA_STADIUM_EDITOR_REPORT.md
+```
+
+Existing allowlisted modules changed in place: `nfl2k5_stadium_studio.py`,
+`nfl2k5_stadium_texture_writer.py`, `mod_editor/studio/session.py`,
+`mod_editor/studio/facade.py`, and `tools/nfl_scne_gltf.py`. Keep
+`tools/nfl_vc_lz_fill.py` in the shipped dependency set. The Blender helper is
+standard-library-only until Blender calls `register`, `import_stadium` or
+`export_textures`; do not add bpy to Mod Studio's runtime dependencies.
+
+## Protected runtime closure and provider fingerprints
+
+In `packaging/check_2k5_mod_studio_runtime.py`, include import probes for:
+
+```text
+mod_editor.gui.stadium_blender_panel_qt
+tools.blender.nfl2k5_stadium
+tools.nfl_stadium_texture_bundle
+tools.nfl_stadium_editor_proof
+```
+
+Retain the existing writer, Studio backend, Models UV decoder and
+`nfl_scne_gltf`, `nfl_scne_inventory`, `nfl_txtr`, `nfl_tset_png_import`,
+`nfl_vc_lz_fill` probes. The new writer imports the existing VC-LZ token
+parser/serializer lazily to fill overly short streams without raising the
+loader scratch beyond the retail-observed bound. The export tool imports
+Models' existing UV decode helpers lazily. No network, image generator,
+external process, capstone or bpy is a runtime dependency of these operations.
+
+Refresh the exact SHA-256 values in the sealed provider closure for these
+changed existing entries after reviewing this patch:
+
+```text
+mod_editor/core/nfl2k5_stadium_texture_writer.py
+mod_editor/core/nfl2k5_stadium_studio.py
+mod_editor/studio/session.py
+tools/nfl_scne_gltf.py
+```
+
+SHA-256 values for this delivered source revision:
+
+| Path | SHA-256 |
+| --- | --- |
+| `mod_editor/core/nfl2k5_stadium_texture_writer.py` | `dc1bf06c20c86411ff4c91e09003c9f561f3c7aada142ed522ca237d7d0d18f5` |
+| `mod_editor/core/nfl2k5_stadium_studio.py` | `7ec5b2b65b3e6be605e91ae772dd15c3eb71ac46398e2ecab0a1c181cf4fef7d` |
+| `mod_editor/studio/session.py` | `0b612dca07442ad0b0e1bdb19d38b1bf32ea78100804278a3736bb2f2ff95841` |
+| `tools/nfl_scne_gltf.py` | `afeb666595742e2a96075fb9d0edb4d8ac913b9e1c2ebfa6ed3ba04496a57207` |
+
+`mod_editor/core/providers.py` already lists these entries, and already lists
+`tools/nfl_vc_lz_fill.py` and `mod_editor/core/nfl2k5_models.py`. The new helper,
+workflow card and developer proof/compiler CLIs do not become executable
+inputs to the sealed unified span subprocess; do not add that UI dependency
+to its closure. Keep its current required bytes and imports narrowly scoped.
+Refresh runtime-checker pinned constants only where they include these paths.
+Until this is done, the sealed provider correctly refuses the changed files.
+The task leaves these closure edits to Claude as requested in the brief.
+
+## Capability registry
+
+Merge the one row from
+`docs/mod_editor/nfl2k5_stadium_blender_capability.json` into the canonical
+registry, sorted by ID. ID: `nfl2k5.stadiums_fields.blender_textures`;
+classification: `offline-writer-proved`; runtime: `not-tested`; GUI: edit,
+explicit opt-in. It has `python3 -m ...` backend and validation commands.
+Add the following entry to `_WORKSPACE_CAPABILITIES` in the protected
+`mod_editor/gui/studio_qt.py`, so capability navigation opens this workflow:
+
+```python
+"nfl2k5.stadiums_fields.blender_textures": "Stadiums",
+```
+
+Do not add a gameplay patch or a second image-build path.
+Run the registry validator with file checks after merging, update runtime
+closure pins and exercise the existing Stadium export/import actions through
+an actual packaged offscreen window. The checked-in source-free window test
+skips explicitly when its developer uniform inventory is absent.
+
+---
+
+# r62 calendar engine handoff, 2026-09-05
+
+This section supersedes the old season-cap limitation and wave-2 specification
+below. Backend: `mod_editor/core/nfl2k5_calendar_engine.py`; allocator owner:
+`nfl2k5_calendar`. **EXPERIMENTAL / UNWITNESSED.** See
+`ASTRA_CALENDAR_ENGINE_REPORT.md` for results, the precise schedule rule and
+Noah's required witnesses. Protected implementation files remain unchanged.
+
+## BuildPlan and presets (protected mod_build.py)
+
+Add `calendar_engine: bool = False` beside `season_cap`. Both must be exact
+bools in plan validation, recipe loading, Studio forwarding, availability,
+inspection, receipt maps and `wants_xbe_patch`. The public 128-season option
+means the complete repair: normalize `season_cap or calendar_engine` to
+`season_cap=True`, `calendar_engine=True`, `season_2026=True`, `xbe_space=True`.
+The 2026 dependency installs the matching regular/preseason ROST templates;
+XBE-only application cannot certify that external resource. Backend 2004
+support remains available for a deliberately matched 2004 template build.
+
+Explicit preset values: Basic false/false; Advanced false/false; Experimental
+true/true **only after** the new standalone suites, both XBE gates, protected
+wiring/runtime checks and regenerated manifest pass on the integrated stack.
+If an integration gate fails, set both Experimental values false together.
+Do not ship the older gate alone under a complete-calendar caption. The old
+`nfl2k5_season_cap` primitive stays available for diagnostic/core callers and
+retains its honest gate-only receipt.
+
+Defer `calendar_engine` to the final grown executable pass, after the existing
+`season_2026` image step. Include `calendar_engine=False` in early `replace`
+passes. Add `or plan.calendar_engine` to the final-pass condition, pass its
+real value to the final `_apply_all`, and retain `calendar_engine_patch` and
+`calendar_engine` in the final step receipt. The scorebug resource installer's
+`extra_requests` must already include calendar even when its own runtime is
+selected. The allocator union must be complete before ANY owner allocates.
+
+## Dispatcher tuple, kwargs, allocation and four status dictionaries
+
+In protected `mod_editor/core/nfl2k5_throw_tuning.py`, import:
+
+```python
+from . import nfl2k5_calendar_engine as calendar_engine_patch
+```
+
+Add keyword `calendar_engine: bool = False` to `_apply_all`, `write_xbe_copy`,
+`write_image_copy` and their forwarding/nonempty-selection/type-validation
+paths. Do the public option normalization in BuildPlan, not in an early
+low-level call that intentionally defers growth. Add the argument at the end
+of `_selected_space_requests`, `_xbe_space_adapter` and inherited defensive
+adapter constructors, and append:
+
+```python
++ (calendar_engine_patch.REQUESTS if calendar_engine else ())
+```
+
+Forward the flag into both allocator-capable adapters and the scorebug
+resource lane's complete union. Include `or calendar_engine` in the allocator
+condition. After the allocator entry in `_apply_all`'s final owners tuple add:
+
+```python
+(calendar_engine, calendar_engine_patch,
+ "calendar_engine_patch", "128-season calendar (experimental)"),
+```
+
+Keep apply-on-applied replay so a sealed mixed install refuses. The module
+coordinates the existing year, calendar, season-length, preseason and
+playoffs14 groups and the cap gate, adding only complete missing prerequisites.
+Do not apply those older groups after the calendar pass. Their public status
+readers now recognize the validated overlay; a raw group reapply still refuses,
+as before. Do not use the old predecessor projection as a writer output.
+
+In `write_image_copy`'s early runtime-resource lane use
+`calendar_engine=calendar_engine and not scorebug_runtime`; include the real
+flag in the resource writer's `extra_requests` and final post-resource call.
+A previously sealed union missing calendar refuses and requires a clean build.
+
+The four public status dictionaries require these exact entries (or one shared
+helper called by all four, using the appropriate byte variable):
+
+| Return dictionary | Entry |
+| --- | --- |
+| `read_xbe` | `"calendar_engine": calendar_engine_patch.status(payload)` |
+| `read_image` | `"calendar_engine": calendar_engine_patch.status(payload)` |
+| `write_xbe_copy` | `"calendar_engine": calendar_engine_patch.status(result)` |
+| `write_image_copy` | `"calendar_engine": calendar_engine_patch.status(after)` |
+
+Keep the separate `season_cap` status: an applied cap byte does not prove a
+calendar installation. Surface the calendar receipt's base year, byte encoding,
+zero persistent data, exact hashes, touched sites and unwitnessed status.
+
+## Gameplay Patches, Build tab and Franchise wording (protected GUI)
+
+Expose ONE combined 128-season option under the existing `season_cap` key.
+Its BuildPlan normalization carries the implementation field `calendar_engine`.
+Add both keys to `NEEDS_IMAGE`; neither is a folder-only or save-only feature.
+Replace the `season_cap` PATCHES row and matching short-label/help maps with:
+
+```python
+("season_cap", "128-season franchise (experimental)",
+ "Retail: Franchise dates and birth dates use a fixed century. Patch: Repairs "
+ "dates, weekdays, live player birth years and season labels through index 127, "
+ "with the final postseason in the following year. EXPERIMENTAL / UNWITNESSED. "
+ "Natural rollovers and save reloads still need testing. History keeps its existing limits."),
+```
+
+The Build `_option` is:
+
+```python
+self.season_cap_check = self._option(
+    f, "season_cap", "128-season franchise (experimental)",
+    calendar_engine_patch.UI_TEXT, badge=NOT_TESTED)
+```
+
+Caption: 35 characters, below 60. Wire checkbox eligibility, load/reset,
+inspection and Gameplay-to-Build forwarding. Availability for this combined
+option requires both modules and the allocator plus the existing 2026 image
+resources. `studio_qt.py` must forward `calendar_engine` with default false.
+
+No Franchise data-view or codec change is needed: it already uses a full base
+year plus the saved byte index and a moving live-DOB century. A save has no
+new field and cannot identify the executable's installed calendar patch.
+When replacing its old informational warning during integration, use:
+“Use the calendar patch with your build's starting year for long franchises.
+A save alone does not identify that patch. Editing this year does not simulate
+seasons.” Keep index/ordinal display and terminal-index read-only behavior.
+Do not globally replace the gate-only module's warning with a repair claim.
+
+## Packaging, closure, capability and manifest
+
+Add these explicit protected release-allowlist lines:
+
+```text
+mod_editor/core/nfl2k5_calendar_engine.py
+mod_editor/core/nfl2k5_calendar_engine_code.py
+docs/mod_editor/nfl2k5_calendar_engine_capability.json
+ASTRA_CALENDAR_ENGINE_REPORT.md
+```
+
+The modified preseason, playoffs14 and season-length modules must be staged
+from this revision. Their existing paths remain in the closure. Add
+`mod_editor.core.nfl2k5_calendar_engine` and
+`mod_editor.core.nfl2k5_calendar_engine_code` to the protected runtime import
+probe. Transitive runtime imports are the existing preseason, playoffs14,
+season-length, season-cap, allocator, rdata-site, bump-strength, cave-oracle
+and draft-assembler helpers, plus standard-library datetime/hashlib/struct.
+GNU as, Capstone and Unicorn are development/proof dependencies only. The
+annotated `.S`, assembler CLI and tests are developer files, not runtime inputs.
+
+Merge `docs/mod_editor/nfl2k5_calendar_engine_capability.json` into the existing
+capability registry using its standard workflow. Refresh closure fingerprints
+and the protected cave manifest with Claude's manifest command. The shared
+allocator gate union and all three manifest owner lists/request composition
+are already updated. Recorder ownership uses the Python module suffix
+`nfl2k5_calendar_engine`; named allocator children use `nfl2k5_calendar`.
+Do not rename the budget owner to get a second reservation. No protected
+manifest JSON was regenerated in this task.
+
+---
+
+# r62 storage growth handoff, 2026-09-05
+
+Backend: `mod_editor/core/nfl2k5_roster_storage.py`, owner
+`nfl2k5_roster_storage`, option **`all_stadiums`**. This addition precedes and
+preserves earlier handoffs. The implemented primitive offers the 82 existing
+stadiums in Create a Team. It does not enlarge team records, create more teams
+or support 16/17 reserves. See `ASTRA_STORAGE_GROWTH_REPORT.md` for the design
+and census. Label the option **EXPERIMENTAL / UNWITNESSED**.
+
+## BuildPlan, presets and build ordering (protected)
+
+In `mod_editor/core/mod_build.py`, add `all_stadiums: bool = False` beside
+`zone_drop_cap`. Explicitly add `"all_stadiums": False` to **each** of
+`softdrink_basic`, `softdrink_advanced`, `softdrink_experimental`; none enables
+it. Preset selection clears previous manual opt-in. Include the flag in plan
+validation (exact bool), recipe loading, `wants_xbe_patch`, availability,
+inspection, selection checks, status/receipt maps and Studio plan forwarding.
+Availability requires `nfl2k5_roster_storage` and `nfl2k5_xbe_space`.
+Normalize selection to `xbe_space=True` and use the existing grown-feature
+image-only preflight. This option alone does not enable another gameplay patch.
+
+The initial `replace(plan, ... xbe_space=False, ...)` near line 831 must include
+`all_stadiums=False`. All early executable passes must keep the flag false.
+At the final growth pass near lines 1137-1146:
+
+1. Pass `all_stadiums=plan.all_stadiums` into `_selected_space_requests` for
+   the scorebug resource installer's `extra_requests`. This is necessary even
+   if its own runtime owner is already selected.
+2. Include `or plan.all_stadiums` in the final executable-pass condition.
+3. Forward `all_stadiums=plan.all_stadiums` to the final `_apply_all` call and
+   retain its `all_stadiums_patch` receipt plus `all_stadiums` installed status.
+
+The source ROST must retain all 82 retail stadium records. An older save with
+those records needs no conversion; the existing +0x114 pointer is serialized.
+Do not label a patch receipt as proof that custom or truncated stadium tables
+are compatible. No PLAY/ROST archive edit is needed for this option.
+
+## Dispatcher, allocation union and four status dictionaries (protected)
+
+In `mod_editor/core/nfl2k5_throw_tuning.py`:
+
+```python
+from . import nfl2k5_roster_storage as roster_storage_patch
+```
+
+Add keyword `all_stadiums: bool = False` to `_apply_all`, `write_xbe_copy` and
+`write_image_copy`, all their forwarding calls and their nonempty-selection
+checks. Validate its type alongside `defensive_try` and `zone_drop_cap`.
+Append the argument at the end of existing helper signatures to retain
+positional compatibility. Extend the existing union helper as follows:
+
+```python
+def _selected_space_requests(with_kickoff=False, runtime=False, momentum=0,
+                             defensive_try=False, zone_drop_cap=False,
+                             all_stadiums=False):
+    return ((kickoff_relocated_patch.REQUESTS if with_kickoff else ())
+            + (scorebug_runtime_patch.REQUESTS if runtime else ())
+            + (momentum_patch.REQUESTS if momentum > 0 else ())
+            + (defensive_try_patch.REQUESTS if defensive_try else ())
+            + (zone_drop_patch.REQUESTS if zone_drop_cap else ())
+            + (roster_storage_patch.REQUESTS if all_stadiums else ()))
+```
+
+Add `all_stadiums=False` to `_xbe_space_adapter.__init__`, and forward it
+to that helper. In the final `_apply_all` owners tuple, forward the flag to
+**both** `_defensive_try_adapter` and `_xbe_space_adapter`. The defensive
+adapter inherits the union constructor and can be the first allocator caller.
+Extend the allocator tuple's condition with `or all_stadiums`. After the
+allocator tuple, add this tuple alongside the other final owners:
+
+```python
+(all_stadiums, roster_storage_patch,
+ "all_stadiums_patch", "all 82 Create a Team stadiums (experimental)"),
+```
+
+Keep the existing loop's apply-on-applied behavior, so replay validates the
+entire seal. The complete union is mandatory before first growth; an existing
+allocation without this owner refuses and requires a clean rebuild. The
+allocator now orders this owner after all beta-61 owners without changing
+their addresses. It adds 82 immutable bytes and no RW bytes or new pages.
+
+`write_image_copy` has a separate scorebug-runtime lane near lines 1496 and
+1568-1577. Defer `all_stadiums` there with the other grown flags in its early
+call (`all_stadiums=all_stadiums and not scorebug_runtime`), forward the real
+flag to the resource writer's `extra_requests`, then forward it to the final
+post-resource `_apply_all`. Otherwise the runtime lane seals an incomplete
+union and a later stadium installation must refuse.
+
+The four public return dictionaries must contain these exact projections:
+
+| Dictionary | New entry |
+| --- | --- |
+| `read_xbe` | `"all_stadiums": roster_storage_patch.status(payload)` |
+| `read_image` | `"all_stadiums": roster_storage_patch.status(payload)` |
+| `write_xbe_copy` | `"all_stadiums": roster_storage_patch.status(result)` |
+| `write_image_copy` | `"all_stadiums": roster_storage_patch.status(after)` |
+
+Use the actual byte variable in each function. This stack already centralizes
+grown projections in `_grown_status_fields`: adding the projection there is
+appropriate if all four returns continue to call it. Preserve receipt fields
+`experimental`, `runtime_witnessed`, `save_layout_changed`, `reserve_limit`,
+`team_slots`, exact hashes/changed-byte counts and allocation reservations.
+
+## Gameplay Patches, Build tab and Reserves (protected GUI)
+
+In `mod_editor/gui/gameplay_patches_panel_qt.py`, add `"all_stadiums"` to
+`NEEDS_IMAGE` and use this PATCHES row (also update any short-label map):
+
+```python
+("all_stadiums", "All 82 Create a Team stadiums (experimental)",
+ "Retail: Create a Team offers 67 stadiums. Patch: Offers all 82 existing "
+ "stadiums. EXPERIMENTAL / UNWITNESSED. Added previews and game loading need "
+ "testing. Team and reserve limits stay the same."),
+```
+
+In `mod_editor/gui/build_panel_qt.py`, add:
+
+```python
+self.all_stadiums_check = self._option(
+    gameplay_layout, "all_stadiums",
+    "All 82 Create a Team stadiums (experimental)",
+    roster_storage_patch.UI_TEXT)
+```
+
+Use its current gameplay layout variable. The caption is 44 characters,
+below 60. Wire checkbox load/reset/enable state and image eligibility. In
+`studio_qt.py`, forward the boolean with default false into BuildPlan and any
+Gameplay-to-Build bridge. No additional tab or GUI panel is required.
+
+**Reserves must stay at 12.** The stadium option is not evidence of wider
+player storage. Do not use `xbe_space`, `all_stadiums` or a save metadata byte
+alone to raise the Reserves control. A future 16/17 patch needs its own exact
+XBE status, compatible versioned save schema and eligibility predicate before
+its UI limit can change. The existing Reserves panel is outside this job's
+GUI ownership, and no edit to it is requested for the delivered primitive.
+
+## Allowlist, closure, capability and manifest (protected)
+
+Add these exact release-allowlist paths:
+
+```text
+mod_editor/core/nfl2k5_roster_storage.py
+docs/mod_editor/nfl2k5_roster_storage_capability.json
+docs/mod_editor/nfl2k5_roster_storage_census.json
+ASTRA_STORAGE_GROWTH_REPORT.md
+```
+
+The audit CLI `tools/nfl2k5_roster_storage_audit.py` and standalone tests are
+developer evidence tools; they need not enter the end-user runtime closure.
+Keep the already allowlisted roster/save/franchise/practice-squad codecs,
+allocator, bump-strength digest helper, boot-logo and depth-chart-storage
+helpers. Add `mod_editor.core.nfl2k5_roster_storage` to the import probe in
+`packaging/check_2k5_mod_studio_runtime.py`. Its codec helpers import only the
+standard library. Patch operations additionally import existing `nfl2k5_xbe_space`,
+`nfl2k5_bump_strength` and `nfl2k5_cave_oracle`, with their existing closure.
+Capstone remains test/audit-only; Unicorn is unused by this job.
+Regenerate applicable provider closure hashes with the existing packaging
+tools after wiring, without dropping any required transitive import.
+
+Merge `docs/mod_editor/nfl2k5_roster_storage_capability.json` using the existing
+registry serializer/validator. ID is `nfl2k5.stadiums_fields.all_stadiums`,
+existing surface `stadiums_fields`, classification `offline-writer-proved`,
+runtime `not-tested`, all presets off. The validation command is the new
+standalone storage test. Do not advertise more created teams or larger reserves.
+
+The unprotected manifest recorder and both gate compositions already include
+the new owner. The protected `data/nfl2k5_cave_reservations.json` was untouched.
+Claude must regenerate it **after** the protected code and closure edits:
+
+```sh
+python3 tools/nfl2k5_cave_oracle.py manifest \
+  '/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe' \
+  --xiso '/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso' \
+  --work-dir .scratch --json data/nfl2k5_cave_reservations.json
+```
+
+Retain the source-drift guard. Run both XBE gates, the new storage suite, the
+three existing codec suites and `test_rosters_reserves_abilities.py`, then the
+existing packaging/runtime closure gates. The supplied standalone tests skip
+precisely for missing retail evidence or Capstone and do not read whole packs
+or disc images into RAM. No release-tag/updater/CI changes are requested.
+# Beta 62 allocator scale-out: image_xbe_extent accepted sizes
+
+In `mod_editor/core/nfl2k5_throw_tuning.py`, replace only the grown-size
+membership check in `image_xbe_extent` with:
+
+```python
+_require(length in (depth_chart_storage.FILE_SIZE, *xbe_space_patch.accepted_file_sizes()),
+         f"default.xbe inside the image is {length} bytes, not the retail size or a recognised grown size")
+```
+
+Retain the subsequent bounded read and `recognized_grown_xbe(candidate)` check.
+Size acceptance alone does not establish a valid allocation. The new accepted
+extent is **12,300,288 bytes (`0xBBB000`)**; prior accepted sizes are unchanged.
+
 # Defensive try handoff, 2026-09-05
 
 The new backend is `mod_editor/core/nfl2k5_defensive_try.py`, owner
@@ -2918,3 +4276,4381 @@ All new options remain experimental and unwitnessed, Retail/off in every preset.
 The defensive conversion box-score row and persistent category remain missing;
 only its diagnostic tally is implemented. See ASTRA_INTEGRATION_3_REPORT.md for
 capacity, receipts, complete CI accounting and delivery details.
+
+# r62-rosters-data: 2026 team names, style clarity and explicit age shifts
+
+This section is the integration handoff for `astra/r62-rosters-data`, based on
+`5f5b5047d42984ee41449c4a03669e0945a22f2a`. Earlier handoffs above are preserved.
+All new behavior is **EXPERIMENTAL / UNWITNESSED**. The protected files were not
+edited. The Rosters panel changes are implemented directly; the team-name Build
+option and the protected Studio facade connection below are ready for Claude.
+
+## Dispatcher and the four executable status dictionaries
+
+**No `_apply_all` tuple or keyword is added.** There is no executable patch in
+this job. Do not pass `team_names_2026` or an age-shift argument through
+`nfl2k5_throw_tuning._apply_all`, `write_xbe_copy` or `write_image_copy`.
+The four XBE dictionaries in `read_xbe`, `read_image`, `write_xbe_copy` (using
+`result`) and `write_image_copy` (using `after`) get **no new key**. A bare XBE
+cannot reveal which names or birth dates the main ROST or a loaded save contains.
+Neither XBE safety-suite owner list changes; both existing suites are run.
+There are no new code/data pages, caves, reservations or digest repins.
+
+## BuildPlan, availability, inspection and order (protected mod_build.py)
+
+Add `team_names_2026: bool = False`. Reject non-Boolean values during plan
+validation. Include the field in project/recipe serialization and Build panel
+load/save/reset paths. **Basic=false, advanced=false, experimental=false**:
+this remains an explicit opt-in even with `season_2026=True`. The fallback names
+and changed abbreviations need review, so a calendar choice does not enable it.
+Do not include this field in `wants_xbe_patch`.
+
+Availability key `team_names_2026` requires
+`_core_module("nfl2k5_team_names_2026")` and the shipped
+`data/nfl2k5_team_names_2026.json` with its module-pinned SHA-256. Extend
+`mod_build.inspect`'s **data** dictionary with `"team_names_2026": "n/a"` for
+non-image input. For a disc use `module.image_status(source)`; parsing/I/O errors
+are `foreign`. Expose `module.manifest()["teams"]` for the exact before / desired /
+written review, and `strg_audit` for scope. No archive pack is read wholesale.
+
+Reject `plan.team_names_2026` when the input is a bare executable or a save.
+Preflight `image_status(source)` before creating output. Only retail/applied
+are accepted. Run the grouped pass on the private build image after existing
+ROST passes (position pools, season_2026 schedule, team history, prospect names,
+player tags and roster_edits). Do this after any generic authored team text is
+composed too, so a conflict refuses before final publication. Use this block:
+
+```python
+if plan.team_names_2026:
+    module = _core_module("nfl2k5_team_names_2026")
+    if module is None:
+        raise RuntimeError("The 2026 team-name module is unavailable")
+    names_receipt = module.apply_to_image(
+        target, progress=lambda message: progress(message, 0, 0))
+    receipt["steps"].append({"step": "team_names_2026", **names_receipt})
+```
+
+Keep the whole receipt, including the 17 string spans, limits, full intended
+names, chosen short forms, hashes, zero growth and replay state. Do not discard
+`writes` from the report. The adapter resolves the current outer table through
+`OuterImage`, so earlier archive growth can relocate packs. It reads only the
+main 593,792-byte resource, validates all fields before mutation, rereads the
+source before writing and checks the exact output. On I/O failure discard the
+private build copy; multi-span power-loss atomicity is not promised.
+
+Existing saves are never searched, opened or edited by this Build pass. A new
+franchise gets the disc's names; an old save supplies its own ROST. Disabling the
+option preserves the selected source, including names already on that source;
+return to a retail source to restore retail names.
+
+## Build tab option and Gameplay Patches text
+
+In protected `build_panel_qt.py`, near the 2026 season option:
+
+```python
+self.team_names_2026_check = self._option(
+    g, "team_names_2026", "2026 team names (experimental)",
+    "Use modern team names in new disc rosters. Limited name space writes "
+    "L.A. Chargers (LA), L Vegas Raiders (LV), L.A. Rams (LAR), and "
+    "Washington Cmdrs (WAS); Arizona uses ARI. Existing saves keep their names. "
+    "EXPERIMENTAL / UNWITNESSED.")
+```
+
+The caption has 30 characters, within the 60-character limit. Connect this
+checkbox to the plan, all preset resets, source availability and the Studio
+preview refresh. A details view should list `desired` and `written` from the
+manifest and explain the name-space limits rather than exposing byte offsets.
+
+If shown on protected `gameplay_patches_panel_qt.py`, add a `PATCHES` row with
+key `team_names_2026`, caption `2026 team names`, and exactly this explanatory
+text (includes the required words **Retail** and **Patch**):
+
+> Retail: 2004 team names. Patch: modern names in the disc roster, with L.A., L Vegas, LA and Cmdrs short forms where space is limited. Existing saves keep their names. EXPERIMENTAL / UNWITNESSED.
+
+Add `team_names_2026` to `NEEDS_IMAGE`. Route the checkbox to the Build data
+field, not the executable dispatcher. Style controls and age shifts get no
+Gameplay Patches row, no NEEDS_IMAGE entry and no BuildPlan flag: they are
+explicit Rosters edits, available to both disc rosters and save copies.
+
+## Same strings on Team Identity (protected studio_qt.py)
+
+`nfl2k5_text_catalog` already maps main-ROST team fields and the independent
+team-label pool; no replacement catalog or display-name dictionary is needed.
+The implemented helper `catalog_overrides(catalog, enabled=flag,
+value_lookup=underlying_session.text_value)` returns actual planned strings by
+the existing **dot-separated** asset IDs. Example:
+`nfl2k5.text.rost.5.team.25.nickname -> Cmdrs`. It uses the same manifest as the
+byte writer, validates source/staged values, and refuses a manual conflict or a
+mixed install. Pass the underlying lookup, not the decorated facade recursively.
+
+In the protected facade `text_value(asset)` adapter, resolve the asset ID,
+return this override when present, otherwise return the underlying session's
+value. Build computes the same override set for preflight. Invalidate/recompute
+the preview when the checkbox, source, project, session Undo/Redo or any text
+edit changes. Keep the preview local to the selected source/project. Reset to
+source values when off. Never write overrides into the session as 17 individual
+text edits: the grouped data pass also owns the normally read-only team-label
+pool, and it must preflight all names together.
+
+Refresh Team Identity's displayed city/nickname/abbreviation through the facade
+lookup, including the title assembled from city + nickname. Do not use a cached
+`RosterTeam.display_name` to mask the short forms. The value shown must equal
+what Build writes, not the full `desired` marketing name. Show the intended full
+name only in the explanatory preview. If manual editing is offered while this
+option is selected, disable edits to these 35 pinned cells or expose the explicit
+conflict before Build; do not overwrite manual text silently.
+
+For direct resource consumers, `read_team_identities(resource, enabled=flag)`
+returns actual source/planned city, nickname, abbreviation and combined display.
+It is tested against both the pure writer and the existing Team Identity catalog.
+The separate historical ROST resources remain historical. The 1,115 STRG
+allocations have no affected literal names; `[TEAM0NAME]` and similar dynamic
+placeholders are retained. No broad search/replace through tutorials, historical
+milestones, stadiums, executable strings, logos or recorded commentary is allowed.
+
+## Rosters age tool and save behavior
+
+Implemented in the owned panel: Tools -> `Shift ages to season year...` opens a
+preview with explicit source season, target season (2026 by default), optional
+shown-list scope, every change and every skip. `Apply age shift` changes memory
+as one undo entry. A subsequent Save disc copy / Save Xbox save copy / roster
+JSON / CSV export is the user's persistence action. Receipt view/export is in
+Tools. The codec uses the existing seven-bit modulo-100 birth-year storage and
+checks a 100-year reference window. No fixed-century assumption is reintroduced.
+
+The source picker starts with the loaded reference year or 2004. When a 2026
+calendar save still contains a 2004-era roster, the user must explicitly choose
+2004 as the source season. An already modern roster should choose 2026 and gets
+no shift. A reopened save does not encode this provenance; do not infer it from
+player names, years pro or the calendar patch. Repeated same-pair shifts are
+suppressed per player in the current session; undo restores their eligibility.
+
+September 1 ages 18..55 qualify. Primary records must carry the NFL-player flag;
+non-NFL records, unflagged prospects, templates and invalid/implausible dates
+are listed as skipped. February 29 becomes February 28 when needed, explicitly
+receipted. Actual birth dates become fictional shifted dates, preserving ages;
+years pro, player ratings, team membership, contracts, save calendar and statistics
+are not rewritten. A calendar/years-pro progression overhaul is not implied.
+The header now prints the current context's September 1 age. Save membership
+re-decoding preserves the chosen reference/base year.
+
+## Allowlist and runtime closure (protected release files)
+
+Add exact lines to `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_roster_ages.py
+mod_editor/core/nfl2k5_team_names_2026.py
+data/nfl2k5_team_names_2026.json
+```
+
+The existing `roster_editor_panel_qt.py`, `nfl2k5_roster_records.py`,
+`nfl2k5_text_catalog.py` and `docs/nfl2k5_ratings_and_styles.md` carry updated
+behavior/documentation and should retain their existing staged paths. In
+`packaging/check_2k5_mod_studio_runtime.py` add imports for
+`mod_editor.core.nfl2k5_roster_ages` and
+`mod_editor.core.nfl2k5_team_names_2026`, plus a manifest-exists/hash check and
+an offscreen construction of `AgeShiftDialog` after loading a synthetic roster.
+New runtime dependencies are existing shipped modules: roster_records,
+text_catalog, their error/format/parser closure, and
+`tools/nfl2k5_playbook_position_recode.py`/`nfl_uniform_color_xiso_direct_patch.py`
+through the existing bounded `OuterImage` adapter. Age changes additionally
+use only datetime, hashlib and typing. Do not package the private inventory,
+retail ROST, test saves, logs or `.scratch/`.
+
+## Capability registry entries
+
+Add capability `nfl2k5.players.team_names_2026`, game `nfl2k5_xbox`, surface
+`players_rosters`, classification `offline-writer-proved`; backend module
+`mod_editor/core/nfl2k5_team_names_2026.py`, operation `write`, command `null`.
+GUI: expose=true, mode=edit, default_enabled=false, reason: "Explicit disc-only
+2026 names with fixed-space short forms; existing saves keep their own names."
+Runtime: status=`not-tested`, evidence=[], scope="EXPERIMENTAL / UNWITNESSED;
+no played or screen witness." Selectors: main ROST outer 5, team indexes
+7/8/22/23/25, identity fields plus independent nickname/abbreviation labels;
+asset codes and pointers fixed. Constraints: module-pinned manifest, 35 exact
+preflight cells, 17 writes, mixed/foreign refusal, zero growth, no STRG edits,
+no saves. Evidence paths: new module, data manifest, this report and
+`tests/mod_editor/test_nfl2k5_team_names_2026.py`. Validation command:
+`python3 tests/mod_editor/test_nfl2k5_team_names_2026.py`. Portme: protected
+Build/facade wiring and Noah's new-franchise/scorebug/menu witness list.
+Distribution: source-and-schemas-only tooling; user-authored-inputs-and-recipes
+mod payload; never-bundle-retail-data game data. No ROST dump is distributable.
+Source container: main disc ROST 0x20 wrapper + 0x90F60 body, resource outer 5;
+manifest SHA-256 `fea1e37b7fb23887b8231d3e971b5113eeecef1d815001b9032da6b0eac8d13b`.
+
+Add capability `nfl2k5.players.age_shift`, same game/surface/classification;
+backend `mod_editor/core/nfl2k5_roster_ages.py`, operation=write, command=null;
+GUI expose=true/mode=edit/default_enabled=false (explicit preview and Apply).
+Runtime not-tested, empty runtime evidence, no gameplay claim. Selectors are
+(pool,index) from a chosen RosterDocument plus explicit source and target season.
+Constraints and distribution follow the preceding age/save section. Evidence:
+new age module, owned panel, `tests/mod_editor/test_rosters_data.py`,
+`tests/mod_editor/test_rosters_data_qt.py`, `ASTRA_ROSTERS_DATA_REPORT.md`.
+Validation: `QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_rosters_data_qt.py`.
+Source container: version 17 disc ROST or version 0 roster/franchise save,
+field-relative 0x54 records, title's existing signed-save copy writer.
+Portme: Noah's signed-copy reopen and 2026-franchise witness. Registry changes
+should not re-enable the older narrow disc_roster provider's unrelated writes.
+# r62 gameplay levers handoff, 2026-09-05
+
+This section supersedes older coverage/acceleration assumptions for these four
+controls. Implementation and tests are in `ASTRA_GAMEPLAY_LEVERS_REPORT.md`.
+The protected dispatcher, BuildPlan, Gameplay panels, release allowlist, runtime
+checker, and reservation JSON were deliberately left for Claude. The feature's
+own `throw_tuning_panel_qt.py` already offers flatter flight, a numerical preview
+and a flight curve, with a working transactional copy action.
+
+All four new switches are **EXPERIMENTAL / UNWITNESSED** and default False in
+`softdrink_basic`, `softdrink_advanced`, and `softdrink_experimental`. Advanced
+and Experimental already select `penalties="nfl"`, which includes the existing
+Chop Block repair; report its actual applied state even with the new independent
+switch False. No played witness or automatic preset promotion is authorized by
+these implementation proofs.
+
+## Dispatcher and the four status dictionaries
+
+In protected `mod_editor/core/nfl2k5_throw_tuning.py`, import:
+
+```python
+from . import nfl2k5_coverage_slider as coverage_slider_patch
+from . import nfl2k5_scramble_tuning as scramble_tuning_patch
+from . import nfl2k5_throw_arc as flatter_flight_patch
+```
+
+`nfl2k5_throw_arc` has literal pins and defers all access to the dispatcher's
+definitions until call time, so this import does not require a cyclic-import
+workaround. The shared runtime dependency is `nfl2k5_gameplay_lever.py`.
+
+Add Boolean kwargs, default False, to `_apply_all`, `write_xbe_copy`, and
+`write_image_copy`, and forward them through every call, including deferred
+scorebug/grown-XBE passes:
+
+```python
+coverage_slider=False, scramble_tuning=False,
+flatter_deep_ball=False, chop_block_toggle=False
+```
+
+Validate all four with `type(value) is bool` before copying or mutation. Add
+them to both writers' `nothing requested` checks. Add an adapter for the
+existing penalties module's independent entry points:
+
+```python
+class _chop_block_adapter:
+    status = staticmethod(penalties_patch.chop_block_status)
+    apply = staticmethod(penalties_patch.apply_chop_block)
+```
+
+Add these ordinary `_apply_all` tuple entries beside penalties (the complete
+rate profile and the independent repair commute):
+
+```python
+(chop_block_toggle, _chop_block_adapter,
+ "chop_block_toggle_patch", "experimental Chop Block toggle repair"),
+(flatter_deep_ball, flatter_flight_patch,
+ "flatter_deep_ball_patch", "experimental flatter deep flight"),
+```
+
+Add these entries in the **final owner tuple, after allocation**:
+
+```python
+(coverage_slider, coverage_slider_patch,
+ "coverage_slider_patch", "experimental Coverage slider response"),
+(scramble_tuning, scramble_tuning_patch,
+ "scramble_tuning_patch", "experimental slow-QB acceleration"),
+```
+
+Extend `_selected_space_requests`, `_xbe_space_adapter`, the inherited
+`_defensive_try_adapter` construction, and every request-union caller with the
+two new Boolean arguments. Append the selected modules' `REQUESTS` to the
+same initial union used for kickoff, scorebug, Momentum, defensive tries and
+zone drop. Either switch implies the allocator. Extend its `flag` condition
+in the final tuple. Do not call a new owner on an already-grown image that
+was sealed without its request. Do not grow early in the ordinary pass if
+Build still has roster/layout/scorebug work to do. Mirror the existing
+deferred-owner routing and reserve the whole union before the first growth.
+
+The allocator change is already implemented: r62 owners sort after every
+beta-61 owner, preserving its existing named addresses. Requests add 16 and
+160 immutable RX bytes, zero RW bytes, and no page-count change. The full
+union assigns Coverage to `0x014D99A0` and scramble to `0x014D99B0`; these
+addresses are receipts, not constants to hardcode. Smaller unions differ.
+
+Insert the following in **all four status dictionaries**: `read_xbe(payload)`,
+`read_image(payload)`, `write_xbe_copy(result)`, `write_image_copy(after)`.
+Use the variable shown for each function; the snippet uses `payload`:
+
+```python
+"coverage_slider": coverage_slider_patch.status(payload),
+"scramble_tuning": scramble_tuning_patch.status(payload),
+"flatter_deep_ball": flatter_flight_patch.status(payload),
+"chop_block_toggle": penalties_patch.chop_block_status(payload),
+"chop_block_evidence": penalties_patch.chop_block_evidence(payload),
+```
+
+Include full subreceipts on new writes and explicit replay receipts on
+already-applied input. Add these keys to `mod_build.inspect`, availability,
+step summaries and output receipt selection. A foreign flatter-flight status
+on a known high-arc/realistic source means the original source is required
+for this particular option; it does not invalidate unrelated game features.
+
+## Flight ordering and read-back
+
+The flat module's `apply(payload)` changes **only** the speed table. It never
+silently changes the arm-distance settings. Selecting the new option in Build
+sets `throw=True`, uses the existing 80-yard ceiling initially, and clears
+`arc`, `realistic_flight`, and `arc_by_distance`. Later explicit distance
+changes remain independent. The workspace already does this normalization.
+
+Before mutation, reject `flatter_deep_ball` together with a nonzero arc,
+realistic flight, or the relocated high-arc band. Also require the original
+payload's `flatter_flight_patch.status` to be retail or applied: changing an
+unused in-place table under a relocated reader must never be a successful
+no-op. In `_apply_all`, when flat is requested, remove `lobspeed` from `wanted`
+before the ordinary distance pass. Then the flat tuple entry applies the
+pinned speed edit separately, with its exact receipt. Do not overwrite an
+already-flat speed table with a retail speed table during replay.
+
+For replay of matching distance tables, run `plan_patch` only when
+`wanted and _curves_differ(payload, wanted)`. The current
+`or not arc_table` condition forces an unnecessary write and rejects the
+already-matching case. Keep all count/coordinate validation and refusal checks.
+
+On reading a flat source, retain its ceiling and report the flight choice
+separately; do not infer a tall arc from it. The feature module's `read_any`
+already normalizes this for the workspace. The actual speed points are
+`FLAT_LOBSPEED`. Use them for each writer's preview and in Build summaries.
+`arc_table` in read reports is a dictionary with a `state` member, while write
+receipts use a string; do not compare the whole read dictionary with `retail`.
+The workspace now also previews the actual relocated table when that existing
+mode is selected, fixing its old numerical-table mismatch.
+
+## BuildPlan, Gameplay, and Build controls
+
+Add these fields to protected `BuildPlan`, all default False:
+
+```python
+coverage_slider: bool = False
+scramble_tuning: bool = False
+flatter_deep_ball: bool = False
+chop_block_toggle: bool = False
+```
+
+Include them in selection/has-work predicates, preset resets, availability,
+inspect results, persistence/plan serialization, worker kwargs, the early XBE
+pass for flat/Chop, and the final grown-owner pass for Coverage/scramble.
+Extend the scorebug `extra_requests` path and final `_apply_all` call with
+Coverage/scramble; merely forwarding the first writer call is insufficient.
+In every preset, add explicit False values. Preserve the selected existing
+penalty profile. Do not disable the independent Chop checkbox by pretending
+the bundled repair is still retail.
+
+Use these Gameplay Patches `PATCHES` entries. The imported help constants
+already contain both required words **Retail** and **Patch**:
+
+```python
+("coverage_slider", "Coverage slider response (experimental)", coverage_slider_patch.HELP_TEXT),
+("scramble_tuning", "Slow-QB acceleration (experimental)", scramble_tuning_patch.HELP_TEXT),
+("chop_block_toggle", "Repair Chop Block toggle (experimental)", penalties_patch.CHOP_BLOCK_HELP),
+("flatter_deep_ball", "Flatter deep flight (experimental)",
+ "EXPERIMENTAL / UNWITNESSED. Retail deep lobs use 20 yards per second. "
+ "Patch: deep lobs use 25, keeping speeds through 35 yards and the selected "
+ "distance curve. At 80 yards the equal-height preview is 3.20 seconds and "
+ "a 13.7-yard apex. Choose one flight option and start from the original source."),
+```
+
+For the **Gameplay tab explanation**, place `coverage_slider_patch.HELP_TEXT`
+beside Coverage. It explicitly explains 0, 50 and 100. This changes a defender's
+direct ball-reaction contribution; it is not a catch/interception multiplier
+and zero does not remove context-driven reactions. Keep the Human and CPU
+slider settings in their existing settings writer, not the runtime table's
+index order. Add `scramble_tuning_patch.HELP_TEXT` beside its option and
+`penalties_patch.CHOP_BLOCK_HELP` beside the independent toggle repair.
+Replace any remaining claim that retail has no acceleration with the beta-61
+correction. The owned Throw workspace tooltip is already corrected.
+
+`NEEDS_IMAGE`: add `coverage_slider` and `scramble_tuning`, matching the
+existing product policy for grown owners. Do not add `flatter_deep_ball` or
+`chop_block_toggle`; they also work on a bare default.xbe. Their source gating
+must use the relevant status, not unrelated penalty profile state.
+
+Build `_option` captions, each under 60 characters:
+
+| Key | Caption |
+| --- | --- |
+| coverage_slider | Coverage slider response (experimental) |
+| scramble_tuning | Slow-QB acceleration (experimental) |
+| flatter_deep_ball | Flatter deep flight (experimental) |
+| chop_block_toggle | Repair Chop Block toggle (experimental) |
+
+Wire all four checkboxes into `_make_plan`, reset, presets, source status
+gating, selected-change text and source-reload behavior. Attach the same help
+text. No new Studio navigation item is required: the Throw workspace exists
+and its own panel is already changed. No additional GUI panel was edited here.
+
+## Allowlist, runtime closure, capability rows and oracle
+
+Add exactly these new runtime allowlist lines; the edited existing modules
+and panel are already listed:
+
+```text
+mod_editor/core/nfl2k5_gameplay_lever.py
+mod_editor/core/nfl2k5_coverage_slider.py
+mod_editor/core/nfl2k5_scramble_tuning.py
+mod_editor/core/nfl2k5_throw_arc.py
+```
+
+Add explicit runtime-closure imports in the protected staged checker:
+
+```text
+mod_editor.core.nfl2k5_gameplay_lever
+mod_editor.core.nfl2k5_coverage_slider
+mod_editor.core.nfl2k5_scramble_tuning
+mod_editor.core.nfl2k5_throw_arc
+```
+
+Retain existing imports of `nfl2k5_penalties`, `nfl2k5_xbe_space`,
+`nfl2k5_cave_oracle`, `nfl2k5_bump_strength`, `nfl2k5_rdata_sites`,
+`nfl2k5_draft_ai` (the small assembler), `platform_compat`, and the Throw panel.
+No Capstone/Unicorn requirement is added to runtime patch application; only
+instruction tests need them. Include new modules in the gameplay provider
+closure, then regenerate changed source pins in `providers.py` and the
+protected runtime checker using the existing repin workflow after integration.
+Do not make stale fingerprints silently acceptable.
+
+Four schema-valid complete capability objects are delivered in
+`docs/mod_editor/nfl2k5_gameplay_levers_capabilities.json`. Merge by ID into
+`mod_editor/capabilities/registry.v1.json`, preserving experimental runtime
+status and the witness limits. All use the existing
+`gameplay_tuning_sliders` surface. The handoff JSON is review evidence, not an
+additional runtime asset to allowlist.
+
+The manifest **generator** already imports/observes the new modules, appends
+their requests, observes the independent Chop entry point, and records flat
+flight as an alternative data-table probe when the experimental stack uses
+the mutually exclusive high-arc band. Its alternative probe does not change
+the final stack's chosen flight. Claude must regenerate the protected
+`data/nfl2k5_cave_reservations.json` after all branches are integrated, with:
+
+```text
+python3 tools/nfl2k5_cave_oracle.py manifest <retail-default.xbe> --xiso <retail.xiso.iso> --work-dir <writable-disposable-space> --json data/nfl2k5_cave_reservations.json
+```
+
+Both executable gates now include all four levers and the complete existing
+owner union in both orders. The recorder has a focused new test. The on-disk
+manifest remains intentionally unchanged and its source fingerprints will
+remain stale until Claude regenerates it; this is not a passed fresh-manifest
+or staged-release claim.
+# r62 hires pack handoff, 2026-09-05
+
+This is an archive build pass, EXPERIMENTAL / UNWITNESSED. The two new core
+modules and headless API are implemented. Protected Build, Studio, release
+and runtime files remain untouched. The research memo explicitly says the
+resource-only pilot needs no XBE dispatcher entry or cave reservation.
+The existing music archive writer grows/shrinks and remaps the collection;
+its publication transaction is now shared with music. Both existing provider
+hash pins were refreshed in the unprotected `providers.py`.
+
+## BuildPlan and execution
+
+Add these fields to protected `mod_editor/core/mod_build.py`:
+
+```python
+hires_pack: bool = False
+hires_folder: str = ""
+hires_scale: int = 2
+hires_target: str = "xemu-64"
+```
+
+**Basic / advanced (the existing `modern` key) / experimental: all explicitly
+set `hires_pack=False`. Never enable it in a preset.** Preserve the folder
+choice but do not scan/import/apply anything while disabled. The ordinary
+default build therefore retains native texture sizes. Do not add it to
+`wants_xbe_patch`, imply `xbe_space`, select an allocator owner, or modify
+the cave manifest. `hires_scale` accepts exact integers 1 or 2. The only
+enabled target is `xemu-64`; `xemu-128` must remain unavailable with the
+explanation "128 MiB support has not been proved".
+
+Add `availability()["hires_pack"]` for importability of
+`nfl2k5_hires_pack`, `nfl2k5_hires_texture`, `nfl2k5_music_archive` and
+`nfl2k5_music_banks`. When selected, preflight the folder and selected
+resources before the ordinary build writes. Use
+`hires.inspect_image(source, plan.hires_folder, scale=plan.hires_scale,
+target=plan.hires_target)` for exact art-relative preflight. Retain exceptions
+as actionable failures, not implicit resize or omission. Native texture edits
+on the same target conflict. In particular, if the folder selects `scorebug`,
+reject simultaneous `scorebug` / `scorebug_runtime` / reference-frame imports
+before the first write. Other pilot targets can accompany those options.
+
+Run the hires pass **last**, after all ordinary fixed-span resource writers,
+paired scorebug resources, XBE patches and music-library compilation. Resolve
+against that current private image by identity. In `_build_into`, after the
+music-library block and before returning the receipt:
+
+```python
+if plan.hires_pack:
+    hires = _core_module("nfl2k5_hires_pack")
+    with tempfile.TemporaryDirectory(prefix=".hires-", dir=target.parent) as folder:
+        destination = Path(folder).resolve() / "image.iso"
+        rec = hires.build_image(
+            target, destination, plan.hires_folder,
+            scale=plan.hires_scale, target=plan.hires_target, progress=progress)
+        os.replace(destination, target)
+    receipt["steps"].append({"step": "hires_pack", **rec})
+```
+
+The outer Build transaction still publishes only after all passes succeed.
+Do not call a fixed retail-offset writer after this pass. The existing final
+`inspect(target, ...)` includes legacy fixed-offset resource inspectors: take
+their result before the final remap and carry it as pre-remap inspection,
+then set the final hires state from `rec["verification"]` and report the
+actual final image hash/size. Alternatively migrate each such inspector to
+identity-based traversal before calling it on the grown archive. Never label
+a stale-offset failure as a proved retail/applied final state. The hires
+verification already independently hashes all 4,323 outers and the XBE.
+Add `hires_pack` to Build inspection/results without hiding an
+`authored-unverified`, mixed or foreign status behind a boolean. For a plain
+XBE source report "requires image".
+
+## Dispatcher and the four status dictionaries
+
+| Protected surface | Exact change for this resource-only pilot |
+| --- | --- |
+| `nfl2k5_throw_tuning._apply_all` tuple | **None.** It accepts XBE bytes; hires accepts TXTRs or a disc copy. |
+| `_apply_all` keyword argument | **None.** Do not forward `hires_pack` into this dispatcher. |
+| `read_xbe` status dict | **None.** No executable hires state exists. |
+| `read_image` status dict | **None.** Put the archive result in `mod_build.inspect`, outside XBE status. |
+| `write_xbe_copy` status dict | **None.** A standalone executable cannot contain the pack. |
+| `write_image_copy` status dict | **None.** The Build archive transaction owns the resource result. |
+
+The unchanged XBE memory/cave gates were run with their existing complete
+owner set in both orders. There is no new executable owner to compose into
+their `setUpClass` chains. Do not create a fake XBE patch just to populate
+these surfaces.
+
+## Build controls, Gameplay Patches and All Textures
+
+In protected `build_panel_qt.py` add the opt-in checkbox through `_option`:
+
+```python
+self.hires_pack_check = self._option(
+    layout, "hires_pack", "Hi-res pack (experimental)",
+    "Retail: textures keep their original sizes. Patch: selected artwork in your "
+    "Hi-res folder can use 2x detail. Experimental and unwitnessed in game. "
+    "xemu rendering scale is set separately.", badge="EXPERIMENTAL")
+```
+
+Caption is 25 characters, below 60. Add a folder chooser, `2x detail` / `Original
+size` output selection and a disabled 128 MiB target with the explanation
+above. The second choice maps to scale 1 and keeps the option explicitly on;
+turning it off does not undo an already-authored source disc. Include all
+four fields in option/state maps, plan creation, dirty detection, reset,
+summary, source/image availability and preset reset. Show the selected
+asset names and exact dimensions, P8 color loss, selected memory delta,
+logical archive growth and physical image growth in the build receipt.
+
+`Gameplay Patches.PATCHES`: **no active tuple**. `NEEDS_IMAGE`: **no added key**,
+because that panel routes executable patches and has no hires row. The
+Retail/Patch text above is the exact information text if integration adds a
+read-only link from that panel to Build. Such a link must use the Build
+controller, never the XBE writer. The Build checkbox itself requires a disc.
+
+**All Textures decision:** no new control belongs in its native replacement
+flow for this pilot. Its existing master export supplies full-resolution
+authoring sources, while the requested folder/scale/memory selection belongs
+in Build. Its fixed-span import promises remain intact. Therefore no GUI
+panel was edited. Protected `studio_qt.py` should route the four Build fields
+through the existing plan/controller operation lock. No automatic emulator
+launch or master-file conversion is implied.
+
+## Getting Started insertion
+
+Paste the following into protected-integration owner
+`docs/mod_editor/2k5_mod_studio_getting_started.md` near the Build artwork
+instructions, and link `nfl2k5_hires_pack.md` for the complete API/limits:
+
+> **Hi-res pack (experimental, unwitnessed).** This optional Build choice is
+> off in every preset. Put a `Hi-res` folder beside your project, then choose
+> that folder in Build. Use `scorebug.png` at 128 x 128, `field_logo.png` at
+> 512 x 512, and `helmet.png` at 512 x 512. Missing files leave their targets
+> unselected. The field logo is created-team logo 33 in dry weather; the
+> helmet is uniform `00H0.IFF`'s Standard/A `helmet00`. These are specific
+> pilot assets, not all teams. An NFL 2K5 `.2ktexmaster` with the same basename
+> can replace each PNG; choose one extension per target. Keep the atlas
+> arrangement and seams. `2x detail` installs larger textures. `Original
+> size` builds your retained artwork at the native dimensions. Keep the same
+> folder for replay or downscaling, and use your original disc to change art
+> or restore retail bytes. 128 MiB support is unavailable. Set xemu's
+> rendering resolution separately; this choice has no played witness yet.
+
+The exact getting-started page was left for integration as the task requests
+"(WIRING)"; the complete standalone guide is delivered now.
+
+## Release allowance, runtime closure and capability
+
+Add these exact lines to protected `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_hires_pack.py
+mod_editor/core/nfl2k5_hires_texture.py
+docs/mod_editor/nfl2k5_hires_pack.md
+```
+
+No new third-party dependency: Pillow is already shipped. In protected
+`packaging/check_2k5_mod_studio_runtime.py`, explicitly import both new dotted
+modules, inspect all three `ASSETS`, assert their scale-2 video total is
+718336, and assert `status({}, missing_folder) == "foreign"`. Keep imports
+closed over these existing modules/tools (including legacy bare tool imports):
+
+```text
+mod_editor.core.texture_master
+mod_editor.core.json_stream
+mod_editor.core.errors
+mod_editor.core.nfl2k5_bump_strength
+mod_editor.core.nfl2k5_music_archive
+mod_editor.core.nfl2k5_music_banks
+mod_editor.core.nfl2k5_music_metadata
+mod_editor.core.nfl2k5_music_storage
+mod_editor.core.nfl2k5_depth_chart_storage
+mod_editor.core.nfl2k5_ausb_fixed_slots
+mod_editor.core.platform_compat
+tools.nfl_txtr / nfl_txtr
+tools.nfl_tset_png_import / nfl_tset_png_import
+tools.nfl_uniform_inventory / nfl_uniform_inventory
+tools.nfl_outer / nfl_outer
+tools.nfl2k5_commentary_swap
+tools.nfl_uniform_color_xiso_direct_patch
+tools.xbox_ima_encoder
+PIL.Image
+```
+
+The normal transitive closure of those existing helpers remains required;
+Capstone, Unicorn, the Ghidra corpus and private texture inventories are not
+new runtime dependencies. `tools/nfl2k5_hires_consumer_audit.py` and
+`reports/hires_pack_consumers.v1.json` are developer evidence, not runtime
+inputs; do not add game spans, scratch PNGs, ISO copies or the brief to the
+release. The two existing music provider pins were updated, with no pin
+widened. Run `packaging/repin.py` again after protected integration.
+
+Merge the sole object in
+`docs/mod_editor/nfl2k5_hires_pack_capability.json` into the canonical registry:
+ID `nfl2k5.textures.hires_pack`, existing `uniforms` surface, classification
+`offline-writer-proved`, runtime `not-tested`, GUI default false. This is a
+new archive-size capability, not a relaxation of `all_p8`. No schema surface
+or patch-address reservation is added. Update count/findings expectations.
+Run the two new standalone suites, music banks, texture masters, both XBE
+gates, the staged import check and the protected full Build transaction tests.
+
+## r62 music playlist: protected integration handoff
+
+**EXPERIMENTAL / UNWITNESSED; every preset leaves this off.** Backend, assembly,
+Music page, three standalone backend suites, both owner unions and manifest
+recorder integration are implemented here. The protected files below are not
+edited. `ASTRA_MUSIC_PLAYLIST_REPORT.md` and
+`reports/music_playlist_contexts.v1.json` distinguish native instruction proofs
+from unresolved individual screen routes. Do not advertise "all modes".
+
+### BuildPlan, source validation, order and receipt
+# r62 abilities runtime handoff, 2026-09-05
+
+This section is the complete protected-file handoff for abilities rules v1.
+`ASTRA_ABILITIES_RUNTIME_REPORT.md` defines the precise experimental contract
+and Noah's pending witnesses. The backend, assembler/template, standalone
+proofs, complete gate union and manifest generator are implemented here.
+No protected product source or checked-in reservation manifest was edited.
+
+## BuildPlan, defaults, validation and deferred ownership
+
+In `mod_editor/core/mod_build.py`, add:
+
+```python
+music_shuffle: bool = False
+music_shuffle_selection: dict | None = None  # MusicPanel.playlist_options(), schema 1
+```
+
+Set `music_shuffle=False` and `music_shuffle_selection=None` explicitly in all
+three Basic / Advanced / Experimental presets (the actual `softdrink_*` keys).
+Applying a preset must not discard personal Music page choices. Reset clears
+the enable flag; retain the choices until the user changes/resets the library.
+Include `music_shuffle` in `wants_xbe_patch`, validation, inspection,
+availability, selected-key forwarding, receipt and plan serialization. Reject
+non-Boolean flags. Keep feature state separate from a selected checkbox.
+
+A selected build needs an image and validated AUSB descriptors. Construct
+`playlist.from_options(plan.music_shuffle_selection)` when provided, otherwise
+`playlist.Selection()` (66 core songs). Validate the source with
+`playlist.validate_source(selected, counts)`, where `counts` is obtained from
+the existing bounded `Nfl2k5AudioDisc` descriptor reader. For a simultaneous
+bank rebuild, validate against that rebuild's planned **final** descriptor
+counts, and validate again on the staged rebuilt image before publication.
+Do not infer descriptor counts from 200 metadata titles. The page supports the
+66 original songs plus ten established background beds. The backend caps
+custom selections at 100 records under this reservation and can address added
+bank indices when their descriptors validate. It does not automatically select
+an entire grown 200-song library.
+
+Add playlist REQUESTS to the **complete** allocator union before any grown
+owner runs; include both dormant installed owners and newly selected owners as
+required by the existing immutable-directory contract. Realize with
+`space.apply(payload, requests, scaleout=True)`. Pass the planned playlist to
+the final grown-owner pass, after the resource/scorebug-dependent passes have
+resolved their extents. The later music bank writer preserves these hooks and
+allocated sections. Never add the playlist request to an already sealed,
+different union; rebuild from its supported base. Combined music/scorebug
+builds must defer playlist allocation along with the other grown owners.
+
+Store `music_shuffle_patch` (exact backend receipt), `music_shuffle_state`
+(`read_settings`), source/result hashes and final enabled records in the Build
+receipt. Use `nfl2k5_depth_chart_storage.write_image_xbe` and the existing staged
+copy/rollback transaction; do not introduce an ISO/pack `read_bytes` path.
+A different installed selection refuses and requires a rebuild from base.
+Unchecked/off preserves an already patched source; it does not uninstall.
+
+### Dispatcher tuple, kwargs and all four status dictionaries
+
+In protected `nfl2k5_throw_tuning.py` import:
+
+```python
+from . import nfl2k5_music_playlist as music_playlist_patch
+```
+
+Extend `_apply_all`, `write_xbe_copy`, `write_image_copy`, their forwarded calls
+and `write_copy`'s accepted forwarded options with:
+
+```python
+music_shuffle: bool = False,
+music_shuffle_selection: music_playlist_patch.Selection | None = None,
+```
+
+The Build layer converts the serialized page document into `Selection` first;
+no Qt import belongs in the dispatcher. Extend `_selected_space_requests`,
+`_xbe_space_adapter` and `_defensive_try_adapter` propagation with the flag and
+`+ (music_playlist_patch.REQUESTS if music_shuffle else ())`. Include the flag
+in the existing grown-allocation and "something selected" predicates. Keep
+that union identical in every early/deferred allocation branch. Add this tuple
+to the final grown-owner dispatcher **after** the allocator adapter:
+
+```python
+(music_shuffle, music_shuffle_selection or music_playlist_patch.Selection(),
+ "music_shuffle_patch", "experimental music playlist"),
+```
+
+`Selection.status` returns foreign for a differently configured installed
+playlist; it must not be treated as an already-applied compatible patch.
+The module's aggregate `status(payload)` validates arbitrary installed choices.
+For standalone expert byte-API replay where choices are deliberately omitted,
+use `music_playlist_patch.apply(payload)` to retain the installed selection.
+
+Add both exact entries to **each** of these four returned status dictionaries:
+`read_xbe`, `read_image`, `write_xbe_copy`, `write_image_copy`:
+
+```python
+"music_shuffle": music_playlist_patch.status(payload),
+"music_shuffle_state": music_playlist_patch.read_settings(payload),
+```
+
+Use the actual executable byte variable in each dictionary (original for read,
+final/patched for write); never return input state after a successful write.
+The state includes `all_modes_proved=False` and `runtime_witnessed=False`.
+Preserve existing `music_policy`, `music_unlock`, `music_userlist` and their
+four-dictionary entries; they compose in either order. Shuffle controls the
+shared background while enabled regardless of the older direct-bank policy.
+
+### Music page, Gameplay Patches and Build tab
+
+`mod_editor/gui/music_panel_qt.py` is already edited. It adds a Playlist page,
+`playlist_changed(dict)`, `playlist_options()` and
+`set_playlist_options(dict)`, individual checks, outtake/bed switches, clear/all,
+zero/one-song explanations and atomic Save/Open choices. Source/operation locks
+cover the page. Existing Recordings controls and policy signals retain their
+API. No preview process starts when playlist choices change.
+
+In protected `studio_qt.py`, connect `playlist_changed` to the shared Build
+plan's `music_shuffle` flag and `music_shuffle_selection` document, mark the
+project dirty, and restore via `set_playlist_options` on project/source open.
+Use signal blocking/one controller transaction to avoid a feedback loop when
+Build changes the same option. Persist the document with the project's Build
+settings. The Music page's local choices JSON round-trip works independently;
+the old dedicated `.2k5music` audio-project schema is unchanged. Never silently
+claim its old format now persists these choices. Standalone "Build music copy"
+and "Export .2k5patch" on Recordings retain their fixed-slot scope; route the
+playlist's executable changes through the main Build transaction.
+
+Add a protected Gameplay Patches `PATCHES` row keyed `music_shuffle` with title
+**"Shared music shuffle (experimental)"** and this exact explanation:
+
+> Retail: each screen chooses its own music. Patch: selected menu and jukebox
+> recordings shuffle in the shared menu, Crib and game background player.
+> Loading and shows keep their timed music. Background disc and HDD playlists
+> are replaced. Individual screen coverage is still untested in game.
+
+Add `"music_shuffle"` to `NEEDS_IMAGE` because a build must validate source bank
+counts. Pure backend XBE proofs do not replace that image preflight.
+
+In protected `build_panel_qt.py`, add through `_option`:
+
+```python
+self.music_shuffle_check = self._option(
+    layout, "music_shuffle", "Shuffle songs in menus, Crib and games",
+    "Experimental, not yet tested in game. Uses the Music tab playlist. "
+    "Loading and shows keep their timed music.", badge="EXPERIMENTAL")
+```
+
+Caption: 38 characters, below 60. Add it to all option/state maps, source
+availability, reset, dirty state, summary, preset handling and plan assembly.
+Bind it to the Music page's enable flag; retain its detailed song choices.
+Do not use "Across all modes". Draft presentation routing, individual franchise
+screens, replay routing and played audio remain open witness gates.
+
+### Release allowance, closure, capability and cave manifest
+
+Add exact new runtime allowance lines in protected
+`packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_music_playlist.py
+mod_editor/core/nfl2k5_music_playlist_code.py
+reports/music_playlist_contexts.v1.json
+```
+
+The existing `mod_editor/gui/music_panel_qt.py` allowance stays. Assembly source
+and generator are development reproducibility tools, not runtime dependencies:
+`tools/nfl2k5_music_playlist.S`, `tools/nfl2k5_music_playlist_assemble.py`.
+No scratch artifacts or original game/audio files belong in a release.
+
+In protected `packaging/check_2k5_mod_studio_runtime.py`, import the two new core
+modules and the existing Music panel. Verify default 66 / outtakes-off 54 /
+beds-on 76 selections, import the generated template, and instantiate the page
+offscreen without loading game evidence. Preserve runtime closure for:
+
+```text
+mod_editor.core.nfl2k5_xbe_space
+mod_editor.core.nfl2k5_bump_strength
+mod_editor.core.nfl2k5_cave_oracle
+mod_editor.core.nfl2k5_music_policy
+mod_editor.core.nfl2k5_music_catalog
+mod_editor.core.nfl2k5_music_metadata
+mod_editor.core.nfl2k5_music_storage
+mod_editor.core.nfl2k5_depth_chart_storage
+mod_editor.core.platform_compat
+mod_editor.studio.music_service
+```
+
+No GNU assembler, Capstone, Unicorn or private research corpus is needed for
+normal module import or the playlist writer. They are developer proof tools.
+
+Merge the ready registry object in
+`docs/mod_editor/nfl2k5_music_playlist_capability.json` into
+`mod_editor/capabilities/registry.v1.json`: ID `nfl2k5.music.playlist`, existing
+`audio` surface, `offline-writer-proved`, runtime `not-tested`, default false.
+Update registry count/findings expectations during integration. This handoff
+follows the brief's explicit "capability via WIRING" boundary.
+
+The gate union, allocator allocation-evidence default union and manifest
+builder owner/request/wrapper/probe lists are already updated. Regenerate
+protected `data/nfl2k5_cave_reservations.json` only through Claude's coordinated
+`tools/nfl2k5_cave_oracle.py manifest` run after protected integration, then repin
+packaging source hashes using the existing release workflow. The new standalone
+manifest test observes the real writer and validates every hook and full
+RX/RW/RO child without rewriting a disc or the protected manifest.
+# r62 native Practice Squad screen handoff, 2026-09-05
+
+`nfl2k5_practice_squad_screen` is implemented and EXPERIMENTAL / UNWITNESSED.
+Protected product files are unchanged. This section supersedes the old
+PS-section statements that the management destination is deferred. The
+transaction, Free Practice and Schedule-first prerequisites remain required.
+CPU poaching/protection stay off and have no option in this delivery.
+
+## BuildPlan, presets and allocation order
+
+In `mod_editor/core/mod_build.py`, add `practice_squad_screen: bool = False`.
+Explicitly keep it **False in basic, advanced (`modern`) and experimental**.
+Add it to availability, inspection, option persistence/serialization, selection
+and has-work predicates, worker arguments, summary and step receipts. Enabling
+it implies `practice_squad=True`, `franchise_practice=True` and `xbe_space=True`;
+the existing conjunction installs `practice_reserves`. Include the implication
+in both Build and bare writer normalization, before the first mutation.
+
+Include `screen.REQUESTS` in `_selected_space_requests` and every selected
+request union, including the defensive-try allocator adapter and scorebug
+`extra_requests` path. Reserve the whole union before installing any grown
+owner. Use v3 (`space.apply(payload, requests, scaleout=True)`). The feature
+requests exactly `("nfl2k5_practice_squad_screen", "code", 4096, 16)` and
+`("nfl2k5_practice_squad_screen", "data", 256, 16)`. Immutable code, clones,
+menu and strings fit within RX; no separate RO allocation or extra RW is needed.
+The committed beta-62 budget fixture already has both exact rows.
+
+Defer the screen until the **final grown-owner pass**, after SPECIAL/resource
+work and `practice_reserves`. Include its request when paired scorebug realizes
+the allocator, and include the flag in the final `_apply_all` call after that
+paired pass. A pre-existing sealed request set without this owner must refuse
+and require rebuilding from the original source. No late request insertion or
+address relocation is permitted. All presets stay off even though enabling
+this option automatically selects its prerequisites.
+
+## Dispatcher tuple, keyword and all four dictionaries
+
+In protected `mod_editor/core/nfl2k5_throw_tuning.py` import:
+
+```python
+from . import nfl2k5_practice_squad_screen as practice_squad_screen_patch
+```
+
+Add `practice_squad_screen: bool = False` to `_apply_all`, `write_xbe_copy`,
+`write_image_copy`, allocator adapters and `_selected_space_requests`.
+Forward it through every writer/Build dispatch, including deferred scorebug
+calls. Include it in the writer's has-work checks. At dispatcher entry,
+normalize its prerequisites before ordinary patch processing.
+
+Add this exact tuple in the **final owners** loop, after the allocator entry
+and the already-executed `practice_reserves` block:
+
+```python
+(practice_squad_screen, practice_squad_screen_patch,
+ "practice_squad_screen_patch", "experimental Practice Squad screen"),
+```
+
+Preserve its complete receipt, including limits, allocation, labels, hashes,
+`runtime_witnessed=False`, poaching/protection and replay `changed_bytes=0`.
+`FranchisePractice.status/apply` already recognize the exact new table through
+its sealed owner validator, so do not project or rewrite the old pointer in
+the dispatcher. Free Practice replay must leave the new pointer intact.
+
+Add the following key in **each** dictionary:
+
+| Function | Entry |
+| --- | --- |
+| `read_xbe` | `"practice_squad_screen": practice_squad_screen_patch.status(payload),` |
+| `read_image` | `"practice_squad_screen": practice_squad_screen_patch.status(payload),` |
+| `write_xbe_copy` | `"practice_squad_screen": practice_squad_screen_patch.status(result),` |
+| `write_image_copy` | `"practice_squad_screen": practice_squad_screen_patch.status(after),` |
+
+Expose the same key in `mod_build.inspect`, availability and final output
+status. Missing prerequisites are an error, never a successful omitted step.
+
+## Gameplay Patches, Build and Studio
+
+Import the module in `gameplay_patches_panel_qt.py` and add to `PATCHES`:
+
+```python
+("practice_squad_screen", "Practice Squad screen (experimental)",
+ practice_squad_screen_patch.HELP_TEXT),
+```
+
+`HELP_TEXT` contains **Retail** and **Patch** and explicitly says experimental
+and unwitnessed. Add `practice_squad_screen` to `NEEDS_IMAGE`, matching product
+policy for grown owners. Its pure XBE API remains available for developer use.
+
+In `build_panel_qt.py`, add the opt-in `_option` with the 36-character caption
+**`Practice Squad screen (experimental)`**, the same help, and the existing
+EXPERIMENTAL badge. Connect it to `_make_plan`, preset/reset, source-reload,
+source availability/status, persistence, dirty detection and selected-change
+text. Studio forwards the plan through the existing Build operation lock;
+no new GUI panel or top-level navigation item is needed. Show prerequisite
+selection in the build summary. Never report an in-game witness from these
+CPU tests.
+
+## Allowlist, runtime closure, capability and manifest
+
+Add these exact runtime paths to `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_practice_squad_screen.py
+mod_editor/core/nfl2k5_practice_squad_screen_code.py
+```
+
+Explicitly import both in protected
+`packaging/check_2k5_mod_studio_runtime.py`. Retain closure imports for
+`nfl2k5_practice_squad`, `nfl2k5_practice_squad_runtime`,
+`nfl2k5_franchise_practice`, `nfl2k5_practice_reserves`,
+`nfl2k5_xbe_space`, `nfl2k5_bump_strength`, `nfl2k5_rdata_sites`,
+`nfl2k5_cave_oracle`, `nfl2k5_draft_ai` and their existing transitive dependencies.
+The Franchise Practice module now lazily imports the screen validator only
+when a pointer needs delegation recognition, so the new module must ship even
+when the Build option defaults off. Add both files to the gameplay provider
+closure and repin provider/runtime source hashes after integration.
+GNU as, Capstone, Unicorn, the `.S` file, the assembler script and test fixtures
+are development-only dependencies; application uses the checked-in byte
+and relocation template with the Python standard library.
+
+Merge the complete schema-valid object in
+`docs/mod_editor/nfl2k5_practice_squad_screen_capability.json` by ID
+`nfl2k5.franchise.practice_squad_screen` into the canonical capability registry.
+It uses the existing `menus` surface, classification `offline-writer-proved`,
+runtime `not-tested`, GUI explicit opt-in, default false. It requires no new
+surface enum. Update registry count/coverage assertions during integration.
+The handoff JSON/report are review artifacts, not runtime game assets.
+
+The manifest builder and both executable gates already include the owner.
+The exact four-byte pointer is intentionally delegated from Franchise
+Practice; it is not free storage. The full menu/code/state capacities are
+allocator children, never retail caves. Claude must regenerate protected
+`data/nfl2k5_cave_reservations.json` after integration with the existing
+`tools/nfl2k5_cave_oracle.py manifest` command. A scratch manifest can be tested
+with `NFL2K5_CAVE_MANIFEST`; production fingerprints must never be weakened.
+Run both new standalone suites, Franchise Practice, practice reserves and
+both complete XBE gates, then the protected Build/closure tests after wiring.
+abilities: bool = False
+abilities_off_week: int | None = None
+```
+
+Add `"abilities": False, "abilities_off_week": None` to **all three** presets:
+`softdrink_basic`, `softdrink_advanced`, `softdrink_experimental`. None is the
+only default; enabling the runtime does not choose a week or assign flags.
+The API week is the **zero-based existing regular-season row 0..17**. UI week
+labels are 1..18 and translate once using `label_number - 1`. No added week,
+schedule/save expansion, or simulated-game effect is implied.
+
+Validate `type(plan.abilities) is bool`, call
+`abilities_patch._week(plan.abilities_off_week)`, and reject a non-None week
+when `abilities` is False. Validate before copying output. Add `abilities` to
+`BuildPlan.wants_xbe_patch()`, image requirement/availability maps, inspector
+selection, summaries, serialization, receipt extraction and source/output
+status maps. An existing project missing either field gets the defaults.
+Do not coerce strings, floats or Boolean week values to integers.
+
+Abilities imply the allocator. Include their `REQUESTS` in the same complete
+union as every selected allocator owner **before the first allocation**.
+The actual request is `(nfl2k5_abilities_runtime, code, 1072, 16)`, within the
+1536-byte abilities budget, zero RW. Never hardcode the returned VA. Use the
+existing v3 scale-out path (`scaleout=True` when explicitly allocating).
+
+Follow the existing deferred-owner routing: in the early `replace(plan, ...)`
+used to decide the ordinary XBE pass, set `abilities=False` and
+`abilities_off_week=None`. Carry the selected requests into the paired
+scorebug `extra_requests` path. Add `or plan.abilities` to the final XBE pass
+condition and forward both fields in its final `_apply_all` invocation. Do
+not create an early smaller directory and try to add abilities afterward.
+The extent adapter must accept `space.SCALEOUT_SIZE` via the existing
+scale-out WIRING handoff, not a new arbitrary image length.
+
+## Dispatcher tuple, keyword arguments and all four dictionaries
+# r62 dedicated zone QB spy runtime handoff, 2026-09-05
+
+Backend: `mod_editor/core/nfl2k5_qb_spy_runtime.py`, allocator owner
+`nfl2k5_qb_spy`, option **`qb_spy`**. This is **EXPERIMENTAL / UNWITNESSED**.
+The protected implementation files and reservation JSON were not edited.
+`ASTRA_QB_SPY_RUNTIME_REPORT.md` describes the five live hooks, bounded proofs,
+31-record authored lookup limit, and exact deferred man/rush work.
+
+## BuildPlan, presets and paired intent
+
+In protected `mod_editor/core/mod_build.py`, add `qb_spy: bool = False`.
+Explicitly set `"qb_spy": False` in Basic, Advanced (the current `modern`
+preset key), and Experimental. Include it in exact-bool validation,
+`wants_xbe_patch`, availability, recipe/project serialization, inspection,
+selection/status maps, source gating and plan forwarding. Availability requires
+`nfl2k5_qb_spy_runtime`, its generated `_code` module and `nfl2k5_xbe_space`.
+`qb_spy=True` implies `xbe_space=True`; apply the existing grown-owner
+image-only product preflight. No preset enables it.
+
+Before any image mutation, compile the staged PLAY resources using the existing
+formation/play and pack writers. Keep **each exact replacement resource paired
+with its original compiler report**, including `spy_intent.schema`, resolved
+`play_index`/`slot`, `asset_id`, and `replacement_sha256`. Project rows and
+`.2k5book` files already retain versioned authoring intent. Feed those pairs to:
+
+```python
+spy_table, spy_table_receipt = qb_spy_patch.compile_intent_table(
+    [(compiled.replacement, compiled.report), ...])
+```
+
+The empty input produces a valid table with zero records and enables command
+spies only. Compile once before allocation; keep `spy_table` as transient build
+bytes, not a user-editable BuildPlan field. Store `spy_table_receipt` alongside
+the build's authoring receipts. Pass **all** intended records together; never
+install one book's table and subsequently try to replace it. More than 31
+records, duplicate/colliding identities, invalid slots/scripts, or stale
+resource/report pairs refuse before writes. All 32 books with one authored
+spy each exceed this revision's limit; command spies consume no RO rows.
+
+For packs, retain the per-resource `CompiledFormationPlay.report` from the
+actual compiler, not the enclosing pack summary. If multiple passes touch the
+same book, compose and validate the final resource first, then resolve retained
+intent to its final indices and produce a matching compiler report. Do not
+change `replacement_sha256` to conceal a stale report or infer Spy from zone
+bytes. A resource-only import without retained intent remains a shallow zone.
+The table hashes only immutable names, assignment descriptor and two nodes;
+loaded relocation addresses are not persisted. No runtime byte is written into
+PLAY. Custom names may use at most 63 UTF-16 units for this lookup.
+
+Defer `qb_spy` with the other grown flags: add `qb_spy=False` to the early
+`replace(plan, ...)` and early XBE writer calls. At the final growth pass,
+include it in the condition, request union and `_apply_all` arguments, with
+`qb_spy_intent_table=spy_table`. Preserve `qb_spy_patch`, `qb_spy`, and the
+lookup receipt in final build reporting. In the scorebug resource lane, forward
+`qb_spy` to `extra_requests` before its first allocator call and enable it only
+in the final executable pass. Apply no allocator after an incomplete union.
+
+Keep the authoring notice accurate until these protected paths are wired.
+Then replace the old "not yet shipped" notice with:
+"Shallow middle zone. Dedicated QB tracking requires QB spy (experimental)
+and the paired authored play lookup in Build." Show the same text in existing
+Spy assignment help. A global `runtime_available=True` on a compiler receipt
+would be incorrect: only the final paired XBE/table establishes availability.
+No GUI file was changed in this branch.
+
+## Dispatcher tuple, kwargs, allocator union and four status dictionaries
+
+In protected `mod_editor/core/nfl2k5_throw_tuning.py`, import:
+
+```python
+from . import nfl2k5_abilities_runtime as abilities_patch
+```
+
+Add `abilities: bool = False, abilities_off_week: int | None = None` to
+`_apply_all`, `write_xbe_copy`, and `write_image_copy`. Forward both through
+every caller and include `abilities` in both writers' nothing-requested
+conditions. Validate the Boolean/week relationship as above. Keep the
+backend's omitted replay argument semantics: passing an explicit None to an
+installed configured image intentionally refuses changing its week.
+
+Extend `_selected_space_requests`, `_xbe_space_adapter`, inherited
+`_defensive_try_adapter` constructors, and every union call with `abilities`.
+Append `(abilities_patch.REQUESTS if abilities else ())` to the union. Add
+`or abilities` to the allocator tuple's enabled condition. Reuse the existing
+adapter pattern:
+
+```python
+class _abilities_adapter:
+    def __init__(self, off_week):
+        self.off_week = off_week
+
+    @staticmethod
+    def status(payload):
+        return abilities_patch.status(payload)
+
+    def apply(self, payload):
+        return abilities_patch.apply(payload, abilities_off_week=self.off_week)
+```
+
+Add this tuple to the **final owners, after allocation**, beside Momentum and
+zone-drop (and after the batch-1 Coverage/scramble owners when integrated):
+
+```python
+(abilities, _abilities_adapter(abilities_off_week),
+ "abilities_patch", "experimental player abilities"),
+```
+
+The seven retail hook spans are disjoint from Momentum and the legacy ramp.
+Every permutation of those three owners is byte-identical in backend tests.
+Keep the existing Build/Momentum policy that normalizes the legacy ramp off;
+do not silently change that product policy. The instruction suite separately
+proves the speed-call/store path with the ramp both off and on.
+
+Add these keys to **all four returned status dictionaries**. Use `payload`
+in `read_xbe` and `read_image`, `result` in `write_xbe_copy`, and `after` in
+`write_image_copy`:
+
+```python
+"abilities": abilities_patch.status(payload),
+"abilities_settings": abilities_patch.read_settings(payload),
+```
+
+`abilities_settings` includes `abilities_off_week`, `model_version`,
+`experimental`, and `runtime_witnessed`. Use the same values in
+`mod_build.inspect`, `_allocator_feature_status`, availability, output report
+and write subreceipt forwarding. Never report only the requested checkbox
+when the executable is foreign or has a different installed week. Preserve
+`abilities_patch`'s exact edit, allocation, code-install and byte-count
+receipt; replay has an empty edits list and zero changed bytes.
+
+## Gameplay Patches, Build tab and existing Rosters card
+
+Add the following `PATCHES` row in
+`mod_editor/gui/gameplay_patches_panel_qt.py` and add `abilities` to
+`NEEDS_IMAGE`:
+
+```python
+("abilities", "Player abilities (experimental)",
+ "Retail ignores stored ability flags. Patch: Speedster permits movement "
+ "Speed above 99. Each special move requires its stored permission, and "
+ "right-stick moves also require Right-Stick Moves. The special-move charge "
+ "meter works only for live ball carriers with an allowed move, including "
+ "CPU players. Abilities must be assigned in Rosters or the save first. "
+ "An optional existing franchise week turns them off temporarily. "
+ "EXPERIMENTAL / UNWITNESSED. Simulated games are unchanged."),
+```
+
+The text contains both required words **Retail** and **Patch**. Do not label
+zero-flag retail rosters ready for normal play: under this opt-in contract
+those players cannot use the five special moves. Cosmetic stars never grant
+permissions. Turning the switch off in a project means rebuild from its
+supported base; it does not uninstall hooks from an already-patched source.
+
+Add the Build-tab `_option` caption:
+
+```python
+self.abilities_check = self._option(
+    g, "abilities", "Player abilities (experimental)",
+    tt.abilities_patch.HELP_TEXT, badge="EXPERIMENTAL / UNWITNESSED",
+    needs_image=True)
+```
+
+The caption is 31 characters, below 60. Add an adjacent off-week combo:
+`No abilities-off week` (data None), then `Week 1`..`Week 18` (data 0..17).
+Caption: `Week with abilities off`. Disable it while `abilities` is False and
+reset to None when disabling the runtime. Tooltip: `Use an existing regular-
+season week. Player ability flags stay saved and return the following week.`
+Implement plan creation, source inspection, dirty tracking, preset/reset and
+project load/save bindings for both fields in the protected Build/Studio
+panels. Loading an installed source displays its actual rules version and
+week. Refuse reconfiguration with the backend's rebuild message.
+
+The already-shipped `roster_editor_panel_qt.py` is another owner's GUI and was
+left unchanged. Its current data-only sentence must become conditional at
+integration: `Stored abilities. They affect play only with Player abilities
+rules v1 on the game disc. Existing franchise saves keep their own flags.`
+Retain the seven existing mask-preserving controls and the separate star
+control. Do not invent an assignment pass, automatic HOF tier, rating clamp,
+or save migration in this wiring. A movement cache clamp does not police
+unrelated raw-rating reads or franchise simulation.
+
+## Release allowlist, runtime closure and capability
+
+Add exactly these runtime allowlist lines to
+`packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_abilities_runtime.py
+mod_editor/core/nfl2k5_abilities_runtime_code.py
+```
+
+Add these explicit imports to the protected runtime checker's closure:
+
+```text
+mod_editor.core.nfl2k5_abilities_runtime
+mod_editor.core.nfl2k5_abilities_runtime_code
+```
+
+Retain their already-shipped dependencies `nfl2k5_xbe_space`,
+`nfl2k5_bump_strength`, and `nfl2k5_cave_oracle`. Application needs Python's
+standard library and the existing allocator, no assembler, Capstone or
+Unicorn. `tools/nfl2k5_abilities_runtime.S` and its assembler are development
+sources; the Python byte template is shipped. Add both modules to the
+existing gameplay provider closure and repin its fingerprints and the
+protected staged checker after integration. No new dependency is needed in
+CI and no release-tag test was changed here.
+
+Merge the complete schema-compatible object from
+`docs/mod_editor/nfl2k5_abilities_runtime_capability.json` into
+`mod_editor/capabilities/registry.v1.json` by ID
+`nfl2k5.gameplay.abilities_runtime`, on existing surface
+`gameplay_tuning_sliders`. Keep `offline-writer-proved`, runtime `not-tested`,
+and experimental/default-off GUI status. The handoff JSON itself is review
+evidence and is not a runtime asset to allowlist.
+
+## Manifest, gates and integration acceptance
+
+The manifest generator now imports, observes and installs this owner in the
+complete dormant-owner probe, appends its REQUESTS and lists it in all owner
+registries. Both XBE gate setUpClass methods assert its presence through
+`tests/nfl2k5_allocator_stack.py`; the gate union applies every owner in both
+orders. Its dedicated manifest test checks whole hooks plus the immutable
+allocation, including unchanged bytes.
+
+Claude must regenerate the protected
+`data/nfl2k5_cave_reservations.json` after all final source edits. This branch
+only writes the real-build manifest under `.scratch/abilities/manifest.json`.
+Do not relax source-drift checks or copy a partially patched fixture into the
+production manifest. Regenerate with the standard command and run:
+
+```text
+python3 tests/mod_editor/test_nfl2k5_abilities_runtime.py
+python3 tests/mod_editor/test_nfl2k5_abilities_unicorn.py
+python3 tests/mod_editor/test_xbe_patch_memory_writes.py
+python3 tests/mod_editor/test_xbe_patch_cave_references.py
+python3 tests/mod_editor/test_nfl2k5_cave_oracle.py
+```
+
+For this isolated branch set `NFL2K5_CAVE_MANIFEST` to the fresh scratch
+manifest for the last three commands. After protected integration, validate
+staged runtime closure and capability registry and build a disposable disc
+with explicit abilities on/off plus a configured week. No user-facing
+checkbox is wired by this branch; that is the brief's protected-file boundary.
+from . import nfl2k5_qb_spy_runtime as qb_spy_patch
+```
+
+Add keyword-only `qb_spy: bool = False` and
+`qb_spy_intent_table: bytes | None = None` to `_apply_all`, `write_xbe_copy`,
+`write_image_copy` and all their forwarding calls. Append parameters to existing
+union/adaptor signatures to preserve positional compatibility. Check exact bool
+and reject a supplied table when `qb_spy` is false. Keep nonempty-selection
+checks and image eligibility consistent. `_selected_space_requests` adds:
+
+```python
++ (qb_spy_patch.REQUESTS if qb_spy else ())
+```
+
+Forward this flag through `_xbe_space_adapter` **and** its inherited
+`_defensive_try_adapter`, both constructors/calls in the final tuple, and all
+scorebug `extra_requests` lanes. Extend the allocator condition with
+`or qb_spy`. Preserve all other landed owners' requests. The spy requests move
+512 bytes of its 2,048-byte immutable budget into general RO; they do not use
+additional RW budget or any retail tail.
+
+A concrete table-aware adapter follows the existing owner adapter conventions:
+
+```python
+class _qb_spy_adapter:
+    def __init__(self, table):
+        self.table = table
+    def status(self, payload):
+        return qb_spy_patch.status(payload)
+    def apply(self, payload):
+        return qb_spy_patch.apply(payload, intent_table=self.table)
+```
+
+After the allocator and its other final owners, add:
+
+```python
+(qb_spy, _qb_spy_adapter(qb_spy_intent_table),
+ "qb_spy_patch", "dedicated zone QB spy (experimental)"),
+```
+
+Keep apply-on-applied behavior: exact replay checks the complete runtime, table,
+hooks, zero offline state and dependency pins. An omitted table on replay keeps
+the installed one; explicit different bytes require a rebuild. Expose table
+pairing/count in the receipt without treating a successful code install as a
+played witness.
+
+Add the following projection to `_allocator_feature_status` (the current shared
+grown status helper) or each of its four consumers:
+
+| Return dictionary | Required entry |
+| --- | --- |
+| `read_xbe` | `"qb_spy": qb_spy_patch.status(payload)` |
+| `read_image` | `"qb_spy": qb_spy_patch.status(payload)` |
+| `write_xbe_copy` | `"qb_spy": qb_spy_patch.status(patched)` |
+| `write_image_copy` | `"qb_spy": qb_spy_patch.status(final)` |
+
+Use each function's actual final byte variable. Do not project an early,
+pre-growth result. For `write_image_copy`'s scorebug lane, forward false/no table
+in the initial pass, reserve real requests before resource installation, and
+forward the real flag/table to the post-resource `_apply_all` call.
+
+## Gameplay Patches, Build and Studio (protected)
+
+Add `"qb_spy"` to `NEEDS_IMAGE`. Use this PATCHES row:
+
+```python
+("qb_spy", "QB spy for zone defenders (experimental)", qb_spy_patch.HELP_TEXT),
+```
+
+The help constant contains **Retail** and **Patch** and explains the zone-only,
+paired-lookup and unwitnessed limits. The Build `_option` caption is 40
+characters (under 60):
+
+```python
+self.qb_spy_check = self._option(
+    gameplay_layout, "qb_spy", "QB spy for zone defenders (experimental)",
+    qb_spy_patch.HELP_TEXT)
+```
+
+Use the current layout variable and normal experimental badge. Include checkbox
+loading, reset, preset clearing, source eligibility, selection summary,
+`_make_plan`, and `studio_qt.py` Gameplay-to-Build/worker plan forwarding.
+No man/rush enable switch or new standalone GUI panel belongs to this revision.
+
+## Release, closure, capability and manifest
+
+Add these exact protected release-allowlist lines:
+
+```text
+mod_editor/core/nfl2k5_qb_spy_runtime.py
+mod_editor/core/nfl2k5_qb_spy_runtime_code.py
+ASTRA_QB_SPY_RUNTIME_REPORT.md
+```
+
+The `.S` source, assembler, standalone tests and capability handoff JSON are
+developer evidence; the generated Python template is the runtime asset. Add
+explicit imports to `packaging/check_2k5_mod_studio_runtime.py`:
+
+```text
+mod_editor.core.nfl2k5_qb_spy_runtime
+mod_editor.core.nfl2k5_qb_spy_runtime_code
+```
+
+Retain transitive closure for the already shipped allocator, bump-strength
+section digest helper, cave-oracle XBE reader, PLAY inspector/library/codec,
+formation/play compiler and pack compiler. Runtime application never invokes
+GNU as, Unicorn, Capstone or the Ghidra corpus. Recompute provider and staged
+closure pins using the existing packaging tools after integration.
+
+Merge `docs/mod_editor/nfl2k5_qb_spy_runtime_capability.json` through the current
+registry serializer/validator: ID `nfl2k5.gameplay.qb_spy`, existing surface
+`gameplay_tuning_sliders`, classification `offline-writer-proved`, runtime
+`not-tested`, GUI default false. No new surface schema is needed.
+
+The unprotected manifest builder and both XBE gates already compose the spy
+owner, with the same canonical allocator name, in both installation orders.
+Claude alone regenerates the protected `data/nfl2k5_cave_reservations.json`
+after integration. Retain the source fingerprint guard and include all five
+live hook spans plus the three named child allocations. Run the spy writer and
+Unicorn suites, both XBE gates and the normal protected Build/closure checks.
+No release-tag/updater/workflow changes are requested; no push.
+
+---
+
+# r62 deep-zone tiers: evidence boundary, 2026-09-06
+
+This section governs **this job's new work only**. It does not undo the landed
+initial-drop, QB-spy, Coverage or catch integrations above.
+
+**Decision: do not wire new facing, bail or reaction switches.** The controlling
+`CB_DEEP_ZONE_RESEARCH_2026-09-05.md` section 3 calls the wider callback policy
+"HYPOTHESIS later extension" and requires event/target identity, user exclusions,
+hysteresis and next-play cleanup. Section 2 does not certify a bail donor.
+Sections 4 and 5 separate reaction from catch conversion and require traces.
+Neither the memo nor this checkout supplies Noah's required callback witness.
+The new native proofs establish additional prerequisites, not those missing
+contracts. The requested runtime tiers are therefore deferred, not implemented.
+
+`mod_editor/core/nfl2k5_zone_facing.py` is a **read-only developer audit**, with
+`assess(payload)` and a bounded `python3 -m` CLI. It deliberately has no
+`apply`, `status`, `OWNER` or `REQUESTS` patch interface. Its JSON says
+`patch_available: false`, `runtime_witnessed: false` and identifies each deferred
+tier. Do not use a successful audit as an installed gameplay feature.
+
+## Dispatcher, BuildPlan and presets
+
+| Required integration location | Decision for this delivery |
+| --- | --- |
+| `_apply_all` tuple and kwarg | No new tuple or kwarg. In particular, never pass the audit as a writer. Keep the landed `zone_drop_cap` and `qb_spy` tuples. |
+| `_selected_space_requests` and `_xbe_space_adapter` | No new request or flag. The audit consumes zero RX/RW/RO bytes. |
+| Four status dictionaries: `read_xbe`, `read_image`, `write_xbe_copy`, `write_image_copy` | Retain the existing `_grown_status_fields` entries for `zone_drop_cap`, `qb_spy` and `coverage_slider`, and the separate catch status. Do not add `zone_facing: applied` or treat `evidence_verified` as patch status. |
+| `BuildPlan` fields, normalization, deferred pass and final pass | No new runtime fields or forwarding. Existing `zone_drop_cap: bool = False` remains the initial-depth experiment only. |
+| Basic / Advanced / Experimental presets | None enables facing, bail or a new reaction adjustment; all three remain unavailable. Preserve `zone_drop_cap=False` in all presets. |
+| Future field names | Reserve `zone_facing`, `zone_bail`, `zone_ball_reaction`, each default `False`, for actual separately proved writers. Do not introduce unsupported selectable fields in this integration. |
+
+The allocator scale-out report has **no deep-zone-tiers budget row**. The memo's
+512 RX / 256 RW later-policy estimate fits the full planned union with 51,264 RX
+and 3,840 RW bytes still available to new owners, but is neither assembled code
+nor an allocated reservation. No new row is added to the committed budget
+fixture, `tests/nfl2k5_allocator_stack.py` or any manifest owner list. The existing
+initial-drop and Spy owners are already in all those lists. Both XBE gates now
+also run the read-only evidence audit in their composed `setUpClass` paths.
+
+## Gameplay Patches and Build text
+
+No new PATCHES row, NEEDS_IMAGE entry, GUI panel, checkbox or Build `_option`
+belongs to an unavailable runtime tier. The current `zone_drop_cap` row can be
+made more precise in the protected integration pass, keeping the same key:
+
+```python
+("zone_drop_cap", "Initial deep-zone corner drop (experimental)",
+ "EXPERIMENTAL / UNWITNESSED. Retail: a shallow deep-zone corner can start "
+ "by running. Patch: cap the initial depth request. Later movement can still "
+ "turn him away. This does not add bail technique or change ball reaction."),
+```
+
+This help contains **Retail** and **Patch**. Keep `zone_drop_cap` in
+`NEEDS_IMAGE`. Use the same 44-character caption for its existing Build `_option`:
+`Initial deep-zone corner drop (experimental)`. Existing checkbox, preset and
+plan synchronization keep the same flag. Do not advertise sustained quarterback
+facing, an interception improvement, or a bail technique as already built.
+The backend's older `HELP_TEXT` can be aligned with this wording when Claude
+regenerates its source fingerprint; this branch leaves that shipped source and
+its reservation fingerprint intact.
+
+## Allowlist, runtime closure, capability and manifest
+
+- **Release allowlist lines:** no new runtime line is required. The audit and
+  tests are developer evidence and are not imported by the product. If Claude
+  distributes the report with other Astra reports, the exact optional line is
+  `ASTRA_DEEP_ZONE_TIERS_REPORT.md`. The existing zone-drop/Spy/Coverage/catch
+  backend allowlist entries remain necessary for their existing features.
+- **Runtime-closure imports:** no new import in
+  `packaging/check_2k5_mod_studio_runtime.py`. If this developer audit is later
+  deliberately distributed, add the exact allowlist line
+  `mod_editor/core/nfl2k5_zone_facing.py` and closure import
+  `mod_editor.core.nfl2k5_zone_facing`, retaining its existing five backend
+  dependencies. It needs neither Capstone nor Unicorn to run.
+- **Capability registry:** no new product surface or writer entry. Keep
+  `nfl2k5.gameplay.zone_drop_cap` limited to the initial drop, with runtime
+  `not-tested` and all presets off. Add this report and the two new test paths
+  to that entry's evidence if desired. A developer audit command is
+  `python3 -m mod_editor.core.nfl2k5_zone_facing --xbe <extracted-default.xbe>`;
+  a standalone validation command is
+  `python3 -m tests.mod_editor.test_nfl2k5_zone_facing`.
+- **Manifest:** no new runtime owner or storage span exists, so no owner-list
+  addition or reservation-JSON regeneration is required for this job. Do not
+  reserve either zone callback for a second owner. If the existing backend help
+  or other fingerprinted sources change during integration, Claude alone
+  regenerates the protected JSON using the normal builder.
+
+## Concrete requirements before the deferred runtime work
+
+1. Retain paired full callback traces through receiver selection `0x1A1510`,
+   deep selection `0x1A2F80`, movement and effective facing. Establish which of
+   `A+0x40/+0x48` is the receiver whose crossing releases the preference. Define
+   the depth margin, hysteresis and late man-to-zone behavior from that evidence.
+2. Prove pass release separately from generic owner changes. Reuse the Spy
+   holder/type/team and user-control evidence where it applies, but preserve
+   handoff, scramble, loose ball and turnover pursuit. Trace actual assignment
+   reset, audible, snap and substitution; do not borrow Spy's private RW records.
+3. Design one explicit detour composition contract. Spy currently owns the
+   entire six-byte prologues at `0x1A5790` and `0x1A5090` and pins each complete
+   callback. It bypasses receiver selection for an active spy. A later owner
+   must share that dispatch or intercept proved nonoverlapping calls with strict
+   mutual recognition. Do not merely exempt callback bytes from either hash.
+   Prove both apply orders, replay, native fallback, active spy and every reset.
+4. Prove the press/bail donor and its transition before adding its flag. Modes
+   9/10 identify the outside deep assignments in both Cover 3 and four-deep
+   examples; they cannot establish thirds-only bail. PLAY names and Start operands
+   cannot establish actual press alignment or a rendered technique.
+5. If a reaction adjustment is still justified, specify its exact-CB/deep-zone
+   guard and separate contribution at the already facing-aware gate `0x1F4250`.
+   Account for the existing Coverage owner there; do not modify the Interception
+   catch cave at `0x1C8317` or count its effect twice. Then add actual REQUESTS,
+   allocator/manifest owners, strict idempotent writer APIs, the full flags/status/
+   Build/PATCHES/NEEDS_IMAGE/closure/capability integration, and per-tier native
+   proofs. All presets still default off until a separate release decision.
+
+No permission request, push or protected-file edit is part of this handoff.
+## r62 Franchise Practice exit correction (2026-09-06)
+
+This is a bug fix under the existing `franchise_practice` switch. The implementation,
+standalone tests and evidence are in `ASTRA_FRANCHISE_PRACTICE_EXIT_REPORT.md`.
+The START stub now pops settings once and pushes the retail game screen so Quit
+can tear that screen down and resume the retained Coach's Desk. No new flag,
+allocator owner, resource, save field or capability surface is introduced.
+
+### Existing dispatcher, status and preset wiring to retain
+
+`nfl2k5_throw_tuning._apply_all` already accepts `franchise_practice: bool = False`
+and contains the exact tuple:
+
+```python
+(franchise_practice, franchise_practice_patch,
+ "franchise_practice_patch", "Franchise-practice"),
+```
+
+Keep that tuple, the existing import and the `franchise_practice=` forwarding.
+The four existing status dictionaries require no new key or adapter:
+
+| Function | Existing entry |
+| --- | --- |
+| `read_xbe` | `"franchise_practice": franchise_practice_patch.status(payload)` |
+| `read_image` | `"franchise_practice": franchise_practice_patch.status(payload)` |
+| `write_xbe_copy` | `"franchise_practice": franchise_practice_patch.status(result)` |
+| `write_image_copy` | `"franchise_practice": franchise_practice_patch.status(after)` |
+
+`BuildPlan.franchise_practice: bool = False` stays as shipped. BASIC is false;
+ADVANCED and EXPERIMENTAL are true. Preserve Practice Squad screen normalization
+and the existing final XBE pass. Both XBE gates and `tests/nfl2k5_allocator_stack.py`
+already include this owner and its dependent reserves/screen patches; the same
+352-byte reservation covers the seven added code bytes. No request-union or
+budget-fixture change is needed.
+
+### Protected UI copy correction
+
+Replace only the existing Gameplay Patches help text for `franchise_practice`.
+Its current description says Practice is above Schedule and attributes the
+return to the one pop alone. Use:
+
+```python
+("franchise_practice", "Free Practice inside Franchise",
+ "Retail: Practice is available from Game Modes. Patch: adds Practice below "
+ "Schedule on the Coach's Desk. Practice uses your franchise roster and "
+ "returns to the Coach's Desk when you quit. EXPERIMENTAL / UNWITNESSED: "
+ "verify the return and unchanged schedule, roster and depth chart."),
+```
+
+Keep `franchise_practice` out of `NEEDS_IMAGE`: this remains an XBE-only patch.
+Keep the Build `_option` caption `Free Practice inside Franchise` (30 characters),
+its `franchise_practice` key and `NOT_TESTED` badge. Its concise help can be:
+`Practice with your franchise team, then return to the Coach's Desk. Experimental.`
+No new checkbox, worker argument or Studio forwarding is needed.
+
+### Protected manifest and release handoff
+
+Claude must regenerate `data/nfl2k5_cave_reservations.json` with
+`tools/nfl2k5_cave_oracle.py manifest` after integration. The production manifest
+is unchanged here. Its source guard correctly rejects the old fingerprint of
+`mod_editor/core/nfl2k5_franchise_practice.py`; this is the only stale source.
+Do not update the fingerprint by hand or disable the guard. Run the full oracle
+suite with the regenerated manifest, then both XBE gates. Use a disposable image
+inside `TemporaryDirectory` with cleanup on all paths, sufficient space to keep
+the main drive above 100 GB free, and bounded streaming I/O. This worktree did
+not build or retain a disc or pack copy because space was too close to that floor.
+
+The runtime module is already allowlisted and imported by the runtime closure:
+
+```text
+mod_editor/core/nfl2k5_franchise_practice.py
+mod_editor.core.nfl2k5_franchise_practice
+```
+
+Retain those entries. If the report is included in release documentation, add
+this allowlist line:
+
+```text
+ASTRA_FRANCHISE_PRACTICE_EXIT_REPORT.md
+```
+
+No new runtime-closure import or capability registry entry is needed. Preserve
+the existing experimental/unwitnessed classification. Older already-patched
+XBEs containing the previous START are deliberately `foreign`; rebuild from
+retail through the current owner stack instead of silently migrating a mixed
+image. No release-tag, updater, workflow or push change is requested.
+## r62 momentum-contact: model 2 collision extension (2026-09-06)
+
+This section supersedes the model-1 Momentum fields/help where specified.
+EXPERIMENTAL / UNWITNESSED. The existing owner is extended; do not register or
+allocate a second owner. Protected product files and the protected reservation
+JSON are unchanged in this task. `ASTRA_MOMENTUM_CONTACT_REPORT.md` contains the
+calibration, tier A/B audit, test evidence and Noah's pending witness list.
+
+### Dispatcher and the four status dictionaries
+
+In `mod_editor/core/nfl2k5_throw_tuning.py`, add keyword arguments
+`momentum_collisions: bool = False, momentum_collision_level: int = 0` beside
+`momentum`/`momentum_contact` on `_apply_all`, both public copy writers and every
+forwarding call. Validate with
+`momentum_patch._settings(momentum, momentum_contact, momentum_collisions, momentum_collision_level)`
+before any copy or mutation. Positive collision level requires the collision
+flag; Boolean levels and integers outside 0..100 refuse. True/0 is a no-op.
+Use `collision_on = momentum_collisions and momentum_collision_level > 0` and
+`momentum_on = momentum > 0 or collision_on` for allocation/application tests.
+Do not require positive movement momentum to enable collisions.
+
+Extend `_selected_space_requests` and `_xbe_space_adapter` with the two new
+keywords. Include `momentum_patch.REQUESTS` exactly once when `momentum_on`.
+Update every call site, including `_defensive_try_adapter` and the runtime
+scorebug extra-request path. Keep old positional arguments in place; append
+new fields as keywords to avoid shifting unrelated options. `_xbe_space_adapter`
+and `_defensive_try_adapter.apply` must use `scaleout=True` when `collision_on`,
+so the full union is reserved before any owner emits code. Other beta-62 owners
+also select v3 through the existing allocator. Missing or legacy preallocation
+refuses before an installed result; rebuild from the supported source.
+
+Extend the existing `_momentum_adapter` as follows:
+
+```python
+class _momentum_adapter:
+    def __init__(self, level, contact, collisions=False, collision_level=0):
+        self.settings = dict(momentum=level, momentum_contact=contact,
+                             momentum_collisions=collisions,
+                             momentum_collision_level=collision_level)
+
+    def status(self, payload):
+        return momentum_patch.status(payload)
+
+    def apply(self, payload):
+        return momentum_patch.apply(payload, **self.settings)
+```
+
+In `_apply_all`'s final owners tuple, after the allocator entry, replace the
+existing Momentum entry with:
+
+```python
+(momentum_on,
+ _momentum_adapter(momentum, momentum_contact,
+                   momentum_collisions, momentum_collision_level),
+ "momentum_patch", "experimental player momentum"),
+```
+
+The allocator activation expression must include
+`collision_on`. Do not install Momentum once per component. For the parity
+profile, extend the existing legacy normalization from `momentum > 0` to
+`momentum_on`: disable a newly selected `accel_ramp` and retain the receipt
+`legacy_accel_ramp_disabled_by_momentum_profile`. The backend continues to
+recognize an independently installed legacy ramp without removing it; such a
+source is not the clean parity baseline.
+
+`_grown_status_fields` currently serves all four status dictionaries:
+`read_xbe`, `read_image`, `write_xbe_copy`, `write_image_copy`. Keep calling it
+from all four. Retain `momentum_settings` as the complete `read_settings`
+object, including model_version=2 and the two new keys. Compute component
+statuses separately so collision-only is not shown as installed braking:
+
+```python
+state = momentum_patch.status(payload)
+settings = momentum_patch.read_settings(payload)
+def component(enabled):
+    return "foreign" if state == "foreign" else (
+        "applied" if state == "applied" and enabled else "retail")
+fields = {
+    "momentum": component(settings.get("momentum", 0) > 0),
+    "momentum_contact": component(settings.get("momentum_contact", False)),
+    "momentum_collisions": component(settings.get("momentum_collisions", False)
+                                     and settings.get("momentum_collision_level", 0) > 0),
+    "momentum_settings": settings,
+}
+```
+
+Merge `fields` with the existing unrelated status fields. The backend's
+`momentum_patch.status` remains an owner status for integrity and replay.
+Use `settings['status'] == 'applied'` to lock ALL of this owner's component
+settings on an installed source, including an inactive movement component of
+a collision-only source. Changing component settings requires a clean rebuild;
+otherwise an UI may incorrectly offer to add braking to a sealed collision
+configuration. Model-1 images intentionally report foreign; rebuild, never
+resize/migrate their allocation in place.
+
+### BuildPlan, normalization, presets and final pass
+
+In `mod_editor/core/mod_build.py` add:
+
+```python
+momentum_collisions: bool = False
+momentum_collision_level: int = 0
+```
+
+Basic, Advanced and Experimental (`softdrink_experimental`) all explicitly
+keep **false/0**. Existing movement momentum and run-up defaults stay off/0.
+Opt-in comparison order is movement 0, run-up false, collisions true/50,
+then true/100; combined movement/run-up comes afterward. Recipe round trips
+must preserve unusual valid integers and both new fields.
+
+Add the collision flag to `wants_xbe_patch`, capability availability (same
+`nfl2k5_momentum` backend plus allocator), image state extraction and displayed
+status keys. A true flag at level 0 may still enter normal build validation;
+it must not select a Momentum allocation. Validate all four settings at the
+current Momentum validation call. For positive collision level imply
+`xbe_space=True` and disable a newly selected legacy ramp with the existing
+receipt as described above.
+
+Both `replace(plan, ...)` calls that defer grown features must also pass
+`momentum_collisions=False, momentum_collision_level=0`, to prevent an early
+fixed-size pass from partially installing this owner. Include `collision_on`
+in the final grown-pass condition; forward both fields to `_apply_all` and to
+`_selected_space_requests` in the paired scorebug resource pass. Carry the
+complete settings and component statuses into final rebuilt-image reports.
+The final pass already uses the accepted v3 extent writer; no transport or
+archive change is required.
+
+### Gameplay Patches and Build controls
+
+In `mod_editor/gui/gameplay_patches_panel_qt.py`, add this `PATCHES` row:
+
+```python
+("momentum_collisions", "Weight and speed in contact (experimental, unwitnessed)",
+ "Retail already uses weight and speed in tackles. Patch: a small, capped "
+ "benefit when the ball carrier's weight and speed toward contact outweigh "
+ "the defender's approach. Standing carriers gain no benefit. Ratings still "
+ "matter. Experimental / Unwitnessed. Separate from turning and braking."),
+```
+
+Add `momentum_collisions` to `NEEDS_IMAGE`. Add an independent level control
+for `momentum_collision_level`, with Retail/0, Light/25, Medium/50, Heavy/100
+and honest installed-value display for other valid integers. Check selects
+last positive level (initially 50); uncheck sets flag false and level 0.
+Selecting level 0 clears the flag. Gate editing against the entire owner's
+installed/foreign state, not just this component's status. Do not clear this
+control when movement momentum changes to 0. Retain the existing requirement
+that only the old run-up option needs positive movement momentum.
+
+In `mod_editor/gui/build_panel_qt.py`, add the `_option` caption
+**`Weight and speed in contact (experimental)`** (41 characters, <=60), using
+`momentum_collisions` and `nfl2k5_momentum.COLLISION_HELP_TEXT`. Give it the
+same independent level control and state-lock behavior. Add both fields to
+plan construction, preset loads, status refresh, recipe notes and selected
+feature display. For positive selection clear the legacy ramp checkbox and
+record the profile normalization. Keep implementation addresses, allocation
+terms and the mathematical formula out of the product flow.
+
+### Capability, allowlist and runtime closure
+
+Replace the existing `nfl2k5.gameplay.momentum` object in
+`mod_editor/capabilities/registry.v1.json` with the complete updated object in
+`docs/mod_editor/nfl2k5_momentum_capability.json`. This extends the existing
+surface; no new surface enum, router, owner or duplicate registry ID is needed.
+Both backend.command and validation_command use the schema-resolvable
+`python3 -m mod_editor.core.nfl2k5_momentum ...` form. The backend example
+builds collision-only 50. Classification stays `offline-writer-proved`, runtime
+`not-tested`, GUI default disabled.
+
+Required `packaging/release-allowlist.txt` lines (the first three already exist;
+retain once, append the new report):
+
+```text
+mod_editor/core/nfl2k5_momentum.py
+mod_editor/core/nfl2k5_momentum_code.py
+docs/mod_editor/nfl2k5_momentum_capability.json
+ASTRA_MOMENTUM_CONTACT_REPORT.md
+```
+
+Runtime-closure imports in `packaging/check_2k5_mod_studio_runtime.py` already
+contain `mod_editor.core.nfl2k5_momentum` and
+`mod_editor.core.nfl2k5_momentum_code`; retain them and assert model_version 2,
+`COLLISION_HELP_TEXT`, and the four-argument settings contract. No new runtime
+package or GNU assembler dependency is introduced. The assembler and tests
+remain development tools. Extend the integration validator to run
+`tests/mod_editor/test_nfl2k5_momentum_collisions.py` standalone.
+
+### Manifest and integration acceptance
+
+The existing Momentum owner was already in all three manifest owner lists,
+`all_requests`, and the shared allocator union. Its request is now **1,408 RX /
+2,064 RW**, with no extra RW or RO. The committed budget fixture replaces only
+its code row. Both gate fixtures and both manifest owner probes now explicitly
+install collisions true/100 alongside run-up/movement 100; the manifest also
+records `momentum_settings`. Both orders include the actual abilities owner.
+Claude must regenerate `data/nfl2k5_cave_reservations.json` from final integrated
+sources using the real manifest builder; this task never overwrites it.
+
+After protected wiring, check collision-only 0/false/true/50 builds, both-zero
+byte identity, movement-only old configuration, combined 100/true/true/100,
+all four read/write status dictionaries, model-1/foreign refusal, profile
+normalization, exact replay and changed-setting refusal. Run both XBE gates,
+the Momentum suites and the manifest suite against the fresh private/release
+manifest. Keep source-fingerprint checks enabled. No gameplay witness or
+release enablement is implied by these offline checks.
+# r62-play-rules-editor: retail Rules library and Info reference
+
+This feature authors PLAY data through the existing compiler and project/pack
+pipeline. Its own wizard tabs and panels are implemented. All shared files
+below were left untouched as required by ASTRA_BRIEF.md. Evidence and witness
+requirements are in `ASTRA_PLAY_RULES_REPORT.md`.
+
+## Studio registration
+
+Import `PlayInfoPanel` from `mod_editor.gui.play_info_panel_qt` in the protected
+`studio_qt.py`. In `_build_create_play_page`, keep the existing authoring page
+and replace its final `return page` with this wrapper (`QTabWidget` is already
+imported):
+
+```python
+tabs = QTabWidget()
+tabs.setObjectName("createPlayTabs")
+tabs.addTab(page, "Create a Play")
+self._play_info_panel = PlayInfoPanel()
+tabs.addTab(self._play_info_panel, "Info")
+return tabs
+```
+
+Update that page's blurb to:
+
+```text
+Choose a formation, design assignments or copy retail rules, then place the
+play in the book. Rules and gameplay results are experimental and unwitnessed.
+Use Info for the format, rule vocabulary and current evidence limits.
+```
+
+The wizard already contains Assignments, Rules library and Info tabs on its
+assignment page. The standalone Studio Info tab makes the same reference
+available before choosing a source. It needs no facade, retail assets, runtime
+patch or source eligibility gate. Do not edit `playbooks_panel_qt.py` for this
+job; the Create a Play surface satisfies the requested placement. Maintain the
+existing `PlaybooksPanel(self.facade)` registration.
+
+## Explicit dispatcher, Build and allocator disposition
+
+| Protected integration item | Required change |
+| --- | --- |
+| `_apply_all` owner tuple and kwarg | None. This is an existing PLAY resource writer path, not an XBE patch. |
+| `_selected_space_requests`, `_xbe_space_adapter`, `_grown_status_fields` | None. No owner or executable/data allocation. |
+| `read_xbe` status dictionary | No new key. |
+| `read_image` status dictionary | No new key. |
+| `write_xbe_copy` status dictionary | No new key. |
+| `write_image_copy` status dictionary | No new key; normal resource compiler receipts apply. |
+| `BuildPlan` field, normalization, deferral, final pass | No new field. Existing staged formation/play/pack requests carry the change. |
+| Basic / advanced / experimental preset enablement | None enables or silently copies rules. Applying a bundle is an explicit authoring action. |
+| Gameplay Patches `PATCHES` text and `NEEDS_IMAGE` | No new row or membership. Retail rules are PLAY data; Patch installation uses the existing project/pack transport. |
+| Build `_option` caption (60-character limit) | Not applicable; no new checkbox. |
+| Allocator budgets, union, memory/cave gates and cave manifest | No new owner; no changes or regeneration needed for this job. |
+
+Existing dedicated Spy and read-option runtime settings keep their own Build
+requirements. Copying a retail bundle does not create those intents or enable
+their switches. Do not invent a gameplay patch toggle to expose a data editor.
+
+## Exact release allowlist additions
+
+Add these currently absent lines to `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_play_rules.py
+mod_editor/gui/play_rules_panel_qt.py
+mod_editor/gui/play_info_panel_qt.py
+docs/mod_editor/play_rules.json
+docs/mod_editor/play_rules.md
+docs/mod_editor/play_rules.evidence.json
+ASTRA_PLAY_RULES_REPORT.md
+ASTRA_DEFENSE_PLAY_REPORT.md
+ASTRA_READ_OPTION_BUILD_REPORT.md
+ASTRA_SCREEN_PASS_REPORT.md
+ASTRA_GAMEPLAY_LEVERS_REPORT.md
+```
+
+The last four reports are linked by Info and were absent from this branch's
+allowlist. Retain existing lines for `ASTRA_ZONE_DROP_REPORT.md`,
+`ASTRA_QB_SPY_RUNTIME_REPORT.md`, `docs/product/PLAY_EDITOR_FINDINGS.md`,
+`docs/mod_editor/playbook_packs.md` and
+`mod_editor/core/nfl2k5_seven_on_seven_book.py`. The codec, library, inspector,
+writer, pack module and Create a Play wizard already have product paths; retain
+their updated versions. The evidence JSON contains hashes/counts and corpus
+locations, not node payloads or decompiler bodies.
+
+Do not release `.scratch/play_rules_audit.json`, the research CLI, tests or
+`docs/mod_editor/play_rules.capability.json`; those are local/developer evidence
+or integration inputs. Presets ship selectors only. User-exported project/pack
+operands remain user artifacts and must not be copied into the release.
+
+## Runtime closure
+
+Add these explicit imports to the protected runtime closure check:
+
+```text
+mod_editor.core.nfl2k5_play_rules
+mod_editor.gui.play_rules_panel_qt
+mod_editor.gui.play_info_panel_qt
+```
+
+Stage `docs/mod_editor/play_rules.json` at that exact relative path. Its loader
+resolves the application root from `mod_editor/core`; retain the normal staged
+directory layout. Retain transitive codec/library/inspector/writer/pack, errors,
+PyQt5 and existing book-reader closure. No Capstone, Unicorn, Ghidra, network
+dependency or game asset is needed to open Info.
+
+Extend the offscreen runtime probe to instantiate `PlayInfoPanel`, assert 47
+topics including all 29 opcode topics and a read-only reader, search `31
+records`, and open the linked local reports. Missing reference JSON must fail
+the release probe rather than ship an empty tab. Run the normal staged closure
+and provider fingerprint regeneration after integration. Source tests prove
+the panels, not the protected packaged build that this job cannot edit.
+
+## Capability handoff
+
+Merge `docs/mod_editor/play_rules.capability.json` as capability
+`nfl2k5.scripts.play_rules` on existing surface `scripts_config` using the
+registry serializer. Classification is `offline-writer-proved`, runtime
+`not-tested`, exposed edit mode with `default_enabled: false`. No surface enum
+or schema expansion is needed. The backend command invokes the existing
+project writer with `python3 -m tools.nfl2k5_visual_mod_project ...`; the
+validation command is `python3 -m tests.mod_editor.test_nfl2k5_play_rules`.
+The read-only catalog/inspect commands are documented in the guide.
+
+The handoff passes the repository validator's structural checks and its own
+evidence/command file checks. A full inherited registry file check currently
+stops at the pre-existing missing `docs/research/apf_audio.md` in capability 0;
+resolve that independently when doing shared integration. Do not mistake it
+for a missing new Rules file.
+
+The older `nfl2k5.scripts.director_playbook` row contains stale global claims
+that the compiler never authors nodes and that the true-spy backend is not yet
+built. Reconcile that row with the already-landed authoring/spy capabilities
+and the new Rules row: copied operands can persist in local projects and v3
+packs, while the distributed library contains selectors only. The new row does
+not claim a witnessed runtime outcome.
+
+Run both new standalone Rules test files, the existing authoring/writer,
+defense/read-option and pack suites, and protected Studio/runtime closure
+checks after wiring. No updater, tag, workflow or push change is requested.
+# r62 read-option runtime handoff, 2026-09-06
+
+This section is the handoff for `astra/r62-read-option-runtime`. It supersedes
+only earlier deferred-runtime notes for this feature. EXPERIMENTAL / UNWITNESSED.
+All three presets remain OFF. No protected file was edited in this branch.
+
+The delivered core has modern hold/release input, a versioned read-only table,
+a CPU position/velocity policy, a native receiver-readiness gate, and a
+single condition-task decision shared through the native QB/back cache. The
+requested in-game prompt and live search for a replacement unblocked EDGE are
+NOT implemented. Do not call this a finished dependable-read feature or enable
+it automatically. The report describes the exact limits and pending work.
+
+## BuildPlan and paired PLAY artifacts
+
+In protected `mod_editor/core/mod_build.py` add:
+
+```python
+read_option_runtime: bool = False
+```
+
+Add it to `wants_xbe_patch()`, the Boolean normalization/validation list, inspect
+and availability/status forwarding, and every grow-owner deferral/final-pass
+condition alongside `qb_spy`. Explicitly set it False in `softdrink_basic`,
+`softdrink_advanced` and `softdrink_experimental`; changing presets must clear a
+prior true value. No independent acceleration-ramp or defensive setting changes.
+
+As with the existing `spy_pairs`, retain each final PLAY replacement and its
+complete compiler receipt for authored reads. After ALL edits to that resource,
+call the new `nfl2k5_play_library.compile_read_option_intent_table(read_pairs)`.
+Its input is a sequence of `(exact_replacement_bytes, compiler_report)` tuples.
+It verifies `replacement_sha256`, the option schema, both participant scripts,
+formation/personnel intent, capacity and unique identity before allocating or
+writing the output. It excludes every native speed option. A selected Build
+checkbox requires at least one read row; fail clearly if none was authored.
+
+Do not feed a receipt from an intermediate gun, defense, clone, mirror, retarget
+or import pass to this compiler after another pass has changed its resource.
+Carry the authored intents into the FINAL writer invocation or reject the stale
+pair and require a recompile. Never regenerate a matching hash on a stale receipt.
+Persist this table's receipt in the build output as `read_option_intent_table`,
+beside the paired PLAY receipts. An empty table is supported for dormant owner
+composition and lower-level XBE tests, not a successful selected UI feature.
+
+Pass `read_option_runtime=False` in the early ordinary-XBE pass, and reserve its
+REQUESTS in the final complete union. In the final owner pass forward the real
+Boolean and `read_option_intent_table=read_table`. Do not add a new PLAY opcode.
+RPO receiver 6 is explicitly refused because its A button shares the snap hold;
+choose receiver 7 or 8. The existing data-only presets and pack schema stay intact.
+
+## Dispatcher, allocator and all four status dictionaries
+# r62 Senior Bowl: preparation only, native MVP activation blocked
+
+This section belongs to `astra/r62-senior-bowl`. It is additive to every
+previous handoff above. **EXPERIMENTAL / UNWITNESSED. The requested native
+simulation MVP is incomplete.** `docs/mod_editor/senior_bowl.md` states the
+exact code/ABI/save/sim/menu gaps. Nothing below authorizes treating dormant
+component installation as a working game event. The dedicated Studio panel
+and preview capability can be registered now; all native activation paths
+must remain disabled and reject a programmatically true selection.
+
+No protected product file was edited in this branch. The supplied original
+`.S`, assembler and byte template, host configuration/preview/codec, standalone
+suites, allocator union, both gate owner lists and manifest observer are ready
+for review. No game, kernel, native file I/O or simulator execution is claimed.
+
+## BuildPlan, presets, normalization and availability
+
+In protected `mod_editor/core/mod_build.py`, add these fields next to the
+other optional franchise owners:
+
+```python
+senior_bowl: bool = False
+senior_bowl_settings: dict[str, object] = field(default_factory=lambda: {
+    "scheme": "retail", "away": {"bank": 50, "side": "A", "era": 0},
+    "home": {"bank": 51, "side": "H", "era": 0}})
+senior_bowl_seed: int = 1
+```
+
+Set `senior_bowl=False` explicitly in `softdrink_basic`, `softdrink_advanced`
+and `softdrink_experimental`; no preset enables it. Personal preview choices
+may persist across preset changes, but every preset resets activation false.
+Validate through `senior_bowl_patch.Settings.from_dict` and the panel's seed
+range 0..2147483647; reject bool/noninteger seeds and unknown settings. Keep
+settings/seed in project/BuildPlan serialization and declare them subsettings
+in the existing no-invisible-capability/Build-field coverage table, not as
+separate toggles. Runtime component selection accepts u32 seeds; the panel
+intentionally uses the signed Qt spin-box range and refuses larger project
+seeds instead of silently clamping them.
+
+Before any build output is created, validate that `type(plan.senior_bowl) is
+bool` and refuse true while `NATIVE_EVENT_AVAILABLE` is false:
+
+```python
+if plan.senior_bowl and not senior_bowl_patch.NATIVE_EVENT_AVAILABLE:
+    raise ValueError(senior_bowl_patch.NATIVE_BLOCKER)
+```
+
+Module importability is not runtime availability. `availability()` should
+report the native `senior_bowl` toggle unavailable and the host panel usable.
+Include the flag in `wants_xbe_patch` for future coverage, inspect/status
+projection and final result reporting, without bypassing the early refusal.
+Do not imply that the existing native Practice Squad screen proves this event's
+save/simulator/menu paths.
+
+When the documented native implementation actually becomes ready, normalize
+its dependency flags and construct the complete request union before any owner
+is applied. Its present requests are exactly:
+
+```python
+(("nfl2k5_senior_bowl", "code", 4096, 16),
+ ("nfl2k5_senior_bowl", "data", 65536, 4096))
+```
+
+The budget fixture has these actual rows, replacing the 16384-byte RX estimate.
+Future code/descriptor growth needs an explicit request change within the
+original 16384/65536 allowance and a fresh full union. No borrowed allocator
+tail or arbitrary VA is an allocation.
+
+## Dispatcher tuple, keyword, allocator adapter and four dictionaries
+
+## r62 Guardian overlay, route A (2026-09-06)
+
+This is the integration handoff for `ASTRA_GUARDIAN_OVERLAY_REPORT.md`.
+**EXPERIMENTAL / UNWITNESSED.** All protected files remain unchanged in this
+branch. The executable, paired resource/ROST transaction, allocation union,
+manifest recorder, standalone proofs and capability handoff are implemented.
+Do not advertise the old C replacement as this feature.
+
+### Record ownership and the Rosters session
+
+Reserve physical **record +0x53 bit 5 (0x20)** for `guardian_cap`. The complete
+little-endian word map at +0x52 is: locks `0x001F`, abilities `0x1EE0`, Star Tag
+`0x0100`, Guardian cap `0x2000`, unassigned `0xC000`. The abilities runtime's
+mask excludes Guardian. There is no spare helmet enum: keep Helmet 0/1 (A/C).
+The new native clone hook at `0xC16CD` copies only `0x2000`; do not replace it
+with an uncoordinated full-word copy in another owner's clone patch.
+`nfl2k5_player_tags.apply_body` now masks star bit 0 and preserves its neighbors.
+
+The parallel Rosters owner should wire its **Guardian cap** control separately
+from Helmet, Star Tag and abilities. The existing record codec already preserves
+the bit through `unknown_53_high`; Guardian is **0x10 in that shifted field**.
+A document operation reads `bool(record.values['unknown_53_high'] & 0x10)` and
+sets/clears only that mask through the document's normal edit/journal transaction.
+The byte-level APIs `guardian.record_selected(raw84)` and
+`guardian.set_record_selected(raw84, bool)` enforce the physical format.
+Add `guardian_cap` as a derived `Record.get`/`Record.set` property (same pattern
+as abilities), boolean CSV column with explicit 0/1 validation, and bulk edit
+choice. Preserve `unknown_53_high` as the backing field so the existing ability
+and unknown-bit round trip remains intact. Binary roster/save export/import
+already preserves the complete record. Clone/import via document transactions
+must retain this bit or explicitly clear it for a genuinely new identity.
+
+Store the edited bit in the composed roster document before exporting its
+resource. For normal GUI builds use `guardian_players=None` below, retaining
+those authored selections. Do not persist a roster index as player identity.
+For controlled CLI/project snapshots, the optional `guardian_players` array
+contains `{pool, index, record_sha256}` entries, where the SHA-256 is of that
+exact 84-byte record with only the Guardian bit cleared. Null means retain;
+`[]` explicitly clears all. The writer rejects mismatched/duplicate identities
+before opening a writer. Refresh a pin only after the owning document has
+resolved the same player through its existing identity/provenance mechanism.
+A changed name, star, ability or other record field invalidates an old pin.
+Never silently relax this into fuzzy matching.
+
+UI help: `Guardian cap requires the experimental Guardian overlay image.
+Existing saves need their own player selections. Practice does not save caps
+onto players.` The cap artwork is one shared neutral quilt texture. Label it
+**Global Guardian cap artwork** under Uniforms & Equipment, with a shared-art
+explanation. The compiler currently owns the fixed neutral profile; do not
+expose unsupported per-uniform art or an arbitrary artwork upload operation.
+
+### Dispatcher, allocator and all four status dictionaries
+
+In protected `mod_editor/core/nfl2k5_throw_tuning.py` import:
+
+```python
+from . import nfl2k5_read_option_runtime as read_option_patch
+```
+
+Add keyword arguments to `_apply_all`, `write_xbe_copy`, and `write_image_copy`
+and forward them through every caller:
+
+```python
+read_option_runtime: bool = False,
+read_option_intent_table: bytes | None = None,
+```
+
+Validate an actual Boolean. A table must be bytes, validate with
+`read_option_patch.validate_intent_table`, and require the Boolean when a table
+is supplied. Omitted table on replay preserves the installed table; a different
+explicit table refuses and requires rebuilding from a supported source.
+
+Extend `_selected_space_requests`, `_xbe_space_adapter`, the inherited
+`_defensive_try_adapter`, their signatures/callers, and grow-owner conditions:
+
+```python
++ (read_option_patch.REQUESTS if read_option_runtime else ())
+```
+
+Include `or read_option_runtime` in the allocator entry and both writers'
+nothing-requested conditions. Add this adapter and tuple in the final owners
+AFTER the allocator tuple, beside the existing QB spy adapter:
+
+```python
+class _read_option_adapter:
+    def __init__(self, table):
+        self.table = table
+
+    @staticmethod
+    def status(payload):
+        return read_option_patch.status(payload)
+
+    def apply(self, payload):
+        return read_option_patch.apply(payload, intent_table=self.table)
+
+(read_option_runtime, _read_option_adapter(read_option_intent_table),
+ "read_option_runtime_patch", "read option mesh controls (experimental)"),
+```
+
+In `_grown_status_fields(payload)` add:
+
+```python
+"read_option_runtime": read_option_patch.status(payload),
+"read_option_runtime_settings": read_option_patch.read_settings(payload),
+```
+
+Ensure these land in ALL FOUR dictionaries: `read_xbe` and `read_image` use
+`payload`, `write_xbe_copy` uses `result`, `write_image_copy` uses `after`.
+Forward them through `mod_build.inspect`, `_allocator_feature_status`, build
+receipts and output inspection. The settings report actual installed row count,
+table hash and mesh policy. Foreign/uninstalled settings are None. Preserve the
+exact owner receipt including full hook span, allocation, hashes, changed bytes,
+zero RW budget and `experimental=True`, `runtime_witnessed=False`.
+
+## Gameplay Patches and Build tab
+
+In protected `mod_editor/gui/gameplay_patches_panel_qt.py`, add a PATCHES row
+with key `read_option_runtime`, title `Read option mesh controls (experimental)`,
+and description `read_option_patch.HELP_TEXT`. The exact text is:
+
+> EXPERIMENTAL / UNWITNESSED. Retail: option plays use the original pitch and
+> position rules. Patch: paired authored reads use release to give and hold the
+> snap button to keep at the mesh. CPU QBs read the selected edge. RPO throws
+> require the intended receiver to be ready. The in-game prompt and a replacement
+> defender search are not included. All presets are off.
+
+This contains the required words Retail and Patch. Add the key to NEEDS_IMAGE
+because an enabled product build needs its paired PLAY resource. Preserve the
+normal foreign-image refusal and receipt read-back, rather than reporting the
+checkbox as proof of installation.
+
+In protected `mod_editor/gui/build_panel_qt.py` add the Boolean `_option` using
+caption `Read option mesh controls (experimental)` (40 characters), default
+False. Bind it to BuildPlan collection, preset application, reset and post-build
+status; use HELP_TEXT for its description. Show the two-read capacity/refusal
+before building. Do not present this box as authoring new plays automatically.
+Any existing Studio or Gameplay forwarding lists in the other protected panels
+need the same key. No new feature-specific GUI panel is necessary.
+
+## Release allowance, closure, capability and manifest
+
+Add exactly these lines to protected `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_read_option_runtime.py
+mod_editor/core/nfl2k5_read_option_runtime_code.py
+```
+
+Add these explicit runtime-closure imports to protected
+`packaging/check_2k5_mod_studio_runtime.py` and the gameplay provider closure:
+
+```text
+mod_editor.core.nfl2k5_read_option_runtime
+mod_editor.core.nfl2k5_read_option_runtime_code
+```
+
+The already-shipped play library, inspector, codec, allocator, cave reader and
+section-digest helper remain dependencies. No GNU assembler, Unicorn, Capstone,
+private research file, test module or generated game bytes are runtime assets.
+The .S and assembler are development sources; end-user application uses the
+checked-in reproducible Python byte template.
+
+Merge `docs/mod_editor/nfl2k5_read_option_runtime_capability.json` into the
+capability registry by ID `nfl2k5.gameplay.read_option_runtime`, on the existing
+`gameplay_tuning_sliders` surface. Both commands use `python3 -m dotted.module`
+so file-check validation resolves them. Keep `offline-writer-proved`, runtime
+`not-tested`, explicit limitations and all presets off.
+
+The unprotected complete-owner stack, both XBE gates, all manifest owner lists
+and the budget fixture are already updated in this branch. Claude must regenerate
+protected `data/nfl2k5_cave_reservations.json` after merging final sources and this
+wiring. The scratch manifest is verification evidence, not a replacement for
+that protected release artifact. Add `read_option_runtime=False` to the manifest
+builder's dormant-base BuildPlan replacement once the protected BuildPlan field
+exists, so future preset changes cannot preallocate an incomplete request union.
+
+Acceptance after wiring: two paired reads selected, a dormant empty table at
+backend level, no read recipes with the checkbox on (refusal), all presets reset
+off, changed/stale PLAY receipt refusal, two controllers/layouts, both XBE gates,
+capability file check, staged runtime closure, and Noah's pending witness list.
+from . import nfl2k5_senior_bowl as senior_bowl_patch
+```
+
+Add `senior_bowl: bool = False` to `_apply_all`, `write_xbe_copy` and
+`write_image_copy` signatures and forward `senior_bowl=senior_bowl` at every
+call. Validate bool and refuse a true unavailable selection at the beginning
+of each public writer and `_apply_all`, before mutation. Add the same
+`senior_bowl=False` keyword to `_selected_space_requests` and
+`_xbe_space_adapter.__init__`; include
+`+ (senior_bowl_patch.REQUESTS if senior_bowl else ())` and forward the keyword
+at both adapter construction and complete-union planning sites. Those
+functions must also reject a true unavailable selection, before allocation.
+
+Use a guarded adapter, rather than directly exposing the development-only
+component installer as if it launched a native event:
+
+```python
+class _senior_bowl_adapter:
+    def status(self, payload):
+        return senior_bowl_patch.status(payload)
+
+    def apply(self, payload):
+        if not senior_bowl_patch.NATIVE_EVENT_AVAILABLE:
+            raise ValueError(senior_bowl_patch.NATIVE_BLOCKER)
+        return senior_bowl_patch.apply(payload)
+```
+
+Add this exact `_apply_all` final-owners tuple after the allocator entry:
+
+```python
+(senior_bowl, _senior_bowl_adapter(), "senior_bowl_patch",
+ "Senior Bowl native event (unavailable)"),
+```
+
+This tuple is deliberately unreachable for true in this revision. Keep false
+in the initial pass when resources/scorebug defer grown owners, reserve the
+selected union once, and forward the actual flag to the final `_apply_all`
+pass, along with BuildPlan's settings/seed only when a native settings adapter
+exists. **The present `apply(payload)` takes no settings and installs zero
+retail hooks. Do not claim that kit/project choices were installed in-game.**
+The future implementation must add a settings-aware adapter and repinned
+immutable configuration when those settings acquire native consumers.
+
+`_grown_status_fields(payload)` is shared by the four status returns. Add:
+
+```python
+"senior_bowl": senior_bowl_patch.status(payload),
+"senior_bowl_native_available": senior_bowl_patch.NATIVE_EVENT_AVAILABLE,
+```
+
+The `senior_bowl` status is explicitly **component installation status**; pair
+it with the availability bit in displayed text and receipts. The four required
+consumers must read the actual final byte object:
+
+| Dictionary | Entry |
+| --- | --- |
+| `read_xbe` | `senior_bowl_patch.status(payload)` plus false native availability |
+| `read_image` | same, from the read image's XBE payload |
+| `write_xbe_copy` | same, from final `patched` |
+| `write_image_copy` | same, from the post-resource, grown final XBE |
+
+Extend `mod_build.inspect`'s `_grown_status_fields` key allowlist to include
+both fields. Never infer native readiness from applied code or a successful
+allocator seal. Restore the availability bit only after the substantive
+native implementation and its acceptance gates have landed.
+
+## Gameplay Patches PATCHES, NEEDS_IMAGE and Build tab
+
+Protected `gameplay_patches_panel_qt.py`: add the key `senior_bowl` to
+`NEEDS_IMAGE` and the following PATCHES row, then disable its checkbox with
+the blocker text even when a disc is loaded:
+
+```python
+("senior_bowl", "Senior Bowl native event (not available)",
+ senior_bowl_patch.HELP_TEXT),
+```
+
+`HELP_TEXT` contains the required words **Retail** and **Patch**, explains
+preparation, and says in-game simulation/saving/menus are unavailable. Retain
+the EXPERIMENTAL / UNWITNESSED label. A prepared status must not enable the
+checkbox in a refresh or source-change callback.
+
+Protected `build_panel_qt.py`, using its existing gameplay layout:
+
+```python
+self.senior_bowl_check = self._option(
+    gl, "senior_bowl", "Senior Bowl native event (not available)",
+    senior_bowl_patch.HELP_TEXT, badge=NOT_TESTED)
+self.senior_bowl_check.setEnabled(False)
+self.senior_bowl_check.setToolTip(senior_bowl_patch.NATIVE_BLOCKER)
+```
+
+Caption length is 40 characters (under 60). Add the field to checkbox reload,
+reset/preset clearing, selection summaries and `_make_plan`, preserving its
+forced-off state. Persist panel settings/seed independently. Do not add an
+in-game Simulate button, stock modifier or playable toggle to another panel.
+A disabled control alone is insufficient: the backend refusal above is
+required for reopened/manually edited project files.
+
+## Studio tab registration and project/session binding
+
+In protected `studio_qt.py`, import and construct
+`mod_editor.gui.senior_bowl_panel_qt.SeniorBowlPanel`. Register one **Senior
+Bowl** tab alongside the Gameplay page's existing `extra_tabs`, by extending
+the tuple already supplied to `GameplayPanel`, not editing that protected
+panel or colliding with the existing Practice/Practice Squad descriptors:
+
+```python
+self._senior_bowl_panel = SeniorBowlPanel()
+# Existing extra_tabs plus:
+(self._senior_bowl_panel, "Senior Bowl")
+```
+
+`settings_changed` emits `options()` containing exactly `senior_bowl=False`,
+`senior_bowl_settings` and `senior_bowl_seed`. Save those through the normal
+Studio project dictionary/BuildPlan and restore with `set_options`. Connect
+source/session clearing to `set_players((), "")`; avoid retaining a class
+from another franchise. The page can read its own signed SAVEGAME.DAT through
+Open franchise save, with bounded reads of that file and its EXTRA only.
+For a composed Studio roster/save snapshot use
+`prospects_from_document(document)` then `panel.set_players(players, source)`;
+set the known position scheme first. Do not pass a disc as a save or silently
+reclassify records. `selected_player_index` returns the actual identity after
+sorting, not the row ordinal.
+
+Preview projects use `.2k5senior`, schema `nfl2k5_senior_bowl_project/v1`.
+Standalone save/open buttons are already implemented in the owned panel.
+Missing source files load choices and clear stale rosters. A changed embedded
+class identity refuses. None of these writes touch SAVEGAME.DAT/EXTRA or
+constitute the native event persistence path. Keep project/source operation
+guards consistent with other Studio pages during a running build/session edit.
+No displayed GUI was used; five offscreen panel tests cover the supplied API.
+
+## Allowlist, runtime closure, capability and manifest
+
+Add these exact protected `packaging/release-allowlist.txt` entries:
+
+```text
+mod_editor/core/nfl2k5_senior_bowl.py
+mod_editor/core/nfl2k5_senior_bowl_code.py
+mod_editor/gui/senior_bowl_panel_qt.py
+docs/mod_editor/senior_bowl.md
+ASTRA_SENIOR_BOWL_REPORT.md
+```
+
+Add explicit closure imports in protected
+`packaging/check_2k5_mod_studio_runtime.py`:
+
+```text
+mod_editor.core.nfl2k5_senior_bowl
+mod_editor.core.nfl2k5_senior_bowl_code
+mod_editor.gui.senior_bowl_panel_qt
+```
+
+Retain transitive closure for roster records, practice squad, franchise save,
+allocator, cave oracle and their existing imports. GNU as, Unicorn, Capstone,
+retail evidence files and the research corpus are development dependencies
+only, not requirements for the preview or byte installer. Pin these new local
+imports through the current provider/staged-closure mechanism; do not bypass
+closure tests or edit release versions/workflows for this feature.
+
+Merge `docs/mod_editor/nfl2k5_senior_bowl_capability.json` into the canonical
+registry using the existing serializer/validator. ID is
+`nfl2k5.franchise.senior_bowl_preview`, existing surface `schedules_franchise`,
+classification `read-only-mapped`, runtime `not-tested`, GUI `view`, default
+false. This truthfully advertises the host preview. It is not a native-event
+capability. Both backend and validation commands use `python3 -m` dotted
+modules so registry file-check mode resolves them. No new surface enum is
+needed. If native activation lands later, add a separately scoped writer
+capability with its actual runtime evidence and revised validation commands.
+
+Already edited unprotected integration: the actual-request budget fixture,
+`tests/nfl2k5_allocator_stack.py` REQUESTS/compose owner tuples, both XBE gates'
+setUpClass owner assertions plus full component write/ownership cases, and
+`nfl2k5_cave_manifest.py` append/reservation/module/extra-owner lists, request
+union, ordinary owner probe and synthetic-probe lists. The manifest probe
+records dormant components only. Claude alone regenerates protected
+`data/nfl2k5_cave_reservations.json` after integration. Keep source fingerprint
+checks and all existing owners. No real-disc build or newly generated complete
+release manifest is claimed by this branch; the added manifest unit proof
+observes this actual writer and its full named RX/RW allocations.
+
+# r62-bone-import handoff, 2026-09-06
+
+This section supersedes the r61b Animations import-disabled handoff. The core,
+Animations panel, standalone tests and owner-composition helpers are implemented.
+EXPERIMENTAL / UNWITNESSED. Protected files remain untouched. No gameplay or
+DCC/Blender acceptance is implied. See `ASTRA_BONE_IMPORT_REPORT.md` and
+`docs/mod_editor/nfl2k5_animation_import.md` for scope and witness requirements.
+
+## Protected integration decisions
+
+This is an explicit per-resource output-copy editor, not a preset executable
+patch. An arbitrary user's sidecar, source resource and edited rotations cannot
+be represented by a boolean BuildPlan setting. Do not silently apply the default
+embedded one-word composition witness to user builds.
+
+| Required integration point | Concrete decision |
+| --- | --- |
+| `nfl2k5_throw_tuning._apply_all` dispatcher tuple and kwarg | No new production tuple or kwarg. Do not add `animation_xbe.apply` with no Replacement: that default is only the safety-gate witness. Explicit user imports go through `nfl2k5_animation_import.write_import_copy` or `nfl2k5_animation_xbe.write_import_copy`. |
+| `_selected_space_requests` / `_xbe_space_adapter` | No flags or adapter; animation XBE `REQUESTS = ()`. No allocation, page expansion, code or runtime state. |
+| Four status dictionaries (loose-XBE inspection, disc inspection, `_apply_all` result, final apply result) and `_grown_status_fields` | No boolean status entry. A clip's original/applied/foreign state depends on its compiled Replacement and must not be reported as one universal patch state. The panel displays the actual preflight and output receipt. |
+| `BuildPlan` field, normalization, deferral and final pass | None. No automatic clip or body mutation during the shared build pass. |
+| Presets `basic` / `advanced` / `experimental` | None enable an animation or limb edit. The dedicated panel requires a selected source, edit and successful preflight. |
+| Gameplay Patches `PATCHES` text and `NEEDS_IMAGE` | No row and no NEEDS_IMAGE entry. If a discoverability cross-link is desired, exact copy: **Retail: original motions and limb lengths. Patch: open Animations to check an edit and write a new copy.** Do not turn the cross-link into a toggle. |
+| Build tab `_option` caption | No `_option`. Reserved cross-link caption if one is wanted: **Animation import (Experimental)** (31 characters including the space before the parenthesis; comfortably below 60). |
+| Studio navigation | Keep the existing Animations registration. No new panel is necessary. |
+
+In `studio_qt.py`, in the source-follow block immediately before the existing
+`self._animations_panel.set_source_paths(*paths)` / `.reload()`, set:
+
+```python
+self._animations_panel.image_field.setText(str(source))
+```
+
+Set it whenever the source disc changes, even while resource paths are still
+being prepared. The field's signal invalidates pending import preflight. The
+panel's **Choose source disc** control already works without this convenience
+wiring. Embedded imports explicitly use the optional retail XBE field and write
+a new standalone XBE; they do not silently install it into a disc.
+
+## Release allowlist and runtime closure
+
+Add these exact lines to `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_animation_import.py
+mod_editor/core/nfl2k5_animation_bones.py
+mod_editor/core/nfl2k5_animation_xbe.py
+docs/mod_editor/nfl2k5_animation_import.md
+docs/mod_editor/nfl2k5_animation_import_capability.json
+```
+
+The existing core animation/math/panel, Models, XBE helpers and tools are already
+allowlisted. In `packaging/check_2k5_mod_studio_runtime.py`, add these module names
+to the runtime import list beside the existing animation entries:
+
+```python
+"mod_editor.core.nfl2k5_animation_import",
+"mod_editor.core.nfl2k5_animation_bones",
+"mod_editor.core.nfl2k5_animation_xbe",
+```
+
+Expand its animation lazy-tool loop to include `nfl_vc_lz_fill`,
+`nfl_scne_gltf`, and `nfl_uniform_color_xiso_direct_patch`; all three files already
+appear on the allowlist. Retain `nfl_outer`, `nfl_motion_inventory`,
+`nfl_scene_probe`, `nfl_scne_inventory`, `nfl_txtr` and `xbe_info`.
+
+Add assertions that `compile_import`, `write_import_copy`, `compile_limb`,
+`write_limb_copy`, and the embedded `status`/`apply` methods are callable;
+`nfl2k5_animation_xbe.status(b"bad") == "foreign"`; and a fresh offscreen
+AnimationsPanel has its Import button disabled. Do not replace the latter with
+an assertion that `IMPORT_ENABLED` is false: the button is now gated per plan.
+No C compiler, private reports, recovered-C source, or evidence files are runtime
+imports. The high-body C comparison lives only in the standalone evidence test.
+
+## Capability change
+
+Replace the existing `nfl2k5.animations.inspect_export` object in
+`mod_editor/capabilities/registry.v1.json` with the complete schema-valid object
+in `docs/mod_editor/nfl2k5_animation_import_capability.json`. Preserve the stable
+ID so existing navigation continues to resolve. The object changes classification
+from `extract-only` to `offline-writer-proved`, backend operation from `export`
+to `write`, GUI mode from `export` to `edit`, and replaces the old disabled-import
+constraints with the exact gated subset. Runtime status remains `not-tested`.
+Both backend.command and validation_command use `python3 -m` with an actual
+repository module. The validation command checks packaged CLI availability;
+the evidence section names the substantive standalone tests. The same panel
+contains clip, limb and authored-gesture actions, so no extra invisible surface
+or generic BuildPlan field is introduced.
+
+## Occupied embedded roots and shared gates
+
+`nfl2k5_animation_xbe` owns only the explicitly pinned occupied spans
+`0x86d478..0x86e014` (2,972 bytes) and `0x851e38..0x85291c` (2,788 bytes), with
+writes restricted to their main quaternion words, plus the affected section
+header's digest. These are live animation data, not free space. Retail `.rdata`
+flags are 7 and stay 7. No `.text` mutation and no cave bytes occur.
+
+The checked-in test union already includes its empty `REQUESTS` and default
+one-word witness in both orders. Both XBE gate setUpClass methods explicitly
+check that the owner composed. The manifest builder now includes the owner in
+its module/request/compose/status/extra-owner lists and declares both complete
+root reservations, including unchanged bytes. Do not add an allocator budget
+row: zero-byte requests are invalid and this owner has no allocation.
+
+Claude must regenerate the protected
+`data/nfl2k5_cave_reservations.json` with the existing oracle manifest command
+after integration, with the disk-space rule respected. This session did not
+regenerate it. The writer checks the existing complete retail manifest for
+other-owner overlaps as well as its own explicit pinned spans. Generated
+manifest rows for this owner may also include observed digest bytes in retail
+or grown headers; those do not grant any additional resource write range.
+
+## Validation and user witness handoff
+
+Run these standalone files (Qt offscreen), and retain their precise skip reasons
+if private assets or the C compiler are absent:
+
+```text
+tests/mod_editor/test_nfl2k5_animation.py
+tests/mod_editor/test_nfl2k5_animation_import.py
+tests/mod_editor/test_nfl2k5_animation_retail.py
+tests/mod_editor/test_nfl2k5_animation_import_retail.py
+tests/mod_editor/test_animations_panel_qt.py
+tests/mod_editor/test_xbe_patch_memory_writes.py
+tests/mod_editor/test_xbe_patch_cave_references.py
+```
+
+For the corpus set `NFL2K5_ANIMATION_FULL_CORPUS=1`; provide the existing resource
+inventory via `NFL2K5_ANIMATION_INVENTORY` when not using `.scratch/`. The full
+corpus has 5,198 resources and 14,091,296 main/auxiliary words. No whole image or
+pack is read into memory. Compact disposable XDVDFS tests verify byte-identical
+no-edit output, the authored referee clip, both LODs/SKEL, exact changed ranges,
+replay, directory/source refusals and cleanup. Real retail offsets are checked
+read-only. A full retail output-copy acceptance build was intentionally not
+started with only about 102 GiB free on the main drive; it would break Noah's
+100 GB floor. No acceptance disc or pack copy remains in `.scratch/`.
+
+Before promising import, complete Noah's witness list in the report: unchanged
+round trip and edited clip through start/blend/loop/end/mirror/replay, then both
+LODs, head/hands/equipment, body profiles, planted feet, hand-to-ball and opponent
+contact for the limb. Throws/tackles need both actors and release/contact timing;
+this revision does not expose paired-action or throw-style authoring.
+from . import nfl2k5_guardian_overlay as guardian_overlay_patch
+from . import nfl2k5_guardian_resources as guardian_resources
+```
+
+Add `guardian_overlay: bool = False`,
+`guardian_everyone_practice: bool = True`, and the image-only optional
+`guardian_players=None` through `_apply_all`, `write_xbe_copy`,
+`write_image_copy` and forwarded `write_copy` kwargs as applicable. Validate
+both switches as actual booleans; roster recipes are meaningful only for
+image operations. Raw XBE writes are a component operation and must retain
+explicit matching-resource dependency text in their receipt.
+
+Extend `_selected_space_requests(..., guardian_overlay=False)` with
+`guardian_overlay_patch.REQUESTS if guardian_overlay else ()`, extend
+`_xbe_space_adapter` and every selected-owner predicate with this flag, and
+include it in complete request unions passed to the scorebug installer.
+The actual owner is `nfl2k5_guardian_overlay`, **496 bytes RX, zero RW/RO**.
+It replaces the planned `nfl2k5_guardian_cap_overlay` 2048/336 rows in the budget
+fixture. It requires v3 automatically. There is no bitmap: stored record flags
+and fresh native texture lookup remove the proposed persistent cache.
+
+Settings adapter and final `_apply_all` tuple after the allocator entry:
+
+```python
+class _guardian_overlay_adapter:
+    def __init__(self, everyone_practice):
+        self.everyone_practice = everyone_practice
+    @staticmethod
+    def status(payload):
+        return guardian_overlay_patch.status(payload)
+    def apply(self, payload):
+        return guardian_overlay_patch.apply(
+            payload, guardian_everyone_practice=self.everyone_practice)
+
+(guardian_overlay,
+ _guardian_overlay_adapter(guardian_everyone_practice),
+ 'guardian_overlay_patch', 'experimental Guardian cap overlay'),
+```
+
+Add to `_grown_status_fields(payload)`:
+
+```python
+'guardian_overlay': guardian_overlay_patch.status(payload),
+'guardian_overlay_settings': guardian_overlay_patch.read_settings(payload),
+```
+
+Verify the helper expands into **all four** output dictionaries: `read_xbe`
+(with `payload`), `read_image` (with `payload`), `write_xbe_copy` (with `result`),
+and `write_image_copy` (with its final re-read `patched` XBE). Image readers
+also expose `guardian_resources.image_status(image_path)` as
+`guardian_overlay_resources`, so a resource/XBE mismatch cannot appear ready.
+The executable `status` by itself never proves resources are installed.
+
+### BuildPlan, presets, deferral and the paired resource pass
+
+In protected `mod_editor/core/mod_build.py` add these fields:
+
+```python
+guardian_overlay: bool = False
+guardian_everyone_practice: bool = True
+guardian_players: list[dict] | None = None
+```
+
+Set Guardian overlay **false in Basic, Advanced and Experimental**. The
+practice preference is true within the explicitly enabled feature. Preserve
+it in project normalization/serialization. Require that `guardian_cap` (the
+existing route B option) and `guardian_overlay` are mutually exclusive. Reject
+a non-null `guardian_players` recipe with the overlay disabled. Include new
+fields in the recognized project keys and CLI forwarding.
+
+Use `defer_grown = plan.scorebug_runtime or plan.guardian_overlay` in the
+initial image pass. As in the existing scorebug path, defer the allocator and
+all selected owners until the complete request union is known; always defer
+Guardian's executable until its paired resources can be staged. All selected
+owners must be reserved once on the supported base. Never append a new request
+to an already-sealed allocator directory.
+
+After fixed resource and authored roster passes, run existing runtime scorebug
+resource installation first when selected, reserving Guardian's request in
+that same union. Then run:
+
+```python
+rec = guardian_resources.apply_to_image(
+    target,
+    guardian_everyone_practice=plan.guardian_everyone_practice,
+    guardian_players=plan.guardian_players,
+    extra_requests=tuple(r for r in all_selected_requests
+                         if r[0] != guardian_overlay_patch.OWNER),
+)
+receipt['steps'].append({'step': 'guardian_overlay', **rec})
+```
+
+The module reserves its own request on an ungrown base and installs into a
+pre-reserved union otherwise. Exclude its own row from `extra_requests` because
+the allocator rejects duplicate owner/kind rows. It stages both B models, one
+TXTR, optional ROST bit edits and executable before mutation; pack and XBE
+transports share an ordinary-I/O rollback boundary. Its in-place target must
+be the private build copy. The final dispatcher pass replays Guardian with the
+same settings and installs every other selected owner into the reserved union.
+Re-read the final XBE for every status receipt. `write_image_copy` needs the
+same sequencing, deferral and final pass as `mod_build`.
+
+The append grows outer 3 by 88,544 bytes and pack 0 by 88,064 sector-aligned
+bytes. Every subsequent outer virtual offset moves by 43 sectors; physical
+bytes in packs 1..F remain fixed. Current archive/XDVDFS locations are resolved
+fresh. This path also handles an already-moved pack after earlier scorebug or
+music writes. The old scorebug **installer** pins retail pack geometry, so do
+not run it after Guardian; its status reader has a moved-archive fallback.
+Music's later streaming rebuild can consume the updated common group. Continue
+to use the existing build's `file_grow` v2 export chain for both appended pack
+and XBE extents, and verify export/reapply after this handoff is wired.
+
+### Gameplay Patches and Build tab
+
+In protected `gameplay_patches_panel_qt.py`, add a `PATCHES` row keyed
+`guardian_overlay`, title **Guardian caps (experimental)**, using this exact
+plain help (also `guardian_overlay_patch.HELP_TEXT`):
+
+`EXPERIMENTAL / UNWITNESSED. Retail has no separate Guardian cap. Patch:
+selected players wear a padded cover over either helmet. Caps for everyone
+in practice is optional. A missing cap texture keeps the normal helmet.
+Requires the matching models and global cap artwork.`
+
+Add `guardian_overlay` to `NEEDS_IMAGE`. Do not offer a resource-free raw-XBE
+GUI switch. Route A and the old route B checkbox must not be simultaneously
+selectable. Add the dependent **Caps for everyone in practice** preference to
+project controls; disable that control while the overlay is disabled.
+
+In protected `build_panel_qt.py`, `_option` captions (both <=60 characters):
+
+- `guardian_overlay`: **Guardian caps (experimental)**
+- `guardian_everyone_practice`: **Caps for everyone in practice**
+
+Include both in plan extraction, loaded-project restoration and change signals.
+Rosters selects individual people; the practice option does not bulk-edit them.
+
+### Packaging, runtime closure and capability
+
+Add exact allowlist lines to protected `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_guardian_overlay.py
+mod_editor/core/nfl2k5_guardian_overlay_code.py
+mod_editor/core/nfl2k5_guardian_resources.py
+mod_editor/core/nfl2k5_resource_growth.py
+docs/mod_editor/nfl2k5_guardian_overlay_capability.json
+```
+
+Retain the existing shipped `nfl2k5_guardian_cap.py`, `nfl2k5_models.py`,
+`nfl2k5_p8_texture_writer.py`, `nfl2k5_player_tags.py`, music archive,
+XBE storage/allocator and their existing texture/model tool closure. Add the
+four new dotted core modules to the import list in protected
+`packaging/check_2k5_mod_studio_runtime.py`. The generated byte module removes
+GNU `as` from runtime requirements; `.S`, assembler and tests are development
+sources and need not ship. No retail binary, disc, texture span or scratch proof
+belongs in an allowlist.
+
+Merge `docs/mod_editor/nfl2k5_guardian_overlay_capability.json` into the canonical
+registry, without changing its `offline-writer-proved` classification or
+`runtime.status = not-tested`. The schema-valid backend command is
+`python3 -m mod_editor.core.nfl2k5_guardian_resources apply <private-build-copy.iso>`;
+validation is `python3 -m mod_editor.core.nfl2k5_guardian_resources check <image.iso>`.
+Both resolve a dotted module in registry file-check mode.
+
+### Manifest and acceptance after wiring
+
+The generator's owner lists, allocator dormant union and gate union are updated
+locally. When protected
+BuildPlan fields land, also set `guardian_overlay=False` and
+`guardian_players=None` in its separate dormant-owner base build, just like
+scorebug/abilities deferral, to avoid pre-sealing the request directory there.
+Claude must regenerate protected `data/nfl2k5_cave_reservations.json` using the
+normal manifest command against the fully wired stack. The private manifest
+used here comes from `test_nfl2k5_guardian_manifest.py`, which observes every
+actual XBE writer and requires complete changed-byte attribution, but expressly
+records **no disc/resource build**. It is not a replacement release manifest.
+
+Run all four Guardian test files, both complete XBE gates in both orders, the
+normal release-manifest suite after regeneration, capability/runtime closure,
+and integrated opt-in image + modpack export/reapply acceptance. The current
+system drive was already below Noah's 100 GB free target, so no full disc copy
+was made in this session. Use sufficient free capacity and disposable temporary
+directories for those final integrated images. Noah's required played witness
+is in the report; offline proofs do not establish GPU appearance or saved-game
+lifecycle coverage.
+
+---
+
+# r62 MyCareer and independent Crib movie cut, 2026-09-06
+
+This section is additive. The supplied backends, own Qt page, generated assembly,
+tests and report are implemented. The files listed as protected in ASTRA_BRIEF.md
+have not been edited. Claude applies the following concrete integration. Keep
+both features **EXPERIMENTAL / UNWITNESSED**, with no played-runtime claim.
+
+## BuildPlan, presets, preflight and ordering
+
+Add these fields to `mod_editor/core/mod_build.py`:
+
+```python
+my_career: bool = False
+my_career_setup: str | None = None  # path to prepared MyCareer.json
+crib_reclaim: bool = False
+```
+
+Basic, Advanced and Experimental explicitly set `my_career=False`,
+`my_career_setup=None`, `crib_reclaim=False`. Add both modules to availability
+checks and both flags to `wants_xbe_patch`, normalization, serialization, preset
+round-trips and inspection/status key forwarding. Validate exact booleans.
+When `my_career` is true, require a nonempty setup, call
+`nfl2k5_my_career.read_setup(plan.my_career_setup)` before copying an image,
+freeze its returned 1280 bytes, and set `xbe_space=True`. Reject a setup supplied
+without its option. An unconfigured `apply(payload)` exists for owner/gate
+composition; it must not be offered as a configured MyCareer Build.
+
+Do not enable practice-squad features merely for MyCareer. If they are selected,
+preserve their existing prerequisite normalization. MyCareer understands their
+reserve metadata. The small change in `nfl2k5_practice_reserves.status` recognizes
+only MyCareer's complete sealed installation at the shared copy-helper entry;
+retain that change. No draft-AI picker, cap, roster limit or progression setting
+is implicitly enabled or disabled.
+
+Add MyCareer to the existing final allocator pass and all deferral predicates
+around the scorebug runtime path. On the preliminary pass pass `my_career=False`
+and `my_career_setup=None`; reserve its request in the **complete final union**
+passed to `runtime_apply_in_place(extra_requests=...)`. The final `_apply_all`
+receives `my_career=plan.my_career, my_career_setup=frozen_setup` along with every
+other selected owner. Preserve the existing allocator-first order. A later
+incremental request expansion after another owner's installation must refuse.
+
+`crib_reclaim` requests no allocator space. Its XBE tuple disables the consumer,
+but only the image rebuild below earns a reclaimed-byte receipt. Defer the
+image rewrite until **after** all XBE growth and archive rewrites, including
+music-library and hires-pack processing. Then use fresh offsets:
+
+```python
+crib = _core_module("nfl2k5_crib_reclaim")
+preview = crib.plan(target)
+with tempfile.TemporaryDirectory(prefix=".crib-cut-", dir=target.parent) as folder:
+    destination = Path(folder).resolve() / "image.iso"
+    rec = crib.rebuild(target, destination, expected_plan=preview, progress=progress)
+    os.replace(destination, target)
+receipt["steps"].append({"step": "crib_reclaim", **rec})
+inspection = inspect(target, screen_timing=plan.screen_timing)
+```
+
+Both readers and writers close before replacement. Reopen metadata after the
+rewrite; no saved physical offset is valid across it. Source and output must be
+separate. Retain the existing public Build transaction and failure cleanup.
+Before creating the first working image, account for the working image **and**
+the Crib transaction's second copy plus its scratch allowance. Keep the main
+drive above the user's 100 GB floor. The backend conservatively requires
+100 GiB plus scratch free for any source above 1 GiB. This session did not create
+a full-size disposable image because the drive had only about 102 GiB free.
+
+## Dispatcher, allocation adapter and four status dictionaries
+
+In `mod_editor/core/nfl2k5_throw_tuning.py`, import:
+
+```python
+from . import nfl2k5_my_career as my_career_patch
+from . import nfl2k5_crib_reclaim as crib_reclaim_patch
+```
+
+Thread `my_career=False`, `my_career_setup=None`, `crib_reclaim=False` through
+`_apply_all`, `write_xbe_copy`, `write_image_copy`, their validation/no-op checks,
+all forwarding calls, and the scorebug deferred/final paths. Normalize and
+validate setup once, retaining the immutable bytes during the build.
+
+Append `my_career=False` to `_selected_space_requests` and `_xbe_space_adapter`,
+and pass it at every call site. Add
+`+ (my_career_patch.REQUESTS if my_career else ())` to the returned union and
+`or my_career` to allocator-selection predicates. Crib may be accepted as a
+forwarded flag but must contribute `()` and must not force allocation.
+
+The settings adapter is concrete and needs no assembler at runtime:
+
+```python
+class _my_career_adapter:
+    def __init__(self, setup):
+        self.setup = my_career_patch.read_setup(setup)
+
+    def status(self, payload):
+        return my_career_patch.status(payload)
+
+    def apply(self, payload):
+        return my_career_patch.apply(payload, setup=self.setup)
+```
+
+Append these `_apply_all` owner tuples **after** the shared allocator tuple:
+
+```python
+(my_career, _my_career_adapter(my_career_setup),
+ "my_career_patch", "MyCareer (experimental)"),
+(crib_reclaim, crib_reclaim_patch,
+ "crib_reclaim_patch", "Crib movie cut (experimental)"),
+```
+
+Add the following to `_grown_status_fields(payload)`, then retain its expansion
+in all **four** result/status dictionaries: `read_xbe`, `read_image`,
+`write_xbe_copy`, `write_image_copy`. Also add the keys to `mod_build.inspect`'s
+forwarded status list and the final Build receipt.
+
+```python
+"my_career": my_career_patch.status(payload),
+"crib_reclaim": crib_reclaim_patch.status(payload),
+```
+
+For a valid applied MyCareer image, `installed_setup(payload) is not None` is the
+configuration check. Do not call it on retail/foreign images. Do not expose the
+full identity/checkpoint bytes in generic status displays. `crib_reclaim` here
+is the XBE consumer status; label it accordingly. Only the explicit image plan
+and rebuild receipt establish `archive_bytes_reclaimed`, `disc_bytes_reclaimed`
+and verification of every retained resource. An XBE-only patch reports **zero**
+disc bytes reclaimed. Never silently count the movie payload size as image
+savings or run a 6 GB full-image hash on every ordinary status refresh.
+
+## Gameplay Patches, Build options and MyCareer page
+
+Add these PATCHES rows to `mod_editor/gui/gameplay_patches_panel_qt.py` and put
+both keys in `NEEDS_IMAGE`. Their help includes both required words:
+
+```python
+("my_career", "MyCareer (experimental)",
+ "EXPERIMENTAL / UNWITNESSED. Retail: Franchise controls a team. Patch: "
+ "MyCareer follows MyPlayer, a created QB, through the normal draft. "
+ "The CPU manages the club and teammates. Create the paired draft save "
+ "and setup on the MyCareer page, then include the setup in Build."),
+("crib_reclaim", "Crib movie cut (experimental)",
+ "EXPERIMENTAL / UNWITNESSED. Retail: The Crib includes 23 movies. Patch: "
+ "Remove those movies from a smaller image. The Trophy Room, awards, "
+ "profiles, shared room, games and furniture stay."),
+```
+
+MyCareer needs its setup picker in the Gameplay Patches action path too. Forward
+the chosen frozen setup to the dispatcher and refuse a missing setup before a
+copy. Crib's action must call its transactional image `rebuild` with an explicit
+output, not finish after the XBE-only dispatch. Keep the two options independent.
+
+In `mod_editor/gui/build_panel_qt.py`, add `_option` entries using exact captions
+`MyCareer (experimental)` (23 characters) and `Crib movie cut (experimental)`
+(29 characters), each below 60. Add a `MyCareer.json` file picker and explanatory
+text linking it to the paired save. Wire both checkboxes, setup path, all plan
+read/write paths, availability and preset/reset synchronization. Selecting or
+opening a setup must not implicitly enable either checkbox.
+
+In `mod_editor/gui/studio_qt.py`, import and instantiate
+`MyCareerPanel` from `mod_editor.gui.my_career_panel_qt`, register its own tab
+with exact title **MyCareer**, and call `set_source(current_image)` on source
+changes. Connect `setup_ready(str)` to the Build panel's setup-path setter.
+The page itself already implements preparation, background work, errors,
+explicit movie-plan review and the separate smaller-image transaction. It
+does not start work on tab creation or source selection. Preserve the exact
+names **MyCareer** and **MyPlayer** everywhere; use no em dashes in UI text.
+
+## Allowlist, runtime closure, capability and manifest handoff
+
+Required runtime allowlist lines in `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_my_career.py
+mod_editor/core/nfl2k5_my_career_code.py
+mod_editor/core/nfl2k5_crib_reclaim.py
+mod_editor/gui/my_career_panel_qt.py
+docs/mod_editor/nfl2k5_my_career_capabilities.json
+ASTRA_MY_CAREER_REPORT.md
+```
+
+Retain already-shipped transitive dependencies: `nfl2k5_roster_records`,
+`nfl2k5_franchise_save`, `nfl2k5_practice_reserves`, `nfl2k5_xbe_space`,
+`nfl2k5_music_archive`, `nfl2k5_music_banks`, `nfl2k5_rdata_sites`,
+`nfl2k5_cave_oracle`, `nfl2k5_bump_strength`, `nfl2k5_depth_chart_storage`,
+`platform_compat`, `tools.nfl2k5_commentary_swap` and `tools.nfl_outer`, plus their
+existing closures. Source-distribution additions are
+`tools/nfl2k5_my_career.S` and `tools/nfl2k5_my_career_assemble.py`; the runtime
+needs only generated Python bytes, not GNU as, Capstone or Unicorn.
+
+Add runtime-closure imports in `packaging/check_2k5_mod_studio_runtime.py`:
+
+```text
+mod_editor.core.nfl2k5_my_career
+mod_editor.core.nfl2k5_my_career_code
+mod_editor.core.nfl2k5_crib_reclaim
+mod_editor.gui.my_career_panel_qt
+```
+
+Merge the two schema-valid objects in
+`docs/mod_editor/nfl2k5_my_career_capabilities.json` into the registry. IDs:
+`nfl2k5.mode.my_career` on existing `mode_state_routing`, and
+`nfl2k5.crib.movie_reclaim` on existing `crib_assets`. Classification is
+`offline-writer-proved`; runtime is `not-tested`; GUI defaults are false. Both
+backend and validation commands use `python3 -m <dotted.module> ...`, so the
+registry file-check mode resolves them. No new surface enum is needed.
+
+Both owners are already in `tests/nfl2k5_allocator_stack.py`, both XBE gates and
+the manifest builder's complete request and owner lists. MyCareer's real
+8192/4096/16-byte-aligned requests exactly equal its existing committed budget
+rows; no budget expansion or extra RO page is requested. Crib has no allocation.
+
+Claude alone regenerates `data/nfl2k5_cave_reservations.json` after protected
+integration, using the usual real-disc manifest workflow when disk space allows.
+The old manifest's named child offsets change when this owner enters the union.
+The cave gate now uses a **test-only** named-child projection for its two
+allocation proofs: old owner/kind bounds and identical size/alignment are
+required, retail reservations remain byte-for-byte intact, unknown owners
+refuse, and the product manifest is never rewritten. The separate MyCareer
+manifest tests observe its actual byte writes and zero-initialized RW capacity.
+These proofs do not replace Claude's release manifest regeneration or a played
+acceptance run. No updater, release-tag, workflow or push changes are requested.
+
+# r62-screen-hooks: second screen timing experiment, 2026-09-06
+
+This section adds only `screen_hooks`. EXPERIMENTAL / UNWITNESSED. The runtime,
+assembler, standalone proofs, complete allocator union and manifest builder
+are implemented; the protected shared product files below were left unchanged.
+All Basic, Advanced and Experimental presets explicitly keep this flag OFF.
+The earlier `screen_timing` A-D experiment and its existing preset values stay
+independent. Noah has not yet witnessed the data tier. This box is for an
+explicit second experiment, never a default fix or a requirement for A-D.
+
+## BuildPlan, validation, resource order and final allocation
+
+In `mod_editor/core/mod_build.py`, add `screen_hooks: bool = False` to
+`BuildPlan`. Put `"screen_hooks": False` explicitly in `softdrink_basic`,
+`softdrink_advanced` and `softdrink_experimental`; loading any preset clears
+a previously selected value. Include it in `wants_xbe_patch()`, the actual-bool
+normalization list, availability, `inspect` status forwarding, recipe/plan
+serialization, feature summaries and the Build widget's plan collection.
+Do not derive it from `screen_timing`, or enable a timing level when checked.
+
+Add `screen_hooks` to every grow-owner deferral/final-pass condition alongside
+`calendar_engine` / `qb_spy`, including early-write suppression. Pass
+`screen_hooks=False` in the early normal-XBE pass. The existing
+`screen_timing.apply_to_image` A-D pass runs first. Install the hooks only in
+the existing final `_apply_all` owner pass after that PLAY pass and all other
+resource edits, with `screen_hooks=plan.screen_hooks`.
+
+The final union must include the hooks before its first allocation. Forward
+`screen_hooks=plan.screen_hooks` into the scorebug runtime call's
+`tt._selected_space_requests(...)`, both normal final-owner paths, and all
+equivalent dispatcher/writer forwarding. Otherwise a combined scorebug build
+can freeze an allocation union that lacks this owner. Standalone hook builds
+implicitly select scale-out through their new-owner REQUESTS. Never allocate
+them separately after another incomplete union has been installed.
+
+`_allocator_feature_status` should expose module availability and the actual
+`screen_hooks` state. `mod_build.inspect` should pass through both the state
+and `screen_hooks_settings` from executable inspection for either a standalone
+XBE or an image. Product builds require an image through NEEDS_IMAGE; the
+development XBE-only API/CLI remains useful and intentional. No PLAY identity
+table, authored-intent receipt or additional settings adapter is needed: the
+runtime follows the loaded grammar directly and has fixed policies.
+
+## Dispatcher and all four status dictionaries
+
+In `mod_editor/core/nfl2k5_throw_tuning.py` import:
+
+```python
+from . import nfl2k5_screen_hooks as screen_hooks_patch
+```
+
+Add `screen_hooks: bool = False` to `_apply_all`, `write_xbe_copy` and
+`write_image_copy`, forwarding it through every call and validating
+`type(screen_hooks) is bool`. Include it in both writers' nothing-requested
+conditions. Extend `_selected_space_requests`, `_xbe_space_adapter`, inherited
+`_defensive_try_adapter`, their callers and allocator enablement predicates:
+
+```python
++ (screen_hooks_patch.REQUESTS if screen_hooks else ())
+```
+
+The final `_apply_all` owners tuple gets this entry AFTER its allocator entry:
+
+```python
+(screen_hooks, screen_hooks_patch, "screen_hooks_patch",
+ "screen pass timing hooks (second experiment)"),
+```
+
+This tuple is reached after `screen_timing` in image Build as specified above;
+the resource-only timing module does not belong in `_apply_all`'s XBE tuple.
+No settings adapter is required because `apply(payload)` has no settings args.
+Status/apply refuse both-hook mixtures, altered code, padding, dependencies,
+seals, geometry and digests before installing anything. Preserve the complete
+owner receipt, source/result hashes, the two exact edit spans, instruction
+size, zero data bytes, experiment order and unwitnessed markers.
+
+Add these entries to `_grown_status_fields(payload)`:
+
+```python
+"screen_hooks": screen_hooks_patch.status(payload),
+"screen_hooks_settings": screen_hooks_patch.read_settings(payload),
+```
+
+Verify they appear in all FOUR dictionaries, with each dictionary's actual
+bytes: `read_xbe(payload)`, `read_image(payload)`, `write_xbe_copy(result)`,
+`write_image_copy(after)`. `read_settings` returns None when foreign or absent;
+installed values are model version 1, line floor 0.8, default QB timer 0.6,
+explicit delays preserved, experiment order 2 and runtime_witnessed False.
+Forward these through Build output inspection and status refresh; a checked
+box alone is not proof that an owner is installed.
+
+## Gameplay Patches and Build tab
+
+In `mod_editor/gui/gameplay_patches_panel_qt.py`, add a PATCHES row with key
+`screen_hooks`, title `Screen pass timing hooks (second experiment)`, and
+description `screen_hooks_patch.HELP_TEXT`, exactly:
+
+> EXPERIMENTAL / UNWITNESSED. Retail: screen plays use their original line and
+> QB timers. Patch: matched screens keep expired line holds until 0.8 seconds
+> after the snap and use a 0.6-second default QB timer. Explicit QB delays stay
+> unchanged. This is the second experiment after the timing levels A-D. It
+> does not guarantee a throw or catch. All presets are off.
+
+This contains Retail and Patch. Add `screen_hooks` to NEEDS_IMAGE and the normal
+foreign-state gating, plan collection, status read-back and reset forwarding.
+Place it after the A-D timing control. Preserve independent checkboxes.
+
+In `mod_editor/gui/build_panel_qt.py`, add the Boolean `_option` with caption
+`Screen pass timing hooks (second experiment)` (44 characters, <=60), key
+`screen_hooks`, default False, and HELP_TEXT as its description. Include the
+field in preset application, plan construction, reset and installed-status
+refresh. Any existing forwarding lists in `studio_qt.py`, `gameplay_panel_qt.py`
+or providers need the same key. No new feature-specific GUI panel is required.
+Keep addresses and allocation details out of the product control text.
+
+## Allowlist, runtime closure, capability and manifest
+
+Add these lines to `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_screen_hooks.py
+mod_editor/core/nfl2k5_screen_hooks_code.py
+ASTRA_SCREEN_HOOKS_REPORT.md
+```
+
+Add these imports to `packaging/check_2k5_mod_studio_runtime.py` and any gameplay
+provider closure import list:
+
+```text
+mod_editor.core.nfl2k5_screen_hooks
+mod_editor.core.nfl2k5_screen_hooks_code
+```
+
+Retain the existing allocator, cave reader and section-digest helper closure.
+GNU as, Capstone, Unicorn, tests, `.S`, the development assembler and private
+evidence are not runtime dependencies or shipped game assets. The byte template
+is checked in and reproducible. The release report links the witness protocol.
+
+Merge the complete object in
+`docs/mod_editor/nfl2k5_screen_hooks_capability.json` into
+`mod_editor/capabilities/registry.v1.json` as
+`nfl2k5.gameplay.screen_hooks` on `gameplay_tuning_sliders`. It is schema-valid
+with both commands in `python3 -m dotted.module ...` form. Keep classification
+`offline-writer-proved`, runtime `not-tested`, default_enabled False and the
+second-experiment wording. The handoff JSON itself is an integration input;
+no additional surface enum or schema change is required.
+
+The complete stack in `tests/nfl2k5_allocator_stack.py`, both XBE gates and all
+manifest request/observer/apply/probe/status/owner lists already include the
+new owner. Its real request is exactly the fixture's existing 640 RX / 0 RW /
+0 RO row, so no budget growth or owner rename is required. Claude must
+regenerate protected `data/nfl2k5_cave_reservations.json` from final integrated
+sources. The private bounded projection is explicitly not a new disc-build
+manifest. Add `screen_hooks=False` to the manifest builder's dormant-base
+BuildPlan replacement after the protected field exists, so preset changes
+cannot preallocate an incomplete owner union.
+
+Integration acceptance: all presets reset off; A-D alone unchanged; hooks
+alone; D plus hooks with explicit 0.6 preserved; scorebug plus hooks sharing
+one union; absent/foreign/applied states in all four dictionaries; exact replay;
+both XBE gates, the three new standalone suites, capability file validation,
+staged runtime closure, regenerated manifest and Noah's paired-snap protocol.
+Do not label the timing values calibrated or gameplay witnessed.
+
+# r62 QB spy from man and rush, 2026-09-06
+
+This section supersedes the earlier zone-only QB-spy handoff. Backend owner
+`nfl2k5_qb_spy` now installs zone, man and rush entry paths atomically through
+`mod_editor/core/nfl2k5_qb_spy_runtime.py`. Keep the existing **`qb_spy`** flag.
+**EXPERIMENTAL / UNWITNESSED.** No protected file was edited in this branch.
+
+## Allocation and source rebuild
+
+The owner's complete requests are now `(code, 2048, 16)`, `(data, 768, 16)` and
+`(read_only, 512, 16)`. This is 512 additional RX bytes and no additional RW/RO.
+The request union, fixture, both gate compositions and manifest builder use
+the same existing owner. Do not add a second owner or duplicate its rows.
+The native callback identities remain retail: seven callback entry detours
+delegate to the same spy dispatcher/table, and three dispatch wrappers execute
+their native initializer once then clear stale records. See the report for why
+replacing callback pointers would break native man exchange comparisons.
+
+An installed 1536-byte revision-1 allocation is immutable and now reports
+`foreign`; apply refuses with an explicit rebuild-from-base message. Rebuild
+from the original supported source with all selected requests, recompile the
+paired intent table and reapply owners. Never upgrade an installed request set
+or copy its old hooks into the new allocation. The loaded PLAY v1 table remains
+unchanged: authored spies use legal shallow-zone fallback, while the native Spy
+command also works on supported man/rush callbacks after initialization.
+
+## Dispatcher, BuildPlan and four status dictionaries
+
+In protected `mod_editor/core/nfl2k5_throw_tuning.py`, keep the existing
+`qb_spy: bool = False` and `qb_spy_intent_table: bytes | None = None` keyword
+arguments on `_apply_all`, `write_xbe_copy` and `write_image_copy`, with the
+existing table/flag validation and `_qb_spy_adapter`. Its apply must continue
+to call `qb_spy_patch.apply(payload, intent_table=self.table)`.
+
+Update the existing final owners tuple after the allocator entry to:
+
+```python
+(qb_spy, _qb_spy_adapter(qb_spy_intent_table),
+ "qb_spy_patch", "QB spy for zone, man and rush (experimental)"),
+```
+
+Keep `_selected_space_requests`'s `+ (qb_spy_patch.REQUESTS if qb_spy else ())`
+and the existing `qb_spy` argument/condition in `_xbe_space_adapter`. They pick
+up the grown request automatically before the first allocation. Keep the
+`_grown_status_fields` member `"qb_spy": qb_spy_patch.status(payload)` and its
+existing expansion in **all four dictionaries**:
+
+| Dictionary | Status bytes |
+| --- | --- |
+| `read_xbe` | input `payload` |
+| `read_image` | extracted input `payload` |
+| `write_xbe_copy` | completed `patched` |
+| `write_image_copy` | completed `final` |
+
+In protected `mod_editor/core/mod_build.py`, retain `BuildPlan.qb_spy: bool =
+False`; update its comment to zone/man/rush. Basic (`softdrink_basic`), Advanced
+(`softdrink_modern`) and Experimental (`softdrink_experimental`) all explicitly
+keep `qb_spy=False`. Retain wants-XBE detection, `xbe_space` normalization,
+runtime-closure selection, early `qb_spy=False` deferral, the full selected
+request union, and final `qb_spy=plan.qb_spy, qb_spy_intent_table=spy_table`.
+Continue compiling `spy_pairs` before the final pass and preserving table
+receipts. The existing empty table supports command-only builds. No new
+BuildPlan field or preset enablement is needed.
+
+## Gameplay Patches and Build captions
+
+In protected `mod_editor/gui/gameplay_patches_panel_qt.py`, replace the existing
+PATCHES row with:
+
+```python
+("qb_spy", "QB spy for zone, man and rush (experimental)",
+ tt.qb_spy_patch.HELP_TEXT),
+```
+
+Keep `"qb_spy"` in `NEEDS_IMAGE`. HELP_TEXT now contains both required words
+**Retail** and **Patch**, explains four-yard tracking and release, retains the
+experimental/unwitnessed label and states that authored plays keep their zone
+fallback. Do not retain the earlier claim that man/rush needs a future patch.
+
+In protected `mod_editor/gui/build_panel_qt.py`, use this existing control:
+
+```python
+self.qb_spy_check = self._option(
+    g, "qb_spy", "QB spy for zone, man and rush (experimental)",
+    tt.qb_spy_patch.HELP_TEXT, badge="EXPERIMENTAL / UNWITNESSED",
+    needs_image=True)
+```
+
+The caption is 44 characters, under the 60-character limit. Keep checkbox
+serialization, source-image gating and BuildPlan forwarding as already wired.
+
+## Packaging, registry and release ownership
+
+These exact protected `packaging/release-allowlist.txt` lines already exist;
+retain them, with no new runtime file required:
+
+```text
+mod_editor/core/nfl2k5_qb_spy_runtime.py
+mod_editor/core/nfl2k5_qb_spy_runtime_code.py
+docs/mod_editor/nfl2k5_qb_spy_runtime_capability.json
+```
+
+Retain these imports in protected
+`packaging/check_2k5_mod_studio_runtime.py` and Build's closure:
+
+```text
+mod_editor.core.nfl2k5_qb_spy_runtime
+mod_editor.core.nfl2k5_qb_spy_runtime_code
+mod_editor.core.nfl2k5_xbe_space
+```
+
+Assembly, GNU as, Capstone and Unicorn remain development/test dependencies.
+Update the existing `nfl2k5.gameplay.qb_spy` capability from the revised
+`docs/mod_editor/nfl2k5_qb_spy_runtime_capability.json`; the existing
+`gameplay_tuning_sliders` surface and default-off classification remain. Both
+commands now use resolvable `python3 -m` modules. The bounded standalone copy
+recipe refuses existing output paths and validates everything before opening
+an output. It does not update an old installed allocation in place.
+
+Claude must regenerate protected `data/nfl2k5_cave_reservations.json` after
+merging final sources. The current manifest builder enumerates this owner in
+all its existing lists and observes the additional live hooks/reservations.
+Run both XBE gates, capability file validation and staged runtime closure after
+the text/registry/manifest handoff. Gameplay acceptance remains Noah's witness
+list in `ASTRA_QB_SPY_MAN_RUSH_REPORT.md`.
+
+# r62 music all modes, tier 4b (2026-09-06)
+
+This section supersedes the tier-4a music routing, selection and persistence
+instructions. Protected sources remain untouched. Apply the reviewable
+`docs/mod_editor/music_all_modes_wiring.patch` to `mod_build.py`,
+`build_panel_qt.py` and `studio_qt.py`. `git apply --check` passes against this
+branch. `test_music_all_modes_wiring.py` applies it in memory and exercises the
+publication wrapper and real offscreen Build/Music widgets with the proposed
+Studio methods. It also accepts already-applied handoff sources.
+
+## Final image validation and Build document
+
+Keep the existing `BuildPlan` fields:
+
+```python
+music_shuffle: bool = False
+music_shuffle_selection: dict | None = None
+```
+
+Basic, advanced and experimental presets all leave `music_shuffle=False` and
+selection `None`. Preset application resets the checkbox; retained personal
+choices may remain available for a later explicit opt-in. Normalize a supplied
+document using `music_playlist_patch.from_options`, accepting schemas 1 and 2.
+The field holds a detached JSON dictionary, never a `Selection` dataclass.
+The old Build setter accidentally stored a `Selection` and fed it back to a
+document validator; the patch corrects that conversion boundary.
+
+Keep the early ordinary-XBE pass deferred with `music_shuffle=False` and
+`music_shuffle_selection=None`. In the final allocator/owner pass:
+
+```python
+library = _core_module("nfl2k5_music_banks")
+preview = library.plan(target, plan.music_library) if plan.music_library else None
+playlist_selection, playlist_preflight = library.playlist_preflight(
+    target, plan.music_shuffle_selection, library_plan=preview)
+```
+
+This reads actual source AUSB counts. Planned counts come from the validated
+plan's `boundaries`, including both jukebox twins; `layout.banks` does not exist
+in the real plan. Keep `revalidated_after_rebuild=False` here. Only the final
+check may set it true.
+
+In outer `build`, after `_build` completes every edit including Hi-res remapping
+and immediately before the final `os.replace`, reopen the private output with
+`library.revalidate_playlist`. Run this when shuffle OR a library rebuild is
+selected, so a pre-existing playlist is checked even when the checkbox is off.
+When shuffle is selected pass the chosen document, or `default_options()` for
+the default 66 records, as `expected`. The reader validates actual installed
+RX/RO/hooks, selected indices, every descriptor extent and jukebox twin geometry.
+Store its receipt as `music_shuffle_validation`, and merge it into each
+`music_shuffle_preflight` step. Every reader must close before publication.
+Any mismatch raises inside the private transaction and preserves the old target.
+
+The unprotected `nfl2k5_music_banks.verify` already invokes the installed-playlist
+check before the library writer publishes its private result. The outer Build
+check is still required after all subsequent changes and for shuffle-only builds.
+No installed playlist reports `installed=False`, zero records and a false
+revalidation flag; it must never be represented as validated installation.
+
+## Project state maps, lazy pages and library previews
+
+This base had no project archive field or session API for Build preferences.
+The unprotected archive/session/facade now persist a validated music map:
+
+```json
+{"music_shuffle": true, "music_shuffle_selection": {"schema": 2}}
+```
+
+The inner object above is abbreviated; persist the complete document returned
+by `MusicPanel.playlist_options()`, including catalogue, checked rows, filters,
+records and enabled indices. `playlist.build_settings` validates the complete
+map. Unknown fields are refused; when more Build settings are introduced,
+extend this validator deliberately. Existing archives without this optional
+field load as `{}`. Named saves, recovery saves and load rollback include it.
+Build-only projects are valid; asset Revert All and its Undo retain preferences.
+
+The protected patch adds `BuildPanel.music_build_settings()` and
+`restore_music_build_settings(state)`. Validation precedes widget mutation;
+snapshots are detached and JSON-compatible. It connects both enable switches
+through Studio and caches choices before the lazy Build page exists. Capture
+the map on the GUI thread before named/fast Save and whenever choices change,
+through `facade.set_project_build_settings`. Restore from
+`facade.project_build_settings` after project open and after either lazy page
+is created. Guard restore/source-inspection signals so transient defaults do
+not overwrite saved preferences or mark the workspace dirty. Old projects
+reset the enable flag and choices instead of inheriting the previous project.
+
+Build's accepted music-library preview emits actual source counts plus its
+validated plan. Studio calls `catalog_for_counts(counts, library_plan=preview)`
+and `MusicPanel.set_playlist_catalog`; cache the catalogue if Music is still
+lazy. Source inspection independently calls `read_playlist_catalog` in the
+worker, reading rebuilt jukebox titles and actual counts. Catalogue-read errors
+show a status message without discarding the other source capability results.
+This allows a grown-library Playlist even when fixed-slot audio editing has no
+service. Existing operation locks still disable controls. The Music page also
+has its own bounded library-image browser and retains its choices JSON files.
+
+## Dispatcher and all four status dictionaries
+
+These entries are already wired; retain them and forward the new receipt scope.
+Import remains `nfl2k5_music_playlist as music_playlist_patch` in protected
+`nfl2k5_throw_tuning.py`. `_apply_all`, `write_xbe_copy` and `write_image_copy`
+retain `music_shuffle: bool = False, music_shuffle_selection=None`. Validate
+the Boolean and a `Selection` instance at the dispatcher boundary. Build alone
+converts the saved dictionary with `playlist_preflight`.
+
+`_selected_space_requests` includes `music_playlist_patch.REQUESTS` when enabled;
+`_xbe_space_adapter` forwards the flag. Keep it in allocator activation,
+scorebug deferral, the full final request union and both nothing-selected checks.
+Keep this final owner tuple after allocation:
+
+```python
+(music_shuffle, music_shuffle_selection or music_playlist_patch.Selection(),
+ "music_shuffle_patch", "experimental music playlist"),
+```
+
+`Selection` is the settings adapter; no extra adapter class is needed.
+`_grown_status_fields(payload)` retains:
+
+```python
+"music_shuffle": music_playlist_patch.status(payload),
+"music_shuffle_state": music_playlist_patch.read_settings(payload),
+```
+
+Ensure all four dictionaries receive it: `read_xbe(payload)`,
+`read_image(payload)`, `write_xbe_copy(result)`, `write_image_copy(after)`.
+Forward through Build inspection and receipts. Preserve `runtime_witnessed=False`
+and `context_proof_scope`; `all_modes_proved` refers ONLY to the 24 bounded
+contracts in the matrix. It does not certify audio or a played game.
+
+## Captions, release closure and owner composition
+
+Retain Build `_option` caption `Shuffle songs in menus, Crib and games`
+(37 characters, below 60), experimental badge, default off, `needs_image=True`.
+Use `music_playlist_patch.HELP_TEXT` for its help. Change the protected Gameplay
+Patches `music_shuffle` PATCHES description to:
+
+> EXPERIMENTAL / UNWITNESSED. Retail: screens choose their own music. Patch:
+> up to 100 selected songs share a shuffle across menus, Crib, draft and game
+> background. Pause and replay keep it playing. Loading, halftime and wrap-up
+> keep their timed music. Stadium clip previews pause and resume the song.
+> Actual playback still needs testing in game. All presets are off.
+
+Keep `music_shuffle` in `NEEDS_IMAGE`. Do not label it witnessed or silently
+enable it in another gameplay panel. No new GUI surface or capability ID is
+needed. This change updates only `nfl2k5.music.playlist` in the registry and
+`docs/mod_editor/nfl2k5_music_playlist_capability.json`, including working
+`python3 -m` commands. The module CLI is a bounded executable-only development
+writer; product image builds must use descriptor validation before publication.
+
+Ensure these existing protected release-allowlist lines remain:
+
+```text
+mod_editor/core/nfl2k5_music_playlist.py
+mod_editor/core/nfl2k5_music_playlist_code.py
+mod_editor/core/nfl2k5_music_banks.py
+mod_editor/core/nfl2k5_practice_squad_screen.py
+mod_editor/gui/music_panel_qt.py
+mod_editor/studio/project_archive.py
+mod_editor/studio/session.py
+mod_editor/studio/facade.py
+reports/music_playlist_contexts.v1.json
+docs/mod_editor/nfl2k5_music_playlist_capability.json
+```
+
+Runtime closure imports must include `mod_editor.core.nfl2k5_music_playlist`,
+`mod_editor.core.nfl2k5_music_playlist_code`, `mod_editor.core.nfl2k5_music_banks`,
+`mod_editor.core.nfl2k5_music_archive`, `mod_editor.core.nfl2k5_music_catalog`,
+`mod_editor.core.nfl2k5_music_metadata`, `mod_editor.core.nfl2k5_xbe_space`,
+`mod_editor.core.nfl2k5_practice_squad_screen`, `mod_editor.gui.music_panel_qt`,
+and the three Studio modules above. Archive persistence now validates playlist
+documents even before the Music page is opened. Existing archive/encoder/section
+digest dependencies remain in closure; GNU assembler, Unicorn, Capstone, tests,
+research memos, this handoff patch and retail bytes are not runtime imports.
+
+The owner is already in `tests/nfl2k5_allocator_stack.py`, all manifest request
+and owner lists, and the committed budget fixture. Requests remain exactly
+2,048 RX / 512 RW / 1,024 RO bytes; code uses 1,689 bytes. Both full XBE gates
+pass in both orders. The unprotected Practice Squad guard now accepts the exact
+validated playlist dispatcher hook and hashes the remaining native routine.
+Do not relax that guard to accept arbitrary jumps.
+
+Claude must regenerate protected `data/nfl2k5_cave_reservations.json` with
+`tools/nfl2k5_cave_oracle.py manifest` after applying the final integration.
+The new live hooks are `screen_event` at `0x6E4E0` and the draft call at
+`0x325E22`; no new owner or budget is required. Tier-4a installed code is refused
+as foreign by tier 4b; rebuild from the supported base, including when changing
+the installed selection.
+
+After wiring, run the playlist/context/library/project/UI/handoff tests, both
+full XBE gates, capability validation and staged runtime closure. Follow the
+Noah witness list in `ASTRA_MUSIC_ALL_MODES_REPORT.md`; no gameplay, audible
+playback, full retail-disc acceptance build or final release manifest was
+produced by this task.
+# r62 Modern 2K mode names (2026-09-06)
+
+This section is the modern-naming handoff. EXPERIMENTAL / UNWITNESSED.
+The brief reserves the shared files below for Claude; none was edited here.
+The actual backend, JSON, Text page, codec fix and standalone tests are delivered.
+Read `ASTRA_MODERN_NAMING_REPORT.md` and `docs/mod_editor/modern_2k_mode_names.md`.
+
+## Dispatcher and all four status dictionaries
+
+In `mod_editor/core/nfl2k5_throw_tuning.py` import
+`nfl2k5_modern_naming as modern_naming_patch` through the existing package/exact-path
+import mechanism. Add `modern_naming: bool = False` to `_apply_all`, `patch_file`
+and `patch_image` and every forwarding call. Validate its exact Boolean type.
+Include it in both "no patch selected" guards. In the ordinary fixed-site patch
+loop add the exact tuple, using the same tuple shape as adjacent owners:
+
+```python
+(modern_naming, modern_naming_patch, "modern_naming_patch", "modern 2K mode names")
+```
+
+The ordinary loop's `status`/`apply` API accepts the XBE directly. The receipt
+is a complete XBE-half naming receipt. This is immutable text in `.string_`,
+not runtime code; **do not request allocator pages or add an allocator adapter**.
+`REQUESTS = ()`. `_selected_space_requests` and `_xbe_space_adapter` need no new
+flags, and no budget row or cave reservation is appropriate.
+
+Add `"modern_naming": modern_naming_patch.status(payload)` to
+`_grown_status_fields(payload)`. Despite its historical name, that shared helper
+already includes fixed edits and expands into **all four** required status dicts:
+standalone status (`payload`, near 639), image status (`payload`, near 764),
+`patch_file` final status (`result`, near 1489), and `patch_image` final status
+(`after`, near 1765). Verify the key in each; this is XBE-only status, not a claim
+that the STRG half is installed. No status value may be hard-coded to "applied".
+
+If the integration supports a non-default manifest path, add a snapshot-backed
+adapter forwarding the same immutable JSON to status/apply and the final DATA
+pass. Never allow the JSON to change between the two halves. The default pass
+rereads the file deliberately; Build must snapshot it or compare its canonical
+SHA-256 at preflight and before/after the final pass and refuse on any mismatch.
+A changed JSON during Build invalidates the disposable output; never publish it.
+
+## BuildPlan, presets, preflight, deferral and final DATA pass
+
+In `mod_editor/core/mod_build.py`:
+
+1. Add `modern_naming: bool = False` to `BuildPlan` beside `team_names_2026`.
+   `to_recipe()` already uses `asdict`; ensure recipe/project import retains it.
+   Normalize only actual Booleans; reject strings/numbers. Include it in
+   `wants_xbe_patch()` and every XBE kwarg forwarding path, including deferred
+   allocator/scorebug passes. It is independent of season_2026 and team names.
+2. `softdrink_basic` and `softdrink_advanced`: `modern_naming=False`.
+   `softdrink_experimental`: select it only through
+   `module.preset_enabled("experimental")`, which revalidates every configured
+   desired/fallback, including both MyCareer roles. Reevaluate in `apply_preset`,
+   not just at import time. Invalid JSON means False with a visible reason;
+   explicit user True still refuses preflight instead of silently dropping it.
+3. `availability()["modern_naming"]` requires module presence and
+   `all_strings_fit()`. Standalone XBE source status says `"requires image"` for
+   this whole feature. The image branch uses `module.image_status(source)`;
+   it validates both halves and labels a partial install foreign. Include
+   `modern_naming_details = module.image_preview(source)` for the full table.
+4. Before copying a disc, when True, require an image, a valid manifest snapshot,
+   and `image_status(source) in ("retail", "applied")`. Call
+   `catalog_overrides(catalog, enabled=True, value_lookup=host.text_value)`
+   against raw staged project values to reject manual changes to the owned STRG
+   asset. The sole archive asset is `nfl2k5.text.strg.4248.1.3`. Never pass the
+   already-overridden facade back into this check. XBE literals are Build-only.
+   Existing unnamed sources need no dependency on MyCareer being installed.
+5. `_apply_all(..., modern_naming=plan.modern_naming)` owns the XBE half. After
+   project text edits and any pack relocation/growth, add the final data step:
+
+```python
+if plan.modern_naming:
+    module = _core_module("nfl2k5_modern_naming")
+    if module is None:
+        raise RuntimeError("Modern mode names are unavailable")
+    naming_receipt = module.apply_to_image(
+        target, include_xbe=False,
+        progress=lambda message: progress(message, 0, 0))
+    receipt["steps"].append({"step": "modern_naming", **naming_receipt})
+    if module.image_status(target) != "applied":
+        raise ValueError("Modern naming XBE and text-bank halves disagree")
+```
+
+The deliberate intermediate XBE-applied/STRG-retail state is accepted only by
+this DATA-only adapter. The normal full-image adapter refuses mixed states.
+Do not call its full-image default between the two Build steps. The final full
+status and manifest hash check must happen before publish. Pack directory IDs,
+chunk offsets, source spans and actual output are checked through bounded readers.
+
+6. Disabling: on the usual original-source build, skip both passes and remove
+   preview overrides; no text edits were staged by this feature. This restores
+   retail naming from that original source. If a user selects a named source,
+   False must not silently retain installed names. Require the retained original
+   source or refuse before copying, with "Choose the original source to restore
+   retail mode names". An explicit restore workflow can call
+   `apply_to_image(target, enabled=False, original_source=original)`; it restores
+   owned spans while preserving unrelated edits. Never guess source provenance.
+
+## PATCHES row, NEEDS_IMAGE and Build option
+
+In `mod_editor/gui/gameplay_patches_panel_qt.py`, add the existing three-field
+PATCHES row shape with key `modern_naming`, title `Modern 2K mode names`, and
+these help words (contains the mandatory **Retail** and **Patch**):
+
+> Retail uses Quick Game, Franchise and Create Player. Patch uses Play Now,
+> MyNFL and MyPlayer. Coach's Desk and The Crib keep their names. Experimental /
+> Unwitnessed. Preview every change in Text & Team Identity.
+
+Use `nfl2k5_modern_naming.HELP_TEXT` as the shared constant. Add `modern_naming`
+to `NEEDS_IMAGE`. This is a data option even though most literal storage is XBE.
+Use the adjacent data-row status/callback fields, not a dummy unsupported action.
+
+In `mod_editor/gui/build_panel_qt.py` add:
+
+```python
+self.modern_naming_check = self._option(
+    f, "modern_naming", "Modern 2K mode names (MyNFL, MyPlayer, Play Now)",
+    modern_naming.HELP_TEXT, needs_image=True)
+```
+
+Caption length is 45, below 60. Include it in all checkbox/preset/availability
+loops, plan construction, image-only admission, change detection and preview
+refresh. Follow `team_names_2026_check`'s actual `_option` signature and state
+persistence. If span validation fails, show the exception and leave Experimental's
+checkbox off. On switching away from Experimental, Basic/Advanced reset it off.
+
+## Text & Team Identity facade and MyCareer ownership
+
+`text_rosters_panel.py` already inserts the new **Modern mode names** subtab in
+text/combined views and reloads it with the host catalogue. Rosters-only is
+unchanged. `modern_naming_panel_qt.py` renders all 24 before/after rows and their
+IDs/limits; each tooltip contains the complete text. Until this facade wiring is
+installed, it explicitly presents an unverified mapping with no Build claim.
+
+In `mod_editor/gui/studio_qt.py`, extend `_EmbeddedOperationGuardedHost` alongside the existing
+team-name callbacks:
+
+- Add constructor kwarg `modern_naming_enabled: Callable[[], bool] | None = None`,
+  stored as `_modern_naming_enabled` with a False fallback. At the Text host
+  creation near 2464 pass `modern_naming_enabled=self._modern_naming_preview_enabled`.
+  Implement that window callback like `_team_names_preview_enabled`: require
+  the checkbox and that `Path(self._build_panel.source_field.text()).resolve()`
+  equals `Path(self.facade.source_path).resolve()`; otherwise return False.
+- Add `modern_naming_preview()` returning
+  `{"enabled": enabled, "rows": naming.image_preview(source, enabled=enabled)}`
+  using `self._host.source_path` (the retained source image) and the same manifest
+  snapshot as Build.
+  Also check raw staged catalog values before returning. If the source is an
+  already-named disc and naming is disabled, require the original-source binding
+  above instead of claiming a verified restoration preview from an unknown base.
+- Merge `naming.catalog_overrides(catalog, enabled=enabled,
+  value_lookup=self._host.text_value)` with `_team_name_overrides`; IDs are
+  disjoint. `text_value()` returns these transient values. `replace_text()` and
+  `revert_text()` on an overridden STRG field should ask the user to turn off the
+  Build naming option before manually editing it. No automatic project write.
+- Connect `modern_naming_check.toggled` to the same text-panel reload mechanism
+  used for team names. Clear/rebuild caches on manifest/source/preset change.
+  Compute the override map once per refresh; avoid opening the image per cell.
+
+The other session owns `nfl2k5_my_career` descriptors. No such module exists at
+this base. It should use `career_text("menu_row", allocation_bytes=20)` and
+`career_text("screen_title", allocation_bytes=20)` when installing its own text.
+Default output is `MyCareer`, 18 bytes including NUL, plus two bytes of spare
+contract space. These are two **contract rows, not invented retail IDs**.
+No existing mode row is replaced with MyCareer by this pass. That owner must
+add its own allocator and descriptor proof; this pass allocates nothing.
+
+## Packaging, runtime closure, capability registry and integration tests
+
+Append missing exact lines to `packaging/release-allowlist.txt` (do not duplicate
+already-shipped lines):
+
+```text
+mod_editor/core/nfl2k5_modern_naming.py
+mod_editor/gui/modern_naming_panel_qt.py
+data/nfl2k5_modern_naming_2k.json
+docs/mod_editor/modern_2k_mode_names.md
+docs/mod_editor/nfl2k5_modern_naming_capability.json
+```
+
+Retain already-listed `tools/string_table_inventory.py` with this revision's
+NFL zero-padding fix and `mod_editor/gui/text_rosters_panel.py` with its new tab.
+Also include the new documentation page in the documentation browser/index.
+
+Add literal imports to `packaging/check_2k5_mod_studio_runtime.py`:
+
+```python
+"mod_editor.core.nfl2k5_modern_naming",
+"mod_editor.gui.modern_naming_panel_qt",
+```
+
+The backend closure includes the existing rdata/bump/allocator/storage/digest
+helpers, `nfl2k5_safe_text_banks`, `nfl2k5_roster_records`,
+`nfl2k5_throw_tuning`, `platform_compat`, `nfl_outer`, `nfl_scene_probe`,
+`string_table_inventory`, and `nfl2k5_playbook_position_recode`. Carry the default
+JSON at its root-relative `data/` path. This module is a package import; do not
+load it under an invented top-level module name without its package context.
+
+Insert the exact object from
+`docs/mod_editor/nfl2k5_modern_naming_capability.json` into the canonical registry
+and sort capability objects by `id`, as its validator requires.
+It uses existing `menus`, so no new surface vocabulary is needed. Both commands
+are `python3 -m mod_editor.core.nfl2k5_modern_naming ...` for file-check closure.
+Status is `offline-writer-proved`, runtime `not-tested`; no witnessed claim.
+
+Both executable gates already compose the name pass before and after the
+allocator owner union, including v3, and assert its status. The owner has no
+code/data allocation and does not belong in `tests/nfl2k5_allocator_stack.py`'s
+REQUESTS or the cave manifest's owner reservation lists. Do not regenerate the
+protected cave JSON on this branch. Regenerate source-closure/provider pins if
+the runtime validation reports them changed by the codec revision.
+
+After wiring, run the new standalone tests and both gates, plus protected
+integration tests for a naming-only Build, all presets, manifest overflow,
+manual conflict, JSON changes mid-build, off/on/off source restoration, and the
+MyCareer owner calling both label roles. A checked box or static preview is not
+proof that the shared Build dispatch was wired.
+
+The shared `tools/nfl2k5_playbook_position_recode.py` loose-pack header read is
+also corrected to `read(HEADER_SIZE)` inside a closed context manager. Retain
+that already-shipped file and regenerate any exact-source provider closure pin
+covering it. The naming regression forbids whole-pack reads on this path.
+
+# r62 read-option controls v2 handoff, 2026-09-06
+
+This section supersedes the earlier read-option runtime handoff's missing
+prompt/replacement search, 0.35-second snap deadline, zero-RW budget and
+under-center-only authoring statements. EXPERIMENTAL / UNWITNESSED. No protected
+file was edited. The implementation and evidence are in
+`ASTRA_READ_OPTION_CONTROLS_REPORT.md`.
+
+## Owner and rebuild policy
+
+Keep the existing `read_option_runtime` option and canonical
+`nfl2k5_read_option_runtime` owner. Its revised REQUESTS are 2,048 RX + 256 RW +
+88 RO, alignment 16 for all three. The unchanged 64-byte paired PLAY table is
+followed by an immutable HUD anchor and two policy constants. Request sets are
+immutable: rebuild from the pinned retail/base input with the complete revised
+union. Do not apply v2 over an existing v1 allocation, append a second owner,
+or overwrite an old seal. The backend refuses those inputs before mutation.
+
+`tests/nfl2k5_allocator_stack.py` and the manifest builder already import this
+owner and concatenate its live REQUESTS. Their complete union, installation,
+replay, recorder and extra-owner lists therefore include the revised owner.
+Claude must regenerate protected `data/nfl2k5_cave_reservations.json` after
+integration. The scratch manifest is a local gate input only. Add
+`read_option_runtime=False` to the manifest's dormant-base BuildPlan replacement
+when that protected BuildPlan field is integrated.
+
+## Dispatcher, settings and all four status dictionaries
+
+In protected `mod_editor/core/nfl2k5_throw_tuning.py`, retain/add the earlier
+handoff's import `nfl2k5_read_option_runtime as read_option_patch`, Boolean
+`read_option_runtime=False` and bytes-or-None `read_option_intent_table=None`
+kwargs in `_apply_all`, `write_xbe_copy`, `write_image_copy`, every forwarding
+call, `_selected_space_requests`, `_xbe_space_adapter` and the inherited
+`_defensive_try_adapter`. Validate an actual Boolean, table bytes with
+`validate_intent_table`, and require the flag when supplying a table.
+
+Append `(read_option_patch.REQUESTS if read_option_runtime else ())` to the
+selected union and include the flag in allocation and nothing-requested
+conditions. Keep `_read_option_adapter(table)` from the earlier handoff: its
+`status` delegates to the module and its `apply` calls
+`read_option_patch.apply(payload, intent_table=self.table)`. The final
+`_apply_all` owners tuple, after the allocator, must contain:
+
+```python
+(read_option_runtime, _read_option_adapter(read_option_intent_table),
+ "read_option_runtime_patch", "read option mesh controls (experimental)"),
+```
+
+Add/retain these in `_grown_status_fields(payload)`:
+
+```python
+"read_option_runtime": read_option_patch.status(payload),
+"read_option_runtime_settings": read_option_patch.read_settings(payload),
+```
+
+All four dictionaries must expose them: `read_xbe(payload)`,
+`read_image(payload)`, `write_xbe_copy(result)` and `write_image_copy(after)`.
+Settings now report `model_version=2`, `mesh_frames=21`, `crash_samples=3`, the
+installed table count/hash, cue and EDGE policy. Copy actual settings and
+receipts into inspection/build results; do not retain the v1 `mesh_seconds`
+field or advertise a fixed animation-derived mesh duration.
+
+QB spy now recognizes only fully validated read-option snap/reset neighbors
+before normalizing their exact hook spans for its full-body dependency hashes.
+Ship that compatibility change together with this owner. Do not weaken the
+neighbor validation or strip its sealed-code/table checks.
+
+## BuildPlan, paired reads and presets
+
+In protected `mod_editor/core/mod_build.py`, retain/add
+`read_option_runtime: bool = False`. Basic, Advanced and Experimental all keep
+it False. Carry it through normalization, inspection, the allocator feature
+status, final receipts and reset/preset collection. Reserve the revised union
+before installing any owner. Defer runtime installation until selected PLAY
+outputs are final, including later edits and exact compiler receipts, then
+compile the table and pass it to the final XBE pass. The early ordinary-XBE
+pass gets `read_option_runtime=False`; deferred owner reservations still include
+its revised REQUESTS. Reject enabled builds with no paired read recipes or
+more than two reads before disc copying. Omitted table on backend replay keeps
+the installed table; changed explicit settings require a rebuild.
+
+The standard compiler keeps a valid authored EDGE preference. For a runtime
+read with no authored defender, call
+`compile_intent_table(pairs, use_authored_edge=False)`: its explicit 255 sentinel
+selects from actual snap assignments. The data-tier opponent fixture remains
+necessary to validate the native PLAY graph and is not a runtime defender
+identity in this mode. No second BuildPlan option is required.
+
+The core authoring helper now also accepts native Shotgun formations with a
+back in slot 10, including `Gun: Doubles Right`, for Zone read and RPO. Empty
+Shotgun and Shotgun Speed option still refuse. Keep native positions/personnel;
+slot 9 uses the existing receiver block when it is a WR/TE. The standalone
+controls test compiles callable MIN `SD Gun Zone Read` at 134 and
+`SD Gun RPO Slant` at 31, retaining the native formation links and fixed resource
+span. These names are witness recipes, not automatically installed plays.
+
+In the off-limits `mod_editor/gui/create_play_wizard_qt.py`, replace the obsolete
+"Native under-center I personnel only" note with "Native I formations, or
+Shotgun with a back for Zone read and RPO." The `option_design` positions check
+continues to require the original native positions/personnel; update its error
+to "Option presets keep the native formation. Restore its stock positions and
+personnel first." The existing call to `make_option_design` handles the revised
+formation eligibility. Explain that the data-only tier retains geometric native
+conditions and the separate runtime checkbox enables these controls.
+
+## Gameplay Patches, Build caption, allowance and closure
+
+In protected `gameplay_patches_panel_qt.py`, the PATCHES key remains
+`read_option_runtime`, title `Read option mesh controls (experimental)`, with
+`read_option_patch.HELP_TEXT` as its description. It contains both required words
+"Retail" and "Patch" and describes the human cue, hold/release controls, live
+CPU EDGE read and RPO receiver press. Keep the key in NEEDS_IMAGE.
+
+In protected `build_panel_qt.py`, use `_option` caption
+`Read option mesh controls (experimental)` (40 characters), default False, with
+HELP_TEXT. Forward the same key through protected Studio/Gameplay collection,
+preset/reset and status paths. No extra ext-owner flag or new GUI panel is needed.
+
+Protected `packaging/release-allowlist.txt` must contain these exact lines:
+
+```text
+mod_editor/core/nfl2k5_read_option_runtime.py
+mod_editor/core/nfl2k5_read_option_runtime_code.py
+```
+
+Retain the already shipped `nfl2k5_qb_spy_runtime.py` and `nfl2k5_play_library.py`.
+The protected runtime probe/provider closures must import:
+
+```text
+mod_editor.core.nfl2k5_read_option_runtime
+mod_editor.core.nfl2k5_read_option_runtime_code
+mod_editor.core.nfl2k5_qb_spy_runtime
+mod_editor.core.nfl2k5_play_library
+```
+
+QB spy's validated-neighbor check makes the read-option module part of Spy's
+closure even when read-option controls are off. Retain the existing allocator,
+codec, inspector, writer, section-digest and cave-reader dependencies. GNU as,
+Unicorn, Capstone, corpus exports and tests are development-only dependencies.
+
+Merge the updated handoff object
+`docs/mod_editor/nfl2k5_read_option_runtime_capability.json` by existing ID
+`nfl2k5.gameplay.read_option_runtime` on `gameplay_tuning_sliders`. No new surface
+is introduced. Keep classification `offline-writer-proved`, runtime `not-tested`,
+all defaults off and the controls report's witness list. Backend and validation
+commands use `python3 -m <dotted.module> ...` for registry file-check mode.
+
+After protected wiring, verify paired Shotgun builds, disabled presets,
+missing/stale recipe refusals, the revised budget, all four status dictionaries,
+release closure and both XBE gates before offering Noah a witness disc.
+
+# r62 hires-more family and memory handoff, 2026-09-06
+
+This section supersedes the three-asset limits in the r62 hires-pack handoff.
+It is resource-only, EXPERIMENTAL / UNWITNESSED. Protected files were not
+edited. The existing Build pass already calls the extended backend, so its
+folder validation and before/after-compile budget refusals take effect now.
+The family controls and budget display below still need integration.
+
+## BuildPlan, presets and preflight
+
+In `mod_editor/core/mod_build.py`, retain the existing four fields and add:
+
+```python
+hires_families: tuple[str, ...] = (
+    "helmets", "field_logos", "stock_fields", "scorebug", "numbers", "jerseys")
+```
+
+Basic, advanced (`modern`) and experimental all retain `hires_pack=False`.
+All six family choices initially select which *present* files participate
+when the user explicitly enables Hi-res; they do not enable Hi-res itself.
+Preserve the selected family tuple with the folder, normalize serialized
+lists to tuples, reject duplicates/unknown names, and reject an empty tuple
+when enabled. No folder work runs while Hi-res is off. Preserve compatibility
+with saved plans that lack the new field by using the tuple above.
+
+Add `nfl2k5_hires_layouts`, `nfl2k5_hires_catalog`, `nfl2k5_hires_budget` and
+`nfl2k5_hires_evidence` to the `availability()["hires_pack"]` import closure.
+Pass `families=plan.hires_families` to both existing `inspect_image` preflight
+and final `build_image`. Add a cheap budget stage before texture encoding:
+
+```python
+receipt["hires_budget"] = hires.preflight_budget(
+    plan.hires_folder, scale=plan.hires_scale, target=plan.hires_target,
+    families=plan.hires_families)
+```
+
+The model covers two shared team texture sets, two primary field scenes,
+two selected external logos, selected scorebug textures, and the 22 native
+player-name output surfaces. It prices the actual wrappers and 128-byte
+allocator headers/alignment. After encoding, `build_image` repeats the check
+with actual checked scratch sizes. An overage raises a ValueError stating
+required bytes, the 65,011,712-byte (62 MiB) ceiling and excess bytes, before
+any public mutation. Do not catch this as a warning and continue.
+
+An under-ceiling result is **unproved**, never green/safe. Show `message`
+and `modeled_delta_bytes`; `headroom_bytes` is deliberately null. The boot
+allocation result, startup reservations, context-selected heap, other live
+resources and fragmentation are unknown. Do not display
+`modeled_residual_to_ceiling_bytes` as headroom. The report explicitly cannot
+fulfil the requested whole-game safe-fit proof. No preset or automatic
+subset should treat `family_subsets` as certification. It supplies only a
+selection inside the necessary arithmetic bound.
+
+Keep the existing final-pass deferral: after all other fixed-span resource
+writers, scene edits, reference/runtime scorebug work and music compilation.
+Resolve resources in the current private image. Pass the same family tuple
+through preflight and the final pass, preserve the source/input/destination
+transaction, then retain the final verification and image hash. Do not run
+fixed retail-offset inspectors on the remapped image and call them current.
+
+Conflict detection must compare selected `(outer, chunk)` identities with
+other texture/stadium imports, not only `scorebug` or filename prefixes.
+Both jersey images belong to the same TSET; the entire stock-field SCNE is
+pinned around its selected descriptor, so any independent scene modification
+conflicts. Check consumer pins as well as resource identities. The existing
+reference/runtime scorebug changes the table at `0xA95C60`; selecting either
+Hi-res scorebug input therefore refuses that combination, even when an
+individual texture resource does not overlap. It needs a separately audited
+combined consumer recipe. The other five families pass the complete XBE
+owner union in both orders, so do not reject them solely because a scorebug
+option is enabled.
+
+In the existing `mod_build.py` Hi-res preflight, replace the check for
+`row["key"] == "scorebug"` with
+`any(row["family"] == "scorebug" for row in preview["assets"])`, keeping
+the `(plan.scorebug or plan.scorebug_runtime)` condition. This catches
+`scorebug_espn` before the private build passes alter its consumer table.
+
+## Build tab controls
+
+In protected `mod_editor/gui/build_panel_qt.py`, keep the existing parent
+`_option` caption `Hi-res pack (experimental)` (25 characters). Add six
+family `_option` controls beneath it, using these captions, all below 60:
+
+| UI key | Caption | Backend family |
+| --- | --- | --- |
+| `hires_helmets` | `All teams' helmets (experimental)` | `helmets` |
+| `hires_field_logos` | `Created-team midfield logos (experimental)` | `field_logos` |
+| `hires_stock_fields` | `Stock midfield logos (experimental)` | `stock_fields` |
+| `hires_scorebug` | `Scorebug art (experimental)` | `scorebug` |
+| `hires_numbers` | `Uniform numbers (experimental)` | `numbers` |
+| `hires_jerseys` | `Jerseys, clean and muddy (experimental)` | `jerseys` |
+
+Use plain tooltip text: `Retail: original texture sizes. Patch: selected
+artwork uses 2x detail. Experimental and unwitnessed. Memory fit is unproved.`
+For jerseys add `Supply both the clean image and its .mud image.` For stock
+fields add `Original scene pixels remain allocated beside the new logo.`
+Enable family controls only for an available image source with the parent
+Hi-res option checked. Their availability inherits the parent; do not probe
+six nonexistent executable owners. Derive `BuildPlan.hires_families` from
+checked controls; include it in plan persistence, dirty state, summaries,
+reset/preset handling and final receipts. The parent remains off in every
+preset. Display one summary row per family rather than 2,524 per-asset rows;
+the JSON receipt retains every exact resource result.
+
+Run `preflight_budget` in the existing worker pattern when folder, scale,
+target or family selection changes. Retain the request identity so an older
+worker cannot enable Build after a new folder fails. Disable Build on any
+preflight exception and show its exact numerical refusal. Under-ceiling
+results retain the experimental/unproved warning; no green fit badge.
+Keep `xemu-128` disabled and backend refusal in place. Explanation:
+`The game still limits texture addresses to the first 64 MiB.` No confirmation
+dialog or override removes a refusal. Names do not get an enabled checkbox.
+
+## Dispatcher, statuses and Gameplay Patches
+
+There is no new XBE patch or allocation. These explicit N/A entries satisfy
+the shared wiring contract:
+
+| Protected surface | Required treatment |
+| --- | --- |
+| `_apply_all` owners tuple | No new tuple entry; this compiler accepts resources/images. |
+| `_apply_all` kwarg | No Hi-res family argument belongs in the executable dispatcher. |
+| `read_xbe` status dictionary | No executable Hi-res state. |
+| `read_image` status dictionary | Keep executable statuses; use Build's archive receipt for Hi-res. |
+| `write_xbe_copy` status dictionary | No change; a standalone XBE contains no family art. |
+| `write_image_copy` status dictionary | No new XBE status; the final Build archive pass supplies verification. |
+| `_grown_status_fields` | No new field. |
+| `_selected_space_requests` / `_xbe_space_adapter` | No new flags or requests. |
+| `tests/nfl2k5_allocator_stack.py` and cave manifest lists | No new owner; keep their complete existing union. |
+
+Gameplay Patches `PATCHES` / `NEEDS_IMAGE`: no new row or new executable
+Patch, since the Build folder is required and that panel cannot represent
+it. Retain the existing explanation for Hi-res if it is surfaced there:
+`Retail: original texture sizes. Patch: use the Hi-res folder in Build.
+Experimental and unwitnessed; memory fit is unproved.` It must remain
+image-only (`NEEDS_IMAGE`) wherever the existing parent option appears.
+All Textures keeps its native fixed-span contract; do not route these larger
+resources through its existing in-place writers. Studio registration needs
+no new panel. The cave manifest must not be regenerated by this worktree.
+
+## Release closure and capability
+
+Add these exact allowlist lines to protected `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_hires_catalog.py
+mod_editor/core/nfl2k5_hires_layouts.py
+mod_editor/core/nfl2k5_hires_budget.py
+mod_editor/core/nfl2k5_hires_evidence.py
+```
+
+Retain the existing pack/texture/guide lines. The catalog is generated Python
+metadata and is required at runtime; it contains no retail pixel payload.
+The three audit/acceptance tools and reports remain developer evidence,
+not release runtime dependencies. In protected
+`packaging/check_2k5_mod_studio_runtime.py`, import all four new dotted core
+modules along with the two existing Hi-res modules, then smoke-test catalog
+count, a budget receipt with null headroom, and refusal of `xemu-128`.
+The layouts module imports `nfl2k5_hires_texture`, `tools.nfl_txtr`, the
+existing P8 palette codec and standard-library `collections`, `functools`
+and `struct`; no new wheel, Qt panel or private research inventory is needed.
+Refresh existing provider closure fingerprints after integration as needed.
+
+Update the existing capability `nfl2k5.textures.hires_pack`, on the existing
+`uniforms` surface; no new surface ID is needed. The complete schema-valid
+handoff is `docs/mod_editor/nfl2k5_hires_pack_capability.json`. Its backend
+and validation command both use `python3 -m <dotted.module> ...`. Preserve
+`runtime.status=not-tested` and default false. Do not turn static compilation
+or budget arithmetic into a witnessed/compatible capability classification.
+
+# r62 read-option / screen-hooks composition repair, 2026-09-06
+
+See `ASTRA_READOPTION_SCREENHOOKS_COMPOSE_REPORT.md`. Both Python owners must
+ship together: each now validates the other's exact installation before
+normalizing its disjoint hook in native `0x19C740`. No assembly, runtime policy,
+allocation request, new flag or new product surface is introduced by this fix.
+The fixture's read-option rows now match the already landed v2 REQUESTS.
+
+The earlier screen-hooks and read-option-controls-v2 sections remain the
+concrete product wiring contract. Retain these `_apply_all` entries after the
+complete-union allocator:
+
+```python
+(read_option_runtime, _read_option_adapter(read_option_intent_table),
+ "read_option_runtime_patch", "read option mesh controls (experimental)"),
+(screen_hooks, screen_hooks_patch, "screen_hooks_patch",
+ "screen pass timing hooks (second experiment)"),
+```
+
+Keep `read_option_runtime=False`, `read_option_intent_table=None` and
+`screen_hooks=False` kwargs and their existing request-selection/forwarding
+contract. All four status dictionaries (`read_xbe`, `read_image`,
+`write_xbe_copy`, `write_image_copy`) need the existing `read_option_runtime`,
+`read_option_runtime_settings`, `screen_hooks`, and `screen_hooks_settings`
+entries. BuildPlan fields remain the existing two Boolean flags and paired
+read-option table/recipe fields; Basic, Advanced and Experimental defaults
+remain off for both owners. There is no extra composition switch.
+
+Gameplay Patches retains each module's HELP_TEXT, including the literal words
+"Retail" and "Patch", and both keys in NEEDS_IMAGE. Build `_option` captions
+remain `Read option mesh controls (experimental)` and
+`Screen pass timing hooks (second experiment)`, both under 60 characters.
+Keep the two existing capability IDs and surfaces from the earlier handoffs;
+there is no new registry surface or runtime-witness claim.
+
+Protected `packaging/release-allowlist.txt` must contain all four paths:
+
+```text
+mod_editor/core/nfl2k5_read_option_runtime.py
+mod_editor/core/nfl2k5_read_option_runtime_code.py
+mod_editor/core/nfl2k5_screen_hooks.py
+mod_editor/core/nfl2k5_screen_hooks_code.py
+```
+
+Protected runtime-closure probes must import all four corresponding dotted
+modules. In particular, a Spy/read-option provider now also needs screen hooks
+and its template even when the screen-hooks option is off. The local imports
+occur at inspection time, after both modules have initialized; neither owner
+recursively calls the other's public status. No new wheel is required.
+
+Integration is still blocked on the separately assigned MyCareer/playlist/
+Practice Squad composition repair. Both XBE gates pass this pair and then
+fail there. Do not remove an owner, skip a gate or loosen its guards. Merge
+that companion repair, regenerate protected
+`data/nfl2k5_cave_reservations.json` using the existing manifest builder, then
+rerun both full gates in ordinary/explicit-scaleout and forward/reverse modes.
+The current manifest already has six stale source fingerprints at the base
+commit; this fix adds the screen-hooks source change. Refresh through actual
+writer observation, not a manual hash substitution. The bounded screen-hook
+projection correctly refuses this stale parent and is not a release manifest.
+## r62-roster-arena-growth integration (2026-09-06)
+
+This section supersedes the earlier storage-growth proposal for reserves and extra
+created records. EXPERIMENTAL / UNWITNESSED. Keep `reserves_16=False` and
+`created_teams_extra=0` in Basic, Advanced and Experimental. No preset enables
+either. The implementation and proof boundary are in
+`ASTRA_ROSTER_ARENA_GROWTH_REPORT.md`. Do not regenerate the protected manifest
+until the dispatcher and complete resource build described here are integrated.
+
+### Dispatcher: nfl2k5_throw_tuning.py
+
+Import `nfl2k5_roster_arena_growth as roster_arena_patch` and
+`nfl2k5_roster_arena_image as roster_arena_image`. Thread keyword arguments
+`reserves_16: bool = False, created_teams_extra: int = 0` through `_apply_all`,
+`write_xbe`, `write_image`, `_selected_space_requests`, `_xbe_space_adapter`, every
+forwarding call and the CLI. Reject bool/non-int for `created_teams_extra` and
+all values except 0/2. Validate the boolean independently even when both options
+are off. Call `roster_arena_patch.options(...)` only if either option is selected.
+
+Append `roster_arena_patch.REQUESTS` exactly once to the selected union if
+`reserves_16 or created_teams_extra`. Its only request is
+`('nfl2k5_roster_arena_growth', 'code', 8192, 16)`. The allocator selects v3; no
+additional RW or page-count change. Include both flags in the allocator entry's
+condition and adapter arguments. Also pass them into the union used by
+`scorebug_ingame.runtime_apply_in_place(..., extra_requests=...)`. Every selected
+owner must be reserved before any grown owner is installed. Adding a missing
+owner to an already populated directory intentionally refuses.
+
+Use this settings adapter and append this `_apply_all` owners tuple **after**
+the allocator and the existing PS/practice prerequisites (screen and growth
+compose in either order):
+
+```python
+class _roster_arena_adapter:
+    def __init__(self, reserves_16, created_teams_extra):
+        self.kwargs = dict(reserves_16=reserves_16,
+                           created_teams_extra=created_teams_extra)
+    @staticmethod
+    def status(payload):
+        return roster_arena_patch.status(payload)
+    def apply(self, payload):
+        return roster_arena_patch.apply(payload, **self.kwargs)
+
+(reserves_16 or created_teams_extra,
+ _roster_arena_adapter(reserves_16, created_teams_extra),
+ 'roster_arena_growth', 'experimental larger roster arena'),
+```
+
+Normalize either flag to `xbe_space=True, practice_squad=True,
+franchise_practice=True`. Preserve the existing `practice_reserves` dependency;
+the growth owner also installs it itself. `reserves_16` additionally normalizes
+`practice_squad_screen=True` so users can manage the larger squad in game.
+`created_teams_extra=2` alone retains the 12-reserve limit. The new owner calls
+base PS/practice apply safely; their status methods recognize only a fully
+verified delegation, including allocation seals and hook pins.
+
+Add these fields to `_grown_status_fields(payload)` using
+`settings = roster_arena_patch.read_settings(payload)`:
+
+```python
+'roster_arena_growth': settings['status'],
+'reserves_16': ('foreign' if settings['status'] == 'foreign' else
+                'applied' if settings['reserves_16'] else 'retail'),
+'created_teams_extra': ('foreign' if settings['status'] == 'foreign' else
+                        'applied' if settings['created_teams_extra'] else 'retail'),
+'roster_arena_settings': settings,
+```
+
+The **four status dictionaries** are `read_xbe` (payload), `read_image` (payload),
+`write_xbe` (result), and `write_image` (after). All four must spread this helper;
+add it to `write_xbe` if absent. For image read/write results separately include
+`roster_arena_resource = roster_arena_image.image_status(path_or_target)`. An
+XBE's applied status alone does not prove the paired ROST. Raw XBE writes are a
+development component only; the public options require an image. For image
+writes run the paired final resource pass below before reporting success.
+
+When `scorebug_runtime` defers owners, defer these two flags too. Carry their
+original values through allocation planning and restore them in the final
+`_apply_all`. Do not install growth using a partial request union during an
+earlier roster/text or scorebug pass.
+
+### BuildPlan and paired publication: mod_build.py
+
+Add fields `reserves_16: bool = False` and `created_teams_extra: int = 0`, explicit
+off/zero entries to all three preset dictionaries, and both to recipe/export,
+summary, capability dependency lookup, `wants_xbe_patch`, option validation and
+normalization. Map both to module `nfl2k5_roster_arena_growth`. Report normalized
+PS/practice/screen dependencies in the recipe. Include both flags in every
+final allocator condition and `_selected_space_requests` call.
+
+In the early `replace(plan, ...)` used to defer grown owners set
+`reserves_16=False, created_teams_extra=0`; preserve the original values for the
+final union and final `_apply_all`. Update the `scorebug_runtime` deferral in
+`write_image` the same way. After **all** other disc resource edits (rosters,
+team/history strings, music, art), and after final composed XBE installation,
+run this on the Build-owned disposable working image:
+
+```python
+if plan.reserves_16 or plan.created_teams_extra:
+    with tempfile.TemporaryDirectory(prefix='.roster-arena-',
+                                     dir=target.parent) as folder:
+        paired = Path(folder).resolve() / target.name
+        rec = roster_arena_image.build_image(
+            target, paired, reserves_16=plan.reserves_16,
+            created_teams_extra=plan.created_teams_extra, progress=progress)
+        os.replace(paired, target)  # writer has closed every descriptor
+    receipt['steps'].append({'step': 'roster_arena_growth', **rec})
+```
+
+The paired writer uses the existing archive relocation and transactional-copy
+primitives, resolves outer 5 by index and pinned name ID, updates the ROST
+wrapper and all outer/pack/directory geometry, and verifies every neighboring
+outer plus the entire composed XBE before replacement. Its replay is byte
+identical. Never send the grown ROST through the old equal-size resource writer.
+Reopen the image to validate the pair and use fresh offsets in subsequent reads.
+Public failure must discard the entire Build-owned image, including any earlier
+XBE-only intermediate. Do not publish an executable/resource mismatch.
+
+Existing saves are separate artifacts. Provide a signed-copy action using
+`nfl2k5_roster_arena.migrate_save(source, new_target, reserves_16=...,
+created_teams_extra=...)` and reload the result. The action verifies EXTRA,
+preserves all other container members, signs and reopens the copy. It refuses
+the source as destination and existing output files. Loading an old v0 save in
+the patched native runtime enables the arena and preserves its old 52 records;
+adding two records to that existing save requires the host migration.
+
+### Gameplay Patches, Build captions and roster panel
+
+In `gameplay_patches_panel_qt.py` add these PATCHES entries and both keys to
+`NEEDS_IMAGE`:
+
+* `reserves_16`, caption `16 reserves (experimental)`: `Retail: 65 player slots per team.
+  Patch: 16 reserves in a migrated save; an explicitly eligible team may hold
+  17. EXPERIMENTAL / UNWITNESSED. Build a paired disc and keep the original save.`
+* `created_teams_extra`, caption `Two extra created teams (experimental)`:
+  `Retail: two created-team records. Patch: two more records with separate names
+  and inherited stock assets. EXPERIMENTAL / UNWITNESSED. The franchise league
+  stays at 32 teams.`
+
+This panel is boolean-driven: translate the created-team toggle to integer 2
+when checked and 0 when unchecked at the adapter boundary. Never pass True as
+the integer. Bare-XBE inputs must disable these public actions. Both option
+states must agree with the pair status, not simply one changed executable.
+
+In `build_panel_qt.py` use `_option` captions `16 reserves (experimental)` and
+`Two extra created teams (experimental)` (both under 60 characters), the same
+help text, `badge='EXPERIMENTAL / UNWITNESSED'`, and `needs_image=True`. Add both
+to preset syncing, dirty detection, enablement, status summary and plan assembly;
+convert the second checkbox to `2 if checked else 0`. Preserve the off defaults
+on preset switching. Add feature labels in the two summary mappings.
+
+`roster_editor_panel_qt.py` is outside this task's GUI scope. Its current
+`_refresh_actions` delegates to `document.reserve_move_check`; that backend now
+accepts migrated v1 saves and the correct 16/17 limit. Preserve that authoritative
+check and its refusal text. Use `document.reserve_limit(team_index)` for the
+Reserves count/limit label. Backend reserve transactions now enforce 16/17 only
+for migrated NFL teams; never raise the global legacy constant. Provide the
+signed-copy migration action above and reload via `nfl2k5_roster_records.load_save`.
+Show `EXPERIMENTAL / UNWITNESSED. Requires the matching larger-roster disc.`
+For the optional 17th, take an explicit team-eligibility decision and pass its
+bit in `eligible_team_mask` during migration. Default mask is zero. There is no
+automatic player nationality/eligibility classifier. Do not silently infer one
+from a player name or grant all teams an extra slot. Reserve-only moves remain
+signed-save operations; Build & Share correctly refuses to encode them.
+
+### Packaging, registry and manifest
+
+Add these literal allowlist lines to `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_roster_arena.py
+mod_editor/core/nfl2k5_roster_arena_code.py
+mod_editor/core/nfl2k5_roster_arena_growth.py
+mod_editor/core/nfl2k5_roster_arena_image.py
+docs/mod_editor/nfl2k5_roster_arena_growth_capability.json
+```
+
+Development C/assembly and tests need no runtime compiler or extra runtime
+package. Existing PS screen/code, franchise/roster/save modules, archive writer,
+platform compatibility helpers and allocator are already distributed; keep
+them in the runtime closure. Explicitly import these four new modules in
+`packaging/check_2k5_mod_studio_runtime.py`'s closure list using dotted
+`mod_editor.core.*` names. The new dependency chain also reaches
+`nfl2k5_music_archive`, `nfl2k5_music_banks`, `nfl2k5_save_rost`,
+`nfl2k5_roster_records`, `nfl2k5_franchise_save`, `nfl2k5_practice_squad`,
+`nfl2k5_practice_reserves`, `nfl2k5_xbe_space`, and the archive tools they already
+import. Exercise both new modules' `--help` in the installed runtime.
+
+Merge the one schema-valid object from
+`docs/mod_editor/nfl2k5_roster_arena_growth_capability.json` into the sorted
+registry. ID `nfl2k5.rosters.arena_growth`, classification
+`offline-writer-proved`, runtime `not-tested`, GUI default false. Both command
+fields use `python3 -m <dotted.module> ...` for file-check resolution. Update the
+existing PS-screen capability's 12-only constraint to describe legacy 12 and
+migrated 16/explicitly eligible 17; retain its unwitnessed label.
+
+The full request union, gate compose tuple, manifest recorder owner lists and
+probe list, and allocator dormant union are already updated here. The late
+owner packs after existing owners so their shipped addresses remain exact.
+Claude must regenerate `data/nfl2k5_cave_reservations.json` using the integrated
+manifest builder and the required disposable-disc/disk policy, then rerun both
+gates. This worktree deliberately does not edit that protected JSON, release
+checker, dispatcher, Build plan or GUI files.
+
+## r62 MyCareer composition correction (2026-09-06)
+
+No new feature, dispatcher option, allocation, preset or GUI surface is added.
+The existing `_apply_all` owner tuple/kwargs and four status dictionaries,
+`BuildPlan` fields and Basic/Advanced/Experimental defaults, Gameplay PATCHES
+Retail/Patch descriptions and NEEDS_IMAGE, Build `_option` captions, release
+allowlist, runtime-closure imports and capability registry entries already
+cover these modules. No change to those protected surfaces is requested.
+
+Claude must regenerate `data/nfl2k5_cave_reservations.json` with the existing
+`tools/nfl2k5_cave_oracle.py manifest` command against the final integrated
+sources and live request union. The shipped manifest still records read-option
+v1 (960 RX / 64 RO); the landed v2 already requires 2048 RX / 256 RW / 88 RO.
+This correction synchronizes the unprotected budget fixture with those live
+requests. Do not repin historical source fingerprints by hand or relax the
+size/alignment projection refusal.
+
+For this session's tests, `.scratch/mycareer-compose/observed-xbe-manifest.json`
+is generated by the existing standalone `test_nfl2k5_guardian_manifest.py`
+recorder using `NFL2K5_GUARDIAN_MANIFEST_OUTPUT`. It observes actual complete
+XBE gate writer calls, rejects unattributed changes, verifies final section
+seals, records current named allocations and validates current source hashes.
+It is bounded executable evidence, with no new disc/resource build or gameplay
+claim. Gate/manifest tests can select it with `NFL2K5_CAVE_MANIFEST`; their
+production oracle and source-drift checks remain intact. Release manifest
+regeneration remains mandatory for integration. No protected file was edited.
+
+The report `ASTRA_MYCAREER_COMPOSE_REPORT.md` gives the full pair matrix,
+additional guard conflicts discovered, exact validation commands and Noah's
+remaining played witness list. MyCareer and all affected gameplay features
+remain EXPERIMENTAL / UNWITNESSED.
+
+
+## Beta 62 integration 3 disposition (2026-09-06)
+
+The integration authorized by `ASTRA_BRIEF.md` is implemented in the protected
+product sources. `ASTRA_INTEGRATION_62_3_REPORT.md` records every feature,
+protected diff location, test result, limitation and played-witness requirement.
+
+The dispatcher now carries collision settings, read-option controls, unavailable
+franchise/Senior Bowl guards, Guardian overlay, MyCareer, screen hooks, modern
+naming, Crib reclaim and roster arena through validation, exact request unions,
+settings adapters, the allocator-first tuple, image pairing and all four status
+dictionaries. Existing defensive-try, widescreen and QB-spy flags consume the
+landed grown owners. Build defers allocations, checks final PLAY compiler pairs,
+freezes MyCareer setup, publishes Guardian resources before final XBE, and runs
+modern DATA, roster arena, Crib shrink and playlist revalidation after growth.
+
+New opt-ins stay false in every preset; collision level defaults to zero, extra
+created teams to zero, Guardian practice preference to true, and hires families
+to all six while the parent remains off. Experimental modern naming is conditional
+on every manifest span fitting. The later scorebug handoff supersedes the earlier
+probe-field proposal: diagnostics stay CLI-only; runtime stays false in presets.
+The existing single widescreen flag remains. MyCareer setup selection/preparation
+does not tick its checkbox or the independent Crib option. Native Senior Bowl
+and franchise-2026 execution remain unavailable and refuse before preparation.
+
+Both patch panels, the Build settings/project map, Rules/Create a Play Info,
+Senior Bowl preparation, MyCareer, Stadiums workflow, animation source field,
+Guardian roster/CSV/undo controls, signed-save migration and transient modern-name
+facade are connected. Practice help now promises the corrected Coach's Desk
+return. Hires controls preserve numerical budget failures and reject stale worker
+results; 128 MiB remains disabled. The wizard describes native I or eligible
+Shotgun formations and distinguishes data recipes from runtime controls.
+
+Registry counts are 108 overall and 70 NFL2K5; all candidate IDs are merged with
+resolvable local module commands. The allowlist has 475 exact files. Provider
+integrity covers the actual 225-module closure; the runtime imports 180 product
+modules and 34 tools. Reviewed release metadata is 24 files, including the exact
+music routing report, with no broader reports/payload exception. Shipped old
+reports use portable path notation while retaining their evidence.
+
+The required 77-test owner-pairwise suite passes in both orders. The staged file
+audit and runtime closure pass. The required real-disc manifest regeneration
+also passed alone after repinning, observing 10,051 reservations from 115 writer
+calls. Initial disk preflight refused at 104.75 GB; capacity later rose to 111 GB
+and the monitored run never fell below 104.64 GB. Its temporary directory and
+discs were removed. No manual fingerprint updates were used. See the report's
+final ledger for both XBE gates and the oracle result. Historical private registry
+evidence is separately reported as missing; no dummy evidence was shipped.
+Every new game behavior remains experimental/unwitnessed.
+
+The existing practice-squad cave assertion was updated for the arena owner's
+fifteen exact five-byte ABI bridges. It validates the complete sealed owner,
+exact manifest spans/labels and installed bridge bytes while retaining every
+retail-reference check. No arena, practice-squad, allocator or oracle guard was
+relaxed. The post-manifest full gate results are in the report.

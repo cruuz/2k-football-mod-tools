@@ -143,6 +143,8 @@ def parse_pool(
     referenced: dict[int, tuple[str, int]],
     encoding: str,
     what: str,
+    *,
+    fixed_allocations: bool = False,
 ) -> tuple[list[PoolEntry], int, bytes]:
     if not referenced:
         return [], pool_offset, data[pool_offset:]
@@ -153,6 +155,22 @@ def parse_pool(
     pool_end = max(end for _text, end in referenced.values())
     if pool_end > len(data):
         raise StringTableError(f"{what}: string pool exceeds body")
+
+    if fixed_allocations:
+        # NFL's fixed-span editor zero-fills after a shorter replacement. The
+        # next distinct lookup target, not the first NUL, bounds each interior
+        # allocation. Retain these spans so an edited bank still round-trips.
+        starts = sorted(referenced)
+        if starts[0] != pool_offset:
+            raise StringTableError(f"{what}: unreferenced prefix in text pool")
+        pool = []
+        for index, start in enumerate(starts):
+            stop = starts[index + 1] if index + 1 < len(starts) else pool_end
+            text, end = referenced[start]
+            if end > stop or any(data[end:stop]):
+                raise StringTableError(f"{what}: overlapping text or nonzero allocation padding")
+            pool.append(PoolEntry(index, start, stop, text))
+        return pool, pool_end, data[pool_end:]
 
     pool: list[PoolEntry] = []
     cursor = pool_offset
@@ -297,7 +315,7 @@ def parse_nfl_body(data: bytes, record: ResourceRecord) -> ParsedTable:
         preliminary.append((offset, id_a, id_b, code_units, target, text))
 
     pool, pool_end, trailer = parse_pool(
-        data, pool_offset, referenced, "utf-16le", "NFL STRG"
+        data, pool_offset, referenced, "utf-16le", "NFL STRG", fixed_allocations=True
     )
     pool_by_offset = {item.offset: item.index for item in pool}
     records = [
@@ -340,6 +358,11 @@ def rebuild_table(table: ParsedTable) -> bytes:
     cursor = table.text_pool_offset
     for item in table.pool:
         encoded = item.text.encode(table.encoding) + b"\0\0"
+        if table.platform == "nfl2k5":
+            size = item.end_offset - item.offset
+            if len(encoded) > size:
+                raise StringTableError("NFL text exceeds its fixed allocation")
+            encoded += bytes(size - len(encoded))
         pool_offsets.append(cursor)
         encoded_pool.append(encoded)
         cursor += len(encoded)

@@ -83,7 +83,7 @@ class RecordingTextureDelegate:
         return getattr(texture, "texture_index", None) == 0
 
     def current_png(self, texture: object) -> Path:
-        raise AssertionError("export embedding must use the manifest PNG here")
+        return texture.png_path
 
     def replace(self, texture: object, supplied_png: Path) -> str:
         texture_id = getattr(texture, "texture_id")
@@ -707,6 +707,65 @@ class StadiumGltfTextureWriteBackTests(StadiumGltfTextureEmbeddingTests):
             self._studio(RecordingTextureDelegate()).replace_textures_from_gltf(
                 self.SCENE_ID, edited
             )
+
+
+    def test_unchanged_pixels_do_not_call_the_writer(self) -> None:
+        edited = self._edited_pair(self.png_payload)
+        delegate = RecordingTextureDelegate()
+        results = self._studio(delegate).replace_textures_from_gltf(self.SCENE_ID, edited)
+        self.assertEqual(len(results), 1)
+        self.assertFalse(results[0].changed)
+        self.assertIsNone(results[0].write_result)
+        self.assertEqual(delegate.supplied, {})
+
+    def test_different_png_encoding_of_identical_pixels_is_a_noop(self) -> None:
+        # A harmless text chunk changes bytes without changing RGBA.
+        text = b'Comment\0saved in Blender'
+        chunk = (struct.pack('>I', len(text)) + b'tEXt' + text
+                 + struct.pack('>I', zlib.crc32(b'tEXt' + text) & 0xffffffff))
+        alternative = self.png_payload[:33] + chunk + self.png_payload[33:]
+        edited = self._edited_pair(alternative)
+        delegate = RecordingTextureDelegate()
+        result = self._studio(delegate).replace_textures_from_gltf(self.SCENE_ID, edited)
+        self.assertFalse(result[0].changed)
+        self.assertEqual(delegate.supplied, {})
+
+    def test_foreign_explicit_id_never_falls_back_to_a_matching_name(self) -> None:
+        edited = self._edited_pair(one_pixel_png(bytes((1, 2, 3, 255))))
+        document = json.loads(edited.read_text())
+        for section in ('materials', 'textures', 'images'):
+            for row in document[section]:
+                if row.get('extras', {}).get('nfl2k5_texture_id'):
+                    row['extras']['nfl2k5_texture_id'] = 'nfl2k5.stadium.o0043.c0003.scene0077.texture0000'
+        edited.write_text(json.dumps(document))
+        delegate = RecordingTextureDelegate()
+        with self.assertRaisesRegex(ValidationError, 'does not belong'):
+            self._studio(delegate).replace_textures_from_gltf(self.SCENE_ID, edited)
+        self.assertEqual(delegate.supplied, {})
+
+    def test_conflicting_carrier_ids_refuse(self) -> None:
+        edited = self._edited_pair(self.png_payload)
+        document = json.loads(edited.read_text())
+        document['images'][0]['extras']['nfl2k5_texture_id'] = self.SCENE_ID + '.texture0001'
+        edited.write_text(json.dumps(document))
+        with self.assertRaisesRegex(ValidationError, 'identities disagree'):
+            self._studio().replace_textures_from_gltf(self.SCENE_ID, edited)
+
+    def test_malformed_png_refuses_before_writer(self) -> None:
+        edited = self._edited_pair(b'not png')
+        delegate = RecordingTextureDelegate()
+        with self.assertRaisesRegex(ValidationError, 'Invalid Stadium PNG'):
+            self._studio(delegate).replace_textures_from_gltf(self.SCENE_ID, edited)
+        self.assertEqual(delegate.supplied, {})
+
+    def test_external_paths_cannot_escape_the_bundle(self) -> None:
+        edited = self._edited_pair(self.png_payload)
+        document = json.loads(edited.read_text())
+        document['images'][0].pop('bufferView')
+        document['images'][0]['uri'] = '../private.png'
+        edited.write_text(json.dumps(document))
+        with self.assertRaisesRegex(ValidationError, 'unsafe path'):
+            self._studio().replace_textures_from_gltf(self.SCENE_ID, edited)
 
 
 if __name__ == "__main__":

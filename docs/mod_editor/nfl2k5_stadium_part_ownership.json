@@ -1,0 +1,76 @@
+{
+  "explanation": "Native center/radius culling consumers are pinned. A matching node name, one transform record, or zero selector values does not prove independent ownership, update order, visibility or transform serialization.",
+  "function_ranges": [
+    {
+      "end_va_exclusive": "0x00021591",
+      "name": "transform_bound_center",
+      "sha256": "1c2d288c9e44c8dea32cca64bb1673bcb6d9e08d05d961eef1f4bbe541fd3d1a",
+      "size": 113,
+      "start_va": "0x00021520"
+    },
+    {
+      "end_va_exclusive": "0x00021627",
+      "name": "node_sphere_visibility_dispatch",
+      "sha256": "3004525d4f27a344c5ce145503f99093a59e57d9d92d775427394a948ed02bda",
+      "size": 135,
+      "start_va": "0x000215a0"
+    },
+    {
+      "end_va_exclusive": "0x000216f6",
+      "name": "node_relocator",
+      "sha256": "fbe34058fa5197b0c584c31b23672668eadbd84710d577d84f61aacbb4f41bc8",
+      "size": 198,
+      "start_va": "0x00021630"
+    },
+    {
+      "end_va_exclusive": "0x000218c3",
+      "name": "render_node",
+      "sha256": "4b51b577a3dedc1b8aebb5d89bc1983c054d913728acefd5514edf291c9c2566",
+      "size": 99,
+      "start_va": "0x00021860"
+    },
+    {
+      "end_va_exclusive": "0x0002322d",
+      "name": "shape_relocator",
+      "sha256": "c537a5b259fe034d0c8dfa8362a71830c2a7d18f4b2064b0868880a775796751",
+      "size": 669,
+      "start_va": "0x00022f90"
+    },
+    {
+      "end_va_exclusive": "0x00023753",
+      "name": "shape_center_getter",
+      "sha256": "58367ffa2a0179375018fa0f5c26da24391e42ebe0ed8fdda35a21fc7bdc396f",
+      "size": 3,
+      "start_va": "0x00023750"
+    },
+    {
+      "end_va_exclusive": "0x00023764",
+      "name": "shape_radius_getter",
+      "sha256": "a3c5b6dafc3d14f6903185a68e16b068ced67b6eb9cb8cdca6aeac1a387cf380",
+      "size": 4,
+      "start_va": "0x00023760"
+    },
+    {
+      "end_va_exclusive": "0x0002aea1",
+      "name": "frustum_sphere_test",
+      "sha256": "72444b6c5a4236cf5a8b720a5b91c00571e657e7e1bfb6423f607c418ff913c3",
+      "size": 225,
+      "start_va": "0x0002adc0"
+    }
+  ],
+  "md5": "444064a9ec984dd29d2c05a43f5c96e8",
+  "proved_dataflow": {
+    "center_transform": "node +0x14 current matrix transforms the local center",
+    "consumer": "0x0002adc0 camera/frustum sphere test",
+    "culling_bypass": "node flags +0x0c bit 2 bypasses the sphere test",
+    "radius_scale": "node flags +0x0c bit 0 selects radius *= node +0x10",
+    "render_suppress": "node flags +0x0c bit 4 suppresses the node before culling",
+    "serialized_center": "shape +0x00/+0x04/+0x08 f32le; +0x0c homogeneous 1.0",
+    "serialized_radius": "shape +0x48 f32le"
+  },
+  "reproduced_with": "tools.xbe_info.Xbe.report and tools.nfl_scne_bounds_ownership.executable_evidence",
+  "runtime_independent_parts_proved": false,
+  "schema": "nfl2k5_stadium_part_ownership_audit/v1",
+  "sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+  "transforms_write_back": false
+}

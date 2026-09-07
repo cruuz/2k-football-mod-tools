@@ -1,0 +1,343 @@
+{
+  "before_v7_640x480": {
+    "schema": "nfl2k5_scorebug_native_projection/v1",
+    "experimental": true,
+    "runtime_witnessed": false,
+    "coordinate_system": "720x480 framebuffer, crop x=40..680 to a 640x480 comparison",
+    "root": [
+      320,
+      424
+    ],
+    "native_root_matrix": [
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      -1.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      320.0,
+      424.0,
+      100.0,
+      1.0
+    ],
+    "native_camera": [
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      16793.16796875,
+      0.0,
+      40.0,
+      16.0,
+      -15953.509765625,
+      1.0
+    ],
+    "hud_viewport": [
+      40.0,
+      16.0,
+      0.0,
+      0.0,
+      680.0,
+      464.0,
+      1.0,
+      0.0
+    ],
+    "frame": [
+      84.0911865234375,
+      396.9989013671875,
+      559.957275390625,
+      445.0
+    ],
+    "clock": [
+      260.9967041015625,
+      421.9927978515625,
+      378.9959411621094,
+      443.00048828125
+    ],
+    "down": [
+      266.9967041015625,
+      398.9984130859375,
+      378.9972229003906,
+      416.9940185546875
+    ],
+    "frame_instructions": 10644,
+    "widescreen": false,
+    "mode": 0,
+    "text_scale_x": 1,
+    "scene_sha256": "119fce3e634021947509fc401cc2dcbe5e173947f6941ff533df416275c9c9ab",
+    "limitations": [
+      "glyphs approximated",
+      "no depth test or GPU consumption",
+      "settled score rotation",
+      "not a reproduction of the supplied clipped screenshot"
+    ]
+  },
+  "after_v8_640x480": {
+    "schema": "nfl2k5_scorebug_native_projection/v1",
+    "experimental": true,
+    "runtime_witnessed": false,
+    "coordinate_system": "720x480 framebuffer, crop x=40..680 to a 640x480 comparison",
+    "root": [
+      320.0,
+      408.0
+    ],
+    "native_root_matrix": [
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      -1.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      320.0,
+      408.0,
+      100.0,
+      1.0
+    ],
+    "native_camera": [
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      16793.16796875,
+      0.0,
+      40.0,
+      16.0,
+      -15953.509765625,
+      1.0
+    ],
+    "hud_viewport": [
+      40.0,
+      16.0,
+      0.0,
+      0.0,
+      680.0,
+      464.0,
+      1.0,
+      0.0
+    ],
+    "frame": [
+      84.0911865234375,
+      380.9989013671875,
+      559.957275390625,
+      429.0
+    ],
+    "clock": [
+      241.0015869140625,
+      406.005615234375,
+      399.0044860839844,
+      427.00048828125
+    ],
+    "down": [
+      251.0006103515625,
+      382.9984130859375,
+      394.9938049316406,
+      400.9940185546875
+    ],
+    "frame_instructions": 10644,
+    "widescreen": false,
+    "mode": 0,
+    "text_scale_x": 1,
+    "scene_sha256": "1b5452ae574029317f8438c059b0662532b41bfb4206af6bdee0b26c6b7a5c14",
+    "limitations": [
+      "glyphs approximated",
+      "no depth test or GPU consumption",
+      "settled score rotation",
+      "not a reproduction of the supplied clipped screenshot"
+    ]
+  },
+  "after_v8_widest_640x480": {
+    "schema": "nfl2k5_scorebug_native_projection/v1",
+    "experimental": true,
+    "runtime_witnessed": false,
+    "coordinate_system": "720x480 framebuffer, crop x=40..680 to a 640x480 comparison",
+    "root": [
+      320.0,
+      408.0
+    ],
+    "native_root_matrix": [
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      -1.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      320.0,
+      408.0,
+      100.0,
+      1.0
+    ],
+    "native_camera": [
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      16793.16796875,
+      0.0,
+      40.0,
+      16.0,
+      -15953.509765625,
+      1.0
+    ],
+    "hud_viewport": [
+      40.0,
+      16.0,
+      0.0,
+      0.0,
+      680.0,
+      464.0,
+      1.0,
+      0.0
+    ],
+    "frame": [
+      84.0911865234375,
+      380.9989013671875,
+      559.957275390625,
+      429.0
+    ],
+    "clock": [
+      241.0015869140625,
+      406.005615234375,
+      399.0044860839844,
+      427.00048828125
+    ],
+    "down": [
+      251.0006103515625,
+      382.9984130859375,
+      394.9938049316406,
+      400.9940185546875
+    ],
+    "frame_instructions": 10644,
+    "widescreen": false,
+    "mode": 0,
+    "text_scale_x": 1,
+    "scene_sha256": "1b5452ae574029317f8438c059b0662532b41bfb4206af6bdee0b26c6b7a5c14",
+    "limitations": [
+      "glyphs approximated",
+      "no depth test or GPU consumption",
+      "settled score rotation",
+      "not a reproduction of the supplied clipped screenshot"
+    ],
+    "widest_sample": true
+  },
+  "after_v8_wide_640x480": {
+    "schema": "nfl2k5_scorebug_native_projection/v1",
+    "experimental": true,
+    "runtime_witnessed": false,
+    "coordinate_system": "720x480 framebuffer, crop x=40..680 to a 640x480 comparison",
+    "root": [
+      320.0,
+      408.0
+    ],
+    "native_root_matrix": [
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      -1.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      320.0,
+      408.0,
+      100.0,
+      1.0
+    ],
+    "native_camera": [
+      0.84375,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      16793.16796875,
+      0.0,
+      90.0,
+      16.0,
+      -15953.509765625,
+      1.0
+    ],
+    "hud_viewport": [
+      40.0,
+      16.0,
+      0.0,
+      0.0,
+      680.0,
+      464.0,
+      1.0,
+      0.0
+    ],
+    "frame": [
+      120.95193862915039,
+      380.9989013671875,
+      522.4639511108398,
+      429.0
+    ],
+    "clock": [
+      253.34508895874023,
+      406.005615234375,
+      386.6600351333618,
+      427.00048828125
+    ],
+    "down": [
+      261.78176498413086,
+      382.9984130859375,
+      383.2760229110718,
+      400.9940185546875
+    ],
+    "frame_instructions": 10644,
+    "widescreen": true,
+    "mode": 0,
+    "text_scale_x": 0.84375,
+    "scene_sha256": "1b5452ae574029317f8438c059b0662532b41bfb4206af6bdee0b26c6b7a5c14",
+    "limitations": [
+      "glyphs approximated",
+      "no depth test or GPU consumption",
+      "settled score rotation",
+      "not a reproduction of the supplied clipped screenshot"
+    ]
+  }
+}

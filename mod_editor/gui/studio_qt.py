@@ -124,6 +124,10 @@ from mod_editor.gui.sounds_panel_qt import SoundsPanel
 from mod_editor.gui.build_panel_qt import BuildPanel
 from mod_editor.gui.models_panel_qt import ModelsPanel
 from mod_editor.gui.animations_panel_qt import AnimationsPanel
+from mod_editor.gui.play_info_panel_qt import PlayInfoPanel
+from mod_editor.gui.senior_bowl_panel_qt import SeniorBowlPanel
+from mod_editor.gui.my_career_panel_qt import MyCareerPanel
+from mod_editor.gui.stadium_blender_panel_qt import StadiumBlenderPanel, texture_import_summary
 from mod_editor.gui.roster_editor_panel_qt import RosterEditorPanel
 from mod_editor.gui.gameplay_patches_panel_qt import TEXT_PATCHES, GameplayPatchesPanel
 from mod_editor.gui.menus_panel_qt import MenusPanel
@@ -799,8 +803,13 @@ class _EmbeddedOperationGuardedHost:
         *,
         requester: str,
         require_mutation_admission: Callable[[str, str], None],
+        team_names_enabled: Callable[[], bool] | None = None,
+        modern_naming_enabled: Callable[[], bool] | None = None,
     ) -> None:
         self._host = host
+        self._team_names_enabled = team_names_enabled or (lambda: False)
+        self._modern_naming_enabled = modern_naming_enabled or (lambda: False)
+        self._override_cache = None
         self._requester = requester
         self._require_mutation_admission = require_mutation_admission
 
@@ -819,10 +828,58 @@ class _EmbeddedOperationGuardedHost:
     def text_catalog_snapshot(
         self, progress: ProgressSink
     ) -> Nfl2k5TextCatalog:
-        return self._host.text_catalog_snapshot(progress)
+        catalog = self._host.text_catalog_snapshot(progress)
+        overrides = self._team_name_overrides(catalog)
+        if not overrides:
+            return catalog
+        from dataclasses import replace
+        teams = []
+        for team in catalog.teams:
+            fields = dict(team.text_asset_ids)
+            if team.outer_index == 5 and "city" in fields and "nickname" in fields:
+                title = " ".join(overrides.get(fields[key], self._host.text_value(fields[key]))
+                                 for key in ("city", "nickname")).strip()
+                team = replace(team, display_name=title)
+            teams.append(team)
+        return Nfl2k5TextCatalog(catalog.banks, catalog.assets, teams, catalog.players, catalog.number_assets)
+
+    def _team_name_overrides(self, catalog=None):
+        if not (self._team_names_enabled() or self._modern_naming_enabled()):
+            return {}
+        from mod_editor.core import nfl2k5_team_names_2026 as names, nfl2k5_modern_naming as modes
+        from mod_editor.core.nfl2k5_throw_tuning import _modern_naming_digest
+        key = (self._team_names_enabled(), self._modern_naming_enabled(),
+               getattr(self._host, "source_path", None), _modern_naming_digest())
+        if catalog is None and self._override_cache is not None and self._override_cache[0] == key:
+            return self._override_cache[1]
+        if catalog is None:
+            catalog = self._host.text_catalog_snapshot(lambda *_: None)
+        values = {**names.catalog_overrides(catalog, enabled=self._team_names_enabled(), value_lookup=self._host.text_value),
+                  **modes.catalog_overrides(catalog, enabled=self._modern_naming_enabled(), value_lookup=self._host.text_value)}
+        self._override_cache = key, values, {asset_id: self._host.text_value(asset_id) for asset_id in values}
+        return values
+
+    def modern_naming_preview(self):
+        from mod_editor.core import nfl2k5_modern_naming as names, nfl2k5_throw_tuning as tuning
+        source = getattr(self._host, "source_path", None)
+        if not source or not self.source_ready:
+            raise ValueError("Open a source disc to review its mode names")
+        enabled = self._modern_naming_enabled()
+        digest = tuning._modern_naming_digest()
+        tuning._naming_source_preflight(Path(source), enabled)
+        self._team_name_overrides(self._host.text_catalog_snapshot(lambda *_: None))
+        rows = names.image_preview(source, enabled=enabled)
+        if digest != tuning._modern_naming_digest():
+            raise ValueError("Modern naming manifest changed during preview; refresh the source")
+        return {"enabled": enabled, "rows": rows, "manifest_sha256": digest}
 
     def text_value(self, asset: TextAsset | str) -> str:
-        return self._host.text_value(asset)
+        asset_id = asset if isinstance(asset, str) else asset.asset_id
+        overrides = self._team_name_overrides()
+        if asset_id in overrides and self._host.text_value(asset) not in (
+                self._override_cache[2][asset_id], overrides[asset_id]):
+            raise ValueError("Naming conflicts with a manual edit; refresh or disable the naming option")
+        return overrides[asset_id] if asset_id in overrides else self._host.text_value(asset)
 
     def number_value(self, asset: RosterNumberAsset | str) -> int:
         return self._host.number_value(asset)
@@ -831,6 +888,9 @@ class _EmbeddedOperationGuardedHost:
         self, asset: TextAsset | str, value: str, progress: ProgressSink
     ) -> object:
         self._require_mutation_admission(self._requester, "change text or a player")
+        asset_id = asset if isinstance(asset, str) else asset.asset_id
+        if asset_id in self._team_name_overrides():
+            raise ValueError("Turn off the matching naming option in Build before editing these fields")
         return self._host.replace_text(asset, value, progress)
 
     def replace_number(
@@ -841,6 +901,8 @@ class _EmbeddedOperationGuardedHost:
 
     def revert_text(self, asset_id: str, progress: ProgressSink) -> object:
         self._require_mutation_admission(self._requester, "revert text or a player")
+        if asset_id in self._team_name_overrides():
+            raise ValueError("Turn off the matching naming option in Build before editing these fields")
         return self._host.revert_text(asset_id, progress)
 
     def export_text(
@@ -1647,6 +1709,9 @@ class StudioMainWindow(QMainWindow):
         self._stadium_browser: _StadiumBrowserState | None = None
         self._audio_panel: AudioPanel | None = None
         self._music_panel: MusicPanel | None = None
+        self._music_playlist_document = None
+        self._restoring_music_playlist = False
+        self._music_playlist_catalog = None
         self._bump_panel: BumpPanel | None = None
         self._save_panel: SavePanel | None = None
         self._text_roster_panel: TextRosterPanel | None = None
@@ -1893,7 +1958,99 @@ class StudioMainWindow(QMainWindow):
         if self._build_panel is not None:
             self._build_panel.set_music_policy(values)
 
+    def _music_playlist_changed(self, document):
+        if self._restoring_music_playlist:
+            return
+        from mod_editor.core import nfl2k5_music_playlist as playlist
+        try:
+            self._music_playlist_document = playlist.copy_options(document)
+            if self._build_panel is not None:
+                self._restoring_music_playlist = True
+                try:
+                    self._build_panel.set_music_shuffle_selection(self._music_playlist_document)
+                finally:
+                    self._restoring_music_playlist = False
+            self._capture_music_build_settings()
+        except (OSError, ValueError) as exc:
+            self.statusBar().showMessage(f"Playlist choices not saved: {exc}", 8000)
+        self._mark_workspace_changed()
+
+    def _capture_music_build_settings(self):
+        from mod_editor.core import nfl2k5_music_playlist as playlist
+        if self._build_panel is not None:
+            state = self._build_panel.project_build_settings()
+        else:
+            document = playlist.copy_options(self._music_playlist_document)
+            state = {} if document is None else {
+                "music_shuffle": document["music_shuffle"], "music_shuffle_selection": document}
+        setter = getattr(self.facade, "set_project_build_settings", None)
+        if callable(setter) and getattr(self.facade, "source_ready", False):
+            setter(state)
+        return state
+
+    def _restore_music_build_settings(self):
+        from mod_editor.core import nfl2k5_music_playlist as playlist
+        getter = getattr(self.facade, "project_build_settings", None)
+        from mod_editor.core import nfl2k5_build_settings as saved
+        state = saved.build_settings(getter() if callable(getter) and getattr(self.facade, "source_ready", False) else {})
+        document = state.get("music_shuffle_selection")
+        self._restoring_music_playlist = True
+        try:
+            self._music_playlist_document = document
+            if self._build_panel is not None:
+                self._build_panel.restore_project_build_settings(state)
+            bowl_panel = getattr(self, "_senior_bowl_panel", None)
+            if bowl_panel is not None:
+                choices = {**saved.defaults(), **state}
+                bowl_panel.set_options({key: choices[key] for key in
+                                        ("senior_bowl", "senior_bowl_settings", "senior_bowl_seed")})
+            if self._music_panel is not None:
+                if self._music_playlist_catalog is not None:
+                    # Clear stale checks before replacing a source catalogue.
+                    self._music_panel.set_playlist_options(playlist.default_options(self._music_playlist_catalog))
+                    self._music_panel.set_playlist_catalog(self._music_playlist_catalog)
+                visible = document or playlist.default_options(self._music_panel.playlist_page._catalog)
+                visible = playlist.copy_options(visible)
+                visible["music_shuffle"] = state.get("music_shuffle", False)
+                self._music_panel.set_playlist_options(visible)
+        finally:
+            self._restoring_music_playlist = False
+
+    def _build_music_shuffle_changed(self, enabled):
+        if self._restoring_music_playlist:
+            return
+        try:
+            state = self._capture_music_build_settings()
+        except (OSError, ValueError) as exc:
+            self.statusBar().showMessage(f"Playlist choices not saved: {exc}", 8000)
+            self._mark_workspace_changed()
+            return
+        self._music_playlist_document = state["music_shuffle_selection"]
+        if self._music_panel is not None:
+            from mod_editor.core import nfl2k5_music_playlist as playlist
+            document = state["music_shuffle_selection"] or self._music_panel.playlist_options()
+            document = playlist.copy_options(document)
+            document["music_shuffle"] = bool(enabled)
+            self._restoring_music_playlist = True
+            try:
+                self._music_panel.set_playlist_options(document)
+            finally:
+                self._restoring_music_playlist = False
+        self._mark_workspace_changed()
+
+    def _music_library_preview_ready(self, counts, preview):
+        from mod_editor.core import nfl2k5_music_playlist as playlist
+        catalog = playlist.catalog_for_counts(counts, library_plan=preview)
+        self._music_playlist_catalog = catalog
+        if self._music_panel is not None:
+            try:
+                self._music_panel.set_playlist_catalog(catalog)
+            except ValueError as exc:
+                self.statusBar().showMessage(f"Playlist library not changed: {exc}", 8000)
+
     def _music_changed(self):
+        if self._restoring_music_playlist:
+            return
         if self._build_panel is not None:
             self._build_panel.music_project_check.setChecked(bool(getattr(self.facade, "modified_count", 0)))
         self._mark_workspace_changed()
@@ -2556,13 +2713,18 @@ class StudioMainWindow(QMainWindow):
         animations_item = QListWidgetItem("  Animations")
         animations_item.setData(Qt.UserRole, "animations")
         animations_item.setSizeHint(QSize(210, 44))
-        animations_item.setToolTip("Experimental, unwitnessed animation inspection and export. Import is disabled.")
+        animations_item.setToolTip("Experimental, unwitnessed animation inspection, export and bounded bone import.")
         self.navigation.addItem(animations_item)
         create_item = QListWidgetItem("  ★ Create a Play")
         create_item.setData(Qt.UserRole, "create_play")
         create_item.setSizeHint(QSize(210, 44))
         create_item.setToolTip("Five steps: pick a playbook, line up a formation, choose run or pass, draw routes, place the play.")
         self.navigation.addItem(create_item)
+        career_item = QListWidgetItem("  MyCareer")
+        career_item.setData(Qt.UserRole, "my_career")
+        career_item.setSizeHint(QSize(210, 44))
+        career_item.setToolTip("Prepare MyPlayer, a created quarterback, and the paired draft save. Experimental and unwitnessed.")
+        self.navigation.addItem(career_item)
         build_item = QListWidgetItem("  ★ Build & Share")
         build_item.setData(Qt.UserRole, "build_share")
         build_item.setSizeHint(QSize(210, 44))
@@ -2603,6 +2765,8 @@ class StudioMainWindow(QMainWindow):
         text_specialist_host = _EmbeddedOperationGuardedHost(
             self.facade,
             requester="text",
+            team_names_enabled=self._team_names_preview_enabled,
+            modern_naming_enabled=self._modern_naming_preview_enabled,
             require_mutation_admission=self._require_specialist_mutation_admission,
         )
         crib_specialist_host = _EmbeddedOperationGuardedHost(
@@ -2785,8 +2949,10 @@ class StudioMainWindow(QMainWindow):
                 self._music_panel.operation_guard = lambda: self._embedded_operation_denial("Music")
                 self._music_panel.changed.connect(self._music_changed)
                 self._music_panel.policy_changed.connect(self._music_policy_changed)
+                self._music_panel.playlist_changed.connect(self._music_playlist_changed)
                 self._music_panel.receipt_ready.connect(self._music_receipt_ready)
                 self._music_panel.operation_state_changed.connect(self._music_operation_state_changed)
+                self._restore_music_build_settings()
                 audio_tabs.addTab(self._music_panel, "Music")
                 audio_tabs.currentChanged.connect(lambda _index: self._music_panel.stop_preview())
                 self.navigation.currentRowChanged.connect(lambda _index: self._music_panel.stop_preview())
@@ -2813,12 +2979,15 @@ class StudioMainWindow(QMainWindow):
                 # The Xbox save editor (sliders + franchise year) is a gameplay tool, not a
                 # uniform tool: one instance, moved here from Uniforms & Equipment (GP-02).
                 self._save_panel = SavePanel(self.facade)
+                self._senior_bowl_panel = SeniorBowlPanel()
+                self._senior_bowl_panel.settings_changed.connect(self._senior_bowl_settings_changed)
                 self._gameplay_panel = GameplayPanel(
                     self.facade,
                     capability_page=self._build_capability_page(section),
                     extra_tabs=((self._gameplay_patches_panel, "Game Fixes"),
                                 (self._throw_tuning_panel, "Throw Distance && Arc"),
-                                (self._save_panel, tab_title("Saves & Sliders"))),
+                                (self._save_panel, tab_title("Saves & Sliders")),
+                                (self._senior_bowl_panel, "Senior Bowl")),
                 )
                 page = self._gameplay_panel
             else:
@@ -2832,7 +3001,14 @@ class StudioMainWindow(QMainWindow):
         self._animations_panel = AnimationsPanel(self.facade)
         self.pages.addWidget(self._page_scroll_host(self._animations_panel))
         self._create_play_page = self._build_create_play_page()
-        self.pages.addWidget(self._page_scroll_host(self._create_play_page))
+        self._play_info_panel = PlayInfoPanel()
+        self._create_play_tabs = QTabWidget()
+        self._create_play_tabs.addTab(self._create_play_page, "Create a Play")
+        self._create_play_tabs.addTab(self._play_info_panel, "Info")
+        self.pages.addWidget(self._page_scroll_host(self._create_play_tabs))
+        self._my_career_panel = MyCareerPanel()
+        self._my_career_panel.setup_ready.connect(self._my_career_setup_ready)
+        self.pages.addWidget(self._page_scroll_host(self._my_career_panel))
         self._build_share_page = self._build_build_share_page()
         self.pages.addWidget(self._page_scroll_host(self._build_share_page))
         workspace_layout.addWidget(self.pages, 1)
@@ -4392,6 +4568,11 @@ class StudioMainWindow(QMainWindow):
         texture_actions.addWidget(revert_button)
         texture_layout.addLayout(texture_actions)
         outer.addWidget(texture_panel)
+
+        self._stadium_blender_panel = StadiumBlenderPanel()
+        self._stadium_blender_panel.exportRequested.connect(self._export_stadium_scene_gltf)
+        self._stadium_blender_panel.importRequested.connect(self._apply_stadium_textures_from_gltf)
+        texture_layout.addWidget(self._stadium_blender_panel)
 
         state = _StadiumBrowserState(
             search, scene_list, count_label, viewport, scene_label,
@@ -6220,7 +6401,9 @@ class StudioMainWindow(QMainWindow):
             box.setInformativeText(
                 f"Open {gltf_path.name} in Blender.\n\n"
                 f"{bin_path.name} holds the geometry and must stay in the same "
-                "folder. Move or copy both together.\n\n"
+                "folder. Move or copy both together. The model includes PNG textures and source UV coordinates.\n\n"
+                "Use the saved Blender helper to paint textures and import the texture file here. "
+                "Part movement and changed UV coordinates are outside this texture workflow.\n\n"
                 "The model is scaled to metres so it opens at a normal size. "
                 "The game stores it in centimetres, which is why an unscaled "
                 "export looks about a hundred times too big."
@@ -6348,15 +6531,14 @@ class StudioMainWindow(QMainWindow):
             box = QMessageBox(self)
             box.setWindowTitle("Stadium textures applied")
             box.setIcon(QMessageBox.Information)
-            box.setText(
-                f"Wrote {len(receipts)} edited stadium texture(s) through the "
-                "bounded writer."
-            )
+            summary, changed = texture_import_summary(receipts)
+            box.setText(summary)
             box.setInformativeText(lines)
             box.addButton("Close", QMessageBox.RejectRole)
             box.exec_()
-            self._set_status(f"Applied {len(receipts)} edited stadium texture(s).")
-            self._mark_workspace_changed()
+            self._set_status(summary)
+            if changed:
+                self._mark_workspace_changed()
             self._select_stadium_texture(state.texture_list.currentItem(), None)
 
         self._start_task(
@@ -7146,6 +7328,11 @@ class StudioMainWindow(QMainWindow):
     ) -> None:
         if self._refuse_while_audio_busy("save the project"):
             return
+        try:
+            self._capture_music_build_settings()
+        except (OSError, ValueError) as exc:
+            self.statusBar().showMessage(f"Project settings could not be saved: {exc}", 8000)
+            return
         was_dirty = self._workspace_dirty
 
         def success(result: object) -> None:
@@ -7270,6 +7457,7 @@ class StudioMainWindow(QMainWindow):
                             f"{str(exc).strip()}"
                         )
             self._refresh_edit_state(rebuild_components=True)
+            self._restore_music_build_settings()
 
             def refresh_loaded_project() -> None:
                 if self._audio_panel is not None:
@@ -7742,6 +7930,9 @@ class StudioMainWindow(QMainWindow):
         roster somebody has edited.  A later open supersedes an earlier one (generation).
         """
 
+        self._animations_panel.image_field.setText(str(source or ""))
+        self._my_career_panel.set_source(source)
+        self._senior_bowl_panel.set_players((), source="")
         if source is None or not bool(getattr(self.facade, "source_ready", False)):
             return
         source = Path(source)
@@ -7761,9 +7952,17 @@ class StudioMainWindow(QMainWindow):
             self._source_inspect_pending = False
             if not isinstance(state, dict):
                 return
-            for panel in (self._build_panel, self._gameplay_patches_panel, self._edge_panel):
-                if panel is not None:
-                    panel.apply_state(state)
+            self._restoring_music_playlist = True
+            try:
+                for panel in (self._build_panel, self._gameplay_patches_panel, self._edge_panel):
+                    if panel is not None:
+                        panel.apply_state(state)
+            finally:
+                self._restoring_music_playlist = False
+            self._music_playlist_catalog = state.get("music_playlist_catalog")
+            self._restore_music_build_settings()
+            if state.get("music_playlist_catalog_error"):
+                self.statusBar().showMessage(f"Playlist library unavailable: {state['music_playlist_catalog_error']}", 8000)
             self._describe_source_pill(state)
             self._refresh_welcome_state()
 
@@ -7775,7 +7974,17 @@ class StudioMainWindow(QMainWindow):
                 if panel is not None and hasattr(panel, "reading_failed"):
                     panel.reading_failed(message)
 
-        worker = _BackgroundTask(lambda progress: mod_build.inspect(source))
+        def inspect_source(progress):
+            state = mod_build.inspect(source)
+            if state.get("container") == "xiso" and state.get("music_library") == "available":
+                from mod_editor.core import nfl2k5_music_banks
+                try:
+                    state["music_playlist_catalog"] = nfl2k5_music_banks.read_playlist_catalog(source)
+                except (OSError, ValueError) as exc:
+                    state["music_playlist_catalog_error"] = str(exc)
+            return state
+
+        worker = _BackgroundTask(inspect_source)
         self._workers.add(worker)
         worker.signals.result.connect(bound(self, inspected))
         worker.signals.error.connect(bound(self, inspect_failed))
@@ -8413,6 +8622,35 @@ class StudioMainWindow(QMainWindow):
         layout.addStretch(1)
         return page
 
+    def _senior_bowl_settings_changed(self, options):
+        if self._build_panel is not None:
+            self._build_panel.set_senior_bowl_options(options)
+            self._capture_music_build_settings()
+            self._mark_workspace_changed()
+
+    def _my_career_setup_ready(self, path):
+        self._build_panel.set_my_career_setup(path)
+        self._capture_music_build_settings()
+        self._mark_workspace_changed()
+
+    def _modern_naming_preview_enabled(self):
+        panel = getattr(self, "_build_panel", None)
+        source = getattr(self.facade, "source_path", None)
+        return bool(panel and source and panel.modern_naming_check.isChecked()
+                    and Path(panel.source_field.text()).resolve() == Path(source).resolve())
+
+    def _team_names_preview_enabled(self) -> bool:
+        panel = getattr(self, "_build_panel", None)
+        if panel is None or not panel.team_names_2026_check.isChecked():
+            return False
+        source = getattr(self.facade, "source_path", None)
+        return bool(source and Path(panel.source_field.text()).resolve() == Path(source).resolve())
+
+    def _refresh_team_names_preview(self, *_args) -> None:
+        panel = getattr(self, "_text_roster_panel", None)
+        if panel is not None:
+            panel.reload()
+
     def _build_build_share_page(self) -> QWidget:
         """★ Build & Share: one copy with every patch (Build) and the .2k5patch exchange (Share)."""
 
@@ -8420,8 +8658,14 @@ class StudioMainWindow(QMainWindow):
         tabs.setObjectName("buildShareTabs")
         tabs.setAccessibleName("Build and share workspaces")
         self._build_panel = BuildPanel(self.facade)
+        self._build_panel.team_names_2026_check.toggled.connect(self._refresh_team_names_preview)
+        self._build_panel.modern_naming_check.toggled.connect(self._refresh_team_names_preview)
+        self._build_panel.source_field.textChanged.connect(self._refresh_team_names_preview)
         self._build_panel.operation_guard = lambda: self._embedded_operation_denial("Build")
         self._build_panel.operation_state_changed.connect(self._build_operation_state_changed)
+        self._build_panel.music_shuffle_check.toggled.connect(self._build_music_shuffle_changed)
+        self._build_panel.music_library_preview_ready.connect(self._music_library_preview_ready)
+        self._restore_music_build_settings()
         if self._music_policy_values:
             self._build_panel.set_music_policy(self._music_policy_values)
         self._connect_star_players()
@@ -8553,7 +8797,7 @@ class StudioMainWindow(QMainWindow):
             return
         if row - 1 >= len(PRODUCT_CATEGORY_ORDER):
             special = row - 1 - len(PRODUCT_CATEGORY_ORDER)
-            titles = ("Rosters", "Models", "Animations", "Create a Play", "Build & Share")
+            titles = ("Rosters", "Models", "Animations", "Create a Play", "MyCareer", "Build & Share")
             self.page_title.setText(titles[special] if special < len(titles) else "")
             return
         category = PRODUCT_CATEGORY_ORDER[row - 1]

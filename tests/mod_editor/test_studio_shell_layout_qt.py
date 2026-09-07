@@ -8,6 +8,11 @@ and Share tabs.
 
 from __future__ import annotations
 
+# Standalone invocation must not depend on a caller's PYTHONPATH.
+import sys
+from pathlib import Path
+sys.path[:0] = [str(Path(__file__).resolve().parents[2]), str(Path(__file__).resolve().parents[1])]
+
 import os
 import unittest
 
@@ -42,14 +47,16 @@ class StudioShellLayoutTests(unittest.TestCase):
 
     def test_navigation_rows_and_pages_line_up(self) -> None:
         rows = self._row_texts()
-        self.assertEqual(len(rows), 1 + len(PRODUCT_CATEGORY_ORDER) + 5)
+        self.assertEqual(len(rows), 1 + len(PRODUCT_CATEGORY_ORDER) + 6)
         self.assertEqual(rows[0], "Getting Started")
-        self.assertEqual(rows[-5], "★ Rosters")
-        self.assertEqual(rows[-4], "★ Models")
-        self.assertEqual(rows[-3], "Animations")
+        self.assertEqual(rows[-6], "★ Rosters")
+        self.assertEqual(rows[-5], "★ Models")
+        self.assertEqual(rows[-4], "Animations")
         self.assertFalse(self.window._animations_panel.import_button.isEnabled())
-        self.assertEqual(rows[-2], "★ Create a Play")
+        self.assertEqual(rows[-3], "★ Create a Play")
+        self.assertEqual(rows[-2], "MyCareer")
         self.assertEqual(rows[-1], "★ Build & Share")
+        self.assertEqual(_tab_titles(self.window._create_play_tabs), ["Create a Play", "Info"])
         self.assertIn("Gameplay", rows)
         self.assertIn("Presentation", rows)
         self.assertNotIn("Sliders & Gameplay", rows)
@@ -70,12 +77,13 @@ class StudioShellLayoutTests(unittest.TestCase):
         self.assertIn("Throw Distance & Arc", titles)
         self.assertIn("Game Fixes", titles)
         self.assertIn("Saves & Sliders", titles)
+        self.assertIn("Senior Bowl", titles)
         self.assertEqual(titles[0], "Game Fixes")
         for moved in ("ESPN Scorebug & Ticker", "Commentary", "Share"):
             self.assertNotIn(moved, titles)
         patches = self.window._gameplay_patches_panel
         assert patches is not None
-        self.assertEqual(set(patches.checks), {"momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "catch_slider", "accel_ramp", "draft_ai", "returner_fix", "progression", "team_column", "kick_rules", "overtime", "camera", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces", "prospect_names", "franchise_practice", "player_star", "depth_roles", "dynamic_kickoff", "depth_chart_rows", "practice_squad", "depth_locks", "season_cap", "xbe_space", "kickoff_relocated", "guardian_cap", "screen_timing", "scorebug", "scorebug_runtime", "music_policy", "music_unlock", "music_userlist"})
+        self.assertEqual(set(patches.checks), {"momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "catch_slider", "accel_ramp", "draft_ai", "returner_fix", "progression", "team_column", "kick_rules", "overtime", "camera", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces", "prospect_names", "franchise_practice", "player_star", "depth_roles", "dynamic_kickoff", "depth_chart_rows", "practice_squad", "depth_locks", "season_cap", "xbe_space", "kickoff_relocated", "guardian_cap", "screen_timing", "scorebug", "scorebug_runtime", "music_policy", "music_unlock", "music_userlist", "all_stadiums", "team_names_2026", "coverage_slider", "scramble_tuning", "flatter_deep_ball", "chop_block_toggle", "music_shuffle", "practice_squad_screen", "abilities", "qb_spy", "momentum_collisions", "read_option_runtime", "screen_hooks", "franchise_2026_rules", "senior_bowl", "guardian_overlay", "my_career", "crib_reclaim", "modern_naming", "reserves_16", "created_teams_extra"})
 
     def test_presentation_page_has_inventory_scorebug_and_commentary(self) -> None:
         page = self.window._category_pages[ProductCategory.SCOREBUG_PRESENTATION]

@@ -11,7 +11,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from pathlib import Path
 
-from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, pyqtSignal
+from PyQt5.QtCore import QTimer, QObject, QRunnable, Qt, QThreadPool, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -35,6 +35,7 @@ import threading
 import tempfile
 from dataclasses import replace, asdict
 
+from mod_editor.gui import beta62_options as r62_ui
 from mod_editor.core import mod_build
 from mod_editor.core import nfl2k5_player_star as player_star
 from mod_editor.core import nfl2k5_throw_tuning as tt
@@ -91,6 +92,7 @@ class BuildPanel(QWidget):
     """One-stop build of every patch into a single copy."""
 
     operation_state_changed = pyqtSignal(bool)
+    music_library_preview_ready = pyqtSignal(object, object)
     built = pyqtSignal(dict)   # the receipt of the copy just written (Share pre-fills from it)
 
     def __init__(self, facade: object | None = None, parent: QWidget | None = None) -> None:
@@ -109,6 +111,18 @@ class BuildPanel(QWidget):
         self.star_players: list[str] = []
         self._star_names: list[str] = []
         self.playbook_packs: list[str] = []
+        self._music_shuffle_selection = None  # the Music page's playlist document (schema 1), set by the shell
+        self._senior_bowl_options = {}
+        self._guardian_players = None
+        self._hires_budget_identity = None
+        self._hires_budget_receipt = None
+        self._hires_budget_error = ""
+        self._hires_budget_tasks = {}
+        self._hires_budget_serial = 0
+        self._hires_budget_timer = QTimer(self)
+        self._hires_budget_timer.setSingleShot(True)
+        self._hires_budget_timer.setInterval(200)
+        self._hires_budget_timer.timeout.connect(self._preview_hires_budget)
         self._build_ui()
         self._refresh()
 
@@ -332,9 +346,67 @@ class BuildPanel(QWidget):
         g.addWidget(self.momentum_contact_note)
         self.defensive_try_check = self._option(g, "defensive_try", "Defensive two-point returns (experimental)",
             tt.defensive_try_patch.UI_TEXT, badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
-        self.zone_drop_cap_check = self._option(g, "zone_drop_cap", "Corner deep-zone backpedal (experimental)",
-            "Caps the initial deep-zone depth request for cornerbacks. Experimental / Unwitnessed.",
+        self.zone_drop_cap_check = self._option(g, "zone_drop_cap", 'Initial deep-zone corner drop (experimental)',
+            r62_ui.ZONE_HELP,
             badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        self.coverage_slider_check = self._option(g, "coverage_slider", "Coverage slider response (experimental)",
+            tt.coverage_slider_patch.HELP_TEXT, needs_image=True)
+        self.scramble_tuning_check = self._option(g, "scramble_tuning", "Slow-QB acceleration (experimental)",
+            tt.scramble_tuning_patch.HELP_TEXT, needs_image=True)
+        self.flatter_deep_ball_check = self._option(g, "flatter_deep_ball", "Flatter deep flight (experimental)",
+            tt.flatter_flight_patch.HELP_TEXT)
+        self.chop_block_toggle_check = self._option(g, "chop_block_toggle", "Repair Chop Block toggle (experimental)",
+            tt.penalties_patch.CHOP_BLOCK_HELP)
+        self.flatter_deep_ball_check.toggled.connect(self._flatter_flight_toggled)
+        self.realistic_check.toggled.connect(lambda on: self.flatter_deep_ball_check.setChecked(False) if on else None)
+        self.arc_by_distance_check.toggled.connect(lambda on: self.flatter_deep_ball_check.setChecked(False) if on else None)
+        self.arc_spin.valueChanged.connect(lambda value: self.flatter_deep_ball_check.setChecked(False) if value else None)
+        self.all_stadiums_check = self._option(g, "all_stadiums",
+            "All 82 Create a Team stadiums (experimental)", tt.roster_storage_patch.UI_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        self.music_shuffle_check = self._option(g, "music_shuffle", "Shuffle songs in menus, Crib and games",
+            "Experimental, not yet tested in game. Uses the Music tab playlist. "
+            "Loading and shows keep their timed music.", badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        self.abilities_check = self._option(g, "abilities", "Player abilities (experimental)",
+            tt.abilities_patch.HELP_TEXT, badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        self.abilities_week = QComboBox()
+        self.abilities_week.addItem("No abilities-off week", None)
+        for week in range(1, 19):
+            self.abilities_week.addItem(f"Week {week}", week - 1)
+        self.abilities_week.setCurrentIndex(0)
+        self.abilities_week.setEnabled(False)
+        self.abilities_week.setAccessibleName("Week with abilities off")
+        self.abilities_week.setToolTip("Use an existing regular-season week. Player ability flags stay saved and return the following week.")
+        g.addWidget(self.abilities_week)
+        self.abilities_check.toggled.connect(self._abilities_toggled)
+        self.abilities_week.currentIndexChanged.connect(lambda _index: self._refresh())
+        self.qb_spy_check = self._option(g, "qb_spy", "QB spy for zone, man and rush (experimental)",
+            tt.qb_spy_patch.HELP_TEXT, badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        for key, caption, help_text in r62_ui.OPTIONS:
+            setattr(self, key + "_check", self._option(g, key, caption, help_text,
+                    badge="EXPERIMENTAL / UNWITNESSED", needs_image=True))
+        self.momentum_collision_level = QComboBox()
+        for caption, value in (("Retail (0)", 0), ("Light (25)", 25), ("Medium (50)", 50), ("Heavy (100)", 100)):
+            self.momentum_collision_level.addItem(caption, value)
+        self.momentum_collision_level.setAccessibleName("Weight and speed in contact level")
+        self._collision_last_positive = 50
+        g.addWidget(self.momentum_collision_level)
+        self.momentum_collision_level.currentIndexChanged.connect(self._collision_changed)
+        self.momentum_collisions_check.toggled.connect(self._momentum_toggled)
+        self.guardian_everyone_practice_check = self._option(g, "guardian_everyone_practice",
+            "Caps for everyone in practice", "Practice caps do not change saved player selections.")
+        self.guardian_everyone_practice_check.setChecked(True)
+        self.guardian_everyone_practice_check.toggled.connect(self._refresh)
+        career_row = QHBoxLayout()
+        self.my_career_setup_field = QLineEdit()
+        self.my_career_setup_field.setPlaceholderText("MyCareer.json from the paired draft save")
+        self.my_career_setup_field.textChanged.connect(self._refresh)
+        career_row.addWidget(self.my_career_setup_field, 1)
+        self.my_career_setup_button = QPushButton("Choose MyCareer setup...")
+        self.my_career_setup_button.clicked.connect(self._choose_my_career_setup)
+        career_row.addWidget(self.my_career_setup_button)
+        g.addLayout(career_row)
+
         self.kick_rules_check = self._option(g, "kick_rules", "Modern kick spots & kicking power",
                                              "Kickoff: 35 · touchback: 35 · PAT snap: 15.",
                                              details="These describe the shipped patch, not a newly verified NFL ruleset. Two-point tries stay at the 2; "
@@ -455,18 +527,25 @@ class BuildPanel(QWidget):
                                          needs_image=True,
                                          details="Real 2026 schedule with the 3-game preseason, 17 games over 18 weeks with one bye, 2026 dates and rookie "
                                                  "birth years.")
+        self.team_names_2026_check = self._option(f, "team_names_2026", "2026 team names (experimental)",
+            "Use modern team names in new disc rosters. Limited name space writes "
+            "L.A. Chargers (LA), L Vegas Raiders (LV), L.A. Rams (LAR), and "
+            "Washington Cmdrs (WAS); Arizona uses ARI. Existing saves keep their names. "
+            "EXPERIMENTAL / UNWITNESSED.", needs_image=True, details=self._team_names_details())
         self.season_cap_check = self._option(
-            f, "season_cap", "128-season franchise gate (experimental)",
-            "Franchise runs to 128 seasons. Dates and ages after 2099 are not repaired yet. "
-            "Game birth dates can already be wrong in 2053. Not tested in game.", badge=NOT_TESTED)
+            f, "season_cap", "128-season franchise (experimental)",
+            tt.calendar_engine_patch.UI_TEXT, badge=NOT_TESTED, needs_image=True)
+        self.practice_squad_screen_check = self._option(
+            f, "practice_squad_screen", "Practice Squad screen (experimental)",
+            tt.practice_squad_screen_patch.HELP_TEXT, badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
         self.position_row_check = self._option(f, "position_row", "Change position in Edit Player",
                                                "In-game: use Depth Chart → Auto afterward.", badge=NOT_TESTED,
                                                details="The Position row (the game's own picker, 17 positions, ratings kept, overall recomputed) sits "
                                                        "after Last Name on the first page of Edit Player, in roster mode and in Franchise.")
         self.probowl_order_check = self._option(f, "probowl_order", "Pro Bowl Votes: offense, defense, kickers",
                                                 "The tabs run offence, defence, then K and P.", badge=NOT_TESTED)
-        self.franchise_practice_check = self._option(f, "franchise_practice", "Free Practice inside Franchise",
-                                                     "A Practice row on the Coach's Desk: your first team against itself, no stats or injuries.",
+        self.franchise_practice_check = self._option(f, "franchise_practice", 'Free Practice inside Franchise',
+                                                     r62_ui.PRACTICE_HELP,
                                                      badge=NOT_TESTED)
         self.practice_squad_check = self._option(f, "practice_squad", "Practice squads (53 + 12 reserves)",
                                                  "Each team keeps up to 12 cut players as reserves in Franchise; no reserve screen yet.",
@@ -546,15 +625,59 @@ class BuildPanel(QWidget):
         pres = QGroupBox("Presentation")
         pl = QVBoxLayout(pres)
         from mod_editor.core import nfl2k5_guardian_cap as cap
+        self.hires_pack_check = self._option(pl, "hires_pack", "Hi-res pack (experimental)",
+            "Retail: textures keep their original sizes. Patch: selected artwork in your "
+            "Hi-res folder can use 2x detail. Experimental and unwitnessed in game. "
+            "xemu rendering scale is set separately.", badge="EXPERIMENTAL", needs_image=True)
+        hires_row = QHBoxLayout()
+        self.hires_folder_field = QLineEdit()
+        self.hires_folder_field.setPlaceholderText("Choose your Hi-res folder")
+        self.hires_folder_field.setAccessibleName("Hi-res artwork folder")
+        self.hires_folder_field.textChanged.connect(self._refresh)
+        hires_row.addWidget(self.hires_folder_field, 1)
+        self.hires_folder_button = QPushButton("Choose folder...")
+        self.hires_folder_button.clicked.connect(self._choose_hires_folder)
+        hires_row.addWidget(self.hires_folder_button)
+        self.hires_scale_combo = QComboBox()
+        self.hires_scale_combo.addItem("2x detail", 2)
+        self.hires_scale_combo.addItem("Original size", 1)
+        self.hires_scale_combo.currentIndexChanged.connect(self._refresh)
+        hires_row.addWidget(self.hires_scale_combo)
+        self.hires_target_combo = QComboBox()
+        self.hires_target_combo.addItem("64 MiB", "xemu-64")
+        self.hires_target_combo.addItem("128 MiB (unavailable)", "xemu-128")
+        self.hires_target_combo.model().item(1).setEnabled(False)
+        self.hires_target_combo.setItemData(1, "The game still limits texture addresses to the first 64 MiB.", Qt.ToolTipRole)
+        self.hires_target_combo.setToolTip("The game still limits texture addresses to the first 64 MiB.")
+        self.hires_target_combo.currentIndexChanged.connect(self._refresh)
+        hires_row.addWidget(self.hires_target_combo)
+        pl.addLayout(hires_row)
+        self.hires_receipt_label = QLabel("")
+        self.hires_receipt_label.setWordWrap(True)
+        pl.addWidget(self.hires_receipt_label)
+        self._hires_family_checks = {}
+        for family, caption in r62_ui.HIRES_FAMILIES:
+            help_text = "Retail: original texture sizes. Patch: selected artwork uses 2x detail. Experimental and unwitnessed. Memory fit is unproved."
+            if family == "jerseys":
+                help_text += " Supply both the clean image and its .mud image."
+            if family == "stock_fields":
+                help_text += " Original scene pixels remain allocated beside the new logo."
+            check = self._option(pl, "hires_" + family, caption, help_text)
+            check.setChecked(True)
+            check.toggled.connect(self._refresh)
+            self._hires_family_checks[family] = check
+        self.hires_budget_label = QLabel("Memory fit is unproved. Enable Hi-res and choose artwork to check its modeled budget.")
+        self.hires_budget_label.setWordWrap(True)
+        pl.addWidget(self.hires_budget_label)
         self.guardian_cap_check = self._option(
             pl, "guardian_cap", "Guardian caps on helmet C (experimental)",
             cap.UI_TEXT + " Neutral gray artwork is for Detroit current away only. "
             "EXPERIMENTAL / UNWITNESSED.", badge=NOT_TESTED, needs_image=True)
-        self.scorebug_check = self._option(pl, "scorebug", "Experimental ESPN scorebar",
-            "A bottom score display with a white clock strip and ESPN corner mark.", needs_image=True,
-            badge=NOT_TESTED, details="Not tested in game. Team names remain live. The kick meter moves up and the lineup strip is hidden. Team logos and events require scorebug effects.")
-        self.scorebug_runtime_check = self._option(pl, "scorebug_runtime", "Team logos and scorebug effects (experimental)",
-            'Retail: team panels and timeout marks use the stock display. Patch: adds team logos, remaining timeout marks, a score flash, down refresh and a red play clock below five seconds. Unwitnessed in game; use a separate disc copy.', needs_image=True, badge=NOT_TESTED)
+        self.scorebug_check = self._option(pl, "scorebug", 'Experimental ESPN scorebar',
+            r62_ui.SCOREBUG_HELP, needs_image=True,
+            badge=NOT_TESTED, details=r62_ui.SCOREBUG_HELP)
+        self.scorebug_runtime_check = self._option(pl, "scorebug_runtime", 'Scorebug effects (diagnostic only)',
+            r62_ui.SCOREBUG_RUNTIME_HELP, needs_image=True, badge=NOT_TESTED)
         self.music_policy_check = self._option(pl, "music_policy", "Use jukebox songs in menus", "Retail: menus use the menu bank. Patch: menus use the 59 jukebox recordings in the game's random order. The 7 menu tracks are not included yet. Twelve jukebox tracks are spoken outtakes.", badge=NOT_TESTED)
         self.music_unlock_check = self._option(pl, "music_unlock", "Make every music collection available",
             "Every collection is available without spending credits. Experimental, not yet tested in game.", badge=NOT_TESTED)
@@ -586,10 +709,9 @@ class BuildPanel(QWidget):
         pl.addWidget(self.music_preview_label)
         self.camera_check = self._option(pl, "camera", "Make Standard camera look like Far",
                                          "The Standard preset takes Far's look-at, lens and offset; Far itself is untouched.")
-        self.widescreen_check = self._option(pl, "widescreen", "Widescreen 16:9",
-                                             "Set xemu Display aspect ratio to 16x9.", badge=NOT_TESTED,
-                                             details="Hor+: the 3D view widens, HUD and menus keep their 4:3 sizing (pillarboxed). "
-                                                     "xemu: Settings -> Display -> aspect ratio, or [display.ui] aspect_ratio in xemu.toml.")
+        self.widescreen_check = self._option(pl, "widescreen", 'Widescreen 16:9 (experimental)',
+                                             tt.widescreen_patch.HELP_TEXT, badge=NOT_TESTED,
+                                             details=tt.widescreen_patch.HELP_TEXT)
         ol.addWidget(pres)
 
         # ---- Custom data (optional overrides) and the advanced inputs
@@ -808,7 +930,7 @@ class BuildPanel(QWidget):
             bits.append(f"throw ceiling {settings.max_deep_yards:g} yd" + (", realistic flight" if settings.realistic_flight else "") + (", arc by distance" if getattr(settings, 'arc_by_distance', False) else ""))
         for key, label in (("catch_slider", "catch/INT sliders"), ("accel_ramp", "acceleration ramp"),
                            ("draft_ai", "draft AI"), ("returner_fix", "returner fix"), ("progression", "progression"), ("team_column", "TEAM column"), ("team_history", "team history"), ("career_stats", "career stats"), ("prospect_names", "prospect names"),
-                           ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season gate"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"), ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"),
+                           ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season franchise"), ("music_shuffle", "music shuffle"), ("practice_squad_screen", "Practice Squad screen"), ("abilities", "player abilities"), ("qb_spy", "QB spy"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"), ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"),
                            ("player_star", "star decal"), ("player_tags", "star tags"), ("roster_edits", "roster edits"),
                            ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"), ("position_pools", "one-pool positions"), ("depth_roles", "depth roles"), ("depth_chart_rows", "depth-chart rows"),
                            ("camera", "camera"), ("widescreen", "widescreen"),
@@ -827,7 +949,7 @@ class BuildPanel(QWidget):
             ("returner_fix", "returner fix"), ("progression", "progression"), ("team_column", "TEAM column"),
             ("team_history", "team history"), ("career_stats", "career stats"), ("prospect_names", "prospect names"),
             ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"),
-            ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season gate"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"),
+            ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season franchise"), ("music_shuffle", "music shuffle"), ("practice_squad_screen", "Practice Squad screen"), ("abilities", "player abilities"), ("qb_spy", "QB spy"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"),
             ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"),
             ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"),
             ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"), ("player_star", "star decal"),
@@ -871,10 +993,16 @@ class BuildPanel(QWidget):
             else:
                 box.setToolTip("")
                 self._set_badge(key, self._static_badges.get(key, ""))
+        self.hires_pack_check.setEnabled(is_image and self._available.get("hires_pack", False))
+        self.hires_pack_check.setChecked(False)
+        self._set_badge("hires_pack", str(state.get("hires_pack", "requires image")))
         gate(self.catch_check, "catch_slider")
         gate(self.accel_check, "accel_ramp")
-        for key in ("momentum", "momentum_contact", "defensive_try", "zone_drop_cap"):
+        for key in ("momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "all_stadiums", "team_names_2026", "coverage_slider", "scramble_tuning",
+                    "music_shuffle", "practice_squad_screen", "abilities", "qb_spy", *r62_ui.KEYS):
             gate(getattr(self, key + "_check"), key, needs_image=True)
+        gate(self.flatter_deep_ball_check, "flatter_deep_ball")
+        gate(self.chop_block_toggle_check, "chop_block_toggle")
         gate(self.draft_check, "draft_ai")
         gate(self.returner_check, "returner_fix")
         gate(self.progression_check, "progression")
@@ -973,7 +1101,18 @@ class BuildPanel(QWidget):
         self.momentum_level.blockSignals(True)
         self.momentum_level.setCurrentIndex(0)
         self.momentum_level.blockSignals(False)
-        values = mod_build.PRESETS[name]
+        self.abilities_week.blockSignals(True)
+        self.abilities_week.setCurrentIndex(0)
+        self.abilities_week.blockSignals(False)
+        values = dict(mod_build.PRESETS[name])
+        values["modern_naming"] = tt.modern_naming_patch.preset_enabled(name.removeprefix("softdrink_"))
+        if name == "softdrink_experimental" and not values["modern_naming"]:
+            self._helpers["modern_naming"].setText("Modern naming is unavailable: at least one configured label does not fit.")
+        self._collision_last_positive = 50
+        self.momentum_collision_level.blockSignals(True)
+        self.momentum_collision_level.setCurrentIndex(0)
+        self.momentum_collision_level.blockSignals(False)
+        self.my_career_setup_field.clear()
         self.screen_timing_combo.setCurrentText(values.get("screen_timing") or "D")
         boxes = self._boxes()
         applied, skipped = [], []
@@ -1018,11 +1157,13 @@ class BuildPanel(QWidget):
 
     def _boxes(self) -> dict[str, QCheckBox]:
         return {
+            "hires_pack": self.hires_pack_check, "flatter_deep_ball": self.flatter_deep_ball_check, "chop_block_toggle": self.chop_block_toggle_check,
             "throw": self.throw_check, "catch_slider": self.catch_check, "accel_ramp": self.accel_check,
             "draft_ai": self.draft_check, "returner_fix": self.returner_check, "progression": self.progression_check,
             **{key: getattr(self, key + "_check") for key in (
                 "scorebug_runtime", "music_policy", "music_unlock", "music_userlist", "music_project", "music_library",
-                "momentum", "momentum_contact", "defensive_try", "zone_drop_cap")},
+                "momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "all_stadiums", "team_names_2026", "coverage_slider", "scramble_tuning",
+                "music_shuffle", "practice_squad_screen", "abilities", "qb_spy", *r62_ui.KEYS)},
             "edge_rename": self.edge_check, "scorebug": self.scorebug_check, "guardian_cap": self.guardian_cap_check, "screen_timing": self.screen_timing_check, "scheme_labels": self.scheme_labels_check,
             "camera": self.camera_check, "kick_rules": self.kick_rules_check, "kick_power": self.kick_power_check,
             "position_pools": self.position_pools_check, "depth_roles": self.depth_roles_check,
@@ -1074,6 +1215,20 @@ class BuildPanel(QWidget):
             momentum=int(self.momentum_level.currentData() or 50) if self.momentum_check.isChecked() else 0,
             momentum_contact=self.momentum_contact_check.isChecked(),
             defensive_try=self.defensive_try_check.isChecked(), zone_drop_cap=self.zone_drop_cap_check.isChecked(),
+            all_stadiums=self.all_stadiums_check.isChecked(),
+            music_shuffle=self.music_shuffle_check.isChecked(),
+            music_shuffle_selection=self.music_build_settings()["music_shuffle_selection"] if self.music_shuffle_check.isChecked() else None,
+            practice_squad_screen=self.practice_squad_screen_check.isChecked(),
+            abilities=self.abilities_check.isChecked(),
+            abilities_off_week=(self.abilities_week.currentData() if self.abilities_check.isChecked() else None),
+            qb_spy=self.qb_spy_check.isChecked(),
+            calendar_engine=self.season_cap_check.isChecked(),
+            coverage_slider=self.coverage_slider_check.isChecked(),
+            scramble_tuning=self.scramble_tuning_check.isChecked(),
+            flatter_deep_ball=self.flatter_deep_ball_check.isChecked(),
+            chop_block_toggle=self.chop_block_toggle_check.isChecked(),
+
+            team_names_2026=self.team_names_2026_check.isChecked(),
             catch_slider=self.catch_check.isChecked(), accel_ramp=self.accel_check.isChecked(),
             draft_ai=self.draft_check.isChecked(), edge_rename=self.edge_check.isChecked(),
             returner_fix=self.returner_check.isChecked(), progression=self.progression_check.isChecked(),
@@ -1106,6 +1261,8 @@ class BuildPanel(QWidget):
             music_unlock=self.music_unlock_check.isChecked(), music_userlist=self.music_userlist_check.isChecked(),
             music_project=(self.music_project_field.text().strip() or None) if self.music_project_check.isChecked() else None,
             music_library=(self.music_library_field.text().strip() or None) if self.music_library_check.isChecked() else None,
+            hires_pack=self.hires_pack_check.isChecked(), hires_folder=self.hires_folder_field.text().strip(),
+            hires_scale=self.hires_scale_combo.currentData(), hires_target=self.hires_target_combo.currentData(),
             guardian_cap=self.guardian_cap_check.isChecked(),
             scorebug=self.scorebug_check.isChecked(), commentary=list(self.commentary),
             playbook_packs=tuple(self.playbook_packs),
@@ -1117,6 +1274,16 @@ class BuildPanel(QWidget):
             plan.position_pools = plan.position_pools or state.get("position_pools") != "applied"
             plan.scheme_labels = plan.scheme_labels or state.get("scheme_labels") != "applied"
             plan.depth_roles = plan.depth_roles or state.get("depth_roles") != "applied"
+        for key in r62_ui.KEYS:
+            setattr(plan, key, getattr(self, key + "_check").isChecked())
+        plan.created_teams_extra = 2 if self.created_teams_extra_check.isChecked() else 0
+        plan.momentum_collision_level = int(self.momentum_collision_level.currentData() or 50) if plan.momentum_collisions else 0
+        plan.guardian_everyone_practice = self.guardian_everyone_practice_check.isChecked()
+        plan.guardian_players = self._guardian_players if plan.guardian_overlay else None
+        plan.my_career_setup = (self.my_career_setup_field.text().strip() or None) if plan.my_career else None
+        plan.hires_families = tuple(key for key, box in self._hires_family_checks.items() if box.isChecked())
+        for key, value in self._senior_bowl_options.items():
+            setattr(plan, key, value)
         if getattr(self, "_momentum_legacy_disabled", False):
             plan.notes = (plan.notes + "\nlegacy_accel_ramp_disabled_by_momentum_profile=true").strip()
         return plan
@@ -1124,9 +1291,23 @@ class BuildPanel(QWidget):
     def has_work(self) -> bool:
         p = self.plan()
         return bool(self._include_session_project() or p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression
-                    or p.scorebug_runtime or p.momentum > 0 or p.defensive_try or p.zone_drop_cap or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
+                    or any(getattr(p, key) for key in r62_ui.KEYS) or p.scorebug_runtime or p.momentum > 0 or p.defensive_try or p.zone_drop_cap or p.all_stadiums or p.coverage_slider or p.scramble_tuning or p.flatter_deep_ball or p.chop_block_toggle or p.team_names_2026 or p.music_shuffle or p.practice_squad_screen or p.abilities or p.qb_spy or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.hires_pack or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
                     or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits
                     or p.commentary or p.playbook_packs)
+
+    @staticmethod
+    def _team_names_details() -> str:
+        from mod_editor.core import nfl2k5_team_names_2026 as names
+        try:
+            teams = names.manifest()["teams"]
+        except (OSError, ValueError) as exc:
+            return "Team-name preview unavailable: " + str(exc)
+        def label(row):
+            return f"{row['city']} {row['nickname']} ({row['abbreviation']})"
+        lines = ["Each name must fit its existing space. Intended name / Written name:"]
+        lines.extend(f"{label(team['desired'])} / {label(team['written'])}"
+                     for team in teams if team['retail'] != team['desired'])
+        return "\n".join(lines)
 
     def selected_labels(self) -> list[str]:
         """The short names of every ticked change, in page order."""
@@ -1141,6 +1322,8 @@ class BuildPanel(QWidget):
                     text += f" ({self.momentum_level.currentData()})"
                 if key == "screen_timing":
                     text += f" ({self.screen_timing_combo.currentText()})"
+                if key == "hires_pack":
+                    text += f" ({self.hires_scale_combo.currentText()}, {self.hires_target_combo.currentText()}, {self.hires_folder_field.text().strip()})"
                 if key == "throw":
                     text += f" ({self.ceiling_spin.value()} yd)"
                 labels.append(text)
@@ -1170,6 +1353,13 @@ class BuildPanel(QWidget):
         for key in ("music_project", "music_library"):
             if getattr(self, key + "_check").isChecked() and not getattr(self, key + "_field").text().strip() and not (key == "music_project" and self._include_session_project()):
                 return "Choose a " + key.replace("_", " ") + " before building."
+        if self.hires_pack_check.isChecked() and not self.hires_folder_field.text().strip():
+            return "Choose your Hi-res artwork folder before building."
+        if self.my_career_check.isChecked() and not self.my_career_setup_field.text().strip():
+            return "Choose the paired MyCareer.json setup from the MyCareer page."
+        if self.hires_pack_check.isChecked():
+            if self._hires_budget_identity != self._hires_identity() or self._hires_budget_receipt is None:
+                return self._hires_budget_error or "Checking the selected Hi-res memory budget."
         if self.career_stats_check.isChecked() and not self.career_stats_field.text().strip():
             return "Choose a career stats CSV file."
         if self.roster_edits_check.isChecked() and not self.roster_edits_field.text().strip():
@@ -1186,6 +1376,16 @@ class BuildPanel(QWidget):
         if same:
             return "Source and output are the same file. Fix: choose a different output file."
         return ""
+
+    def _flatter_flight_toggled(self, on):
+        if on:
+            if not self.throw_check.isChecked():
+                self.ceiling_spin.setValue(80)
+            self.throw_check.setChecked(True)
+            self.realistic_check.setChecked(False)
+            self.arc_by_distance_check.setChecked(False)
+            self.arc_spin.setValue(0)
+        self._refresh()
 
     def _momentum_toggled(self, on):
         if on:
@@ -1207,7 +1407,7 @@ class BuildPanel(QWidget):
     def _refresh(self) -> None:
         if hasattr(self, "momentum_contact_note"):
             enabled = self.momentum_check.isChecked()
-            installed = (self._state or {}).get("momentum") == "applied"
+            installed = ((self._state or {}).get("momentum_settings") or {}).get("status") == "applied"
             level = (self._state or {}).get("momentum_settings", {})
             level = level.get("momentum", 0) if isinstance(level, dict) else 0
             selected = level if installed else self._momentum_last_positive if enabled else 0
@@ -1229,6 +1429,30 @@ class BuildPanel(QWidget):
             if self.scorebug_runtime_check.isChecked():
                 self.scorebug_check.setChecked(True)
                 self.xbe_space_check.setChecked(True)
+        settings = (self._state or {}).get("momentum_settings") or {}
+        if settings.get("status") in ("applied", "foreign"):
+            for key in ("momentum", "momentum_contact", "momentum_collisions"):
+                getattr(self, key + "_check").setEnabled(False)
+            self.momentum_level.setEnabled(False)
+        collision = self.momentum_collisions_check
+        value = settings.get("momentum_collision_level", 0) if settings.get("status") == "applied" else self._collision_last_positive if collision.isChecked() else 0
+        self.momentum_collision_level.blockSignals(True)
+        if self.momentum_collision_level.findData(value) < 0:
+            self.momentum_collision_level.addItem(f"Installed ({value})", value)
+        self.momentum_collision_level.setCurrentIndex(self.momentum_collision_level.findData(value))
+        self.momentum_collision_level.blockSignals(False)
+        self.momentum_collision_level.setEnabled(collision.isEnabled())
+        for key, reason in r62_ui.UNAVAILABLE.items():
+            getattr(self, key + "_check").setEnabled(False)
+            getattr(self, key + "_check").setToolTip(reason)
+        self.guardian_everyone_practice_check.setEnabled(self.guardian_overlay_check.isEnabled() and self.guardian_overlay_check.isChecked())
+        if self.guardian_overlay_check.isChecked():
+            self.guardian_cap_check.setChecked(False)
+        for check in self._hires_family_checks.values():
+            check.setEnabled(self.hires_pack_check.isEnabled() and self.hires_pack_check.isChecked())
+        self._schedule_hires_budget()
+        for widget in (self.hires_folder_field, self.hires_folder_button, self.hires_scale_combo, self.hires_target_combo):
+            widget.setEnabled(self.hires_pack_check.isEnabled() and self.hires_pack_check.isChecked())
         self.ceiling_spin.setEnabled(self.throw_check.isChecked())
         self.realistic_check.setEnabled(self.throw_check.isChecked())
         self.arc_by_distance_check.setEnabled(self.throw_check.isChecked())
@@ -1254,6 +1478,90 @@ class BuildPanel(QWidget):
         self.build_button.setAccessibleDescription(self.build_button.toolTip())
 
     # ------------------------------------------------------------ actions
+    def set_my_career_setup(self, path):
+        self.my_career_setup_field.setText(str(path or ""))
+
+    def _choose_my_career_setup(self):
+        path, _ = QFileDialog.getOpenFileName(self, "Choose paired MyCareer setup", "", "MyCareer setup (*.json)")
+        if path:
+            self.set_my_career_setup(path)
+
+    def set_senior_bowl_options(self, options):
+        tt.senior_bowl_patch.Settings.from_dict(options["senior_bowl_settings"])
+        seed = options["senior_bowl_seed"]
+        if options.get("senior_bowl") is not False or type(seed) is not int or not 0 <= seed <= 2147483647:
+            raise ValueError("Senior Bowl is preparation only; use a seed from 0 to 2147483647")
+        import copy
+        self._senior_bowl_options = copy.deepcopy(options)
+        self._refresh()
+
+    def _collision_changed(self):
+        value = int(self.momentum_collision_level.currentData() or 0)
+        if value:
+            self._collision_last_positive = value
+        self.momentum_collisions_check.setChecked(value > 0 and self.momentum_collisions_check.isEnabled())
+        self._momentum_toggled(value > 0)
+
+    def _hires_identity(self):
+        return (self.source_field.text().strip(), self.hires_folder_field.text().strip(),
+                self.hires_scale_combo.currentData(), self.hires_target_combo.currentData(),
+                tuple(key for key, check in self._hires_family_checks.items() if check.isChecked()))
+
+    def _schedule_hires_budget(self):
+        if not self.hires_pack_check.isChecked():
+            self._hires_budget_timer.stop()
+            return
+        identity = self._hires_identity()
+        if identity == self._hires_budget_identity:
+            return
+        self._hires_budget_identity = identity
+        self._hires_budget_receipt = None
+        self._hires_budget_error = ""
+        self.hires_budget_label.setText("Checking the selected artwork budget. Memory fit remains unproved.")
+        self._hires_budget_timer.start()
+
+    def _preview_hires_budget(self):
+        identity = self._hires_budget_identity
+        if not self.hires_pack_check.isChecked() or identity != self._hires_identity():
+            return
+        _, folder, scale, target, families = identity
+        self._hires_budget_serial += 1
+        token = self._hires_budget_serial
+        def preview(_progress):
+            try:
+                from mod_editor.core import nfl2k5_hires_pack
+                result = nfl2k5_hires_pack.preflight_budget(folder, scale=scale, target=target, families=families)
+                return token, identity, result, ""
+            except Exception as exc:  # preview refusals are displayed verbatim
+                return token, identity, None, str(exc)
+        task = _Task(preview)
+        self._hires_budget_tasks[token] = task
+        # A QObject receiver disconnects on page destruction; a lambda could
+        # otherwise update already-deleted controls after a slow folder scan.
+        task.signals.finished.connect(self._hires_budget_reply)
+        self._pool.start(task)
+
+    @pyqtSlot(object)
+    def _hires_budget_reply(self, reply):
+        token, identity, result, reason = reply
+        self._hires_budget_tasks.pop(token, None)
+        self._hires_budget_done(identity, result, reason)
+
+    def _hires_budget_done(self, identity, result, reason=""):
+        if identity != self._hires_identity() or not self.hires_pack_check.isChecked():
+            return
+        self._hires_budget_identity = identity
+        self._hires_budget_receipt = result
+        self._hires_budget_error = reason
+        self.hires_budget_label.setText(reason if result is None else
+            f"{result['message']} Modeled change: {result['modeled_delta_bytes']:,} bytes. Memory fit is unproved.")
+        self._refresh()
+
+    def _choose_hires_folder(self) -> None:
+        chosen = QFileDialog.getExistingDirectory(self, "Choose Hi-res artwork folder", self.hires_folder_field.text())
+        if chosen:
+            self.hires_folder_field.setText(chosen)
+
     def _choose_source(self) -> None:
         chosen, _f = QFileDialog.getOpenFileName(self, "Choose your game disc (.iso) or default.xbe", str(Path.home()), SOURCE_FILTER)
         if not chosen:
@@ -1329,6 +1637,70 @@ class BuildPanel(QWidget):
         if chosen:
             getattr(self, key + "_field").setText(chosen)
             getattr(self, key + "_check").setChecked(True)
+
+    def _abilities_toggled(self, on):
+        self.abilities_week.setEnabled(bool(on))
+        if not on:
+            self.abilities_week.blockSignals(True)
+            self.abilities_week.setCurrentIndex(0)
+            self.abilities_week.blockSignals(False)
+        self._refresh()
+
+    def set_music_shuffle_selection(self, document):
+        """The Music page's playlist choices (schema 1) or None; the enable flag follows the page."""
+        if document is None:
+            self._music_shuffle_selection = None
+            return
+        self._music_shuffle_selection = tt.music_playlist_patch.copy_options(document)
+        if self.music_shuffle_check.isChecked() != bool(document.get("music_shuffle")):
+            self.music_shuffle_check.setChecked(bool(document.get("music_shuffle")))
+        self._refresh()
+
+    def project_build_settings(self):
+        from mod_editor.core import nfl2k5_build_settings as saved
+        plan = self.plan()
+        state = self.music_build_settings()
+        defaults = saved.defaults()
+        for key in saved.FEATURE_KEYS:
+            value = getattr(plan, key)
+            if value != defaults[key]:
+                state[key] = value
+        # Preparation settings survive while the unavailable event is off.
+        for key, value in self._senior_bowl_options.items():
+            if value != defaults[key]:
+                state[key] = value
+        return saved.build_settings(state)
+
+    def restore_project_build_settings(self, state):
+        from mod_editor.core import nfl2k5_build_settings as saved
+        checked = saved.build_settings(state)
+        choices = {**saved.defaults(), **checked}
+        self.restore_music_build_settings({key: checked[key] for key in saved.MUSIC_KEYS if key in checked})
+        self.set_senior_bowl_options({key: choices[key] for key in
+                                     ("senior_bowl", "senior_bowl_settings", "senior_bowl_seed")})
+        self._guardian_players = choices["guardian_players"]
+        self.guardian_everyone_practice_check.setChecked(choices["guardian_everyone_practice"])
+        self.set_my_career_setup(choices["my_career_setup"])
+        self._collision_last_positive = choices["momentum_collision_level"] or 50
+        for key in r62_ui.KEYS:
+            self._boxes()[key].setChecked(bool(choices[key]))
+        for family, check in self._hires_family_checks.items():
+            check.setChecked(family in choices["hires_families"])
+        self._refresh()
+
+    def music_build_settings(self):
+        document = tt.music_playlist_patch.copy_options(self._music_shuffle_selection)
+        enabled = self.music_shuffle_check.isChecked()
+        if document is not None:
+            document["music_shuffle"] = enabled
+        return tt.music_playlist_patch.build_settings({
+            "music_shuffle": enabled, "music_shuffle_selection": document})
+
+    def restore_music_build_settings(self, state):
+        checked = tt.music_playlist_patch.build_settings(state)
+        self._music_shuffle_selection = checked.get("music_shuffle_selection")
+        self.music_shuffle_check.setChecked(checked.get("music_shuffle", False))
+        self._refresh()
 
     def set_music_policy(self, values):
         self.music_policy_check.setChecked(values.get("music_policy") == "jukebox_menus")
@@ -1446,6 +1818,7 @@ class BuildPanel(QWidget):
             from mod_editor.core import nfl2k5_music_banks
             progress("Checking music library sizes...", 0, 0)
             result = nfl2k5_music_banks.plan(source, recipe)
+            result["source_descriptor_counts"] = nfl2k5_music_banks.read_descriptor_counts(source)
             progress("Music library sizes checked", 1, 1)
             return result
 
@@ -1471,6 +1844,8 @@ class BuildPanel(QWidget):
         if self._music_preview_identity != (self.source_field.text().strip(), self.music_library_field.text().strip()):
             self.music_preview_label.setText("The source or recipe changed. Preview again for current sizes.")
             return
+        if "source_descriptor_counts" in result:
+            self.music_library_preview_ready.emit(result["source_descriptor_counts"], result)
         output = result["layout"]["image_size"]
         scratch = result["scratch_bytes"] + result["source_size"]
         if self._include_session_project() or self.music_project_check.isChecked():
@@ -1479,18 +1854,27 @@ class BuildPanel(QWidget):
             f"Projected library output: {output:,} bytes ({output / 1024**3:.2f} GiB). "
             f"Temporary space for this build: about {scratch:,} bytes ({scratch / 1024**3:.2f} GiB). "
             "Other selected changes may increase these estimates. Sizes are checked again during the build. "
-            "Create a fresh playlist after rebuilding.")
+            "Choose songs on the Music Playlist page, up to 100 per build.")
 
     def _music_preview_failed(self, message):
         self._finish_music_preview()
         self.music_preview_label.setText(plain_failure("preview the music library", message))
 
     def _include_session_project(self):
-        return bool(self.music_project_check.isChecked() and not self.music_project_field.text().strip()
+        return bool((self.team_names_2026_check.isChecked() or self.modern_naming_check.isChecked()
+                     or (self.music_project_check.isChecked() and not self.music_project_field.text().strip()))
                     and getattr(self._facade, "_session", None) is not None
                     and getattr(self._facade, "modified_count", 0))
 
     def _build_operation(self, plan, progress, include_session=False):
+        if plan.modern_naming and getattr(self._facade, "source_ready", False):
+            tt.modern_naming_patch.catalog_overrides(self._facade.text_catalog_snapshot(progress), enabled=True,
+                                                    value_lookup=self._facade.text_value)
+        if plan.team_names_2026 and getattr(self._facade, "source_ready", False):
+            if Path(plan.source).resolve() == Path(self._facade.source_path).resolve():
+                from mod_editor.core import nfl2k5_team_names_2026 as names
+                names.catalog_overrides(self._facade.text_catalog_snapshot(progress), enabled=True,
+                                        value_lookup=self._facade.text_value)
         if not include_session:
             return mod_build.build(plan, progress)
         source = Path(plan.source).resolve(strict=True)
@@ -1498,7 +1882,7 @@ class BuildPanel(QWidget):
         with facade._lock:
             cache, session = facade._cache, facade._session
             if source != Path(facade.source_path).resolve(strict=True):
-                raise ValueError("Choose the open project's source disc to include its Music replacements")
+                raise ValueError("Choose the open project's source disc to include its staged edits")
         # Compile the shared canonical project once, including both music twins.
         # The patch plan then builds on that verified intermediate, never pristine source.
         with tempfile.TemporaryDirectory(prefix=".shared-build-", dir=Path(plan.target).absolute().parent) as folder:
@@ -1543,7 +1927,16 @@ class BuildPanel(QWidget):
                                 f"{target}\n\nPlay latest disc in xemu (bottom right), or open Share → Export mod file.\n\n"
                                 f"Steps written: {steps}.")
         try:
-            self.apply_state(mod_build.inspect(Path(str(receipt.get("target")))))
+            state = receipt["result"] if "pre_remap_inspection" in receipt else mod_build.inspect(Path(str(receipt.get("target"))))
+            self.apply_state(state)
+            hires = next((step for step in receipt.get("steps", []) if step.get("step") == "hires_pack"), None)
+            if hires is not None:
+                assets = ", ".join(f"{row['key']}: " + f"{row['after']['mips'][0]['width']} x {row['after']['mips'][0]['height']}"
+                                   for row in hires["assets"])
+                self.hires_receipt_label.setText(
+                    f"{assets}. P8 output uses at most 256 colors; color detail may be lost. "
+                    f"Video memory change: {hires['memory']['video_delta']:,} bytes. "
+                    f"Archive growth: {hires['logical_growth']:,} bytes. Disc growth: {hires['physical_growth']:,} bytes.")
         except Exception:  # noqa: BLE001
             pass
         else:

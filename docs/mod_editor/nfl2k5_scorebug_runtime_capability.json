@@ -1,70 +1,71 @@
 [
   {
-    "id": "nfl2k5.scorebug_presentation.runtime",
-    "game": "nfl2k5_xbox",
-    "surface": "scorebug_presentation",
-    "title": "Team logos and scorebug effects (experimental, unwitnessed)",
-    "summary": "Bind native team panels and show timeout counts, score flashes, down refresh and play-clock urgency.",
-    "classification": "offline-writer-proved",
     "backend": {
-      "command": "nfl2k5_scorebug_reference.py apply --runtime",
-      "module": "mod_editor/core/nfl2k5_scorebug_ingame.py",
+      "command": "python3 -m tools.nfl2k5_scorebug_reference apply --runtime",
+      "module": "tools/nfl2k5_scorebug_reference.py",
       "operation": "write"
     },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "ASTRA_SCOREBUG_FIX_REPORT.md",
+      "tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_native.py"
+    ],
+    "game": "nfl2k5_xbox",
     "gui": {
       "default_enabled": false,
       "expose": true,
       "mode": "edit",
-      "reason": "EXPERIMENTAL / UNWITNESSED. Enable only in the experimental preset after the protected integration handoff."
+      "reason": "EXPERIMENTAL / UNWITNESSED v2. A tester reports a v1 entry-to-game freeze; keep runtime off in all presets pending the diagnostic matrix."
     },
+    "id": "nfl2k5.scorebug_presentation.runtime",
     "input_constraints": [
       "User-owned pinned NFL 2K5 USA disc with retail HUD resources, or a completely recognized runtime installation.",
       "Use a disposable output copy; reserve the selected allocator owner union before installing hooks.",
       "An XBE alone cannot install the required 264 native panel textures. Rebuild from base when changing the owner set."
     ],
     "portme": [
-      "Apply the runtime scorebug section of WIRING.md and regenerate the reservation manifest.",
-      "Complete Noah's boot, team identity, scoring, timeout, clock, down-slide and next-game witness list."
+      "Apply the r62 scorebug section of WIRING.md, disable automatic runtime selection and regenerate the protected reservation manifest.",
+      "Run the six-profile matrix and static 4:3/widescreen witness list in ASTRA_SCOREBUG_FIX_REPORT.md."
     ],
     "public_distribution": {
       "game_data": "never-bundle-retail-data",
-      "tooling": "source-and-schemas-only",
       "mod_payload": "user-authored-inputs-and-recipes",
-      "rule": "Distribute the compiler and recipes; derive native resources from the user's own disc. Do not distribute generated game resources, executables or discs."
+      "rule": "Distribute the compiler and recipes; derive native resources from the user's own disc. Do not distribute generated game resources, executables or discs.",
+      "tooling": "source-and-schemas-only"
     },
     "runtime": {
-      "status": "not-tested",
       "evidence": [
-        "ASTRA_SCOREBUG_RUNTIME_REPORT.md",
-        "docs/scorebug_runtime/evidence.json"
+        "ASTRA_SCOREBUG_FIX_REPORT.md",
+        "docs/scorebug_ingame/witness_r61b.md"
       ],
-      "scope": "Static analysis and bounded Unicorn execution prove the native descriptor relocation, lookup, binding and event paths. Actual kernel loading, asynchronous collection lifetime, GPU rendering, memory pressure and gameplay remain unwitnessed."
+      "scope": "The earlier v1 runtime build froze entering gameplay in xemu on macOS; that failure is not reproduced or fixed here. v2 has bounded native collection, allocation, decompression, lookup and event checks. OS asynchronous lifetime, GPU consumption and live memory pressure remain unproved.",
+      "status": "not-tested"
     },
     "selectors": {
       "fields": [
         {
+          "allowed": "false in every preset; manual true implies scorebug and xbe_space and selects the full diagnostic profile",
           "name": "scorebug_runtime",
-          "required": true,
-          "allowed": "false by default; true only for an experimental disc build"
+          "required": true
         }
       ],
       "notes": "Implies scorebug and xbe_space. Relocated kickoff is independent and requires its existing alignment prerequisites."
     },
     "source_container": {
       "format": "XBE and native TXTR/SCNE resources in XDVDFS pack 0",
-      "retail_file": "user-owned default.xbe and vc_53450030/0 in an NFL 2K5 USA disc",
-      "resource": "owned RX/RW hook allocations plus HUD outer 346 and its archive index",
       "hash_pins": [
         "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
         "2c23410c05c1ec266c3176b8b201f9a48b4a45ac148110ca569e5df25984e7c8",
         "5f56ff615439fa8d1f87a833393f29e565873250f523c31134e6f2fae4004c49"
-      ]
+      ],
+      "resource": "owned RX/RW hook allocations plus HUD outer 346 and its archive index",
+      "retail_file": "user-owned default.xbe and vc_53450030/0 in an NFL 2K5 USA disc"
     },
-    "evidence": [
-      "ASTRA_SCOREBUG_RUNTIME_REPORT.md",
-      "tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
-      "tests/mod_editor/test_nfl2k5_scorebug_resources.py"
-    ],
-    "validation_command": "python3 tests/mod_editor/test_nfl2k5_scorebug_runtime.py"
+    "summary": "Native team panels and scorebug events, with reduced-resource CLI probes for a reported entry-to-game freeze.",
+    "surface": "scorebug_presentation",
+    "title": "Scorebug effects (diagnostic only)",
+    "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_scorebug_runtime"
   }
 ]

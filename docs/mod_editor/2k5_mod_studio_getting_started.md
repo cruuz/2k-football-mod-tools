@@ -59,6 +59,24 @@ or *unknown image*, with a sentence saying what to do. Every refusal quotes the
 same line, so a failure says which disc you handed it and not just how many bytes
 disagreed.
 
+
+**Hi-res pack (experimental, unwitnessed).** This optional Build choice is
+off in every preset. Put a `Hi-res` folder beside your project, then choose
+that folder in Build. Use `scorebug.png` at 128 x 128, `field_logo.png` at
+512 x 512, and `helmet.png` at 512 x 512. Missing files leave their targets
+unselected. The field logo is created-team logo 33 in dry weather; the
+helmet is uniform `00H0.IFF`'s Standard/A `helmet00`. These are specific
+pilot assets, not all teams. An NFL 2K5 `.2ktexmaster` with the same basename
+can replace each PNG; choose one extension per target. Keep the atlas
+arrangement and seams. `2x detail` installs larger textures. `Original
+size` builds your retained artwork at the native dimensions. Keep the same
+folder for replay or downscaling, and use your original disc to change art
+or restore retail bytes. 128 MiB support is unavailable. Set xemu's
+rendering resolution separately; this choice has no played witness yet.
+
+See [the Hi-res pack guide](nfl2k5_hires_pack.md) for the complete limits.
+
+
 ## Make your first edit
 
 1. Open **2K5 Mod Studio** from the desktop application menu.
@@ -358,7 +376,7 @@ Build remains disabled until at least one replacement is staged.
   asset.
 
 These labels come from the same capability registry used by the build system.
-The current registry has 180 cross-title rows, including 45 Xbox NFL 2K5
+The current registry has 205 cross-title rows, including 45 Xbox NFL 2K5
 capabilities, 37 APF 2K8 (Xbox 360) rows, and 98 rows across the eight
 PlayStation 2 game modules listed in the next section. No current 2K5
 capability is labeled Coming Soon, and an asset never becomes writable merely
@@ -576,10 +594,14 @@ Rules that prevent most refusals here: keep text inside the shown character budg
 its tokens; keep names inside the shown budget; supply mono WAVs to mono slots and stereo to
 stereo; do not stage two aliases of one stadium span; choose a destination that does not exist
 yet, on a drive with room for two images.
+The current registry has 205 cross-title rows, including 70 Xbox NFL 2K5
+capabilities and the separate PS2 save-import bridge. No current 2K5 capability
+is labeled Coming Soon, and an asset never becomes writable merely because it
+has a preview.
 
 ## What v1.0 covers
 
-The complete 18-tab sidebar is present even where a feature remains read-only.
+The complete 19-page sidebar is present even where a feature remains read-only.
 The whole-game resource browser is the fallback home for anything that does not
 yet have a specialized editor, so indexed assets are not hidden.
 
@@ -1621,3 +1643,8 @@ with texture replacement off, the pack loads nothing and looks like it did nothi
 The exported receipt repeats the steps for the emulator you chose, and
 `tools/nfl2k5_ps2_replacement_pack_verify.py` re-checks a finished pack — including
 that its instructions match the emulator it says it is for.
+## Beta-62 owner integration 3
+All new gameplay experiments remain unwitnessed. Build exposes weight/speed collisions independently of movement, paired read-option controls, a second screen-pass experiment, Guardian overlays, MyCareer setup, a Crib movie cut, 16 reserves and two extra created teams. All are off in every preset. The scorebug effects option is also off in every preset; the static v8 bar remains in Experimental. Diagnostic scorebug probes are CLI-only.
+Create a Play now includes an Info reference; the wizard retains its Rules page. Gameplay includes Senior Bowl preparation, with native simulation disabled. The 2026 franchise rules option remains unavailable until its owner supports saved counters and native player outcomes. MyCareer prepares a created quarterback called MyPlayer and supplies the paired setup to Build. Larger roster saves require the matching disc and an explicit signed-copy migration on Rosters; no team automatically receives a seventeenth reserve.
+[Modern mode names](modern_2k_mode_names.md) previews Play Now, MyNFL and MyPlayer in Game Text. The checkbox shares the source binding with Build, and Experimental enables it only when every current manifest span fits. Use the original source to restore retail names. [Animation import](nfl2k5_animation_import.md) exposes the bounded clip and limb workflows. [Stadium Blender textures](nfl2k5_stadium_blender_workflow.md) exports PNG textures with UV coordinates and stages only changed pixels; it does not import changed UVs or geometry.
+Hi-res Build has six selectable families. Its worker checks the modeled texture cost before encoding and disc copying, and rejects stale replies after a folder or selection changes. A result below the ceiling does not prove whole-game fit; headroom is unknown. The 128 MiB target remains disabled because the game limits texture addresses to the first 64 MiB.

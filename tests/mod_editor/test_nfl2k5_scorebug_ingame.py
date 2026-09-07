@@ -1,7 +1,8 @@
-"""Standalone v7 resource, native-driver data and transaction checks. No emulator."""
+"""Standalone v8 resource, native-driver data and transaction checks. No emulator."""
 from __future__ import annotations
 
 import os
+import importlib.util
 from pathlib import Path
 import struct
 import sys
@@ -42,7 +43,8 @@ class MetadataTests(unittest.TestCase):
             r.status(b"","digital_font")
 
 
-@unittest.skipUnless(PACK.is_file() and XBE.is_file(),"retail pack 0 and default.xbe evidence absent")
+@unittest.skipUnless(PACK.is_file() and XBE.is_file() and importlib.util.find_spec('PIL'),
+                     "retail pack 0, default.xbe and Pillow required")
 class RetailTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

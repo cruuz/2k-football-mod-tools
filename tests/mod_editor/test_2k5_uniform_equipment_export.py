@@ -171,7 +171,7 @@ class ProductInventoryTests(unittest.TestCase):
 class StudioTruthfulEquipmentBoundaryTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.source = (_ROOT / "mod_editor/gui/studio_qt.py").read_text()
+        cls.source = (_ROOT / "mod_editor/gui/studio_qt.py").read_text(encoding="utf-8")
         tree = ast.parse(cls.source)
         cls.string_literals = {
             node.value

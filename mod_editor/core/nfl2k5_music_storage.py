@@ -29,19 +29,14 @@ def _slots(extended):
             if extended else (HEADER, NAME, REFS))
 
 
-def _descriptor(data, extended=False):
-    _header, name, refs = _slots(extended)
+def _descriptor(data, extended=False, *, scaleout=False):
+    _header, name, refs = space.scale_music_slots() if scaleout else _slots(extended)
     return struct.pack('<9I20s', 0x3A, VA, CAPACITY, RAW, CAPACITY,
                        0x10000 + name, 0, 0x10000 + refs, 0x10000 + refs + 2,
                        space._digest(data))
 
 
-def unwrap(payload):
-    """Validate the complete allocation and project the original 24 sections."""
-    extended = len(payload) == space.EXT_FILE_SIZE
-    space._require(len(payload) in (FILE_SIZE, space.EXT_FILE_SIZE), 'foreign music allocation extent')
-    header, name, refs = _slots(extended)
-    block = payload[RAW:RAW + CAPACITY]
+def _block_data(block):
     space._require(block[:8] == MAGIC, 'foreign music allocation magic')
     size = struct.unpack_from('<I', block, 8)[0]
     space._require(0 < size <= CAPACITY-PREFIX, 'foreign music allocation size')
@@ -49,6 +44,31 @@ def unwrap(payload):
     space._require(block[12:44] == hashlib.sha256(data).digest()
                    and not any(block[44:PREFIX]) and not any(block[PREFIX+size:]),
                    'foreign music allocation seal/padding')
+    return data
+
+
+def unwrap(payload):
+    """Validate music ownership and project the same allocator without music."""
+    if space.is_scaleout(payload):
+        space._require(space.has_music(payload), 'missing scale-out music allocation')
+        space.validate_scale_structure(payload)
+        block = payload[RAW:RAW + CAPACITY]
+        data = _block_data(block)
+        header, name, refs = space.scale_music_slots()
+        space._require(payload[header:header + 56] == _descriptor(block, scaleout=True),
+                       'foreign scale-out music descriptor/digest')
+        base = bytearray(payload)
+        base[RAW:RAW + CAPACITY] = bytes(CAPACITY)
+        header, name, refs = space.scale_music_slots()
+        base[header:header + 56] = bytes(56)
+        base[name:refs + 4] = space._scale_names()[-12:]
+        struct.pack_into('<I', base, 0x11C, space.SCALE_COUNT)
+        return bytes(base), data
+    extended = len(payload) == space.EXT_FILE_SIZE
+    space._require(len(payload) in (FILE_SIZE, space.EXT_FILE_SIZE), 'foreign music allocation extent')
+    header, name, refs = _slots(extended)
+    block = payload[RAW:RAW + CAPACITY]
+    data = _block_data(block)
     space._require(payload[header:header+56] == _descriptor(block, extended)
                    and payload[name:refs+4] == b'.ASTRAr\0' + bytes(4),
                    'foreign read-only music section')
@@ -87,20 +107,21 @@ def install(payload, data):
         base, old = unwrap(payload)
         space._require(space.status(base) == 'applied' and old == data, 'foreign/different music allocation')
         return payload, {'status': 'already_applied', 'changed_bytes': 0}
-    space._require(count in (24, 25) and space.status(payload) == 'applied', 'music requires established XBE allocator')
+    scaleout = space.is_scaleout(payload)
+    space._require(count in (24, 25, space.SCALE_COUNT) and space.status(payload) == 'applied', 'music requires established XBE allocator')
     extended = count == 25
-    header, name, refs = _slots(extended)
+    header, name, refs = space.scale_music_slots() if scaleout else _slots(extended)
     block = bytearray(CAPACITY)
     block[:8] = MAGIC
     struct.pack_into('<I', block, 8, len(data))
     block[12:44] = hashlib.sha256(data).digest()
     block[PREFIX:PREFIX+len(data)] = data
-    buf = bytearray(payload) if extended else bytearray(payload) + block
+    buf = bytearray(payload) if extended or scaleout else bytearray(payload) + block
     buf[RAW:RAW + CAPACITY] = block
-    buf[header:header+56] = _descriptor(block, extended)
+    buf[header:header+56] = _descriptor(block, extended, scaleout=scaleout)
     buf[name:refs+4] = b'.ASTRAr\0' + bytes(4)
-    struct.pack_into('<I', buf, 0x11C, 26 if extended else 25)
-    struct.pack_into('<I', buf, 0x10C, space.EXT_IMAGE_SIZE if extended else VA+CAPACITY-0x10000)
+    struct.pack_into('<I', buf, 0x11C, space.SCALE_COUNT + 1 if scaleout else 26 if extended else 25)
+    struct.pack_into('<I', buf, 0x10C, space.SCALE_IMAGE_SIZE if scaleout else space.EXT_IMAGE_SIZE if extended else VA+CAPACITY-0x10000)
     result = bytes(buf)
     space._require(space.status(result) == 'applied', 'music allocation postcondition failed')
     return result, {'status': 'applied', 'file_growth': len(result) - len(payload), 'reservations': reservations()}

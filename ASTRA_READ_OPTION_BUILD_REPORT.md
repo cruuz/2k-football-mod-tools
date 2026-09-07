@@ -1,5 +1,7 @@
 # Read option / RPO build continuation, 2026-09-05
 
+Public path notation: `<home>` and `<media>` identify the original local home and mounted input directories. Recorded hashes, measurements and outcomes are unchanged.
+
 **EXPERIMENTAL / UNWITNESSED. Data tier only.** Continued the seven uncommitted
 product-file edits and draft pack from the interrupted session on
 `astra/r61b-read-option-build`, starting at `d0bf583`. Read the complete hub memo
@@ -194,7 +196,7 @@ budget, ported retail validation and fixed-span dry compilation:
 
 ```sh
 python3 tools/nfl2k5_playbook_pack.py check data/playbooks/softdrink_option.2k5book \
-  --image '/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)' --team MIN
+  --image '<media>/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)' --team MIN
 ```
 
 `git diff --check` passes. Logs are retained in `.scratch/` only. No XBE patch is

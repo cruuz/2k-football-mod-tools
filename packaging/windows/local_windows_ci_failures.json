@@ -19,7 +19,8 @@
     "retail": "Wine exposes local retail XBE; optional legacy fixture is absent (native CI skips this class)",
     "hostpath": "Wine exposes the local PS2 witness tree with a name invalid through Win32",
     "tkinter": "the pinned embeddable Windows runtime omits tkinter (hosted CPython includes it)",
-    "copyfile2": "Wine 9.0 does not implement KERNEL32.dll.CopyFile2 used by CPython shutil.copy2"
+    "copyfile2": "Wine 9.0 does not implement KERNEL32.dll.CopyFile2 used by CPython shutil.copy2",
+    "joblimit": "Wine does not enforce Job Object process-memory limits, so the 2 GiB ceiling probe cannot refuse an oversized allocation"
   },
   "files": [
     {
@@ -107,6 +108,21 @@
       ],
       "notes": [],
       "wine_signatures": []
+    },
+    {
+      "name": "test_2k5_uniform_equipment_export.py",
+      "category": "UNKNOWN",
+      "evidence": [
+        {
+          "line": 174,
+          "case": "StudioTruthfulEquipmentBoundaryTests.setUpClass",
+          "signature": "UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 110708",
+          "cause": "hostpath"
+        }
+      ],
+      "notes": [
+        "beta-62 (2026-09-06): the maintainer-only test (CI lean-skip list) read a UTF-8 inventory with the Windows default code page; fixed with encoding='utf-8' at line 174, re-verify on the next Wine run."
+      ]
     },
     {
       "name": "test_apf_audio_encoder_gui.py",
@@ -834,6 +850,27 @@
       ]
     },
     {
+      "name": "test_disc_memory_budget.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 0,
+          "case": "DiscMemoryBudgetTests.test_ceiling_refuses_an_oversized_allocation",
+          "signature": "AssertionError: 0 == 0",
+          "cause": "joblimit"
+        },
+        {
+          "line": 0,
+          "case": "DiscMemoryBudgetTests.test_each_disc_suspect_stays_below_two_gib (test='test_nfl2k5_music_build.py')",
+          "signature": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "cause": "identity"
+        }
+      ],
+      "notes": [
+        "beta-62 (2026-09-06, revision 91efa7c): the Windows Job Object memory ceiling is a no-op under Wine and the nested music-build child hits the identity gap; both pass on Linux. Real Windows CI decides the Job Object path."
+      ]
+    },
+    {
       "name": "test_emulator_launch_polish.py",
       "category": "LEAN CHECKOUT",
       "evidence": [
@@ -933,6 +970,21 @@
       ],
       "notes": [],
       "wine_signatures": []
+    },
+    {
+      "name": "test_music_panel_qt.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 0,
+          "case": "MusicPanelTests.test_rows_honest_names_presentation_policy_defaults_and_no_autoplay",
+          "signature": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "cause": "identity"
+        }
+      ],
+      "notes": [
+        "beta-62 (2026-09-06, revision 91efa7c, jobs=1 and jobs=2): every case fails in _ensure_private_audio_inventories with the same identity gap as test_2k5_audio_operation_integration.py; passes on Linux."
+      ]
     },
     {
       "name": "test_never_silent_gray_boot.py",
@@ -1197,7 +1249,7 @@
         {
           "line": 23,
           "case": "Nfl2k5ExtendedVisualIOTests.test_strict_validation_accepts_exact_pngs_and_explains_bad_inputs",
-          "signature": "AssertionError: \"not a folder or link\" does not match \"Choose an existing PNG file for Portrait 0042 \ufffd Test Quarterback\"",
+          "signature": "AssertionError: \"not a folder or link\" does not match \"Choose an existing PNG file for Portrait 0042 � Test Quarterback\"",
           "cause": "symlink"
         }
       ],
@@ -1205,7 +1257,7 @@
       "wine_signatures": [
         {
           "statement": "with self.assertRaisesRegex(ValidationError, \"not a folder or link\"):",
-          "terminal": "AssertionError: \"not a folder or link\" does not match \"Choose an existing PNG file for Portrait 0042 \ufffd Test Quarterback\"",
+          "terminal": "AssertionError: \"not a folder or link\" does not match \"Choose an existing PNG file for Portrait 0042 � Test Quarterback\"",
           "gap": "symlink",
           "headers": [
             "FAIL: test_strict_validation_accepts_exact_pngs_and_explains_bad_inputs (__main__.Nfl2k5ExtendedVisualIOTests.test_strict_validation_accepts_exact_pngs_and_explains_bad_inputs)"

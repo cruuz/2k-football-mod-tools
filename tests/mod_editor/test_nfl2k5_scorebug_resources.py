@@ -1,6 +1,8 @@
 """Standalone runtime TXTR, complete archive index and disc transaction tests."""
 from __future__ import annotations
 import hashlib
+import importlib.util
+from contextlib import ExitStack
 import os
 from pathlib import Path
 import struct
@@ -33,12 +35,25 @@ class PublicTests(unittest.TestCase):
         self.assertEqual(a.RUNTIME_GROWTH%2048,0)
 
 
-@unittest.skipUnless(PACK.is_file() and XBE.is_file(),'retail pack 0 and USA XBE evidence absent')
+@unittest.skipUnless(PACK.is_file() and XBE.is_file() and importlib.util.find_spec('PIL'),
+                     'retail pack 0, USA XBE and Pillow required')
 class RetailTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.before=PACK.read_bytes();cls.xbe=XBE.read_bytes()
-        cls.after,cls.receipt=a.compile_runtime_collection(cls.before)
+        # The compiler returns a lazy composition. No whole pack is materialized.
+        stack=ExitStack();cls.addClassCleanup(stack.close)
+        cls.before_file=stack.enter_context(PACK.open('rb'))
+        cls.before=a.PackView.from_fd(cls.before_file.fileno(),0,PACK.stat().st_size)
+        cls.xbe=XBE.read_bytes()
+        view=a.PackView.from_fd(cls.before_file.fileno(),0,len(cls.before))
+        after,cls.receipt=a.compile_runtime_collection(view)
+        directory=Path(stack.enter_context(tempfile.TemporaryDirectory())).resolve()
+        cls.after_path=directory/'grown-pack'
+        with cls.after_path.open('wb') as output:
+            for block in a.pack_blocks(after):output.write(block)
+        del after
+        cls.after_file=stack.enter_context(cls.after_path.open('rb'))
+        cls.after=a.PackView.from_fd(cls.after_file.fileno(),0,cls.after_path.stat().st_size)
     def test_all_264_native_objects_identity_pixels_and_dimming(self):
         start=a.HUD_START+a.HUD_SIZE
         objects=r.tx.parse_chunks(self.after[start:start+a.RUNTIME_APPEND_SIZE])
@@ -63,9 +78,9 @@ class RetailTests(unittest.TestCase):
             at,size=rec['pack_offset'],rec['span_size']
             self.assertEqual(self.before[at:at+size],self.after[at:at+size])
     def test_index_maps_every_unchanged_outer_to_identical_physical_pack_offsets(self):
-        n=struct.unpack_from('<I',self.before)[0]
-        before_blocks=struct.unpack_from('<36I',self.before,12)
-        after_blocks=struct.unpack_from('<36I',self.after,12)
+        n=struct.unpack('<I',self.before[:4])[0]
+        before_blocks=struct.unpack('<36I',self.before[12:156])
+        after_blocks=struct.unpack('<36I',self.after[12:156])
         self.assertEqual(after_blocks[1:],before_blocks[1:])
         self.assertEqual(after_blocks[0]-before_blocks[0],a.RUNTIME_GROWTH//2048)
         def packs(blocks):
@@ -77,8 +92,8 @@ class RetailTests(unittest.TestCase):
         bp,ap=packs(before_blocks),packs(after_blocks)
         for i in range(n):
             off=outer.HEADER_SIZE+i*12
-            bid,bsz,boff=struct.unpack_from('<III',self.before,off)
-            aid,asz,aoff=struct.unpack_from('<III',self.after,off)
+            bid,bsz,boff=struct.unpack('<III',self.before[off:off+12])
+            aid,asz,aoff=struct.unpack('<III',self.after[off:off+12])
             self.assertEqual(aid,bid)
             if i==a.HUD_OUTER_INDEX:
                 self.assertEqual((asz, aoff),(bsz+a.RUNTIME_APPEND_SIZE,boff));continue
@@ -91,7 +106,10 @@ class RetailTests(unittest.TestCase):
                 self.assertEqual((x.pack_name,x.size),(y.pack_name,y.size))
                 self.assertEqual(y.pack_offset,x.pack_offset+(a.RUNTIME_GROWTH if i>a.HUD_OUTER_INDEX and x.pack_ordinal==0 else 0))
         end=outer.align_up(a.HUD_START+a.HUD_SIZE)
-        self.assertEqual(self.after[end+a.RUNTIME_GROWTH:],self.before[end:])
+        for at in range(end,len(self.before),1024*1024):
+            count=min(1024*1024,len(self.before)-at)
+            self.assertTrue(self.after[at+a.RUNTIME_GROWTH:at+a.RUNTIME_GROWTH+count]==self.before[at:at+count],
+                            f'unchanged pack suffix differs at {at:#x}')
         # Wrapper and chunk order are unchanged for all 139 existing resources.
         old=r.tx.parse_chunks(self.before[a.HUD_START:a.HUD_START+a.HUD_SIZE])
         new=r.tx.parse_chunks(self.after[a.HUD_START:a.HUD_START+a.HUD_SIZE+a.RUNTIME_APPEND_SIZE])
@@ -108,10 +126,18 @@ class RetailTests(unittest.TestCase):
                     outer.HEADER_SIZE+(a.HUD_OUTER_INDEX+1)*12+8,
                     a.RESOURCES['score_bug']['pack_offset'],a.RESOURCES['score_buga']['pack_offset'],
                     a.HUD_START+a.HUD_SIZE,a.HUD_START+a.HUD_SIZE+a.RUNTIME_APPEND_SIZE):
-            bad=bytearray(self.after);bad[off]^=1
-            self.assertEqual(a.runtime_pack_status(bad),'foreign',hex(off))
-        wrong=bytearray(self.before);wrong[a.TEAM_LOGOS['LV']['pack_offset']]^=1
+            self.assertEqual(a.runtime_pack_status(self.corrupt(self.after,off)),'foreign',hex(off))
+        wrong=self.corrupt(self.before,a.TEAM_LOGOS['LV']['pack_offset'])
         with self.assertRaises(r.ScorebugError):a.compile_runtime_collection(wrong)
+        with self.assertRaisesRegex(ValueError,'whole-pack read'):
+            self.before[:]
+    @staticmethod
+    def corrupt(source, off):
+        def read(n, at):
+            data=bytearray(source[at:at+n])
+            if at <= off < at+n:data[off-at]^=1
+            return bytes(data)
+        return a.PackView(len(source),read)
     def image(self,path,xbe=None):
         xbe=self.xbe if xbe is None else xbe
         pack_sector=64;xs=pack_sector+len(self.before)//2048
@@ -122,17 +148,22 @@ class RetailTests(unittest.TestCase):
             f.seek(0x10000);f.write(r.layout.xc.XDVDFS_MAGIC)
             f.write(struct.pack('<II',33,len(root)));f.seek(0x107ec);f.write(r.layout.xc.XDVDFS_MAGIC)
             f.seek(33*2048);f.write(root);f.seek(34*2048);f.write(sub.ljust(32,b'\0'))
-            f.seek(pack_sector*2048);f.write(self.before);f.seek(xs*2048);f.write(xbe)
+            f.seek(pack_sector*2048)
+            for block in a.pack_blocks(self.before):f.write(block)
+            f.seek(xs*2048);f.write(xbe)
             f.seek(neighbor*2048);f.write(b'KEEPTHIS')
         return neighbor*2048
     def test_disc_growth_replay_and_rollback_at_pack_node_and_xbe_writes(self):
         # Compiler itself ran above. Reuse its exact immutable output so failure
         # injection exercises IO rather than repeating artwork quantization.
-        def compile(pack):
+        def compile(pack, *, probe='full'):
             state=a.runtime_pack_status(pack)
             if state=='applied':return pack,{'status':'already_applied','changed_bytes':0}
-            self.assertEqual(state,'retail');return self.after,self.receipt
-        with tempfile.TemporaryDirectory() as tmp,patch.object(a,'compile_runtime_collection',side_effect=compile):
+            self.assertEqual(state,'retail');return replacement,self.receipt
+        # A Mock retains every argument in call_args_list, including each
+        # complete 194 MB pack. These replacements need no call history.
+        replacement=self.after
+        with tempfile.TemporaryDirectory() as tmp,patch.object(a,'compile_runtime_collection',new=compile):
             path=(Path(tmp)/'copy.iso').resolve()
             neighbor=self.image(path)
             self.assertEqual(r.runtime_image_status(path),'retail')
@@ -147,6 +178,20 @@ class RetailTests(unittest.TestCase):
             size=path.stat().st_size
             self.assertEqual(r.runtime_apply_in_place(path,with_kickoff=True)['image_growth'],0)
             self.assertEqual(path.stat().st_size,size)
+            # Installing another already-reserved XBE owner must not append the
+            # unchanged pack, or require a nonexistent resource-change receipt.
+            self.image(path)
+            r.runtime_apply_in_place(path,extra_requests=kickoff.REQUESTS)
+            with path.open('rb') as f:
+                entries,_=r.layout.xc.parse_xdvdfs(f.fileno(),path.stat().st_size)
+                pack_offset=entries['vc_53450030/0'].byte_offset
+            rec=r.runtime_apply_in_place(path,with_kickoff=True)
+            self.assertEqual(rec['image_growth'],0)
+            self.assertEqual(rec['pack_offset'],pack_offset)
+            with path.open('rb') as f:
+                entries,_=r.layout.xc.parse_xdvdfs(f.fileno(),path.stat().st_size)
+                x=entries['default.xbe'];f.seek(x.byte_offset)
+                self.assertEqual(kickoff.status(f.read(x.size)),'applied')
             for mode in ('pack','pack_node','xbe','xbe_node','same_size_xbe'):
                 xbe=runtime.space.apply(self.xbe,runtime.REQUESTS)[0] if mode=='same_size_xbe' else None
                 self.image(path,xbe)
@@ -156,17 +201,56 @@ class RetailTests(unittest.TestCase):
                 def fail(fd,data,off):
                     nonlocal failed,nodes
                     if len(data)==8:nodes+=1
-                    hit=(mode=='pack' and len(data)==len(self.after)
+                    hit=(mode=='pack' and off==(before_size+2047)&-2048 and len(data)==a.READ_BLOCK
                          or mode=='pack_node' and nodes==1 and len(data)==8
                          or mode in ('xbe','same_size_xbe') and len(data)==runtime.space.FILE_SIZE
                          or mode=='xbe_node' and nodes==2 and len(data)==8)
                     if not failed and hit:
                         failed=True;real(fd,data[:3],off);return 3
                     return real(fd,data,off)
-                with patch.object(io,'pwrite',side_effect=fail),self.assertRaises(ValueError):r.runtime_apply_in_place(path)
+                with patch.object(io,'pwrite',new=fail),self.assertRaises(ValueError):r.runtime_apply_in_place(path)
                 self.assertTrue(failed,mode);self.assertEqual(path.stat().st_size,before_size)
                 with path.open('rb') as f:self.assertEqual(hashlib.file_digest(f,'sha256').hexdigest(),before_sha,mode)
             os.replace(path,path.with_suffix('.closed'))
+
+    def test_all_probe_sets_are_exact_idempotent_and_refuse_other_profiles(self):
+        from tools import nfl2k5_scorebug_reference as cli
+        with tempfile.TemporaryDirectory() as directory:
+            path=(Path(directory)/'probe.iso').resolve()
+            for probe in a.PROBES:
+                count, appendix, growth=a.probe_sizes(probe)
+                compiled, receipt=a.compile_runtime_collection(self.before,probe=probe)
+                self.assertEqual(len(compiled),r.PACK_SIZE+growth)
+                self.assertEqual(receipt['texture_count'],count)
+                self.assertEqual(len(receipt['resources']),count)
+                self.assertEqual(receipt['native_heap_bytes'],count*5376)
+                self.assertEqual(a.runtime_pack_status(compiled,probe=probe),'applied')
+                self.assertIs(a.compile_runtime_collection(compiled,probe=probe)[0],compiled)
+                names={item['name'] for item in receipt['resources']}
+                self.assertEqual(names,{a.runtime_panel_name(code,side,n) for code in a.probe_codes(probe)
+                                        for side in ('home','away') for n in range(4)})
+                for other in a.PROBES:
+                    same=a.probe_codes(probe)==a.probe_codes(other)
+                    self.assertEqual(a.runtime_pack_status(compiled,probe=other),'applied' if same else 'foreign')
+                self.image(path)
+                if probe=='transport':
+                    # Logical XDVDFS extents remain valid with trailing rip padding.
+                    with path.open('r+b') as f:f.truncate(path.stat().st_size+458752)
+                target=path.with_name('installed.iso')
+                installed=cli.apply_copy(path,target,runtime_probe=probe)
+                self.assertEqual(r.runtime_image_status(path,probe=probe),'retail')
+                path.unlink()
+                os.replace(target,path)
+                self.assertEqual(installed['hooks_installed'],a.probe_has_hooks(probe))
+                self.assertEqual(r.runtime_image_status(path,probe=probe),'applied')
+                self.assertEqual(r.runtime_apply_in_place(path,probe=probe)['image_growth'],0)
+                with path.open('rb') as f:
+                    entries,_=r.layout.xc.parse_xdvdfs(f.fileno(),path.stat().st_size)
+                    x=entries['default.xbe'];f.seek(x.byte_offset);xbe=f.read(x.size)
+                for va,original in runtime.HOOKS.values():
+                    off=r.layout.sbpos.va_to_off(xbe,va)
+                    self.assertEqual(xbe[off:off+5]==original,not a.probe_has_hooks(probe))
+                path.unlink()
 
 
 if __name__=='__main__':unittest.main()

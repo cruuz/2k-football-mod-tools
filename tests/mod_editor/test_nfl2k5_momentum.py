@@ -27,6 +27,7 @@ try:
     from unicorn import x86_const as x86
 except ImportError:
     uc = None
+    x86 = None
 try:
     from capstone import Cs, CS_ARCH_X86, CS_MODE_32
 except ImportError:
@@ -131,8 +132,12 @@ class ImageTests(unittest.TestCase):
         self.assertEqual(patch.status(left), "applied")
         with self.assertRaises(ValueError): patch.apply(kickoff.apply(self.retail)[0])
         with self.assertRaises(ValueError): kickoff.apply(self.patched)
+        overflow = space.apply(self.retail, patch.REQUESTS + kickoff.REQUESTS +
+                               (("capacity_probe", "code", 4096, 16), ("capacity_probe2", "code", 4096, 16)))[0]
+        self.assertTrue(space.is_scaleout(overflow))
         with self.assertRaisesRegex(ValueError, "capacity exceeded"):
-            space.apply(self.retail, patch.REQUESTS + kickoff.REQUESTS + (("capacity_probe", "code", 4096, 16), ("capacity_probe2", "code", 4096, 16)))
+            space.plan(patch.REQUESTS + kickoff.REQUESTS +
+                       (("capacity_probe", "code", 98304, 16), ("capacity_probe2", "code", 1, 16)))
 
     def test_defensive_try_both_orders_with_actual_owner(self):
         from mod_editor.core import nfl2k5_defensive_try as other
@@ -202,7 +207,8 @@ class Machine:
     def __init__(self, payload, *, native_tick=True, tail=True):
         self.uc = uc.Uc(uc.UC_ARCH_X86, uc.UC_MODE_32)
         image = XbeImage(payload)
-        self.uc.mem_map(0x10000, 0x14BC000 - 0x10000)
+        end = max(0x14BC000, max((s.end + 4095) & -4096 for s in image.sections))
+        self.uc.mem_map(0x10000, end - 0x10000)
         self.uc.mem_write(image.base, payload[:image.headers_size])
         for section in image.sections:
             self.uc.mem_write(section.start, payload[section.raw:section.raw + section.raw_size])
@@ -287,7 +293,9 @@ class Machine:
         self.u32(frame + 8, self.P + 0x1000 if other is None else other)
         va = patch.HOOKS["contact_later" if later else "contact_first"][0]
         target = va + 5 + struct.unpack("<i", self.uc.mem_read(va + 1, 4))[0]
-        stub = self.STOP + 0x300
+        # Distinct callers prevent Unicorn's translated-block cache from
+        # retaining the first target when a test switches to the later read.
+        stub = self.STOP + (0x340 if later else 0x300)
         self.uc.mem_write(stub, b"\x68\x04\x01\0\0\xe8" + struct.pack("<i", target - stub - 10)
                           + b"\xd9\x1d" + struct.pack("<I", self.STOP + 0x10C) + b"\xc3")
         self.run(stub, esi=self.P, ebp=frame, edx=12, ecx=self.P + 0xB00)

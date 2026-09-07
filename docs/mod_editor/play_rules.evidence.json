@@ -1,0 +1,1090 @@
+{
+  "schema": "nfl2k5_play_rules_evidence/v1",
+  "date": "2026-09-06",
+  "evidence": "EXPERIMENTAL / UNWITNESSED",
+  "gameplay_witnessed": false,
+  "reproduction": "python3 tools/nfl2k5_play_rules_research.py --image <game> --xbe <default.xbe> --corpus <functions/nfl2k5>",
+  "books": [
+    {
+      "book": "ARZ",
+      "source_sha256": "bfef19854973fa7edfb1df46fe0f9a86ba9569470cc2911846620d208b6dbd22",
+      "body_sha256": "5732e7185ccc3e6288e1a542ce3aeaf7fb85f272da26be3ebfad09bef9b96ecf",
+      "plays": 270,
+      "formations": 41,
+      "nodes": 2655,
+      "resolved_presets": 50
+    },
+    {
+      "book": "ATL",
+      "source_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
+      "body_sha256": "193872cdf47282370edc1836eac224c76cfe4d80b446d1355c48f5dbdfa96769",
+      "plays": 254,
+      "formations": 39,
+      "nodes": 2438,
+      "resolved_presets": 32
+    },
+    {
+      "book": "BAL",
+      "source_sha256": "56ff0239095b6b62a52b184546413691a5a59c9388f093e5f438a60715ce633a",
+      "body_sha256": "673fd6cbd0b943806f2f106cba39caeac081935ed4f683eadcc94b9788225fd3",
+      "plays": 263,
+      "formations": 42,
+      "nodes": 2496,
+      "resolved_presets": 32
+    },
+    {
+      "book": "BUF",
+      "source_sha256": "d15e31e7a83c68d411d815105938942afeb9faf03d4b9cc53be3f8a0146c6f9d",
+      "body_sha256": "9cdf0da594b21eff5e1fd2ccb8f1b444da3b4b50c6dfb3ed5feeceafd0efa4ce",
+      "plays": 270,
+      "formations": 46,
+      "nodes": 2710,
+      "resolved_presets": 33
+    },
+    {
+      "book": "CAR",
+      "source_sha256": "5fb8fc4a482fd622c4429a1db92bc87c2dc84a45c134ead72f7d7bbe51ae729a",
+      "body_sha256": "a6ff376bd6b8f0fa10c6f19934b23fd692f97b3096c725766f588bdc66e1fe8c",
+      "plays": 269,
+      "formations": 45,
+      "nodes": 2659,
+      "resolved_presets": 40
+    },
+    {
+      "book": "CHI",
+      "source_sha256": "deadb7395dccc2689bc325d6e93e0b585d2ddc52386ce697cafde755f224446b",
+      "body_sha256": "a2dc54616cbc856151085f6944a4f1f18277b620b0bc6f0b3f4effa540e224c8",
+      "plays": 266,
+      "formations": 41,
+      "nodes": 2739,
+      "resolved_presets": 47
+    },
+    {
+      "book": "CIN",
+      "source_sha256": "858dd688901691d61d1838c85ce0dd6588130bde772f177e0d3dfdd55332d1c6",
+      "body_sha256": "5fdd3560de8fbade730c7770854fb3830f327e7d1728a1b126761249bdddb36b",
+      "plays": 270,
+      "formations": 44,
+      "nodes": 2694,
+      "resolved_presets": 55
+    },
+    {
+      "book": "CLE",
+      "source_sha256": "61afe904be26b3f61b92c465eb75d877116100b376d543ba800c9abf6617c2b7",
+      "body_sha256": "ab4e660ada42349c90e87d0ae32d9006f954a59e40c68037c9254321e37a1b5a",
+      "plays": 269,
+      "formations": 44,
+      "nodes": 2685,
+      "resolved_presets": 39
+    },
+    {
+      "book": "DAL",
+      "source_sha256": "7c2200f05c210ca69a90a0215a3475a798a782abf54a2cf15b1b43997f244fab",
+      "body_sha256": "934dbdc1e2105809d7f4ebd219d7fecd56e76c09130c3d58864d014bd3ef5102",
+      "plays": 269,
+      "formations": 41,
+      "nodes": 2674,
+      "resolved_presets": 43
+    },
+    {
+      "book": "DEN",
+      "source_sha256": "ce4c6da4fe76ff2a132cf1a78817e80496bfbce80e09d1618a09bbfbcdfc3d71",
+      "body_sha256": "cb75f4439341dad1439e079a538a58102d0e4dd6e62b35963494faa2e5fd27ea",
+      "plays": 263,
+      "formations": 41,
+      "nodes": 2649,
+      "resolved_presets": 39
+    },
+    {
+      "book": "DET",
+      "source_sha256": "4eb3f42cc5b58a8165329b266e6c28e7ae74f0277d5f2149c22c8f6dc1a3a0aa",
+      "body_sha256": "275145cce7f0190c047f3b798bcd08d2cf73df310796152e448639a2a449488c",
+      "plays": 255,
+      "formations": 41,
+      "nodes": 2504,
+      "resolved_presets": 45
+    },
+    {
+      "book": "Editor",
+      "source_sha256": "2709a1d09169e7954a5fd711b98fc7f3ffb6413136f5c2cf59347d00a221c9b6",
+      "body_sha256": "025ee8dffc8f0d91b4b179486a83bc2969c83adce5fcd04e322046dc0102f0c2",
+      "plays": 51,
+      "formations": 15,
+      "nodes": 818,
+      "resolved_presets": 2
+    },
+    {
+      "book": "GB",
+      "source_sha256": "45efe7167b4a4b6cf8a521fa3a5be9c013c33911004ce7a6f193660b043bbcc3",
+      "body_sha256": "152d6ce06ca97dc945f43202231cecba3979aa758ff553f2957d475dfb69e136",
+      "plays": 264,
+      "formations": 48,
+      "nodes": 2578,
+      "resolved_presets": 52
+    },
+    {
+      "book": "GEN",
+      "source_sha256": "a79ef59b7534c27bf57994f0b48873f1465248046833f917cc581f78986a966c",
+      "body_sha256": "ef08b3d62f281cf8d5a582bc1c0b263218a6bd0667397f3a2045885e5496a57e",
+      "plays": 218,
+      "formations": 41,
+      "nodes": 2151,
+      "resolved_presets": 53
+    },
+    {
+      "book": "HOU",
+      "source_sha256": "7fc25a62457c130c6bd78a46186abbb43bb5cd19f7f331e766c53f1d1b42ba98",
+      "body_sha256": "1f7deed982172989733cf3249ceae5705be28ea1910cad57876bb87640fb5392",
+      "plays": 270,
+      "formations": 40,
+      "nodes": 2725,
+      "resolved_presets": 44
+    },
+    {
+      "book": "IND",
+      "source_sha256": "6f54310741b89b4b39167d03a1f47eae34d0d16d757d061530299e2a6c383537",
+      "body_sha256": "bb1a11655af3883c2abd2dc529dd048395cc0f8af648f70933c0c169327fa0f3",
+      "plays": 265,
+      "formations": 45,
+      "nodes": 2646,
+      "resolved_presets": 48
+    },
+    {
+      "book": "JAX",
+      "source_sha256": "c7ed939ecacec0196d98f0b698c7a2461f2804739770d59cfe14a38e76b43e7a",
+      "body_sha256": "9abd713d9da800040b585c633a7673954b1cc115b24296c9c7af51dae70e4a6d",
+      "plays": 270,
+      "formations": 41,
+      "nodes": 2607,
+      "resolved_presets": 42
+    },
+    {
+      "book": "KC",
+      "source_sha256": "56935ebb3cd8915f87d5647be7a8bcd324e2a04fe6134ff10c97c1c94f55b457",
+      "body_sha256": "2284bef2cf1a5e4ed6769c81a1ed3b3b5c280cd43dbb2875bc74beaf5ff82259",
+      "plays": 261,
+      "formations": 42,
+      "nodes": 2718,
+      "resolved_presets": 46
+    },
+    {
+      "book": "MIA",
+      "source_sha256": "e3da606f907617aeea92a5fef1381bfcca485cac01d0fa664fda8afdad27b9f9",
+      "body_sha256": "32ae4bf9765557f5f8f9008a791823798ce6873d69fe0c764fb578e43e41a5ba",
+      "plays": 259,
+      "formations": 43,
+      "nodes": 2722,
+      "resolved_presets": 44
+    },
+    {
+      "book": "MIN",
+      "source_sha256": "50673fd09d38f4a17057a4e79a87119ee861456dd4416b94191b1563aa60887e",
+      "body_sha256": "206ea8c360989c83959416610520774ab7f72a0845e1a9803e356ecce356f932",
+      "plays": 266,
+      "formations": 46,
+      "nodes": 2472,
+      "resolved_presets": 55
+    },
+    {
+      "book": "NE",
+      "source_sha256": "c49392010deb41a8ec757affc62aa1bfb801f752a7c49a85b1f55e120bd87510",
+      "body_sha256": "343be62f54eab3320cc74ad966b7284ead4ecd7b98b2c9f4bd15419e32cdf5f0",
+      "plays": 250,
+      "formations": 42,
+      "nodes": 2615,
+      "resolved_presets": 45
+    },
+    {
+      "book": "NO",
+      "source_sha256": "e246947ab221107032e1e7ee385c528960efc1a92271673d4761f28d275a4f94",
+      "body_sha256": "13ae60e47654c052f2de83661d63e84c17830be6ec772e53b64713d844c2ab17",
+      "plays": 264,
+      "formations": 41,
+      "nodes": 2730,
+      "resolved_presets": 44
+    },
+    {
+      "book": "NYG",
+      "source_sha256": "113a15c75d6a99ba0918f90174990323e84252a796a6941a56342165f9f1f9b6",
+      "body_sha256": "8851c3093c51496b440b3cc3f833983b2c2014a6ede57e14fd0c1299e435f6ae",
+      "plays": 269,
+      "formations": 43,
+      "nodes": 2609,
+      "resolved_presets": 52
+    },
+    {
+      "book": "NYJ",
+      "source_sha256": "0f523411813ae945dfc49e9ba5419fc659615072bd281e5191fcf8c9a73e6932",
+      "body_sha256": "8dceb28425d91d9c0f26123c092409c4cecfa6db4a7975ea1ba4afafaa7fb144",
+      "plays": 270,
+      "formations": 41,
+      "nodes": 2622,
+      "resolved_presets": 39
+    },
+    {
+      "book": "OAK",
+      "source_sha256": "73955c2e2e7c63f9aea3ae744eaf250db3c34cc54e0bf884d3a977481ae23577",
+      "body_sha256": "ce9ef8fe42415d9bc43f3b9ad66a5603e60d4c837a458959c1d2fd238154f060",
+      "plays": 270,
+      "formations": 43,
+      "nodes": 2617,
+      "resolved_presets": 44
+    },
+    {
+      "book": "PHI",
+      "source_sha256": "1b5bed4b207e8e39d6b1e2c8c23951576b5f7126d55ea5db2876b3b824427d1f",
+      "body_sha256": "08448270bfda1ac6143b30fc221b3c94400aa577ab858f92b6c4d443f1582075",
+      "plays": 267,
+      "formations": 41,
+      "nodes": 2553,
+      "resolved_presets": 46
+    },
+    {
+      "book": "PIT",
+      "source_sha256": "9f27b57168c04210d44368748d0699cbfd9e727405cdc5d62426cac9013409dd",
+      "body_sha256": "8b0c19729751f26505999d43cb2376fb2e5e39bcc73bf10cf597d6617417c147",
+      "plays": 263,
+      "formations": 41,
+      "nodes": 2706,
+      "resolved_presets": 36
+    },
+    {
+      "book": "PRACTICE",
+      "source_sha256": "56de927e6969f010dccf0e1a3d7f216bcb8010393e543769de12a794e9ccdfb9",
+      "body_sha256": "67c0f8812732bd7b342beaf8c7e01dd190a047882dfc4ead2f10907e870121ee",
+      "plays": 27,
+      "formations": 23,
+      "nodes": 315,
+      "resolved_presets": 14
+    },
+    {
+      "book": "reference",
+      "source_sha256": "a78b73d4cdf0d8bd2862c5ee4ef6d2c6bd9d42446211c4abdeb7c609b5cdc690",
+      "body_sha256": "d96557625a102adc758b7f0894b106d141b0c08c49e9f85f52b574630be60030",
+      "plays": 263,
+      "formations": 49,
+      "nodes": 2385,
+      "resolved_presets": 59
+    },
+    {
+      "book": "SD",
+      "source_sha256": "7e6ddb8d36ab3451e2aa80d110903d8a726ec5efdb68e3e2dc9462599144a0c0",
+      "body_sha256": "f137c9c6736821833a18be26b3d3ee67020eecb506f50f795dc0c0d4edaf8552",
+      "plays": 270,
+      "formations": 41,
+      "nodes": 2716,
+      "resolved_presets": 47
+    },
+    {
+      "book": "SEA",
+      "source_sha256": "4d5ff26d6102d943aa0bee61a7f452c8570f28c0bf9db879db60de0dbd791506",
+      "body_sha256": "77c27cd2356535f5d479fbeae2c7ffbe560a0de54c6cea6e1fd4957db9803d66",
+      "plays": 269,
+      "formations": 43,
+      "nodes": 2632,
+      "resolved_presets": 41
+    },
+    {
+      "book": "SF",
+      "source_sha256": "a1bb2195e1df901230e8d79885bdb448eb19b6ca90976c2a3fd673bcf74f6ec6",
+      "body_sha256": "e24f21fd1c516603154abdc2e84d4118532afce0c256725803543c2b0244a636",
+      "plays": 249,
+      "formations": 39,
+      "nodes": 2403,
+      "resolved_presets": 34
+    },
+    {
+      "book": "STL",
+      "source_sha256": "dc4745657752e75205dc4d163e7c95b6aa7db28e6fb565af5f77d6d8a07b984a",
+      "body_sha256": "c79e2bbd2548f2849596608b6ddbfdc5f9886c7b8a5fb18eee170768a9913c72",
+      "plays": 269,
+      "formations": 45,
+      "nodes": 2705,
+      "resolved_presets": 55
+    },
+    {
+      "book": "TB",
+      "source_sha256": "baa2902b92cc67bbdc60bdc8d8ef9167ed51160a7b6904b7365b81b992757f2e",
+      "body_sha256": "eb95a121d8580855f085969c62b80b7237e84c415797fab05aba6d263e8ccc4e",
+      "plays": 253,
+      "formations": 49,
+      "nodes": 2395,
+      "resolved_presets": 45
+    },
+    {
+      "book": "TEN",
+      "source_sha256": "c5b13aa07d03d0da6b78a2b117e3e46792bacc213a0cb7016ca8e1478f062141",
+      "body_sha256": "e4a177ccdc05a7a3870c1f7c85b0df2a2b596ae8566f346b42dadee27098ad98",
+      "plays": 264,
+      "formations": 39,
+      "nodes": 2616,
+      "resolved_presets": 38
+    },
+    {
+      "book": "WAS",
+      "source_sha256": "7f4c96bb44c330cfeb733cdcd1d9f0b2342c876b6c342c83da88bab7dbc2e881",
+      "body_sha256": "c5306fc3d96acd1c729d92c33f466205a7de33050118b935e5d410fd533feca5",
+      "plays": 260,
+      "formations": 42,
+      "nodes": 2645,
+      "resolved_presets": 52
+    },
+    {
+      "book": "WCO",
+      "source_sha256": "e1153d37198fd7f6c71fc41541c4cada06efb284ba360d0a6e976ca64ac7c152",
+      "body_sha256": "4a10e074b6490355b629341a4dd0149eeccc2b28a2cd331d6e03e163a0fef1da",
+      "plays": 232,
+      "formations": 45,
+      "nodes": 2229,
+      "resolved_presets": 51
+    }
+  ],
+  "samples": [
+    {
+      "id": "combo_inside",
+      "book": "ATL",
+      "formation": 23,
+      "formation_name": "Nickel",
+      "play": 28,
+      "name": "Combo Inside Zone",
+      "family": "Defense",
+      "body_sha256": "193872cdf47282370edc1836eac224c76cfe4d80b446d1355c48f5dbdfa96769",
+      "source_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
+      "roundtrip_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
+      "changed_byte_count": 0,
+      "assignment_node_counts": [
+        2,
+        2,
+        2,
+        2,
+        3,
+        2,
+        3,
+        2,
+        2,
+        3,
+        3
+      ]
+    },
+    {
+      "id": "outside_zone",
+      "book": "ATL",
+      "formation": 6,
+      "formation_name": "Quads",
+      "play": 77,
+      "name": "Strong Outside Zone",
+      "family": "Offense",
+      "body_sha256": "193872cdf47282370edc1836eac224c76cfe4d80b446d1355c48f5dbdfa96769",
+      "source_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
+      "roundtrip_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
+      "changed_byte_count": 0,
+      "assignment_node_counts": [
+        3,
+        2,
+        2,
+        3,
+        2,
+        2,
+        2,
+        2,
+        2,
+        5,
+        3
+      ]
+    },
+    {
+      "id": "power",
+      "book": "ATL",
+      "formation": 2,
+      "formation_name": "Split Flip Pro",
+      "play": 98,
+      "name": "Strong Power",
+      "family": "Offense",
+      "body_sha256": "193872cdf47282370edc1836eac224c76cfe4d80b446d1355c48f5dbdfa96769",
+      "source_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
+      "roundtrip_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
+      "changed_byte_count": 0,
+      "assignment_node_counts": [
+        3,
+        2,
+        2,
+        3,
+        2,
+        2,
+        2,
+        2,
+        2,
+        5,
+        3
+      ]
+    },
+    {
+      "id": "counter",
+      "book": "ATL",
+      "formation": 10,
+      "formation_name": "Ace",
+      "play": 127,
+      "name": "Weak Counter",
+      "family": "Offense",
+      "body_sha256": "193872cdf47282370edc1836eac224c76cfe4d80b446d1355c48f5dbdfa96769",
+      "source_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
+      "roundtrip_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
+      "changed_byte_count": 0,
+      "assignment_node_counts": [
+        3,
+        2,
+        2,
+        3,
+        2,
+        2,
+        2,
+        2,
+        2,
+        5,
+        3
+      ]
+    },
+    {
+      "id": "draw",
+      "book": "ATL",
+      "formation": 6,
+      "formation_name": "Quads",
+      "play": 159,
+      "name": "Strong Draw",
+      "family": "Offense",
+      "body_sha256": "193872cdf47282370edc1836eac224c76cfe4d80b446d1355c48f5dbdfa96769",
+      "source_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
+      "roundtrip_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
+      "changed_byte_count": 0,
+      "assignment_node_counts": [
+        4,
+        3,
+        3,
+        4,
+        3,
+        3,
+        2,
+        2,
+        2,
+        2,
+        3
+      ]
+    },
+    {
+      "id": "screen",
+      "book": "ATL",
+      "formation": 5,
+      "formation_name": "Flip Tight Triple",
+      "play": 178,
+      "name": "50 H Screen Strong",
+      "family": "Offense",
+      "body_sha256": "193872cdf47282370edc1836eac224c76cfe4d80b446d1355c48f5dbdfa96769",
+      "source_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
+      "roundtrip_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
+      "changed_byte_count": 0,
+      "assignment_node_counts": [
+        4,
+        2,
+        4,
+        5,
+        2,
+        4,
+        3,
+        3,
+        2,
+        3,
+        2
+      ]
+    },
+    {
+      "id": "cover3",
+      "book": "ATL",
+      "formation": 23,
+      "formation_name": "Nickel",
+      "play": 8,
+      "name": "3 Weak",
+      "family": "Defense",
+      "body_sha256": "193872cdf47282370edc1836eac224c76cfe4d80b446d1355c48f5dbdfa96769",
+      "source_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
+      "roundtrip_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
+      "changed_byte_count": 0,
+      "assignment_node_counts": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "id": "cover2man",
+      "book": "ATL",
+      "formation": 23,
+      "formation_name": "Nickel",
+      "play": 25,
+      "name": "2 Man",
+      "family": "Defense",
+      "body_sha256": "193872cdf47282370edc1836eac224c76cfe4d80b446d1355c48f5dbdfa96769",
+      "source_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
+      "roundtrip_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
+      "changed_byte_count": 0,
+      "assignment_node_counts": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "id": "pass_sets",
+      "book": "ATL",
+      "formation": 12,
+      "formation_name": "I Pro",
+      "play": 60,
+      "name": "50 Z Comeback",
+      "family": "Offense",
+      "body_sha256": "193872cdf47282370edc1836eac224c76cfe4d80b446d1355c48f5dbdfa96769",
+      "source_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
+      "roundtrip_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
+      "changed_byte_count": 0,
+      "assignment_node_counts": [
+        4,
+        2,
+        2,
+        3,
+        2,
+        2,
+        4,
+        3,
+        3,
+        2,
+        2
+      ]
+    },
+    {
+      "id": "fire",
+      "book": "CIN",
+      "formation": 27,
+      "formation_name": "4-3",
+      "play": 12,
+      "name": "Strong Fire Zone Blitz",
+      "family": "Defense",
+      "body_sha256": "5fdd3560de8fbade730c7770854fb3830f327e7d1728a1b126761249bdddb36b",
+      "source_sha256": "858dd688901691d61d1838c85ce0dd6588130bde772f177e0d3dfdd55332d1c6",
+      "roundtrip_sha256": "858dd688901691d61d1838c85ce0dd6588130bde772f177e0d3dfdd55332d1c6",
+      "changed_byte_count": 0,
+      "assignment_node_counts": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "id": "speed_option",
+      "book": "MIN",
+      "formation": 12,
+      "formation_name": "I Jokers",
+      "play": 24,
+      "name": "Strong Speed Option",
+      "family": "Offense",
+      "body_sha256": "206ea8c360989c83959416610520774ab7f72a0845e1a9803e356ecce356f932",
+      "source_sha256": "50673fd09d38f4a17057a4e79a87119ee861456dd4416b94191b1563aa60887e",
+      "roundtrip_sha256": "50673fd09d38f4a17057a4e79a87119ee861456dd4416b94191b1563aa60887e",
+      "changed_byte_count": 0,
+      "assignment_node_counts": [
+        5,
+        2,
+        2,
+        3,
+        2,
+        2,
+        2,
+        2,
+        2,
+        3,
+        5
+      ]
+    },
+    {
+      "id": "inside_zone",
+      "book": "TB",
+      "formation": 15,
+      "formation_name": "Weak I Pro",
+      "play": 70,
+      "name": "Strong Inside Zone",
+      "family": "Offense",
+      "body_sha256": "eb95a121d8580855f085969c62b80b7237e84c415797fab05aba6d263e8ccc4e",
+      "source_sha256": "baa2902b92cc67bbdc60bdc8d8ef9167ed51160a7b6904b7365b81b992757f2e",
+      "roundtrip_sha256": "baa2902b92cc67bbdc60bdc8d8ef9167ed51160a7b6904b7365b81b992757f2e",
+      "changed_byte_count": 0,
+      "assignment_node_counts": [
+        3,
+        2,
+        2,
+        3,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        3
+      ]
+    }
+  ],
+  "plays": 9251,
+  "nodes": 91833,
+  "validated_plays": 9251,
+  "exact_nodes": 91833,
+  "name_checks": {
+    "Combo Inside Zone": true,
+    "Inside Zone Read": false,
+    "Slide protection": false
+  },
+  "xbe": {
+    "sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+    "table_sha256": "cf59c9ec6e250849eb3c23a9abb7675ae782487bb355e4596626dd5afa1f06cf",
+    "table_entries_verified": 29
+  },
+  "corpus": {
+    "functions": {
+      "0x00180840": {
+        "path": "pseudo_c/shard_007168_007679.c",
+        "line": 8607,
+        "sha256": "0da53d76b710819f0a304c0f9f64bcbedf0933dfa18adb456b177156345b0fbb",
+        "lines": 37
+      },
+      "0x001808f0": {
+        "path": "pseudo_c/shard_007168_007679.c",
+        "line": 8644,
+        "sha256": "f682d601d7544de4a6b2fea8dcba5b478b50c3b1a7045cb18b60fa05cac399f8",
+        "lines": 43
+      },
+      "0x00180a00": {
+        "path": "pseudo_c/shard_007168_007679.c",
+        "line": 8687,
+        "sha256": "5025c13d006d698d9ecea379fce399cf72f61d787f1de089a0f9bb6906ada219",
+        "lines": 41
+      },
+      "0x00180ab0": {
+        "path": "pseudo_c/shard_007168_007679.c",
+        "line": 8728,
+        "sha256": "123316ba7b8560373cd67fb74ee84be745db2b61e9f354f406cb4bbf286dff12",
+        "lines": 47
+      },
+      "0x00180bb0": {
+        "path": "pseudo_c/shard_007168_007679.c",
+        "line": 8775,
+        "sha256": "517602a1b00780fcdfc96200877f310e22b0acb1f2fab5368c7f443e093bf8d9",
+        "lines": 35
+      },
+      "0x00180c30": {
+        "path": "pseudo_c/shard_007168_007679.c",
+        "line": 8810,
+        "sha256": "0fadf7e832a62ef1affdf5246c687dc14514014dc238bcf9de888dc89c336289",
+        "lines": 36
+      },
+      "0x00180cb0": {
+        "path": "pseudo_c/shard_007168_007679.c",
+        "line": 8846,
+        "sha256": "18c04a1b14c8865f46f6dcfc9a6694b5d7c74e15a04127b3685977a6822e0d38",
+        "lines": 49
+      },
+      "0x00180d80": {
+        "path": "pseudo_c/shard_007168_007679.c",
+        "line": 8895,
+        "sha256": "3d77863bc7358b60411290d6944b3f3028931109f5308db205fe54ba7e22eebf",
+        "lines": 29
+      },
+      "0x00180dd0": {
+        "path": "pseudo_c/shard_007168_007679.c",
+        "line": 8924,
+        "sha256": "08cb6918a3a2b9146305b90e71b4c392cf8c8478dd8aed63558ccc95a2ff53ac",
+        "lines": 45
+      },
+      "0x00180e80": {
+        "path": "pseudo_c/shard_007168_007679.c",
+        "line": 8969,
+        "sha256": "421e87657c75cc057f8da6dc2a6b6718f9734f5011033e3054d0d4de35c54d06",
+        "lines": 26
+      },
+      "0x00180ed0": {
+        "path": "pseudo_c/shard_007168_007679.c",
+        "line": 8995,
+        "sha256": "b32a903cfd6da794c298a68b0a2721d1ced31917b17c15abe172454498c64189",
+        "lines": 33
+      },
+      "0x00180f10": {
+        "path": "pseudo_c/shard_007168_007679.c",
+        "line": 9028,
+        "sha256": "1d84aaf17b337d2693c59b9e5b0fd298b242e4132d09c46bca7e562c2f01ac3c",
+        "lines": 50
+      },
+      "0x00181b10": {
+        "path": "pseudo_c/shard_007168_007679.c",
+        "line": 9552,
+        "sha256": "89071e4a97c631a9d901682b6832ec078081217f3217eaa144a9a84d84f9e35b",
+        "lines": 64
+      },
+      "0x00181cc0": {
+        "path": "pseudo_c/shard_007168_007679.c",
+        "line": 9616,
+        "sha256": "0c0c10c46dfd3816cc2bb18ba4c4d15a03b3d0c8d6bdd5ac55a3102ee10fb597",
+        "lines": 150
+      },
+      "0x00182110": {
+        "path": "pseudo_c/shard_007168_007679.c",
+        "line": 9766,
+        "sha256": "1dd5b63561e0dec891a74f90f12d7b951deef87baecad4c31cf3ee9839245575",
+        "lines": 162
+      },
+      "0x0019c740": {
+        "path": "pseudo_c/shard_007680_008191.c",
+        "line": 4398,
+        "sha256": "677f3f7608c0497a449b7948b989b52eb79bfd475c478ab2dc55d9d26445ecbe",
+        "lines": 58
+      },
+      "0x0019fa10": {
+        "path": "pseudo_c/shard_007680_008191.c",
+        "line": 6441,
+        "sha256": "3725bf93068286495fd5d4e8645a5f23af43d500728d262e5138fff79706b1b4",
+        "lines": 88
+      },
+      "0x001a2e70": {
+        "path": "pseudo_c/shard_007680_008191.c",
+        "line": 8822,
+        "sha256": "63debbe24856a76bb892f0732afc24a082ba3913e7e252b8cf043b257adf3f72",
+        "lines": 53
+      },
+      "0x001a5090": {
+        "path": "pseudo_c/shard_007680_008191.c",
+        "line": 10349,
+        "sha256": "a0bc015cf3b83b68e6d3a531683179ec585ca7cb0b565950ed1b105d32b4faf4",
+        "lines": 251
+      },
+      "0x001a5790": {
+        "path": "pseudo_c/shard_007680_008191.c",
+        "line": 10600,
+        "sha256": "13a72bbcfce272ad37de22c2adc7e4799b6f8323d1a3757092ea1677f45a6ed9",
+        "lines": 177
+      },
+      "0x001a5bc0": {
+        "path": "pseudo_c/shard_007680_008191.c",
+        "line": 10777,
+        "sha256": "80706fd9a13063fb31c2ad4c94c99abd9d9866b9f74a9304fee9c0442711290e",
+        "lines": 288
+      },
+      "0x001a6220": {
+        "path": "pseudo_c/shard_007680_008191.c",
+        "line": 11065,
+        "sha256": "09e6811168c40627a7dd8b6e85c9ae90736cf82cdee4c624ddb4c3ec73700324",
+        "lines": 183
+      },
+      "0x001a9840": {
+        "path": "pseudo_c/shard_007680_008191.c",
+        "line": 13734,
+        "sha256": "d285deeb2352dd8d03cb24c62d045e3720e2e4cc06913ab6cf791f7c6fe3ba74",
+        "lines": 138
+      },
+      "0x001abcd0": {
+        "path": "pseudo_c/shard_007680_008191.c",
+        "line": 14992,
+        "sha256": "18b6a30b97a0801bd33e2ced8ae77c13ffc25dc245442742107c48388ba42cad",
+        "lines": 24
+      },
+      "0x001ace40": {
+        "path": "pseudo_c/shard_007680_008191.c",
+        "line": 15895,
+        "sha256": "583dddc50332f67a5a807f7c53d76e260e234314eee0068a5170409bc755e3c1",
+        "lines": 324
+      },
+      "0x001ae490": {
+        "path": "pseudo_c/shard_007680_008191.c",
+        "line": 17002,
+        "sha256": "b36b054b3578e67cf4da930b88e4325ec0404b6611842d8ff67fda8be4ea0eea",
+        "lines": 188
+      },
+      "0x001af530": {
+        "path": "pseudo_c/shard_007680_008191.c",
+        "line": 17784,
+        "sha256": "112476c4a15ff2c9297f49561ff14e6001e140820c0fb7e98c59252203713aa4",
+        "lines": 154
+      },
+      "0x001af870": {
+        "path": "pseudo_c/shard_007680_008191.c",
+        "line": 17938,
+        "sha256": "07889f6e92c9a60b1a4cc02b7087aaa1a7e4f916c2b00ccace81454e67c79dee",
+        "lines": 135
+      },
+      "0x001afb50": {
+        "path": "pseudo_c/shard_007680_008191.c",
+        "line": 18095,
+        "sha256": "7c16d27a64c28043b0fa0afc0e5c91903961f3e93be5e3d53ce6e9c963da345d",
+        "lines": 81
+      },
+      "0x001b85a0": {
+        "path": "pseudo_c/shard_007680_008191.c",
+        "line": 24753,
+        "sha256": "fbd8db934b2843edb0d1ec670f2d3c00cb08615e6d02b0775e0330d6df039bff",
+        "lines": 81
+      },
+      "0x001b8bc0": {
+        "path": "pseudo_c/shard_007680_008191.c",
+        "line": 25247,
+        "sha256": "230b35e345e365fd05fa883cd27dbd93f564d8cdd2de62e214faea7e019eb1d7",
+        "lines": 32
+      },
+      "0x001b8c40": {
+        "path": "pseudo_c/shard_007680_008191.c",
+        "line": 25308,
+        "sha256": "7b984e201e97023454222208021c14bd7768673b6cee31df32f723a6ba3165fe",
+        "lines": 31
+      },
+      "0x001b8ca0": {
+        "path": "pseudo_c/shard_007680_008191.c",
+        "line": 25339,
+        "sha256": "b81c084db24401c3c4c2d37211f5928f5764050f00853432513e3479d62575d7",
+        "lines": 32
+      },
+      "0x001cea80": {
+        "path": "pseudo_c/shard_008192_008703.c",
+        "line": 14437,
+        "sha256": "f8f7a9f43fcc422bb267dea1fdf3e4cfd2c57ad7055cf0d248895990730897ed",
+        "lines": 33
+      },
+      "0x00229ae0": {
+        "path": "pseudo_c/shard_009216_009727.c",
+        "line": 26428,
+        "sha256": "f5675053bda9f9d605fe988b16329f88698c89fe76396756fd8223d3be360fe8",
+        "lines": 574
+      },
+      "0x0023abb0": {
+        "path": "pseudo_c/shard_009728_010239.c",
+        "line": 10141,
+        "sha256": "a5bee504aee9c401a4a6a56319fde8d7591d530c6c1e2d05932d6bce2a7594cf",
+        "lines": 91
+      },
+      "0x0023ada0": {
+        "path": "pseudo_c/shard_009728_010239.c",
+        "line": 10232,
+        "sha256": "74b03a3a93ccc22fb8e45c0f27b29b0d5e675cafe397aa5de087a6d6a2292cf3",
+        "lines": 128
+      },
+      "0x0023b6e0": {
+        "path": "pseudo_c/shard_009728_010239.c",
+        "line": 10840,
+        "sha256": "3cd81a54f4f49c77f195e69156f47f0d5fef1f6404b40310db83e855479b10ea",
+        "lines": 255
+      },
+      "0x0023dbe0": {
+        "path": "pseudo_c/shard_009728_010239.c",
+        "line": 12489,
+        "sha256": "57a9a7ae6f6279e79f15f3015079249e7c72f1191a9b114ce4f17be89f707cdb",
+        "lines": 113
+      },
+      "0x0023f450": {
+        "path": "pseudo_c/shard_009728_010239.c",
+        "line": 13582,
+        "sha256": "43662fc66b9d4f10b8105f2bd48f3dcdbc2d5471c06c096c272bae789cb63bda",
+        "lines": 389
+      },
+      "0x002400b0": {
+        "path": "pseudo_c/shard_009728_010239.c",
+        "line": 14094,
+        "sha256": "f7a8f6c8f6a8c54434e3367d1b4ede4f86a18ff56b0586f1611c5cb1bcd11f6b",
+        "lines": 89
+      },
+      "0x002d6550": {
+        "path": "pseudo_c/shard_012288_012799.c",
+        "line": 5567,
+        "sha256": "d307ab33f4a18a89dfcfc442ba504f2decb4f94dcc5d263fc24c671cc9b92d64",
+        "lines": 72
+      },
+      "0x002e41f0": {
+        "path": "pseudo_c/shard_012288_012799.c",
+        "line": 13923,
+        "sha256": "8aacbe340b984631ada269dba41b933b3ee1a81413e745e18e900bbcc437f6c1",
+        "lines": 161
+      },
+      "0x002e4590": {
+        "path": "pseudo_c/shard_012288_012799.c",
+        "line": 14084,
+        "sha256": "dddbda994b42f90de912104c4dad2989aec2ccf00170afb57dbf1d509af7dcb4",
+        "lines": 185
+      },
+      "0x002edfb0": {
+        "path": "pseudo_c/shard_012288_012799.c",
+        "line": 20197,
+        "sha256": "f47c47d154c8a3aab0b5590e0cccc5eb3a7a726def3294efcf4811f9fffc7e03",
+        "lines": 34
+      },
+      "0x002ee000": {
+        "path": "pseudo_c/shard_012288_012799.c",
+        "line": 20231,
+        "sha256": "e114ba2fd1aee8175ca069deead1590aebed1cd4693fe7720f18efeffbc94671",
+        "lines": 29
+      },
+      "0x002ee040": {
+        "path": "pseudo_c/shard_012288_012799.c",
+        "line": 20260,
+        "sha256": "e69902b80184b3c4347759d444198ffa7adba7d2572798898600be8282b680c8",
+        "lines": 35
+      },
+      "0x002f0f10": {
+        "path": "pseudo_c/shard_012288_012799.c",
+        "line": 22298,
+        "sha256": "11a6237f8d91fc099776c7a07364898d4f1c7131e9359bb430ae86e846f0d101",
+        "lines": 98
+      },
+      "0x002f10b0": {
+        "path": "pseudo_c/shard_012288_012799.c",
+        "line": 22396,
+        "sha256": "595f77fc232c3c1f85727fd8774900c1cc11cfe6ca6d2cf1107c7bc005a14c19",
+        "lines": 84
+      },
+      "0x002f1ba0": {
+        "path": "pseudo_c/shard_012288_012799.c",
+        "line": 23002,
+        "sha256": "fa2e0d0a6c0b4c36ef692c21863d20c435bb4cf775217161c7b99441cb16a052",
+        "lines": 94
+      },
+      "0x002f2750": {
+        "path": "pseudo_c/shard_012288_012799.c",
+        "line": 23478,
+        "sha256": "a15b26b513dd247a1054cd28b846947547f1801f73839ed5a2a6ca450766d864",
+        "lines": 129
+      },
+      "0x002f3d10": {
+        "path": "pseudo_c/shard_012288_012799.c",
+        "line": 24284,
+        "sha256": "bd029038409cbad20717985aa6cdb2cb7ac361e4dd1c278a0914803bf877e1e7",
+        "lines": 95
+      },
+      "0x002faff0": {
+        "path": "pseudo_c/shard_012800_013311.c",
+        "line": 1036,
+        "sha256": "15e87de14e8a38f12d90717fe66fbf27ad13459f2d7018d297667e46d170bdd7",
+        "lines": 689
+      },
+      "0x002fe190": {
+        "path": "pseudo_c/shard_012800_013311.c",
+        "line": 3266,
+        "sha256": "8e3c4356aeee190b9301694685946af6e94bad9639862e2b320f8dc5c2f165a8",
+        "lines": 241
+      },
+      "0x00300b00": {
+        "path": "pseudo_c/shard_012800_013311.c",
+        "line": 4883,
+        "sha256": "481fae5c7ccb517e9990b9467a5102872366bd7b6a999c1fab169e5728294753",
+        "lines": 189
+      }
+    },
+    "missing": [
+      "0x00180830",
+      "0x001808b0",
+      "0x001808c0",
+      "0x001808d0",
+      "0x001808e0",
+      "0x001809a0",
+      "0x001809b0",
+      "0x001809c0",
+      "0x001809d0",
+      "0x00180eb0",
+      "0x00181b00",
+      "0x00181cb0",
+      "0x00182b20",
+      "0x00182b30",
+      "0x002b4200",
+      "0x002b4210",
+      "0x002b4220",
+      "0x002b4230",
+      "0x002b4350",
+      "0x002b4420",
+      "0x002b4580",
+      "0x002b4650",
+      "0x002b4760",
+      "0x002b4800",
+      "0x002b4820",
+      "0x002b4840",
+      "0x002b4880",
+      "0x002b48a0",
+      "0x002b48c0",
+      "0x002b4950",
+      "0x002b4a30",
+      "0x002b4ac0",
+      "0x002b4b80",
+      "0x002b4c30",
+      "0x002b4d50",
+      "0x002b4df0",
+      "0x002b4f10",
+      "0x002b4fb0",
+      "0x002b5090",
+      "0x002b5120",
+      "0x002b5240",
+      "0x002b52e0",
+      "0x002b5380",
+      "0x002b53e0",
+      "0x002b5480",
+      "0x002b54e0",
+      "0x002b5660",
+      "0x002b5740",
+      "0x002b5770",
+      "0x002b58d0",
+      "0x002b59c0",
+      "0x002b59f0",
+      "0x002b5af0",
+      "0x002b5ba0",
+      "0x002b5cc0",
+      "0x002b5d60",
+      "0x002b5f60",
+      "0x002b60a0",
+      "0x002b61c0",
+      "0x002b6240",
+      "0x002b62f0",
+      "0x002b6330",
+      "0x002b6370",
+      "0x002b63b0",
+      "0x002b63c0",
+      "0x002b63d0",
+      "0x002b63e0",
+      "0x002b6530",
+      "0x002b6610",
+      "0x002b6620",
+      "0x002b66d0",
+      "0x002b6730",
+      "0x002b67e0",
+      "0x002b6840",
+      "0x002b6990",
+      "0x002b6a70",
+      "0x002b6a80",
+      "0x002b6bd0",
+      "0x002b6cb0",
+      "0x002b6e20",
+      "0x002d3300",
+      "0x002d3e80",
+      "0x002e6770"
+    ],
+    "note": "Decompiler types and inferred names are not independent gameplay proof."
+  }
+}

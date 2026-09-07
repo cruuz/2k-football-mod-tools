@@ -1830,6 +1830,7 @@ def apply_packs_to_archive(
     packs: Sequence[tuple[str, PlaybookPack]],
     progress: Callable[[str], None] | None = None,
     book_entries: Mapping[str, int] | None = None,
+    collector: list | None = None,
 ) -> dict[str, Any]:
     """Install loaded packs into an open, writable ``vc_53450030`` archive.
 
@@ -1869,6 +1870,9 @@ def apply_packs_to_archive(
             if compiled.replacement[:RESOURCE_HEADER_SIZE] != before[:RESOURCE_HEADER_SIZE]:
                 raise PlaybookPackError(f"{team}: the PLAY resource wrapper changed")
             pending[index] = compiled.replacement
+            if collector is not None:
+                # exact replacement bytes paired with the compiler's own report (spy_intent, replacement_sha256)
+                collector.append((compiled.replacement, compiled.report))
             entry_report.append({
                 "team": team, "outer_index": index,
                 "retargeted": bool(resolved),
@@ -1908,6 +1912,7 @@ def apply_packs_to_image(
     path: Path | str,
     packs: Sequence[Path | str],
     progress: Callable[[str], None] | None = None,
+    collector: list | None = None,
 ) -> dict[str, Any]:
     """Apply every ``.2k5book`` to the team books of the disc image at ``path`` (a COPY).
 
@@ -1918,7 +1923,7 @@ def apply_packs_to_image(
     recode = _outer_image()
     loaded = [(Path(p).name, load_pack(p)) for p in packs]
     with recode.OuterImage(path, writable=True) as archive:
-        return apply_packs_to_archive(archive, loaded, progress, recode.BOOK_ENTRIES)
+        return apply_packs_to_archive(archive, loaded, progress, recode.BOOK_ENTRIES, collector=collector)
 
 
 __all__ = [
@@ -1984,7 +1989,7 @@ def validate_defense_pack_play(play: PackPlay, book: Nfl2k5Playbook | None, body
 
 
 def _freeze_chains(chains: Sequence) -> tuple:
-    return tuple(None if c is None else tuple((int(op), tuple(float(v) for v in vals)) for op, vals in c)
+    return tuple(None if c is None else tuple((int(n[0]), tuple(float(v) for v in n[1]), *n[2:]) for n in c)
                  for c in chains)
 
 

@@ -1,0 +1,204 @@
+{
+  "schema": "nfl2k5_hires_player_names/v2",
+  "runtime_witnessed": false,
+  "assets": [
+    {
+      "outer": 3,
+      "chunk": 164,
+      "name": "jerseyname00",
+      "system": 128,
+      "video": 11776,
+      "scratch": 16,
+      "span_sha256": "33e80201ae04c0a666f5cdcce1701e2db6e195f98576fe9c1ad6ba3010a4d847"
+    },
+    {
+      "outer": 3,
+      "chunk": 165,
+      "name": "jerseyname01",
+      "system": 128,
+      "video": 11776,
+      "scratch": 16,
+      "span_sha256": "a844d9ff0d23fc004e4d717ea12a744e456aa2d2b8e0f8231a0eec326fa36ad1"
+    },
+    {
+      "outer": 3,
+      "chunk": 166,
+      "name": "jerseyname02",
+      "system": 128,
+      "video": 11776,
+      "scratch": 16,
+      "span_sha256": "9567fd78210d92a7282040822ffd1d49a82656f58868200e7d0069f71eb55ebf"
+    },
+    {
+      "outer": 3,
+      "chunk": 167,
+      "name": "jerseyname03",
+      "system": 128,
+      "video": 11776,
+      "scratch": 16,
+      "span_sha256": "28c8cbde6e5632ff83b7ffd466aa059a397a7bf38257ad82f196152e04f6290f"
+    },
+    {
+      "outer": 3,
+      "chunk": 168,
+      "name": "jerseyname04",
+      "system": 128,
+      "video": 11776,
+      "scratch": 16,
+      "span_sha256": "03c0103c6d123fcc0239cf5bab458c5ba16b2db29a167f1f8a71974e8f231a34"
+    },
+    {
+      "outer": 3,
+      "chunk": 169,
+      "name": "jerseyname05",
+      "system": 128,
+      "video": 11776,
+      "scratch": 16,
+      "span_sha256": "89413d3d5d6c800249f39f122681e55d70b53e28709b868d598aec7520bb7ffa"
+    },
+    {
+      "outer": 3,
+      "chunk": 170,
+      "name": "jerseyname06",
+      "system": 128,
+      "video": 11776,
+      "scratch": 16,
+      "span_sha256": "e53dcc415782937833287e7db90069f3a907a15cae5592fdf86e0727c9cbae8f"
+    },
+    {
+      "outer": 3,
+      "chunk": 171,
+      "name": "jerseyname07",
+      "system": 128,
+      "video": 11776,
+      "scratch": 16,
+      "span_sha256": "4effee4fc29d151ddb52693d1b28cd03c4386ec23ebffefc09e82a5194ba90d7"
+    },
+    {
+      "outer": 3,
+      "chunk": 172,
+      "name": "jerseyname08",
+      "system": 128,
+      "video": 11776,
+      "scratch": 16,
+      "span_sha256": "e6b7f2dd7fbfacf175449eafd353d7e006463752bdd9b86b1130aedecd03038e"
+    },
+    {
+      "outer": 3,
+      "chunk": 173,
+      "name": "jerseyname09",
+      "system": 128,
+      "video": 11776,
+      "scratch": 16,
+      "span_sha256": "21cf1a3573b5fd646b381b501738b8f6988a32edcd23129769f7a9c76de2a084"
+    },
+    {
+      "outer": 3,
+      "chunk": 174,
+      "name": "jerseyname10",
+      "system": 128,
+      "video": 11776,
+      "scratch": 16,
+      "span_sha256": "c054398f546b4a1dfb16cf162a87f6f4b1467d48b104cbda47e563254b1ddcad"
+    },
+    {
+      "outer": 3,
+      "chunk": 175,
+      "name": "jerseyname11",
+      "system": 128,
+      "video": 11776,
+      "scratch": 16,
+      "span_sha256": "f7e94f10a381b1e33cd1a744861834d0b21d0c12e6f29229560633006561804e"
+    },
+    {
+      "outer": 3,
+      "chunk": 176,
+      "name": "jerseyname12",
+      "system": 128,
+      "video": 11776,
+      "scratch": 16,
+      "span_sha256": "48d1072703fa7c1b84ed630b89cd838094378bcc383c8b7f27bbbfcd99de6951"
+    },
+    {
+      "outer": 3,
+      "chunk": 177,
+      "name": "jerseyname13",
+      "system": 128,
+      "video": 11776,
+      "scratch": 16,
+      "span_sha256": "8ce4e85cddca99a0230d76e5dfd375be1bcb6915d78d1f1b089503bd36e9e20b"
+    },
+    {
+      "outer": 3,
+      "chunk": 178,
+      "name": "jerseyname14",
+      "system": 128,
+      "video": 11776,
+      "scratch": 16,
+      "span_sha256": "fff1754bf22b7c1f28dba8dc9148e784342c5c35b0358f6cf4168a45e7cf1b63"
+    },
+    {
+      "outer": 3,
+      "chunk": 179,
+      "name": "jerseyname15",
+      "system": 128,
+      "video": 11776,
+      "scratch": 16,
+      "span_sha256": "2cdf28b2f38b292285ac12f692a495b43d62e3e1932378f05730e928bdea9c0e"
+    },
+    {
+      "outer": 3,
+      "chunk": 180,
+      "name": "jerseyname16",
+      "system": 128,
+      "video": 11776,
+      "scratch": 16,
+      "span_sha256": "b5c96941489741e0eeaf88b8fbbe34f3cfd95e22040d0aa00eba00f73a9231fe"
+    },
+    {
+      "outer": 3,
+      "chunk": 181,
+      "name": "jerseyname17",
+      "system": 128,
+      "video": 11776,
+      "scratch": 16,
+      "span_sha256": "a7394232d3fc187a1ab4995f38e3d04c517ae5e08c2e5dc1d2070cba6b976046"
+    },
+    {
+      "outer": 3,
+      "chunk": 182,
+      "name": "jerseyname18",
+      "system": 128,
+      "video": 11776,
+      "scratch": 16,
+      "span_sha256": "98c59f03a3f3b635c606141ebe4e755bf1636fa2507e1dfd56fb8a699c76eed9"
+    },
+    {
+      "outer": 3,
+      "chunk": 183,
+      "name": "jerseyname19",
+      "system": 128,
+      "video": 11776,
+      "scratch": 16,
+      "span_sha256": "1da93a58b39b08f208b55f1376f3667dd2f8c101226df6f180bff3b05c4a820f"
+    },
+    {
+      "outer": 3,
+      "chunk": 184,
+      "name": "jerseyname20",
+      "system": 128,
+      "video": 11776,
+      "scratch": 16,
+      "span_sha256": "ac8f2040f32299151bd823f7edc496e9985ca976289086f095cb46b92e50a19d"
+    },
+    {
+      "outer": 3,
+      "chunk": 185,
+      "name": "jerseyname21",
+      "system": 128,
+      "video": 11776,
+      "scratch": 16,
+      "span_sha256": "8d1aee6cff685f33b64ed42366af5a6ae6a6b13cfc6c6df834ab6311196857d1"
+    }
+  ]
+}

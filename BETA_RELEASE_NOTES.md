@@ -1,3 +1,35 @@
+# beta-62 — RC86 / alpha.84
+
+**Date:** 2026-09-06
+
+**2K5 Mod Studio:** `v1.0-RC86`
+
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.84` (unchanged)
+
+Everything the beta-61 research tables listed as buildable was built, and everything they listed as research-only was
+audited to a verdict. Built by GPT-6 Astra under Claude's review; nothing new has been played unless the changelog says so,
+and every new option is off in every preset unless stated. See the RC86 section of `docs/mod_editor/2k5_mod_studio_changelog.md`
+for the complete list.
+
+## New
+
+- Read option and RPO with modern controls: hold the snap button to keep, let go in time to hand off, read the edge rusher (opt-in).
+- MyCareer: a MyPlayer quarterback drafted into a franchise from a signed save (opt-in). Modern 2K names in the game: MyNFL, Play Now, MyPlayer (Experimental preset).
+- Widescreen v3, the static ESPN scorebar v8, and a runtime-scorebug diagnostic instead of a guess at the freeze.
+- Momentum collisions, defensive two-point box score and saved stats, screen timing hooks, QB spy from man and rush, player abilities off-week, Guardian cap overlay, roster arena growth (16 reserves, two more created teams), native Practice Squad screen, shared music shuffle with all named routes, six hi-res texture families, bone and animation import, stadium texture round trips, Rules library and Info tab in Create a Play, 82 Create a Team stadiums, gameplay levers, 128-season calendar.
+- Owned executable space scaled out to 104 KiB of code, 84 KiB of state and 16 KiB read-only; every owner installs in every order.
+
+## Fixed
+
+- Franchise Practice quits to the Coach's Desk instead of the main menu.
+- The Franchise schedule lists every playoff game and lets you edit dates and kickoff times before the teams are known.
+- The experimental patch pack exports again (chained growth of two files).
+- Rosters: exact undo on play-style buckets; the scramble parity toggle says what it does.
+
+## Not in this release
+
+- Senior Bowl simulation (preparation page only), franchise 2026 roster rules enforcement, deep-zone corner facing and bail, 7-on-7, a root cause for the runtime scorebug freeze, any hi-res memory-fit guarantee, the community Blender stadium add-ons (audited and withheld).
+
 # beta-61 — RC85 / alpha.84
 
 **Date:** 2026-09-05

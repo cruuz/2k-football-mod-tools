@@ -5,6 +5,8 @@ Asset codes are distinct from roster ids: LV=20, HOU=37.
 Palettes are copied from docs/scorebug_svg/teams.json; logos retain their retail era.
 """
 
+from functools import lru_cache
+
 RESOURCES = {'score_buga': {'outer': 346,
                 'outer_id': 11965036,
                 'chunk': 53,
@@ -538,7 +540,7 @@ TEAM_LOGOS = {'ARI': {'outer': 24,
          'primary': '#03202F',
          'secondary': '#A71930'}}
 
-PATCHED_SHA256 = {'score_bug': '475efc3d7aa03535f8f807dbdca0baaa32928faf2ade9116551c7bb57039c732', 'score_buga': '72aee2c09b471c6f07e3658c00ef6f204021f3f6065cd96344c7c72d30df9947'}
+PATCHED_SHA256 = {'score_bug': 'cdcf2aa898dd85332e3b872ca73eeae525ca85e9e543f4d07250bf820df16427', 'score_buga': '8771f332aa07a63db1c21d9803455cc4ed5dd7f04fb88d36d571b03f1c7b7cd0'}
 
 XBE_GUARDS = [(1032608, 89, '087132e1b01db50d2ab03c33faa583c44217fd8de4e2813c85640985f535719e', 'material binding'), (1037040, 294, '7c7e00839242a825fa4d3c361dec3d4da4bec327735f107599872ddf59e3444e', 'score rotation'), (1031728, 33, 'da040c2ad99c4a69867d6256db6ddf1c2c72be543a13cd430f10d4e743216935', 'play clock formatter'), (1030928, 128, '769ae0697334bb1cb70488d0168b78cc7534a0b18c341038d7366d5f3586703f', 'play clock getter')]
 
@@ -556,13 +558,13 @@ LEGACY_DIGITAL_FONT = {'chunk': 46,
 
 # Runtime resource collection. Pixel data is derived from the user's retail disc.
 # These are ordinary native TXTR resources in the same HUD outer as score_bug.
-RUNTIME_VERSION = "scorebug-runtime-v1"
+RUNTIME_VERSION = "scorebug-runtime-v2-probes"
 HUD_OUTER_INDEX, HUD_START, HUD_SIZE = 346, 109895680, 2977184
 RUNTIME_TEXTURE_COUNT, RUNTIME_TEXTURE_SPAN = 264, 5280
 RUNTIME_APPEND_SIZE = RUNTIME_TEXTURE_COUNT * RUNTIME_TEXTURE_SPAN
 RUNTIME_GROWTH = ((HUD_SIZE + RUNTIME_APPEND_SIZE + 2047) // 2048 - (HUD_SIZE + 2047) // 2048) * 2048
 # Filled by the reproducible compiler; no game bytes are distributed.
-RUNTIME_PINS = {'index': '1b4c2af593e2b61d42b5afc3ad9c67433eee2af4fc16920f8a1538640c956b10', 'hud_before': '2c23410c05c1ec266c3176b8b201f9a48b4a45ac148110ca569e5df25984e7c8', 'hud_after': 'a36b11dcf12e8b2f9948206e487cf074486fdaaa67bfc1a68d7044882e4b5b1c', 'appendix': '5f56ff615439fa8d1f87a833393f29e565873250f523c31134e6f2fae4004c49'}
+RUNTIME_PINS = {'index': '1b4c2af593e2b61d42b5afc3ad9c67433eee2af4fc16920f8a1538640c956b10', 'hud_before': '2c23410c05c1ec266c3176b8b201f9a48b4a45ac148110ca569e5df25984e7c8', 'hud_after': '765af4ac443263def3c46b13986dfbf2eefc7ecfd715afd593b829b5d31b9605', 'appendix': '5f56ff615439fa8d1f87a833393f29e565873250f523c31134e6f2fae4004c49'}
 
 
 def runtime_panel_name(asset_code, side, count):
@@ -623,7 +625,104 @@ def panel_states(span, team, side):
         yield state
 
 
-def compile_runtime_collection(pack):
+@lru_cache(maxsize=66)
+def _compiled_panels(template, span, team, side):
+    """At most 1.4 MB of encoded panels; preflight and write reuse exact bytes."""
+    code = "--" if team is None else TEAM_LOGOS[team]["asset_code"]
+    return tuple(runtime_panel(template, image, runtime_panel_name(code, side, count))
+                 for count, image in enumerate(panel_states(span, team, side)))
+
+
+READ_BLOCK = 1024 * 1024
+PROBES = ("transport", "hooks", "resources", "neutral", "pair", "full")
+
+
+def probe_has_hooks(probe):
+    probe_codes(probe)  # validate before selecting a mutation path
+    return probe not in ("transport", "resources")
+
+
+class PackView:
+    """A descriptor-backed extent or a composition of bounded extents.
+
+    The descriptor belongs to the caller and must outlive the view. Deliberately
+    no buffer protocol: converting an entire pack to bytes is never necessary.
+    """
+    def __init__(self, size, read):
+        self.size, self.read = size, read
+
+    @classmethod
+    def from_fd(cls, fd, offset, size):
+        from . import platform_compat as io
+        return cls(size, lambda n, at: io.pread(fd, n, offset + at))
+
+    def __len__(self):
+        return self.size
+
+    def __getitem__(self, key):
+        if not isinstance(key, slice) or key.step not in (None, 1):
+            raise ValueError("pack access requires a contiguous bounded slice")
+        start, end, _ = key.indices(self.size)
+        if end - start > 8 * READ_BLOCK:
+            raise ValueError("whole-pack read refused; iterate bounded blocks")
+        data = self.read(max(0, end - start), start)
+        if len(data) != max(0, end - start):
+            raise ValueError("short scorebug pack read")
+        return data
+
+
+def pack_blocks(pack):
+    for at in range(0, len(pack), READ_BLOCK):
+        yield pack[at:at + READ_BLOCK]
+
+
+def pack_digest(pack):
+    import hashlib
+    result = hashlib.sha256()
+    for block in pack_blocks(pack):
+        result.update(block)
+    return result.hexdigest()
+
+
+def join_views(parts):
+    """Each part is (source, start, length); only an index and one HUD are owned."""
+    size = sum(n for _, _, n in parts)
+    def read(n, at):
+        result = []
+        for source, start, length in parts:
+            if at >= length:
+                at -= length
+                continue
+            take = min(n, length - at)
+            result.append(source[start + at:start + at + take])
+            n -= take
+            at = 0
+            if not n:
+                break
+        return b"".join(result)
+    return PackView(size, read)
+
+
+def probe_codes(probe):
+    if probe not in PROBES:
+        raise ValueError("unknown scorebug runtime probe")
+    if probe in ("transport", "hooks"):
+        return set()
+    if probe == "neutral":
+        return {"--"}
+    if probe == "pair":
+        return {"--", TEAM_LOGOS["TB"]["asset_code"], TEAM_LOGOS["NE"]["asset_code"]}
+    return {"--"} | {v["asset_code"] for v in TEAM_LOGOS.values()}
+
+
+def probe_sizes(probe):
+    count = len(probe_codes(probe)) * 8
+    appendix = count * RUNTIME_TEXTURE_SPAN
+    growth = ((HUD_SIZE + appendix + 2047) // 2048 - (HUD_SIZE + 2047) // 2048) * 2048
+    return count, appendix, growth
+
+
+def compile_runtime_collection(pack, *, probe="full"):
     """Pure bounded pack-0 compiler, retaining all unrelated bytes and entries.
 
     Insert at the end of outer 346, expand its existing index entry and pack 0,
@@ -633,7 +732,8 @@ def compile_runtime_collection(pack):
     import struct
     from . import nfl2k5_scorebug_ingame as r
     import nfl_outer as outer
-    state = runtime_pack_status(pack)
+    texture_count, append_size, growth = probe_sizes(probe)
+    state = runtime_pack_status(pack, probe=probe)
     if state == "applied":
         return pack, {"status": "already_applied", "changed_bytes": 0, "growth": 0}
     if state != "retail":
@@ -643,51 +743,59 @@ def compile_runtime_collection(pack):
                "score_buga": r.apply(inputs["score_buga"], "score_buga", inputs=inputs)[0]}
     panels, receipts = [], []
     for team, record in [(None, {"asset_code": "--"})] + sorted(TEAM_LOGOS.items()):
+        if record["asset_code"] not in probe_codes(probe):
+            continue
         span = b"" if team is None else pack[record["pack_offset"]:record["pack_offset"] + record["span_size"]]
         for side in ("home", "away"):
-            for count, image in enumerate(panel_states(span, team, side)):
+            for count, data in enumerate(_compiled_panels(inputs["score_buga"], span, team, side)):
                 name = runtime_panel_name(record["asset_code"], side, count)
-                data = runtime_panel(inputs["score_buga"], image, name)
                 receipts.append(dict(name=name, team=team, side=side, timeouts=count, size=len(data), sha256=r.digest(data)))
                 panels.append(data)
     appendix = b"".join(panels)
-    if len(appendix) != RUNTIME_APPEND_SIZE:
+    if len(appendix) != append_size:
         raise ValueError("runtime texture collection size changed")
     end = HUD_START + HUD_SIZE
     aligned_end = outer.align_up(end)
     new_end = outer.align_up(end + len(appendix))
-    result = bytearray(pack[:end] + appendix + bytes(new_end - end - len(appendix)) + pack[aligned_end:])
+    hud = bytearray(pack[HUD_START:end])
     for name, data in patches.items():
-        start = RESOURCES[name]["pack_offset"]
-        result[start:start + len(data)] = data
-    entries = struct.unpack_from("<I", pack)[0]
-    struct.pack_into("<I", result, 12, len(result) // 2048)
-    struct.pack_into("<I", result, outer.HEADER_SIZE + HUD_OUTER_INDEX * 12 + 4, HUD_SIZE + len(appendix))
+        start = RESOURCES[name]["pack_offset"] - HUD_START
+        hud[start:start + len(data)] = data
+    entries = struct.unpack("<I", pack[:4])[0]
+    table = bytearray(pack[:outer.HEADER_SIZE + entries * 12])
+    struct.pack_into("<I", table, 12, (len(pack) + growth) // 2048)
+    struct.pack_into("<I", table, outer.HEADER_SIZE + HUD_OUTER_INDEX * 12 + 4, HUD_SIZE + len(appendix))
     for i in range(HUD_OUTER_INDEX + 1, entries):
         at = outer.HEADER_SIZE + i * 12 + 8
-        old = struct.unpack_from("<I", pack, at)[0]
-        struct.pack_into("<I", result, at, old + RUNTIME_GROWTH // 2048)
-    result = bytes(result)
-    if runtime_pack_status(result) != "applied":
+        old = struct.unpack_from("<I", table, at)[0]
+        struct.pack_into("<I", table, at, old + growth // 2048)
+    tail = appendix + bytes(new_end - end - len(appendix))
+    result = join_views(((table, 0, len(table)), (pack, len(table), HUD_START - len(table)),
+                         (hud, 0, len(hud)), (tail, 0, len(tail)),
+                         (pack, aligned_end, len(pack) - aligned_end)))
+    if runtime_pack_status(result, probe=probe) != "applied":
         raise ValueError("runtime collection postcondition failed")
     return result, dict(status="applied", version=RUNTIME_VERSION, experimental=True, runtime_witnessed=False,
-                        growth=len(result)-len(pack), sha256_before=r.digest(pack), sha256_after=r.digest(result),
+                        probe=probe, texture_count=texture_count, native_heap_bytes=texture_count * 5376,
+                        growth=len(result)-len(pack), sha256_before=pack_digest(pack), sha256_after=pack_digest(result),
                         outer_index=HUD_OUTER_INDEX, outer_size_before=HUD_SIZE,
-                        outer_size_after=HUD_SIZE+RUNTIME_APPEND_SIZE, resources=receipts,
+                        outer_size_after=HUD_SIZE+append_size, resources=receipts,
                         scene_sha256=r.digest(patches["score_bug"]), atlas_sha256=r.digest(patches["score_buga"]),
                         appendix_sha256=r.digest(appendix),
                         transport="sector insertion in pack 0; all later index offsets move equally")
 
 
-def runtime_pack_status(pack):
+def runtime_pack_status(pack, *, probe="full"):
     import struct
     from . import nfl2k5_scorebug_ingame as r
     import nfl_outer as outer
     try:
-        grown = len(pack) == r.PACK_SIZE + RUNTIME_GROWTH
-        if len(pack) != (r.PACK_SIZE + RUNTIME_GROWTH if grown else r.PACK_SIZE):
+        _, append_size, growth = probe_sizes(probe)
+        hud = pack[HUD_START:HUD_START + HUD_SIZE]
+        grown = r.digest(hud) == RUNTIME_PINS["hud_after"]
+        if len(pack) != (r.PACK_SIZE + growth if grown else r.PACK_SIZE):
             return "foreign"
-        count, reserved, packs = struct.unpack_from("<III", pack)
+        count, reserved, packs = struct.unpack("<III", pack[:12])
         if count != 4323 or reserved != 0 or not 1 <= packs <= 36:
             return "foreign"
         table = bytearray(pack[:outer.HEADER_SIZE + count * 12])
@@ -697,30 +805,39 @@ def runtime_pack_status(pack):
             for i in range(HUD_OUTER_INDEX + 1, count):
                 at = outer.HEADER_SIZE + i * 12 + 8
                 old = struct.unpack_from("<I", table, at)[0]
-                struct.pack_into("<I", table, at, old - RUNTIME_GROWTH // 2048)
+                struct.pack_into("<I", table, at, old - growth // 2048)
         if r.digest(table) != RUNTIME_PINS["index"]:
             return "foreign"
         # Check real grown header fields BEFORE normalization, not just its inverse.
-        if struct.unpack_from("<I", pack, 12)[0] * 2048 != len(pack):
+        if struct.unpack("<I", pack[12:16])[0] * 2048 != len(pack):
             return "foreign"
         at = outer.HEADER_SIZE + HUD_OUTER_INDEX * 12
-        if struct.unpack_from("<III", pack, at) != (11965036, HUD_SIZE + (RUNTIME_APPEND_SIZE if grown else 0), HUD_START // 2048):
+        if struct.unpack("<III", pack[at:at + 12]) != (11965036, HUD_SIZE + (append_size if grown else 0), HUD_START // 2048):
             return "foreign"
-        hud = pack[HUD_START:HUD_START + HUD_SIZE]
         expected = "hud_after" if grown else "hud_before"
         if r.digest(hud) != RUNTIME_PINS[expected]:
             return "foreign"
         if grown:
             end = HUD_START + HUD_SIZE
-            if r.digest(pack[end:end + RUNTIME_APPEND_SIZE]) != RUNTIME_PINS["appendix"]:
+            pin = RUNTIME_PINS["appendix"] if probe in ("resources", "full") else PROBE_APPEND_PINS[probe]
+            if r.digest(pack[end:end + append_size]) != pin:
                 return "foreign"
-            if any(pack[end + RUNTIME_APPEND_SIZE:outer.align_up(end + RUNTIME_APPEND_SIZE)]):
+            if any(pack[end + append_size:outer.align_up(end + append_size)]):
                 return "foreign"
         return "applied" if grown else "retail"
     except (ValueError, KeyError, IndexError, struct.error):
         return "foreign"
 
+
+# Reproducible subsets of the full collection. Pair includes both orientations
+# of TB and NE plus neutral fallbacks, so changing ends does not change assets.
+PROBE_APPEND_PINS = {"hooks": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                     "transport": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                     "neutral": "033c496f73f8e533cb443ca0b6ac14bab9f07fe5611eae5b1ddb7935492ee89d",
+                     "pair": "a15a1db5d316b69039a7462b842ac775e033d74dc25211adb4d870deaedcb1fc"}
+
 # Native ABI bodies, normalized only for independently recognized scorebug fields/hooks.
 RUNTIME_ABI_GUARDS = [(1035472, 407, 'fae55450eb58f087e0e31b50636342c39d7b7df70361fae6b2ccda6e2fedfa60'), (1035888, 1466, 'fadbe0384fccb436be4f0fe52514aa9e38c543288a471ffc6b44e9ffde365b2f'), (1034688, 780, 'bdc0d7cda462c37ec5546944605fe12141a83c798965b78ebe5abe8467d379df'), (1031280, 73, '1fea8eb67ed1d7df96e85562ec8d79075736ed4d10e5cfbe18f1b7be05c01e60'), (281056, 104, '710fd5ba9fd2a147042dd4c5f133cc2a8d36dcdc10b47417d17ec65df9b46191'), (279504, 770, '1caaf5b258e1849435c7ed69dbc970f9ce5f265415c4dadecee3bef94dc8d6b3'), (199744, 37, 'dd3d52cc45c43dc86d8db7220d777346237b324dd9a00dce35c9de3362bbfdee'), (277792, 136, '03233a25e1afc3ef91892233872e5b9cf29404be7b250dbf17a62db248949d9f'), (282016, 20, '0ee1f6425e946ec6d8dd4aeae08c6ae211e9de4ba09f9648a75f052d1c6bed6e'), (216560, 108, 'f84f040777759d3417fb8bee34ab8e046cf40255e18c467530417ae504aad29c'), (216080, 267, '69266ee656258cc0c7c3f770b0a650452d18c4c84251088bb204fbecb3afa2fe'), (754112, 58, '13cd2011501c1d9567889a32898a944b6cd7dee7769062e7ad57a0994614c674'), (1032272, 29, '02136e09af5b89365ab949b6cdd50c82e2c705bf3e4a9a585f6561234e33de99'), (1032304, 29, '730201c327a46bc2ee757b942eef6efb387d47a9aa5d9cdde452e5539a296222'), (400464, 6, 'b47138018b9b2ec278b17d759b0d8e54f0c9c5c9181510e9d3716d37aa74d6a4'), (400480, 6, '7d1ab1e0e220598d0dfeec086c9327bcec8699bc836f0ee2d3930a8e3d500e9b'), (1031584, 9, '5e68b2fc2391d42f537a7a352387790a5c46114bbe4f2197a6293a5a9a6f1b63'), (1034192, 446, '61eb66a3851ced7740b600c9b2ec8dc32c1fcfdb6c980ae7995b78407b23390a'), (15124024, 24, '9385e4da55d331aa5b8649841a9206ccd44b267e2a05abb359cb178b7d862f67'), (15124276, 24, 'c9ce8e336a66c1f198ee4f2a11052c232675558077c0f6e328e689d5bd52aee2')]
 
-RUNTIME_SCENE_SHA256 = '8021de322c4c97b367eafff7ede305358648e20b7a9378925714ba77bf7f0624'
+STATIC_SCENE_SHA256 = '1b5452ae574029317f8438c059b0662532b41bfb4206af6bdee0b26c6b7a5c14'
+RUNTIME_SCENE_SHA256 = '0fb13bf99bb66347c78f24cff9260e47bc1f980f89c7eb483ea8aff3005d712a'

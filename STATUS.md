@@ -25,7 +25,7 @@ and no Madden 09 row is `runtime-proved`.
   **8,926, all correct**.
 - **PCSX2 replacement identities** for **3,024** disc textures on the uniform containers and **234 of 8,449** across
   the art pages, learned by pixel-matching a 33-frame texture dump. *Write PCSX2 pack* is still offered by **no** row.
-- **Capability registry: 106 rows** across four game/platform targets — 45 Xbox NFL 2K5, 37 APF 2K8, 14 PS2 Madden 09,
+- **Capability registry: 205 rows** across ten game/platform targets — 70 Xbox NFL 2K5, 37 APF 2K8, 14 PS2 Madden 09,
   10 NFL 2K5 PS2. All ten Madden 09 validators pass in a shipped tree on Linux; the conformance harness passes 544 of
   544 checks for the module. The `cmd.exe` validator run and the portable build's Windows smoke are **pending the
   RC88 smoke**.
@@ -113,6 +113,16 @@ Source/UI versions are **2K5 RC85** and **APF alpha.84**.
 - ISO9660 reader serial fix (`SLUS-209.19` -> `SLUS-20919`); its 54-test suite now runs in CI.
 - The PCSX2 replacement-pack audit accepts all six PCSX2 name shapes (it rejected 27% of a real
   pack).
+# 2K5 Mod Studio — v1.0 RC86 Release Status
+## Beta 62 (RC86, 2026-09-06) — the whole wave-2 backlog, wired
+Source/UI versions are **2K5 RC86** and **APF alpha.84**.
+- Every beta-61 research item built or audited to a verdict: read option with modern controls, MyCareer, MyNFL / Play Now / MyPlayer
+  naming, widescreen v3, static scorebar v8 plus a runtime-freeze probe, momentum collisions, defensive-try stats, screen hooks,
+  QB spy from man and rush, Guardian overlay, roster arena growth, native Practice Squad screen, music routes, hi-res families,
+  bone import, stadium texture round trips, play rules library, 82 stadiums, 128-season calendar, Franchise Practice exit fix,
+  playoff editor fix, scaled-out executable space with pairwise composition proofs. Honest partials: Senior Bowl simulation,
+  franchise 2026 rules enforcement, deep-zone facing/bail, the scorebug freeze root cause, hi-res memory fit. All new options are
+  experimental and unwitnessed; see the RC86 changelog section.
 
 ## Beta 60 (unreleased) — ★ Rosters reads the disc's own position scheme
 
@@ -2913,7 +2923,7 @@ Export-only boundary instead of pretending that registry status is an action.
 
 | Product surface | Exact release-candidate coverage |
 | --- | ---: |
-| Capability registry | 180 rows total; 45 Xbox NFL 2K5 rows; 9 NFL 2K5 PS2 rows (save-import writer, read-only disc inventory, PCSX2 replacement-pack export, six on-disc writers (PS2 NFL 2K5 Studio tabs): text, playbooks, uniform colours, disc roster, stadium positions, AUDO sounds) |
+| Capability registry | 205 rows total; 70 Xbox NFL 2K5 rows; 9 NFL 2K5 PS2 rows (save-import writer, read-only disc inventory, PCSX2 replacement-pack export, six on-disc writers (PS2 NFL 2K5 Studio tabs): text, playbooks, uniform colours, disc roster, stadium positions, AUDO sounds) |
 | Sidebar tabs | 11 |
 | Specialized visual assets | 63,592 total; all 63,592 Editable, including 28,530 package-local equipment P8 palettes |
 | Text banks | 716 |

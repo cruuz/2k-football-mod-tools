@@ -23,14 +23,18 @@ from PyQt5.QtWidgets import (
     QAbstractItemView, QCheckBox, QComboBox, QDoubleSpinBox, QFileDialog, QFormLayout, QFrame,
     QGroupBox, QHBoxLayout, QInputDialog, QLabel, QLineEdit, QListWidget, QListWidgetItem, QMenu,
     QMessageBox, QPushButton, QRadioButton, QScrollArea, QSizePolicy, QSpinBox, QStackedWidget,
-    QTableWidget,
+    QTableWidget, QTabWidget,
     QTableWidgetItem, QVBoxLayout, QWidget, QWizard, QWizardPage,
 )
 
 from mod_editor.core import nfl2k5_play_codec as codec
 from mod_editor.core import nfl2k5_play_library as lib
+from mod_editor.core import nfl2k5_play_rules as rules
+from mod_editor.core.errors import ValidationError
 from mod_editor.core.nfl2k5_playbook_inspector import Nfl2k5Playbook
 from mod_editor.gui.play_designer_qt import FieldScene, FieldView, PlayerToken, from_scene, to_scene
+from mod_editor.gui.play_info_panel_qt import PlayInfoPanel
+from mod_editor.gui.play_rules_panel_qt import PlayRulesPanel
 
 YD = codec.YD_CM
 BIG = "font-size: 15px;"
@@ -126,6 +130,7 @@ class DesignedPlay:
     spy_slots: tuple[int, ...] = ()
     front_index: int | None = None
     option_intent: dict | None = None
+    rule_label: str = ""
 
 
 class CreatePlayWizard(QWizard):
@@ -686,11 +691,13 @@ class PlayTypePage(QWizardPage):
         form.addRow("Intended read defender", self.option_read)
         self.option_receiver = QComboBox()
         form.addRow("RPO quick slant receiver", self.option_receiver)
-        note = QLabel(lib.OPTION_NOTICE + " Native under-center I personnel only. "
+        note = QLabel(lib.OPTION_NOTICE + " Native I formations, or Shotgun with a back for Zone read and RPO. "
             "Speed option keeps stock supporting blocks. Read mesh: 1 yard to the run side, "
             "3 yards back. Keep: 4 yards opposite, 3 up. Back: 2 yards to the run side, 5 up. "
             "The selected defender is not guaranteed to remain unblocked. "
-            "RPO uses a 3-yard slant and a nominal 0.3-second pass delay.")
+            "RPO uses a 3-yard slant and a nominal 0.3-second pass delay. "
+            "These are data-only recipes. Select Read option mesh controls in Build "
+            "to enable the separate runtime controls.")
         note.setWordWrap(True); form.addRow(note)
         layout.addWidget(self.option_box)
         for combo in (self.option_preset, self.option_side, self.option_back, self.option_defense, self.option_receiver):
@@ -718,7 +725,7 @@ class PlayTypePage(QWizardPage):
         rec = lib.formation_record(self.wiz.body, cur.donor_formation_index)
         actual = [(s.x[0], s.z[0]) for s in rec.slots]
         if list(cur.positions) != actual or cur.category_positions is not None:
-            raise ValueError("Option presets keep the native under-center formation. Restore its stock positions and personnel first.")
+            raise ValueError("Option presets keep the native formation. Restore its stock positions and personnel first.")
         return lib.make_option_design(self.wiz.book, self.wiz.body, cur.donor_formation_index,
             self.option_preset.currentText(), weak=self.option_side.currentData(),
             back_slot=self.option_back.currentData(), opponent_formation_index=self.option_defense.currentData(),
@@ -993,7 +1000,12 @@ class AssignPage(QWizardPage):
         self.setTitle("Step 4 — Give everyone a job")
         self.setSubTitle("Drag from a player to DRAW his route (or the ball carrier's path). Click him for a menu of "
                          "routes, blocks, carries, lead blocks and fakes. The play is checked against the game's rules as you go.")
-        root = QHBoxLayout(self)
+        outer = QVBoxLayout(self)
+        self.tabs = QTabWidget()
+        outer.addWidget(self.tabs)
+        assignments_tab = QWidget()
+        root = QHBoxLayout(assignments_tab)
+        self.tabs.addTab(assignments_tab, 'Assignments')
         self.scene = DrawScene(self._menu_for, self._drawn, self._can_draw)
         self.view = FieldView(self.scene)
         root.addWidget(self.view, 4)
@@ -1034,8 +1046,16 @@ class AssignPage(QWizardPage):
         self.concept: str | None = None
         self._error: str | None = None
         self._raw: dict[int, list[tuple[float, float]]] = {}
+        self.rule_application: rules.RuleApplication | None = None
+        self._rule_replaced_slots: set[int] = set()
+        self.rules_panel = PlayRulesPanel(self._apply_retail_rules, self._reset_rules)
+        self.info_panel = PlayInfoPanel()
+        self.tabs.addTab(self.rules_panel, 'Rules library')
+        self.tabs.addTab(self.info_panel, 'Info')
 
     def initializePage(self) -> None:
+        self.rule_application = None
+        self._rule_replaced_slots.clear()
         self.spec, self.label = self.wiz.page_type.build_spec()
         self.defense_design = None
         self.option_design = None
@@ -1061,9 +1081,12 @@ class AssignPage(QWizardPage):
         n = len(cur.plays) + 1
         self.name_edit.setText(f"{self.label} {n}"[:40] if self.spec.play_type != "run" else f"{self.spec.run_direction.title()} {self.label}"[:40])
         self.scene.set_tokens([(float(x), float(z)) for x, z in cur.positions], cur.labels, False, lambda _s: None, lambda _s: None)
+        self.rules_panel.set_book(self.wiz.book, self.wiz.body)
         self._refresh()
 
     def _chains(self) -> list[lib.Chain]:
+        if self.rule_application is not None:
+            return self.rule_application.chains
         if self.option_design is not None:
             return self.option_design.chains
         if self.defense_design is not None:
@@ -1071,6 +1094,9 @@ class AssignPage(QWizardPage):
         return lib.build_chains(self.spec, self.scheme)
 
     def _refresh(self) -> None:
+        if self.rule_application is not None:
+            self._refresh_rules()
+            return
         cur = self.wiz.current
         if self.spec.play_type == "option":
             self._refresh_option()
@@ -1122,6 +1148,73 @@ class AssignPage(QWizardPage):
             self.status.setText("The play passes the data checks. " + screen_note if self.spec.screen
                                 else "✔ The game accepts this play.")
             self.status.setStyleSheet("color:#2e7d32;" + BIG)
+        self.completeChanged.emit()
+
+    def _apply_retail_rules(self, bundle: rules.RuleBundle) -> str:
+        if self.spec is None:
+            raise ValidationError('Choose a formation and play type first.')
+        family = (bundle.play_flags >> 6) & 7
+        if (family == 1) != self.wiz.is_defense:
+            raise ValidationError('Choose the same offense or defense family before copying these rules.')
+        if family not in (0, 1):
+            raise ValidationError('Special-teams rules are inspectable; use their dedicated authoring controls.')
+        if self.option_design is not None and len(bundle.slots) != 11:
+            raise ValidationError('Copy the complete retail option or keep the existing option preset and its intent.')
+        if len(bundle.slots) == 11:
+            donor, flags, base = bundle.play_index, bundle.play_flags, None
+        else:
+            if self.rule_application is not None:
+                donor, flags = self.rule_application.donor_play_index, self.rule_application.play_flags
+            elif self.defense_design is not None:
+                donor, flags = self.defense_design.donor_play_index, self.defense_design.play_flags
+            else:
+                donor, flags = self.wiz.reference_play(self.spec.play_type, self.scheme)
+            base = self._chains()
+        cur = self.wiz.current
+        application = rules.apply_bundle(bundle, self.wiz.book, self.wiz.body,
+            cur.donor_formation_index, donor, chains=base, position_codes=cur.codes, play_flags=flags)
+        from mod_editor.core.nfl2k5_formation_play_writer import NODE_CAPACITY, authored_node_cost, rule_play_request
+        request = rule_play_request(self.wiz.book.asset_id, self.wiz.body, donor,
+                                    application.chains, play_flags=flags)
+        cost = authored_node_cost(request.assignments)
+        staged = sum(authored_node_cost(rule_play_request(self.wiz.book.asset_id, self.wiz.body,
+            p.donor_play_index, p.chains, play_flags=p.play_flags).assignments if p.rule_label else p.chains)
+            for f in self.wiz.designed for p in f.plays)
+        if self.wiz.book.node_count + staged + cost > NODE_CAPACITY:
+            raise ValidationError('The copied assignments exceed the remaining node pool for this design.')
+        self.rule_application = application
+        self._rule_replaced_slots.update(application.target_slots)
+        self.name_edit.setText(('Copy ' + bundle.label)[:40])
+        self._refresh()
+        return ('Copied rules to ' + ', '.join(cur.labels[s] for s in application.target_slots) +
+                '. Complete combined-play data checks passed. ' + rules.EVIDENCE)
+
+    def _reset_rules(self):
+        self.rule_application = None
+        self._rule_replaced_slots.clear()
+        if self.spec is not None:
+            self._refresh()
+        self.rules_panel.status.setText('Copied rules cleared. The designed assignments are active.')
+
+    def _refresh_rules(self):
+        application = self.rule_application
+        self.scene.clear_art()
+        self.jobs.clear()
+        self._error = None
+        try:
+            donor = lib.play_chains(self.wiz.body, application.donor_play_index)[1]
+            self._error = lib.validate_chains(application.play_flags, donor, application.chains)
+            for slot, chain in enumerate(application.chains):
+                nodes = codec.encode_chain(chain, donor[slot][1])
+                self.scene.draw_art(codec.play_art(nodes, self.wiz.current.positions[slot]), QColor('#ffd54f'))
+                item = QListWidgetItem(self.wiz.current.labels[slot] + ': ' + ' / '.join(n.name for n in nodes))
+                item.setData(Qt.UserRole, slot)
+                item.setToolTip('\n'.join(n.describe() for n in nodes))
+                self.jobs.addItem(item)
+        except (ValueError, ValidationError) as exc:
+            self._error = str(exc)
+        self.status.setText((self._error or 'Copied retail rules pass the data checks.') + ' ' +
+                            rules.EVIDENCE + '. ' + rules.RUNTIME_NOTICE)
         self.completeChanged.emit()
 
     def _refresh_option(self):
@@ -1185,6 +1278,8 @@ class AssignPage(QWizardPage):
 
     # -- drawing
     def _can_draw(self, slot: int) -> bool:
+        if self.rule_application is not None:
+            return False
         if self.spec is None or self.spec.play_type == "option":
             return False
         kind = self.spec.kinds[slot]
@@ -1269,6 +1364,11 @@ class AssignPage(QWizardPage):
         self.completeChanged.emit()
 
     def _menu_for(self, slot: int) -> None:
+        if self.rule_application is not None:
+            QMessageBox.information(self, 'Copied rule details', '\n'.join(
+                n.describe() for n in codec.encode_chain(self.rule_application.chains[slot])) +
+                '\nUse Reset copied rules to return to the assignment drawing controls.')
+            return
         if self.spec.play_type == "option":
             if self.option_design:
                 QMessageBox.information(self, "Option branch details", "\n".join(
@@ -1362,6 +1462,19 @@ class AssignPage(QWizardPage):
 
     def _commit(self) -> None:
         cur = self.wiz.current
+        if self.rule_application is not None:
+            d = self.rule_application
+            family = (d.play_flags >> 6) & 7
+            play_type = ('defense' if family == 1 else
+                         'pa_pass' if d.play_flags & lib.PLAY_FLAG_PLAY_ACTION else
+                         'run' if d.play_flags & lib.PLAY_CLASS_MASK == lib.PLAY_CLASS_RUN else 'pass')
+            spy = tuple(sorted(s for s in self.defense_design.spy_slots
+                               if s not in self._rule_replaced_slots)) if self.defense_design else ()
+            cur.plays.append(DesignedPlay(self.name_edit.text().strip() or d.label,
+                play_type, d.label, d.chains, d.donor_play_index, play_flags=d.play_flags,
+                spy_slots=spy, front_index=self.defense_design.front_index if self.defense_design else None,
+                rule_label=d.label))
+            return
         if self.option_design is not None:
             d = self.option_design
             cur.plays.append(DesignedPlay(self.name_edit.text().strip() or self.label,
@@ -1515,6 +1628,10 @@ class FinalizePage(QWizardPage):
         if play.option_intent:
             self.table.setItem(row, 4, QTableWidgetItem("Preset receiver slot " + str(play.option_intent.get('receiver_slot', 'none'))))
             return
+        if play.rule_label:
+            self.table.setItem(row, 4, QTableWidgetItem(
+                'Copied read order: ' + ', '.join(map(str, order)) if order else 'No dropback'))
+            return
         if order is None:
             item = QTableWidgetItem("— (no dropback)")
             item.setFlags(Qt.ItemIsEnabled)
@@ -1590,6 +1707,11 @@ class FinalizePage(QWizardPage):
                     assert current_formation is not None
                     obj.replace_index = target
                     assignments = [codec.chain_json(chain) for chain in obj.chains]
+                    if obj.rule_label:
+                        from mod_editor.core.nfl2k5_formation_play_writer import rule_play_request
+                        request = rule_play_request(book.asset_id, self.wiz.body, obj.donor_play_index,
+                                                    obj.chains, play_flags=obj.play_flags)
+                        assignments = request.provider_edit()['assignments']
                     link_index = None
                     link_selector = None
                     if target is None or not any(l.play_index == target for l in book.formations[current_formation.replace_index].play_links) if current_formation.replace_index is not None else True:
@@ -1662,14 +1784,20 @@ class FinalizePage(QWizardPage):
             else:
                 donor = book.plays[obj.donor_play_index]
                 formation = formations[-1]
-                plays.append(pk.PackPlay(f"defense-p{len(plays)}", obj.name, "defense", pk._freeze_chains(obj.chains),
+                assignments = obj.chains
+                if obj.rule_label:
+                    from mod_editor.core.nfl2k5_formation_play_writer import rule_play_request
+                    assignments = rule_play_request(book.asset_id, body, donor.index,
+                        obj.chains, play_flags=obj.play_flags).assignments
+                plays.append(pk.PackPlay(f"defense-p{len(plays)}", obj.name, "defense", pk._freeze_chains(assignments),
                     pk.PackDonor(donor.index, donor.name, donor.flags_or_id, lib.defense_signature(body, donor.index)),
                     donor.flags_or_id, target, book.plays[target].name if target is not None else "", obj.concept_or_scheme,
                     current, 3, formation.donor.name, obj.front_index, lib.defense_component(obj.chains), obj.spy_slots))
         return pk.PlaybookPack(pk.PackBook(book.book_name, "Custom defense", "unknown", "1.0.0", "CC0-1.0",
                                notes=lib.DEFENSE_EVIDENCE + ". " + lib.SPY_NOTICE),
                               pk.PackBase(pk.book_fingerprint(body), len(book.formations), len(book.plays), book.node_count),
-                              tuple(formations), tuple(plays), pk.DEFENSE_SCHEMA)
+                              tuple(formations), tuple(plays),
+                              pk.OPTION_SCHEMA if any(p.rule_label for f in self.wiz.designed for p in f.plays) else pk.DEFENSE_SCHEMA)
 
     def _defense_preview(self):
         from mod_editor.core import nfl2k5_playbook_pack as pk

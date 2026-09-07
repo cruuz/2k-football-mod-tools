@@ -11,7 +11,7 @@ sys.path.insert(0, str(ROOT))
 from mod_editor.core import mod_build as build, nfl2k5_throw_tuning as tt
 from mod_editor.core import nfl2k5_xbe_space as space, nfl2k5_music_storage as music_storage
 from mod_editor.core.nfl2k5_cave_oracle import XbeImage
-from tests.nfl2k5_allocator_stack import REQUESTS, compose
+from tests.nfl2k5_allocator_stack import LEGACY_REQUESTS, REQUESTS, compose
 
 RETAIL = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION", "/media/noah/Storage/for codex 1.0/extracted")) / "ESPN NFL 2K5 (USA)/default.xbe"
 OPTIONS = dict(xbe_space=True, kickoff_relocated=True, scorebug_runtime=True, momentum=100,
@@ -81,9 +81,9 @@ class CompleteOwnerTests(unittest.TestCase):
     def test_capacity_permissions_metadata_and_stable_existing_addresses(self):
         layout = space.layout(self.full)
         regions = layout["regions"]
-        self.assertEqual([r["size"] for r in regions if r["kind"] == "code"], [4096, 4096])
-        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 6501)
-        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "data"), 3242)
+        self.assertEqual([r["size"] for r in regions if r["kind"] == "code"], [4096, 4096, 24 * 4096])
+        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 48343)  # complete union, including model-2 Momentum and boot logo
+        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "data"), 78762)  # complete beta-62 union RW state
         image = XbeImage(self.full)
         for a in layout["allocations"]:
             section = image.section(a["va"], a["size"])
@@ -121,8 +121,11 @@ class CompleteOwnerTests(unittest.TestCase):
                     space.apply(bad, REQUESTS)
         with self.assertRaisesRegex(ValueError, "differ"):
             space.apply(self.full, tt.momentum_patch.REQUESTS)
+        overflow, _ = space.apply(self.retail, REQUESTS + (("extra", "code", 4096, 16),))
+        self.assertTrue(space.is_scaleout(overflow))
+        self.assertEqual(space.status(overflow), "applied")
         with self.assertRaisesRegex(ValueError, "capacity exceeded"):
-            space.apply(self.retail, REQUESTS + (("extra", "code", 4096, 16),))
+            space.plan(REQUESTS + (("extra", "code", 98305, 16),))
 
     def test_dispatcher_and_raw_writer_status_roundtrip(self):
         patched, receipt = tt._apply_all(self.retail, None, False, accel_ramp=True, **OPTIONS)

@@ -136,11 +136,12 @@ class ShapeTests(unittest.TestCase):
                                  f"call 0x{fp.SET_TEAM_B_VA:x}",
                                  f"mov dword ptr [0x{fp.PRACTICE_TYPE_VA:x}], 1",
                                  f"call 0x{fp.PRACTICE_TYPE_APPLY_VA:x}", "ret"])
-        # START stub: FUN_00148b50 with one pop
+        # START retains one pop and gives the new session its own game screen.
         start = [t for i, t in zip(insns, text) if i.address >= fp.START_STUB_VA]
         self.assertEqual(start, ["push esi", "mov esi, ecx", "mov eax, dword ptr [esi + 0x10c]",
                                  "mov dword ptr [eax + 0xa84], 1", f"call 0x{fp.SCREEN_POP_VA:x}",
-                                 "pop esi", f"jmp 0x{fp.GAME_START_VA:x}"])
+                                 "mov ecx, esi", f"mov edx, 0x{fp.GAME_SCREEN_VA:x}",
+                                 "pop esi", f"jmp 0x{fp.SCREEN_PUSH_VA:x}"])
         self.assertEqual(start.count(f"call 0x{fp.SCREEN_POP_VA:x}"), 1)
         # the only absolute writes are to .data globals, never into .text
         for insn in insns:
@@ -488,8 +489,9 @@ class EmulationTests(unittest.TestCase):
         uc.mem_write(esp - 4, struct.pack("<I", self.RETURN))
         uc.reg_write(UC_X86_REG_ESP, esp - 4)
         uc.reg_write(UC_X86_REG_ECX, self.MANAGER)
-        uc.emu_start(entry, fp.GAME_START_VA, count=500_000)
-        self.assertEqual(uc.reg_read(UC_X86_REG_EIP), fp.GAME_START_VA)   # both tail-jump into the loader
+        target = fp.SCREEN_PUSH_VA if entry == fp.START_STUB_VA else fp.GAME_START_VA
+        uc.emu_start(entry, target, count=500_000)
+        self.assertEqual(uc.reg_read(UC_X86_REG_EIP), target)
         return {"depth": self._u32(uc, self.MANAGER + 0x100),
                 "pending": self._u32(uc, self.MANAGER_STATE + 0xA84),
                 "dirty": self._u32(uc, self.MANAGER + 0x108),

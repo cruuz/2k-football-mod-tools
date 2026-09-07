@@ -22,7 +22,10 @@ def write_json(path,value):
     path.write_text(json.dumps(value,indent=2,sort_keys=True)+"\n",encoding="utf-8",newline="\n")
 
 
-def apply_copy(source: Path,target: Path, *, overwrite: bool=False, runtime: bool=False, with_kickoff: bool=False):
+def apply_copy(source: Path,target: Path, *, overwrite: bool=False, runtime: bool=False, with_kickoff: bool=False,
+               runtime_probe: str | None = None):
+    runtime = runtime or runtime_probe is not None
+    probe = runtime_probe or "full"
     if with_kickoff and not runtime:
         raise r.ScorebugError("relocated kickoff requires --runtime")
     source=source.resolve(strict=True)
@@ -31,10 +34,11 @@ def apply_copy(source: Path,target: Path, *, overwrite: bool=False, runtime: boo
         raise r.ScorebugError("output must be a separate, non-symlink copy")
     if target.exists() and not overwrite:
         raise r.ScorebugError("output already exists")
+    target=target.resolve()
     with source.open("rb") as stream:
         # Full plan before copying; any foreign resource fails without an output.
         if runtime:
-            r.runtime_image_plan(stream.fileno(), with_kickoff=with_kickoff)
+            r.runtime_image_plan(stream.fileno(), with_kickoff=with_kickoff, probe=probe)
         else:
             r.image_plan(stream.fileno(),os.fstat(stream.fileno()).st_size)
     target.parent.mkdir(parents=True,exist_ok=True)
@@ -43,7 +47,7 @@ def apply_copy(source: Path,target: Path, *, overwrite: bool=False, runtime: boo
     temporary=Path(name).resolve()
     try:
         shutil.copyfile(source,temporary)
-        receipt=(r.runtime_apply_in_place(temporary, with_kickoff=with_kickoff) if runtime else r.apply_in_place(temporary))
+        receipt=(r.runtime_apply_in_place(temporary, with_kickoff=with_kickoff, probe=probe) if runtime else r.apply_in_place(temporary))
         # Every reader/writer is closed before Windows/macOS publication.
         os.replace(temporary,target)
     finally:
@@ -102,23 +106,27 @@ def runtime_preview(source, output, *, matchup=("LV", "HOU"), timeouts=(3, 3),
         base, size = layout.xc.pack_extent(stream.fileno(), os.fstat(stream.fileno()).st_size, "0")
         if size not in (r.PACK_SIZE, r.PACK_SIZE + art.RUNTIME_GROWTH):
             raise r.ScorebugError("unknown runtime pack extent")
-        pack = layout._pread(stream.fileno(), size, base)
-    if art.runtime_pack_status(pack) == "retail":
-        pack, _ = art.compile_runtime_collection(pack)
-    if art.runtime_pack_status(pack) != "applied":
-        raise r.ScorebugError("foreign runtime scorebug resources")
+        pack = art.PackView.from_fd(stream.fileno(), base, size)
+        if art.runtime_pack_status(pack) == "retail":
+            pack, _ = art.compile_runtime_collection(pack)
+        if art.runtime_pack_status(pack) != "applied":
+            raise r.ScorebugError("foreign runtime scorebug resources")
+        # Retain only owned HUD bytes after closing the source descriptor.
+        hud = pack[art.HUD_START:art.HUD_START + art.HUD_SIZE + art.RUNTIME_APPEND_SIZE]
     def decode_image(span):
         c, d, _ = r.decode(span);t = r.tx.parse_texture(d, c)
         return Image.frombytes("RGBA", (t.width, t.height), r.tx.texture_to_rgba(d, c, t))
     scene = art.RESOURCES["score_bug"]
-    m = layout.Mesh(r.decode(pack[scene["pack_offset"]:scene["pack_offset"]+scene["span_size"]])[1], runtime=True)
+    at = scene["pack_offset"] - art.HUD_START
+    m = layout.Mesh(r.decode(hud[at:at+scene["span_size"]])[1], runtime=True)
     atlas = art.RESOURCES["score_buga"]
-    texture = decode_image(pack[atlas["pack_offset"]:atlas["pack_offset"]+atlas["span_size"]])
+    at = atlas["pack_offset"] - art.HUD_START
+    texture = decode_image(hud[at:at+atlas["span_size"]])
     wanted = {art.runtime_panel_name(art.TEAM_LOGOS[team]["asset_code"], side, count): side
               for side, team, count in zip(("away", "home"), matchup, timeouts)}
     panels = {};selected = {}
-    for offset in range(art.HUD_START + art.HUD_SIZE, art.HUD_START + art.HUD_SIZE + art.RUNTIME_APPEND_SIZE, art.RUNTIME_TEXTURE_SPAN):
-        span = pack[offset:offset + art.RUNTIME_TEXTURE_SPAN]
+    for offset in range(art.HUD_SIZE, art.HUD_SIZE + art.RUNTIME_APPEND_SIZE, art.RUNTIME_TEXTURE_SPAN):
+        span = hud[offset:offset + art.RUNTIME_TEXTURE_SPAN]
         c, d, _ = r.decode(span);name = r.tx.parse_texture(d,c).name
         if name in wanted:
             panels[wanted[name]] = decode_image(span);selected[wanted[name]] = name
@@ -144,7 +152,11 @@ def main(argv=None):
     sub=p.add_subparsers(dest="command",required=True)
     a=sub.add_parser("apply");a.add_argument("source",type=Path);a.add_argument("target",type=Path)
     a.add_argument("--overwrite",action="store_true")
-    a.add_argument("--runtime",action="store_true")
+    choice=a.add_mutually_exclusive_group()
+    choice.add_argument("--runtime",action="store_true")
+    from mod_editor.core.nfl2k5_scorebug_resources import PROBES
+    choice.add_argument("--runtime-probe",choices=PROBES,
+                        help="EXPERIMENTAL diagnostic build; pair is TB/NE plus neutral")
     a.add_argument("--relocated-kickoff",action="store_true")
     a=sub.add_parser("preview");a.add_argument("out",type=Path);a.add_argument("--source",required=True,type=Path)
     a.add_argument("--widest",action="store_true");a.add_argument("--matchup",nargs=2,choices=sorted(r.TEAM_LOGOS))
@@ -156,12 +168,14 @@ def main(argv=None):
     a=sub.add_parser("stage");a.add_argument("source",type=Path);a.add_argument("output",type=Path)
     a=sub.add_parser("status");a.add_argument("source",type=Path)
     a.add_argument("--runtime",action="store_true")
+    a.add_argument("--runtime-probe",choices=PROBES)
     a=sub.add_parser("scne");a.add_argument("retail_scne",type=Path);a.add_argument("out_scne",type=Path)
     a.add_argument("--span",required=True,type=Path)
     args=p.parse_args(argv)
     try:
         if args.command=="apply":
-            receipt=apply_copy(args.source,args.target,overwrite=args.overwrite,runtime=args.runtime,with_kickoff=args.relocated_kickoff)
+            receipt=apply_copy(args.source,args.target,overwrite=args.overwrite,runtime=args.runtime,
+                               with_kickoff=args.relocated_kickoff,runtime_probe=args.runtime_probe)
             write_json(Path(str(args.target)+".scorebug.json"),receipt)
             print(json.dumps(receipt,indent=2))
         elif args.command=="preview":
@@ -179,7 +193,8 @@ def main(argv=None):
             receipts=stage(args.source,args.output)
             print(f"Staged {len(receipts)} panels. Runtime binding is not installed.")
         elif args.command=="status":
-            print(r.runtime_image_status(args.source) if args.runtime else r.image_status(args.source))
+            print(r.runtime_image_status(args.source,probe=args.runtime_probe or "full")
+                  if args.runtime or args.runtime_probe else r.image_status(args.source))
         else:
             span=args.span.read_bytes()
             decoded=r.pinned(span,r.RESOURCES["score_bug"])

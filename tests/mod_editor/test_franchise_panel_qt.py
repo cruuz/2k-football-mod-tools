@@ -162,7 +162,9 @@ class OverviewTests(_PanelCase):
         page = self.page
         self.assertIn("season 31 = index 30", page.year_rule_label.text())
         self.assertIn("EXPERIMENTAL / UNWITNESSED", page.season_cap_label.text())
-        self.assertIn("Franchise runs to 128 seasons. Dates and ages after 2099 are not repaired yet.",
+        self.assertIn("Use the calendar patch with your build's starting year for long franchises.",
+                      page.season_cap_label.text())
+        self.assertIn("A save alone does not identify that patch. Editing this year does not simulate seasons.",
                       page.season_cap_label.text())
         page.base_year_spin.setValue(2026)
         self.assertEqual(page.save.to_bytes(), payload)

@@ -1,0 +1,64 @@
+{
+  "backend": {
+    "module": "mod_editor/core/nfl2k5_screen_hooks.py",
+    "operation": "write",
+    "command": "python3 -m mod_editor.core.nfl2k5_screen_hooks apply source.xbe --output new-screen-hooks.xbe"
+  },
+  "classification": "offline-writer-proved",
+  "evidence": [
+    "ASTRA_SCREEN_HOOKS_REPORT.md",
+    "tests/mod_editor/test_nfl2k5_screen_hooks.py",
+    "tests/mod_editor/test_nfl2k5_screen_hooks_unicorn.py",
+    "tests/mod_editor/test_nfl2k5_screen_hooks_manifest.py",
+    "tools/nfl2k5_screen_hooks.S"
+  ],
+  "game": "nfl2k5_xbox",
+  "gui": {
+    "default_enabled": false,
+    "expose": true,
+    "mode": "edit",
+    "reason": "EXPERIMENTAL / UNWITNESSED. Second experiment after timing levels A-D. All presets off. Protected integration is specified in WIRING.md."
+  },
+  "id": "nfl2k5.gameplay.screen_hooks",
+  "input_constraints": [
+    "Pinned USA XBE or verified composed input; allocate the complete owner union before installation.",
+    "Requires loaded Start, take-snap, mode-0 drop, terminal-pass QB grammar and an explicit first read of slot 6 through 10 with a type-9 or type-10 route.",
+    "Only finite type-0/1 holds followed by mode-0 release and terminal type-3 block qualify; terminal and infinite blockers bypass.",
+    "Explicit QB delays survive. Fixed policies, no new writable storage or readiness guarantee."
+  ],
+  "portme": [
+    "Wire the shared product controls and regenerate the production cave manifest as specified in WIRING.md.",
+    "Run Noah's paired-snap witness protocol in ASTRA_SCREEN_HOOKS_REPORT.md after the data-tier observations."
+  ],
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "rule": "Ship source and recipes; never distribute generated game executable or disc bytes.",
+    "tooling": "source-and-schemas-only"
+  },
+  "runtime": {
+    "status": "not-tested",
+    "scope": "Bounded installed instructions and real PLAY loader prove scoping, timer policies and ordinary-pass bypass. Loader boot, movement, contact, receiver readiness, throw decisions and gameplay benefit remain unwitnessed.",
+    "evidence": ["ASTRA_SCREEN_HOOKS_REPORT.md"]
+  },
+  "selectors": {
+    "fields": [
+      {
+        "name": "screen_hooks",
+        "required": true,
+        "allowed": "false in Basic, Advanced and Experimental; independent explicit opt-in"
+      }
+    ],
+    "notes": "Retail: original timers. Patch: 0.8-second screen hold floor and 0.6-second default QB initializer. Second experiment after timing levels A-D."
+  },
+  "source_container": {
+    "format": "XBE in XDVDFS",
+    "hash_pins": ["73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"],
+    "resource": "two pinned live hooks of 9 and 7 bytes; one 640-byte RX owner; no new RW or RO",
+    "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+  },
+  "summary": "Second screen timing experiment: matched finite line holds wait until 0.8 seconds after the snap and default QB timers use 0.6 seconds.",
+  "surface": "gameplay_tuning_sliders",
+  "title": "Screen pass timing hooks (second experiment, unwitnessed)",
+  "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_screen_hooks"
+}

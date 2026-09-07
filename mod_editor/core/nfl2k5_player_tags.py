@@ -18,7 +18,7 @@ Type flags, +0x23 is bits 24..31 of the live dword at +0x20 (an 8-bit field at b
 flag bits, read by FUN_000be290 and written by FUN_000be2a0), and +0x24 bit 7 is its own copied
 one-bit field and is set in retail data.  See ``nfl2k5_player_star`` for the full derivation.
 
-No other studio pass writes +0x53: the team history rebuilds the entry pool, the players' +0x2C
+Other studio flags share +0x53, so every star write masks bit 0 only. The team history rebuilds the entry pool, the players' +0x2C
 pointers and the used count; the position-pool reclassifier writes +0x35; modern prospect names
 rewrite the generated-name pool.  Running this pass last therefore leaves every other pass's digest
 gate intact, and its own gate is simply "which records carry the bit".
@@ -248,9 +248,9 @@ def apply_body(body: bytes, tags: Sequence[object]) -> tuple[bytes, dict[str, An
     wanted, log = resolve(roster, tags)
     buf = bytearray(body)
     for player in roster.players:
-        buf[player.offset + TAG_RECORD_OFFSET] = 0
+        buf[player.offset + TAG_RECORD_OFFSET] &= ~TAG_BIT
     for player in wanted:
-        buf[player.offset + TAG_RECORD_OFFSET] = TAG_BIT
+        buf[player.offset + TAG_RECORD_OFFSET] |= TAG_BIT
     out = bytes(buf)
     # invariant: only the pad byte of a 0x54 record ever changes
     allowed = {p.offset + TAG_RECORD_OFFSET for p in roster.players}

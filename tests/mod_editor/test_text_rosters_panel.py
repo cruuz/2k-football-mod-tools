@@ -2,8 +2,12 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+import sys
 import tempfile
 import unittest
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.nfl2k5_text_catalog import (
@@ -465,7 +469,7 @@ class TextRosterPanelOffscreenTests(unittest.TestCase):
 
         self.assertEqual(
             [text_panel.tabs.tabText(index) for index in range(text_panel.tabs.count())],
-            ["All Text"],
+            ["All Text", "Modern mode names"],
         )
         self.assertEqual(
             [
@@ -531,6 +535,7 @@ class TextRosterPanelOffscreenTests(unittest.TestCase):
             [panel.tabs.tabText(index) for index in range(panel.tabs.count())],
             [
                 "All Text",
+                "Modern mode names",
                 "Current Roster Players",
                 "Historical Teams && Players",
             ],
