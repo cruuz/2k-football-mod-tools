@@ -516,7 +516,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/audio_conform.py": "466f8f4352da350a02b65092bdc5736f6059c1a6e45525f3aca271111bc984d0",
         "mod_editor/core/errors.py": "4624e80f063f1e7db69ec6c20d2703f01eec49728b02c88792ccb309bd742de0",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
-        "mod_editor/core/mod_build.py": "8d5f9ccd6766b1ed7ed92b8fafe78cd6ba0277bf1368c62c8951210bc70e12ff",
+        "mod_editor/core/mod_build.py": "e23cdbfdf2374ea5aa59b3d70f2d513b7f2ac026a11a347b7ea0ec85478463dc",
         "mod_editor/core/model.py": "292f0c5444e32f5cea000fd3cabd6963d7d805a5434dcbc364a36ca2c0f0d228",
         "mod_editor/core/modpack.py": "7524c5de4d03c23997f88355c6888f1e013e5d5e62a995d07e8b963d1be9fd2a",
         "mod_editor/core/modpack_ops.py": "897f364a0cfe42bb8fbd33f8bc97166ea25520a379a612431f00d8aefca8e5c5",
