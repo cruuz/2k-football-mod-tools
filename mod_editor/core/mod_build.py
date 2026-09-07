@@ -1567,8 +1567,15 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     # prospect names, user roster edits, arena growth) from a complete scan of every disc roster.
     olb_filtered = False
     pools_final = _core_module("nfl2k5_position_pools")
-    if (pools_final is not None and tt.is_disc_image(source)
-            and (plan.position_pools or pools_final.status(_xbe_bytes(target)) == "applied")):
+    run_olb_filter = bool(plan.position_pools) and pools_final is not None and tt.is_disc_image(source)
+    if not run_olb_filter and pools_final is not None and tt.is_disc_image(source):
+        # A source that already carries the pools gets the same final decision; an executable that
+        # cannot be read here was never patched by this build, so the rows are left alone.
+        try:
+            run_olb_filter = pools_final.status(_xbe_bytes(target)) == "applied"
+        except Exception:  # noqa: BLE001
+            run_olb_filter = False
+    if run_olb_filter:
         roster_scan = _tools_module("nfl2k5_roster_reclassify")
         if roster_scan is None or not callable(getattr(roster_scan, "olb_filter_policy", None)):
             raise RuntimeError("the roster scan for the Outside Linebackers rows is not available in this build")
