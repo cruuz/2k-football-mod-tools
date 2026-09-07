@@ -75,6 +75,12 @@ primary:
  jne primary_lost
  cmp DWORD PTR [state+24], 1
  je primary_valid
+.ifdef MYCAREER_INLINE
+ mov ecx, DWORD PTR [eax]
+ sub ecx, ebx
+ cmp ecx, DWORD PTR [state+84]
+ jne primary_lost
+.endif
  mov ecx, DWORD PTR [eax+0x10]
  sub ecx, ebx
  cmp ecx, DWORD PTR [state+88]
@@ -208,6 +214,7 @@ resolve_return:
 
 /* The final-generation hook and first actual draft pick share one guarded
  * injection. A generation after this transition never silently reinjects. */
+.ifndef MYCAREER_INLINE
 inject:
  pushfd
  pushad
@@ -248,6 +255,7 @@ generation:
  call eax
  call inject
  ret
+.endif
 overwrite_guard:
  pushfd
  pushad
@@ -272,6 +280,7 @@ overwrite_done:
  popfd
  push 0x2be6f0
  ret
+.ifndef MYCAREER_INLINE
 draft:
  call inject
  sub esp, 0x110
@@ -307,6 +316,7 @@ confirm_load:
 confirm_done:
  pop eax
  ret
+.endif
 
 copy:
  pushfd
@@ -436,7 +446,11 @@ bind_complete:
  mov DWORD PTR [0xbe4d68+ecx], edi
  mov DWORD PTR [0xbe4d6c+ecx], edi
  mov DWORD PTR [0xe5fc50], 0
+.ifdef MYCAREER_INLINE
+ mov DWORD PTR [0xe5fc90], 0
+.else
  mov DWORD PTR [0xe5fc88], 0
+.endif
  test edi, edi
  jz bind_done
  mov edx, DWORD PTR [edi+0xc]
@@ -651,9 +665,12 @@ cpu_retail:
  push \resume
  ret
 .endm
+.ifndef MYCAREER_INLINE
 gm_launcher front_office, 0x142916
 gm_launcher gameplan, 0x142956
+.endif
 
+.ifndef MYCAREER_INLINE
 screen_dispatch:
  /* The adjacent ordinary Franchise row explicitly leaves MyCareer. */
  cmp edx, 0x500dc8
@@ -686,6 +703,7 @@ screen_retail:
  cmp DWORD PTR [esi+0x100], 0x20
  push 0x6e39a
  ret
+.endif
 
 camera:
  /* The camera owner (version 4, Standard default) no longer touches the
@@ -810,6 +828,7 @@ settle_award:
  jbe settle_store
  mov DWORD PTR [state+64], 1000000
 settle_store:
+.ifndef MYCAREER_INLINE
  mov edi, DWORD PTR [state+72]
  and edi, 63
  shl edi, 4
@@ -824,12 +843,19 @@ settle_store:
  cmp DWORD PTR [state+76], 64
  jae settle_done
  inc DWORD PTR [state+76]
+.else
+ add DWORD PTR [state+196], edx
+ cmp DWORD PTR [state+196], 1000000
+ jbe settle_done
+ mov DWORD PTR [state+196], 1000000
+.endif
 settle_done:
  popad
  popfd
  ret
 
 /* FNV-1a32: ESI bytes, ECX length, EAX seed. EDX clobbered. */
+.ifndef MYCAREER_INLINE
 hash_bytes:
  test ecx, ecx
  jz hash_done
@@ -1232,3 +1258,5 @@ journal_path:
 hex_digits:
  .ascii "0123456789ABCDEF"
 code_end:
+.endif
+.section .note.GNU-stack,"",@progbits

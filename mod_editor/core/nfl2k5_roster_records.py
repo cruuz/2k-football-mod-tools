@@ -838,12 +838,16 @@ def franchise_reference_year(payload: bytes | bytearray, preamble: int,
     """
     from . import nfl2k5_save_writer as writer
     writer.validate_franchise_base_year(base_year)
-    if (len(payload) in (writer.FRANCHISE_SAVE_SIZE, writer.FRANCHISE_SAVE_SIZE + 0x1000) and preamble == 0x300
+    native_size = len(payload)
+    from . import nfl2k5_my_career_save as career
+    if native_size in career.SIZES:
+        native_size = career.native_size(payload)
+    if (native_size in (writer.FRANCHISE_SAVE_SIZE, writer.FRANCHISE_SAVE_SIZE + 0x1000) and preamble == 0x300
             and payload[0x2E0:0x2E4] == b"ROST"
-            and struct.unpack_from("<I", payload, 0x2E4)[0] == 0x91020 + len(payload) - writer.FRANCHISE_SAVE_SIZE
+            and struct.unpack_from("<I", payload, 0x2E4)[0] == 0x91020 + native_size - writer.FRANCHISE_SAVE_SIZE
             and payload[0x30C:0x310] == b"ROST"
-            and struct.unpack_from("<I", payload, 0x310)[0] == (1 if len(payload) > writer.FRANCHISE_SAVE_SIZE else 0)):
-        return base_year + payload[writer.FRANCHISE_YEAR_OFFSET + len(payload) - writer.FRANCHISE_SAVE_SIZE]
+            and struct.unpack_from("<I", payload, 0x310)[0] == (1 if native_size > writer.FRANCHISE_SAVE_SIZE else 0)):
+        return base_year + payload[writer.FRANCHISE_YEAR_OFFSET + native_size - writer.FRANCHISE_SAVE_SIZE]
     return None
 
 

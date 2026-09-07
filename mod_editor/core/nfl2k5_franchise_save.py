@@ -344,9 +344,19 @@ class FranchiseSave:
         except ValueError as exc:
             raise FranchiseSaveError(str(exc)) from exc
         data = bytes(payload)
-        _require(len(data) in (FRANCHISE_SAVE_SIZE, FRANCHISE_SAVE_SIZE + 0x1000),
-                 f"a franchise save is 720,044 or 724,140 bytes; this is {len(data):,}")
-        growth = len(data) - FRANCHISE_SAVE_SIZE
+        from . import nfl2k5_my_career_save as career
+        self.career_offset = None
+        native_size = len(data)
+        if len(data) in career.SIZES:
+            try:
+                native_size = career.native_size(data)
+                self.career_offset = native_size
+            except ValueError as exc:
+                raise FranchiseSaveError(str(exc)) from exc
+        _require(native_size in (FRANCHISE_SAVE_SIZE, FRANCHISE_SAVE_SIZE + 0x1000),
+                 f"unsupported franchise container length: {len(data):,}; expected "
+                 "720,044 or 724,140 native bytes, optionally followed by a 128-byte career block")
+        growth = native_size - FRANCHISE_SAVE_SIZE
         self.arena_end = ARENA_END + growth
         self.season_block = SEASON_BLOCK + growth
         self.front_office_block = FRONT_OFFICE_BLOCK + growth
@@ -1026,9 +1036,13 @@ class FranchiseSave:
     # ------------------------------------------------------------------ the map
     def regions(self) -> list[Region]:
         growth = self.arena_end - ARENA_END
-        return [replace(region, size=region.size + growth) if region.offset == ARENA_ROOT else
+        regions = [replace(region, size=region.size + growth) if region.offset == ARENA_ROOT else
                 replace(region, offset=region.offset + growth) if region.offset >= ARENA_END else region
                 for region in REGIONS]
+        if self.career_offset is not None:
+            regions.append(Region(self.career_offset, 128, "MyCareer version 1", "PROVED",
+                                  "inline identity and progression; native signature covers the full container"))
+        return regions
 
 
 def _regions() -> list[Region]:

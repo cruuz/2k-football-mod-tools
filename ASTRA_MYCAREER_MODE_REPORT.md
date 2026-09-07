@@ -1,221 +1,301 @@
-# MyCareer in-game mode milestone report
+# MyCareer mode-2 implementation and acceptance report
 
-2026-09-07, branch `astra/r64-mycareer-mode`, starting commit `c450b2d`.
-**EXPERIMENTAL / UNWITNESSED.** No game boot, played game, rendered menu,
-console save, audio, GUI, network access or push occurred.
+2026-09-07, `astra/r64-mycareer-mode-2`, base
+`2f2a29c7a0f9ecd2527a1a1dfe784426cecb1021`.
+**EXPERIMENTAL / UNWITNESSED. M2 and M3 are incomplete.**
+This report replaces the historical M1/audit report, which remains in the base
+commit. The binding continuation brief supersedes M1's fixed-length save
+proposal: the occupied season tail is never used by this implementation.
 
-## Milestone status
+The seedless creation, franchise initialization, apartment, inline persistence,
+native load return, Practice lifecycle, abandoned-game return and generic disc
+writer are implemented and tested. A continuous completed player-locked match,
+off-field snap/clock progression and the M3 features are not certified. No
+M2_DONE or M3_DONE marker is written. There was no game boot, Xbox emulator boot,
+GUI display, audio, network access, played witness or push.
 
-| Milestone | Status |
-| --- | --- |
-| M1: complete mode design and native prerequisite evidence | Complete; bundle commit and DONE receipt accompany delivery |
-| M2: in-game creation, placement, franchise, hub and game loop | Started with save occupancy and native completion proofs; not complete |
-| M3: calendar, card, depth, upgrades, requests, art and auto-save | Not complete |
+## What was built
 
-M1 delivers `ASTRA_MYCAREER_MODE_DESIGN.md`, an explicit feature/native map,
-save candidate and field layout with its ownership gate, game and Practice
-return contracts, CPU/off-field decision, budgets, Fable asset requests and
-milestone acceptance criteria. `WIRING.md` supplies every protected integration
-surface and clearly distinguishes future changes from M1, which changes no
-production hook, allocator request, capability or Build behavior.
+`mod_editor/core/nfl2k5_my_career_mode.py` is the generic format of the existing
+`nfl2k5_my_career` owner. It reuses exactly 8192 RX / 4096 RW bytes. It refuses
+legacy/generic mixtures before mutation; old explicitly prepared-save builds
+retain their compatibility implementation. Generic status validates every
+hook, native context, allocation, complete generated template, format seal
+and initially zero RW. The legacy status API delegates full validation when
+it recognizes the new format.
 
-`tools/nfl2k5_my_career_mode_audit.py` is a bounded read-only evidence command,
-with nine literal native-function pins and twelve descriptor words, refusing
-foreign/oversized evidence. It emits JSON describing the current owner and
-explicitly refuses to call the proposed save bytes an allocated region.
-`test_nfl2k5_my_career_mode_routes.py` adds actual native prerequisite execution;
-it does not stub out creation and pretend a complete mode ran.
+The installed Game Modes action opens an owned entry list:
 
-## PROVED and HYPOTHESIS
+1. Enter the draft: native `Coming in the next update` notice.
+2. Undrafted free agent: native new-player creation, followed by all 32 NFL clubs.
+3. Load career: native Load/Save UI.
+4. Quit to main menu: the explicit exit.
 
-**PROVED:** current entry still requires a per-disc seed and a prepared draft
-save. Existing persistence is an external `U:` journal, not bytes in the
-franchise save. The current any-position binder, CPU ownership and once-only
-ledger remain unchanged and pass their original tests.
+The new-player bridge enters the actual NEW branch at `0x34621C`, preserving
+native date/name/appearance/equipment and completion logic. It snapshots the
+unused 84-byte PRIMARY slot, two 34-byte name cells and unused FA tail cell.
+Back/cancel restores the entire bounded source roster and clears transient CAP
+callbacks. Full pools, full FA storage, aliased names, contradictory ownership
+and full destinations refuse visibly. Native confirmation occurs before any
+franchise or signing mutation. The five positions absent from the native CAP
+rating-template table receive balanced numerical ratings under exact career
+creation ownership; style bytes are preserved. Tests cover those record
+values and cancellation, not rendered position-selector choices.
 
-**PROVED in new bounded execution:** the native creator selects a free created
-PRIMARY record, initializes its existing name storage and college reference,
-and pushes the actual player editor `0x56F050`, with no MyCareer seed. A full
-pool does not push or mutate records. Selecting an existing created player
-uses a distinct native branch; a new-career adapter must explicitly avoid
-that branch. The probes execute `0x3461F0`, `0xBFF00/0xBFF50`, `0xC0A80`,
-native string copying and PUSH; only RNG and descriptor rendering/event
-delivery are external substitutes. This is not installed Game Modes entry.
+Placement executes complete native defaults and franchise initialization
+`0x148C60 -> 0x10EA10 -> 0x13EE10`, native FA removal, contract, jersey,
+team append/sort/salary operations, club association `0x13EC90`, then complete
+finalization `0x13F1B0`. These initializers are not stubs in the creation test.
+Weekly Preparation defaults off. CPU front-office management stays enabled.
+The identity is captured from the new record, never selected by player name.
+The native RNG supplies the creation token; deterministic entropy is a named
+fixture seam, so the fixtures do not demonstrate hardware entropy quality.
 
-**PROVED in new bounded execution:** native Franchise Options advance runs
-its validation, calls `0x10EA10` then `0x13EE10`, and pushes `0x52ABE0` only
-when accepted. Those two initializers are stubs in this specific call-order
-test, so their internal work and a completed new franchise are HYPOTHESIS.
-The design calls this out instead of calling a mocked initialization proved.
+The distinct Apartment uses owned native-list descriptors, not a renamed
+Coach's Desk. Its five rows are Play next game, Practice, MyPlayer, Save and
+Quit to main menu. Back on the root stays in the mode. Native schedule, player
+card, Practice settings and Save children return correctly through Back.
+Cold native Load executes the real completion operation, CLEAR and REPLACE
+at `0x16DD30`, restores the club association and opens Apartment at depth zero.
+An authenticated but invalid requested career clears identity and displays
+`Career save could not be loaded.` without disabling the entry list.
 
-**PROVED in new bounded execution:** complete native season load `0xC5800`
-and save `0xC5310`, including their stat serializers, round-trip the 128-byte
-tail at file `0x9967C..0x996FB` for three patterns. Source bytes and output
-canaries are checked. Empty substate 3 clears that region. Its normal
-preservation is real evidence; its availability for MyCareer is **HYPOTHESIS**.
-Only the two explicit tail constructions were found in a linear `.text`
-operand census; computed-index access and lifecycle ownership need further
-proof. No production save writer is authorized by that negative census.
+Practice uses a private clone of native settings and native Team Select.
+Native START, game descriptor, Pause, Quit confirmation, ended-game dispatch
+and return to Apartment are executed with explicit engine/rendering service
+seams. The game is not claimed played. For franchise launch, Schedule START
+and Play reach native Team Select and Game. The postgame parent `0x4F19E8`
+must remain on the stack: it calls `0xC74E0`, including `0xC5DF0` week processing
+for completed games. A guarded callback replacement at `0x4F1994` runs that
+native callback first, then returns from Schedule to Apartment. Abandoned-game
+and scene-load-failure tests exercise this native chain and a usable child
+after return. No XP is awarded and abandonment retains native fixture status.
+The completed-game branch is not yet proved through a full match.
 
-**PROVED:** native coach-mode predicate does not implement a skip command.
-**HYPOTHESIS:** CPU drives at normal speed, playable position-specific behavior,
-human play-call gating, creation completion/placement, a distinct hub's game
-return and stable save/load. No native possession-skip routine is identified.
-The requested shared auto-save implementation is absent from this checkout;
-the design proposes an adapter contract, not a fabricated address.
+## Inline persistence
 
-## M1 validation and receipts
+`nfl2k5_my_career_save.py` defines the versioned 128-byte `MCPL0001` footer
+AFTER all four complete native streams, including front office:
 
-All suites ran standalone, plain Python, no skips. Commands are relative to
-this checkout; logs and `/usr/bin/time -v` receipts are in
-`.scratch/mycareer-mode/` and are excluded from commits.
+| Native container | Career container | Footer offset |
+| --- | --- | --- |
+| 720044 bytes, ROST version 0 | 720172 bytes | 720044 (`0xAFCAC`) |
+| 724140 bytes, ROST version 1 | 724268 bytes | 724140 (`0xB0CAC`) |
 
-| Command | Result |
-| --- | --- |
-| `python3 tests/mod_editor/test_nfl2k5_my_career.py` | 13 passed, 20.088 s |
-| `python3 tests/mod_editor/test_nfl2k5_my_career_unicorn.py` | 18 passed, 11.754 s |
-| `python3 tests/mod_editor/test_nfl2k5_my_career_mode_routes.py -v` | 7 passed, 2.748 s |
-| `python3 tests/mod_editor/test_nfl2k5_my_career_mode_audit.py -v` | 2 passed, 0.044 s |
-| `python3 tests/mod_editor/test_xbe_patch_memory_writes.py` | 79 passed, 306.119 s |
-| `python3 tests/mod_editor/test_xbe_patch_cave_references.py` | 95 passed, 391.941 s |
-| `python3 tools/nfl2k5_my_career_assemble.py --check` | Template verified |
-| `python3 tools/nfl2k5_xbe_space.py plan --requests tests/fixtures/nfl2k5_allocator_beta62_requests.json` | PASS, 41 requests |
-| `git diff --check` | PASS |
+ROST versions remain owned by the arena-growth implementation. Career schema
+version 1 is independent. The real Franchise1 season-tail occupancy recorded
+by M1 remains a counterexample to using `0x9967C..0x996FB`; none of those bytes
+is appropriated. Ordinary saves retain their native length.
 
-**214 passing tests.** Both gates use the complete owner union, forward and
-reverse application, status checks and replay. They passed with the checked-in
-manifest; no protected manifest replacement or freshness exemption was used.
-Peak measured process RSS: **499,292 KiB**, below the 2 GiB test bound.
+The footer contains a creation token, PRIMARY ordinal, phase/port/camera/
+position, club ordinal, root-relative college and name references, immutable
+record/birth identity, upgrade balance, committed-fixture watermark, pending
+request scalars, starter preference and cumulative points. Reserved bytes are
+zero. No allocator address, live body pointer, executable recipe or external
+journal is persisted. The FNV checksum detects corruption; native signing
+provides authentication.
 
-Read-only audit reproduction:
+Seven pinned adapters cover native total-size calculation (`0x16AA26`),
+metadata admission (`0x16ABB5`), serialization before signing (`0x16E50D`),
+load-begin identity clearing (`0x16E5CE`), successful signed read before ANY
+deserializer (`0x16E6D3`), source ROST extent (`0x16E7E5`) and completion after
+all deserializers (`0x16E815`). Loading a smaller native roster into a larger
+arena uses the SOURCE extent when locating later streams. Bad lengths,
+wrappers, versions, reserved fields, identity references and ordinals refuse
+before native decode. Failed reads do not leave an old player attached.
+
+PROVED in bounded instruction execution: all four native serializers and all
+four deserializers; both container sizes; independent careers on different
+allocator layouts; native HMAC construction and EXTRA writer covering the
+entire extended buffer, matching the existing host verifier; cancelled/failed
+writes and malformed reads. Signing fixtures replace kernel SHA-1/OS services
+and use the title certificate key derivation. No physical console save is
+claimed. Reader/save-writer helpers recognize the footer without mistaking it
+for extra roster growth or shifting the season year by 128 bytes.
+
+## Control and off-field evidence
+
+The retained binder revalidates primary identity and maps it through the native
+match copy. It bounds the body list and controller array, rejects duplicate or
+cyclic lists, detaches absent bodies, and leaves CPU teammates unassigned to
+the human port. The inline variant corrects the away human field to `0xE5FC90`;
+the historical assembler output remains byte-identical.
+
+Consumer-specific play-call hooks leave both raw team `+0x30` human fields
+clear. On-field QB/WR/HB/FB/TE may call offense; CB/FS/SS/OLB/ILB/DT/DE may call
+defense. Linemen, special teams and absent bodies use CPU eligibility. Native
+`0x1891B0` and native controller assignment run for all 17 positions on both
+teams and across possession changes. This is a control-decision proof, not a
+snap, drive or physical control witness. The CPU body callback `0x152B80` is
+unchanged so teammates' CPU behavior is retained.
+
+`mode_unit_present()` exports a bounded presence query for a future Supersim
+stop condition. It returns a validated body or zero; the adapter must discover
+its relocated label from the sealed owner. No guessed Supersim address is
+installed. Normal-speed CPU play is the fallback, pending snap/clock proof.
+The `0xC5D9E` wrapper settles the ledger after native stat commit and before
+week advancement; autosave's separate `0xC5DA9` boundary is left to its owner.
+The compact schema transports pending requests and earned points, but there
+is no new M3 request or purchase UI.
+
+## Exact builds, allocations and resource bounds
+
+The committed `docs/mod_editor/nfl2k5_my_career_mode_receipt.json` contains
+source hashes, both complete disc hashes, XBE hashes, exact patch edits,
+allocator receipts, unchanged replay, cold-load results and deletion receipts.
+It records M2/M3 complete as false. No game executable, save or disc is included.
+
+| Layout used by independent disc build | MyCareer RX VA | MyCareer RW VA |
+| --- | --- | --- |
+| MyCareer requests only | `0x14DA000` | `0x14F2000` |
+| Committed full budget union | `0x14DD670` | `0x14F3350` |
+
+Both use the existing 8192/4096 budget, with no fictitious relocation owner.
+The cold-load suites use these same two layouts. Full safety gates separately
+INSTALL and replay the complete owner stack in both orders. The generic disc
+recipe reserves the union but installs only allocator infrastructure and this
+MyCareer format; other selected features still use their normal adapters.
+
+Current measured content: **7870 RX bytes**, including **6996 machine-code
+bytes**, strings and the compressed immutable menu template. A **17-byte seal**
+is at the end of the allocation, leaving **305 bytes** before it. The expanded
+menus occupy **996 RW bytes** at `state+256`; persistent binder fields, CAP
+rollback, footer staging and the bounded visited-controller list all fit the
+4096-byte state allocation. No mutable `.data`/`.bss` or runtime code-page
+storage is linked. GCC `-Os` and GNU binutils regenerate the checked template.
+A separate `-Oz` size experiment saved only 71 C-section bytes; it was not
+adopted. The remaining space does not accommodate the unimplemented M3 design.
+No owner budget or page was expanded to conceal that shortfall.
+
+Two full 6300499968-byte source disc copies were built sequentially inside
+TemporaryDirectory, each grown to 6312800256 bytes. Both were read back,
+stream-hashed, used for cold native load of the QB/club-2 and CB/club-31 careers,
+and deleted before writing the receipt. Lowest measured root free space while
+an image existed: **102589693952 bytes**, above the 100 GB floor. Acceptance
+process peak RSS: **253176 KiB**. Files are streamed in 4 MiB chunks; executable
+reads are capped at 16 MiB. Scratch contains only bounded save hex, research
+scripts, JSON and logs, below 200 MB. The synthetic XDVDFS test also proves a
+neighbouring file survives executable relocation.
+
+Generic recipe, run from this repository with new output paths:
 
 ```sh
-python3 tools/nfl2k5_my_career_mode_audit.py \
-  '/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe'
+python3 -m mod_editor.core.nfl2k5_my_career_mode apply \
+  '/path/to/retail/default.xbe' '/path/to/output/default.xbe' \
+  --requests tests/fixtures/nfl2k5_allocator_beta62_requests.json \
+  --receipt '/path/to/output/mycareer-xbe.json'
+
+python3 -m tools.mycareer_mode.build_disc \
+  '/path/to/retail.xiso.iso' '/path/to/output/MyCareer.xiso.iso' \
+  --requests tests/fixtures/nfl2k5_allocator_beta62_requests.json \
+  --receipt '/path/to/output/mycareer-disc.json'
 ```
 
-`M1-audit.json` pins retail
-`73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9`.
-`M1-writer-receipt.json` records the unchanged existing owner's seedless
-installation, exact edit receipt and zero-change identical replay; its XBE
-hash is `d396fa02e54be144a4bf9c5210170fb97568aed4573f099b586fce6a7b64b842`.
-That unconfigured old-owner XBE is NOT a playable new-mode recipe.
+No setup file, player name or prepared Franchise is accepted by either recipe.
+They refuse existing outputs, stream temporary staging and verify the result
+before replacing the new output path. All stage handles close before replace.
+The image/XBE and JSON receipt are separate publications; a receipt-write
+failure can leave the successfully published output and is not an atomic
+multi-file transaction. The production patch and generic recipe remain labelled
+experimental. Protected Build and GUI integration is specified in WIRING.md.
 
-Root free space was 108,010,352,640 bytes at M1 verification. No disc or pack
-copy was made; a 6.3 GB disposable image would consume the floor's headroom.
-Only bounded executable/synthetic save reads were used. Scratch stays below
-200 MB; no acceptance disc is left behind.
+## Validation
 
-## M2 continuation: occupied save region and actual creation completion
+Every suite ran standalone with plain Python. Native evidence tests declare
+precise skips when the pinned USA XBE, retail roster, Unicorn or Capstone is
+absent. No skip was used to hide a failure in the new suites. Durations below
+are the latest completed run for each named suite in this session.
 
-**PROVED:** the supplied three 720,044-byte fixtures do not all have an empty
-season tail. The two `f0`/`f1` fixtures have zero tails. The year-7, stage-1,
-substate-2 `256B40374FD6-Franchise1` fixture has 12 nonzero bytes, the words
-`0x3FFFFFFF`, `0x9BFFFFFF`, `0x0119307F` at relative offsets 0, 4, 8.
-Its save SHA-256 is
-`0db746fe2c8ae2102fdd420863a5e5bcddec4b83ac3e234568824c337e4422a7`;
-tail SHA-256 is
-`063baa6954477e544ee04ae3b390055e247ce3e4c56328667aff7f72ffa791dd`.
-This is observed occupancy, not a claim about those words' gameplay meaning.
-The bare-file audit does not check EXTRA authentication or modify any input.
-
-Decision: reject unconditional use of `0x9967C..0x996FB`. Neither disc-specific
-seeds nor an external journal substitutes for the requested inline state.
-Preservation alone passed in M1; availability did not. The design now includes
-this counterexample at its top. `audit_save`/CLI `--save` emit the exact
-occupancy and false allocation permission even for zero samples. New tests
-pin the real counterexample and cover size/marker refusals, both ends of the
-tail, nonmutation and the distinction between empty samples and free storage.
-
-**PROVED native completion:** the separate creation-boundary suite executes
-`0x346C50`, native date/record normalization, team membership traversal, FA
-lookup/removal/append and native POP-TO to the created-player list. Fresh
-completion marks the created player and appends him to FA. Repeated completion
-keeps one membership. Existing team ownership avoids FA insertion. A synthetic
-full-list stress case shows append refusing while the record is already marked
-created. This is a capacity-edge fixture, not a claim that the supplied retail
-saves contain 2,500 distinct free agents. A career adapter needs preflight and
-postcondition checks before adopting the player. Other primary records are
-unchanged. All callers return with balanced stacks and callee-saved registers.
-
-The descriptor delivery/render/destructor service `0x6E4E0` and notification
-subscribers through `0x110E60` are explicit external stubs. They do not choose
-membership or the return target. These new tests do not claim a rendered hub,
-native new-franchise finalization, game launch, cold reload or playable mode.
-
-| Additional / changed command | Result |
+| Command (`python3` prefix) | Result |
 | --- | --- |
-| `python3 tests/mod_editor/test_nfl2k5_my_career_creation_boundary.py -v` | 4 passed, 1.933 s |
-| `python3 tests/mod_editor/test_nfl2k5_my_career_mode_audit.py -v` | 6 passed, 0.057 s (supersedes M1's 2-test version) |
-| Audit command above with `--save <Franchise1/SAVEGAME.DAT>` | Exact read-only occupied-tail receipt |
+| `tests/mod_editor/test_nfl2k5_my_career_inline.py` | 8 passed, 11.193 s |
+| `tests/mod_editor/test_nfl2k5_my_career_frontend.py` | 7 passed, 53.422 s |
+| `tests/mod_editor/test_nfl2k5_my_career_control.py` | 2 passed, 15.092 s |
+| `tests/mod_editor/test_nfl2k5_my_career_generic_build.py` | 5 passed, 7.496 s |
+| `tests/mod_editor/test_nfl2k5_my_career.py` | 13 passed, 19.725 s |
+| `tests/mod_editor/test_nfl2k5_my_career_unicorn.py` | 18 passed, 12.208 s |
+| `tests/mod_editor/test_nfl2k5_my_career_manifest.py` | 3 passed, 5.924 s |
+| `tests/mod_editor/test_nfl2k5_my_career_mode_routes.py` | 7 passed, 3.037 s |
+| `tests/mod_editor/test_nfl2k5_my_career_mode_audit.py` | 6 passed, 0.075 s |
+| `tests/mod_editor/test_nfl2k5_my_career_creation_boundary.py` | 4 passed, 2.291 s |
+| `tests/mod_editor/test_nfl2k5_franchise_save.py` | 13 passed, 1.582 s |
+| `tests/mod_editor/test_nfl2k5_roster_records.py` | 108 tests, 1 skipped, 12.423 s |
+| `tests/mod_editor/test_nfl2k5_save_writer.py` | 17 tests, 1 skipped, 0.039 s |
+| `tests/mod_editor/test_xbe_patch_memory_writes.py` | 79 passed, 363.931 s |
+| `tests/mod_editor/test_xbe_patch_cave_references.py` | 95 passed, 454.913 s |
+| `tools/mycareer_mode/build_runtime.py --check` | PASS |
+| `tools/nfl2k5_my_career_assemble.py --check` | PASS; legacy template unchanged |
+| `git diff --check` | PASS |
 
-The resulting unique coverage is **222 passing tests**, with both XBE gates
-from M1 still applicable: this continuation changes no production module,
-allocator requests, native code or protected file. Logs, resource metrics,
-`M2-tail-samples.json` and `M2-save-audit.json` are in scratch. Initial scratch
-creation-completion probing needed the manager's actual list-state pointer;
-that fixture issue was corrected before the four final tests ran.
+The two baseline skips are the absent shipped portrait catalogue and the old
+save-writer smoke test's `/tmp/opencode/espn26/default.xbe` fixture. The new
+native signing suite uses the actual pinned retail extraction and passes.
 
-M2 and M3 remain unfinished. In particular, no generic disc recipe is published
-as playable, no inline save bytes are allocated, and no game entry is rerouted
-to a half-created career. The remaining implementation work is explicit in
-the design: certify fixed-size save storage, implement fresh-entry cancellation
-and placement, execute the complete default franchise sequence, implement the
-owned hub/child lifecycle and play-call/off-field behavior, then integrate the
-shared auto-save owner and M3 screens. The existing Studio/prepared-save mode
-is unchanged and does not satisfy that requested loop.
+The capability fragment passes schema validation in the merged registry and
+explicit checks of its own evidence/module/command paths. Baseline full-file
+registry checking reports an unrelated missing `docs/research/apf_audio.md`;
+no baseline file or validation exemption was committed. Initially the safety
+gates refused Overtime/PAT companion edits inside audited play-call contexts.
+The fix requires those owners' complete sealed status and normalizes only
+those exact sites before checking the original native context hash.
 
-This partial continuation is committed separately and included with M1 in
-`.scratch/r64-mycareer-mode.bundle`; its status is recorded in
-`.scratch/M2_PROGRESS.json`. There is deliberately no `M2_DONE` or `M3_DONE`.
+## Remaining acceptance work and counterevidence
 
-## Noah's witness list, all pending
+- **M2 completed played-game chain:** the engine-step/asset seams in the stack
+  fixture do not execute football. A completion-boundary probe reaches a null
+  player-stat callback because the fixture has not initialized the live engine's
+  match-stat objects. It is recorded as a failed probe, not a completed match.
+  A complete native finish, real stats, once-only award, final-season transition
+  and return to a usable apartment remain required.
+- **Off-field fallback:** real PLAY data plus native constructors select the
+  expected CPU/human branch in a research probe. Full CPU choice reaches an
+  uninitialized role/script pointer at `0x1A8E60`; the resource-validation seam
+  does not establish a legal complete play-script set. No mid-function stub was
+  added to turn this into a passing game. Snap, clock, turnover, timeout,
+  halftime, overtime, injury and substitution progression are still unproved.
+- **Schedule scope:** Play next game currently opens native Schedule. Explicit
+  earliest-unplayed selection, bye/advance presentation and filtering unrelated
+  game-card actions remain unfinished. Native START can simulate other fixtures
+  before the career fixture. A 500-million-instruction research budget expired
+  in native history insertion while completing those CPU fixtures; that bounded
+  stop is not evidence of a production hang or a completed week.
+- **M3:** calendar view, season/career stat tabs, depth chart, numerical purchase
+  UI, weekly trade/release transaction, hub art and shared auto-save are not
+  implemented. Scalar storage and the five-row hub do not satisfy M3. Fit the
+  remaining design inside the existing budget before adding these features;
+  this report makes no claim that 305 bytes is sufficient.
+- **Rendered/physical behavior:** hardware/device/rendering boundaries remain
+  explicit. Neither menu rendering nor a physical save/load or player position
+  has been witnessed by Noah. All presets and public GUI exposure stay off.
 
-1. Boot a generic patched disc with no MyCareer.json, no prepared draft save
-   and no title-journal file. Choose MyCareer, create MyPlayer with name,
-   college, position and attributes, choose a club, and reach the apartment.
-   Cancel on every creation page and restart without consuming another slot.
-2. Verify nine hub rows, long names, focus, controller footer and art at 4:3
-   and widescreen. Back from every child, dialog and nested page reaches a
-   usable hub. Explicit Quit alone leaves it. Repeat at root and above Main
-   Menu, including Save and load errors.
-3. Create separate QB, HB/FB, WR, TE, OL, DL, LB, DB, K and P careers. Play
-   snaps at each position. Verify human play calling only for the correct unit
-   while MyPlayer is present, CPU teammates and no control transfer after
-   turnover, handoff, catch, fumble, substitution, injury or inactive status.
-4. Watch off-field drives through possession changes, timeout, halftime and
-   overtime. Verify no stuck snap or menu and honest off-field status text.
-   Any Skip control must have a working proved action.
-5. Launch/quit/cancel/resume/repeat franchise Practice, then a scheduled game,
-   then Practice again. Every end returns to the apartment with valid menu
-   state; Practice does not advance the calendar or award game XP.
-6. Complete games, byes, final regular week, playoffs and season rollover.
-   Verify native score/stats/injuries/progression, next opponent and once-only
-   25-point participation award. Abandon a game and follow native result rules.
-7. Open the correct MyPlayer card, season and career stats; edit the team's
-   depth chart, select starter on the intended side, advance a week and check
-   lock persistence and CPU roster management.
-8. Buy attributes through every price tier and cap, cancel confirmation, and
-   check exact balance/rating changes. Preserve all style, lock and ability
-   fields. Test insufficient points and native progression between purchases.
-9. Request a trade or demand release, save with the request pending, reload,
-   advance a week, and verify a different legal club with correct old/new depth,
-   salary and transaction history. Check cancel and unavailable-team handling.
-10. Verify auto-save after each committed game, manual Save, cancelled Save,
-    failed Save/retry and cold reload. Copy the ordinary signed career save
-    to another patched disc with a different allocator layout and no journal.
-    Load two different careers on the same disc and verify identity, balance,
-    watermark, team and pending requests never cross between them.
-11. Exit to ordinary Franchise and ordinary Create Player/Practice. Confirm
-    their menus, rosters, settings, save/load and return routes remain native.
+Read-only dependency checks: `astra/r64-mycareer-supersim-draft` still exposes
+`RUNTIME_READY=False`, `REQUESTS=()`. Its report proves native simulation/draft
+steps but records loss of live state on resume; it is not an installable
+Supersim adapter. Draft retains the requested next-update notice. The shared
+`astra/r63-franchise-autosave` owner exists but its cached-slot/FPF-aware native
+save callback recognizes Coach's Desk, not this apartment; the proposed
+`request_after_game` ABI is not an actual callable contract. Fable's apartment,
+panel, calendar and focus PNGs/recipes exist on `fable/r64-mycareer-art`, but no
+hub-only native texture/scene family is assigned here. Those worktrees were
+read only and no dependency files were copied or edited. WIRING.md details
+all three integration boundaries and every protected dispatcher/Build/GUI/
+allowlist/runtime-closure/capability change.
 
-## Delivery discipline
+## Noah's witness list after the outstanding code gates
 
-The worktree's Git directory resolves outside writable roots, into
-`/home/noah/2k-football-mod-tools/.git/worktrees/astra-r64-mycareer-mode`.
-Use the requested bundle fallback with isolated Git metadata under `.scratch/`,
-read-only access to existing objects, and explicit-path staging/commits. Keep
-edits in this worktree. No original repository metadata, protected product
-file, brief, scratch artifact or generated game payload is part of a commit.
-Each completed milestone gets `.scratch/M<n>.bundle` and `.scratch/M<n>_DONE`.
-Unfinished milestones do not get a misleading DONE marker. No push.
+Create at least two careers on one generic disc, including different names,
+positions and clubs. Check every CAP page, template, Back/cancel and full-team
+refusal. Load both careers on another allocator layout and verify identity,
+club, ratings, points and settings. Use native Save, overwrite, cancel, device
+failure, retry and cold reload. Invalid career files must show an error and
+never attach to another player.
+
+For each position family, verify MyPlayer alone receives physical input through
+substitutions, possession changes, kicking, penalties and camera changes. Test
+benched/injured games and CPU snaps on the other unit. Complete regulation,
+overtime, a bye and the season's last game; verify real stats and once-only
+awards, then enter every apartment child after game return. Abandoned games
+and Practice must award nothing. Test load failure and repeated launch/return
+from both a root apartment and one above Main Menu. Quit cancellation must
+stay in the mode; only explicit confirmed Quit leaves it. M3 needs its separate
+purchase/request/calendar/art/auto-save witness matrix once implemented.

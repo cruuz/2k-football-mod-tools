@@ -246,7 +246,8 @@ def save_kind(payload: bytes) -> str:
         return "settings"
     if len(payload) == FRANCHISE_SAVE_SIZE:
         return "franchise"
-    if len(payload) == FRANCHISE_SAVE_SIZE + 0x1000:
+    if len(payload) in (FRANCHISE_SAVE_SIZE + 0x1000, FRANCHISE_SAVE_SIZE + 128,
+                        FRANCHISE_SAVE_SIZE + 0x1000 + 128):
         from .nfl2k5_franchise_save import is_franchise_save
         if is_franchise_save(payload):
             return "franchise"
@@ -256,14 +257,14 @@ def save_kind(payload: bytes) -> str:
 def _franchise_shift(payload) -> int:
     if len(payload) == FRANCHISE_SAVE_SIZE:
         return 0
-    _require(len(payload) == FRANCHISE_SAVE_SIZE + 0x1000,
-             "save is not a 720,044-byte or migrated 724,140-byte franchise")
+    _require(len(payload) in (FRANCHISE_SAVE_SIZE + 0x1000, FRANCHISE_SAVE_SIZE + 128,
+                             FRANCHISE_SAVE_SIZE + 0x1000 + 128), "unsupported franchise container length")
     from .nfl2k5_franchise_save import FranchiseSave
     try:
-        FranchiseSave(payload)
+        save = FranchiseSave(payload)
     except ValueError as exc:
         raise SaveWriterError(str(exc)) from exc
-    return 0x1000
+    return save.arena_end - 0x91320
 
 
 def read_franchise_fields(payload: bytes, *, base_year: int = FRANCHISE_DISPLAY_YEAR_BASE) -> dict[str, object]:

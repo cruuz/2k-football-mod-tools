@@ -484,6 +484,9 @@ def check_context(image):
 
 
 def status(payload):
+    from . import nfl2k5_my_career_mode as mode
+    if mode.recognized(payload):
+        return mode.status(payload)
     try:
         layout = space.layout(payload)
         image = XbeImage(payload)
@@ -506,6 +509,10 @@ def status(payload):
 
 
 def apply(payload, *, setup=None):
+    from . import nfl2k5_my_career_mode as mode
+    if mode.recognized(payload):
+        require(setup is None, "inline MyCareer cannot accept an executable player recipe")
+        return mode.apply(payload)
     wanted = read_setup(setup)
     state = status(payload)
     require(state != "foreign", "foreign/mixed MyCareer bytes; refusing")

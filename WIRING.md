@@ -11906,3 +11906,179 @@ Run the existing roster-record, roster-editor, reserve/franchise, Build core,
 Build panel and beta62 Build integration suites after wiring. Run the normal
 allowlist, capability and staged runtime closure checks after the protected
 integration; this branch does not claim a packaged release or a played result.
+
+## r64 MyCareer mode-2: seedless owner and inline saves
+
+This section supersedes the preceding M1/no-inline-writer handoff. See the
+current `ASTRA_MYCAREER_MODE_REPORT.md`. **EXPERIMENTAL / UNWITNESSED; M2 and
+M3 acceptance remain incomplete.** The generic owner and build recipe exist;
+do not enable a preset or advertise the full playable loop from this commit.
+No protected file was edited. The following are concrete integration changes
+for Claude, subject to the outstanding acceptance checks in the report.
+
+### Dispatcher and Build
+
+In `mod_editor/core/nfl2k5_throw_tuning.py`, import
+`nfl2k5_my_career_mode as my_career_mode_patch` alongside the existing legacy
+`my_career_patch`. Retain `_apply_all(..., my_career=False,
+my_career_setup=None, ...)` and the tuple
+`(my_career, _my_career_adapter(my_career_setup), "my_career_patch",
+"MyCareer (experimental)")` after the allocator entry. Change the adapter's
+apply method to `my_career_mode_patch.apply(payload)` when `setup is None`;
+only an explicit legacy setup calls `my_career_patch.apply(payload, setup=...)`.
+Do not blindly redirect the legacy public apply function: old unconfigured
+and prepared-save tests intentionally retain their compatibility behavior.
+The adapter's status can remain `my_career_patch.status`, which now recognizes
+the generic tag and delegates complete validation, including foreign/mixed
+refusal. A tag alone is never sufficient validation.
+
+`_selected_space_requests` and `_xbe_space_adapter` retain `my_career` and the
+same `REQUESTS`: owner `nfl2k5_my_career`, code 8192, data 4096, alignment 16.
+There is no second mode owner and no additional page. `_validate_my_career`
+(the setup validation path near the existing `read_setup` call) must validate
+a setup only when one is supplied, in preflight and both copy writers.
+Normalize, freeze, defer and forward the optional setup consistently through
+the final image pass; never install a legacy no-seed template as an interim
+step and then attempt to replace it with the incompatible generic template.
+
+All four status dictionaries, executable inspection, image inspection,
+executable/copy apply result and copied-image result, retain the `my_career`
+key from the exact owner status. `_grown_status_fields` must use that same
+dispatch. The `my_career_patch` receipt contains `in_game_mode`,
+`inline_save_version`, `save_growth`, code/data capacities, seed/journal counts
+and `runtime_witnessed=False`. Surface the format in diagnostic details;
+`applied` does not mean a played loop was accepted or a career was created.
+Legacy setup plus an already generic executable is an error, never a reseed.
+
+In `mod_editor/core/mod_build.py`, retain `BuildPlan.my_career: bool = False`
+and optional `my_career_setup`. Permit a missing setup for the generic format
+through validation, freezing, image deferral and the final owner pass. Replace
+the old unconditional prepared-save requirement with the format contract
+above. **Basic, Advanced and Experimental presets all leave MyCareer false.**
+An explicit experimental selection may use the generic owner once acceptance
+is finished. Requests for an old project with a setup retain the legacy route.
+The normal grown-XBE image writer still owns directory relocation and rollback.
+
+### Gameplay and Build controls
+
+Keep `my_career` in Gameplay Patches `NEEDS_IMAGE`. Replacement `PATCHES` text:
+`Retail controls a franchise team. Patch adds an experimental MyCareer entry,
+native player creation, team signing, an apartment and inline career saves.
+The playable loop is still being verified. Experimental / Unwitnessed.`
+Remove the required setup chooser for the generic branch only; keep old projects
+clearly labelled as legacy prepared-save careers. Do not describe draft or
+Supersim as enabled. The native draft row already displays its next-update notice.
+
+Build tab `_option` caption: `MyCareer: create MyPlayer in the game` (37 chars).
+There is no new player-name, college, ordinal, external save or JSON field in
+the generic player flow. Studio navigation may keep the existing preparation
+panel as a legacy tool; it must not direct generic-mode users to it as a required
+step. Shared GUI files were left untouched.
+
+### Runtime closure, capability and manifest
+
+Add these exact release-allowlist lines when merging these source changes;
+keep the gameplay controls and all presets off until runtime acceptance:
+
+```text
+mod_editor/core/nfl2k5_my_career_mode.py
+mod_editor/core/nfl2k5_my_career_mode_code.py
+mod_editor/core/nfl2k5_my_career_save.py
+docs/mod_editor/nfl2k5_my_career_mode_capabilities.json
+```
+
+Retain the existing legacy core/code entries. Add the three dotted imports
+`mod_editor.core.nfl2k5_my_career_mode`,
+`mod_editor.core.nfl2k5_my_career_mode_code`, and
+`mod_editor.core.nfl2k5_my_career_save` to
+`packaging/check_2k5_mod_studio_runtime.py`'s closure list. The franchise reader,
+roster-record reader and save writer now import the footer codec, so that file
+is needed even in a build with the gameplay option disabled. GCC/binutils,
+Unicorn, tests, private research and `tools/mycareer_mode` are development
+dependencies, never imports of the shipped owner.
+
+Merge the schema-valid fragment
+`docs/mod_editor/nfl2k5_my_career_mode_capabilities.json` into the capability
+registry in sorted ID order. It describes the new generic format separately
+from the legacy preparation workflow, on the existing `mode_state_routing`
+surface, with GUI expose/default false and runtime not-tested. Its backend
+and validation commands are real dotted modules. This is one allocator owner,
+not two installed modes. Full registry file checking currently also reports
+unrelated missing baseline research paths; the new fragment's own file and
+command closure is tested explicitly.
+
+Regenerate `data/nfl2k5_cave_reservations.json` using the existing cave oracle
+after integration. All three manifest-owner lists, the complete allocator
+stack and both XBE gates now import the generic owner under the old budget
+name. The budget fixture's existing MyCareer rows already equal the real
+requests, so they are unchanged. Do not grant any free-space exemption to
+the occupied season tail or an unknown cave.
+
+### Generic executable and disc recipes
+
+Run from the repository root; all outputs must be new paths. These recipes
+contain no setup file or player name. They build experimental artifacts and
+do not certify the uncompleted played-game exit check.
+
+```sh
+python3 -m mod_editor.core.nfl2k5_my_career_mode apply \
+  '/path/to/retail/default.xbe' '/path/to/output/default.xbe' \
+  --requests tests/fixtures/nfl2k5_allocator_beta62_requests.json \
+  --receipt '/path/to/output/mycareer-xbe.json'
+
+python3 -m tools.mycareer_mode.build_disc \
+  '/path/to/retail.xiso.iso' '/path/to/output/MyCareer.xiso.iso' \
+  --requests tests/fixtures/nfl2k5_allocator_beta62_requests.json \
+  --receipt '/path/to/output/mycareer-disc.json'
+```
+
+The standalone disc recipe streams 4 MiB chunks into a TemporaryDirectory,
+uses `nfl2k5_depth_chart_storage.write_image_xbe`, reads the relocated XBE back,
+closes handles and uses `os.replace`. It refuses insufficient disk space and
+keeps at least 100 GB free on the root drive. Its bounded XDVDFS fixture proves
+the neighbouring file survives. Two complete retail-disc copies were verified
+with different allocator layouts, and both were deleted before the report.
+Both extracted executables cold-loaded both native-created careers into the
+apartment. Exact disc/XBE hashes, edits, allocations and cleanup receipts are
+in `docs/mod_editor/nfl2k5_my_career_mode_receipt.json`. Reserving the full union
+installs only allocator infrastructure
+and MyCareer; apply other selected owners through their normal adapters after
+the shared union exists. Do not install both MyCareer formats.
+
+### Parallel owner adapters and M3 boundaries
+
+Supersim's read-only branch still has `RUNTIME_READY=False` and `REQUESTS=()`.
+The installed generic code exports `mode_unit_present`: no arguments, returns
+the validated MyPlayer body VA or zero, preserving the platform callee-saved
+register convention. `mode_human(team)` uses ECX and returns EAX 0/1 for native
+play-call eligibility. A future Supersim stop adapter may query the presence
+routine at the relocated `code_for(code_va, data_va)` label. Require a sealed
+owner/version before using that address. Do not write callbacks or pointers
+to executable text, persist a body pointer, or equate presence with a proved
+live-game resume. Normal-speed native CPU play remains the fallback.
+
+The read-only `astra/r63-franchise-autosave` owner calls native `0x16E3F0` only
+after caching a successful native device/name/slot, and respects FPF+0x64.
+Its Coach's Desk return callback does not recognize this new apartment. Wire
+an explicit shared completion callback after native game result/stat commit,
+the MyCareer `settle` call, and full return to the apartment. The MyCareer
+settlement hook uses `0xC5D9E`; leave autosave's `0xC5DA9` boundary to that owner.
+The generic owner wraps the native postgame event callback at `0x4F1994`:
+it executes the full `0xC74E0` first, including native `0xC5DF0` when the game
+completed, then returns from Schedule to the owned apartment. Preserve this
+order. Do not trim away the franchise postgame parent at Team Select's
+REPLACE-Game branch. Abandonment and scene-load failure routes pass bounded
+native input/stack tests; the completed played-game path still needs proof.
+Never invoke save from a per-frame binder or during game resource teardown.
+First-slot selection, failed/cancelled writes, replay suppression and cold
+reload must pass together before calling this integrated. Do not invent an
+address for M1's proposed `request_after_game(manager, fixture_key)` ABI.
+
+Fable's four PNGs and recipes are read-only at the parallel art worktree. They
+have not been assigned a hub-only native resource family here. Do not replace
+shared Crib textures or add unproved texture IDs to the executable. M3 still
+needs that resource/lifecycle proof, calendar/card tabs/depth/purchase/request
+UI, safe weekly transactions and the shared autosave adapter. The remaining
+305 bytes before the 17-byte format tag cannot hold the current M3 design; refactor
+within 8192/4096 or report the measured shortfall, never consume another owner
+or page. No M2_DONE or M3_DONE marker is justified by this delivery.

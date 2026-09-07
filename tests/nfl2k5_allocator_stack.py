@@ -21,7 +21,7 @@ from mod_editor.core import nfl2k5_franchise_2026 as franchise_2026
 from mod_editor.core import nfl2k5_senior_bowl as senior_bowl
 from mod_editor.core import nfl2k5_animation_xbe as animation_xbe
 from mod_editor.core import nfl2k5_guardian_overlay as guardian
-from mod_editor.core import nfl2k5_my_career as my_career
+from mod_editor.core import nfl2k5_my_career_mode as my_career
 from mod_editor.core import nfl2k5_crib_reclaim as crib_reclaim
 from mod_editor.core import nfl2k5_screen_hooks as screen_hooks
 from mod_editor.core import nfl2k5_roster_arena_growth as arena_growth

@@ -100,7 +100,7 @@ class CaveReferenceTests(unittest.TestCase):
         settings = momentum.read_settings(cls.patched)
         if not settings.get("momentum_collisions") or settings.get("momentum_collision_level") != 100:
             raise AssertionError("collision momentum missing from the composed XBE")
-        from mod_editor.core import nfl2k5_my_career as my_career, nfl2k5_crib_reclaim as crib_reclaim
+        from mod_editor.core import nfl2k5_my_career_mode as my_career, nfl2k5_crib_reclaim as crib_reclaim
         if my_career.status(cls.patched) != "applied" or crib_reclaim.status(cls.patched) != "applied":
             raise AssertionError("MyCareer or Crib movie cut missing from the composed XBE")
         from mod_editor.core import nfl2k5_calendar_engine as calendar

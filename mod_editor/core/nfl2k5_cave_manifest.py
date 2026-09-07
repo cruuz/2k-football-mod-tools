@@ -260,7 +260,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     from . import nfl2k5_senior_bowl as senior_bowl
     from . import nfl2k5_animation_xbe as animation_xbe
     from . import nfl2k5_guardian_overlay as guardian
-    from . import nfl2k5_my_career as my_career, nfl2k5_crib_reclaim as crib_reclaim
+    from . import nfl2k5_my_career_mode as my_career, nfl2k5_crib_reclaim as crib_reclaim
     # Includes defensive_try's scale-out stat code/RO requests, atomically
     # installed by the existing defensive_try entry in both owner lists below.
     from . import nfl2k5_screen_hooks as screen_hooks
