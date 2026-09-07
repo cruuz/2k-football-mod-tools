@@ -11218,3 +11218,141 @@ that regeneration: it pins all retail/installed table bytes and rejects any
 other overlapping owner. It does not replace, write or weaken the release
 manifest. Run both gates again after protected wiring/regeneration, then Noah's
 witness list in the report. No release-tag, CI or update file change is requested.
+
+# r64 ESPN 25th Anniversary scenarios and rosters, 2026-09-07
+
+EXPERIMENTAL / UNWITNESSED. The shipped scope is fixed-25 SITU editing and the
+shared historic roster editor. Additional rows are research-only. Do not expose
+an install-more-than-25 switch, claim private rosters per moment, or write a
+profile. Details and authored JSON/CSV formats are in
+`docs/mod_editor/nfl2k5_espn25_authoring.md`; native evidence and the growth
+refusal are in `docs/mod_editor/nfl2k5_espn25_research.md`.
+
+**Rosters host, `mod_editor/gui/roster_editor_panel_qt.py` (protected).** Import
+`Espn25Panel` from `mod_editor.gui.espn25_panel_qt`; create it as an additional
+Rosters subtab captioned `ESPN Anniversary`. Keep the existing live-roster
+editor separate. On project-image selection, load
+`nfl2k5_espn25_scenarios.Catalog.load(source_path)` in the existing background
+worker, then call `panel.set_catalog(catalog)` on the GUI thread. The worker
+returns a detached object with no open handles. Surface a layout refusal using
+the host's usual error handling and disable the tab until a supported source
+loads. Do not discard pending edits during a routine refresh: only replace the
+catalog on explicit project change or successful build/reload, using the host's
+existing dirty/recovery lifecycle.
+
+The panel supplies a complete roster grid, shared-use acknowledgment, CSV
+import/export, scenario JSON load and build-plan save. It uses RosterDocument and
+the existing CSV codec. `panel.plan_ready` emits
+`{"path": absolute_plan_path, "plan": validated_plan_dict}` after an atomic
+save. Connect it to the project/build state as `espn25_plan = payload["path"]`,
+mark the project dirty, and persist/recover that project field. Include
+`panel.pending`, `panel.scenario_json.toPlainText()` and source identity in the
+host's ordinary unsaved-edit recovery snapshot; restore after matching the source
+catalog. Preserve the saved plan file when saving a portable project, and resolve
+its project-relative path on load. Do not put its before-byte preimages in a
+public modpack. Public content is the authoring JSON/CSV.
+
+**Text and Rosters cross-link, `mod_editor/gui/text_rosters_panel.py` (protected).**
+Replace `ESPN_25TH_COMING_SOON_NOTE` with:
+`"Edit Anniversary setup and shared historic rosters in Rosters > ESPN Anniversary. Experimental and unwitnessed. Extra moments can be validated for research; installation is unavailable."`
+Keep the existing four-string editor fixed at 25. If its pending edits also
+change SITU, consolidate/re-author the Anniversary plan against that result or
+report the conflict before starting the build. Never silently rebase a hashed
+plan or let one writer overwrite another's edits.
+
+**BuildPlan and build pass, `mod_editor/core/mod_build.py` (protected).**
+
+- Add `espn25_plan: str = ""` beside `roster_edits`. Empty is disabled. Set `""`
+  in **basic, advanced and experimental** presets; user content is never enabled
+  automatically. Normalize with the existing project-path handling, require a
+  string/path to a bounded readable plan, and reject a bare-XBE build when set.
+- In `available()`, set `"espn25_plan"` when
+  `_core_module("nfl2k5_espn25_scenarios")` is present. Image probing can use
+  `Catalog.load(source)` and report `available` or `foreign`; without a selected
+  plan do not call the plan-dependent `status` function. Bare-XBE status is
+  `"requires image"`.
+- During validation, load the plan exactly once with `read_json`, keep that
+  detached value in the normalized build operation, and call
+  `resolve_plan(Catalog.load(source), loaded_plan)` before copying. Check any
+  other enabled writer for SITU/historic-resource conflicts. Refuse version-18
+  roster arena growth with this plan: the current main-wrapper geometry is
+  pinned. Reclassification of historic ROSTs is not covered by this editor's
+  retail position scheme; refuse a conflicting historic recode rather than
+  interpreting its positions as retail.
+- Defer application until all other resource/pack relocation passes have
+  finished, including music growth and roster passes. On the disposable final
+  image, run the following **after final resource relocation and before output
+  publication**:
+
+  ```python
+  espn = _core_module("nfl2k5_espn25_scenarios")
+  progress("Applying ESPN Anniversary edits", 0, 0)
+  espn_receipt = espn.apply_to_image(target, loaded_espn25_plan)
+  receipt["steps"].append({"step": "espn25_plan", **espn_receipt})
+  receipt["result"]["espn25_plan"] = espn.status(target, loaded_espn25_plan)
+  ```
+
+  Both preflight and final pass resolve resources through XDVDFS/outer tables,
+  not fixed physical offsets. On failure discard the disposable output. The
+  result must be `applied`; every resource receipt includes full before/after
+  hashes and exact changed spans. Never call `build_image` inside the existing
+  build worker, since the worker already owns the disposable copy.
+
+**XBE dispatcher `_apply_all`, kwarg, tuple and four status dictionaries.** No
+new entry or kwarg in `nfl2k5_throw_tuning._apply_all`: this feature has no XBE
+apply function. No adapter in `_selected_space_requests`/`_xbe_space_adapter`,
+no final XBE-owner tuple entry, no `_grown_status_fields` key. Leave the four
+XBE-only status dictionaries at the current `_grown_status_fields` expansion
+sites (inspect, split inspect, apply receipt, projected apply receipt) unchanged.
+Only the image-level Build status/receipt above gains `espn25_plan`. Putting it
+into XBE status would falsely assert resource state from executable bytes.
+`REQUESTS = ()`; no cave, allocator budget fixture, owner union or manifest
+registration is needed. Both existing XBE gates still run forward/reverse and
+v3 scale-out forward/reverse as regressions. Do not regenerate cave reservations.
+
+**Gameplay Patches and Build tab (protected).** Add an informational image-only
+`PATCHES` row keyed `espn25_plan`, with text:
+`"Retail uses 25 moments and shared historic teams. Patch applies your saved Anniversary setup and roster edits. Extra moments remain unavailable. Experimental and unwitnessed."`
+Add `espn25_plan` to `NEEDS_IMAGE`. The page action opens the Rosters Anniversary
+subtab; it is not a bare Boolean executable patch. If the current PATCHES widget
+assumes Boolean options, use the existing content-file control pattern instead
+of passing a path through a Boolean dispatcher. Build `_option` caption:
+`"Use saved ESPN Anniversary edits"` (31 characters), backed by the selected
+plan path and a file picker; checking it requires a validated plan, unchecking
+clears `espn25_plan`. Do not enable it through a preset.
+
+**Allowlist, runtime closure and capability registry (protected).** Add exact
+allowlist lines:
+
+```text
+mod_editor/core/nfl2k5_espn25_scenarios.py
+mod_editor/gui/espn25_panel_qt.py
+data/nfl2k5_espn25_layout.json
+data/nfl2k5_espn25_authoring.schema.json
+docs/mod_editor/nfl2k5_espn25_authoring.md
+docs/mod_editor/nfl2k5_espn25_research.md
+docs/mod_editor/nfl2k5_espn25_capability.json
+```
+
+Add `mod_editor.core.nfl2k5_espn25_scenarios` and
+`mod_editor.gui.espn25_panel_qt` to the runtime-closure import exercise in
+`packaging/check_2k5_mod_studio_runtime.py`. The feature imports the already
+shipped roster records and safe-text encoder modules, the existing `_outer_image` provider
+`tools/nfl2k5_playbook_position_recode.py`, PyQt5 and standard-library modules.
+Verify `data/nfl2k5_espn25_layout.json` is present relative to the installed
+repository root; the authoring schema is documentation, while the layout pins
+are required at runtime. Do not package tests or private evidence helpers.
+
+Insert the single object from
+`docs/mod_editor/nfl2k5_espn25_capability.json` into
+`mod_editor/capabilities/registry.v1.json` in lexicographic ID order. It uses `offline-writer-proved`,
+`runtime.status = not-tested`, and schema-valid commands:
+
+```text
+python3 -m mod_editor.core.nfl2k5_espn25_scenarios build source.iso espn25-plan.json output.iso
+python3 -m mod_editor.core.nfl2k5_espn25_scenarios status source.iso espn25-plan.json
+```
+
+Run the three standalone ESPN suites, both XBE gates, and the registry and
+packaged-runtime checks after integration. Do not describe the currently
+unmounted protected-tab integration as shipped UI until those edits land.

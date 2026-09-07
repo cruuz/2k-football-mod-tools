@@ -1,0 +1,442 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EXPERIMENTAL / UNWITNESSED ESPN Anniversary authoring",
+  "description": "The backend also validates byte budgets, source layout, historic name/year pairs, CSV identity, and fixed string allocations. Research tables cannot be installed.",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "nfl2k5.espn25.edits.v1"
+        },
+        "moments": {
+          "type": "array",
+          "maxItems": 25,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "moment": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 24
+              },
+              "text": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 8191
+                  },
+                  "description": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 8191
+                  },
+                  "objective": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 8191
+                  },
+                  "date": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 8191
+                  }
+                },
+                "required": []
+              },
+              "teams": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "away": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "selector": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 32
+                      },
+                      "year": {
+                        "type": "integer",
+                        "minimum": 1900,
+                        "maximum": 2100
+                      }
+                    },
+                    "required": [
+                      "selector",
+                      "year"
+                    ]
+                  },
+                  "home": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "selector": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 32
+                      },
+                      "year": {
+                        "type": "integer",
+                        "minimum": 1900,
+                        "maximum": 2100
+                      }
+                    },
+                    "required": [
+                      "selector",
+                      "year"
+                    ]
+                  }
+                },
+                "required": []
+              },
+              "setup": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "stadium_index": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 30
+                  },
+                  "human_side": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "possession_side": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "away_score": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99
+                  },
+                  "away_historical_score": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99
+                  },
+                  "home_score": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99
+                  },
+                  "home_historical_score": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99
+                  },
+                  "quarter_index": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 3
+                  },
+                  "ball_yards": {
+                    "type": "number",
+                    "minimum": -49,
+                    "maximum": 49
+                  },
+                  "yards_to_gain": {
+                    "type": "number",
+                    "minimum": 0.01,
+                    "maximum": 99
+                  },
+                  "down": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 4
+                  },
+                  "clock_seconds": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 900
+                  },
+                  "away_timeouts": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 3
+                  },
+                  "home_timeouts": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 3
+                  }
+                },
+                "required": []
+              },
+              "conditions_from_moment": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 24
+              }
+            },
+            "required": [
+              "moment"
+            ]
+          }
+        },
+        "rosters": {
+          "type": "array",
+          "maxItems": 75,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "moment": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 24
+              },
+              "side": {
+                "enum": [
+                  "away",
+                  "home"
+                ]
+              },
+              "shared_resource": {
+                "const": true
+              },
+              "csv": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 262144
+              }
+            },
+            "required": [
+              "moment",
+              "side",
+              "shared_resource",
+              "csv"
+            ]
+          }
+        }
+      },
+      "required": [
+        "schema"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "nfl2k5.espn25.research.v1"
+        },
+        "append": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 7,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "template": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 24
+              },
+              "text": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 8191
+                  },
+                  "description": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 8191
+                  },
+                  "objective": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 8191
+                  },
+                  "date": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 8191
+                  }
+                },
+                "required": [
+                  "title",
+                  "description",
+                  "objective",
+                  "date"
+                ]
+              },
+              "teams": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "away": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "selector": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 32
+                      },
+                      "year": {
+                        "type": "integer",
+                        "minimum": 1900,
+                        "maximum": 2100
+                      }
+                    },
+                    "required": [
+                      "selector",
+                      "year"
+                    ]
+                  },
+                  "home": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "selector": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 32
+                      },
+                      "year": {
+                        "type": "integer",
+                        "minimum": 1900,
+                        "maximum": 2100
+                      }
+                    },
+                    "required": [
+                      "selector",
+                      "year"
+                    ]
+                  }
+                },
+                "required": [
+                  "away",
+                  "home"
+                ]
+              },
+              "setup": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "stadium_index": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 30
+                  },
+                  "human_side": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "possession_side": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "away_score": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99
+                  },
+                  "away_historical_score": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99
+                  },
+                  "home_score": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99
+                  },
+                  "home_historical_score": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99
+                  },
+                  "quarter_index": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 3
+                  },
+                  "ball_yards": {
+                    "type": "number",
+                    "minimum": -49,
+                    "maximum": 49
+                  },
+                  "yards_to_gain": {
+                    "type": "number",
+                    "minimum": 0.01,
+                    "maximum": 99
+                  },
+                  "down": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 4
+                  },
+                  "clock_seconds": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 900
+                  },
+                  "away_timeouts": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 3
+                  },
+                  "home_timeouts": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 3
+                  }
+                },
+                "required": [
+                  "stadium_index",
+                  "human_side",
+                  "possession_side",
+                  "away_score",
+                  "away_historical_score",
+                  "home_score",
+                  "home_historical_score",
+                  "quarter_index",
+                  "ball_yards",
+                  "yards_to_gain",
+                  "down",
+                  "clock_seconds",
+                  "away_timeouts",
+                  "home_timeouts"
+                ]
+              },
+              "conditions_from_moment": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 24
+              }
+            },
+            "required": [
+              "template",
+              "text",
+              "teams",
+              "setup"
+            ]
+          }
+        }
+      },
+      "required": [
+        "schema",
+        "append"
+      ]
+    }
+  ]
+}
