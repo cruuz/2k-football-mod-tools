@@ -678,6 +678,16 @@ class BuildPanel(QWidget):
         self.scorebug_check = self._option(pl, "scorebug", 'Experimental ESPN scorebar',
             r62_ui.SCOREBUG_HELP, needs_image=True,
             badge=NOT_TESTED, details=r62_ui.SCOREBUG_HELP)
+        scorebar_row = QHBoxLayout()
+        self.scorebug_folder_field = QLineEdit()
+        self.scorebug_folder_field.setPlaceholderText("Optional: choose your scorebar folder")
+        self.scorebug_folder_field.setAccessibleName("Scorebar artwork folder")
+        self.scorebug_folder_field.textChanged.connect(self._refresh)
+        scorebar_row.addWidget(self.scorebug_folder_field, 1)
+        self.scorebug_folder_button = QPushButton("Choose folder...")
+        self.scorebug_folder_button.clicked.connect(self._choose_scorebug_folder)
+        scorebar_row.addWidget(self.scorebug_folder_button)
+        pl.addLayout(scorebar_row)
         self.scorebug_runtime_check = self._option(pl, "scorebug_runtime", 'Scorebug effects (diagnostic only)',
             r62_ui.SCOREBUG_RUNTIME_HELP, needs_image=True, badge=NOT_TESTED)
         self.music_policy_check = self._option(pl, "music_policy", "Use jukebox songs in menus", "Retail: menus use the menu bank. Patch: menus use the 59 jukebox recordings in the game's random order. The 7 menu tracks are not included yet. Twelve jukebox tracks are spoken outtakes.", badge=NOT_TESTED)
@@ -1267,6 +1277,7 @@ class BuildPanel(QWidget):
             music_project=(self.music_project_field.text().strip() or None) if self.music_project_check.isChecked() else None,
             music_library=(self.music_library_field.text().strip() or None) if self.music_library_check.isChecked() else None,
             hires_pack=self.hires_pack_check.isChecked(), hires_folder=self.hires_folder_field.text().strip(),
+            scorebug_folder=(self.scorebug_folder_field.text().strip() if self.scorebug_check.isChecked() and not self.scorebug_runtime_check.isChecked() else ""),
             hires_scale=self.hires_scale_combo.currentData(), hires_target=self.hires_target_combo.currentData(),
             guardian_cap=self.guardian_cap_check.isChecked(),
             scorebug=self.scorebug_check.isChecked(), commentary=list(self.commentary),
@@ -1458,6 +1469,9 @@ class BuildPanel(QWidget):
         self._schedule_hires_budget()
         for widget in (self.hires_folder_field, self.hires_folder_button, self.hires_scale_combo, self.hires_target_combo):
             widget.setEnabled(self.hires_pack_check.isEnabled() and self.hires_pack_check.isChecked())
+        scorebar_art = self.scorebug_check.isEnabled() and self.scorebug_check.isChecked() and not self.scorebug_runtime_check.isChecked()
+        for widget in (self.scorebug_folder_field, self.scorebug_folder_button):
+            widget.setEnabled(scorebar_art)
         self.ceiling_spin.setEnabled(self.throw_check.isChecked())
         self.realistic_check.setEnabled(self.throw_check.isChecked())
         self.arc_by_distance_check.setEnabled(self.throw_check.isChecked())
@@ -1508,7 +1522,7 @@ class BuildPanel(QWidget):
         self._momentum_toggled(value > 0)
 
     def _hires_identity(self):
-        return (self.source_field.text().strip(), self.hires_folder_field.text().strip(),
+        return (self.source_field.text().strip(), self.hires_folder_field.text().strip(), self.scorebug_folder_field.text().strip(),
                 self.hires_scale_combo.currentData(), self.hires_target_combo.currentData(),
                 tuple(key for key, check in self._hires_family_checks.items() if check.isChecked()))
 
@@ -1561,6 +1575,11 @@ class BuildPanel(QWidget):
         self.hires_budget_label.setText(reason if result is None else
             f"{result['message']} Modeled change: {result['modeled_delta_bytes']:,} bytes. Memory fit is unproved.")
         self._refresh()
+
+    def _choose_scorebug_folder(self) -> None:
+        folder = QFileDialog.getExistingDirectory(self, "Choose scorebar artwork folder", self.scorebug_folder_field.text().strip() or str(Path.home()))
+        if folder:
+            self.scorebug_folder_field.setText(folder)
 
     def _choose_hires_folder(self) -> None:
         chosen = QFileDialog.getExistingDirectory(self, "Choose Hi-res artwork folder", self.hires_folder_field.text())

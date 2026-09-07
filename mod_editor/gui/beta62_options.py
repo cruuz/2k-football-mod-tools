@@ -2,11 +2,11 @@
 from mod_editor.core import nfl2k5_throw_tuning as tt
 
 SCOREBUG_HELP = (
-    "Retail: Uses the original scoreboard. Patch: Fits one dark ESPN bar inside the safe area, "
-    "with the ESPN mark on the left and white scores, clocks, quarter and down text. "
-    "Team abbreviations stay live and possession stays yellow. Both team blocks stay dark; "
-    "there are no timeout marks. Moves the kick meter up and hides the lineup strip. "
-    "EXPERIMENTAL / UNWITNESSED v9; needs a game check.")
+    "Retail: Uses the original scoreboard. Patch: Installs new repaintable ESPN artwork, "
+    "with a left mark, dark team blocks, larger white scores, a red down cell and a light clock cell. "
+    "Team abbreviations and possession stay live. Choose a scorebar folder to use your own art. "
+    "Team colours and live timeout marks need separate runtime work. "
+    "Moves the kick meter up and hides the lineup strip. EXPERIMENTAL / UNWITNESSED v10.")
 SCOREBUG_RUNTIME_HELP = (
     "Retail: Uses the original team panels and timeout display. Patch: Adds team logos, remaining timeout "
     "marks, score flashes, down refresh and a red play clock below five seconds. The previous version froze "

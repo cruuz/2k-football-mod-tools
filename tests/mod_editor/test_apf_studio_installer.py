@@ -357,7 +357,7 @@ class ReleaseClosureTests(unittest.TestCase):
             runtime,
         )
         self.assertIn("STADIUM_MATERIAL_FINDINGS_SHA256", runtime)
-        self.assertIn("len(registry.capabilities) == 108", runtime)
+        self.assertIn("len(registry.capabilities) == 109", runtime)
 
 
 @unittest.skipIf(

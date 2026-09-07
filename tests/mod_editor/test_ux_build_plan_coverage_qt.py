@@ -45,6 +45,7 @@ NOT_A_CONTROL = {
     "music_shuffle_selection": "the Music page's playlist document, delivered by the shell",
     "calendar_engine": "carried by the combined 128-season franchise option (season_cap)",
     "hires_folder": "the Hi-res folder field of the hi-res pack option",
+    "scorebug_folder": "the scorebar artwork folder field of the ESPN scorebar option",
     "hires_scale": "fixed at 2x by the hi-res pack option",
     "hires_target": "fixed at xemu-64 by the hi-res pack option",
     "source": "the disc / executable field (filled by the open-disc hook or Choose…)",

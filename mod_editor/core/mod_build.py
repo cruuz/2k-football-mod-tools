@@ -255,6 +255,7 @@ class BuildPlan:
     guardian_cap: bool = False  # helmet C resource trial, experimental and unwitnessed
     scorebug: bool = False
     scorebug_runtime: bool = False
+    scorebug_folder: str = ""      # optional repaintable ESPN scorebar artwork folder (docs/scorebug_template layout); blank = shipped art
     music_policy: str = "retail"
     music_unlock: bool = False
     music_userlist: bool = False
@@ -937,6 +938,16 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("hires_scale must be the integer 1 or 2")
     if not isinstance(plan.hires_folder, str) or not isinstance(plan.hires_target, str):
         raise ValueError("Hi-res folder and target must be text")
+    if not isinstance(plan.scorebug_folder, str):
+        raise ValueError("The scorebar artwork folder must be text")
+    plan = replace(plan, scorebug_folder=plan.scorebug_folder.strip())
+    if plan.scorebug_folder:
+        if not plan.scorebug:
+            raise ValueError("A scorebar artwork folder needs the ESPN scorebar option")
+        if plan.scorebug_runtime:
+            raise ValueError("A scorebar artwork folder cannot be combined with the runtime scorebug")
+        if not tt.is_disc_image(plan.source):
+            raise ValueError("A scorebar artwork folder needs a disc image source")
     if not isinstance(plan.hires_families, (tuple, list)) or any(type(x) is not str for x in plan.hires_families):
         raise ValueError("Hi-res families must be a list of family names")
     families = tuple(plan.hires_families)
@@ -981,6 +992,15 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         if not is_image:
             raise ValueError("Crib movie cut needs a disc image")
         tt.crib_reclaim_patch.plan(source)
+    if plan.scorebug and not plan.scorebug_runtime and tt.is_disc_image(source):
+        # beta 62: check every template PNG, its palette, the fixed-span fit and the source identity
+        # before a multi-gigabyte copy; the output-side transaction preflights again on the composed bytes
+        scorebar = _core_module("nfl2k5_scorebug_ingame")
+        if scorebar is not None and hasattr(scorebar, "image_plan"):
+            with open(source, "rb") as stream:
+                scorebar.image_plan(stream.fileno(), os.fstat(stream.fileno()).st_size,
+                                    scorebug_folder=plan.scorebug_folder or None)
+
     if plan.hires_pack:
         if plan.hires_target != "xemu-64":
             raise ValueError("128 MiB support has not been proved")
@@ -1149,7 +1169,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             raise RuntimeError("scorebug layout tool is not available in this build")
         progress("Re-laying the scorebug (mesh, placement, textures)", 0, 0)
         try:
-            rec = sbl.apply_in_place(target)
+            rec = sbl.apply_in_place(target, scorebug_folder=plan.scorebug_folder or None)
         except SystemExit as exc:
             # the layout writer reports refusals as SystemExit (it is also a CLI). A build runs on
             # a Qt worker thread whose runner catches Exception, so a SystemExit there would kill
