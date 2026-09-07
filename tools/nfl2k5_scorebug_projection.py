@@ -165,8 +165,11 @@ class StaticMachine:
             data.extend(unit)
         raise ValueError('unterminated native fixture string')
 
-    def identity(self, *, home='GB', away='OAK', home_code='11', away_code='20'):
+    def identity(self, *, home='GB', away='OAK', home_code=None, away_code=None):
         for context, name, code in ((0xb30864, home, home_code), (0xb30a58, away, away_code)):
+            if code is None:
+                alias = {'OAK': 'LV', 'SD': 'LAC', 'STL': 'LAR'}.get(name.upper(), name.upper())
+                code = r.TEAM_LOGOS.get(alias, {}).get('asset_code', '??')
             self.put(context + 0x10c, self.string(code))
             self.put(context + 0x13c, self.string(name))
 
@@ -336,7 +339,7 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
                     score_values=(0, 0), previous_scores=(0, 0), baseline_v9=False,
                     runtime_textures=None, identity=None, timeouts=(3, 3), scorebug_folder=None, runtime_fonts=(),
                     possession='home', game_seconds=790, play_seconds=12, quarter=1,
-                    ball_yards=50, visibility_state=None):
+                    ball_yards=50, visibility_state=None, down=1, distance_yards=10):
     """Run the actual scene relocator, setup, frame driver and camera activation.
 
     Startup animation selection, optional font IDs, per-frame game predicates
@@ -382,6 +385,8 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
     m.put(m.away, score_values[1])
     m.float(m.game_clock + 16, game_seconds); m.float(m.clock + 16, play_seconds)
     m.put(0xe602c4, quarter)
+    m.put(m.play+4, down)
+    m.float(m.play+0x28, distance_yards*91.4)
     m.put(0xe5fc20 + 0x1c, 0xb30864); m.put(0xe5fc60 + 0x1c, 0xb30a58)
     m.put(0xe60284, 0xe5fc60 if possession == 'home' else 0xe5fc20)
     # FBA40 uses the native field coordinate, positive from midfield toward
@@ -483,12 +488,14 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
     scene = m.get(0xa95528)
     for i in range(m.get(scene + 0x1c)):
         at = m.get(scene + 0x20) + i * 128
-        materials.append(dict(name=m.read_string(m.get(at)), flags=hex(m.get(at + 8)),
+        materials.append(dict(name=m.read_string(m.get(at)), address=hex(at), tint=hex(m.get(at+0x18)), flags=hex(m.get(at + 8)),
                               visible=not bool(m.get(at + 8) & 1), texture=hex(m.get(at + 0x30))))
     visible = {row['name'] for row in materials if row['visible']}
+    aliases = {'zz_ESPN_bug': 'score_buga'} if 'score_buga' in visible else {}
     objects = {}
     for k, indices in r.layout.strips(decoded):
         lo, hi, name = r.layout.SUBMESHES[k]
+        name = aliases.get(name, name)
         if name not in visible:
             continue
         live = set()
@@ -511,7 +518,7 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
                 root=list(root), native_root_matrix=root_matrix,
                 native_camera=list(camera), hud_viewport=viewport,
                 positions=positions, world_positions=world_positions, anchors=anchors,
-                materials=materials, objects=objects, score_transforms=score_transforms,
+                materials=materials, material_aliases=aliases, objects=objects, score_transforms=score_transforms,
                 scorebug_runtime_installed=runtime_textures is not None, private_fonts=private_receipts,
                 possession=possession,
                 static_version='espn-reference-v8' if baseline_v8 else 'espn-reference-v9' if baseline_v9 else r.scene_version(scorebug_folder=scorebug_folder),
@@ -626,7 +633,13 @@ def native_text_draw(capture, *, shadow_offset=None):
         instructions = len(m.visits)
     finally:
         m.uc.hook_del(hook)
-    return dict(bindings=bindings, draws=draws, draw_instructions=instructions)
+    materials = []
+    scene = m.get(0xa95528)
+    for i in range(m.get(scene+0x1c)):
+        at = m.get(scene+0x20)+128*i
+        materials.append(dict(name=m.read_string(m.get(at)), address=hex(at), tint=hex(m.get(at+0x18)),
+            flags=hex(m.get(at+8)), visible=not bool(m.get(at+8)&1), texture=hex(m.get(at+0x30))))
+    return dict(bindings=bindings, draws=draws, draw_instructions=instructions, materials=materials)
 
 
 def native_team_binding_audit(capture):
@@ -783,6 +796,7 @@ def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive
                    for k, v in enumerate(q)])
     visible = {m['name'] for m in geometry['materials'] if m['visible']}
     bound = {m['name']: m['texture'] for m in geometry['materials']}
+    tints = {m['name']: color(int(m.get('tint', '0xffffffff'),16)) for m in geometry['materials']}
     if geometry.get('scorebug_runtime_installed'):
         missing = {bound[name] for name in visible if bound[name] not in material_atlases}
         if missing:
@@ -790,6 +804,7 @@ def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive
     winding = {}
     for k, indices in r.layout.strips(decoded):
         name = r.layout.SUBMESHES[k][2]
+        name = geometry.get('material_aliases', {}).get(name, name)
         if name not in visible:
             continue
         winding[name] = dict(positive=0, negative=0)
@@ -802,7 +817,8 @@ def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive
             area = (b[0]-a[0])*(c[1]-a[1]) - (c[0]-a[0])*(b[1]-a[1])
             if abs(area) > 1e-6:
                 winding[name]['positive' if area > 0 else 'negative'] += 1
-            triangle(material_atlases.get(bound[name], atlas), pts, [uv[v] for v in vs], [colors[v] for v in vs],
+            tinted = [tuple(c*t/255 for c,t in zip(colors[v],tints[name])) for v in vs]
+            triangle(material_atlases.get(bound[name], atlas), pts, [uv[v] for v in vs], tinted,
                      [geometry['world_positions'][v][2] for v in vs], cull=cull_positive)
     for row in geometry['draws']:
         vertices = row['vertices']

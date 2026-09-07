@@ -186,7 +186,7 @@ class ProjectionTests(unittest.TestCase):
         self.capture['machine'].uc.mem_write(0xa957f0+0x30,struct.pack('<3f',2,2,1))
         self.assertEqual(next(d for d in normal['draws'] if d['callback']=='0xfc7d0')['font'],'font4')
 
-    def test_text_contrast_font_selection_and_neutral_subset(self):
+    def test_text_contrast_font_selection_and_reused_home_panel(self):
         words={struct.unpack_from('<I',self.after,r.layout.S1+i*10)[0] for i in range(48,64)}
         self.assertEqual(words,{0xffffffff})
         for row in self.normal['draws']:
@@ -196,10 +196,11 @@ class ProjectionTests(unittest.TestCase):
             self.assertEqual(row['color'],expected)
             self.assertTrue(all(v['color']==expected for v in row['vertices']))
             if callback in ('0xfc050','0xfc070'):self.assertEqual(row['font'],'font8')
-        self.assertEqual(self.normal['objects']['zz_ESPN_bug'][0],self.normal['objects']['zz_ESPN_bug'][2])
+        self.assertNotIn('zz_ESPN_bug',self.normal['objects'])
+        self.assertGreater(self.normal['objects']['score_buga'][2]-self.normal['objects']['score_buga'][0],100)
         self.assertGreater(self.normal['objects']['dscore_buga'][2]-self.normal['objects']['dscore_buga'][0],80)
 
-    def test_all_32_static_team_bindings_ignore_team_identity(self):
+    def test_all_32_static_texture_bindings_share_the_atlas_without_entry_team_lookups(self):
         rows=native_team_binding_audit(self.capture)
         self.assertEqual(len(rows),32)
         self.assertEqual({d['asset_code'] for d in rows},{d['asset_code'] for d in a.TEAM_LOGOS.values()})
@@ -235,7 +236,8 @@ class ProjectionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             target=Path(tmp).resolve()/'native.png'
             proof=render_native(self.after,self.atlas,self.fonts,self.normal,target)
-            self.assertEqual(proof['winding']['zz_ESPN_bug'],dict(positive=0,negative=0))
+            self.assertNotIn('zz_ESPN_bug',proof['winding'])
+            self.assertEqual(proof['winding']['score_buga'],dict(positive=0,negative=2))
             self.assertEqual(proof['winding']['yscore_buga1'],dict(positive=0,negative=30))
             self.assertEqual(proof['winding']['dscore_buga'],dict(positive=0,negative=2))
             self.assertEqual(proof['winding']['cscore_buga'],dict(positive=0,negative=2))

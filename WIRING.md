@@ -10976,3 +10976,62 @@ ASTRA_TEST_TEAMKIT_PROPOSAL=1 python3 tests/mod_editor/test_team_kit_product_int
 After applying the fixture to the real source, run the ordinary integration
 suite without `ASTRA_TEST_TEAMKIT_PROPOSAL`; that flag applies the still-pending
 patch in memory and is only for review on the pre-integration base.
+# r64 scorebar v3, 2026-09-07
+
+Read `ASTRA_SCOREBAR_V3_REPORT.md` and `docs/scorebug_ingame/v3/`. The default
+static scene is now `espn-broadcast-exact-v3`: the down pill and clock cells
+stay requested during plays, and the existing abbreviation callbacks read
+retail team primary colors for the two panels. Static text uses retail
+FONT4/FONT8. **EXPERIMENTAL / UNWITNESSED.** No runtime owner, allocation,
+entry hook, texture lookup or cached team binding was added. The diagnostic
+runtime remains off in every preset. These protected changes are a handoff;
+they have not been applied in this worktree.
+
+| Protected integration point | Exact action |
+| --- | --- |
+| Dispatcher `_apply_all` tuple and keyword | Keep the existing static image step. `mod_build.build` passes `scorebug_folder=plan.scorebug_folder or None` through `nfl2k5_scorebug_layout.apply_in_place`, which delegates to the current static writer and its complete XBE transaction. No new tuple entry or keyword belongs in `_apply_all`; `nfl2k5_scorebar_v3` supplies pinned spans to that writer and is not a separate owner with an `apply` method. Retain the existing `(scorebug_runtime, scorebug_runtime_patch, "scorebug_runtime_patch", "experimental scorebug effects")` tuple for explicit diagnostics only. |
+| Four status dictionaries | Preserve `scorebug_xbe: scorebug_reference.xbe_status(payload/result/after)` in the XBE read, image read, XBE apply and image apply dictionaries, currently around lines 657, 784, 1767 and 2102 in `nfl2k5_throw_tuning.py`. Preserve their separate `scorebug_runtime` fields and the image resource readers. No new status key. Existing static readers recognize v3 and explicit-folder v10; old default v2 and mixed resources require a clean-source rebuild. |
+| `BuildPlan` and presets | Keep `scorebug`, `scorebug_runtime`, and `scorebug_folder`. Basic and Advanced leave `scorebug=False`; Experimental keeps `scorebug=True`. Every preset keeps `scorebug_runtime=False`. Blank folder selects v3; an explicit folder retains the byte-identical v10 contract. No allocator flag, normalization change, extra deferral or final owner pass is needed for static v3. |
+| Availability | Include `nfl2k5_scorebar_v3` with the existing static compiler closure when checking or staging `scorebug`. Retain image-only validation and the Hi-res scorebug conflict. |
+| Gameplay Patches `PATCHES` and `NEEDS_IMAGE` | Keep the existing `("scorebug", "Experimental ESPN scorebar", r62_ui.SCOREBUG_HELP)` row and `scorebug` in `NEEDS_IMAGE`. Replace the shared help in `mod_editor/gui/beta62_options.py` with the exact copy below; both Build and Gameplay already use it. It contains `Retail` and `Patch`. |
+| Build `_option` caption | Keep `Experimental ESPN scorebar` (26 characters), `needs_image=True`, the unwitnessed badge and the optional artwork-folder field. Keep `Scorebug effects (diagnostic only)` off. No new checkbox. |
+| Release allowlist | Add exactly `mod_editor/core/nfl2k5_scorebar_v3.py` to `packaging/release-allowlist.txt`. Existing exact, ingame and resources lines stay. Do not ship witness captures, historical compiler fixtures, native proof tools, assembly evidence or test logs as runtime dependencies. |
+| Runtime closure imports | Add exactly `mod_editor.core.nfl2k5_scorebar_v3` to the module list in `packaging/check_2k5_mod_studio_runtime.py`. The helper imports only `struct`; no Unicorn, Capstone, Pillow, evidence, retail file or research import enters its runtime closure. |
+| Capability registry | No new surface or capability ID. Keep the existing scorebar/template capabilities and their explicit-folder semantics. Update any default-static description from v2/neutral panels to v3/live primary colors and persistent middle. Keep runtime and visual validation unwitnessed; do not promote CPU fixtures to gameplay evidence. |
+| Allocator union | No new `REQUESTS`, budget row or allocation. `tests/nfl2k5_allocator_stack.py` now includes the static writer as an explicit adapter in both owner orders, with replay. Runtime's existing dependency may apply static earlier in the reverse order; all final bytes must still agree. |
+| Manifest | Regenerate protected `data/nfl2k5_cave_reservations.json` only after integrating the final stack, using the existing `python3 tools/nfl2k5_cave_oracle.py manifest` workflow and disposable-disc disk rules. The builder already traces `nfl2k5_scorebug_ingame.apply_xbe`; its source fingerprint scan automatically includes the new helper. No additions to its `all_requests` or owner lists are required. Confirm that the static owner's complete spans and helper source hash appear, as detailed below. |
+
+Exact replacement for shared `SCOREBUG_HELP`:
+
+```python
+SCOREBUG_HELP = (
+    "Retail: Uses the original scoreboard. Patch: Uses each team's primary "
+    "color with readable white scores and yellow possession highlighting. "
+    "The red down box and separate clock cells stay visible through the play "
+    "with live values. The play clock shows -- when unavailable. Ball-on "
+    "and event labels replace the down text while the clock cells stay visible. "
+    "The three timeout marks on each side are decorative. A scorebar folder "
+    "selects your painted template. Moves the kick meter up and hides the "
+    "lineup strip. EXPERIMENTAL / UNWITNESSED; rebuild from a clean source.")
+```
+
+The native visibility replacement is the complete instruction span
+`0xFCA87..0xFCCCC` (end exclusive, 581 bytes), inside the existing FC9C0
+function. Its two helpers start at `0xFCC1F` and `0xFCCA6`. It is a pinned
+function rewrite, not a padding allocation. Keep it whole in the manifest;
+retained byte islands do not create external callers. Record the separate
+29-byte entries `0xFC010..0xFC02D` and `0xFC030..0xFC04D`, the complete
+33-byte `0xFBE30..0xFBE51` formatter, and the existing four-byte material
+name pointer at `0xA95CB0`. Exact old/new bytes are in `receipts.json` and
+the helper. Both gates retain all retail pointer/branch checks, including
+oracle unknowns; their span normalization verifies each full retail and
+patched byte sequence before considering displaced internal branches.
+
+The diagnostic scene retains its v2 geometry, private-font layout, loader
+hooks and panel appendix. Its collapsed former corner mark now uses the
+same `score_buga` name as the shared XBE descriptor. Its HUD pin also changes
+for that name and the shared atlas's white tint texel. All probe resource
+pins were regenerated from retail slices and checked. This is compatibility
+with the shared static layer, not a runtime freeze fix or authorization to
+enable the runtime option. The explicit-folder v10 scene, atlas and XBE
+remain byte-identical.

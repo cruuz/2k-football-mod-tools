@@ -106,9 +106,9 @@ class NativeFixTests(unittest.TestCase):
                 m.close()
 
     def test_native_retail_visibility_requests_separate_down_and_ball_on_and_keep_event_text_clear(self):
-        requests = {'pre_snap': [1,1,0,0,0,0], 'after_play': [1,0,0,0,1,0],
-                    'live': [0,0,0,0,0,0], 'flag': [0,0,0,1,0,0],
-                    'fumble': [0,0,0,0,0,1], 'kickoff': [0,1,1,0,0,0]}
+        requests = {'pre_snap': [1,1,0,0,0,0], 'after_play': [1,1,0,0,1,0],
+                    'live': [1,1,0,0,0,0], 'flag': [1,1,0,1,0,0],
+                    'fumble': [1,1,0,0,0,1], 'kickoff': [1,1,1,0,0,0]}
         for wide in (False, True):
             for mode in (0, 1):
                 for state, wanted in requests.items():
@@ -123,11 +123,14 @@ class NativeFixTests(unittest.TestCase):
                         rows = {d['callback']:d for d in drawn['draws']}
                         if state == 'after_play':
                             self.assertEqual(rows['0xfbeb0']['text'], 'Ball on WAS 35')
-                            self.assertFalse(overlap(box(rows['0xfc7d0']),box(rows['0xfbeb0'])))
+                            # V3 events replace down text, keeping clocks clear.
+                            self.assertTrue(overlap(box(rows['0xfc7d0']),box(rows['0xfbeb0'])))
+                            for clock in ('0xfc090', '0xfc100', '0xfc150', '0xfbe30'):
+                                if rows[clock]['vertices']:
+                                    self.assertFalse(overlap(box(rows[clock]),box(rows['0xfbeb0'])))
                             for score in ('0xfc050','0xfc070'):
                                 self.assertFalse(overlap(box(rows[score]),box(rows['0xfbeb0'])))
-                            # Front event material blocks ordinary dark clock
-                            # glyphs. Verify their native Z, not just a PNG.
+                            # Its front material replaces down in the pill.
                             event_z = max(v['world'][2] for v in rows['0xfbeb0']['vertices'])
                             clock_z = min(v['world'][2] for v in rows['0xfc090']['vertices'])
                             self.assertLess(event_z,clock_z)
@@ -151,7 +154,9 @@ class NativeFixTests(unittest.TestCase):
                     m.run(0xfce70,(0x3c888889,),limit=500000)
                     rows={d['callback']:d for d in projection.native_text_draw(capture)['draws']}
                     if '0xfbeb0' in rows and '0xfc7d0' in rows:
-                        self.assertFalse(overlap(box(rows['0xfbeb0']),box(rows['0xfc7d0'])))
+                        for clock in ('0xfc090','0xfc150','0xfbe30'):
+                            if rows[clock]['vertices']:
+                                self.assertFalse(overlap(box(rows['0xfbeb0']),box(rows[clock])))
                     self.assertEqual(m.get(0xa95be0),binding)
                 self.assertEqual('0xfbeb0' in rows,state=='after_play')
         finally:

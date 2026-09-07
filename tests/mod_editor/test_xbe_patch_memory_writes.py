@@ -89,6 +89,20 @@ class SectionTableTests(unittest.TestCase):
 class PatchWriteTests(unittest.TestCase):
     """Every absolute memory write in every patch's changed code targets writable memory."""
 
+    def test_static_scorebar_v3_composes_and_writes_only_existing_native_state(self):
+        from mod_editor.core import nfl2k5_scorebug_ingame as scorebug, nfl2k5_scorebar_v3 as v3
+        from mod_editor.core.nfl2k5_cave_oracle import absolute_writes
+        self.assertEqual(scorebug.xbe_status(self.patched), 'applied')
+        self.assertEqual(scorebug.apply_xbe(self.patched)[0], self.patched)
+        allowed={0xa95a00,0xa95a70,0xa95ae0,0xa95b50,0xa95bc0,0xa95c30,0xba2f10}
+        for write in absolute_writes(self.patched,[(v3.VISIBILITY_VA,v3.VISIBILITY_VA+len(v3.VISIBILITY_CODE))]):
+            if write['target'] is not None:
+                self.assertIn(int(write['target'],0),allowed)
+                self.assertTrue(write['writable'],write)
+        # The colour destination is an indirect native material +18 field.
+        # The v3 native suite records every actual write and proves its bound.
+        self.assertIn(bytes.fromhex('89443918'),v3.VISIBILITY_CODE)
+
     @classmethod
     def setUpClass(cls) -> None:
         from mod_editor.core import nfl2k5_throw_tuning as tt

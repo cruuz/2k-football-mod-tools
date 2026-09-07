@@ -227,7 +227,23 @@ class CaveReferenceTests(unittest.TestCase):
                 a = 0x2A7E50
             if b - a >= CAVE_MIN:
                 ranges.add((a, b))
-        return sorted((a, b) for a, b in ranges if b - a >= CAVE_MIN)
+        # Scorebar v3 replaces complete pinned live spans. Split adjacent
+        # callbacks at their independently referenced entries, and include
+        # retained byte islands so their displaced branches remain internal.
+        from mod_editor.core import nfl2k5_scorebar_v3 as v3
+        spans=[(va,va+len(old),old,new) for va,old,new,_ in v3.xbe_specs() if va<0x4e0000]
+        corrected=set()
+        for a,b in ranges:
+            cursor=a
+            for lo,hi,old,new in sorted(spans):
+                if a<hi and b>lo:
+                    self.assertEqual(self.retail[lo-BASE:hi-BASE],old)
+                    self.assertEqual(self.patched[lo-BASE:hi-BASE],new)
+                    if cursor<lo: corrected.add((cursor,lo))
+                    corrected.add((lo,hi))
+                    cursor=max(cursor,hi)
+            if cursor<b: corrected.add((cursor,b))
+        return sorted((a,b) for a,b in corrected if b-a>=CAVE_MIN)
 
     def _calendar_noninstruction(self, source, target):
         """A single pinned E9 is the displacement of JG, not a rel32 opcode.
@@ -659,6 +675,24 @@ class ScorebugReferenceReservations(unittest.TestCase):
         for va,old,new,label in scorebug.xbe_specs():
             section=image.section(va,len(new))
             if section is not None and section.name == ".text":
+                from mod_editor.core import nfl2k5_scorebar_v3 as v3
+                if va in (v3.VISIBILITY_VA, 0xfc010, 0xfc030, 0xfbe30):
+                    # Complete live instruction spans, never an allocation in
+                    # padding. Every new branch has a native or owned target.
+                    offset=scorebug.layout.sbpos.va_to_off(retail,va)
+                    self.assertEqual(retail[offset:offset+len(old)],old)
+                    self.assertEqual(len(old),len(new))
+                    insns=list(md.disasm(new,va))
+                    self.assertEqual(sum(i.size for i in insns),len(new))
+                    native={0xabe90,0x30ab0,0x30f20,0x68d70,0x61c50,0x61c60,0xfbb10,0xfbe4e,0x4a400}
+                    starts={i.address for i in md.disasm(v3.VISIBILITY_CODE,v3.VISIBILITY_VA)}
+                    starts.update(i.address for i in insns)
+                    for ins in insns:
+                        if ins.mnemonic.startswith('j') or ins.mnemonic=='call':
+                            self.assertTrue(ins.op_str.startswith('0x'),ins.op_str)
+                            target=int(ins.op_str,16)
+                            self.assertTrue(target in starts or target in native,(hex(ins.address),hex(target)))
+                    continue
                 if va == 0xfc0a6:
                     # This is a replacement of live, guarded quarter cases,
                     # not allocation in padding or a new code cave.

@@ -1,4 +1,4 @@
-"""Broadcast-derived scorebug scene v3. EXPERIMENTAL / UNWITNESSED.
+"""Broadcast-derived scorebug scene v2. EXPERIMENTAL / UNWITNESSED.
 
 The frame comes from the LV/HOU JPEG; static text fit uses Noah's r64 captures.
 This module authors native scene inputs, not a renderer or a gameplay claim.
@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import struct
 
-VERSION = "espn-broadcast-exact-v3"
+VERSION = "espn-broadcast-exact-v2"
 RED_BIAS = -20
 REFERENCE_SHA256 = 'f88b98687827c753882d8c5186eb186095510228b039c6d7a2e9e9d88e725e14'  # Filled from the supplied image by the evidence builder.
 SOURCE_RAILS = (434, 942, 1488, 1054)
@@ -45,7 +45,7 @@ STATIC_STRIP = (-56., STRIP[1], 56., STRIP[3])
 STATIC_PILL = (-52., PILL[1], 52., PILL[3])
 STATIC_CELLS = {"quarter": (264., 301.), "game_clock": (301., 347.),
                 "play_clock": (347., 376.)}
-EVENT_ROW = STATIC_PILL
+EVENT_ROW = (-64., -28., 64., -3.)
 FRAME_COLOR = (37, 38, 37, 255)
 REGIONS = {"frame": (0, 0, 24, 24), "down": (0, 24, 64, 40),
            "strip": (0, 40, 64, 60), "solid": (1, 62, 2, 63)}
@@ -70,11 +70,6 @@ RUNTIME_ANCHORS = {'away_city': (-75, 0, -64), 'away_score': [-67.75, -27.651, -
 RUNTIME_ANCHORS["drop_ball_on"] = (0, -26, -8)
 for _event in ("drop_yellow", "drop_red", "drop_hangtime"):
     RUNTIME_ANCHORS[_event] = (0, -26, -8)
-
-# Events replace the down text in its existing pill; the three clock cells
-# keep their geometry and depth. The diagnostic runtime keeps its v2 scene.
-for _event in ("drop_ball_on", "drop_yellow", "drop_red", "drop_hangtime"):
-    ANCHORS[_event] = (0, 2.289, -8)
 
 
 def atlas(*, revision=3, red_bias=None):
@@ -137,7 +132,6 @@ def atlas(*, revision=3, red_bias=None):
     d.line((47, 41, 47, 58), fill=(65, 66, 61, 255))
     d.rectangle((0, 61, 3, 63), fill=(248, 250, 243, 255))
     d.rectangle((4, 61, 7, 63), fill=FRAME_COLOR)
-    d.rectangle((8, 61, 11, 63), fill=(255, 255, 255, 255))
     return im
 
 
@@ -198,35 +192,14 @@ def mesh(retail, *, runtime=False, revision=2):
         m.pos[v] = m.pos[49][:]
         m.uv_edit[v] = m.uv_edit[49]
     quad(range(64, 80), PILL if runtime else STATIC_PILL, REGIONS["down"], z=-3)
-    # Retail can request events and down together. Static events cover the
-    # down text at the same pill geometry, with clocks clear beneath them.
-    event_row = (-64., -28., 64., -3.) if runtime else EVENT_ROW
-    event_tile = (5.5, 62.5, 5.5, 62.5) if runtime else REGIONS["down"]
-    quad(range(16, 32), event_row, event_tile, z=-7)
+    # Retail has a distinct ball-on element and can request it AND down text.
+    # Its native material gate follows the same slide as its text. A front
+    # lower-row panel occludes the ordinary clock glyphs while the event is up.
+    quad(range(16, 32), EVENT_ROW, (5.5, 62.5, 5.5, 62.5), z=-7)
     for vertices in (range(0, 16), range(32, 48)):
-        quad(vertices, event_row, event_tile, z=-7)
-    # Both scene variants share the pinned XBE material-name descriptor.
-    # The diagnostic runtime keeps this former mark geometrically collapsed.
-    name = "score_buga\0".encode("utf-16le")
-    m.buf[0x3f8c:0x3f8c+len(name)] = name
+        quad(vertices, EVENT_ROW, (5.5, 62.5, 5.5, 62.5), z=-7)
     if not runtime:
-        quad(range(80, 96), EVENT_ROW, event_tile, z=-7)
-        # Zscore is the away panel; the old corner mark becomes the home
-        # panel. Both have their own existing native material record. Their
-        # vertices stay on the root palette, independent of score rotation.
-        quad(range(230, 246), PANELS["away"], (9.5, 62.5, 9.5, 62.5), z=-1)
-        quad(range(262, 274), PANELS["home"], (9.5, 62.5, 9.5, 62.5), z=-1)
-        # This old mark is a list of disjoint triangles separated by doubled
-        # indices, not a continuous quad strip. Supply the other half through
-        # its second triangle (265,266,267); all later triangles stay collapsed.
-        bottom_right = m.pos[265][:]
-        m.pos[265] = m.pos[264][:]
-        m.pos[266] = m.pos[263][:]
-        m.pos[267] = bottom_right
-        # Neutral until the first live abbreviation draw, then native tint.
-        for material in (0x4c0, 0x6c0):
-            struct.pack_into("<I", m.buf, material+0x14, 0xffffffff)
-            struct.pack_into("<I", m.buf, material+0x18, 0xff252625)
+        quad(range(80, 96), EVENT_ROW, (5.5, 62.5, 5.5, 62.5), z=-7)
     if runtime:
         # UV helper units are 1/64; these are the texel centres of 128x32.
         quad(range(230, 246), PANELS["away"], (.25, 1, 63.75, 63), z=-2)
@@ -261,8 +234,9 @@ def xbe_specs(specs):
                for va, slot in slots.items()]
     result += [(va, struct.pack("<I", 4), struct.pack("<I", 3), "live team FONT4")
                for va in (0xa95888, 0xa958b0)]
-    from . import nfl2k5_scorebar_v3
-    result.extend(nfl2k5_scorebar_v3.xbe_specs())
+    for va in (0xfc028, 0xfc048):
+        result.append((va, b"\xe9" + struct.pack("<i", 0x30f50 - va - 5),
+                       b"\xe9" + struct.pack("<i", 0x30f20 - va - 5), "live team capitals"))
     result.append((0xa95b94, struct.pack("<I", 1), struct.pack("<I", 3), "center ball label in its own row"))
     # These literals are used only by FBEB0, the native ball/field-goal label.
     # Keep formatting and branches; replace the line break within its own row.
@@ -273,7 +247,8 @@ def xbe_specs(specs):
     # FBE30 is the scorebug-only play-clock formatter. Reuse the existing
     # UTF-16 format suffix "%02d" by skipping its leading colon, no new string
     # allocation and no change to rounding, urgency or the callback's ABI.
-    # V3 owns the complete FBE30 formatter span, including this operand.
+    result.append((0xfbe43, struct.pack("<I", 0xe6c438), struct.pack("<I", 0xe6c43a),
+                   "play clock without leading colon"))
     # Compact the four existing quarter cases into a common copy/capitalize
     # tail, entirely inside their original instruction span. Only this
     # callback's caller-owned buffer changes; shared 1st/2nd strings and the

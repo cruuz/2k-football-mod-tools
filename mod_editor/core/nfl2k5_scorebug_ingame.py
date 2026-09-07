@@ -24,7 +24,7 @@ import nfl_vc_lz_fill as fill
 import nfl2k5_scorebug_layout as layout
 from . import nfl2k5_bump_strength as bs
 
-VERSION = "espn-broadcast-exact-v2"
+VERSION = "espn-broadcast-exact-v3"
 TEMPLATE_VERSION = "espn-reference-v10"
 _AUTO = object()
 PACK_SIZE = 193710080

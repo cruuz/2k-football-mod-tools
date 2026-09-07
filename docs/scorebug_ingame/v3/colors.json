@@ -1,0 +1,314 @@
+{
+  "first_draw": "Neutral until existing abbreviation callbacks run; no team-entry hooks.",
+  "guards": [
+    {
+      "label": "scorebar visibility and lazy colour span",
+      "sha256": "e563e5240911c235ffb43a773f40a319fe53e9af03aa6b98403f38b2931ef44d",
+      "size": 581,
+      "va": "0xfca87"
+    },
+    {
+      "label": "native team primary accessor",
+      "sha256": "f427d83eb8f774be881e8818e9bf807f3c265c83ccedcfe2005c6e5a3c088ee5",
+      "size": 67,
+      "va": "0x68d70"
+    },
+    {
+      "label": "native asset-code comparison",
+      "sha256": "0e2eee1e67c709089c59e72bd3de909c3c9e22f9de49da13a47d9ed9d64a9de2",
+      "size": 174,
+      "va": "0x30b90"
+    },
+    {
+      "label": "retail team colour table",
+      "sha256": "0713d8ca89333142d86dad04904d4804ea76687301a50df7265b5407302036e6",
+      "size": 2240,
+      "va": "0x4e7fe0"
+    },
+    {
+      "label": "live team contexts",
+      "sha256": "b70dd350e789fd545dc95d77207f46034dab8c79080209a477ba31f0a18a295d",
+      "size": 22,
+      "va": "0x61c50"
+    }
+  ],
+  "menu_evidence": {
+    "end": "0x31f4cf",
+    "primary_call": "0x31f4b0 -> 0x68d70",
+    "primary_store": "0x31f4b6: [material+0x18] = EAX",
+    "retail_bytes": "e87cf4ffff8bf085f65b74318bbc24280100008bcfe8b7a8d4ff83f8018bcf7514e8bb98d4ff5f8946185e5d81c418010000c22400e8f798d4ff8946185f5e5d",
+    "secondary_call": "0x31f4c4 -> 0x68dc0",
+    "sha256": "ad2b8f5424aaff0f49249a893d26f52825cf599beb0a8fef8c098828a729b681",
+    "source": "Native Team Select function 0x31f1d0, also identified in the read-only Ghidra corpus.",
+    "start": "0x31f48f"
+  },
+  "pairs": [
+    {
+      "abbreviation": "BAL",
+      "asset_code": "02",
+      "native_primary_accessor_visited": true,
+      "native_submission": {
+        "argb": "0xff31145c",
+        "code_pins": [
+          {
+            "end": "0x241fb",
+            "sha256": "462b702fa06bbbb2c1f48f60b7417665f94d00297a7936167be33d49bae6645a",
+            "start": "0x241ec"
+          },
+          {
+            "end": "0x23c93",
+            "sha256": "e88770fb550c363af9c1ecfa5af25129a347038e2879b59017008b9ec1504d30",
+            "start": "0x23bf0"
+          }
+        ],
+        "command_bytes": 28,
+        "gpu_executed": false,
+        "header": [
+          "0x41ea4",
+          "0x6",
+          "0x100b80"
+        ],
+        "material_field": "+0x18",
+        "rgba_half_scale": [
+          0.09607844054698944,
+          0.03921568766236305,
+          0.18039216101169586,
+          0.5
+        ],
+        "unchanged_color_second_submission_bytes": 0
+      },
+      "pair": "BAL at JAX",
+      "panel_argb": "0xff31145c",
+      "primary": "0xff31145c",
+      "primary_reads": [
+        "0x4e8020"
+      ],
+      "side": "away",
+      "team": "BAL"
+    },
+    {
+      "abbreviation": "JAX",
+      "asset_code": "12",
+      "native_primary_accessor_visited": true,
+      "native_submission": {
+        "argb": "0xff0c586d",
+        "code_pins": [
+          {
+            "end": "0x241fb",
+            "sha256": "462b702fa06bbbb2c1f48f60b7417665f94d00297a7936167be33d49bae6645a",
+            "start": "0x241ec"
+          },
+          {
+            "end": "0x23c93",
+            "sha256": "e88770fb550c363af9c1ecfa5af25129a347038e2879b59017008b9ec1504d30",
+            "start": "0x23bf0"
+          }
+        ],
+        "command_bytes": 28,
+        "gpu_executed": false,
+        "header": [
+          "0x41ea4",
+          "0x6",
+          "0x100b80"
+        ],
+        "material_field": "+0x18",
+        "rgba_half_scale": [
+          0.02352941408753395,
+          0.1725490242242813,
+          0.2137255072593689,
+          0.5
+        ],
+        "unchanged_color_second_submission_bytes": 0
+      },
+      "pair": "BAL at JAX",
+      "panel_argb": "0xff0c586d",
+      "primary": "0xff0c586d",
+      "primary_reads": [
+        "0x4e8138"
+      ],
+      "side": "home",
+      "team": "JAX"
+    },
+    {
+      "abbreviation": "MIN",
+      "asset_code": "15",
+      "native_primary_accessor_visited": true,
+      "native_submission": {
+        "argb": "0xff422259",
+        "code_pins": [
+          {
+            "end": "0x241fb",
+            "sha256": "462b702fa06bbbb2c1f48f60b7417665f94d00297a7936167be33d49bae6645a",
+            "start": "0x241ec"
+          },
+          {
+            "end": "0x23c93",
+            "sha256": "e88770fb550c363af9c1ecfa5af25129a347038e2879b59017008b9ec1504d30",
+            "start": "0x23bf0"
+          }
+        ],
+        "command_bytes": 28,
+        "gpu_executed": false,
+        "header": [
+          "0x41ea4",
+          "0x6",
+          "0x100b80"
+        ],
+        "material_field": "+0x18",
+        "rgba_half_scale": [
+          0.12941177189350128,
+          0.06666667014360428,
+          0.17450980842113495,
+          0.5
+        ],
+        "unchanged_color_second_submission_bytes": 0
+      },
+      "pair": "MIN at NYJ",
+      "panel_argb": "0xff422259",
+      "primary": "0xff422259",
+      "primary_reads": [
+        "0x4e818c"
+      ],
+      "side": "away",
+      "team": "MIN"
+    },
+    {
+      "abbreviation": "NYJ",
+      "asset_code": "19",
+      "native_primary_accessor_visited": true,
+      "native_submission": {
+        "argb": "0xff253f36",
+        "code_pins": [
+          {
+            "end": "0x241fb",
+            "sha256": "462b702fa06bbbb2c1f48f60b7417665f94d00297a7936167be33d49bae6645a",
+            "start": "0x241ec"
+          },
+          {
+            "end": "0x23c93",
+            "sha256": "e88770fb550c363af9c1ecfa5af25129a347038e2879b59017008b9ec1504d30",
+            "start": "0x23bf0"
+          }
+        ],
+        "command_bytes": 28,
+        "gpu_executed": false,
+        "header": [
+          "0x41ea4",
+          "0x6",
+          "0x100b80"
+        ],
+        "material_field": "+0x18",
+        "rgba_half_scale": [
+          0.07254902273416519,
+          0.12352941930294037,
+          0.10588236153125763,
+          0.5
+        ],
+        "unchanged_color_second_submission_bytes": 0
+      },
+      "pair": "MIN at NYJ",
+      "panel_argb": "0xff253f36",
+      "primary": "0xff253f36",
+      "primary_reads": [
+        "0x4e81fc"
+      ],
+      "side": "home",
+      "team": "NYJ"
+    },
+    {
+      "abbreviation": "WAS",
+      "asset_code": "29",
+      "native_primary_accessor_visited": true,
+      "native_submission": {
+        "argb": "0xff3b1821",
+        "code_pins": [
+          {
+            "end": "0x241fb",
+            "sha256": "462b702fa06bbbb2c1f48f60b7417665f94d00297a7936167be33d49bae6645a",
+            "start": "0x241ec"
+          },
+          {
+            "end": "0x23c93",
+            "sha256": "e88770fb550c363af9c1ecfa5af25129a347038e2879b59017008b9ec1504d30",
+            "start": "0x23bf0"
+          }
+        ],
+        "command_bytes": 28,
+        "gpu_executed": false,
+        "header": [
+          "0x41ea4",
+          "0x6",
+          "0x100b80"
+        ],
+        "material_field": "+0x18",
+        "rgba_half_scale": [
+          0.11568628251552582,
+          0.0470588281750679,
+          0.06470588594675064,
+          0.5
+        ],
+        "unchanged_color_second_submission_bytes": 0
+      },
+      "pair": "WAS at NYG",
+      "panel_argb": "0xff3b1821",
+      "primary": "0xff86364a",
+      "primary_reads": [
+        "0x4e8314"
+      ],
+      "side": "away",
+      "team": "WAS"
+    },
+    {
+      "abbreviation": "NYG",
+      "asset_code": "18",
+      "native_primary_accessor_visited": true,
+      "native_submission": {
+        "argb": "0xff191c5c",
+        "code_pins": [
+          {
+            "end": "0x241fb",
+            "sha256": "462b702fa06bbbb2c1f48f60b7417665f94d00297a7936167be33d49bae6645a",
+            "start": "0x241ec"
+          },
+          {
+            "end": "0x23c93",
+            "sha256": "e88770fb550c363af9c1ecfa5af25129a347038e2879b59017008b9ec1504d30",
+            "start": "0x23bf0"
+          }
+        ],
+        "command_bytes": 28,
+        "gpu_executed": false,
+        "header": [
+          "0x41ea4",
+          "0x6",
+          "0x100b80"
+        ],
+        "material_field": "+0x18",
+        "rgba_half_scale": [
+          0.04901961237192154,
+          0.05490196496248245,
+          0.18039216101169586,
+          0.5
+        ],
+        "unchanged_color_second_submission_bytes": 0
+      },
+      "pair": "WAS at NYG",
+      "panel_argb": "0xff191c5c",
+      "primary": "0xff191c5c",
+      "primary_reads": [
+        "0x4e81e0"
+      ],
+      "side": "home",
+      "team": "NYG"
+    }
+  ],
+  "schema": "nfl2k5_scorebar_v3_colors/v1",
+  "scope": "Native CPU table reads and material constant upload proved; GPU shader result modeled.",
+  "table": {
+    "end": "0x4e88a0",
+    "primary_offset": 8,
+    "rows": 80,
+    "start": "0x4e7fe0",
+    "stride": 28
+  }
+}

@@ -27,6 +27,7 @@ import nfl2k5_scorebug_projection as projection
 
 FIXTURE = ROOT / 'tests/fixtures/nfl2k5_scorebug_exact_v1.py'
 FIXTURE_SHA = '6489bdd9a06112180219bb6382bf9c570f2850ee7c7d847fcc38f2f653e0074c'
+V2_FIXTURE_SHA = '7626ade9cf27019e86e13ee8bf5c69b74851620846edfcab0b5461c1d0d6faba'
 WITNESSES = {
     'pre_snap': dict(file='ksnip_20260907-140247.png', size=[1128, 665],
         sha256='5624a4f2c460869ab16ae267976b0fe21ee9f8eb900abac00f2e9498d32ab63c', offset=[85, -25]),
@@ -38,12 +39,16 @@ WITNESSES = {
 
 
 @contextmanager
-def historical():
-    """Hash-pinned authored v1 compiler, independent of Git history or scratch."""
-    source = FIXTURE.read_bytes()
-    if hashlib.sha256(source).hexdigest() != FIXTURE_SHA:
-        raise ValueError('foreign v1 negative-control compiler')
-    spec = importlib.util.spec_from_file_location('mod_editor.core._scorebug_v1_control', FIXTURE)
+def historical(version='v1'):
+    """Hash-pinned historical compiler, independent of Git history or scratch."""
+    fixture = FIXTURE if version == 'v1' else ROOT/'tests/fixtures/nfl2k5_scorebug_exact_v2.py'
+    if version not in ('v1', 'v2'):
+        raise ValueError('unknown historical scorebar')
+    wanted = FIXTURE_SHA if version == 'v1' else V2_FIXTURE_SHA
+    source = fixture.read_bytes()
+    if hashlib.sha256(source).hexdigest() != wanted:
+        raise ValueError('foreign '+version+' negative-control compiler')
+    spec = importlib.util.spec_from_file_location('mod_editor.core._scorebug_'+version+'_control', fixture)
     old = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(old)
     with ExitStack() as stack:

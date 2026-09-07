@@ -65,11 +65,14 @@ def compose(payload, *, reverse=False, scaleout=False, extra_requests=()):
     payload, _ = ps.apply(payload)
     payload, _ = fp.apply(payload)
     payload, _ = pr.apply(payload)
-    payload, _ = scene.apply_xbe(payload)
+    class StaticScorebar:
+        OWNER = 'nfl2k5_scorebug_ingame'
+        apply = staticmethod(scene.apply_xbe)
+        status = staticmethod(scene.xbe_status)
     payload, policy_receipt = policy.apply(payload, music_unlock=True, music_userlist=True)
     payload, _ = space.apply(payload, REQUESTS + tuple(extra_requests), scaleout=scaleout)
     # One apply/status transaction owns both try rules and the stat extension.
-    owners = ((camera, {}), (defensive_try, {}), (kickoff, {}), (runtime, {}),
+    owners = ((StaticScorebar, {}), (camera, {}), (defensive_try, {}), (kickoff, {}), (runtime, {}),
               (momentum, dict(momentum=100, momentum_contact=True, momentum_collisions=True, momentum_collision_level=100)), (zone_drop, {}),
               (music, dict(song_records=SONGS)), (roster_storage, {}), (coverage, {}), (scramble, {}), (playlist, {}),
               (practice_screen, {}), (abilities, dict(abilities_off_week=7)), (qb_spy, {}), (calendar, {}), (read_option, {}), (franchise_2026, {}), (senior_bowl, {}), (animation_xbe, {}), (guardian, {}),

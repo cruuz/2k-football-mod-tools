@@ -1,0 +1,1122 @@
+{
+  "native_refit_verified": true,
+  "new_callback_edits": [
+    {
+      "label": "persistent middle and lazy panel colour in native visibility span",
+      "patched": "8b35b402e60039fe0f8482010000538b1dec02e60039bb60010000751639bb98000000740a8d839000000039f8750431d2eb05ba01000000a18002e60039f88b0db802e6008915505ba9000f84860000008b400c83c004747e8b400439f874778b4004c1e80883e03f83f80a753783f90e756439fa7560d905345ca900c705e05aa90001000000d81d245ca900dfe0f6c4447b06893de05aa900893dc05ba900e9dd00000083f80c752d83fe03742889c883e80c740348751e39fa751a6a0159890d102fba00893de05aa900890dc05ba900e9ab000000d905545ba9008b15fc02e600d81d445ba900893de05aa900dfe0f6c4447a4684f67842d905345ca900d81d245ca900dfe0f6c4447a2f83fe04752a83f90e7425393d142fba00be010000007510397c240c741783f90c740583f90d750d8935c05ba900eb0bbe01000000893dc05ba90083f90e7521d905545ba900d81d445ba900dfe0f6c4447a0e39bb980100008935305ca9007506893d305ca900e891f2faff85c074068935c05ba9006a0158a3005aa900a3705aa9005b5f5e83c408c20400535789d789c385c074258b903c01000085d2741b89f1e8763ef3ff89d983bb0c01000000750231c9e824c1f6ffeb0a66c7060000b8252625ffa980808000751089c181c10f0f0f00f7c180808000741489c125fefefe00d1e881e1f0f0f000c1e90429c80d000000ff8b0d2855a90085c9741183791c0b750b8b492085c97404894439185f5bc3a19402e60085c0740bf64018067505e956eeffff58c7062d002d0066c746040000e982f1ffff",
+      "retail": "8b35b402e6003bf70f842f020000538b1dec02e60039bb60010000751639bb98000000740a8d83900000003bc7750433d2eb05ba01000000a18002e6003bc78b0db802e6008915505ba9000f84050100008b400c83c0040f84f90000008b40043bc70f84ee0000008b4004c1e80883e03f83f80a757883f90e0f85d70000003bd70f85cf000000d905345ca900c705e05aa90001000000d81d245ca900dfe0f6c4447b06893de05aa900d905545ba900893d005aa900d81d445ba900dfe0f6c4447a168b159402e600f6421806c705705aa900010000007406893d705aa9005b893dc05ba9005f5e83c408c2040083f80c756383fe03745e8bc183e80c74034875543bd77550d905545ba900b901000000d81d445ba900890d102fba00893de05aa900890d005aa900dfe0f6c4447a11a19402e600f6401806890d705aa9007406893d705aa9005b5f890dc05ba9005e83c408c20400d905545ba9008b15fc02e600d81d445ba900893de05aa900dfe0f6c4447a4c84f67848d905345ca900d81d245ca900dfe0f6c4447a3583fe04753083f90e742b393d142fba00be010000008935005aa9007510397c240c741d83f90c740583f90d75138935c05ba900eb11893d005aa900be01000000893dc05ba90083f90e7521d905545ba900d81d445ba900dfe0f6c4447a0e39bb980100008935305ca9007506893d305ca900d905545ba900d81d445ba900dfe0f6c4447a1684f678128b0d9402e600f64118068935705aa9007406893d705aa900e8d7f1faff85c074068935c05ba9005b5f5e83c408c20400",
+      "va": "0xfca87"
+    },
+    {
+      "label": "live home name and panel colour",
+      "patched": "568bf1e8385cf6ffba00030000e8fd0b00008bce5ee9f64ef3ff909090",
+      "retail": "568bf1e8385cf6ff8b903c0100008bcee88b4af3ff8bce5ee9234ff3ff",
+      "va": "0xfc010"
+    },
+    {
+      "label": "live away name and panel colour",
+      "patched": "568bf1e8285cf6ffba00050000e8dd0b00008bce5ee9d64ef3ff909090",
+      "retail": "568bf1e8285cf6ff8b903c0100008bcee86b4af3ff8bce5ee9034ff3ff",
+      "va": "0xfc030"
+    },
+    {
+      "label": "home panel uses the existing score_buga material name",
+      "patched": "e8c6e600",
+      "retail": "80c7e600",
+      "va": "0xa95cb0"
+    },
+    {
+      "label": "live play clock or -- without changing its cell",
+      "patched": "51568bf1e86d0e0000894424048d44240450ba3ac4e6008bcee8b2e5f4ff5e59c3",
+      "retail": "51568bf1e8d7fcffff894424048d44240450ba38c4e6008bcee8b2e5f4ff5e59c3",
+      "va": "0xfbe30"
+    }
+  ],
+  "pixel_match_claimed": false,
+  "read_only_disc_preflight": {
+    "receipt": {
+      "animation": "retail score rotation and native text visibility; cells remain inside the frame",
+      "experimental": true,
+      "layout": "espn-broadcast-exact-v3",
+      "resources": [
+        {
+          "absolute": 1741675264,
+          "filled_bytes": 4785,
+          "resource": "score_bug",
+          "sha256_after": "7b072c04b9d35f59a5645ce196cd209238ff5426d657e5bae43de6e26a5f7a35",
+          "sha256_before": "afa1481f7ce356c2cfb95cbeccebc18af183f6aa4ba13cd2981247a3619a8476",
+          "span_size": 4832,
+          "state_before": "retail",
+          "version": "espn-broadcast-exact-v3",
+          "wrapper_identical": true
+        },
+        {
+          "absolute": 1741540432,
+          "filled_bytes": 2389,
+          "palette_attempts": [
+            {
+              "colors": 98,
+              "encoder": "greedy",
+              "result": "fit"
+            }
+          ],
+          "resource": "score_buga",
+          "sha256_after": "0bdaba82bfa2fc9a2862994ad39f4620a96fcd23f8800773a1a7b622765ee039",
+          "sha256_before": "b17fe5ddc714bc2f508e38cbff5143d86828e9bca4748011dd54200624583b21",
+          "span_size": 2432,
+          "state_before": "retail",
+          "version": "espn-broadcast-exact-v3",
+          "wrapper_identical": true
+        }
+      ],
+      "root": [
+        320.0,
+        408.0
+      ],
+      "runtime_team_logos": false,
+      "state_before": "retail",
+      "team_material_hook": {
+        "away_parent": "away_score1",
+        "away_parent_index": 23,
+        "future_away_material": "zscore_buga",
+        "future_home_material": "hscore_buga",
+        "home_parent": "home_score1",
+        "home_parent_index": 26,
+        "runtime_bound": false,
+        "static_material": "zscore_buga"
+      },
+      "textures": [
+        "score_buga"
+      ],
+      "timeout_dimming": false,
+      "under_5_color": false,
+      "witnessed": false,
+      "wrapper_identical": true,
+      "xbe": {
+        "boot_logo": {
+          "changed_byte_count": 684,
+          "logo_va": "0x10cd0",
+          "size_of_headers": "0xf82",
+          "status": "applied"
+        },
+        "edits": [
+          {
+            "after": "0000a0430000cc43",
+            "before": "73f7d373e3f7430f",
+            "label": "reserved position floats",
+            "size": 8,
+            "va": "0x10a40"
+          },
+          {
+            "after": "d805400a0100",
+            "before": "d805586d4e00",
+            "label": "root x",
+            "size": 6,
+            "va": "0xfcffc"
+          },
+          {
+            "after": "d805400a0100",
+            "before": "d80568694f00",
+            "label": "root x",
+            "size": 6,
+            "va": "0xfd07b"
+          },
+          {
+            "after": "d805400a0100",
+            "before": "d805586d4e00",
+            "label": "root x",
+            "size": 6,
+            "va": "0xfd0eb"
+          },
+          {
+            "after": "d805440a0100",
+            "before": "d8051c0f4f00",
+            "label": "root y",
+            "size": 6,
+            "va": "0xfd15e"
+          },
+          {
+            "after": "9090909090",
+            "before": "e8b5fcffff",
+            "label": "persistent bug",
+            "size": 5,
+            "va": "0xfc9f6"
+          },
+          {
+            "after": "9090909090",
+            "before": "e8e4f7ffff",
+            "label": "persistent bug",
+            "size": 5,
+            "va": "0xfcec7"
+          },
+          {
+            "after": "9090909090",
+            "before": "e800c80500",
+            "label": "persistent bug",
+            "size": 5,
+            "va": "0x9feab"
+          },
+          {
+            "after": "9090909090",
+            "before": "e8d6ffffff",
+            "label": "persistent bug",
+            "size": 5,
+            "va": "0xfc6d5"
+          },
+          {
+            "after": "ffffffff",
+            "before": "c0c0c0ff",
+            "label": "text contrast",
+            "size": 4,
+            "va": "0xa95894"
+          },
+          {
+            "after": "ffffffff",
+            "before": "c0c0c0ff",
+            "label": "text contrast",
+            "size": 4,
+            "va": "0xa958bc"
+          },
+          {
+            "after": "ffffffff",
+            "before": "000000ff",
+            "label": "text contrast",
+            "size": 4,
+            "va": "0xa95958"
+          },
+          {
+            "after": "ffffffff",
+            "before": "000000ff",
+            "label": "text contrast",
+            "size": 4,
+            "va": "0xa95990"
+          },
+          {
+            "after": "ffffffff",
+            "before": "000000ff",
+            "label": "text contrast",
+            "size": 4,
+            "va": "0xa959d8"
+          },
+          {
+            "after": "ffffffff",
+            "before": "c0c0c0ff",
+            "label": "text contrast",
+            "size": 4,
+            "va": "0xa95a48"
+          },
+          {
+            "after": "222624ff",
+            "before": "c0c0c0ff",
+            "label": "text contrast",
+            "size": 4,
+            "va": "0xa9590c"
+          },
+          {
+            "after": "222624ff",
+            "before": "c0c0c0ff",
+            "label": "text contrast",
+            "size": 4,
+            "va": "0xa95910"
+          },
+          {
+            "after": "222624ff",
+            "before": "c0c0c0ff",
+            "label": "text contrast",
+            "size": 4,
+            "va": "0xa95934"
+          },
+          {
+            "after": "222624ff",
+            "before": "c0c0c0ff",
+            "label": "text contrast",
+            "size": 4,
+            "va": "0xa95938"
+          },
+          {
+            "after": "222624ff",
+            "before": "000000ff",
+            "label": "text contrast",
+            "size": 4,
+            "va": "0xa958e4"
+          },
+          {
+            "after": "222624ff",
+            "before": "000000ff",
+            "label": "text contrast",
+            "size": 4,
+            "va": "0xa958e8"
+          },
+          {
+            "after": "ffffffff",
+            "before": "000000ff",
+            "label": "text contrast",
+            "size": 4,
+            "va": "0xa95ab8"
+          },
+          {
+            "after": "ffffffff",
+            "before": "000000ff",
+            "label": "text contrast",
+            "size": 4,
+            "va": "0xa95b28"
+          },
+          {
+            "after": "ffffffff",
+            "before": "c0c0c0ff",
+            "label": "text contrast",
+            "size": 4,
+            "va": "0xa95b98"
+          },
+          {
+            "after": "ffffffff",
+            "before": "c0c0c0ff",
+            "label": "text contrast",
+            "size": 4,
+            "va": "0xa95c08"
+          },
+          {
+            "after": "000000000000000000000000",
+            "before": "00000000000080bf00000000",
+            "label": "drop_down direction",
+            "size": 12,
+            "va": "0xa959e0"
+          },
+          {
+            "after": "000000000000000000000000",
+            "before": "00000000000080bf00000000",
+            "label": "drop_clock direction",
+            "size": 12,
+            "va": "0xa95a50"
+          },
+          {
+            "after": "000000000000000000000000",
+            "before": "00000000000080bf00000000",
+            "label": "drop_hangtime direction",
+            "size": 12,
+            "va": "0xa95ac0"
+          },
+          {
+            "after": "000000000000000000000000",
+            "before": "00000000000080bf00000000",
+            "label": "drop_yellow direction",
+            "size": 12,
+            "va": "0xa95b30"
+          },
+          {
+            "after": "000000000000000000000000",
+            "before": "00000000000080bf00000000",
+            "label": "drop_ball_on direction",
+            "size": 12,
+            "va": "0xa95ba0"
+          },
+          {
+            "after": "000000000000000000000000",
+            "before": "00000000000080bf00000000",
+            "label": "drop_red direction",
+            "size": 12,
+            "va": "0xa95c10"
+          },
+          {
+            "after": "cdcc4c3e",
+            "before": "0000003f",
+            "label": "down slide duration",
+            "size": 4,
+            "va": "0xa959f0"
+          },
+          {
+            "after": "e8c6e600",
+            "before": "68c7e600",
+            "label": "literal ESPN mark atlas",
+            "size": 4,
+            "va": "0xa95cac"
+          },
+          {
+            "after": "e8c6e600",
+            "before": "68c7e600",
+            "label": "literal ESPN mark atlas",
+            "size": 4,
+            "va": "0xa95cb4"
+          },
+          {
+            "after": "40ffffff",
+            "before": "00c0c0ff",
+            "label": "live possession highlight",
+            "size": 4,
+            "va": "0xa95898"
+          },
+          {
+            "after": "40ffffff",
+            "before": "00c0c0ff",
+            "label": "live possession highlight",
+            "size": 4,
+            "va": "0xa958c0"
+          },
+          {
+            "after": "03000000",
+            "before": "00000000",
+            "label": "scorebug FONT slot",
+            "size": 4,
+            "va": "0xa958d8"
+          },
+          {
+            "after": "03000000",
+            "before": "00000000",
+            "label": "scorebug FONT slot",
+            "size": 4,
+            "va": "0xa95900"
+          },
+          {
+            "after": "03000000",
+            "before": "00000000",
+            "label": "scorebug FONT slot",
+            "size": 4,
+            "va": "0xa95928"
+          },
+          {
+            "after": "07000000",
+            "before": "00000000",
+            "label": "scorebug FONT slot",
+            "size": 4,
+            "va": "0xa95950"
+          },
+          {
+            "after": "07000000",
+            "before": "00000000",
+            "label": "scorebug FONT slot",
+            "size": 4,
+            "va": "0xa95988"
+          },
+          {
+            "after": "03000000",
+            "before": "00000000",
+            "label": "scorebug FONT slot",
+            "size": 4,
+            "va": "0xa959d0"
+          },
+          {
+            "after": "03000000",
+            "before": "00000000",
+            "label": "scorebug FONT slot",
+            "size": 4,
+            "va": "0xa95a40"
+          },
+          {
+            "after": "03000000",
+            "before": "00000000",
+            "label": "scorebug FONT slot",
+            "size": 4,
+            "va": "0xa95ab0"
+          },
+          {
+            "after": "03000000",
+            "before": "00000000",
+            "label": "scorebug FONT slot",
+            "size": 4,
+            "va": "0xa95b20"
+          },
+          {
+            "after": "03000000",
+            "before": "00000000",
+            "label": "scorebug FONT slot",
+            "size": 4,
+            "va": "0xa95b90"
+          },
+          {
+            "after": "03000000",
+            "before": "00000000",
+            "label": "scorebug FONT slot",
+            "size": 4,
+            "va": "0xa95c00"
+          },
+          {
+            "after": "03000000",
+            "before": "04000000",
+            "label": "live team FONT4",
+            "size": 4,
+            "va": "0xa95888"
+          },
+          {
+            "after": "03000000",
+            "before": "04000000",
+            "label": "live team FONT4",
+            "size": 4,
+            "va": "0xa958b0"
+          },
+          {
+            "after": "8b35b402e60039fe0f8482010000538b1dec02e60039bb60010000751639bb98000000740a8d839000000039f8750431d2eb05ba01000000a18002e60039f88b0db802e6008915505ba9000f84860000008b400c83c004747e8b400439f874778b4004c1e80883e03f83f80a753783f90e756439fa7560d905345ca900c705e05aa90001000000d81d245ca900dfe0f6c4447b06893de05aa900893dc05ba900e9dd00000083f80c752d83fe03742889c883e80c740348751e39fa751a6a0159890d102fba00893de05aa900890dc05ba900e9ab000000d905545ba9008b15fc02e600d81d445ba900893de05aa900dfe0f6c4447a4684f67842d905345ca900d81d245ca900dfe0f6c4447a2f83fe04752a83f90e7425393d142fba00be010000007510397c240c741783f90c740583f90d750d8935c05ba900eb0bbe01000000893dc05ba90083f90e7521d905545ba900d81d445ba900dfe0f6c4447a0e39bb980100008935305ca9007506893d305ca900e891f2faff85c074068935c05ba9006a0158a3005aa900a3705aa9005b5f5e83c408c20400535789d789c385c074258b903c01000085d2741b89f1e8763ef3ff89d983bb0c01000000750231c9e824c1f6ffeb0a66c7060000b8252625ffa980808000751089c181c10f0f0f00f7c180808000741489c125fefefe00d1e881e1f0f0f000c1e90429c80d000000ff8b0d2855a90085c9741183791c0b750b8b492085c97404894439185f5bc3a19402e60085c0740bf64018067505e956eeffff58c7062d002d0066c746040000e982f1ffff",
+            "before": "8b35b402e6003bf70f842f020000538b1dec02e60039bb60010000751639bb98000000740a8d83900000003bc7750433d2eb05ba01000000a18002e6003bc78b0db802e6008915505ba9000f84050100008b400c83c0040f84f90000008b40043bc70f84ee0000008b4004c1e80883e03f83f80a757883f90e0f85d70000003bd70f85cf000000d905345ca900c705e05aa90001000000d81d245ca900dfe0f6c4447b06893de05aa900d905545ba900893d005aa900d81d445ba900dfe0f6c4447a168b159402e600f6421806c705705aa900010000007406893d705aa9005b893dc05ba9005f5e83c408c2040083f80c756383fe03745e8bc183e80c74034875543bd77550d905545ba900b901000000d81d445ba900890d102fba00893de05aa900890d005aa900dfe0f6c4447a11a19402e600f6401806890d705aa9007406893d705aa9005b5f890dc05ba9005e83c408c20400d905545ba9008b15fc02e600d81d445ba900893de05aa900dfe0f6c4447a4c84f67848d905345ca900d81d245ca900dfe0f6c4447a3583fe04753083f90e742b393d142fba00be010000008935005aa9007510397c240c741d83f90c740583f90d75138935c05ba900eb11893d005aa900be01000000893dc05ba90083f90e7521d905545ba900d81d445ba900dfe0f6c4447a0e39bb980100008935305ca9007506893d305ca900d905545ba900d81d445ba900dfe0f6c4447a1684f678128b0d9402e600f64118068935705aa9007406893d705aa900e8d7f1faff85c074068935c05ba9005b5f5e83c408c20400",
+            "label": "persistent middle and lazy panel colour in native visibility span",
+            "size": 581,
+            "va": "0xfca87"
+          },
+          {
+            "after": "568bf1e8385cf6ffba00030000e8fd0b00008bce5ee9f64ef3ff909090",
+            "before": "568bf1e8385cf6ff8b903c0100008bcee88b4af3ff8bce5ee9234ff3ff",
+            "label": "live home name and panel colour",
+            "size": 29,
+            "va": "0xfc010"
+          },
+          {
+            "after": "568bf1e8285cf6ffba00050000e8dd0b00008bce5ee9d64ef3ff909090",
+            "before": "568bf1e8285cf6ff8b903c0100008bcee86b4af3ff8bce5ee9034ff3ff",
+            "label": "live away name and panel colour",
+            "size": 29,
+            "va": "0xfc030"
+          },
+          {
+            "after": "e8c6e600",
+            "before": "80c7e600",
+            "label": "home panel uses the existing score_buga material name",
+            "size": 4,
+            "va": "0xa95cb0"
+          },
+          {
+            "after": "51568bf1e86d0e0000894424048d44240450ba3ac4e6008bcee8b2e5f4ff5e59c3",
+            "before": "51568bf1e8d7fcffff894424048d44240450ba38c4e6008bcee8b2e5f4ff5e59c3",
+            "label": "live play clock or -- without changing its cell",
+            "size": 33,
+            "va": "0xfbe30"
+          },
+          {
+            "after": "03000000",
+            "before": "01000000",
+            "label": "center ball label in its own row",
+            "size": 4,
+            "va": "0xa95b94"
+          },
+          {
+            "after": "420061006c006c0020006100740020004d00690064006600690065006c0064000000",
+            "before": "420061006c006c002000610074000a004d00690064006600690065006c0064000000",
+            "label": "single-line ball label",
+            "size": 34,
+            "va": "0xe6c484"
+          },
+          {
+            "after": "420061006c006c0020006f006e002000250073002000250064000000",
+            "before": "420061006c006c0020006f006e000a00250073002000250064000000",
+            "label": "single-line ball label",
+            "size": 28,
+            "va": "0xe6c4a8"
+          },
+          {
+            "after": "2500640020005900610072006400200041007400740065006d00700074000000",
+            "before": "25006400200059006100720064000a0041007400740065006d00700074000000",
+            "label": "single-line ball label",
+            "size": 32,
+            "va": "0xe6c4c4"
+          },
+          {
+            "after": "bae4c3e600eb15baecc3e600eb0ebaf4c3e600eb07bafcc3e600eb00e8e949f3ff59e9534ef3ff909090909090909090",
+            "before": "bae4c3e600e8004af3ff59c3baecc3e600e8f449f3ff59c3baf4c3e600e8e849f3ff59c3bafcc3e600e8dc49f3ff59c3",
+            "label": "quarter capitals in existing cases",
+            "size": 48,
+            "va": "0xfc0a6"
+          },
+          {
+            "after": "adc00f00",
+            "before": "b2c00f00",
+            "label": "quarter case table",
+            "size": 4,
+            "va": "0xfc0f4"
+          },
+          {
+            "after": "b4c00f00",
+            "before": "bec00f00",
+            "label": "quarter case table",
+            "size": 4,
+            "va": "0xfc0f8"
+          },
+          {
+            "after": "bbc00f00",
+            "before": "cac00f00",
+            "label": "quarter case table",
+            "size": 4,
+            "va": "0xfc0fc"
+          }
+        ],
+        "hud_layout": {
+          "changed_bytes": 25,
+          "edits": [
+            {
+              "after": "d825e4884e00",
+              "before": "d825486c4e00",
+              "file_offset": "0xaab52",
+              "label": "kick_meter_margin",
+              "margin": 150.0,
+              "va": "0xbab52"
+            },
+            {
+              "after": "33c0c3",
+              "before": "558bec",
+              "file_offset": "0xefa80",
+              "label": "lineup_insert_off",
+              "va": "0xffa80"
+            }
+          ],
+          "sections_repinned": [
+            0
+          ],
+          "status": {
+            "kick_meter_margin": "150.0",
+            "lineup_insert": "off"
+          }
+        },
+        "sha256_after": "5ec31f2351d6e0257b978ca577585161cf44b2f76cd85fce183e75a8a13f46fd",
+        "sha256_before": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+        "state_before": "retail",
+        "version": "espn-broadcast-exact-v3"
+      }
+    },
+    "writes": [
+      {
+        "after_sha256": "5ec31f2351d6e0257b978ca577585161cf44b2f76cd85fce183e75a8a13f46fd",
+        "before_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+        "length": 11948032,
+        "offset": 2396160
+      },
+      {
+        "after_sha256": "7b072c04b9d35f59a5645ce196cd209238ff5426d657e5bae43de6e26a5f7a35",
+        "before_sha256": "afa1481f7ce356c2cfb95cbeccebc18af183f6aa4ba13cd2981247a3619a8476",
+        "length": 4832,
+        "offset": 1741675264
+      },
+      {
+        "after_sha256": "0bdaba82bfa2fc9a2862994ad39f4620a96fcd23f8800773a1a7b622765ee039",
+        "before_sha256": "b17fe5ddc714bc2f508e38cbff5143d86828e9bca4748011dd54200624583b21",
+        "length": 2432,
+        "offset": 1741540432
+      }
+    ]
+  },
+  "resources": [
+    {
+      "decoded_sha256": "b59a76a64911a168c8d577860d469730fd7662ce44c18ed45f391d57af43bfdd",
+      "filled_bytes": 4785,
+      "native_decoded_sha256": "b59a76a64911a168c8d577860d469730fd7662ce44c18ed45f391d57af43bfdd",
+      "replay_identical": true,
+      "resource": "score_bug",
+      "sha256_after": "7b072c04b9d35f59a5645ce196cd209238ff5426d657e5bae43de6e26a5f7a35",
+      "sha256_before": "afa1481f7ce356c2cfb95cbeccebc18af183f6aa4ba13cd2981247a3619a8476",
+      "span_size": 4832,
+      "state_before": "retail",
+      "version": "espn-broadcast-exact-v3",
+      "wrapper_identical": true,
+      "wrapper_plus_14_after": 16,
+      "wrapper_plus_14_before": 16
+    },
+    {
+      "decoded_sha256": "9da77c3b372a0845167a0c3ec4d0b00ac7787474d6dd6066b22b4a6a6243cd87",
+      "filled_bytes": 2389,
+      "native_decoded_sha256": "9da77c3b372a0845167a0c3ec4d0b00ac7787474d6dd6066b22b4a6a6243cd87",
+      "palette_attempts": [
+        {
+          "colors": 98,
+          "encoder": "greedy",
+          "result": "fit"
+        }
+      ],
+      "replay_identical": true,
+      "resource": "score_buga",
+      "sha256_after": "0bdaba82bfa2fc9a2862994ad39f4620a96fcd23f8800773a1a7b622765ee039",
+      "sha256_before": "b17fe5ddc714bc2f508e38cbff5143d86828e9bca4748011dd54200624583b21",
+      "span_size": 2432,
+      "state_before": "retail",
+      "version": "espn-broadcast-exact-v3",
+      "wrapper_identical": true,
+      "wrapper_plus_14_after": 16,
+      "wrapper_plus_14_before": 16
+    }
+  ],
+  "root_free_bytes": 108432179200,
+  "runtime_hooks": [
+    {
+      "bytes": "e845f3ffff",
+      "va": "0xfce56"
+    },
+    {
+      "bytes": "e819faffff",
+      "va": "0xfcfa2"
+    }
+  ],
+  "static": true,
+  "temporary_disc_created": false,
+  "v10": false,
+  "version": "espn-broadcast-exact-v3",
+  "xbe": {
+    "boot_logo": {
+      "changed_byte_count": 684,
+      "logo_va": "0x10cd0",
+      "size_of_headers": "0xf82",
+      "status": "applied"
+    },
+    "edits": [
+      {
+        "after": "0000a0430000cc43",
+        "before": "73f7d373e3f7430f",
+        "label": "reserved position floats",
+        "size": 8,
+        "va": "0x10a40"
+      },
+      {
+        "after": "d805400a0100",
+        "before": "d805586d4e00",
+        "label": "root x",
+        "size": 6,
+        "va": "0xfcffc"
+      },
+      {
+        "after": "d805400a0100",
+        "before": "d80568694f00",
+        "label": "root x",
+        "size": 6,
+        "va": "0xfd07b"
+      },
+      {
+        "after": "d805400a0100",
+        "before": "d805586d4e00",
+        "label": "root x",
+        "size": 6,
+        "va": "0xfd0eb"
+      },
+      {
+        "after": "d805440a0100",
+        "before": "d8051c0f4f00",
+        "label": "root y",
+        "size": 6,
+        "va": "0xfd15e"
+      },
+      {
+        "after": "9090909090",
+        "before": "e8b5fcffff",
+        "label": "persistent bug",
+        "size": 5,
+        "va": "0xfc9f6"
+      },
+      {
+        "after": "9090909090",
+        "before": "e8e4f7ffff",
+        "label": "persistent bug",
+        "size": 5,
+        "va": "0xfcec7"
+      },
+      {
+        "after": "9090909090",
+        "before": "e800c80500",
+        "label": "persistent bug",
+        "size": 5,
+        "va": "0x9feab"
+      },
+      {
+        "after": "9090909090",
+        "before": "e8d6ffffff",
+        "label": "persistent bug",
+        "size": 5,
+        "va": "0xfc6d5"
+      },
+      {
+        "after": "ffffffff",
+        "before": "c0c0c0ff",
+        "label": "text contrast",
+        "size": 4,
+        "va": "0xa95894"
+      },
+      {
+        "after": "ffffffff",
+        "before": "c0c0c0ff",
+        "label": "text contrast",
+        "size": 4,
+        "va": "0xa958bc"
+      },
+      {
+        "after": "ffffffff",
+        "before": "000000ff",
+        "label": "text contrast",
+        "size": 4,
+        "va": "0xa95958"
+      },
+      {
+        "after": "ffffffff",
+        "before": "000000ff",
+        "label": "text contrast",
+        "size": 4,
+        "va": "0xa95990"
+      },
+      {
+        "after": "ffffffff",
+        "before": "000000ff",
+        "label": "text contrast",
+        "size": 4,
+        "va": "0xa959d8"
+      },
+      {
+        "after": "ffffffff",
+        "before": "c0c0c0ff",
+        "label": "text contrast",
+        "size": 4,
+        "va": "0xa95a48"
+      },
+      {
+        "after": "222624ff",
+        "before": "c0c0c0ff",
+        "label": "text contrast",
+        "size": 4,
+        "va": "0xa9590c"
+      },
+      {
+        "after": "222624ff",
+        "before": "c0c0c0ff",
+        "label": "text contrast",
+        "size": 4,
+        "va": "0xa95910"
+      },
+      {
+        "after": "222624ff",
+        "before": "c0c0c0ff",
+        "label": "text contrast",
+        "size": 4,
+        "va": "0xa95934"
+      },
+      {
+        "after": "222624ff",
+        "before": "c0c0c0ff",
+        "label": "text contrast",
+        "size": 4,
+        "va": "0xa95938"
+      },
+      {
+        "after": "222624ff",
+        "before": "000000ff",
+        "label": "text contrast",
+        "size": 4,
+        "va": "0xa958e4"
+      },
+      {
+        "after": "222624ff",
+        "before": "000000ff",
+        "label": "text contrast",
+        "size": 4,
+        "va": "0xa958e8"
+      },
+      {
+        "after": "ffffffff",
+        "before": "000000ff",
+        "label": "text contrast",
+        "size": 4,
+        "va": "0xa95ab8"
+      },
+      {
+        "after": "ffffffff",
+        "before": "000000ff",
+        "label": "text contrast",
+        "size": 4,
+        "va": "0xa95b28"
+      },
+      {
+        "after": "ffffffff",
+        "before": "c0c0c0ff",
+        "label": "text contrast",
+        "size": 4,
+        "va": "0xa95b98"
+      },
+      {
+        "after": "ffffffff",
+        "before": "c0c0c0ff",
+        "label": "text contrast",
+        "size": 4,
+        "va": "0xa95c08"
+      },
+      {
+        "after": "000000000000000000000000",
+        "before": "00000000000080bf00000000",
+        "label": "drop_down direction",
+        "size": 12,
+        "va": "0xa959e0"
+      },
+      {
+        "after": "000000000000000000000000",
+        "before": "00000000000080bf00000000",
+        "label": "drop_clock direction",
+        "size": 12,
+        "va": "0xa95a50"
+      },
+      {
+        "after": "000000000000000000000000",
+        "before": "00000000000080bf00000000",
+        "label": "drop_hangtime direction",
+        "size": 12,
+        "va": "0xa95ac0"
+      },
+      {
+        "after": "000000000000000000000000",
+        "before": "00000000000080bf00000000",
+        "label": "drop_yellow direction",
+        "size": 12,
+        "va": "0xa95b30"
+      },
+      {
+        "after": "000000000000000000000000",
+        "before": "00000000000080bf00000000",
+        "label": "drop_ball_on direction",
+        "size": 12,
+        "va": "0xa95ba0"
+      },
+      {
+        "after": "000000000000000000000000",
+        "before": "00000000000080bf00000000",
+        "label": "drop_red direction",
+        "size": 12,
+        "va": "0xa95c10"
+      },
+      {
+        "after": "cdcc4c3e",
+        "before": "0000003f",
+        "label": "down slide duration",
+        "size": 4,
+        "va": "0xa959f0"
+      },
+      {
+        "after": "e8c6e600",
+        "before": "68c7e600",
+        "label": "literal ESPN mark atlas",
+        "size": 4,
+        "va": "0xa95cac"
+      },
+      {
+        "after": "e8c6e600",
+        "before": "68c7e600",
+        "label": "literal ESPN mark atlas",
+        "size": 4,
+        "va": "0xa95cb4"
+      },
+      {
+        "after": "40ffffff",
+        "before": "00c0c0ff",
+        "label": "live possession highlight",
+        "size": 4,
+        "va": "0xa95898"
+      },
+      {
+        "after": "40ffffff",
+        "before": "00c0c0ff",
+        "label": "live possession highlight",
+        "size": 4,
+        "va": "0xa958c0"
+      },
+      {
+        "after": "03000000",
+        "before": "00000000",
+        "label": "scorebug FONT slot",
+        "size": 4,
+        "va": "0xa958d8"
+      },
+      {
+        "after": "03000000",
+        "before": "00000000",
+        "label": "scorebug FONT slot",
+        "size": 4,
+        "va": "0xa95900"
+      },
+      {
+        "after": "03000000",
+        "before": "00000000",
+        "label": "scorebug FONT slot",
+        "size": 4,
+        "va": "0xa95928"
+      },
+      {
+        "after": "07000000",
+        "before": "00000000",
+        "label": "scorebug FONT slot",
+        "size": 4,
+        "va": "0xa95950"
+      },
+      {
+        "after": "07000000",
+        "before": "00000000",
+        "label": "scorebug FONT slot",
+        "size": 4,
+        "va": "0xa95988"
+      },
+      {
+        "after": "03000000",
+        "before": "00000000",
+        "label": "scorebug FONT slot",
+        "size": 4,
+        "va": "0xa959d0"
+      },
+      {
+        "after": "03000000",
+        "before": "00000000",
+        "label": "scorebug FONT slot",
+        "size": 4,
+        "va": "0xa95a40"
+      },
+      {
+        "after": "03000000",
+        "before": "00000000",
+        "label": "scorebug FONT slot",
+        "size": 4,
+        "va": "0xa95ab0"
+      },
+      {
+        "after": "03000000",
+        "before": "00000000",
+        "label": "scorebug FONT slot",
+        "size": 4,
+        "va": "0xa95b20"
+      },
+      {
+        "after": "03000000",
+        "before": "00000000",
+        "label": "scorebug FONT slot",
+        "size": 4,
+        "va": "0xa95b90"
+      },
+      {
+        "after": "03000000",
+        "before": "00000000",
+        "label": "scorebug FONT slot",
+        "size": 4,
+        "va": "0xa95c00"
+      },
+      {
+        "after": "03000000",
+        "before": "04000000",
+        "label": "live team FONT4",
+        "size": 4,
+        "va": "0xa95888"
+      },
+      {
+        "after": "03000000",
+        "before": "04000000",
+        "label": "live team FONT4",
+        "size": 4,
+        "va": "0xa958b0"
+      },
+      {
+        "after": "8b35b402e60039fe0f8482010000538b1dec02e60039bb60010000751639bb98000000740a8d839000000039f8750431d2eb05ba01000000a18002e60039f88b0db802e6008915505ba9000f84860000008b400c83c004747e8b400439f874778b4004c1e80883e03f83f80a753783f90e756439fa7560d905345ca900c705e05aa90001000000d81d245ca900dfe0f6c4447b06893de05aa900893dc05ba900e9dd00000083f80c752d83fe03742889c883e80c740348751e39fa751a6a0159890d102fba00893de05aa900890dc05ba900e9ab000000d905545ba9008b15fc02e600d81d445ba900893de05aa900dfe0f6c4447a4684f67842d905345ca900d81d245ca900dfe0f6c4447a2f83fe04752a83f90e7425393d142fba00be010000007510397c240c741783f90c740583f90d750d8935c05ba900eb0bbe01000000893dc05ba90083f90e7521d905545ba900d81d445ba900dfe0f6c4447a0e39bb980100008935305ca9007506893d305ca900e891f2faff85c074068935c05ba9006a0158a3005aa900a3705aa9005b5f5e83c408c20400535789d789c385c074258b903c01000085d2741b89f1e8763ef3ff89d983bb0c01000000750231c9e824c1f6ffeb0a66c7060000b8252625ffa980808000751089c181c10f0f0f00f7c180808000741489c125fefefe00d1e881e1f0f0f000c1e90429c80d000000ff8b0d2855a90085c9741183791c0b750b8b492085c97404894439185f5bc3a19402e60085c0740bf64018067505e956eeffff58c7062d002d0066c746040000e982f1ffff",
+        "before": "8b35b402e6003bf70f842f020000538b1dec02e60039bb60010000751639bb98000000740a8d83900000003bc7750433d2eb05ba01000000a18002e6003bc78b0db802e6008915505ba9000f84050100008b400c83c0040f84f90000008b40043bc70f84ee0000008b4004c1e80883e03f83f80a757883f90e0f85d70000003bd70f85cf000000d905345ca900c705e05aa90001000000d81d245ca900dfe0f6c4447b06893de05aa900d905545ba900893d005aa900d81d445ba900dfe0f6c4447a168b159402e600f6421806c705705aa900010000007406893d705aa9005b893dc05ba9005f5e83c408c2040083f80c756383fe03745e8bc183e80c74034875543bd77550d905545ba900b901000000d81d445ba900890d102fba00893de05aa900890d005aa900dfe0f6c4447a11a19402e600f6401806890d705aa9007406893d705aa9005b5f890dc05ba9005e83c408c20400d905545ba9008b15fc02e600d81d445ba900893de05aa900dfe0f6c4447a4c84f67848d905345ca900d81d245ca900dfe0f6c4447a3583fe04753083f90e742b393d142fba00be010000008935005aa9007510397c240c741d83f90c740583f90d75138935c05ba900eb11893d005aa900be01000000893dc05ba90083f90e7521d905545ba900d81d445ba900dfe0f6c4447a0e39bb980100008935305ca9007506893d305ca900d905545ba900d81d445ba900dfe0f6c4447a1684f678128b0d9402e600f64118068935705aa9007406893d705aa900e8d7f1faff85c074068935c05ba9005b5f5e83c408c20400",
+        "label": "persistent middle and lazy panel colour in native visibility span",
+        "size": 581,
+        "va": "0xfca87"
+      },
+      {
+        "after": "568bf1e8385cf6ffba00030000e8fd0b00008bce5ee9f64ef3ff909090",
+        "before": "568bf1e8385cf6ff8b903c0100008bcee88b4af3ff8bce5ee9234ff3ff",
+        "label": "live home name and panel colour",
+        "size": 29,
+        "va": "0xfc010"
+      },
+      {
+        "after": "568bf1e8285cf6ffba00050000e8dd0b00008bce5ee9d64ef3ff909090",
+        "before": "568bf1e8285cf6ff8b903c0100008bcee86b4af3ff8bce5ee9034ff3ff",
+        "label": "live away name and panel colour",
+        "size": 29,
+        "va": "0xfc030"
+      },
+      {
+        "after": "e8c6e600",
+        "before": "80c7e600",
+        "label": "home panel uses the existing score_buga material name",
+        "size": 4,
+        "va": "0xa95cb0"
+      },
+      {
+        "after": "51568bf1e86d0e0000894424048d44240450ba3ac4e6008bcee8b2e5f4ff5e59c3",
+        "before": "51568bf1e8d7fcffff894424048d44240450ba38c4e6008bcee8b2e5f4ff5e59c3",
+        "label": "live play clock or -- without changing its cell",
+        "size": 33,
+        "va": "0xfbe30"
+      },
+      {
+        "after": "03000000",
+        "before": "01000000",
+        "label": "center ball label in its own row",
+        "size": 4,
+        "va": "0xa95b94"
+      },
+      {
+        "after": "420061006c006c0020006100740020004d00690064006600690065006c0064000000",
+        "before": "420061006c006c002000610074000a004d00690064006600690065006c0064000000",
+        "label": "single-line ball label",
+        "size": 34,
+        "va": "0xe6c484"
+      },
+      {
+        "after": "420061006c006c0020006f006e002000250073002000250064000000",
+        "before": "420061006c006c0020006f006e000a00250073002000250064000000",
+        "label": "single-line ball label",
+        "size": 28,
+        "va": "0xe6c4a8"
+      },
+      {
+        "after": "2500640020005900610072006400200041007400740065006d00700074000000",
+        "before": "25006400200059006100720064000a0041007400740065006d00700074000000",
+        "label": "single-line ball label",
+        "size": 32,
+        "va": "0xe6c4c4"
+      },
+      {
+        "after": "bae4c3e600eb15baecc3e600eb0ebaf4c3e600eb07bafcc3e600eb00e8e949f3ff59e9534ef3ff909090909090909090",
+        "before": "bae4c3e600e8004af3ff59c3baecc3e600e8f449f3ff59c3baf4c3e600e8e849f3ff59c3bafcc3e600e8dc49f3ff59c3",
+        "label": "quarter capitals in existing cases",
+        "size": 48,
+        "va": "0xfc0a6"
+      },
+      {
+        "after": "adc00f00",
+        "before": "b2c00f00",
+        "label": "quarter case table",
+        "size": 4,
+        "va": "0xfc0f4"
+      },
+      {
+        "after": "b4c00f00",
+        "before": "bec00f00",
+        "label": "quarter case table",
+        "size": 4,
+        "va": "0xfc0f8"
+      },
+      {
+        "after": "bbc00f00",
+        "before": "cac00f00",
+        "label": "quarter case table",
+        "size": 4,
+        "va": "0xfc0fc"
+      }
+    ],
+    "hud_layout": {
+      "changed_bytes": 25,
+      "edits": [
+        {
+          "after": "d825e4884e00",
+          "before": "d825486c4e00",
+          "file_offset": "0xaab52",
+          "label": "kick_meter_margin",
+          "margin": 150.0,
+          "va": "0xbab52"
+        },
+        {
+          "after": "33c0c3",
+          "before": "558bec",
+          "file_offset": "0xefa80",
+          "label": "lineup_insert_off",
+          "va": "0xffa80"
+        }
+      ],
+      "sections_repinned": [
+        0
+      ],
+      "status": {
+        "kick_meter_margin": "150.0",
+        "lineup_insert": "off"
+      }
+    },
+    "sha256_after": "5ec31f2351d6e0257b978ca577585161cf44b2f76cd85fce183e75a8a13f46fd",
+    "sha256_before": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+    "state_before": "retail",
+    "version": "espn-broadcast-exact-v3"
+  },
+  "xbe_replay_identical": true
+}

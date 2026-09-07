@@ -72,7 +72,7 @@ class RetailTests(unittest.TestCase):
                 foreign=bytearray(after);foreign[offset]^=1
                 self.assertEqual(r.status(bytes(foreign),name),"foreign")
 
-    def test_scene_changes_only_geometry_uvs_vertex_colours_and_text_transforms(self):
+    def test_scene_changes_only_geometry_colours_text_transforms_and_owned_panel_materials(self):
         before=r.decode(self.inputs["score_bug"])[1]
         after=r.decode(self.replacements["score_bug"])[1]
         L=r.layout
@@ -82,8 +82,13 @@ class RetailTests(unittest.TestCase):
                      or (L.S1<=i<L.S1+L.VCOUNT*10 and
                          (4<=(i-L.S1)%10<10 or ((i-L.S1)%10<4 and
                           (0<=(i-L.S1)//10<L.VCOUNT))))
-                     or any(L.TBASE+t*0x70+0x40<=i<L.TBASE+t*0x70+0x5c for t in range(L.TCOUNT)))
+                     or any(L.TBASE+t*0x70+0x40<=i<L.TBASE+t*0x70+0x5c for t in range(L.TCOUNT))
+                     or any(base+0x14<=i<base+0x1c for base in (0x4c0,0x6c0))
+                     or 0x3f8c<=i<0x3f8c+len('score_buga\0'.encode('utf-16le')))
             self.assertTrue(allowed,hex(i))
+        for base in (0x4c0,0x6c0):
+            self.assertEqual(struct.unpack_from('<2I',after,base+0x14),(0xffffffff,0xff252625))
+        self.assertEqual(after[0x3f8c:0x3fa2],'score_buga\0'.encode('utf-16le'))
         self.assertEqual(L.strips(before),L.strips(after))
         self.assertEqual(len(after),16512)
 
@@ -93,8 +98,12 @@ class RetailTests(unittest.TestCase):
         self.assertAlmostEqual(r.FRAME[3]-r.FRAME[1],112*448/1080)
         self.assertLess(424-r.FRAME[1],464)
         for v in range(274,286):
-            self.assertEqual(m.pos[v],m.pos[v-12])
-            self.assertEqual(m.uv_edit[v],m.uv_edit[v-12])
+            self.assertEqual(m.pos[v],[0,0,-3])
+        # The first former mark is now a complete home panel; the second
+        # remains collapsed in both placement modes.
+        points=m.pos[262:274]
+        self.assertEqual([min(p[0] for p in points),min(p[1] for p in points),
+                          max(p[0] for p in points),max(p[1] for p in points)],list(r.PANELS['home']))
         self.assertEqual(r.WATERMARK,(0,0,0,0))
         for name,xyz in r.ANCHORS.items():
             self.assertEqual(m.world[r.layout.T[name]],list(xyz))
