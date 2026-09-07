@@ -355,9 +355,10 @@
         "module": "mod_editor/games/nflblitz2003_ps2/roster_lane.py",
         "operation": "write"
       },
-      "classification": "offline-writer-proved",
+      "classification": "runtime-proved",
       "evidence": [
         "docs/product/NFLBLITZ2003_PS2_MODULE.md",
+        "docs/product/measured/nflblitz2003_ps2/runtime-witness.json",
         "tests/mod_editor/test_nflblitz2003_ps2_lanes.py",
         "tests/mod_editor/test_nflblitz2003_ps2_module.py",
         "tools/validate_nflblitz2003_ps2_roster.sh"
@@ -390,9 +391,11 @@
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
-        "evidence": [],
-        "scope": "No rebuilt image has been booted in an emulator or on hardware; the game's acceptance of a rewritten member is not claimed.",
-        "status": "not-tested"
+        "evidence": [
+          "docs/product/measured/nflblitz2003_ps2/runtime-witness.json"
+        ],
+        "scope": "Runtime-proved headlessly, for the screens savestate B3-01 reaches with no input and no further. All 756 records of roster.rst were rewritten to a 31-character marker on a copy of the pinned SLUS-20474 image (same 1,029,144,576 bytes, lane verifier PASS), and the state was restored against both images on PenguinScreen2 8226182aa with the software rasteriser. In a dense burst the two runs are BIT-IDENTICAL for frames 2500-2532 and the first difference is frame 2533, 8 pixels at magnitude 300 of 765, growing frame by frame; not one of the 127 differing frames in that burst is diffuse. A sparse sweep gives the same answer with a window bounded by bit-identical frames on both sides (samples 2580-2880, 580-1283 changed pixels at magnitude 276-328). Controls: the sibling crowd and trivia rebuilds give 120 of 120 bit-identical frames, and rewriting the same 756 fields with a different letter leaves 57 of 120 frames bit-identical while changing 63 in two bounded windows with no diffuse frame anywhere, so the residual tracks the bytes written. Which record maps to which player or team is still not measured. Receipt: docs/product/measured/nflblitz2003_ps2/runtime-witness.json.",
+        "status": "visible-proved"
       },
       "selectors": {
         "fields": [

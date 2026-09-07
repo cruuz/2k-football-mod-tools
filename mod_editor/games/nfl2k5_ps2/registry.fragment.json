@@ -8,7 +8,8 @@
       },
       "classification": "runtime-proved",
       "evidence": [
-        "docs/product/NFL2K5_PS2_MODULE.md",
+        "docs/product/PS2_PHASE2_AUDIO_RESEARCH.md",
+        "docs/product/PS2_PORT_HANDOFF.md",
         "reports/gameplay_tuning/nfl2k5_ps2_audo_catalog.v1.json",
         "reports/gameplay_tuning/nfl2k5_ps2_audo_trial.v1.json"
       ],
@@ -86,9 +87,11 @@
         "module": "tools/nfl2k5_ps2_unif_color_patch.py",
         "operation": "write"
       },
-      "classification": "offline-writer-proved",
+      "classification": "runtime-proved",
       "evidence": [
-        "docs/product/NFL2K5_PS2_MODULE.md",
+        "docs/product/PS2_PHASE2_COLORS_ROSTERS.md",
+        "docs/product/PS2_PORT_HANDOFF.md",
+        "docs/product/measured/nfl2k5_ps2/runtime-witness.json",
         "reports/gameplay_tuning/nfl2k5_ps2_unif_color_catalog.v1.json",
         "reports/gameplay_tuning/nfl2k5_ps2_unif_color_trial.v1.json"
       ],
@@ -125,9 +128,11 @@
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
-        "evidence": [],
-        "scope": "Offline only: bytes proven, pixels not. The real-disc trial rewrote one facemask word as a single 8-byte declared range at image offset 1,069,963,344 inside /VC_20919/0.; the independent verifier decoded all 634 Unif records and compared 1,073,741,816 unchanged bytes inside the replaced pack, ps2_iso9660_verify compared 3,591,340,024 outside it, and the output image kept the source's exact 4,665,081,856 bytes. No emulator was run. A runtime witness would be a controlled PenguinScreen2/PCSX2 capture that isolates the facemask and HI_turtleneck materials on a known uniform set and shows the written tint on them and on nothing else.",
-        "status": "not-tested"
+        "evidence": [
+          "docs/product/measured/nfl2k5_ps2/runtime-witness.json"
+        ],
+        "scope": "Runtime-proved headlessly, for the screens savestate K-01 reaches with no input and no further, and small. All 634 Unif records had both packed colour words set to #FF00FF on a copy of the pinned SLUS-20919 image (same 4,665,081,856 bytes; the lane's own verifier compared 2,147,478,576 unchanged bytes and passed), and the state was restored against both images on PenguinScreen2 8226182aa with the software rasteriser. 106 of 120 sampled frames are BIT-IDENTICAL and 14 differ, 9 of them inside windows bounded by bit-identical frames on both sides; a dense burst of 180 consecutive frames differs on 179, every one localised and none diffuse, by 2 to 13 pixels (median 5) in the lower half of the frame -- the facemask and turtleneck at this camera distance. The claim rests on a two-colour control rather than on area: rebuilding the same image with #00FF00 changes THE SAME pixels, frame for frame, and the magnitude tracks the colour distance (77-229 of 765 for magenta against retail, 54-237 for green, up to 459 for magenta against green), while a second same-length rebuild of the same image through a different writer changes no pixel at all. Which record is drawn on which player is not claimed, and nothing is claimed about a larger on-screen size than the pixels counted. Receipt: docs/product/measured/nfl2k5_ps2/runtime-witness.json.",
+        "status": "visible-proved"
       },
       "selectors": {
         "fields": [
@@ -171,7 +176,7 @@
       },
       "classification": "unknown",
       "evidence": [
-        "docs/product/NFL2K5_PS2_MODULE.md"
+        "docs/product/PS2_CODE_PATCH_PIPELINE.md"
       ],
       "game": "nfl2k5_ps2",
       "gui": {
@@ -246,7 +251,8 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/NFL2K5_PS2_MODULE.md",
+        "docs/product/PS2_PHASE2_TEXT.md",
+        "docs/product/PS2_PORT_HANDOFF.md",
         "reports/gameplay_tuning/nfl2k5_ps2_text_target_catalog.v1.json",
         "reports/gameplay_tuning/nfl2k5_ps2_text_trial.v1.json"
       ],
@@ -332,7 +338,8 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/NFL2K5_PS2_MODULE.md",
+        "docs/product/PS2_PHASE2_COLORS_ROSTERS.md",
+        "docs/product/PS2_PORT_HANDOFF.md",
         "reports/gameplay_tuning/nfl2k5_ps2_disc_roster_catalog.v1.json",
         "reports/gameplay_tuning/nfl2k5_ps2_disc_roster_trial.v1.json"
       ],
@@ -505,7 +512,8 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/NFL2K5_PS2_MODULE.md",
+        "docs/product/PS2_PHASE2_PLAYBOOKS_RESEARCH.md",
+        "docs/product/PS2_PORT_HANDOFF.md",
         "reports/gameplay_tuning/nfl2k5_ps2_playbook_catalog.v1.json",
         "reports/gameplay_tuning/nfl2k5_ps2_playbook_trial.v1.json"
       ],
@@ -589,7 +597,8 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/NFL2K5_PS2_MODULE.md",
+        "docs/product/PS2_PHASE2_STADIUMS.md",
+        "docs/product/PS2_PORT_HANDOFF.md",
         "reports/gameplay_tuning/nfl2k5_ps2_stadium_target_catalog.v1.json",
         "reports/gameplay_tuning/nfl2k5_ps2_stadium_trial.v1.json"
       ],
@@ -669,7 +678,7 @@
       },
       "classification": "read-only-mapped",
       "evidence": [
-        "docs/product/NFL2K5_PS2_MODULE.md",
+        "docs/product/PS2_PORT_HANDOFF.md",
         "reports/gameplay_tuning/nfl2k5_ps2_disc_inventory.v1.json",
         "reports/gameplay_tuning/nfl2k5_ps2_xbox_name_join.v1.csv"
       ],
@@ -755,7 +764,8 @@
       },
       "classification": "extract-only",
       "evidence": [
-        "docs/product/NFL2K5_PS2_MODULE.md",
+        "docs/product/PS2_M1_PLAN.md",
+        "docs/product/PS2_PORT_HANDOFF.md",
         "mod_editor/data/nfl2k5-xbox-map.v1.json",
         "reports/gameplay_tuning/nfl2k5-xbox-map.unresolved.v1.json"
       ],

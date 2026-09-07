@@ -11030,9 +11030,11 @@
         "module": "tools/nfl2k5_ps2_unif_color_patch.py",
         "operation": "write"
       },
-      "classification": "offline-writer-proved",
+      "classification": "runtime-proved",
       "evidence": [
-        "docs/product/NFL2K5_PS2_MODULE.md",
+        "docs/product/PS2_PHASE2_COLORS_ROSTERS.md",
+        "docs/product/PS2_PORT_HANDOFF.md",
+        "docs/product/measured/nfl2k5_ps2/runtime-witness.json",
         "reports/gameplay_tuning/nfl2k5_ps2_unif_color_catalog.v1.json",
         "reports/gameplay_tuning/nfl2k5_ps2_unif_color_trial.v1.json"
       ],
@@ -11069,9 +11071,11 @@
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
-        "evidence": [],
-        "scope": "Offline only: bytes proven, pixels not. The real-disc trial rewrote one facemask word as a single 8-byte declared range at image offset 1,069,963,344 inside /VC_20919/0.; the independent verifier decoded all 634 Unif records and compared 1,073,741,816 unchanged bytes inside the replaced pack, ps2_iso9660_verify compared 3,591,340,024 outside it, and the output image kept the source's exact 4,665,081,856 bytes. No emulator was run. A runtime witness would be a controlled PenguinScreen2/PCSX2 capture that isolates the facemask and HI_turtleneck materials on a known uniform set and shows the written tint on them and on nothing else.",
-        "status": "not-tested"
+        "evidence": [
+          "docs/product/measured/nfl2k5_ps2/runtime-witness.json"
+        ],
+        "scope": "Runtime-proved headlessly, for the screens savestate K-01 reaches with no input and no further, and small. All 634 Unif records had both packed colour words set to #FF00FF on a copy of the pinned SLUS-20919 image (same 4,665,081,856 bytes; the lane's own verifier compared 2,147,478,576 unchanged bytes and passed), and the state was restored against both images on PenguinScreen2 8226182aa with the software rasteriser. 106 of 120 sampled frames are BIT-IDENTICAL and 14 differ, 9 of them inside windows bounded by bit-identical frames on both sides; a dense burst of 180 consecutive frames differs on 179, every one localised and none diffuse, by 2 to 13 pixels (median 5) in the lower half of the frame -- the facemask and turtleneck at this camera distance. The claim rests on a two-colour control rather than on area: rebuilding the same image with #00FF00 changes THE SAME pixels, frame for frame, and the magnitude tracks the colour distance (77-229 of 765 for magenta against retail, 54-237 for green, up to 459 for magenta against green), while a second same-length rebuild of the same image through a different writer changes no pixel at all. Which record is drawn on which player is not claimed, and nothing is claimed about a larger on-screen size than the pixels counted. Receipt: docs/product/measured/nfl2k5_ps2/runtime-witness.json.",
+        "status": "visible-proved"
       },
       "selectors": {
         "fields": [
@@ -12125,9 +12129,10 @@
         "module": "mod_editor/games/nflblitz2002_ps2/roster_lane.py",
         "operation": "write"
       },
-      "classification": "offline-writer-proved",
+      "classification": "runtime-proved",
       "evidence": [
         "docs/product/NFLBLITZ2002_PS2_MODULE.md",
+        "docs/product/measured/nflblitz2002_ps2/runtime-witness.json",
         "tests/mod_editor/test_nflblitz2002_ps2_lanes.py",
         "tests/mod_editor/test_nflblitz2002_ps2_module.py",
         "tools/validate_nflblitz2002_ps2_roster.sh"
@@ -12160,9 +12165,11 @@
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
-        "evidence": [],
-        "scope": "No rebuilt image has been booted in an emulator or on hardware; the game's acceptance of a rewritten member is not claimed.",
-        "status": "not-tested"
+        "evidence": [
+          "docs/product/measured/nflblitz2002_ps2/runtime-witness.json"
+        ],
+        "scope": "Runtime-proved headlessly, for the screens savestate B2-01 reaches with no input and no further. All 738 records of roster.rst were rewritten to a 31-character marker on a copy of the pinned SLUS-20051 image (same 1,464,205,312 bytes, lane verifier PASS), the state was restored against both images on PenguinScreen2 8226182aa with the software rasteriser, and the displayed framebuffer was captured for the same frame plan on each. 27 consecutive sampled frames are BIT-IDENTICAL between the two runs and the rewritten names then appear in a window bounded by bit-identical frames on both sides (samples 1620-1740, 16-17 changed pixels at magnitude 275 of 765 in a 16-pixel-tall strip that grows in x), and again continuously from sample 6300 (460-1774 changed pixels, at most 0.62% of the frame). Two controls close the loop: rebuilding the same image through the sibling crowd and trivia writers, whose lines are not drawn here, gives 120 of 120 bit-identical frames, so neither the rebuild nor the emulator contributes a pixel; and writing a different letter into the same 738 fields changes the residual by a constant 503 pixels in the same region, so what is drawn is a function of the bytes written. Which record maps to which player or team on screen is still not measured. Receipt: docs/product/measured/nflblitz2002_ps2/runtime-witness.json.",
+        "status": "visible-proved"
       },
       "selectors": {
         "fields": [
@@ -12685,9 +12692,10 @@
         "module": "mod_editor/games/nflblitz2003_ps2/roster_lane.py",
         "operation": "write"
       },
-      "classification": "offline-writer-proved",
+      "classification": "runtime-proved",
       "evidence": [
         "docs/product/NFLBLITZ2003_PS2_MODULE.md",
+        "docs/product/measured/nflblitz2003_ps2/runtime-witness.json",
         "tests/mod_editor/test_nflblitz2003_ps2_lanes.py",
         "tests/mod_editor/test_nflblitz2003_ps2_module.py",
         "tools/validate_nflblitz2003_ps2_roster.sh"
@@ -12720,9 +12728,11 @@
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
-        "evidence": [],
-        "scope": "No rebuilt image has been booted in an emulator or on hardware; the game's acceptance of a rewritten member is not claimed.",
-        "status": "not-tested"
+        "evidence": [
+          "docs/product/measured/nflblitz2003_ps2/runtime-witness.json"
+        ],
+        "scope": "Runtime-proved headlessly, for the screens savestate B3-01 reaches with no input and no further. All 756 records of roster.rst were rewritten to a 31-character marker on a copy of the pinned SLUS-20474 image (same 1,029,144,576 bytes, lane verifier PASS), and the state was restored against both images on PenguinScreen2 8226182aa with the software rasteriser. In a dense burst the two runs are BIT-IDENTICAL for frames 2500-2532 and the first difference is frame 2533, 8 pixels at magnitude 300 of 765, growing frame by frame; not one of the 127 differing frames in that burst is diffuse. A sparse sweep gives the same answer with a window bounded by bit-identical frames on both sides (samples 2580-2880, 580-1283 changed pixels at magnitude 276-328). Controls: the sibling crowd and trivia rebuilds give 120 of 120 bit-identical frames, and rewriting the same 756 fields with a different letter leaves 57 of 120 frames bit-identical while changing 63 in two bounded windows with no diffuse frame anywhere, so the residual tracks the bytes written. Which record maps to which player or team is still not measured. Receipt: docs/product/measured/nflblitz2003_ps2/runtime-witness.json.",
+        "status": "visible-proved"
       },
       "selectors": {
         "fields": [

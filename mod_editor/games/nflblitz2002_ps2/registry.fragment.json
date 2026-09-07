@@ -355,9 +355,10 @@
         "module": "mod_editor/games/nflblitz2002_ps2/roster_lane.py",
         "operation": "write"
       },
-      "classification": "offline-writer-proved",
+      "classification": "runtime-proved",
       "evidence": [
         "docs/product/NFLBLITZ2002_PS2_MODULE.md",
+        "docs/product/measured/nflblitz2002_ps2/runtime-witness.json",
         "tests/mod_editor/test_nflblitz2002_ps2_lanes.py",
         "tests/mod_editor/test_nflblitz2002_ps2_module.py",
         "tools/validate_nflblitz2002_ps2_roster.sh"
@@ -390,9 +391,11 @@
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
-        "evidence": [],
-        "scope": "No rebuilt image has been booted in an emulator or on hardware; the game's acceptance of a rewritten member is not claimed.",
-        "status": "not-tested"
+        "evidence": [
+          "docs/product/measured/nflblitz2002_ps2/runtime-witness.json"
+        ],
+        "scope": "Runtime-proved headlessly, for the screens savestate B2-01 reaches with no input and no further. All 738 records of roster.rst were rewritten to a 31-character marker on a copy of the pinned SLUS-20051 image (same 1,464,205,312 bytes, lane verifier PASS), the state was restored against both images on PenguinScreen2 8226182aa with the software rasteriser, and the displayed framebuffer was captured for the same frame plan on each. 27 consecutive sampled frames are BIT-IDENTICAL between the two runs and the rewritten names then appear in a window bounded by bit-identical frames on both sides (samples 1620-1740, 16-17 changed pixels at magnitude 275 of 765 in a 16-pixel-tall strip that grows in x), and again continuously from sample 6300 (460-1774 changed pixels, at most 0.62% of the frame). Two controls close the loop: rebuilding the same image through the sibling crowd and trivia writers, whose lines are not drawn here, gives 120 of 120 bit-identical frames, so neither the rebuild nor the emulator contributes a pixel; and writing a different letter into the same 738 fields changes the residual by a constant 503 pixels in the same region, so what is drawn is a function of the bytes written. Which record maps to which player or team on screen is still not measured. Receipt: docs/product/measured/nflblitz2002_ps2/runtime-witness.json.",
+        "status": "visible-proved"
       },
       "selectors": {
         "fields": [
