@@ -218,11 +218,36 @@ jobs:
             [ -e "$f" ] || continue   # glob did not match -> skip literal pattern
             found=1
             name=$(basename "$f")
-            # Files needing the large unshipped inventories are NOT named here.
-            # A hand-written list goes stale the moment a test starts building
-            # the studio shell: on 2026-09-06 it said twelve and the true number
-            # was thirty-one, so an absent payload read as a wall of red. The
-            # decision is made below from the failure's own output instead.
+            # These developer-audit files rebuild compact product contracts
+            # from large, intentionally unshipped inventories/models. They run
+            # in the maintainer's complete 219-file local matrix; hosted jobs
+            # name each omission and still run every product/runtime test.
+            # This list is pinned in parity with local_windows_ci.LEAN_SKIPS
+            # (test_ci_skip_list_and_isolated_rule_stay_in_parity), so the two
+            # runners cannot drift. It is a floor, not the whole rule: the
+            # classification below catches a file that needs an unshipped
+            # payload but is not named here yet, which is how a stale list
+            # turned an absent asset into a wall of red on 2026-09-06.
+            if [ "$lean_checkout" -eq 1 ]; then
+              case "$name" in
+                test_2k5_uniform_equipment_export.py|\
+                test_all_textures_workspace.py|\
+                test_apf_logo_surface_ownership.py|\
+                test_apf_product_findings.py|\
+                test_menu_modes.py|\
+                test_nfl2k5_crib_geometry_writer.py|\
+                test_nfl2k5_crib.py|\
+                test_nfl2k5_face_shield_registry.py|\
+                test_nfl2k5_stock_midfield_logo_boundary.py|\
+                test_no_capability_is_invisible.py|\
+                test_presentation_inspection.py|\
+                test_uniform_sharing.py)
+                  skipped=$((skipped + 1))
+                  echo "SKIP  $name  (developer-only large evidence is intentionally absent)"
+                  continue
+                  ;;
+              esac
+            fi
             if [ "$name" = "$isolated" ]; then
               env -u PYTHONPATH $TMO "$PY" "$f" >"$OUTF" 2>&1; rc=$?
             else
