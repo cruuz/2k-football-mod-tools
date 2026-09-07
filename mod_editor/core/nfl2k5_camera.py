@@ -1,14 +1,15 @@
-"""EXPERIMENTAL / UNWITNESSED Far selection and scorebar-safe framing, USA XBE.
+"""EXPERIMENTAL / UNWITNESSED paired Standard/Far framing, USA XBE.
 
-Far is row 1 of 4F03F8, not a rename of Standard. Seven Far descriptors
-retain their native type, lag and callbacks. The settings default, settings
+Far is row 1 of 4F03F8. Standard retains retail Far's settled eye positions
+with the raised Far pitch. Both rows retain native type, lag and callbacks,
+with bounded live growth and modest optional pass zoom. The settings default, settings
 saved-load calls and common game-camera initialization select Far; Options remains a
 session choice. The automatic spectator branch uses that same choice.
 
 64 owned RX bytes, no RW allocation, no retail cave. Reserve REQUESTS with
 all other selected owners before apply. Rebuild historical descriptor-only
 installations from retail; mixed/foreign inputs refuse before mutation.
-See ASTRA_CAMERA_FAR_REPORT.md for native evidence and visual-proof limits.
+See ASTRA_CAMERA_V2_REPORT.md for native evidence and visual-proof limits.
 """
 
 from __future__ import annotations
@@ -23,7 +24,7 @@ from .nfl2k5_draft_ai import _Asm
 from .nfl2k5_bump_strength import _sections, _section_for_offset, section_digest
 
 OWNER = "nfl2k5_camera"
-VERSION = 2
+VERSION = 3
 CODE_SIZE = 64
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
 IMAGE_BASE = 0x10000
@@ -40,7 +41,7 @@ OPTION_GLOBAL_VA = 0x00E5FFF0            # DAT_00e5fff0: the Options "Camera" va
 OPTION_DEFAULT_SITE_VA = 0x000E3C68      # FUN_000e3b90: `xor edi,edi ; mov dword ptr [0xE5FFF0], edi` (fresh-profile default 0)
 RETAIL_OPTION_DEFAULT = bytes.fromhex("33ff893df0ffe500")   # xor edi,edi ; mov dword [0xE5FFF0], edi
 
-# Standard-row reference guards, keyed by game state. These remain unchanged.
+# Seven scrimmage recipients, keyed by game state. State 1 aliases state 16.
 STANDARD_DESCRIPTORS: dict[int, int] = {
     9: 0x00A88870,    # pre-snap scrimmage
     13: 0x00A888C0,   # after the catch
@@ -50,7 +51,7 @@ STANDARD_DESCRIPTORS: dict[int, int] = {
     18: 0x00A88960,   # live variant
     19: 0x00A889B0,   # live variant (look-at behind the ball)
 }
-# The seven Far recipients; Standard and all unrelated states remain retail.
+# The seven Far recipients. Six retain r63-camera-far geometry exactly.
 FAR_DESCRIPTORS: dict[int, int] = {
     9: 0x00A88B90, 13: 0x00A88BE0, 15: 0x00A88D70, 16: 0x00A88D20, 17: 0x00A88C30, 18: 0x00A88C80, 19: 0x00A88CD0,
 }
@@ -106,7 +107,7 @@ PRESETS: dict[str, dict[int, Values]] = {
     "far_look": {
         9: ((0.0, 0.0, -250.0), 28.0, (0.0, 700.0, -1800.0)),
         13: ((0.0, 0.0, -250.0), 28.0, (0.0, 650.0, -1600.0)),
-        15: ((0.0, 50.0, -150.0), 24.0, (0.0, 800.0, -2000.0)),
+        15: ((0.0, 0.0, -250.0), 28.0, (0.0, 700.0, -1800.0)),
         16: ((0.0, 0.0, -350.0), 28.0, (0.0, 650.0, -1600.0)),
         17: ((0.0, 0.0, -250.0), 28.0, (0.0, 650.0, -1600.0)),
         18: ((0.0, 0.0, -250.0), 28.0, (0.0, 650.0, -1600.0)),
@@ -127,6 +128,51 @@ PRESETS: dict[str, dict[int, Values]] = {
 DEFAULT_PRESET = "far_look"
 PRESET_TITLES = {"far_look": "Far with room above the scorebar (experimental)",
                  "broadcast_wide": "Broadcast Wide (23 yd back, 9-10 yd up, lens 32)"}
+
+
+def _f32(value: float) -> float:
+    return struct.unpack("<f", struct.pack("<f", value))[0]
+
+
+def _middle_values(state: int) -> Values:
+    # Native type 2 in 5F760 adds the offset TO the target. Preserve the
+    # actual retail Far eye relative to the focus, not a mistaken absolute
+    # interpretation of descriptor +30. Match the raised Far's optical pitch.
+    old_target, lens, old_offset = FAR_RETAIL_VALUES[state]
+    raised_offset = PRESETS[DEFAULT_PRESET][state][2]
+    eye_y = old_target[1] + old_offset[1]
+    eye_z = old_target[2] + old_offset[2]
+    offset_z = _f32(eye_y * raised_offset[2] / raised_offset[1])
+    target_z = _f32(eye_z - offset_z)
+    return ((0.0, 0.0, target_z), 28.0 if state == 15 else lens,
+            (0.0, eye_y, offset_z))
+
+
+STANDARD_VALUES = {state: _middle_values(state) for state in STANDARD_DESCRIPTORS}
+# Authored kick views use the original Far geometry, like unchanged new Far.
+# 14 aliases 10. Shared return/presentation descriptors are guarded, not edited.
+STANDARD_SPECIAL_DESCRIPTORS = {8: 0xA88780, 10: 0xA88820, 11: 0xA887D0}
+FAR_SPECIAL_DESCRIPTORS = {8: 0xA88AA0, 10: 0xA88B40, 11: 0xA88AF0}
+STANDARD_SPECIAL_RETAIL = {
+    8: ((0., 460., -1012.), 36., (0., 210., -1100.)),
+    10: ((0., 185., 0.), 35., (0., 245., -700.)),
+    11: ((0., 0., 100.), 36., (0., 500., -1325.)),
+}
+STANDARD_SPECIAL_VALUES = {
+    8: ((0., 555., -1432.), 28., (0., 120., -815.)),
+    10: ((0., 185., 0.), 28., (0., 245., -700.)),
+    11: ((0., 0., 0.), 28., (0., 500., -1325.)),
+}
+# These records share state 9's exact type/lag/callback template.
+
+# (offset y, offset z, target z), written by existing pass-zoom setup stores.
+# Native absolute eye is (target + offset), hence Standard (650,-1200),
+# Far (750,-2150). Both remain close to their respective pre-snap distances.
+PASS_ZOOM_VALUES = {
+    STANDARD_ROW: (650.0, _f32(-650.0 * 1800 / 700),
+                   _f32(-1200.0 - _f32(-650.0 * 1800 / 700))),
+    FAR_ROW: (750.0, -1900.0, -250.0),
+}
 
 
 class CameraPatchError(ValueError):
@@ -177,6 +223,12 @@ def decode_descriptor(record: bytes) -> dict[str, object]:
     }
 
 
+STANDARD_SPECIAL_BYTES = {
+    state: descriptor_bytes(RETAIL_DESCRIPTORS[9], values)
+    for state, values in STANDARD_SPECIAL_RETAIL.items()
+}
+
+
 # Complete instructions, not just their changed operands. ESI=1 is pinned
 # at E3B92; EDI remains zero for the adjacent pivot/zoom defaults.
 HOOKS = {
@@ -186,6 +238,12 @@ HOOKS = {
     "settings_reload_far": (0x16E864, bytes.fromhex("e8b745f7ff")),
     "game_entry_far": (0xA55EB, bytes.fromhex("e9a0feffff")),
     "spectator_session_choice": (0xA54C3, bytes.fromhex("7e06")),
+    "standard_pass_zoom": (0xA4A2D, bytes.fromhex(
+        "c7812404000000007a44c7812804000000401cc5c781080400000000fa43")),
+    "far_pass_zoom": (0xA4C0C, bytes.fromhex(
+        "c7812404000000007a44c7812804000000401cc5c781080400000000fa43")),
+    "standard_live_cap": (0xA4B1A, bytes.fromhex("d905348aa800dcc0")),
+    "far_live_cap": (0xA4D1F, bytes.fromhex("d905548da800dcc0")),
 }
 # Narrow immutable prerequisites. Whole table pins include kick/preview states,
 # and reject redirected recipients. MyCareer's separate A5490 hook is outside
@@ -203,6 +261,7 @@ CONTEXT_PINS = (
     (0xA54B7, bytes.fromhex("a1f065b60083f806741e85ff")),
     (0xA54C5, bytes.fromhex("8b1df0ffe5003bd87410891df065b600c705f465b600010000005f5e5bc3")),
     (0xA55E1, bytes.fromhex("c705e065b60001000000")),
+    (0x4EDA58, struct.pack('<f', 500.0)),  # read-only pooled literal, never changed
 )
 # Hash-only guards are generated from the pinned USA executable, below.
 CONTEXT_HASHES = (
@@ -211,7 +270,15 @@ CONTEXT_HASHES = (
     (0x31000, 33, "6108e11605dbbba3cec8f5dbccc0c99915850f57b2b6267fa3444adf91191974"),
     (0xE3B98, 208, "3f0b05b388c4afa96464e14cb5022db712d6afc2cf98b4c0e0a5a7d9d2f2c145"),
     (0xA55A0, 65, "bd07d17cb82a9f14cadc87f9241aebcd51f8939b89342d9427d0966aa8fb0b11"),
-    (0xA4B90, 500, "21a951b17f3257486ad6d426241dfae25dc55effa53b369fa9c6eaf2cc6572ac"),
+    (0x60090, 652, "c2499c2d3646047733da8f7c983e9f9c345483cfc0e92bf0b69e3c347308be71"),
+    (0x5f760, 2330, "099dea96ff3a33cc7b4960754707f986376531a8e4779fed9673b3f946404172"),
+    (0x5e100, 26, "568c0199f70fafe44d180569001277d7b1f4ecf47006c041474b0ead2e64b412"),
+    (0x4f0380, 120, "76b386d4da5fb35681822d2efcfdf506e59512d9883a43585be3100b7316906b"),
+    (0x4f0d5c, 8, "604cce4ae8609b5bfd0acf6cc634ebb82ea1dcef5dbec9ada2b1449218f4144d"),
+    # Full Standard and Far setup/live routines; own hook bytes are restored
+    # to their recognized retail values solely for these prerequisite hashes.
+    (0xA4950, 0x440, "78d271fb1e53de7bbc5d5d325f055e2fd76d9b05f659a53fac1c6b7d73135d4b"),
+    (0xA87F10, 0xEB0, "9951b67f9a439ce9eed42f3092e9bd85c76fc581ea20176da0c12968ceab6f09"),
 )
 
 
@@ -258,11 +325,29 @@ def _sites(payload: bytes, preset: str) -> list[tuple[str, int, bytes, bytes]]:
         "fresh_settings_far": bytes.fromhex("33ff8935f0ffe500"),
         "game_entry_far": b"\xe9" + struct.pack("<i", va - 0xA55F0),
         "spectator_session_choice": b"\x90\x90",
+        # Keep native 1.02 growth, direction, reset and lag decisions. The
+        # old limit was twice the live offset height and could overshoot by
+        # one update. These limits include that overshoot in the proof.
+        "standard_live_cap": bytes.fromhex("d90558da4e00d9d0"),  # fld 500; fnop
+        "far_live_cap": b"\xd9\x05" + struct.pack('<I', FAR_DESCRIPTORS[9] + 0x34) + b"\xd9\xd0",
     }
+    for row, label in ((STANDARD_ROW, 'standard_pass_zoom'), (FAR_ROW, 'far_pass_zoom')):
+        values = PASS_ZOOM_VALUES[row]
+        if row == FAR_ROW and preset == 'broadcast_wide':
+            values = (1000.0, -2500.0, 500.0)  # retained backend-only variant
+        replacements[label] = b''.join(b'\xc7\x81' + struct.pack('<If', field, value)
+            for field, value in zip((0x424, 0x428, 0x408), values))
     for name in ("settings_load_far", "franchise_load_far", "settings_reload_far"):
         replacements[name] = b"\xe8" + struct.pack("<i", va + 32 - HOOKS[name][0] - 5)
     sites = [(label, _offset(payload, addr), before, replacements[label])
              for label, (addr, before) in HOOKS.items()]
+    for descriptors, originals, values in (
+            (STANDARD_DESCRIPTORS, RETAIL_DESCRIPTORS, STANDARD_VALUES),
+            (STANDARD_SPECIAL_DESCRIPTORS, STANDARD_SPECIAL_BYTES, STANDARD_SPECIAL_VALUES)):
+        for state, addr in descriptors.items():
+            before = originals[state]
+            sites.append((f"standard_state_{state}", _offset(payload, addr), before,
+                          descriptor_bytes(before, values[state])))
     for state, addr in FAR_DESCRIPTORS.items():
         before = FAR_RETAIL_DESCRIPTORS[state]
         sites.append((f"far_state_{state}", _offset(payload, addr), before,
@@ -279,14 +364,18 @@ def status(payload: bytes, preset: str = DEFAULT_PRESET) -> str:
         for va, pin in CONTEXT_PINS:
             _require(_read(payload, va, len(pin)) == pin, f"foreign context at {va:#x}")
         for va, size, digest in CONTEXT_HASHES:
-            _require(hashlib.sha256(_read(payload, va, size)).hexdigest() == digest,
+            raw = bytearray(_read(payload, va, size))
+            start = _offset(payload, va)
+            for _label, off, old, new in sites:
+                if start <= off and off + len(old) <= start + size:
+                    actual = bytes(raw[off-start:off-start+len(old)])
+                    _require(actual in (old, new), 'foreign bytes in camera prerequisite')
+                    raw[off-start:off-start+len(old)] = old
+            _require(hashlib.sha256(raw).hexdigest() == digest,
                      f"foreign camera prerequisite at {va:#x}")
-        for state, va in STANDARD_DESCRIPTORS.items():
-            _require(_read(payload, va, DESCRIPTOR_SIZE) == RETAIL_DESCRIPTORS[state],
-                     "historical/foreign Standard rewrite; rebuild from retail")
         states = {"retail" if payload[off:off+len(old)] == old else
                   "applied" if payload[off:off+len(new)] == new else "foreign"
-                  for _label, off, old, new in sites}
+                  for _label, off, old, new in sites if old != new}
         if states == {"retail"}:
             return "retail"
         if states == {"applied"} and allocation(payload) is not None:
@@ -308,7 +397,7 @@ def detect_preset(payload: bytes) -> str | None:
 
 
 def read_standard(payload: bytes) -> dict[int, dict[str, object]]:
-    """Decode the unchanged Standard-row reference descriptors in ``payload``."""
+    """Decode the seven Standard scrimmage descriptors in ``payload``."""
 
     out = {}
     for state, va in STANDARD_DESCRIPTORS.items():

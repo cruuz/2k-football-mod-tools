@@ -124,7 +124,13 @@ class PatchWriteTests(unittest.TestCase):
         cls.patched, cls.music_receipt = compose(cls.patched, reverse=getattr(cls, "reverse_owners", False), scaleout=getattr(cls, "scaleout", False))
         from mod_editor.core import nfl2k5_camera as camera
         if camera.status(cls.patched) != "applied" or camera.apply(cls.patched)[0] != cls.patched:
-            raise AssertionError("Far selection/framing missing from complete owner union")
+            raise AssertionError("Paired Standard/Far framing and pass limits missing from complete owner union")
+        for descriptors, values in ((camera.STANDARD_DESCRIPTORS, camera.STANDARD_VALUES),
+                                   (camera.FAR_DESCRIPTORS, camera.PRESETS['far_look'])):
+            for state, va in descriptors.items():
+                actual = camera.decode_descriptor(camera._read(cls.patched, va, 80))
+                if (actual['target'], actual['fov'], actual['offset']) != values[state]:
+                    raise AssertionError("camera recipient differs in the complete owner union")
         from mod_editor.core import nfl2k5_animation_xbe as animation_xbe
         if animation_xbe.status(cls.patched) != "applied":
             raise AssertionError("Embedded animation owner missing from the composed XBE")

@@ -5,6 +5,7 @@ from contextlib import ExitStack
 from unittest.mock import patch
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import struct
@@ -81,7 +82,7 @@ class CameraPatchTests(unittest.TestCase):
             cls.pins.enter_context(patch.object(module, name, value))
         cls.patched, cls.receipt = c.apply(cls.retail)
 
-    def test_replay_exact_receipts_and_only_seven_far_recipients(self):
+    def test_replay_exact_receipts_and_paired_recipients(self):
         self.assertEqual(c.status(self.retail), 'retail')
         self.assertEqual(c.status(self.patched), 'applied')
         self.assertEqual(c.detect_preset(self.patched), 'far_look')
@@ -91,22 +92,49 @@ class CameraPatchTests(unittest.TestCase):
         self.assertTrue(receipt['experimental'])
         self.assertFalse(receipt['runtime_witnessed'])
         self.assertEqual(c.option_default_status(again), 'far')
-        self.assertEqual(c.read_standard(again), c.read_standard(self.retail))
+        self.assertNotEqual(c.read_standard(again), c.read_standard(self.retail))
         self.assertEqual(c.read_preset_table(again), c.read_preset_table(self.retail))
-        self.assertEqual(len(self.receipt['edits']), 14)
+        self.assertEqual(len(self.receipt['edits']), 28)
         for edit in self.receipt['edits']:
             off, size = int(edit['file_offset'], 0), edit['size']
             self.assertEqual(again[off:off+size], bytes.fromhex(edit['after']))
             self.assertEqual(hashlib.sha256(again[off:off+size]).hexdigest(), edit['after_sha256'])
-        for state, row in c.read_far(again).items():
-            expected = c.PRESETS[c.DEFAULT_PRESET][state]
-            self.assertEqual((row['target'], row['fov'], row['offset']), expected)
-            before = c.FAR_RETAIL_DESCRIPTORS[state]
-            after = c._read(again, c.FAR_DESCRIPTORS[state], 80)
-            for start, end in ((0,16),(28,32),(36,48),(60,80)):
-                self.assertEqual(before[start:end], after[start:end])
+        for addresses, templates, values in (
+                (c.STANDARD_DESCRIPTORS,c.RETAIL_DESCRIPTORS,c.STANDARD_VALUES),
+                (c.STANDARD_SPECIAL_DESCRIPTORS,c.STANDARD_SPECIAL_BYTES,c.STANDARD_SPECIAL_VALUES),
+                (c.FAR_DESCRIPTORS,c.FAR_RETAIL_DESCRIPTORS,c.PRESETS[c.DEFAULT_PRESET])):
+            for state, va in addresses.items():
+                before, after = templates[state], c._read(again,va,80)
+                row = c.decode_descriptor(after)
+                self.assertEqual((row['target'], row['fov'], row['offset']), values[state])
+                for start, end in ((0,16),(28,32),(36,48),(60,80)):
+                    self.assertEqual(before[start:end], after[start:end])
         for s in strength._sections(again):
             self.assertEqual(again[s.header_offset+36:s.header_offset+56], strength.section_digest(again,s))
+
+    def test_standard_keeps_retail_far_eye_with_raised_pitch_and_far_presnap_exact(self):
+        from tools.nfl2k5_camera_far_proof import PRIOR_FAR_VALUES
+        for state, (target,lens,offset) in c.STANDARD_VALUES.items():
+            old_target, _, old_offset = c.FAR_RETAIL_VALUES[state]
+            for a,b in zip((t+o for t,o in zip(target,offset)),
+                           (t+o for t,o in zip(old_target,old_offset))):
+                self.assertAlmostEqual(a,b,places=3)
+            far_offset = c.PRESETS['far_look'][state][2]
+            self.assertAlmostEqual(offset[1]/-offset[2],far_offset[1]/-far_offset[2],places=6)
+            self.assertEqual(lens,28)
+        for state in set(c.FAR_DESCRIPTORS)-{15}:
+            self.assertEqual(c._read(self.patched,c.FAR_DESCRIPTORS[state],80),
+                c.descriptor_bytes(c.FAR_RETAIL_DESCRIPTORS[state],PRIOR_FAR_VALUES[state]))
+
+    def test_all_58_recipients_and_other_six_rows_preserve_declared_boundaries(self):
+        table=c.read_preset_table(self.retail)
+        modified=set(c.STANDARD_DESCRIPTORS.values())|set(c.STANDARD_SPECIAL_DESCRIPTORS.values())|set(c.FAR_DESCRIPTORS.values())
+        for row in range(8):
+            for state, (_,va) in enumerate(table[row]):
+                with self.subTest(row=row,state=state):
+                    before=c._read(self.retail,va,80);after=c._read(self.patched,va,80)
+                    self.assertEqual(before!=after,va in modified)
+                    if row>1: self.assertEqual(before,after)
 
     def test_every_partial_install_foreign_context_and_old_version_refuses(self):
         # Allocate first so only this owner's sites vary, with valid digests.
@@ -126,6 +154,17 @@ class CameraPatchTests(unittest.TestCase):
             off = c._offset(buf,va)
             buf[off:off+80] = c.descriptor_bytes(c.RETAIL_DESCRIPTORS[state],c.FAR_RETAIL_VALUES[state])
         with self.assertRaises(c.CameraPatchError): c.apply(repin(buf))
+        # r63-camera-far had these same selection wrappers but retail Standard,
+        # native pass stores/caps and the wider state-15 descriptor.
+        from tools.nfl2k5_camera_far_proof import PRIOR_FAR_VALUES
+        buf=bytearray(self.patched)
+        for label,off,before,_after in c._sites(self.patched,c.DEFAULT_PRESET):
+            if label.startswith('standard_state_') or label in (
+                    'standard_pass_zoom','far_pass_zoom','standard_live_cap','far_live_cap'):
+                buf[off:off+len(before)]=before
+        off=c._offset(buf,c.FAR_DESCRIPTORS[15])
+        buf[off:off+80]=c.descriptor_bytes(c.FAR_RETAIL_DESCRIPTORS[15],PRIOR_FAR_VALUES[15])
+        with self.assertRaisesRegex(c.CameraPatchError,'rebuild from retail'): c.apply(repin(buf))
         self.assertEqual(c.status(b'bad'), 'foreign')
 
     def test_named_variant_is_exact_and_cannot_mix(self):
@@ -238,43 +277,154 @@ class SelectionProofTests(unittest.TestCase):
         h.execute(uc,0xA5490)
         self.assertEqual(self.get(uc,0xB665F0),1)
 
-    def test_native_active_row_indexes_the_far_recipients(self):
-        h,uc = self.machine()
-        self.put(uc,0xE5FFF4,1,0,0)
+    def test_native_active_row_indexes_all_58_recipients_in_each_aspect(self):
+        from mod_editor.core import nfl2k5_widescreen as wide
         table=c.read_preset_table(self.patched)
-        for row in (c.STANDARD_ROW,c.FAR_ROW):
-            for state in c.FAR_DESCRIPTORS:
-                # Execute the actual table indexing and call to the native
-                # descriptor copier/setup. Stop before moving-player focus.
-                self.put(uc,0xB665F0,row)
-                uc.reg_write(r.UC_X86_REG_EAX,self.get(uc,0xB665F0))
-                uc.reg_write(r.UC_X86_REG_ESI,state)
-                uc.reg_write(r.UC_X86_REG_EBX,0x3F800000)
-                h.execute(uc,0xA572D,stop=0xA5741)
-                copied=bytes(uc.mem_read(0xA82D30,80))
-                self.assertEqual(copied,c._read(self.patched,table[row][state][1],80))
-                if row==c.FAR_ROW:
-                    self.assertEqual(table[row][state][1],c.FAR_DESCRIPTORS[state])
+        for aspect in ('4:3',*wide.ASPECTS):
+            payload=self.patched if aspect=='4:3' else wide.apply(self.patched,aspect)[0]
+            h,uc = self.machine(payload)
+            self.put(uc,0xE5FFF4,1,0,0)
+            for row in (c.STANDARD_ROW,c.FAR_ROW):
+                for state in range(29):
+                    self.put(uc,0xB665F0,row)
+                    uc.reg_write(r.UC_X86_REG_EAX,self.get(uc,0xB665F0))
+                    uc.reg_write(r.UC_X86_REG_ESI,state)
+                    uc.reg_write(r.UC_X86_REG_EBX,0x3F800000)
+                    # All states reach their original descriptor. Presentation
+                    # scene callbacks require real scene objects, so this full
+                    # table census stops at the copier's call boundary.
+                    h.execute(uc,0xA572D,stop=0xA573C)
+                    self.assertEqual(uc.reg_read(r.UC_X86_REG_EDX),table[row][state][1])
+                    if state in c.FAR_DESCRIPTORS:
+                        h.execute(uc,0xA573C,at_call=True,stop=0xA5741)
+                        copied=bytes(uc.mem_read(0xA82D30,80))
+                        self.assertEqual(copied,c._read(payload,table[row][state][1],80))
 
     def test_native_geometry_clearance_and_widescreen_y_invariance(self):
         from tools.nfl2k5_camera_far_proof import prove
         proof = prove(self.retail)
-        self.assertEqual(len(proof['rows']),54)
+        self.assertEqual(len(proof['rows']),480)
+        self.assertEqual(len(proof['descriptor_inventory']),58)
         reference = {}
         for row in proof['rows']:
-            self.assertGreater(row['focus_clearance_px'],110)
-            self.assertGreater(row['backfield_clearance_px'],60)
-            key=(row['state'],row['direction'],row['pass_zoom'],row['pullback'])
+            if row['build']=='new' and row['state']==9:
+                self.assertGreater(row['focus_clearance_px'],90 if row['preset_row']==0 else 159)
+            key=(row['build'],row['preset_row'],row['state'],row['direction'],row['pass_zoom'],row['live_updates'])
             y=[point[1] for point in row['points_640x480'].values()]
             if row['aspect']=='4:3': reference[key]=y
             else:
                 for before,after in zip(reference[key],y): self.assertAlmostEqual(before,after,places=3)
-        # All three constructors/setup routes have retained the descriptor
-        # geometry. The optional pass-zoom callback has its own proved inputs.
+            if row['build']=='new' and row['state']==15:
+                self.assertEqual(row['metrics']['lens_word'],28)
+                for sample in row['receiver_samples']:
+                    x,y=sample['screen_640x480']
+                    self.assertTrue(0<x<640 and 0<y<381,(key,sample))
+        lookup={(v['build'],v['preset_row'],v['aspect'],v['direction'],v['state'],v['pass_zoom'],v['live_updates']):v
+                for v in proof['rows']}
         for row in proof['rows']:
-            if row['pass_zoom']==0:
-                decoded=row['descriptor_after_setup'];expected=c.PRESETS['far_look'][row['state']]
+            if row['build']!='new': continue
+            aspect,direction=row['aspect'],row['direction']
+            def get(build,preset,state,zoom=0,updates=0):
+                return lookup[build,preset,aspect,direction,state,zoom,updates]['metrics']['focus_distance_cm']
+            if row['state'] in (15,16):
+                retail_delta=max(0,get('retail',1,row['state'],row['pass_zoom'],row['live_updates'])-get('retail',1,9))
+                new_delta=row['metrics']['focus_distance_cm']-get('new',row['preset_row'],9)
+                self.assertLessEqual(new_delta,retail_delta+0.002)
+                self.assertLessEqual(new_delta,125.0)  # tighter product bound, including native growth overshoot
+            if row['state'] in c.FAR_DESCRIPTORS and not(row['pass_zoom'] or row['live_updates']):
+                expected=(c.STANDARD_VALUES if row['preset_row']==0 else c.PRESETS['far_look'])[row['state']]
+                decoded=row['descriptor_after_setup']
                 self.assertEqual((decoded['target'],decoded['fov'],decoded['offset']),expected)
+
+    def test_native_pass_zoom_human_gates_and_live_lag_reset_paths(self):
+        from tools.nfl2k5_camera_far_proof import Projection, GAME_CAMERA
+        for preset, descriptors, callback in ((0,c.STANDARD_DESCRIPTORS,0xA4A50),(1,c.FAR_DESCRIPTORS,0xA4C30)):
+            p=Projection(self.patched)
+            h,uc=p.h,p.uc
+            for controlled in (False,True):
+                for zoom in (0,1):
+                    decoded=p.setup(descriptors[15],zoom=zoom,controlled=controlled)
+                    override=zoom and (controlled or preset==1)
+                    expected=c.PASS_ZOOM_VALUES[preset] if override else (
+                        (c.STANDARD_VALUES if preset==0 else c.PRESETS['far_look'])[15][2][1],
+                        (c.STANDARD_VALUES if preset==0 else c.PRESETS['far_look'])[15][2][2],
+                        (c.STANDARD_VALUES if preset==0 else c.PRESETS['far_look'])[15][0][2])
+                    self.assertEqual((*decoded['offset'][1:],decoded['target'][2]),expected)
+            for direction in (1,-1):
+                p.setup(descriptors[16],direction=direction)
+                initial=bytes(uc.mem_read(GAME_CAMERA+0x3F0,80))
+                # Each native blocking predicate prevents growth.
+                for blocked in (0x64BE0,0x887D0):
+                    p.predicates[blocked]=1
+                    h.execute(uc,callback,ecx=GAME_CAMERA)
+                    self.assertEqual(bytes(uc.mem_read(GAME_CAMERA+0x3F0,80)),initial)
+                    p.predicates[blocked]=0
+                self.put(uc,0xE5FC00,0)
+                h.execute(uc,callback,ecx=GAME_CAMERA)
+                self.assertEqual(bytes(uc.mem_read(GAME_CAMERA+0x3F0,80)),initial)
+                p.actors(direction=direction)
+                self.put(uc,0xB6176C,1)
+                uc.mem_write(0xB61738,struct.pack('<f',0.2))
+                h.execute(uc,callback,ecx=GAME_CAMERA)
+                self.assertEqual(self.get(uc,GAME_CAMERA+0x3F8),0x4F03E4)
+                uc.mem_write(0xB61738,struct.pack('<f',0.4))
+                h.execute(uc,callback,ecx=GAME_CAMERA)
+                self.assertEqual(self.get(uc,GAME_CAMERA+0x3F8),0x4F0380)
+                self.assertEqual(self.get(uc,0xB6176C),0)
+                # Crossing native reset threshold restores the revised live
+                # record, then throw -> catch reinstalls the correct recipient.
+                p.actors(direction=direction,actor_z=5000*direction)
+                h.execute(uc,callback,ecx=GAME_CAMERA)
+                self.assertEqual(bytes(uc.mem_read(GAME_CAMERA+0x3F0,80)),
+                                 c._read(self.patched,descriptors[16],80))
+                for state in (15,13,17,18,19,9):
+                    p.setup(descriptors[state],direction=direction)
+
+    def test_release_transition_selects_pass_state_before_native_camera_lookup(self):
+        h,uc=self.machine()
+        for kind, expected in ((3,13),(6,14),(0,15),(1,15),(2,15),(4,15)):
+            self.put(uc,0xE602BC,kind)
+            h.execute(uc,0x9FFB6,stop=0x9FFD6)
+            self.assertEqual(uc.reg_read(r.UC_X86_REG_ECX),expected)
+            self.put(uc,0xB61704,0)
+            self.put(uc,0xB616C0,9)
+            h.execute(uc,0x89260,ecx=expected,stop=0x892A6)
+            self.assertEqual(self.get(uc,0xB616C0),expected)
+
+    def test_camera_manifest_tracks_final_allocation_and_recognizes_only_recorded_preset(self):
+        from mod_editor.core.nfl2k5_cave_manifest import Recorder
+        from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
+        from tests import nfl2k5_allocator_stack as stack
+        manifest=ReservationManifest.load(DEFAULT_MANIFEST,XbeImage(self.retail))
+        seed=space.apply(self.retail,stack.REQUESTS,scaleout=True)[0]
+        seed=stack.music.apply(seed,song_records=stack.SONGS)[0]
+        projected=stack.manifest_for_allocated_union(manifest,self.retail,seed)
+        current=c.allocation(seed)
+        for span in projected.document['spans']:
+            if span['owner']==c.OWNER and int(span['start'],0)>=space.CODE_VA:
+                self.assertTrue(current['va']<=int(span['start'],0)<int(span['end'],0)<=current['va']+64)
+        obsolete=[s for s in manifest.document['spans'] if s['owner']==c.OWNER and
+                  s['basis']=='declared edit: owned_camera_wrappers' and
+                  not any(a['owner']==c.OWNER and a['va']==int(s['start'],0)
+                          for a in manifest.document['allocator_layout']['allocations'])]
+        for span in obsolete:
+            for change in (dict(start=hex(int(span['start'],0)+1)),dict(size=63),dict(owner='foreign_camera')):
+                document={**manifest.document,'spans':[{**span,**change}]}
+                with self.assertRaisesRegex(AssertionError,'unrecognized'):
+                    stack.manifest_for_allocated_union(ReservationManifest(document,XbeImage(self.retail)),self.retail,seed)
+        recorder=Recorder(self.retail)
+        recorder.wrapper(c,'apply')(self.retail)
+        # Simulate the recorder's second, larger owner union without disc I/O.
+        seed=recorder.wrapper(space,'apply')(self.retail,stack.REQUESTS,scaleout=True)[0]
+        seed=recorder.wrapper(stack.music,'apply')(seed,song_records=stack.SONGS)[0]
+        result=recorder.wrapper(c,'apply')(seed)[0]
+        self.assertFalse([s for s in recorder.spans if s['owner']==c.OWNER and
+                          int(s['start'],0)>=space.CODE_VA])
+        named=[s for s in recorder.finish(result) if s['owner']==c.OWNER and
+               int(s['start'],0)>=space.CODE_VA]
+        self.assertEqual(len(named),1)
+        self.assertEqual((int(named[0]['start'],0),named[0]['size']),(current['va'],64))
+        self.assertEqual(c.status(result),'applied')
 
     def test_mycareer_uses_options_for_the_session_when_camera_patch_is_selected(self):
         from mod_editor.core import nfl2k5_my_career as career

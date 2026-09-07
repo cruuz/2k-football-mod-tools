@@ -156,6 +156,10 @@ class Recorder:
                 off = int(off, 0) if isinstance(off, str) else off
                 va = post_image.va_for_offset(off)
             if isinstance(va, int) and isinstance(size, int) and size > 0:
+                if owner == "nfl2k5_camera" and edit.get("label") == "owned_camera_wrappers":
+                    allocation = module.allocation(after)
+                    if allocation is None or (va, size) != (allocation["va"], allocation["size"]):
+                        raise OracleError("camera wrapper receipt differs from its named allocation")
                 # An owner's write into its own named allocation is published from the
                 # FINAL layout by finish(); the dormant-owner probe can place the same
                 # owner at a different offset, so a declared edit inside a grown page

@@ -94,13 +94,17 @@ def manifest_for_allocated_union(manifest, retail, allocated):
     The protected release manifest records a different union. Keep every retail
     reservation and every parent page. Move a grown child span only if it lies
     wholly within its recorded owner/kind allocation, whose size/alignment must
-    match the actual sealed directory. Unknown or changed ownership refuses.
+    match the actual sealed directory. The old camera recorder also published
+    its complete wrapper at the recorded preset's allocation; recognize that
+    one complete span by re-planning the recorded preset. Unknown or changed
+    ownership refuses.
     This is not a regenerated disc manifest and is never written to the product.
     """
     from mod_editor.core.nfl2k5_cave_oracle import ReservationManifest, XbeImage
     old = manifest.document["allocator_layout"]["allocations"]
     layout = space.layout(allocated)
     current = {(a["owner"], a["kind"]): a for a in layout["allocations"]}
+    preset_camera = None
     spans = []
     for span in manifest.document["spans"]:
         start, end = int(span["start"], 0), int(span["end"], 0)
@@ -109,6 +113,24 @@ def manifest_for_allocated_union(manifest, retail, allocated):
             continue
         matches = [a for a in old if a["owner"] == span["owner"] and
                    a["va"] <= start < end <= a["va"] + a["size"]]
+        if not matches and span["owner"] == camera.OWNER and span["basis"] == "declared edit: owned_camera_wrappers":
+            # The release manifest before r63-camera-v2 retained an obsolete
+            # whole-wrapper declaration from its preset probe. Derive its
+            # address from recorded build flags; never accept an arbitrary
+            # unknown grown span or a partial/missized camera declaration.
+            if preset_camera is None:
+                import inspect
+                from mod_editor.core import nfl2k5_throw_tuning as tuning
+                values = manifest.document["preset_values"]
+                arguments = {key: values[key] for key in inspect.signature(tuning._selected_space_requests).parameters
+                             if key in values}
+                arguments.update(with_kickoff=values.get("kickoff_relocated", False),
+                                 runtime=values.get("scorebug_runtime", False))
+                candidates = space.plan(tuning._selected_space_requests(**arguments))["allocations"]
+                preset_camera = next((a for a in candidates if a["owner"] == camera.OWNER and a["kind"] == "code"), {})
+            if (preset_camera and start == preset_camera['va'] and
+                    end-start == span['size'] == preset_camera['size'] == camera.CODE_SIZE):
+                matches = [preset_camera]
         if len(matches) != 1:
             raise AssertionError("manifest contains an unrecognized grown owner span")
         before = matches[0]

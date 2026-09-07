@@ -9233,3 +9233,61 @@ retail reservations remain intact. This is not a replacement release
 manifest. The gate also recognizes the current manifest's explicit transfer
 of the eligibility hook from kickoff to relocated kickoff, then verifies the
 actual installed bytes. No free/unknown cave exemption was added.
+
+## r63-camera-v2: paired presets and modest pass framing (2026-09-07)
+
+The backend is complete in the existing `nfl2k5_camera` owner, version 3.
+`ASTRA_CAMERA_V2_REPORT.md` supersedes the earlier claim that Standard stays
+retail, and corrects the old projection fixture's interpretation of type-2
+camera offsets. There is no new option, row index, allocation, or Build preset
+change. MyCareer assembly and its generated template remain byte-identical.
+
+The camera-only BuildPlan and the complete owner union work with the already
+landed Far wiring. **No dispatcher or BuildPlan implementation change is
+needed.** Preserve `_apply_all`'s final tuple
+`(camera, camera_patch, "camera_patch", "camera")`, the `camera=camera` kwarg,
+request union and allocator deferral. Preserve `"camera": camera_patch.status(...)`
+in all four status dictionaries (plain inspection, image inspection,
+`write_copy` result, image-write result) and `_grown_status_fields`.
+Keep `BuildPlan.camera: bool = False`, Basic off, Advanced on, Experimental
+on. `REQUESTS` stays `(("nfl2k5_camera", "code", 64, 16),)`.
+
+Two protected maintenance changes remain for Claude:
+
+1. Update the existing `PATCHES` camera help in
+   `mod_editor/gui/gameplay_patches_panel_qt.py` to this exact text, retaining
+   the current title and `camera` in `NEEDS_IMAGE`:
+
+   ```python
+   "Retail: Standard and Far use the original camera framing and pass zoom. "
+   "Patch: start games and practice with Far. Standard gives a closer view at "
+   "the same raised angle, and both cameras pull back less during passes. "
+   "Options changes last for the current session. Experimental; not yet witnessed in play."
+   ```
+
+   In `mod_editor/gui/build_panel_qt.py`, retain `_option(pl, "camera", ...)`
+   and its 34-character caption `Start games with Far (experimental)`.
+   Use help: `Far starts each game and practice. Standard offers a closer view
+   at the raised angle; passes use a smaller pullback. Options changes last
+   for the session. Not yet witnessed in play.` Keep `badge=NOT_TESTED`.
+
+2. Regenerate protected `data/nfl2k5_cave_reservations.json` with the normal
+   manifest tool after integration. Include the ten Standard descriptor edits
+   and four complete pass/live instruction edits. The recorder now verifies
+   the camera's owned-wrapper receipt against its named allocation and waits
+   until `finish()` to publish that child. This fixes the old manifest's
+   duplicate wrapper declaration from a different preset allocation. The
+   test projection recognizes that old complete span only by re-planning the
+   manifest's recorded preset; arbitrary/partial/missized spans still refuse.
+   The protected manifest was not edited or regenerated in this task.
+
+Retain existing allowlist lines and runtime-closure imports for
+`mod_editor/core/nfl2k5_camera.py`, `mod_editor/core/nfl2k5_xbe_space.py`,
+`mod_editor/core/nfl2k5_draft_ai.py` and
+`mod_editor/core/nfl2k5_my_career_code.py`. No new runtime file or import is
+introduced. The proof tool, public fixture, report, JSON and PNG are repository
+verification artifacts. The unified provider's camera source digest is
+already updated in `mod_editor/core/providers.py`. No new capability registry
+entry is needed; the retail camera inspector remains a retail map. No release
+tag, protected build module, allowlist, runtime-closure file or GUI file was
+changed here. The new behavior remains EXPERIMENTAL / UNWITNESSED.

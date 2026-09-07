@@ -81,7 +81,7 @@ class CaveReferenceTests(unittest.TestCase):
         cls.patched, cls.music_receipt = compose(cls.patched, reverse=getattr(cls, "reverse_owners", False), scaleout=getattr(cls, "scaleout", False))
         from mod_editor.core import nfl2k5_camera as camera
         if camera.status(cls.patched) != "applied" or camera.apply(cls.patched)[0] != cls.patched:
-            raise AssertionError("Far selection/framing missing from complete owner union")
+            raise AssertionError("Paired Standard/Far framing and pass limits missing from complete owner union")
         from mod_editor.core import nfl2k5_animation_xbe as animation_xbe
         if animation_xbe.status(cls.patched) != "applied":
             raise AssertionError("Embedded animation owner missing from the composed XBE")
@@ -602,6 +602,8 @@ class CaveReferenceTests(unittest.TestCase):
         image = XbeImage(self.patched)
         for name, (va, before) in camera.HOOKS.items():
             self.assertEqual(sum(i.size for i in md.disasm(before, va)), len(before), name)
+            after = camera._read(self.patched, va, len(before))
+            self.assertEqual(sum(i.size for i in md.disasm(after, va)), len(after), name)
             self.assertEqual(self.manifest.overlaps(va, va+len(before), exclude_owner=camera.OWNER), [])
             for target in range(va+1, va+len(before)):
                 self.assertFalse(self.targets.get(target, []), hex(target))
@@ -611,6 +613,12 @@ class CaveReferenceTests(unittest.TestCase):
         self.assertEqual({va: refs for va, refs in self.targets.items()
                           if allocation['va'] <= va < allocation['va']+64}, {})
         self.assertEqual(camera.status(self.patched), 'applied')
+        # Existing descriptors and complete instruction edits allocate no
+        # retail cave. Check the expanded v3 edit list against every owner.
+        for reservation in camera.reservations(self.patched):
+            if reservation['basis'].startswith('declared edit:'):
+                self.assertEqual(self.manifest.overlaps(int(reservation['start'],0),
+                    int(reservation['end'],0),exclude_owner=camera.OWNER), [], reservation)
 
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
