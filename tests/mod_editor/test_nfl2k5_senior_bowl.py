@@ -227,11 +227,9 @@ class PublicTests(unittest.TestCase):
         self.assertFalse(row["gui"]["default_enabled"])
 
     def test_template_reproduction(self):
-        if shutil.which("as") is None:
-            self.skipTest("GNU i386 as is absent")
-        version = subprocess.run(["as", "--version"], capture_output=True, text=True)
-        if "GNU assembler" not in version.stdout:
-            self.skipTest("template reproduction requires GNU i386 as")
+        from _gnu_elf32_as import gnu_elf32_as
+        if not gnu_elf32_as():
+            self.skipTest("template reproduction requires GNU i386 as producing ELF32")
         subprocess.run([sys.executable, str(ROOT / "tools/nfl2k5_senior_bowl_assemble.py"), "--check"], check=True)
 
 

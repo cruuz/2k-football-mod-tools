@@ -42,7 +42,7 @@ class HandoffTests(unittest.TestCase):
         registry.validate_data(data, check_files=False)
         with tempfile.TemporaryDirectory() as directory:
             candidate = Path(directory).resolve() / "registry.v1.json"
-            candidate.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n")
+            candidate.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
             checked = registry.load_and_validate(candidate, check_files=False)
             self.assertEqual(len(checked["capabilities"]), original_count + int(not existing))
             result = subprocess.run(
