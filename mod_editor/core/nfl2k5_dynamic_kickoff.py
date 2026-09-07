@@ -2,7 +2,7 @@
 
 Pair with kick_rules (35-yard tee) and the playbook kickoff_alignment tool.
 No timer releases the hold: ground/player contact latches the first field class.
-See ASTRA_KICKOFF_V3_REPORT.md for the complete-frame hold investigation.
+See ASTRA_KICKOFF_V4_REPORT.md for the native pre-kick state investigation.
 
 Runtime storage is ten previously unreferenced bytes on the writable shared
 .rdata/.data page. 0xA69970 and 0xA69974..7F belong to other patches. Settings
@@ -64,6 +64,8 @@ HOOKS = {
     "block_target": (0x2FAFF0, bytes.fromhex("558bec83e4f0")),
     "diagram": (0x1802BB, bytes.fromhex("8b450c85c0")),
     "separation": (0x1D8940, bytes.fromhex("8b48248b5120")),
+    "ready": (0x1FF940, bytes.fromhex("8b41108b5004")),
+    "head_pose": (0x1DF430, bytes.fromhex("558bec83e4f0")),
 }
 
 
@@ -139,8 +141,8 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     def label(name): a.label(name)
     def j(op, name): a.j32(op, name)
     def call(name): a.j32("e8", name)
-    def save(): b("9c60")  # pushfd, pushad (36 bytes)
-    def restore(): b("619d")
+    def save(flags=True): b("9c60" if flags else "60")
+    def restore(flags=True): b("619d" if flags else "61")
     def replay(name):
         va, original = HOOKS[name]
         b(original.hex())
@@ -148,16 +150,13 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     def guard(done, live=False):
         call("active_live" if live else "active"); j("0f84", done)
     def signed_z():  # ST0 := ball/contact z in kicking direction, balanced by caller
-        b("d94208")  # fld [edx+8]
-        b("f605" + imm(FLAGS) + "10")
-        unique = "positive_" + str(len(a.items))
-        j("0f84", unique); b("d9e0"); label(unique)
+        b("d94208"); call("direction_z")
     def compare_pop(va):
         b("d81d" + imm(va) + "dfe0f6c441")  # fcomp, fnstsw ax, test ah, C0|C3
     def percent_roll(va):
         a.call(RAND)
         b("31d26a6459f7f1")  # unsigned RNG % 100 -> edx
-        b("0fb605" + imm(va) + "39c2")  # cmp edx,eax
+        b("3a15" + imm(va))  # DL is 0..99; compare the byte probability
 
     label("active_live")
     b("833d" + imm(PLAY_STATE) + "0e"); j("0f85", "inactive")
@@ -166,11 +165,16 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     b("f605" + imm(FLAGS) + "08c3")
     label("inactive"); b("31c0c3")
 
+    label("direction_z")
+    b("f605" + imm(FLAGS) + "10"); j("0f84", "direction_done")
+    b("d9e0")
+    label("direction_done"); b("c3")
+
     label("launch")
-    save()
+    save(False)
     b("c605" + imm(FLAGS) + "00")
     b("833d" + imm(PHASE) + "02"); j("0f85", "launch_done")
-    b("8b74242c")  # original [esp+8] is kicker
+    b("8b742428")  # original [esp+8] is kicker, plus PUSHAD (32 bytes)
     b("85f6"); j("0f84", "launch_done")
     b("8b462085c0"); j("0f84", "launch_done")
     # Query the retail Ball Action opcode (8) on BOTH normal and squib paths.
@@ -194,7 +198,7 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     label("launch_positive")
     percent_roll(TB_PROB); j("0f83", "launch_done")
     b("800d" + imm(FLAGS) + "20")
-    label("launch_done"); restore(); replay("launch")
+    label("launch_done"); restore(False); replay("launch")
 
     label("reset")
     b("c605" + imm(FLAGS) + "00")  # mov does not change flags
@@ -211,9 +215,7 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     b("0fb60d" + imm(TARGET_MAX) + "0fb61d" + imm(TARGET_MIN))
     b("29d94131d2f7f101da")  # selected receiving yard = lo + RNG % (hi-lo+1)
     b("6a325829d050db0424d80d" + imm(YARD))  # (50-yard)*91.44
-    b("f605" + imm(FLAGS) + "10"); j("0f84", "aim_positive")
-    b("d9e0")
-    label("aim_positive")
+    call("direction_z")
     b("d825" + imm(KICK_SPOT) + "d9e1")  # abs(target z - exact kick spot)
     b("d95c246083c404")  # original [esp+0x38], accounting for saved regs + temp
     b("c744243800200000")  # original [esp+0x14] elevation = 45 degrees
@@ -244,25 +246,25 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     label("contact_done"); b("c3")
 
     label("ground")
-    save(); guard("ground_done", live=True)
+    save(False); guard("ground_done", live=True)
     b("3b0d" + imm(BALL)); j("0f85", "ground_done")
     # EDX is the collision-resolved transform passed by 0x1C841F.
     call("contact")
     b("800d" + imm(TB_PROB) + "80")  # high bit: an actual ground contact occurred
     b("83f804"); j("0f84", "ground_invalid")
-    b("0fb605" + imm(FLAGS) + "83e00783f803"); j("0f85", "ground_done")
+    b("a0" + imm(FLAGS) + "24073c03"); j("0f85", "ground_done")
     label("ground_invalid")
     b("f605" + imm(FLAGS) + "40"); j("0f85", "ground_done")
     b("800d" + imm(FLAGS) + "80")
     call("finish")
-    label("ground_done"); restore(); replay("ground")
+    label("ground_done"); restore(False); replay("ground")
 
     label("touch")
     save(); guard("touch_done", live=True)
     b("a1" + imm(BALL) + "85c0"); j("0f84", "touch_done")
     b("8b5014"); call("contact")
     b("83f804"); j("0f84", "touch_invalid")
-    b("0fb605" + imm(FLAGS) + "83e00783f803"); j("0f85", "touch_done")
+    b("a0" + imm(FLAGS) + "24073c03"); j("0f85", "touch_done")
     label("touch_invalid")
     b("f605" + imm(FLAGS) + "40"); j("0f85", "touch_done")
     b("800d" + imm(FLAGS) + "80")
@@ -274,25 +276,34 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     # behind the tee at 184050. This runs BEFORE launch, so ACTIVE is not a
     # valid guard. Only normal kickoff coverage bypasses the retail clamp.
     label("lineup")
-    save()
+    save(False)
     b("8b41383b05" + imm(POSSESSION)); j("0f85", "lineup_go")
     call("aligned_roles"); j("0f84", "lineup_go")
-    restore(); b("c3")
-    label("lineup_go"); restore(); replay("lineup")
+    restore(False); b("c3")
+    label("lineup_go"); restore(False); replay("lineup")
 
     # State 12 is still lining up; 158C90 advances to 13 only when both teams
     # are ready. State 14 starts before the animation's 222CA0 ball launch.
-    # Hold through that approach as well as flight, without freezing setup.
+    # Hold completed players through that approach as well as flight.
     label("held")
-    b("a1" + imm(PLAY_STATE) + "83e80d83f801"); j("0f87", "held_no")
+    b("a1" + imm(PLAY_STATE) + "83e80d83f801"); j("0f86", "held_contact")
+    # Global lineup state 12 outlasts individual lineup completion. The native
+    # setup task writes player-state +3E4=13 only after reaching its mark and
+    # facing it. A new lineup resets that field to 12. Never freeze travel.
+    b("40"); j("0f85", "held_no")
+    # The late head pass also visits officials/presentation actors. Their +20
+    # field is not necessarily a player-state object, so reject them first.
+    b("83791c01"); j("0f85", "held_no")
+    b("8b412085c0"); j("0f84", "held_no")
+    b("83b8e40300000d"); j("0f85", "held_no")
+    label("held_contact")
     b("f605" + imm(FLAGS) + "07"); j("0f85", "held_no")
     # EAX=1 only for the 19 coverage/setup slots of a normal kickoff. The
     # selected kicking formation is available before CTX+1C4 (last kicker).
     # Onside type 10 and safety phase 1 retain their retail behavior.
     label("aligned_roles")
     b("833d" + imm(PHASE) + "02"); j("0f85", "held_no")
-    b("83791c01"); j("0f85", "held_no")
-    b("83794800"); j("0f85", "held_no")
+    b("8b411c480b4148"); j("0f85", "held_no")
     b("80792e0b"); j("0f83", "held_no")
     b("8b15" + imm(POSSESSION) + "85d2"); j("0f84", "held_no")
     b("8b420c85c0"); j("0f84", "held_no")
@@ -308,15 +319,23 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     label("held_yes"); b("31c040c3")
     label("held_no"); b("31c0c3")
 
+    # 1881E0 otherwise waits forever for the ready-stance descriptor that our
+    # fixed idle replaces. Completed held roles are ready; the free kicker and
+    # every out-of-scope player still execute the native descriptor query.
+    # held clobbers only EAX/EDX, both overwritten by the displaced prologue.
+    label("ready")
+    call("held"); j("0f85", "ready_yes"); replay("ready")
+    label("ready_yes"); b("c3")
+
     label("plan")
-    save(); call("returner")
+    save(False); call("returner")
     # Restore the input ECX after any retail calls made by returner().
     b("8b4c2418"); call("held"); j("0f84", "plan_go")
-    restore(); b("c3")
-    label("plan_go"); restore(); replay("plan")
+    restore(False); b("c3")
+    label("plan_go"); restore(False); replay("plan")
 
     label("motion")
-    save(); b("89f1"); call("held"); j("0f84", "motion_go")
+    save(False); b("89f1"); call("held"); j("0f84", "motion_go")
     # Select the native zero-speed clip. Re-entry also handles an old running
     # clip in the same descriptor; 2FCAC0 installs only when the clip differs.
     b("8b460c83601000836018fd")
@@ -335,41 +354,48 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     # their fixed frame zero and pass dt=0 to 31BEB0. Root callbacks and the
     # collision setter below are suppressed, so no restore fights an integrator.
     b("8b461483601cf98b5058836204008b507483620400")
-    restore(); b("31c0"); a.jmp_abs(0x218015)
-    label("motion_go"); restore()
+    restore(False); b("31c0"); a.jmp_abs(0x218015)
+    label("motion_go"); restore(False)
     label("motion_native"); replay("motion")
 
     label("position")
-    save(); call("held"); j("0f84", "position_go")
-    restore(); b("c20800")
-    label("position_go"); restore(); replay("position")
+    save(False); call("held"); j("0f84", "position_go")
+    restore(False); b("c20800")
+    label("position_go"); restore(False); replay("position")
 
     label("root_motion")
-    save(); call("held"); j("0f84", "root_go")
-    restore(); b("c3")
-    label("root_go"); restore(); replay("root_motion")
+    save(False); call("held"); j("0f84", "root_go")
+    restore(False); b("c3")
+    label("root_go"); restore(False); replay("root_motion")
 
     # 1D898D/1D8997 add a fresh collision impulse directly, bypassing 2CC4F0,
     # then retain it for the later 28D06D/28D081 integration. Stop the producer
     # for held players. EAX is the player; one stack argument, no ST0 return.
     label("separation")
-    save(); b("89c1"); call("held"); j("0f84", "separation_go")
-    restore(); b("c20400")
-    label("separation_go"); restore(); replay("separation")
+    save(False); b("89c1"); call("held"); j("0f84", "separation_go")
+    restore(False); b("c20400")
+    label("separation_go"); restore(False); replay("separation")
+
+    # 28F310 can request a new head-look target after motion. At the later
+    # 1DF430 pass, mode 0 samples the fixed clip's head without interpolation.
+    # Keep the task's target intact so native tracking resumes on contact.
+    label("head_pose")
+    save(False); b("89c1"); call("held"); j("0f84", "head_go")
+    b("8b411083a0a801000000")
+    label("head_go"); restore(False); replay("head_pose")
 
     # Selector ABI: ECX=blocker, EDX=origin; seven stack operands, ST0=threshold.
     # Only released, normal kickoff return blockers use this nearest rule.
     label("block_target")
-    save(); guard("block_go", live=True)
+    save(False); guard("block_go", live=True)
     b("f605" + imm(FLAGS) + "07"); j("0f84", "block_go")
-    b("837c242c02"); j("0f85", "block_go")  # native drive mode
-    b("83791c01"); j("0f85", "block_go")
-    b("83794800"); j("0f85", "block_go")
+    b("837c242802"); j("0f85", "block_go")  # native drive mode
+    b("8b411c480b4148"); j("0f85", "block_go")
     b("80792e0b"); j("0f83", "block_go")
     b("a1" + imm(BALL) + "3908"); j("0f84", "block_go")
     b("a1" + imm(CTX) + "8b80c40100008b40388b10395138"); j("0f85", "block_go")
     j("e9", "block_start")
-    label("block_go"); restore(); replay("block_target")
+    label("block_go"); restore(False); replay("block_target")
     label("block_start")
     b("8b71188b780431db6a165d680000807f")  # self transform, opponent list, best, bound, +inf
     label("block_loop")
@@ -395,8 +421,8 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     # Its current task exists before both initialization and refresh calls.
     b("8b41208b8010030000895840")
     # Strong primary score, no deeper fallback; native drive engagement follows.
-    b("8b44243489188b442438c7000000803f31d28b44243c89108b4424408910")
-    restore(); b("d9056c694e00c21c00")
+    b("8d742430fcad8918adc7000000803f31d2ad8910ad8910")
+    restore(False); b("d9056c694e00c21c00")
 
     # This point is reached only in diagram mode, after retail x compression.
     # Recognize the dynamic type-8 coverage row; world and other forms replay.
@@ -438,7 +464,7 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     label("return_done"); b("c3")
 
     label("dead")
-    save(); guard("dead_go", live=True)
+    save(False); guard("dead_go", live=True)
     b("f605" + imm(FLAGS) + "40"); j("0f85", "dead_go")
     b("3b0d" + imm(BALL)); j("0f85", "dead_go")
     b("8b5114"); call("contact")
@@ -447,22 +473,22 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     b("83f804"); j("0f85", "dead_go")
     b("800d" + imm(FLAGS) + "80")
     label("dead_finish"); call("finish")
-    restore(); b("c3")
-    label("dead_go"); restore(); replay("dead")
+    restore(False); b("c3")
+    label("dead_go"); restore(False); replay("dead")
 
     # Retail B6760 accepts the 5103A0 animation descriptor independently of
     # position. A receiving carrier with the ball inside the landing zone must
     # not become an end-zone touchback merely by entering that state.
     label("eligibility")
-    save(); guard("eligibility_go", live=True)
+    save(False); guard("eligibility_go", live=True)
     b("a1" + imm(BALL) + "85c0"); j("0f84", "eligibility_go")
     b("3938"); j("0f85", "eligibility_go")
     b("8b15" + imm(CTX) + "8b92c401000085d2"); j("0f84", "eligibility_go")
     b("8b52388b123b5738"); j("0f85", "eligibility_go")
     b("8b5014"); call("classify")
     b("83f801"); j("0f85", "eligibility_go")
-    restore(); b("31c0c3")
-    label("eligibility_go"); restore(); replay("eligibility")
+    restore(False); b("31c0c3")
+    label("eligibility_go"); restore(False); replay("eligibility")
 
     # Use the retail touchback/dead-play transition, retaining kick ownership
     # bookkeeping. force-40 overrides the spot afterward. The short/OOB
@@ -488,9 +514,7 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     label("spot_40"); b("6a285a")
     label("spot_calc")
     b("6a325929d151db0424d80d" + imm(YARD))
-    b("f605" + imm(FLAGS) + "10"); j("0f84", "spot_positive")
-    b("d9e0")
-    label("spot_positive")
+    call("direction_z")
     b("d95c244083c404")  # original [esp+0x18] after save + temp
     b("8364243400")  # original [esp+0x10] = centered x
     label("spot_done"); restore(); replay("spot")

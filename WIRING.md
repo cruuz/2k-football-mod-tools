@@ -452,6 +452,65 @@ the shared help contains both "Retail" and "Patch". No new dispatcher flag,
 Build option or capability registry entry is needed. The repaintable template
 compiler, source PNG catalog and its release checks remain intact.
 
+# r64 kickoff v4: completed lineup and late head pose (2026-09-07)
+
+EXPERIMENTAL/UNWITNESSED. See `ASTRA_KICKOFF_V4_REPORT.md`. Existing dynamic
+kickoff now holds each of the nineteen coverage/setup players as soon as its
+native lineup state is 13, even while the global state is still 12. The new
+ready query preserves native team readiness after fixed idle replaces the
+ready descriptor. A late head-pose guard samples the fixed clip instead of
+interpolating a renewed head-look request. Code uses 1,935/1,939 reserved bytes;
+state remains 10 RW bytes. There are eighteen hooks and no new allocation.
+
+Claude must regenerate the protected `data/nfl2k5_cave_reservations.json` with
+`python3 tools/nfl2k5_cave_oracle.py manifest` after integration. Include current
+source fingerprints and both additional live spans:
+
+| Hook | Complete overwritten span | Retail pin |
+| --- | --- | --- |
+| `ready` | `1FF940..1FF946` | `8b41108b5004` |
+| `head_pose` | `1DF430..1DF436` | `558bec83e4f0` |
+
+The existing manifest builder discovers both from the owner's declared edits;
+grown builds transfer their ownership to `nfl2k5_dynamic_kickoff_relocated`.
+Retain v3's `1D8940..1D8946` separation span. The test projection verifies each
+retail pin, exact installed jump and absence of a foreign overlapping owner.
+It still rejects unknown grown declarations. This projection is confined to
+the tests; the protected product manifest has not been regenerated here.
+
+Dispatcher `_apply_all` keeps the existing
+`(dynamic_kickoff, _dynamic_kickoff_adapter(dynamic_kickoff_settings),
+"dynamic_kickoff_patch", "dynamic-kickoff")` tuple and the post-allocator
+`(kickoff_relocated, kickoff_relocated_patch, "kickoff_relocated_patch",
+"experimental relocated kickoff")` tuple. Keep kwargs `dynamic_kickoff`,
+`dynamic_kickoff_settings`, `kickoff_relocated`, request selection and deferred
+final application. In the four status dictionaries (file inspection, image
+inspection, file patch result, image patch result), keep `dynamic_kickoff`,
+`dynamic_kickoff_settings`, `kickoff_relocated`, `kickoff_relocated_settings`
+and their existing status/read-settings calls. No dispatcher edit is needed.
+
+`BuildPlan` keeps `dynamic_kickoff`, its settings and `kickoff_relocated` with
+existing normalization. Basic and Advanced leave dynamic kickoff disabled;
+Experimental enables it. Relocation stays disabled by default in all three
+presets and still implies the allocator and dynamic kickoff when selected.
+Gameplay Patches keeps both PATCHES entries and both `NEEDS_IMAGE` keys.
+The existing dynamic text begins "Retail: on a kickoff everyone sprints at
+the kick" and includes "Patch: the 2024/2025 rule." Retain its role exceptions
+and unwitnessed label. The relocation text retains "Retail: the extra patch
+space is unused. Patch: moves the dynamic kickoff there with the same
+settings." No newly witnessed claim is authorized by the native tests.
+
+Build tab `_option` keeps `Dynamic kickoff: ready stance and close blocks`
+(46 characters, below 60), `needs_image=True` and `NOT_TESTED`. Allowlist lines
+remain `mod_editor/core/nfl2k5_dynamic_kickoff.py` and
+`mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py`; runtime-closure imports
+remain `mod_editor.core.nfl2k5_dynamic_kickoff` and
+`mod_editor.core.nfl2k5_dynamic_kickoff_relocated`. The two existing provider
+source pins are refreshed in `providers.py`. No capability registry entry is
+needed because this changes the existing surface. The fitted card and PLAY
+alignment/return resources are unchanged. Rebuild from supported retail input;
+historical v1/v2/v3 executable patches are deliberately refused as foreign.
+
 # r63 kickoff v3: collision producer and residual pose hold (2026-09-07)
 
 EXPERIMENTAL/UNWITNESSED. See `ASTRA_KICKOFF_V3_REPORT.md`. The existing

@@ -1,6 +1,6 @@
 """Standalone v3 complete-frame, exact-receipt and guard regression proofs.
 
-Optional evidence refresh: python3 this_file.py --record
+Historical v3 evidence stays fixed; --record refuses newer compiler output.
 The normal unittest run only reads receipts and independently replays them.
 """
 from collections import Counter
@@ -28,6 +28,29 @@ HELD = tuple(range(1, 11)) + tuple(range(13, 22))
 
 def digest(value):
     return hashlib.sha256(json.dumps(value, separators=(',', ':')).encode()).hexdigest()
+
+
+def replay_edits(source, receipt, name):
+    """Replay exact public edits with input checks, including allocator seals."""
+    result = bytearray(source)
+    edits = receipt[name]['edits'] + receipt[name + '_section_digest_edits']
+    if name == 'relocated':
+        edits += receipt['relocated_allocator_metadata_edits']
+    for edit in edits:
+        off, after = edit['offset'], bytes.fromhex(edit['after'])
+        before = source[off:off + len(after)]
+        expected = edit.get('before', edit.get('before_sha256'))
+        actual = before.hex() if 'before' in edit else hashlib.sha256(before).hexdigest()
+        if actual != expected:
+            raise AssertionError(f'{name} receipt input differs at {off:#x}')
+        result[off:off + len(after)] = after
+    if hashlib.sha256(result).hexdigest() != receipt[name + '_output_sha256']:
+        raise AssertionError(f'{name} receipt output differs')
+    return bytes(result)
+
+
+def v3_payload(base):
+    return replay_edits(base, json.loads(RECEIPT.read_text()), 'legacy')
 
 
 def fresh_collision_evidence(payload):
@@ -173,23 +196,15 @@ class V3Tests(unittest.TestCase):
 
     def test_exact_executable_receipts_and_foreign_v2_rejection(self):
         receipt = json.loads(RECEIPT.read_text())
-        for key, value in self.patch_receipt.items():
-            self.assertEqual(digest(value), digest(receipt[key]), key)
-        for source, expected, name in ((self.base, self.legacy, 'legacy'),
-                                        (self.allocated, self.grown, 'relocated')):
-            replay = bytearray(source)
-            edits = receipt[name]['edits'] + receipt[name + '_section_digest_edits']
-            if name == 'relocated':
-                edits += receipt['relocated_allocator_metadata_edits']
-            for edit in edits:
-                off, after = edit['offset'], bytes.fromhex(edit['after'])
-                before = source[off:off + len(after)]
-                if 'before' in edit:
-                    self.assertEqual(before.hex(), edit['before'])
-                else:
-                    self.assertEqual(hashlib.sha256(before).hexdigest(), edit['before_sha256'])
-                replay[off:off + len(after)] = after
-            self.assertEqual(bytes(replay), expected)
+        historical = v3_payload(self.base)
+        allocated = space.apply(historical, REQUESTS, scaleout=True)[0]
+        self.assertEqual(hashlib.sha256(allocated).hexdigest(), receipt['union_allocated_sha256'])
+        old_grown = replay_edits(allocated, receipt, 'relocated')
+        for old in (historical, old_grown):
+            self.assertEqual(dk.status(old), 'foreign')
+            with self.assertRaises(ValueError):
+                dk.apply(old)
+        for _, expected, _ in self.variants():
             self.assertEqual(dk.status(expected), 'applied')
             self.assertEqual(dk.apply(expected)[0], expected)
             for section in _sections(expected):
@@ -210,6 +225,7 @@ class V3Tests(unittest.TestCase):
 
     def test_complete_60_frames_all_roles_directions_placements_and_contact(self):
         receipt = json.loads(RECEIPT.read_text())
+        historical = json.loads(TRACES.read_text())
         for placement, payload, state in self.variants():
             for direction in (-1, 1):
                 key = f'{placement}_{direction:+d}'
@@ -217,8 +233,15 @@ class V3Tests(unittest.TestCase):
                     summary, trace = exercise(self, payload, state=state, direction=direction,
                                               fixed=True, radius=250,
                                               release='ground' if direction < 0 else 'touch')
-                    self.assertEqual(summary, receipt['cases'][key])
                     self.assertEqual(digest(trace), summary['trace_sha256'])
+                    # Current native writers move when the cave changes; keep
+                    # every historical v3 frame's observed output exact.
+                    old = historical[key]
+                    self.assertEqual(digest([trace['states'][s] for _, s in trace['frames']]),
+                                     digest([old['states'][s] for _, s in old['frames']]))
+                    for field in ('per_frame_changed_players', 'first_contact',
+                                  'free_position_change_frames', 'initial_positions'):
+                        self.assertEqual(summary[field], receipt['cases'][key][field])
 
     def test_historical_v2_full_frame_counterexample(self):
         summary, _ = exercise(self, self.v2, state=dk.FLAGS, direction=1,
@@ -327,6 +350,8 @@ class ReceiptIntegrityTests(unittest.TestCase):
 
 def record():
     V3Tests.setUpClass()
+    if V3Tests.patch_receipt['legacy_output_sha256'] != json.loads(RECEIPT.read_text())['legacy_output_sha256']:
+        raise SystemExit('v3 is historical; record new compiler evidence in the v4 suite')
     test = V3Tests()
     result = V3Tests.patch_receipt
     result['cases'] = {}

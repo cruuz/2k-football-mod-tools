@@ -99,8 +99,8 @@ def manifest_for_allocated_union(manifest, retail, allocated):
     its complete wrapper at the recorded preset's allocation; recognize that
     one complete span by re-planning the recorded preset. Unknown or changed
     ownership refuses.
-    The v3 kickoff live hook is pinned against both retail and the composed
-    owner before adding its reservation.
+    The additional v3/v4 kickoff live hooks are pinned against both retail and
+    the composed owner before adding their reservations.
     This is not a regenerated disc manifest and is never written to the product.
     """
     from mod_editor.core.nfl2k5_cave_oracle import ReservationManifest, XbeImage
@@ -144,31 +144,35 @@ def manifest_for_allocated_union(manifest, retail, allocated):
         spans.append({**span, "start": hex(start + delta), "end": hex(end + delta)})
     spans += space.reservations(allocated)
     from mod_editor.core import nfl2k5_dynamic_kickoff as legacy_kickoff
-    va, original = legacy_kickoff.HOOKS["separation"]
     image = XbeImage(retail)
-    if image.read(va, len(original)) != original:
-        raise AssertionError("kickoff separation retail pin differs")
-    if any(r.detail.split(":", 1)[0] not in ("nfl2k5_dynamic_kickoff", kickoff.OWNER)
-           for r in manifest.overlaps(va, va + len(original))):
-        raise AssertionError("kickoff separation overlaps a different owner")
-    installed = XbeImage(allocated).read(va, len(original))
+    installed_image = XbeImage(allocated)
+    owner = None
     if kickoff.status(allocated) == "applied":
         code, data = kickoff._sites(allocated)
         _, labels = kickoff.code_for(legacy_kickoff._settings(), code["va"], data["va"])
-        if installed != legacy_kickoff._hook_bytes("separation", labels):
-            raise AssertionError("kickoff separation owner hook differs")
-        spans.append(dict(start=hex(va), end=hex(va + len(original)), size=len(original),
-                          owner=kickoff.OWNER, basis="test-only pinned live edit: separation"))
-    elif installed != original and legacy_kickoff.status(allocated) != "applied":
-        # A union without either kickoff owner (camera-only seeds, for example)
-        # must still carry the retail bytes at the separation hook.
-        raise AssertionError("kickoff separation changed without a kickoff owner")
+        owner = kickoff.OWNER
+    elif legacy_kickoff.status(allocated) == "applied":
+        _, labels = legacy_kickoff._code(legacy_kickoff._settings())
+        owner = "nfl2k5_dynamic_kickoff"
+    for name in ("separation", "ready", "head_pose"):
+        va, original = legacy_kickoff.HOOKS[name]
+        if image.read(va, len(original)) != original:
+            raise AssertionError(f"kickoff {name} retail pin differs")
+        if any(r.detail.split(":", 1)[0] not in ("nfl2k5_dynamic_kickoff", kickoff.OWNER)
+               for r in manifest.overlaps(va, va + len(original))):
+            raise AssertionError(f"kickoff {name} overlaps a different owner")
+        installed = installed_image.read(va, len(original))
+        expected = legacy_kickoff._hook_bytes(name, labels) if owner else original
+        if installed != expected:
+            raise AssertionError(f"kickoff {name} owner hook differs")
+        if owner:
+            spans.append(dict(start=hex(va), end=hex(va + len(original)), size=len(original),
+                              owner=owner, basis=f"test-only pinned live edit: {name}"))
     # The release manifest is protected and predates this owner. Project only
     # its pinned live edits after validating the full installed owner. Do not
     # grant a range exemption for arbitrary changes near the native save code.
     if autosave.status(allocated) == "applied":
         owned = autosave.allocations(allocated)
-        installed_image = XbeImage(allocated)
         for name, va, before, after in autosave.sites(owned["code"]["va"], owned["read_only"]["va"]):
             if image.read(va, len(before)) != before or installed_image.read(va, len(after)) != after:
                 raise AssertionError(f"Auto Save live edit pin differs: {name}")

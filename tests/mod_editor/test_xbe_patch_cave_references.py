@@ -441,7 +441,7 @@ class CaveReferenceTests(unittest.TestCase):
         for r in space.reservations(self.patched):
             self.assertGreaterEqual(int(r["start"], 0), space.CODE_VA)
 
-    def test_kickoff_touchback_and_separation_guards_are_complete_owned_hooks(self) -> None:
+    def test_kickoff_contact_readiness_and_pose_guards_are_complete_owned_hooks(self) -> None:
         from mod_editor.core import nfl2k5_dynamic_kickoff as kickoff
         from mod_editor.core import nfl2k5_dynamic_kickoff_relocated as relocated
         from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
@@ -450,7 +450,7 @@ class CaveReferenceTests(unittest.TestCase):
         code, data = relocated._sites(self.patched)
         expected, labels = relocated.code_for(kickoff._settings(), code["va"], data["va"])
         self.assertEqual(image.read(code["va"], code["size"]), expected)
-        for name in ("eligibility", "separation"):
+        for name in ("eligibility", "separation", "ready", "head_pose"):
             va, original = kickoff.HOOKS[name]
             overlaps = manifest.overlaps(va, va + len(original))
             self.assertTrue(overlaps)

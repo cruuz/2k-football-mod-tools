@@ -254,6 +254,118 @@ class FrameMachine(NativeMachine):
         return self.snapshot()
 
 
+PREKICK_SITES = {
+    0x1853D0, 0x183D30, 0x2111D0, 0x186160, 0x183CD0, 0x1ABCF0,
+    0x1881E0, 0x1FF940, 0x1580F0, 0x158C90, 0xB6F30, 0xB45A0,
+    0x1211E0, 0x70AF0, 0x201E70, 0x202160, 0x2D6CD0,
+    0x28F310, 0x1DF3B0, 0x2176B0,
+}
+PREKICK_FIELDS = FIELDS + ('turn_spring', 'primary_clock', 'secondary_clock',
+                          'head_rotation', 'head_mode', 'skeleton_low', 'skeleton_high')
+
+
+class PreKickMachine(FrameMachine):
+    """Native lineup-completion handoff, readiness aggregation and input replay.
+
+    Initial task targets and arrival counters describe players at their marks.
+    1853D0 checks facing/arrival and calls 183D30 -> 2111D0; Python never writes
+    the completed player state or a later global play state. The two free deep
+    players finish later, giving a long state-12 window. The approach command
+    is delivered at B6F30's ABI, not by simulating the game's CPU decision loop.
+    Synthetic ready clips and decoded controller axes are external inputs.
+    """
+    def __init__(self, payload, **kwargs):
+        super().__init__(payload, tasks=False, **kwargs)
+        self.state_writes = []
+        self.input_frames = []
+        self.put(dk.PLAY_STATE, 12)
+        self.put(self.CTX + 0x1C4, 0)
+        self.put(0xE602D8, self.GAME + 0x400)
+        self.put(0xE602DC, self.GAME + 0x800)
+        self.put(0xE602E8, self.GAME + 0xC00)
+        for team, book in ((self.KICK_TEAM, self.KICK_BOOK),
+                           (self.RECEIVE_TEAM, self.RECEIVE_BOOK)):
+            self.put(team + 0x30C, book + 0x400)  # valid selected-play operands
+        for index, who in enumerate(self.players):
+            self.run(0x2C9AB0, ecx=self.get(who + 0x20), edx=0)
+            task = self.get(who + 0x510)
+            self.uc.mem_write(task + 0x20, bytes(self.uc.mem_read(who + 0xB30, 16)))
+            self.put(task + 0x30, self.get(who + 0xB50))
+            self.put(task + 0x38, 3)  # native arrival band; facing is rechecked
+            self.put(task + 0x3C, 1)
+            self.put(who + 0x5E4, 12)  # initial lineup input, before observation
+            # Retail ready descriptor, valid matching group, synthetic clip.
+            # Its normal planner and both skeletal LODs execute in the old case.
+            self.put(who + 0x904, 0x50F1E4)
+            self.put(who + 0x9D0, 0x510F08)
+            self.put(who + 0x9D4, 0x205F000)
+            base = 0x2100000 + index * 0x8000
+            self.watches.extend((
+                (who, 'turn_spring', who + 0xB68, 28),
+                (who, 'primary_clock', base + 4, 8),
+                (who, 'secondary_clock', base + 0x84, 8),
+                (who, 'head_rotation', who + 0x9B0, 16),
+                (who, 'head_mode', who + 0xAA8, 4),
+                (who, 'skeleton_low', base + 0x2000, 25 * 64),
+                (who, 'skeleton_high', base + 0x2640, 62 * 64),
+                (who, 'lineup_state', who + 0x5E4, 4),
+            ))
+        # A selected coverage man and setup blocker receive held diagonal input.
+        # The native 70AF0 -> 1211E0 path reads these decoded hardware samples.
+        for controller, who in enumerate((self.COVERAGE, self.BLOCKER)):
+            self.put(who + 0x100, controller)
+            self.f32(0xB37B00 + controller * 0x244 + 8 * 8, .8)
+            self.f32(0xB37B00 + controller * 0x244 + 9 * 8, -.6)
+        self.watch_words.clear()
+        for who, kind, start, length in self.watches:
+            for address in range(start, start + length, 4):
+                self.watch_words[address] = (self.players.index(who), kind, start)
+        for site in sorted(PREKICK_SITES | {0x2180D0}):
+            if site not in set(PHASES) | SITES | set(self.stub_pops) | set(self.fpu_stubs):
+                self.uc.hook_add(uni.UC_HOOK_CODE, self._hook, begin=site, end=site)
+        self.uc.hook_add(uni.UC_HOOK_MEM_WRITE, self._state_write,
+                         begin=dk.PLAY_STATE, end=dk.PLAY_STATE + 3)
+        self.visited.clear()
+        self.calls.clear()
+        self.writes.clear()
+
+    def _state_write(self, uc, access, address, size, value, data):
+        self.state_writes.append([self.phase, uc.reg_read(x86.UC_X86_REG_EIP),
+                                  self.get(dk.PLAY_STATE), value])
+
+    def _hook(self, uc, address, size, data):
+        if address == 0x2180D0 and hasattr(self, 'input_frames'):
+            self.input_frames.append([self.readf(who + 0x110)
+                                      for who in (self.COVERAGE, self.BLOCKER)])
+        super()._hook(uc, address, size, data)
+
+    def complete_lineup(self, players):
+        self.phase = 0  # an explicit native handoff outside the frame dispatcher
+        self.writes.clear()
+        for who in players:
+            assert self.get(who + 0x5E4) == 12
+            self.run(0x1853D0, ecx=who)
+            assert self.uc.reg_read(x86.UC_X86_REG_EAX) == 1
+            assert self.get(who + 0x5E4) == 13
+            self.run(0x186160, ecx=who)  # native pending-event ready task
+            self.put(who + 0x620, 0x4000)  # external wait-for-event script operand
+            self.put(who + 0x200, 1)  # native task scheduler's first group
+        return self.snapshot()
+
+    def approach(self):
+        self.phase = 0
+        self.writes.clear()
+        self.run(0xB6F30)  # complete native transition, including history and clocks
+        assert self.get(dk.PLAY_STATE) == 14
+
+    def native_state(self):
+        return dict(play_state=self.get(dk.PLAY_STATE), flags=self.flags(),
+                    team_ready=[self.get(team + 0x324) for team in
+                                (self.KICK_TEAM, self.RECEIVE_TEAM)],
+                    players=[[self.get(who + 0x5E4), self.get(who + 0x904)]
+                             for who in self.players])
+
+
 class WriteReceipt:
     """Lossless dictionary encoding of every held-player write and final state.
 
