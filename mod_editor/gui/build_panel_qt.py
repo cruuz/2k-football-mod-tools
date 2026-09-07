@@ -617,6 +617,33 @@ class BuildPanel(QWidget):
         self.roster_edits_status.setWordWrap(True)
         self.roster_edits_status.hide()
         r.addWidget(self.roster_edits_status)
+        self.espn25_plan_check = self._option(r, "espn25_plan", "Use saved ESPN Anniversary edits",
+                                              "Save build edits on ★ Rosters > ESPN Anniversary, then choose that plan JSON here.",
+                                              badge=NOT_TESTED, needs_image=True,
+                                              details="Applies a saved ESPN 25th Anniversary plan: the fixed-25 moment setup (scores, clock, "
+                                                      "field position, sides, conditions) and the shared historic roster edits. It runs last, "
+                                                      "after every other resource pass, and refuses a plan whose source bytes no longer match "
+                                                      "the disc. Editing a historic roster changes every moment that uses it and that team "
+                                                      "outside Anniversary mode. Cannot be combined with the merged position pools or the "
+                                                      "roster arena growth. Never part of a preset. EXPERIMENTAL / UNWITNESSED.")
+        self.espn25_row = QWidget()
+        espn25_row = QHBoxLayout(self.espn25_row)
+        espn25_row.setContentsMargins(30, 0, 0, 0)
+        espn25_row.addWidget(QLabel("Anniversary plan JSON"))
+        self.espn25_plan_field = QLineEdit()
+        self.espn25_plan_field.setPlaceholderText("Save build edits on ★ Rosters > ESPN Anniversary or choose a plan JSON file")
+        espn25_row.addWidget(self.espn25_plan_field, 1)
+        self.espn25_plan_button = QPushButton("Choose…")
+        self.espn25_plan_button.clicked.connect(self._choose_espn25_plan)
+        espn25_row.addWidget(self.espn25_plan_button)
+        self.espn25_row.hide()
+        r.addWidget(self.espn25_row)
+        self.espn25_plan_status = QLabel("")
+        self.espn25_plan_status.setObjectName("throwMuted")
+        self.espn25_plan_status.setWordWrap(True)
+        self.espn25_plan_status.hide()
+        r.addWidget(self.espn25_plan_status)
+        self._espn25_plan_cache: tuple[tuple[str, int, int] | None, str] = (None, "")
         self.player_star_check = self._option(r, "player_star", "Show a star under selected players",
                                              "A white star outline under every tagged player on the field; not yet tested in-game.", badge=NOT_TESTED,
                                              details="The game's own controller star follows every player you select. With nobody selected nothing "
@@ -839,6 +866,8 @@ class BuildPanel(QWidget):
         self.career_stats_check.toggled.connect(self.career_row.setVisible)
         self.roster_edits_check.toggled.connect(self.edits_row.setVisible)
         self.roster_edits_check.toggled.connect(lambda on: self.roster_edits_status.setVisible(on and bool(self.roster_edits_status.text())))
+        self.espn25_plan_check.toggled.connect(self.espn25_row.setVisible)
+        self.espn25_plan_check.toggled.connect(lambda on: self.espn25_plan_status.setVisible(on and bool(self.espn25_plan_status.text())))
         self.uniform_choice_mode.setEnabled(False)
         self.uniform_choice_check.toggled.connect(self.uniform_choice_mode.setEnabled)
         self.kick_rules_check.toggled.connect(lambda on: on and self.kick_power_check.setChecked(False))
@@ -852,7 +881,8 @@ class BuildPanel(QWidget):
         for box in self.findChildren(QCheckBox):
             box.toggled.connect(lambda _c: self._refresh())
         self.ceiling_spin.valueChanged.connect(lambda _v: self._refresh())
-        for field in (self.team_history_field, self.career_stats_field, self.prospect_names_field, self.roster_edits_field):
+        for field in (self.team_history_field, self.career_stats_field, self.prospect_names_field, self.roster_edits_field,
+                      self.espn25_plan_field):
             field.textChanged.connect(lambda _t: self._refresh())
         self._refresh()
 
@@ -951,7 +981,7 @@ class BuildPanel(QWidget):
         for key, label in (("catch_slider", "catch/INT sliders"), ("accel_ramp", "acceleration ramp"),
                            ("draft_ai", "draft AI"), ("returner_fix", "returner fix"), ("progression", "progression"), ("team_column", "TEAM column"), ("team_history", "team history"), ("career_stats", "career stats"), ("prospect_names", "prospect names"),
                            ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season franchise"), ("music_shuffle", "music shuffle"), ("practice_squad_screen", "Practice Squad screen"), ("abilities", "player abilities"), ("qb_spy", "QB spy"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"), ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"),
-                           ("player_star", "star decal"), ("player_tags", "star tags"), ("roster_edits", "roster edits"),
+                           ("player_star", "star decal"), ("player_tags", "star tags"), ("roster_edits", "roster edits"), ("espn25_plan", "Anniversary edits"),
                            ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"), ("position_pools", "one-pool positions"), ("depth_roles", "depth roles"), ("depth_chart_rows", "depth-chart rows"),
                            ("camera", "camera"), ("widescreen", "widescreen"),
                            ("scorebug", "ESPN scorebug")):
@@ -1035,6 +1065,25 @@ class BuildPanel(QWidget):
         self.roster_edits_check.setChecked(False)
         self.roster_edits_check.setToolTip("" if is_image else "Full disc required (not a bare default.xbe).")
         self._set_badge("roster_edits", "" if is_image else "Full disc required")
+        # the Anniversary plan is a source-specific resource plan: only an image with the fixed retail
+        # scenario / historic-roster layout can take it (the plan itself is checked when chosen and at build)
+        espn_state = str(state.get("espn25_plan"))
+        espn_available = self._available.get("espn25_plan", True)
+        self.espn25_plan_check.setEnabled(espn_available and is_image and espn_state == "available")
+        self.espn25_plan_check.setChecked(False)
+        if not espn_available:
+            self.espn25_plan_check.setToolTip("Not available in this release.")
+            self._set_badge("espn25_plan", "Not available in this release")
+        elif not is_image:
+            self.espn25_plan_check.setToolTip("Full disc required (not a bare default.xbe).")
+            self._set_badge("espn25_plan", "Full disc required")
+        elif espn_state != "available":
+            self.espn25_plan_check.setToolTip("Not recognised: the Anniversary scenarios or historic rosters on this disc "
+                                              "are not the fixed retail layout, so a saved plan can't be applied here.")
+            self._set_badge("espn25_plan", "Unrecognized source data")
+        else:
+            self.espn25_plan_check.setToolTip("")
+            self._set_badge("espn25_plan", self._static_badges.get("espn25_plan", ""))
         gate(self.kick_rules_check, "kick_rules")
         gate(self.kick_power_check, "kick_power", module="kick_rules")
         gate(self.kickoff_alignment_check, "kickoff_alignment", needs_image=True)
@@ -1202,6 +1251,7 @@ class BuildPanel(QWidget):
             "kick_laces": self.kick_laces_check, "franchise_practice": self.franchise_practice_check,
             "practice_squad": self.practice_squad_check, "depth_locks": self.depth_locks_check,
             "player_star": self.player_star_check, "roster_edits": self.roster_edits_check,
+            "espn25_plan": self.espn25_plan_check,
             "realistic_flight": self.realistic_check, "arc_by_distance": self.arc_by_distance_check,
         }
 
@@ -1288,6 +1338,7 @@ class BuildPanel(QWidget):
             career_stats=(self.career_stats_field.text().strip() if self.career_stats_check.isChecked() else ""),
             prospect_names=((self.prospect_names_field.text().strip() or "modern") if self.prospect_names_check.isChecked() else ""),
             roster_edits=(self.roster_edits_field.text().strip() if self.roster_edits_check.isChecked() else ""),
+            espn25_plan=(self.espn25_plan_field.text().strip() if self.espn25_plan_check.isChecked() else ""),
             screen_timing=(self.screen_timing_combo.currentText() if self.screen_timing_check.isChecked() else None),
             scorebug_runtime=self.scorebug_runtime_check.isChecked(),
             music_policy="jukebox_menus" if self.music_policy_check.isChecked() else "retail",
@@ -1326,7 +1377,7 @@ class BuildPanel(QWidget):
         p = self.plan()
         return bool(self._include_session_project() or p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression
                     or any(getattr(p, key) for key in r62_ui.KEYS) or p.scorebug_runtime or p.momentum > 0 or p.defensive_try or p.zone_drop_cap or p.all_stadiums or p.coverage_slider or p.scramble_tuning or p.flatter_deep_ball or p.chop_block_toggle or p.team_names_2026 or p.music_shuffle or p.practice_squad_screen or p.abilities or p.qb_spy or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.hires_pack or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
-                    or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits
+                    or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.espn25_plan
                     or p.commentary or p.playbook_packs)
 
     @staticmethod
@@ -1398,6 +1449,13 @@ class BuildPanel(QWidget):
             return "Choose a career stats CSV file."
         if self.roster_edits_check.isChecked() and not self.roster_edits_field.text().strip():
             return "Export roster edits on ★ Rosters or choose a JSON file."
+        if self.espn25_plan_check.isChecked():
+            espn_path = self.espn25_plan_field.text().strip()
+            if not espn_path:
+                return "Save build edits on ★ Rosters > ESPN Anniversary or choose a plan JSON file."
+            problem = self._espn25_plan_problem(espn_path)
+            if problem:
+                return problem
         if not self.has_work():
             return "Tick at least one change, or press a preset."
         target = self.target_field.text().strip()
@@ -1613,6 +1671,54 @@ class BuildPanel(QWidget):
         except Exception as exc:  # noqa: BLE001
             show_operation_error(self, "read that file", str(exc))
 
+    def _espn25_plan_problem(self, path: str) -> str:
+        """"" when ``path`` is a saved Anniversary plan; otherwise the sentence the button shows.
+
+        Shape only (schema, pinned resources), read through the bounded duplicate-key-rejecting
+        reader; the plan is resolved against the source disc's bytes when the build starts."""
+
+        try:
+            info = Path(path).stat()
+        except OSError:
+            return f"The Anniversary plan is missing: {path}"
+        key = (path, info.st_size, info.st_mtime_ns)
+        if self._espn25_plan_cache[0] == key:
+            return self._espn25_plan_cache[1]
+        try:
+            from mod_editor.core import nfl2k5_espn25_scenarios as espn
+            plan = espn.read_json(path)
+            espn.keys(plan, ("schema", "label", "main_descriptor_sha256", "resources", "rosters"),
+                      ("schema", "main_descriptor_sha256", "resources"))
+            espn.require(plan["schema"] == espn.PLAN_SCHEMA and isinstance(plan["resources"], list) and plan["resources"],
+                         "not a saved Anniversary build plan (" + espn.PLAN_SCHEMA + ")")
+            problem = ""
+        except Exception as exc:  # noqa: BLE001 - one sentence on the button
+            problem = f"The Anniversary plan cannot be used: {exc}"
+        self._espn25_plan_cache = (key, problem)
+        return problem
+
+    def _choose_espn25_plan(self) -> None:
+        chosen, _f = QFileDialog.getOpenFileName(self, "Choose a saved ESPN Anniversary plan", str(Path.home()),
+                                                 "Anniversary plan (*.json);;All files (*)")
+        if chosen:
+            self.set_espn25_plan(chosen)
+
+    def set_espn25_plan(self, path: str) -> None:
+        """★ Rosters > ESPN Anniversary calls this after an atomic plan save (unticking clears espn25_plan)."""
+
+        self.espn25_plan_field.setText(path)
+        problem = self._espn25_plan_problem(path) if path else ""
+        self.espn25_plan_check.setChecked(bool(path) and not problem and self.espn25_plan_check.isEnabled())
+        if problem:
+            self.espn25_plan_status.setText(problem)
+        elif path:
+            self.espn25_plan_status.setText(f"Plan: {Path(path).name}. Build applies this saved file; save build edits "
+                                            "again after further Anniversary changes.")
+        else:
+            self.espn25_plan_status.setText("")
+        self.espn25_plan_status.setVisible(bool(path) and (self.espn25_plan_check.isChecked() or bool(problem)))
+        self._refresh()
+
     def _choose_roster_edits(self) -> None:
         chosen, _f = QFileDialog.getOpenFileName(self, "Choose a roster-edits document", str(Path.home()),
                                                  "Roster edits (*.json);;All files (*)")
@@ -1812,6 +1918,8 @@ class BuildPanel(QWidget):
             files.append(f"prospect names CSV: {Path(plan.prospect_names).name}")
         if plan.roster_edits:
             files.append(f"roster edits: {Path(plan.roster_edits).name}")
+        if plan.espn25_plan:
+            files.append(f"ESPN Anniversary plan: {Path(plan.espn25_plan).name}")
         if plan.playbook_packs:
             files.append(f"playbook packs: {len(plan.playbook_packs)}")
         if self._include_session_project():

@@ -99,7 +99,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "64ac47e2f3d28c374d4b0b8d44e5eba16b69ce5d70bbbeb6288ddadeb2be10ed",
     "mod_editor/gui/studio_qt.py":
-        "6ae2ba04efe92077acadcdbe20a146cf7495b8a066d35842f32ceb1de42d3352",
+        "1909e78855b83924246038003c8f94c53d1bfbbc4c1b865e4b00ff48421dcb8b",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
@@ -1792,8 +1792,10 @@ def main() -> int:
         "mod_editor.core.nfl2k5_player_star",
         "mod_editor.core.nfl2k5_player_tags",
         "mod_editor.core.nfl2k5_roster_records",
+        "mod_editor.core.nfl2k5_espn25_scenarios",
         "mod_editor.gui.models_panel_qt",
         "mod_editor.gui.roster_editor_panel_qt",
+        "mod_editor.gui.espn25_panel_qt",
         "mod_editor.gui.franchise_panel_qt",
         "mod_editor.gui.task_delivery",
         "mod_editor.gui.ux_text",
@@ -1901,6 +1903,14 @@ def main() -> int:
             and not option.formations and packs.check_pack(option).ok, "bundled option pack contract changed")
     music = modules["mod_editor.core.nfl2k5_music_build"]
     music._banks_module()
+    # ESPN Anniversary: the layout pins ship relative to the installed root, no executable owner
+    espn = modules["mod_editor.core.nfl2k5_espn25_scenarios"]
+    require(espn.MANIFEST == ROOT / "data/nfl2k5_espn25_layout.json" and espn.MANIFEST.is_file()
+            and not espn.MANIFEST.is_symlink(), "ESPN Anniversary layout pins missing from the installed root")
+    espn_layout = espn.read_json(espn.MANIFEST)
+    require(set(espn_layout) >= {"main", "situ", "rosters"} and len(espn_layout["rosters"]) == 75
+            and espn.REQUESTS == () and espn.PLAN_SCHEMA == "nfl2k5.espn25.plan.v1",
+            "ESPN Anniversary layout pins or owner boundary changed")
     os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
     from PyQt5.QtWidgets import QApplication
     qt_app = QApplication.instance() or QApplication([])
@@ -1930,8 +1940,16 @@ def main() -> int:
     require(roster_panel.document.to_body() == bytes(body), "age preview mutated the roster")
     age_dialog.close()
     age_dialog.deleteLater()
+    require(not roster_panel.pages.isTabEnabled(roster_panel._espn25_index)
+            and roster_panel.pages.tabText(roster_panel._espn25_index) == "ESPN Anniversary",
+            "ESPN Anniversary subtab must stay disabled without a disc image")
     roster_panel.close()
     roster_panel.deleteLater()
+    qt_app.processEvents()
+    espn_panel = modules["mod_editor.gui.espn25_panel_qt"].Espn25Panel()
+    require(espn_panel.moments.count() == 0 and not espn_panel.pending, "ESPN Anniversary panel must start empty")
+    espn_panel.close()
+    espn_panel.deleteLater()
     qt_app.processEvents()
     panel = modules["mod_editor.gui.music_panel_qt"].MusicPanel()
     require(panel.service is None and not panel.operation_in_progress, "empty Music panel is not idle")
@@ -2032,11 +2050,11 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 112,
+    require(len(registry.capabilities) == 113,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
-    require(len(product_catalog.capabilities) == 74,
+    require(len(product_catalog.capabilities) == 75,
             "NFL 2K5 product capability count changed")
     _exercise_default_provider_controller(
         modules["mod_editor.core.controller"],
@@ -2439,7 +2457,7 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=112 sections=12 nfl2k5_capabilities=74 "
+        "registry=113 sections=12 nfl2k5_capabilities=75 "
         "reports=16 reviewed_metadata=24 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "

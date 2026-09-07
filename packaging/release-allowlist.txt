@@ -516,6 +516,13 @@ mod_editor/gui/share_panel_qt.py
 mod_editor/gui/sounds_panel_qt.py
 mod_editor/gui/models_panel_qt.py
 mod_editor/gui/roster_editor_panel_qt.py
+mod_editor/core/nfl2k5_espn25_scenarios.py
+mod_editor/gui/espn25_panel_qt.py
+data/nfl2k5_espn25_layout.json
+data/nfl2k5_espn25_authoring.schema.json
+docs/mod_editor/nfl2k5_espn25_authoring.md
+docs/mod_editor/nfl2k5_espn25_research.md
+docs/mod_editor/nfl2k5_espn25_capability.json
 tools/nfl2k5_audo_swap.py
 tools/nfl2k5_commentary_swap.py
 tools/nfl2k5_fieldpack_texture_into_xiso.py

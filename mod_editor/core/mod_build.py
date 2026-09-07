@@ -236,6 +236,12 @@ class BuildPlan:
     # and leaves +0x2C, the season-stat pool, the generated-name pool and the +0x53 star bit alone,
     # so all four of their digest gates stay intact.  Disc images only.
     roster_edits: str = ""
+    # ESPN 25th Anniversary setup and shared historic roster edits: "" = off, otherwise the path of a
+    # saved ``nfl2k5.espn25.plan.v1`` JSON plan written by Rosters > ESPN Anniversary.  A fixed-span
+    # resource plan (SITU outer 22 + the shared historic ROSTs), no executable owner; it is applied
+    # LAST on the disposable copy, after every relocation and roster pass, and resolved through the
+    # copy's own XDVDFS/outer tables.  Never enabled by a preset.  EXPERIMENTAL / UNWITNESSED.
+    espn25_plan: str = ""
     # community playbook packs (.2k5book recipes) installed into the copy's team books.
     # A recipe, not retail bytes: the same formation/play/link rows the designers stage, so
     # Build compiles them against the user's own disc.  Never in a preset -- a community book
@@ -309,6 +315,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "edge_rename": False, "scorebug": False, "guardian_cap": False, "scheme_labels": False, "camera": False,
         "kick_rules": False, "kick_power": True, "kickoff_alignment": False, "dynamic_kickoff": False, "xbe_space": False, "kickoff_relocated": False,
         "position_pools": False, "position_pools_keep_olb": False, "season_cap": False, "season_2026": False, "widescreen": False, "overtime": False, "team_column": True, "seven_on_seven": False, "team_history": "", "career_stats": "", "screen_timing": None, "depth_roles": False, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "", "uniform_choice": "", "kick_laces": False, "franchise_practice": False, "practice_squad": False, "depth_locks": False, "prospect_names": "", "player_star": False,
+        "espn25_plan": "",
     },
     # ADVANCED = basic + everything that modernises the game (Noah's tweaks and breakthroughs).
     "softdrink_advanced": {
@@ -325,6 +332,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "edge_rename": True, "scorebug": False, "guardian_cap": False, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": False, "dynamic_kickoff": False, "xbe_space": False, "kickoff_relocated": False,
         "position_pools": True, "position_pools_keep_olb": False, "season_cap": False, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": None, "depth_roles": True, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": False, "franchise_practice": True, "practice_squad": False, "depth_locks": False, "prospect_names": "modern", "player_star": True,
+        "espn25_plan": "",
     },
     # EXPERIMENTAL = advanced + widescreen and anything still rough (dynamic-kickoff line-up).
     "softdrink_experimental": {
@@ -342,6 +350,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "edge_rename": True, "scorebug": True, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": True, "dynamic_kickoff": True, "xbe_space": False, "kickoff_relocated": False,
         "position_pools": True, "position_pools_keep_olb": False, "season_cap": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": "D", "depth_roles": True, "depth_chart_rows": True, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": True, "franchise_practice": True, "practice_squad": True, "depth_locks": True, "prospect_names": "modern", "player_star": True,
+        "espn25_plan": "",
     },
 }
 PRESETS["softdrink_experimental"]["modern_naming"] = tt.modern_naming_patch.preset_enabled("experimental")
@@ -444,6 +453,9 @@ def availability() -> dict[str, bool]:
         "player_star": _core_module("nfl2k5_player_star") is not None,
         "player_tags": _core_module("nfl2k5_player_tags") is not None,
         "roster_edits": _core_module("nfl2k5_roster_records") is not None,
+        # the plan-dependent status function is never called without a selected plan; Build probes
+        # the image with Catalog.load and reports available / foreign (a bare XBE: requires image)
+        "espn25_plan": _core_module("nfl2k5_espn25_scenarios") is not None,
         "seven_on_seven": (SEVEN_ON_SEVEN_RELEASED
                            and _core_module("nfl2k5_seven_on_seven") is not None
                            and _core_module("nfl2k5_seven_on_seven_book") is not None),
@@ -533,6 +545,7 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         # the executable half alone is never "applied": the name pool lives in pack 0 (both halves below for images)
         "prospect_names": ("partial" if report.get("prospect_names") == "applied" else report.get("prospect_names", "unknown")),
         "player_star": report.get("player_star", "unknown"), "player_tags": "n/a", "roster_edits": "n/a",
+        "espn25_plan": "requires image",
         "seven_on_seven": report.get("seven_on_seven", "unknown"), "seven_on_seven_book": "n/a", "team_history": "n/a",
         "position_pools": "n/a", "position_pool_filters": "n/a", "season_2026": "n/a", "kickoff_alignment": "n/a",
         "guardian_cap": report.get("guardian_cap", "n/a"),
@@ -656,6 +669,15 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
                 out["roster_edits"] = records.status(source)
             except Exception:  # noqa: BLE001
                 out["roster_edits"] = "foreign"
+        espn = _core_module("nfl2k5_espn25_scenarios")
+        if espn is not None:
+            # the fixed SITU / historic ROST layout of a USA disc: available, else foreign (never a
+            # plan status: that needs the selected plan, which inspect does not have)
+            try:
+                espn.Catalog.load(source)
+                out["espn25_plan"] = "available"
+            except Exception:  # noqa: BLE001
+                out["espn25_plan"] = "foreign"
     if "edge_rename" in report:
         out["edge_rename"] = report.get("edge_rename")
         out["edge_rename_disc"] = report.get("edge_rename_disc")
@@ -946,6 +968,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Keep Outside Linebackers needs the merged position pools")
     if type(plan.team_names_2026) is not bool:
         raise ValueError("team_names_2026 must be boolean")
+    if type(plan.espn25_plan) is not str:
+        raise ValueError("espn25_plan must be text: the path of a saved ESPN Anniversary plan, or empty")
+    plan = replace(plan, espn25_plan=plan.espn25_plan.strip())
     tt._validate_lever_flags(plan.coverage_slider, plan.scramble_tuning, plan.flatter_deep_ball, plan.chop_block_toggle)
     if plan.flatter_deep_ball:
         if plan.arc or plan.realistic_flight or plan.arc_by_distance:
@@ -1077,6 +1102,36 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("star tags need a disc image (the roster records live in pack 0)")
     if plan.roster_edits and not is_image:
         raise ValueError("roster edits need a disc image (the roster records live in pack 0)")
+    loaded_espn25_plan = None
+    if plan.espn25_plan:
+        espn = _core_module("nfl2k5_espn25_scenarios")
+        if espn is None:
+            raise RuntimeError("the ESPN Anniversary module is not available in this build")
+        if not is_image:
+            raise ValueError("ESPN Anniversary edits need a disc image (the scenarios and historic rosters live in pack 0)")
+        if plan.reserves_16 or plan.created_teams_extra:
+            # the plan pins the current (retail) main-roster wrapper geometry; the version-18 arena
+            # growth rewrites it, so the two are refused together rather than resolved by guesswork
+            raise ValueError("ESPN Anniversary edits cannot be combined with the roster arena growth "
+                             "(16 reserves or extra created teams): the plan pins the current main roster geometry")
+        if plan.position_pools:
+            # the pool reclassify recodes every historic ROST too; this editor reads historic positions
+            # as retail only, so a conflicting recode is refused instead of reinterpreted
+            raise ValueError("ESPN Anniversary edits cannot be combined with the merged position pools: "
+                             "the reclassify recodes the shared historic rosters this plan pins")
+        espn_path = Path(plan.espn25_plan)
+        if not espn_path.is_file():
+            raise ValueError(f"the ESPN Anniversary plan is missing: {espn_path}")
+        try:
+            # loaded exactly once (bounded, duplicate-key-rejecting reader); the detached value is
+            # kept for the final pass, and the plan is resolved against the source before any copy
+            loaded_espn25_plan = espn.read_json(espn_path)
+            progress("Checking the ESPN Anniversary plan against the source", 0, 0)
+            espn.resolve_plan(espn.Catalog.load(source), loaded_espn25_plan)
+        except ValueError as exc:
+            raise ValueError(f"ESPN Anniversary plan refused: {exc}. Re-author the plan in Rosters > ESPN "
+                             "Anniversary against this source (its scenario text and historic rosters must "
+                             "match the plan)") from exc
     if plan.playbook_packs and not is_image:
         raise ValueError("playbook packs need a disc image (the books live in the archive packs)")
     if plan.depth_chart_rows:
@@ -1597,6 +1652,17 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             receipt["result"]["image_sha256"] = _core_module("nfl2k5_music_archive").file_hash(target)
         else:
             receipt["result"] = inspect(target, screen_timing=plan.screen_timing)
+    if loaded_espn25_plan is not None:
+        # last of all: the music, hi-res, naming, arena and crib passes above may have relocated packs,
+        # so the plan resolves SITU and the historic ROSTs through the copy's own XDVDFS/outer tables
+        # here, after final resource relocation and before build() publishes the disposable output
+        espn = _core_module("nfl2k5_espn25_scenarios")
+        progress("Applying ESPN Anniversary edits", 0, 0)
+        espn_receipt = espn.apply_to_image(target, loaded_espn25_plan)
+        receipt["steps"].append({"step": "espn25_plan", **espn_receipt})
+        receipt["result"]["espn25_plan"] = espn.status(target, loaded_espn25_plan)
+        if receipt["result"]["espn25_plan"] != "applied":
+            raise ValueError("the ESPN Anniversary edits failed their read-back on the copy")
     return receipt
 
 

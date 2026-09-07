@@ -3576,6 +3576,71 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_espn25_scenarios build source.iso espn25-plan.json output.iso",
+        "module": "mod_editor/core/nfl2k5_espn25_scenarios.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_ESPN25_SCENARIOS_REPORT.md",
+        "docs/mod_editor/nfl2k5_espn25_research.md",
+        "tests/mod_editor/test_nfl2k5_espn25_scenarios.py",
+        "tests/mod_editor/test_nfl2k5_espn25_native.py",
+        "tests/mod_editor/test_nfl2k5_espn25_panel_qt.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Hostable panel is implemented; protected mount and build integration are in WIRING.md."
+      },
+      "id": "nfl2k5.espn25.scenarios_rosters",
+      "input_constraints": [
+        "Pinned USA fixed-layout SITU and historic ROST resources; source-derived plan with full before/after hashes.",
+        "Indices are zero-based. All 50 sides share 35 historic files; imports explicitly acknowledge every shared use.",
+        "No player creation, college edits, membership changes, private roster clones, expanded-table installation, XBE writes or profile writes.",
+        "CSV and JSON are bounded. Name edits must fit the existing name pool; SITU strings retain fixed allocations."
+      ],
+      "portme": [
+        "Complete protected wiring and Noah witness list. Prove full UI paging and saved completion bits before implementing expanded-table installation."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_ESPN25_SCENARIOS_REPORT.md"
+        ],
+        "scope": "Bounded native lookup, historic player import, setup writes, 30-row list callbacks and in-memory completion; no played game or profile serialization proof.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "Path to a validated nfl2k5.espn25.plan.v1 JSON plan; empty disables build pass.",
+            "name": "espn25_plan",
+            "required": true
+          }
+        ],
+        "notes": "Off in basic, advanced and experimental presets; source-specific resource plan, no XBE owner."
+      },
+      "source_container": {
+        "format": "XDVDFS or extracted vc_53450030 packs for inspection",
+        "hash_pins": [],
+        "resource": "SITU first chunk of outer 22; shared historic ROST outer 113..187; main ROST descriptors read-only",
+        "retail_file": "user-owned NFL 2K5 USA Xbox image"
+      },
+      "summary": "Edit fixed-25 setup and shared historic rosters; validate additional moments for research only.",
+      "surface": "players_rosters",
+      "title": "ESPN Anniversary scenarios and historic rosters (experimental)",
+      "validation_command": "python3 -m mod_editor.core.nfl2k5_espn25_scenarios status source.iso espn25-plan.json"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_patch_cli practice_squad_screen <source.xbe> <new-copy.xbe>",
         "module": "mod_editor/core/nfl2k5_patch_cli.py",
         "operation": "write"

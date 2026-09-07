@@ -57,11 +57,13 @@ from __future__ import annotations
 
 import json
 import shutil
+import copy
+import csv
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
-from PyQt5.QtCore import QSize, Qt, pyqtSignal
+from PyQt5.QtCore import QObject, QRunnable, QSize, Qt, QThreadPool, pyqtSignal
 from PyQt5.QtGui import QColor, QFont, QPainter, QPen
 from PyQt5.QtWidgets import (
     QAbstractItemView,
@@ -95,6 +97,7 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.core import nfl2k5_roster_records as rr
+from mod_editor.gui.espn25_panel_qt import Espn25Panel
 from mod_editor.gui.franchise_panel_qt import FranchisePanel
 from mod_editor.gui.ux_text import Details, show_operation_error, suggest_copy_name
 
@@ -830,12 +833,43 @@ class SwapPlayerDialog(QDialog):
 
 
 # --------------------------------------------------------------------------------------------- panel
+class _Espn25CatalogSignals(QObject):
+    loaded = pyqtSignal(int, object, object)        # generation, detached Catalog, source identity
+    failed = pyqtSignal(int, str)                   # generation, refusal
+
+
+class _Espn25CatalogTask(QRunnable):
+    """Read the ESPN Anniversary catalog off the GUI thread.
+
+    ``Catalog.load`` returns a detached object with no open handles, so it crosses the thread
+    boundary safely; the host applies it with ``Espn25Panel.set_catalog`` on the GUI thread."""
+
+    def __init__(self, source: Path, generation: int) -> None:
+        super().__init__()
+        self.signals = _Espn25CatalogSignals()
+        self.source = Path(source)
+        self.generation = generation
+        self.setAutoDelete(False)
+
+    def run(self) -> None:
+        try:
+            from mod_editor.core import nfl2k5_espn25_scenarios as espn
+            catalog = espn.Catalog.load(self.source)
+            identity = RosterEditorPanel.espn25_identity(self.source, catalog)
+        except Exception as exc:  # noqa: BLE001 - one message for the status line
+            self.signals.failed.emit(self.generation, f"{type(exc).__name__}: {exc}")
+        else:
+            self.signals.loaded.emit(self.generation, catalog, identity)
+
+
 class RosterEditorPanel(QWidget):
     """The ★ Rosters workspace."""
 
     roster_edits_changed = pyqtSignal(str)          # path of the saved roster-edits document
     disc_written = pyqtSignal(str)                  # a disc copy this page wrote (Play latest can start it)
     roster_edits_stale = pyqtSignal()               # the roster changed after the last export (M08)
+    espn25_plan_changed = pyqtSignal(str)           # path of the saved ESPN Anniversary plan (Build's espn25_plan)
+    ESPN25_RECOVERY_SCHEMA = "2k5_mod_studio_espn25_recovery/v1"
 
     def __init__(self, facade: object | None = None, parent: QWidget | None = None) -> None:
         super().__init__(parent)
@@ -857,6 +891,13 @@ class RosterEditorPanel(QWidget):
         self._scheme_detection: dict[str, Any] = {}
         self._edits_path: Path | None = None
         self._edits_snapshot: tuple[frozenset[tuple[str, int]], int] | None = None
+        # ESPN Anniversary (EXPERIMENTAL / UNWITNESSED): the catalog of the loaded disc, read off-thread
+        self._espn25_generation = 0
+        self._espn25_tasks: set[_Espn25CatalogTask] = set()
+        self._espn25_identity: dict[str, Any] | None = None
+        self._espn25_saved: tuple[dict[int, dict[str, Any]], str] | None = None
+        self._espn25_pending_restore: dict[str, Any] | None = None
+        self.espn25_plan_path = ""
         self._repair_plans: list[dict[str, Any]] = []
         self._templates: tuple[rr.CreatePlayerTemplate, ...] = rr.create_player_templates()
         self._templates_source = "retail table"
@@ -1045,6 +1086,14 @@ class RosterEditorPanel(QWidget):
         self.franchise_panel = FranchisePanel()
         self.franchise_panel.shared_roster_panel = self
         self.franchise_panel.install(self.pages)
+        # ESPN Anniversary: the fixed-25 moment setup and the shared historic roster editor, separate from
+        # the live roster above; disabled until a supported disc image loads (a save has no scenarios)
+        self.espn25_panel = Espn25Panel()
+        self.espn25_panel.plan_ready.connect(self._espn25_plan_ready)
+        self._espn25_index = self.pages.addTab(self.espn25_panel, "ESPN Anniversary")
+        self.pages.setTabEnabled(self._espn25_index, False)
+        self.pages.setTabToolTip(self._espn25_index, "Open a game disc (.iso) to edit the Anniversary moments.")
+        self._show_page_tabs()
         layout.addWidget(self.pages, 1)
 
         self.status_label = QLabel("Open your game disc (top right) or an Xbox save to begin.")
@@ -1663,6 +1712,8 @@ class RosterEditorPanel(QWidget):
         self.write_button.setText("Save Xbox save copy…" if kind == "save" else "Save disc copy…")
         self._show_franchise(None)
         self.franchise_panel.clear()
+        # an explicit load replaces the Anniversary catalog too (a routine refresh never reaches here)
+        self._reload_espn25(source if kind == "disc" else None)
         self._dirty.clear()
         self.undo_stack.clear()
         self._clipboard = None
@@ -1703,9 +1754,148 @@ class RosterEditorPanel(QWidget):
         return loaded
 
     def is_dirty(self) -> bool:
-        """Whether this roster carries edits the user would lose on a reload."""
+        """Whether this roster (or its Anniversary tab) carries edits the user would lose on a reload."""
 
-        return bool(self._dirty) or self.undo_stack.can_undo()
+        return bool(self._dirty) or self.undo_stack.can_undo() or self.espn25_dirty()
+
+    # ------------------------------------------------------------------ ESPN Anniversary
+    @staticmethod
+    def espn25_identity(source: Path | str, catalog) -> dict[str, Any]:
+        """What Anniversary edits were made against: the catalog's digests, plus the path for display."""
+
+        from mod_editor.core import nfl2k5_espn25_scenarios as espn
+        return {"source": str(source),
+                "main_descriptor_sha256": str(catalog.manifest["main"]["descriptor_sha256"]),
+                "situ_sha256": espn.sha(catalog.resource(22)),
+                "rosters": {str(index): espn.sha(catalog.resource(int(index))) for index in catalog.manifest["rosters"]}}
+
+    @staticmethod
+    def _espn25_same_catalog(first: Mapping[str, Any], second: Mapping[str, Any]) -> bool:
+        return all(first.get(key) == second.get(key) for key in ("main_descriptor_sha256", "situ_sha256", "rosters"))
+
+    def _show_page_tabs(self) -> None:
+        # the franchise page hides the whole tab bar while it is hidden; the Anniversary tab keeps it
+        self.pages.tabBar().setVisible(True)
+
+    def _reload_espn25(self, source: Path | None) -> None:
+        """An explicit roster load replaces the Anniversary catalog; pending edits belonged to the old one."""
+
+        self._espn25_generation += 1
+        self._espn25_identity = None
+        self._espn25_saved = None
+        self.espn25_plan_path = ""
+        self.pages.setTabEnabled(self._espn25_index, False)
+        self._show_page_tabs()
+        if source is None or not Path(source).exists():
+            self.pages.setTabToolTip(self._espn25_index,
+                                     "ESPN Anniversary edits need a game disc (.iso); an Xbox save has no scenarios.")
+            return
+        self.pages.setTabToolTip(self._espn25_index, "Reading the Anniversary scenarios and historic rosters…")
+        task = _Espn25CatalogTask(Path(source), self._espn25_generation)
+        task.signals.loaded.connect(self._espn25_loaded)
+        task.signals.failed.connect(self._espn25_failed)
+        self._espn25_tasks.add(task)
+        QThreadPool.globalInstance().start(task)
+
+    def _espn25_loaded(self, generation: int, catalog: object, identity: object) -> None:
+        self._espn25_tasks = {task for task in self._espn25_tasks if task.generation != generation}
+        if generation != self._espn25_generation:
+            return                                          # a later load superseded this catalog
+        self.espn25_panel.set_catalog(catalog)
+        self._espn25_identity = dict(identity)
+        self._espn25_saved = self._espn25_state()
+        self.pages.setTabEnabled(self._espn25_index, True)
+        self.pages.setTabToolTip(self._espn25_index, "")
+        if self._espn25_pending_restore is not None:
+            self._apply_espn25_restore()
+
+    def _espn25_failed(self, generation: int, message: str) -> None:
+        self._espn25_tasks = {task for task in self._espn25_tasks if task.generation != generation}
+        if generation != self._espn25_generation:
+            return
+        self._espn25_identity = None
+        self.pages.setTabEnabled(self._espn25_index, False)
+        self.pages.setTabToolTip(self._espn25_index, f"ESPN Anniversary is unavailable for this disc: {message}")
+        self._set_status(f"ESPN Anniversary is unavailable for this disc: {message}")
+
+    def espn25_ready(self) -> bool:
+        """A supported disc image's Anniversary catalog is loaded and the tab is usable."""
+
+        return self._espn25_identity is not None and self.pages.isTabEnabled(self._espn25_index)
+
+    def _espn25_state(self) -> tuple[dict[int, dict[str, Any]], str]:
+        panel = self.espn25_panel
+        return copy.deepcopy(panel.pending), panel.scenario_json.toPlainText()
+
+    def espn25_dirty(self) -> bool:
+        """Anniversary edits made since the catalog loaded or the plan was last saved."""
+
+        return self.espn25_ready() and self._espn25_state() != self._espn25_saved
+
+    def _espn25_plan_ready(self, payload: Mapping[str, Any]) -> None:
+        path = str(payload["path"])
+        self.espn25_plan_path = path
+        self._espn25_saved = self._espn25_state()
+        self.espn25_plan_changed.emit(path)
+        self._set_status(f"ESPN Anniversary edits saved to {Path(path).name}. On ★ Build & Share, tick "
+                         '"Use saved ESPN Anniversary edits" and make a new disc copy to apply them.')
+
+    def show_espn25(self) -> None:
+        """Bring the ESPN Anniversary page to the front (the Gameplay row's page action)."""
+
+        self.pages.setCurrentIndex(self._espn25_index)
+
+    def espn25_recovery_snapshot(self) -> dict[str, Any] | None:
+        """The unsaved Anniversary edits with the identity of the disc they were made against.
+
+        JSON-safe; ``restore_espn25_recovery`` applies it only once the matching catalog has loaded."""
+
+        if not self.espn25_ready():
+            return None
+        panel = self.espn25_panel
+        text = panel.scenario_json.toPlainText()
+        if not panel.pending and not text.strip():
+            return None
+        return {"schema": self.ESPN25_RECOVERY_SCHEMA, "identity": copy.deepcopy(self._espn25_identity),
+                "pending": [[int(outer), copy.deepcopy(row)] for outer, row in sorted(panel.pending.items())],
+                "scenario_json": text, "plan": self.espn25_plan_path}
+
+    def restore_espn25_recovery(self, snapshot: Mapping[str, Any]) -> bool:
+        """Queue unsaved Anniversary edits; they are applied once the matching source catalog has loaded."""
+
+        if not isinstance(snapshot, Mapping) or snapshot.get("schema") != self.ESPN25_RECOVERY_SCHEMA:
+            raise ValueError("not an ESPN Anniversary recovery snapshot")
+        self._espn25_pending_restore = copy.deepcopy(dict(snapshot))
+        if self.espn25_ready():
+            return self._apply_espn25_restore()
+        return False
+
+    def _apply_espn25_restore(self) -> bool:
+        snapshot, self._espn25_pending_restore = self._espn25_pending_restore, None
+        panel = self.espn25_panel
+        identity = snapshot.get("identity") or {}
+        if not isinstance(identity, Mapping) or not self._espn25_same_catalog(identity, self._espn25_identity or {}):
+            self._set_status("Unsaved ESPN Anniversary edits were not restored: this disc's scenarios or historic "
+                             f"rosters differ from {identity.get('source') or 'the disc they were made on'}.")
+            return False
+        pending: dict[int, dict[str, Any]] = {}
+        try:
+            for outer, row in snapshot.get("pending", ()):
+                moment, side, text = int(row["moment"]), str(row["side"]), str(row["csv"])
+                if panel.catalog.binding(moment, side)["outer"] != int(outer) or row.get("shared_resource") is not True:
+                    raise ValueError(f"moment {moment + 1} {side} no longer binds to historic roster {outer}")
+                panel.catalog.import_csv(moment, side, text)          # the CSV must still validate here
+                pending[int(outer)] = {"moment": moment, "side": side, "shared_resource": True, "csv": text}
+        except (KeyError, TypeError, ValueError, csv.Error) as exc:
+            self._set_status(f"Unsaved ESPN Anniversary edits were not restored: {exc}")
+            return False
+        panel.pending = pending
+        panel.scenario_json.setPlainText(str(snapshot.get("scenario_json") or ""))
+        panel._select()
+        self.espn25_plan_path = str(snapshot.get("plan") or "")
+        self._set_status(f"Restored unsaved ESPN Anniversary edits ({len(pending)} historic roster"
+                         f"{'s' if len(pending) != 1 else ''}). Save build edits to stage them for Build.")
+        return True
 
     def note_other_source(self, display: str) -> None:
         """The shell opened another disc; this page keeps its own roster and says so."""
@@ -1789,7 +1979,10 @@ class RosterEditorPanel(QWidget):
         box = QMessageBox(self)
         box.setIcon(QMessageBox.Warning)
         box.setWindowTitle("Replace the edited roster?")
-        box.setText(f"{len(self._dirty)} player{'s' if len(self._dirty) != 1 else ''} edited here would be lost.\n\n"
+        anniversary = ("\nUnsaved ESPN Anniversary edits would be lost too: Save build edits on that tab first."
+                       if self.espn25_dirty() else "")
+        box.setText(f"{len(self._dirty)} player{'s' if len(self._dirty) != 1 else ''} edited here would be lost."
+                    f"{anniversary}\n\n"
                     "Export roster edits (.json)… or Save disc copy… first to keep them.")
         keep = box.addButton("Keep editing", QMessageBox.RejectRole)
         box.addButton("Discard roster changes", QMessageBox.DestructiveRole)

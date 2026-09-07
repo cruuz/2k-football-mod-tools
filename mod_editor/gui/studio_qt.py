@@ -2816,6 +2816,7 @@ class StudioMainWindow(QMainWindow):
                 # sliders, acceleration ramp, franchise draft AI) with their
                 # explanations, written through mod_build.
                 self._gameplay_patches_panel = GameplayPatchesPanel(self.facade)
+                self._gameplay_patches_panel.open_anniversary.connect(self._open_rosters_anniversary)
                 self._connect_gameplay_build()
                 # The Xbox save editor (sliders + franchise year) is a gameplay tool, not a
                 # uniform tool: one instance, moved here from Uniforms & Equipment (GP-02).
@@ -8544,7 +8545,7 @@ class StudioMainWindow(QMainWindow):
         self._build_panel.team_names_2026_check.toggled.connect(self._refresh_team_names_preview)
         self._build_panel.modern_naming_check.toggled.connect(self._refresh_team_names_preview)
         self._build_panel.source_field.textChanged.connect(self._refresh_team_names_preview)
-        self._build_panel.operation_guard = lambda: self._embedded_operation_denial("Build")
+        self._build_panel.operation_guard = self._build_operation_guard
         self._build_panel.operation_state_changed.connect(self._build_operation_state_changed)
         self._build_panel.music_shuffle_check.toggled.connect(self._build_music_shuffle_changed)
         self._build_panel.music_library_preview_ready.connect(self._music_library_preview_ready)
@@ -8561,6 +8562,8 @@ class StudioMainWindow(QMainWindow):
             self._build_panel.season_check.toggled.connect(roster_editor.use_build_year)
             roster_editor.roster_edits_changed.connect(self._build_panel.set_roster_edits)
             roster_editor.roster_edits_stale.connect(self._build_panel.mark_roster_edits_stale)
+            # Rosters > ESPN Anniversary saves a validated plan; Build carries it as the espn25_plan step
+            roster_editor.espn25_plan_changed.connect(self._espn25_plan_saved)
         tabs.addTab(self._build_panel, "Build")
         # Share: a .2k5patch (byte runs + the modder's own images/audio + recipe)
         # made from a patched copy, applied to somebody else's own disc copy.
@@ -8586,6 +8589,49 @@ class StudioMainWindow(QMainWindow):
         self._gameplay_build_link = GameplayBuildLink(
             build, gameplay, self._gameplay_build_changed,
             suspended=lambda: self._restoring_music_playlist)
+
+    def _espn25_plan_saved(self, path: str) -> None:
+        """A saved Anniversary plan is a project choice: tick it on Build and mark the project dirty."""
+
+        if self._build_panel is not None:
+            self._build_panel.set_espn25_plan(path)
+        self._gameplay_build_changed()
+
+    def _open_rosters_anniversary(self) -> None:
+        """The Gameplay row for the Anniversary plan only opens Rosters > ESPN Anniversary."""
+
+        self._go_to_rosters()
+        panel = getattr(self, "_roster_editor_panel", None)
+        if panel is not None:
+            panel.show_espn25()
+
+    def _build_operation_guard(self) -> str | None:
+        denial = self._embedded_operation_denial("Build")
+        if denial:
+            return denial
+        return self._espn25_text_conflict()
+
+    def _espn25_text_conflict(self) -> str | None:
+        """Two writers never overwrite each other's Anniversary strings (SITU, outer 22).
+
+        Game Text's four-string editor stages moment titles, histories, objectives and dates in
+        the shared project; a saved Anniversary plan pins that resource byte for byte. When both
+        would go into one build the conflict is reported before it starts, never rebased silently."""
+
+        build = self._build_panel
+        if build is None or not build.espn25_plan_check.isChecked() or not build._include_session_project():
+            return None
+        changed: tuple[str, ...] = ()
+        for panel in (self._text_roster_panel, self._roster_panel):
+            if panel is not None:
+                changed = panel.anniversary_pending_edits()
+                if changed:
+                    break
+        if not changed:
+            return None
+        return (f"{len(changed)} ESPN 25th Anniversary string{'s' if len(changed) != 1 else ''} edited on Game Text "
+                "would be overwritten by the saved Anniversary plan (or the other way round). Revert those text edits, "
+                "or build a disc with them first and save the Anniversary plan again against that disc.")
 
     def _gameplay_build_changed(self, *_args):
         if self._restoring_music_playlist or not getattr(self.facade, "source_ready", False):

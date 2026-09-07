@@ -63,10 +63,14 @@ TEXT_STATUSES = frozenset(
     {STATUS_ALL, STATUS_EDITABLE, STATUS_READ_ONLY, STATUS_MODIFIED}
 )
 ESPN_25TH_COMING_SOON_NOTE = (
-    "ESPN 25th Anniversary: titles, history, objectives, and dates are Editable. "
-    "Team selectors are Preview/Export-only; scenario setup and unlock logic are "
-    "inspect-only because their authoring ownership is not proved."
+    "Edit Anniversary setup and shared historic rosters in Rosters > ESPN Anniversary. "
+    "Experimental and unwitnessed. Extra moments can be validated for research; "
+    "installation is unavailable."
 )
+# The four-string editor below (moment title, history, objective, date) stays fixed at 25 moments
+# and shares SITU (outer 22) with the Anniversary plan; the shell reports a pending edit on both
+# as a conflict before a build starts rather than rebasing either writer silently.
+SITU_BANK_PREFIX = "nfl2k5.text-bank.situ."
 
 
 @runtime_checkable
@@ -1468,6 +1472,18 @@ class TextRosterPanel(QWidget):
         self.revert_player_button.setProperty("disableReason", _hist_player_boot)
         return group
 
+    def anniversary_pending_edits(self) -> tuple[str, ...]:
+        """Asset ids of ESPN 25th Anniversary (SITU) strings whose staged value differs from the disc."""
+
+        catalog = self.catalog
+        if catalog is None:
+            return ()
+        return tuple(
+            asset.asset_id for asset in catalog.assets
+            if asset.bank_id.startswith(SITU_BANK_PREFIX)
+            and text_asset_status(asset, self.host.text_value) == STATUS_MODIFIED
+        )
+
     def reload(self) -> None:
         """Reload immutable catalog metadata and all current staged values."""
 
@@ -2693,6 +2709,7 @@ class TextRosterPanel(QWidget):
 
 __all__ = [
     "ESPN_25TH_COMING_SOON_NOTE",
+    "SITU_BANK_PREFIX",
     "HistoricalPlayerRow",
     "HistoricalResource",
     "STATUS_ALL",

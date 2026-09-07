@@ -263,9 +263,9 @@ class TextRosterPanelViewModelTests(unittest.TestCase):
             text_catalog_summary(self.catalog),
             "17 entries · 14 Editable · 3 View only",
         )
-        self.assertIn("ESPN 25th Anniversary", ESPN_25TH_COMING_SOON_NOTE)
-        self.assertIn("Team selectors", ESPN_25TH_COMING_SOON_NOTE)
-        self.assertIn("ownership is not proved", ESPN_25TH_COMING_SOON_NOTE)
+        self.assertIn("Rosters > ESPN Anniversary", ESPN_25TH_COMING_SOON_NOTE)
+        self.assertIn("Experimental and unwitnessed", ESPN_25TH_COMING_SOON_NOTE)
+        self.assertIn("installation is unavailable", ESPN_25TH_COMING_SOON_NOTE)
 
     def test_universal_filter_searches_current_values_bank_and_status(self) -> None:
         changed = "text.113.team.nickname"

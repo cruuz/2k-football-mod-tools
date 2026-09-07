@@ -246,7 +246,13 @@ PATCHES = (
      "Retail: the weekly auto-depth ranks tackles and guards by rating, so the better RT slides over to LT, and it rewrites "
      "KR and PR every week. Patch: moving a player on the depth chart, or confirming a returner, locks that choice in the "
      "player's record and the weekly sort keeps it. Unlock from the Rosters tab. No new screen or button. Unwitnessed in game."),
+    ("espn25_plan", "ESPN Anniversary setup and rosters (experimental)",
+     "Retail uses 25 moments and shared historic teams. Patch applies your saved Anniversary setup and roster edits. "
+     "Extra moments remain unavailable. Experimental and unwitnessed."),
 )
+# Rows that are informational here: their page action opens the page that authors the content, and they
+# never pass a Boolean through the BuildPlan (the field is a plan path chosen on Rosters / Build).
+INFORMATIONAL = {"espn25_plan"}
 
 
 class _Signals(QObject):
@@ -312,6 +318,8 @@ LABELS: dict[str, tuple[str, str, str]] = {
                          "All 13 SPECIAL roles on one screen, with complete player names; offense and defense keep eleven rows.", NOT_TESTED),
     "edge_rename": ("Call defensive ends EDGE", "Rosters, depth charts, the draft, the formation editor and the scorebug legend say EDGE.", ""),
     "scheme_labels": ("Use scheme-specific depth-chart names", "4-3: SAM, MIKE, WILL; 3-4: EDGE, MIKE, WILL, NT.", ""),
+    "espn25_plan": ("ESPN Anniversary setup and rosters (experimental)",
+                    "Author and save the plan on Rosters > ESPN Anniversary; tick it on Build. This row only opens that page.", NOT_TESTED),
 }
 
 # BuildPlan fields that are profile names rather than booleans: the value a ticked box writes
@@ -322,6 +330,7 @@ NEEDS_IMAGE = {"camera", "music_shuffle", "practice_squad_screen", "abilities", 
 PATCHES = (*PATCHES, *r62_ui.OPTIONS)
 NEEDS_IMAGE.update(r62_ui.KEYS)
 NEEDS_IMAGE.add("position_pools")
+NEEDS_IMAGE.add("espn25_plan")
 
 TEXT_PATCHES = (
     ("edge_rename", "Rename DE to EDGE everywhere",
@@ -345,6 +354,8 @@ class GameplayPatchesPanel(QWidget):
     ``patches`` chooses which toggles the page shows (``PATCHES`` for gameplay, ``TEXT_PATCHES`` for
     the EDGE rename); each key must be a BuildPlan field and an ``inspect`` state key.
     """
+
+    open_anniversary = pyqtSignal()   # the ESPN Anniversary row's page action: open Rosters > ESPN Anniversary
 
     def __init__(self, facade: object | None = None, parent: QWidget | None = None, *,
                  patches: tuple[tuple[str, str, str], ...] = PATCHES,
@@ -440,10 +451,20 @@ class GameplayPatchesPanel(QWidget):
             rl.setSpacing(1)
             head = QHBoxLayout()
             head.setSpacing(8)
-            check = QCheckBox(tab_title(short))
-            check.setAccessibleDescription(helper or label)
-            check.toggled.connect(lambda _c: self._refresh())
-            head.addWidget(check)
+            check: QCheckBox | None = None
+            if key in INFORMATIONAL:
+                caption = QLabel(tab_title(short))
+                caption.setAccessibleDescription(helper or label)
+                head.addWidget(caption)
+                self.anniversary_button = QPushButton("Open Rosters > ESPN Anniversary")
+                self.anniversary_button.setToolTip(helper)
+                self.anniversary_button.clicked.connect(self.open_anniversary.emit)
+                head.addWidget(self.anniversary_button)
+            else:
+                check = QCheckBox(tab_title(short))
+                check.setAccessibleDescription(helper or label)
+                check.toggled.connect(lambda _c: self._refresh())
+                head.addWidget(check)
             if key == "momentum_collisions":
                 self.momentum_collision_level = QComboBox()
                 for text, value in (("Retail (0)", 0), ("Light (25)", 25), ("Medium (50)", 50), ("Heavy (100)", 100)):
@@ -499,7 +520,8 @@ class GameplayPatchesPanel(QWidget):
             more.setContentsMargins(30, 0, 0, 0)
             rl.addWidget(more)
             lb.addWidget(row)
-            self.checks[key] = check
+            if check is not None:
+                self.checks[key] = check
             self.badges[key] = badge_label
             self._static_badges[key] = badge
         root.addWidget(list_box)
@@ -546,8 +568,15 @@ class GameplayPatchesPanel(QWidget):
         self.write_button.setText(write_caption(is_image))
         for key, _label, _e in self._patches:
             value = str(state.get(key))
-            check = self.checks[key]
             needs_image = key in NEEDS_IMAGE and not is_image
+            if key in INFORMATIONAL:
+                # no toggle here: the badge says whether this source can take the saved plan at all
+                badge = ("Full disc required" if needs_image else "Unrecognized source data" if value == "foreign"
+                         else self._static_badges.get(key, ""))
+                self.badges[key].setText(badge)
+                self.badges[key].setVisible(bool(badge))
+                continue
+            check = self.checks[key]
             check.setEnabled(value == "retail" and not needs_image and key not in r62_ui.UNAVAILABLE)
             check.setChecked(False)
             tip = {"applied": "Already installed on this source.",
