@@ -229,7 +229,7 @@ class FrontendTests(unittest.TestCase):
                     self.assertEqual(cold.depth(), 0)
                     card = 0x535E70 if career[-89] == 0 else 0x5365A8
                     for row, child in ((1, cold.labels["practice_menu"]),
-                                       (2, card), (3, 0x507EC8)):
+                                       (2, card), (4, 0x507EC8)):
                         cold.select(row)
                         self.assertEqual(cold.top(), child)
                         cold.frame(0x200)

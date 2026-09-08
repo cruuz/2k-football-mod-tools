@@ -43,12 +43,17 @@ inline_save:
  add esp,4
  ret
 inline_load_begin:
- mov DWORD PTR [state],0
- mov DWORD PTR [state+2560],0
- mov DWORD PTR [state+2564],0
- mov DWORD PTR [state+2568],0
- mov DWORD PTR [state+2660],0
- mov DWORD PTR [state+2664],0
+ pushfd
+ push eax
+ xor eax,eax
+ mov DWORD PTR [state],eax
+ mov DWORD PTR [state+2560],eax
+ mov DWORD PTR [state+2564],eax
+ mov DWORD PTR [state+2568],eax
+ mov DWORD PTR [state+2660],eax
+ mov DWORD PTR [state+2664],eax
+ pop eax
+ popfd
  jmp 0x16ab70
 /* Replace just type-9's expected-size branch of the native admission table. */
 inline_admission:
@@ -280,5 +285,95 @@ human_defense:
  jnz 1f
  jmp 0xa3432
 1: jmp 0xa3443
+
+.global start_player
+.global mode_row_text
+mode_row_text:
+ /* Native row text is already formatted. Tint the selected owned row,
+  * retaining the scene's opacity and all native selection/scrolling. */
+ call 0x30ab0
+ pushfd
+ push eax
+ cmp edi,DWORD PTR [state+2672]
+ jne row_done
+ mov eax,DWORD PTR [edi+0x100]
+ cmp esi,DWORD PTR [edi+eax*8+4]
+ jne row_done
+ mov eax,DWORD PTR [edi+eax*8]
+ cmp DWORD PTR [eax+8],OFFSET FLAT:mode_handler
+ jne row_done
+ mov eax,DWORD PTR [esp+36]
+ and DWORD PTR [eax+32],0xff000000
+ or DWORD PTR [eax+32],0x00ffff00
+row_done:
+ pop eax
+ popfd
+ ret
+start_player:
+ /* resolve_team validates identity, membership, uniqueness and <=65 slots.
+  * Insert the created record before the old starter in both native chains.
+  * Ranks below its former rank move down once; overflow row 7 stays 7. */
+ pushad
+ call resolve_team
+ cmp DWORD PTR [state+24],3
+ jne start_done
+ mov edi,DWORD PTR [state+2560]
+ mov esi,DWORD PTR [state+2588]
+ movzx ebp,BYTE PTR [edi+41]
+ shr ebp,2
+ and ebp,7
+ xor ebx,ebx
+start_loop:
+ movzx eax,BYTE PTR [esi+0x11c]
+ cmp ebx,eax
+ jae start_finish
+ mov edx,DWORD PTR [esi+ebx*4]
+ mov al,BYTE PTR [edi+53]
+ cmp BYTE PTR [edx+53],al
+ jne start_next
+ movzx eax,BYTE PTR [edx+41]
+ shr eax,2
+ and eax,7
+ cmp edx,edi
+ jne start_other
+ xor eax,eax
+ jmp start_write
+start_other:
+ cmp eax,ebp
+ jb start_shift
+ mov ecx,eax
+ or ecx,ebp
+ jnz start_write
+start_shift:
+ inc eax
+start_write:
+ push eax
+ movzx ecx,BYTE PTR [edi+53]
+ mov eax,0x1ec18
+ bt eax,ecx
+ pop eax
+ lea ecx,[eax+eax*8]
+ lea ecx,[ecx*4]
+ jnc start_bits
+ cmp eax,3
+ jae start_bits
+ movzx ecx,BYTE PTR [start_sides+eax]
+start_bits:
+ and BYTE PTR [edx+41],3
+ or BYTE PTR [edx+41],cl
+start_next:
+ inc ebx
+ jmp start_loop
+start_finish:
+ or BYTE PTR [edi+82],3
+ push 1
+ pop eax
+ mov DWORD PTR [state+180],eax
+ mov DWORD PTR [state+184],eax
+start_done:
+ popad
+ ret
+start_sides:
+ .byte 0x40,0x04,0x28
 
 .section .note.GNU-stack,"",@progbits

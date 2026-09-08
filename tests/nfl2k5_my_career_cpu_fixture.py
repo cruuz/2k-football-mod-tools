@@ -31,16 +31,34 @@ def retail_playbook():
 class Machine(PlayedMachine):
     ACTORS = 0x2A40000
 
-    def cpu_scene(self, resource):
+    def cpu_scene(self, resource, *, benched=True, practice=False):
         from mod_editor.core.nfl2k5_playbook_inspector import parse_playbook_resource
         parse_playbook_resource(resource, outer_index=308)
-        self.launch()
+        if practice:
+            self.select(1)
+            self.frame(0x10)
+            self.frame(0x10)
+            if self.top() != 0x4E7EC0:
+                raise AssertionError('native Free Practice did not enter the game')
+            for va in (0x617E0, 0x87160, 0x1D3060, 0x1F1D10, 0x1F1D70):
+                self.call(va, budget=2000000)
+            self.call(0xCCE00)
+        else:
+            self.launch()
         self.match_player = self.get(self.state + 2564)
         if not self.match_player:
             raise AssertionError("CPU trial must be the actual career fixture")
+        if benched:
+            # Mode 5 signs a starter. These older CPU-only scenarios require
+            # an explicitly benched QB, including after possession changes.
+            # This is a depth-chart input before native lineup construction.
+            rank = self.uc.mem_read(self.match_player + 41, 1)[0]
+            self.uc.mem_write(self.match_player + 41, bytes(((rank & 3) | 0xFC,)))
         career_side = 0xE5FC20 if self.match_player < 0xB321A0 else 0xE5FC60
         self.offense = 0xE5FC60 if career_side == 0xE5FC20 else 0xE5FC20
         self.defense = career_side
+        if practice:
+            self.offense, self.defense = 0xE5FC20, 0xE5FC60
         for va in (0xAF290, 0x136DB0, 0x1D30A0, 0x1F1D70, 0x164000, 0x161460):
             self.call(va, budget=20000000)
         for team, depth, settings in ((0x61C50, 0x61C70, 0xE6019C),

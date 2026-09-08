@@ -13252,3 +13252,92 @@ as that imported default. Keep the source-drift refusal; only add the
 same explicit environment-path selection already used by the MyCareer
 and screen-hooks manifest suites. The report distinguishes this run from
 ordinary standalone commands.
+
+
+## MyCareer mode 5 handoff (2026-09-08)
+
+EXPERIMENTAL / UNWITNESSED. Read `ASTRA_MYCAREER_MODE_5_REPORT.md`.
+This updates the existing generic MyCareer owner; it adds no allocator owner,
+BuildPlan option, product panel, capability ID, or archive writer. Keep the
+8,192-byte RX and 4,096-byte RW requests and the existing gate union.
+Rebuild from the original XBE: a mode-4 or mixed installation is foreign to
+this exact mode-5 template and must not be upgraded in place.
+
+The following wiring is already present at this branch base and must remain:
+
+* In `nfl2k5_throw_tuning._apply_all`, the final owner tuple is
+  `(my_career, _my_career_adapter(my_career_setup), "my_career_patch", "MyCareer (experimental)")`.
+  Pass `my_career=True, my_career_setup=None` for in-game creation. The adapter's
+  `None` route calls `nfl2k5_my_career_mode.apply`; an explicit validated setup
+  calls `nfl2k5_my_career.apply(payload, setup=...)`. Its shared `status` is
+  `nfl2k5_my_career.status`, which delegates complete generic validation.
+* `_selected_space_requests` and `_xbe_space_adapter` retain `my_career` and
+  the existing `my_career_patch.REQUESTS`. The four status dictionaries in
+  `read_xbe`, `read_image`, `write_xbe_copy`, and `write_image_copy` already expand
+  `_grown_status_fields(payload/result/after)`; retain its
+  `"my_career": my_career_patch.status(payload)` entry in all four paths.
+* `BuildPlan.my_career: bool = False` and
+  `BuildPlan.my_career_setup: str | None = None` stay unchanged. Basic,
+  advanced and experimental presets all keep MyCareer **off** until opted in.
+  Empty setup fields normalize to `None`; keep first-pass deferral and the
+  final pass so the allocator reserves the complete request union first.
+* Gameplay Patches inherits the `my_career` PATCHES row from
+  `mod_editor.gui.beta62_options`, and `NEEDS_IMAGE` includes that row through
+  the existing shared catalog. Preserve the native-disc requirement and the
+  optional legacy setup field. Suggested replacement details, including the
+  required Retail/Patch wording:
+  `Retail: Franchise controls a team. Patch: create MyPlayer in the game, choose a club and sign as a starter. The Apartment offers Play next game, Practice, MyPlayer, Start MyPlayer, Save and Quit. Restore the starting spot with Start MyPlayer. Native lists highlight the selected row in yellow. Your quarterback calls plays while on the field; the other unit uses the CPU at normal speed. The Apartment explains off-field control. Supersim and Apartment art are not available. Experimental / Unwitnessed.`
+  Synchronize the inherited `nfl2k5_my_career.HELP_TEXT` when wiring this copy:
+  its current five-row list and reference to an in-game footer are stale.
+* The Build tab's shared `_option` caption can stay
+  `MyCareer: create MyPlayer in the game` (35 characters, below 60).
+  Do not require a setup for the generic route.
+* Keep these existing allowlist lines:
+  `mod_editor/core/nfl2k5_my_career.py`,
+  `mod_editor/core/nfl2k5_my_career_code.py`,
+  `mod_editor/core/nfl2k5_my_career_mode.py`,
+  `mod_editor/core/nfl2k5_my_career_mode_code.py`,
+  `mod_editor/core/nfl2k5_my_career_save.py`,
+  `mod_editor/gui/my_career_panel_qt.py`,
+  `docs/mod_editor/nfl2k5_my_career_capabilities.json`, and
+  `docs/mod_editor/nfl2k5_my_career_mode_capabilities.json`.
+  The new navigation fixture, tests, validation receipt and manifest projection
+  tool are development evidence and need no runtime allowlist entry.
+* Keep runtime-closure imports for `mod_editor.core.nfl2k5_my_career`,
+  `nfl2k5_my_career_code`, `nfl2k5_my_career_mode`,
+  `nfl2k5_my_career_mode_code`, `nfl2k5_my_career_save`, and
+  `mod_editor.gui.my_career_panel_qt` (each core suffix under
+  `mod_editor.core`). No compiler, Unicorn or archive-research tool is a
+  production dependency.
+* Retain capability ID `nfl2k5.mode.my_career_inline`; no new registry surface
+  is necessary. Its backend command remains
+  `python3 -m mod_editor.core.nfl2k5_my_career_mode apply default.xbe generic-default.xbe`
+  and its validation command remains
+  `python3 -m tests.mod_editor.test_nfl2k5_my_career_inline`.
+  Add mode-5 and updated mode-4/turnover tests to its evidence when refreshing
+  the catalog, with the report's exact witness limits.
+
+Protected manifest regeneration remains Claude's release step. This session
+kept the main drive above 100 GB: 106.004 GB free minus the 6.3005 GB source
+image would have left only 99.703 GB before XBE growth. No acceptance image
+was created. `tools/mycareer_mode/refresh_gate_manifest.py` instead observes
+the real MyCareer writer with the oracle Recorder, inherits only verified
+parent source pins, and adds conservative native reservations to
+`.scratch/mode5-manifest.json`. That file labels itself a bounded XBE
+projection; its parent disc fields are historical. It is not a release
+manifest and must not be copied over the protected JSON. Once capacity
+permits a disposable build while retaining 100 GB, run the full oracle
+manifest command against the original XBE/XISO and regenerate
+`data/nfl2k5_cave_reservations.json` through the normal release workflow.
+
+The older defensive-try note immediately above is superseded by this base:
+its standalone test now honors `NFL2K5_CAVE_MANIFEST` and passes directly.
+No shared harness edit is needed.
+
+Fable art is still unbound. `navigation` includes the shared `nav_menu_a`
+and `title_bar_wide` families; the Apartment descriptor now uses those same
+retail resources. There is no proved Apartment-only SCNE/TXTR registration,
+lookup and unload path. A future binding must clone/register private resource
+names and prove enter/back/load/quit lifetime and compatibility with Game
+Modes, Team Select and the Crib. Do not replace shared Crib or navigation
+textures with the Fable backdrop. This session changes no archive bytes.

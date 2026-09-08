@@ -44,6 +44,9 @@ MODE_HOOKS = (
     ("human_eax", 0xA2ABA, "8b483085c9", 0xE8),
     ("human_ecx", 0xA2E7B, "8b413085c0", 0xE8),
     ("human_ecx", 0xA2EBA, "8b413085c0", 0xE8),
+    ("human_esi", 0xA30FE, "8b463085c0", 0xE8),
+    ("human_esi", 0x189D9B, "8b463085c0", 0xE8),
+    ("mode_row_text", 0x2C8790, "e81b83d6ff", 0xE8),
     ("human_eax", 0x1530B9, "8b483085c9", 0xE8),
     ("human_esi", 0x1531D5, "8b463085c0", 0xE8),
     ("human_defense", 0xA342C, "395e30537511", 0xE9),
@@ -67,6 +70,12 @@ GUARDS = (
     (0x120a20, 0x775, "17308ced725f4ca7d221cc803adc4b254d6903bfe90cc3a98a0417c645f25f2c"),
     (0x49f00, 0x4d9, "908d559d09574449caa7b433d83fbd92ea17718ab1d728f5824406c309a4f790"),
     (0xf3e90, 0xed, "ec3b1d1e23628198be072193dcf9959fbbe68c218226c7e17eec07ecea427077"),
+    (0xf3cd0, 0x87, "c6a26b2780164a3e75395d59ef13abaa13f1fc42a43b290ac27712748f7a2ec0"),
+    (0xf37e0, 0x18f, "82f21e664aa9c26b883bfdb3fd4e56f2ae0db841f6f09b558f737947ec769f7a"),
+    (0x143ea0, 0xec, "4c96e5f3bba073c4217d5743a214bcaaa57509717a093de0594387146a36cf5a"),
+    (0x143450, 0xb7, "c3f4054fd3db4b8272cba5c054d7414576784c3f08999e47ae8e30f7e07c0cde"),
+    (0x2c8730, 0x6b, "f7b29a4dfa6927f593f3d9a2cfd4937bafe1ce4dcee37c097a2db932fe5ec559"),
+    (0x2c8810, 0x5c, "f0051c31c6c26ca1728dd52e413bbdb00ac1110d33486579a548933267a05dba"),
     (0x150260, 0x94, "b92b5c935f2c864568e123dc9e925663e413613bfa77882a9fc7e7cfec2586de"),
     (0x14ff80, 0xa0, "b9caaad84cde3c36bcce67af26a1a2e943756591e160f25abb916021a9f36a2e"),
     (0x4f03f8, 0xe8, "414cd90aad9ac27f35fac2eb5b0b45f03e622550d7599f9d07075e30b2ebf6e1"),
@@ -77,6 +86,7 @@ GUARDS = (
     (0xC74E0, 0x43, "bb1906f9f029ea81788d579b295586805684d2a185ca8402e8d31483e27f6cc2"),
     (0xC5D60, 0x49, "57f2d784b1dd7419bab67951363f82a169fa5cb2d9f06529fdf56ea864f03941"),
     (0x1891B0, 0x53, "ee2e72b5f39d739e4e46aa79a71aba77b446b5544599483c8b1e26674c98e1a3"),
+    (0x189D10, 0x1EA, "9a4538e1f60aa36b90bb790d388272d5cd5fd5b42c400d730a0b6adcb8556f94"),
     (0xA11F0, 0x299, "c19563b80a731172b11f2df41e94219a87629b124dd48917808c565770ad4d87"),
     (0xA2A60, 0xF9, "d0b86d2a91f1333bf0408ae8aadf09bf31d1c713d9a885c65e56c76c6ef3f99a"),
     (0xA2D40, 0x41E, "6ea576ebdb694d8215b61be72a60c06d865d8aacb1111cf39d550a4d727ba049"),
@@ -136,10 +146,10 @@ def code_for(code_va, data_va):
         ("load_text", "Load career"), ("quit_text", "Quit to main menu"),
         ("team_text", "Choose team"), ("sign_text", "Sign"),
         ("play_text", "Play next game"), ("card_text", "MyPlayer"), ("save_text", "Save"),
+        ("start_text", "Start MyPlayer"),
         ("advance_notice", "No game pending. Advancing."),
-        ("watch_text", "Off field: CPU at normal speed"),
+        ("watch_text", "Off field: CPU plays"),
         ("fixture_text", "%s at %s. %s"),
-        ("wait_text", "CPU plays until MyPlayer's unit is on the field"),
         ("draft_notice", "Draft is not ready."),
         ("refusal_notice", "Roster is full."),
         ("load_notice", "Career load failed."),
@@ -173,20 +183,22 @@ def code_for(code_va, data_va):
     rows("entry_rows", (("draft_text", "mode_draft"), ("udfa_text", "mode_create"),
                         ("load_text", "mode_load"), ("quit_text", "mode_quit")))
     rows("hub_rows", (("play_text", "mode_play"), (0xE9C3BC, "mode_practice"),
-                      ("card_text", "mode_card"), ("save_text", "mode_save_menu"), ("quit_text", "mode_quit")))
+                      ("card_text", "mode_card"), ("start_text", "mode_start"),
+                      ("save_text", "mode_save_menu"), ("quit_text", "mode_quit")))
     rows("team_rows", (("team_text", "mode_team_open"), ("sign_text", "mode_sign")))
     for name, title, table, flags in (("entry_menu", "mode_text", "entry_rows", 3),
                                       ("apartment", "apartment_text", "hub_rows", 3),
                                       ("team_menu", "team_text", "team_rows", 0x13)):
         struct.pack_into("<11I", menu, labels[name] - data_va - 200, labels[title], 0, labels["mode_handler"],
-                         0, labels[table], 0, labels["watch_text"] if name == "apartment" else 0xE7F928,
-                         0, 0x02400044, 0x018D0052, flags)
+                         0, labels[table], 0, 0xE7F928,
+                         0xAA281C, 0x02400044, 0x018D0052, flags)
     struct.pack_into("<11I", menu, 0, labels["team_text"], 0, labels["mode_handler"],
-                     0, data_va + 432, 0, 0xE7F928, 0, 0x02400044, 0x018D0052, 0x13)
+                     0, data_va + 432, 0, 0xE7F928, 0xAA281C, 0x02400044, 0x018D0052, 0x13)
     # Own Practice descriptor: native settings, teams, input and Back lifecycle.
     hooks = menu_reserve("practice_hooks", 20)
-    enter = menu_reserve("practice_enter", 72)
-    struct.pack_into("<18I", menu, enter, 1, labels["mode_practice_init"], *([0] * 16))
+    # Native 6E578 reads the next command at +0x24. Keep its zero terminator.
+    enter = menu_reserve("practice_enter", 40)
+    struct.pack_into("<10I", menu, enter, 1, labels["mode_practice_init"], *([0] * 8))
     struct.pack_into("<5I", menu, hooks, 11, 0x5015F8, 1, labels["practice_enter"], 0)
     struct.pack_into("<11I", menu, labels["practice_menu"] - data_va - 200,
                      0xE7D8B0, labels["practice_hooks"], 0xF3FC0, 0,

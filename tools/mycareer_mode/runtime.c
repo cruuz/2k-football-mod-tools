@@ -152,7 +152,7 @@ u32 FC mode_human(u8 *t) {
 #define N1(a) ((u32 (FC *)(u32))(a))
 #define N2(a) ((u32 (FC *)(u32,u32))(a))
 extern const u8 entry_menu[], apartment[], team_menu[], practice_menu[], club_menu[];
-extern const u16 watch_text[], wait_text[], fixture_text[];
+extern const u16 watch_text[], fixture_text[];
 u32 mode_next_fixture(void);
 extern const u16 draft_notice[], refusal_notice[];
 extern void FC native_new_player(u32 manager);
@@ -261,7 +261,7 @@ void FC mode_team_open(u32 manager) {
  * Unlike the animated list handler this does not need a named SCNE sheet. */
 static NI void text(const u16 *s,u32 selected,float x,float y,u32 font) {
     ((void (FC *)(const u16 *,u32,float,float,float,float,u32,u32,u32,u32))0x6bc30)
-        (s,selected,x,y,20,240,0,0,G(0xa90ecc+4*font),0xffffffff);
+        (s,0,x,y,20,240,0,0,G(0xa90ecc+4*font),selected?0xffffff00:0xffffffff);
 }
 static NI const u16 *footer(void) {
     u32 slot=mode_next_fixture(),args[3];
@@ -273,14 +273,11 @@ static NI const u16 *footer(void) {
     return (const u16 *)(state+3468);
 }
 void FC mode_draw(u32 manager) {
-    int i,n=W((u8 *)manager,0x100),selected=W((u8 *)manager,8*n+4);
-    const u8 *d=(const u8 *)W((u8 *)manager,8*n),*r=(const u8 *)W(d,16);
-    text((const u16 *)W(d,0),0,320,52,6);
-    for(i=0;i<32 && W(r,0)!=3;i++,r+=52)
-        text((const u16 *)W(r,4),i==selected, d==club_menu?180+280*(i>>4):320,
-             d==club_menu?90+20*(i&15):120+42*i,d==club_menu?0:1);
-    if(d==team_menu) text((const u16 *)W(team(S(2684)),0x104),0,320,240,1);
-    text(d==apartment?footer():(const u16 *)W(d,24),0,320,432,0);
+    const u8 *d=(const u8 *)W((u8 *)manager,8*W((u8 *)manager,0x100));
+    /* Native navigation owns every title, row and selected-row highlight.
+     * This pass supplies only the two extra pieces of career information. */
+    if(d==apartment) text(footer(),0,320,432,0);
+    if(d==team_menu) text((const u16 *)W(team(S(2684)),0x104),0,320,380,1);
 }
 
 void mode_visuals(void) {
@@ -290,7 +287,8 @@ void mode_visuals(void) {
      * control transfer and teammate AI never observe the temporary value. */
     CALL0(0x75d90);
     if(t) W(t,0x30)=old;
-    if(!p && inline_active()) text(wait_text,0,320,454,0);
+    /* Live substitutions and special-team waits have no modal prompt.
+     * The Apartment explains CPU control without floating text over play. */
 }
 u32 mode_result(void) {
     u32 result=G(0xA83A18);
@@ -306,6 +304,10 @@ static NI u32 on_stack(u32 manager,const u8 *descriptor) {
     return 0;
 }
 static NI u32 hub(u32 manager) { return owner(manager) && inline_active() && on_stack(manager,apartment); }
+extern void start_player(void);
+void FC mode_start(u32 manager) {
+    if(hub(manager)) start_player();
+}
 static NI void capture(u8 *p) {
     u32 i;
     zero(state,200); S(4)=0x31303030; S(8)=1280;
@@ -338,6 +340,7 @@ void FC mode_sign(u32 manager) {
     CALL2(0xc3ee0,(u32)t,(u32)p); CALL1(0x243790,(u32)t); CALL1(0xc3f00,(u32)t);
     CALL1(0x13ec90,(u32)t);
     capture(p);
+    start_player();
     CALL1(0x13f1b0,manager);
 }
 /* Return the first playable career fixture, never a selected Schedule card.
@@ -355,7 +358,7 @@ void FC mode_play(u32 manager) {
     u32 slot;
     extern const u16 advance_notice[];
     if(!hub(manager) || !primary()) return;
-    resolve_team();
+    start_player();
     if(S(56)>=32) return;
     slot=mode_next_fixture();
     if(slot<374 && slot/17<=G(0xE576B4)) {
@@ -370,12 +373,18 @@ void FC mode_play(u32 manager) {
     }
 }
 void FC mode_practice(u32 manager) {
-    if(hub(manager) && primary()) CALL2(0x6e390,manager,(u32)practice_menu);
+    if(hub(manager) && primary()) {
+        start_player();
+        CALL2(0x6e390,manager,(u32)practice_menu);
+    }
 }
 void FC mode_practice_init(u32 manager) {
-    u32 club=S(2588); (void)manager;
+    u32 club=S(2588),other=(u32)team((S(56)+1)&31),swap; (void)manager;
     CALL0(0x148ad0);
-    if(club) { CALL1(0x77ae0,club); CALL1(0x77b20,club); G(0xE601D4)=1; CALL0(0xe33f0); }
+    /* Free Practice starts with home offense. Keep the unique created
+     * record on its position's side, instead of copying it to both teams. */
+    if((0x18c70>>state[149])&1) { swap=club; club=other; other=swap; }
+    if(club) { CALL1(0x77ae0,club); CALL1(0x77b20,other); G(0xE601D4)=1; CALL0(0xe33f0); }
 }
 void FC mode_card(u32 manager) {
     u32 p;
