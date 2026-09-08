@@ -1466,12 +1466,13 @@ RETAIL_DEFENSE_PERSONNEL_FINGERPRINTS = {
 # the separate, explicitly selected runtime consumes paired compiler receipts.
 OPTION_PRESETS = ('Speed option', 'Zone read (experimental)', 'RPO (experimental)')
 OPTION_INTENT_SCHEMA = 'nfl2k5_option_intent/v1'
-OPTION_NOTICE = ('EXPERIMENTAL / UNWITNESSED. The read is position/velocity based; '
-                 'a dependable modern read needs the later runtime tier. '
-                 'Opponent slots are fixed to the selected test formation. The game cannot '
-                 'check that formation or find an edge defender for you. For zone read and RPO, '
-                 'a true result gives; a false or missing target keeps or enters the pass. '
-                 'Blocks, exchange timing and pass readiness need play tests.')
+OPTION_NOTICE = ('EXPERIMENTAL / UNWITNESSED. Enable Read option runtime with this pack '
+                 'for the one-second read window. Hold snap through the window to keep; '
+                 'release or do nothing after snapping to give. The stick waits until the '
+                 'window ends. On an RPO, hold snap and press the named receiver to throw. '
+                 'Watch the edge marked by the snap-button icon. Without the runtime, '
+                 'these are retail position-based experiments with no held mesh. '
+                 'Blocks, exchange animation and pass readiness need play tests.')
 STOCK_SPEED_OPTIONS = (('MIN', 24), ('NO', 57), ('NO', 66), ('PHI', 175), ('TEN', 144))
 
 
@@ -1590,7 +1591,10 @@ def make_option_design(book: Nfl2k5Playbook, body: bytes, formation_index: int,
                      (26, [4, side * YD, -3 * YD, read_slot, 4, 1, 13, 0], 0x14),
                      normal, (19, [back_slot, 0], 0x13)]
         hb = list(chains[back_slot])
-        hb[1] = (26, [6, side * YD, -3 * YD, 0, 3, 0, 2, 0], 0x14)
+        # Mode 6 is relative to the QB, not the line of scrimmage. Approach
+        # his ball side at half a yard while he holds the native mesh task.
+        # The old -3-yard offset sent the back three yards behind the QB.
+        hb[1] = (26, [6, side * .5 * YD, 0, 0, 3, 0, 2, 0], 0x14)
         hb[2] = (24, [0, side * 3 * YD, 0, 0, 15, 0, 0], 0x02)
         hb[3] = (22, [int(weak), .1, 8], 0x11)
         hb[4] = (21, [0, side * 2 * YD, 5 * YD, 2, 15, 0, 0], 0x03)

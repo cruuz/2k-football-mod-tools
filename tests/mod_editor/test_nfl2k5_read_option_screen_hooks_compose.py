@@ -79,7 +79,7 @@ class CompositionTests(unittest.TestCase):
                     self.assertEqual((receipt["status"], receipt["changed_bytes"], receipt["edits"]),
                                      ("already_applied", 0, []))
                     self.assertFalse(owner.read_settings(forward)["runtime_witnessed"])
-            self.assertEqual(read.read_settings(forward)["model_version"], 2)
+            self.assertEqual(read.read_settings(forward)["model_version"], 3)
 
     def test_partner_only_and_reserved_uninstalled_partner_are_supported(self):
         for owner, partner in (PAIR, tuple(reversed(PAIR))):

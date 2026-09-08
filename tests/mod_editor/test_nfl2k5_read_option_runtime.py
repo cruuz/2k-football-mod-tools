@@ -137,7 +137,7 @@ class ImageTests(unittest.TestCase):
     def test_mixed_hooks_dependencies_code_tables_and_partial_union_refuse(self):
         image = XbeImage(self.patched)
         places = patch.allocations(self.patched)
-        for va in (0x1AF191, 0x1AF210, 0x120960, 0xA9B4B0, places['code']['va'], places['read_only']['va']):
+        for va in (0x1AF009, 0x1AF210, 0x120960, 0xA9B4B0, places['code']['va'], places['read_only']['va']):
             bad = bytearray(self.patched); bad[image.offset(va)] ^= 1
             bad = repin(bad)
             with self.subTest(va=hex(va)):
@@ -160,7 +160,7 @@ class ImageTests(unittest.TestCase):
         recorder = Recorder(self.retail)
         recorder.observe(patch, 'apply', self.retail, self.patched, self.receipt)
         spans = recorder.spans
-        self.assertTrue(any(int(row['start'], 0) <= 0x1AF191 < int(row['end'], 0)
+        self.assertTrue(any(int(row['start'], 0) <= 0x1AF009 < int(row['end'], 0)
                             and row['owner'] == patch.OWNER for row in spans))
 
 

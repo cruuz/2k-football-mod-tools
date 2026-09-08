@@ -2213,10 +2213,11 @@ def option_pack(book: Nfl2k5Playbook, body: bytes, team: str = 'MIN') -> Playboo
             PackDonor(d.donor_play_index, book.plays[d.donor_play_index].name, donor_flags,
                       lib.qb_signature(donor_chains[0][1])), d.play_flags, target, book.plays[target].name,
             preset, option_intent=d.intent))
-    return PlaybookPack(PackBook(team, 'SOFTDRINK option', 'SOFTDRINK', '1.0.0', 'CC0-1.0', (),
+    return PlaybookPack(PackBook(team, 'SOFTDRINK option', 'SOFTDRINK', '1.0.1', 'CC0-1.0', (),
         lib.OPTION_NOTICE + ' Five native speed-option recipes plus speed, zone-read and RPO presets. '
         f'Replaces eight {book.formations[fi].name} calls, never appends. The 4-3 fixture is an authoring check only; '
-        'use matching defensive personnel in play tests. False/missing target does not guarantee a safe give.'),
+        'Pair the read-option runtime for the one-second mesh and live edge cue. '
+        'Without that runtime, these reads retain the experimental retail fallback.'),
         PackBase(book_fingerprint(body), len(book.formations), len(book.plays), book.node_count),
         (), tuple(plays), OPTION_SCHEMA)
 

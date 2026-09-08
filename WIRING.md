@@ -1,3 +1,124 @@
+# r64 Read option v3 integration (2026-09-08)
+
+EXPERIMENTAL / UNWITNESSED. This section supersedes the v1/v2 read-option
+window, fixed HUD anchor and geometry descriptions below. See
+[ASTRA_READ_OPTION_V3_REPORT.md](ASTRA_READ_OPTION_V3_REPORT.md). All protected
+implementation files remain unchanged. Existing integration already dispatches
+this owner and imports its updated HELP_TEXT; no new option or surface is needed.
+
+## Required integration changes
+
+1. Regenerate protected `data/nfl2k5_cave_reservations.json` after merging all
+   changes, using `tools/nfl2k5_cave_oracle.py manifest`. The tick hook moves
+   from `0x1AF191` (9 bytes) to `0x1AF009` (10 bytes), and the new input-priority
+   hook occupies `0x21516A` (6 bytes). Retain the other four hooks. The existing
+   stack and manifest builder concatenate the owner's live REQUESTS and already
+   include it in every installation, replay and recorder list. Its reservation
+   stays **2048 RX / 256 RW / 88 RO**, all aligned to 16. Use the scratch manifest
+   only as local test evidence; do not copy or hand-edit its fingerprints into
+   the protected release artifact.
+2. In `mod_editor/gui/create_play_wizard_qt.py`, the option geometry QLabel
+   beginning near line 695 is outside this job's GUI ownership. Replace its
+   existing text from `Speed option keeps stock supporting blocks.` through
+   `enable the separate runtime controls.` with this exact text:
+
+   ```python
+   "Speed option keeps stock supporting blocks. With Read option mesh controls, "
+   "the QB holds for one second and the back approaches beside him. Hold snap "
+   "through the window to keep; release or do nothing to give. On an RPO, hold "
+   "snap and press the named receiver to throw. Watch the edge marked by the "
+   "snap-button icon. Without the runtime, these are experimental retail "
+   "position-based recipes. Blocks and exchange animation need play tests."
+   ```
+
+   The authoring notice and saved pack already carry these controls. This
+   removes the extra wizard label's stale claim that the held QB moves one
+   yard sideways and three yards back. Do not change native formation slots,
+   the conditional branch contract, or the fixed resource spans to fix text.
+3. Merge the revised capability object in
+   `docs/mod_editor/nfl2k5_read_option_runtime_capability.json` into the existing
+   registry entry `nfl2k5.gameplay.read_option_runtime`. Keep surface
+   `gameplay_tuning_sliders`, opt-in default, and `runtime.status=not-tested`.
+   Its evidence includes the native frame suite; it does not claim played
+   animation or collision evidence. No new capability entry is introduced.
+
+## Dispatcher and status contract already present
+
+Retain the import `nfl2k5_read_option_runtime as read_option_patch` in protected
+`mod_editor/core/nfl2k5_throw_tuning.py`. `_apply_all`, its writers and forwarding
+calls keep kwargs `read_option_runtime=False` and
+`read_option_intent_table=None`, their Boolean/bytes validation, the existing
+`_read_option_adapter(table)`, and this tuple after allocator installation:
+
+```python
+(read_option_runtime, _read_option_adapter(read_option_intent_table),
+ "read_option_runtime_patch", "read option mesh controls (experimental)"),
+```
+
+`_selected_space_requests` and `_xbe_space_adapter` continue reserving
+`read_option_patch.REQUESTS` when the flag is selected. Keep these two fields
+in `_grown_status_fields(payload)`, expanded in **all four** status dictionaries
+in `read_xbe`, `read_image`, `write_xbe_copy` and `write_image_copy`:
+
+```python
+"read_option_runtime": read_option_patch.status(payload),
+"read_option_runtime_settings": read_option_patch.read_settings(payload),
+```
+
+Settings and receipts now report `model_version=3` and `mesh_seconds=1.0`.
+`mesh_frames=61` describes nominal 60 Hz samples including the first sample;
+expiry is determined by elapsed game time. Rebuild from a supported base with
+the complete request union; installed v1/v2 owner bytes are not an upgrade base.
+
+In protected `mod_editor/core/mod_build.py`, retain
+`BuildPlan.read_option_runtime: bool = False`. Basic, Advanced and Experimental
+all leave it **off**. Keep normalization, early-pass deferral, final pairing
+**after position pools and depth roles**, the nonempty table refusal, the final
+`read_option_intent_table=read_table` call, and the final playbook count summary.
+The shipped pack still yields eight authored replacements and exactly two reads.
+
+The Gameplay Patches `PATCHES` row comes from `mod_editor/gui/beta62_options.py`:
+
+```python
+("read_option_runtime", "Read option mesh controls (experimental)",
+ tt.read_option_patch.HELP_TEXT),
+```
+
+Keep its `NEEDS_IMAGE` membership. HELP_TEXT includes both **Retail** and
+**Patch**, the one-second window, hold/release/default-give controls, EDGE cue
+and RPO receiver instruction. Protected Build tab `_option` keeps caption
+`Read option mesh controls (experimental)` (40 characters), False by default,
+and the same help text. Neither protected panel needs a new row or flag.
+
+## Packaging closure already present
+
+Retain these exact lines in protected `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_read_option_runtime.py
+mod_editor/core/nfl2k5_read_option_runtime_code.py
+mod_editor/core/nfl2k5_play_library.py
+mod_editor/core/nfl2k5_playbook_pack.py
+mod_editor/core/nfl2k5_play_intents.py
+data/playbooks/softdrink_option.2k5book
+docs/mod_editor/nfl2k5_read_option_runtime_capability.json
+```
+
+Retain these runtime-closure imports in protected
+`packaging/check_2k5_mod_studio_runtime.py`:
+
+```python
+"mod_editor.core.nfl2k5_read_option_runtime",
+"mod_editor.core.nfl2k5_read_option_runtime_code",
+"mod_editor.core.nfl2k5_play_library",
+"mod_editor.core.nfl2k5_playbook_pack",
+"mod_editor.core.nfl2k5_play_intents",
+```
+
+The assembler and instruction tests remain development tools. The application
+loads the generated template and needs no GNU assembler, Unicorn or Capstone.
+No release-tag test, version, CI workflow or protected packaging source changed.
+
 # r63 Discord bugs 1: protected integration handoff (2026-09-07)
 
 **EXPERIMENTAL / UNWITNESSED. Protected files have NOT been edited.**

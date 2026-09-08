@@ -1,6 +1,6 @@
 """Metadata-backed mesh read. EXPERIMENTAL / UNWITNESSED, all presets off.
 
-Version 2 grows the existing owner to 2,048 RX, 256 RW and 88 RO bytes.
+Version 3 retains the existing 2,048 RX, 256 RW and 88 RO reservation.
 Rebuild from the supported base with the complete revised request union;
 v1 allocations are deliberately refused, never upgraded in place. The v1
 64-byte PLAY lookup remains compatible. Private state is reset at each snap
@@ -18,8 +18,12 @@ from .nfl2k5_cave_oracle import XbeImage
 
 OWNER = "nfl2k5_read_option_runtime"
 CODE_SIZE, DATA_SIZE, TABLE_SIZE, RO_SIZE = 2048, 256, 64, 88
-MESH_FRAMES, CRASH_SAMPLES = 21, 3
+MESH_SECONDS, CRASH_SAMPLES = 1.0, 3
+# Nominal samples at 60 Hz, including the initial sample; expiry uses time.
+MESH_FRAMES = 61
 AUTO_EDGE = 255
+# Retain the v2 RO layout. The first four floats are unused legacy HUD
+# coordinates; the final two remain the CPU prediction time and read radius.
 PROMPT = struct.pack("<6f", 360, 96, 0, 1, .2, 228.6)
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16),
             (OWNER, "read_only", RO_SIZE, 16))
@@ -28,7 +32,8 @@ HEADER = struct.Struct("<4sIII")
 RECORD = struct.Struct("<5I4B")
 MAX_RECORDS = (TABLE_SIZE - HEADER.size) // RECORD.size
 HOOKS = {
-    "tick": (0x1AF191, bytes.fromhex("d94760d81d80414e00")),
+    "tick": (0x1AF009, bytes.fromhex("d944241cd81d0ca55000")),
+    "schedule": (0x21516A, bytes.fromhex("8b44243033f6")),
     "hud": (0x646A1, bytes.fromhex("e80a5a0900")),
     "pass_init": (0x19C849, bytes.fromhex("c70660bb1900")),
     "snap": (0xB6FBD, bytes.fromhex("8935c802e600")),
@@ -37,10 +42,12 @@ HOOKS = {
 HELP_TEXT = (
     "EXPERIMENTAL / UNWITNESSED. Retail: option plays use the original pitch "
     "and position rules. Patch: paired authored reads use release to give and "
-    "hold the snap button to keep at the mesh. CPU QBs read the selected edge. "
-    "A brief snap-button cue marks the read window. CPU reads use a live "
-    "unblocked edge and sustained movement. A receiver press during the RPO "
-    "mesh reaches the native pass request. All presets are off."
+    "hold the snap button for the whole one-second window to keep. "
+    "Releasing it, including a quick tap to snap, gives to the back. "
+    "Doing nothing after the snap gives. The stick waits until the read ends. "
+    "The snap-button icon marks the unblocked edge to watch. CPU QBs read "
+    "that edge's sustained movement. On an RPO, hold snap and press the "
+    "named receiver during the window to throw. All presets are off."
 )
 
 
@@ -101,12 +108,12 @@ def validate_intent_table(table):
 
 
 def code_for(code_va, table_va, data_va):
-    symbols = dict(code=code_va, intent_table=table_va, original_tail=0x1AF19A,
+    symbols = dict(code=code_va, intent_table=table_va, original_tail=0x1AF013,
                    result_tail=0x1AF210, lookup_actor=0x1894F0,
                    held_command=0x120960, receiver_ready=0x19B800,
                    state_data=data_va, hud_native=0xFA0B0, draw_icon=0xF97F0,
                    hud_tail=0x646A6, pass_tail=0x19C84F, snap_tail=0xB6FC3,
-                   reset_tail=0x1AD9C8)
+                   reset_tail=0x1AD9C8, schedule_tail=0x215170, schedule_mesh=0x215367)
     result = bytearray(assembly.CODE)
     for offset, kind, symbol, value in assembly.RELOCATIONS:
         target = symbols[symbol] + value + struct.unpack_from("<I", result, offset)[0]
@@ -200,11 +207,12 @@ def read_settings(payload):
         state, table = _inspect(payload)
         if state != 'applied':
             return None
-        return dict(model_version=2, authored_reads=validate_intent_table(table),
-                    table_sha256=hashlib.sha256(table).hexdigest(), mesh_frames=MESH_FRAMES, crash_samples=CRASH_SAMPLES,
+        return dict(model_version=3, authored_reads=validate_intent_table(table),
+                    table_sha256=hashlib.sha256(table).hexdigest(), mesh_seconds=MESH_SECONDS,
+                    mesh_frames=MESH_FRAMES, crash_samples=CRASH_SAMPLES,
                     edge_policy="snap assignments, live unblocked replacement",
-                    prompt="native snap-button icon during human mesh",
-                    human_control='hold snap to keep; release to give',
+                    prompt="native snap-button icon on selected edge during human mesh",
+                    human_control='hold snap through window to keep; release or no input to give',
                     experimental=True, runtime_witnessed=False)
     except (ValueError, TypeError, KeyError, IndexError, struct.error):
         return None
@@ -225,7 +233,8 @@ def apply(payload: bytes, *, intent_table: bytes | None = None) -> tuple[bytes, 
     if table is None:
         table = compile_intent_table()[0]
     count = validate_intent_table(table)
-    receipt = dict(experimental=True, runtime_witnessed=False, tier="mesh", model_version=2,
+    receipt = dict(experimental=True, runtime_witnessed=False, tier="mesh", model_version=3,
+                   mesh_seconds=MESH_SECONDS,
                    authored_reads=count, table_sha256=hashlib.sha256(table).hexdigest(),
                    code_bytes=CODE_SIZE, instruction_bytes=assembly.LABELS['config'],
                    read_only_bytes=RO_SIZE, data_bytes=DATA_SIZE, changed_bytes=0, edits=[])
@@ -261,6 +270,8 @@ def apply(payload: bytes, *, intent_table: bytes | None = None) -> tuple[bytes, 
 # Pinned dependency slices and controller tables. Only validated owner hooks
 # (including the screen timer store in the shared initializer) are normalized.
 GUARDS = (
+    (0x215145, 62, "c02a6c72d6bac4ea370d814d4f5ac18f4254bd822276d6f9c221e3c1c69aeb33"),
+    (0xfa0b0, 434, "8dcb54df98e3b4259017ef519b03cf976752a92aed610ecf530b13596193dced"),
     (0x64670, 63, "8982b6527e0545f7fddf26e6ecb1aa2d39411bf3c520b4bfb925a46509080de5"),
     (0xf97f0, 345, "c89e3adfe3227a7c7d450a322434a30f147b4bb0057993d51fcfca97ec1541d0"),
     (0xf9f40, 338, "0b33d7255b461fcbfbc9895a0550af05e0dab708905d51b5c4c324178c9df5ac"),

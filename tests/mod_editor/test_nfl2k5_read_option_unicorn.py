@@ -96,7 +96,7 @@ class Machine(NativeMachine):
         if 0 <= self.controller <= 3:
             self.u32(0xA9B95C+self.controller*44, 0x100 if held else 0)
             self.u32(0xA9B954+self.controller*44, getattr(self, 'throw_mask', 0x200) if throw else 0)
-        # Actual stack geometry at1AF191 after the retail aligned prologue.
+        # Actual stack geometry at1AF009 after the retail aligned prologue.
         native_sp = self.STACK-0x60
         self.u32(self.STACK-4, 0x6789)
         self.u32(native_sp, 0x5678)
@@ -110,7 +110,7 @@ class Machine(NativeMachine):
                       ECX=self.interp, EBX=0xFFFFFFFF, EDX=0x2345, EAX=0x789A, EFLAGS=0x246)
         for name, value in values.items():
             self.uc.reg_write(getattr(x86, 'UC_X86_REG_'+name), value)
-        self.uc.emu_start(0x1AF191, self.STOP, count=12000)
+        self.uc.emu_start(patch.HOOKS['tick'][0], self.STOP, count=12000)
         end = self.uc.reg_read(x86.UC_X86_REG_EIP)
         if end != (stop_at or self.STOP):
             raise AssertionError(f'bounded tick failed to stop: {end:#x}')
@@ -127,7 +127,17 @@ class Machine(NativeMachine):
         return result
 
     def finish(self, **kwargs):
-        return self.frames(max(1, patch.MESH_FRAMES-self.get(self.state_va+20)), **kwargs)
+        result = None
+        stop_at = kwargs.pop('stop_at', None)
+        for _ in range(patch.MESH_FRAMES+2):
+            now = self.readf(self.GAME+0x410)
+            deadline = self.readf(self.state_va+44)
+            when = min(now+1/60, deadline) if deadline > now else now+1/60
+            result = self.tick(when, stop_at=stop_at if deadline and when >= deadline else None,
+                               **kwargs)
+            if self.get(self.task+0x44) <= 2:
+                return result
+        raise AssertionError('mesh failed to reach its game-time deadline')
 
     def back_result(self):
         state = self.RB+0x600
@@ -175,7 +185,7 @@ class InstructionTests(unittest.TestCase):
                     for held, expected in ((False, 1), (True, 0)):
                         with self.subTest(controller=controller, layout=layout, context=context, held=held):
                             m = self.machine(controller=controller, layout=layout, context=context)
-                            self.assertEqual(m.frames(20, held=held), 0)
+                            self.assertEqual(m.frames(patch.MESH_FRAMES-1, held=held), 0)
                             self.assertEqual(m.get(0xBE4E28+8), 0xFFFFFFFF)
                             self.assertIn(0x120960, m.hits)
                             self.assertIn(0x77230, m.hits)
@@ -201,7 +211,7 @@ class InstructionTests(unittest.TestCase):
             self.assertEqual(m.get(m.task+0x44), decision)
             self.assertEqual(m.back_result(), int(decision == 1))
         m = self.machine(rpo=True, controller=0)
-        m.frames(20); m.finish(stop_at=0x1AF292)
+        m.frames(patch.MESH_FRAMES-1); m.finish(stop_at=0x1AF292)
         self.assertEqual(m.get(m.task+0x44), 0)
         self.assertTrue(m.get(m.interp+4) & 0x20000)
         self.assertEqual(m.get(0xBE4E28+8), 0)
@@ -231,7 +241,7 @@ class InstructionTests(unittest.TestCase):
                            node=m.qs+0x450, assignment=m.interp)[field]
             old = m.uc.mem_read(address, 1)
             m.uc.mem_write(address, bytes([old[0] ^ 1]))
-            m.tick(stop_at=0x1AF19A)
+            m.tick(stop_at=0x1AF013)
             self.assertEqual(m.get(m.task+0x44), 0x41500000)
 
     def test_instructions_relocate_in_the_complete_owner_allocation_union(self):
@@ -331,7 +341,8 @@ class InstructionTests(unittest.TestCase):
         for address, size in m.writes:
             self.assertTrue(0x3100000 <= address < m.STACK or
                             m.task+0x40 <= address and address+size <= m.task+0x48 or
-                            m.state_va <= address and address+size <= m.state_va+patch.DATA_SIZE, hex(address))
+                            m.state_va <= address and address+size <= m.state_va+patch.DATA_SIZE or
+                            m.QB+0x110 <= address and address+size <= m.QB+0x120, hex(address))
 
 
 if __name__ == '__main__':

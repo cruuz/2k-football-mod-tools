@@ -113,7 +113,7 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_read_option_runtime as read_option
         if read_option.status(cls.patched) != "applied":
             raise AssertionError("read option owner missing from the composed XBE")
-        if read_option.read_settings(cls.patched)["model_version"] != 2:
+        if read_option.read_settings(cls.patched)["model_version"] != 3:
             raise AssertionError("revised read option controls missing from the composed XBE")
         from mod_editor.core import nfl2k5_franchise_2026 as franchise_2026
         if franchise_2026.status(cls.patched) != "applied":

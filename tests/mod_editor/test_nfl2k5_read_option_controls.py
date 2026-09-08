@@ -83,6 +83,12 @@ class ControlsMachine(Machine):
         return p
 
     def hud(self, ready=True):
+        # Native world-marker queue transport; one EDGE head, no glyph yet.
+        # Native projection itself is exercised in the v3 frame suite.
+        self.u32(0xA94EA4, 1)
+        self.u32(0xA94EAC, self.get(self.P+0x3C))
+        self.uc.mem_write(0xA94EB0, struct.pack('<4h', 360, 120, 360, 96))
+        self.u32(0xA94EB8, 5 << 21)
         self.u32(0xA94EA0, int(ready))
         self.boundaries = {0x2D2A0: (12, None), 0x2CB90: (8, None),
                            0x2CB50: (12, None), 0x2CA00: (0, None)}
@@ -97,7 +103,7 @@ class ControlsMachine(Machine):
         self.run(0x1B8790, ecx=self.interp, edx=node)
         self.run(0x1B84E0, eax=self.interp)
         self.u32(self.DEF+8, self.OFFMETA)
-        self.boundaries = {0x2C9AB0: (0, None)}
+        self.boundaries = {0x2C9AB0: (0, None), 0x198C20: (4, 'float')}
         return self.run(0x19C740, ecx=self.QB)
 
 
@@ -213,7 +219,7 @@ class ControlsInstructionTests(unittest.TestCase):
             elif change == 'assignment': m.u32(m.interp, m.get(m.interp)+96)
             elif change == 'node': m.uc.mem_write(m.qs+0x450, b'\x03')
             elif change == 'controller': m.u32(m.QB+0x100, -1)
-            else: m.f32(m.GAME+0x410, .8)
+            else: m.f32(m.GAME+0x410, 1.8)
             with self.subTest(change=change): self.assertEqual(m.hud(), [])
 
     def test_blocked_or_absent_authored_edge_selects_unblocked_live_replacement(self):
@@ -259,16 +265,16 @@ class ControlsInstructionTests(unittest.TestCase):
 
     def test_hysteresis_rejects_one_tick_twitch_and_survives_one_wide_sample(self):
         m = self.machine()
-        m.edge(vx=0); m.frames(19)
+        m.edge(vx=0); m.frames(patch.MESH_FRAMES-2)
         m.edge(vx=4); m.frames(1)
         m.edge(vx=0); m.finish()
         self.assertEqual(m.get(m.task+0x44), 1)
         m = self.machine()
-        m.frames(20)
+        m.frames(patch.MESH_FRAMES-1)
         m.edge(vx=0); m.finish()
         self.assertEqual(m.get(m.task+0x44), 0)
         m = self.machine()
-        m.frames(18)
+        m.frames(patch.MESH_FRAMES-3)
         m.edge(vx=0); m.finish()
         self.assertEqual(m.get(m.task+0x44), 1)
 
@@ -277,11 +283,11 @@ class ControlsInstructionTests(unittest.TestCase):
         m.tick(.1)
         for _ in range(5): m.tick(.1, held=False)
         self.assertEqual(m.get(m.state_va+20), 1)
-        m.frames(19)
-        m.finish(held=False)
+        m.frames(patch.MESH_FRAMES-2)
+        m.tick(m.readf(m.state_va+44), held=False)
         self.assertEqual(m.get(m.task+0x44), 0)
         m = self.machine(controller=0)
-        m.frames(19); m.frames(1, held=False); m.finish()
+        m.frames(patch.MESH_FRAMES-2); m.frames(1, held=False); m.finish()
         self.assertEqual(m.get(m.task+0x44), 1)
         m = self.machine(controller=0)
         m.tick(.2); m.tick(.1, held=False)

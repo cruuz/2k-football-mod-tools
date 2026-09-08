@@ -8,6 +8,7 @@ from pathlib import Path
 import copy
 import hashlib
 import json
+import os
 import sys
 import unittest
 
@@ -20,9 +21,11 @@ from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, OracleError, Re
 from tests.mod_editor.test_nfl2k5_defensive_try import XBE
 from tests.nfl2k5_allocator_stack import REQUESTS
 
+MANIFEST = Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST))
+
 
 def bounded_projection(retail, document=None):
-    parent = json.loads(DEFAULT_MANIFEST.read_text(encoding="utf-8")) if document is None else document
+    parent = json.loads(MANIFEST.read_text(encoding="utf-8")) if document is None else document
     historical = ReservationManifest(parent, XbeImage(retail))
     fingerprints = builder.source_fingerprints()
     allowed = "mod_editor/core/nfl2k5_defensive_try.py"
@@ -88,7 +91,7 @@ class ManifestTests(unittest.TestCase):
         self.assertFalse(self.document["bounded_projection"]["real_disc_build"])
 
     def test_unrelated_source_drift_cannot_be_recertified(self):
-        parent = json.loads(DEFAULT_MANIFEST.read_text(encoding="utf-8"))
+        parent = json.loads(MANIFEST.read_text(encoding="utf-8"))
         parent["source_sha256"]["mod_editor/core/nfl2k5_team_column.py"] = "0" * 64
         with self.assertRaisesRegex(OracleError, "unobserved source changed"):
             bounded_projection(self.retail, parent)

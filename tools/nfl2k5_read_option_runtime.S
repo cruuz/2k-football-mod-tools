@@ -1,5 +1,5 @@
 /* EXPERIMENTAL / UNWITNESSED. GNU as --32.
- * Live conditional-update boundary, AFTER native movement, BEFORE its timer
+ * Live conditional-update boundary, BEFORE native movement, BEFORE its timer
  * and threat gates. ESI actor, EDI task, ECX interpreter. No stack arguments.
  * task+44 is the conditional argument (initialized to float 13 by retail),
  * not padding: this tagged callback owns it as pending/committed decision.
@@ -9,11 +9,11 @@
 .intel_syntax noprefix
 .code32
 .text
-.global tick, hud, pass_init, snap, reset, config, code_end
+.global tick, hud, pass_init, snap, reset, schedule, config, code_end
 .extern intent_table, state_data, original_tail, result_tail, lookup_actor, held_command, receiver_ready
-.extern hud_native, draw_icon, hud_tail, pass_tail, snap_tail, reset_tail
+.extern hud_native, draw_icon, hud_tail, pass_tail, snap_tail, reset_tail, schedule_tail, schedule_mesh
 /* Private RW: actor/task/descriptor/roster, last clock, frame, confidence,
- * controller, queued receiver, crash latch, selected EDGE, spare; 11 snap
+ * controller, queued receiver, crash latch, selected EDGE, deadline; 11 snap
  * records at +64, each actor/roster/assignment. One offense owns the ball. */
 tick:
     pushfd
@@ -22,68 +22,87 @@ tick:
     and esp, -16
     sub esp, 512
     fxsave [esp]
+    push ebp
+    mov ebp, offset state_data
     fninit
     call lookup
     test eax, eax
     jz original
     mov ebx, eax                       /* immutable row */
+    mov edx, [esi+0xc]
+    xor eax, eax
+    mov [edx+0x10], eax                /* no native run or stick throttle */
+    mov [edx+0x1c], eax                /* raw held/rising state stays intact */
     mov eax, [edi+0x44]
     cmp eax, 2
     jbe decided
     cmp eax, 0x41500000                /* fresh native condition argument13 */
     jne active
-    mov [state_data], esi
-    mov [state_data+4], edi
+    mov [ebp], esi
+    mov [ebp+4], edi
     mov edx, [esi+0x20]
     mov edx, [edx+0x41c]
-    mov [state_data+8], edx
+    mov [ebp+8], edx
     mov edx, [esi+0x3c]
-    mov [state_data+12], edx
+    mov [ebp+12], edx
     push edi
-    mov edi, offset state_data+20
+    lea edi, [ebp+20]
     xor eax, eax
-    mov ecx, 6
+    push 6
+    pop ecx
     cld
     rep stosd
     pop edi
     dec eax
-    mov [state_data+16], eax
+    mov [ebp+16], eax
     mov dword ptr [edi+0x44], 0x41500001
 active:
-    cmp [state_data], esi
-    jne abandon
-    cmp [state_data+4], edi
-    jne abandon
+    cmp [ebp], esi
+    jne invalid_active
+    cmp [ebp+4], edi
+    jne invalid_active
     mov edx, [esi+0x3c]
-    cmp [state_data+12], edx
-    jne abandon
+    cmp [ebp+12], edx
+    jne invalid_active
     cmp dword ptr [0xe602b8], 14
-    jne abandon
+    jne invalid_active
     mov eax, [0xe5fc00]
     test eax, eax
-    jz abandon
+    jz invalid_active
     cmp [eax], esi
-    jne abandon
+    jne invalid_active
     mov eax, [0xe6029c]
     test eax, eax
     jz pending
     mov eax, [eax+0x10]
     cmp eax, 0x40a00000                /* negative/NaN/stale: no exchange */
-    jae abandon
-    cmp [state_data+16], eax
+    jae invalid_active
+    cmp [ebp+16], eax
     je pending                        /* at most once per simulation tick */
-    cmp dword ptr [state_data+16], -1
+    cmp dword ptr [ebp+16], -1
     je frame_step
-    cmp eax, [state_data+16]
-    jb abandon
+    cmp eax, [ebp+16]
+    jb invalid_active
+    jmp frame_step
+invalid_active:
+    jmp abandon
 frame_step:
-    mov [state_data+16], eax
-    inc dword ptr [state_data+20]
-    cmp dword ptr [state_data+20], 21
+    cmp dword ptr [ebp+20], 0
+    jne timed
+    push eax
+    fld dword ptr [esp]
+    fld1
+    faddp st(1)
+    fstp dword ptr [ebp+44]
+    pop eax
+timed:
+    mov [ebp+16], eax
+    inc dword ptr [ebp+20]
+    cmp eax, [ebp+44]
     jae clock_gate                    /* input at/after expiry cannot latch */
     mov edx, [esi+0xc]
     mov ecx, [edx]
-    mov [state_data+28], ecx
+    mov [ebp+28], ecx
     cmp ecx, -1
     je clock_gate
     cmp ecx, 3
@@ -128,38 +147,39 @@ invalid_layout:
 release:
     cmp dword ptr [edi+0x44], -2
     je clock_gate
-    mov dword ptr [edi+0x44], -1
+    or dword ptr [edi+0x44], -1
 clock_gate:
-    mov eax, [esi+0xc]
-    cmp dword ptr [eax], -1
-    jne boundary
     call resolve_edge
-    cmp [state_data+40], eax
+    cmp [ebp+40], eax
     je same_edge
-    mov [state_data+40], eax
+    mov [ebp+40], eax
     xor edx, edx
-    mov [state_data+24], edx
-    mov [state_data+36], edx
+    mov [ebp+24], edx
+    mov [ebp+36], edx
 same_edge:
     mov [edi+0x40], eax
+    mov edx, [esi+0xc]
+    cmp dword ptr [edx], -1
+    jne boundary
     call sample
     test eax, eax
     jz wide_sample
-    cmp dword ptr [state_data+24], 3
+    cmp dword ptr [ebp+24], 3
     je boundary
-    inc dword ptr [state_data+24]
-    cmp dword ptr [state_data+24], 3
+    inc dword ptr [ebp+24]
+    cmp dword ptr [ebp+24], 3
     jne boundary
-    mov [state_data+36], eax
+    mov [ebp+36], eax
     jmp boundary
 wide_sample:
-    cmp dword ptr [state_data+24], 0
+    cmp dword ptr [ebp+24], 0
     je boundary
-    dec dword ptr [state_data+24]
+    dec dword ptr [ebp+24]
     jne boundary
-    mov [state_data+36], eax
+    mov [ebp+36], eax
 boundary:
-    cmp dword ptr [state_data+20], 21
+    mov eax, [ebp+16]
+    cmp eax, [ebp+44]
     jb pending
     cmp dword ptr [edi+0x44], -1
     je give
@@ -168,7 +188,7 @@ boundary:
     mov eax, [esi+0xc]
     cmp dword ptr [eax], -1
     jne keep
-    cmp dword ptr [state_data+36], 0
+    cmp dword ptr [ebp+36], 0
     je give
     cmp byte ptr [ebx+22], 0
     je keep
@@ -228,7 +248,8 @@ project:
     jnz not_crash                           /* unordered comparison cannot keep */
     test ah, 0x45
     jz not_crash
-    mov eax, 1
+    push 1
+    pop eax
     ret
 not_crash:
     xor eax, eax
@@ -241,17 +262,19 @@ pass:
     call lookup_actor
     test eax, eax
     jz give
-    mov [state_data+32], eax
+    mov [ebp+32], eax
     push esi
     mov esi, eax
     call receiver_ready               /* actual retail receiver gate */
     pop esi
     test eax, eax
     jz give
-    mov eax, 2
+    push 2
+    pop eax
     jmp commit
 give:
-    mov eax, 1
+    push 1
+    pop eax
     jmp commit
 abandon:
 keep:
@@ -259,7 +282,7 @@ keep:
 commit:
     cmp eax, 2
     je store_commit
-    mov dword ptr [state_data+32], 0
+    and dword ptr [ebp+32], 0
 store_commit:
     mov [edi+0x44], eax                /* sole commitment before native exit */
 decided:
@@ -274,7 +297,9 @@ decided:
 pass_result:
     xor eax, eax                      /* back releases on keep OR pass */
 result:
-    mov [ebp+16], eax                  /* saved EBX = native result */
+    mov edx, [esp]
+    mov [edx+16], eax                  /* saved EBX = native result */
+    pop ebp
     fxrstor [esp]
     mov esp, ebp
     popad
@@ -284,12 +309,13 @@ pending:
     or eax, -1
     jmp result
 original:
+    pop ebp
     fxrstor [esp]
     mov esp, ebp
     popad
     popfd
-    fld dword ptr [edi+0x60]
-    fcomp dword ptr [0x4e4180]
+    fld dword ptr [esp+0x1c]
+    fcomp dword ptr [0x50a50c]
     jmp original_tail
 
 /* Conservative live blocker check: an offensive assignment targeting the
@@ -343,7 +369,8 @@ resolve_edge:
     mov [esp], eax
     mov [esp+4], eax
     mov ebp, offset state_data+64
-    mov edi, 11
+    push 11
+    pop edi
 edge_loop:
     mov eax, [ebp]
     test eax, eax
@@ -355,7 +382,8 @@ edge_loop:
     cmp [eax+0x38], edx
     jne edge_next
     mov edx, [edx+4]
-    mov ecx, 11
+    push 11
+    pop ecx
 member:
     test edx, edx
     jz edge_next
@@ -470,6 +498,38 @@ resolved:
     pop ebx
     ret
 
+/* Before human priority at21516A. EBP is actor, stack locals are native.
+ * Lookup is integer-only. Restrict the override to the paired live condition;
+ * after native advancement the next frame uses ordinary human control. */
+schedule:
+    pushfd
+    pushad
+    mov esi, ebp
+    cmp dword ptr [0xe602b8], 14
+    jne schedule_original
+    mov eax, [0xe5fc00]
+    test eax, eax
+    jz schedule_original
+    cmp [eax], esi
+    jne schedule_original
+    mov eax, [esi+0x20]
+    mov eax, [eax+0x310]
+    cmp dword ptr [eax], 0x1aef80
+    jne schedule_original
+    call lookup
+    test eax, eax
+    jz schedule_original
+    popad
+    popfd
+    mov dword ptr [esp+0x14], 1       /* native task path, not user priority */
+    jmp schedule_mesh
+schedule_original:
+    popad
+    popfd
+    mov eax, [esp+0x30]
+    xor esi, esi
+    jmp schedule_tail
+
 /* Disjoint from Spy's B6FB3 snap hook. Snapshot actual live assignments. */
 snap:
     pushfd
@@ -480,7 +540,8 @@ snap:
     test esi, esi
     jz snap_done
     mov esi, [esi+4]
-    mov ecx, 11
+    push 11
+    pop ecx
 snap_actor:
     test esi, esi
     jz snap_done
@@ -507,33 +568,27 @@ reset:
     call clear_state
     popad
     popfd
-    mov ecx, 0x5a
+    push 0x5a
+    pop ecx
     jmp reset_tail
 clear_state:
     cld
     xor eax, eax
     mov edi, offset state_data
-    mov ecx, 64
+    push 64
+    pop ecx
     rep stosd
     ret
 
-/* Pixel HUD is already active at646A1. Native icon0 uses passicons atlas;
- * center anchor is unchanged by widescreen's world-marker compensation. */
+/* The native world-marker queue is ready at646A1. Mark only the selected
+ * EDGE row; native projection and icon0's passicons atlas supply the glyph. */
 hud:
-    call hud_native
     pushfd
     pushad
-    mov ebp, esp
-    and esp, -16
-    sub esp, 512
-    fxsave [esp]
-    fninit
     call live_state
     jc hud_done
     cmp eax, [state_data+16]
     jne hud_done
-    cmp dword ptr [state_data+20], 21
-    jae hud_done
     cmp byte ptr [edx+0x450], 2
     jne hud_done
     cmp [state_data+4], edi
@@ -546,15 +601,28 @@ hud:
     ja hud_done
     cmp [state_data+28], eax
     jne hud_done
-    mov eax, offset intent_table+64
-    xor ecx, ecx
-    push 1
-    call draw_icon
+    mov eax, [state_data+40]
+    test eax, eax
+    jz hud_done
+    mov eax, [eax+0x3c]
+    mov ecx, [0xa94ea4]
+    cmp ecx, 25
+    ja hud_done
+    mov edx, 0xa94eac
+cue_row:
+    jecxz hud_done
+    cmp [edx], eax
+    je cue_edge
+    add edx, 16
+    loop cue_row
+    jmp hud_done
+cue_edge:
+    and dword ptr [edx+12], 0xff1fffff /* icon0 at native projected EDGE head */
+    or dword ptr [edx+12], 0x80       /* large native glyph */
 hud_done:
-    fxrstor [esp]
-    mov esp, ebp
     popad
     popfd
+    call hud_native
     jmp hud_tail
 
 /* Pending RPO crosses the actual pass initializer, which otherwise clears
@@ -573,7 +641,7 @@ pass_init:
     mov eax, [state_data+32]
     test eax, eax
     jz pass_done
-    mov dword ptr [state_data+32], 0   /* one initializer consumes one latch */
+    and dword ptr [state_data+32], 0  /* one initializer consumes one latch */
     push eax
     mov esi, eax
     call receiver_ready
@@ -582,6 +650,8 @@ pass_init:
     jz pass_done
     mov [ebp+0x40], eax
     mov dword ptr [ebp], 0x19bae0
+    mov ecx, [state_data]
+    call dword ptr [ebp]             /* emit native request before human priority resumes */
 pass_done:
     popad
     popfd
@@ -650,7 +720,8 @@ buffer:
     push edx
     xor edx, edx
     push ecx
-    mov ecx, 96
+    push 96
+    pop ecx
     div ecx
     pop ecx
     test edx, edx
