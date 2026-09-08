@@ -1156,7 +1156,7 @@ def _selected_space_requests(with_kickoff=False, runtime=False, momentum=0, defe
         + (franchise_2026_patch.REQUESTS if franchise_2026_rules else ())
         + (senior_bowl_patch.REQUESTS if senior_bowl else ())
         + (guardian_overlay_patch.REQUESTS if guardian_overlay else ())
-        + (my_career_patch.REQUESTS if my_career else ())
+        + (my_career_mode_patch.REQUESTS if my_career else ())  # M3: code 16384, state 4096 and the fixed M3 state page; harmless for a legacy setup
         + (screen_hooks_patch.REQUESTS if screen_hooks else ())
         + (coverage_trail_patch.REQUESTS if coverage_trail else ())
         + (franchise_edit_player_patch.REQUESTS if franchise_edit_player else ())
@@ -1519,6 +1519,8 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
     _validate_r62_options(**r62)
     momentum_patch._settings(momentum, momentum_contact, momentum_collisions, momentum_collision_level)
     weekly_prep = r62["weekly_prep"] = bool(weekly_prep or weekly_prep_cpu or weekly_prep_remember)
+    if my_career and my_career_setup is None:
+        draft_ai = True  # M3's draft reuses the draft-AI ratings/need implementation and receipt
     if playbook_pair and (read_option_runtime or qb_spy):
         raise ValueError(PLAYBOOK_PAIR_CONFLICT)
     installed_money_downs = cpu_money_downs_patch.read_settings(payload)

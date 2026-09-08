@@ -1884,6 +1884,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_deep_zone",
         "mod_editor.core.nfl2k5_deep_zone_code",
         "mod_editor.core.nfl2k5_deep_zone_bail",
+        "mod_editor.core.nfl2k5_my_career_progression",
         "mod_editor.core.nfl2k5_match_coverage",
         "mod_editor.core.nfl2k5_abilities_editor",
         "mod_editor.gui.abilities_panel_qt",

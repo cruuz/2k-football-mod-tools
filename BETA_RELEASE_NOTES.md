@@ -42,6 +42,10 @@ commit-by-commit index at the end.
 - 7-on-7 practice v2 released as an opt-in: retail line positions instead of sideline parking, passing sets, a delayed
   end rush.
 - Franchise 2026 rules research: the remaining runtime blockers proved; the option stays unavailable.
+- MyCareer M3: enter the draft (native first draft, MyPlayer in the rookie class, Senior Bowl preparation includes
+  MyPlayer, the draft AI picks a club) or sign undrafted with an explicit confirmation to let a full club make room;
+  Upgrades in the Apartment spend played-game XP with position caps; the next fixture date is shown (existing option,
+  renamed "MyCareer: draft and upgrades", off in every preset). Senior Bowl gameplay is still unavailable.
 - Throws to backs: research only, no repair; none of the four symptoms reproduced through a full frame.
 
 ## Fixed

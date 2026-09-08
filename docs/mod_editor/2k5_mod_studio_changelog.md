@@ -194,6 +194,25 @@ commit on the stack since beta 62, grouped by area, with a commit index at the e
   shifts the former starter to depth 2 with both native rank and side fields and the depth-lock bits set; Apartment
   gains a Start MyPlayer action between MyPlayer and Save; signing, Start MyPlayer, Practice and Play next game share
   the same bounded insertion. Hub art is still blocked. `ASTRA_MYCAREER_MODE_5_REPORT.md`.
+- **MyCareer M3: the draft, Senior Bowl preparation and upgrades (existing option, renamed "MyCareer: draft and
+  upgrades", `my_career`, off in every preset; the owner grows to 16,384 RX plus a second fixed 4,096-byte state page
+  at `0x1505000`, the previously spare last RW page, moving no other owner).** Noah asked for the Senior Bowl and the
+  draft inside MyCareer with upgrades. The generic Game Modes entry now prepares a native first draft, creates
+  MyPlayer with the existing Create Player templates, places the record in the rookie class and opens Senior Bowl
+  preparation (the default seed-1 selection in the Senior Bowl data tier includes MyPlayer; the Senior Bowl game
+  itself is still unavailable). Continuing runs the existing draft AI (the generic MyCareer path now installs
+  `draft_ai` before allocation to reuse its ratings and needs) and the native pick, signing and cleanup routines; the
+  drafted player returns to the same Apartment. An undrafted player uses the existing club selection and native
+  free-agent signing. Astra's final native run found a real blockage: native preseason leaves all 32 clubs at 54
+  players with nowhere to sign, so an undrafted career now asks for an explicit confirmation to let the chosen club
+  make room; after confirmation the pinned native cut routine takes the club to 53 and the signing routines add
+  MyPlayer as its 54th, the released player enters the native free-agent list, and cancellation changes no roster.
+  The Apartment adds Upgrades and the next fixture's week, date and time: purchases spend the existing 25 XP per
+  played appearance at 10 / 15 / 25 / 40 / 60 XP per rating point by threshold, role skills cap at 99, physical and
+  general skills at 90, unrelated specialist skills at 75, never lowering a native or template rating; quotes are
+  re-validated at confirmation and stale or replayed quotes consume the quote without buying. Save and load reuse the
+  existing 128-byte footer. Old 8 KiB MyCareer executables refuse and must be rebuilt from base. 569 tests, both gates,
+  the pairwise matrix and a continuous season-to-creation native replay. Witness list in `ASTRA_MYCAREER_DRAFT_REPORT.md`.
 - **ESPN 25th Anniversary in the game: the duplicate-Cowboys defect fixed, the option refuses until the rest is
   proved.** `0xC2300` clears the active count at team +0x11C but leaves released player pointers at +0 to +0x100, so
   Practice Squad's reserve count rejects the next `0xC1030` import while `0x20CB30` ignores the failure and publishes
@@ -259,6 +278,7 @@ MyCareer draft commits are listed in the ship record when they land.
 - Research: 0b8a880 throws to backs, held.
 - Studio and allocator: 2df5e1f dormant_union equals the gate union; a67d7f8 fresh-rip cache check (the beta 62 hotfix).
 - Circling: be99b32 wiring; bf3b68b close pursuit recovery owner.
+- MyCareer M3: f659d81 draft, Senior Bowl preparation and upgrades (plus its wiring commit).
 - Beta 62 corrections: ad6d239 ESPN 25 team reuse repair and the refusing option; a009a87 MyCareer mode 5;
   e3e4ec5 read option v4 diagnostic and the bm identity proof.
 

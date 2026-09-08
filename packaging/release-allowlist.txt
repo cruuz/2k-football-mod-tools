@@ -927,3 +927,5 @@ mod_editor/core/nfl2k5_deep_zone_code.py
 mod_editor/core/nfl2k5_deep_zone_bail.py
 docs/mod_editor/nfl2k5_deep_zone_capability.json
 ASTRA_DEEP_ZONE_TIERS_V2_REPORT.md
+mod_editor/core/nfl2k5_my_career_progression.py
+ASTRA_MYCAREER_DRAFT_REPORT.md

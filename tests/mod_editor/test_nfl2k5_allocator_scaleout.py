@@ -254,15 +254,18 @@ class SyntheticTests(unittest.TestCase):
         from unicorn import x86_const as x86
         layout = space.layout(self.grown)
         pages = [p for p in layout['pages'] if p['kind'] == 'code']
-        target = next(a['va'] for a in layout['allocations'] if a['owner'] == 'synthetic_scaleout' and a['kind'] == 'data')
+        # The beta-63 union fills every RW page (MyCareer M3 owns the last one), so the synthetic owner has no
+        # writable request of its own; the emulated write lands in the M3 state page instead (emulated memory only).
+        target = next(a['va'] for a in layout['allocations'] if a['owner'] == space.MYCAREER_M3_STATE_OWNER and a['kind'] == 'data')
         owner = next(a for a in layout['allocations'] if a['owner'] == 'synthetic_scaleout' and a['kind'] == 'code')
         # The complete union occupies page 3 before this page-aligned owner.
         # Negative offsets used to leave INT3 at the assumed entry point.
         owned_pages = [p for p in pages if owner['va'] <= p['va']
                        and p['va'] + 4096 <= owner['va'] + owner['size']]
-        entries = [(owned_pages[0], 0x33333333), (owned_pages[7], 0xAAAAAAAA)]
+        self.assertGreaterEqual(len(owned_pages), 2)
+        entries = [(owned_pages[0], 0x33333333), (owned_pages[-1], 0xAAAAAAAA)]
         self.assertGreaterEqual(owned_pages[0]['va'], space.SCALE_RUNS[0][1])
-        self.assertEqual(owned_pages[7]['va'] - owned_pages[0]['va'], 7 * 4096)
+        self.assertEqual(owned_pages[-1]['va'] - owned_pages[0]['va'], (len(owned_pages) - 1) * 4096)
         code = bytearray(b'\xcc' * owner['size'])
         for page, value in entries:
             at = page['va'] - owner['va']

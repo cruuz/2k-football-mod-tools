@@ -1070,6 +1070,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         plan = replace(plan, position_row=True, xbe_space=True)
     if plan.weekly_prep_cpu or plan.weekly_prep_remember:
         plan = replace(plan, weekly_prep=True, xbe_space=True)
+    if plan.my_career and plan.my_career_setup is None:
+        plan = replace(plan, draft_ai=True)  # generic MyCareer (M3 draft) reuses the draft-AI implementation
     if plan.playbook_pair and (plan.read_option_runtime or plan.qb_spy):
         raise ValueError(tt.PLAYBOOK_PAIR_CONFLICT)
     if type(plan.deep_zone_bail_calls) not in (tuple, list) or plan.deep_zone_bail_calls:

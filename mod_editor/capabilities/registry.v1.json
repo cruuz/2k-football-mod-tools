@@ -5602,26 +5602,30 @@
         "tests/mod_editor/test_nfl2k5_my_career_inline.py",
         "tests/mod_editor/test_nfl2k5_my_career_control.py",
         "tests/mod_editor/test_nfl2k5_my_career_generic_build.py",
-        "docs/mod_editor/nfl2k5_my_career_mode_receipt.json"
+        "docs/mod_editor/nfl2k5_my_career_mode_receipt.json",
+        "ASTRA_MYCAREER_DRAFT_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_my_career_draft.py",
+        "tests/mod_editor/test_nfl2k5_my_career_upgrades.py",
+        "tests/mod_editor/test_nfl2k5_my_career_m3_budget.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": false,
         "expose": false,
         "mode": "edit",
-        "reason": "EXPERIMENTAL / UNWITNESSED. M2 playable-loop acceptance and protected Build wiring remain unfinished; do not enable a preset."
+        "reason": "EXPERIMENTAL / UNWITNESSED. Explicit opt-in only; Noah must witness the draft, purchase, save and playable loop. Protected wiring is specified in WIRING.md."
       },
       "id": "nfl2k5.mode.my_career_inline",
       "input_constraints": [
         "Pinned USA executable; reserve the complete owner union before installation.",
         "No setup file, prepared franchise, player name or executable seed. Create MyPlayer in the game.",
         "Mutually exclusive with the previous journal/prepared-save MyCareer install; rebuild from an original XBE.",
-        "Existing MyCareer budget only: 8192 RX and 4096 RW.",
+        "M3 requires 16384 RX and two named 4096-byte RW blocks. Old reservations must rebuild from base; every other owner keeps its address.",
         "Career footer follows the complete native Franchise container. Sizes 720172 or 724268; ordinary saves are unchanged.",
-        "Draft is a coming-next-update notice. Supersim live resume, M3 management, art and autosave are not integrated."
+        "Senior Bowl preparation only: the default seed-1 squads include MyPlayer. Native event transport and stat isolation are unresolved. Requests, trades and Supersim stay out."
       ],
       "portme": [
-        "Complete the M2/M3 exit checks and Noah witness list in ASTRA_MYCAREER_MODE_REPORT.md."
+        "Complete the Noah witness list in ASTRA_MYCAREER_DRAFT_REPORT.md."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -5631,9 +5635,10 @@
       },
       "runtime": {
         "evidence": [
-          "ASTRA_MYCAREER_MODE_REPORT.md"
+          "ASTRA_MYCAREER_MODE_REPORT.md",
+          "ASTRA_MYCAREER_DRAFT_REPORT.md"
         ],
-        "scope": "Bounded native input, CAP, league initialization, serializers, HMAC/EXTRA, control decisions and cancellation routes. Two disposable disc builds cold-load both careers at different allocator addresses. No game boot or played witness.",
+        "scope": "Bounded native creation, class placement, seven-round AI draft, signing, played-XP purchase, signed container and cold-load routes. Explicit fixture preconditions and hardware seams are documented; no game boot or played witness.",
         "status": "not-tested"
       },
       "selectors": {
@@ -5651,13 +5656,13 @@
         "hash_pins": [
           "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
         ],
-        "resource": "Game Modes row, pinned native hooks, owned 8192 RX/4096 RW and an appended 128-byte career save footer.",
+        "resource": "Game Modes row, pinned native hooks, owned 16384 RX/8192 RW and an appended 128-byte career save footer.",
         "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
       },
-      "summary": "Seedless native creation, undrafted signing, owned apartment and inline career saves. Playable-loop acceptance is still in progress.",
+      "summary": "Native draft or undrafted entry, Senior Bowl preparation, played-XP upgrades and next-fixture calendar in the existing Apartment loop. EXPERIMENTAL / UNWITNESSED.",
       "surface": "mode_state_routing",
       "title": "In-game MyCareer (experimental, unwitnessed)",
-      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_my_career_inline"
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_my_career_draft"
     },
     {
       "backend": {

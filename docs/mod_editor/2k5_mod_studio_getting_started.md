@@ -1566,7 +1566,7 @@ folder, then press **Create MyPlayer**. It writes a signed `MyCareer.zip`, its J
 is refused with a message to create MyPlayer again). In the built game, MyCareer sits on the Game Modes
 row where First Person Football was and opens the native Load and Save screen; a build without a setup
 only explains itself. The CPU calls plays, snaps and kicks and manages the club; input stays on MyPlayer's
-body. Off in every preset and nothing has been booted. What does not ship yet: creating MyPlayer from
-inside the game, the apartment hub and the career save. That mode is designed, its native prerequisites
-are proved and its hub art is authored, and the Build caption "MyCareer: create MyPlayer in the game" is
-reserved for it; until it lands, the studio page above is the only way in.
+body. Off in every preset. Since beta 62 the in-game mode ships behind the Build caption "MyCareer: draft and
+upgrades": create MyPlayer on the game's own screen, sign as an undrafted free agent or (beta 63) enter the
+draft, live in the Apartment, earn XP and buy upgrades. Noah has played the beta-62 signing route; the draft,
+Senior Bowl preparation and upgrades are unwitnessed and the hub art is still blocked.
