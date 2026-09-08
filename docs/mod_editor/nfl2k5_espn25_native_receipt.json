@@ -1,0 +1,709 @@
+{
+  "evidence": "EXPERIMENTAL / UNWITNESSED",
+  "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+  "dataset_sha256": "66ab419ad9fa3388b2749526f57b0d7b5a1d4c631560230dd6635457e97e6406",
+  "instruction_budget_per_call": 2000000,
+  "moments": [
+    {
+      "moment": 0,
+      "title": "THE ICE BOWL",
+      "loaded": true,
+      "imported_players_checked": 106,
+      "archive_requests": [
+        {
+          "filename": "h-10-1966-packers-3.iff",
+          "outer": 133
+        },
+        {
+          "filename": "h-07-1971-cowboys-4.iff",
+          "outer": 125
+        }
+      ],
+      "setup": {
+        "home_score": 14,
+        "away_score": 17,
+        "home_timeouts": 3,
+        "away_timeouts": 3,
+        "quarter": 4,
+        "clock_seconds": 290.0,
+        "down": 1,
+        "ball_cm": -1645.9200439453125,
+        "first_down_cm": -731.52001953125,
+        "possession": 15072288
+      }
+    },
+    {
+      "moment": 1,
+      "title": "THE HEIDI BOWL",
+      "loaded": true,
+      "imported_players_checked": 106,
+      "archive_requests": [
+        {
+          "filename": "h-20-1967-raiders-1.iff",
+          "outer": 157
+        },
+        {
+          "filename": "h-19-1968-jets-4.iff",
+          "outer": 155
+        }
+      ],
+      "setup": {
+        "home_score": 29,
+        "away_score": 32,
+        "home_timeouts": 3,
+        "away_timeouts": 3,
+        "quarter": 4,
+        "clock_seconds": 65.0,
+        "down": 0,
+        "ball_cm": 1828.800048828125,
+        "first_down_cm": 914.4000244140625,
+        "possession": 15072352
+      }
+    },
+    {
+      "moment": 2,
+      "title": "MERRY CHRISTMAS MIAMI",
+      "loaded": true,
+      "imported_players_checked": 106,
+      "archive_requests": [
+        {
+          "filename": "h-13-1969-chiefs-4.iff",
+          "outer": 139
+        },
+        {
+          "filename": "h-14-1972-dolphins-4.iff",
+          "outer": 141
+        }
+      ],
+      "setup": {
+        "home_score": 24,
+        "away_score": 17,
+        "home_timeouts": 3,
+        "away_timeouts": 3,
+        "quarter": 4,
+        "clock_seconds": 300.0,
+        "down": 0,
+        "ball_cm": -1828.800048828125,
+        "first_down_cm": -914.4000244140625,
+        "possession": 15072288
+      }
+    },
+    {
+      "moment": 3,
+      "title": "THE IMMACULATE RECEPTION",
+      "loaded": true,
+      "imported_players_checked": 106,
+      "archive_requests": [
+        {
+          "filename": "h-22-1975-steelers-1.iff",
+          "outer": 163
+        },
+        {
+          "filename": "h-20-1967-raiders-1.iff",
+          "outer": 157
+        }
+      ],
+      "setup": {
+        "home_score": 6,
+        "away_score": 7,
+        "home_timeouts": 0,
+        "away_timeouts": 2,
+        "quarter": 4,
+        "clock_seconds": 22.0,
+        "down": 4,
+        "ball_cm": -914.4000244140625,
+        "first_down_cm": 0.0,
+        "possession": 15072288
+      }
+    },
+    {
+      "moment": 4,
+      "title": "THE SEA OF HANDS",
+      "loaded": true,
+      "imported_players_checked": 106,
+      "archive_requests": [
+        {
+          "filename": "h-20-1976-raiders-0.iff",
+          "outer": 158
+        },
+        {
+          "filename": "h-14-1972-dolphins-4.iff",
+          "outer": 141
+        }
+      ],
+      "setup": {
+        "home_score": 21,
+        "away_score": 26,
+        "home_timeouts": 0,
+        "away_timeouts": 2,
+        "quarter": 4,
+        "clock_seconds": 30.0,
+        "down": 1,
+        "ball_cm": 3840.47998046875,
+        "first_down_cm": 4572.0,
+        "possession": 15072288
+      }
+    },
+    {
+      "moment": 5,
+      "title": "THE FINAL COMEBACK",
+      "loaded": true,
+      "imported_players_checked": 106,
+      "archive_requests": [
+        {
+          "filename": "h-07-1977-cowboys-3.iff",
+          "outer": 126
+        },
+        {
+          "filename": "h-29-1982-redskins-2.iff",
+          "outer": 183
+        }
+      ],
+      "setup": {
+        "home_score": 21,
+        "away_score": 34,
+        "home_timeouts": 3,
+        "away_timeouts": 3,
+        "quarter": 4,
+        "clock_seconds": 229.0,
+        "down": 1,
+        "ball_cm": -822.9600219726562,
+        "first_down_cm": 91.44000244140625,
+        "possession": 15072288
+      }
+    },
+    {
+      "moment": 6,
+      "title": "THE AINTS' BIGGEST CHOKE",
+      "loaded": true,
+      "imported_players_checked": 106,
+      "archive_requests": [
+        {
+          "filename": "h-25-1981-49ers-3.iff",
+          "outer": 171
+        },
+        {
+          "filename": "h-17-1991-saints-4.iff",
+          "outer": 149
+        }
+      ],
+      "setup": {
+        "home_score": 7,
+        "away_score": 35,
+        "home_timeouts": 3,
+        "away_timeouts": 3,
+        "quarter": 3,
+        "clock_seconds": 300.0,
+        "down": 0,
+        "ball_cm": 1828.800048828125,
+        "first_down_cm": 914.4000244140625,
+        "possession": 15072352
+      }
+    },
+    {
+      "moment": 7,
+      "title": "LONGEST PLAYOFF GAME EVER",
+      "loaded": true,
+      "imported_players_checked": 106,
+      "archive_requests": [
+        {
+          "filename": "h-14-1984-dolphins-3.iff",
+          "outer": 142
+        },
+        {
+          "filename": "h-24-1980-chargers-4.iff",
+          "outer": 169
+        }
+      ],
+      "setup": {
+        "home_score": 0,
+        "away_score": 24,
+        "home_timeouts": 3,
+        "away_timeouts": 3,
+        "quarter": 2,
+        "clock_seconds": 300.0,
+        "down": 1,
+        "ball_cm": 1828.800048828125,
+        "first_down_cm": 914.4000244140625,
+        "possession": 15072352
+      }
+    },
+    {
+      "moment": 8,
+      "title": "THE CATCH",
+      "loaded": true,
+      "imported_players_checked": 106,
+      "archive_requests": [
+        {
+          "filename": "h-25-1981-49ers-3.iff",
+          "outer": 171
+        },
+        {
+          "filename": "h-07-1977-cowboys-3.iff",
+          "outer": 126
+        }
+      ],
+      "setup": {
+        "home_score": 21,
+        "away_score": 27,
+        "home_timeouts": 0,
+        "away_timeouts": 3,
+        "quarter": 4,
+        "clock_seconds": 58.0,
+        "down": 3,
+        "ball_cm": 4023.360107421875,
+        "first_down_cm": 4297.68017578125,
+        "possession": 15072288
+      }
+    },
+    {
+      "moment": 9,
+      "title": "GREATEST REDSKIN COMEBACK",
+      "loaded": true,
+      "imported_players_checked": 106,
+      "archive_requests": [
+        {
+          "filename": "h-29-1982-redskins-2.iff",
+          "outer": 183
+        },
+        {
+          "filename": "h-20-1983-raiders-0.iff",
+          "outer": 159
+        }
+      ],
+      "setup": {
+        "home_score": 20,
+        "away_score": 35,
+        "home_timeouts": 3,
+        "away_timeouts": 3,
+        "quarter": 4,
+        "clock_seconds": 300.0,
+        "down": 1,
+        "ball_cm": -3383.280029296875,
+        "first_down_cm": -2468.8798828125,
+        "possession": 15072288
+      }
+    },
+    {
+      "moment": 10,
+      "title": "THE DRIVE",
+      "loaded": true,
+      "imported_players_checked": 106,
+      "archive_requests": [
+        {
+          "filename": "h-30-1986-browns-1.iff",
+          "outer": 187
+        },
+        {
+          "filename": "h-08-1986-broncos-1.iff",
+          "outer": 129
+        }
+      ],
+      "setup": {
+        "home_score": 20,
+        "away_score": 13,
+        "home_timeouts": 3,
+        "away_timeouts": 3,
+        "quarter": 4,
+        "clock_seconds": 300.0,
+        "down": 1,
+        "ball_cm": 4389.1201171875,
+        "first_down_cm": 3474.72021484375,
+        "possession": 15072352
+      }
+    },
+    {
+      "moment": 11,
+      "title": "THE 2-SECOND MISCALCULATION",
+      "loaded": true,
+      "imported_players_checked": 106,
+      "archive_requests": [
+        {
+          "filename": "h-06-1988-bengals-1.iff",
+          "outer": 124
+        },
+        {
+          "filename": "h-25-1989-49ers-3.iff",
+          "outer": 172
+        }
+      ],
+      "setup": {
+        "home_score": 26,
+        "away_score": 20,
+        "home_timeouts": 3,
+        "away_timeouts": 0,
+        "quarter": 4,
+        "clock_seconds": 2.0,
+        "down": 1,
+        "ball_cm": -2286.0,
+        "first_down_cm": -3200.39990234375,
+        "possession": 15072352
+      }
+    },
+    {
+      "moment": 12,
+      "title": "SAME OLD BUCS",
+      "loaded": true,
+      "imported_players_checked": 106,
+      "archive_requests": [
+        {
+          "filename": "h-00-1975-cardinals-3.iff",
+          "outer": 113
+        },
+        {
+          "filename": "h-27-1979-buccaneers-3.iff",
+          "outer": 177
+        }
+      ],
+      "setup": {
+        "home_score": 3,
+        "away_score": 28,
+        "home_timeouts": 3,
+        "away_timeouts": 3,
+        "quarter": 4,
+        "clock_seconds": 300.0,
+        "down": 1,
+        "ball_cm": -2743.2001953125,
+        "first_down_cm": -1828.8001708984375,
+        "possession": 15072288
+      }
+    },
+    {
+      "moment": 13,
+      "title": "49ERS DO IT AGAIN",
+      "loaded": true,
+      "imported_players_checked": 106,
+      "archive_requests": [
+        {
+          "filename": "h-25-1989-49ers-3.iff",
+          "outer": 172
+        },
+        {
+          "filename": "h-06-1988-bengals-1.iff",
+          "outer": 124
+        }
+      ],
+      "setup": {
+        "home_score": 13,
+        "away_score": 16,
+        "home_timeouts": 3,
+        "away_timeouts": 3,
+        "quarter": 4,
+        "clock_seconds": 190.0,
+        "down": 1,
+        "ball_cm": -3840.47998046875,
+        "first_down_cm": -2926.080078125,
+        "possession": 15072288
+      }
+    },
+    {
+      "moment": 14,
+      "title": "WIDE RIGHT",
+      "loaded": true,
+      "imported_players_checked": 106,
+      "archive_requests": [
+        {
+          "filename": "h-18-1990-giants-2.iff",
+          "outer": 153
+        },
+        {
+          "filename": "h-03-1990-bills-2.iff",
+          "outer": 118
+        }
+      ],
+      "setup": {
+        "home_score": 20,
+        "away_score": 19,
+        "home_timeouts": 3,
+        "away_timeouts": 3,
+        "quarter": 4,
+        "clock_seconds": 136.0,
+        "down": 1,
+        "ball_cm": 3657.60009765625,
+        "first_down_cm": 2743.2001953125,
+        "possession": 15072352
+      }
+    },
+    {
+      "moment": 15,
+      "title": "HOUSTON'S HEARTS RIPPED OUT",
+      "loaded": true,
+      "imported_players_checked": 106,
+      "archive_requests": [
+        {
+          "filename": "h-08-1986-broncos-1.iff",
+          "outer": 129
+        },
+        {
+          "filename": "h-28-1979-oilers-2.iff",
+          "outer": 181
+        }
+      ],
+      "setup": {
+        "home_score": 23,
+        "away_score": 24,
+        "home_timeouts": 0,
+        "away_timeouts": 3,
+        "quarter": 4,
+        "clock_seconds": 127.0,
+        "down": 1,
+        "ball_cm": -4389.1201171875,
+        "first_down_cm": -3474.72021484375,
+        "possession": 15072288
+      }
+    },
+    {
+      "moment": 16,
+      "title": "THE TWO TD COMEBACK ON KC",
+      "loaded": true,
+      "imported_players_checked": 106,
+      "archive_requests": [
+        {
+          "filename": "h-08-1986-broncos-1.iff",
+          "outer": 129
+        },
+        {
+          "filename": "h-13-1993-chiefs-2.iff",
+          "outer": 140
+        }
+      ],
+      "setup": {
+        "home_score": 6,
+        "away_score": 19,
+        "home_timeouts": 3,
+        "away_timeouts": 3,
+        "quarter": 4,
+        "clock_seconds": 210.0,
+        "down": 1,
+        "ball_cm": -2743.2001953125,
+        "first_down_cm": -1828.8001708984375,
+        "possession": 15072288
+      }
+    },
+    {
+      "moment": 17,
+      "title": "THE BIGGEST COMEBACK EVER",
+      "loaded": true,
+      "imported_players_checked": 106,
+      "archive_requests": [
+        {
+          "filename": "h-03-1990-bills-2.iff",
+          "outer": 118
+        },
+        {
+          "filename": "h-28-1979-oilers-2.iff",
+          "outer": 181
+        }
+      ],
+      "setup": {
+        "home_score": 3,
+        "away_score": 35,
+        "home_timeouts": 3,
+        "away_timeouts": 3,
+        "quarter": 3,
+        "clock_seconds": 255.0,
+        "down": 0,
+        "ball_cm": 1828.800048828125,
+        "first_down_cm": 914.4000244140625,
+        "possession": 15072352
+      }
+    },
+    {
+      "moment": 18,
+      "title": "THE HEARTBREAKER",
+      "loaded": true,
+      "imported_players_checked": 106,
+      "archive_requests": [
+        {
+          "filename": "h-13-1993-chiefs-2.iff",
+          "outer": 140
+        },
+        {
+          "filename": "h-08-1986-broncos-1.iff",
+          "outer": 129
+        }
+      ],
+      "setup": {
+        "home_score": 24,
+        "away_score": 28,
+        "home_timeouts": 3,
+        "away_timeouts": 3,
+        "quarter": 4,
+        "clock_seconds": 89.0,
+        "down": 0,
+        "ball_cm": 1828.800048828125,
+        "first_down_cm": 914.4000244140625,
+        "possession": 15072352
+      }
+    },
+    {
+      "moment": 19,
+      "title": "THE COLTS' COLLAPSE",
+      "loaded": true,
+      "imported_players_checked": 106,
+      "archive_requests": [
+        {
+          "filename": "h-03-1990-bills-2.iff",
+          "outer": 118
+        },
+        {
+          "filename": "h-11-1970-colts-5.iff",
+          "outer": 136
+        }
+      ],
+      "setup": {
+        "home_score": 0,
+        "away_score": 26,
+        "home_timeouts": 3,
+        "away_timeouts": 3,
+        "quarter": 2,
+        "clock_seconds": 299.0,
+        "down": 0,
+        "ball_cm": 1828.800048828125,
+        "first_down_cm": 914.4000244140625,
+        "possession": 15072352
+      }
+    },
+    {
+      "moment": 20,
+      "title": "THE SUPER BOWL DRIVE",
+      "loaded": true,
+      "imported_players_checked": 106,
+      "archive_requests": [
+        {
+          "filename": "h-08-1998-broncos-0.iff",
+          "outer": 130
+        },
+        {
+          "filename": "h-10-1996-packers-2.iff",
+          "outer": 134
+        }
+      ],
+      "setup": {
+        "home_score": 24,
+        "away_score": 24,
+        "home_timeouts": 3,
+        "away_timeouts": 3,
+        "quarter": 4,
+        "clock_seconds": 207.0,
+        "down": 1,
+        "ball_cm": 91.44000244140625,
+        "first_down_cm": 1005.8400268554688,
+        "possession": 15072288
+      }
+    },
+    {
+      "moment": 21,
+      "title": "A YARD TOO SHORT",
+      "loaded": true,
+      "imported_players_checked": 106,
+      "archive_requests": [
+        {
+          "filename": "h-28-1999-titans-0.iff",
+          "outer": 182
+        },
+        {
+          "filename": "h-23-1999-rams-2.iff",
+          "outer": 167
+        }
+      ],
+      "setup": {
+        "home_score": 16,
+        "away_score": 23,
+        "home_timeouts": 0,
+        "away_timeouts": 3,
+        "quarter": 4,
+        "clock_seconds": 6.0,
+        "down": 1,
+        "ball_cm": 3657.60009765625,
+        "first_down_cm": 4572.0,
+        "possession": 15072288
+      }
+    },
+    {
+      "moment": 22,
+      "title": "VINATIERI STRIKES AGAIN",
+      "loaded": true,
+      "imported_players_checked": 106,
+      "archive_requests": [
+        {
+          "filename": "h-16-2001-patriots-0.iff",
+          "outer": 147
+        },
+        {
+          "filename": "h-23-1999-rams-2.iff",
+          "outer": 167
+        }
+      ],
+      "setup": {
+        "home_score": 17,
+        "away_score": 17,
+        "home_timeouts": 0,
+        "away_timeouts": 1,
+        "quarter": 4,
+        "clock_seconds": 90.0,
+        "down": 0,
+        "ball_cm": 1828.800048828125,
+        "first_down_cm": 914.4000244140625,
+        "possession": 15072352
+      }
+    },
+    {
+      "moment": 23,
+      "title": "THE BOTCHED SNAP",
+      "loaded": true,
+      "imported_players_checked": 106,
+      "archive_requests": [
+        {
+          "filename": "h-25-2003-49ers-0.iff",
+          "outer": 174
+        },
+        {
+          "filename": "h-18-2003-giants-0.iff",
+          "outer": 154
+        }
+      ],
+      "setup": {
+        "home_score": 14,
+        "away_score": 38,
+        "home_timeouts": 3,
+        "away_timeouts": 3,
+        "quarter": 3,
+        "clock_seconds": 185.0,
+        "down": 0,
+        "ball_cm": 1828.800048828125,
+        "first_down_cm": 914.4000244140625,
+        "possession": 15072352
+      }
+    },
+    {
+      "moment": 24,
+      "title": "FOURTH AND TWENTY-SIX",
+      "loaded": true,
+      "imported_players_checked": 106,
+      "archive_requests": [
+        {
+          "filename": "h-21-2004-eagles-0.iff",
+          "outer": 162
+        },
+        {
+          "filename": "h-10-2004-packers-0.iff",
+          "outer": 135
+        }
+      ],
+      "setup": {
+        "home_score": 14,
+        "away_score": 17,
+        "home_timeouts": 3,
+        "away_timeouts": 3,
+        "quarter": 4,
+        "clock_seconds": 86.0,
+        "down": 4,
+        "ball_cm": -2194.56005859375,
+        "first_down_cm": 182.8800048828125,
+        "possession": 15072288
+      }
+    }
+  ],
+  "gameplay_witnessed": false
+}

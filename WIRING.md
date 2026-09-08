@@ -11356,3 +11356,295 @@ python3 -m mod_editor.core.nfl2k5_espn25_scenarios status source.iso espn25-plan
 Run the three standalone ESPN suites, both XBE gates, and the registry and
 packaged-runtime checks after integration. Do not describe the currently
 unmounted protected-tab integration as shipped UI until those edits land.
+
+
+# r64 ESPN 25th real rosters, 2026-09-07
+
+Owner: `mod_editor/core/nfl2k5_espn25_rosters.py`. Dataset and row provenance:
+`data/nfl2k5_espn25_moment_rosters/manifest.json`. Evidence and Noah's witness list:
+`ASTRA_ESPN25_ROSTERS_REPORT.md`. EXPERIMENTAL / UNWITNESSED.
+
+This handoff specifies the protected product edits. The data owner, deterministic
+CSV generator, 75-resource inventory, dataset, capability object, standalone
+writer/image tests and 25-moment native trace are delivered. The protected Build,
+dispatcher, GUI, packaging and registry files are unchanged in this worktree.
+
+## Dispatcher: `mod_editor/core/nfl2k5_throw_tuning.py`
+
+Expose `nfl2k5_espn25_rosters as espn25_rosters_patch` using the same import style
+as the existing image resource owners. Add strict Boolean `espn25_rosters=False`
+to `write_image_copy`, `write_xbe_copy`, and any public explicit-signature
+`write_copy` facade or flag-selection helper. `write_xbe_copy` must reject True
+before copying, with "Historic moment rosters need a disc image". False keeps
+its ordinary behavior. The facade must carry the keyword to the image path.
+
+**`_apply_all` tuple and keyword decision:** no executable tuple is added.
+`apply` here accepts a mapping of 35 complete resource spans; it cannot accept
+an XBE. Do not pass this flag to `_apply_all`, `_selected_space_requests` or
+`_xbe_space_adapter`, and do not add it to `R62_RUNTIME_KEYS` or `R62_SPACE_KEYS`.
+`REQUESTS = ()`; no allocator row, budget row, cave observer, executable digest
+repin or reservation-manifest regeneration belongs to this data-only owner.
+The generic executable-owner ground rule does not override that API boundary.
+
+Add all four public status fields explicitly:
+
+```python
+# read_xbe and write_xbe_copy
+"espn25_rosters": "n/a",
+# read_image, after resolving its source path
+"espn25_rosters": espn25_rosters_patch.image_status(path),
+# write_image_copy, after the final resource pass on the private target
+"espn25_rosters": espn25_rosters_patch.image_status(target),
+```
+
+Use a lazy `_espn25_rosters_image_status` helper, parallel to
+`_guardian_image_status`, if necessary to keep executable-only reads lightweight.
+Do not put image status in `_grown_status_fields(payload)`: an XBE cannot reveal
+archive installation state. States are `retail`, `applied`, `foreign`, with
+`n/a` only on the executable-only surfaces. Mixed installs are `foreign`.
+
+When the direct image facade receives True, preflight
+`espn25_rosters_patch.apply(espn25_rosters_patch.read_resources(source))` before
+copying. On its private target, after the last image-relocation/executable pass,
+call `espn25_rosters_patch.apply_to_image(target)`. Include the complete receipt
+under `espn25_rosters_patch`, including every relative before/after byte span,
+resource hashes, image segment locations, zero growth and `xbe_changed=False`.
+The owner resolves actual XDVDFS placement through `OuterImage`; never substitute
+hard-coded XISO offsets or write loose source packs. On failure discard the
+private target through the existing build transaction.
+
+The Build orchestrator below owns its final resource pass. Pass False to any
+earlier image-facade pass in that route, so one Build step records the patch once.
+Direct CLI publication is also available:
+
+```sh
+python3 -m mod_editor.core.nfl2k5_espn25_rosters build source.iso historic.iso --receipt historic-receipt.json
+```
+
+It refuses existing targets, compiles every roster before copying, uses a
+temporary sibling copy, closes all handles, verifies reads and publishes with
+`os.replace`. The CLI stages its receipt before publishing the image and removes
+that receipt on an ordinary image-publication failure. An invalid receipt
+directory fails before copying. A process or power loss between the two final
+replacements may leave the receipt alone; this is not a two-file atomic commit.
+`build_image(..., receipt_path=...)` exposes the same optional receipt path to
+Python callers. It keeps at least 100 GiB free.
+`apply_to_image` itself is for a caller-owned disposable image, not a source.
+
+## BuildPlan, presets, preflight and final resource pass: `mod_build.py`
+
+Add `espn25_rosters: bool = False` to `BuildPlan`, with strict Boolean validation,
+recipe serialization/load, preset mapping, selected-options summary, capability
+availability and source-status projection. Add the module to the `_core_module`
+availability mapping. Availability must also call `dataset()` so a missing or
+changed manifest/CSV disables the row with its concrete error. No network or
+private nflverse input is required at runtime; the checked generated CSVs ship.
+
+Set the field False in **softdrink_basic, softdrink_advanced and
+softdrink_experimental**. All 25 native selections/imports passed, satisfying the
+brief's necessary loading condition, but the stronger release choice is opt-in:
+no supplied game lineup exists, 105 role fillers are from other seasons and
+1,173 numbers retain an unknown historical value. Do not enable Experimental
+merely on the basis of a CPU trace. The report is explicit about this decision.
+
+Keep `wants_xbe_patch()` unchanged. Include this data option wherever Build checks
+whether anything is selected, by following `team_names_2026`/`guardian_cap` rather
+than coercing a data pass into executable tuning. Normalize no allocator or
+runtime dependency. A build selecting only this flag must create a copied disc
+and reach the data step while retaining the entire source executable.
+
+Before any large copy:
+
+```python
+if type(plan.espn25_rosters) is not bool:
+    raise ValueError("espn25_rosters must be boolean")
+if plan.espn25_rosters:
+    if not is_image:
+        raise ValueError("Historic moment rosters need a disc image")
+    if plan.position_pools:
+        raise ValueError("Historic moment rosters need the retail position layout. Turn off One-pool positions.")
+    module = _core_module("nfl2k5_espn25_rosters")
+    if module is None:
+        raise RuntimeError("Historic moment rosters are unavailable in this build")
+    _, roster_preview = module.apply(module.read_resources(source))
+    receipt["espn25_rosters_preflight"] = roster_preview
+```
+
+The `position_pools` refusal is concrete: the existing
+`tools/nfl2k5_roster_reclassify.apply(..., historic=True)` rewrites all 75 historic
+position/order spans. That conflicts with this profile's pinned original
+position mix. Do not silently use `historic=False`, change this dataset's
+positions, force the patch over reclassified resources, or rely on a failed
+late copy. Existing reclassified sources already report foreign here.
+
+After the last other image pass and before final verification/publication:
+
+```python
+if plan.espn25_rosters:
+    progress("Applying historic moment rosters", 0, 0)
+    module = _core_module("nfl2k5_espn25_rosters")
+    historic_receipt = module.apply_to_image(target)
+    receipt["steps"].append({"step": "espn25_rosters", **historic_receipt})
+```
+
+Preserve the exact receipt in Build results. Refresh source/status scans with
+`image_status(source)` and final checks with `image_status(target)`. A replay
+must record zero changed bytes. False must record no step and make no roster
+edits. Current-team names, current-player edits and resource relocation can
+compose if the historic bindings and main college strings remain the same.
+
+The separate Anniversary editor owns manual shared-roster/scenario plans. A
+changed historic target or changed title/date/name/year binding is deliberately
+foreign to this shipped recipe. Report that conflict during preview. Require a
+clean source or one chosen roster plan; do not silently overwrite a user's
+manual roster. Cloning a shared roster requires descriptor/archive growth and
+is not part of this option. Historic exhibitions using these same files also
+receive the replacement players.
+
+## Shared UI wiring, no new editor panel
+
+In `gameplay_patches_panel_qt.py`, add this PATCHES row and add the key to
+`NEEDS_IMAGE`:
+
+```python
+("espn25_rosters", "Historic moments: real rosters",
+ tt.espn25_rosters_patch.HELP_TEXT)
+```
+
+The backend help contains both **Retail** and **Patch**, the precise approximation
+notice and EXPERIMENTAL / UNWITNESSED. Route its selection through Build's data
+pass and conflict preflight. Include it in checkbox refresh, source availability,
+selected-options persistence and writer keyword forwarding. Do not send it to
+an executable tuple just because the panel also contains executable patches.
+
+In `build_panel_qt.py`, add the requested row beside the roster options:
+
+```python
+self.espn25_rosters_check = self._option(
+    g, "espn25_rosters", "Historic moments: real rosters",
+    tt.espn25_rosters_patch.HELP_TEXT)
+```
+
+The caption is 30 characters, below 60. Connect the existing refresh/preset/
+BuildPlan/reset flows. Preserve the opt-in state and explain the position-pool
+conflict when both controls are selected. Forward the same key in any shared
+selection/recipe flow in `studio_qt.py` and `gameplay_panel_qt.py`. No roster
+editor panel is added or changed; the parallel scenario session owns it.
+
+## Packaging, runtime closure and capability registry
+
+Add these exact paths to `packaging/release-allowlist.txt` (no directory glob):
+
+```text
+mod_editor/core/nfl2k5_espn25_rosters.py
+tools/nfl2k5_espn25_rosters_from_nflverse.py
+data/nfl2k5_espn25_moment_rosters/manifest.json
+data/nfl2k5_espn25_moment_rosters/h-00-1975-cardinals-3.csv
+data/nfl2k5_espn25_moment_rosters/h-03-1990-bills-2.csv
+data/nfl2k5_espn25_moment_rosters/h-06-1988-bengals-1.csv
+data/nfl2k5_espn25_moment_rosters/h-07-1971-cowboys-4.csv
+data/nfl2k5_espn25_moment_rosters/h-07-1977-cowboys-3.csv
+data/nfl2k5_espn25_moment_rosters/h-08-1986-broncos-1.csv
+data/nfl2k5_espn25_moment_rosters/h-08-1998-broncos-0.csv
+data/nfl2k5_espn25_moment_rosters/h-10-1966-packers-3.csv
+data/nfl2k5_espn25_moment_rosters/h-10-1996-packers-2.csv
+data/nfl2k5_espn25_moment_rosters/h-10-2004-packers-0.csv
+data/nfl2k5_espn25_moment_rosters/h-11-1970-colts-5.csv
+data/nfl2k5_espn25_moment_rosters/h-13-1969-chiefs-4.csv
+data/nfl2k5_espn25_moment_rosters/h-13-1993-chiefs-2.csv
+data/nfl2k5_espn25_moment_rosters/h-14-1972-dolphins-4.csv
+data/nfl2k5_espn25_moment_rosters/h-14-1984-dolphins-3.csv
+data/nfl2k5_espn25_moment_rosters/h-16-2001-patriots-0.csv
+data/nfl2k5_espn25_moment_rosters/h-17-1991-saints-4.csv
+data/nfl2k5_espn25_moment_rosters/h-18-1990-giants-2.csv
+data/nfl2k5_espn25_moment_rosters/h-18-2003-giants-0.csv
+data/nfl2k5_espn25_moment_rosters/h-19-1968-jets-4.csv
+data/nfl2k5_espn25_moment_rosters/h-20-1967-raiders-1.csv
+data/nfl2k5_espn25_moment_rosters/h-20-1976-raiders-0.csv
+data/nfl2k5_espn25_moment_rosters/h-20-1983-raiders-0.csv
+data/nfl2k5_espn25_moment_rosters/h-21-2004-eagles-0.csv
+data/nfl2k5_espn25_moment_rosters/h-22-1975-steelers-1.csv
+data/nfl2k5_espn25_moment_rosters/h-23-1999-rams-2.csv
+data/nfl2k5_espn25_moment_rosters/h-24-1980-chargers-4.csv
+data/nfl2k5_espn25_moment_rosters/h-25-1981-49ers-3.csv
+data/nfl2k5_espn25_moment_rosters/h-25-1989-49ers-3.csv
+data/nfl2k5_espn25_moment_rosters/h-25-2003-49ers-0.csv
+data/nfl2k5_espn25_moment_rosters/h-27-1979-buccaneers-3.csv
+data/nfl2k5_espn25_moment_rosters/h-28-1979-oilers-2.csv
+data/nfl2k5_espn25_moment_rosters/h-28-1999-titans-0.csv
+data/nfl2k5_espn25_moment_rosters/h-29-1982-redskins-2.csv
+data/nfl2k5_espn25_moment_rosters/h-30-1986-browns-1.csv
+docs/mod_editor/nfl2k5_espn25_rosters_capability.json
+ASTRA_ESPN25_ROSTERS_REPORT.md
+```
+
+The repository also delivers the full local research inventory and exact native/
+resource receipts under `docs/mod_editor/nfl2k5_espn25_*`. Those decoded retail
+research artifacts and the raw `inputs/` CSVs do not need to ship in the public
+runtime. The exact repository-only receipts are
+`docs/mod_editor/nfl2k5_espn25_resource_receipt.json`,
+`docs/mod_editor/nfl2k5_espn25_replay_receipt.json`,
+`docs/mod_editor/nfl2k5_espn25_image_receipt.json`,
+`docs/mod_editor/nfl2k5_espn25_native_receipt.json`, and
+`docs/mod_editor/nfl2k5_espn25_acceptance.json`. The image receipt comes from a
+bounded synthetic XISO containing the user's resource slices; actual source
+locations in the acceptance object are read-only observations, not a full-disc
+installation claim. Preserve the nflverse CC-BY-4.0 attribution in the manifest/report; its
+license applies to the supplied identities, not the user's retail game files.
+Do not bundle binary ROSTs, a retail executable, a save or a disc. Tests and the
+native helper are development sources; include only under the existing test
+packaging policy. Never ship the brief or scratch contents.
+
+In `packaging/check_2k5_mod_studio_runtime.py`, add the import-closure entry:
+
+```python
+"mod_editor.core.nfl2k5_espn25_rosters",
+```
+
+Retain already shipped dependencies `nfl2k5_roster_records`, its existing roster/
+practice-squad helpers, and tools `nfl2k5_playbook_position_recode`,
+`nfl_uniform_color_xiso_direct_patch`, `nfl_outer` and their existing imports.
+There is no new third-party runtime dependency. The generator is standard-library
+only. Unicorn and Capstone are optional development test dependencies.
+
+Merge the exact object from
+`docs/mod_editor/nfl2k5_espn25_rosters_capability.json` into
+`mod_editor/capabilities/registry.v1.json`, sort IDs, and run the registry
+validator. Classification stays `offline-writer-proved`, runtime `not-tested`,
+GUI default False. The full inventory is a repository evidence reference, not a
+runtime data dependency. Backend/validation commands use `python3 -m` as required.
+
+The merged 112-capability schema and every new entry's local file/command
+reference pass. Full registry file checking in this worktree stops at the
+pre-existing missing `docs/research/apf_audio.md`. Run that existing strict check
+in the coordinating checkout with its research evidence present; do not relax
+the validator or generate substitute evidence.
+
+## Coordinating acceptance
+
+The final standalone roster suite passes 21 tests; the native suite passes one
+test covering all 25 moments and 2,650 imported players. They include both
+orders with current team/player edits, split-resource image segments, Windows
+seek/write fallbacks and handle tracking, receipt/publication failure cleanup,
+disk-floor refusal, dataset tamper detection, and before-copy foreign refusal.
+The 45-file generator `--check` reproduces the full dataset and both inventories
+exactly, using manifest pin
+`66ab419ad9fa3388b2749526f57b0d7b5a1d4c631560230dd6635457e97e6406`.
+
+Run the two new standalone suites, generator `--check` when the 45 supplied CSVs
+are available, and the existing unchanged XBE gates. Then test the protected
+integration: all three presets off; strict booleans; image-only refusal before
+copying; position-pool/manual-plan conflicts before copying; a data-only Build;
+all four facade status fields; exact replay; mixed/foreign refusal; packaging
+with every one of the 35 CSVs; recipe persistence; and ordinary kickoff options
+composed with this final image data step. Verify the original source is unchanged
+and all non-owned bytes, including XBE, SITU, main ROST and the unused 40 historic
+resources, remain identical. These protected integration tests cannot honestly
+be reported as passing before the handoff is applied.
+
+The unchanged safety gates passed here: 83 memory-write tests and 99 cave-reference
+tests in their existing complete owner unions. This data owner consumes no
+executable allocation and does not change either gate or the cave manifest.
+Noah's full 25-moment played witness remains required; native import success
+alone says nothing about complete formations, rendering, completion or exact
+historical starting lineups.
