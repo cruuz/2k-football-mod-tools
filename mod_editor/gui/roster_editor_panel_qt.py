@@ -1033,6 +1033,11 @@ class RosterEditorPanel(QWidget):
         passes_menu.addAction("Shift ages to season year...", self.open_age_shift)
         passes_menu.addAction("Show age shift receipt", self.show_age_shift_receipt)
         passes_menu.addAction("Export age shift receipt...", lambda: self.export_age_shift_receipt())
+        self.save_roster_to_disc_action = passes_menu.addAction(
+            "Use this save's roster on the disc...", self._use_save_roster_on_disc)
+        self.save_roster_to_disc_action.setToolTip(
+            "Choose an Xbox roster or franchise save and export its roster for the current disc. "
+            "EXPERIMENTAL / UNWITNESSED.")
         self.passes_button.setMenu(passes_menu)
         self.csv_button = QToolButton()
         self.csv_button.setText("CSV ▾")
@@ -1070,6 +1075,13 @@ class RosterEditorPanel(QWidget):
         tools.addWidget(self.save_edits_button)
         tools.addWidget(self.write_button)
         layout.addLayout(tools)
+
+        self.save_roster_to_disc_button = QPushButton("Use this save's roster on the disc...")
+        self.save_roster_to_disc_button.setToolTip(
+            "Export this save's whole roster for the current disc, including edits made here. "
+            "Review skipped players before building. EXPERIMENTAL / UNWITNESSED.")
+        self.save_roster_to_disc_button.clicked.connect(self._use_save_roster_on_disc)
+        layout.addWidget(self.save_roster_to_disc_button)
 
         splitter = QSplitter(Qt.Horizontal)
         splitter.addWidget(self._build_team_pane())
@@ -3153,15 +3165,77 @@ class RosterEditorPanel(QWidget):
             return {}
         return rr.edits_document(self.document, name=self._source_path.name if self._source_path else "")
 
-    def save_edits_to(self, path: Path | str) -> dict[str, Any]:
-        document = self.edits_document()
-        Path(path).write_text(json.dumps(document, indent=1), encoding="utf-8", newline="\n")
+    def save_edits_to(self, path: Path | str, *, document: dict[str, Any] | None = None) -> dict[str, Any]:
+        document = self.edits_document() if document is None else document
+        from mod_editor.core.nfl2k5_roster_save_to_disc import json_text
+        Path(path).write_text(json_text(document), encoding="utf-8", newline="\n")
         self._edits_path = Path(path)
         self._edits_snapshot = (frozenset(self._dirty), len(self.undo_stack._done))
         self.roster_edits_changed.emit(str(path))
         self._set_status(f"Roster edits exported to {path} ({len(document.get('edits', []))} players). "
                          "Build uses this saved file. Export again after further changes.")
         return document
+
+    def save_roster_to_disc(self, path: Path | str, *, save_path: Path | str | None = None,
+                            disc_path: Path | str | None = None):
+        """Export against freshly read disc bytes; keep the current editor session intact."""
+        from mod_editor.core import nfl2k5_roster_save_to_disc as save_import
+        source = (save_import.load_save(save_path) if save_path is not None else self.document)
+        target_path = (disc_path or getattr(self._facade, "source_path", None)
+                       or getattr(self._facade, "source", None)
+                       or (self._source_path if self._source_kind == "disc" else None))
+        if source is None or source.container is None:
+            raise rr.RosterRecordError("Choose a signed Xbox roster or franchise save first.")
+        if target_path is None:
+            raise rr.RosterRecordError("Open the disc you will use for Build first.")
+        destination = Path(path).expanduser().resolve()
+        receipt_path = destination.with_suffix(".receipt.json")
+        if destination.suffix.lower() != ".json" or destination == receipt_path:
+            raise rr.RosterRecordError("Choose a roster edits .json filename, not a .receipt.json filename.")
+        protected = {Path(target_path).resolve(), source.container.path.resolve()}
+        if destination in protected or receipt_path in protected:
+            raise rr.RosterRecordError("The edits and receipt must be separate from the source disc and save.")
+        target = rr.load_image(target_path, detect=True)
+        result = save_import.compare(target, source)
+        result.write_receipt(destination)
+        self.save_edits_to(destination, document=result.edits)
+        self._set_status(result.summary)
+        return result
+
+    def _use_save_roster_on_disc(self) -> None:
+        if self.document is None:
+            return
+        save_path = None
+        if self._source_kind != "save":
+            save_path, _filter = QFileDialog.getOpenFileName(
+                self, "Choose an Xbox roster or franchise save", "", SAVE_FILTER)
+            if not save_path:
+                return
+        disc_path = (getattr(self._facade, "source_path", None) or getattr(self._facade, "source", None)
+                     or (self._source_path if self._source_kind == "disc" else None))
+        if not disc_path:
+            disc_path, _filter = QFileDialog.getOpenFileName(
+                self, "Choose the disc you will use for Build", "", DISC_FILTER)
+            if not disc_path:
+                return
+        chosen, _filter = QFileDialog.getSaveFileName(
+            self, "Use this save's roster on the disc", "roster_edits.json", EDITS_FILTER)
+        if not chosen:
+            return
+        try:
+            result = self.save_roster_to_disc(chosen, save_path=save_path, disc_path=disc_path)
+        except Exception as exc:
+            QMessageBox.warning(self, "Save roster export refused", str(exc))
+            return
+        box = QMessageBox(self)
+        box.setWindowTitle("Save roster exported for the disc")
+        box.setIcon(QMessageBox.Information)
+        box.setText(result.summary)
+        box.setInformativeText(f"Disc: {disc_path}\nEdits: {chosen}\n"
+                               "See details for skipped players, reasons and team counts. "
+                               "A franchise save uses its roster arena; season progress stays in the save.")
+        box.setDetailedText(result.details)
+        box.exec_()
 
     def _save_edits(self) -> None:
         if self.document is None:
@@ -3250,6 +3324,10 @@ class RosterEditorPanel(QWidget):
 
     def _refresh_actions(self) -> None:
         loaded = self.document is not None
+        self.save_roster_to_disc_button.setVisible(loaded and self._source_kind == "save")
+        self.save_roster_to_disc_button.setEnabled(loaded)
+        self.save_roster_to_disc_action.setVisible(loaded and self._source_kind == "disc")
+        self.save_roster_to_disc_action.setEnabled(loaded)
         selected = self.selected_player() is not None
         if self._edits_snapshot is not None and \
                 self._edits_snapshot != (frozenset(self._dirty), len(self.undo_stack._done)):

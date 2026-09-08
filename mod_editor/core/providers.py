@@ -644,7 +644,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_roster_arena_code.py": "23a661e5f3bf87d23d1769d5866f6e464d6dfb092afdc34c57b8cd5b8a07ef1d",
         "mod_editor/core/nfl2k5_roster_arena_growth.py": "b8c291abe201e1296f21626fae29bea47bb4571aeb6cb60dd0eacd972fbe839d",
         "mod_editor/core/nfl2k5_roster_arena_image.py": "3d3344b53d40c017d921c91fbf3d8579f12f5cbee6ec9e112bd68b7d18345b7d",
-        "mod_editor/core/nfl2k5_roster_records.py": "b5d149567983669015e6104c5b81cb56f00612ce5c92a245206145bc85bd2468",
+        "mod_editor/core/nfl2k5_roster_records.py": "f1d6ece12702836eb453c6d72ec906b4516f4483872e7760a056ad84e5e1b863",
         "mod_editor/core/nfl2k5_roster_storage.py": "b2bed5fb92dedd9d1c4312a7e9344ca1558225d9ed12977e4fe69f4ca9d85bb6",
         "mod_editor/core/nfl2k5_safe_text_banks.py": "c7ea4288611615204f53c40f5da06728bd9e5511eec5ae06711145e509461d48",
         "mod_editor/core/nfl2k5_save_rost.py": "07964036800f67f1c8de7edfa36feddd3148cd82c50c03ad1703e457b9c9a233",

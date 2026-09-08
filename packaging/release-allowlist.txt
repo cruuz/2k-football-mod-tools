@@ -509,6 +509,7 @@ mod_editor/core/nfl2k5_seven_on_seven_book.py
 mod_editor/core/nfl2k5_player_star.py
 mod_editor/core/nfl2k5_player_tags.py
 mod_editor/core/nfl2k5_roster_records.py
+mod_editor/core/nfl2k5_roster_save_to_disc.py
 mod_editor/core/nfl2k5_widescreen.py
 mod_editor/gui/build_panel_qt.py
 mod_editor/gui/commentary_panel_qt.py
@@ -521,6 +522,7 @@ mod_editor/gui/roster_editor_panel_qt.py
 mod_editor/core/nfl2k5_espn25_scenarios.py
 mod_editor/core/nfl2k5_espn25_rosters.py
 docs/mod_editor/nfl2k5_espn25_rosters_capability.json
+docs/mod_editor/nfl2k5_roster_save_to_disc_capability.json
 ASTRA_ESPN25_ROSTERS_REPORT.md
 data/nfl2k5_espn25_moment_rosters/h-00-1975-cardinals-3.csv
 data/nfl2k5_espn25_moment_rosters/h-03-1990-bills-2.csv

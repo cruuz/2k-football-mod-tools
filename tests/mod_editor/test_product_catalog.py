@@ -62,6 +62,7 @@ class ProductCatalogTests(unittest.TestCase):
         second = build_nfl2k5_product_catalog(self.registry)
         expected = {
             'nfl2k5.textures.hires_pack',
+            'nfl2k5.rosters.save_to_disc',
             'nfl2k5.rosters.espn25_real_rosters',
             'nfl2k5_xbox.position_pool_filters',
             'nfl2k5.espn25.scenarios_rosters',
@@ -141,7 +142,7 @@ class ProductCatalogTests(unittest.TestCase):
         first_ids = [binding.capability_id for binding in first.capabilities]
         second_ids = [binding.capability_id for binding in second.capabilities]
 
-        self.assertEqual(len(first_ids), 76)
+        self.assertEqual(len(first_ids), 77)
         self.assertEqual(len(first_ids), len(set(first_ids)))
         self.assertEqual(set(first_ids), expected)
         self.assertEqual(first_ids, second_ids)
@@ -176,7 +177,7 @@ class ProductCatalogTests(unittest.TestCase):
         catalog = build_nfl2k5_product_catalog(self.registry)
         expected = {
             ProductCategory.UNIFORMS_EQUIPMENT: (5, 4, 0, 0, 0, 1, 0),
-            ProductCategory.ROSTERS_PLAYERS: (10, 10, 0, 0, 0, 0, 0),
+            ProductCategory.ROSTERS_PLAYERS: (11, 11, 0, 0, 0, 0, 0),
             ProductCategory.TEAM_IDENTITY: (0, 0, 0, 0, 0, 0, 0),
             ProductCategory.FIELD_ART_CREATE_TEAM: (1, 1, 0, 0, 0, 0, 0),
             ProductCategory.STADIUMS: (10, 6, 1, 0, 0, 3, 0),
@@ -213,7 +214,7 @@ class ProductCatalogTests(unittest.TestCase):
                 catalog.counts.evidence,
                 catalog.counts.research,
             ),
-            (76, 57, 8, 1, 0, 7, 3),
+            (77, 58, 8, 1, 0, 7, 3),
         )
 
     def test_ambiguous_stadium_surface_and_team_identity_are_explicit(self) -> None:
@@ -266,7 +267,7 @@ class ProductCatalogTests(unittest.TestCase):
         )
         binding = catalog.binding("nfl2k5.audio.audo_wav")
 
-        self.assertEqual(len(seen), 76)
+        self.assertEqual(len(seen), 77)
         self.assertEqual(
             binding.findings_notes,
             ("850 AUDO records mapped", "Export stays local"),
