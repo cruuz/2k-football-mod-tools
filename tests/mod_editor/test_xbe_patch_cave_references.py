@@ -43,6 +43,16 @@ def sections(xbe: bytes):
 
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
 class CaveReferenceTests(unittest.TestCase):
+    def test_money_downs_hooks_are_owned_and_code_is_allocated(self):
+        from mod_editor.core import nfl2k5_cpu_money_downs as patch, nfl2k5_xbe_space as space
+        row = next(a for a in space.layout(self.patched)["allocations"] if a["owner"] == patch.OWNER)
+        for va, before in patch.HOOKS.values():
+            self.assertEqual(self.manifest.overlaps(va, va + len(before), exclude_owner=patch.OWNER), [])
+            self.assertTrue(self.manifest.overlaps(va, va + len(before)))
+            self.assertFalse([address for address in self.targets if va < address < va + len(before)])
+        self.assertGreaterEqual(row["va"], space.CODE_VA)
+        self.assertEqual(patch.status(self.patched), "applied")
+
     def test_contracts_editor_uses_only_owned_read_only_tables(self):
         from mod_editor.core import nfl2k5_franchise_edit_player as edit
         from mod_editor.core.nfl2k5_cave_oracle import XbeImage
@@ -109,6 +119,9 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_espn25_rosters as espn25
         if espn25.xbe_status(cls.patched) != "applied" or espn25.apply_xbe(cls.patched)[0] != cls.patched:
             raise AssertionError("Historic team reload repair missing from the complete owner union")
+        from mod_editor.core import nfl2k5_cpu_money_downs as money_downs
+        if money_downs.status(cls.patched) != "applied" or money_downs.apply(cls.patched)[0] != cls.patched:
+            raise AssertionError("CPU money downs missing from the complete owner union")
         from mod_editor.core import nfl2k5_franchise_edit_player as edit_player
         if edit_player.status(cls.patched) != "applied" or edit_player.apply(cls.patched)[0] != cls.patched:
             raise AssertionError("Contracts Edit Player did not compose/replay")

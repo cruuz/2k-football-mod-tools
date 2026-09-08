@@ -1,0 +1,3978 @@
+{
+  "experimental": true,
+  "runtime_witnessed": false,
+  "scope": "Bounded USA native instructions with supplied game state, no disc build or played-game evidence",
+  "retail_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+  "owner_code_bytes": 1248,
+  "policy": {
+    "cases": 2016,
+    "distances": [
+      0.5,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      12,
+      20
+    ],
+    "cells": [
+      {
+        "quarter": 1,
+        "seconds": 600,
+        "score_margin": 0,
+        "own_yard": 10,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 2,
+        "seconds": 30,
+        "score_margin": 0,
+        "own_yard": 10,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 301,
+        "score_margin": 9,
+        "own_yard": 10,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": 9,
+        "own_yard": 10,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": -9,
+        "own_yard": 10,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -4,
+        "own_yard": 10,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -3,
+        "own_yard": 10,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 1,
+        "seconds": 600,
+        "score_margin": 0,
+        "own_yard": 30,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1
+        ]
+      },
+      {
+        "quarter": 2,
+        "seconds": 30,
+        "score_margin": 0,
+        "own_yard": 30,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 301,
+        "score_margin": 9,
+        "own_yard": 30,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": 9,
+        "own_yard": 30,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": -9,
+        "own_yard": 30,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -4,
+        "own_yard": 30,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -3,
+        "own_yard": 30,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 1,
+        "seconds": 600,
+        "score_margin": 0,
+        "own_yard": 50,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2
+        ]
+      },
+      {
+        "quarter": 2,
+        "seconds": 30,
+        "score_margin": 0,
+        "own_yard": 50,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 301,
+        "score_margin": 9,
+        "own_yard": 50,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": 9,
+        "own_yard": 50,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": -9,
+        "own_yard": 50,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -4,
+        "own_yard": 50,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -3,
+        "own_yard": 50,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 1,
+        "seconds": 600,
+        "score_margin": 0,
+        "own_yard": 70,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "quarter": 2,
+        "seconds": 30,
+        "score_margin": 0,
+        "own_yard": 70,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 301,
+        "score_margin": 9,
+        "own_yard": 70,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": 9,
+        "own_yard": 70,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": -9,
+        "own_yard": 70,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -4,
+        "own_yard": 70,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -3,
+        "own_yard": 70,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 1,
+        "seconds": 600,
+        "score_margin": 0,
+        "own_yard": 87.5,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2
+        ]
+      },
+      {
+        "quarter": 2,
+        "seconds": 30,
+        "score_margin": 0,
+        "own_yard": 87.5,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 301,
+        "score_margin": 9,
+        "own_yard": 87.5,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": 9,
+        "own_yard": 87.5,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": -9,
+        "own_yard": 87.5,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -4,
+        "own_yard": 87.5,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -3,
+        "own_yard": 87.5,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 1,
+        "seconds": 600,
+        "score_margin": 0,
+        "own_yard": 97.5,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2
+        ]
+      },
+      {
+        "quarter": 2,
+        "seconds": 30,
+        "score_margin": 0,
+        "own_yard": 97.5,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 301,
+        "score_margin": 9,
+        "own_yard": 97.5,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": 9,
+        "own_yard": 97.5,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": -9,
+        "own_yard": 97.5,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -4,
+        "own_yard": 97.5,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -3,
+        "own_yard": 97.5,
+        "level": "modern",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 1,
+        "seconds": 600,
+        "score_margin": 0,
+        "own_yard": 10,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 2,
+        "seconds": 30,
+        "score_margin": 0,
+        "own_yard": 10,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 301,
+        "score_margin": 9,
+        "own_yard": 10,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": 9,
+        "own_yard": 10,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": -9,
+        "own_yard": 10,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -4,
+        "own_yard": 10,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -3,
+        "own_yard": 10,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 1,
+        "seconds": 600,
+        "score_margin": 0,
+        "own_yard": 30,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1
+        ]
+      },
+      {
+        "quarter": 2,
+        "seconds": 30,
+        "score_margin": 0,
+        "own_yard": 30,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 301,
+        "score_margin": 9,
+        "own_yard": 30,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": 9,
+        "own_yard": 30,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": -9,
+        "own_yard": 30,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -4,
+        "own_yard": 30,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -3,
+        "own_yard": 30,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 1,
+        "seconds": 600,
+        "score_margin": 0,
+        "own_yard": 50,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2
+        ]
+      },
+      {
+        "quarter": 2,
+        "seconds": 30,
+        "score_margin": 0,
+        "own_yard": 50,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 301,
+        "score_margin": 9,
+        "own_yard": 50,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": 9,
+        "own_yard": 50,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": -9,
+        "own_yard": 50,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -4,
+        "own_yard": 50,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -3,
+        "own_yard": 50,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 1,
+        "seconds": 600,
+        "score_margin": 0,
+        "own_yard": 70,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "quarter": 2,
+        "seconds": 30,
+        "score_margin": 0,
+        "own_yard": 70,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 301,
+        "score_margin": 9,
+        "own_yard": 70,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": 9,
+        "own_yard": 70,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": -9,
+        "own_yard": 70,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -4,
+        "own_yard": 70,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -3,
+        "own_yard": 70,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 1,
+        "seconds": 600,
+        "score_margin": 0,
+        "own_yard": 87.5,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2
+        ]
+      },
+      {
+        "quarter": 2,
+        "seconds": 30,
+        "score_margin": 0,
+        "own_yard": 87.5,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 301,
+        "score_margin": 9,
+        "own_yard": 87.5,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": 9,
+        "own_yard": 87.5,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": -9,
+        "own_yard": 87.5,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -4,
+        "own_yard": 87.5,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -3,
+        "own_yard": 87.5,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 1,
+        "seconds": 600,
+        "score_margin": 0,
+        "own_yard": 97.5,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2
+        ]
+      },
+      {
+        "quarter": 2,
+        "seconds": 30,
+        "score_margin": 0,
+        "own_yard": 97.5,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 301,
+        "score_margin": 9,
+        "own_yard": 97.5,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": 9,
+        "own_yard": 97.5,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": -9,
+        "own_yard": 97.5,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -4,
+        "own_yard": 97.5,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -3,
+        "own_yard": 97.5,
+        "level": "modern",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 1,
+        "seconds": 600,
+        "score_margin": 0,
+        "own_yard": 10,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 2,
+        "seconds": 30,
+        "score_margin": 0,
+        "own_yard": 10,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 301,
+        "score_margin": 9,
+        "own_yard": 10,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": 9,
+        "own_yard": 10,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": -9,
+        "own_yard": 10,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -4,
+        "own_yard": 10,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -3,
+        "own_yard": 10,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 1,
+        "seconds": 600,
+        "score_margin": 0,
+        "own_yard": 30,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2
+        ]
+      },
+      {
+        "quarter": 2,
+        "seconds": 30,
+        "score_margin": 0,
+        "own_yard": 30,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 301,
+        "score_margin": 9,
+        "own_yard": 30,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": 9,
+        "own_yard": 30,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": -9,
+        "own_yard": 30,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -4,
+        "own_yard": 30,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -3,
+        "own_yard": 30,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 1,
+        "seconds": 600,
+        "score_margin": 0,
+        "own_yard": 50,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "quarter": 2,
+        "seconds": 30,
+        "score_margin": 0,
+        "own_yard": 50,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 301,
+        "score_margin": 9,
+        "own_yard": 50,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": 9,
+        "own_yard": 50,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": -9,
+        "own_yard": 50,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -4,
+        "own_yard": 50,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -3,
+        "own_yard": 50,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 1,
+        "seconds": 600,
+        "score_margin": 0,
+        "own_yard": 70,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "quarter": 2,
+        "seconds": 30,
+        "score_margin": 0,
+        "own_yard": 70,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 301,
+        "score_margin": 9,
+        "own_yard": 70,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": 9,
+        "own_yard": 70,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": -9,
+        "own_yard": 70,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -4,
+        "own_yard": 70,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -3,
+        "own_yard": 70,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 1,
+        "seconds": 600,
+        "score_margin": 0,
+        "own_yard": 87.5,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "quarter": 2,
+        "seconds": 30,
+        "score_margin": 0,
+        "own_yard": 87.5,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 301,
+        "score_margin": 9,
+        "own_yard": 87.5,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": 9,
+        "own_yard": 87.5,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": -9,
+        "own_yard": 87.5,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -4,
+        "own_yard": 87.5,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -3,
+        "own_yard": 87.5,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 1,
+        "seconds": 600,
+        "score_margin": 0,
+        "own_yard": 97.5,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "quarter": 2,
+        "seconds": 30,
+        "score_margin": 0,
+        "own_yard": 97.5,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 301,
+        "score_margin": 9,
+        "own_yard": 97.5,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": 9,
+        "own_yard": 97.5,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": -9,
+        "own_yard": 97.5,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -4,
+        "own_yard": 97.5,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -3,
+        "own_yard": 97.5,
+        "level": "aggressive",
+        "direction": -1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 1,
+        "seconds": 600,
+        "score_margin": 0,
+        "own_yard": 10,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 2,
+        "seconds": 30,
+        "score_margin": 0,
+        "own_yard": 10,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 301,
+        "score_margin": 9,
+        "own_yard": 10,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": 9,
+        "own_yard": 10,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": -9,
+        "own_yard": 10,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -4,
+        "own_yard": 10,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -3,
+        "own_yard": 10,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 1,
+        "seconds": 600,
+        "score_margin": 0,
+        "own_yard": 30,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2
+        ]
+      },
+      {
+        "quarter": 2,
+        "seconds": 30,
+        "score_margin": 0,
+        "own_yard": 30,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 301,
+        "score_margin": 9,
+        "own_yard": 30,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": 9,
+        "own_yard": 30,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": -9,
+        "own_yard": 30,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -4,
+        "own_yard": 30,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -3,
+        "own_yard": 30,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 1,
+        "seconds": 600,
+        "score_margin": 0,
+        "own_yard": 50,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "quarter": 2,
+        "seconds": 30,
+        "score_margin": 0,
+        "own_yard": 50,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 301,
+        "score_margin": 9,
+        "own_yard": 50,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": 9,
+        "own_yard": 50,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": -9,
+        "own_yard": 50,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -4,
+        "own_yard": 50,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -3,
+        "own_yard": 50,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 1,
+        "seconds": 600,
+        "score_margin": 0,
+        "own_yard": 70,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "quarter": 2,
+        "seconds": 30,
+        "score_margin": 0,
+        "own_yard": 70,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 301,
+        "score_margin": 9,
+        "own_yard": 70,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": 9,
+        "own_yard": 70,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": -9,
+        "own_yard": 70,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -4,
+        "own_yard": 70,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -3,
+        "own_yard": 70,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 1,
+        "seconds": 600,
+        "score_margin": 0,
+        "own_yard": 87.5,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "quarter": 2,
+        "seconds": 30,
+        "score_margin": 0,
+        "own_yard": 87.5,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 301,
+        "score_margin": 9,
+        "own_yard": 87.5,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": 9,
+        "own_yard": 87.5,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": -9,
+        "own_yard": 87.5,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -4,
+        "own_yard": 87.5,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -3,
+        "own_yard": 87.5,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 1,
+        "seconds": 600,
+        "score_margin": 0,
+        "own_yard": 97.5,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "quarter": 2,
+        "seconds": 30,
+        "score_margin": 0,
+        "own_yard": 97.5,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": []
+      },
+      {
+        "quarter": 4,
+        "seconds": 301,
+        "score_margin": 9,
+        "own_yard": 97.5,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": 9,
+        "own_yard": 97.5,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 300,
+        "score_margin": -9,
+        "own_yard": 97.5,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -4,
+        "own_yard": 97.5,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "quarter": 4,
+        "seconds": 120,
+        "score_margin": -3,
+        "own_yard": 97.5,
+        "level": "aggressive",
+        "direction": 1,
+        "accepted_distances": []
+      }
+    ]
+  },
+  "classifier": {
+    "archive_index": 307,
+    "resource_sha256": "bfef19854973fa7edfb1df46fe0f9a86ba9569470cc2911846620d208b6dbd22",
+    "comparisons": 1848,
+    "supported_formation_play_links": 20
+  },
+  "book_coverage": {
+    "scope": "Host grammar census; native relocation comparison above is ARI only",
+    "books": [
+      {
+        "archive_index": 307,
+        "book": "ARZ",
+        "resource_sha256": "bfef19854973fa7edfb1df46fe0f9a86ba9569470cc2911846620d208b6dbd22",
+        "distinct_formation_play_links": 462,
+        "supported_links": 20
+      },
+      {
+        "archive_index": 308,
+        "book": "ATL",
+        "resource_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
+        "distinct_formation_play_links": 414,
+        "supported_links": 9
+      },
+      {
+        "archive_index": 309,
+        "book": "BAL",
+        "resource_sha256": "56ff0239095b6b62a52b184546413691a5a59c9388f093e5f438a60715ce633a",
+        "distinct_formation_play_links": 419,
+        "supported_links": 23
+      },
+      {
+        "archive_index": 310,
+        "book": "BUF",
+        "resource_sha256": "d15e31e7a83c68d411d815105938942afeb9faf03d4b9cc53be3f8a0146c6f9d",
+        "distinct_formation_play_links": 458,
+        "supported_links": 17
+      },
+      {
+        "archive_index": 311,
+        "book": "CAR",
+        "resource_sha256": "5fb8fc4a482fd622c4429a1db92bc87c2dc84a45c134ead72f7d7bbe51ae729a",
+        "distinct_formation_play_links": 458,
+        "supported_links": 25
+      },
+      {
+        "archive_index": 312,
+        "book": "CHI",
+        "resource_sha256": "deadb7395dccc2689bc325d6e93e0b585d2ddc52386ce697cafde755f224446b",
+        "distinct_formation_play_links": 438,
+        "supported_links": 13
+      },
+      {
+        "archive_index": 313,
+        "book": "CIN",
+        "resource_sha256": "858dd688901691d61d1838c85ce0dd6588130bde772f177e0d3dfdd55332d1c6",
+        "distinct_formation_play_links": 472,
+        "supported_links": 18
+      },
+      {
+        "archive_index": 314,
+        "book": "CLE",
+        "resource_sha256": "61afe904be26b3f61b92c465eb75d877116100b376d543ba800c9abf6617c2b7",
+        "distinct_formation_play_links": 453,
+        "supported_links": 22
+      },
+      {
+        "archive_index": 315,
+        "book": "DAL",
+        "resource_sha256": "7c2200f05c210ca69a90a0215a3475a798a782abf54a2cf15b1b43997f244fab",
+        "distinct_formation_play_links": 426,
+        "supported_links": 14
+      },
+      {
+        "archive_index": 316,
+        "book": "DEN",
+        "resource_sha256": "ce4c6da4fe76ff2a132cf1a78817e80496bfbce80e09d1618a09bbfbcdfc3d71",
+        "distinct_formation_play_links": 464,
+        "supported_links": 16
+      },
+      {
+        "archive_index": 317,
+        "book": "DET",
+        "resource_sha256": "4eb3f42cc5b58a8165329b266e6c28e7ae74f0277d5f2149c22c8f6dc1a3a0aa",
+        "distinct_formation_play_links": 434,
+        "supported_links": 10
+      },
+      {
+        "archive_index": 318,
+        "book": "Editor",
+        "resource_sha256": "2709a1d09169e7954a5fd711b98fc7f3ffb6413136f5c2cf59347d00a221c9b6",
+        "distinct_formation_play_links": 54,
+        "supported_links": 0
+      },
+      {
+        "archive_index": 319,
+        "book": "GB",
+        "resource_sha256": "45efe7167b4a4b6cf8a521fa3a5be9c013c33911004ce7a6f193660b043bbcc3",
+        "distinct_formation_play_links": 484,
+        "supported_links": 20
+      },
+      {
+        "archive_index": 320,
+        "book": "GEN",
+        "resource_sha256": "a79ef59b7534c27bf57994f0b48873f1465248046833f917cc581f78986a966c",
+        "distinct_formation_play_links": 452,
+        "supported_links": 24
+      },
+      {
+        "archive_index": 321,
+        "book": "HOU",
+        "resource_sha256": "7fc25a62457c130c6bd78a46186abbb43bb5cd19f7f331e766c53f1d1b42ba98",
+        "distinct_formation_play_links": 400,
+        "supported_links": 9
+      },
+      {
+        "archive_index": 322,
+        "book": "IND",
+        "resource_sha256": "6f54310741b89b4b39167d03a1f47eae34d0d16d757d061530299e2a6c383537",
+        "distinct_formation_play_links": 474,
+        "supported_links": 14
+      },
+      {
+        "archive_index": 323,
+        "book": "JAX",
+        "resource_sha256": "c7ed939ecacec0196d98f0b698c7a2461f2804739770d59cfe14a38e76b43e7a",
+        "distinct_formation_play_links": 430,
+        "supported_links": 16
+      },
+      {
+        "archive_index": 324,
+        "book": "KC",
+        "resource_sha256": "56935ebb3cd8915f87d5647be7a8bcd324e2a04fe6134ff10c97c1c94f55b457",
+        "distinct_formation_play_links": 435,
+        "supported_links": 13
+      },
+      {
+        "archive_index": 325,
+        "book": "MIA",
+        "resource_sha256": "e3da606f907617aeea92a5fef1381bfcca485cac01d0fa664fda8afdad27b9f9",
+        "distinct_formation_play_links": 474,
+        "supported_links": 17
+      },
+      {
+        "archive_index": 326,
+        "book": "MIN",
+        "resource_sha256": "50673fd09d38f4a17057a4e79a87119ee861456dd4416b94191b1563aa60887e",
+        "distinct_formation_play_links": 487,
+        "supported_links": 35
+      },
+      {
+        "archive_index": 327,
+        "book": "NE",
+        "resource_sha256": "c49392010deb41a8ec757affc62aa1bfb801f752a7c49a85b1f55e120bd87510",
+        "distinct_formation_play_links": 443,
+        "supported_links": 15
+      },
+      {
+        "archive_index": 328,
+        "book": "NO",
+        "resource_sha256": "e246947ab221107032e1e7ee385c528960efc1a92271673d4761f28d275a4f94",
+        "distinct_formation_play_links": 425,
+        "supported_links": 9
+      },
+      {
+        "archive_index": 329,
+        "book": "NYG",
+        "resource_sha256": "113a15c75d6a99ba0918f90174990323e84252a796a6941a56342165f9f1f9b6",
+        "distinct_formation_play_links": 468,
+        "supported_links": 10
+      },
+      {
+        "archive_index": 330,
+        "book": "NYJ",
+        "resource_sha256": "0f523411813ae945dfc49e9ba5419fc659615072bd281e5191fcf8c9a73e6932",
+        "distinct_formation_play_links": 423,
+        "supported_links": 21
+      },
+      {
+        "archive_index": 331,
+        "book": "OAK",
+        "resource_sha256": "73955c2e2e7c63f9aea3ae744eaf250db3c34cc54e0bf884d3a977481ae23577",
+        "distinct_formation_play_links": 474,
+        "supported_links": 12
+      },
+      {
+        "archive_index": 332,
+        "book": "PHI",
+        "resource_sha256": "1b5bed4b207e8e39d6b1e2c8c23951576b5f7126d55ea5db2876b3b824427d1f",
+        "distinct_formation_play_links": 446,
+        "supported_links": 13
+      },
+      {
+        "archive_index": 333,
+        "book": "PIT",
+        "resource_sha256": "9f27b57168c04210d44368748d0699cbfd9e727405cdc5d62426cac9013409dd",
+        "distinct_formation_play_links": 401,
+        "supported_links": 8
+      },
+      {
+        "archive_index": 334,
+        "book": "PRACTICE",
+        "resource_sha256": "56de927e6969f010dccf0e1a3d7f216bcb8010393e543769de12a794e9ccdfb9",
+        "distinct_formation_play_links": 186,
+        "supported_links": 43
+      },
+      {
+        "archive_index": 335,
+        "book": "reference",
+        "resource_sha256": "a78b73d4cdf0d8bd2862c5ee4ef6d2c6bd9d42446211c4abdeb7c609b5cdc690",
+        "distinct_formation_play_links": 548,
+        "supported_links": 21
+      },
+      {
+        "archive_index": 336,
+        "book": "SD",
+        "resource_sha256": "7e6ddb8d36ab3451e2aa80d110903d8a726ec5efdb68e3e2dc9462599144a0c0",
+        "distinct_formation_play_links": 436,
+        "supported_links": 6
+      },
+      {
+        "archive_index": 337,
+        "book": "SEA",
+        "resource_sha256": "4d5ff26d6102d943aa0bee61a7f452c8570f28c0bf9db879db60de0dbd791506",
+        "distinct_formation_play_links": 452,
+        "supported_links": 15
+      },
+      {
+        "archive_index": 338,
+        "book": "SF",
+        "resource_sha256": "a1bb2195e1df901230e8d79885bdb448eb19b6ca90976c2a3fd673bcf74f6ec6",
+        "distinct_formation_play_links": 404,
+        "supported_links": 9
+      },
+      {
+        "archive_index": 339,
+        "book": "STL",
+        "resource_sha256": "dc4745657752e75205dc4d163e7c95b6aa7db28e6fb565af5f77d6d8a07b984a",
+        "distinct_formation_play_links": 488,
+        "supported_links": 32
+      },
+      {
+        "archive_index": 340,
+        "book": "TB",
+        "resource_sha256": "baa2902b92cc67bbdc60bdc8d8ef9167ed51160a7b6904b7365b81b992757f2e",
+        "distinct_formation_play_links": 499,
+        "supported_links": 18
+      },
+      {
+        "archive_index": 341,
+        "book": "TEN",
+        "resource_sha256": "c5b13aa07d03d0da6b78a2b117e3e46792bacc213a0cb7016ca8e1478f062141",
+        "distinct_formation_play_links": 408,
+        "supported_links": 16
+      },
+      {
+        "archive_index": 342,
+        "book": "WAS",
+        "resource_sha256": "7f4c96bb44c330cfeb733cdcd1d9f0b2342c876b6c342c83da88bab7dbc2e881",
+        "distinct_formation_play_links": 476,
+        "supported_links": 14
+      },
+      {
+        "archive_index": 343,
+        "book": "WCO",
+        "resource_sha256": "e1153d37198fd7f6c71fc41541c4cada06efb284ba360d0a6e976ca64ac7c152",
+        "distinct_formation_play_links": 500,
+        "supported_links": 19
+      }
+    ]
+  },
+  "play_selection": {
+    "formation": 8,
+    "category": 4,
+    "archive_index": 307,
+    "native_selector": "2096A0 through candidate normalization, then 203440 cubed-weight roulette",
+    "supplied_state": "Zero tendency/history tables; fixed formation and category; native loader and validator",
+    "direction_down_controls": "All markers, both directions, downs 3 and 4",
+    "samples": [
+      {
+        "level": "retail",
+        "marker_yards": 3,
+        "down": 3,
+        "native_reach_probability": 0.47058823529411764,
+        "reaches_in_256": 117,
+        "candidates": [
+          {
+            "play_index": 61,
+            "weight": 0.10000000149011612,
+            "mirrored": false,
+            "name": "50 Inside",
+            "reaches": true,
+            "samples": 21
+          },
+          {
+            "play_index": 61,
+            "weight": 0.10000000149011612,
+            "mirrored": true,
+            "name": "50 Inside",
+            "reaches": true,
+            "samples": 33
+          },
+          {
+            "play_index": 62,
+            "weight": 0.05000000074505806,
+            "mirrored": false,
+            "name": "H Lead Shovel",
+            "reaches": false,
+            "samples": 6
+          },
+          {
+            "play_index": 62,
+            "weight": 0.05000000074505806,
+            "mirrored": true,
+            "name": "H Lead Shovel",
+            "reaches": false,
+            "samples": 4
+          },
+          {
+            "play_index": 63,
+            "weight": 0.05000000074505806,
+            "mirrored": false,
+            "name": "PA Outs",
+            "reaches": false,
+            "samples": 7
+          },
+          {
+            "play_index": 63,
+            "weight": 0.05000000074505806,
+            "mirrored": true,
+            "name": "PA Outs",
+            "reaches": false,
+            "samples": 1
+          },
+          {
+            "play_index": 72,
+            "weight": 0.10000000149011612,
+            "mirrored": false,
+            "name": "50 Streaks",
+            "reaches": true,
+            "samples": 32
+          },
+          {
+            "play_index": 72,
+            "weight": 0.10000000149011612,
+            "mirrored": true,
+            "name": "50 Streaks",
+            "reaches": true,
+            "samples": 31
+          },
+          {
+            "play_index": 91,
+            "weight": 0.10000000149011612,
+            "mirrored": false,
+            "name": "50 H Screen Weak",
+            "reaches": false,
+            "samples": 41
+          },
+          {
+            "play_index": 91,
+            "weight": 0.10000000149011612,
+            "mirrored": true,
+            "name": "50 H Screen Weak",
+            "reaches": false,
+            "samples": 22
+          },
+          {
+            "play_index": 103,
+            "weight": 0.10000000149011612,
+            "mirrored": false,
+            "name": "90 X Slant",
+            "reaches": false,
+            "samples": 32
+          },
+          {
+            "play_index": 103,
+            "weight": 0.10000000149011612,
+            "mirrored": true,
+            "name": "90 X Slant",
+            "reaches": false,
+            "samples": 26
+          }
+        ]
+      },
+      {
+        "level": "retail",
+        "marker_yards": 7,
+        "down": 3,
+        "native_reach_probability": 0.47058823529411764,
+        "reaches_in_256": 117,
+        "candidates": [
+          {
+            "play_index": 61,
+            "weight": 0.10000000149011612,
+            "mirrored": false,
+            "name": "50 Inside",
+            "reaches": true,
+            "samples": 21
+          },
+          {
+            "play_index": 61,
+            "weight": 0.10000000149011612,
+            "mirrored": true,
+            "name": "50 Inside",
+            "reaches": true,
+            "samples": 33
+          },
+          {
+            "play_index": 62,
+            "weight": 0.05000000074505806,
+            "mirrored": false,
+            "name": "H Lead Shovel",
+            "reaches": false,
+            "samples": 6
+          },
+          {
+            "play_index": 62,
+            "weight": 0.05000000074505806,
+            "mirrored": true,
+            "name": "H Lead Shovel",
+            "reaches": false,
+            "samples": 4
+          },
+          {
+            "play_index": 63,
+            "weight": 0.05000000074505806,
+            "mirrored": false,
+            "name": "PA Outs",
+            "reaches": false,
+            "samples": 7
+          },
+          {
+            "play_index": 63,
+            "weight": 0.05000000074505806,
+            "mirrored": true,
+            "name": "PA Outs",
+            "reaches": false,
+            "samples": 1
+          },
+          {
+            "play_index": 72,
+            "weight": 0.10000000149011612,
+            "mirrored": false,
+            "name": "50 Streaks",
+            "reaches": true,
+            "samples": 32
+          },
+          {
+            "play_index": 72,
+            "weight": 0.10000000149011612,
+            "mirrored": true,
+            "name": "50 Streaks",
+            "reaches": true,
+            "samples": 31
+          },
+          {
+            "play_index": 91,
+            "weight": 0.10000000149011612,
+            "mirrored": false,
+            "name": "50 H Screen Weak",
+            "reaches": false,
+            "samples": 41
+          },
+          {
+            "play_index": 91,
+            "weight": 0.10000000149011612,
+            "mirrored": true,
+            "name": "50 H Screen Weak",
+            "reaches": false,
+            "samples": 22
+          },
+          {
+            "play_index": 103,
+            "weight": 0.10000000149011612,
+            "mirrored": false,
+            "name": "90 X Slant",
+            "reaches": false,
+            "samples": 32
+          },
+          {
+            "play_index": 103,
+            "weight": 0.10000000149011612,
+            "mirrored": true,
+            "name": "90 X Slant",
+            "reaches": false,
+            "samples": 26
+          }
+        ]
+      },
+      {
+        "level": "retail",
+        "marker_yards": 12,
+        "down": 3,
+        "native_reach_probability": 0.23529411764705882,
+        "reaches_in_256": 63,
+        "candidates": [
+          {
+            "play_index": 61,
+            "weight": 0.10000000149011612,
+            "mirrored": false,
+            "name": "50 Inside",
+            "reaches": false,
+            "samples": 21
+          },
+          {
+            "play_index": 61,
+            "weight": 0.10000000149011612,
+            "mirrored": true,
+            "name": "50 Inside",
+            "reaches": false,
+            "samples": 33
+          },
+          {
+            "play_index": 62,
+            "weight": 0.05000000074505806,
+            "mirrored": false,
+            "name": "H Lead Shovel",
+            "reaches": false,
+            "samples": 6
+          },
+          {
+            "play_index": 62,
+            "weight": 0.05000000074505806,
+            "mirrored": true,
+            "name": "H Lead Shovel",
+            "reaches": false,
+            "samples": 4
+          },
+          {
+            "play_index": 63,
+            "weight": 0.05000000074505806,
+            "mirrored": false,
+            "name": "PA Outs",
+            "reaches": false,
+            "samples": 7
+          },
+          {
+            "play_index": 63,
+            "weight": 0.05000000074505806,
+            "mirrored": true,
+            "name": "PA Outs",
+            "reaches": false,
+            "samples": 1
+          },
+          {
+            "play_index": 72,
+            "weight": 0.10000000149011612,
+            "mirrored": false,
+            "name": "50 Streaks",
+            "reaches": true,
+            "samples": 32
+          },
+          {
+            "play_index": 72,
+            "weight": 0.10000000149011612,
+            "mirrored": true,
+            "name": "50 Streaks",
+            "reaches": true,
+            "samples": 31
+          },
+          {
+            "play_index": 91,
+            "weight": 0.10000000149011612,
+            "mirrored": false,
+            "name": "50 H Screen Weak",
+            "reaches": false,
+            "samples": 41
+          },
+          {
+            "play_index": 91,
+            "weight": 0.10000000149011612,
+            "mirrored": true,
+            "name": "50 H Screen Weak",
+            "reaches": false,
+            "samples": 22
+          },
+          {
+            "play_index": 103,
+            "weight": 0.10000000149011612,
+            "mirrored": false,
+            "name": "90 X Slant",
+            "reaches": false,
+            "samples": 32
+          },
+          {
+            "play_index": 103,
+            "weight": 0.10000000149011612,
+            "mirrored": true,
+            "name": "90 X Slant",
+            "reaches": false,
+            "samples": 26
+          }
+        ]
+      },
+      {
+        "level": "modern",
+        "marker_yards": 3,
+        "down": 3,
+        "native_reach_probability": 0.7499999832361935,
+        "reaches_in_256": 189,
+        "candidates": [
+          {
+            "play_index": 61,
+            "weight": 0.125,
+            "mirrored": false,
+            "name": "50 Inside",
+            "reaches": true,
+            "samples": 48
+          },
+          {
+            "play_index": 61,
+            "weight": 0.125,
+            "mirrored": true,
+            "name": "50 Inside",
+            "reaches": true,
+            "samples": 45
+          },
+          {
+            "play_index": 62,
+            "weight": 0.0416666679084301,
+            "mirrored": false,
+            "name": "H Lead Shovel",
+            "reaches": false,
+            "samples": 0
+          },
+          {
+            "play_index": 62,
+            "weight": 0.0416666679084301,
+            "mirrored": true,
+            "name": "H Lead Shovel",
+            "reaches": false,
+            "samples": 1
+          },
+          {
+            "play_index": 63,
+            "weight": 0.0416666679084301,
+            "mirrored": false,
+            "name": "PA Outs",
+            "reaches": false,
+            "samples": 2
+          },
+          {
+            "play_index": 63,
+            "weight": 0.0416666679084301,
+            "mirrored": true,
+            "name": "PA Outs",
+            "reaches": false,
+            "samples": 1
+          },
+          {
+            "play_index": 72,
+            "weight": 0.125,
+            "mirrored": false,
+            "name": "50 Streaks",
+            "reaches": true,
+            "samples": 43
+          },
+          {
+            "play_index": 72,
+            "weight": 0.125,
+            "mirrored": true,
+            "name": "50 Streaks",
+            "reaches": true,
+            "samples": 53
+          },
+          {
+            "play_index": 91,
+            "weight": 0.0833333358168602,
+            "mirrored": false,
+            "name": "50 H Screen Weak",
+            "reaches": false,
+            "samples": 14
+          },
+          {
+            "play_index": 91,
+            "weight": 0.0833333358168602,
+            "mirrored": true,
+            "name": "50 H Screen Weak",
+            "reaches": false,
+            "samples": 12
+          },
+          {
+            "play_index": 103,
+            "weight": 0.0833333358168602,
+            "mirrored": false,
+            "name": "90 X Slant",
+            "reaches": false,
+            "samples": 18
+          },
+          {
+            "play_index": 103,
+            "weight": 0.0833333358168602,
+            "mirrored": true,
+            "name": "90 X Slant",
+            "reaches": false,
+            "samples": 19
+          }
+        ]
+      },
+      {
+        "level": "modern",
+        "marker_yards": 7,
+        "down": 3,
+        "native_reach_probability": 0.7499999832361935,
+        "reaches_in_256": 189,
+        "candidates": [
+          {
+            "play_index": 61,
+            "weight": 0.125,
+            "mirrored": false,
+            "name": "50 Inside",
+            "reaches": true,
+            "samples": 48
+          },
+          {
+            "play_index": 61,
+            "weight": 0.125,
+            "mirrored": true,
+            "name": "50 Inside",
+            "reaches": true,
+            "samples": 45
+          },
+          {
+            "play_index": 62,
+            "weight": 0.0416666679084301,
+            "mirrored": false,
+            "name": "H Lead Shovel",
+            "reaches": false,
+            "samples": 0
+          },
+          {
+            "play_index": 62,
+            "weight": 0.0416666679084301,
+            "mirrored": true,
+            "name": "H Lead Shovel",
+            "reaches": false,
+            "samples": 1
+          },
+          {
+            "play_index": 63,
+            "weight": 0.0416666679084301,
+            "mirrored": false,
+            "name": "PA Outs",
+            "reaches": false,
+            "samples": 2
+          },
+          {
+            "play_index": 63,
+            "weight": 0.0416666679084301,
+            "mirrored": true,
+            "name": "PA Outs",
+            "reaches": false,
+            "samples": 1
+          },
+          {
+            "play_index": 72,
+            "weight": 0.125,
+            "mirrored": false,
+            "name": "50 Streaks",
+            "reaches": true,
+            "samples": 43
+          },
+          {
+            "play_index": 72,
+            "weight": 0.125,
+            "mirrored": true,
+            "name": "50 Streaks",
+            "reaches": true,
+            "samples": 53
+          },
+          {
+            "play_index": 91,
+            "weight": 0.0833333358168602,
+            "mirrored": false,
+            "name": "50 H Screen Weak",
+            "reaches": false,
+            "samples": 14
+          },
+          {
+            "play_index": 91,
+            "weight": 0.0833333358168602,
+            "mirrored": true,
+            "name": "50 H Screen Weak",
+            "reaches": false,
+            "samples": 12
+          },
+          {
+            "play_index": 103,
+            "weight": 0.0833333358168602,
+            "mirrored": false,
+            "name": "90 X Slant",
+            "reaches": false,
+            "samples": 18
+          },
+          {
+            "play_index": 103,
+            "weight": 0.0833333358168602,
+            "mirrored": true,
+            "name": "90 X Slant",
+            "reaches": false,
+            "samples": 19
+          }
+        ]
+      },
+      {
+        "level": "modern",
+        "marker_yards": 12,
+        "down": 3,
+        "native_reach_probability": 0.5094339622641509,
+        "reaches_in_256": 132,
+        "candidates": [
+          {
+            "play_index": 61,
+            "weight": 0.09090909361839294,
+            "mirrored": false,
+            "name": "50 Inside",
+            "reaches": false,
+            "samples": 17
+          },
+          {
+            "play_index": 61,
+            "weight": 0.09090909361839294,
+            "mirrored": true,
+            "name": "50 Inside",
+            "reaches": false,
+            "samples": 11
+          },
+          {
+            "play_index": 62,
+            "weight": 0.04545454680919647,
+            "mirrored": false,
+            "name": "H Lead Shovel",
+            "reaches": false,
+            "samples": 2
+          },
+          {
+            "play_index": 62,
+            "weight": 0.04545454680919647,
+            "mirrored": true,
+            "name": "H Lead Shovel",
+            "reaches": false,
+            "samples": 1
+          },
+          {
+            "play_index": 63,
+            "weight": 0.04545454680919647,
+            "mirrored": false,
+            "name": "PA Outs",
+            "reaches": false,
+            "samples": 3
+          },
+          {
+            "play_index": 63,
+            "weight": 0.04545454680919647,
+            "mirrored": true,
+            "name": "PA Outs",
+            "reaches": false,
+            "samples": 1
+          },
+          {
+            "play_index": 72,
+            "weight": 0.13636364042758942,
+            "mirrored": false,
+            "name": "50 Streaks",
+            "reaches": true,
+            "samples": 75
+          },
+          {
+            "play_index": 72,
+            "weight": 0.13636364042758942,
+            "mirrored": true,
+            "name": "50 Streaks",
+            "reaches": true,
+            "samples": 57
+          },
+          {
+            "play_index": 91,
+            "weight": 0.09090909361839294,
+            "mirrored": false,
+            "name": "50 H Screen Weak",
+            "reaches": false,
+            "samples": 25
+          },
+          {
+            "play_index": 91,
+            "weight": 0.09090909361839294,
+            "mirrored": true,
+            "name": "50 H Screen Weak",
+            "reaches": false,
+            "samples": 23
+          },
+          {
+            "play_index": 103,
+            "weight": 0.09090909361839294,
+            "mirrored": false,
+            "name": "90 X Slant",
+            "reaches": false,
+            "samples": 21
+          },
+          {
+            "play_index": 103,
+            "weight": 0.09090909361839294,
+            "mirrored": true,
+            "name": "90 X Slant",
+            "reaches": false,
+            "samples": 20
+          }
+        ]
+      },
+      {
+        "level": "aggressive",
+        "marker_yards": 3,
+        "down": 3,
+        "native_reach_probability": 0.8767123287671234,
+        "reaches_in_256": 216,
+        "candidates": [
+          {
+            "play_index": 61,
+            "weight": 0.1428571492433548,
+            "mirrored": false,
+            "name": "50 Inside",
+            "reaches": true,
+            "samples": 55
+          },
+          {
+            "play_index": 61,
+            "weight": 0.1428571492433548,
+            "mirrored": true,
+            "name": "50 Inside",
+            "reaches": true,
+            "samples": 49
+          },
+          {
+            "play_index": 62,
+            "weight": 0.0357142873108387,
+            "mirrored": false,
+            "name": "H Lead Shovel",
+            "reaches": false,
+            "samples": 0
+          },
+          {
+            "play_index": 62,
+            "weight": 0.0357142873108387,
+            "mirrored": true,
+            "name": "H Lead Shovel",
+            "reaches": false,
+            "samples": 2
+          },
+          {
+            "play_index": 63,
+            "weight": 0.0357142873108387,
+            "mirrored": false,
+            "name": "PA Outs",
+            "reaches": false,
+            "samples": 2
+          },
+          {
+            "play_index": 63,
+            "weight": 0.0357142873108387,
+            "mirrored": true,
+            "name": "PA Outs",
+            "reaches": false,
+            "samples": 1
+          },
+          {
+            "play_index": 72,
+            "weight": 0.1428571492433548,
+            "mirrored": false,
+            "name": "50 Streaks",
+            "reaches": true,
+            "samples": 53
+          },
+          {
+            "play_index": 72,
+            "weight": 0.1428571492433548,
+            "mirrored": true,
+            "name": "50 Streaks",
+            "reaches": true,
+            "samples": 59
+          },
+          {
+            "play_index": 91,
+            "weight": 0.0714285746216774,
+            "mirrored": false,
+            "name": "50 H Screen Weak",
+            "reaches": false,
+            "samples": 7
+          },
+          {
+            "play_index": 91,
+            "weight": 0.0714285746216774,
+            "mirrored": true,
+            "name": "50 H Screen Weak",
+            "reaches": false,
+            "samples": 9
+          },
+          {
+            "play_index": 103,
+            "weight": 0.0714285746216774,
+            "mirrored": false,
+            "name": "90 X Slant",
+            "reaches": false,
+            "samples": 10
+          },
+          {
+            "play_index": 103,
+            "weight": 0.0714285746216774,
+            "mirrored": true,
+            "name": "90 X Slant",
+            "reaches": false,
+            "samples": 9
+          }
+        ]
+      },
+      {
+        "level": "aggressive",
+        "marker_yards": 7,
+        "down": 3,
+        "native_reach_probability": 0.8767123287671234,
+        "reaches_in_256": 216,
+        "candidates": [
+          {
+            "play_index": 61,
+            "weight": 0.1428571492433548,
+            "mirrored": false,
+            "name": "50 Inside",
+            "reaches": true,
+            "samples": 55
+          },
+          {
+            "play_index": 61,
+            "weight": 0.1428571492433548,
+            "mirrored": true,
+            "name": "50 Inside",
+            "reaches": true,
+            "samples": 49
+          },
+          {
+            "play_index": 62,
+            "weight": 0.0357142873108387,
+            "mirrored": false,
+            "name": "H Lead Shovel",
+            "reaches": false,
+            "samples": 0
+          },
+          {
+            "play_index": 62,
+            "weight": 0.0357142873108387,
+            "mirrored": true,
+            "name": "H Lead Shovel",
+            "reaches": false,
+            "samples": 2
+          },
+          {
+            "play_index": 63,
+            "weight": 0.0357142873108387,
+            "mirrored": false,
+            "name": "PA Outs",
+            "reaches": false,
+            "samples": 2
+          },
+          {
+            "play_index": 63,
+            "weight": 0.0357142873108387,
+            "mirrored": true,
+            "name": "PA Outs",
+            "reaches": false,
+            "samples": 1
+          },
+          {
+            "play_index": 72,
+            "weight": 0.1428571492433548,
+            "mirrored": false,
+            "name": "50 Streaks",
+            "reaches": true,
+            "samples": 53
+          },
+          {
+            "play_index": 72,
+            "weight": 0.1428571492433548,
+            "mirrored": true,
+            "name": "50 Streaks",
+            "reaches": true,
+            "samples": 59
+          },
+          {
+            "play_index": 91,
+            "weight": 0.0714285746216774,
+            "mirrored": false,
+            "name": "50 H Screen Weak",
+            "reaches": false,
+            "samples": 7
+          },
+          {
+            "play_index": 91,
+            "weight": 0.0714285746216774,
+            "mirrored": true,
+            "name": "50 H Screen Weak",
+            "reaches": false,
+            "samples": 9
+          },
+          {
+            "play_index": 103,
+            "weight": 0.0714285746216774,
+            "mirrored": false,
+            "name": "90 X Slant",
+            "reaches": false,
+            "samples": 10
+          },
+          {
+            "play_index": 103,
+            "weight": 0.0714285746216774,
+            "mirrored": true,
+            "name": "90 X Slant",
+            "reaches": false,
+            "samples": 9
+          }
+        ]
+      },
+      {
+        "level": "aggressive",
+        "marker_yards": 12,
+        "down": 3,
+        "native_reach_probability": 0.7111111111111111,
+        "reaches_in_256": 184,
+        "candidates": [
+          {
+            "play_index": 61,
+            "weight": 0.0833333358168602,
+            "mirrored": false,
+            "name": "50 Inside",
+            "reaches": false,
+            "samples": 7
+          },
+          {
+            "play_index": 61,
+            "weight": 0.0833333358168602,
+            "mirrored": true,
+            "name": "50 Inside",
+            "reaches": false,
+            "samples": 11
+          },
+          {
+            "play_index": 62,
+            "weight": 0.0416666679084301,
+            "mirrored": false,
+            "name": "H Lead Shovel",
+            "reaches": false,
+            "samples": 1
+          },
+          {
+            "play_index": 62,
+            "weight": 0.0416666679084301,
+            "mirrored": true,
+            "name": "H Lead Shovel",
+            "reaches": false,
+            "samples": 2
+          },
+          {
+            "play_index": 63,
+            "weight": 0.0416666679084301,
+            "mirrored": false,
+            "name": "PA Outs",
+            "reaches": false,
+            "samples": 3
+          },
+          {
+            "play_index": 63,
+            "weight": 0.0416666679084301,
+            "mirrored": true,
+            "name": "PA Outs",
+            "reaches": false,
+            "samples": 0
+          },
+          {
+            "play_index": 72,
+            "weight": 0.1666666716337204,
+            "mirrored": false,
+            "name": "50 Streaks",
+            "reaches": true,
+            "samples": 94
+          },
+          {
+            "play_index": 72,
+            "weight": 0.1666666716337204,
+            "mirrored": true,
+            "name": "50 Streaks",
+            "reaches": true,
+            "samples": 90
+          },
+          {
+            "play_index": 91,
+            "weight": 0.0833333358168602,
+            "mirrored": false,
+            "name": "50 H Screen Weak",
+            "reaches": false,
+            "samples": 12
+          },
+          {
+            "play_index": 91,
+            "weight": 0.0833333358168602,
+            "mirrored": true,
+            "name": "50 H Screen Weak",
+            "reaches": false,
+            "samples": 12
+          },
+          {
+            "play_index": 103,
+            "weight": 0.0833333358168602,
+            "mirrored": false,
+            "name": "90 X Slant",
+            "reaches": false,
+            "samples": 11
+          },
+          {
+            "play_index": 103,
+            "weight": 0.0833333358168602,
+            "mirrored": true,
+            "name": "90 X Slant",
+            "reaches": false,
+            "samples": 13
+          }
+        ]
+      }
+    ]
+  },
+  "native_category": {
+    "states": [
+      {
+        "own_yard": 50,
+        "distance": 2
+      },
+      {
+        "own_yard": 70,
+        "distance": 2
+      },
+      {
+        "own_yard": 30,
+        "distance": 7
+      },
+      {
+        "own_yard": 80,
+        "distance": 2,
+        "quarter": 4,
+        "seconds": 100,
+        "score_margin": -3
+      }
+    ],
+    "rows": [
+      {
+        "level": "retail",
+        "difficulty": 0,
+        "cpu_human_sliders": [
+          0.0,
+          1.0
+        ],
+        "direction": -1,
+        "categories": [
+          17,
+          19,
+          17,
+          19
+        ]
+      },
+      {
+        "level": "retail",
+        "difficulty": 0,
+        "cpu_human_sliders": [
+          0.0,
+          1.0
+        ],
+        "direction": 1,
+        "categories": [
+          17,
+          19,
+          17,
+          19
+        ]
+      },
+      {
+        "level": "retail",
+        "difficulty": 1,
+        "cpu_human_sliders": [
+          0.25,
+          0.75
+        ],
+        "direction": -1,
+        "categories": [
+          17,
+          19,
+          17,
+          19
+        ]
+      },
+      {
+        "level": "retail",
+        "difficulty": 1,
+        "cpu_human_sliders": [
+          0.25,
+          0.75
+        ],
+        "direction": 1,
+        "categories": [
+          17,
+          19,
+          17,
+          19
+        ]
+      },
+      {
+        "level": "retail",
+        "difficulty": 2,
+        "cpu_human_sliders": [
+          0.5,
+          0.5
+        ],
+        "direction": -1,
+        "categories": [
+          17,
+          19,
+          17,
+          19
+        ]
+      },
+      {
+        "level": "retail",
+        "difficulty": 2,
+        "cpu_human_sliders": [
+          0.5,
+          0.5
+        ],
+        "direction": 1,
+        "categories": [
+          17,
+          19,
+          17,
+          19
+        ]
+      },
+      {
+        "level": "retail",
+        "difficulty": 3,
+        "cpu_human_sliders": [
+          0.75,
+          0.25
+        ],
+        "direction": -1,
+        "categories": [
+          17,
+          19,
+          17,
+          19
+        ]
+      },
+      {
+        "level": "retail",
+        "difficulty": 3,
+        "cpu_human_sliders": [
+          0.75,
+          0.25
+        ],
+        "direction": 1,
+        "categories": [
+          17,
+          19,
+          17,
+          19
+        ]
+      },
+      {
+        "level": "modern",
+        "difficulty": 0,
+        "cpu_human_sliders": [
+          0.0,
+          1.0
+        ],
+        "direction": -1,
+        "categories": [
+          5,
+          5,
+          17,
+          19
+        ]
+      },
+      {
+        "level": "modern",
+        "difficulty": 0,
+        "cpu_human_sliders": [
+          0.0,
+          1.0
+        ],
+        "direction": 1,
+        "categories": [
+          5,
+          5,
+          17,
+          19
+        ]
+      },
+      {
+        "level": "modern",
+        "difficulty": 1,
+        "cpu_human_sliders": [
+          0.25,
+          0.75
+        ],
+        "direction": -1,
+        "categories": [
+          5,
+          5,
+          17,
+          19
+        ]
+      },
+      {
+        "level": "modern",
+        "difficulty": 1,
+        "cpu_human_sliders": [
+          0.25,
+          0.75
+        ],
+        "direction": 1,
+        "categories": [
+          5,
+          5,
+          17,
+          19
+        ]
+      },
+      {
+        "level": "modern",
+        "difficulty": 2,
+        "cpu_human_sliders": [
+          0.5,
+          0.5
+        ],
+        "direction": -1,
+        "categories": [
+          5,
+          5,
+          17,
+          19
+        ]
+      },
+      {
+        "level": "modern",
+        "difficulty": 2,
+        "cpu_human_sliders": [
+          0.5,
+          0.5
+        ],
+        "direction": 1,
+        "categories": [
+          5,
+          5,
+          17,
+          19
+        ]
+      },
+      {
+        "level": "modern",
+        "difficulty": 3,
+        "cpu_human_sliders": [
+          0.75,
+          0.25
+        ],
+        "direction": -1,
+        "categories": [
+          5,
+          5,
+          17,
+          19
+        ]
+      },
+      {
+        "level": "modern",
+        "difficulty": 3,
+        "cpu_human_sliders": [
+          0.75,
+          0.25
+        ],
+        "direction": 1,
+        "categories": [
+          5,
+          5,
+          17,
+          19
+        ]
+      },
+      {
+        "level": "aggressive",
+        "difficulty": 0,
+        "cpu_human_sliders": [
+          0.0,
+          1.0
+        ],
+        "direction": -1,
+        "categories": [
+          5,
+          5,
+          17,
+          19
+        ]
+      },
+      {
+        "level": "aggressive",
+        "difficulty": 0,
+        "cpu_human_sliders": [
+          0.0,
+          1.0
+        ],
+        "direction": 1,
+        "categories": [
+          5,
+          5,
+          17,
+          19
+        ]
+      },
+      {
+        "level": "aggressive",
+        "difficulty": 1,
+        "cpu_human_sliders": [
+          0.25,
+          0.75
+        ],
+        "direction": -1,
+        "categories": [
+          5,
+          5,
+          17,
+          19
+        ]
+      },
+      {
+        "level": "aggressive",
+        "difficulty": 1,
+        "cpu_human_sliders": [
+          0.25,
+          0.75
+        ],
+        "direction": 1,
+        "categories": [
+          5,
+          5,
+          17,
+          19
+        ]
+      },
+      {
+        "level": "aggressive",
+        "difficulty": 2,
+        "cpu_human_sliders": [
+          0.5,
+          0.5
+        ],
+        "direction": -1,
+        "categories": [
+          5,
+          5,
+          17,
+          19
+        ]
+      },
+      {
+        "level": "aggressive",
+        "difficulty": 2,
+        "cpu_human_sliders": [
+          0.5,
+          0.5
+        ],
+        "direction": 1,
+        "categories": [
+          5,
+          5,
+          17,
+          19
+        ]
+      },
+      {
+        "level": "aggressive",
+        "difficulty": 3,
+        "cpu_human_sliders": [
+          0.75,
+          0.25
+        ],
+        "direction": -1,
+        "categories": [
+          5,
+          5,
+          17,
+          19
+        ]
+      },
+      {
+        "level": "aggressive",
+        "difficulty": 3,
+        "cpu_human_sliders": [
+          0.75,
+          0.25
+        ],
+        "direction": 1,
+        "categories": [
+          5,
+          5,
+          17,
+          19
+        ]
+      }
+    ],
+    "kicker_range_yards": 40,
+    "substituted_helpers": [
+      "18B120 kicker/roster-derived range only"
+    ],
+    "difficulty_limit": "Native preset writer executed; fixed roster-derived range. This does not prove difficulty independence of all upstream player state."
+  },
+  "target_selection": {
+    "rows": [
+      {
+        "level": "retail",
+        "down": 3,
+        "marker": 3,
+        "direction": -1,
+        "winner": 0
+      },
+      {
+        "level": "retail",
+        "down": 3,
+        "marker": 3,
+        "direction": 1,
+        "winner": 0
+      },
+      {
+        "level": "retail",
+        "down": 3,
+        "marker": 7,
+        "direction": -1,
+        "winner": 0
+      },
+      {
+        "level": "retail",
+        "down": 3,
+        "marker": 7,
+        "direction": 1,
+        "winner": 0
+      },
+      {
+        "level": "retail",
+        "down": 3,
+        "marker": 12,
+        "direction": -1,
+        "winner": 0
+      },
+      {
+        "level": "retail",
+        "down": 3,
+        "marker": 12,
+        "direction": 1,
+        "winner": 0
+      },
+      {
+        "level": "retail",
+        "down": 4,
+        "marker": 3,
+        "direction": -1,
+        "winner": 0
+      },
+      {
+        "level": "retail",
+        "down": 4,
+        "marker": 3,
+        "direction": 1,
+        "winner": 0
+      },
+      {
+        "level": "retail",
+        "down": 4,
+        "marker": 7,
+        "direction": -1,
+        "winner": 0
+      },
+      {
+        "level": "retail",
+        "down": 4,
+        "marker": 7,
+        "direction": 1,
+        "winner": 0
+      },
+      {
+        "level": "retail",
+        "down": 4,
+        "marker": 12,
+        "direction": -1,
+        "winner": 0
+      },
+      {
+        "level": "retail",
+        "down": 4,
+        "marker": 12,
+        "direction": 1,
+        "winner": 0
+      },
+      {
+        "level": "modern",
+        "down": 3,
+        "marker": 3,
+        "direction": -1,
+        "winner": 1
+      },
+      {
+        "level": "modern",
+        "down": 3,
+        "marker": 3,
+        "direction": 1,
+        "winner": 1
+      },
+      {
+        "level": "modern",
+        "down": 3,
+        "marker": 7,
+        "direction": -1,
+        "winner": 1
+      },
+      {
+        "level": "modern",
+        "down": 3,
+        "marker": 7,
+        "direction": 1,
+        "winner": 1
+      },
+      {
+        "level": "modern",
+        "down": 3,
+        "marker": 12,
+        "direction": -1,
+        "winner": 1
+      },
+      {
+        "level": "modern",
+        "down": 3,
+        "marker": 12,
+        "direction": 1,
+        "winner": 1
+      },
+      {
+        "level": "modern",
+        "down": 4,
+        "marker": 3,
+        "direction": -1,
+        "winner": 1
+      },
+      {
+        "level": "modern",
+        "down": 4,
+        "marker": 3,
+        "direction": 1,
+        "winner": 1
+      },
+      {
+        "level": "modern",
+        "down": 4,
+        "marker": 7,
+        "direction": -1,
+        "winner": 1
+      },
+      {
+        "level": "modern",
+        "down": 4,
+        "marker": 7,
+        "direction": 1,
+        "winner": 1
+      },
+      {
+        "level": "modern",
+        "down": 4,
+        "marker": 12,
+        "direction": -1,
+        "winner": 1
+      },
+      {
+        "level": "modern",
+        "down": 4,
+        "marker": 12,
+        "direction": 1,
+        "winner": 1
+      },
+      {
+        "level": "aggressive",
+        "down": 3,
+        "marker": 3,
+        "direction": -1,
+        "winner": 1
+      },
+      {
+        "level": "aggressive",
+        "down": 3,
+        "marker": 3,
+        "direction": 1,
+        "winner": 1
+      },
+      {
+        "level": "aggressive",
+        "down": 3,
+        "marker": 7,
+        "direction": -1,
+        "winner": 1
+      },
+      {
+        "level": "aggressive",
+        "down": 3,
+        "marker": 7,
+        "direction": 1,
+        "winner": 1
+      },
+      {
+        "level": "aggressive",
+        "down": 3,
+        "marker": 12,
+        "direction": -1,
+        "winner": 1
+      },
+      {
+        "level": "aggressive",
+        "down": 3,
+        "marker": 12,
+        "direction": 1,
+        "winner": 1
+      },
+      {
+        "level": "aggressive",
+        "down": 4,
+        "marker": 3,
+        "direction": -1,
+        "winner": 1
+      },
+      {
+        "level": "aggressive",
+        "down": 4,
+        "marker": 3,
+        "direction": 1,
+        "winner": 1
+      },
+      {
+        "level": "aggressive",
+        "down": 4,
+        "marker": 7,
+        "direction": -1,
+        "winner": 1
+      },
+      {
+        "level": "aggressive",
+        "down": 4,
+        "marker": 7,
+        "direction": 1,
+        "winner": 1
+      },
+      {
+        "level": "aggressive",
+        "down": 4,
+        "marker": 12,
+        "direction": -1,
+        "winner": 1
+      },
+      {
+        "level": "aggressive",
+        "down": 4,
+        "marker": 12,
+        "direction": 1,
+        "winner": 1
+      }
+    ],
+    "native_routine": "1985E0 including native attribute helper 17AE80; no substituted helpers",
+    "supplied_state": "Viability and projected catch scores/locations; trajectory generation, actual throws and catches are not replayed",
+    "controls": [
+      "Unavailable",
+      "Nonviable",
+      "Below native threshold",
+      "Human team",
+      "Human passer",
+      "Downs 1 and 2",
+      "No candidates",
+      "No viable candidates",
+      "Much stronger short target"
+    ]
+  }
+}

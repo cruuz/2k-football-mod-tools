@@ -14022,3 +14022,161 @@ forward/reverse/replay, configured MyCareer and playlist, and with the option
 off. Confirm all three presets leave it off. Use temporary disposable discs
 under the brief's capacity rules, then run both gates and the two standalone
 feature suites. Noah's precise runtime witness list is in the report.
+# r65 CPU fourth downs and first downs (2026-09-08)
+
+EXPERIMENTAL / UNWITNESSED. The new owner is implemented and callable, with
+Retail, Modern and Aggressive levels. The shared product files below were
+protected by ASTRA_BRIEF.md and were not edited. This section is the exact
+integration handoff; existing read-option, MyCareer, ESPN and coverage-trail
+sections remain independent. See ASTRA_CPU_MONEY_DOWNS_REPORT.md for the table,
+native replay evidence and Noah's witness list.
+
+## Dispatcher and allocation
+
+In `mod_editor/core/nfl2k5_throw_tuning.py`, import
+`nfl2k5_cpu_money_downs as cpu_money_downs_patch`. Add the string kwarg
+`cpu_money_downs="retail"` to `_apply_all`, `write_xbe_copy`, `write_image_copy`,
+`_selected_space_requests`, `_xbe_space_adapter.__init__` and
+`_validate_r62_options`, forwarding it through each corresponding call.
+Add `cpu_money_downs` to both `R62_RUNTIME_KEYS` and `R62_SPACE_KEYS`.
+Validate `type(cpu_money_downs) is str` and membership in
+`cpu_money_downs_patch.LEVELS`; exclude it from Boolean flag validation.
+In `_deferred_r62_options`, set it explicitly to `"retail"` after the generic
+False defaults, just as numeric options have explicit numeric defaults.
+Do not use truthiness to decide whether the nonempty string `"retail"` is on.
+
+Append `(cpu_money_downs_patch.REQUESTS if cpu_money_downs != "retail" else ())`
+to `_selected_space_requests`. The allocator entry's enable expression also
+includes `cpu_money_downs != "retail"`. Reserve the full union once with
+`space.apply(payload, requests, scaleout=True)` before owner installation.
+This owner reserves 2048 aligned RX bytes, no RW or RO child. Its standalone
+`apply` explicitly selects v3 on an unallocated base.
+
+Use this adapter and tuple after the allocator entry:
+
+```python
+class _cpu_money_downs_adapter:
+    def __init__(self, level):
+        self.level = level
+    status = staticmethod(cpu_money_downs_patch.status)
+    def apply(self, payload):
+        return cpu_money_downs_patch.apply(payload, level=self.level)
+
+(cpu_money_downs != "retail", _cpu_money_downs_adapter(cpu_money_downs),
+ "cpu_money_downs_patch", cpu_money_downs_patch.BUILD_CAPTION),
+```
+
+Before dispatch, reject an installed different level, including an installed
+patch when Retail was requested. Use `read_settings(payload)` for that check;
+rebuild from a verified base to change levels. The owner itself refuses a
+level change, but a disabled tuple must not silently retain an installed patch.
+Retain the existing refusal of foreign source bytes and strict union replay.
+
+Add to `_grown_status_fields(payload)`:
+
+```python
+"cpu_money_downs": cpu_money_downs_patch.status(payload),
+"cpu_money_downs_settings": cpu_money_downs_patch.read_settings(payload),
+```
+
+All **four** status dictionaries in `read_xbe`, `read_image`, `write_xbe_copy`
+and `write_image_copy` must expand those fields. They already use
+`_grown_status_fields`; retain those expansions. Add both keys to the
+`mod_build.py` result-summary/status field list as well. Read actual installed
+bytes for level reporting; do not echo the requested level as proof.
+
+## BuildPlan, presets and final pass
+
+In `mod_editor/core/mod_build.py`, add
+`BuildPlan.cpu_money_downs: str = "retail"`. Basic, Advanced and Experimental
+all explicitly set `"cpu_money_downs": "retail"`. Recommendation: Advanced
+with Modern explicitly selected is Noah's first comparison build; no preset
+should enable an unwitnessed feature automatically.
+
+Add the module/allocator availability pair
+`("cpu_money_downs", "nfl2k5_cpu_money_downs")`, string validation and
+serialization. `_r62_plan_options` will forward the field through its key list.
+In `wants_xbe_patch`, grown/final-pass conditions and copy-writer enable checks,
+use `plan.cpu_money_downs != "retail"` (or the local equivalent). Normalize it
+as a level string, preserving the selected level through preset overrides.
+In the early `replace(plan, ...)` deferral near the first XBE pass, explicitly
+set `cpu_money_downs="retail"`. Pass the actual level in the final `r62`
+options after all PLAY/roster/position rewrites and before final receipt
+inspection. It requires no authored intent table and writes no PLAY resource.
+Preflight rejects a different installed level before copying a disc.
+
+## Gameplay Patches and Build controls
+
+The Gameplay Patches `PATCHES` row is:
+
+```python
+("cpu_money_downs", cpu_money_downs_patch.BUILD_CAPTION,
+ cpu_money_downs_patch.HELP_TEXT),
+```
+
+Add `"cpu_money_downs"` to `NEEDS_IMAGE` for the shared disc-build UI. The
+standalone development CLI can still inspect/write a bounded XBE. The help
+text deliberately includes both **Retail** and **Patch**:
+
+> EXPERIMENTAL / UNWITNESSED. Retail: the CPU uses its original fourth-down choices and passing preferences. Patch: Modern adds measured fourth-down attempts and favors supported primary routes and viable targets reaching the first-down line. Aggressive increases those preferences. Late tying and winning kicks keep retail decisions. Catches and conversions are not guaranteed. Retail is the default in every preset.
+
+Special-case this row's value collection instead of converting its level to
+bool. Use a combo with labels/data `Retail/retail`, `Modern/modern`,
+`Aggressive/aggressive`, initially Retail. If the existing checkbox row is
+retained, checking it selects Modern, unchecking selects Retail, and the combo
+keeps the checkbox synchronized. Do not maintain a second BuildPlan Boolean.
+Preset restore, source availability, plan construction and receipt display
+must use the combo's string data. Apply the same behavior in the Build tab.
+
+The Build `_option` caption is exactly
+`CPU fourth downs and first downs (experimental)` (47 characters), with
+`HELP_TEXT` and the unwitnessed badge. Add the adjacent three-level combo;
+exclude this key from generic Boolean collection before assigning
+`cpu_money_downs=combo.currentData()` to BuildPlan.
+
+## Packaging, capability registry and production manifest
+
+Append these lines to `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_cpu_money_downs.py
+mod_editor/core/nfl2k5_cpu_money_downs_code.py
+docs/mod_editor/nfl2k5_cpu_money_downs_capability.json
+docs/mod_editor/nfl2k5_cpu_money_downs_replays.json
+```
+
+Retain already-listed `nfl2k5_gameplay_lever.py`, `nfl2k5_xbe_space.py`,
+`nfl2k5_rdata_sites.py`, `nfl2k5_cave_oracle.py` and
+`nfl2k5_playbook_inspector.py` with their existing dependency closure. Add
+`mod_editor.core.nfl2k5_cpu_money_downs` and
+`mod_editor.core.nfl2k5_cpu_money_downs_code` to the import closure in
+`packaging/check_2k5_mod_studio_runtime.py`. GNU as, Capstone, Unicorn,
+test fixtures and `.S` are development tools, not new runtime imports.
+
+Merge the complete schema-valid object in
+`docs/mod_editor/nfl2k5_cpu_money_downs_capability.json` into the registry as
+`nfl2k5.gameplay.cpu_money_downs`, surface `gameplay_tuning_sliders`.
+Keep `gui.default_enabled=false`, `classification=offline-writer-proved`,
+`runtime.status=not-tested`, the EXPERIMENTAL / UNWITNESSED text and the bounded
+evidence scope. Its executable commands are:
+
+```text
+python3 -m mod_editor.core.nfl2k5_cpu_money_downs --xbe source.xbe --apply --level modern --output new-money-downs.xbe
+python3 -m tests.mod_editor.test_nfl2k5_cpu_money_downs
+```
+
+The gate union, budget fixture, actual writer observation and all relevant
+manifest-builder owner lists already include this owner. Claude must regenerate
+`data/nfl2k5_cave_reservations.json` with
+`tools/nfl2k5_cave_oracle.py manifest` after integration. The scratch projection
+used here inherits historical reservations with seven known stale identities
+refreshed for local checks; this is explicitly not new disc-build provenance.
+Do not publish it. The dedicated owner projection observes the actual 17 hook
+bytes, the full named child and allocator writes; it still inherits the other
+owners' disc steps and requires production regeneration.
+
+After wiring, exercise Retail/Modern/Aggressive plan round trips, invalid and
+Boolean levels, early deferral, final union selection, four status surfaces,
+level-change refusal, standalone capability validation and runtime closure.
+No release version, tag, release tests, CI workflow or unrelated GUI changes
+are requested by this job.
