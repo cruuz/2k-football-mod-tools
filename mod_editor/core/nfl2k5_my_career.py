@@ -38,11 +38,12 @@ PENDING, PROSPECT, ACTIVE, UNSIGNED, RESERVE, LOST = range(1, 7)
 HELP_TEXT = (
     "EXPERIMENTAL / UNWITNESSED. Retail: Franchise controls a team and Game Modes offers First Person Football. "
     "Patch: the First Person Football row becomes MyCareer. Create MyPlayer in the game as an undrafted free agent "
-    "(the game's own Create Player screen, then any of the 32 clubs), live in an Apartment with Play next game, Practice, "
-    "MyPlayer, Save and Quit, and save the career inline. Play selects your next game; off the field the CPU plays at "
-    "normal speed. With Franchise Auto Save installed and on, completed results save to the slot chosen by a manual Save "
-    "or Load. The draft entry is not ready yet. A legacy MyCareer.json setup from a draft-stage save still works. "
-    "The complete playable loop is still under verification."
+    "(the game's own Create Player screen, then a visible list of all 32 clubs), live in a visible Apartment with Play "
+    "next game, Practice, MyPlayer, Save and Quit, and save the career inline. Play opens your next fixture after any "
+    "required league processing; a game you quit stays playable. MyPlayer gets the retail indicator, receiver icons and "
+    "play art. Off the field the CPU plays at normal speed and a footer says so; Supersim is not available. With Franchise "
+    "Auto Save installed and on, completed results save to the slot chosen by a manual Save or Load. The draft entry is "
+    "not ready yet. A legacy MyCareer.json setup from a draft-stage save still works. Experimental / Unwitnessed."
 )
 WITNESS_LIST = (
     "From Game Modes choose MyCareer: a build without a setup only explains itself; a configured build opens Load / Save.",
