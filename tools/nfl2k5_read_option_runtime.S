@@ -12,9 +12,14 @@
 .global tick, hud, pass_init, snap, reset, schedule, config, code_end
 .extern intent_table, state_data, original_tail, result_tail, lookup_actor, held_command, receiver_ready
 .extern hud_native, draw_icon, hud_tail, pass_tail, snap_tail, reset_tail, schedule_tail, schedule_mesh
+.ifdef READ_DIAGNOSTIC
+.extern draw_text
+.endif
 /* Private RW: actor/task/descriptor/roster, last clock, frame, confidence,
  * controller, queued receiver, crash latch, selected EDGE, deadline; 11 snap
- * records at +64, each actor/roster/assignment. One offense owns the ball. */
+ * records at +64, each actor/roster/assignment. One offense owns the ball.
+ * READ_DIAGNOSTIC replaces those records with telemetry (see the Python
+ * DIAGNOSTIC_FIELDS map), and uses +160..255 for native UTF-16 HUD text. */
 tick:
     pushfd
     pushad
@@ -26,6 +31,13 @@ tick:
     mov ebp, offset state_data
     fninit
     call lookup
+.ifdef READ_DIAGNOSTIC
+    cmp esi, [ebp+56]
+    jne diagnostic_tick_done
+    inc dword ptr [ebp+140]
+    mov [ebp+52], eax
+diagnostic_tick_done:
+.endif
     test eax, eax
     jz original
     mov ebx, eax                       /* immutable row */
@@ -193,6 +205,7 @@ boundary:
     cmp byte ptr [ebx+22], 0
     je keep
     jmp pass
+.ifndef READ_DIAGNOSTIC
 sample:
     test eax, eax
     jz not_crash
@@ -254,6 +267,7 @@ project:
 not_crash:
     xor eax, eax
     ret
+.endif
 pass:
     mov ecx, [esi+0x38]
     movzx edx, byte ptr [ebx+22]
@@ -285,6 +299,9 @@ commit:
     and dword ptr [ebp+32], 0
 store_commit:
     mov [edi+0x44], eax                /* sole commitment before native exit */
+.ifdef READ_DIAGNOSTIC
+    mov [ebp+144], eax                /* retained after native task disposal */
+.endif
 decided:
     cmp eax, 1
     je result
@@ -307,6 +324,9 @@ result:
     jmp result_tail
 pending:
     or eax, -1
+.ifdef READ_DIAGNOSTIC
+    mov [ebp+144], eax
+.endif
     jmp result
 original:
     pop ebp
@@ -322,6 +342,7 @@ original:
  * selected edge disqualifies that CPU read. Never alter a block or defender.
  * EAX target, CF blocked/invalid. QB's own read target is deliberately ignored.
  */
+.ifndef READ_DIAGNOSTIC
 unblocked:
     push ebx
     mov ecx, [esi+0x38]
@@ -497,6 +518,16 @@ resolved:
     pop edi
     pop ebx
     ret
+.else
+/* The diagnostic variant is a HUMAN engagement probe. Reclaim the CPU
+ * resolver's RX bytes, never another owner's reservation. No candidate makes
+ * CPU reads give; human control/identity/timing/dispatch instructions remain.
+ * Normal installations retain the full resolver and EDGE cue above/below. */
+resolve_edge:
+sample:
+    xor eax, eax
+    ret
+.endif
 
 /* Before human priority at21516A. EBP is actor, stack locals are native.
  * Lookup is integer-only. Restrict the override to the paired live condition;
@@ -505,6 +536,46 @@ schedule:
     pushfd
     pushad
     mov esi, ebp
+.ifdef READ_DIAGNOSTIC
+    cmp esi, [state_data+56]
+    jne diag_schedule_done
+    inc dword ptr [state_data+152]
+    mov eax, [esi+0x20]
+    test eax, eax
+    jz diag_schedule_done
+    movzx edx, byte ptr [eax+0x450]
+    mov [state_data+148], edx
+    mov edx, [eax+0x41c]
+    mov [state_data+68], edx
+    mov edx, [eax+0x310]
+    test edx, edx
+    jz diagnostic_no_task
+    mov edx, [edx]
+diagnostic_no_task:
+    mov [state_data+112], edx
+    mov eax, [esi+0xc]
+    test eax, eax
+    jz diag_schedule_done
+    mov edx, [eax+0x1c]
+    mov [state_data+100], edx
+    mov edx, [eax+0x10]
+    mov [state_data+104], edx
+    mov ecx, [eax]
+    mov [state_data+120], ecx
+    cmp ecx, 3
+    ja diag_schedule_done
+    imul eax, ecx, 44
+    mov edx, [eax+0xa9b95c]
+    mov [state_data+84], edx
+    mov edx, [eax+0xa9b954]
+    mov [state_data+88], edx
+    mov edx, [eax+0xa9b960]
+    mov [state_data+92], edx
+    imul ecx, ecx, 28
+    mov edx, [ecx+0xe5fe90]
+    mov [state_data+96], edx
+diag_schedule_done:
+.endif
     cmp dword ptr [0xe602b8], 14
     jne schedule_original
     mov eax, [0xe5fc00]
@@ -535,6 +606,27 @@ snap:
     pushfd
     pushad
     call clear_state
+.ifdef READ_DIAGNOSTIC
+    inc dword ptr [state_data+48]     /* only SNAP enables the HUD line */
+    or dword ptr [state_data+60], -1 /* unknown index, never guessed */
+    mov ecx, [0xe60280]
+    jecxz diag_snap_done
+    xor edx, edx
+    call lookup_actor                /* actual offense's slot-zero QB */
+    test eax, eax
+    jz diag_snap_done
+    mov esi, eax
+    mov [state_data+56], eax
+    cmp dword ptr [esi+0x20], 0
+    je diag_snap_done
+    call identity                    /* identity is independent of node 2 */
+    mov [state_data+52], eax
+    mov [state_data+124], eax
+    mov eax, [esi+0x20]
+    mov eax, [eax+0x41c]
+    mov [state_data+64], eax
+diag_snap_done:
+.else
     mov edi, offset state_data+64
     mov esi, [0xe60284]
     test esi, esi
@@ -557,6 +649,7 @@ snap_next:
     add edi, 12
     mov esi, [esi+0x34]
     loop snap_actor
+.endif
 snap_done:
     popad
     popfd
@@ -580,11 +673,104 @@ clear_state:
     rep stosd
     ret
 
-/* The native world-marker queue is ready at646A1. Mark only the selected
- * EDGE row; native projection and icon0's passicons atlas supply the glyph. */
+/* The native world-marker queue is ready at646A1. Normal v3 marks the EDGE
+ * row. The diagnostic instead clones the same HUD path's FONT text context. */
 hud:
     pushfd
     pushad
+.ifdef READ_DIAGNOSTIC
+    mov ebp, esp
+    and esp, -16
+    sub esp, 512
+    fxsave [esp]
+    push ebp
+    fninit
+    mov ebp, offset state_data
+    inc dword ptr [ebp+128]
+    mov eax, [0xa95040]
+    mov [ebp+136], eax
+    cmp dword ptr [ebp+48], 0
+    je diagnostic_done
+    lea edi, [ebp+160]                /* 48 UTF-16 units, within our RW */
+    mov esi, offset intent_table+64   /* READ, replacing unused v3 floats */
+    push 5
+    pop ecx
+    cld
+    rep movsw
+    cmp dword ptr [ebp+52], 0
+    jne diagnostic_match
+    mov eax, 0x7373696d               /* miss */
+    call diagnostic_word
+    call diagnostic_index
+    jmp diagnostic_draw
+diagnostic_match:
+    call diagnostic_index
+    mov eax, 0x70616e73               /* snap: no condition sample yet */
+    cmp dword ptr [ebp+20], 0
+    je diagnostic_phase
+    mov eax, 0x646e6570               /* pend */
+    cmp dword ptr [ebp+144], -1
+    je diagnostic_phase
+    mov eax, 0x7065656b               /* keep */
+    cmp dword ptr [ebp+144], 0
+    je diagnostic_phase
+    mov eax, 0x65766967               /* give */
+    cmp dword ptr [ebp+144], 1
+    je diagnostic_phase
+    mov eax, 0x73736170               /* pass */
+diagnostic_phase:
+    call diagnostic_word
+    mov eax, [ebp+20]
+    call diagnostic_number
+    /* Absolute since-snap deadline, hundredths. Conversion is diagnostic
+     * only: the gameplay comparison still uses the original float at +44. */
+    fld dword ptr [ebp+44]
+    push 100
+    fimul dword ptr [esp]
+    fistp dword ptr [esp]
+    pop eax
+    xor edx, edx
+    mov ecx, 100
+    div ecx
+    push edx
+    call diagnostic_number
+    mov word ptr [edi-2], '.'
+    pop eax
+    xor edx, edx
+    div ebx                          /* retained decimal base 10 */
+    add ax, '0'
+    stosw
+    lea eax, [edx+'0']
+    stosw
+diagnostic_draw:
+    xor eax, eax
+    stosw
+    /* The same HUD path's native passicons FONT object, copied onto the
+     * stack so position, colour, alignment and draw advances stay private. */
+    cmp dword ptr [0xa95040], 0
+    je diagnostic_done
+    sub esp, 128
+    mov edi, esp
+    mov esi, 0xa95040
+    push 32
+    pop ecx
+    rep movsd
+    mov ecx, esp
+    mov dword ptr [ecx+0x10], 0x42000000 /* 32 px */
+    mov dword ptr [ecx+0x14], 0x42800000 /* 64 px */
+    and dword ptr [ecx+0x18], 0
+    and dword ptr [ecx+0x64], 0        /* left */
+    and dword ptr [ecx+0x68], 0        /* top */
+    or dword ptr [ecx+0x20], -1       /* white, retain native shadow */
+    lea edx, [ebp+160]
+    inc dword ptr [ebp+132]
+    call draw_text
+    add esp, 128
+diagnostic_done:
+    pop ebp
+    fxrstor [esp]
+    mov esp, ebp
+.else
     call live_state
     jc hud_done
     cmp eax, [state_data+16]
@@ -619,11 +805,53 @@ cue_row:
 cue_edge:
     and dword ptr [edx+12], 0xff1fffff /* icon0 at native projected EDGE head */
     or dword ptr [edx+12], 0x80       /* large native glyph */
+.endif
 hud_done:
     popad
     popfd
     call hud_native
     jmp hud_tail
+
+.ifdef READ_DIAGNOSTIC
+/* Bounded unsigned formatting: <= 10 digits per dword, no count wrap in
+ * the text. Unknown index is ???. No printf globals/allocation/locale. */
+diagnostic_index:
+    mov eax, [ebp+60]
+    cmp eax, -1
+    jne diagnostic_number
+    mov eax, 0x203f3f3f
+    jmp diagnostic_word
+diagnostic_number:
+    push 10
+    pop ebx
+    xor ecx, ecx
+diagnostic_digit:
+    xor edx, edx
+    div ebx
+    push edx
+    inc ecx
+    test eax, eax
+    jnz diagnostic_digit
+diagnostic_pop:
+    pop eax
+    add ax, '0'
+    stosw
+    loop diagnostic_pop
+    jmp diagnostic_space
+diagnostic_word:
+    push 4
+    pop ecx
+diagnostic_letter:
+    movzx edx, al
+    mov [edi], dx
+    add edi, 2
+    shr eax, 8
+    loop diagnostic_letter
+diagnostic_space:
+    mov ax, ' '
+    stosw
+    ret
+.endif
 
 /* Pending RPO crosses the actual pass initializer, which otherwise clears
  * the receiver. Hand the ready target to the native throw-request callback. */
@@ -700,11 +928,19 @@ invalid_state:
 /* Exact identity in either bounded relocated PLAY buffer. Hash book/name,
  * both participant scripts, and require QB slot0 / condition node2. */
 lookup:
-    cmp byte ptr [esi+0x2e], 0
-    jne no
+.ifdef READ_DIAGNOSTIC
     mov edx, [esi+0x20]
     cmp byte ptr [edx+0x450], 2
     jne no
+identity:
+.endif
+    cmp byte ptr [esi+0x2e], 0
+    jne no
+    mov edx, [esi+0x20]
+.ifndef READ_DIAGNOSTIC
+    cmp byte ptr [edx+0x450], 2
+    jne no
+.endif
     mov edx, [edx+0x41c]
     mov ecx, 0xb75a40
     mov eax, edx
@@ -727,6 +963,9 @@ buffer:
     test edx, edx
     pop edx
     jne no
+.ifdef READ_DIAGNOSTIC
+    mov [state_data+60], eax
+.endif
     push esi
     push edi
     mov edi, ecx                      /* PLAY base */

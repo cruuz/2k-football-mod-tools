@@ -1,3 +1,211 @@
+# r64 Read option v4 engagement diagnostic (2026-09-08)
+
+EXPERIMENTAL / UNWITNESSED. This section supersedes the v3 claim of live
+engagement. Noah played bm and reported no handoff or apparent change; no EDGE
+cue was reported. The new native READ line is an engagement probe. The requested
+cancelable animated handoff and new controls remain conditional on a live
+engagement witness, as required by the brief. See
+[ASTRA_READ_OPTION_V4_REPORT.md](ASTRA_READ_OPTION_V4_REPORT.md).
+
+## Instrumented build decision
+
+Keep normal v3 installation byte-identical. All presets retain the existing
+runtime opt-in default of False. The owner now accepts `diagnostic=True` for
+an explicitly instrumented build, reports `model_version=4, diagnostic=True`,
+and recognizes both exact variants for replay. An omitted mode preserves an
+already installed variant. Switching variants requires rebuilding from the
+supported source. It is not an in-place upgrade of bm.
+
+The native-font diagnostic fits the unchanged **2048 RX / 256 RW / 88 RO**
+reservation, with 1928 generated code bytes and 120 padding bytes. To fit that
+budget it replaces the normal EDGE marker and CPU edge resolver. **Use a human
+QB for this witness; CPU diagnostic reads give.** Human v3 timing, input,
+condition dispatch and native give/keep/pass outcomes are retained. The option
+pack, five-node script geometry, two-entry table schema and native speed-option
+recipes are unchanged, preserving comparison with bm.
+
+For Claude's one instrumented build, use this scoped adapter around the existing
+synchronous BuildPlan build. It is tested against the existing real adapter;
+it requires no protected source edit or new GUI flag. `plan` is Claude's usual
+candidate plan containing the option pack and final-book pairing settings.
+
+```python
+from dataclasses import replace
+from unittest.mock import patch
+from mod_editor.core import mod_build
+from mod_editor.core import nfl2k5_read_option_runtime as read_option
+
+original_apply = read_option.apply
+
+def instrumented(payload, **kwargs):
+    return original_apply(payload, diagnostic=True, **kwargs)
+
+with patch.object(read_option, "apply", instrumented):
+    receipt = mod_build.build(replace(plan, read_option_runtime=True), progress)
+```
+
+The adapter patch is scoped to one dedicated build process and restored on every
+exit. Use the existing final pass after position pools and depth roles; do not
+compile from the seed fixture or replace an installed v3 owner. Read back the
+actual disc XBE with the existing bounded XDVDFS reader and require:
+
+```python
+settings = read_option.read_settings(actual_xbe)
+assert settings["model_version"] == 4 and settings["diagnostic"] is True
+assert settings["authored_reads"] == 2
+assert settings["runtime_witnessed"] is False
+```
+
+Also require the final pairing receipt to name MIN 155/157, retain the real
+64-byte table hash, and record `read_option.allocations(actual_xbe)` for the RW
+memory capture. Do not infer that the diagnostic was installed merely from the
+"Final playbooks paired" summary. Give Noah `DIAGNOSTIC_HELP_TEXT` and the report's
+photograph list with that build. This session did not build or retain a disc.
+A temporary acceptance build must be inside `TemporaryDirectory`, check `df -h /`
+first and leave more than 100 GB free after its maximum expected growth.
+
+For a development XBE only, the equivalent existing module command is:
+
+```text
+python3 -m mod_editor.core.nfl2k5_read_option_runtime apply source.xbe --output new-diagnostic.xbe --table final-intent.bin --diagnostic
+python3 -m mod_editor.core.nfl2k5_read_option_runtime status new-diagnostic.xbe
+python3 -m mod_editor.core.nfl2k5_read_option_runtime state captured-owner-rw-256.bin
+```
+
+The last command decodes exactly one 256-byte memory dump; an installed XBE's RW
+bytes are initial zeros and are not a runtime dump. Neither CLI operation writes
+back a running game. Addresses are taken from that build's allocation receipt,
+not assumed from bm or the test union.
+
+## Protected integration contract
+
+No protected implementation file was edited. Retain the existing import
+`nfl2k5_read_option_runtime as read_option_patch`, kwargs
+`read_option_runtime=False`, `read_option_intent_table=None`, validation and
+forwarding in `mod_editor/core/nfl2k5_throw_tuning.py`. Its current adapter is:
+
+```python
+class _read_option_adapter:
+    def __init__(self, table):
+        self.table = table
+    status = staticmethod(read_option_patch.status)
+    def apply(self, payload):
+        return read_option_patch.apply(payload, intent_table=self.table)
+```
+
+Keep this `_apply_all` tuple after the allocator:
+
+```python
+(read_option_runtime, _read_option_adapter(read_option_intent_table),
+ "read_option_runtime_patch", "read option mesh controls (experimental)"),
+```
+
+`_selected_space_requests` and `_xbe_space_adapter` still reserve the same
+`read_option_patch.REQUESTS` when selected. The scoped build above supplies the
+new owner kwarg `diagnostic=True`; do not hard-code it in the normal dispatcher.
+No new public dispatcher kwarg is needed for this one witness build.
+
+Retain these `_grown_status_fields` entries, expanded in **all four** dictionaries
+in `read_xbe`, `read_image`, `write_xbe_copy`, and `write_image_copy`:
+
+```python
+"read_option_runtime": read_option_patch.status(payload),
+"read_option_runtime_settings": read_option_patch.read_settings(payload),
+```
+
+The settings must report actual bytes: version 3/diagnostic False for normal,
+version 4/diagnostic True for the probe, plus authored count, table hash and
+`runtime_witnessed=False`. The build receipt already receives those values.
+
+In `mod_editor/core/mod_build.py`, keep
+`BuildPlan.read_option_runtime: bool = False`; **Basic, Advanced and Experimental
+all leave it off**. Preserve Boolean normalization, early-pass deferral, final
+pairing after position/depth rewrites, refusal of an empty authored table,
+`read_option_intent_table=read_table` in the final pass and its count receipt.
+Do not add a separate BuildPlan diagnostic field or change presets.
+
+Retain the Gameplay Patches `PATCHES` row (currently supplied by
+`mod_editor/gui/beta62_options.py`) and its `NEEDS_IMAGE` membership:
+
+```python
+("read_option_runtime", "Read option mesh controls (experimental)",
+ tt.read_option_patch.HELP_TEXT),
+```
+
+`HELP_TEXT` still contains **Retail** and **Patch**, describes intended normal
+v3 controls, and now explicitly records that Noah's v3 play test showed no
+handoff and live engagement is unconfirmed. `DIAGNOSTIC_HELP_TEXT` also contains
+Retail/Patch and explains the native line, retained v3 human controls and CPU
+limitation. The protected Build tab `_option` keeps caption
+`Read option mesh controls (experimental)` (40 characters, below 60), False and
+the same HELP_TEXT. No other GUI panel changes are requested.
+
+Retain these exact protected allowlist lines:
+
+```text
+mod_editor/core/nfl2k5_read_option_runtime.py
+mod_editor/core/nfl2k5_read_option_runtime_code.py
+mod_editor/core/nfl2k5_play_library.py
+mod_editor/core/nfl2k5_playbook_pack.py
+mod_editor/core/nfl2k5_play_intents.py
+data/playbooks/softdrink_option.2k5book
+docs/mod_editor/nfl2k5_read_option_runtime_capability.json
+```
+
+Retain these runtime-closure imports in
+`packaging/check_2k5_mod_studio_runtime.py`:
+
+```python
+"mod_editor.core.nfl2k5_read_option_runtime",
+"mod_editor.core.nfl2k5_read_option_runtime_code",
+"mod_editor.core.nfl2k5_play_library",
+"mod_editor.core.nfl2k5_playbook_pack",
+"mod_editor.core.nfl2k5_play_intents",
+```
+
+The template contains both variants; GNU as, Capstone, Unicorn and test helpers
+remain development dependencies. No new shipped module or public surface needs
+an allowlist entry. Merge the revised capability document
+`docs/mod_editor/nfl2k5_read_option_runtime_capability.json` into existing ID
+`nfl2k5.gameplay.read_option_runtime`, surface `gameplay_tuning_sliders`. Retain
+`runtime.status=not-tested`, explicit opt-in and the module-form backend command.
+Its validation command is now
+`python3 -m tests.mod_editor.test_nfl2k5_read_option_diagnostic`. This is an update
+to the existing capability, not a new registry entry or a live success claim.
+
+## Manifest and gate handoff
+
+Claude must regenerate protected `data/nfl2k5_cave_reservations.json` using the
+real `tools/nfl2k5_cave_oracle.py manifest` after merging. Existing owner union
+and all three manifest owner lists already contain this owner; sizes, hooks and
+capacities have not changed. For normal builds its generated v3 bytes remain
+exactly the same. A diagnostic manifest run can use the same scoped adapter
+above in a dedicated process around `build_manifest` to observe that variant.
+
+Disk headroom prevented a full disposable disc copy while preserving 100 GB.
+The local scratch manifest is explicitly **test-only ownership revalidation**,
+not a new disc build. Its standalone generator verifies all other source pins,
+executes the hash-pinned base v3 writer and the current normal writer against
+both empty and paired tables in two allocation layouts, requires byte identity,
+and checks that diagnostic differences normalize exactly to normal by restoring
+only this owner's code/table/hooks and recomputing existing seals/digests. It
+retains historical disc fields as labeled inherited evidence. It refuses drift
+in any other owner or a changed hook/budget. The oracle's source-freshness and
+reservation checks remain enabled. Do not copy this scratch artifact into the
+release manifest or report it as a disc build.
+
+```text
+NFL2K5_READ_OPTION_V4_MANIFEST=.scratch/read-option-v4/manifest.json python3 tests/mod_editor/test_nfl2k5_read_option_diagnostic_manifest.py
+NFL2K5_CAVE_MANIFEST=.scratch/read-option-v4/manifest.json python3 tests/mod_editor/test_xbe_patch_memory_writes.py
+NFL2K5_CAVE_MANIFEST=.scratch/read-option-v4/manifest.json python3 tests/mod_editor/test_xbe_patch_cave_references.py
+NFL2K5_CAVE_MANIFEST=.scratch/read-option-v4/manifest.json python3 tests/mod_editor/test_nfl2k5_cave_oracle.py
+```
+
+The safety gates explicitly compose the diagnostic in both installation orders,
+including scale-out. Their shared `compose` helper defaults to normal v3 for
+other callers. No cave exemption, allocation increase, canonical fingerprint
+edit, version change or release-test change is part of this work.
+
 # r64 Read option v3 integration (2026-09-08)
 
 EXPERIMENTAL / UNWITNESSED. This section supersedes the v1/v2 read-option

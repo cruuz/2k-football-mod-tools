@@ -38,7 +38,7 @@ REQUESTS = (camera.REQUESTS + LEGACY_REQUESTS + roster_storage.REQUESTS + covera
 SONGS = [dict(title=f"Tone {i+1:03}", artist="Synthetic", frames=256) for i in range(200)]
 
 
-def compose(payload, *, reverse=False, scaleout=False, extra_requests=()):
+def compose(payload, *, reverse=False, scaleout=False, extra_requests=(), read_option_diagnostic=False):
     from mod_editor.core import nfl2k5_scorebug_ingame as scene
     from mod_editor.core import nfl2k5_practice_squad as ps, nfl2k5_franchise_practice as fp
     from mod_editor.core import nfl2k5_practice_reserves as pr
@@ -75,7 +75,8 @@ def compose(payload, *, reverse=False, scaleout=False, extra_requests=()):
     owners = ((StaticScorebar, {}), (camera, {}), (defensive_try, {}), (kickoff, {}), (runtime, {}),
               (momentum, dict(momentum=100, momentum_contact=True, momentum_collisions=True, momentum_collision_level=100)), (zone_drop, {}),
               (music, dict(song_records=SONGS)), (roster_storage, {}), (coverage, {}), (scramble, {}), (playlist, {}),
-              (practice_screen, {}), (abilities, dict(abilities_off_week=7)), (qb_spy, {}), (calendar, {}), (read_option, {}), (franchise_2026, {}), (senior_bowl, {}), (animation_xbe, {}), (guardian, {}),
+              (practice_screen, {}), (abilities, dict(abilities_off_week=7)), (qb_spy, {}), (calendar, {}),
+              (read_option, dict(diagnostic=read_option_diagnostic)), (franchise_2026, {}), (senior_bowl, {}), (animation_xbe, {}), (guardian, {}),
               (my_career, {}), (crib_reclaim, {}), (autosave, {}),
               (screen_hooks, {}),
               (arena_growth, dict(created_teams_extra=2)))

@@ -13,24 +13,28 @@
     "ASTRA_READ_OPTION_CONTROLS_REPORT.md",
     "tests/mod_editor/test_nfl2k5_read_option_controls.py",
     "ASTRA_READ_OPTION_V3_REPORT.md",
-    "tests/mod_editor/test_nfl2k5_read_option_frames.py"
+    "tests/mod_editor/test_nfl2k5_read_option_frames.py",
+    "ASTRA_READ_OPTION_V4_REPORT.md",
+    "tests/mod_editor/test_nfl2k5_read_option_diagnostic.py",
+    "tests/mod_editor/test_nfl2k5_read_option_diagnostic_manifest.py"
   ],
   "game": "nfl2k5_xbox",
   "gui": {
     "default_enabled": false,
     "expose": true,
     "mode": "edit",
-    "reason": "EXPERIMENTAL / UNWITNESSED. All presets off. One-second mesh, native per-frame control priority, handoff ownership event, EDGE cue and RPO request have bounded instruction proofs. Protected integration is in WIRING.md."
+    "reason": "EXPERIMENTAL / UNWITNESSED. All presets off. Noah played v3 and reported no handoff; live runtime engagement is unconfirmed. V4 adds a separate native READ diagnostic for that finding. Protected integration is in WIRING.md."
   },
   "id": "nfl2k5.gameplay.read_option_runtime",
   "input_constraints": [
     "Pinned USA XBE or verified composed input; reserve the complete owner union before installing bytes.",
-    "At most two authored read plays, bound to exact PLAY/compiler receipt pairs. Empty table is dormant.",
+    "At most two authored read plays, bound to exact PLAY/compiler receipt pairs. An empty table makes no gameplay decisions; diagnostic mode still reports misses.",
     "RPO receiver must be slot 7 or 8; receiver slot 6 shares the snap button. Native speed options are excluded.",
-    "Installed v1/v2 owners require rebuilding from the supported base. An explicit automatic-EDGE table uses snap assignments instead of an authored defender."
+    "Installed v1/v2 owners require rebuilding from the supported base. An explicit automatic-EDGE table uses snap assignments instead of an authored defender.",
+    "The development diagnostic requires apply(..., diagnostic=True) or --diagnostic and a rebuild from base. It replaces the EDGE cue and CPU edge resolver within the same owner budget; diagnostic CPU reads give. Normal v3 bytes are unchanged."
   ],
   "portme": [
-    "Run Noah's I Jokers 155/157, Gun Zone Read 134, hold/release/default give, RPO receiver, live EDGE and lifecycle witness list in ASTRA_READ_OPTION_V3_REPORT.md."
+    "Photograph the snap, pending and give/keep/pass or miss lines for I Jokers 155/157, then follow the memory, lifecycle and prior-fixture witness list in ASTRA_READ_OPTION_V4_REPORT.md. Cancelable animated controls wait for a live engagement witness."
   ],
   "public_distribution": {
     "game_data": "never-bundle-retail-data",
@@ -40,10 +44,11 @@
   },
   "runtime": {
     "status": "not-tested",
-    "scope": "Bounded native per-frame dispatcher replays prove paired final-book lookup, one second of game time, stick priority suppression, give/take initialization, native ownership transfer on the supplied animation event, keep control, and the RPO native throw-request store. Native projection and atlas submission prove the EDGE marker path. Collision-free actor poses, animation timing, asset allocation, post-transfer notifications, GPU submission and aim calculation are fixture inputs or boundaries. Boot, rendered mesh/throw/fake animation and defense remain unwitnessed.",
+    "scope": "Noah played v3 on disc bm and reported no handoff or apparent improvement; he did not report an EDGE cue. The engine engagement point remains unconfirmed. Bounded CPU tests load the actual bm MIN bytes in both retail pools, execute the native descriptor assignment path and diagnostic FONT4 glyph renderer, and compare diagnostic human frames to v3. Menu selection, post-snap condition-node entry, input samples, actor poses, animation events, font residency and GPU submission remain supplied inputs or boundaries. These tests do not establish live engagement, rendered text or animation. The diagnostic is installed only on an explicitly instrumented build; new cancelable handoff/pass/pitch/keep controls are deferred until engagement is witnessed.",
     "evidence": [
       "ASTRA_READ_OPTION_CONTROLS_REPORT.md",
-      "ASTRA_READ_OPTION_V3_REPORT.md"
+      "ASTRA_READ_OPTION_V3_REPORT.md",
+      "ASTRA_READ_OPTION_V4_REPORT.md"
     ]
   },
   "selectors": {
@@ -54,7 +59,7 @@
         "allowed": "false in Basic, Advanced and Experimental; explicit opt-in"
       }
     ],
-    "notes": "Two paired authored reads. Hold snap for the whole one-second window to keep; release or no input gives. On RPO, hold snap and press the intended receiver during the window. Left stick waits until the read ends. Supports native I and the supported Gun recipes."
+    "notes": "Two paired authored reads. Hold snap for the whole one-second window to keep; release or no input gives. On RPO, hold snap and press the intended receiver during the window. Left stick waits until the read ends. Supports native I and the supported Gun recipes. The existing flag gates a development diagnostic variant; no new GUI switch or preset default. Diagnostic lines persist until the next native reset for a photograph."
   },
   "source_container": {
     "format": "XBE in XDVDFS",
@@ -64,8 +69,8 @@
     "resource": "Six pinned live hooks; rebuild the existing owner from base with 2048 RX, 256 RW and 88 RO bytes.",
     "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
   },
-  "summary": "Paired custom reads latch give, keep or pass with modern hold-to-keep controls and a CPU edge read.",
+  "summary": "Experimental authored reads with an opt-in native HUD probe to investigate the unconfirmed live engagement reported on v3.",
   "surface": "gameplay_tuning_sliders",
   "title": "Read option mesh controls (experimental, unwitnessed)",
-  "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_read_option_controls"
+  "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_read_option_diagnostic"
 }

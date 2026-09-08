@@ -1,6 +1,8 @@
 """Metadata-backed mesh read. EXPERIMENTAL / UNWITNESSED, all presets off.
 
-Version 3 retains the existing 2,048 RX, 256 RW and 88 RO reservation.
+The normal v3 install is byte-identical. V4 adds an explicit human engagement
+diagnostic within the same 2,048 RX, 256 RW and 88 RO reservation. It replaces
+the EDGE cue and CPU edge search, so diagnostic CPU reads always give.
 Rebuild from the supported base with the complete revised request union;
 v1 allocations are deliberately refused, never upgraded in place. The v1
 64-byte PLAY lookup remains compatible. Private state is reset at each snap
@@ -25,6 +27,16 @@ AUTO_EDGE = 255
 # Retain the v2 RO layout. The first four floats are unused legacy HUD
 # coordinates; the final two remain the CPU prediction time and read radius.
 PROMPT = struct.pack("<6f", 360, 96, 0, 1, .2, 228.6)
+DIAGNOSTIC_PROMPT = "READ ".encode("utf-16le").ljust(16, b"\0") + PROMPT[16:]
+# Offsets within the owner's named RW allocation, NOT fixed Xbox addresses.
+DIAGNOSTIC_FIELDS = dict(actor=0, task=4, descriptor=8, roster=12,
+    sample_clock=16, samples=20, controller=28, receiver=32, deadline=44,
+    snap_seen=48, lookup_row=52, snap_qb=56, play_index=60,
+    snap_descriptor=64, dispatch_descriptor=68, raw_held=84, raw_pressed=88,
+    input_context=92, controller_layout=96, input_command=100, input_throttle=104,
+    dispatch_callback=112, dispatch_controller=120, snap_lookup_row=124,
+    hud_calls=128, text_calls=132, font_pointer=136, condition_calls=140,
+    decision=144, dispatch_node=148, dispatch_calls=152, text=160)
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16),
             (OWNER, "read_only", RO_SIZE, 16))
 TABLE_SCHEMA = "nfl2k5_read_option_lookup/v1"
@@ -47,7 +59,21 @@ HELP_TEXT = (
     "Doing nothing after the snap gives. The stick waits until the read ends. "
     "The snap-button icon marks the unblocked edge to watch. CPU QBs read "
     "that edge's sustained movement. On an RPO, hold snap and press the "
-    "named receiver during the window to throw. All presets are off."
+    "named receiver during the window to throw. These are intended controls: "
+    "Noah's v3 play test showed no handoff and live engagement is unconfirmed. "
+    "All presets are off."
+)
+DIAGNOSTIC_HELP_TEXT = (
+    "EXPERIMENTAL / UNWITNESSED. Retail: original option controls. Patch: "
+    "human engagement diagnostic, selected only with the Read option runtime. "
+    "Photograph READ plus the play number, snap/pend/give/keep/pass, sample "
+    "count and absolute clock deadline in seconds. READ miss means the paired "
+    "identity was not found. An absent line cannot distinguish a missed snap "
+    "hook from unavailable HUD text. Human v3 controls are unchanged: hold "
+    "snap through the window to keep, release or do nothing to give, or hold "
+    "snap and press the RPO receiver. This diagnostic replaces the edge icon "
+    "and CPU edge search; CPU reads give. A cancelable animated mesh and "
+    "new pass/pitch/explicit-keep controls wait for a live engagement witness."
 )
 
 
@@ -107,15 +133,16 @@ def validate_intent_table(table):
     return count
 
 
-def code_for(code_va, table_va, data_va):
+def code_for(code_va, table_va, data_va, *, diagnostic=False):
     symbols = dict(code=code_va, intent_table=table_va, original_tail=0x1AF013,
                    result_tail=0x1AF210, lookup_actor=0x1894F0,
                    held_command=0x120960, receiver_ready=0x19B800,
                    state_data=data_va, hud_native=0xFA0B0, draw_icon=0xF97F0,
                    hud_tail=0x646A6, pass_tail=0x19C84F, snap_tail=0xB6FC3,
-                   reset_tail=0x1AD9C8, schedule_tail=0x215170, schedule_mesh=0x215367)
-    result = bytearray(assembly.CODE)
-    for offset, kind, symbol, value in assembly.RELOCATIONS:
+                   reset_tail=0x1AD9C8, schedule_tail=0x215170, schedule_mesh=0x215367,
+                   draw_text=0x47420)
+    result = bytearray(assembly.DIAGNOSTIC_CODE if diagnostic else assembly.CODE)
+    for offset, kind, symbol, value in (assembly.DIAGNOSTIC_RELOCATIONS if diagnostic else assembly.RELOCATIONS):
         target = symbols[symbol] + value + struct.unpack_from("<I", result, offset)[0]
         if kind == 2:
             target -= code_va + offset
@@ -124,8 +151,9 @@ def code_for(code_va, table_va, data_va):
     return bytes(result).ljust(CODE_SIZE, b"\xcc")
 
 
-def sites(code_va):
-    return [(name, va, old, b"\xe9" + struct.pack("<i", code_va + assembly.LABELS[name] - va - 5)
+def sites(code_va, *, diagnostic=False):
+    labels = assembly.DIAGNOSTIC_LABELS if diagnostic else assembly.LABELS
+    return [(name, va, old, b"\xe9" + struct.pack("<i", code_va + labels[name] - va - 5)
              + b"\x90" * (len(old) - 5)) for name, (va, old) in HOOKS.items()]
 
 
@@ -144,7 +172,7 @@ def _inspect_owner(payload, image):
     recursively entering status while checking the shared pass initializer.
     """
     owned = any(a["owner"] == OWNER for a in space.layout(payload)["allocations"])
-    installed, table, code_va = False, None, 0
+    installed, table, code_va, diagnostic = False, None, 0, False
     if owned:
         places = allocations(payload)
         code, ro = (places[k] for k in ("code", "read_only"))
@@ -158,13 +186,16 @@ def _inspect_owner(payload, image):
             _require(table == bytes(TABLE_SIZE) and prompt == bytes(len(PROMPT)), "Mixed Read option table without runtime")
             table = None
         else:
-            _require(content == code_for(code_va, ro["va"], places["data"]["va"]), "Foreign Read option runtime")
+            diagnostic = content == code_for(code_va, ro["va"], places["data"]["va"], diagnostic=True)
+            _require(diagnostic or content == code_for(code_va, ro["va"], places["data"]["va"]),
+                     "Foreign Read option runtime")
             validate_intent_table(table)
-            _require(prompt == PROMPT, "Foreign Read option prompt")
+            _require(prompt == (DIAGNOSTIC_PROMPT if diagnostic else PROMPT), "Foreign Read option prompt")
             installed = True
-    for name, va, before, after in sites(code_va):
+    checked_sites = sites(code_va, diagnostic=diagnostic)
+    for name, va, before, after in checked_sites:
         _require(image.read(va, len(before)) == (after if installed else before), f"Mixed/foreign Read option {name}")
-    return installed, table, sites(code_va)
+    return installed, table, checked_sites
 
 
 def _check_dependencies(image, checked_sites):
@@ -191,7 +222,39 @@ def _inspect(payload):
         checked_sites += neighbor_sites
         screen._check_dependencies(image, checked_sites)
     _check_dependencies(image, checked_sites)
+    if installed and _diagnostic_installed(payload):
+        for va, size, digest in DIAGNOSTIC_GUARDS:
+            _require(hashlib.sha256(image.read(va, size)).hexdigest() == digest,
+                     f"Foreign Read option diagnostic dependency at {va:#x}")
     return "applied" if installed else "retail", table
+
+
+def _diagnostic_installed(payload):
+    places = allocations(payload)
+    return XbeImage(payload).read(places['read_only']['va']+TABLE_SIZE, len(PROMPT)) == DIAGNOSTIC_PROMPT
+
+
+def decode_diagnostic_state(data):
+    """Decode exactly one owner's memory dump, never an XBE or guessed address.
+
+    This is observation, not validation of live pointers or proof that text
+    appeared on a display. The caller finds the RW allocation in the receipt.
+    """
+    _require(isinstance(data, bytes) and len(data) == DATA_SIZE,
+             "Expected the owner's exact 256-byte RW memory dump")
+    values = {name: struct.unpack_from('<I', data, offset)[0]
+              for name, offset in DIAGNOSTIC_FIELDS.items() if name != 'text'}
+    import math
+    for name in ('sample_clock', 'deadline', 'input_throttle'):
+        value = struct.unpack_from('<f', data, DIAGNOSTIC_FIELDS[name])[0]
+        values[name + '_bits'] = hex(values[name])
+        values[name] = value if math.isfinite(value) else str(value)
+    values['phase'] = ('off' if not values['snap_seen'] else
+        'miss' if not values['lookup_row'] else 'snap' if not values['samples'] else
+        {0: 'keep', 1: 'give', 2: 'pass', 0xFFFFFFFF: 'pend'}.get(values['decision'], 'unknown'))
+    values['text'] = data[DIAGNOSTIC_FIELDS['text']:].decode('utf-16le', 'replace').split('\0', 1)[0]
+    values['runtime_witnessed'] = False
+    return values
 
 
 def status(payload):
@@ -207,11 +270,13 @@ def read_settings(payload):
         state, table = _inspect(payload)
         if state != 'applied':
             return None
-        return dict(model_version=3, authored_reads=validate_intent_table(table),
+        diagnostic = _diagnostic_installed(payload)
+        return dict(model_version=4 if diagnostic else 3, diagnostic=diagnostic,
+                    authored_reads=validate_intent_table(table),
                     table_sha256=hashlib.sha256(table).hexdigest(), mesh_seconds=MESH_SECONDS,
                     mesh_frames=MESH_FRAMES, crash_samples=CRASH_SAMPLES,
-                    edge_policy="snap assignments, live unblocked replacement",
-                    prompt="native snap-button icon on selected edge during human mesh",
+                    edge_policy="diagnostic CPU gives" if diagnostic else "snap assignments, live unblocked replacement",
+                    prompt="native READ engagement line" if diagnostic else "native snap-button icon on selected edge during human mesh",
                     human_control='hold snap through window to keep; release or no input to give',
                     experimental=True, runtime_witnessed=False)
     except (ValueError, TypeError, KeyError, IndexError, struct.error):
@@ -226,31 +291,44 @@ def reservations(payload):
         for name, va, old, _new in sites(places["code"]["va"])]
 
 
-def apply(payload: bytes, *, intent_table: bytes | None = None) -> tuple[bytes, dict]:
+def apply(payload: bytes, *, intent_table: bytes | None = None,
+          diagnostic: bool | None = None) -> tuple[bytes, dict]:
     """Install atomically in memory; replay keeps omitted table, refuses changes."""
     state, previous = _inspect(payload)
+    _require(diagnostic is None or type(diagnostic) is bool, "Expected a diagnostic Boolean")
+    previous_diagnostic = _diagnostic_installed(payload) if state == 'applied' else False
+    diagnostic = previous_diagnostic if diagnostic is None else diagnostic
+    if diagnostic:
+        image = XbeImage(payload)
+        for va, size, digest in DIAGNOSTIC_GUARDS:
+            _require(hashlib.sha256(image.read(va, size)).hexdigest() == digest,
+                     f"Foreign Read option diagnostic dependency at {va:#x}")
     table = previous if intent_table is None and previous is not None else intent_table
     if table is None:
         table = compile_intent_table()[0]
     count = validate_intent_table(table)
-    receipt = dict(experimental=True, runtime_witnessed=False, tier="mesh", model_version=3,
+    labels = assembly.DIAGNOSTIC_LABELS if diagnostic else assembly.LABELS
+    receipt = dict(experimental=True, runtime_witnessed=False, tier="mesh", model_version=4 if diagnostic else 3,
+                   diagnostic=diagnostic,
                    mesh_seconds=MESH_SECONDS,
                    authored_reads=count, table_sha256=hashlib.sha256(table).hexdigest(),
-                   code_bytes=CODE_SIZE, instruction_bytes=assembly.LABELS['config'],
+                   code_bytes=CODE_SIZE, instruction_bytes=labels['config'],
                    read_only_bytes=RO_SIZE, data_bytes=DATA_SIZE, changed_bytes=0, edits=[])
     if state == "applied":
+        _require(diagnostic == previous_diagnostic, "Different Read option diagnostic; rebuild from the supported source")
         _require(table == previous, "Different Read option intent; rebuild from the supported source")
         return payload, {**receipt, "status": "already_applied"}
     allocated, allocation_receipt = (space.apply(payload, REQUESTS, scaleout=True)
                                     if space.status(payload) == "retail" else (payload, {}))
     places = allocations(allocated)
-    content = code_for(places["code"]["va"], places["read_only"]["va"], places["data"]["va"])
+    content = code_for(places["code"]["va"], places["read_only"]["va"], places["data"]["va"], diagnostic=diagnostic)
     installed, code_receipt = space.install_code(allocated, OWNER, content)
-    installed, table_receipt = space.install_read_only(installed, OWNER, table + PROMPT)
+    installed, table_receipt = space.install_read_only(installed, OWNER, table +
+                                                     (DIAGNOSTIC_PROMPT if diagnostic else PROMPT))
     image = XbeImage(installed)
     result = bytearray(installed)
     edits = []
-    for name, va, before, after in sites(places["code"]["va"]):
+    for name, va, before, after in sites(places["code"]["va"], diagnostic=diagnostic):
         off = image.offset(va, len(before))
         result[off:off + len(after)] = after
         edits.append(dict(label=name, va=hex(va), file_offset=hex(off), size=len(after),
@@ -311,6 +389,17 @@ GUARDS = (
     (0xa9b4b0, 108, "688da526368a7181635c7fb0b4f97119514675040bd84ee63df9849a1e9c9ce0"),
 )
 
+# The normal v3 mode acquires no new dependencies. Only the diagnostic calls
+# this native text renderer. Its passicons FONT initializer is already pinned
+# by GUARDS at 0xF9F40; font/position storage is cloned to the stack at runtime.
+# Pin the actual 2D glyph helpers, line walker/table and string wrapper. The
+# intervening unused 3D font path is owned by widescreen and team-column.
+DIAGNOSTIC_GUARDS = (
+    (0x460f0, 0x480, '6124464d2b575fe4ae175db48d92cf5f7e96303b729773ec043ddfd5dd54d21a'),
+    (0x46df0, 0xf0, '990b60a03a3c7aa9675c5d62fb73a65138124f728d99b36d8b87a047da46d15f'),
+    (0x47420, 0x65, '9139e722cbec6eb58e5e61fb29acb28121c4840149ed5d52b4a314633c27cb71'),
+)
+
 
 def main(argv=None):
     """Development CLI; bounded XBE/table reads, exclusive output, no disc IO."""
@@ -318,12 +407,19 @@ def main(argv=None):
     import json
     from pathlib import Path
     parser = argparse.ArgumentParser(description=HELP_TEXT)
-    parser.add_argument('operation', choices=('status', 'apply'))
+    parser.add_argument('operation', choices=('status', 'apply', 'state'))
     parser.add_argument('source', type=Path)
     parser.add_argument('--output', type=Path)
     parser.add_argument('--table', type=Path, help='exact 64-byte compiled intent table')
+    parser.add_argument('--diagnostic', action='store_const', const=True, default=None,
+                        help=DIAGNOSTIC_HELP_TEXT)
     args = parser.parse_args(argv)
     try:
+        if args.operation == 'state':
+            with args.source.open('rb') as stream:
+                data = stream.read(DATA_SIZE+1)
+            print(json.dumps(decode_diagnostic_state(data), sort_keys=True, allow_nan=False))
+            return 0
         with args.source.open('rb') as stream:
             payload = stream.read(12_300_289)
         _require(len(payload) <= 12_300_288, 'Expected a supported XBE, not a disc or archive pack')
@@ -336,7 +432,7 @@ def main(argv=None):
             with args.table.open('rb') as stream:
                 table = stream.read(TABLE_SIZE+1)
             validate_intent_table(table)
-        result, receipt = apply(payload, intent_table=table)
+        result, receipt = apply(payload, intent_table=table, diagnostic=args.diagnostic)
         with args.output.open('xb') as stream:
             stream.write(result)
         print(json.dumps(receipt, sort_keys=True))

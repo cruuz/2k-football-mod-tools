@@ -136,7 +136,7 @@ class PatchWriteTests(unittest.TestCase):
         cls.before_allocator = cls.patched
         # Camera now needs 64 owned code bytes; the full union installs it. No
         # allocation may be sealed by the earlier protected dispatcher pass.
-        cls.patched, cls.music_receipt = compose(cls.patched, reverse=getattr(cls, "reverse_owners", False), scaleout=getattr(cls, "scaleout", False))
+        cls.patched, cls.music_receipt = compose(cls.patched, read_option_diagnostic=True, reverse=getattr(cls, "reverse_owners", False), scaleout=getattr(cls, "scaleout", False))
         if getattr(cls, "reverse_owners", False):
             cls.patched, cls.pools_receipt = pools.apply(cls.patched, roster_has_olb=False)
         if pools.filter_list_status(cls.patched) != "applied":
@@ -207,8 +207,8 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_read_option_runtime as read_option
         if read_option.status(cls.patched) != "applied":
             raise AssertionError("read option owner missing from the composed XBE")
-        if read_option.read_settings(cls.patched)["model_version"] != 3:
-            raise AssertionError("revised read option controls missing from the composed XBE")
+        if read_option.read_settings(cls.patched)["model_version"] != 4:
+            raise AssertionError("read option engagement diagnostic missing from the composed XBE")
         from mod_editor.core import nfl2k5_senior_bowl as senior_bowl
         if senior_bowl.status(cls.patched) != "applied":
             raise AssertionError("Senior Bowl dormant components missing from the composed XBE")
@@ -492,7 +492,7 @@ class PatchWriteTests(unittest.TestCase):
             self.assertNotEqual(image.section(row['va']).name, '.text')
         code = places['code']
         self.assertTrue(image.section(code['va']).executable)
-        writes = absolute_writes(self.patched, [(code['va'], code['va']+read_option.assembly.LABELS['config'])])
+        writes = absolute_writes(self.patched, [(code['va'], code['va']+read_option.assembly.DIAGNOSTIC_LABELS['config'])])
         self.assertTrue(writes)
         data = places['data']
         for row in writes:
@@ -635,7 +635,7 @@ class ReverseOwnerOrderTests(PatchWriteTests):
         from mod_editor.core import nfl2k5_modern_naming as modern_naming
         from mod_editor.core import nfl2k5_position_pools as pools
         forward = pools.apply(self.before_allocator, roster_has_olb=False)[0]
-        self.assertEqual(modern_naming.apply(compose(forward, scaleout=getattr(self, "scaleout", False))[0])[0], self.patched)
+        self.assertEqual(modern_naming.apply(compose(forward, read_option_diagnostic=True, scaleout=getattr(self, "scaleout", False))[0])[0], self.patched)
 
 
 class ScaleoutOwnerTests(PatchWriteTests):
