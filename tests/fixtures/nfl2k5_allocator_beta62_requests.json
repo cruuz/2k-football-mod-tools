@@ -270,6 +270,24 @@
   16
  ],
  [
+  "nfl2k5_playbook_pair",
+  "code",
+  8192,
+  16
+ ],
+ [
+  "nfl2k5_playbook_pair",
+  "data",
+  512,
+  16
+ ],
+ [
+  "nfl2k5_playbook_pair",
+  "read_only",
+  4096,
+  16
+ ],
+ [
   "nfl2k5_weekly_prep",
   "code",
   1536,

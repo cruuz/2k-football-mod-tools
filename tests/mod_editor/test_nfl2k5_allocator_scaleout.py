@@ -25,7 +25,7 @@ from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
 from tests.mod_editor.test_nfl2k5_xbe_space import synthetic, PublicTests, RETAIL, repin
 from tests.nfl2k5_allocator_stack import LEGACY_REQUESTS, REQUESTS, compose
 
-LARGE = (("synthetic_scaleout", "code", 48 * 1024, 4096),  # sized to fit beside every landed beta-62 owner
+LARGE = (("synthetic_scaleout", "code", 40 * 1024, 4096),  # sized to fit beside every landed beta-62 owner
          ("synthetic_scaleout", "data", 4 * 1024, 4096),
          ("synthetic_scaleout", "read_only", 1024, 16))
 
@@ -38,7 +38,7 @@ class PlannerTests(unittest.TestCase):
         self.assertEqual([report['capacity'][k]['capacity_bytes'] for k in ('code', 'data', 'read_only')],
                          [106496, 86016, 20480])
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [4096, 0, 6368])  # r65: Contracts Edit Player adds 704 read-only bytes
+                         [0, 0, 2192])  # beta 63 stack: playbook pair 8192 RX / 512 RW / 4096 RO, CPU money downs 2048 RX, weekly prep, Contracts Edit Player 704 RO; synthetic RX 40 KiB fills the code pages exactly
         self.assertEqual(len(report['pages']), 52)
         for a in report['allocations']:
             self.assertEqual(a['va'] % a['align'], 0)
@@ -51,7 +51,7 @@ class PlannerTests(unittest.TestCase):
             self.assertIn(list(request), requests)
         report = space.plan(requests)
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [52624, 4096, 7400])  # r65: Contracts Edit Player adds 704 RO bytes; RX/RW unchanged
+                         [40752, 4096, 3224])  # beta 63 stack: playbook pair (8192 RX, 512 RW in the alignment gap, 4096 RO), CPU money downs (2048 RX), weekly prep, Contracts Edit Player (704 RO), Broadcast camera v5 (+96 RX, +80 RO)
 
     def test_every_kind_exact_capacity_alignment_and_overflow(self):
         for kind, capacity in [('code', 98304), ('data', 81920), ('read_only', 16384)]:

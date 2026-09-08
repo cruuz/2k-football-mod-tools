@@ -1,0 +1,69 @@
+{
+  "backend": {
+    "command": "python3 -m mod_editor.core.nfl2k5_playbook_pair apply source.xbe paired.xbe",
+    "module": "mod_editor/core/nfl2k5_playbook_pair.py",
+    "operation": "write"
+  },
+  "classification": "offline-writer-proved",
+  "evidence": [
+    "ASTRA_PLAYBOOK_PAIR_REPORT.md",
+    "tests/mod_editor/test_nfl2k5_playbook_pair.py",
+    "tests/mod_editor/test_nfl2k5_playbook_pair_unicorn.py",
+    "tools/nfl2k5_playbook_pair.c",
+    "tools/nfl2k5_playbook_pair.S"
+  ],
+  "game": "nfl2k5_xbox",
+  "gui": {
+    "default_enabled": false,
+    "expose": true,
+    "mode": "edit",
+    "reason": "EXPERIMENTAL / UNWITNESSED. Explicit opt-in only; Basic, Advanced and Experimental presets all off. Native choices default to Same as offense. Protected wiring is in WIRING.md."
+  },
+  "id": "nfl2k5.gameplay.playbook_pair",
+  "input_constraints": [
+    "Pinned USA XBE or recognized composition; reserve the full selected allocator union first.",
+    "Stock club, Generic or West Coast books only. Refuses native User A/B sources. Special teams remain with the offensive book.",
+    "Pairs must fit 50 formations, 270 plays, 26 categories, 3500 nodes, 36 links per formation and the fixed name pool. Failure keeps the original book and shows a notice.",
+    "Choice lasts one game and is not saved to Franchise. VIP learning and replay are bypassed for paired sides.",
+    "Authored read-option and QB-spy identity tables target the original two buffers. Their custom controls are not supported on a paired side."
+  ],
+  "portme": [
+    "Apply the protected dispatcher, BuildPlan, GUI and packaging handoff in WIRING.md.",
+    "Run Noah's Play Now, Franchise, audible, hot-route, shift and cancellation witness list in ASTRA_PLAYBOOK_PAIR_REPORT.md."
+  ],
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "rule": "Distribute source and patch recipes. Never distribute the generated executable or retail disc bytes.",
+    "tooling": "source-and-schemas-only"
+  },
+  "runtime": {
+    "status": "not-tested",
+    "evidence": [
+      "ASTRA_PLAYBOOK_PAIR_REPORT.md"
+    ],
+    "scope": "Bounded emitted x86 merges retail books and exercises load callbacks, failures, cleanup and retail accessors. Retail User A/B serialization roundtrips in memory. No game, drawing, device I/O or signed save was run."
+  },
+  "selectors": {
+    "fields": [
+      {
+        "name": "playbook_pair",
+        "required": true,
+        "allowed": "boolean; false in all presets; explicit opt-in"
+      }
+    ],
+    "notes": "Retail: one book supplies both units. Patch: add a game-only Defensive playbook choice for each side."
+  },
+  "source_container": {
+    "format": "XBE in XDVDFS",
+    "hash_pins": [
+      "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+    ],
+    "resource": "Eight pinned retail edit spans; 8192 RX, 512 RW and 4096 RO bytes in the allocator union; no archive or save edits",
+    "retail_file": "user-owned NFL 2K5 USA default.xbe"
+  },
+  "summary": "Adds game-only defensive playbook choices beside the original choices in native Options for either side.",
+  "surface": "gameplay_tuning_sliders",
+  "title": "Separate offensive and defensive playbooks (experimental)",
+  "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_playbook_pair"
+}

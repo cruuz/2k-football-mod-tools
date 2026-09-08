@@ -89,6 +89,18 @@ class SectionTableTests(unittest.TestCase):
 class PatchWriteTests(unittest.TestCase):
     """Every absolute memory write in every patch's changed code targets writable memory."""
 
+    def test_playbook_pair_state_and_tables_have_separate_permissions(self):
+        from mod_editor.core import nfl2k5_playbook_pair as pair
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        owned = pair.allocations(self.patched)
+        image = XbeImage(self.patched)
+        self.assertTrue(image.runtime_writable(owned['data']['va'], pair.DATA_SIZE))
+        self.assertFalse(image.runtime_writable(owned['read_only']['va'], pair.RO_SIZE))
+        start = owned['code']['va']
+        writes = absolute_writes(self.patched, [(start, start+len(pair.assembly.CODE))])
+        self.assertTrue(writes)
+        self.assertTrue(all(w['target'] is None or w['writable'] for w in writes), writes)
+
     def test_money_downs_owns_no_runtime_storage(self):
         from mod_editor.core import nfl2k5_cpu_money_downs as patch, nfl2k5_xbe_space as space
         from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
@@ -185,6 +197,9 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_coverage_trail as coverage_trail
         if coverage_trail.status(cls.patched) != "applied" or coverage_trail.apply(cls.patched)[0] != cls.patched:
             raise AssertionError("Coverage trail missing from the complete owner union")
+        from mod_editor.core import nfl2k5_playbook_pair as playbook_pair
+        if playbook_pair.status(cls.patched) != "applied" or playbook_pair.apply(cls.patched)[0] != cls.patched:
+            raise AssertionError("Playbook pair missing from the complete owner union")
         from mod_editor.core import nfl2k5_weekly_prep as weekly_prep
         if weekly_prep.status(cls.patched) != "applied" or weekly_prep.apply(cls.patched)[0] != cls.patched:
             raise AssertionError("Weekly prep missing from the complete owner union")

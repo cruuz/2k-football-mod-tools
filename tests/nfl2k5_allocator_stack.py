@@ -28,6 +28,7 @@ from mod_editor.core import nfl2k5_roster_arena_growth as arena_growth
 from mod_editor.core import nfl2k5_franchise_autosave as autosave
 from mod_editor.core import nfl2k5_espn25_rosters as espn25
 from mod_editor.core import nfl2k5_coverage_trail as coverage_trail
+from mod_editor.core import nfl2k5_playbook_pair as playbook_pair
 from mod_editor.core import nfl2k5_weekly_prep as weekly_prep
 from mod_editor.core import nfl2k5_cpu_money_downs as money_downs
 from mod_editor.core import nfl2k5_franchise_edit_player as edit_player
@@ -39,7 +40,7 @@ LEGACY_REQUESTS = (kickoff.REQUESTS + runtime.REQUESTS + momentum.REQUESTS
 # Both installation orders use this same union and require rebuild from base.
 REQUESTS = (camera.REQUESTS + LEGACY_REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS
             + playlist.REQUESTS + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS
-            + defensive_try.REQUESTS[2:] + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS + guardian.REQUESTS + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS + autosave.REQUESTS + espn25.REQUESTS + coverage_trail.REQUESTS + weekly_prep.REQUESTS + money_downs.REQUESTS + edit_player.REQUESTS)
+            + defensive_try.REQUESTS[2:] + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS + guardian.REQUESTS + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS + autosave.REQUESTS + espn25.REQUESTS + coverage_trail.REQUESTS + playbook_pair.REQUESTS + weekly_prep.REQUESTS + money_downs.REQUESTS + edit_player.REQUESTS)
 SONGS = [dict(title=f"Tone {i+1:03}", artist="Synthetic", frames=256) for i in range(200)]
 
 
@@ -92,7 +93,7 @@ def compose(payload, *, reverse=False, scaleout=False, extra_requests=(), read_o
               (music, dict(song_records=SONGS)), (roster_storage, {}), (coverage, {}), (scramble, {}), (playlist, {}),
               (practice_screen, {}), (abilities, dict(abilities_off_week=7)), (qb_spy, {}), (calendar, {}),
               (read_option, dict(diagnostic=read_option_diagnostic)), (franchise_2026, {}), (senior_bowl, {}), (animation_xbe, {}), (guardian, {}),
-              (my_career, {}), (crib_reclaim, {}), (autosave, {}), (coverage_trail, {}), (weekly_prep, {}), (money_downs, {}), (edit_player, {}),
+              (my_career, {}), (crib_reclaim, {}), (autosave, {}), (coverage_trail, {}), (playbook_pair, {}), (weekly_prep, {}), (money_downs, {}), (edit_player, {}),
               (screen_hooks, {}),
               (arena_growth, dict(created_teams_extra=2)))
     order = tuple(reversed(owners)) if reverse else owners

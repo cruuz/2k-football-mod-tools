@@ -128,6 +128,9 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_coverage_trail as coverage_trail
         if coverage_trail.status(cls.patched) != "applied" or coverage_trail.apply(cls.patched)[0] != cls.patched:
             raise AssertionError("Coverage trail missing from the complete owner union")
+        from mod_editor.core import nfl2k5_playbook_pair as playbook_pair
+        if playbook_pair.status(cls.patched) != "applied" or playbook_pair.apply(cls.patched)[0] != cls.patched:
+            raise AssertionError("Playbook pair missing from the complete owner union")
         from mod_editor.core import nfl2k5_weekly_prep as weekly_prep
         if weekly_prep.status(cls.patched) != "applied" or weekly_prep.apply(cls.patched)[0] != cls.patched:
             raise AssertionError("Weekly prep missing from the complete owner union")
@@ -731,6 +734,27 @@ class CaveReferenceTests(unittest.TestCase):
             self.assertEqual({at: refs for at, refs in self.targets.items() if va <= at < end}, {})
             self.assertTrue(all(r.detail.split(':', 1)[0] == 'nfl2k5_xbe_space'
                                 for r in self.manifest.overlaps(va, end, exclude_owner=autosave.OWNER)))
+
+    def test_playbook_pair_hooks_and_tables_have_exclusive_ownership(self):
+        from mod_editor.core import nfl2k5_playbook_pair as pair
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        image = XbeImage(self.patched)
+        owned = pair.allocations(self.patched)
+        md = Cs(CS_ARCH_X86, CS_MODE_32)
+        for name, va, original, _ in pair.HOOKS:
+            before = bytes.fromhex(original)
+            self.assertEqual(sum(i.size for i in md.disasm(before, va)), len(before), name)
+            self.assertEqual(sum(i.size for i in md.disasm(image.read(va,len(before)), va)), len(before), name)
+            for target in range(va+1, va+len(before)):
+                self.assertFalse(self.targets.get(target, []), (name, hex(target)))
+        for name, va, before, _ in pair.sites(owned['code']['va'],owned['read_only']['va']):
+            self.assertEqual(self.manifest.overlaps(va,va+len(before),exclude_owner=pair.OWNER), [], name)
+            self.assertTrue(self.manifest.overlaps(va,va+len(before)), name)
+        for allocation in owned.values():
+            va, end = allocation['va'], allocation['va']+allocation['size']
+            self.assertEqual({at: refs for at, refs in self.targets.items() if va <= at < end}, {})
+            self.assertTrue(all(r.detail.split(':',1)[0] == 'nfl2k5_xbe_space'
+                                for r in self.manifest.overlaps(va,end,exclude_owner=pair.OWNER)))
 
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
 class ScorebugReferenceReservations(unittest.TestCase):

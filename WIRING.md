@@ -14361,3 +14361,144 @@ below the 100 GB reserve, so no disposable disc was built. Re-run both XBE
 gates, weekly-prep suites, Auto Save suites, registry checks and clean-stage
 runtime closure after protected integration. Keep all features explicitly
 experimental until Noah completes the report's witness list.
+
+## R65 playbook pair: protected integration handoff
+
+Owner `mod_editor/core/nfl2k5_playbook_pair.py`; generated template
+`nfl2k5_playbook_pair_code.py`. EXPERIMENTAL / UNWITNESSED. See
+`ASTRA_PLAYBOOK_PAIR_REPORT.md` for the native proof, limits, exact validation and
+Noah's witness list. This branch implements the owner and gate integration; no
+protected product file is edited.
+
+This option is **explicit opt-in, off in Basic, Advanced and Experimental**.
+Native choices start at Same as offense. It adds two adjacent Defensive playbook
+rows to the two pregame Options lists, for human and CPU sides; special teams
+stay with the offensive source. The choice lasts one game. The on-screen notice
+plainly refuses Franchise persistence. No save field or 38th stock book is added.
+
+### Dispatcher and four status dictionaries
+
+In protected `mod_editor/core/nfl2k5_throw_tuning.py`:
+
+1. Import `nfl2k5_playbook_pair as playbook_pair_patch`. Add boolean
+   `playbook_pair=False` to `_apply_all`, `apply_to_xbe`, `apply_to_image`,
+   `_validate_r62_options`, `_selected_space_requests` and `_xbe_space_adapter`.
+   Add `playbook_pair` to both `R62_SPACE_KEYS` and `R62_RUNTIME_KEYS`, the boolean
+   validation group, every relevant want/defer predicate, and `_r62_options` /
+   `_r62_space_options` forwarding. Include it in the image `defer_grown` path.
+2. `_selected_space_requests` appends `playbook_pair_patch.REQUESTS` when enabled.
+   `_xbe_space_adapter` forwards the flag and selects scaleout when enabled.
+   The union must be realized before **any** owner seals its allocation. The
+   owner takes no settings and needs no custom adapter class.
+3. Put this exact entry in the final `_apply_all` owners tuple after the allocator:
+
+   ```python
+   (playbook_pair, playbook_pair_patch, "playbook_pair_patch",
+    "Separate offensive and defensive playbooks (experimental)"),
+   ```
+
+4. Add `"playbook_pair": playbook_pair_patch.status(payload)` to
+   `_grown_status_fields(payload)`. Verify all **four** status dictionaries expose
+   it: `inspect_payload` (around line 665), `plan_patch` result (around 794),
+   `apply_to_xbe` result (around 1791), and `apply_to_image` result (around 2136),
+   each already spreads `_grown_status_fields` for its actual output bytes.
+5. Preserve the current intent-owner implementations. Until their identity
+   lookups support composite roots, refuse `playbook_pair` together with
+   `read_option_runtime` or `qb_spy` in user-facing builds, before output creation.
+   Plain message: `Separate playbooks cannot be combined with custom read-option
+   or QB-spy controls in this build. Turn one option off.` This is a semantic
+   product constraint. The safety gates intentionally compose every executable
+   owner to prove byte ownership, including empty/diagnostic intent tables;
+   that is not a claim that authored controls operate on a relocated composite.
+
+### BuildPlan and final image pass
+
+In protected `mod_editor/core/mod_build.py`, add `playbook_pair: bool = False`.
+Add explicit `playbook_pair=False` to every basic/advanced/experimental preset.
+Forward through the existing r62 option maps, normalization/boolean validation,
+`wants_xbe_patch`, core-module availability checks and result/status key lists.
+Add `("playbook_pair", "nfl2k5_playbook_pair")` alongside the existing
+Franchise Auto Save core-module availability pair. The initial `replace(plan,
+...)` deferral around line 1259 must set it false; the final request union and
+final XBE pass must retain the user's real value. Include it in final-pass
+predicates around lines 1050/1620 and in `_grown_status_fields` result refreshes.
+Use the existing grown-XBE disc writer; do not write 12,300,288 bytes into the
+retail XBE's old extent. No archive or save writer is added.
+
+Preserve the proposed intent incompatibility check in direct dispatcher calls
+as well as BuildPlan normalization, so a raw XBE build cannot silently drop
+those authored controls. The module's standalone CLI is an expert byte writer;
+its HELP_TEXT, capability and report expose the limitation. No claim of automatic
+Franchise team persistence should appear in a preset or receipt.
+
+### Studio text, caption and packaging
+
+In protected Gameplay Patches `PATCHES`, add key `playbook_pair`, default false,
+with title `Separate offensive and defensive playbooks (experimental)` and
+`nfl2k5_playbook_pair.HELP_TEXT`. The description must retain the literal words
+**Retail** and **Patch**; the shipped helper already contains both. Add
+`playbook_pair` to `NEEDS_IMAGE`. A source image supplies the stock PLAY resources
+that the game will load. Include the key in signal/selection/application maps.
+Use the same text in the equivalent protected Gameplay panel if it enumerates
+these patches independently. Do not expose a new editor claiming a 38th book or
+profile persistence.
+
+In protected Build tab, `_option` caption is
+`Separate offensive and defensive playbooks (experimental)` (57 characters).
+Tooltip is HELP_TEXT. Default false; wire extraction/restoration of the boolean
+alongside `franchise_autosave`. If studio_qt owns cross-panel option propagation,
+forward this same key there; no new standalone GUI panel is needed.
+
+Add these exact lines to protected `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_playbook_pair.py
+mod_editor/core/nfl2k5_playbook_pair_code.py
+docs/mod_editor/nfl2k5_playbook_pair_capability.json
+```
+
+If feature reports are packaged, also include `ASTRA_PLAYBOOK_PAIR_REPORT.md`.
+The C/S generator sources and test harnesses are development-only. In protected
+`packaging/check_2k5_mod_studio_runtime.py`, runtime-closure imports are
+`mod_editor.core.nfl2k5_playbook_pair` and
+`mod_editor.core.nfl2k5_playbook_pair_code`; its existing xbe_space,
+bump_strength and cave_oracle dependencies remain required. No GCC, GNU as,
+Capstone, Unicorn or Ghidra is a product runtime dependency.
+
+Merge `docs/mod_editor/nfl2k5_playbook_pair_capability.json` into the central
+capability registry, ID `nfl2k5.gameplay.playbook_pair`, existing surface
+`gameplay_tuning_sliders`, GUI default false, runtime status `not-tested`.
+It has schema-valid `python3 -m ...` backend and validation commands. No release
+version, updater, release-tag test or CI workflow change is needed for this job.
+
+### Manifest and acceptance
+
+The owner is already in `tests/nfl2k5_allocator_stack.py` REQUESTS/compose, both
+XBE gates, the real manifest builder owner lists and the budget fixture. The
+synthetic allocator stress test uses 40 KiB RX rather than 48 KiB to retain a
+valid multi-page stress owner alongside the new budget. Other owners' budgets
+and runtime code are unchanged.
+
+The current drive is below the 100 GB free-space floor, so this job builds no
+disposable disc. For bounded local ownership evidence, run:
+
+```sh
+NFL2K5_PLAYBOOK_PAIR_MANIFEST="$PWD/.scratch/playbook-pair-manifest.json" \
+  python3 tests/mod_editor/test_nfl2k5_playbook_pair_manifest.py
+NFL2K5_CAVE_MANIFEST="$PWD/.scratch/playbook-pair-manifest.json" \
+  python3 tests/mod_editor/test_xbe_patch_cave_references.py
+NFL2K5_CAVE_MANIFEST="$PWD/.scratch/playbook-pair-manifest.json" \
+  python3 tests/mod_editor/test_nfl2k5_cave_oracle.py
+python3 tests/mod_editor/test_xbe_patch_memory_writes.py
+```
+
+The first command observes actual current XBE writers, with current source
+fingerprints and no inherited stale-source exemption. Its JSON explicitly says
+XBE-only, no disc built, not a release manifest. Never copy it over the protected
+release manifest. Once sufficient disk space exists, Claude must regenerate
+`data/nfl2k5_cave_reservations.json` using the normal `tools/nfl2k5_cave_oracle.py
+manifest <retail.xbe> --xiso <retail.iso> --work-dir <temporary-parent> --json
+<protected-manifest>` path, after wiring the protected dispatcher and build
+option. Keep every disposable disc in TemporaryDirectory and delete it on all
+exits. Then rerun both gates and the owner/native suites. Noah's played-game
+witness remains required before calling the feature witnessed.
