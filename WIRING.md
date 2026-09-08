@@ -13613,3 +13613,74 @@ manifest command after integration. This session used a scratch copy of
 manifest 26 with current source fingerprints and only the pinned live edit
 added; it did not manufacture a new real-disc manifest or allocate a cave.
 Do not copy that scratch manifest over the production file.
+
+## R65 throws to backs, 2026-09-08: research hold
+
+See `ASTRA_BACK_THROWS_REPORT.md`. This delivery is a read-only native research
+tool and standalone tests. It installs **no gameplay owner**. The four reported
+gameplay failures and the standing-versus-dive contract remain unproved in a
+full native frame. Do not expose a repaired-back-throws option, advertise 2K8
+parity, or enable a preset from these component results.
+
+Current integration is explicitly empty:
+
+| Protected integration point | This delivery |
+| --- | --- |
+| `_apply_all` owner tuple and kwarg | None; there is no `nfl2k5_back_throws` writer to dispatch. |
+| Four status dictionaries | No new field in bare-XBE inspect, bare-XBE write result, image inspect or image write result; no `applied` status exists. |
+| `_selected_space_requests`, `_xbe_space_adapter`, `_grown_status_fields` | No additions; zero RX, RW or RO bytes are requested. |
+| `BuildPlan`, normalization, deferral and final pass | No field or forwarding; Basic, Advanced and Experimental all remain without this option. |
+| Gameplay Patches `PATCHES` / `NEEDS_IMAGE` | No row and no membership. |
+| Build tab `_option` | No control. |
+| Release allowlist | No runtime lines; the new tool and test are development files. The report can be included with the other Astra reports. |
+| Runtime closure imports | None; do not add Unicorn, Capstone or the research tool to the application. |
+| Capability registry | No product capability is introduced. The development CLI is not a playable-back-throws feature. |
+
+The existing gate union, owner-budget fixture, manifest builder's three lists
+and both gate setUpClass methods therefore remain unchanged. Adding a no-op
+owner or returning `applied` for retail bytes would misstate this result.
+The scratch manifest only refreshes seven pre-existing source hashes; it does
+not add reservations or regenerate the full disc proof. Do not publish it.
+
+For a later implementation, the following is a **conditional handoff, not
+code to wire now**. First reproduce the missing full-frame failures, prove
+native clip motion/envelopes, implement the owner, and pass its refusal,
+idempotence, all-owner, pairwise and full-frame tests. Keep every preset off
+until those conditions are met; initial exposure should be opt-in only.
+
+1. Import the eventual `nfl2k5_back_throws` as `back_throws_patch`. Use the
+   internal boolean `back_throws=False`, and an owner tuple after allocation:
+   `(back_throws, back_throws_patch, "back_throws_patch", "Throws to backs (experimental)")`.
+   Forward the flag through both bare-XBE and image writers, including each
+   deferred/final `_apply_all` call. Add `"back_throws": back_throws_patch.status(payload)`
+   to `_grown_status_fields`, so all four dictionaries use the correct current
+   payload (`result` and `after` for write results).
+2. Add `back_throws` to the request selector and allocator adapter and union
+   the eventual `REQUESTS` before installing any grown owner. A simple boolean
+   owner needs no settings adapter. Do not reserve a guessed size: first plan
+   its measured code in a scratch budget fixture. Use v3, `scaleout=True`,
+   `install_code`, and no runtime state in `.text`. Add its actual requests and
+   owner to the shared test union and all three manifest-builder lists, and
+   explicitly assert its status in both gate setUpClass methods.
+3. Add `BuildPlan.back_throws: bool = False`, boolean normalization, the
+   executable deferral condition and final forwarding together. Basic,
+   Advanced and Experimental should initially all leave it false.
+4. A future Gameplay Patches row may use caption `Throws to backs (experimental)`
+   and text: `Retail: backs can have inconsistent short catches. Patch:
+   experimental targeting and catch choices for backs. Full gameplay testing
+   is still required. EXPERIMENTAL / UNWITNESSED.` Rewrite that text to the
+   actually proved scope before exposing it. An XBE-only implementation has
+   no `NEEDS_IMAGE` membership; add that membership only if the final repair
+   requires PLAY or animation resources. Use the same Build `_option` caption
+   (30 characters), with `needs_image` matching the final implementation.
+5. Conditional allowlist/runtime entries are
+   `mod_editor/core/nfl2k5_back_throws.py` /
+   `mod_editor.core.nfl2k5_back_throws`, plus an actual separate code module
+   only if one is built. Neither file exists in this delivery. A future
+   capability can use ID `nfl2k5.gameplay.back_throws`, `gui.expose=false`,
+   `gui.default_enabled=false`, `runtime.status=not-tested`, and this report
+   plus the eventual owner/full-frame tests as evidence. Its backend command
+   must resolve to a real `python3 -m mod_editor.core.nfl2k5_back_throws ...`
+   CLI; no such backend currently exists. The current validation command is
+   `python3 -m tests.mod_editor.test_nfl2k5_back_throws` and validates research
+   components only. Do not register an invented runnable backend.
