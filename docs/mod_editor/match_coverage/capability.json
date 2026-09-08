@@ -1,0 +1,73 @@
+{
+  "backend": {
+    "command": "python3 -m mod_editor.core.nfl2k5_match_coverage pack --image <retail-tree> --team BAL --output <new.2k5book>",
+    "module": "mod_editor/core/nfl2k5_match_coverage.py",
+    "operation": "write"
+  },
+  "classification": "offline-writer-proved",
+  "evidence": [
+    "ASTRA_MATCH_COVERAGE_REPORT.md",
+    "docs/mod_editor/match_coverage/README.md",
+    "docs/mod_editor/match_coverage/census.json",
+    "docs/mod_editor/match_coverage/evidence.json",
+    "docs/mod_editor/match_coverage/pack_receipt.json",
+    "mod_editor/core/nfl2k5_match_coverage.py",
+    "tools/nfl2k5_match_coverage.py",
+    "tests/mod_editor/test_nfl2k5_match_coverage.py",
+    "tests/mod_editor/test_nfl2k5_match_coverage_qt.py"
+  ],
+  "game": "nfl2k5_xbox",
+  "gui": {
+    "default_enabled": false,
+    "expose": true,
+    "mode": "edit",
+    "reason": "Opt-in through the existing Rules library and Install Playbook Pack. EXPERIMENTAL / UNWITNESSED. No automatic preset enablement."
+  },
+  "id": "nfl2k5.scripts.match_coverage",
+  "input_constraints": [
+    "One fixed-size 78,768-byte PLAY resource at a time; all 37 canonical books are scanned through bounded archive reads.",
+    "Census includes six nonreciprocal native rule records and distinguishes them from 53 reciprocal plays. No retail repair is applied.",
+    "Named bundles preserve exact complete chains and existing source/personnel/dependency guards.",
+    "Five authored recipes add 122 nodes; native team books replace existing coverage records, while Editor and PRACTICE preserve drills and append five. Shared menu aliases are enumerated.",
+    "Retarget built-in recipes against the target native book; reject changed custom recipes, stale sources, recoded personnel and insufficient node/name/menu capacity.",
+    "Full Rip/Liz strength and #2 vertical keys, independent quarters #2 reads and Palms #2-out keys are unimplemented. The pack is an experimental native-geometry combination, not a new AI policy."
+  ],
+  "portme": [
+    "Noah must play the stock and authored witness matrix, including all six nonreciprocal native calls.",
+    "Implement and prove missing modern receiver keys before advertising complete Rip/Liz, quarters-match or Palms.",
+    "Merge this capability entry and apply the packaging/runtime-closure instructions in WIRING.md."
+  ],
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "rule": "Ship code, authored recipes, metadata census, hashes and offscreen Studio diagrams. Do not ship source PLAY resources, XBE bytes, archive packs or decompiler blocks.",
+    "tooling": "source-and-schemas-only"
+  },
+  "runtime": {
+    "evidence": [],
+    "scope": "Static native dataflow and all-book offline compiler acceptance; offscreen images are Studio diagrams. No live simulation or gameplay witness.",
+    "status": "not-tested"
+  },
+  "selectors": {
+    "fields": [
+      {
+        "name": "native_match_recipe",
+        "required": true,
+        "allowed": "Five versioned built-in experiments; exact current native book, formation, front and replacement destinations"
+      }
+    ],
+    "notes": "Existing schema v2 defense packs, Rules library and Build playbook_packs option."
+  },
+  "source_container": {
+    "format": "Fixed-span little-endian PLAY resource with 32-byte wrapper and 0x13390-byte body",
+    "hash_pins": [
+      "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+    ],
+    "resource": "37 canonical PLAY books; individual resource reads only",
+    "retail_file": "ESPN NFL 2K5 (USA).xiso.iso"
+  },
+  "summary": "Decode all 37 books, publish 59 match-rule plays in 105 formation views, expose named native exchanges, and compile five experimental match/robber calls through the existing pack option. Full modern release keys remain unimplemented.",
+  "surface": "scripts_config",
+  "title": "Native match coverage census and experimental pack",
+  "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_match_coverage"
+}

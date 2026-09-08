@@ -14502,3 +14502,130 @@ manifest <retail.xbe> --xiso <retail.iso> --work-dir <temporary-parent> --json
 option. Keep every disposable disc in TemporaryDirectory and delete it on all
 exits. Then rerun both gates and the owner/native suites. Noah's played-game
 witness remains required before calling the feature witnessed.
+
+## R65 match coverage: census, native Rules bundles and five-call pack
+
+Branch: `astra/r65-match-coverage`. See `ASTRA_MATCH_COVERAGE_REPORT.md` and
+`docs/mod_editor/match_coverage/README.md`. EXPERIMENTAL / UNWITNESSED. This is
+PLAY authoring and offline documentation; there is no new XBE owner.
+
+### Required integration and existing behavior
+
+* Dispatcher `_apply_all` tuple: **no entry**. Kwarg: **none**. The four status
+  dictionaries in `read_xbe`, `read_image`, `write_xbe_copy` and
+  `write_image_copy` receive **no match-coverage key**. `_selected_space_requests`,
+  `_xbe_space_adapter`, `_grown_status_fields` and allocator owner unions need
+  no changes. Executable RX/RW/RO request is zero. Do not represent a PLAY pack
+  as an installed executable patch.
+* `BuildPlan`: use the existing `playbook_packs: tuple[str, ...] = ()` field.
+  No new field, normalization, deferral or dispatcher pass. **Basic, Advanced
+  and Experimental all leave this pack unselected**. The existing schema-v2
+  defense-pack pass must remain before defensive personnel recoding, and the
+  pack compiler must keep its preflight and final native menu checks.
+* Gameplay Patches `PATCHES` and `NEEDS_IMAGE`: **no new row** because the
+  existing Playbooks/Build pack option owns the action. If Claude adds a
+  discovery-only explanation, use exactly: **"Retail: some calls exchange man
+  and zone assignments. Patch: the optional match coverage pack adds five
+  experimental calls built from those rules. Full Rip/Liz, quarters and Palms
+  receiver keys are not implemented."** Such an action requires a loaded image
+  (`NEEDS_IMAGE=True`); it must open the existing pack flow, not toggle a new
+  gameplay boolean. No discovery UI is required for installation to work.
+* Build tab `_option`: **no new checkbox or boolean**. Existing caption
+  **"Playbook packs"** is 14 characters and its Add file picker already installs
+  `data/playbooks/softdrink_match_coverage.2k5book`. Optional convenience button:
+  **"Add match coverage experiments"** (30 characters), parallel to
+  `_add_modern_defense_pack`, adding this exact path through
+  `set_playbook_packs` with duplicate-path rejection. Keep the pack's full
+  experimental notes visible; do not caption it "complete Palms" or "full Rip/Liz".
+* Rules and Info are already connected through the existing wizard. Core
+  `nfl2k5_play_rules.catalog` now adds structural match bundles, and the existing
+  Info panel reads the new `match_coverage` section of `play_rules.json`.
+  No GUI panel was edited. The existing pack dialog was exercised offscreen,
+  including OAK retargeting and project save/reopen/recompile.
+* Capability registry: merge the schema-valid object at
+  `docs/mod_editor/match_coverage/capability.json` into
+  `mod_editor/capabilities/registry.v1.json`. ID:
+  `nfl2k5.scripts.match_coverage`; classification `offline-writer-proved`;
+  runtime `not-tested`; default disabled. Both commands use `python3 -m`.
+  On this base this changes 117 total / 79 NFL 2K5 entries to 118 / 80.
+  Update only the applicable registry/provider count pins in the integration
+  session; no release version/tag changes are part of this job.
+
+### Release allowlist and runtime closure
+
+Add these required lines to protected `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_match_coverage.py
+tools/nfl2k5_match_coverage.py
+data/playbooks/softdrink_match_coverage.2k5book
+docs/mod_editor/match_coverage/
+ASTRA_MATCH_COVERAGE_REPORT.md
+```
+
+The subtree includes 105 retail Studio diagrams, five authored-call diagrams,
+the census JSON/CSV/table, the native evidence pins, compiler receipt, guide and
+capability object. These are rendered diagrams and metadata, not retail PLAY,
+XBE or Ghidra payloads. Keep `ASTRA_BRIEF.md` and `.scratch/` excluded.
+Existing allowlist entries already cover the changed play rules reference and
+both existing core modules.
+
+In protected `packaging/check_2k5_mod_studio_runtime.py`, add closure imports:
+
+```python
+"mod_editor.core.nfl2k5_match_coverage",
+"tools.nfl2k5_match_coverage",
+```
+
+The census/authoring core imports Qt only when rendering is requested through
+the tool. The release already carries the existing FieldScene, play codec,
+Rules/Info panels, book reader and pack compiler. Next to the modern-defense
+seed check, load the new seed and require schema `packs.DEFENSE_SCHEMA`, five
+plays, and a green source-free `packs.check_pack`. Do not render 110 images or
+require retail inputs in packaged runtime closure checks. Add the new test
+modules to any manual standalone acceptance list; CI's current glob discovers
+both without editing the protected workflow.
+
+### Capacity, preservation and proof boundaries
+
+The five-call pack adds 122 nodes (976 bytes) and no formations; native team
+books replace five coverage records. Editor/PRACTICE append five, preserving
+all drills. It reserves all stock match-rule records and the ten modern-defense
+destinations. OAK, reference and TEN select 4-3 when Nickel lacks five free
+replacement destinations. Native personnel, category rows, geometry and
+shared menu membership remain under the existing validators.
+
+The census includes 59 records / 105 menus, including six nonreciprocal stock
+calls. Do not "repair" these six while integrating this feature. Their live
+behavior is unknown. The pack's Rip/Liz and Two Read names are experimental
+intent, not claims of implemented modern #2 receiver keys. Full modern
+matching remains explicitly outside the proved native vocabulary.
+
+The protected cave reservation JSON is untouched. It will need Claude's normal
+release regeneration because the source fingerprint list includes every
+`nfl2k5_*.py`, including this new PLAY-only module and tool. The private
+executable-only manifest produced by `test_nfl2k5_guardian_manifest.py` is for
+XBE owner/gate checks and expressly has no disc-image step evidence. It must
+not replace the release manifest.
+
+The direct guardian-manifest test initially misses ESPN's first write at raw
+`0xB2319` because `XbePatch.apply` is a prebound static alias of `apply_xbe` and
+does not traverse the recorder's module-function wrapper. The scratch-only
+adapter reproduced in `ASTRA_MATCH_COVERAGE_REPORT.md` temporarily routes that
+alias through the same real writer; the unchanged test then passes with 277
+current source pins, 105 observed writer calls and 10,603 reservations. No
+ESPN source was changed. Account for this observer alias when Claude runs the
+combined manifest builder; keep observing real writes rather than adding
+unobserved reservations. The executable-only manifest leaves the cave oracle's
+disc-step assertion unsatisfied (27/28 tests pass, missing `scorebug_runtime`
+image-step evidence). Normal release-disc evidence and protected-manifest
+regeneration are still required. Root free space was about 93 to 94 GiB, so
+this session did not build a disposable disc.
+
+Both unchanged XBE composition gates pass with that scratch manifest: memory
+writes **95 tests** (1505.110 s, peak 339,944 KiB) and cave references **107
+tests** (1374.999 s, peak 522,428 KiB), covering both installation orders and
+allocator configurations. The cave-reference result is a dedicated retry;
+the first parallel attempt terminated with status 143 before any test output.
+No test failure is inferred from that terminated attempt. This PLAY-only
+feature needs no executable owner added to either gate or allocator union.
