@@ -12474,3 +12474,85 @@ static scene/atlas identities and the diagnostic HUD digest containing the
 same atlas. No protected file was changed. The diagnostic scene, fonts,
 appendix, hooks and activation policy are unchanged; this does not assert
 that the historical runtime freeze is fixed.
+# r64 kickoff v6, 2026-09-08
+
+EXPERIMENTAL / UNWITNESSED correction of the existing `dynamic_kickoff`.
+See `ASTRA_KICKOFF_V6_REPORT.md` and `docs/nfl2k5_kickoff_v6_receipts.json`.
+Noah's positive v5 stance/blocking witness remains valid; the new native
+kneel and commentary correction still requires his three-situation witness.
+
+V6 uses **1,939/1,939 RX bytes, 10 RW bytes, twenty hooks**. It fits the
+existing legacy reservation `0x2890F0..0x289883` and compiles identically for
+the existing relocated allocation. Retain `REQUESTS` code 1939/alignment 16
+and data 10/alignment 4; no union budget, owner, page or state expansion.
+The RW ranges remain `0xA69969..0xA69970` and `0xA69971..0xA69974`.
+All nineteen v5 live spans and pins listed above remain; add:
+
+| Hook | Half-open span | Retail bytes | Displaced behavior |
+| --- | --- | --- | --- |
+| `commentary` | `0xA7930..0xA7935` | `e9bb181400` | JMP to native `0x1E91F0`, one stack argument |
+
+The hook defers the native per-frame catch/clear-lane producer for an active
+normal kickoff whose ball is still in the receiving end zone and has never
+entered the field under possession. It also guards the post-whistle pending
+catch path. Separate native kneel, touchback and possession producers remain.
+The native next-play commentary reset clears the pending contact. A caught
+CPU touchback uses `2EE090`, the retail kneel clip and its timed event; an
+uncaught kick grounded in the end zone ends by rule at the contact callback.
+
+**Protected manifest work for Claude:** regenerate
+`data/nfl2k5_cave_reservations.json` with the existing
+`python3 tools/nfl2k5_cave_oracle.py manifest` workflow after integration.
+Record the new live span, new installed cave/jump bytes and source hashes.
+The builder already includes this owner in its request union and all owner
+lists, so no builder-list change is needed. The test-only union projection
+now checks the new thunk's exact retail bytes, installed jump and overlapping
+owners before reserving its five bytes. It does not write a product manifest.
+The current source audit finds three stale pins: this changed kickoff owner,
+and **both** `nfl2k5_espn25_scenarios.py` and `nfl2k5_roster_records.py` on the
+unchanged base. Both latter files were compared byte-for-byte with HEAD.
+The stock oracle correctly refuses until regeneration; do not weaken it.
+The existing kickoff hash in `providers.py` is refreshed in this change to
+`0f2a618ce8ad2443a472145fa69a7d06e0f78af1e9f7ce211ed9b35b00e6a6e7`.
+The relocated module's source is unchanged.
+
+Dispatcher `_apply_all`: retain
+`(dynamic_kickoff, _dynamic_kickoff_adapter(dynamic_kickoff_settings),
+"dynamic_kickoff_patch", "dynamic-kickoff")` and the post-allocator tuple
+`(kickoff_relocated, kickoff_relocated_patch, "kickoff_relocated_patch",
+"experimental relocated kickoff")`. Keep kwargs `dynamic_kickoff`,
+`dynamic_kickoff_settings`, `kickoff_relocated`, `_selected_space_requests`,
+`_xbe_space_adapter` and deferred final application. The **four status dicts**
+(file inspection, image inspection, file patch result, image patch result)
+keep `dynamic_kickoff`, `dynamic_kickoff_settings`, `kickoff_relocated` and
+`kickoff_relocated_settings` using their existing status/read-settings calls.
+The corrected owner is already reached through those paths.
+
+`BuildPlan` keeps the existing `dynamic_kickoff: bool`,
+`dynamic_kickoff_settings` and `kickoff_relocated` fields, normalization and
+deferral. Basic and Advanced leave dynamic kickoff off; Experimental enables
+it. Relocation remains off in all three defaults and implies dynamic kickoff
+and the allocator when selected. No new option or capability surface.
+
+Gameplay Patches `PATCHES`: keep the `dynamic_kickoff` key and role/landing
+rules; add this presentation explanation to its existing detail text:
+"Retail: the returner can take a knee before the touchback whistle. Patch:
+keeps the native knee animation and waits for it before ending a caught
+touchback; suppresses return commentary while the ball stays in the end zone.
+Experimental; this correction has not been played yet."
+Keep `dynamic_kickoff` and `kickoff_relocated` in `NEEDS_IMAGE`, and preserve
+the existing relocation text containing "Retail" and "Patch".
+Suggested Build tab `_option` caption is
+`Dynamic kickoff: ready stance, blocks and touchbacks` (52 characters), with
+`needs_image=True` and the correction's unwitnessed status. No GUI files were
+edited here. Avoid describing the whole v5 stance/blocking feature as newly
+witnessed or newly failing based on this bounded CPU replay.
+
+Allowlist lines remain `mod_editor/core/nfl2k5_dynamic_kickoff.py` and
+`mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py`. Runtime-closure imports
+remain `mod_editor.core.nfl2k5_dynamic_kickoff` and
+`mod_editor.core.nfl2k5_dynamic_kickoff_relocated`; no new runtime dependency.
+Existing capability registry entries suffice. Keep kickoff alignment and
+36-book return blocking in their current build order. Rebuild from supported
+retail input: all v1 through v5 legacy/grown executables and mixed new hooks
+are refused before mutation, rather than partially upgraded.

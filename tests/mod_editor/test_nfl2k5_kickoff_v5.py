@@ -34,11 +34,13 @@ def v4_payload(base):
 
 
 def historical_payloads(retail, base):
-    """Reconstruct all eight old executables against their published SHA-256s."""
+    """Reconstruct all ten old executables against their published SHA-256s."""
     v2_receipt = json.loads((ROOT / 'docs/nfl2k5_kickoff_v2_receipts.json').read_text())
-    for version in range(1, 5):
+    for version in range(1, 6):
         filename = 'nfl2k5_kickoff_fixes_receipts.json' if version == 1 else f'nfl2k5_kickoff_v{version}_receipts.json'
         receipt = json.loads((ROOT / 'docs' / filename).read_text())
+        if version == 5:
+            receipt = receipt['executable']
         old = previous_payload(retail) if version == 1 else replay_edits(base, receipt, 'legacy')
         assert hashlib.sha256(old).hexdigest() == receipt['legacy_output_sha256']
         yield f'v{version}_legacy', old
@@ -68,6 +70,27 @@ def historical_payloads(retail, base):
         else:
             grown = replay_edits(allocated, receipt, 'relocated')
         yield f'v{version}_grown', grown
+
+
+def setup_identity(case, evidence, placement):
+    """Compare every v5 write and state after naming its relocated writer PC.
+
+    V6 changes code offsets, not the motion/head writer bodies. Restrict this
+    normalization to those two wrappers; native PCs and all data stay exact.
+    Historical receipts remain immutable and still pin both old executables.
+    """
+    hooks = {e['label']: int(e['va'], 0) + 5 + struct.unpack_from('<i', bytes.fromhex(e['after']), 1)[0]
+             for e in evidence[placement]['edits'] if e['label'] in dk.HOOKS}
+    def pc(value):
+        for first, end in (('motion', 'position'), ('head_pose', 'block_tick')):
+            if hooks[first] <= value < hooks[end]:
+                return f'{first}+{value - hooks[first]:x}'
+        return value
+    trace = case['trace']
+    normalized = {**trace,
+        'events': [[*row[:3], pc(row[3]), *row[4:]] for row in trace['events']],
+        'writer_counts': [[*row[:2], pc(row[2]), row[3]] for row in trace['writer_counts']]}
+    return digest({**case, 'trace': normalized, 'trace_sha256': digest(normalized)})
 
 
 class NativeSetupMachine(PreKickMachine):
@@ -297,6 +320,9 @@ class ReturnMachine(FrameMachine):
         self.NODE = 0x2103E00 + self.alternate_index * 0x8000; self.OPS = self.NODE + 0x20
         self.put(who + 0x61C, self.NODE); self.put(self.NODE + 4, self.OPS)
         self.block(who); self.put(who + 0x200, 1)
+        self.begin_catch()
+
+    def begin_catch(self):
         self.put(dk.PLAY_STATE, 14)
         self.launch()
         self.position(self.readf(self.RETURNER + 0xB30), self.readf(self.RETURNER + 0xB38), self.RETURNER)
@@ -434,11 +460,17 @@ class V5Tests(unittest.TestCase):
         for name, payload, state in [('v4', self.v4, dk.FLAGS)] + self.variants():
             for direction in (-1, 1):
                 case = setup_replay(self, payload, state, direction, historical=name == 'v4')
-                self.assertEqual(digest(case), digest(saved['setup'][f'{name}_{direction:+d}']))
+                previous = saved['setup'][f'{name}_{direction:+d}']
+                if name == 'v4':
+                    self.assertEqual(digest(case), digest(previous))
+                else:
+                    placement = 'legacy' if name == 'legacy' else 'relocated'
+                    self.assertEqual(setup_identity(case, self.evidence, placement),
+                                     setup_identity(previous, saved['executable'], placement))
 
     def test_exact_replay_identity_foreign_versions_and_all_pins(self):
         saved = json.loads(RECEIPT.read_text())
-        self.assertEqual(digest(self.evidence), digest(saved['executable']))
+        self.assertEqual(saved['executable']['hook_count'], 19)  # immutable v5 receipt
         for source, out, name in ((self.base, self.legacy, 'legacy'),
                                   (self.allocated, self.grown, 'relocated')):
             self.assertEqual(replay_edits(source, self.evidence, name), out)
@@ -583,6 +615,8 @@ class PublicReceiptTests(unittest.TestCase):
 
 def record():
     V5Tests.setUpClass(); test = V5Tests()
+    if digest(test.evidence) != digest(json.loads(RECEIPT.read_text())['executable']):
+        raise SystemExit('Current compiler is not v5; preserve the historical v5 receipt')
     result = dict(experimental=True, runtime_witnessed=False, executable=test.evidence, setup={}, returns={})
     for name, payload, state in [('v4', test.v4, dk.FLAGS)] + test.variants():
         for direction in (-1, 1):

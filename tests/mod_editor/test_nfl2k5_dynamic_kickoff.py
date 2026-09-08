@@ -188,6 +188,7 @@ class Machine:
             self.put(player + 0x14, player + 0xC00)
             self.put(player + 0x24, player + 0xE00)
             self.put(player + 0x904, self.DESC)
+            self.put(player + 0x510, player + 0x150)  # native empty task sentinel
             # Bounded animation objects: real descriptor transition, heading,
             # zero-speed table selection and clip dispatch; rendering is a stub.
             self.put(player + 0xC58, player + 0xD00)
@@ -564,9 +565,9 @@ class RetailExecutionTests(unittest.TestCase):
                         m.position(0, direction * 4800, m.RETURNER)
                         m.event("touch")
                         m.run(dk.HOOKS["plan"][0], ecx=m.RETURNER)
-                        self.assertEqual(m.get(dk.PLAY_STATE), 0x12 if probability and not human else 14)
-                        if probability and not human:
-                            self.assertAlmostEqual(m.spot(), 35, places=4)
+                        self.assertEqual(m.get(dk.PLAY_STATE), 14)  # native clip ends the play later
+                        self.assertEqual(m.get(m.RETURNER + 0x11C) == 0x63,
+                                         bool(probability and not human))
         m = self.machine()
         m.position(0, 3600, m.RETURNER)
         m.event("touch")
@@ -575,6 +576,9 @@ class RetailExecutionTests(unittest.TestCase):
         m.position(0, 4800, m.RETURNER)
         m.run(dk.HOOKS["plan"][0], ecx=m.RETURNER)
         self.assertEqual(m.get(dk.PLAY_STATE), 14)  # running back into own end zone is not a touchback
+        m.position(0, 4800)
+        m.event("ground")  # a later loose-ball contact cannot erase the controlled return
+        self.assertEqual(m.get(dk.PLAY_STATE), 14)
         m.position(0, 4800, m.KICKER)
         m.run(dk.HOOKS["plan"][0], ecx=m.KICKER)
         self.assertEqual(m.get(dk.PLAY_STATE), 14)
@@ -622,7 +626,8 @@ class RetailExecutionTests(unittest.TestCase):
             m.position(0, 4800, m.RETURNER)
             m.event("touch")
             m.run(dk.HOOKS["plan"][0], ecx=m.RETURNER)
-            self.assertEqual(m.get(dk.PLAY_STATE), 0x12 if downed else 14)
+            self.assertEqual(m.get(dk.PLAY_STATE), 14)
+            self.assertEqual(m.get(m.RETURNER + 0x11C) == 0x63, downed)
 
     def test_safety_onside_scrimmage_and_reset_bypass(self):
         for phase, onside in ((1, False), (2, True), (4, False)):
@@ -700,7 +705,7 @@ class RetailExecutionTests(unittest.TestCase):
                     self.assertAlmostEqual(projected_z / direction / 91.44, 40, delta=0.02)
                     self.assertEqual(m.uc.reg_read(x86.UC_X86_REG_ESP), m.STACK + 12)
 
-    def test_loose_end_zone_cpu_downing_needs_ground_and_preserves_human_control(self):
+    def test_loose_end_zone_touchback_requires_ground_independent_of_controller(self):
         for direction in (-1, 1):
             for human in (False, True):
                 for landing_first in (False, True):
@@ -717,7 +722,7 @@ class RetailExecutionTests(unittest.TestCase):
                         m.position(0, direction * 4800)
                         m.event("ground")
                         m.run(dk.HOOKS["plan"][0], ecx=m.RETURNER)
-                        self.assertEqual(m.get(dk.PLAY_STATE), 14 if human else 0x12)
+                        self.assertEqual(m.get(dk.PLAY_STATE), 0x12)
                         self.assertAlmostEqual(m.spot(), 20 if landing_first else 35, places=4)
 
     def test_boundaries_history_normal_return_and_storage_neighbours(self):

@@ -2,7 +2,7 @@
 
 Pair with kick_rules (35-yard tee) and the playbook kickoff_alignment tool.
 No timer releases the hold: ground/player contact latches the first field class.
-See ASTRA_KICKOFF_V5_REPORT.md for the native pre-kick state investigation.
+See ASTRA_KICKOFF_V6_REPORT.md for the native touchback presentation proof.
 
 Runtime storage is ten previously unreferenced bytes on the writable shared
 .rdata/.data page. 0xA69970 and 0xA69974..7F belong to other patches. Settings
@@ -67,6 +67,7 @@ HOOKS = {
     "ready": (0x1FF940, bytes.fromhex("8b41108b5004")),
     "head_pose": (0x1DF430, bytes.fromhex("558bec83e4f0")),
     "block_tick": (0x23CE70, bytes.fromhex("558bec83e4f0")),
+    "commentary": (0xA7930, bytes.fromhex("e9bb181400")),
 }
 
 
@@ -146,8 +147,12 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     def restore(flags=True): b("619d" if flags else "61")
     def replay(name):
         va, original = HOOKS[name]
-        b(original.hex())
-        a.jmp_abs(va + len(original))
+        if name == "commentary":
+            # The displaced instruction is a relative JMP thunk, not a prologue.
+            a.jmp_abs(0x1E91F0)
+        else:
+            b(original.hex())
+            a.jmp_abs(va + len(original))
     def guard(done, live=False):
         call("active_live" if live else "active"); j("0f84", done)
     def signed_z():  # ST0 := ball/contact z in kicking direction, balanced by caller
@@ -251,17 +256,28 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     b("0805" + imm(FLAGS))  # latch first class, never overwrite it
     label("contact_done"); b("c3")
 
+    # Share invalid-contact classification. Player contacts defer the whistle
+    # until bookkeeping completes; the ground callback can end it immediately.
+    label("invalid_contact")
+    b("83f804"); j("0f84", "invalid_set")
+    b("a0" + imm(FLAGS) + "24073c03"); j("0f85", "invalid_done")
+    label("invalid_set")
+    b("f605" + imm(FLAGS) + "40"); j("0f85", "invalid_done")
+    b("800d" + imm(FLAGS) + "80")
+    label("invalid_done"); b("c3")
+
     label("ground")
     save(False); guard("ground_done", live=True)
     b("3b0d" + imm(BALL)); j("0f85", "ground_done")
     # EDX is the collision-resolved transform passed by 0x1C841F.
     call("contact")
-    b("800d" + imm(TB_PROB) + "80")  # high bit: an actual ground contact occurred
-    b("83f804"); j("0f84", "ground_invalid")
-    b("a0" + imm(FLAGS) + "24073c03"); j("0f85", "ground_done")
-    label("ground_invalid")
     b("f605" + imm(FLAGS) + "40"); j("0f85", "ground_done")
-    b("800d" + imm(FLAGS) + "80")
+    # An untouched kick grounded in the end zone is dead by rule. This is
+    # independent of a returner's controller and the CPU kneel preference.
+    b("83f802"); j("0f84", "ground_finish")
+    call("invalid_contact")
+    b("f605" + imm(FLAGS) + "80"); j("0f84", "ground_done")
+    label("ground_finish")
     call("finish")
     label("ground_done"); restore(False); replay("ground")
 
@@ -269,11 +285,7 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     save(); guard("touch_done", live=True)
     b("a1" + imm(BALL) + "85c0"); j("0f84", "touch_done")
     b("8b5014"); call("contact")
-    b("83f804"); j("0f84", "touch_invalid")
-    b("a0" + imm(FLAGS) + "24073c03"); j("0f85", "touch_done")
-    label("touch_invalid")
-    b("f605" + imm(FLAGS) + "40"); j("0f85", "touch_done")
-    b("800d" + imm(FLAGS) + "80")
+    call("invalid_contact")
     # Defer the whistle until the next dispatcher/dead event, so retail contact
     # bookkeeping completes before the next-play record is constructed.
     label("touch_done"); restore(); replay("touch")
@@ -474,30 +486,36 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     guard("return_done", live=True)
     b("f605" + imm(FLAGS) + "80"); j("0f85", "return_finish")
     b("a1" + imm(BALL) + "85c0"); j("0f84", "return_done")
-    b("8b1085d2"); j("0f84", "return_loose")
+    b("8b1085d2"); j("0f84", "return_done")
     b("39ca"); j("0f85", "return_done")  # only actual holder's dispatcher
-    j("e9", "return_player")
-    label("return_loose")
-    # A CPU deep returner may leave a grounded end-zone ball downed. Never
-    # whistle an airborne, unfielded ball just because it crossed the goal line.
-    b("f605" + imm(TB_PROB) + "80"); j("0f84", "return_done")
-    b("80792e02"); j("0f83", "return_done")
     label("return_player")
     b("83791c01"); j("0f85", "return_done")
     call("receiving"); j("0f84", "return_done")
     b("a1" + imm(BALL))
     b("8b5014"); call("contact")
     b("83f802"); j("0f84", "return_end")
-    b("a1" + imm(BALL) + "833800"); j("0f84", "return_done")
     b("800d" + imm(FLAGS) + "40c3")  # field entered under possession
     label("return_end")
-    b("f605" + imm(FLAGS) + "40"); j("0f85", "return_done")
-    b("f605" + imm(FLAGS) + "20"); j("0f84", "return_done")
+    b("a0" + imm(FLAGS) + "24603c20"); j("0f85", "return_done")
     b("8b410c85c0"); j("0f84", "return_done")
     b("8338ff"); j("0f85", "return_done")
     b("8b4120f6808405000020"); j("0f85", "return_done")
-    label("return_finish"); call("finish")
+    # Native task waits for the catch animation to unlock, clears the old task,
+    # and requests action 0x63. Its retail clip event 0x5F ends the play later.
+    a.jmp_abs(0x2EE090)
+    label("return_finish"); j("e9", "finish")
     label("return_done"); b("c3")
+
+    # Use the retail touchback/dead-play transition, retaining kick ownership
+    # bookkeeping. force-40 overrides the spot afterward. The short/OOB
+    # announcement/penalty-choice UI remains a witness item, not a claim.
+    label("finish")
+    b("b80000803ff605" + imm(FLAGS) + "10"); j("0f84", "finish_positive")
+    b("0fbae81f")
+    label("finish_positive")
+    b("8b0d" + imm(CTX) + "89817c010000")
+    b("31c9")  # param_1=0 for next-spot builder through A0390
+    a.jmp_abs(0xA0390)
 
     label("dead")
     save(False); guard("dead_go", live=True)
@@ -526,17 +544,18 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     restore(False); b("31c0c3")
     label("eligibility_go"); restore(False); replay("eligibility")
 
-    # Use the retail touchback/dead-play transition, retaining kick ownership
-    # bookkeeping. force-40 overrides the spot afterward. The short/OOB
-    # announcement/penalty-choice UI remains a witness item, not a claim.
-    label("finish")
-    b("b80000803ff605" + imm(FLAGS) + "10"); j("0f84", "finish_positive")
-    b("0d00000080")
-    label("finish_positive")
-    b("8b0d" + imm(CTX) + "89817c010000")
-    b("31c9")  # param_1=0 for next-spot builder through A0390
-    a.call(0xA0390)
-    b("c3")
+    # Defer the per-frame catch/clear-lane producer while a kickoff ball is
+    # in the end zone and has never entered the field under possession. The
+    # native kneel (3A), touchback (5B), and possession (5D) producers are separate.
+    # Guard after the whistle too: 1E91F0 processes a pending catch before its
+    # live-state check. Replay the thunk target with its original one-arg ABI.
+    label("commentary")
+    save(False); guard("comment_go")
+    b("f605" + imm(FLAGS) + "40"); j("0f85", "comment_go")
+    b("a1" + imm(BALL) + "8b5014"); call("classify")
+    b("83f802"); j("0f85", "comment_go")
+    restore(False); b("c20400")
+    label("comment_go"); restore(False); replay("commentary")
 
     label("spot")
     save(); guard("spot_done")

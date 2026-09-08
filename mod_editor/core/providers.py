@@ -565,7 +565,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_digit_texture.py": "11af53184b52d3197620c60d9004ebcdd755c360590b9dcf70e5e3196573c69b",
         "mod_editor/core/nfl2k5_disc_identity.py": "bb9701f911996e4fd208f2eabbdce0c00b1519cc036055518830c19f06e223a4",
         "mod_editor/core/nfl2k5_draft_ai.py": "b90f8e84cd6e30c03758158a917773cdb44f3089f5f0aa2413503f39fb4a9a16",
-        "mod_editor/core/nfl2k5_dynamic_kickoff.py": "07d5a7e20b763d4cf454c1ab5bb9d87a697663fceca141c15cdb7dae59e77a7a",
+        "mod_editor/core/nfl2k5_dynamic_kickoff.py": "0f2a618ce8ad2443a472145fa69a7d06e0f78af1e9f7ce211ed9b35b00e6a6e7",
         "mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py": "211063695451178000aa7088245ddef8c31973f08fad490341a378bf6e8a6b4f",
         "mod_editor/core/nfl2k5_edge_rename.py": "1a47e378e17ca4fe8a2e9440778893826a32905efe64359463ac121110353695",
         "mod_editor/core/nfl2k5_espn25_rosters.py": "d6a18931816d9f67b4c811d665461981e2119179b3a8496c230b4af6874d8fd9",
