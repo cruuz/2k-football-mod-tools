@@ -3,24 +3,64 @@
 2026-09-07. Base `76434d6108a25ca7deac0160fb05f717badd7bd0`, branch
 `astra/r64-espn25-rosters`. **EXPERIMENTAL / UNWITNESSED. Opt-in only.**
 
-The data patch is implemented for all 35 shared historic rosters used by the
-25 existing Anniversary moments. It supplies 53 distinct, source-traceable real
-names per file and preserves each retail position slot, rating profile, appearance
-and team-pointer order. It does **not** establish the exact players on the field
-in those games. The supplied season lists cannot support that claim: 105 slots
-need players from other seasons, 1,173 numbers remain unknown, and 12 moments use
-a roster season selected for another moment. Those exceptions are recorded below
-and individually in the manifest.
+The 35 shared files now carry the box-score starters of their chosen moments,
+with season jersey numbers from Pro Football Reference and the attributed
+nflverse base. All **770 chosen-side starters** occupy starting depth slots.
+**1,732 of 1,855 numbers** are supported by those season pages; **123 remain
+unknown**. The fixed position mix still needs **105 players from other seasons**
+and 18 same-season nflverse players absent from the PFR page. Fifteen sides in
+12 moments share a file chosen for another season and cannot carry all of that
+game's starters. Every exception is explicit in the manifest.
 
-The standalone owner, generator, dataset, complete 75-resource inventory,
-standalone tests and exact receipts are delivered. The requested Build/UI option
-is specified in [WIRING.md](WIRING.md#r64-espn-25th-real-rosters-2026-09-07),
-including all protected dispatcher, BuildPlan, presets, UI, packaging and registry
-changes. Those protected files are deliberately unchanged, as required by the
-brief. This branch therefore supplies a working direct CLI and an integration
-handoff; it does not claim the shared Build checkbox is already wired.
+The existing Build and Gameplay Patches option is already wired in this base.
+The data change keeps its names, numbers and colleges byte contract, with
+positions, ratings, appearance, rank/side fields and team pointers preserved.
+The sections labeled "Original" below retain the initial implementation's
+evidence and counts; the following section and current per-moment table
+supersede their season-only selection results and old dataset receipts.
 
-## Source evidence and inventory
+## Exact lineups
+
+Updated 2026-09-08. **EXPERIMENTAL / UNWITNESSED.** Source: **Pro Football
+Reference** box-score starters and season roster pages, supplied offline in
+`pfr_pull/v1`. Its 2,889 rows include 50 Team Total rows, leaving 2,839 players,
+2,837 with numbers. Only derived player facts and source citations are shipped;
+raw pages and the pull stay private. The nflverse CC-BY attribution remains the
+separate base attribution and does not label the PFR source as CC-BY.
+
+The generator reserves each chosen game's 22 starters first. Left and right
+positions use the retail rank and side chains. Repeated TE/WR/DB roles use the
+next available depth for that role. Bench players follow season games started,
+games, then AV within the fixed position mix. When that cannot fill 53, the
+manifest identifies same-season nflverse or nearest-season same-franchise
+reserves. Numbers come only from the relevant PFR season page; 127 former
+other-season number guesses are gone. Colleges fill blank CSV cells when the
+PFR spelling matches one main-table college; 1,080 college cells can now be
+encoded, up from 29.
+
+All 1,100 box-score names match their game's season page. In the actual shared
+files, 966 are present and 903 occupy starting depth; 770 of those belong to the
+35 chosen sides. Thirteen moments have both sides complete. Fifteen losing
+sides list missing starters, displaced starters and number mismatches.
+`exact_game_lineup_established` is true for 35 sides only. **E** means
+"exact game starters from the box score; bench from the season roster";
+it describes the evidence basis, with shared-file exceptions shown per side.
+It does not establish snap-specific players, injuries or substitutions.
+
+Two source decisions need special attention: The Heartbreaker's supplied
+box-score away/home labels run opposite to SITU and are bound by team name.
+SAME OLD BUCS lists Lance Smith as SS, while the season page says RG; RG fills
+the missing offensive guard and is explicitly a HYPOTHESIS correction. Houston's
+1991 box score lists two RDE starters, so both are retained at the first two
+right-end depths. Jim Otto's source number `00` is stored as numeric zero;
+this writer cannot establish whether the game renders `00` or `0`.
+
+See [the exact-lineup report](ASTRA_ESPN25_EXACT_LINEUPS_REPORT.md) for the
+full before/after counts, every unresolved name, source decisions, final tests,
+and Noah's three-moment witness list. Current dataset SHA-256:
+`9f2c1d1d67ef630300a081410129c71a53f9de54f4b02a89ec0cbe7087656ba8`.
+
+## Original source evidence and inventory
 
 The input is the user's USA retail XISO/extraction plus 45 supplied
 `inputs/nflverse_rosters/roster_1960.csv` through `roster_2004.csv`: **69,253 rows**.
@@ -74,7 +114,7 @@ are retained where the supplied chosen-season membership and role support them.
 The original partial scratch note that described every retail player as a
 placeholder was incorrect; the full inventory above supersedes it.
 
-## Selection and preservation rules
+## Original season-only selection rules (superseded)
 
 1. **Choose a roster season for the shared file.** Parse the retail moment's date;
    January/February belong to the preceding season. Prefer a using moment whose
@@ -151,39 +191,41 @@ side, including neutral-site Super Bowls. Dates and titles are retained from the
 user's retail SITU. The title `LONGEST PLAYOFF GAME EVER` is a retail caption,
 not an independently verified record claim.
 
-Every row uses **I: inferred season regulars; exact game lineup unknown**.
-P is the number of retail placeholders replaced. F is a player from another
-season, U a retained unknown number, and O a number inferred from another season.
-All numeric pairs are **away/home**. Shared-file counts repeat here; totals must
-be taken over the 35 unique resources, not summed over the 25 games.
+Every row uses **E: exact game starters from the box score; bench from the
+season roster**, with the shared-file losses shown explicitly. S is starters
+resolved at starting depth (out of 22), N is numbers verified against this
+moment's game-season page, and U is numbers still unverified for this moment.
+F counts other-season players in the loaded file. P counts replaced retail
+placeholders. Pairs are away/home in SITU order. N/U totals repeat shared files;
+unique-resource totals are 1,732/123, while moment-side totals are 2,060/590.
 
-| Index / title | Game date; teams | Away file; selected season | Home file; selected season | Lineup basis and shared loss | P A/H | F; U; O A/H |
+| Index / title | Game date; teams | Away file; selected season | Home file; selected season | Lineup basis and shared loss | S A/H | N; U; F; P A/H |
 | --- | --- | --- | --- | --- | ---: | --- |
-| 0: THE ICE BOWL | 1967-12-31; Dallas Cowboys vs Green Bay Packers | `h-07-1971-cowboys-4.iff`; 1967 | `h-10-1966-packers-3.iff`; 1967 | I. Both selected seasons match; game starters unproved. | 53/53 | F 12/12; U 52/52; O 1/0 |
-| 1: THE HEIDI BOWL | 1968-11-17; New York Jets vs Oakland Raiders | `h-19-1968-jets-4.iff`; 1968 | `h-20-1967-raiders-1.iff`; 1968 | I. Both selected seasons match; game starters unproved. | 53/53 | F 8/5; U 52/52; O 0/1 |
-| 2: MERRY CHRISTMAS MIAMI | 1971-12-25; Miami Dolphins vs Kansas City Chiefs | `h-14-1972-dolphins-4.iff`; 1971 | `h-13-1969-chiefs-4.iff`; 1971 | I. Both selected seasons match; game starters unproved. | 53/53 | F 9/9; U 52/52; O 0/1 |
-| 3: THE IMMACULATE RECEPTION | 1972-12-23; Oakland Raiders vs Pittsburgh Steelers | `h-20-1967-raiders-1.iff`; 1968 | `h-22-1975-steelers-1.iff`; 1972 | I. away uses 1968 for 1972 | 53/53 | F 5/6; U 52/52; O 1/1 |
-| 4: THE SEA OF HANDS | 1974-12-21; Miami Dolphins vs Oakland Raiders | `h-14-1972-dolphins-4.iff`; 1971 | `h-20-1976-raiders-0.iff`; 1974 | I. away uses 1971 for 1974 | 53/53 | F 9/6; U 52/51; O 0/2 |
-| 5: THE FINAL COMEBACK | 1979-12-16; Washington Redskins vs Dallas Cowboys | `h-29-1982-redskins-2.iff`; 1983 | `h-07-1977-cowboys-3.iff`; 1979 | I. away uses 1983 for 1979 | 53/53 | F 3/9; U 51/43; O 1/10 |
-| 6: THE AINTS' BIGGEST CHOKE | 1980-12-07; New Orleans Saints vs San Francisco 49ers | `h-17-1991-saints-4.iff`; 1980 | `h-25-1981-49ers-3.iff`; 1981 | I. home uses 1981 for 1980 | 52/53 | F 2/0; U 53/42; O 0/10 |
-| 7: LONGEST PLAYOFF GAME EVER | 1982-01-02; San Diego Chargers vs Miami Dolphins | `h-24-1980-chargers-4.iff`; 1981 | `h-14-1984-dolphins-3.iff`; 1981 | I. Both selected seasons match; game starters unproved. | 53/53 | F 4/4; U 53/42; O 0/11 |
-| 8: THE CATCH | 1982-01-10; Dallas Cowboys vs San Francisco 49ers | `h-07-1977-cowboys-3.iff`; 1979 | `h-25-1981-49ers-3.iff`; 1981 | I. away uses 1979 for 1981 | 53/53 | F 9/0; U 43/42; O 10/10 |
-| 9: GREATEST REDSKIN COMEBACK | 1983-10-02; Los Angeles Raiders vs Washington Redskins | `h-20-1983-raiders-0.iff`; 1983 | `h-29-1982-redskins-2.iff`; 1983 | I. Both selected seasons match; game starters unproved. | 53/53 | F 0/3; U 52/51; O 0/1 |
-| 10: THE DRIVE | 1987-01-11; Denver Broncos vs Cleveland Browns | `h-08-1986-broncos-1.iff`; 1986 | `h-30-1986-browns-1.iff`; 1986 | I. Both selected seasons match; game starters unproved. | 53/53 | F 1/3; U 52/53; O 0/0 |
-| 11: THE 2-SECOND MISCALCULATION | 1987-09-20; San Francisco 49ers vs Cincinnati Bengals | `h-25-1989-49ers-3.iff`; 1988 | `h-06-1988-bengals-1.iff`; 1988 | I. away uses 1988 for 1987; home uses 1988 for 1987 | 51/53 | F 0/2; U 26/50; O 24/2 |
-| 12: SAME OLD BUCS | 1987-11-08; Tampa Bay Buccaneers vs St. Louis Cardinals | `h-27-1979-buccaneers-3.iff`; 1987 | `h-00-1975-cardinals-3.iff`; 1987 | I. Both selected seasons match; game starters unproved. | 53/53 | F 0/0; U 28/53; O 25/0 |
-| 13: 49ERS DO IT AGAIN | 1989-01-22; Cincinnati Bengals vs San Francisco 49ers | `h-06-1988-bengals-1.iff`; 1988 | `h-25-1989-49ers-3.iff`; 1988 | I. Both selected seasons match; game starters unproved. | 53/51 | F 2/0; U 50/26; O 2/24 |
-| 14: WIDE RIGHT | 1991-01-27; Buffalo Bills vs New York Giants | `h-03-1990-bills-2.iff`; 1990 | `h-18-1990-giants-2.iff`; 1990 | I. Both selected seasons match; game starters unproved. | 53/52 | F 1/3; U 46/31; O 4/21 |
-| 15: HOUSTON'S HEARTS RIPPED OUT | 1992-01-04; Houston Oilers vs Denver Broncos | `h-28-1979-oilers-2.iff`; 1991 | `h-08-1986-broncos-1.iff`; 1986 | I. home uses 1986 for 1991 | 53/53 | F 5/1; U 43/52; O 0/0 |
-| 16: THE TWO TD COMEBACK ON KC | 1992-10-04; Kansas City Chiefs vs Denver Broncos | `h-13-1993-chiefs-2.iff`; 1992 | `h-08-1986-broncos-1.iff`; 1986 | I. home uses 1986 for 1992 | 51/53 | F 0/1; U 37/52; O 12/0 |
-| 17: THE BIGGEST COMEBACK EVER | 1993-01-03; Houston Oilers vs Buffalo Bills | `h-28-1979-oilers-2.iff`; 1991 | `h-03-1990-bills-2.iff`; 1990 | I. away uses 1991 for 1992; home uses 1990 for 1992 | 53/53 | F 5/1; U 43/46; O 0/4 |
-| 18: THE HEARTBREAKER | 1994-10-17; Denver Broncos vs Kansas City Chiefs | `h-08-1986-broncos-1.iff`; 1986 | `h-13-1993-chiefs-2.iff`; 1992 | I. away uses 1986 for 1994; home uses 1992 for 1994 | 53/51 | F 1/0; U 52/37; O 0/12 |
-| 19: THE COLTS' COLLAPSE | 1997-09-21; Indianapolis Colts vs Buffalo Bills | `h-11-1970-colts-5.iff`; 1997 | `h-03-1990-bills-2.iff`; 1990 | I. home uses 1990 for 1997 | 53/53 | F 0/1; U 0/46; O 0/4 |
-| 20: THE SUPER BOWL DRIVE | 1998-01-25; Green Bay Packers vs Denver Broncos | `h-10-1996-packers-2.iff`; 1997 | `h-08-1998-broncos-0.iff`; 1997 | I. Both selected seasons match; game starters unproved. | 42/36 | F 1/0; U 0/0; O 0/0 |
-| 21: A YARD TOO SHORT | 2000-01-30; St. Louis Rams vs Tennessee Titans | `h-23-1999-rams-2.iff`; 1999 | `h-28-1999-titans-0.iff`; 1999 | I. Both selected seasons match; game starters unproved. | 25/32 | F 0/0; U 1/0; O 0/0 |
-| 22: VINATIERI STRIKES AGAIN | 2002-02-03; St. Louis Rams vs New England Patriots | `h-23-1999-rams-2.iff`; 1999 | `h-16-2001-patriots-0.iff`; 2001 | I. away uses 1999 for 2001 | 25/19 | F 0/0; U 1/2; O 0/0 |
-| 23: THE BOTCHED SNAP | 2003-01-05; New York Giants vs San Francisco 49ers | `h-18-2003-giants-0.iff`; 2002 | `h-25-2003-49ers-0.iff`; 2002 | I. Both selected seasons match; game starters unproved. | 17/9 | F 0/0; U 0/0; O 1/0 |
-| 24: FOURTH AND TWENTY-SIX | 2004-01-11; Green Bay Packers vs Philadelphia Eagles | `h-10-2004-packers-0.iff`; 2003 | `h-21-2004-eagles-0.iff`; 2003 | I. Both selected seasons match; game starters unproved. | 3/5 | F 0/0; U 0/0; O 0/0 |
+| 0: THE ICE BOWL | 1967-12-31; Dallas Cowboys vs Green Bay Packers | `h-07-1971-cowboys-4.iff`; 1967 | `h-10-1966-packers-3.iff`; 1967 | E. Both sides complete. | 22/22 | N 41/41; U 12/12; F 12/12; P 53/53 |
+| 1: THE HEIDI BOWL | 1968-11-17; New York Jets vs Oakland Raiders | `h-19-1968-jets-4.iff`; 1968 | `h-20-1967-raiders-1.iff`; 1968 | E. Both sides complete. | 22/22 | N 44/49; U 9/4; F 8/4; P 53/53 |
+| 2: MERRY CHRISTMAS MIAMI | 1971-12-25; Miami Dolphins vs Kansas City Chiefs | `h-14-1972-dolphins-4.iff`; 1971 | `h-13-1969-chiefs-4.iff`; 1971 | E. Both sides complete. | 22/22 | N 44/44; U 9/9; F 8/9; P 53/53 |
+| 3: THE IMMACULATE RECEPTION | 1972-12-23; Oakland Raiders vs Pittsburgh Steelers | `h-20-1967-raiders-1.iff`; 1968 | `h-22-1975-steelers-1.iff`; 1972 | E. away uses 1968 for 1972 | 6/22 | N 13/47; U 40/6; F 4/5; P 53/53 |
+| 4: THE SEA OF HANDS | 1974-12-21; Miami Dolphins vs Oakland Raiders | `h-14-1972-dolphins-4.iff`; 1971 | `h-20-1976-raiders-0.iff`; 1974 | E. away uses 1971 for 1974 | 15/22 | N 29/47; U 24/6; F 8/6; P 53/53 |
+| 5: THE FINAL COMEBACK | 1979-12-16; Washington Redskins vs Dallas Cowboys | `h-29-1982-redskins-2.iff`; 1983 | `h-07-1977-cowboys-3.iff`; 1979 | E. away uses 1983 for 1979 | 7/22 | N 11/44; U 42/9; F 3/9; P 53/53 |
+| 6: THE AINTS' BIGGEST CHOKE | 1980-12-07; New Orleans Saints vs San Francisco 49ers | `h-17-1991-saints-4.iff`; 1980 | `h-25-1981-49ers-3.iff`; 1981 | E. home uses 1981 for 1980 | 22/13 | N 51/27; U 2/26; F 2/0; P 52/53 |
+| 7: LONGEST PLAYOFF GAME EVER | 1982-01-02; San Diego Chargers vs Miami Dolphins | `h-24-1980-chargers-4.iff`; 1981 | `h-14-1984-dolphins-3.iff`; 1981 | E. Both sides complete. | 22/22 | N 48/48; U 5/5; F 4/5; P 53/53 |
+| 8: THE CATCH | 1982-01-10; Dallas Cowboys vs San Francisco 49ers | `h-07-1977-cowboys-3.iff`; 1979 | `h-25-1981-49ers-3.iff`; 1981 | E. away uses 1979 for 1981 | 10/22 | N 28/53; U 25/0; F 9/0; P 53/53 |
+| 9: GREATEST REDSKIN COMEBACK | 1983-10-02; Los Angeles Raiders vs Washington Redskins | `h-20-1983-raiders-0.iff`; 1983 | `h-29-1982-redskins-2.iff`; 1983 | E. Both sides complete. | 22/22 | N 52/50; U 1/3; F 1/3; P 53/53 |
+| 10: THE DRIVE | 1987-01-11; Denver Broncos vs Cleveland Browns | `h-08-1986-broncos-1.iff`; 1986 | `h-30-1986-browns-1.iff`; 1986 | E. Both sides complete. | 22/22 | N 52/50; U 1/3; F 0/3; P 53/53 |
+| 11: THE 2-SECOND MISCALCULATION | 1987-09-20; San Francisco 49ers vs Cincinnati Bengals | `h-25-1989-49ers-3.iff`; 1988 | `h-06-1988-bengals-1.iff`; 1988 | E. away uses 1988 for 1987; home uses 1988 for 1987 | 11/11 | N 39/40; U 14/13; F 0/2; P 51/53 |
+| 12: SAME OLD BUCS | 1987-11-08; Tampa Bay Buccaneers vs St. Louis Cardinals | `h-27-1979-buccaneers-3.iff`; 1987 | `h-00-1975-cardinals-3.iff`; 1987 | E. Both sides complete. Lance Smith RG correction. | 22/22 | N 53/53; U 0/0; F 0/0; P 53/53 |
+| 13: 49ERS DO IT AGAIN | 1989-01-22; Cincinnati Bengals vs San Francisco 49ers | `h-06-1988-bengals-1.iff`; 1988 | `h-25-1989-49ers-3.iff`; 1988 | E. Both sides complete. | 22/22 | N 51/52; U 2/1; F 2/0; P 53/51 |
+| 14: WIDE RIGHT | 1991-01-27; Buffalo Bills vs New York Giants | `h-03-1990-bills-2.iff`; 1990 | `h-18-1990-giants-2.iff`; 1990 | E. Both sides complete. | 22/22 | N 52/50; U 1/3; F 1/3; P 53/52 |
+| 15: HOUSTON'S HEARTS RIPPED OUT | 1992-01-04; Houston Oilers vs Denver Broncos | `h-28-1979-oilers-2.iff`; 1991 | `h-08-1986-broncos-1.iff`; 1986 | E. home uses 1986 for 1991 Two source RDEs. | 22/5 | N 45/13; U 8/40; F 5/0; P 53/53 |
+| 16: THE TWO TD COMEBACK ON KC | 1992-10-04; Kansas City Chiefs vs Denver Broncos | `h-13-1993-chiefs-2.iff`; 1992 | `h-08-1986-broncos-1.iff`; 1986 | E. home uses 1986 for 1992 | 22/5 | N 51/10; U 2/43; F 0/0; P 51/53 |
+| 17: THE BIGGEST COMEBACK EVER | 1993-01-03; Houston Oilers vs Buffalo Bills | `h-28-1979-oilers-2.iff`; 1991 | `h-03-1990-bills-2.iff`; 1990 | E. away uses 1991 for 1992; home uses 1990 for 1992 | 17/11 | N 38/35; U 15/18; F 5/1; P 53/53 |
+| 18: THE HEARTBREAKER | 1994-10-17; Denver Broncos vs Kansas City Chiefs | `h-08-1986-broncos-1.iff`; 1986 | `h-13-1993-chiefs-2.iff`; 1992 | E. away uses 1986 for 1994; home uses 1992 for 1994 | 2/7 | N 4/16; U 49/37; F 0/0; P 53/51 |
+| 19: THE COLTS' COLLAPSE | 1997-09-21; Indianapolis Colts vs Buffalo Bills | `h-11-1970-colts-5.iff`; 1997 | `h-03-1990-bills-2.iff`; 1990 | E. home uses 1990 for 1997 | 22/2 | N 52/5; U 1/48; F 0/1; P 53/53 |
+| 20: THE SUPER BOWL DRIVE | 1998-01-25; Green Bay Packers vs Denver Broncos | `h-10-1996-packers-2.iff`; 1997 | `h-08-1998-broncos-0.iff`; 1997 | E. Both sides complete. | 22/22 | N 52/53; U 1/0; F 1/0; P 42/36 |
+| 21: A YARD TOO SHORT | 2000-01-30; St. Louis Rams vs Tennessee Titans | `h-23-1999-rams-2.iff`; 1999 | `h-28-1999-titans-0.iff`; 1999 | E. Both sides complete. | 22/22 | N 52/52; U 1/1; F 1/0; P 25/32 |
+| 22: VINATIERI STRIKES AGAIN | 2002-02-03; St. Louis Rams vs New England Patriots | `h-23-1999-rams-2.iff`; 1999 | `h-16-2001-patriots-0.iff`; 2001 | E. away uses 1999 for 2001 | 11/22 | N 20/53; U 33/0; F 1/0; P 25/19 |
+| 23: THE BOTCHED SNAP | 2003-01-05; New York Giants vs San Francisco 49ers | `h-18-2003-giants-0.iff`; 2002 | `h-25-2003-49ers-0.iff`; 2002 | E. Both sides complete. | 22/22 | N 52/51; U 1/2; F 0/0; P 17/9 |
+| 24: FOURTH AND TWENTY-SIX | 2004-01-11; Green Bay Packers vs Philadelphia Eagles | `h-10-2004-packers-0.iff`; 2003 | `h-21-2004-eagles-0.iff`; 2003 | E. Both sides complete. | 22/22 | N 52/51; U 1/2; F 0/1; P 3/5 |
 
 There are **15 mismatched sides in 12 moments**. The chosen and losing moments
 are explicit below. A single shared file cannot switch its players by game date:
@@ -194,7 +236,7 @@ ROST entries, new selectors and main historic descriptor/string growth; that is
 outside this fixed-span option. The same file's historic exhibition team also
 receives these replacement identities.
 
-## Unique resource decisions and byte counts
+## Original unique resource decisions and byte counts (superseded)
 
 The filename contains the original descriptor year. `Season` is the actual
 selected data season. `Source` is the distinct supplied team-season membership
@@ -318,7 +360,7 @@ other GUI panels, registry contents and cave manifest were not edited. No full
 protected Build, recipe, release-package or kickoff-plus-data integration result
 is claimed before that handoff is applied.
 
-## PROVED receipts, tests and their limits
+## Original PROVED receipts, tests and their limits
 
 Final dataset SHA-256:
 `66ab419ad9fa3388b2749526f57b0d7b5a1d4c631560230dd6635457e97e6406`.
@@ -398,7 +440,7 @@ with `d61c7c9...` and 25,906 changed bytes are superseded; they are not the ship
 evidence. The cache was also removed so a long-lived Studio check detects a later
 missing/modified manifest or CSV. No failing test was reclassified as a skip.
 
-## Noah's witness list and known gaps
+## Original witness list and known gaps (see Exact lineups)
 
 After the protected handoff is integrated, build a disposable disc with this
 option explicitly selected and One-pool positions off. First use the same
@@ -435,7 +477,7 @@ proof. Exact game starters, injuries, substitutions and snap-specific players
 need additional game-level evidence that was not supplied. Even perfect loading
 cannot resolve the missing data or the fixed shared-roster limitation.
 
-## Delivery and resource discipline
+## Original delivery and resource discipline
 
 No network, GUI display, audio, console emulator, other-worktree edit, source
 mutation or push was performed. Existing ASTRA report summaries, the RC85

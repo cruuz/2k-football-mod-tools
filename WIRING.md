@@ -12814,3 +12814,37 @@ prepared files remain in the session cache so an already captured Build path
 cannot silently acquire different content. Music projects contain only the
 current song list. Existing shared Undo/Redo continues to own fixed replacements;
 added songs use the explicit Remove and Move controls.
+
+## r64 ESPN 25th exact lineups, 2026-09-08
+
+The existing `espn25_rosters` surface is already wired on base `5704832`.
+This delivery changes its dataset and shared HELP_TEXT, with no new option,
+writer bytes or executable owner. Protected files remain untouched.
+
+- **Allowlist:** add the exact line `ASTRA_ESPN25_EXACT_LINEUPS_REPORT.md` beside
+  `ASTRA_ESPN25_ROSTERS_REPORT.md` in `packaging/release-allowlist.txt`. The
+  current allowlist already contains all 35 CSVs, manifest, owner and capability
+  descriptor. Both offline generators remain repository development tools;
+  neither is required by the shipped runtime. Never add raw PFR pages or inputs.
+- **Dispatcher `_apply_all` tuple and kwarg, four status dictionaries:** retain
+  the existing `espn25_rosters=False` plumbing and image-only adapter. No tuple,
+  request union, kwarg or dictionary addition is needed. No XBE owner is added.
+- **BuildPlan and presets:** retain `espn25_rosters: bool = False` in Basic,
+  Advanced and Experimental and all existing position/layout/plan refusals.
+- **Gameplay Patches:** the existing `PATCHES` row imports
+  `tt.espn25_rosters_patch.HELP_TEXT`, updated here to include "Retail" and
+  "Patch", PFR starters/numbers, shared-season and reserve limits. Keep
+  `espn25_rosters` in `NEEDS_IMAGE`; no protected text edit is required.
+- **Build `_option`:** retain `Historic moments: real rosters` (30 characters),
+  the imported HELP_TEXT and `needs_image=True`.
+- **Runtime closure imports:** existing
+  `mod_editor.core.nfl2k5_espn25_rosters` suffices. No PFR reader or generator
+  import is added to the runtime.
+- **Capability registry:** the existing
+  `nfl2k5.rosters.espn25_real_rosters` object and its descriptor are updated
+  here with exact-lineup evidence and separate PFR/nflverse attribution. No new
+  surface or capability-count change. CLI/validation commands are unchanged.
+- **Protected reservation manifest:** the owner source pin changes because
+  DATASET_SHA256 and HELP_TEXT changed. Regenerate
+  `data/nfl2k5_cave_reservations.json` once with the complete integration stack,
+  as the brief instructs; do not carry an ad hoc pin from this worktree.

@@ -1498,13 +1498,14 @@ refused. Never part of a preset; unwitnessed in game.
 ## Historic moments: real rosters (RC86)
 
 **Historic moments: real rosters** (Build tab and Gameplay Patches; disc images only; off in every
-preset) fills the 35 shared historic roster files with 53 real names each from the nflverse season
-rosters (1960 to 2004, CC-BY), keeping every retail slot's position, ratings and appearance. It is not the
-exact game-day lineup: the source has no starters or depth order, 105 slots are filled from neighbouring
-seasons, 1,173 jersey numbers are unknown for their year, and 12 moments share a file with a moment from
-another season, so the file carries one season. The report lists every approximation per moment. It needs
-the retail position layout (it refuses the merged position pools) and cannot be combined with a saved
-Anniversary plan in the same build. Unwitnessed in game.
+preset) uses Pro Football Reference box-score starters and season jersey numbers with the nflverse
+roster base (CC-BY), keeping each retail slot's position, ratings and appearance. All 22 starters are
+placed at starting depth for each file's chosen moment; 12 moments share a file with another season,
+so their missing starters are listed in the roster report. Across the 35 files, 1,732 numbers are
+supported by the season pages and 123 remain unknown; the fixed roster mix still needs 105 reserves
+from other seasons. Box-score starters do not establish every player on the field for a particular
+snap. It needs the retail position layout (it refuses the merged position pools) and cannot be
+combined with a saved Anniversary plan in the same build. Experimental and unwitnessed in game.
 
 ## Team Kit import into another project, and the receipt (RC86)
 

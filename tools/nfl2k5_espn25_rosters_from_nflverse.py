@@ -3,7 +3,8 @@
 
 Source: user-supplied nflverse-data season CSVs, CC-BY-4.0, same attribution
 as nfl2k5_team_history_from_nflverse.py. No downloads or game execution.
-Reconstruction cannot establish game starters from a season membership list.
+The supplied PFR box scores and season rosters establish starter identities.
+Missing fixed-role reserves and shared-file conflicts remain explicit.
 Use --check to regenerate in temporary storage and compare every output byte.
 """
 from __future__ import annotations
@@ -305,7 +306,9 @@ def write_json(path, value):
     Path(path).write_text(json.dumps(value, indent=2, sort_keys=True, ensure_ascii=True) + "\n", encoding="utf-8", newline="\n")
 
 
-def generate(retail, inputs, output, docs):
+def generate(retail, inputs, output, docs, pfr=None):
+    import nfl2k5_espn25_exact_lineups as exact
+    evidence = exact.Evidence(pfr or exact.DEFAULT_PFR)
     source = Source(inputs)
     output.mkdir(parents=True, exist_ok=True)
     docs.mkdir(parents=True, exist_ok=True)
@@ -356,7 +359,7 @@ def generate(retail, inputs, output, docs):
             continue
         uses = [m for m in moments if any(m[s]["outer"] == d["outer"] for s in ("away", "home"))]
         chosen = choose_season(d, uses)
-        text, provenance, after = make_roster(raw, d, chosen, source, context["colleges"])
+        text, provenance, after, exclusions = exact.make_roster(raw, d, chosen, source, context["colleges"], evidence)
         name = d["filename"][:-4] + ".csv"
         (output / name).write_text(text, encoding="utf-8", newline="\n")
         target = {**d, "size": len(raw), "retail_sha256": e.sha(raw), "applied_sha256": e.sha(after),
@@ -366,10 +369,7 @@ def generate(retail, inputs, output, docs):
                   "losing_moments": [m["moment"] for m in uses if m["season"] != chosen["season"]],
                   "placeholders_replaced": classifications["placeholder"], "position_mix": file_info["position_mix"],
                   "season_source_players": len({r["identity"] for r in source.by_team[SELECTORS[d["selector"]]] if r["season"] == chosen["season"]}),
-                  "excluded_source_names": [{"name": r["full_name"], "file": r["source_file"], "line": r["source_line"],
-                                             "reason": "Name does not fit the existing 15-character codec; not shortened."}
-                                            for r in source.by_team[SELECTORS[d["selector"]]]
-                                            if r["season"] == chosen["season"] and not name_fits(r)],
+                  "excluded_source_names": exclusions,
                   "fillers": sum(p["adjacent_season_filler"] for p in provenance),
                   "unknown_numbers": sum(p["jersey_source"]["basis"] == "retail_slot_unknown_historical_number" for p in provenance),
                   "other_season_numbers": sum(p["jersey_source"]["basis"] == "other_season_same_player_same_franchise" for p in provenance),
@@ -413,6 +413,7 @@ def generate(retail, inputs, output, docs):
             "names": "Use supplied full_name split by supplied last_name; preserve familiar names from full_name when first_name is legal name. Existing codec allocator only; no truncation.",
             "activation": "All presets off: opt-in because data cannot meet exact-game identities/numbers, even if bounded native loading passes. Protected wiring in WIRING.md."},
         "resources": targets, "moments": moment_rows}
+    exact.enrich_manifest(manifest, moments, evidence, output)
     write_json(output / "manifest.json", manifest)
     fields = list(inventory_rows[0])
     with (docs / "nfl2k5_espn25_inventory.csv").open("w", encoding="utf-8", newline="") as handle:
@@ -432,19 +433,20 @@ def main(argv=None):
     parser.add_argument("--inputs", type=Path, default=DEFAULT_INPUT)
     parser.add_argument("--out", type=Path, default=e.DATA_DIR)
     parser.add_argument("--docs", type=Path, default=ROOT / "docs/mod_editor")
+    parser.add_argument("--pfr", type=Path, help="Private pfr_pull/v1 evidence (default .scratch/pfr/pfr_data.json)")
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args(argv)
     if args.check:
         with tempfile.TemporaryDirectory(prefix="espn25-data-check-") as directory:
             scratch = Path(directory).resolve()
-            generate(args.retail, args.inputs, scratch / "data", scratch / "docs")
+            generate(args.retail, args.inputs, scratch / "data", scratch / "docs", args.pfr)
             for folder, target in ((scratch / "data", args.out), (scratch / "docs", args.docs)):
                 for path in folder.iterdir():
                     e.require(path.read_bytes() == (target / path.name).read_bytes(), f"regeneration differs: {path.name}")
             e.require({p.name for p in (scratch / "data").iterdir()} == {p.name for p in args.out.iterdir()}, "unexpected dataset files")
         print("all generated files reproduce exactly")
     else:
-        generate(args.retail, args.inputs, args.out, args.docs)
+        generate(args.retail, args.inputs, args.out, args.docs, args.pfr)
     return 0
 
 

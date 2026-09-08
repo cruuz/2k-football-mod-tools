@@ -9,14 +9,16 @@
     "ASTRA_ESPN25_ROSTERS_REPORT.md",
     "tests/mod_editor/test_nfl2k5_espn25_rosters.py",
     "tests/mod_editor/test_nfl2k5_espn25_rosters_native.py",
-    "docs/mod_editor/nfl2k5_espn25_inventory.json"
+    "docs/mod_editor/nfl2k5_espn25_inventory.json",
+    "ASTRA_ESPN25_EXACT_LINEUPS_REPORT.md",
+    "tests/mod_editor/test_nfl2k5_espn25_exact_lineups.py"
   ],
   "game": "nfl2k5_xbox",
   "gui": {
     "default_enabled": false,
     "expose": true,
     "mode": "edit",
-    "reason": "EXPERIMENTAL / UNWITNESSED. All presets off because supplied season lists cannot establish exact game starters or numbers. Protected wiring in WIRING.md."
+    "reason": "EXPERIMENTAL / UNWITNESSED. All presets off. Chosen-side box-score starters are established; shared files, incomplete bench lists and snap-specific players remain limited."
   },
   "id": "nfl2k5.rosters.espn25_real_rosters",
   "input_constraints": [
@@ -25,13 +27,13 @@
     "Season rosters are incomplete: named same-franchise nearby-season role fillers and retained unknown numbers are disclosed per player."
   ],
   "portme": [
-    "Apply the protected Build and image-resource-pass handoff in WIRING.md.",
+    "The existing Build option is wired; keep it off in every preset and retain the image/layout compatibility checks.",
     "Noah must load each of the 25 moments and check on-field and pause-menu identities, numbers, formations and gameplay."
   ],
   "public_distribution": {
     "game_data": "never-bundle-retail-data",
     "mod_payload": "user-authored-inputs-and-recipes",
-    "rule": "Source and generated CC-BY-4.0 attributed roster CSV recipes. Do not distribute resource binaries, executables or disc images. Full decoded retail inventory is local research evidence.",
+    "rule": "Source and generated roster CSV recipes: nflverse CC-BY-4.0 base plus attributed Pro Football Reference derived player facts. No raw PFR pages, resource binaries, executables or disc images. Full decoded retail inventory is local research evidence.",
     "tooling": "source-and-schemas-only"
   },
   "runtime": {
@@ -49,7 +51,7 @@
         "required": true
       }
     ],
-    "notes": "Retail: position-name placeholders. Patch: inferred historical identities, with shared-season and incomplete-data limits."
+    "notes": "Retail: position-name placeholders. Patch: box-score starters and season numbers for each chosen shared file, with every shared-season and incomplete-data exception recorded."
   },
   "source_container": {
     "format": "uncompressed ROST resources in XDVDFS outer archive",

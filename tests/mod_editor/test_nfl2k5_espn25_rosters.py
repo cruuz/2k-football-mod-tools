@@ -97,16 +97,12 @@ class DatasetTests(unittest.TestCase):
         self.assertEqual(len(manifest["source"]["files"]), 45)
         self.assertFalse(e.DEFAULT_ENABLED)
         self.assertEqual(e.REQUESTS, ())
-        self.assertTrue(all(not m["exact_game_lineup_established"] for m in manifest["moments"]))
+        self.assertTrue(any(m["exact_game_lineup_established"] for m in manifest["moments"]))
+        self.assertTrue(any(not m["exact_game_lineup_established"] for m in manifest["moments"]))
         for target in manifest["resources"]:
             self.assertEqual(Counter(r["position"] for r in sheets[target["outer"]]), target["position_mix"])
             self.assertEqual(target["fillers"], sum(p["source_season"] != target["selected_season"] for p in target["players"]))
-            for position in rr.POSITIONS:
-                group = [p for row, p in zip(sheets[target["outer"]], target["players"]) if row["position"] == position]
-                regulars = [p["retail_depth_rank"] for p in group if not p["adjacent_season_filler"]]
-                fillers = [p["retail_depth_rank"] for p in group if p["adjacent_season_filler"]]
-                if regulars and fillers:
-                    self.assertLessEqual(max(regulars), min(fillers))
+            self.assertEqual(sum(p["game_starter"] for p in target["players"]), 22)
             if target["editorial_qb_preference"]:
                 qb = next(p for row, p in zip(sheets[target["outer"]], target["players"])
                           if row["position"] == "QB" and p["retail_depth_rank"] == 0)
@@ -125,31 +121,39 @@ class DatasetTests(unittest.TestCase):
         for target in manifest["resources"]:
             seen = set()
             for p, row in zip(target["players"], sheets[target["outer"]]):
-                r = by_line[p["source_file"], p["source_line"]]
-                self.assertEqual(gen.display_parts(r), (row["first"], row["last"]))
-                self.assertEqual(r["identity"], p["source_identity"])
-                self.assertNotIn(r["identity"], seen)
-                seen.add(r["identity"])
-                self.assertEqual(r["franchise"], gen.SELECTORS[target["selector"]])
-                self.assertEqual(r["season"], p["source_season"])
-                fit, _ = gen.position_fit(r, row["position"])
-                self.assertLess(fit, gen.INF)
+                if p["source_file"].startswith("roster_"):
+                    r = by_line[p["source_file"], p["source_line"]]
+                    self.assertEqual(r["identity"], p["source_identity"])
+                    self.assertEqual(r["franchise"], gen.SELECTORS[target["selector"]])
+                    self.assertEqual(r["season"], p["source_season"])
+                    if not p["pfr_name"]:
+                        self.assertEqual(gen.display_parts(r), (row["first"], row["last"]))
+                        self.assertLess(gen.position_fit(r, row["position"])[0], gen.INF)
+                    if p["college_source"] == "nflverse":
+                        self.assertEqual(p["source_college"], r["college"])
+                else:
+                    self.assertEqual(p["source_file"], p["pfr_roster_url"])
+                    self.assertEqual(p["source_line"], p["pfr_roster_line"])
+                self.assertNotIn(p["source_identity"], seen)
+                seen.add(p["source_identity"])
                 if row["college"]:
-                    self.assertEqual(row["college"], r["college"])
+                    self.assertEqual(row["college"], p["source_college"])
                     self.assertEqual(manifest["colleges"].count(row["college"]), 1)
+                # Every PFR name/number/college is independently compared to the
+                # supplied page in test_nfl2k5_espn25_exact_lineups.py.
                 basis = p["jersey_source"]
-                if basis["basis"] != "retail_slot_unknown_historical_number":
-                    donor = by_line[basis["file"], basis["line"]]
-                    self.assertEqual((donor["identity"], donor["franchise"]), (r["identity"], r["franchise"]))
-                    self.assertEqual(gen.number(donor["jersey_number"]), int(row["jersey"]))
+                self.assertIn(basis["basis"], ("pfr_game_season", "retail_slot_unknown_historical_number"))
+                if basis["basis"] == "pfr_game_season":
+                    self.assertEqual((basis["file"], basis["line"]), (p["pfr_roster_url"], p["pfr_roster_line"]))
+                    self.assertEqual(basis["season"], target["selected_season"])
 
     def test_short_lists_do_not_silently_become_claimed_53_player_season_rosters(self):
         manifest, _ = e.dataset()
         self.assertGreater(sum(t["fillers"] for t in manifest["resources"]), 0)
         self.assertGreater(sum(t["unknown_numbers"] for t in manifest["resources"]), 0)
         for target in manifest["resources"]:
-            if target["season_source_players"] < 53:
-                self.assertGreaterEqual(target["fillers"], 53 - target["season_source_players"])
+            if target["pfr_season_source_players"] < 53:
+                self.assertGreaterEqual(target["unknown_numbers"], 53 - target["pfr_season_source_players"])
         # These are shared-resource choices, not new historical claims.
         bills = next(t for t in manifest["resources"] if t["filename"] == "h-03-1990-bills-2.iff")
         self.assertEqual((bills["selected_season"], bills["chosen_moment"], bills["losing_moments"]), (1990, 14, [17, 19]))

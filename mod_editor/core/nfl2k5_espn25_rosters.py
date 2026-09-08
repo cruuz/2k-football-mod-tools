@@ -1,7 +1,7 @@
 """Historic moments: real rosters. EXPERIMENTAL / UNWITNESSED.
 
 Data only, on the 35 shared historic ROSTs used by the retail 25 moments.
-Season lists are incomplete; the shipped manifest describes every approximation.
+Box-score starters and season numbers are sourced; shared-file gaps are listed.
 No executable, scenario, team pointer, rating or appearance edit is made here.
 The image adapter edits only a caller-owned disposable build copy. ``build_image``
 provides copy-first publication. No whole image or archive pack is read into RAM.
@@ -31,15 +31,15 @@ EVIDENCE = "EXPERIMENTAL / UNWITNESSED"
 CAPTION = "Historic moments: real rosters"
 HELP_TEXT = (
     "Retail: many historic players have position names in shared rosters. "
-    "Patch: replace them with real players from the supplied season lists. "
-    "Some starters and numbers are unknown; short lists use named reserves from "
+    "Patch: use Pro Football Reference game starters and season jersey numbers "
+    "with the nflverse roster base. Short lists still need named reserves from "
     "nearby seasons. Shared teams cannot match every game. Requires the retail position layout. "
     "EXPERIMENTAL / UNWITNESSED. See the roster report before testing."
 )
 DEFAULT_ENABLED = False
 DATA_DIR = Path(__file__).resolve().parents[2] / "data/nfl2k5_espn25_moment_rosters"
 # Updated deliberately after deterministic offline regeneration; no runtime fetch.
-DATASET_SHA256 = "66ab419ad9fa3388b2749526f57b0d7b5a1d4c631560230dd6635457e97e6406"
+DATASET_SHA256 = "9f2c1d1d67ef630300a081410129c71a53f9de54f4b02a89ec0cbe7087656ba8"
 MAX_RESOURCE = 1024 * 1024
 MAX_MANIFEST = 8 * 1024 * 1024
 SITU_OUTER = 22
