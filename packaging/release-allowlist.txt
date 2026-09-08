@@ -788,3 +788,7 @@ mod_editor/core/nfl2k5_weekly_prep_save.py
 docs/mod_editor/weekly_preparation.md
 docs/mod_editor/nfl2k5_weekly_prep_capability.json
 ASTRA_WEEKLY_PREP_REPORT.md
+mod_editor/core/nfl2k5_playbook_pair.py
+mod_editor/core/nfl2k5_playbook_pair_code.py
+docs/mod_editor/nfl2k5_playbook_pair_capability.json
+ASTRA_PLAYBOOK_PAIR_REPORT.md

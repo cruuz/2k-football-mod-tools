@@ -102,6 +102,7 @@ class ProductCatalogTests(unittest.TestCase):
             'nfl2k5.gameplay.coverage_trail',
             'nfl2k5.gameplay.cpu_money_downs',
             'nfl2k5.gameplay.franchise_edit_player',
+            'nfl2k5.gameplay.playbook_pair',
             'nfl2k5.franchise.practice_squad_screen',
             'nfl2k5.franchise.weekly_preparation',
             'nfl2k5.menus.layouts',
@@ -147,7 +148,7 @@ class ProductCatalogTests(unittest.TestCase):
         first_ids = [binding.capability_id for binding in first.capabilities]
         second_ids = [binding.capability_id for binding in second.capabilities]
 
-        self.assertEqual(len(first_ids), 82)
+        self.assertEqual(len(first_ids), 83)
         self.assertEqual(len(first_ids), len(set(first_ids)))
         self.assertEqual(set(first_ids), expected)
         self.assertEqual(first_ids, second_ids)
@@ -190,7 +191,7 @@ class ProductCatalogTests(unittest.TestCase):
             ProductCategory.MENUS_UI: (6, 3, 2, 0, 0, 1, 0),
             ProductCategory.CRIB: (2, 2, 0, 0, 0, 0, 0),
             ProductCategory.AUDIO: (8, 7, 0, 1, 0, 0, 0),
-            ProductCategory.SLIDERS_GAMEPLAY: (27, 19, 5, 0, 0, 0, 3),
+            ProductCategory.SLIDERS_GAMEPLAY: (28, 20, 5, 0, 0, 0, 3),
             ProductCategory.PLAYBOOKS_PLAYS: (4, 4, 0, 0, 0, 0, 0),
             ProductCategory.TEXTURES: (1, 1, 0, 0, 0, 0, 0),
         }
@@ -219,7 +220,7 @@ class ProductCatalogTests(unittest.TestCase):
                 catalog.counts.evidence,
                 catalog.counts.research,
             ),
-            (82, 62, 8, 1, 0, 8, 3),
+            (83, 63, 8, 1, 0, 8, 3),
         )
 
     def test_ambiguous_stadium_surface_and_team_identity_are_explicit(self) -> None:
@@ -272,7 +273,7 @@ class ProductCatalogTests(unittest.TestCase):
         )
         binding = catalog.binding("nfl2k5.audio.audo_wav")
 
-        self.assertEqual(len(seen), 82)
+        self.assertEqual(len(seen), 83)
         self.assertEqual(
             binding.findings_notes,
             ("850 AUDO records mapped", "Export stays local"),

@@ -35,6 +35,7 @@ OPTIONS = (
     ("coverage_trail", "Close pursuit recovery (experimental)", tt.coverage_trail_patch.HELP_TEXT),
     ("franchise_edit_player", "Franchise Edit Player (experimental)", tt.franchise_edit_player_patch.HELP_TEXT),
     ("cpu_money_downs", tt.cpu_money_downs_patch.BUILD_CAPTION, tt.cpu_money_downs_patch.HELP_TEXT),
+    ("playbook_pair", "Separate offensive and defensive playbooks (experimental)", tt.playbook_pair_patch.HELP_TEXT),
     ("weekly_prep", "Fix safety drills (experimental)",
      "EXPERIMENTAL / UNWITNESSED. Retail: DB drills skip both safety positions. "
      "Patch: include safeties in the same drills as corners. TE drill rows already exist."),
