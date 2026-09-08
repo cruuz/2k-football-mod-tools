@@ -23,7 +23,8 @@ REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 RUNTIME_READY = False
 UI_TEXT = ("Retail: Owned players form the game roster and IR has no in-season returns. "
            "Patch: 2026 rule kernel is EXPERIMENTAL / UNWITNESSED. Game enforcement "
-           "is unavailable pending saved counters and player-result mapping.")
+           "is unavailable: the MyCareer save block and reserve storage do not "
+           "own these counters, and player results still need mapping.")
 MAX_PLAYERS, TEAMS, IR_SLOTS = 4096, 32, 5
 EMPTY = 0xffff
 MAGIC = b"F26K\x01\x00\x00\x00"
@@ -62,7 +63,86 @@ def require_runtime_ready():
     """Build preflight must call this before copying a disc for this option."""
     if not RUNTIME_READY:
         raise Franchise2026Error("2026 franchise enforcement is unavailable: native saved counters "
-                                 "and player-result identity adapters are not implemented")
+                                 "and player-result identity adapters are not implemented; "
+                                 "MyCareer's 128-byte footer and the reserve arena are not a ledger")
+
+
+def persistence_contract():
+    """Current format ownership, not a grant to use apparently empty bytes.
+
+    These are the shipped schemas, independent of which options are selected.
+    Removing another owner from a build does not transfer its record bits.
+    """
+    from . import nfl2k5_my_career_save as career
+    from . import nfl2k5_roster_arena as arena
+    from . import nfl2k5_abilities_runtime as abilities
+    from . import nfl2k5_guardian_overlay as guardian
+    from . import nfl2k5_player_star as star
+    occupied = star.TAG_BIT | (abilities.ABILITY_MASK >> 8) | guardian.RECORD_BIT
+    return dict(
+        ledger_bytes=DATA_SIZE, native_ledger_bytes_owned=0,
+        mycareer=dict(owner="nfl2k5_my_career", bytes=career.SIZE,
+                      native_container_sizes=list(career.BASE_SIZES),
+                      career_container_sizes=list(career.SIZES),
+                      reserved_zero_spans=[[82, 84], [88, 128]],
+                      reusable_bytes=0, extensible=False),
+        reserve_arena=dict(owner="nfl2k5_roster_arena_growth",
+                           version=arena.SAVE_VERSION, bytes=arena.ARENA_SIZE,
+                           growth=arena.ARENA_SIZE - arena.RETAIL_SIZE,
+                           block_offset=arena.BLOCK_OFFSET, block_bytes=arena.BLOCK_SIZE,
+                           reusable_bytes=0, padding_is_allocation=False),
+        player_flags=dict(offset=star.TAG_RECORD_OFFSET, occupied_mask=occupied,
+                          unassigned_mask=0xff & ~occupied,
+                          required_history_bits=4, owned_ledger_mask=0),
+        blockers=[
+            dict(id="save_transport", detail="No Franchise-2026 save namespace, size admission, "
+                 "serialize/restore or signed transaction owns the 4096-byte ledger. "
+                 "MyCareer accepts only its fixed footer; reserve overflow owns its own block."),
+            dict(id="player_lifecycle", detail="Reserve epoch changes do not remap or clear "
+                 "Franchise-2026 histories on primary slot reuse, import or retirement."),
+            dict(id="game_day_projection", detail="61730 and the arena_stage adapter copy the "
+                 "permanent active prefix in competitive games; no accepted elevations or 47/48 selection enter it."),
+            dict(id="result_identity", detail="C5280 and 27DBC0 pair match copies with permanent "
+                 "ownership slots; reordering or compacting a match roster needs identity-aware writeback."),
+            dict(id="week_events", detail="Native acceptance, cancellation, played/simulated completion, "
+                 "IR, dated cutdown and trade events do not call the dormant rule kernel."),
+        ])
+
+
+def save_ownership_assessment(payload):
+    """Validate a bounded raw SAVEGAME.DAT and report ownership without edits.
+
+    Raw bytes cannot authenticate EXTRA. Existing codecs validate framing,
+    overflow CRC, career identity and active/reserve/IR ownership instead.
+    No zero scan, pointer gap or reserve index is offered as ledger storage.
+    """
+    from . import nfl2k5_my_career_save as career
+    from . import nfl2k5_roster_arena as arena
+    from .nfl2k5_save_rost import decode
+    from .nfl2k5_franchise_save import FranchiseSave
+    _require(isinstance(payload, (bytes, bytearray)) and len(payload) in career.BASE_SIZES + career.SIZES,
+             "unsupported franchise container length")
+    native = career.native_size(payload)
+    save = FranchiseSave(payload)
+    squads = save._validate_ownership()
+    if native != len(payload):
+        career.read(payload)  # Include identity, not only the footer checksum.
+    document = decode(payload)
+    auxiliary = struct.unpack_from("<I", payload, 0x2e8)[0]
+    limit = (arena.ARENA_SIZE - arena.BLOCK_OFFSET - arena.BLOCK_SIZE
+             if document.overflow is not None else document.layout.arena_size)
+    _require(auxiliary <= limit, "native auxiliary tail overlaps owned reserve storage")
+    contract = persistence_contract()
+    return dict(experimental=True, runtime_witnessed=False, runtime_enforced=False,
+                changed_bytes=0, signature_verified=False,
+                save_sha256=hashlib.sha256(payload).hexdigest(), save_bytes=len(payload),
+                native_bytes=native, career_footer_present=native != len(payload),
+                arena_version=document.layout.version, arena_bytes=document.layout.arena_size,
+                native_auxiliary_bytes=auxiliary,
+                primary_players=save.player_table[0],
+                reserve_epoch=document.overflow.epoch if document.overflow is not None else None,
+                reserve_counts={str(t): len(players) for t, players in sorted(squads.items()) if t < TEAMS},
+                native_ledger_bytes_owned=0, persistence=contract)
 
 
 def runtime_assessment(payload):
@@ -70,13 +150,16 @@ def runtime_assessment(payload):
     from .nfl2k5_cave_oracle import XbeImage
     from . import nfl2k5_xbe_space as space
     space.layout(payload)
+    kernel_status = status(payload)
+    _require(kernel_status != "foreign", "foreign franchise kernel")
     image = XbeImage(payload)
     for name, va, size, digest in RUNTIME_PINS:
         _require(hashlib.sha256(image.read(va, size)).hexdigest() == digest, f"foreign runtime evidence: {name}")
-    return dict(experimental=True, runtime_enforced=False, changed_bytes=0,
-                blockers=["C5280 and 27DBC0 pair game copies with permanent ownership indices",
+    contract = persistence_contract()
+    return dict(experimental=True, runtime_witnessed=False, runtime_enforced=False, changed_bytes=0,
+                kernel_status=kernel_status, persistence=contract,
+                blockers=[b["detail"] for b in contract["blockers"]] + [
                           "2D09EC zero-extends IR index and overwrites the serialized upper halfword",
-                          "No native saved ledger transport or player-pool lifecycle adapters",
                           "Native dated cutdown and all trade acceptance guards remain unmodified"],
                 pins=[dict(name=n, va=hex(v), size=s, sha256=h) for n, v, s, h in RUNTIME_PINS])
 
@@ -666,9 +749,18 @@ def apply(payload):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--self-check", action="store_true")
-    parser.add_argument("--assess-xbe")
+    action = parser.add_mutually_exclusive_group(required=True)
+    action.add_argument("--self-check", action="store_true")
+    action.add_argument("--assess-xbe")
+    action.add_argument("--assess-save", help="read-only raw SAVEGAME.DAT ownership assessment")
     args = parser.parse_args()
+    if args.assess_save:
+        from pathlib import Path
+        from . import nfl2k5_my_career_save as career
+        with Path(args.assess_save).open("rb") as reader:
+            payload = reader.read(max(career.SIZES) + 1)
+        print(json.dumps(save_ownership_assessment(payload), indent=2))
+        return
     if args.assess_xbe:
         from pathlib import Path
         with Path(args.assess_xbe).open("rb") as reader:
@@ -676,8 +768,6 @@ def main():
         _require(len(payload) <= 12_300_288, "XBE exceeds the owned allocator extent")
         print(json.dumps(runtime_assessment(payload), indent=2))
         return
-    if not args.self_check:
-        parser.error("only --self-check is supported; live franchise enforcement is unavailable")
     state = RuleState.new(2026, 2479)
     state.enter_ir(0, 1, 0)
     for k in range(4):
@@ -686,7 +776,8 @@ def main():
     state.activate(0, 1, 28, medically_clear=True, active_count=52, reserve_count=12)
     state.validate()
     code_for(0x14da000, 0x14f2000)
-    print(json.dumps(dict(experimental=True, runtime_enforced=False, self_check="passed", requests=REQUESTS)))
+    print(json.dumps(dict(experimental=True, runtime_enforced=False, self_check="passed",
+                         requests=REQUESTS, persistence=persistence_contract())))
 
 
 if __name__ == "__main__":

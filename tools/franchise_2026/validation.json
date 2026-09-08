@@ -1,0 +1,389 @@
+{
+  "schema": 1,
+  "date": "2026-09-08",
+  "branch": "astra/r65-franchise-2026-runtime",
+  "base_revision": "be99b324f34d536c625efcba7e7ea5d4f104fd2b",
+  "experimental": true,
+  "runtime_witnessed": false,
+  "runtime_ready": false,
+  "runtime_enforced": false,
+  "decision": "Neither landed save owner owns or transports the rules ledger. Retain runtime refusal.",
+  "tested_source_sha256": {
+    "mod_editor/core/nfl2k5_franchise_2026.py": "ce242e8cb9842868b91425cf0de6dc3352f9f4fdf95202e8f220fc64c89d4b49",
+    "docs/mod_editor/nfl2k5_franchise_2026_capability.json": "80d217a48cac828f9c011781049e7ce7a2ed2b03a015a5028ca82f68f05d938a",
+    "tests/mod_editor/test_nfl2k5_franchise_2026_runtime.py": "daf5719359e98f12ef4ef3c3b37f0ea4935a5ea079d7e24d9ea8423cc9e4e541",
+    "tests/mod_editor/test_nfl2k5_guardian_manifest.py": "f17521788f7b9debc323d2dc7827c69b909b50bef7b6d8e3386414696f1a9ce0",
+    "tools/franchise_2026/refresh_gate_manifest.py": "abb5f01a5f93f2e9ff7e57b4c5139193976f0aded1bcb87fdcf61affb7ed890c"
+  },
+  "unittest_suites": [
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_franchise_2026.py",
+      "exit_code": 0,
+      "tests_run": 20,
+      "skipped": 0,
+      "unittest_seconds": 5.92,
+      "result": "OK",
+      "log_sha256": "1893a527f73104defc28f0ec5d390a68acb659bbbcfc061f1176c89b2ce747e8",
+      "environment": {
+        "NFL2K5_CAVE_MANIFEST": ".scratch/franchise-runtime-manifest.json"
+      },
+      "max_rss_kib": 125100
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_franchise_2026_unicorn.py",
+      "exit_code": 0,
+      "tests_run": 10,
+      "skipped": 0,
+      "unittest_seconds": 1.008,
+      "result": "OK",
+      "log_sha256": "66631cf2e7d55d9e6ad2be28e7498ac6dee95735a1a76c72f72d8fcd4e20e994",
+      "environment": {
+        "NFL2K5_CAVE_MANIFEST": ".scratch/franchise-runtime-manifest.json"
+      },
+      "max_rss_kib": 61808
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_franchise_save.py",
+      "exit_code": 0,
+      "tests_run": 13,
+      "skipped": 0,
+      "unittest_seconds": 1.579,
+      "result": "OK",
+      "log_sha256": "289f9e2f03e95aac23ee099f92a1f30a444cf006be9fec6d59212fe9631d0509",
+      "environment": {
+        "NFL2K5_CAVE_MANIFEST": ".scratch/franchise-runtime-manifest.json"
+      },
+      "max_rss_kib": 61064
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_save_rost.py",
+      "exit_code": 0,
+      "tests_run": 9,
+      "skipped": 0,
+      "unittest_seconds": 2.664,
+      "result": "OK",
+      "log_sha256": "a41443caa9c28d22d9a3e4a8f492e0bcbdd04b3d3140d803ef377b9436433754",
+      "environment": {
+        "NFL2K5_CAVE_MANIFEST": ".scratch/franchise-runtime-manifest.json"
+      },
+      "max_rss_kib": 65408
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_roster_arena_growth.py",
+      "exit_code": 0,
+      "tests_run": 13,
+      "skipped": 0,
+      "unittest_seconds": 33.562,
+      "result": "OK",
+      "log_sha256": "3a551a7a48792180a1cf2b95248ad2cf88ace629c6ce12aedd5bae0ce6f9a454",
+      "environment": {
+        "NFL2K5_CAVE_MANIFEST": ".scratch/franchise-runtime-manifest.json"
+      },
+      "max_rss_kib": 244240
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_inline.py",
+      "exit_code": 0,
+      "tests_run": 8,
+      "skipped": 0,
+      "unittest_seconds": 12.975,
+      "result": "OK",
+      "log_sha256": "bc3012f8241e0c9c4f08fd1b65095d05705434e318a3f6dffb59a9ccbbb09fd5",
+      "environment": {
+        "NFL2K5_CAVE_MANIFEST": ".scratch/franchise-runtime-manifest.json"
+      },
+      "max_rss_kib": 290680
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_allocator_scaleout.py",
+      "exit_code": 0,
+      "tests_run": 23,
+      "skipped": 0,
+      "unittest_seconds": 514.728,
+      "result": "OK",
+      "log_sha256": "b1a8f72084b11114f1baffe695e40556ad8aa4def76e9b5070d523e5afe6e784",
+      "environment": {
+        "NFL2K5_CAVE_MANIFEST": ".scratch/franchise-runtime-manifest.json"
+      },
+      "max_rss_kib": 191704
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_cave_oracle.py",
+      "exit_code": 0,
+      "tests_run": 28,
+      "skipped": 0,
+      "unittest_seconds": 245.817,
+      "result": "OK",
+      "log_sha256": "14af3ad6d841967da2ee4c4eaea1a34f00d5d686b0205fa8012d5c2d357f9763",
+      "environment": {
+        "NFL2K5_CAVE_MANIFEST": ".scratch/franchise-runtime-manifest.json"
+      },
+      "max_rss_kib": 908440
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_manifest.py",
+      "exit_code": 0,
+      "tests_run": 3,
+      "skipped": 0,
+      "unittest_seconds": 6.704,
+      "result": "OK",
+      "log_sha256": "4e85e6fc8b771fe4624e2c740643057617fca3a35533ef1a93806064f29bcdf5",
+      "environment": {
+        "NFL2K5_CAVE_MANIFEST": ".scratch/franchise-runtime-manifest.json"
+      },
+      "max_rss_kib": 137552
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_guardian_manifest.py",
+      "exit_code": 0,
+      "tests_run": 1,
+      "skipped": 0,
+      "unittest_seconds": 182.86,
+      "result": "OK",
+      "log_sha256": "b0560ed607b52acece9201a6a246eb811b330cd530035a0c17583ba28d1d386e",
+      "environment": {
+        "NFL2K5_CAVE_MANIFEST": ".scratch/franchise-runtime-manifest.json"
+      },
+      "max_rss_kib": 238804
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_music_playlist_manifest.py",
+      "exit_code": 0,
+      "tests_run": 2,
+      "skipped": 0,
+      "unittest_seconds": 3.881,
+      "result": "OK",
+      "log_sha256": "1e8e840f7021262e4db99fd99f6d3f5875874d075a5cb7d0df14dc05de835353",
+      "environment": {
+        "NFL2K5_CAVE_MANIFEST": ".scratch/franchise-runtime-manifest.json"
+      },
+      "max_rss_kib": 131088
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_screen_hooks_manifest.py",
+      "exit_code": 0,
+      "tests_run": 3,
+      "skipped": 0,
+      "unittest_seconds": 3.946,
+      "result": "OK",
+      "log_sha256": "ad1aa84a8b8b80d4ef8e972caf5c9df39a76d255079e7d81c26a52f84889d0bd",
+      "environment": {
+        "NFL2K5_CAVE_MANIFEST": ".scratch/franchise-runtime-manifest.json"
+      },
+      "max_rss_kib": 130016
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_defensive_try_manifest.py",
+      "exit_code": 0,
+      "tests_run": 3,
+      "skipped": 0,
+      "unittest_seconds": 4.374,
+      "result": "OK",
+      "log_sha256": "04142d4643fac345898a01e03a1189c84c3c5ee130d07939320e0023063ac2ae",
+      "environment": {
+        "NFL2K5_CAVE_MANIFEST": ".scratch/franchise-runtime-manifest.json"
+      },
+      "max_rss_kib": 155388
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_franchise_2026_runtime.py",
+      "exit_code": 0,
+      "tests_run": 10,
+      "skipped": 0,
+      "unittest_seconds": 69.172,
+      "result": "OK",
+      "log_sha256": "d89734c234704796c405b7155d86f0613d44dbcd6efec9dc96e4558ffdddf128",
+      "max_rss_kib": 209204
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py",
+      "exit_code": 0,
+      "tests_run": 115,
+      "skipped": 0,
+      "unittest_seconds": 780.38,
+      "result": "OK",
+      "log_sha256": "c2d5fcda05c7fe28d1983eaef1c5e8bcbcc63b8ac82ef1f98e36fcabf09ba0bf",
+      "max_rss_kib": 192556
+    },
+    {
+      "command": "python3 tests/mod_editor/test_xbe_patch_memory_writes.py",
+      "exit_code": 0,
+      "tests_run": 95,
+      "skipped": 0,
+      "unittest_seconds": 970.007,
+      "result": "OK",
+      "log_sha256": "112cf20a9199d8edd7e022bc3f5a44732705ce265ec9b7b6364aa460e70d6b3c",
+      "max_rss_kib": 342024
+    },
+    {
+      "command": "python3 tests/mod_editor/test_xbe_patch_cave_references.py",
+      "exit_code": 0,
+      "tests_run": 107,
+      "skipped": 0,
+      "unittest_seconds": 1099.199,
+      "result": "OK",
+      "log_sha256": "0758ad046c705b5c8718075c90c1e483dbf98a545ba76b18821bba94f318f98b",
+      "environment": {
+        "NFL2K5_CAVE_MANIFEST": ".scratch/franchise-runtime-manifest.json"
+      },
+      "max_rss_kib": 527584
+    },
+    {
+      "command": "python3 tests/mod_editor/test_mod_build_beta62_integration3.py",
+      "exit_code": 0,
+      "tests_run": 11,
+      "skipped": 0,
+      "unittest_seconds": 164.822,
+      "result": "OK",
+      "log_sha256": "9075242ddde760043b2e373fd5429a2b3e878a985f446fdcfb797c9a4a5ef7ee"
+    }
+  ],
+  "totals": {
+    "suites": 18,
+    "passed": 474,
+    "skipped": 0,
+    "maximum_measured_rss_kib": 908440
+  },
+  "missing_evidence_check": {
+    "command": "python3 tests/mod_editor/test_nfl2k5_franchise_2026_runtime.py",
+    "exit_code": 0,
+    "tests_run": 10,
+    "skipped": 5,
+    "unittest_seconds": 0.981,
+    "result": "OK",
+    "log_sha256": "e8d2b3757d5acf46d0a3536591126092d51752b914ce5619822fcdf98410a08d",
+    "environment": {
+      "NFL2K5_RETAIL_EXTRACTION": "/nonexistent-franchise-evidence"
+    }
+  },
+  "additional_checks": [
+    {
+      "command": "python3 tools/nfl2k5_franchise_2026_assemble.py --check",
+      "result": "PASS: existing template verified"
+    },
+    {
+      "command": "python3 -m mod_editor.core.nfl2k5_franchise_2026 --self-check",
+      "result": "PASS: runtime_enforced=false; unchanged 5120 RX / 4096 RW requests"
+    },
+    {
+      "command": "python3 -m mod_editor.core.nfl2k5_franchise_2026 --assess-xbe \"/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe\"",
+      "result": "PASS: seven routine pins and retail kernel; no runtime enforcement",
+      "pins": [
+        {
+          "name": "slot_result_map",
+          "va": "0xc5280",
+          "size": 121,
+          "sha256": "3514e52ea1b2c3e3294461a663358b029041657bea8614cd323a0cb0caa61bee"
+        },
+        {
+          "name": "parallel_award_owner",
+          "va": "0x27dbc0",
+          "size": 788,
+          "sha256": "c8e40b8ed48fd1dca6192f6afeeeb3463de4fc314c66e501a81752255ef51465"
+        },
+        {
+          "name": "ir_serializer",
+          "va": "0x2d09c1",
+          "size": 59,
+          "sha256": "3b0a4f39877840fc7017cb8bbd7472fe0c86b41ce556e47634a6b35222719bf2"
+        },
+        {
+          "name": "ir_restore",
+          "va": "0x2d0f3f",
+          "size": 48,
+          "sha256": "0606d3f6972d6b0a4c6408e731bc529e91a5231a93004a7fd6d5426d35477400"
+        },
+        {
+          "name": "office_size",
+          "va": "0x2d0780",
+          "size": 6,
+          "sha256": "adeb0e31cc24628c34d78764298bc3370fbc44c24d2d1b0ba58348eb26ff967c"
+        },
+        {
+          "name": "trade_predicate",
+          "va": "0x247d10",
+          "size": 41,
+          "sha256": "e18d7b342a89f6b081049a211754ba0d3b08ceef0c339eb7e02f6556719735ed"
+        },
+        {
+          "name": "pending_trade_purge",
+          "va": "0x247e20",
+          "size": 40,
+          "sha256": "5cc78dd0f89c0cc25733b5d121410d84ce87df33ed5195159532dec940a0d84a"
+        }
+      ]
+    },
+    {
+      "command": "python3 -m mod_editor.core.nfl2k5_franchise_2026 --assess-save \"/home/noah/Desktop/2K5-8 Editors/save_fixtures/f0/UDATA/53450030/0B8506889D40/SAVEGAME.DAT\"",
+      "result": "PASS: no mutation or native ledger ownership",
+      "save_sha256": "56926604e438bd47f1f94edf844a0ecd00d5a382a647526baec396ead5f1b1b8",
+      "bytes": 720044,
+      "primary_players": 2479,
+      "auxiliary_bytes": 366,
+      "signature_verified": false
+    },
+    {
+      "command": "python3 tools/nfl2k5_xbe_space.py plan --requests tests/fixtures/nfl2k5_allocator_beta62_requests.json",
+      "result": "PASS: 45 requests; XBE size 12300288; no build; feature stays inside 8192 RX / 4096 RW budget"
+    },
+    {
+      "command": "python3 tools/franchise_2026/refresh_gate_manifest.py \"/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe\" --output .scratch/franchise-runtime-manifest.json",
+      "result": "PASS: strict current source pins and named-child projection; native feature bytes equal beta-62 at two allocator placements",
+      "spans": 11042,
+      "observed_steps": 5,
+      "source_pins": 275,
+      "parent_manifest_sha256": "f4117990ba33f4f29c3796883a22438355d52a0bbe71804e1f3ed472728f0d06",
+      "changed_parent_sources": [
+        "mod_editor/core/mod_build.py",
+        "mod_editor/core/nfl2k5_espn25_rosters.py",
+        "mod_editor/core/nfl2k5_franchise_2026.py",
+        "mod_editor/core/nfl2k5_my_career_mode.py",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py",
+        "mod_editor/core/nfl2k5_read_option_runtime.py",
+        "mod_editor/core/nfl2k5_read_option_runtime_code.py",
+        "mod_editor/core/nfl2k5_throw_tuning.py"
+      ],
+      "release_manifest": false,
+      "disc_built": false,
+      "parent_disc_fields_are_historical": true
+    },
+    {
+      "command": "python3 tools/franchise_2026/refresh_gate_manifest.py \"/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe\" --output data/nfl2k5_cave_reservations.json",
+      "result": "PASS: expected ValueError before input read/output write; protected destination refused"
+    },
+    {
+      "check": "Capability registry in-memory replacement and changed-row file checks",
+      "result": "PASS",
+      "rows": 117,
+      "scope": "Complete in-memory schema plus changed capability evidence/backend/command file checks; canonical registry is unchanged"
+    }
+  ],
+  "development_failures_resolved": [
+    "New fixture queried slot 52 after team two shrank to 48 active players; derive its actual count and retain both-side first/intermediate/last assertions.",
+    "Initial scratch projection omitted the existing music metadata allocation; install the real music metadata owner before strict full-union projection.",
+    "Guardian manifest harness failed to observe Anniversary XbePatch.apply cached static alias at VA 0xC2319/file 0xB2319; observe that real writer and assert its owner reservation without changing production code or the strict attribution check."
+  ],
+  "constraints": {
+    "no_network": true,
+    "no_push": true,
+    "no_console_or_game_emulator": true,
+    "no_gui_or_audio": true,
+    "cpu_evidence": "Bounded Unicorn instruction fixtures with explicit device/auth/heap/preview seams; not a console witness",
+    "disc_built": false,
+    "archive_pack_read_into_memory": false,
+    "disc_bytes": 6300499968,
+    "initial_free_space": "df -h /: 98 GiB",
+    "free_bytes_at_receipt": 104337133568,
+    "required_free_bytes": 100000000000,
+    "disc_omission_reason": "A 6.3 GB disposable copy cannot preserve the 100 GB free-space floor.",
+    "scratch_bytes_at_receipt": 2936760,
+    "protected_release_manifest_unchanged": true
+  },
+  "known_gaps": [
+    "No Franchise-2026 save namespace, size admission, serialize/restore or signed transaction owns the 4096-byte ledger. MyCareer accepts only its fixed footer; reserve overflow owns its own block.",
+    "Reserve epoch changes do not remap or clear Franchise-2026 histories on primary slot reuse, import or retirement.",
+    "61730 and the arena_stage adapter copy the permanent active prefix in competitive games; no accepted elevations or 47/48 selection enter it.",
+    "C5280 and 27DBC0 pair match copies with permanent ownership slots; reordering or compacting a match roster needs identity-aware writeback.",
+    "Native acceptance, cancellation, played/simulated completion, IR, dated cutdown and trade events do not call the dormant rule kernel."
+  ]
+}

@@ -14965,3 +14965,153 @@ hook precedes actual ball transfer, and the QB receive callback may already
 advance to the condition while the ball is in flight. The diagnostic shows
 `READ <resource> snap` during that interval, then `pend` when the QB receives
 the ball and starts the handoff. No extra dispatcher setting is required.
+# r65 Franchise 2026 runtime audit, 2026-09-08
+
+**EXPERIMENTAL / UNWITNESSED. Runtime activation remains blocked.** This
+section supersedes the r62 handoff's save-ownership assumptions, not its
+readiness guard. `ASTRA_FRANCHISE_2026_RUNTIME_REPORT.md` records fresh native
+counterexamples with MyCareer mode 5, reserve growth and the dormant rules
+owner installed together. No protected file or other owner's runtime module
+was edited. The Guardian manifest test now observes the existing Anniversary
+adapter's cached writer, retaining strict attribution of every changed byte.
+
+## Decision and required integration
+
+`RUNTIME_READY` stays false. The three owners install in all six orders, but
+native saves do not serialize the rule ledger and competitive staging still
+copies 53 active players. A different selection in RW changes neither result.
+The complete retail C5280 resolver maps a reordered/elevated match record to
+the permanent player in the same roster slot. Changing only the readiness
+flag would advertise enforcement and introduce incorrect result ownership.
+
+MyCareer owns a fixed 128-byte footer, including its required-zero bytes.
+Its admission/staging code accepts only native sizes 720044/724140 and career
+sizes 720172/724268. Adding 4096 to 720044 aliases the grown-roster length;
+the complete framing check still refuses a ledger masquerading as that arena.
+The grown arena owns its 352-byte overflow block and retains the native
+auxiliary tail. An empty byte is not an allocation. Guardian owns +0x53 bit 5;
+only bits 6-7 remain unassigned, and this owner claims neither.
+
+A future activation needs a coordinated save format and native transport
+across the size/admission/read/serialize/restore/signing boundaries, preserving
+both existing footer and arena versions. It also needs generation-aware pool
+clear/import/retirement handling, a competitive projection with identity-aware
+result/stat/injury/award/depth writeback, accepted game/retry/cancel/completion
+events, and the R1-R5 IR/calendar/CPU decisions. The existing C selector has a
+65-entry input ABI; a native 70-player adapter must explicitly handle overflow.
+No allocation or runtime interception for that future format is installed here.
+
+## Dispatcher, BuildPlan and four status dictionaries
+
+The base already has this exact `_apply_all` tuple in
+`mod_editor/core/nfl2k5_throw_tuning.py`, after the allocator:
+
+```python
+(franchise_2026_rules, _franchise_2026_adapter(),
+ "franchise_2026_rules_patch", "2026 franchise rules (unavailable)"),
+```
+
+Keep the `_apply_all(..., franchise_2026_rules=False)` kwarg, and forward it
+through the extracted/image writers and Build final pass. Preserve
+`_franchise_2026_adapter.status -> "unavailable"` and its guarded apply:
+
+```python
+franchise_2026_patch.require_runtime_ready()
+return franchise_2026_patch.apply(payload)
+```
+
+`_validate_r62_options` must continue to refuse true requests before copy,
+allocation or dispatch. `_selected_space_requests` and `_xbe_space_adapter`
+retain the flag and `franchise_2026_patch.REQUESTS`; no new owner or request
+is added. Requests remain 5120 RX / 4096 RW at alignment 16, within the
+8192 RX / 4096 RW budget. Gate union, manifest owner lists and budget fixture
+already contain the real rows, so no duplicated entries are needed.
+
+`mod_editor/core/mod_build.py`: retain
+`BuildPlan.franchise_2026_rules: bool = False`; Basic, Advanced and Experimental
+all set it false. Keep availability tied to `RUNTIME_READY`, normalization
+through the readiness preflight, temporary deferral to false, and the final
+pass kwarg `franchise_2026_rules=plan.franchise_2026_rules`. No enabled preset
+or new Build field is justified by this audit.
+
+Keep these fields in `_grown_status_fields`, consumed by all four dictionaries:
+`read_xbe(payload)`, `read_image(payload)`, `write_xbe_copy(result)` and
+`write_image_copy(after)` (the parentheses identify each local byte variable):
+
+```python
+"franchise_2026_rules": "unavailable",
+"franchise_2026_kernel": franchise_2026_patch.status(payload),
+"franchise_2026_runtime_enforced": False,
+```
+
+Do not use the kernel's `applied` status as evidence of game enforcement. The
+new `--assess-save` and extended `--assess-xbe` commands remain inspection APIs.
+
+## Gameplay Patches and Build caption
+
+The shared `mod_editor/gui/beta62_options.py` is another owner's GUI helper,
+so this session leaves it untouched. Claude should replace its stale
+`FRANCHISE_HELP` definition with:
+
+```python
+FRANCHISE_HELP = tt.franchise_2026_patch.UI_TEXT
+```
+
+That supplies this precise PATCHES help through the existing OPTIONS row:
+
+> Retail: Owned players form the game roster and IR has no in-season returns. Patch: 2026 rule kernel is EXPERIMENTAL / UNWITNESSED. Game enforcement is unavailable: the MyCareer save block and reserve storage do not own these counters, and player results still need mapping.
+
+Keep PATCHES key `franchise_2026_rules`, its membership in `NEEDS_IMAGE`, and
+its disabled state through `UNAVAILABLE`. Keep the Build `_option` key and
+caption `2026 franchise rules (unavailable)` (34 characters, below 60), with
+the same help. No additional panel, native menu or user-facing setting is added.
+
+## Allowlist, runtime imports, registry and manifest
+
+Retain these existing allowlist lines:
+
+```text
+mod_editor/core/nfl2k5_franchise_2026.py
+mod_editor/core/nfl2k5_franchise_2026_code.py
+docs/mod_editor/nfl2k5_franchise_2026_capability.json
+```
+
+If shipping the feature report, add exactly:
+
+```text
+ASTRA_FRANCHISE_2026_RUNTIME_REPORT.md
+```
+
+Tests and `tools/franchise_2026/refresh_gate_manifest.py` are development-only;
+they are not runtime-closure imports. The updated inspector imports these
+already shipped modules, which Claude should retain/check in
+`packaging/check_2k5_mod_studio_runtime.py` and the provider closure:
+
+```text
+mod_editor.core.nfl2k5_franchise_2026
+mod_editor.core.nfl2k5_franchise_2026_code
+mod_editor.core.nfl2k5_franchise_save
+mod_editor.core.nfl2k5_save_rost
+mod_editor.core.nfl2k5_my_career_save
+mod_editor.core.nfl2k5_roster_arena
+mod_editor.core.nfl2k5_abilities_runtime
+mod_editor.core.nfl2k5_guardian_overlay
+mod_editor.core.nfl2k5_player_star
+```
+
+Refresh the changed core source hash with the existing provider pin process.
+The canonical registry row already exists. Replace that row's contents with
+the revised `docs/mod_editor/nfl2k5_franchise_2026_capability.json`, retaining
+ID `nfl2k5.schedules_franchise.rules_2026_inspection`, `read-only-mapped`,
+hidden view mode and `runtime.status="not-tested"`. There is no new surface
+or count change. Backend and validation commands remain
+`python3 -m mod_editor.core.nfl2k5_franchise_2026 --self-check`.
+
+Claude must regenerate `data/nfl2k5_cave_reservations.json` after integration.
+The scratch revalidation tool verifies all changed parent pins against beta-62,
+proves this owner's output equals its pinned implementation at two placements,
+observes the base's changed native owners, retains historical reservations and
+uses the existing strict named-allocation projection. Its disc fields are
+explicitly historical; no new disc was built. Never publish that test manifest
+as the release manifest. For oracle and owner suites that read the manifest,
+use `NFL2K5_CAVE_MANIFEST=.scratch/franchise-runtime-manifest.json`.

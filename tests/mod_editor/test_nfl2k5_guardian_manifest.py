@@ -44,6 +44,8 @@ class ManifestTests(unittest.TestCase):
         engines={"mod_editor.core.nfl2k5_gameplay_lever", "mod_editor.core.nfl2k5_rdata_sites"}
         modules=[m for name,m in tuple(sys.modules.items()) if name.startswith("mod_editor.core.nfl2k5_")
                  and name not in engines and hasattr(m,"__file__")]
+        from mod_editor.core import nfl2k5_espn25_rosters as espn25
+        self.assertIs(espn25.XbePatch.apply, espn25.apply_xbe)
         fingerprints=cm.source_fingerprints()
         with ExitStack() as stack:
             for module in modules:
@@ -67,6 +69,9 @@ class ManifestTests(unittest.TestCase):
                  section_digests_verified=True,source_sha256=fingerprints,spans=spans,steps=recorder.steps,
                  allocator_layout=g.space.layout(final),image_steps=[],runtime_witnessed=False)
         manifest=ReservationManifest(doc,XbeImage(retail),source_root=ROOT)
+        rows=manifest.overlaps(espn25.XBE_SITE_VA,espn25.XBE_SITE_VA+len(espn25.XBE_BEFORE))
+        self.assertTrue(rows)
+        self.assertTrue(all(row.detail.startswith(espn25.OWNER+":") for row in rows))
         for va,before in g.HOOKS.values():
             rows=manifest.overlaps(va,va+len(before))
             self.assertTrue(rows)
