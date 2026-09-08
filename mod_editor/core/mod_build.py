@@ -100,7 +100,7 @@ class BuildPlan:
     returner_fix: bool = False
     progression: bool = False
     scheme_labels: bool = False   # depth-chart slot labels by scheme: 4-3 SAM/MIKE/WILL, 3-4 EDGE/MIKE/WILL/NT
-    camera: bool = False          # Far at startup/game entry, with room above the scorebar; experimental
+    camera: bool = False          # Standard default, Far and Broadcast session choices; experimental
     kick_rules: bool = False      # kickoff 35 / touchback 35 (2026) / PAT 15, FG ceiling ~70 yd for elite legs
     kick_power: bool = False      # FG ceiling ~70 yd for elite legs ONLY (retail kick spots) - the BASIC preset's kicking fix
     # dynamic-kickoff alignment (2024+ rule, PHASE 1 = data only): coverage on the receiving 40, return

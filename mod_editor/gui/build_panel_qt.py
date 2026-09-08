@@ -754,10 +754,11 @@ class BuildPanel(QWidget):
         self.music_preview_label = QLabel("Choose a recipe to preview output and temporary space.")
         self.music_preview_label.setWordWrap(True)
         pl.addWidget(self.music_preview_label)
-        self.camera_check = self._option(pl, "camera", "Start games with the new Standard camera (experimental)",
+        self.camera_check = self._option(pl, "camera", "Standard, Far and Broadcast cameras (experimental)",
                                          "The new Standard (closer, raised angle) starts each game and practice; Far keeps "
-                                         "the far view; passes use a smaller pullback. Options changes last for the session. "
-                                         "Not yet witnessed in play.", badge=NOT_TESTED, needs_image=True)
+                                         "the far view; passes use a smaller pullback. Choose Broadcast in the game's Camera "
+                                         "options for a following sideline view without changing Coach Mode. Choices last "
+                                         "for the session. EXPERIMENTAL / UNWITNESSED.", badge=NOT_TESTED, needs_image=True)
         self.widescreen_check = self._option(pl, "widescreen", 'Widescreen 16:9 (experimental)',
                                              tt.widescreen_patch.HELP_TEXT, badge=NOT_TESTED,
                                              details=tt.widescreen_patch.HELP_TEXT)
