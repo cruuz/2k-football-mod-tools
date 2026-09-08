@@ -156,7 +156,7 @@ class StudioQtViewModelTests(unittest.TestCase):
             if binding.status == ProductStatus.EVIDENCE
         ]
         self.assertEqual(len(research), 3)
-        self.assertEqual(len(evidence), 7)
+        self.assertEqual(len(evidence), 8)  # +1 the in-game MyCareer (evidence status, opt-in)
         for binding in research:
             # Some reviewed registry rows intentionally have no porting list,
             # but this helper must remain deterministic and string-only.
