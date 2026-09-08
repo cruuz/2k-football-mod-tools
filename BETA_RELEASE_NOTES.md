@@ -1,3 +1,102 @@
+# beta-62 — RC86 / alpha.84
+
+**Date:** 2026-09-08
+
+**2K5 Mod Studio:** `v1.0-RC86`
+
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.84` (unchanged)
+
+The biggest beta in the series. Everything the beta-61 research tables listed as buildable was built, everything
+they listed as research-only was audited to a verdict, and then a week of corrections followed Noah's own play tests
+and the Discord ledger. Built by GPT-6 Astra under Claude's review; nothing new has been played unless it says so
+below, and every new option is off in every preset unless stated. The RC86 section of
+`docs/mod_editor/2k5_mod_studio_changelog.md` describes every change since beta 60 in full, grouped by area, with a
+commit-by-commit index at the end.
+
+## New
+
+- Dynamic kickoff v2 to v5: the hold from each player's own lineup, the receiving team's stance, blocks that take the
+  nearest coverage man, fitted play art (Experimental; witnessed as good on the final disc).
+- Cameras: paired Standard and Far, the new Standard starts every game and practice, throws pull back less (Advanced
+  and Experimental; witnessed).
+- The ESPN scorebar rebuilt to the broadcast reference and then fixed in game as the v3 static bar: live team names,
+  each team's colour on its panel, separate clock cells, the middle stays through the play (Experimental; witnessed).
+  Scorebar Studio, a new page that paints your own bar with plain controls and hands the folder to Build.
+- Franchise Auto Save: the First Person Football setting rows become Auto Save; save once by hand, then every completed
+  game saves on the return to the Coach's Desk (Advanced and Experimental, switch starts Off; witnessed).
+- MyCareer created inside the game (opt-in): the Game Modes row opens MyCareer, you create MyPlayer as an undrafted free
+  agent on the game's own Create Player screen, pick any of the 32 clubs from a visible list, and live in an Apartment
+  (Play next game, Practice, MyPlayer, Save, Quit) with inline saves; MyPlayer gets the retail indicator, receiver icons
+  and play art; a quit game stays playable; Auto Save composes with it. Noah played the first cut and reported the
+  blank lists, which mode 4 fixed; the fixed cut is unplayed. Modern 2K names in the game: MyNFL, Play Now, MyPlayer
+  (Experimental; MyNFL witnessed). The older prepared-save MyCareer still works through a MyCareer.json setup.
+- The empty Outside Linebackers group is removed after a complete roster scan (Advanced and Experimental), with a
+  "Keep Outside Linebackers for existing saves" switch for old and custom saves.
+- ESPN 25th Anniversary: a Rosters subtab edits the historic roster behind each moment and the moment setup, applied
+  with "Use saved ESPN Anniversary edits" (opt-in); "Historic moments: real rosters" fills the 35 historic files with
+  the exact box-score starters at starting depth and that season's jersey numbers (from Pro Football Reference, facts
+  only), the bench from the season roster (opt-in; unknown numbers fell from 1,173 to 123).
+- Read option and RPO with modern controls (opt-in): the quarterback holds a one-second mesh with the back beside him,
+  the unblocked edge gets the cue, hold the snap button through the window to keep, release or do nothing to hand off,
+  press the named receiver during the window on the RPO to throw. The pairing now survives the merged-position and
+  depth-role passes, so the plays install on the Advanced and Experimental presets. Noah played the first cut (the
+  quarterback ran at the snap); v3 is the correction and is unplayed.
+- Widescreen v3, momentum collisions, defensive two-point box score and saved stats, screen timing hooks, QB spy from
+  man and rush, player abilities with an off week, Guardian cap overlay, roster arena growth (16 reserves, two more
+  created teams), native Practice Squad screen, shared music shuffle, six hi-res texture families, bone and animation
+  import, stadium texture round trips, Rules library and Info tab in Create a Play, 82 Create a Team stadiums, gameplay
+  levers, the 128-season calendar (Experimental).
+- Add your music, the simple way: the Music tab opens on Songs with one "Add songs..." button (MP3, M4A, FLAC, OGG, WAV,
+  or drop files), automatic conversion and volume matching, a Play that plays the encoded result, plain warnings for
+  lo-fi or very quiet files, and a portable Music project.
+- Gloves and cleats can get their own texture: "Give this glove or shoe its own texture" writes a separate image with a
+  complete mip chain for one variant (original, half or quarter size; refuses when the slot cannot hold it).
+- Owned executable space scaled out to 104 KiB of code, 84 KiB of state and 16 KiB read-only; every owner installs in
+  every order.
+
+## Fixed
+
+- Franchise Practice quits to the Coach's Desk instead of the main menu (second correction; witnessed).
+- Kickoff v6: a kick caught in the end zone gets the native kneel and its whistle, and the booth no longer calls a
+  return on a touchback (Noah's last kickoff note; unplayed).
+- The scorebar rim follows the teams like the panels (silver when a team has no usable colour) instead of the reference
+  broadcast's red and silver (Noah's last scorebar note; unplayed).
+- Team Kit bundles import into any project, with a receipt of imported, skipped and overwritten components; a 351-edit
+  project saves in a tenth of a second instead of 23 seconds.
+- Number sheets: a layout chooser for the four 0-9 arrangements, smaller digit textures built as true coverage averages
+  instead of blocky steps, and an encoded preview of every digit before anything is staged.
+- Ten editor bugs from the Discord ledger: the updater no longer says "Update available" after updating, Gameplay
+  Patches and Build stay in sync and a project keeps its gameplay choices, an unchanged copy says "No changes written",
+  Make disc and Check my images work for gameplay-only builds, a modded image no longer shows stock art from a stale
+  cache, the first-name limit is explained, portrait selectors are confirmed in Rosters, the wrong xemu binary is
+  refused with a message, Photoshop PNG variants are accepted and DDS is refused with advice.
+- A build checks its destination before any expensive work and refuses to replace an image another program holds open.
+- A preset pressed right after inspecting a disc is no longer wiped by the project restore.
+- The Franchise schedule lists every playoff game and lets you edit dates and kickoff times before the teams are known.
+- The experimental patch pack exports again (chained growth of two files).
+- The Crib movie cut and the animation import ask for the real scratch bytes plus a margin, not 100 GiB.
+- Rosters: exact undo on play-style buckets; the scramble parity toggle says what it does.
+
+## Witnessed by Noah (2026-09-07 and 2026-09-08, xemu, Experimental preset discs)
+
+- MyNFL in the game; Free Practice in Franchise quits to the Coach's Desk; the kickoff good after v5 (open: a kick
+  caught in the end zone shows no kneel while commentary calls a return); both cameras, with the new Standard as the
+  default; the v3 scorebar good (open: the rim is red on the right and silver on the left); Franchise Auto Save saving
+  on the return to the Coach's Desk. The SEGA-screen hang was bisected on 9/8: the Crib reclaim and the Practice Squad
+  screen boot alone, the roster arena growth (16 reserves, two extra created teams) hangs, so it stays off everywhere.
+  On 9/8 he also played the first MyCareer cut (route, creation, signing and a real game as the 49ers quarterback all
+  worked; the club list and the Apartment drew nothing, no marker, no play art, a quit game advanced the week) and the
+  first read option cut (the quarterback ran at the snap). Mode 4 and read option v3 are the corrections and are
+  unplayed. Everything else in this beta is unwitnessed.
+
+## Not in this release
+
+- Senior Bowl simulation (preparation page only), franchise 2026 roster rules enforcement, MyCareer's draft entry,
+  Supersim and the calendar, card, depth, upgrades and requests screens (measured over budget), deep-zone corner facing
+  and bail, 7-on-7, a
+  root cause for the runtime scorebug freeze (probe matrix reduced to two profiles), more than 25 Anniversary moments,
+  any hi-res memory-fit guarantee, the community Blender stadium add-ons (audited and withheld).
+
 # beta-61 — RC85 / alpha.84
 
 **Date:** 2026-09-05

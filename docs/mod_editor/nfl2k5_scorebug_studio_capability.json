@@ -1,0 +1,77 @@
+[
+  {
+    "backend": {
+      "command": "python3 -m mod_editor.core.nfl2k5_scorebug_author export --preset plain_dark --folder <scorebar-folder>",
+      "module": "mod_editor/core/nfl2k5_scorebug_author.py",
+      "operation": "write"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "FABLE_SCOREBUG_STUDIO_REPORT.md",
+      "docs/mod_editor/scorebug_studio.md",
+      "tests/mod_editor/test_nfl2k5_scorebug_author.py",
+      "tests/mod_editor/test_scorebug_studio_panel_qt.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_template.py"
+    ],
+    "game": "nfl2k5_xbox",
+    "gui": {
+      "default_enabled": false,
+      "expose": true,
+      "mode": "edit",
+      "reason": "EXPERIMENTAL / UNWITNESSED. The Scorebar page describes the eight fixed scorebar cells by simple settings (colour, blend, rounding, border, opacity, an optional picture), previews them on a drawn field with stand-in text, and writes a template folder that the existing static scorebar compiler installs. It never enables an option by itself: Use in Build only fills the Build tab's scorebar folder field."
+    },
+    "id": "nfl2k5.scorebug_presentation.studio",
+    "input_constraints": [
+      "Writes only a user-chosen folder: layout.json copied from the preset's contract, 1x/ and 2x/ PNGs, images/ copies of chosen pictures and scorebar_studio.json. The shipped reference kit is refused as a save target.",
+      "Every saved folder is compiled by nfl2k5_scorebug_template.compile_folder before the page reports success: at most the chosen colour limit (default 128, hard limit 256) across all layers, exact tile sizes, unchanged cell contract.",
+      "Pictures are fitted in on-screen proportions and reduced to the atlas tile; a layer that is exactly a template PNG with no other settings is written back byte for byte.",
+      "One bar for every team; team colours in the preview are preview only. Live text, possession colour and timeouts are drawn by the game and cannot be changed here.",
+      "The game slot figure on the page is an estimate from the optimal VC-LZ encoder with a fixed header allowance; the build's exact fixed-span check remains the authority."
+    ],
+    "portme": [
+      "Apply the Scorebar Studio section of WIRING.md: the Scorebar navigation row, the folder_chosen connection, allowlist lines and the runtime closure imports.",
+      "Complete Noah's witness list in FABLE_SCOREBUG_STUDIO_REPORT.md; no built disc has been watched in-game with a Studio-made bar."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship the model, the page, the preset registry and the guide. Presets reference only the shipped reference kit's PNGs. No retail texture, disc, pack or executable is read or bundled.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "evidence": [
+        "FABLE_SCOREBUG_STUDIO_REPORT.md"
+      ],
+      "scope": "Offline only. The saved folder compiles through the proved static scorebar compiler and the preview is a software raster on a drawn field. No native, emulator or gameplay evidence exists for a Studio-made bar.",
+      "status": "not-tested"
+    },
+    "selectors": {
+      "fields": [
+        {
+          "name": "scorebug",
+          "required": true,
+          "allowed": "boolean; the existing static scorebar option must be on for the folder to be used"
+        },
+        {
+          "name": "scorebug_folder",
+          "required": true,
+          "allowed": "a folder saved by the Scorebar page (or any valid template folder)"
+        }
+      ],
+      "notes": "The page emits folder_chosen(str); the shell writes it into the Build tab's existing scorebug_folder_field. The existing template capability owns the install."
+    },
+    "source_container": {
+      "format": "XBE plus fixed SCNE/TXTR in XDVDFS pack 0, through the existing template installer",
+      "hash_pins": [
+        "afa1481f7ce356c2cfb95cbeccebc18af183f6aa4ba13cd2981247a3619a8476",
+        "b17fe5ddc714bc2f508e38cbff5143d86828e9bca4748011dd54200624583b21"
+      ],
+      "resource": "score_buga atlas through nfl2k5.scorebug_presentation.template; the Studio itself reads no game data",
+      "retail_file": "user-owned USA default.xbe and vc_53450030/0 at build time only"
+    },
+    "summary": "A Scorebar page that turns simple settings and pictures into a valid static scorebar template folder, with a live preview and a hand-off to Build.",
+    "surface": "scorebug_presentation",
+    "title": "Scorebar Studio (experimental)",
+    "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_scorebug_author"
+  }
+]

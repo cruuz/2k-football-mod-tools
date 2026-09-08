@@ -157,7 +157,7 @@ def dob_pivot(year: int) -> int:
     return (year + 4 - 2000) % 100
 
 
-def dob_formatter_bytes(year: int) -> bytes:
+def dob_formatter_bytes(year: int, *, birth_year_helper: int | None = None) -> bytes:
     """FUN_00145d20 rewritten to print a four-digit birth year (same buffer, format and calls)."""
     pivot = dob_pivot(year)
     code = bytearray()
@@ -167,10 +167,13 @@ def dob_formatter_bytes(year: int) -> bytes:
     code += bytes.fromhex("8bd0")                                                     # mov edx,eax
     code += bytes.fromhex("c1e815")                                                   # shr eax,0x15
     code += bytes.fromhex("83e07f")                                                   # and eax,0x7f
-    code += bytes.fromhex("83f8") + bytes([pivot])                                    # cmp eax,pivot
-    code += bytes.fromhex("8d88") + struct.pack("<I", 1900)                           # lea ecx,[eax+1900]
-    code += bytes.fromhex("7703")                                                     # ja +3 (1900s)
-    code += bytes.fromhex("83c164")                                                   # add ecx,100 (2000s)
+    if birth_year_helper is None:
+        code += bytes.fromhex("83f8") + bytes([pivot])
+        code += bytes.fromhex("8d88") + struct.pack("<I", 1900)
+        code += bytes.fromhex("770383c164")
+    else:
+        code += b"\xe8" + struct.pack("<i", birth_year_helper - (DOB_FORMATTER_VA + len(code) + 5))
+        code += bytes.fromhex("8bc8")  # ECX full birth year; EDX packed DOB preserved
     code += bytes.fromhex("894c2408")                                                 # mov [esp+8],ecx
     code += bytes.fromhex("8bc2")                                                     # mov eax,edx
     code += bytes.fromhex("c1e80c")                                                   # shr eax,0xc
@@ -475,8 +478,12 @@ def _site_state(payload: bytes, site: Site, sections) -> str:
 
 def group_status(payload: bytes, group: str, **kwargs) -> str:
     try:
+        from . import nfl2k5_calendar_engine as engine
+        if engine.MAGIC in payload:
+            payload = engine.predecessor(payload)
         sections = _sections(payload)
-        states = {_site_state(payload, s, sections) for s in group_sites(group, **kwargs)}
+        states = {_site_state(payload, s, sections) for s in group_sites(group, **kwargs)
+                  if s.retail != s.patched}
     except (SeasonLengthError, ValueError, struct.error):
         return "foreign"
     if states == {"retail"}:
@@ -489,6 +496,9 @@ def group_status(payload: bytes, group: str, **kwargs) -> str:
 def read_year(payload: bytes) -> int | None:
     """The year the six sites agree on, or None when they disagree."""
     try:
+        from . import nfl2k5_calendar_engine as engine
+        if engine.MAGIC in payload:
+            payload = engine.predecessor(payload)
         sections = _sections(payload)
         years = set()
         for label, va, _note in _YEAR_IMM32:
@@ -583,4 +593,3 @@ def simple_status(payload: bytes) -> str:
     if states == {"applied"}:
         return "applied"
     return "foreign"
-

@@ -1,0 +1,455 @@
+{
+  "schema": "nfl2k5_scorebug_v10_validation/v1",
+  "experimental": true,
+  "witnessed": false,
+  "base_commit": "f263cd04365f9874541c756958a40b998d405e6d",
+  "test_suites": [
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_ingame.py",
+      "run": 11,
+      "passed": 11,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 8.095,
+      "peak_rss_kib": 149520,
+      "exit_status": 0,
+      "log_sha256": "45e2ea923b6be668f870cf3ab79cca5a6b5d972cbe8a4c0b975e46754190142a"
+    },
+    {
+      "command": "python3 tests/nfl2k5_scorebug_layout_test.py",
+      "run": 15,
+      "passed": 11,
+      "skipped": 4,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 1.809,
+      "peak_rss_kib": 146096,
+      "exit_status": 0,
+      "log_sha256": "0ae83ccbe0c5030d227ec192ec5e63097ebfc5db98fadf86b5f3daec081377f3"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_native.py",
+      "run": 4,
+      "passed": 4,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 105.146,
+      "peak_rss_kib": 209340,
+      "exit_status": 0,
+      "log_sha256": "0e93e51667199e49a3b71815d42d145d6872ac0fa4a3b77700c1df9500c8011e"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_phase1_packaging.py",
+      "run": 17,
+      "passed": 16,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 1,
+      "seconds": 0.02,
+      "peak_rss_kib": 24064,
+      "exit_status": 1,
+      "log_sha256": "9366c0c6537b1a9b80834244a16ec3fb93f12fc0fe2c8d2f864d2e97492e1eb7"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_projection.py",
+      "run": 14,
+      "passed": 14,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 363.993,
+      "peak_rss_kib": 346304,
+      "exit_status": 0,
+      "log_sha256": "fb30d44d873ac9955e291a46fb2578b28b6be33293e2d0d7c996cf3a729abdcb"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+      "run": 6,
+      "passed": 6,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 91.695,
+      "peak_rss_kib": 167276,
+      "exit_status": 0,
+      "log_sha256": "338d0394b1806b9dd04de11666bf9a83ebd4436623ac30eb229e992e4558a65b"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+      "run": 12,
+      "passed": 12,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 95.845,
+      "peak_rss_kib": 273920,
+      "exit_status": 0,
+      "log_sha256": "3a80a4fa475424ffedd66627c42e870c95141c87543ba43725b2859ff067824c"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_source_art.py",
+      "run": 13,
+      "passed": 10,
+      "skipped": 3,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 0.35,
+      "peak_rss_kib": 48320,
+      "exit_status": 0,
+      "log_sha256": "7294956146ac2de370422d510eaded1e675ab0787e243ea67fd3e9efe42366f1"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_template_release.py",
+      "run": 5,
+      "passed": 5,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 0.478,
+      "peak_rss_kib": 33208,
+      "exit_status": 0,
+      "log_sha256": "37424b9c4202af3841466057a201a5d0d44ec4203d5a39a89d7d6aaaa1cf5a39"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_template.py",
+      "run": 19,
+      "passed": 19,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 9.381,
+      "peak_rss_kib": 139704,
+      "exit_status": 0,
+      "log_sha256": "786037639bdca3f60a37b8d71d6187b0b008cf220f740f9b2aa9f8697fae64b5"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py",
+      "run": 5,
+      "passed": 5,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 0.053,
+      "peak_rss_kib": 30464,
+      "exit_status": 0,
+      "log_sha256": "677daf24bd12fdfe92cf895b3573452ae1c6654ce05543fbd0316386d50b0d1b"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_xbe_patch_memory_writes.py",
+      "run": 79,
+      "passed": 79,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 301.041,
+      "peak_rss_kib": 314024,
+      "exit_status": 0,
+      "log_sha256": "d0d7e3417089633f51227e2779bcfad874c5163e9ab8987690761096a68f127f"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_xbe_patch_cave_references.py",
+      "run": 91,
+      "passed": 91,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 372.422,
+      "peak_rss_kib": 483672,
+      "exit_status": 0,
+      "log_sha256": "03b8f4c074bf002d5305c31f9c2caa206d0f818c9c24e05567b77188029d0a66"
+    }
+  ],
+  "totals": {
+    "run": 291,
+    "passed": 283,
+    "skipped": 7,
+    "failures": 0,
+    "errors": 1
+  },
+  "peak_test_rss_kib": 483672,
+  "limitations": [
+    "Broader phase1 packaging: missing pre-existing reports/assets/menu_state_trace.json; its protected test was not changed.",
+    "Seven historical skips explicitly name absent legacy export/evidence inputs.",
+    "Full registry file validation stops at missing pre-existing docs/research/apf_audio.md; new row file and command checks pass.",
+    "Protected GUI/build/release allowlist/runtime closure changes are handed off in WIRING.md.",
+    "No gameplay, GPU, diagnostic runtime entry fix or live team/timeout selection is claimed."
+  ],
+  "development_failures_resolved": [
+    "The initial cave gate excluded only the legacy kickoff owner. A relocated-only exclusion also failed. The final test requires exactly both known owners plus complete relocated hook ownership; the targeted case and final 91-test gate pass.",
+    "Layout regression still pinned v9 text anchors. Updated to the independently verified v10 anchors; all 15 run with four historical skips.",
+    "During implementation, a containment test setup referenced renamed receipt metadata; corrected before the final passing projection suite.",
+    "The first staged-compiler smoke used incomplete package initialization stubs. It now stages the real allowlisted product source closure; the final release suite passes."
+  ],
+  "author_reproduction": {
+    "fresh_output_folder": "PASS",
+    "files": 179,
+    "all_bytes_match_shipped_default": true,
+    "temporary_directory_deleted_on_exit": true,
+    "game_inputs": false,
+    "network": false
+  },
+  "capability": {
+    "new_capability": "nfl2k5.scorebug_presentation.template",
+    "new_evidence_and_command_file_checks": "PASS",
+    "paths": [
+      "ASTRA_SCOREBUG_V10_REPORT.md",
+      "docs/scorebug_ingame/v10_native_audit.json",
+      "docs/scorebug_template/README.md",
+      "mod_editor/core/nfl2k5_scorebug_template.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_projection.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_template.py"
+    ],
+    "canonical_registry_modified": false,
+    "full_registry_file_check": "blocked by missing pre-existing docs/research/apf_audio.md",
+    "schema_check_command": "python3 mod_editor/capabilities/validate_registry.py --registry .scratch/v10-capability-registry.json --skip-file-checks",
+    "schema_check_result": "MOD_CAPABILITY_REGISTRY_VALIDATION_PASS schema=vc_mod_capability_registry/v1 games=3 surfaces=21 capabilities=109"
+  },
+  "protected_files_unchanged": [
+    {
+      "path": "mod_editor/core/mod_build.py",
+      "sha256": "b5bc7455e73c39829cf948e31b7a24ee3b3565ec48497f5df4392a1be1171bc0"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_throw_tuning.py",
+      "sha256": "32aed3ac6e0080d96d8fa153e810be9e8210e748844243e8877e4f2c6be7d288"
+    },
+    {
+      "path": "mod_editor/gui/studio_qt.py",
+      "sha256": "81a72698ba3442893ecb8124338bb847cfbb9140e9b82e4a4a27206390de016c"
+    },
+    {
+      "path": "mod_editor/gui/build_panel_qt.py",
+      "sha256": "33fe96b54667cc71a37c2a06d30cdfafe552f2eaa1c22f95ce9e4e42670ca175"
+    },
+    {
+      "path": "mod_editor/gui/gameplay_patches_panel_qt.py",
+      "sha256": "009176f8cd32816dcad49977131b21e7a38f701bf4fa820c1f5eeb3563e23338"
+    },
+    {
+      "path": "mod_editor/gui/gameplay_panel_qt.py",
+      "sha256": "9c8f714f78ea9193ea8c5d21737d067d6a8da4428a7b14130b5b44bb441ffdfe"
+    },
+    {
+      "path": "packaging/release-allowlist.txt",
+      "sha256": "eeb023792fdc776722a1fd83204568c502d7063b426052517fb8f91c67566f6a"
+    },
+    {
+      "path": "mod_editor/core/update_check.py",
+      "sha256": "e83ce96d87320ff9d03b797d4783917edc677a48bead3493424ee271af1679d0"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "2180a046901af91d632079f42f4d4ad7a8916709f017b95772456535cb89d55a"
+    },
+    {
+      "path": "data/nfl2k5_cave_reservations.json",
+      "sha256": "419a7bdcf0253d536772bb337c088b0eabc4b58ee6572df0908ac91ae59dfee6"
+    },
+    {
+      "path": "packaging/check_2k5_mod_studio_runtime.py",
+      "sha256": "d159452a5502dad3c8179698459373ff530f47e0d346e823e155da4edea846a0"
+    },
+    {
+      "path": "tests/mod_editor/test_phase1_packaging.py",
+      "sha256": "ee8aeaaf0fc9dc2f01bea2cfb4d9fc1bb2f72673d6a5e238547a06517dd5d412"
+    }
+  ],
+  "historical_scorebug_evidence_unchanged": [
+    {
+      "path": "docs/scorebug_ingame/after_v8_640x480.png",
+      "sha256": "ec77121e71042b50f980a1474ea95bca23c598978b4663013ba25587d43e20a9"
+    },
+    {
+      "path": "docs/scorebug_ingame/after_v8_wide_640x480.png",
+      "sha256": "ae06edcdecc26f8676d167c91dd994092f696ffb8332c0625aaeb82950cc1642"
+    },
+    {
+      "path": "docs/scorebug_ingame/after_v8_widest_640x480.png",
+      "sha256": "0a0f1ced6acaaad6e1500d4757064523ec21f3f6adc6e10f156e1e23b2247ca5"
+    },
+    {
+      "path": "docs/scorebug_ingame/after_v9_640x480.png",
+      "sha256": "73d36c956e008dd7bb3103494c4d943ae48ba2ff514334bd4003f5d4fc0af8dc"
+    },
+    {
+      "path": "docs/scorebug_ingame/after_v9_640x480_cull.png",
+      "sha256": "dcdfdb54998d3046f35e5a19c68b2ea6bdfe58bfe1520eca02017cc199d962b9"
+    },
+    {
+      "path": "docs/scorebug_ingame/after_v9_mode1_640x480.png",
+      "sha256": "73d36c956e008dd7bb3103494c4d943ae48ba2ff514334bd4003f5d4fc0af8dc"
+    },
+    {
+      "path": "docs/scorebug_ingame/after_v9_mode1_640x480_cull.png",
+      "sha256": "dcdfdb54998d3046f35e5a19c68b2ea6bdfe58bfe1520eca02017cc199d962b9"
+    },
+    {
+      "path": "docs/scorebug_ingame/after_v9_wide_640x480.png",
+      "sha256": "fb7f13aa1a6e0239a330f3fa2576c0bf623ebdd6d53ea72f2f5c2a20d5d4c98c"
+    },
+    {
+      "path": "docs/scorebug_ingame/after_v9_wide_640x480_cull.png",
+      "sha256": "8b5e0245576ded539ca0c4668acb357bbe69783d77638740b825c309cf249784"
+    },
+    {
+      "path": "docs/scorebug_ingame/after_v9_wide_mode1_640x480.png",
+      "sha256": "fb7f13aa1a6e0239a330f3fa2576c0bf623ebdd6d53ea72f2f5c2a20d5d4c98c"
+    },
+    {
+      "path": "docs/scorebug_ingame/after_v9_wide_mode1_640x480_cull.png",
+      "sha256": "8b5e0245576ded539ca0c4668acb357bbe69783d77638740b825c309cf249784"
+    },
+    {
+      "path": "docs/scorebug_ingame/before_v7_640x480.png",
+      "sha256": "91bca09849b6cefdc4ea9856ca418ebcef5743cace5d836610a232a3ebd46e4b"
+    },
+    {
+      "path": "docs/scorebug_ingame/before_v9_v8_640x480.png",
+      "sha256": "7daa3a2ab1a55600b0b654602c19f23a52c9375a65c292a121e0a49dc94e931b"
+    },
+    {
+      "path": "docs/scorebug_ingame/before_v9_v8_wide_640x480.png",
+      "sha256": "24f66634a97ecf4a151d8387520ba86ab30dba142c72b191cd6dedde4f08efe3"
+    },
+    {
+      "path": "docs/scorebug_ingame/espn_native_audit.json",
+      "sha256": "e15c5472c61414c896d293ce1c54242f840cf517e21af5111c96ff5aec216b08"
+    },
+    {
+      "path": "docs/scorebug_ingame/espn_validation.json",
+      "sha256": "e7ce4ba73e25e49a59d734340ee777c01b6597c6dce831c3b65a50f2c7708c98"
+    },
+    {
+      "path": "docs/scorebug_ingame/evidence.json",
+      "sha256": "82609b8496ac4ef62fca230792cda8deae0d23674614e802a9d03bb29fd98073"
+    },
+    {
+      "path": "docs/scorebug_ingame/fix_receipts.json",
+      "sha256": "5fe836ad5350cca6aaa5f59f377726b4bda072ecfa6cf93d9140c15d85a83801"
+    },
+    {
+      "path": "docs/scorebug_ingame/installed.png",
+      "sha256": "d32f2d58a7a850eabe9eae6782c6dba59598e71ddfad89c0928e42184b185caf"
+    },
+    {
+      "path": "docs/scorebug_ingame/probe_capability.json",
+      "sha256": "0286f118e330d009e412237b724812b1f9d0318649421f8471f7d03c01dd64ee"
+    },
+    {
+      "path": "docs/scorebug_ingame/projection.json",
+      "sha256": "779964c8a65d4c832a9f67d9c136dec952341525b3d263e085cd399598a486be"
+    },
+    {
+      "path": "docs/scorebug_ingame/reconstructed_v8_640x480.png",
+      "sha256": "3046ecc6fafe7bbfad67c07a2e162183b71fc0d756ea0cdb09c56af3b8a0a933"
+    },
+    {
+      "path": "docs/scorebug_ingame/reconstructed_v8_wide_640x480.png",
+      "sha256": "90b3b1dc71cfe66ab9f5d53141a79978a20fa814f937b659318632cc105b89d1"
+    },
+    {
+      "path": "docs/scorebug_ingame/reconstructed_v8_wide_cull_hypothesis.png",
+      "sha256": "641ecbdc64af328d438abd14afd6305a1e0a3e347c644bd52c08d38c4f34d9cc"
+    },
+    {
+      "path": "docs/scorebug_ingame/slide_samples.png",
+      "sha256": "1e93bd75de00b93116b9524cb3c41e88947328b97532d68571c4b06e3a49842c"
+    },
+    {
+      "path": "docs/scorebug_ingame/target_BAL_PIT.png",
+      "sha256": "adaf601026e63759cb75b2244bab17f09cfa1c5692d966cb114f59bdd9d8e3fc"
+    },
+    {
+      "path": "docs/scorebug_ingame/target_LV_HOU.png",
+      "sha256": "9644873e73c2bcb8620fb19fd9dc7b2f2fd1cb61915445a5d80a930dd1e3fd1a"
+    },
+    {
+      "path": "docs/scorebug_ingame/target_NO_MIA.png",
+      "sha256": "ee1e0a56681106474fa25c7bee42aa359989dfee478d5ac9539149507aa06fde"
+    },
+    {
+      "path": "docs/scorebug_ingame/target_widest.png",
+      "sha256": "d69c0c17a927757871016fcd29da0b458bf4864e8d6538851ad6e684b07dfb95"
+    },
+    {
+      "path": "docs/scorebug_ingame/team_panels.png",
+      "sha256": "7c42bc7802e88a4136002ad41287e728356838c103118b839353d4ed3b2817c3"
+    },
+    {
+      "path": "docs/scorebug_ingame/v9_before_after_target.png",
+      "sha256": "7e59a0b4bfa26e0a060723f936c1e37d97bb79739116b7611bc2c4ff2ca6be7e"
+    },
+    {
+      "path": "docs/scorebug_ingame/v9_native_audit.json",
+      "sha256": "18fa945ba4463293dcacc72727029ba8258f8cb3730b98cfa9569fb173778430"
+    },
+    {
+      "path": "docs/scorebug_ingame/v9_target_overlay.png",
+      "sha256": "9237509b9bf0e07b9eb67c16fc69f0cfe3e3c0401e3cf8597f83f13e9ecebcd0"
+    },
+    {
+      "path": "docs/scorebug_ingame/v9_validation.json",
+      "sha256": "e86e4ca3533359032d8ba4b9cd79df03a16d4c4a63dd9855a2debcfd8943d44e"
+    },
+    {
+      "path": "docs/scorebug_ingame/validation.json",
+      "sha256": "72e40d54fb63d54670bb9f6fe91e5154b22c7837fa570ae34f9cd84fd93c0975"
+    },
+    {
+      "path": "docs/scorebug_ingame/witness_2026-09-06_v8_ingame.png",
+      "sha256": "cd31bdf57ad64d0e9cc22866423659c232ae68dcc763deb1165bfeeca27c60c9"
+    },
+    {
+      "path": "docs/scorebug_ingame/witness_TB_NE.png",
+      "sha256": "1f72834f059699d06f15c4eb413451ca97bfd72587a87d7c758ca8295c66cd53"
+    },
+    {
+      "path": "docs/scorebug_ingame/witness_harness_target.png",
+      "sha256": "976bedb037e0770f44368ee31c5f4dffd0e1af009c18c405c093643410278998"
+    },
+    {
+      "path": "docs/scorebug_ingame/witness_r61b.md",
+      "sha256": "72f89c54953b21eec261d5e6666fb886f9130eeb5a181a333542aebed38ab9e9"
+    },
+    {
+      "path": "docs/scorebug_ingame/witness_v8_hud_normalized.png",
+      "sha256": "d15e2d0a3e664a5b616d5a9b38108ab5ab52e9157b4a18a54a7e51838b0f4f18"
+    }
+  ],
+  "disk": {
+    "initial_free_bytes": 101558341632,
+    "final_validation_free_bytes": 107887423488,
+    "minimum_required_free_bytes": 100000000000,
+    "full_disc_or_pack_copies_created": false,
+    "temporary_sparse_fixtures_deleted": true
+  },
+  "environment": {
+    "network": false,
+    "push": false,
+    "emulator_or_game": false,
+    "gui_display": false,
+    "audio": false
+  },
+  "proof": {
+    "command": "python3 -m tools.nfl2k5_scorebug_projection --pack '/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/vc_53450030/0' --xbe '/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe' --photo '/home/noah/Desktop/2K5-8 Editors/scorebug_reference_2026-09-05.jpeg' --output docs/scorebug_ingame",
+    "exit_status": 0,
+    "native_audit": "docs/scorebug_ingame/v10_native_audit.json",
+    "real_disc_read_only_plan": "docs/scorebug_ingame/v10_image_plan.json",
+    "four_projection_cases_contained": true,
+    "same_predicate_rejects_v8": true,
+    "native_overlap_and_replay": true
+  },
+  "delivery": {
+    "method": "isolated local commit and Git bundle",
+    "bundle": ".scratch/r63-scorebug-v10.bundle",
+    "explicit_path_count": 212,
+    "base_commit": "f263cd04365f9874541c756958a40b998d405e6d",
+    "direct_add_exit_status": 128,
+    "reason": "Shared worktree index.lock is on a read-only filesystem",
+    "shared_metadata_modified": false,
+    "brief_and_scratch_excluded_from_commit": true,
+    "pushed": false
+  }
+}

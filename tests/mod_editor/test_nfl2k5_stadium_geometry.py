@@ -10,6 +10,12 @@ from types import SimpleNamespace
 import tempfile
 import unittest
 
+import sys
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 from mod_editor.core.nfl2k5_stadium_studio import StadiumGeometryTarget
 from mod_editor.core.nfl2k5_stadium_texture_writer import (
     GEOMETRY_CATALOG_SCHEMA,

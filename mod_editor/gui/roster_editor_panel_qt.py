@@ -57,11 +57,13 @@ from __future__ import annotations
 
 import json
 import shutil
+import copy
+import csv
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
-from PyQt5.QtCore import QSize, Qt, pyqtSignal
+from PyQt5.QtCore import QObject, QRunnable, QSize, Qt, QThreadPool, pyqtSignal
 from PyQt5.QtGui import QColor, QFont, QPainter, QPen
 from PyQt5.QtWidgets import (
     QAbstractItemView,
@@ -95,6 +97,7 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.core import nfl2k5_roster_records as rr
+from mod_editor.gui.espn25_panel_qt import Espn25Panel
 from mod_editor.gui.franchise_panel_qt import FranchisePanel
 from mod_editor.gui.ux_text import Details, show_operation_error, suggest_copy_name
 
@@ -643,6 +646,66 @@ class GlobalEditDialog(QDialog):
 
 
 # ------------------------------------------------------------------------------------------- pickers
+class AgeShiftDialog(QDialog):
+    """Explicit season choice, review, then one undoable in-memory operation."""
+
+    def __init__(self, panel: "RosterEditorPanel") -> None:
+        super().__init__(panel)
+        self.panel = panel
+        self.plan = None
+        self.setWindowTitle("Shift ages to season year")
+        self.resize(700, 480)
+        box = QVBoxLayout(self)
+        note = QLabel("EXPERIMENTAL / UNWITNESSED. Keep player ages while moving birth dates to a new season. "
+                      "Choose the season this roster's ages were made for; a save cannot tell us that. "
+                      "Calendar, years pro and contracts stay as they are. Save a copy to keep changes.")
+        note.setWordWrap(True)
+        box.addWidget(note)
+        row = QHBoxLayout()
+        self.source_year = QSpinBox()
+        self.target_year = QSpinBox()
+        for spin, caption in ((self.source_year, "Ages made for season"),
+                              (self.target_year, "Target season")):
+            spin.setRange(100, 9999)
+            spin.setAccessibleName(caption)
+            row.addWidget(QLabel(caption))
+            row.addWidget(spin)
+        self.source_year.setValue(panel.document.reference_year or 2004)
+        self.target_year.setValue(2026)
+        box.addLayout(row)
+        self.shown_only = QCheckBox("Only the players shown in this list")
+        box.addWidget(self.shown_only)
+        self.report = QPlainTextEdit()
+        self.report.setReadOnly(True)
+        box.addWidget(self.report)
+        buttons = QDialogButtonBox(QDialogButtonBox.Apply | QDialogButtonBox.Cancel)
+        self.apply_button = buttons.button(QDialogButtonBox.Apply)
+        self.apply_button.setText("Apply age shift")
+        self.apply_button.clicked.connect(self._apply)
+        buttons.rejected.connect(self.reject)
+        box.addWidget(buttons)
+        self.source_year.valueChanged.connect(self.refresh_preview)
+        self.target_year.valueChanged.connect(self.refresh_preview)
+        self.shown_only.toggled.connect(self.refresh_preview)
+        self.refresh_preview()
+
+    def refresh_preview(self, *_args) -> None:
+        from mod_editor.core import nfl2k5_roster_ages as ages
+        self.plan = ages.preview(self.panel.document, self.source_year.value(), self.target_year.value(),
+                                 self.panel.visible_players() if self.shown_only.isChecked() else None)
+        self.report.setPlainText(self.panel.age_shift_text(self.plan))
+        self.apply_button.setEnabled(bool(self.plan["changed"]))
+
+    def _apply(self) -> None:
+        try:
+            self.panel.apply_age_shift(self.plan)
+        except rr.RosterRecordError as exc:
+            self.report.setPlainText(str(exc))
+            self.apply_button.setEnabled(False)
+            return
+        self.accept()
+
+
 class IdPickerDialog(QDialog):
     """A searchable id list (play-by-play names, portraits) with a spin box for any id the list lacks."""
 
@@ -770,12 +833,43 @@ class SwapPlayerDialog(QDialog):
 
 
 # --------------------------------------------------------------------------------------------- panel
+class _Espn25CatalogSignals(QObject):
+    loaded = pyqtSignal(int, object, object)        # generation, detached Catalog, source identity
+    failed = pyqtSignal(int, str)                   # generation, refusal
+
+
+class _Espn25CatalogTask(QRunnable):
+    """Read the ESPN Anniversary catalog off the GUI thread.
+
+    ``Catalog.load`` returns a detached object with no open handles, so it crosses the thread
+    boundary safely; the host applies it with ``Espn25Panel.set_catalog`` on the GUI thread."""
+
+    def __init__(self, source: Path, generation: int) -> None:
+        super().__init__()
+        self.signals = _Espn25CatalogSignals()
+        self.source = Path(source)
+        self.generation = generation
+        self.setAutoDelete(False)
+
+    def run(self) -> None:
+        try:
+            from mod_editor.core import nfl2k5_espn25_scenarios as espn
+            catalog = espn.Catalog.load(self.source)
+            identity = RosterEditorPanel.espn25_identity(self.source, catalog)
+        except Exception as exc:  # noqa: BLE001 - one message for the status line
+            self.signals.failed.emit(self.generation, f"{type(exc).__name__}: {exc}")
+        else:
+            self.signals.loaded.emit(self.generation, catalog, identity)
+
+
 class RosterEditorPanel(QWidget):
     """The ★ Rosters workspace."""
 
     roster_edits_changed = pyqtSignal(str)          # path of the saved roster-edits document
     disc_written = pyqtSignal(str)                  # a disc copy this page wrote (Play latest can start it)
     roster_edits_stale = pyqtSignal()               # the roster changed after the last export (M08)
+    espn25_plan_changed = pyqtSignal(str)           # path of the saved ESPN Anniversary plan (Build's espn25_plan)
+    ESPN25_RECOVERY_SCHEMA = "2k5_mod_studio_espn25_recovery/v1"
 
     def __init__(self, facade: object | None = None, parent: QWidget | None = None) -> None:
         super().__init__(parent)
@@ -797,9 +891,17 @@ class RosterEditorPanel(QWidget):
         self._scheme_detection: dict[str, Any] = {}
         self._edits_path: Path | None = None
         self._edits_snapshot: tuple[frozenset[tuple[str, int]], int] | None = None
+        # ESPN Anniversary (EXPERIMENTAL / UNWITNESSED): the catalog of the loaded disc, read off-thread
+        self._espn25_generation = 0
+        self._espn25_tasks: set[_Espn25CatalogTask] = set()
+        self._espn25_identity: dict[str, Any] | None = None
+        self._espn25_saved: tuple[dict[int, dict[str, Any]], str] | None = None
+        self._espn25_pending_restore: dict[str, Any] | None = None
+        self.espn25_plan_path = ""
         self._repair_plans: list[dict[str, Any]] = []
         self._templates: tuple[rr.CreatePlayerTemplate, ...] = rr.create_player_templates()
         self._templates_source = "retail table"
+        self.age_shift_receipts: list[dict[str, Any]] = []
         self.undo_stack = UndoStack(on_change=self._refresh_actions)
         self.cards: dict[str, AttributeCard] = {}
         self._card_order: list[str] = []
@@ -840,6 +942,22 @@ class RosterEditorPanel(QWidget):
             source_row.addWidget(widget)
         source_row.addWidget(self.source_label, 1)
         layout.addLayout(source_row)
+        arena = Details("Migrate a signed save for a larger roster")
+        arena.add_text("EXPERIMENTAL / UNWITNESSED. Create a separately signed save copy and use it with the matching Build options. The original save stays intact. The league remains 32 teams.")
+        self.arena_reserves_check = QCheckBox("16 reserves")
+        self.arena_reserves_check.setChecked(True)
+        self.arena_teams_check = QCheckBox("Two extra created teams")
+        self.arena_eligible = QComboBox()
+        self.arena_eligible.addItem("No team eligible for a 17th reserve", 0)
+        for team in range(32):
+            self.arena_eligible.addItem(f"Team ordinal {team}: allow a 17th reserve", 1 << team)
+        arena.content.addWidget(self.arena_reserves_check)
+        arena.content.addWidget(self.arena_teams_check)
+        arena.content.addWidget(self.arena_eligible)
+        self.arena_migrate_button = QPushButton("Migrate signed save copy")
+        self.arena_migrate_button.clicked.connect(self._migrate_arena_save)
+        arena.content.addWidget(self.arena_migrate_button)
+        layout.addWidget(arena)
 
         # a franchise save says what season it is in; read-only, filled by load_save, hidden otherwise
         self.franchise_label = QLabel("")
@@ -912,6 +1030,14 @@ class RosterEditorPanel(QWidget):
         passes_menu.addAction("Add a year pro to everyone", lambda: self.advance_years_pro(False))
         passes_menu.addAction("Add a year pro to this list", lambda: self.advance_years_pro(True))
         passes_menu.addAction("Restore height / weight / birth date", self.restore_measurements)
+        passes_menu.addAction("Shift ages to season year...", self.open_age_shift)
+        passes_menu.addAction("Show age shift receipt", self.show_age_shift_receipt)
+        passes_menu.addAction("Export age shift receipt...", lambda: self.export_age_shift_receipt())
+        self.save_roster_to_disc_action = passes_menu.addAction(
+            "Use this save's roster on the disc...", self._use_save_roster_on_disc)
+        self.save_roster_to_disc_action.setToolTip(
+            "Choose an Xbox roster or franchise save and export its roster for the current disc. "
+            "EXPERIMENTAL / UNWITNESSED.")
         self.passes_button.setMenu(passes_menu)
         self.csv_button = QToolButton()
         self.csv_button.setText("CSV ▾")
@@ -950,6 +1076,13 @@ class RosterEditorPanel(QWidget):
         tools.addWidget(self.write_button)
         layout.addLayout(tools)
 
+        self.save_roster_to_disc_button = QPushButton("Use this save's roster on the disc...")
+        self.save_roster_to_disc_button.setToolTip(
+            "Export this save's whole roster for the current disc, including edits made here. "
+            "Review skipped players before building. EXPERIMENTAL / UNWITNESSED.")
+        self.save_roster_to_disc_button.clicked.connect(self._use_save_roster_on_disc)
+        layout.addWidget(self.save_roster_to_disc_button)
+
         splitter = QSplitter(Qt.Horizontal)
         splitter.addWidget(self._build_team_pane())
         splitter.addWidget(self._build_grid_pane())
@@ -965,6 +1098,14 @@ class RosterEditorPanel(QWidget):
         self.franchise_panel = FranchisePanel()
         self.franchise_panel.shared_roster_panel = self
         self.franchise_panel.install(self.pages)
+        # ESPN Anniversary: the fixed-25 moment setup and the shared historic roster editor, separate from
+        # the live roster above; disabled until a supported disc image loads (a save has no scenarios)
+        self.espn25_panel = Espn25Panel()
+        self.espn25_panel.plan_ready.connect(self._espn25_plan_ready)
+        self._espn25_index = self.pages.addTab(self.espn25_panel, "ESPN Anniversary")
+        self.pages.setTabEnabled(self._espn25_index, False)
+        self.pages.setTabToolTip(self._espn25_index, "Open a game disc (.iso) to edit the Anniversary moments.")
+        self._show_page_tabs()
         layout.addWidget(self.pages, 1)
 
         self.status_label = QLabel("Open your game disc (top right) or an Xbox save to begin.")
@@ -1070,7 +1211,7 @@ class RosterEditorPanel(QWidget):
                                 "Retail auto-depth ignores these locks. Returner choices take effect at the next patched sort.")
         self.locks_note.setWordWrap(True)
         box.addWidget(self.locks_note)
-        self.reserves_note = QLabel("Reserves: EXPERIMENTAL / UNWITNESSED. Save moves in a signed Xbox save copy.")
+        self.reserves_note = QLabel("Reserves: EXPERIMENTAL / UNWITNESSED. Save moves in a signed Xbox save copy. Migrated saves require the matching larger-roster disc.")
         self.reserves_note.setWordWrap(True)
         box.addWidget(self.reserves_note)
         return pane
@@ -1146,7 +1287,8 @@ class RosterEditorPanel(QWidget):
     def _build_abilities_page(self) -> QWidget:
         host = QWidget()
         box = QVBoxLayout(host)
-        note = QLabel("EXPERIMENTAL / UNWITNESSED: no gameplay effect until the abilities runtime patch ships")
+        note = QLabel("Stored abilities. They affect play only with Player abilities rules v1 on the game disc "
+                      "(Build tab, experimental and unwitnessed). Existing franchise saves keep their own flags.")
         note.setWordWrap(True)
         box.addWidget(note)
         self.ability_checks = {}
@@ -1160,8 +1302,35 @@ class RosterEditorPanel(QWidget):
         self.ability_bulk_button.clicked.connect(lambda: self.set_abilities(
             self.visible_players(), {name: check.isChecked() for name, check in self.ability_checks.items()}))
         box.addWidget(self.ability_bulk_button)
+        self.guardian_cap_check = QCheckBox("Guardian cap (experimental)")
+        self.guardian_cap_check.setToolTip("Stored selection for the Guardian overlay Build option. Works with either helmet. Experimental and unwitnessed.")
+        self.guardian_cap_check.toggled.connect(lambda on: self.set_guardian_caps(
+            [self.selected_player()] if self.selected_player() else [], on))
+        box.addWidget(self.guardian_cap_check)
+        self.guardian_bulk_button = QPushButton("Apply cap choice to all shown players")
+        self.guardian_bulk_button.clicked.connect(lambda: self.set_guardian_caps(
+            self.visible_players(), self.guardian_cap_check.isChecked()))
+        box.addWidget(self.guardian_bulk_button)
         box.addStretch(1)
         return host
+
+    def set_guardian_caps(self, players, enabled):
+        if type(enabled) is not bool:
+            raise rr.RosterRecordError("Guardian cap requires a Boolean")
+        if self.document is None:
+            return 0
+        if any(self.document.by_offset.get(p.offset) is not p for p in players):
+            raise rr.RosterRecordError("player belongs to another document")
+        edits = [(p, p.record.guardian_cap) for p in players if p.record.guardian_cap != enabled]
+        if not edits:
+            return 0
+        def put(after):
+            for player, before in edits:
+                player.record.guardian_cap = enabled if after else before
+                self._after_edit(player)
+        put(True)
+        self.undo_stack.push(UndoEntry("Guardian caps", lambda: put(False), lambda: put(True)))
+        return len(edits)
 
     def _ability_changed(self, name: str, enabled: bool) -> None:
         player = self.selected_player()
@@ -1263,7 +1432,7 @@ class RosterEditorPanel(QWidget):
     def _team_count_label(self, team: rr.TeamRecord) -> str:
         name = team.abbreviation or team.nickname or f'Team {team.index}'
         if team.index < 32:
-            return f"{name} · {len(team.slots)} active + {len(self.document.reserves[team.index])} reserve"
+            return f"{name} · {len(team.slots)} active + {len(self.document.reserves[team.index])}/{self.document.reserve_limit(team.index)} reserve"
         return f"{name} · {len(team.slots)}"
 
     def _restore_composed(self, payload: bytes, edits) -> None:
@@ -1345,13 +1514,19 @@ class RosterEditorPanel(QWidget):
             grid.setColumnStretch(column, 1)
         grid.setRowStretch(grid.rowCount(), 1)
         area.setWidget(host)
+        if group == "Style":
+            note = QLabel("EXPERIMENTAL / UNWITNESSED. Scramble: odd = scrambler; even = other animation families. "
+                          "The number also affects the animation choice. Kicking-style behavior is unverified.")
+            note.setWordWrap(True)
+            grid.addWidget(note, grid.rowCount(), 0, 1, columns)
         area.setObjectName(f"cards_{group.lower()}")
         return area
 
     STYLE_CAPTIONS = {
         "power_run_style_bucket": "Power Run Style",
         "power_run_style": "Power Run Style (raw byte)",
-        "throw_style": "Signature release (unorthodox delivery)",
+        "throw_style": "Scramble parity: odd = scrambler",
+        "scramble": "Scramble (keeps odd/even choice)",
         "kicking_style": "Kicking Style (experimental)",
     }
     STYLE_TOOLTIPS = {
@@ -1361,12 +1536,8 @@ class RosterEditorPanel(QWidget):
             "(value x 0.01), so the raw card below still works.",
         "power_run_style": "The raw +0x4D byte behind the Finesse / Balanced / Power control.",
         "throw_style":
-            "The LOW BIT of Scramble (+0x4F). It is the only bit test on any rating byte in the whole "
-            "executable (0x002D92B1) and it picks which family of directional animation sets the "
-            "player uses. In the retail roster exactly three quarterbacks carry it: Michael Vick, "
-            "Rich Gannon and Philip Rivers, the three unorthodox deliveries, so it reads as a hand-set "
-            "signature-release flag. Changing it leaves the Scramble rating where it is. Unwitnessed "
-            "in game.",
+            "Odd = scrambler. Even and odd select different animation families. This switch changes "
+            "the number by at most one. The exact motion is unverified; this does not promise different CPU playcalling.",
         "scramble":
             "A hidden rating the Player Card never prints, but the game's own roster editor does. "
             "Magnitude and parity are read separately: this slider moves the magnitude and preserves "
@@ -1546,12 +1717,15 @@ class RosterEditorPanel(QWidget):
         """Adopt a parsed roster (the tests and the studio both use this)."""
 
         self.document = document
+        self.age_shift_receipts = []
         self._baseline = None
         self._source_path = source
         self._source_kind = kind
         self.write_button.setText("Save Xbox save copy…" if kind == "save" else "Save disc copy…")
         self._show_franchise(None)
         self.franchise_panel.clear()
+        # an explicit load replaces the Anniversary catalog too (a routine refresh never reaches here)
+        self._reload_espn25(source if kind == "disc" else None)
         self._dirty.clear()
         self.undo_stack.clear()
         self._clipboard = None
@@ -1592,9 +1766,148 @@ class RosterEditorPanel(QWidget):
         return loaded
 
     def is_dirty(self) -> bool:
-        """Whether this roster carries edits the user would lose on a reload."""
+        """Whether this roster (or its Anniversary tab) carries edits the user would lose on a reload."""
 
-        return bool(self._dirty) or self.undo_stack.can_undo()
+        return bool(self._dirty) or self.undo_stack.can_undo() or self.espn25_dirty()
+
+    # ------------------------------------------------------------------ ESPN Anniversary
+    @staticmethod
+    def espn25_identity(source: Path | str, catalog) -> dict[str, Any]:
+        """What Anniversary edits were made against: the catalog's digests, plus the path for display."""
+
+        from mod_editor.core import nfl2k5_espn25_scenarios as espn
+        return {"source": str(source),
+                "main_descriptor_sha256": str(catalog.manifest["main"]["descriptor_sha256"]),
+                "situ_sha256": espn.sha(catalog.resource(22)),
+                "rosters": {str(index): espn.sha(catalog.resource(int(index))) for index in catalog.manifest["rosters"]}}
+
+    @staticmethod
+    def _espn25_same_catalog(first: Mapping[str, Any], second: Mapping[str, Any]) -> bool:
+        return all(first.get(key) == second.get(key) for key in ("main_descriptor_sha256", "situ_sha256", "rosters"))
+
+    def _show_page_tabs(self) -> None:
+        # the franchise page hides the whole tab bar while it is hidden; the Anniversary tab keeps it
+        self.pages.tabBar().setVisible(True)
+
+    def _reload_espn25(self, source: Path | None) -> None:
+        """An explicit roster load replaces the Anniversary catalog; pending edits belonged to the old one."""
+
+        self._espn25_generation += 1
+        self._espn25_identity = None
+        self._espn25_saved = None
+        self.espn25_plan_path = ""
+        self.pages.setTabEnabled(self._espn25_index, False)
+        self._show_page_tabs()
+        if source is None or not Path(source).exists():
+            self.pages.setTabToolTip(self._espn25_index,
+                                     "ESPN Anniversary edits need a game disc (.iso); an Xbox save has no scenarios.")
+            return
+        self.pages.setTabToolTip(self._espn25_index, "Reading the Anniversary scenarios and historic rosters…")
+        task = _Espn25CatalogTask(Path(source), self._espn25_generation)
+        task.signals.loaded.connect(self._espn25_loaded)
+        task.signals.failed.connect(self._espn25_failed)
+        self._espn25_tasks.add(task)
+        QThreadPool.globalInstance().start(task)
+
+    def _espn25_loaded(self, generation: int, catalog: object, identity: object) -> None:
+        self._espn25_tasks = {task for task in self._espn25_tasks if task.generation != generation}
+        if generation != self._espn25_generation:
+            return                                          # a later load superseded this catalog
+        self.espn25_panel.set_catalog(catalog)
+        self._espn25_identity = dict(identity)
+        self._espn25_saved = self._espn25_state()
+        self.pages.setTabEnabled(self._espn25_index, True)
+        self.pages.setTabToolTip(self._espn25_index, "")
+        if self._espn25_pending_restore is not None:
+            self._apply_espn25_restore()
+
+    def _espn25_failed(self, generation: int, message: str) -> None:
+        self._espn25_tasks = {task for task in self._espn25_tasks if task.generation != generation}
+        if generation != self._espn25_generation:
+            return
+        self._espn25_identity = None
+        self.pages.setTabEnabled(self._espn25_index, False)
+        self.pages.setTabToolTip(self._espn25_index, f"ESPN Anniversary is unavailable for this disc: {message}")
+        self._set_status(f"ESPN Anniversary is unavailable for this disc: {message}")
+
+    def espn25_ready(self) -> bool:
+        """A supported disc image's Anniversary catalog is loaded and the tab is usable."""
+
+        return self._espn25_identity is not None and self.pages.isTabEnabled(self._espn25_index)
+
+    def _espn25_state(self) -> tuple[dict[int, dict[str, Any]], str]:
+        panel = self.espn25_panel
+        return copy.deepcopy(panel.pending), panel.scenario_json.toPlainText()
+
+    def espn25_dirty(self) -> bool:
+        """Anniversary edits made since the catalog loaded or the plan was last saved."""
+
+        return self.espn25_ready() and self._espn25_state() != self._espn25_saved
+
+    def _espn25_plan_ready(self, payload: Mapping[str, Any]) -> None:
+        path = str(payload["path"])
+        self.espn25_plan_path = path
+        self._espn25_saved = self._espn25_state()
+        self.espn25_plan_changed.emit(path)
+        self._set_status(f"ESPN Anniversary edits saved to {Path(path).name}. On ★ Build & Share, tick "
+                         '"Use saved ESPN Anniversary edits" and make a new disc copy to apply them.')
+
+    def show_espn25(self) -> None:
+        """Bring the ESPN Anniversary page to the front (the Gameplay row's page action)."""
+
+        self.pages.setCurrentIndex(self._espn25_index)
+
+    def espn25_recovery_snapshot(self) -> dict[str, Any] | None:
+        """The unsaved Anniversary edits with the identity of the disc they were made against.
+
+        JSON-safe; ``restore_espn25_recovery`` applies it only once the matching catalog has loaded."""
+
+        if not self.espn25_ready():
+            return None
+        panel = self.espn25_panel
+        text = panel.scenario_json.toPlainText()
+        if not panel.pending and not text.strip():
+            return None
+        return {"schema": self.ESPN25_RECOVERY_SCHEMA, "identity": copy.deepcopy(self._espn25_identity),
+                "pending": [[int(outer), copy.deepcopy(row)] for outer, row in sorted(panel.pending.items())],
+                "scenario_json": text, "plan": self.espn25_plan_path}
+
+    def restore_espn25_recovery(self, snapshot: Mapping[str, Any]) -> bool:
+        """Queue unsaved Anniversary edits; they are applied once the matching source catalog has loaded."""
+
+        if not isinstance(snapshot, Mapping) or snapshot.get("schema") != self.ESPN25_RECOVERY_SCHEMA:
+            raise ValueError("not an ESPN Anniversary recovery snapshot")
+        self._espn25_pending_restore = copy.deepcopy(dict(snapshot))
+        if self.espn25_ready():
+            return self._apply_espn25_restore()
+        return False
+
+    def _apply_espn25_restore(self) -> bool:
+        snapshot, self._espn25_pending_restore = self._espn25_pending_restore, None
+        panel = self.espn25_panel
+        identity = snapshot.get("identity") or {}
+        if not isinstance(identity, Mapping) or not self._espn25_same_catalog(identity, self._espn25_identity or {}):
+            self._set_status("Unsaved ESPN Anniversary edits were not restored: this disc's scenarios or historic "
+                             f"rosters differ from {identity.get('source') or 'the disc they were made on'}.")
+            return False
+        pending: dict[int, dict[str, Any]] = {}
+        try:
+            for outer, row in snapshot.get("pending", ()):
+                moment, side, text = int(row["moment"]), str(row["side"]), str(row["csv"])
+                if panel.catalog.binding(moment, side)["outer"] != int(outer) or row.get("shared_resource") is not True:
+                    raise ValueError(f"moment {moment + 1} {side} no longer binds to historic roster {outer}")
+                panel.catalog.import_csv(moment, side, text)          # the CSV must still validate here
+                pending[int(outer)] = {"moment": moment, "side": side, "shared_resource": True, "csv": text}
+        except (KeyError, TypeError, ValueError, csv.Error) as exc:
+            self._set_status(f"Unsaved ESPN Anniversary edits were not restored: {exc}")
+            return False
+        panel.pending = pending
+        panel.scenario_json.setPlainText(str(snapshot.get("scenario_json") or ""))
+        panel._select()
+        self.espn25_plan_path = str(snapshot.get("plan") or "")
+        self._set_status(f"Restored unsaved ESPN Anniversary edits ({len(pending)} historic roster"
+                         f"{'s' if len(pending) != 1 else ''}). Save build edits to stage them for Build.")
+        return True
 
     def note_other_source(self, display: str) -> None:
         """The shell opened another disc; this page keeps its own roster and says so."""
@@ -1678,7 +1991,10 @@ class RosterEditorPanel(QWidget):
         box = QMessageBox(self)
         box.setIcon(QMessageBox.Warning)
         box.setWindowTitle("Replace the edited roster?")
-        box.setText(f"{len(self._dirty)} player{'s' if len(self._dirty) != 1 else ''} edited here would be lost.\n\n"
+        anniversary = ("\nUnsaved ESPN Anniversary edits would be lost too: Save build edits on that tab first."
+                       if self.espn25_dirty() else "")
+        box.setText(f"{len(self._dirty)} player{'s' if len(self._dirty) != 1 else ''} edited here would be lost."
+                    f"{anniversary}\n\n"
                     "Export roster edits (.json)… or Save disc copy… first to keep them.")
         keep = box.addButton("Keep editing", QMessageBox.RejectRole)
         box.addButton("Discard roster changes", QMessageBox.DestructiveRole)
@@ -1717,7 +2033,7 @@ class RosterEditorPanel(QWidget):
             item.setSizeHint(QSize(200, 22))
             self.team_list.addItem(item)
             if team.index < 32:
-                reserve = QListWidgetItem(f"    Reserves · {len(self.document.reserves[team.index])}")
+                reserve = QListWidgetItem(f"    Reserves · {len(self.document.reserves[team.index])}/{self.document.reserve_limit(team.index)}")
                 reserve.setData(Qt.UserRole, ("reserve", team.index))
                 reserve.setToolTip(f"{team.display} reserves")
                 self.team_list.addItem(reserve)
@@ -1840,6 +2156,11 @@ class RosterEditorPanel(QWidget):
             check.setEnabled(player is not None)
             check.blockSignals(False)
         self.ability_bulk_button.setEnabled(player is not None)
+        self.guardian_cap_check.blockSignals(True)
+        self.guardian_cap_check.setChecked(player.record.guardian_cap if player else False)
+        self.guardian_cap_check.setEnabled(player is not None)
+        self.guardian_cap_check.blockSignals(False)
+        self.guardian_bulk_button.setEnabled(player is not None)
         if player is None:
             self.header_name.setText("—")
             self.header_stats.setText("")
@@ -1858,10 +2179,11 @@ class RosterEditorPanel(QWidget):
         birth = record.birth_date
         age = ""
         if birth is not None:
-            age = f" · age in Sep 2004: {2004 - birth.year - ((9, 1) < (birth.month, birth.day))}"
+            year = self.document.reference_year or 2004
+            age = f" · age on Sep 1, {year}: {year - birth.year - ((9, 1) < (birth.month, birth.day))}"
         # the animation family the engine picks for this record (Scramble parity, then magnitude)
-        family = ("signature release" if record.throw_style
-                  else ("standard release, mobile family" if record.mobile_quarterback else "standard release"))
+        family = ("odd = scrambler" if record.throw_style
+                  else ("even, high animation family" if record.mobile_quarterback else "even animation family"))
         self.header_stats.setText(
             f"{record.position_name} · #{record.values['jersey']} · {record.height_text} · "
             f"{record.weight} lb{age} · {record.values['years_pro']} yrs pro · {player.college or '—'} · "
@@ -1957,14 +2279,19 @@ class RosterEditorPanel(QWidget):
                 return
         before = player.record.get(name)
         if before == value:
+            if name == "scramble":
+                self.cards[name].set_value(before)
             return
         self.set_field(player, name, value)
 
     def set_field(self, player: rr.Player, name: str, value: int) -> None:
         """Set one field with undo, dirty marking and a refreshed header."""
 
-        before = player.record.get(name)
-        if before == int(value):
+        # A bucket is a lossy view: Balanced may mean 38, not just 50. Save the
+        # actual byte so undo recovers custom ratings without quantising them.
+        restore_name = "power_run_style" if name == "power_run_style_bucket" else name
+        before = player.record.get(restore_name)
+        if player.record.get(name) == int(value):
             return
 
         def do(new: int = int(value)) -> None:
@@ -1972,7 +2299,7 @@ class RosterEditorPanel(QWidget):
             self._after_edit(player, name)
 
         def undo(old: int = before) -> None:
-            player.record.set(name, old)
+            player.record.set(restore_name, old)
             self._after_edit(player, name)
 
         do()
@@ -1992,6 +2319,8 @@ class RosterEditorPanel(QWidget):
             self._show_player(player)
         self._refresh_grid_row(player)
         self._refresh_actions()
+        if name == "photo_id" and self.document is not None:
+            self._set_status(rr.portrait_confirmation(self.document, player))
 
     def _name_changed(self, player: rr.Player) -> bool:
         """True when this player's name or college text differs from the roster we loaded."""
@@ -2145,7 +2474,7 @@ class RosterEditorPanel(QWidget):
                 team = self.document.teams[index]
                 item.setText(self._team_count_label(team))
             elif kind == "reserve":
-                item.setText(f"    Reserves · {len(self.document.reserves[index])}")
+                item.setText(f"    Reserves · {len(self.document.reserves[index])}/{self.document.reserve_limit(index)}")
             else:
                 item.setText(f"{captions[kind]} · {counts[kind]}")
 
@@ -2315,6 +2644,8 @@ class RosterEditorPanel(QWidget):
             return 0
         rows = [dict(row) for row in preview]
         by_key = {(p.pool, p.index): p for p in self.document.players}
+        restore_attribute = "power_run_style" if attribute == "power_run_style_bucket" else attribute
+        before_values = {key: player.record.get(restore_attribute) for key, player in by_key.items()}
 
         def do() -> None:
             assert self.document is not None
@@ -2330,7 +2661,7 @@ class RosterEditorPanel(QWidget):
             for row in rows:
                 player = by_key.get((row["pool"], row["index"]))
                 if player is not None:
-                    player.record.set(attribute, int(row["before"]))
+                    player.record.set(restore_attribute, before_values[(row["pool"], row["index"])])
                     self._after_edit(player)
             self.refresh_grid()
 
@@ -2369,6 +2700,90 @@ class RosterEditorPanel(QWidget):
         self._after_edit(player)
         self._set_status(f"Pasted {count} fields onto {player.display}.")
         return count
+
+    @staticmethod
+    def age_shift_text(receipt: dict[str, Any]) -> str:
+        lines = ["EXPERIMENTAL / UNWITNESSED", receipt.get("summary", "") or
+                 f"Season {receipt['source_year']} to {receipt['target_year']}: "
+                 f"{receipt['changed']} players will change; {len(receipt['skipped'])} skipped.",
+                 "Ages are measured on September 1. No file is changed by this preview.", ""]
+        for row in receipt["changes"]:
+            lines.append(f"{row['name']} ({row['pool']} #{row['index']}): "
+                         f"{row['birth_before']} -> {row['birth_after']}; "
+                         f"age {row['age_before']} -> {row['age_after']}" +
+                         (f". {row['note']}" if row['note'] else ""))
+        for row in receipt["skipped"]:
+            lines.append(f"Skipped {row['name']} ({row['pool']} #{row['index']}): {row['reason']}")
+        return "\n".join(lines)
+
+    def open_age_shift(self) -> AgeShiftDialog | None:
+        if self.document is None:
+            return None
+        dialog = AgeShiftDialog(self)
+        dialog.exec_()
+        return dialog
+
+    def apply_age_shift(self, plan: dict[str, Any]) -> dict[str, Any]:
+        from mod_editor.core import nfl2k5_roster_ages as ages
+        if self.document is None:
+            raise rr.RosterRecordError("no roster is loaded")
+        document = self.document
+        before_history = list(getattr(document, "_age_shift_history", []))
+        before_dirty = set(self._dirty)
+        receipt = ages.apply(document, plan)
+        if not receipt["changed"]:
+            return receipt
+        before_receipts = list(self.age_shift_receipts)
+        after_receipts = before_receipts + [receipt]
+        after_history = list(document._age_shift_history)
+        after_dirty = set(before_dirty)
+        moved = {(row["pool"], row["index"]) for row in document.membership_changes()}
+        for row in receipt["changes"]:
+            player = document.by_offset[row["offset"]]
+            baseline = self._baseline_record(player)
+            changed = baseline is not None and any(
+                baseline.values[key] != player.record.values[key]
+                for key in player.record.values if key not in rr.POINTER_FIELDS)
+            key = (player.pool, player.index)
+            if changed or self._name_changed(player) or key in moved:
+                after_dirty.add(key)
+            else:
+                after_dirty.discard(key)
+
+        def put(after: bool) -> None:
+            for row in receipt["changes"]:
+                player = document.by_offset[row["offset"]]
+                player.record.values.update(row["after" if after else "before"])
+            document.set_reference_year(receipt["target_year"] if after else receipt["reference_year_before"])
+            self.age_shift_receipts = list(after_receipts if after else before_receipts)
+            document._age_shift_history = list(after_history if after else before_history)
+            # Refresh once for the bulk transaction. Per-player refresh would
+            # rerun whole-roster membership/capacity checks thousands of times.
+            self._dirty = set(after_dirty if after else before_dirty)
+            self.refresh_grid()
+            self._show_player(self.selected_player())
+            self.show_age_shift_receipt()
+
+        put(True)
+        self.undo_stack.push(UndoEntry(f"Shift ages to {receipt['target_year']} ({receipt['changed']} players)",
+                                      lambda: put(False), lambda: put(True)))
+        self._set_status(receipt["summary"])
+        return receipt
+
+    def show_age_shift_receipt(self) -> None:
+        self.report.setPlainText("\n\n".join(self.age_shift_text(r) for r in self.age_shift_receipts)
+                                 or "No age shifts are applied in this session.")
+        self.tabs.setCurrentIndex(self.tabs.count() - 1)
+
+    def export_age_shift_receipt(self, path: Path | str | None = None) -> None:
+        if not self.age_shift_receipts:
+            self._set_status("No age shifts are applied in this session.")
+            return
+        if path is None:
+            path, _filter = QFileDialog.getSaveFileName(self, "Export age shift receipt", "age-shift.json", "JSON (*.json)")
+        if path:
+            Path(path).write_text(json.dumps({"schema": "nfl2k5_roster_age_shift_receipts/v1",
+                                             "receipts": self.age_shift_receipts}, indent=2) + "\n", encoding="utf-8", newline="\n")
 
     def advance_years_pro(self, visible_only: bool = False) -> int:
         if self.document is None:
@@ -2750,15 +3165,77 @@ class RosterEditorPanel(QWidget):
             return {}
         return rr.edits_document(self.document, name=self._source_path.name if self._source_path else "")
 
-    def save_edits_to(self, path: Path | str) -> dict[str, Any]:
-        document = self.edits_document()
-        Path(path).write_text(json.dumps(document, indent=1), encoding="utf-8", newline="\n")
+    def save_edits_to(self, path: Path | str, *, document: dict[str, Any] | None = None) -> dict[str, Any]:
+        document = self.edits_document() if document is None else document
+        from mod_editor.core.nfl2k5_roster_save_to_disc import json_text
+        Path(path).write_text(json_text(document), encoding="utf-8", newline="\n")
         self._edits_path = Path(path)
         self._edits_snapshot = (frozenset(self._dirty), len(self.undo_stack._done))
         self.roster_edits_changed.emit(str(path))
         self._set_status(f"Roster edits exported to {path} ({len(document.get('edits', []))} players). "
                          "Build uses this saved file. Export again after further changes.")
         return document
+
+    def save_roster_to_disc(self, path: Path | str, *, save_path: Path | str | None = None,
+                            disc_path: Path | str | None = None):
+        """Export against freshly read disc bytes; keep the current editor session intact."""
+        from mod_editor.core import nfl2k5_roster_save_to_disc as save_import
+        source = (save_import.load_save(save_path) if save_path is not None else self.document)
+        target_path = (disc_path or getattr(self._facade, "source_path", None)
+                       or getattr(self._facade, "source", None)
+                       or (self._source_path if self._source_kind == "disc" else None))
+        if source is None or source.container is None:
+            raise rr.RosterRecordError("Choose a signed Xbox roster or franchise save first.")
+        if target_path is None:
+            raise rr.RosterRecordError("Open the disc you will use for Build first.")
+        destination = Path(path).expanduser().resolve()
+        receipt_path = destination.with_suffix(".receipt.json")
+        if destination.suffix.lower() != ".json" or destination == receipt_path:
+            raise rr.RosterRecordError("Choose a roster edits .json filename, not a .receipt.json filename.")
+        protected = {Path(target_path).resolve(), source.container.path.resolve()}
+        if destination in protected or receipt_path in protected:
+            raise rr.RosterRecordError("The edits and receipt must be separate from the source disc and save.")
+        target = rr.load_image(target_path, detect=True)
+        result = save_import.compare(target, source)
+        result.write_receipt(destination)
+        self.save_edits_to(destination, document=result.edits)
+        self._set_status(result.summary)
+        return result
+
+    def _use_save_roster_on_disc(self) -> None:
+        if self.document is None:
+            return
+        save_path = None
+        if self._source_kind != "save":
+            save_path, _filter = QFileDialog.getOpenFileName(
+                self, "Choose an Xbox roster or franchise save", "", SAVE_FILTER)
+            if not save_path:
+                return
+        disc_path = (getattr(self._facade, "source_path", None) or getattr(self._facade, "source", None)
+                     or (self._source_path if self._source_kind == "disc" else None))
+        if not disc_path:
+            disc_path, _filter = QFileDialog.getOpenFileName(
+                self, "Choose the disc you will use for Build", "", DISC_FILTER)
+            if not disc_path:
+                return
+        chosen, _filter = QFileDialog.getSaveFileName(
+            self, "Use this save's roster on the disc", "roster_edits.json", EDITS_FILTER)
+        if not chosen:
+            return
+        try:
+            result = self.save_roster_to_disc(chosen, save_path=save_path, disc_path=disc_path)
+        except Exception as exc:
+            QMessageBox.warning(self, "Save roster export refused", str(exc))
+            return
+        box = QMessageBox(self)
+        box.setWindowTitle("Save roster exported for the disc")
+        box.setIcon(QMessageBox.Information)
+        box.setText(result.summary)
+        box.setInformativeText(f"Disc: {disc_path}\nEdits: {chosen}\n"
+                               "See details for skipped players, reasons and team counts. "
+                               "A franchise save uses its roster arena; season progress stays in the save.")
+        box.setDetailedText(result.details)
+        box.exec_()
 
     def _save_edits(self) -> None:
         if self.document is None:
@@ -2790,6 +3267,27 @@ class RosterEditorPanel(QWidget):
             raise rr.RosterRecordError(f"{destination} exists")
         shutil.copyfile(self._source_path, destination)
         return rr.apply(destination, self.edits_document())
+
+    def _migrate_arena_save(self):
+        source, _ = QFileDialog.getOpenFileName(self, "Choose the signed save to migrate", "", SAVE_FILTER)
+        if not source:
+            return
+        parent = QFileDialog.getExistingDirectory(self, "Choose a parent folder for the new migrated save")
+        if not parent:
+            return
+        try:
+            from mod_editor.core import nfl2k5_roster_arena as arena
+            target = Path(parent) / "roster-migrated"
+            if target.exists():
+                raise ValueError("roster-migrated already exists; choose another parent folder")
+            receipt = arena.migrate_save(source, target,
+                reserves_16=self.arena_reserves_check.isChecked(),
+                created_teams_extra=2 if self.arena_teams_check.isChecked() else 0,
+                eligible_team_mask=int(self.arena_eligible.currentData()))
+            self._set_status(f"Signed migrated save: {target}. Use the matching Build options. Experimental and unwitnessed.")
+            return receipt
+        except (OSError, ValueError) as exc:
+            show_operation_error(self, "migrate the signed save copy", str(exc))
 
     def _write_copy(self) -> None:
         if self.document is None:
@@ -2826,6 +3324,10 @@ class RosterEditorPanel(QWidget):
 
     def _refresh_actions(self) -> None:
         loaded = self.document is not None
+        self.save_roster_to_disc_button.setVisible(loaded and self._source_kind == "save")
+        self.save_roster_to_disc_button.setEnabled(loaded)
+        self.save_roster_to_disc_action.setVisible(loaded and self._source_kind == "disc")
+        self.save_roster_to_disc_action.setEnabled(loaded)
         selected = self.selected_player() is not None
         if self._edits_snapshot is not None and \
                 self._edits_snapshot != (frozenset(self._dirty), len(self.undo_stack._done)):
@@ -2901,5 +3403,5 @@ class RosterEditorPanel(QWidget):
         self.status_label.setText(text)
 
 
-__all__ = ["AttributeCard", "GlobalEditDialog", "IdPickerDialog", "RosterEditorPanel", "SwapPlayerDialog",
+__all__ = ["AgeShiftDialog", "AttributeCard", "GlobalEditDialog", "IdPickerDialog", "RosterEditorPanel", "SwapPlayerDialog",
            "UndoEntry", "UndoStack", "ValueBar"]

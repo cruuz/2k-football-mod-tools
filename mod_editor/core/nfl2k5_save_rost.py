@@ -20,6 +20,7 @@ import struct
 from typing import Mapping
 
 from . import nfl2k5_roster_records as records
+from . import nfl2k5_roster_storage as storage
 
 
 class SaveRostError(ValueError):
@@ -89,6 +90,7 @@ class Team:
     asset_id: int
     abbreviation: str
     player_offsets: tuple[int, ...]
+    stadium_index: int | None = None
 
 
 class SaveRost:
@@ -118,8 +120,11 @@ class SaveRost:
         self._parse()
 
     def span(self, offset: int, size: int, label: str) -> None:
+        from . import nfl2k5_roster_arena as arena
+        end = (self.layout.root + arena.BLOCK_OFFSET if self.layout.version in (1, 18)
+               else self.layout.end)
         _require(size >= 0 and self.layout.root + 0x70 <= offset
-                 and offset + size <= self.layout.end, f'{label}: range outside ROST arena')
+                 and offset + size <= end, f'{label}: range outside ROST arena data')
 
     def u32(self, offset: int) -> int:
         _require(self.layout.root <= offset <= self.layout.end - 4, 'word outside ROST arena')
@@ -153,6 +158,11 @@ class SaveRost:
 
     def _parse(self) -> None:
         root = self.layout.root
+        from . import nfl2k5_roster_arena as arena
+        try:
+            self.overflow = arena.read(self.original, root, self.layout.end, self.layout.version)
+        except arena.ArenaError as exc:
+            raise SaveRostError(str(exc)) from exc
         occupied = []
         for name, count_field, pointer_field, stride, maximum in TABLES:
             count = self.u32(root + count_field)
@@ -168,6 +178,14 @@ class SaveRost:
         occupied.sort()
         for left, right in zip(occupied, occupied[1:]):
             _require(left[1] <= right[0], f'overlapping {left[2]}/{right[2]} tables')
+        if self.overflow is not None:
+            _require(all(end <= root + arena.BLOCK_OFFSET for _, end, _ in occupied),
+                     'table overlaps reserve overflow')
+
+        try:
+            self.stadiums = storage.read_stadiums(self.original, root=root, end=self.layout.end)
+        except storage.RosterStorageError as exc:
+            raise SaveRostError(str(exc)) from exc
 
         colleges = self.tables['colleges']
         college_records = set()
@@ -207,8 +225,13 @@ class SaveRost:
                     slots.append(target)
             for field in (0x104, 0x108, 0x10C, 0x138, 0x13C):
                 self.string(off + field)
+            try:
+                stadium = storage.team_stadium(self.original, off, self.stadiums)
+            except storage.RosterStorageError as exc:
+                raise SaveRostError(f'team {index}: {exc}') from exc
             self.teams.append(Team(index, off, struct.unpack_from('<H', self.original, off + 0x118)[0],
-                                   self.string(off + 0x108), tuple(slots)))
+                                   self.string(off + 0x108), tuple(slots),
+                                   stadium.index if stadium else None))
         agents = self.tables['free_agents']
         if agents.offset is not None:
             for i in range(agents.count):
@@ -311,8 +334,8 @@ def decode(payload: bytes | bytearray, *, preamble: int | None = None,
             _require(0 <= base <= len(data) - 0x20, 'truncated ROST preamble')
             _require(data[base + 12:base + 16] == b'ROST', 'ROST inner magic missing')
             version, relative = struct.unpack_from('<Ii', data, base + 16)
-            _require(version in (0, 17), f'unsupported ROST version {version}')
-            delta = 0x20 if version == 0 else 0x40
+            _require(version in (0, 1, 17, 18), f'unsupported ROST version {version}')
+            delta = 0x20 if version in (0, 1) else 0x40
             root = base + 0x14 + relative - 1
             _require(root == base + delta, f'version {version}: unexpected root offset')
             if base >= 0x20 and data[base - 0x20:base - 0x1C] == b'ROST':
@@ -323,7 +346,7 @@ def decode(payload: bytes | bytearray, *, preamble: int | None = None,
                 _require(end <= len(data), 'truncated declared ROST resource')
             else:
                 wrapper = None
-                expected = 0x91020 if version == 0 else 0x90F60
+                expected = {0: 0x91020, 1: 0x92020, 17: 0x90F60, 18: 0x92040}[version]
                 _require(base == 0 and len(data) == expected, 'unframed ROST has unknown boundaries')
                 end = len(data)
             candidates.append(SaveRost(data, Layout(version, wrapper, base, root, end),

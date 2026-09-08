@@ -61,6 +61,8 @@ from .helmet_crest_design import (
     validate_metadata as validate_helmet_crest_metadata,
 )
 from .source import EXPECTED_0A_SHA256, sha256_file
+from .field_art import FIELD_ART_EDIT_KIND, validate_field_art_metadata
+from .helmet_crest_design import validate_crest_set
 
 
 ensure_tools_importable()
@@ -830,8 +832,10 @@ class ApfBuildService:
         crest_designs = tuple(
             item for item in edits if item.kind == HELMET_CREST_DESIGN_KIND
         )
-        if len(crest_designs) > 1:
-            raise BuildError("Only one helmet crest design can be built at a time")
+        try:
+            validate_crest_set(crest_designs)
+        except HelmetCrestDesignError as exc:
+            raise BuildError(str(exc)) from exc
         if crest_designs:
             try:
                 crest_metadata = validate_helmet_crest_metadata(
@@ -867,6 +871,7 @@ class ApfBuildService:
         audo_overlay_group: list[Modification] = []
         ausb_overlay_group: list[Modification] = []
         number_groups: dict[int, list[Modification]] = {}
+        field_art_group: list[Modification] = []
         replacement_hashes: dict[str, str] = {}
         overflowed: list[apf_texture_patch.AllocationOverflowError] = []
         for index, modification in enumerate(edits, start=1):
@@ -921,6 +926,8 @@ class ApfBuildService:
                         f"Jersey-number edit is missing its package: {modification.asset_id}"
                     )
                 number_groups.setdefault(entry_index, []).append(modification)
+            elif modification.kind == FIELD_ART_EDIT_KIND:
+                field_art_group.append(modification)
             else:
                 try:
                     outer_index, entry_bytes, writer_schema = self._compile(
@@ -1096,8 +1103,8 @@ class ApfBuildService:
             raw_overlays.extend(overlays)
             edit_rows.extend(rows)
         if helmet_crest_design_group:
-            crest_entries, crest_row = self._compile_helmet_crest_design(
-                helmet_crest_design_group[0], progress
+            crest_entries, crest_row = self._compile_helmet_crests(
+                tuple(helmet_crest_design_group), progress
             )
             for outer_index, entry_bytes in crest_entries.items():
                 if outer_index in compiled:
@@ -1107,6 +1114,11 @@ class ApfBuildService:
                     )
                 compiled[outer_index] = (entry_bytes, crest_row)
             edit_rows.append(crest_row)
+        for outer_index, entry_bytes, row in self._compile_field_art(field_art_group):
+            if outer_index in compiled:
+                raise BuildError(f"Field Art collides with another APF edit at outer {outer_index}")
+            compiled[outer_index] = (entry_bytes, row)
+            edit_rows.append(row)
         for outer_index, group in sorted(localization_groups.items()):
             if outer_index in compiled:
                 raise BuildError(
@@ -2138,6 +2150,83 @@ class ApfBuildService:
             )
         return outer_index, inner_index, substream_index
 
+    def _compile_field_art(self, modifications):
+        import apf_field_art_patch as writer
+        groups = {}
+        for modification in modifications:
+            try:
+                value = validate_field_art_metadata(modification.asset_id, modification.metadata)
+            except ValueError as exc:
+                raise BuildError(str(exc)) from exc
+            group = groups.setdefault(value["entry_index"], [])
+            if any(m.metadata["file_index"] == value["file_index"] for m in group):
+                raise BuildError(f"Field Art texture selected twice: {modification.asset_id}")
+            group.append(modification)
+        results = []
+        for outer_index, group in sorted(groups.items()):
+            try:
+                result = writer.build_field_art_patch_many(self.source.index_0a, outer_index,
+                    tuple((m.metadata["file_index"], m.replacement_path) for m in group))
+            except (OSError, ValueError) as exc:
+                raise BuildError(f"Could not compile Field Art package {outer_index}: {exc}") from exc
+            results.append((outer_index, result.entry_bytes, {
+                "asset_ids": tuple(m.asset_id for m in group), "kind": FIELD_ART_EDIT_KIND,
+                "outer_index": outer_index, "writer_schema": result.manifest["schema"],
+                "entry_size": len(result.entry_bytes), "entry_sha256": _hash_bytes(result.entry_bytes),
+                "replacement_png_sha256s": {m.asset_id: m.replacement_sha256 for m in group},
+                "writer_receipt": result.manifest,
+            }))
+        return results
+
+    def _compile_helmet_crests(self, modifications, progress=_noop):
+        try:
+            validate_crest_set(modifications)
+        except HelmetCrestDesignError as exc:
+            raise BuildError(str(exc)) from exc
+        if len(modifications) == 1:
+            entries, row = self._compile_helmet_crest_design(modifications[0], progress)
+            row["asset_ids"] = (modifications[0].asset_id,)
+            return entries, row
+        entries, specs, components = {}, [], []
+        try:
+            slots = {s.asset_index: s.outer_entry_index for s in apf_team_crests.crest_slots(self.source.index_0a)}
+            for modification in modifications:
+                meta = modification.metadata
+                slot, outer = meta["crest_asset_index"], meta["crest_outer_entry_index"]
+                if slots.get(slot) != outer or outer in entries:
+                    raise BuildError(f"The crest package for slot {slot} changed or is selected twice")
+                detail = self._crest_detail_path(modification)
+                package = apf_logo_patch.build_patch(self.source.index_0a, modification.replacement_path,
+                    entry_index=outer, png_path_l1=detail, clear_l1=detail is None)
+                entries[outer] = package.entry_bytes
+                components.append(package.manifest)
+                specs.append(apf_logocache_patch.CacheLayerSpec(slot, modification.replacement_path,
+                                                               detail, detail is None))
+            cache = apf_logocache_patch.build_cache_patch_many(self.source.index_0a, tuple(specs))
+            for modification in modifications:
+                self._crest_detail_path(modification)
+        except (OSError, apf_logo_patch.PatchError, apf_logocache_patch.PatchError) as exc:
+            raise BuildError(f"Could not compile the team crests together: {exc}") from exc
+        entries[apf_logocache_patch.DIR_TABLE_INDEX] = cache.directory_bytes
+        entries[apf_logocache_patch.PAYLOAD_TABLE_INDEX] = cache.payload_bytes
+        return entries, {
+            "asset_ids": tuple(m.asset_id for m in modifications), "kind": HELMET_CREST_DESIGN_KIND,
+            "outer_indices": tuple(sorted(entries)), "writer_schema": HELMET_CREST_COMPOSITE_SCHEMA,
+            "replacement_png_sha256s": {m.asset_id: m.replacement_sha256 for m in modifications},
+            "crest_asset_indices": tuple(m.metadata["crest_asset_index"] for m in modifications),
+            "component_receipts": components, "cache_receipt": cache.manifest,
+        }
+
+    @staticmethod
+    def _crest_detail_path(modification):
+        digest = modification.metadata.get("detail_sha256")
+        if digest is None:
+            return None
+        path = modification.replacement_path.parent / f"{digest}.png"
+        if not path.is_file() or path.is_symlink() or sha256_file(path) != digest:
+            raise BuildError("The staged crest detail layer is missing or changed; import it again")
+        return path
+
     def _compile_helmet_crest_design(
         self, modification: Modification, progress: Progress = _noop
     ) -> tuple[dict[int, bytes], dict[str, object]]:
@@ -2215,17 +2304,7 @@ class ApfBuildService:
                 "carrier_verification": full_shell.carrier_verification,
             }
             return full_shell.entries, row
-        detail_digest = metadata.get("detail_sha256")
-        detail_path: Path | None = None
-        if isinstance(detail_digest, str):
-            detail_path = modification.replacement_path.parent / (
-                f"{detail_digest}.png"
-            )
-            if not detail_path.is_file():
-                raise BuildError(
-                    "The staged crest detail layer (logo_l1) is missing from "
-                    "the project's private replacement cache"
-                )
+        detail_path = self._crest_detail_path(modification)
         try:
             # A crest is six region masks split across two textures: logo_l0
             # carries regions 0-2 and logo_l1 regions 3-5, each filled from its
@@ -2260,6 +2339,7 @@ class ApfBuildService:
             apf_logocache_patch.DIR_TABLE_INDEX: cache.directory_bytes,
             apf_logocache_patch.PAYLOAD_TABLE_INDEX: cache.payload_bytes,
         }
+        self._crest_detail_path(modification)
         schemas = [
             str(package.manifest.get("schema")),
             str(cache.manifest.get("schema")),

@@ -85,3 +85,12 @@ desktop.ini
 *.avi
 *.mkv
 *.png.tmp
+
+# --- MyCareer hub backdrop: composed from the user's own disc at build time ---
+# docs/mycareer_art/build.py decodes the Crib skyline texture through the private
+# source cache; the composed backdrop, the mockups drawn on it and its P8 previews
+# are retail-derived and stay local. The recipe, atlases and check report are kept.
+docs/mycareer_art/mycareer_apartment.png
+docs/mycareer_art/hub_mockup_*.png
+docs/mycareer_art/*_hub_mockup_*.png
+docs/mycareer_art/previews/preview_*_mycareer_apartment.png

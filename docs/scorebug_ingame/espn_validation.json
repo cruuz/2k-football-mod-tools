@@ -1,0 +1,280 @@
+{
+  "schema": "nfl2k5_scorebug_espn_validation/v1",
+  "measured_at_utc": "2026-09-07T02:56:26.229068+00:00",
+  "base_commit": "26b0d3d9938f30975525c1439eb70f85d943c3f2",
+  "branch": "astra/r63-scorebug-espn",
+  "status": "STOP_RUNTIME_OWNER_REQUIRED",
+  "decision": "No team-dependent static material selector exists in the audited path. Honour the brief stop condition; runtime owner remains off and untouched.",
+  "v9_installed": false,
+  "runtime_witnessed": false,
+  "new_option": false,
+  "protected_files_changed": [],
+  "static_product_writers_changed": [],
+  "wiring_changes_required": false,
+  "git_diff_check": "PASS",
+  "tests": [
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_projection.py"
+      ],
+      "measurement_command": [
+        "/usr/bin/time",
+        "-v",
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_projection.py"
+      ],
+      "tests_run": 13,
+      "passed": 13,
+      "skipped": 0,
+      "failed": 0,
+      "unittest_seconds": 101.883,
+      "wall_time": "2:00.41",
+      "maximum_rss_kib": 205604,
+      "exit_code": 0,
+      "log_sha256": "2e817b80b9dd81f8c0c093ba277f964a4dc8487b1b615e74544e7ca22e945d87"
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_ingame.py"
+      ],
+      "measurement_command": [
+        "/usr/bin/time",
+        "-v",
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_ingame.py"
+      ],
+      "tests_run": 11,
+      "passed": 11,
+      "skipped": 0,
+      "failed": 0,
+      "unittest_seconds": 8.674,
+      "wall_time": "0:08.94",
+      "maximum_rss_kib": 138584,
+      "exit_code": 0,
+      "log_sha256": "37a3ee20d84e59ba40f02f723602fe8c22638e3d3166fade88cb606be3cb8f52"
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_source_art.py"
+      ],
+      "measurement_command": [
+        "/usr/bin/time",
+        "-v",
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_source_art.py"
+      ],
+      "tests_run": 13,
+      "passed": 10,
+      "skipped": 3,
+      "failed": 0,
+      "unittest_seconds": 0.311,
+      "wall_time": "0:00.44",
+      "maximum_rss_kib": 47840,
+      "exit_code": 0,
+      "log_sha256": "cbed082f0a9b24d394799ec1b97505068cd6c6c501a9a2594ee45386cd670c8a"
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py"
+      ],
+      "measurement_command": [
+        "/usr/bin/time",
+        "-v",
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py"
+      ],
+      "tests_run": 5,
+      "passed": 5,
+      "skipped": 0,
+      "failed": 0,
+      "unittest_seconds": 0.052,
+      "wall_time": "0:00.17",
+      "maximum_rss_kib": 30328,
+      "exit_code": 0,
+      "log_sha256": "d7533ac5dac24bcc7db883e6e5044ce42a5f8c987918a2bdf26383f14c1d52ea"
+    },
+    {
+      "command": [
+        "python3",
+        "tests/nfl2k5_scorebug_layout_test.py"
+      ],
+      "measurement_command": [
+        "/usr/bin/time",
+        "-v",
+        "python3",
+        "tests/nfl2k5_scorebug_layout_test.py"
+      ],
+      "tests_run": 15,
+      "passed": 11,
+      "skipped": 4,
+      "failed": 0,
+      "unittest_seconds": 2.57,
+      "wall_time": "0:02.77",
+      "maximum_rss_kib": 146256,
+      "exit_code": 0,
+      "log_sha256": "c2c90291eed66de297c904ea9b03676f450e2e88d61376f47c84f95ed9c1826c"
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_xbe_patch_memory_writes.py"
+      ],
+      "measurement_command": [
+        "/usr/bin/time",
+        "-v",
+        "python3",
+        "tests/mod_editor/test_xbe_patch_memory_writes.py"
+      ],
+      "tests_run": 75,
+      "passed": 75,
+      "skipped": 0,
+      "failed": 0,
+      "unittest_seconds": 297.797,
+      "wall_time": "4:57.93",
+      "maximum_rss_kib": 313796,
+      "exit_code": 0,
+      "log_sha256": "dbdbb649220d734100f6cdd433ca5b0109ef27f297adabc1b2364785baf86e3c"
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_xbe_patch_cave_references.py"
+      ],
+      "measurement_command": [
+        "/usr/bin/time",
+        "-v",
+        "python3",
+        "tests/mod_editor/test_xbe_patch_cave_references.py"
+      ],
+      "tests_run": 87,
+      "passed": 87,
+      "skipped": 0,
+      "failed": 0,
+      "unittest_seconds": 380.694,
+      "wall_time": "6:20.97",
+      "maximum_rss_kib": 483376,
+      "exit_code": 0,
+      "log_sha256": "6a2d4acad557b461313342d61ea2e29d39d988e011cf3d678e3b6d3cf4649c5c"
+    }
+  ],
+  "totals": {
+    "tests_run": 219,
+    "passed": 212,
+    "skipped": 7,
+    "failed": 0
+  },
+  "skipped_explanation": {
+    "tests/mod_editor/test_nfl2k5_scorebug_source_art.py": [
+      "Legacy typed-importer audit evidence is absent.",
+      "Developer copy of the retail scene is absent.",
+      "Full-disc copy comparison skips because its developer scene copy is absent; no disc was copied."
+    ],
+    "tests/nfl2k5_scorebug_layout_test.py": [
+      "Intermediate glTF research export is absent (1 test).",
+      "Optional legacy CPU fixture requires NFL2K5_SCOREBUG_EMULATION_TEST=1 (3 tests). The new native projection tests all execute."
+    ]
+  },
+  "gates": {
+    "memory_writes": "complete forward and reverse owner unions passed",
+    "cave_references": "complete forward and reverse owner unions passed",
+    "scope": "Existing gates may apply the runtime owner only within their pre-existing safety-test fixtures; no runtime code is installed in the static audit."
+  },
+  "resource_proof": {
+    "receipt_file": "docs/scorebug_ingame/espn_native_audit.json",
+    "version": "retained static v8",
+    "exact_xbe_replay": true,
+    "exact_resource_replay": true,
+    "native_overlapping_4dc00_decode": "both resources byte-identical",
+    "wrapper_all_32_bytes": "retained, including +0x14 = 16"
+  },
+  "limits": {
+    "maximum_test_rss_kib": 483376,
+    "single_test_limit_bytes": 2000000000,
+    "font_outer_read_limit_bytes": 3000000,
+    "whole_pack_or_disc_loaded_into_ram": false,
+    "temporary_discs_created": 0,
+    "temporary_discs_remaining": 0,
+    "pack_copies_created": 0,
+    "filesystem_free_bytes_before_bundle": 104525250560,
+    "minimum_free_bytes": 100000000000,
+    "scratch_file_bytes_before_bundle": 5440236,
+    "scratch_limit_bytes": 200000000
+  },
+  "delivery": {
+    "mechanism": "explicit-path commit using isolated .scratch Git metadata; bundle fallback",
+    "bundle": ".scratch/scorebug-espn.bundle",
+    "push_performed": false,
+    "excluded": [
+      "ASTRA_BRIEF.md",
+      ".scratch/",
+      "retail executable/resource binaries",
+      "protected files"
+    ],
+    "explicit_paths": [
+      "tools/nfl2k5_scorebug_projection.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_projection.py",
+      "ASTRA_SCOREBUG_ESPN_REPORT.md",
+      "docs/scorebug_ingame/espn_native_audit.json",
+      "docs/scorebug_ingame/reconstructed_v8_640x480.png",
+      "docs/scorebug_ingame/reconstructed_v8_wide_640x480.png",
+      "docs/scorebug_ingame/reconstructed_v8_wide_cull_hypothesis.png",
+      "docs/scorebug_ingame/witness_2026-09-06_v8_ingame.png",
+      "docs/scorebug_ingame/witness_harness_target.png",
+      "docs/scorebug_ingame/witness_v8_hud_normalized.png",
+      "docs/scorebug_ingame/espn_validation.json"
+    ]
+  },
+  "artifacts": {
+    "tools/nfl2k5_scorebug_projection.py": {
+      "bytes": 34624,
+      "sha256": "2d7df590fe305b267819261343b9b3f58de5928876d20b3056fde6e32998aefc"
+    },
+    "tests/mod_editor/test_nfl2k5_scorebug_projection.py": {
+      "bytes": 12048,
+      "sha256": "a8297ad997b2676f6469fd4e3433d4f21a81acf224c504771729a749b8b42173"
+    },
+    "ASTRA_SCOREBUG_ESPN_REPORT.md": {
+      "bytes": 19057,
+      "sha256": "2dbbe2620567007db3ff11af43d9911b6f9b79d2ce3f606119e1707a8c72c008"
+    },
+    "docs/scorebug_ingame/espn_native_audit.json": {
+      "bytes": 229843,
+      "sha256": "e15c5472c61414c896d293ce1c54242f840cf517e21af5111c96ff5aec216b08"
+    },
+    "docs/scorebug_ingame/reconstructed_v8_640x480.png": {
+      "bytes": 19346,
+      "sha256": "3046ecc6fafe7bbfad67c07a2e162183b71fc0d756ea0cdb09c56af3b8a0a933"
+    },
+    "docs/scorebug_ingame/reconstructed_v8_wide_640x480.png": {
+      "bytes": 19626,
+      "sha256": "90b3b1dc71cfe66ab9f5d53141a79978a20fa814f937b659318632cc105b89d1"
+    },
+    "docs/scorebug_ingame/reconstructed_v8_wide_cull_hypothesis.png": {
+      "bytes": 16736,
+      "sha256": "641ecbdc64af328d438abd14afd6305a1e0a3e347c644bd52c08d38c4f34d9cc"
+    },
+    "docs/scorebug_ingame/witness_2026-09-06_v8_ingame.png": {
+      "bytes": 1415476,
+      "sha256": "cd31bdf57ad64d0e9cc22866423659c232ae68dcc763deb1165bfeeca27c60c9"
+    },
+    "docs/scorebug_ingame/witness_harness_target.png": {
+      "bytes": 587200,
+      "sha256": "976bedb037e0770f44368ee31c5f4dffd0e1af009c18c405c093643410278998"
+    },
+    "docs/scorebug_ingame/witness_v8_hud_normalized.png": {
+      "bytes": 498871,
+      "sha256": "d15e2d0a3e664a5b616d5a9b38108ab5ab52e9157b4a18a54a7e51838b0f4f18"
+    }
+  },
+  "artifact_hash_scope": "Delivery files except this validation JSON; the bundle commit binds the complete tree.",
+  "remaining_unproved": [
+    "Exact GPU cull/blend/filter state",
+    "Inferred capture normalization",
+    "All gameplay state and event visibility",
+    "A repaired v9 and live team-material selection"
+  ]
+}

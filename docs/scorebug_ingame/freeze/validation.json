@@ -1,0 +1,155 @@
+{
+  "base": "059b52a881c36aa91308be7ab7f27958b2d17e7a",
+  "cause_proved": false,
+  "date": "2026-09-07",
+  "development": [
+    {
+      "reason": "read_fonts requires a pack Path, not a descriptor PackView; corrected to use its existing bounded reader",
+      "result": "fixture setup error, 0 tests ran"
+    },
+    {
+      "reason": "missing fixture possession chain at native 0xfcae4; supplied a bounded native-shaped record, then the frame returned",
+      "result": "scratch exploratory first-frame memory fault"
+    },
+    {
+      "result": "4 tests passed",
+      "scope": "initial entry and native-completion cases"
+    },
+    {
+      "result": "6 tests passed",
+      "scope": "added cache/index states and queued lookup; final suite adds historical code and native opener"
+    }
+  ],
+  "missing_evidence_check": {
+    "command": "NFL2K5_RETAIL_EXTRACTION=.scratch/absent python3 tests/mod_editor/test_nfl2k5_scorebug_freeze.py -v",
+    "exit_code": 0,
+    "passed": 0,
+    "skipped": 7
+  },
+  "passed": 238,
+  "peak_rss_kib": 505072,
+  "root_free_bytes_at_validation": 108757671936,
+  "runtime_defaults": {
+    "build_plan": false,
+    "presets": {
+      "softdrink_advanced": false,
+      "softdrink_basic": false,
+      "softdrink_experimental": false
+    }
+  },
+  "runtime_witnessed": false,
+  "schema": "scorebug-freeze-validation-v1",
+  "skipped": 0,
+  "tests": [
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_freeze.py -v",
+      "exit_code": 0,
+      "log_sha256": "44088e260dc829b8ef738d8710798ccfdfebee0b8db7772ccfeb92d5c68e3106",
+      "passed": 7,
+      "peak_rss_kib": 325888,
+      "skipped": 0,
+      "unittest_seconds": 203.345
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_runtime.py -v",
+      "exit_code": 0,
+      "log_sha256": "9d3e328c782a35f20ff4542a06321cef5165dbc1fa794b9479cb0dfe3de1940e",
+      "passed": 12,
+      "peak_rss_kib": 292680,
+      "skipped": 0,
+      "unittest_seconds": 95.384
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_native.py -v",
+      "exit_code": 0,
+      "log_sha256": "3b2d62d6d09366e00b614c019560e410c024f4b19a0676d194d4bc71a7827a1c",
+      "passed": 4,
+      "peak_rss_kib": 217944,
+      "skipped": 0,
+      "unittest_seconds": 100.672
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_resources.py -v",
+      "exit_code": 0,
+      "log_sha256": "f4b3bacb3f715344d71928e8691f02f27cabc1602ec88c8ad167710cac7c9804",
+      "passed": 6,
+      "peak_rss_kib": 174212,
+      "skipped": 0,
+      "unittest_seconds": 99.887
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_fonts.py -v",
+      "exit_code": 0,
+      "log_sha256": "6cb075b58e01a1e42565c0619bf3eaa93689ec8b0d81ce19b490012a3e81c727",
+      "passed": 9,
+      "peak_rss_kib": 291824,
+      "skipped": 0,
+      "unittest_seconds": 36.926
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_projection.py -v",
+      "exit_code": 0,
+      "log_sha256": "e8825e212d27a6f7f67f45d92a07a160272397c5b3d922a8e4467c04a82c177f",
+      "passed": 14,
+      "peak_rss_kib": 307592,
+      "skipped": 0,
+      "unittest_seconds": 25.565
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_exact.py -v",
+      "exit_code": 0,
+      "log_sha256": "2678a3434a3bdb7a405543f33b5971b4b3320a25b78e2d3530b3b0a0f1270d41",
+      "passed": 8,
+      "peak_rss_kib": 291716,
+      "skipped": 0,
+      "unittest_seconds": 49.281
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_versions.py -v",
+      "exit_code": 0,
+      "log_sha256": "c627b4845520380661a5a7159291bc01af0a783c1c72198f497226703411136b",
+      "passed": 4,
+      "peak_rss_kib": 159828,
+      "skipped": 0,
+      "unittest_seconds": 3.7
+    },
+    {
+      "command": "python3 tests/mod_editor/test_xbe_patch_memory_writes.py -v",
+      "exit_code": 0,
+      "log_sha256": "e66e58831e087fb740c3c36e9bb0f7e4f1c81b66e98fc8974f6eec18bd81c599",
+      "passed": 79,
+      "peak_rss_kib": 313592,
+      "skipped": 0,
+      "unittest_seconds": 295.243
+    },
+    {
+      "command": "python3 tests/mod_editor/test_xbe_patch_cave_references.py -v",
+      "exit_code": 0,
+      "log_sha256": "693930d2294e734ec45f57d93015861006a5122c32f9f9d1b0320019186640bd",
+      "passed": 95,
+      "peak_rss_kib": 505072,
+      "skipped": 0,
+      "unittest_seconds": 381.033
+    }
+  ],
+  "trace_sha256": "85afd443e2b2f0bbc30474e24f84161c71ff88c387736bfebd0c3950c91dbcdc",
+  "unchanged_paths": {
+    ".github/workflows/ci.yml": "2180a046901af91d632079f42f4d4ad7a8916709f017b95772456535cb89d55a",
+    "WIRING.md": "dec0e29b8270b4168d18bbfea1f3f6616c708a1a2e33346b92405c162f5a2c41",
+    "data/nfl2k5_cave_reservations.json": "85fa4db646ba2374df291f2e5093d463ebfdf9e95690eb78f07d4ebd3593f108",
+    "mod_editor/core/mod_build.py": "69ce3ca6f8003cced74c8b740b615fae9e8254cb3f414b69a59e1a0cedb9834d",
+    "mod_editor/core/nfl2k5_scorebug_exact.py": "6489bdd9a06112180219bb6382bf9c570f2850ee7c7d847fcc38f2f653e0074c",
+    "mod_editor/core/nfl2k5_scorebug_ingame.py": "9f07ca04aa43f49cc50170c816b582963c763316dfe11a374deeb7e2681fb606",
+    "mod_editor/core/nfl2k5_scorebug_resources.py": "21450a2010744d130331a35e367579ef89fe2ab95b39e97450c4969508fc4e8c",
+    "mod_editor/core/nfl2k5_scorebug_runtime.py": "118e52d046f293f677a2b2f3184d2f121e41b2b5884b7ca3b0f42dfa95c8c379",
+    "mod_editor/core/nfl2k5_scorebug_template.py": "409f7324352b88a6b4387b1f1a8ee1231c56f9674d7762ece24a8142fd2d2060",
+    "mod_editor/core/nfl2k5_throw_tuning.py": "be93ac38e5b8ffed4a79a21bc9bf1e8767798b87ce592fe5a97226c2c0a107b2",
+    "mod_editor/core/update_check.py": "e7a823df539beffe23e3d1a0fbba9ee188a5faa1f0988c0227d3bd92f04790d4",
+    "mod_editor/gui/build_panel_qt.py": "c93ed4b5d02b2654e32c62df3d6ea6f16215c749b47eae7d7de9f18cb34baa4e",
+    "mod_editor/gui/gameplay_panel_qt.py": "9c8f714f78ea9193ea8c5d21737d067d6a8da4428a7b14130b5b44bb441ffdfe",
+    "mod_editor/gui/gameplay_patches_panel_qt.py": "97f2962729afe4a8e66120793254dcbf6b25cec3c6d8343b78287f3520200eee",
+    "mod_editor/gui/studio_qt.py": "0b03bc63239e07a1fd06da0eb7e64f384dedd99c738eae59bade72efc7d460ff",
+    "packaging/check_2k5_mod_studio_runtime.py": "8517b4fdea8c634ce5ca1eebc05d4b83bf2f877a423c0e08496acfa9afd5e877",
+    "packaging/release-allowlist.txt": "6693d7abec3c4db2057ae046e19a21bec6b29f02f65541678f1f3dc08c31e346"
+  }
+}

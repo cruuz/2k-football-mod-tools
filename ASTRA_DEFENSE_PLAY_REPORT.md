@@ -1,5 +1,7 @@
 # ASTRA defense play report
 
+Public path notation: `<home>` and `<media>` identify the original local home and mounted input directories. Recorded hashes, measurements and outcomes are unchanged.
+
 Branch: `astra/r61b-defense-play`. Brief: `ASTRA_BRIEF.md`; research: the two 2026-09-04 defense/Spy memos in the read-only hub. Work used local retail PLAY resources only. No emulator, display, audio, network, XBE mutation or push occurred. **No gameplay was witnessed.**
 
 ## Delivered
@@ -109,7 +111,7 @@ Commands run from this worktree. New tests bootstrap their own import paths and 
 | `QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_play_designer_qt.py` | 4 passed. |
 | `QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_playbooks_panel_qt.py` | 7 passed, 1 skipped (relative extracted pack0 fixture absent). |
 | `python3 tools/nfl2k5_playbook_pack.py modern-defense --book .scratch/ATL.PLAY --team ATL -o data/playbooks/softdrink_modern_defense.2k5book` | Pack generated; full check green. |
-| `python3 tools/nfl2k5_playbook_pack.py check data/playbooks/softdrink_modern_defense.2k5book --image '/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)' --all-books --retarget --json .scratch/defense-cli.json` | 37 of 37 books green. |
+| `python3 tools/nfl2k5_playbook_pack.py check data/playbooks/softdrink_modern_defense.2k5book --image '<media>/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)' --all-books --retarget --json .scratch/defense-cli.json` | 37 of 37 books green. |
 | `python3 -m py_compile` on the ten changed product modules; `git diff --check` | Passed. |
 
 Private reproduction outputs: `.scratch/defense_evidence.py` / `.json` contain per-book source/replacement SHA-256, exact replacement/donor/front indices, affected categories and changed-byte counts. `.scratch/defense-cli.json` records the full CLI checks. Raw PLAY copies and logs remain only in `.scratch/`; none is committed. Standalone tests independently regenerate their evidence from the extracted retail archive and skip precisely when it is absent.

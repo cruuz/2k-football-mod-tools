@@ -14,7 +14,8 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, pyqtSignal
+from PyQt5.QtCore import QObject, QPointF, QRunnable, Qt, QThreadPool, pyqtSignal
+from PyQt5.QtGui import QColor, QPainter, QPen, QPolygonF
 from PyQt5.QtWidgets import (
     QAbstractItemView,
     QCheckBox,
@@ -36,6 +37,7 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.core import nfl2k5_throw_tuning as tt
+from mod_editor.core import nfl2k5_throw_arc as flight
 from mod_editor.gui.ux_text import XEMU_LINE, Details, show_operation_error, source_captions, suggest_copy_name, write_caption
 from mod_editor.gui.task_delivery import bound
 
@@ -47,6 +49,37 @@ SOURCE_FILTER = (
 )
 XBE_FILTER = "Xbox executables (default.xbe *.xbe);;All files (*)"
 IMAGE_FILTER = "Xbox disc images (*.xiso *.iso *.img);;All files (*)"
+
+
+class FlightPreview(QWidget):
+    """The same equal-height ballistic model as the numerical workspace preview."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setMinimumHeight(120)
+        self.setAccessibleName("Flight curve: gray retail speed, blue selected speed")
+        self.lines = ()
+
+    def set_curves(self, curves):
+        distance = tt.preview(curves)[-1].deep_cap_yards
+        self.lines = tuple(flight.flight_points(distance, tt.interpolate(speed, distance))
+                           for speed in (tt.CURVES["lobspeed"].retail, curves["lobspeed"]))
+        self.update()
+
+    def paintEvent(self, event):
+        if not self.lines:
+            return
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        width, height = max(1, self.width() - 32), max(1, self.height() - 38)
+        xmax = max(x for line in self.lines for x, _ in line)
+        ymax = max(y for line in self.lines for _, y in line) * 1.12
+        for color, line in zip(("#8b929b", "#348de4"), self.lines):
+            painter.setPen(QPen(QColor(color), 2))
+            painter.drawPolyline(QPolygonF([QPointF(16 + x / xmax * width, height + 8 - y / ymax * height)
+                                            for x, y in line]))
+        painter.setPen(self.palette().text().color())
+        painter.drawText(16, self.height() - 5, f"{xmax:g} yd | Gray: retail speed | Blue: selected flight | Equal-height guide")
 
 
 class _TaskSignals(QObject):
@@ -237,6 +270,9 @@ class ThrowTuningPanel(QWidget):
             "The in-place table then only matters for read-back; the ceiling still applies."
         )
         layout.addWidget(self.arc_by_distance_check)
+        self.flatter_check = QCheckBox("Flight arc: flatter deep ball (EXPERIMENTAL / UNWITNESSED)")
+        self.flatter_check.setToolTip(flight.HELP_TEXT)
+        layout.addWidget(self.flatter_check)
         realistic_note = QLabel(
             "Real deep balls are not moon balls: the longest tracked NFL completions (62-68 air yards) "
             "hang about 3.5 s with an apex near 15 yd. This table gives 55 yd → 2.8 s, 65 → 3.2 s, "
@@ -278,10 +314,9 @@ class ThrowTuningPanel(QWidget):
 
         self.accel_check = QCheckBox("Gradual player acceleration")
         self.accel_check.setToolTip(
-            "Retail has no acceleration: everyone is at top speed on the first step, so linemen keep pace with "
-            "receivers at high Pursuit and slow quarterbacks burst out of the pocket. This executable patch ramps the "
-            "per-frame speed cache from 60 % to 100 % of the rating: ~1 s at 99 agility, ~1.75 s at 50, ~2 s at 30; "
-            "standing still resets it. xemu-only."
+            "EXPERIMENTAL / UNWITNESSED. Retail already has acceleration. This older option adds "
+            "a gradual change to the effective Speed rating. It compounds native acceleration and "
+            "does not treat human and CPU steering alike. This is separate from the slow-QB carrier curve."
         )
         also.addWidget(self.accel_check)
 
@@ -350,6 +385,8 @@ class ThrowTuningPanel(QWidget):
         # what a 99 arm gets.
         self.preview_table.setFixedHeight(32 * (len(tt.PREVIEW_ARMS) + 1) + 12)
         layout.addWidget(self.preview_table)
+        self.flight_preview = FlightPreview(self)
+        layout.addWidget(self.flight_preview)
         self.curves_label = QLabel("")
         self.curves_label.setObjectName("throwMuted")
         self.curves_label.setWordWrap(True)
@@ -368,6 +405,7 @@ class ThrowTuningPanel(QWidget):
         self.arc_spin.valueChanged.connect(self._arc_from_spin)
         self.realistic_check.toggled.connect(self._option_toggled)
         self.arc_by_distance_check.toggled.connect(self._option_toggled)
+        self.flatter_check.toggled.connect(self._option_toggled)
         self.catch_check.toggled.connect(self._option_toggled)
         self.scorebug_check.toggled.connect(self._option_toggled)
         self.accel_check.toggled.connect(self._option_toggled)
@@ -387,22 +425,38 @@ class ThrowTuningPanel(QWidget):
     def _option_toggled(self, _checked: bool) -> None:
         if self._syncing:
             return
-        self.arc_slider.setEnabled(not self.realistic_check.isChecked())
-        self.arc_spin.setEnabled(not self.realistic_check.isChecked())
+        self._syncing = True
+        try:
+            if self.sender() is self.flatter_check and _checked:
+                self.realistic_check.setChecked(False)
+                self.arc_by_distance_check.setChecked(False)
+                self.arc_slider.setValue(0)
+                self.arc_spin.setValue(0)
+                if self.ceiling_spin.value() == 55:
+                    self.ceiling_slider.setValue(80)
+                    self.ceiling_spin.setValue(80)
+            elif self.sender() in (self.realistic_check, self.arc_by_distance_check) and _checked:
+                self.flatter_check.setChecked(False)
+        finally:
+            self._syncing = False
+        enabled = not (self.realistic_check.isChecked() or self.arc_by_distance_check.isChecked() or self.flatter_check.isChecked())
+        self.arc_slider.setEnabled(enabled)
+        self.arc_spin.setEnabled(enabled)
         self._refresh_preview()
         self._refresh_controls()
 
     def set_settings(self, settings: tt.TuningSettings) -> None:
         self._syncing = True
         try:
+            self.flatter_check.setChecked(False)
             self.ceiling_slider.setValue(int(round(settings.max_deep_yards)))
             self.ceiling_spin.setValue(int(round(settings.max_deep_yards)))
             self.arc_slider.setValue(int(round(settings.arc * 100)))
             self.arc_spin.setValue(int(round(settings.arc * 100)))
             self.realistic_check.setChecked(bool(settings.realistic_flight))
             self.arc_by_distance_check.setChecked(bool(getattr(settings, "arc_by_distance", False)))
-            self.arc_slider.setEnabled(not settings.realistic_flight)
-            self.arc_spin.setEnabled(not settings.realistic_flight)
+            self.arc_slider.setEnabled(not (settings.realistic_flight or settings.arc_by_distance))
+            self.arc_spin.setEnabled(not (settings.realistic_flight or settings.arc_by_distance))
         finally:
             self._syncing = False
         self._refresh_preview()
@@ -468,19 +522,25 @@ class ThrowTuningPanel(QWidget):
 
     # ------------------------------------------------------------- preview
     def preview_rows(self) -> tuple[tt.PreviewRow, ...]:
+        return tt.preview(self._preview_curves())
+
+    def _preview_curves(self) -> dict:
         settings = self.settings()
+        if self.flatter_check.isChecked():
+            return flight.curves_for(settings)
         curves = dict(tt.curves_for(settings))
         curves["lobspeed"] = tt.effective_lobspeed(settings, curves)
-        return tt.preview(curves)
+        return curves
 
     def _refresh_preview(self) -> None:
         retail = tt.preview({name: tt.CURVES[name].retail for name in tt.EDITABLE_CURVES})
         try:
-            curves = tt.curves_for(self.settings())
+            curves = self._preview_curves()
         except tt.ThrowTuningError as exc:
             self.status_label.setText(str(exc))
             return
         rows = tt.preview(curves)
+        self.flight_preview.set_curves(curves)
         self.preview_table.setRowCount(len(rows))
         for index, (before, after) in enumerate(zip(retail, rows)):
             cells = (
@@ -525,7 +585,7 @@ class ThrowTuningPanel(QWidget):
             self._quiet_failure = False
             self.apply_report(result)
 
-        self._run(lambda progress: tt.read_any(source), done)
+        self._run(lambda progress: flight.read_any(source), done)
 
     def apply_report(self, report: dict[str, object]) -> None:
         """Populate the panel from a ``read_any`` report (also used by tests)."""
@@ -545,6 +605,13 @@ class ThrowTuningPanel(QWidget):
         self.set_settings(settings)
         curves = report["curves"]
         assert isinstance(curves, dict)
+        arc_state = report.get("arc_table", "retail")
+        if isinstance(arc_state, dict):
+            arc_state = arc_state.get("state", "foreign")
+        if (tuple(curves["lobspeed"]["points"]) == flight.FLAT_LOBSPEED
+                and arc_state == "retail"):
+            self.set_settings(tt.TuningSettings(settings.max_deep_yards))
+            self.flatter_check.setChecked(True)
         edited = [name for name in tt.EDITABLE_CURVES if not curves[name]["retail"]]
         catch_state = str(report.get("catch_slider", "foreign"))
         self._syncing = True
@@ -618,7 +685,8 @@ class ThrowTuningPanel(QWidget):
         retail = " (retail default.xbe by SHA-256)" if report.get("matches_retail_sha256") else ""
         state = ("retail throw tables" if not edited
                  else "already tuned: " + ", ".join(edited) + " edited")
-        flight = ("arc by distance (45-60 high, 63+ flat)" if getattr(settings, "arc_by_distance", False)
+        flight_text = ("flatter flight (EXPERIMENTAL / UNWITNESSED)" if self.flatter_check.isChecked()
+                  else "arc by distance (45-60 high, 63+ flat)" if getattr(settings, "arc_by_distance", False)
                   else "realistic flight" if settings.realistic_flight else f"arc {int(round(settings.arc * 100))} %")
         catch_text = {"retail": "catch patch not applied", "applied": "catch patch applied",
                       "foreign": "catch-patch sites unrecognised (patch disabled)"}[catch_state]
@@ -637,7 +705,7 @@ class ThrowTuningPanel(QWidget):
                           + (f" (disc text {edge_disc_state})" if edge_disc_state != "n/a" else ""))
         self.source_status.setText(
             f"Read the {container}{retail}: {state}. Current ceiling "
-            f"{settings.max_deep_yards:g} yd, {flight}; {catch_text}"
+            f"{settings.max_deep_yards:g} yd, {flight_text}; {catch_text}"
             + ("; " + "; ".join(extras) if extras else "") + "."
         )
         self._refresh_controls()
@@ -667,7 +735,7 @@ class ThrowTuningPanel(QWidget):
         if current is None:
             return False
         try:
-            wanted = tt.curves_for(self.settings())
+            wanted = flight.curves_for(self.settings()) if self.flatter_check.isChecked() else tt.curves_for(self.settings())
         except tt.ThrowTuningError:
             return False
         curves = self._report["curves"] if self._report else {}
@@ -682,7 +750,11 @@ class ThrowTuningPanel(QWidget):
         returner_change = self.returner_check.isChecked() and str(self._report.get("returner_fix")) == "retail"
         progression_change = self.progression_check.isChecked() and str(self._report.get("progression")) == "retail"
         edge_change = self.edge_check.isChecked() and getattr(self, "_edge_writable", False)
-        return (curve_change or catch_change or scorebug_change or accel_change or draft_change or edge_change
+        arc_state = self._report.get("arc_table", "retail")
+        if isinstance(arc_state, dict):
+            arc_state = arc_state.get("state", "foreign")
+        arc_change = self.arc_by_distance_check.isChecked() and arc_state == "retail"
+        return (curve_change or arc_change or catch_change or scorebug_change or accel_change or draft_change or edge_change
                 or returner_change or progression_change)
 
     def _write(self) -> None:
@@ -693,6 +765,7 @@ class ThrowTuningPanel(QWidget):
         source = Path(source_text)
         target = Path(target_text)
         settings = self.settings()
+        want_flatter = self.flatter_check.isChecked()
         want_catch = self.catch_check.isChecked() and str(self._report.get("catch_slider") if self._report else "") == "retail"
         want_scorebug = self.scorebug_check.isChecked() and getattr(self, "_scorebug_state", "n/a") == "retail"
         want_accel = self.accel_check.isChecked() and str(self._report.get("accel_ramp") if self._report else "") == "retail"
@@ -735,7 +808,8 @@ class ThrowTuningPanel(QWidget):
 
         def write(progress: ProgressSink) -> dict[str, object]:
             progress("Patching throw tables", 0, 0)
-            result = tt.write_copy(source, target, settings=settings, overwrite=overwrite, progress=progress,
+            writer = flight.write_copy if want_flatter else tt.write_copy
+            result = writer(source, target, settings=settings, overwrite=overwrite, progress=progress,
                                    catch_slider=want_catch, accel_ramp=want_accel, draft_ai=want_draft,
                                    edge_rename=want_edge, returner_fix=want_returner, progression=want_progression)
             if scorebug_module is not None:

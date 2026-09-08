@@ -63,6 +63,8 @@ def main(argv=None) -> int:
     manifest.add_argument("--xiso", type=Path, required=True)
     manifest.add_argument("--work-dir", type=Path, required=True, help="existing writable directory for disposable 6+ GB image")
     manifest.add_argument("--json", type=Path, required=True)
+    manifest.add_argument("--synthetic-owner-bytes", type=int, default=0,
+                          help="also install/read back/remove a synthetic RX owner on the real disposable disc")
     fresh = commands.add_parser("space-proof", help="prove no retail address encoding reaches the owned grown pages")
     fresh.add_argument("xbe", type=Path)
     fresh.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
@@ -83,7 +85,7 @@ def main(argv=None) -> int:
             return 0
         if args.command == "manifest":
             from mod_editor.core.nfl2k5_cave_manifest import build_manifest
-            report = build_manifest(data, args.xiso, work_dir=args.work_dir,
+            report = build_manifest(data, args.xiso, work_dir=args.work_dir, synthetic_owner_bytes=args.synthetic_owner_bytes,
                                     progress=lambda text: print(text, file=sys.stderr, flush=True))
             write_json(args.json, report, [args.xbe, args.xiso])
             print(f"Wrote {len(report['spans'])} reservations from {len(report['steps'])} observed XBE writer calls.")

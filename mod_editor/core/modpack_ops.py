@@ -155,11 +155,21 @@ class FileReplace:
         m._require(node + 8 <= before, "directory node extends past image")
         old, new = op["before"], op["after"]
         m._require(old["sector"] * 2048 + old["size"] <= before, "old file extends past image")
-        m._require(new["size"] == payload["length"] and new["sha256"] == payload["sha256"], "file payload differs from expected-after identity")
+        prefix = 0
         if cls.grow:
+            append_sector = (before + 2047) // 2048
+            accounting = op.get("append")
+            if accounting is not None or op["version"] == 2:
+                m._require(isinstance(accounting, Mapping), "growth needs append sector accounting")
+                m._require(m._int(accounting.get("sector"), "append.sector") == append_sector,
+                           "append sector differs from the first sector after the preceding image")
+                sectors = m._int(accounting.get("file_sector_offset"), "append.file_sector_offset")
+                m._require(append_sector + sectors == new["sector"], "append file sector accounting differs")
+                prefix = sectors * 2048
             m._require(new["size"] > old["size"], "file_grow must grow the named file")
-            m._require(new["sector"] * 2048 == (before + 2047) // 2048 * 2048,
-                       "growth must append at the first sector after the image")
+            if op["version"] == 1:
+                m._require(new["sector"] == append_sector,
+                           "growth must append at the first sector after the image")
             m._require(op["after_size"] == new["sector"] * 2048 + new["size"], "growth result size differs from append extent")
         elif cls.shrink:
             m._require(0 < new['size'] < old['size'], 'file_shrink must shorten a nonempty named file')
@@ -168,6 +178,9 @@ class FileReplace:
         else:
             m._require((new["sector"], new["size"], op["after_size"]) == (old["sector"], old["size"], before),
                        "file_replace keeps its extent; use file_grow for a larger file")
+        m._require(prefix + new["size"] == payload["length"], "file payload differs from expected-after length")
+        if not prefix:
+            m._require(new["sha256"] == payload["sha256"], "file payload differs from expected-after identity")
         # A named data file may never alias its directory node or volume header.
         for state in (old, new):
             lo, hi = state["sector"] * 2048, state["sector"] * 2048 + state["size"]
@@ -188,15 +201,23 @@ class FileReplace:
             m._require(view.digest(start, old["size"]) == old["sha256"], f"{op['path']}: expected-before file hash differs")
             if cls.special:
                 m._require(storage.state(view.read(old["size"], start)) == "retail", "unrecognised SPECIAL storage before growth")
-        read = blob_reader(pack, op["payload"])
+        payload_read = blob_reader(pack, op["payload"])
+        prefix = op["append"]["file_sector_offset"] * 2048 if cls.grow and op["version"] == 2 else 0
+        read = lambda count, at: payload_read(count, prefix + at)
+        if prefix:
+            m._require(digest(read, new["size"]) == new["sha256"],
+                       f"{op['path']}: expected-after file hash differs from append payload")
         if cls.special:
             from . import nfl2k5_depth_chart_rows as rows
             m._require(rows.status(read(new["size"], 0)) == "applied", "expected a complete SPECIAL XBE")
         start = view.partition + new["sector"] * 2048
         if cls.grow:
-            if start > view.size:
-                padding = start - view.size
+            append_start = start - prefix
+            if append_start > view.size:
+                padding = append_start - view.size
                 view.put(view.size, padding, literal(bytes(padding)))
+            if prefix:
+                view.put(append_start, prefix, payload_read)
         view.put(start, new["size"], read)
         if cls.grow or cls.shrink:
             view.put(node, 8, literal(struct.pack("<II", new["sector"], new["size"])))
@@ -226,11 +247,13 @@ class FileReplace:
 class FileGrow(FileReplace):
     name = "file_grow"
     grow = True
+    versions = (1, 2)
 
 
 class XbeGrow(FileGrow):
     name = "xbe_grow"
     special = True
+    versions = (1,)
 
     @staticmethod
     def execute(op, pack, descriptor, spans):
@@ -276,7 +299,8 @@ def validate(operations, base, result):
         handler = REGISTRY.get(op_type)
         m._require(handler is not None, f"{NEWER_READER}: unknown operation type {op_type}")
         version = m._int(op.get("version"), "operation.version", minimum=1)
-        m._require(version == handler.version, f"{NEWER_READER}: {handler.name} version {version}")
+        m._require(version in getattr(handler, "versions", (handler.version,)),
+                   f"{NEWER_READER}: {handler.name} version {version}")
         m._require(op.get("name") == handler.name, f"operation {i} type/name disagree")
         m._require(m._int(op.get("before_size"), "operation.before_size", minimum=1) == size, f"operation {i} image size chain differs")
         m._int(op.get("after_size"), "operation.after_size", minimum=1)
@@ -415,6 +439,33 @@ def _subtract(ranges, exclusions):
             yield lo, hi
 
 
+def changed_file_operations(base_path, patched_path):
+    """Discover named allocation changes for Share using bounded directory reads.
+
+    This only selects paths. The exporter still verifies the complete operation
+    chain and every projected output byte against the author image.
+    """
+    with open(base_path, "rb") as base, open(patched_path, "rb") as patched:
+        size, patched_size = os.fstat(base.fileno()).st_size, os.fstat(patched.fileno()).st_size
+        try:
+            before, _ = m._xdvdfs_module().parse_xdvdfs(base.fileno(), size)
+            after, _ = m._xdvdfs_module().parse_xdvdfs(patched.fileno(), patched_size)
+        except ValueError:
+            if size == patched_size:
+                # The existing format-1 exporter also accepts equal-size blobs.
+                return ()
+            raise
+        m._require(before.keys() == after.keys(), "file additions/removals need a registered directory operation")
+        selected = []
+        for name, old in before.items():
+            new = after[name]
+            m._require(old.attributes == new.attributes, f"unrecognised file attributes change: {old.path}")
+            if (old.sector, old.size) != (new.sector, new.size):
+                m._require(not old.attributes & 0x10, "directory changes need a registered directory operation")
+                selected.append(new)
+        return tuple(entry.path for entry in sorted(selected, key=lambda entry: entry.byte_offset))
+
+
 def detect(base, patched, size, patched_size, partition, ranges, named_files):
     """Conservative automatic export; arbitrary operations use the explicit API.
 
@@ -440,7 +491,7 @@ def detect(base, patched, size, patched_size, partition, ranges, named_files):
             m._require(old.attributes == new.attributes, f"unrecognised file attributes change: {old.path}")
             m._require(path in allowed or (old.sector, old.size) == (new.sector, new.size),
                        f"unrecognised file allocation change: {old.path}; name it in file_operations")
-    named = sorted(set(named), key=lambda name: after_entries[name.casefold()].byte_offset
+    named = sorted({name.casefold() for name in named}, key=lambda name: after_entries[name.casefold()].byte_offset
                    if name.casefold() in after_entries else -1)
     exclusions, file_ops, payloads = [], [], {}
     for name in named:
@@ -518,6 +569,22 @@ def detect(base, patched, size, patched_size, partition, ranges, named_files):
     for op in file_ops:
         op["before_size"] = current_size
         if op["type"] in (1, 3):
+            sector = (current_size + 2047) // 2048
+            file_sector_offset = op["after"]["sector"] - sector
+            m._require(file_sector_offset >= 0, "growth overlaps a preceding allocation")
+            op["append"] = {"sector": sector, "file_sector_offset": file_sector_offset}
+            if file_sector_offset:
+                # A build may have appended and then superseded an earlier
+                # allocation (e.g. SPECIAL before the final owned-page XBE).
+                # Carry these physical bytes explicitly, in the next growth's
+                # streamed payload. Never replace them with a zero-filled gap.
+                m._require(op["type"] == 3, "SPECIAL growth must append directly after the image")
+                op["version"] = 2
+                member = op["payload"]["member"]
+                payload = Payload(file_sector_offset * 2048 + op["after"]["size"],
+                    lambda n, at, start=partition + sector * 2048: m._pread_exact(patched, n, start + at, "append payload"))
+                payloads[member] = payload
+                op["payload"] = payload.document(member)
             current_size = op["after"]["sector"] * 2048 + op["after"]["size"]
         op["after_size"] = current_size
         operations.append(op)

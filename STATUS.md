@@ -1,4 +1,16 @@
-# 2K5 Mod Studio — v1.0 RC85 Release Status
+# 2K5 Mod Studio — v1.0 RC86 Release Status
+
+## Beta 62 (RC86, 2026-09-06) — the whole wave-2 backlog, wired
+
+Source/UI versions are **2K5 RC86** and **APF alpha.84**.
+
+- Every beta-61 research item built or audited to a verdict: read option with modern controls, MyCareer, MyNFL / Play Now / MyPlayer
+  naming, widescreen v3, static scorebar v8 plus a runtime-freeze probe, momentum collisions, defensive-try stats, screen hooks,
+  QB spy from man and rush, Guardian overlay, roster arena growth, native Practice Squad screen, music routes, hi-res families,
+  bone import, stadium texture round trips, play rules library, 82 stadiums, 128-season calendar, Franchise Practice exit fix,
+  playoff editor fix, scaled-out executable space with pairwise composition proofs. Honest partials: Senior Bowl simulation,
+  franchise 2026 rules enforcement, deep-zone facing/bail, the scorebug freeze root cause, hi-res memory fit. All new options are
+  experimental and unwitnessed; see the RC86 changelog section.
 
 ## Beta 60 (unreleased) — ★ Rosters reads the disc's own position scheme
 

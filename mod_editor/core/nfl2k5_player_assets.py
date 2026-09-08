@@ -20,11 +20,9 @@ Two things it deliberately does not do:
   game, so there is nothing per-player to report. Saying "this player's gloves"
   would be a lie about how the disc stores them; the report says they are
   shared and names them once.
-* **It does not claim a portrait link that is not in the bytes.** Portraits are
-  numbered separately from faces, and nothing found so far ties a portrait
-  number to a player record. Where a portrait's own label carries the player's
-  name the match is reported as ``by_name`` and flagged as such, rather than
-  being presented as though it came from the roster.
+* Portraits use the roster's photo_id at +0x06 when the caller supplies it.
+  Legacy catalog rows without that selector keep an explicitly labelled name
+  fallback. A renamed player's explicit Photo ID always wins over the label.
 """
 
 from __future__ import annotations
@@ -56,7 +54,7 @@ class PlayerAsset:
     asset_id: str
     label: str
     kind: str          # "live_face" | "player_portrait"
-    link: str          # "face_id" (from the roster record) | "by_name"
+    link: str          # "face_id" | "photo_id" (record selectors) | "by_name" (legacy)
     width: int = 0
     height: int = 0
 
@@ -128,6 +126,9 @@ def build_player_assets(
     assets = list(visual_assets)
     faces = _faces_by_id(assets)
     portraits = _portraits_by_name(assets)
+    portraits_by_id = {str(asset.portrait_id).zfill(4): asset for asset in assets
+                      if getattr(asset, "kind", None) == "player_portrait"
+                      and getattr(asset, "portrait_id", None) is not None}
 
     summaries: list[PlayerAssetSummary] = []
     for row in players:
@@ -146,13 +147,16 @@ def build_player_assets(
                 height=int(getattr(asset, "height", 0)),
             ))
 
-        for asset in portraits.get(_normalise_name(name), ()):
+        photo_id = row.get("photo_id")
+        selected = (portraits.get(_normalise_name(name), ()) if photo_id is None else
+                    ([portraits_by_id[str(photo_id).zfill(4)]] if str(photo_id).zfill(4) in portraits_by_id else []))
+        for asset in selected:
             found.append(PlayerAsset(
                 asset_id=str(asset.asset_id),
                 label=str(asset.label),
                 kind="player_portrait",
-                # Honest about its weakness: matched on the label, not the disc.
-                link="by_name",
+                # Explicit selectors take priority over historical labels.
+                link="photo_id" if photo_id is not None else "by_name",
                 width=int(getattr(asset, "width", 0)),
                 height=int(getattr(asset, "height", 0)),
             ))
@@ -163,10 +167,14 @@ def build_player_assets(
                 f"No live-face texture carries face_id {face_id}; this player "
                 "shares a generic head."
             )
-        if not portraits.get(_normalise_name(name)):
+        if photo_id is not None:
+            notes.append(f"Portrait ID {int(photo_id):04d} is selected by the roster record. "
+                         + ("Replace that numbered portrait, then build it together with the roster edits."
+                            if selected else "That ID is absent from the portrait catalog; choose an existing portrait ID."))
+        elif not selected:
             notes.append(
-                "No portrait matches this player by name. Portraits are "
-                "numbered separately and the roster does not point at one."
+                "No portrait matches this player by name. Portraits are numbered separately; "
+                "this older catalog row did not supply the roster's photo_id. Check Photo in Rosters."
             )
 
         summaries.append(PlayerAssetSummary(

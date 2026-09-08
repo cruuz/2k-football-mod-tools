@@ -101,7 +101,9 @@ class EveryCapabilityIsReachableTests(unittest.TestCase):
             self.assertEqual(row["runtime"]["status"], "not-tested", capability_id)
             self.assertIn("experimental", row["title"].lower(), capability_id)
         animation = self.catalog.binding("nfl2k5.animations.inspect_export").capability.raw
-        self.assertEqual((animation["backend"]["operation"], animation["gui"]["mode"]), ("export", "export"))
+        # Beta 62 integration (b7e5224) made the animation surface an importer as well as an
+        # exporter, so the row is a write/edit capability now.
+        self.assertEqual((animation["backend"]["operation"], animation["gui"]["mode"]), ("write", "edit"))
 
     def test_every_section_reaches_all_of_its_capabilities(self) -> None:
         """No category may hold a capability its page never renders."""

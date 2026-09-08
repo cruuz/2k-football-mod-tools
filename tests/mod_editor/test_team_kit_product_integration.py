@@ -5,11 +5,14 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+import sys
 from types import SimpleNamespace
 import tempfile
 import unittest
 from unittest import mock
 
+ROOT = Path(__file__).resolve().parents[2]
+sys.path[:0] = [str(ROOT), str(ROOT / "tools")]
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from PyQt5.QtCore import Qt  # noqa: E402
@@ -30,6 +33,20 @@ from mod_editor.gui.studio_qt import (  # noqa: E402
 )
 from mod_editor.studio.facade import Nfl2k5StudioFacade  # noqa: E402
 from mod_editor.studio.uniform_bundle import TEAM_KIT_MANIFEST  # noqa: E402
+
+if os.environ.get("ASTRA_TEST_TEAMKIT_PROPOSAL") == "1":
+    from mod_editor.gui import studio_qt
+    from tests.mod_editor.test_teamkit_import_wiring import proposed_source
+    _proposal_namespace = dict(studio_qt.__dict__)
+    exec(compile(proposed_source(), "<Team Kit GUI proposal>", "exec"), _proposal_namespace)
+    StudioMainWindow = _proposal_namespace["StudioMainWindow"]
+
+if os.environ.get("ASTRA_TEST_NUMBER_QUALITY_PROPOSAL") == "1":
+    from mod_editor.gui import studio_qt
+    from tests.mod_editor.test_number_sheet_quality_wiring import proposed_source
+    _proposal_namespace = dict(studio_qt.__dict__)
+    exec(compile(proposed_source(), "<Number sheet quality GUI proposal>", "exec"), _proposal_namespace)
+    StudioMainWindow = _proposal_namespace["StudioMainWindow"]
 
 
 class _LockCheckingTeamKitService:
@@ -170,7 +187,7 @@ class _WindowTeamKitFacade(BrowseOnlyFacade):
             message="Complete paired Team Kit exported privately.",
         )
 
-    def import_team_kit(self, source: Path, progress: object) -> object:
+    def import_team_kit(self, source: Path, progress: object, *, expected_set_selectors=None) -> object:
         if self.import_error is not None:
             raise self.import_error
         progress("Validating all kit PNGs", 79, 79)
@@ -188,7 +205,7 @@ class _WindowTeamKitFacade(BrowseOnlyFacade):
             changed_count=self.import_changed,
             set_selectors=("18H0", "18A0"),
             message=(
-                "Imported 2 changed components as one Undo action."
+                "Imported 2 changed components as one Undo action. Your source XISO was not changed."
                 if self.import_changed else
                 "All decoded pixels matched; nothing was staged."
             ),
@@ -341,7 +358,9 @@ class TeamKitOffscreenGuiTests(unittest.TestCase):
             )
             return SimpleNamespace(path=destination)
 
-        def import_private(source: Path, progress: object) -> object:
+        def import_private(source: Path, progress: object, *, expected_set_selectors=None) -> object:
+            if expected_set_selectors is not None:
+                self.assertEqual(expected_set_selectors, ("18H0",))
             manifest = json.loads(
                 (source / TEAM_KIT_MANIFEST).read_text(encoding="utf-8")
             )
@@ -353,15 +372,20 @@ class TeamKitOffscreenGuiTests(unittest.TestCase):
                         written.getpixel((written.width // 2, written.height // 2))[0],
                         digit * 20,
                     )
-            return SimpleNamespace(changed_count=10)
+            return SimpleNamespace(changed_count=10, message="Imported ten exact game slots as one Undo action.")
 
         self.facade.export_team_kit_sets = export_private  # type: ignore[method-assign]
         self.facade.import_team_kit = import_private  # type: ignore[method-assign]
         receipts: list[str] = []
         with (
+            # Encoding and dialog pixels have their own real-writer/offscreen
+            # suite. This existing test keeps its per-slot/atomic-kit scope on
+            # both the landed GUI and the proposed preview callback.
+            mock.patch.object(self.facade, "preview_digit_sheet", return_value=object(), create=True),
+            mock.patch.object(self.window, "_review_digit_sheet_preview", return_value=True, create=True),
             mock.patch(
                 "mod_editor.gui.studio_qt.QInputDialog.getItem",
-                return_value=("Arm / shoulder numbers", True),
+                side_effect=[("Arm / shoulder numbers", True), ("One row: 0 1 2 3 4 5 6 7 8 9", True)],
             ),
             mock.patch(
                 "mod_editor.gui.studio_qt.QFileDialog.getOpenFileName",
@@ -370,6 +394,10 @@ class TeamKitOffscreenGuiTests(unittest.TestCase):
             mock.patch(
                 "mod_editor.gui.studio_qt.QMessageBox.information",
                 side_effect=lambda _parent, _title, text: receipts.append(text),
+            ),
+            mock.patch(
+                "mod_editor.gui.studio_qt.QMessageBox.exec_",
+                new=lambda box: receipts.append(box.text()) or QMessageBox.Ok,
             ),
         ):
             self.window._choose_digit_sheet_import()
@@ -459,6 +487,10 @@ class TeamKitOffscreenGuiTests(unittest.TestCase):
                 "mod_editor.gui.studio_qt.QMessageBox.information",
                 side_effect=lambda _parent, _title, text: receipts.append(text),
             ),
+            mock.patch(
+                "mod_editor.gui.studio_qt.QMessageBox.exec_",
+                new=lambda box: receipts.append(box.text()) or QMessageBox.Ok,
+            ),
         ):
             self.window._choose_team_kit_import()
         self.assertEqual(self.facade.calls[-1], ("import", edited))
@@ -481,6 +513,7 @@ class TeamKitOffscreenGuiTests(unittest.TestCase):
                 return_value=str(edited),
             ),
             mock.patch("mod_editor.gui.studio_qt.QMessageBox.information"),
+            mock.patch("mod_editor.gui.studio_qt.QMessageBox.exec_", return_value=QMessageBox.Ok),
         ):
             self.window._choose_team_kit_import()
         self.assertEqual(emitted, [0])

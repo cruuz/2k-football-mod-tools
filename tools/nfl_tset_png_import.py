@@ -109,7 +109,7 @@ def decode_rgba_png(
     payload: bytes,
     expected_dimensions: tuple[int, int] | None = (BASE_WIDTH, BASE_HEIGHT),
 ) -> tuple[int, int, bytes]:
-    """Strict bounded decoder for non-interlaced 8-bit RGBA PNG."""
+    """Bounded standard PNG decoder, normalizing samples to 8-bit RGBA."""
 
     require(len(payload) <= MAX_PNG_BYTES, "PNG exceeds the 32 MiB input bound")
     require(payload.startswith(PNG_SIGNATURE), "PNG signature mismatch")
@@ -235,7 +235,7 @@ def _png_unfilter(raw: bytes, width: int, height: int, bits_per_pixel: int) -> b
 
 def _png_read_samples(row: bytes, width: int, channels: int,
                       bit_depth: int) -> list[tuple[int, ...]]:
-    """One unfiltered row to per-pixel sample tuples, scaled to 0..255."""
+    """One unfiltered row to full precision samples, before transparency lookup."""
     pixels: list[tuple[int, ...]] = []
     if bit_depth == 8:
         for x in range(width):
@@ -244,7 +244,7 @@ def _png_read_samples(row: bytes, width: int, channels: int,
     elif bit_depth == 16:
         for x in range(width):
             base = x * channels * 2
-            pixels.append(tuple(row[base + c * 2] for c in range(channels)))
+            pixels.append(struct.unpack_from(">" + "H" * channels, row, base))
     else:
         mask = (1 << bit_depth) - 1
         per_byte = 8 // bit_depth
@@ -298,7 +298,7 @@ def _png_samples_to_rgba(compressed: bytes, width: int, height: int, bit_depth: 
     scale = {1: 255, 2: 85, 4: 17, 8: 1, 16: 1}[bit_depth]
 
     def widen(sample: int) -> int:
-        return sample * scale if bit_depth < 8 else sample
+        return sample >> 8 if bit_depth == 16 else sample * scale
 
     rgba = bytearray(width * height * 4)
     consumed = 0
@@ -532,6 +532,8 @@ def quantize_levels_to_vc_lz_bound(
     stream_tag: int,
     offset_bits: int,
     max_encoded_size: int,
+    quantizer: Callable | None = None,
+    minimum_palette_limit: int = 2,
 ) -> BoundedPaletteFit:
     """Quantize art as richly as practical while honoring a retail VC-LZ cap.
 
@@ -548,11 +550,16 @@ def quantize_levels_to_vc_lz_bound(
     require(bool(levels), "bounded quantizer needs at least one mip level")
     require(max_encoded_size >= 10,
             "bounded quantizer VC-LZ span is shorter than a usable stream")
+    require(minimum_palette_limit in _BOUNDED_PALETTE_LIMITS,
+            "minimum palette limit must be a supported quality tier")
+    quantizer = quantizer or quantize_levels
     attempts: list[dict[str, object]] = []
     tried_entry_counts: set[int] = set()
     last_overflow: TxtrError | None = None
     for maximum in _BOUNDED_PALETTE_LIMITS:
-        palette, index_levels, quantization = quantize_levels(levels, maximum)
+        if maximum < minimum_palette_limit:
+            break
+        palette, index_levels, quantization = quantizer(levels, maximum)
         actual_entries = len(palette)
         # If the input already contains fewer colours than this tier, the same
         # palette was just tested at the preceding tier.  Do not recompress it.
@@ -601,6 +608,13 @@ def quantize_levels_to_vc_lz_bound(
     # attempted at the first tier (its actual palette has one entry); reaching
     # here means even the minimally useful two-colour representation cannot fit.
     if last_overflow is not None:
+        if minimum_palette_limit > 2:
+            raise TxtrError(
+                f"Digit artwork cannot fit its {max_encoded_size}-byte texture slot "
+                f"without dropping below the {minimum_palette_limit}-colour quality budget. "
+                "Use flat fill and outline colours, remove noise or extra edge detail, "
+                "and preview again. No lower-quality texture was accepted."
+            ) from last_overflow
         raise TxtrError(
             f"VC-LZ target cannot fit a usable two-color version inside its "
             f"{max_encoded_size}-byte bound; simplify the image by removing "

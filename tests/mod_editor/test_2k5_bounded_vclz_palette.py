@@ -3,8 +3,9 @@
 The supported digit textures are P8, but their retail VC-LZ bodies are fixed in
 place.  Ninety-four targets have only 1,568 bytes.  A high-colour replacement is
 valid P8 art yet cannot fit if the importer always insists on a 256-entry
-palette.  The product now tries deterministic palette tiers until the complete
-stream fits, preserving the richest tier that passed.
+palette. The product tries deterministic tiers, preserving the richest fit.
+Digit imports now stop at the r64 quality budget; the generic legacy quantizer
+retains its two-colour floor.
 """
 
 from __future__ import annotations
@@ -40,12 +41,12 @@ from nfl_txtr import (  # noqa: E402
 )
 
 
-_REAL_INDEX = _ROOT / "extracted/ESPN NFL 2K5 (USA)/vc_53450030/0"
-_REAL_INVENTORY = _ROOT / "reports/assets/nfl2k5_resource_chunks_v2.json"
+_REAL_INDEX = Path(os.environ.get("NFL2K5_TEST_INDEX", str(_ROOT / "extracted/ESPN NFL 2K5 (USA)/vc_53450030/0")))
+_REAL_INVENTORY = Path(os.environ.get("NFL2K5_TEST_INVENTORY", str(_ROOT / "reports/assets/nfl2k5_resource_chunks_v2.json")))
 _REAL_REPORT = (
     _ROOT / "reports/assets/nfl2k5_live_numbers_nameplate_compatibility.json"
 )
-_REAL_XISO = _ROOT / "ESPN NFL 2K5 (USA).xiso.iso"
+_REAL_XISO = Path(os.environ.get("NFL2K5_TEST_XISO", str(_ROOT / "ESPN NFL 2K5 (USA).xiso.iso")))
 _HAVE_REAL_COMPOSER_INPUTS = all(
     path.is_file()
     for path in (_REAL_INDEX, _REAL_INVENTORY, _REAL_REPORT, _REAL_XISO)
@@ -227,19 +228,24 @@ class Real1568ByteComposedBuildTests(unittest.TestCase):
     gigabytes on a redundant test artifact.
     """
 
-    def test_hostile_number_art_falls_back_and_reopens_from_composed_xiso_window(
+    def test_high_colour_art_fits_quality_floor_and_reopens_from_composed_xiso_window(
         self,
     ) -> None:
         import nfl2k5_visual_mod_project as project_builder
         import nfl_live_numbers_nameplate_png_import as live_import
 
         with tempfile.TemporaryDirectory(prefix="nfl-vclz-1568-composed-") as name:
-            root = Path(name)
+            root = Path(name).resolve()
             hostile = root / "hostile-number.png"
             rng = random.Random(0x15682C05)
-            hostile_rgba = bytes(
-                rng.randrange(256) for _ in range(64 * 64 * 4)
-            )
+            # The old per-pixel random RGBA fixture only fit by severe colour
+            # loss; r64 intentionally refuses it (separate regression below).
+            # Keep exercising the entire real composer, 256-entry overflow and
+            # bounded retry using 256 solid, spatially coherent colour tiles.
+            colours = [bytes((rng.randrange(256), rng.randrange(256), rng.randrange(256), 255))
+                       for _ in range(256)]
+            hostile_rgba = b"".join(colours[(y // 4) * 16 + x // 4]
+                                    for y in range(64) for x in range(64))
             hostile.write_bytes(encode_rgba_png(64, 64, hostile_rgba))
             project_path = root / "number.2k5-project.json"
             project_path.write_bytes(project_builder.canonical_json({
@@ -328,6 +334,7 @@ class Real1568ByteComposedBuildTests(unittest.TestCase):
                 self.assertEqual(fit["attempts"][0]["result"], "vc_lz_overflow")
                 self.assertEqual(fit["attempts"][-1]["result"], "fit")
                 self.assertLess(fit["selected_palette_entries"], 256)
+                self.assertGreaterEqual(fit["selected_palette_entries"], 16)
                 self.assertLessEqual(fit["selected_encoded_bytes"], 1_568)
 
                 guard = 4_096
@@ -406,6 +413,18 @@ class Real1568ByteComposedBuildTests(unittest.TestCase):
                         prepared.temp_files, [prepared.temp_root]
                     )
                     self.assertEqual(leftovers, [])
+
+    def test_original_random_rgba_fixture_refuses_excessive_colour_loss(self):
+        from mod_editor.core.errors import ValidationError
+        from nfl_live_numbers_nameplate_png_import import build_import
+        with tempfile.TemporaryDirectory(prefix="nfl-vclz-quality-refusal-") as name:
+            source = Path(name).resolve() / "noise.png"
+            rng = random.Random(0x15682C05)
+            payload = encode_rgba_png(64, 64, bytes(rng.randrange(256) for _ in range(64 * 64 * 4)))
+            source.write_bytes(payload)
+            with self.assertRaisesRegex((ValidationError, TxtrError), "simplify|quality budget"):
+                build_import(_REAL_INDEX, _REAL_REPORT, "jersey", "07", "H", 7, 1, source)
+            self.assertEqual(source.read_bytes(), payload)
 
 
 if __name__ == "__main__":

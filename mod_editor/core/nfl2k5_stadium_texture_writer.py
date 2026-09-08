@@ -554,6 +554,38 @@ def _require(condition: bool, message: str) -> None:
         raise StadiumTextureWriterError(message)
 
 
+def _fill_compressed_stream(encoded: bytes, decoded: bytes, cap: int) -> bytes:
+    """Spend spare compressed bytes on equivalent literals in linear time.
+
+    A much simpler image can otherwise fail because its zero gap needs more
+    loader scratch than any retail scene. Reuse the proved VC-LZ token codec,
+    expanding early matches to leave at most 16 spare bytes when possible.
+    Token/flag costs are exact; the caller rechecks decode and in-place aliasing.
+    """
+    from nfl_vc_lz_fill import parse_tokens, serialize
+
+    size, tag, bits, tokens = parse_tokens(encoded)
+    _require(size == len(decoded), "VC-LZ fill source size changed")
+    count, length, position = len(tokens), len(encoded), 0
+    result = []
+    for token in tokens:
+        amount = token[2] if token[0] == "M" else 1
+        if token[0] == "M" and length < cap - 16:
+            new_count = count + amount - 1
+            gain = amount - 2 + (new_count + 7) // 8 - (count + 7) // 8
+            if length + gain <= cap:
+                result.extend(("L", value) for value in decoded[position:position + amount])
+                count, length = new_count, length + gain
+            else:
+                result.append(token)
+        else:
+            result.append(token)
+        position += amount
+    filled = serialize(size, tag, bits, result)
+    _require(len(filled) == length <= cap, "VC-LZ fill exceeded its fixed span")
+    return filled
+
+
 def _rebuild_vc_lz_fixed_span(
     decoded: bytes,
     template_header: bytes,
@@ -613,6 +645,8 @@ def _rebuild_vc_lz_fixed_span(
                 max_encoded_size=consumed_cap,
                 verify_roundtrip=True,
             )
+            if stored_size - len(encoded) > scratch_cap:
+                encoded = _fill_compressed_stream(encoded, decoded, consumed_cap)
             decoded_back, decode_info = decompress_vc_lz(encoded, len(decoded))
             alias = minimum_vc_lz_overlap_scratch(encoded, stored_size, len(decoded))
         except TxtrError as exc:
@@ -1215,6 +1249,25 @@ def _compile_resolved_scene(
     for row, replacement_png in zip(resolved, replacement_pngs):
         contract = row.contract
         payload, rgba = _read_dynamic_png(replacement_png, contract)
+        # A PNG carries only the base level. Regenerating a palette and lower
+        # mips for identical pixels destroys information from the retail scene.
+        # Keep its original allocations, including unused palette entries.
+        original_mips = _decode_dynamic_p8_mips(base_decoded, contract)
+        if rgba == original_mips[0]:
+            preview = encode_rgba_png(contract.width, contract.height, rgba)
+            payloads.append(_CompiledP8Payload(
+                contract=contract,
+                replacement_png_sha256=_sha256_bytes(payload),
+                replacement_rgba_sha256=_sha256_bytes(rgba),
+                quantized_preview_png_sha256=_sha256_bytes(preview),
+                quantized_base_rgba_sha256=_sha256_bytes(rgba),
+                mip_rgba_sha256=tuple(_sha256_bytes(value) for value in original_mips),
+                quantization={"unchanged": 1, "palette_entries": 256},
+                palette_entries=256,
+                decoded_changed_byte_count=0,
+                quantized_preview_png=preview,
+            ))
+            continue
         levels = _generate_dynamic_mips(rgba, contract.mip_dimensions)
         try:
             palette, linear_indices, quantization = quantize_levels(levels)
@@ -1280,14 +1333,26 @@ def _compile_resolved_scene(
         "Decoded Stadium edit escaped selected pixel/palette allocations",
     )
     contract = source.contract
-    fixed = _rebuild_vc_lz_fixed_span(
-        edited_bytes,
-        source.span[:HEADER.size],
-        source.opaque_tail,
-        consumed_cap=contract.retail_consumed,
-        scratch_cap=SCNE_OBSERVED_SCRATCH_MAX,
-        template_stream_prefix=source.span[HEADER.size:HEADER.size + 9],
-    )
+    if not changed:
+        encoded = source.span[HEADER.size:HEADER.size + contract.retail_consumed]
+        fixed = _FixedSpanBuild(
+            span=source.span, encoded=encoded,
+            decoded_sha256=_sha256_bytes(source.decoded),
+            encoded_sha256=_sha256_bytes(encoded), encoded_bytes=len(encoded),
+            zero_gap_bytes=0,
+            minimum_alias_scratch_bytes=minimum_vc_lz_overlap_scratch(
+                encoded, contract.stored_size, len(source.decoded)),
+            scratch_after=contract.retail_scratch,
+        )
+    else:
+        fixed = _rebuild_vc_lz_fixed_span(
+            edited_bytes,
+            source.span[:HEADER.size],
+            source.opaque_tail,
+            consumed_cap=contract.retail_consumed,
+            scratch_cap=SCNE_OBSERVED_SCRATCH_MAX,
+            template_stream_prefix=source.span[HEADER.size:HEADER.size + 9],
+        )
     return _CompiledStadiumScene(
         source=source,
         textures=tuple(payloads),
@@ -1319,6 +1384,13 @@ class Nfl2k5StadiumTextureWriter:
             raise StadiumTextureWriterError(
                 "That Stadium texture is not in the private editable P8 catalog"
             ) from exc
+
+    def scene_source(self, scene: Any) -> tuple[bytes, dict[str, Any]]:
+        """Replay one source scene for UV export, without reading a whole pack."""
+        source = self._resolver.resolve(scene.scene_id + ".texture0000")
+        document, _names, _mappings, _sample = parse_scene(
+            scene.scene_index, source.resource, source.decoded, {})
+        return source.decoded, document
 
     def supports(self, texture: StadiumTexture) -> bool:
         catalog = getattr(self, "_editable_textures", None)
@@ -1414,17 +1486,30 @@ class Nfl2k5StadiumTextureWriter:
     def compile(
         self, texture: StadiumTexture, replacement_png: Path
     ) -> CompiledStadiumTextureEdit:
-        if not self.supports(texture):
+        return self.compile_many(((texture, replacement_png),))[0]
+
+    def compile_many(
+        self, replacements: Sequence[tuple[StadiumTexture, Path]],
+        *, geometry_recipe: Path | None = None,
+    ) -> tuple[CompiledStadiumTextureEdit, ...]:
+        """Fit the complete selected scene once, before publishing any edits."""
+        if not replacements or any(not self.supports(row[0]) for row in replacements):
             raise StadiumTextureWriterError(
                 "That stadium texture does not have a bounded writer yet"
             )
-        source = self._resolver.resolve(texture.texture_id)
-        self._require_catalog_match(texture, source.contract)
-        scene = _compile_resolved_scene((source,), (replacement_png,))
-        payload = scene.textures[0]
+        sources = self._resolver.resolve_many(tuple(row[0].texture_id for row in replacements))
+        for (texture, _path), source in zip(replacements, sources):
+            self._require_catalog_match(texture, source.contract)
+        base_decoded, allowed = None, ()
+        if geometry_recipe is not None:
+            _file, _payload, base_decoded, allowed, _ids, _count, _offsets = (
+                _load_and_apply_geometry_recipe(sources[0], geometry_recipe))
+        scene = _compile_resolved_scene(
+            sources, tuple(row[1] for row in replacements),
+            base_decoded=base_decoded, base_allowed_ranges=allowed)
         fixed = scene.fixed
-        return CompiledStadiumTextureEdit(
-            texture_id=texture.texture_id,
+        return tuple(CompiledStadiumTextureEdit(
+            texture_id=payload.contract.texture_id,
             replacement_png_sha256=payload.replacement_png_sha256,
             replacement_rgba_sha256=payload.replacement_rgba_sha256,
             quantized_preview_png_sha256=payload.quantized_preview_png_sha256,
@@ -1439,12 +1524,12 @@ class Nfl2k5StadiumTextureWriter:
             zero_gap_bytes=fixed.zero_gap_bytes,
             minimum_alias_scratch_bytes=fixed.minimum_alias_scratch_bytes,
             scratch_after=fixed.scratch_after,
-            source_span_sha256=source.contract.source_span_sha256,
+            source_span_sha256=payload.contract.source_span_sha256,
             rebuilt_span_sha256=_sha256_bytes(fixed.span),
             quantized_preview_png=payload.quantized_preview_png,
             rebuilt_span=fixed.span,
-            target_metadata=source.contract.target_metadata(),
-        )
+            target_metadata=payload.contract.target_metadata(),
+        ) for payload in scene.textures)
 
     def validated_replacement(
         self, texture: StadiumTexture, replacement_png: Path
@@ -2100,7 +2185,9 @@ def build_unified_stadium_texture_imports(
             "claims": {
                 "source_derived_selector_resolution": True,
                 "bounded_p8_textures_only": True,
-                "complete_mip_chains_regenerated": True,
+                "complete_mip_chains_regenerated": all(
+                    not payload.quantization.get("unchanged") for payload in compiled.textures),
+                "unchanged_texture_allocations_preserved": True,
                 "fixed_scne_allocation_preserved": True,
                 "same_scene_edits_composed_before_compression": True,
                 "opaque_tail_preserved": True,
@@ -2782,7 +2869,9 @@ def build_unified_stadium_geometry_and_texture_import(
             "topology_validated_equivalent_before_import": True,
             "source_uv_material_collision_and_other_stream_bytes_preserved": True,
             "bounded_p8_textures_only": True,
-            "complete_mip_chains_regenerated": True,
+            "complete_mip_chains_regenerated": all(
+                not payload.quantization.get("unchanged") for payload in compiled.textures),
+            "unchanged_texture_allocations_preserved": True,
             "geometry_and_same_scene_textures_composed_before_compression": True,
             "fixed_scne_allocation_preserved": True,
             "opaque_tail_preserved": True,

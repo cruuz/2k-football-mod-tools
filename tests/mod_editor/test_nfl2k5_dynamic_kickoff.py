@@ -29,6 +29,7 @@ try:
 except ImportError:
     uni = None
     Cs = None
+    x86 = None
 
 RETAIL = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION", "/media/noah/Storage/for codex 1.0/extracted")) / "ESPN NFL 2K5 (USA)" / "default.xbe"
 PRIVATE_REASON = f"private NFL 2K5 USA default.xbe required at {RETAIL}; no proprietary fixture is distributed"
@@ -131,13 +132,15 @@ class Machine:
         self.direction = direction
         self.rolls = iter(rolls)
         self.calls = []
+        self.clips = []
+        self.sampler_displacement = 0
         self.fpu_stubs = {}
         self.stub_pops = {va: 0 for va in (
             0x874E0, 0xFEF50, 0x9FC30, 0x189080, 0x1CEEE0, 0x1E8480, 0xFEA90,
             0xB7330, 0xFC6E0, 0x119760, 0x1195F0, 0x14F9E0, 0xAF4F0, 0xAF260, 0xB6180,
-            0x217F90)}
+            0x217F90, 0x1E09D0, 0x213310)}
         self.stub_pops.update({0x12D610: 4, 0x31BEB0: 12})
-        self.uc.hook_add(uni.UC_HOOK_CODE, self._hook)
+        self.code_hook = self.uc.hook_add(uni.UC_HOOK_CODE, self._hook)
         for va, value in ((dk.CTX, self.CTX), (dk.BALL, self.BALL), (dk.PHASE, phase),
                           (dk.PLAY_STATE, 14), (dk.POSSESSION, self.KICK_TEAM),
                           (0xE60284, self.RECEIVE_TEAM), (0xE60288, self.KICK_TEAM),
@@ -185,6 +188,23 @@ class Machine:
             self.put(player + 0x14, player + 0xC00)
             self.put(player + 0x24, player + 0xE00)
             self.put(player + 0x904, self.DESC)
+            self.put(player + 0x510, player + 0x150)  # native empty task sentinel
+            # Bounded animation objects: real descriptor transition, heading,
+            # zero-speed table selection and clip dispatch; rendering is a stub.
+            self.put(player + 0xC58, player + 0xD00)
+            self.put(player + 0xC74, player + 0xD20)
+            self.put(player + 0xD00, player + 0xD40)
+            self.put(player + 0xD20, player + 0xD40)
+            self.put(player + 0x940, self.CALLBACK + 0x40)
+            self.put(player + 0x938, player + 0xD80)
+            self.put(player + 0xD80, player + 0xDA0)
+            self.f32(player + 0xDA4, 0)
+            self.f32(player + 0xDA8, 1)
+            self.put(player + 0xDAC, player + 0xDC0)
+            self.put(player + 0xDC4, player + 0xDF0)
+            self.put(player + 0xDC8, -32768)
+            self.put(player + 0xDCC, 32767)
+            self.put(player + 0xDE0, self.CALLBACK + 0x50)
         # Execute the actual 1B8CA0 -> 1B8C40 -> 1B81A0 opcode reader.
         state = self.KICKER + 0x200 + 0x41C
         self.put(state, self.NODE)
@@ -193,6 +213,9 @@ class Machine:
         self.f32(state + 0x14, 2 if onside else 0)
         self.put(self.DESC + 8, self.CALLBACK)
         self.uc.mem_write(self.CALLBACK, bytes.fromhex("ff05") + struct.pack("<I", self.COUNTER) + b"\xc3")
+        self.uc.mem_write(self.CALLBACK + 0x40, b"\xc3")
+        self.uc.mem_write(self.CALLBACK + 0x50, b"\xd9\xe8\xc2\x08\x00")
+        self.stub_pops[0x2D6B70] = 28  # clip installation/rendering, after real selection
         self.position(0, self.direction * -1371.6)
 
     def put(self, va, value): self.uc.mem_write(va, struct.pack("<I", value & 0xFFFFFFFF))
@@ -223,19 +246,27 @@ class Machine:
             self._ret()
         elif address in self.stub_pops:
             self.calls.append(address)
-            if address == 0x31BEB0:
+            if address in (0x31BEB0, 0x213310):
                 self.put(self.COUNTER, self.get(self.COUNTER) + 1)
+            if address == 0x2D6B70:
+                self.clips.append((self.uc.reg_read(x86.UC_X86_REG_ECX), self.uc.reg_read(x86.UC_X86_REG_EDX)))
+            # A zero-time sample cannot produce advancing root motion. Native
+            # timing/root behavior is exercised by test_nfl2k5_kickoff_v2.py.
+            sp = self.uc.reg_read(x86.UC_X86_REG_ESP)
+            if address == 0x31BEB0 and self.get(sp + 4) and self.sampler_displacement:
+                who = self.uc.reg_read(x86.UC_X86_REG_ESI)
+                self.f32(self.get(who + 0x18) + 0x30, self.sampler_displacement)
             self.uc.reg_write(x86.UC_X86_REG_EAX, 0)
             self._ret(self.stub_pops[address])
 
-    def run(self, address, *, stop=None, ecx=0, edx=0, esi=0, args=()):
+    def run(self, address, *, stop=None, ecx=0, edx=0, esi=0, args=(), budget=30_000):
         for reg, value in ((x86.UC_X86_REG_ESP, self.STACK), (x86.UC_X86_REG_ECX, ecx),
                            (x86.UC_X86_REG_EDX, edx), (x86.UC_X86_REG_ESI, esi)):
             self.uc.reg_write(reg, value)
         self.put(self.STACK, self.STOP)
         for i, arg in enumerate(args): self.put(self.STACK + 4 + 4 * i, arg)
         target = self.STOP if stop is None else stop
-        self.uc.emu_start(address, target, count=30_000)
+        self.uc.emu_start(address, target, count=budget)
         if self.uc.reg_read(x86.UC_X86_REG_EIP) != target:
             raise AssertionError(f"instruction budget exhausted at {self.uc.reg_read(x86.UC_X86_REG_EIP):#x}")
 
@@ -287,6 +318,7 @@ class RetailExecutionTests(unittest.TestCase):
         self.assertGreater(result["long_branch_candidates_checked"], 50_000)
 
     def test_each_hook_decodes_and_cave_control_flow_is_bounded(self):
+        from capstone.x86_const import X86_GRP_SSE2
         md = Cs(CS_ARCH_X86, CS_MODE_32)
         md.detail = True
         code = dk.cave_bytes()
@@ -294,6 +326,7 @@ class RetailExecutionTests(unittest.TestCase):
         self.assertEqual(sum(i.size for i in insns), len(code))
         starts = {i.address for i in insns}
         for i in insns:
+            self.assertNotIn(X86_GRP_SSE2, i.groups, f"Xbox requires SSE1: {i.mnemonic} {i.op_str}")
             if i.mnemonic.startswith("j") or i.mnemonic == "call":
                 target = i.operands[0].imm
                 if dk.CAVE_VA <= target < dk.CAVE_VA + dk.CAVE_SIZE:
@@ -311,11 +344,10 @@ class RetailExecutionTests(unittest.TestCase):
                         before = bytes(m.uc.mem_read(who, 0x1000))
                         m.run(dk.HOOKS["plan"][0], ecx=who)
                         m.run(dk.HOOKS["motion"][0], esi=who)
-                        self.assertEqual(m.get(m.COUNTER), 0)
-                        # The only mutation is the retail animation-updated flag.
-                        expected = bytearray(before)
-                        struct.pack_into("<I", expected, 0xC54, 1)
-                        self.assertEqual(bytes(m.uc.mem_read(who, 0x1000)), expected)
+                        self.assertEqual(m.get(who + 0x904), struct.unpack_from('<I', before, 0x904)[0])
+                        for field in (0xC58, 0xC74):
+                            self.assertEqual(m.readf(m.get(who + field) + 4), 0)
+                        self.assertEqual(bytes(m.uc.mem_read(who + 0xB30, 16)), before[0xB30:0xB40])
                     for who in (m.KICKER, m.RETURNER):
                         old = m.get(m.COUNTER)
                         m.run(dk.HOOKS["plan"][0], ecx=who)
@@ -459,10 +491,9 @@ class RetailExecutionTests(unittest.TestCase):
                                 old = m.get(m.COUNTER)
                                 m.run(dk.HOOKS["plan"][0], ecx=who)
                                 m.run(dk.HOOKS["motion"][0], esi=who)
-                                m.uc.mem_write(who + 0xB30, bytes(48))
                                 m.run(dk.HOOKS["position"][0], ecx=who, args=(0, 0))
-                                self.assertEqual(m.get(m.COUNTER), old)
-                                self.assertEqual(bytes(m.uc.mem_read(who + 0xB30, 48)), previous)
+                                self.assertEqual(m.get(m.COUNTER), old + 1)
+                                self.assertEqual(bytes(m.uc.mem_read(who + 0xB30, 16)), previous[:16])
                                 self.assertEqual(m.flags(), 0)
                 for who, slot in ((m.KICKER, 0), (m.RETURNER, 0), (m.RETURNER, 1)):
                     m.uc.mem_write(who + 0x2E, bytes([slot]))
@@ -534,9 +565,9 @@ class RetailExecutionTests(unittest.TestCase):
                         m.position(0, direction * 4800, m.RETURNER)
                         m.event("touch")
                         m.run(dk.HOOKS["plan"][0], ecx=m.RETURNER)
-                        self.assertEqual(m.get(dk.PLAY_STATE), 0x12 if probability and not human else 14)
-                        if probability and not human:
-                            self.assertAlmostEqual(m.spot(), 35, places=4)
+                        self.assertEqual(m.get(dk.PLAY_STATE), 14)  # native clip ends the play later
+                        self.assertEqual(m.get(m.RETURNER + 0x11C) == 0x63,
+                                         bool(probability and not human))
         m = self.machine()
         m.position(0, 3600, m.RETURNER)
         m.event("touch")
@@ -545,6 +576,9 @@ class RetailExecutionTests(unittest.TestCase):
         m.position(0, 4800, m.RETURNER)
         m.run(dk.HOOKS["plan"][0], ecx=m.RETURNER)
         self.assertEqual(m.get(dk.PLAY_STATE), 14)  # running back into own end zone is not a touchback
+        m.position(0, 4800)
+        m.event("ground")  # a later loose-ball contact cannot erase the controlled return
+        self.assertEqual(m.get(dk.PLAY_STATE), 14)
         m.position(0, 4800, m.KICKER)
         m.run(dk.HOOKS["plan"][0], ecx=m.KICKER)
         self.assertEqual(m.get(dk.PLAY_STATE), 14)
@@ -592,7 +626,8 @@ class RetailExecutionTests(unittest.TestCase):
             m.position(0, 4800, m.RETURNER)
             m.event("touch")
             m.run(dk.HOOKS["plan"][0], ecx=m.RETURNER)
-            self.assertEqual(m.get(dk.PLAY_STATE), 0x12 if downed else 14)
+            self.assertEqual(m.get(dk.PLAY_STATE), 14)
+            self.assertEqual(m.get(m.RETURNER + 0x11C) == 0x63, downed)
 
     def test_safety_onside_scrimmage_and_reset_bypass(self):
         for phase, onside in ((1, False), (2, True), (4, False)):
@@ -670,7 +705,7 @@ class RetailExecutionTests(unittest.TestCase):
                     self.assertAlmostEqual(projected_z / direction / 91.44, 40, delta=0.02)
                     self.assertEqual(m.uc.reg_read(x86.UC_X86_REG_ESP), m.STACK + 12)
 
-    def test_loose_end_zone_cpu_downing_needs_ground_and_preserves_human_control(self):
+    def test_loose_end_zone_touchback_requires_ground_independent_of_controller(self):
         for direction in (-1, 1):
             for human in (False, True):
                 for landing_first in (False, True):
@@ -687,7 +722,7 @@ class RetailExecutionTests(unittest.TestCase):
                         m.position(0, direction * 4800)
                         m.event("ground")
                         m.run(dk.HOOKS["plan"][0], ecx=m.RETURNER)
-                        self.assertEqual(m.get(dk.PLAY_STATE), 14 if human else 0x12)
+                        self.assertEqual(m.get(dk.PLAY_STATE), 0x12)
                         self.assertAlmostEqual(m.spot(), 20 if landing_first else 35, places=4)
 
     def test_boundaries_history_normal_return_and_storage_neighbours(self):
@@ -727,7 +762,7 @@ class RetailExecutionTests(unittest.TestCase):
             m.run(va, stop=va + len(original), ecx=m.BALL)
             self.assertEqual(m.get(dk.PLAY_STATE), 14)
 
-    def test_final_position_setter_restores_frame_snapshot_then_releases(self):
+    def test_final_position_setter_skips_integration_then_releases(self):
         for direction in (-1, 1):
             m = self.machine(direction=direction)
             m.put(0xE60268, m.COVERAGE)
@@ -738,8 +773,11 @@ class RetailExecutionTests(unittest.TestCase):
             m.uc.mem_write(transform + 0x30, previous)
             m.run(0x28DFE0)  # execute the real per-frame snapshot, not a fabricated snapshot
             self.assertEqual(bytes(m.uc.mem_read(transform, 48)), previous)
-            m.uc.mem_write(transform + 0x30, struct.pack("<12f", *([1234] * 12)))
+            # A stale snapshot must not snap the current pose backward. The
+            # integrator's proposed coordinates are suppressed while held.
+            m.uc.mem_write(transform, struct.pack("<12f", *([1234] * 12)))
             m.run(dk.HOOKS["position"][0], ecx=m.COVERAGE, args=(0, 0))
+            self.assertEqual(bytes(m.uc.mem_read(transform + 0x30, 16)), previous[:16])
             self.assertEqual(bytes(m.uc.mem_read(transform + 0x30, 48)), previous)
             self.assertEqual(m.uc.reg_read(x86.UC_X86_REG_ESP), m.STACK + 12)
             m.position(0, direction * 3600)

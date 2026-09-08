@@ -11,8 +11,8 @@ each of which rejects a legitimate dump:
 * different rippers keep or trim trailing padding, changing the file size;
 * any of the above changes the whole-file hash without changing one game byte.
 
-Everything here is synthetic. Real XDVDFS images are built in memory from
-scratch, so this runs on a bare CI runner with no game data, which is precisely
+Everything here is synthetic. Small XDVDFS partitions are written behind sparse
+prefixes, so this runs on a bare CI runner with no game data, which is precisely
 why it can be trusted to keep running -- the tests that would have caught this
 originally are all gated on retail data no runner has.
 
@@ -87,6 +87,20 @@ def build_xdvdfs(
     return bytes(base_offset) + bytes(partition) + bytes(tail_pad)
 
 
+def write_xdvdfs(path, files, base_offset=0, tail_pad=0, total=None):
+    """Keep the real dump geometry without materializing its empty sectors."""
+    partition = build_xdvdfs(files)
+    size = base_offset + len(partition) + tail_pad
+    if total is not None:
+        assert size < total, 'fixture larger than the reported dump'
+        size = total
+    from tests.mod_editor.test_nfl2k5_build_service import _sparse
+    _sparse(path, size)  # also uses FSCTL_SET_SPARSE / SetEndOfFile on Windows
+    with path.open('r+b') as stream:
+        stream.seek(base_offset)
+        stream.write(partition)
+
+
 class XisoLayoutToleranceTests(unittest.TestCase):
     PAYLOAD = {
         "default.xbe": b"XBEH" + bytes(range(256)) * 24,
@@ -108,6 +122,11 @@ class XisoLayoutToleranceTests(unittest.TestCase):
         entries, _ = xiso.parse_xdvdfs(descriptor, size, base)
         return descriptor, base, entries
 
+    def _image(self, base_offset=0, tail_pad=0, total=None):
+        path = self._written(b'')
+        write_xdvdfs(path, self.PAYLOAD, base_offset, tail_pad, total)
+        return path
+
     def test_every_known_dump_layout_is_read_identically(self) -> None:
         """The four partition bases, plus padding, must all yield the same files."""
         cases = {
@@ -119,9 +138,7 @@ class XisoLayoutToleranceTests(unittest.TestCase):
         }
         for label, (base_offset, tail) in cases.items():
             with self.subTest(layout=label):
-                path = self._written(
-                    build_xdvdfs(self.PAYLOAD, base_offset, tail)
-                )
+                path = self._image(base_offset, tail)
                 descriptor, base, entries = self._parse(path)
                 self.assertEqual(base, base_offset, f"{label}: wrong partition base")
                 self.assertEqual(set(entries), {"default.xbe", "readme.txt"})
@@ -155,17 +172,7 @@ class XisoLayoutToleranceTests(unittest.TestCase):
             ("repacked, 224 extra sectors", 6_300_958_720, 0x00000000),
         ):
             with self.subTest(dump=label):
-                body = build_xdvdfs(self.PAYLOAD, base)
-                self.assertLess(len(body), total, "fixture larger than the reported dump")
-                handle = tempfile.NamedTemporaryFile(suffix=".iso", delete=False)
-                self.addCleanup(
-                    lambda p=handle.name: os.path.exists(p) and os.unlink(p)
-                )
-                handle.truncate(total)          # sparse: the padding costs nothing
-                handle.seek(base)
-                handle.write(body[base:])
-                handle.close()
-                path = Path(handle.name)
+                path = self._image(base, total=total)
                 self.assertEqual(path.stat().st_size, total)
 
                 descriptor, found, entries = self._parse(path)
@@ -182,7 +189,7 @@ class XisoLayoutToleranceTests(unittest.TestCase):
     def test_byte_offset_accounts_for_the_partition_base(self) -> None:
         """The regression itself: sector maths that ignores the base reads garbage."""
         base_offset = 0x18300000
-        path = self._written(build_xdvdfs(self.PAYLOAD, base_offset))
+        path = self._image(base_offset)
         _, base, entries = self._parse(path)
         entry = entries["default.xbe"]
         self.assertEqual(base, base_offset)
@@ -206,14 +213,7 @@ class XisoLayoutToleranceTests(unittest.TestCase):
         for base_offset in (0x00A00000, 0x0A000000, 0x1F400000):
             with self.subTest(base=hex(base_offset)):
                 self.assertNotIn(base_offset, xiso.XDVDFS_BASE_OFFSETS)
-                body = build_xdvdfs(self.PAYLOAD, base_offset)
-                handle = tempfile.NamedTemporaryFile(suffix=".iso", delete=False)
-                self.addCleanup(
-                    lambda p=handle.name: os.path.exists(p) and os.unlink(p)
-                )
-                handle.write(body)
-                handle.close()
-                descriptor, found, entries = self._parse(Path(handle.name))
+                descriptor, found, entries = self._parse(self._image(base_offset))
                 self.assertEqual(found, base_offset)
                 self.assertEqual(
                     xiso.read_exact(
@@ -277,9 +277,7 @@ class ContainedIdentityTests(unittest.TestCase):
         for base_offset in (0x00000000, 0x18300000, 0x02080000):
             with tempfile.TemporaryDirectory() as directory:
                 path = Path(directory) / "dump.iso"
-                path.write_bytes(
-                    build_xdvdfs({"default.xbe": payload}, base_offset)
-                )
+                write_xdvdfs(path, {"default.xbe": payload}, base_offset)
                 row = sources.contained_identity(path)
                 self.assertIsNotNone(
                     row, f"base 0x{base_offset:X} was not recognized"

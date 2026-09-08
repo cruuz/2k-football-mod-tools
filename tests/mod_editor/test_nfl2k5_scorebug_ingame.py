@@ -1,7 +1,8 @@
-"""Standalone v7 resource, native-driver data and transaction checks. No emulator."""
+"""Standalone broadcast resource, native-driver data and transaction checks. No emulator."""
 from __future__ import annotations
 
 import os
+import importlib.util
 from pathlib import Path
 import struct
 import sys
@@ -42,7 +43,8 @@ class MetadataTests(unittest.TestCase):
             r.status(b"","digital_font")
 
 
-@unittest.skipUnless(PACK.is_file() and XBE.is_file(),"retail pack 0 and default.xbe evidence absent")
+@unittest.skipUnless(PACK.is_file() and XBE.is_file() and importlib.util.find_spec('PIL'),
+                     "retail pack 0, default.xbe and Pillow required")
 class RetailTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -70,31 +72,53 @@ class RetailTests(unittest.TestCase):
                 foreign=bytearray(after);foreign[offset]^=1
                 self.assertEqual(r.status(bytes(foreign),name),"foreign")
 
-    def test_scene_changes_only_geometry_uvs_and_text_transforms(self):
+    def test_scene_changes_only_geometry_colours_text_transforms_and_owned_panel_materials(self):
         before=r.decode(self.inputs["score_bug"])[1]
         after=r.decode(self.replacements["score_bug"])[1]
         L=r.layout
         for i,(a,b) in enumerate(zip(before,after)):
             if a==b:continue
             allowed=(L.S0<=i<L.S0+L.VCOUNT*6 or L.SHAPE+0x10<=i<L.SHAPE+0x2c
-                     or (L.S1<=i<L.S1+L.VCOUNT*10 and 4<=(i-L.S1)%10<8)
-                     or any(L.TBASE+t*0x70+0x40<=i<L.TBASE+t*0x70+0x5c for t in range(L.TCOUNT)))
+                     or (L.S1<=i<L.S1+L.VCOUNT*10 and
+                         (4<=(i-L.S1)%10<10 or ((i-L.S1)%10<4 and
+                          (0<=(i-L.S1)//10<L.VCOUNT))))
+                     or any(L.TBASE+t*0x70+0x40<=i<L.TBASE+t*0x70+0x5c for t in range(L.TCOUNT))
+                     or any(base+0x14<=i<base+0x1c for base in (0x4c0,0x6c0))
+                     or any(base+0x18<=i<base+0x1c for base in (0x540,0x640))
+                     or 0x3f8c<=i<0x3f8c+len('score_buga\0'.encode('utf-16le')))
             self.assertTrue(allowed,hex(i))
+        for base in (0x4c0,0x6c0):
+            self.assertEqual(struct.unpack_from('<2I',after,base+0x14),(0xffffffff,0xff252625))
+        for base in (0x540,0x640):
+            self.assertEqual(struct.unpack_from('<I',after,base+0x18)[0],0xffd1d2d3)
+        self.assertEqual(after[0x3f8c:0x3fa2],'score_buga\0'.encode('utf-16le'))
         self.assertEqual(L.strips(before),L.strips(after))
         self.assertEqual(len(after),16512)
 
     def test_scene_proportions_both_mark_modes_and_field_anchors(self):
         m=r.mesh(r.decode(self.inputs["score_bug"])[1])
-        self.assertEqual(r.FRAME[2]-r.FRAME[0],480)
-        self.assertEqual(r.FRAME[3]-r.FRAME[1],48)
-        self.assertLess(424-r.FRAME[1],440)
-        for v in range(274,286):
-            self.assertEqual(m.pos[v],m.pos[v-12])
-            self.assertEqual(m.uv_edit[v],m.uv_edit[v-12])
-        self.assertGreater(r.WATERMARK[1],360)
+        self.assertAlmostEqual(r.FRAME[2]-r.FRAME[0],1054/3)
+        self.assertAlmostEqual(r.FRAME[3]-r.FRAME[1],112*448/1080)
+        self.assertLess(424-r.FRAME[1],464)
+        for side, vertices in (('away',range(274,280)),('home',range(280,286))):
+            x0,y0,x1,y1=r.PANELS[side]
+            self.assertEqual(len({tuple(m.pos[v]) for v in vertices}),4)
+            for v in vertices:
+                x,y,z=m.pos[v]
+                self.assertTrue(x0 <= x <= x1 and y0 <= y <= y1)
+                self.assertEqual(z,-2)
+                self.assertEqual(struct.unpack_from('<I',m.buf,r.layout.S1+v*10)[0],0xffffffff)
+        # The first former mark remains a complete home panel; the second
+        # now carries both neutral decorative strips in either placement mode.
+        points=m.pos[262:274]
+        self.assertEqual([min(p[0] for p in points),min(p[1] for p in points),
+                          max(p[0] for p in points),max(p[1] for p in points)],list(r.PANELS['home']))
+        self.assertEqual(r.WATERMARK,(0,0,0,0))
         for name,xyz in r.ANCHORS.items():
             self.assertEqual(m.world[r.layout.T[name]],list(xyz))
-        self.assertGreater(r.PILL[1],r.STRIP[3])
+        self.assertGreater(r.PILL[2]-r.PILL[0],80)
+        for side,parent in (("away",23),("home",26)):
+            self.assertAlmostEqual(m.world[parent][1],(r.PANELS[side][1]+r.PANELS[side][3])/2)
 
     def test_xbe_idempotence_guards_shared_shield_and_native_animation(self):
         self.assertEqual(r.xbe_status(self.xbe),"retail")
@@ -107,13 +131,13 @@ class RetailTests(unittest.TestCase):
             return struct.unpack_from(fmt,self.patched_xbe,r.layout.sbpos.va_to_off(self.patched_xbe,va))
         self.assertAlmostEqual(at(0xa959f0,"<f")[0],.2)
         self.assertEqual(at(0xa959f8,"<f")[0],30.)
-        self.assertAlmostEqual(at(0xa959e0,"<f")[0]*30,6.,places=6)
+        self.assertEqual(at(0xa959e0,"<3f"),(0,0,0))
         self.assertEqual(at(0xa95cac,"<I"),at(0xa95cb4,"<I"))
         self.assertEqual(at(0xa95cac,"<I")[0],0xe6c6e8)
         # The animation code is pinned unchanged, not simulated by a replacement.
         for va,size,sha,label in r.XBE_GUARDS:
             off=r.layout.sbpos.va_to_off(self.patched_xbe,va)
-            self.assertEqual(r.digest(self.patched_xbe[off:off+size]),sha,label)
+            self.assertEqual(r.digest(r.guard_bytes(self.patched_xbe,va,size)),sha,label)
 
     def test_mixed_xbe_and_foreign_driver_refuse(self):
         for va,old,new,label in r.xbe_specs():
@@ -172,6 +196,8 @@ class RetailTests(unittest.TestCase):
                 with path.open("r+b") as stream:stream.seek(bad_off);stream.write(self.inputs["score_buga"])
                 self.assertEqual(r.image_status(path),"retail")
                 receipt=r.apply_in_place(path)
+                self.assertEqual(receipt['layout'],r.VERSION)
+                self.assertFalse(receipt['team_material_hook']['runtime_bound'])
                 self.assertEqual(receipt["state_before"],"retail")
                 self.assertEqual(r.image_status(path),"applied")
                 self.assertEqual(r.apply_in_place(path)["state_before"],"applied")

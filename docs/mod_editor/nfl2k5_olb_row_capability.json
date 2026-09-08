@@ -1,0 +1,70 @@
+{
+  "id": "nfl2k5_xbox.position_pool_filters",
+  "game": "nfl2k5_xbox",
+  "surface": "players_rosters",
+  "title": "Merged positions with one Linebackers group",
+  "summary": "EXPERIMENTAL / UNWITNESSED. Complete disc roster scans select compact or retained Outside Linebackers selectors. Build applies the guarded XBE policy after all roster writers.",
+  "classification": "offline-writer-proved",
+  "backend": {
+    "module": "tools/nfl2k5_roster_reclassify.py",
+    "command": "python3 -m tools.nfl2k5_roster_reclassify apply <copy.xiso.iso>",
+    "operation": "write"
+  },
+  "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_olb_row",
+  "gui": {
+    "expose": true,
+    "mode": "edit",
+    "default_enabled": false,
+    "reason": "Existing position-pools Build option; expose the Gameplay Patches row only after WIRING.md integration."
+  },
+  "runtime": {
+    "status": "not-tested",
+    "scope": "Native bounded selectors and player queries proved offline. Game rendering, saved franchise routes and future seasons remain unwitnessed.",
+    "evidence": [
+      "ASTRA_OLB_ROW_REPORT.md"
+    ]
+  },
+  "source_container": {
+    "format": "USA Xbox XBE plus fixed-span ROST resources",
+    "retail_file": "default.xbe and vc_53450030/0",
+    "resource": "Sixteen .rdata pointer lists; ROST outer 5 and 113 through 187",
+    "hash_pins": [
+      "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+    ]
+  },
+  "selectors": {
+    "fields": [
+      {
+        "name": "position_pools",
+        "required": true,
+        "allowed": "complete position-pools build"
+      },
+      {
+        "name": "position_pools_keep_olb",
+        "required": false,
+        "allowed": "boolean compatibility override for existing or unscanned saves"
+      }
+    ],
+    "notes": "Only a complete scan with zero enum-10 players permits removal. Count and getters remain separate for enums 10 and 11."
+  },
+  "input_constraints": [
+    "Pinned native selector readers and all sixteen complete pointer tables. Mixed or foreign bytes refuse before mutation.",
+    "All 76 disc ROST resources must be scanned after the final roster writer. Existing/unscanned saves require retained rows."
+  ],
+  "evidence": [
+    "ASTRA_OLB_ROW_REPORT.md",
+    "docs/mod_editor/nfl2k5_olb_row_evidence.json",
+    "mod_editor/core/nfl2k5_position_pools.py",
+    "tests/mod_editor/test_nfl2k5_olb_row.py"
+  ],
+  "portme": [
+    "Wire the protected Build final scan and compatibility option; regenerate the protected reservation manifest.",
+    "Witness all selectors in game, including a custom enum-10 roster and an empty Fullbacks group."
+  ],
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "metadata-only",
+    "tooling": "source-and-schemas-only",
+    "rule": "Distribute source, recipes and metadata only; never an executable, roster body, archive or disc."
+  }
+}

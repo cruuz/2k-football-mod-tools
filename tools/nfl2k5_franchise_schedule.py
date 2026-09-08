@@ -455,15 +455,19 @@ def apply_pack(payload: bytes, template: bytes, rost: int = PACK_ROST_OFFSET,
     patched = bytes(buf)
     after = pack_status(patched, rost)
     require(after["state"] == "applied", f"post-apply verification failed: {after}")
-    changed = [i for i in range(len(payload)) if payload[i] != patched[i]] if len(payload) < 1 << 20 else None
+    # Count actual differences in the three written spans. The eight-byte
+    # count/pointer pair does not necessarily change all eight bytes, and a
+    # receipt must not depend on the size of the enclosing input buffer.
+    written_spans = ((hdr + SCHEDULE_COUNT_FIELD, 4), (hdr + SCHEDULE_PTR_FIELD, 4),
+                     (placement, len(template) + len(preseason)))
+    changed = sum(a != b for start, size in written_spans
+                  for a, b in zip(payload[start:start + size], patched[start:start + size]))
     return patched, {"records": count, "placement": f"0x{placement:x}", "count_field": f"0x{hdr + SCHEDULE_COUNT_FIELD:x}",
                      "preseason_games": after.get("preseason_games", 0),
                      "preseason_placement": f"0x{placement + len(template):x}" if preseason else None,
                      "offset_field": f"0x{hdr + SCHEDULE_PTR_FIELD:x}",
                      "offset_value": f"0x{offset_for(hdr + SCHEDULE_PTR_FIELD, placement):x}",
-                     "changed_bytes": (len(changed) if changed is not None
-                                       else 8 + sum(1 for a, b in zip(payload[placement: placement + len(template) + len(preseason)],
-                                                                      template + preseason) if a != b)),
+                     "changed_bytes": changed,
                      "status_after": after}
 
 

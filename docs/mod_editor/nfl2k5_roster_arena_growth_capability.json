@@ -1,0 +1,73 @@
+[
+  {
+    "backend": {
+      "module": "mod_editor/core/nfl2k5_roster_arena_image.py",
+      "operation": "write",
+      "command": "python3 -m mod_editor.core.nfl2k5_roster_arena_image build source.iso --output grown.iso --created-teams-extra 2"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "ASTRA_ROSTER_ARENA_GROWTH_REPORT.md",
+      "tests/mod_editor/test_nfl2k5_roster_arena_growth.py",
+      "tests/mod_editor/test_nfl2k5_roster_arena_image.py"
+    ],
+    "game": "nfl2k5_xbox",
+    "gui": {
+      "default_enabled": false,
+      "expose": true,
+      "mode": "edit",
+      "reason": "EXPERIMENTAL / UNWITNESSED. Explicit opt-in; new switches off in all presets. Protected Build/Gameplay integration is in WIRING.md."
+    },
+    "id": "nfl2k5.rosters.arena_growth",
+    "input_constraints": [
+      "Pinned USA executable, complete allocator union, and a paired migrated disc ROST.",
+      "Existing signed saves migrate to version 1; keep originals. Disc resources migrate to version 18.",
+      "Only NFL ordinals 0..31 use five overflow indices. Active prefix remains 65; regular season/promotions remain 53.",
+      "Seventeenth reserve requires an explicit eligible-team mask; no automatic eligibility inference.",
+      "Extra count is 0 or 2. Old 52 ordinals remain stable; new IDs 100/101 at 52/53 inherit stock assets and playbooks. The franchise league stays 32 teams."
+    ],
+    "portme": [
+      "Complete the console witness list and protected integration in ASTRA_ROSTER_ARENA_GROWTH_REPORT.md and WIRING.md."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "status": "not-tested",
+      "scope": "Bounded Unicorn consumers proved; Xbox kernel allocation, complete disc boot, created-team UI and franchise gameplay remain unwitnessed.",
+      "evidence": [
+        "ASTRA_ROSTER_ARENA_GROWTH_REPORT.md"
+      ]
+    },
+    "selectors": {
+      "fields": [
+        {
+          "name": "reserves_16",
+          "required": false,
+          "allowed": "boolean; false in every preset"
+        },
+        {
+          "name": "created_teams_extra",
+          "required": false,
+          "allowed": "0 or 2; 0 in every preset"
+        }
+      ],
+      "notes": "Either option reserves the same 8192-byte RX owner. No new RW allocation."
+    },
+    "source_container": {
+      "format": "XDVDFS and signed Xbox save",
+      "hash_pins": [
+        "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+      ],
+      "resource": "ROST outer index 5, versioned 0x92000 arena; signed SAVEGAME.DAT and EXTRA; paired XBE",
+      "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+    },
+    "summary": "Versioned roster arena, 16 reserves with explicit 17th eligibility, and two optional created records.",
+    "surface": "players_rosters",
+    "title": "Larger reserves and two extra created teams (experimental)",
+    "validation_command": "python3 -m mod_editor.core.nfl2k5_roster_arena validate SAVEGAME.DAT"
+  }
+]

@@ -21,6 +21,7 @@ import errno
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import shlex
 import shutil
@@ -58,10 +59,10 @@ REPORT_RESIDUAL_LIMITATION = (
     "runner does not print its success marker."
 )
 ALLOWED_LAUNCHERS = {"bash", "python3"}
-EXPECTED_CAPABILITIES = 83
-EXPECTED_COVERED_CAPABILITIES = 78
+EXPECTED_CAPABILITIES = 108
+EXPECTED_COVERED_CAPABILITIES = 103
 EXPECTED_DEFERRED_CAPABILITIES = 5
-EXPECTED_UNIQUE_VALIDATORS = 53
+EXPECTED_UNIQUE_VALIDATORS = 83
 EXPECTED_DEFERRED_IDS = (
     "apf2k8.catching_drops.behavior",
     "apf2k8.franchise_restoration_cross_title.mode",
@@ -831,6 +832,14 @@ def parse_validation_command(command: str) -> tuple[str, ...]:
         argv = tuple(shlex.split(command))
     except ValueError as exc:
         raise ValidationRunError(f"invalid validation command: {exc}") from exc
+    if len(argv) >= 3 and argv[:2] == ("python3", "-m"):
+        module = argv[2]
+        if re.fullmatch(r"(?:mod_editor|tests|tools)(?:\.[A-Za-z_][A-Za-z_0-9]*)+", module) is None:
+            raise ValidationRunError("validation module must be a local dotted module")
+        if argv[3:] not in ((), ("--help",), ("--self-check",), ("catalog",), ("check",)):
+            raise ValidationRunError("unreviewed validation module arguments")
+        read_pinned_file(ROOT / (module.replace(".", "/") + ".py"))
+        return argv
     if len(argv) != 2:
         raise ValidationRunError(
             "validation commands must contain exactly a launcher and local tool"
@@ -871,8 +880,9 @@ def build_validation_plan(
     entries: list[ValidationPlanEntry] = []
     for command, ids in sorted(grouped.items()):
         parsed = parse_validation_command(command)
-        validator_snapshot, _payload = read_pinned_file(ROOT / parsed[1])
-        argv = (str(launcher_snapshots[parsed[0]].path), parsed[1])
+        script = parsed[2].replace(".", "/") + ".py" if parsed[1] == "-m" else parsed[1]
+        validator_snapshot, _payload = read_pinned_file(ROOT / script)
+        argv = (str(launcher_snapshots[parsed[0]].path), *parsed[1:])
         entries.append(ValidationPlanEntry(command, argv, tuple(ids), validator_snapshot))
     plan = tuple(entries)
     covered = sum(len(entry.capability_ids) for entry in plan)

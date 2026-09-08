@@ -1,0 +1,200 @@
+{
+  "schema": "mycareer_art/v1",
+  "seed": 20260907,
+  "ui": {
+    "content": [
+      36,
+      28,
+      604,
+      452
+    ],
+    "menu": [
+      44,
+      142,
+      302,
+      376
+    ],
+    "summary": [
+      332,
+      142,
+      596,
+      376
+    ],
+    "footer_y": 432,
+    "row_height": 26,
+    "rows": 9
+  },
+  "crop_43": [
+    0,
+    64,
+    512,
+    448
+  ],
+  "crop_wide": [
+    0,
+    112,
+    512,
+    400
+  ],
+  "objects": {
+    "layer_0_skybox_night": [
+      0,
+      112,
+      512,
+      368
+    ]
+  },
+  "core_objects": [
+    "layer_0_skybox_night"
+  ],
+  "smooth_rects": {
+    "sky": [
+      40,
+      120,
+      470,
+      190
+    ],
+    "top_extension": [
+      40,
+      64,
+      470,
+      110
+    ],
+    "bottom_extension": [
+      40,
+      380,
+      470,
+      446
+    ]
+  },
+  "backdrop": {
+    "recipe": "crib_skyline_night",
+    "retail_pixels_committed": false,
+    "provenance": {
+      "recipe": "crib_skyline_night",
+      "layers": [
+        {
+          "selector": "crib_scene_texture:skybox_night:0",
+          "asset_id": "nfl2k5.crib.scene.c0006.t000",
+          "rect": [
+            0,
+            112,
+            512,
+            368
+          ],
+          "fit": "exact",
+          "source_size": [
+            512,
+            256
+          ]
+        }
+      ],
+      "shade": {
+        "from_x": 0,
+        "to_x": 330,
+        "min": 0.3,
+        "power": 1.6
+      },
+      "grain": {
+        "sigma": 1.0
+      }
+    },
+    "note": "The skyline the Crib's windows look out on, at night: ESPN NFL 2K5 scene texture crib_scene_texture:skybox_night:0 (512x256, decoded from the user's own disc through the Crib catalog). Placed at native scale, continued above and below with its own edge rows eased to near black, the menu column held in shadow. No drawn pixels."
+  },
+  "panel_tiles": {
+    "summary_opaque": {
+      "rect": [
+        4,
+        4,
+        132,
+        100
+      ],
+      "kind": "opaque",
+      "nine_slice_inset": 12
+    },
+    "opponent_translucent": {
+      "rect": [
+        140,
+        4,
+        252,
+        60
+      ],
+      "kind": "translucent",
+      "nine_slice_inset": 8
+    },
+    "balance_translucent": {
+      "rect": [
+        140,
+        68,
+        252,
+        116
+      ],
+      "kind": "translucent",
+      "nine_slice_inset": 8
+    },
+    "ribbon_translucent": {
+      "rect": [
+        4,
+        108,
+        132,
+        124
+      ],
+      "kind": "translucent",
+      "nine_slice_inset": 4
+    }
+  },
+  "calendar": {
+    "cell": 32,
+    "icons": {
+      "played": [
+        0,
+        0,
+        32,
+        32
+      ],
+      "upcoming": [
+        32,
+        0,
+        64,
+        32
+      ],
+      "bye": [
+        64,
+        0,
+        96,
+        32
+      ],
+      "practice": [
+        96,
+        0,
+        128,
+        32
+      ],
+      "request": [
+        0,
+        32,
+        32,
+        64
+      ],
+      "current": [
+        32,
+        32,
+        64,
+        64
+      ],
+      "milestone": [
+        64,
+        32,
+        96,
+        64
+      ]
+    }
+  },
+  "focus": {
+    "stretch_columns": [
+      12,
+      116
+    ],
+    "rim_px": 2
+  }
+}

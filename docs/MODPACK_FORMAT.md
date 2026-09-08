@@ -71,7 +71,7 @@ Format 1 keeps its existing, more permissive run-only container-size behaviour.
 | 0 | `byte_runs` | 1 | Sorted, nonoverlapping runs within this operation; original `replace` run fields and before/after SHA-256s; concatenated new bytes |
 | 1 | `xbe_grow` | 1 | Recognised retail-storage → SPECIAL-storage transition; append full XBE and repoint `default.xbe` via the existing storage writer |
 | 2 | `file_replace` | 1 | Resolve a named file through XDVDFS and replace its existing, same-size extent |
-| 3 | `file_grow` | 1 | Resolve a named file, append its larger replacement at the next sector after EOF, then repoint that file's directory sector/length |
+| 3 | `file_grow` | 1, 2 | Append a larger named file and repoint its directory sector/length; version 2 also carries retained intermediate allocations before that file |
 | 4 | `file_add` | reserved | Contract/design below; currently refuses as an unknown operation |
 | 5 | `file_shrink` | 1 | Replace a named file with a shorter nonempty payload at its existing sector, update its directory length, retain the physical image size and unused allocation bytes |
 
@@ -89,6 +89,49 @@ exports as `file_shrink` (ID 5). Shrink cannot relocate a file, truncate the ISO
 or modify the bytes after its new declared end. Before/after hashes and nested
 directory resolution are verified as for replacement/growth. Version-2 readers
 without handler 5 refuse it as an unknown operation. ID 4 stays reserved.
+
+### Chained growth and retained allocations
+
+Each newly exported growth records explicit partition-relative sector accounting:
+
+```json
+"append": {"sector": 3076416, "file_sector_offset": 5870}
+```
+
+`append.sector` must equal `ceil(before_size / 2048)`, where `before_size`
+is the image end **after every preceding operation**. `after.sector` must equal
+`append.sector + append.file_sector_offset`. `after_size` is exactly
+`after.sector * 2048 + after.size`; the next operation starts with that size.
+Named paths are deduplicated case-insensitively and emitted in physical append
+order, independently of the caller's list order.
+
+Version 1 has zero `file_sector_offset`, retaining its original full-file payload
+and zero alignment gap. Old version-1 packs may omit `append`; their accounting
+is derived by the same original rule. `xbe_grow` remains version 1 and still
+uses its strict SPECIAL validator and storage writer. `file_shrink` is unchanged.
+
+Version 2 of **operation 3** handles a build that superseded an earlier appended
+allocation. For example, Experimental appends SPECIAL, then the logo pack, then
+the larger owned-page XBE. Its final directory points only to the last two files,
+but the earlier SPECIAL bytes must survive a byte-identical reproduction.
+The next named growth owns those retained bytes explicitly: its payload spans
+`append.sector * 2048` through `after_size`. The prefix has
+`file_sector_offset * 2048` bytes and the final `after.size` bytes are the named
+file. The payload SHA-256 covers the entire append, including the prefix;
+`after.sha256` independently covers the named file, and `before.sha256` still
+covers its input extent after preceding operations. Prefixes are streamed, never
+materialized as an image-sized padding buffer. Only the sub-sector alignment gap
+before `append.sector` is implicitly zero-filled. Unaccounted trailing bytes and
+nonzero implicit alignment bytes still refuse export.
+
+The container stays format 2, registry version 1, **min_reader_version 2**.
+Beta-60/61 readers already reject unknown operation versions before copying or
+writing with **“this mod needs a newer Mod Studio: file_grow version 2”**.
+They cannot silently misapply this addition, so a reader-version bump is
+unnecessary. Ordinary contiguous chains continue exporting operation version 1
+and remain usable by those readers. Frozen synthetic packs produced by both
+shipped exporters cover format 1 Basic and format 2 SPECIAL Advanced in
+`tests/fixtures/modpack_legacy/`; their ZIP identities and applied bytes are pinned.
 
 `xbe_grow` uses that same envelope plus strict SPECIAL validation: old XBE length
 `0xB65000`, new length `0xB77000`, recognised original final-section storage,

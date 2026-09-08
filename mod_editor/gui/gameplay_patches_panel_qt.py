@@ -25,6 +25,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+from mod_editor.gui import beta62_options as r62_ui
 from mod_editor.core import mod_build
 from mod_editor.core import nfl2k5_throw_tuning as tt
 from mod_editor.gui.ux_text import NOT_TESTED, XEMU_LINE, Details, plain_failure, show_operation_error, source_captions, suggest_copy_name, tab_title, write_caption
@@ -46,10 +47,33 @@ PATCHES = (
     ("momentum_contact", "Running start in contact (experimental, unwitnessed)",
      "Retail: speed and weight already affect contact. Patch: a sustained running start can give "
      "the ball carrier a small extra boost through contact. Experimental / Unwitnessed. Requires player momentum."),
+    ("team_names_2026", "2026 team names",
+     "Retail: 2004 team names. Patch: modern names in the disc roster, with L.A., L Vegas, "
+     "LA and Cmdrs short forms where space is limited. Existing saves keep their names. "
+     "EXPERIMENTAL / UNWITNESSED."),
+    ("coverage_slider", "Coverage slider response (experimental)", tt.coverage_slider_patch.HELP_TEXT),
+    ("scramble_tuning", "Slow-QB acceleration (experimental)", tt.scramble_tuning_patch.HELP_TEXT),
+    ("chop_block_toggle", "Repair Chop Block toggle (experimental)", tt.penalties_patch.CHOP_BLOCK_HELP),
+    ("flatter_deep_ball", "Flatter deep flight (experimental)",
+     "EXPERIMENTAL / UNWITNESSED. Retail deep lobs use 20 yards per second. "
+     "Patch: deep lobs use 25, keeping speeds through 35 yards and the selected "
+     "distance curve. At 80 yards the equal-height preview is 3.20 seconds and "
+     "a 13.7-yard apex. Choose one flight option and start from the original source."),
+    ("all_stadiums", "All 82 Create a Team stadiums (experimental)",
+     "Retail: Create a Team offers 67 stadiums. Patch: Offers all 82 existing "
+     "stadiums. EXPERIMENTAL / UNWITNESSED. Added previews and game loading need "
+     "testing. Team and reserve limits stay the same."),
+    ("music_shuffle", "Shared music shuffle (experimental)", "Retail: Uses the original music selections. Patch: " + tt.music_playlist_patch.HELP_TEXT),
+    ("practice_squad_screen", "Practice Squad screen (experimental)", tt.practice_squad_screen_patch.HELP_TEXT),
+    ("abilities", "Player abilities (experimental)",
+     "Retail ignores stored ability flags. Patch: Speedster permits movement Speed above 99. Each special "
+     "move requires its stored permission, and right-stick moves also require Right-Stick Moves. The "
+     "special-move charge meter works only for live ball carriers with an allowed move, including CPU "
+     "players. Abilities must be assigned in Rosters or the save first. An optional existing franchise "
+     "week turns them off temporarily. EXPERIMENTAL / UNWITNESSED. Simulated games are unchanged."),
+    ("qb_spy", "QB spy for zone, man and rush (experimental)", tt.qb_spy_patch.HELP_TEXT),
     ("defensive_try", "Defensive two-point returns (experimental)", tt.defensive_try_patch.UI_TEXT),
-    ("zone_drop_cap", "Corner deep-zone backpedal (experimental, unwitnessed)",
-     "Retail: corners can request full depth during their initial deep-zone drop. Patch: caps that initial "
-     "depth request for cornerbacks. Later steering and ball response stay native. Experimental / Unwitnessed."),
+    ("zone_drop_cap", "Initial deep-zone corner drop (experimental)", r62_ui.ZONE_HELP),
     ("draft_ai", "Realistic, unpredictable CPU drafts and free agency in franchise",
      "Retail: on the clock a CPU team takes the best raw overall among its neediest positions, and raw "
      "overall is compared across positions, so the positions whose rookies roll the highest overalls (HB, DE, "
@@ -89,7 +113,10 @@ PATCHES = (
      "downed in the end zone puts the ball on the 20, a kick straight into the end zone is a touchback to the 35 (30 for the 2024 "
      "spot), short of the landing zone or out of bounds is the 40; the CPU kicker aims for the landing zone 90 % of the time and the "
      "CPU returner takes the touchback 90 % of the time. Your own kicks and returns stay in your hands; onside and safety kicks are "
-     "untouched. Switches on the modern kick spots and the dynamic line-up with it. Unwitnessed in game."),
+     "untouched. Switches on the modern kick spots and the dynamic line-up with it. Beta 62: held players keep an idle "
+     "pose facing the kick and release on contact, a ball fielded inside the landing zone is never a touchback, and the "
+     "return blockers take close assignments (drive blocks in the setup zone, a lead block from the deep non-carrier). "
+     "Noah saw the 2024 rule play in beta 60; the beta-62 corrections are unwitnessed. Rebuild from retail."),
     ("overtime", "Modern overtime: both teams get a possession, 10 minutes with ties, playoffs to a winner",
      "Retail overtime is sudden death for the quarter length: any score ends it, even a first-possession "
      "touchdown, and the regular season ties after one period. Patch (the 2025 NFL rule): each team is "
@@ -98,12 +125,11 @@ PATCHES = (
      "length) and can tie; the postseason keeps playing, including through an unfinished second possession. "
      "The franchise sim engine gets the 10-minute clock and the one-period tie; its own sudden-death rule is "
      "left as is."),
-    ("camera", "Default camera: Standard becomes the Far look",
-     "Retail's Standard camera uses a 35 lens 8 yards behind the quarterback; the Far preset is the same "
-     "geometry through a wider 28 lens (24 with the ball in the air). Patch: the seven live-play records of "
-     "the Standard preset take Far's look-at, lens and offset words, so a profile left on Standard gets the "
-     "Far view. Far itself, the kick, replay and other presets are untouched; the fresh-profile default stays "
-     "Standard."),
+    ("camera", "Start games with the new Standard camera (experimental)",
+     "Retail: Standard and Far use the original camera framing and pass zoom. "
+     "Patch: games and practice start with the new Standard, a closer view at the raised "
+     "angle above the scorebar; Far keeps the raised, far view. Both cameras pull back less "
+     "during passes. Options changes last for the current session. Experimental; not yet witnessed in play."),
     ("position_row", "Position on the first page of Edit Player (roster and Franchise)",
      "Retail: Create Player lets you pick a position, but Edit Player never lists it, in roster mode or in "
      "Franchise, so a position change means a new player. Patch: the Position row (the game's own picker, "
@@ -148,18 +174,7 @@ PATCHES = (
      "the 52 replacements (Diggs, Chubb, Kamara...) and every first name are new, and a 27-byte cave on the "
      "generator announces players with a replacement surname by jersey number instead of a wrong name. Only "
      "franchises created from the copy see it. Unwitnessed in game."),
-    ("franchise_practice", "Free Practice inside Franchise",
-     "Retail: Practice lives only under Game Modes on the main menu, it picks two random teams, and there is no "
-     "way into it from a franchise; the Coach's Desk lists Schedule through Quit and its eleven rows end right "
-     "where the descriptor begins, so there is no spare slot. Patch: the desk's 52-byte event-hook list is copied "
-     "into a cave, which frees exactly one 0x34 row slot, and a Practice row is written there (first, above "
-     "Schedule) opening a clone of the Scrimmage Settings screen. The clone's enter hook runs the retail practice "
-     "defaults, then puts the team you coach on BOTH sides at Practice Type = Full Scrimmage, so you get your "
-     "first-team offence against your first-team defence in your away kit against your home kit on the practice "
-     "field, with the live franchise roster (there is only one roster in memory and the franchise load already "
-     "overwrote it). Its START handler pops once instead of twice, so a rep ends back on the Coach's Desk. "
-     "Practice is game mode 1 and the stat, clock and injury paths are gated on mode 4 and up, so a session "
-     "writes no season stats and no injuries; no retail instruction byte is changed. Unwitnessed in game."),
+    ("franchise_practice", "Free Practice inside Franchise", r62_ui.PRACTICE_HELP),
     ("seven_on_seven", "7-on-7 practice mode",
      "Retail Practice offers Special Move, Full Scrimmage, Offense Only and Kickoff. Patch: Practice -> Scrimmage -> "
      "Practice Type gains 7-On-7, which plays as Full Scrimmage with the practice playbook loaded for both teams and "
@@ -174,6 +189,12 @@ PATCHES = (
      "coach-camera visibility as the ordinary circle, which is untouched. The tag is one bit of the roster record; existing "
      "franchise saves need tags in their own roster. A disc patched with the beta-58 version of this (which never drew) "
      "is upgraded when rebuilt. Unwitnessed in game."),
+    ("position_pools", "Merged positions with one Linebackers group (experimental)",
+     "Retail: separate outside and inside linebacker groups. Patch: merges the "
+     "defensive position pools and removes the Outside Linebackers group when "
+     "all disc rosters contain no outside linebackers. Fullbacks remains. "
+     "Custom players keep their group. For existing saves, enable Keep Outside "
+     "Linebackers in Build. EXPERIMENTAL / UNWITNESSED."),
     ("depth_roles", "X / Z / SLWR receivers and nickel / dime corners (disc images only)",
      "Retail playbooks have no slot receiver: the inside man of a three-wide set is the #1 receiver in 196 formations, "
      "the #2 in 115, the #3 in 100. Patch: every personnel group is rewritten so the innermost receiver is the third "
@@ -207,8 +228,8 @@ PATCHES = (
     ('music_policy', 'Use jukebox songs in menus (experimental)', "Retail: menus use the menu bank. Patch: menus use the 59 jukebox recordings in the game's random order. The 7 menu tracks are not included yet. Twelve jukebox tracks are spoken outtakes."),
     ('music_unlock', 'Make every music collection available (experimental)', 'Retail: collections need Crib purchases. Patch: every collection is available without spending credits or setting purchase bits.'),
     ('music_userlist', 'Use jukebox songs instead of user playlists (experimental)', "Retail: UserList follows the user's disc or HDD playlist. Patch: UserList uses the 59-song jukebox bank instead. Requires jukebox menus."),
-    ('scorebug', 'Experimental ESPN scorebar', 'Retail: a stacked score display near the top of the screen. Patch: a wider display at the bottom, a white clock strip, an ESPN corner mark and a short slide when the down panel appears. Experimental and not tested in game. Team logos and events require the separate scorebug effects option.'),
-    ('scorebug_runtime', 'Team logos and scorebug effects (experimental, unwitnessed)', 'Retail: team panels and timeout marks use the stock display. Patch: adds team logos, remaining timeout marks, a score flash, down refresh and a red play clock below five seconds. Unwitnessed in game; use a separate disc copy.'),
+    ("scorebug", "Experimental ESPN scorebar", r62_ui.SCOREBUG_HELP),
+    ("scorebug_runtime", "Scorebug effects (diagnostic only)", r62_ui.SCOREBUG_RUNTIME_HELP),
     ("guardian_cap", "Guardian caps on helmet C (experimental)",
      "Retail: Helmet C has its normal hard-shell look. Patch: Every player wearing "
      "helmet C shows a guardian cap. Helmet C's normal look is replaced while this is on. "
@@ -216,17 +237,23 @@ PATCHES = (
      "Other uniforms keep their current artwork. This affects C wearers in practice "
      "and games alike. It does not add a separate player choice or put caps on everyone "
      "in practice. Appearance and shine still need an in-game check. EXPERIMENTAL / UNWITNESSED."),
-    ("season_cap", "128-season franchise gate (experimental)",
-     "Retail: the franchise completion check stops advancement after index 30 in retirement. "
-     "Patch: the check accepts indices through 127. "
-     "Franchise runs to 128 seasons. Dates and ages after 2099 are not repaired yet. "
-     "Game birth dates can already be wrong in 2053. EXPERIMENTAL / UNWITNESSED. "
-     "Editing a save year does not simulate seasons."),
+    ("season_cap", "128-season franchise (experimental)",
+     "Retail: Franchise dates and birth dates use a fixed century. Patch: Repairs "
+     "dates, weekdays, live player birth years and season labels through index 127, "
+     "with the final postseason in the following year. EXPERIMENTAL / UNWITNESSED. "
+     "Natural rollovers and save reloads still need testing. History keeps its existing limits."),
     ("depth_locks", "Depth chart locks: tackles, guards and returners stay where you put them (experimental)",
      "Retail: the weekly auto-depth ranks tackles and guards by rating, so the better RT slides over to LT, and it rewrites "
      "KR and PR every week. Patch: moving a player on the depth chart, or confirming a returner, locks that choice in the "
      "player's record and the weekly sort keeps it. Unlock from the Rosters tab. No new screen or button. Unwitnessed in game."),
+    ("espn25_plan", "ESPN Anniversary setup and rosters (experimental)",
+     "Retail uses 25 moments and shared historic teams. Patch applies your saved Anniversary setup and roster edits. "
+     "Extra moments remain unavailable. Experimental and unwitnessed."),
+    ("espn25_rosters", "Historic moments: real rosters", tt.espn25_rosters_patch.HELP_TEXT),
 )
+# Rows that are informational here: their page action opens the page that authors the content, and they
+# never pass a Boolean through the BuildPlan (the field is a plan path chosen on Rosters / Build).
+INFORMATIONAL = {"espn25_plan"}
 
 
 class _Signals(QObject):
@@ -265,8 +292,8 @@ LABELS: dict[str, tuple[str, str, str]] = {
                      "Neutral gray artwork is for Detroit current away only.", NOT_TESTED),
     "xbe_space": ("Extra patch space (experimental)", "Needs a disc boot check before regular use.", NOT_TESTED),
     "kickoff_relocated": ("Kickoff in extra space (experimental)", "Check lineup, hold until contact and returns.", NOT_TESTED),
-    "season_cap": ("128-season franchise gate (experimental)",
-                   "Franchise runs to 128 seasons. Dates and ages after 2099 are not repaired yet.", NOT_TESTED),
+    "season_cap": ("128-season franchise (experimental)",
+                   "Dates, weekdays, birth years and labels repaired through index 127; untested in game.", NOT_TESTED),
     "catch_slider": ("Fix Catching & Interception sliders", "Catching controls drops; Interception controls picks.", ""),
     "accel_ramp": ("Legacy acceleration ramp", "A separate rating-based envelope for controller-driven players.", ""),
     "draft_ai": ("Smarter Franchise drafts & free agency", "Changes CPU decisions; Fantasy Draft is separate.", ""),
@@ -274,17 +301,17 @@ LABELS: dict[str, tuple[str, str, str]] = {
     "progression": ("Change player growth & decline", "Growth over years 1-5, harder decline after years 9-12; more stars and busts.", ""),
     "team_column": ("Show TEAM in Player Card season stats", "Which team each season was played for.", ""),
     "kick_rules": ("Modern kick spots & kicking power", "Kickoff: 35 · touchback: 35 · PAT snap: 15.", ""),
-    "dynamic_kickoff": ("Dynamic kickoff rule (2024/2025)", "Nobody moves until the ball comes down; landing zone; the CPU kicks to it. "
-                        "Switches on the modern kick spots and the alignment.", NOT_TESTED),
+    "dynamic_kickoff": ("Dynamic kickoff: ready stance and close blocks", "Nobody moves until the ball comes down; landing zone; the CPU kicks to it. "
+                        "Held players keep an idle pose facing the kick; return blockers take close assignments.", NOT_TESTED),
     "overtime": ("Modern overtime rules", "Both teams get a possession; regular-season ties remain.", ""),
-    "camera": ("Make Standard camera look like Far", "The Standard preset takes Far's look-at, lens and offset.", ""),
+    "camera": ("Start games with the new Standard", "The new Standard (closer, raised angle) starts each game; Far keeps the far view; Options still works for the session.", NOT_TESTED),
     "position_row": ("Change position in Edit Player", "In-game: use Depth Chart → Auto afterward.", NOT_TESTED),
     "probowl_order": ("Pro Bowl Votes: offense, defense, kickers", "The tabs run offence, defence, then K and P.", NOT_TESTED),
     "penalties": ("Adjusted penalty rates (experimental)", "Estimated rates; includes the Chop Block toggle fix.", NOT_TESTED),
     "uniform_choice": ("Choose home/away jerseys at any stadium", "Up/down past the last era flips that side's colour.", NOT_TESTED),
     "kick_laces": ("Laces face the posts on kicks", "On field goals and PATs the held ball is turned so the laces face the posts.", NOT_TESTED),
     "prospect_names": ("Modern draft-prospect names", "New franchises only; some new surnames are announced by number.", "New franchises only"),
-    "franchise_practice": ("Free Practice inside Franchise", "A Practice row on the Coach's Desk: your first team against itself.", NOT_TESTED),
+    "franchise_practice": ("Practice below Schedule in Franchise", r62_ui.PRACTICE_HELP, NOT_TESTED),
     "seven_on_seven": ("7-on-7 practice", "Practice Type 7-On-7 with 7-on-7 sets in the practice playbook.", NOT_TESTED),
     "player_star": ("Show a star under selected players", "Select players under Names, Numbers & Faces; every tagged player on the field gets a white star outline.", NOT_TESTED),
     "depth_roles": ("X / Z / SLWR receivers and nickel / dime corners", "Changes who lines up in every playbook, not how they play.", NOT_TESTED),
@@ -292,12 +319,20 @@ LABELS: dict[str, tuple[str, str, str]] = {
                          "All 13 SPECIAL roles on one screen, with complete player names; offense and defense keep eleven rows.", NOT_TESTED),
     "edge_rename": ("Call defensive ends EDGE", "Rosters, depth charts, the draft, the formation editor and the scorebug legend say EDGE.", ""),
     "scheme_labels": ("Use scheme-specific depth-chart names", "4-3: SAM, MIKE, WILL; 3-4: EDGE, MIKE, WILL, NT.", ""),
+    "espn25_plan": ("ESPN Anniversary setup and rosters (experimental)",
+                    "Author and save the plan on Rosters > ESPN Anniversary; tick it on Build. This row only opens that page.", NOT_TESTED),
 }
 
 # BuildPlan fields that are profile names rather than booleans: the value a ticked box writes
 STRING_TOGGLES = {"music_policy": "jukebox_menus", "penalties": "nfl", "prospect_names": "modern", "uniform_choice": "choice"}
 # toggles whose other half lives in pack 0: a bare default.xbe cannot take them
-NEEDS_IMAGE = {"momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "scorebug", "scorebug_runtime", "screen_timing", "guardian_cap", "xbe_space", "kickoff_relocated", "prospect_names", "depth_roles", "dynamic_kickoff", "depth_chart_rows"}
+NEEDS_IMAGE = {"camera", "music_shuffle", "practice_squad_screen", "abilities", "qb_spy", "season_cap", "calendar_engine", "coverage_slider", "scramble_tuning", "team_names_2026", "all_stadiums", "momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "scorebug", "scorebug_runtime", "screen_timing", "guardian_cap", "xbe_space", "kickoff_relocated", "prospect_names", "depth_roles", "dynamic_kickoff", "depth_chart_rows"}
+
+PATCHES = (*PATCHES, *r62_ui.OPTIONS)
+NEEDS_IMAGE.update(r62_ui.KEYS)
+NEEDS_IMAGE.add("position_pools")
+NEEDS_IMAGE.add("espn25_plan")
+NEEDS_IMAGE.add("espn25_rosters")
 
 TEXT_PATCHES = (
     ("edge_rename", "Rename DE to EDGE everywhere",
@@ -321,6 +356,8 @@ class GameplayPatchesPanel(QWidget):
     ``patches`` chooses which toggles the page shows (``PATCHES`` for gameplay, ``TEXT_PATCHES`` for
     the EDGE rename); each key must be a BuildPlan field and an ``inspect`` state key.
     """
+
+    open_anniversary = pyqtSignal()   # the ESPN Anniversary row's page action: open Rosters > ESPN Anniversary
 
     def __init__(self, facade: object | None = None, parent: QWidget | None = None, *,
                  patches: tuple[tuple[str, str, str], ...] = PATCHES,
@@ -416,10 +453,41 @@ class GameplayPatchesPanel(QWidget):
             rl.setSpacing(1)
             head = QHBoxLayout()
             head.setSpacing(8)
-            check = QCheckBox(tab_title(short))
-            check.setAccessibleDescription(helper or label)
-            check.toggled.connect(lambda _c: self._refresh())
-            head.addWidget(check)
+            check: QCheckBox | None = None
+            if key in INFORMATIONAL:
+                caption = QLabel(tab_title(short))
+                caption.setAccessibleDescription(helper or label)
+                head.addWidget(caption)
+                self.anniversary_button = QPushButton("Open Rosters > ESPN Anniversary")
+                self.anniversary_button.setToolTip(helper)
+                self.anniversary_button.clicked.connect(self.open_anniversary.emit)
+                head.addWidget(self.anniversary_button)
+            else:
+                check = QCheckBox(tab_title(short))
+                check.setAccessibleDescription(helper or label)
+                check.toggled.connect(lambda _c: self._refresh())
+                head.addWidget(check)
+            if key == "momentum_collisions":
+                self.momentum_collision_level = QComboBox()
+                for text, value in (("Retail (0)", 0), ("Light (25)", 25), ("Medium (50)", 50), ("Heavy (100)", 100)):
+                    self.momentum_collision_level.addItem(text, value)
+                self._collision_last_positive = 50
+                self.momentum_collision_level.currentIndexChanged.connect(self._collision_changed)
+                check.toggled.connect(self._momentum_toggled)
+                head.addWidget(self.momentum_collision_level)
+            if key == "guardian_overlay":
+                self.guardian_everyone_practice_check = QCheckBox("Caps for everyone in practice")
+                self.guardian_everyone_practice_check.setChecked(True)
+                self.guardian_everyone_practice_check.toggled.connect(self._refresh)
+                head.addWidget(self.guardian_everyone_practice_check)
+            if key == "my_career":
+                self.my_career_setup_field = QLineEdit()
+                self.my_career_setup_field.setPlaceholderText("Optional: legacy MyCareer.json (leave empty to create MyPlayer in the game)")
+                self.my_career_setup_field.textChanged.connect(self._refresh)
+                head.addWidget(self.my_career_setup_field)
+                button = QPushButton("Choose setup...")
+                button.clicked.connect(self._choose_my_career_setup)
+                head.addWidget(button)
             if key == "momentum":
                 self.momentum_level = QComboBox()
                 for text, value in (("Retail (0)", 0), ("Light (25)", 25), ("Medium (50)", 50), ("Heavy (100)", 100)):
@@ -454,7 +522,8 @@ class GameplayPatchesPanel(QWidget):
             more.setContentsMargins(30, 0, 0, 0)
             rl.addWidget(more)
             lb.addWidget(row)
-            self.checks[key] = check
+            if check is not None:
+                self.checks[key] = check
             self.badges[key] = badge_label
             self._static_badges[key] = badge
         root.addWidget(list_box)
@@ -501,9 +570,16 @@ class GameplayPatchesPanel(QWidget):
         self.write_button.setText(write_caption(is_image))
         for key, _label, _e in self._patches:
             value = str(state.get(key))
-            check = self.checks[key]
             needs_image = key in NEEDS_IMAGE and not is_image
-            check.setEnabled(value == "retail" and not needs_image)
+            if key in INFORMATIONAL:
+                # no toggle here: the badge says whether this source can take the saved plan at all
+                badge = ("Full disc required" if needs_image else "Unrecognized source data" if value == "foreign"
+                         else self._static_badges.get(key, ""))
+                self.badges[key].setText(badge)
+                self.badges[key].setVisible(bool(badge))
+                continue
+            check = self.checks[key]
+            check.setEnabled(value == "retail" and not needs_image and key not in r62_ui.UNAVAILABLE)
             check.setChecked(False)
             tip = {"applied": "Already installed on this source.",
                    "foreign": "Not recognised: the bytes at this change's sites are neither retail nor this patch "
@@ -558,12 +634,24 @@ class GameplayPatchesPanel(QWidget):
             on = check.isChecked()
             if key == "screen_timing":
                 plan.screen_timing = self.screen_timing_combo.currentText() if on else None
+            elif key == "created_teams_extra":
+                plan.created_teams_extra = 2 if on else 0
+            elif key == "momentum_collisions":
+                plan.momentum_collisions = on
+                plan.momentum_collision_level = int(self.momentum_collision_level.currentData() or 50) if on else 0
             elif key == "momentum":
                 plan.momentum = int(self.momentum_level.currentData() or 50) if on else 0
             elif key == "music_policy":
                 plan.music_policy = "jukebox_menus" if on else "retail"
             else:
                 setattr(plan, key, (STRING_TOGGLES[key] if on else "") if key in STRING_TOGGLES else on)
+        if "guardian_overlay" in self.checks:
+            plan.guardian_everyone_practice = self.guardian_everyone_practice_check.isChecked()
+        if "my_career" in self.checks:
+            plan.my_career_setup = self.my_career_setup_field.text().strip() or None if plan.my_career else None
+        if plan.flatter_deep_ball:
+            plan.throw, plan.max_deep_yards = True, 80.0
+            plan.arc, plan.realistic_flight, plan.arc_by_distance = 0.0, False, False
         if plan.scorebug_runtime:
             plan.scorebug = plan.xbe_space = True
         if plan.music_userlist:
@@ -577,6 +665,18 @@ class GameplayPatchesPanel(QWidget):
         if getattr(self, "_momentum_legacy_disabled", False):
             plan.notes = (plan.notes + "\nlegacy_accel_ramp_disabled_by_momentum_profile=true").strip()
         return plan
+
+    def _choose_my_career_setup(self):
+        path, _ = QFileDialog.getOpenFileName(self, "Choose paired MyCareer setup", "", "MyCareer setup (*.json)")
+        if path:
+            self.my_career_setup_field.setText(path)
+
+    def _collision_changed(self):
+        value = int(self.momentum_collision_level.currentData() or 0)
+        if value:
+            self._collision_last_positive = value
+        self.checks["momentum_collisions"].setChecked(value > 0 and self.checks["momentum_collisions"].isEnabled())
+        self._momentum_toggled(value > 0)
 
     def _momentum_toggled(self, on):
         if on and "accel_ramp" in self.checks:
@@ -603,7 +703,7 @@ class GameplayPatchesPanel(QWidget):
             self.checks["momentum_contact"].setEnabled(enabled and (self._state or {}).get("momentum_contact") == "retail")
             if not enabled:
                 self.checks["momentum_contact"].setChecked(False)
-            installed = (self._state or {}).get("momentum") == "applied"
+            installed = ((self._state or {}).get("momentum_settings") or {}).get("status") == "applied"
             level = (self._state or {}).get("momentum_settings", {})
             level = level.get("momentum", 0) if isinstance(level, dict) else 0
             selected = level if installed else self._momentum_last_positive if enabled else 0
@@ -618,8 +718,36 @@ class GameplayPatchesPanel(QWidget):
             self.checks["music_userlist"].setEnabled(enabled and (self._state or {}).get("music_userlist") == "retail")
             if not enabled:
                 self.checks["music_userlist"].setChecked(False)
+        settings = (self._state or {}).get("momentum_settings") or {}
+        if settings.get("status") in ("applied", "foreign") and getattr(self, "momentum_level", None) is not None:
+            self.momentum_level.setEnabled(False)
+        if settings.get("status") in ("applied", "foreign"):
+            for key in ("momentum", "momentum_contact", "momentum_collisions"):
+                if key in self.checks:
+                    self.checks[key].setEnabled(False)
+        if "momentum_collisions" in self.checks:
+            check = self.checks["momentum_collisions"]
+            installed = settings.get("status") == "applied"
+            value = settings.get("momentum_collision_level", 0) if installed else self._collision_last_positive if check.isChecked() else 0
+            combo = self.momentum_collision_level
+            combo.blockSignals(True)
+            if combo.findData(value) < 0:
+                combo.addItem(f"Installed ({value})", value)
+            combo.setCurrentIndex(combo.findData(value))
+            combo.blockSignals(False)
+            combo.setEnabled(check.isEnabled())
+        for key, reason in r62_ui.UNAVAILABLE.items():
+            if key in self.checks:
+                self.checks[key].setEnabled(False)
+                self.checks[key].setToolTip(reason)
+        if "guardian_overlay" in self.checks:
+            on = self.checks["guardian_overlay"].isChecked()
+            self.guardian_everyone_practice_check.setEnabled(on and self.checks["guardian_overlay"].isEnabled())
+            if on and "guardian_cap" in self.checks:
+                self.checks["guardian_cap"].setChecked(False)
         any_on = any(c.isChecked() for c in self.checks.values())
-        self.write_button.setEnabled(any_on and bool(self.source_field.text()) and bool(self.target_field.text())
+        configured = True   # MyCareer no longer needs a setup file: an empty field selects in-game creation
+        self.write_button.setEnabled(configured and any_on and bool(self.source_field.text()) and bool(self.target_field.text())
                                      and self._task is None and not self._reading)
 
     def _choose_source(self) -> None:
@@ -667,9 +795,9 @@ class GameplayPatchesPanel(QWidget):
         self._task = None
         assert isinstance(receipt, dict)
         target = Path(str(receipt.get("target")))
-        self.status_label.setText(
-            f"Disc ready: {target.name}. Open it in xemu." if tt.is_disc_image(target)
-            else f"Patched executable saved: {target.name}.")
+        from mod_editor.core.build_feedback import completion
+        title, message = completion(receipt)
+        self.status_label.setText(f"{title}: {target.name}. {message}")
         try:
             self.apply_state(mod_build.inspect(Path(str(receipt.get("target")))))
         except Exception:  # noqa: BLE001

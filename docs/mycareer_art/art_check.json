@@ -1,0 +1,384 @@
+{
+  "folder": "docs/mycareer_art",
+  "assets": [
+    {
+      "file": "mycareer_apartment.png",
+      "size": [
+        512,
+        512
+      ],
+      "bytes": 451850,
+      "sha256": "ea812a8fcf54a96a81901cd66c7d8f7a366c557cb6a3e2851afd9d50e33d0312",
+      "alpha": {
+        "min": 255,
+        "max": 255,
+        "distinct": 1
+      },
+      "mips": {
+        "count": 7,
+        "dimensions": [
+          [
+            512,
+            512
+          ],
+          [
+            256,
+            256
+          ],
+          [
+            128,
+            128
+          ],
+          [
+            64,
+            64
+          ],
+          [
+            32,
+            32
+          ],
+          [
+            16,
+            16
+          ],
+          [
+            8,
+            8
+          ]
+        ],
+        "index_bytes": 349504
+      },
+      "palette": {
+        "entries": 256,
+        "limit": 256,
+        "palette_bytes": 1024,
+        "input_unique_rgba_colors": 21548,
+        "maximum_channel_error": 12,
+        "channel_error_p995": 6.0,
+        "rms_rgba_error": 1.442,
+        "differing_pixel_count": 339128,
+        "total_pixel_count": 349504,
+        "mapping": "median_cut_palette + vectorised nearest"
+      },
+      "core_objects_inside_crops": [
+        "layer_0_skybox_night"
+      ],
+      "calm_zones": {
+        "menu": {
+          "rect": [
+            35,
+            178,
+            242,
+            365
+          ],
+          "mean_luma": 21.6,
+          "p99_luma": 70.4,
+          "mean_gradient": 8.12,
+          "limits": {
+            "mean_luma": 96,
+            "p99_luma": 170,
+            "mean_gradient": 9.0
+          }
+        },
+        "summary": {
+          "rect": [
+            266,
+            178,
+            477,
+            365
+          ],
+          "mean_luma": 30.6,
+          "p99_luma": 117.4,
+          "mean_gradient": 13.97,
+          "limits": {
+            "mean_gradient": 16.0
+          }
+        },
+        "footer": {
+          "rect": [
+            0,
+            410,
+            512,
+            448
+          ],
+          "mean_luma": 3.0,
+          "p99_luma": 7.6,
+          "mean_gradient": 1.51,
+          "limits": {
+            "mean_luma": 110,
+            "mean_gradient": 7.0
+          }
+        }
+      },
+      "banding": {
+        "sky": {
+          "rect": [
+            40,
+            120,
+            470,
+            190
+          ],
+          "max": 2.0,
+          "p99": 1.0
+        },
+        "top_extension": {
+          "rect": [
+            40,
+            64,
+            470,
+            110
+          ],
+          "max": 2.0,
+          "p99": 1.0
+        },
+        "bottom_extension": {
+          "rect": [
+            40,
+            380,
+            470,
+            446
+          ],
+          "max": 2.0,
+          "p99": 1.0
+        },
+        "limits": {
+          "max": 8.0,
+          "p99": 6.0
+        }
+      },
+      "ok": true
+    },
+    {
+      "file": "mycareer_panels.png",
+      "size": [
+        256,
+        128
+      ],
+      "bytes": 1506,
+      "sha256": "fe741f48cbf1b18dccc2e2d1c3843be29118134264c76e842dd59f37892ee851",
+      "alpha": {
+        "min": 0,
+        "max": 255,
+        "distinct": 16
+      },
+      "mips": {
+        "count": 5,
+        "dimensions": [
+          [
+            256,
+            128
+          ],
+          [
+            128,
+            64
+          ],
+          [
+            64,
+            32
+          ],
+          [
+            32,
+            16
+          ],
+          [
+            16,
+            8
+          ]
+        ],
+        "index_bytes": 43648
+      },
+      "palette": {
+        "entries": 256,
+        "limit": 256,
+        "palette_bytes": 1024,
+        "input_unique_rgba_colors": 436,
+        "maximum_channel_error": 2,
+        "channel_error_p995": 1.0,
+        "rms_rgba_error": 0.191,
+        "differing_pixel_count": 5034,
+        "total_pixel_count": 43648,
+        "mapping": "median_cut_palette + vectorised nearest"
+      },
+      "tiles": {
+        "summary_opaque": {
+          "rect": [
+            4,
+            4,
+            132,
+            100
+          ]
+        },
+        "opponent_translucent": {
+          "rect": [
+            140,
+            4,
+            252,
+            60
+          ]
+        },
+        "balance_translucent": {
+          "rect": [
+            140,
+            68,
+            252,
+            116
+          ]
+        },
+        "ribbon_translucent": {
+          "rect": [
+            4,
+            108,
+            132,
+            124
+          ]
+        }
+      },
+      "ok": true
+    },
+    {
+      "file": "mycareer_calendar.png",
+      "size": [
+        128,
+        128
+      ],
+      "bytes": 4328,
+      "sha256": "63b6ce5deeefd475a6ca0103f6265da10a4da371d4f4191689b4c705229ff703",
+      "alpha": {
+        "min": 0,
+        "max": 255,
+        "distinct": 19
+      },
+      "mips": {
+        "count": 5,
+        "dimensions": [
+          [
+            128,
+            128
+          ],
+          [
+            64,
+            64
+          ],
+          [
+            32,
+            32
+          ],
+          [
+            16,
+            16
+          ],
+          [
+            8,
+            8
+          ]
+        ],
+        "index_bytes": 21824
+      },
+      "palette": {
+        "entries": 256,
+        "limit": 256,
+        "palette_bytes": 1024,
+        "input_unique_rgba_colors": 478,
+        "maximum_channel_error": 12,
+        "channel_error_p995": 7.0,
+        "rms_rgba_error": 0.557,
+        "differing_pixel_count": 1029,
+        "total_pixel_count": 21824,
+        "mapping": "median_cut_palette + vectorised nearest"
+      },
+      "icons": [
+        "played",
+        "upcoming",
+        "bye",
+        "practice",
+        "request",
+        "current",
+        "milestone"
+      ],
+      "shape_iou": {
+        "worst": 0.755,
+        "limit": 0.8,
+        "pairs": {
+          "played/upcoming": 0.502,
+          "played/bye": 0.333,
+          "played/practice": 0.668,
+          "played/request": 0.755,
+          "played/current": 0.415,
+          "played/milestone": 0.431,
+          "upcoming/bye": 0.437,
+          "upcoming/practice": 0.479,
+          "upcoming/request": 0.564,
+          "upcoming/current": 0.117,
+          "upcoming/milestone": 0.532,
+          "bye/practice": 0.293,
+          "bye/request": 0.388,
+          "bye/current": 0.063,
+          "bye/milestone": 0.48,
+          "practice/request": 0.539,
+          "practice/current": 0.18,
+          "practice/milestone": 0.486,
+          "request/current": 0.229,
+          "request/milestone": 0.458,
+          "current/milestone": 0.051
+        }
+      },
+      "ok": true
+    },
+    {
+      "file": "mycareer_focus.png",
+      "size": [
+        128,
+        32
+      ],
+      "bytes": 370,
+      "sha256": "2db1feb143df65326dd3d2fcb63288bdbac3421334f3141afdfa45a7bb946e66",
+      "alpha": {
+        "min": 0,
+        "max": 255,
+        "distinct": 6
+      },
+      "mips": {
+        "count": 1,
+        "dimensions": [
+          [
+            128,
+            32
+          ]
+        ],
+        "index_bytes": 4096
+      },
+      "palette": {
+        "entries": 33,
+        "limit": 256,
+        "palette_bytes": 1024,
+        "input_unique_rgba_colors": 33,
+        "maximum_channel_error": 0,
+        "channel_error_p995": 0.0,
+        "rms_rgba_error": 0.0,
+        "differing_pixel_count": 0,
+        "total_pixel_count": 4096,
+        "mapping": "median_cut_palette + vectorised nearest"
+      },
+      "rim_luma": 198.7,
+      "fill_luma": 99.5,
+      "ok": true
+    },
+    {
+      "file": "hub_mockup_640x480.png",
+      "ok": true,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "hub_mockup_wide.png",
+      "ok": true,
+      "size": [
+        854,
+        480
+      ]
+    }
+  ],
+  "ok": true
+}

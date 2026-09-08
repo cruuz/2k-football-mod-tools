@@ -1,8 +1,7 @@
 """Free Practice inside Franchise: shape, retail round trip, cave rules and unicorn runs of the stubs.
 
 Shape tests need nothing.  The retail tests read the extracted ``default.xbe``: status/apply/idempotent
-/foreign, the row-table walk, the reference scan over the cave host.  The emulation tests run the three
-cave stubs on the real image bytes -- the enter stub against a synthetic franchise state (league type,
+/foreign, the row-table walk, the reference scan over the cave host.  The emulation tests run the cave row/enter stubs on the real image bytes -- the enter stub against a synthetic franchise state (league type,
 team count, team pointer array, human-controller array) and the START stub against a synthetic screen
 manager, with retail's own ``FUN_00148B50`` as the control for the stack-depth delta."""
 
@@ -72,21 +71,20 @@ class ShapeTests(unittest.TestCase):
         self.assertEqual(fields[11], 0)                                  # always visible
         self.assertEqual(fields[12], 0)
 
-    def test_the_cloned_descriptor_differs_from_retail_in_two_words_only(self) -> None:
+    def test_the_cloned_descriptor_ends_before_the_adjacent_record(self) -> None:
         clone = fp.clone_descriptor()
         self.assertEqual(len(clone), len(fp.RETAIL_SCRIM_DESCRIPTOR))
         diff = [i for i in range(0, len(clone), 4)
                 if clone[i: i + 4] != fp.RETAIL_SCRIM_DESCRIPTOR[i: i + 4]]
-        self.assertEqual(diff, [0x04, 0x30])
+        self.assertEqual(diff, [0x04])
+        self.assertEqual(len(clone), 0x2C)
         self.assertEqual(struct.unpack_from("<I", clone, 0x04)[0], fp.CAVE_SCRIM_HOOKS_VA)
-        self.assertEqual(struct.unpack_from("<I", clone, 0x30)[0], fp.START_STUB_VA)
-        self.assertEqual(struct.unpack_from("<I", clone, 0x2C)[0], 1)    # "has a START handler"
         self.assertEqual(struct.unpack_from("<I", clone, 0x10)[0], 0x5016C8)   # the retail row table
 
-    def test_the_clone_hooks_keep_team_select_and_add_our_enter_record(self) -> None:
+    def test_the_clone_hooks_keep_native_start_and_our_enter_record(self) -> None:
         hooks = fp.clone_hooks()
         self.assertEqual(struct.unpack("<5I", hooks),
-                         (fp.EVENT_TEAM_SELECT, fp.SCRIM_TEAM_SELECT_RECORD_VA,
+                         (fp.EVENT_START, fp.SCRIM_TEAM_SELECT_RECORD_VA,
                           fp.EVENT_ENTER, fp.CAVE_ENTER_RECORD_VA, 0))
         rec = fp.enter_record()
         self.assertEqual(len(rec), fp.ENTER_RECORD_SIZE)
@@ -104,7 +102,7 @@ class ShapeTests(unittest.TestCase):
         self.assertEqual(body[fp.HOOKS_OFFSET: fp.HOOKS_OFFSET + 0x34], fp.cave_hooks())
         self.assertEqual(body[fp.SCRIM_HOOKS_OFFSET: fp.SCRIM_HOOKS_OFFSET + 0x14], fp.clone_hooks())
         self.assertEqual(body[fp.ENTER_RECORD_OFFSET: fp.ENTER_RECORD_OFFSET + 0x28], fp.enter_record())
-        self.assertEqual(body[fp.DESCRIPTOR_OFFSET: fp.DESCRIPTOR_OFFSET + 0x50], fp.clone_descriptor())
+        self.assertEqual(body[fp.DESCRIPTOR_OFFSET: fp.DESCRIPTOR_OFFSET + 0x2C], fp.clone_descriptor())
         self.assertEqual(body[fp.CODE_OFFSET: fp.CODE_OFFSET + fp.CODE_SIZE], fp.CODE)
         self.assertEqual(body[fp.CODE_OFFSET + fp.CODE_SIZE:], b"\xcc" * (fp.CAVE_SIZE - fp.CODE_OFFSET - fp.CODE_SIZE))
         for va in (fp.CAVE_HOOKS_VA, fp.CAVE_SCRIM_HOOKS_VA, fp.CAVE_ENTER_RECORD_VA,
@@ -129,19 +127,20 @@ class ShapeTests(unittest.TestCase):
                                     f"mov dword ptr [0x{fp.NEXT_SCREEN_VA:x}], 0x{fp.CAVE_DESCRIPTOR_VA:x}",
                                     "ret"])
         # enter stub
-        enter = [t for i, t in zip(insns, text) if fp.ENTER_STUB_VA <= i.address < fp.START_STUB_VA]
+        enter = [t for i, t in zip(insns, text) if fp.ENTER_STUB_VA <= i.address < fp.LAUNCH_TARGET_STUB_VA]
         self.assertEqual(enter, [f"call 0x{fp.PRACTICE_DEFAULTS_VA:x}", f"call 0x{fp.COACHED_TEAM_VA:x}",
                                  "test eax, eax", f"jne 0x{fp.CODE_LABELS['enter_done']:x}".replace("jne", "je"),
                                  "push eax", "mov ecx, eax", f"call 0x{fp.SET_TEAM_A_VA:x}", "pop ecx",
                                  f"call 0x{fp.SET_TEAM_B_VA:x}",
                                  f"mov dword ptr [0x{fp.PRACTICE_TYPE_VA:x}], 1",
                                  f"call 0x{fp.PRACTICE_TYPE_APPLY_VA:x}", "ret"])
-        # START stub: FUN_00148b50 with one pop
-        start = [t for i, t in zip(insns, text) if i.address >= fp.START_STUB_VA]
-        self.assertEqual(start, ["push esi", "mov esi, ecx", "mov eax, dword ptr [esi + 0x10c]",
-                                 "mov dword ptr [eax + 0xa84], 1", f"call 0x{fp.SCREEN_POP_VA:x}",
-                                 "pop esi", f"jmp 0x{fp.GAME_START_VA:x}"])
-        self.assertEqual(start.count(f"call 0x{fp.SCREEN_POP_VA:x}"), 1)
+        # The launch arm calls a target selector; it cannot pop or write state.
+        target = [t for i, t in zip(insns, text) if i.address >= fp.LAUNCH_TARGET_STUB_VA]
+        self.assertEqual(target[0], f"mov edx, 0x{fp.MAIN_MENU_VA:x}")
+        self.assertEqual(target[-2:], [f"mov edx, 0x{fp.COACH_DESK_DESCRIPTOR_VA:x}", "ret"])
+        self.assertIn(f"cmp dword ptr [0x{fp.MODE_VA:x}], 2", target)
+        self.assertIn(f"cmp dword ptr [esi + eax*8 - 8], 0x{fp.CAVE_DESCRIPTOR_VA:x}", target)
+        self.assertFalse(any(t.startswith(("call ", "push ", "pop ")) for t in target))
         # the only absolute writes are to .data globals, never into .text
         for insn in insns:
             if insn.mnemonic != "mov":
@@ -184,10 +183,10 @@ class RetailTests(unittest.TestCase):
                          sum(1 for a, b in zip(self.retail, self.patched) if a != b))
         self.assertEqual([e["label"] for e in self.receipt["edits"]],
                          ["coach_desk_hook_pointer", "coach_desk_row_pointer",
-                          "coach_desk_practice_row", "franchise_practice_cave"])
+                          "coach_desk_practice_row", "franchise_practice_cave", "practice_launch_unwind_target"])
         self.assertEqual(self.receipt["sections_repinned"], [0, 12])       # .text and .rdata
-        self.assertEqual(self.receipt["pops_on_start"], 1)
-        self.assertEqual(self.receipt["retail_instruction_bytes_changed"], 0)
+        self.assertEqual(self.receipt["pops_on_start"], 2)
+        self.assertEqual(self.receipt["retail_instruction_bytes_changed"], 5)
         again, receipt2 = fp.apply(self.patched)
         self.assertEqual(again, self.patched)
         self.assertTrue(receipt2.get("already_applied"))
@@ -208,7 +207,7 @@ class RetailTests(unittest.TestCase):
         half[row_off: row_off + fp.FREED_SPAN_SIZE] = bytes(4) + fp.practice_row()
         self.assertEqual(fp.status(bytes(half)), "foreign")
 
-    def test_only_the_four_sites_change_and_the_digests_are_repinned(self) -> None:
+    def test_only_the_five_sites_change_and_the_digests_are_repinned(self) -> None:
         from mod_editor.core import nfl2k5_rdata_sites as rdata
         sites = {(self._off(va), self._off(va) + len(after)) for _l, va, _b, after in fp.sites()}
         digests = {(s.header_offset + 36, s.header_offset + 56) for s in _sections(self.retail)}
@@ -276,7 +275,7 @@ class RetailTests(unittest.TestCase):
         with self.assertRaises(fp.FranchisePracticeError):
             fp.apply(data)
 
-    def test_the_clone_reaches_the_retail_rows_and_the_team_select_record(self) -> None:
+    def test_the_clone_preserves_native_team_select_and_retail_rows(self) -> None:
         clone = self.patched[self._off(fp.CAVE_DESCRIPTOR_VA):][: fp.SCRIM_DESCRIPTOR_SIZE]
         retail_desc = self.retail[self._off(fp.SCRIM_DESCRIPTOR_VA):][: fp.SCRIM_DESCRIPTOR_SIZE]
         self.assertEqual(retail_desc, fp.RETAIL_SCRIM_DESCRIPTOR)
@@ -285,9 +284,10 @@ class RetailTests(unittest.TestCase):
         self.assertEqual(struct.unpack("<5I", hooks)[1], fp.SCRIM_TEAM_SELECT_RECORD_VA)
         head = self.patched[self._off(fp.SCRIM_TEAM_SELECT_RECORD_VA):][: 8]
         self.assertEqual(head, fp.RETAIL_TEAM_SELECT_RECORD_HEAD)
-        # the retail Scrimmage Settings screen still carries its own hooks and START handler
+        # Retail pregame hooks still point to Team Select. Its adjacent restart record
+        # remains pinned, but is not a field of this descriptor.
         self.assertEqual(struct.unpack_from("<I", retail_desc, 0x04)[0], fp.SCRIM_HOOKS_VA)
-        self.assertEqual(struct.unpack_from("<I", retail_desc, 0x30)[0], fp.START_HANDLER_VA)
+        self.assertEqual(struct.unpack_from("<I", fp.RETAIL_SCRIM_CONTEXT, 0x30)[0], fp.START_HANDLER_VA)
 
     def test_order_independence_with_the_other_xbe_patches(self) -> None:
         from mod_editor.core import nfl2k5_kick_laces as laces
@@ -488,28 +488,23 @@ class EmulationTests(unittest.TestCase):
         uc.mem_write(esp - 4, struct.pack("<I", self.RETURN))
         uc.reg_write(UC_X86_REG_ESP, esp - 4)
         uc.reg_write(UC_X86_REG_ECX, self.MANAGER)
-        uc.emu_start(entry, fp.GAME_START_VA, count=500_000)
-        self.assertEqual(uc.reg_read(UC_X86_REG_EIP), fp.GAME_START_VA)   # both tail-jump into the loader
+        target = fp.GAME_START_VA
+        uc.emu_start(entry, target, count=500_000)
+        self.assertEqual(uc.reg_read(UC_X86_REG_EIP), target)
         return {"depth": self._u32(uc, self.MANAGER + 0x100),
                 "pending": self._u32(uc, self.MANAGER_STATE + 0xA84),
                 "dirty": self._u32(uc, self.MANAGER + 0x108),
                 "esp_delta": uc.reg_read(UC_X86_REG_ESP) - (esp - 4)}
 
-    def test_emulated_start_stub_pops_once_where_retail_pops_twice(self) -> None:
+    def test_native_in_game_restart_still_pops_twice(self) -> None:
+        # This adjacent record's callback is NOT pregame START; preserve retail
+        # in-session restart. The v2 suite executes real pregame START input.
         for depth in (2, 4, 8):
-            ours = self._run_start(self.patched, fp.START_STUB_VA, depth)
-            retail = self._run_start(self.patched, fp.START_HANDLER_VA, depth)
-            self.assertEqual(depth - ours["depth"], 1, depth)
-            self.assertEqual(depth - retail["depth"], 2, depth)
-            self.assertEqual(ours["depth"] - retail["depth"], 1, depth)
-            self.assertEqual(ours["pending"], 1)                 # the "game pending" flag, as retail
-            self.assertEqual(retail["pending"], 1)
-            self.assertEqual(ours["dirty"], retail["dirty"])
-            self.assertEqual(ours["esp_delta"], 0)               # a tail jump: the frame is unchanged
-            self.assertEqual(ours["esp_delta"], retail["esp_delta"])
-        # the retail handler in an unpatched image behaves identically: we changed no instruction byte
-        self.assertEqual(self._run_start(self.retail, fp.START_HANDLER_VA),
-                         self._run_start(self.patched, fp.START_HANDLER_VA))
+            run = self._run_start(self.patched, fp.START_HANDLER_VA, depth)
+            self.assertEqual(depth - run["depth"], 2)
+            self.assertEqual(run["pending"], 1)
+            self.assertEqual(run["esp_delta"], 0)
+            self.assertEqual(run, self._run_start(self.retail, fp.START_HANDLER_VA, depth))
 
     def test_emulated_row_stub_defers_our_screen_and_starts_the_fade(self) -> None:
         from unicorn.x86_const import UC_X86_REG_ECX, UC_X86_REG_EIP, UC_X86_REG_ESP

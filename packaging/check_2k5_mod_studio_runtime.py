@@ -99,21 +99,24 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "64ac47e2f3d28c374d4b0b8d44e5eba16b69ce5d70bbbeb6288ddadeb2be10ed",
     "mod_editor/gui/studio_qt.py":
-        "711d4608487a88aff82ad56dd48c27f6029aba3ab59a805c247bde5ed62ab96f",
+        "c66c4c4a30c5468f998a592d5670f827bb90ce0d9e8d9dbd221993ffb92a1f5f",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
         "68b6887e0778391916a6465a722b062d1c09afe3a376c318026e9db8bd7ed23a",
     "mod_editor/studio/facade.py":
-        "9e53ff74c87926bdb54f5329abefb5090e0915a4bdf194db0d570dd4e638aa93",
+        "fa81aff426da2a3556f7e5435598cfc1cf005e7ef65b1eb99609e63d9d29a04c",
     "mod_editor/studio/project_archive.py":
-        "cdda01f3ef5341d7a238cae0c0d98c15fbfed37d5011710e406c97cc963c3d36",
+        "3556062a7cf178ef416706543e71270783d04439494420810fb7a10ca7f01479",
     "mod_editor/studio/session.py":
-        "8ad359de6df43093836b26d0d4301f4b108221fb2fde775ebd048da28bf4e679",
+        "731b5f757d13ceebea0eb6b37dc9380cd0e1d9a29de1e02c136303a5d68df5f0",
 }
 
 REQUIRED_UNIFIED_PROVIDER_CLOSURE = frozenset(
     {
+        "mod_editor/core/nfl2k5_digit_texture.py",
+        "mod_editor/core/nfl2k5_equipment_import_intent.py",
+        "mod_editor/core/nfl2k5_equipment_lz.py",
         "mod_editor/core/nfl2k5_audio_containment_fingerprints.py",
         "mod_editor/core/nfl2k5_audio_origin_authorization.py",
         "mod_editor/core/nfl2k5_audio_source_containment.py",
@@ -1673,7 +1676,25 @@ def main() -> int:
         "mod_editor.core.nfl2k5_momentum_code",
         "mod_editor.core.nfl2k5_defensive_try",
         "mod_editor.core.nfl2k5_zone_drop",
-
+        "mod_editor.core.nfl2k5_roster_storage",
+        "mod_editor.core.nfl2k5_music_playlist",
+        "mod_editor.core.nfl2k5_music_playlist_code",
+        "mod_editor.core.nfl2k5_practice_squad_screen",
+        "mod_editor.core.nfl2k5_practice_squad_screen_code",
+        "mod_editor.core.nfl2k5_abilities_runtime",
+        "mod_editor.core.nfl2k5_abilities_runtime_code",
+        "mod_editor.core.nfl2k5_qb_spy_runtime",
+        "mod_editor.core.nfl2k5_qb_spy_runtime_code",
+        "mod_editor.core.nfl2k5_calendar_engine",
+        "mod_editor.core.nfl2k5_calendar_engine_code",
+        "mod_editor.core.nfl2k5_hires_pack",
+        "mod_editor.core.nfl2k5_hires_texture",
+        "mod_editor.core.nfl2k5_gameplay_lever",
+        "mod_editor.core.nfl2k5_coverage_slider",
+        "mod_editor.core.nfl2k5_scramble_tuning",
+        "mod_editor.core.nfl2k5_throw_arc",
+        "mod_editor.core.nfl2k5_roster_ages",
+        "mod_editor.core.nfl2k5_team_names_2026",
         "mod_editor.core.nfl2k5_cave_oracle",
         "mod_editor.gui.play_designer_qt",
         "mod_editor.gui.create_play_wizard_qt",
@@ -1716,6 +1737,7 @@ def main() -> int:
         "mod_editor.core.ps2_save_service",
         "mod_editor.gui.ps2_save_dialog_qt",
         "mod_editor.core.nfl2k5_playbook_inspector",
+        "mod_editor.core.nfl2k5_play_intents",
         "mod_editor.core.nfl2k5_playbook_pack",
         "mod_editor.core.playbook_package_rule_spike",
         "mod_editor.core.nfl2k5_universal_asset_index",
@@ -1774,25 +1796,88 @@ def main() -> int:
         "mod_editor.core.nfl2k5_player_star",
         "mod_editor.core.nfl2k5_player_tags",
         "mod_editor.core.nfl2k5_roster_records",
+        "mod_editor.core.nfl2k5_roster_save_to_disc",
+        "mod_editor.core.nfl2k5_espn25_scenarios",
+        "mod_editor.core.nfl2k5_espn25_rosters",
         "mod_editor.gui.models_panel_qt",
         "mod_editor.gui.roster_editor_panel_qt",
+        "mod_editor.gui.espn25_panel_qt",
         "mod_editor.gui.franchise_panel_qt",
         "mod_editor.gui.task_delivery",
         "mod_editor.gui.ux_text",
         "mod_editor.gui.text_rosters_panel",
         "mod_editor.gui.studio_qt",
-        'mod_editor.core.nfl2k5_scorebug_runtime',
-        'mod_editor.core.nfl2k5_scorebug_resources',
-        'mod_editor.core.nfl2k5_scorebug_ingame',
-        'mod_editor.core.nfl2k5_music_policy',
-        'mod_editor.core.nfl2k5_music_catalog',
-        'mod_editor.core.nfl2k5_music_build',
-        'mod_editor.core.nfl2k5_music_banks',
-        'mod_editor.core.nfl2k5_music_metadata',
-        'mod_editor.core.nfl2k5_music_storage',
-        'mod_editor.core.nfl2k5_music_archive',
-        'mod_editor.studio.music_service',
-        'mod_editor.gui.music_panel_qt',
+        "mod_editor.core.nfl2k5_scorebug_runtime",
+        "mod_editor.core.nfl2k5_scorebug_resources",
+        "mod_editor.core.nfl2k5_scorebug_ingame",
+        "mod_editor.core.nfl2k5_scorebug_template",
+        "mod_editor.core.nfl2k5_scorebug_author",
+        "mod_editor.core.build_feedback",
+        "mod_editor.core.image_use",
+        "mod_editor.core.nfl2k5_digit_preview",
+        "mod_editor.core.nfl2k5_digit_sheet",
+        "mod_editor.core.nfl2k5_digit_texture",
+        "mod_editor.core.nfl2k5_equipment_import",
+        "mod_editor.core.nfl2k5_equipment_import_intent",
+        "mod_editor.core.nfl2k5_equipment_lz",
+        "mod_editor.gui.equipment_texture_import_dialog",
+        "mod_editor.core.nfl2k5_scorebar_v3",
+        "mod_editor.core.nfl2k5_scorebug_exact",
+        "mod_editor.core.nfl2k5_scorebug_fonts",
+        "mod_editor.core.nfl2k5_music_policy",
+        "mod_editor.core.nfl2k5_music_catalog",
+        "mod_editor.core.nfl2k5_music_build",
+        "mod_editor.core.nfl2k5_music_banks",
+        "mod_editor.core.nfl2k5_music_metadata",
+        "mod_editor.core.nfl2k5_music_storage",
+        "mod_editor.core.nfl2k5_music_archive",
+        "mod_editor.studio.music_service",
+        "mod_editor.gui.music_panel_qt",
+        "mod_editor.gui.scorebug_studio_panel_qt",
+        "mod_editor.gui.gameplay_project_ui",
+        "mod_editor.core.nfl2k5_animation_bones",
+        "mod_editor.core.nfl2k5_animation_import",
+        "mod_editor.core.nfl2k5_animation_xbe",
+        "mod_editor.core.nfl2k5_build_settings",
+        "mod_editor.core.nfl2k5_crib_reclaim",
+        "mod_editor.core.nfl2k5_franchise_2026",
+        "mod_editor.core.nfl2k5_franchise_2026_code",
+        "mod_editor.core.nfl2k5_franchise_autosave",
+        "mod_editor.core.nfl2k5_franchise_autosave_code",
+        "mod_editor.core.nfl2k5_guardian_overlay",
+        "mod_editor.core.nfl2k5_guardian_overlay_code",
+        "mod_editor.core.nfl2k5_guardian_resources",
+        "mod_editor.core.nfl2k5_hires_budget",
+        "mod_editor.core.nfl2k5_hires_catalog",
+        "mod_editor.core.nfl2k5_hires_evidence",
+        "mod_editor.core.nfl2k5_hires_layouts",
+        "mod_editor.core.nfl2k5_modern_naming",
+        "mod_editor.core.nfl2k5_my_career",
+        "mod_editor.core.nfl2k5_my_career_code",
+        "mod_editor.core.nfl2k5_my_career_mode",
+        "mod_editor.core.nfl2k5_my_career_mode_code",
+        "mod_editor.core.nfl2k5_my_career_save",
+        "mod_editor.core.nfl2k5_patch_cli",
+        "mod_editor.core.nfl2k5_play_rules",
+        "mod_editor.core.nfl2k5_read_option_runtime",
+        "mod_editor.core.nfl2k5_read_option_runtime_code",
+        "mod_editor.core.nfl2k5_resource_growth",
+        "mod_editor.core.nfl2k5_roster_arena",
+        "mod_editor.core.nfl2k5_roster_arena_code",
+        "mod_editor.core.nfl2k5_roster_arena_growth",
+        "mod_editor.core.nfl2k5_roster_arena_image",
+        "mod_editor.core.nfl2k5_screen_hooks",
+        "mod_editor.core.nfl2k5_screen_hooks_code",
+        "mod_editor.core.nfl2k5_senior_bowl",
+        "mod_editor.core.nfl2k5_senior_bowl_code",
+        "mod_editor.core.nfl2k5_widescreen",
+        "mod_editor.gui.beta62_options",
+        "mod_editor.gui.modern_naming_panel_qt",
+        "mod_editor.gui.my_career_panel_qt",
+        "mod_editor.gui.play_info_panel_qt",
+        "mod_editor.gui.play_rules_panel_qt",
+        "mod_editor.gui.senior_bowl_panel_qt",
+        "mod_editor.gui.stadium_blender_panel_qt",
     )
     for relative, expected_sha256 in RC29_AUDIO_ANNOTATION_RUNTIME_PINS.items():
         supplied = ROOT / relative
@@ -1805,6 +1890,25 @@ def main() -> int:
         )
 
     modules = {name: importlib.import_module(name) for name in product_modules}
+    require(len(modules["mod_editor.core.nfl2k5_team_names_2026"].manifest()["teams"]) == 32,
+            "2026 team-name manifest missing or changed")
+    wide = modules["mod_editor.core.nfl2k5_widescreen"]
+    require(wide.POLISH_VERSION == 3 and wide.EXPERIMENTAL is True
+            and wide.RUNTIME_WITNESSED is False and bool(wide.HELP_TEXT), "widescreen v3 witness boundary changed")
+    require(modules["mod_editor.core.nfl2k5_franchise_2026"].RUNTIME_READY is False,
+            "franchise rules require a separately reviewed native event")
+    require(modules["mod_editor.core.nfl2k5_senior_bowl"].NATIVE_EVENT_AVAILABLE is False,
+            "Senior Bowl native launch must remain unavailable")
+    budget = modules["mod_editor.core.nfl2k5_hires_budget"].model((), 1)
+    require(budget["headroom_bytes"] is None and not budget["whole_game_fit_proved"],
+            "Hi-res budgets must not promise whole-game fit")
+    hires = modules["mod_editor.core.nfl2k5_hires_pack"]
+    require(len(hires.ASSETS) == 2524 and len(hires.FAMILIES) == 6, "six-family Hi-res catalog changed")
+    texture = modules["mod_editor.core.nfl2k5_hires_texture"]
+    require(len(texture.PILOT_ASSETS) == 3 and sum(sum(w*h for w, h in asset.dimensions(2)) + 1024
+            for asset in texture.PILOT_ASSETS) == 718336, "Hi-res pilot texture budget changed")
+    with tempfile.TemporaryDirectory() as missing:
+        require(hires.status({}, Path(missing) / "absent") == "foreign", "Hi-res missing-art refusal changed")
     _exercise_texture_master(modules["mod_editor.core.texture_master"])
     packs = modules["mod_editor.core.nfl2k5_playbook_pack"]
     require(packs.load_pack(ROOT / "data/playbooks/softdrink_modern_defense.2k5book").schema == packs.DEFENSE_SCHEMA,
@@ -1814,13 +1918,70 @@ def main() -> int:
             and not option.formations and packs.check_pack(option).ok, "bundled option pack contract changed")
     music = modules["mod_editor.core.nfl2k5_music_build"]
     music._banks_module()
+    # ESPN Anniversary: the layout pins ship relative to the installed root, no executable owner
+    espn = modules["mod_editor.core.nfl2k5_espn25_scenarios"]
+    require(espn.MANIFEST == ROOT / "data/nfl2k5_espn25_layout.json" and espn.MANIFEST.is_file()
+            and not espn.MANIFEST.is_symlink(), "ESPN Anniversary layout pins missing from the installed root")
+    espn_layout = espn.read_json(espn.MANIFEST)
+    require(set(espn_layout) >= {"main", "situ", "rosters"} and len(espn_layout["rosters"]) == 75
+            and espn.REQUESTS == () and espn.PLAN_SCHEMA == "nfl2k5.espn25.plan.v1",
+            "ESPN Anniversary layout pins or owner boundary changed")
     os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
     from PyQt5.QtWidgets import QApplication
     qt_app = QApplication.instance() or QApplication([])
+    # A 4 KiB, one-player/one-team ROST constructed here keeps the shipped
+    # closure independent of test fixtures, retail resources, and source paths.
+    records = modules["mod_editor.core.nfl2k5_roster_records"]
+    body = bytearray(4096)
+    body[12:16] = b"ROST"
+    struct.pack_into("<I", body, 16, 17)
+    def relative(field, target):
+        struct.pack_into("<i", body, field, target - field + 1)
+    relative(20, records.OBJ_OFF)
+    for count_field, table_field in records.POOL_FIELDS.values():
+        relative(table_field, 0x200)
+    struct.pack_into("<I", body, records.POOL_FIELDS["primary"][0], 1)
+    relative(0x210, 0x900)
+    relative(0x214, 0x904)
+    body[0x900:0x908] = b"A\0\0\0B\0\0\0"
+    struct.pack_into("<I", body, records.TEAM_COUNT_FIELD, 1)
+    relative(records.TEAM_TABLE_FIELD, 0x300)
+    roster_gui = modules["mod_editor.gui.roster_editor_panel_qt"]
+    roster_panel = roster_gui.RosterEditorPanel()
+    roster_panel.load_document(records.RosterDocument(body))
+    age_dialog = roster_gui.AgeShiftDialog(roster_panel)
+    require(age_dialog.source_year.value() == 2004 and age_dialog.target_year.value() == 2026
+            and age_dialog.plan is not None, "explicit age review unavailable")
+    require(roster_panel.document.to_body() == bytes(body), "age preview mutated the roster")
+    age_dialog.close()
+    age_dialog.deleteLater()
+    require(not roster_panel.pages.isTabEnabled(roster_panel._espn25_index)
+            and roster_panel.pages.tabText(roster_panel._espn25_index) == "ESPN Anniversary",
+            "ESPN Anniversary subtab must stay disabled without a disc image")
+    roster_panel.close()
+    roster_panel.deleteLater()
+    qt_app.processEvents()
+    espn_panel = modules["mod_editor.gui.espn25_panel_qt"].Espn25Panel()
+    require(espn_panel.moments.count() == 0 and not espn_panel.pending, "ESPN Anniversary panel must start empty")
+    espn_panel.close()
+    espn_panel.deleteLater()
+    qt_app.processEvents()
     panel = modules["mod_editor.gui.music_panel_qt"].MusicPanel()
     require(panel.service is None and not panel.operation_in_progress, "empty Music panel is not idle")
     panel.close()
     panel.deleteLater()
+    qt_app.processEvents()
+    studio = modules["mod_editor.core.nfl2k5_scorebug_author"]
+    require([item.id for item in studio.presets()] == ["reference_v10", "fable_espn", "plain_dark", "retail_like"],
+            "Scorebar Studio preset registry changed")
+    with tempfile.TemporaryDirectory() as scratch:
+        receipt = studio.Document.from_preset("plain_dark").save_folder(Path(scratch) / "bar")
+        require(receipt["slot"]["fits"] and receipt["template"]["colours"] <= 128,
+                "Scorebar Studio export no longer fits the scorebar slot")
+    scorebar_page = modules["mod_editor.gui.scorebug_studio_panel_qt"].ScorebugStudioPanel()
+    require(scorebar_page.layer_list.count() == 8 and not scorebar_page.is_dirty, "Scorebar Studio page is not idle")
+    scorebar_page.close()
+    scorebar_page.deleteLater()
     qt_app.processEvents()
     runtime = modules["mod_editor.core.nfl2k5_scorebug_runtime"]
     require(bool(runtime.REQUESTS) and runtime.status(b"bad") == "foreign", "runtime scorebug gate changed")
@@ -1832,6 +1993,12 @@ def main() -> int:
             importlib.import_module("nfl2k5_scorebug_reference").main(["--help"])
         except SystemExit as exc:
             require(exc.code == 0, "scorebug CLI help parser failed")
+    for module_name in ("mod_editor.core.nfl2k5_roster_arena", "mod_editor.core.nfl2k5_roster_arena_image"):
+        with contextlib.redirect_stdout(io.StringIO()):
+            try:
+                modules[module_name].main(["--help"])
+            except SystemExit as exc:
+                require(exc.code == 0, "roster migration CLI unavailable")
     animation = modules["mod_editor.core.nfl2k5_animation"]
     for name in ("nfl_outer", "nfl_motion_inventory", "nfl_scene_probe", "nfl_scne_inventory", "nfl_txtr", "xbe_info"):
         animation._tool(name)
@@ -1898,11 +2065,11 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 83,
+    require(len(registry.capabilities) == 116,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
-    require(len(product_catalog.capabilities) == 45,
+    require(len(product_catalog.capabilities) == 78,
             "NFL 2K5 product capability count changed")
     _exercise_default_provider_controller(
         modules["mod_editor.core.controller"],
@@ -2305,8 +2472,8 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=83 sections=12 nfl2k5_capabilities=45 "
-        "reports=16 reviewed_metadata=23 sets=634 visuals=71963 "
+        "registry=116 sections=12 nfl2k5_capabilities=78 "
+        "reports=16 reviewed_metadata=24 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "
         "text_read_only=3272 roster_numbers=6522 "

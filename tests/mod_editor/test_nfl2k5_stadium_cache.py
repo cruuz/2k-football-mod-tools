@@ -10,6 +10,12 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
+import sys
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 from mod_editor.core import platform_compat
 from mod_editor.core.model import SourceRecord
 from mod_editor.core.nfl2k5_source_cache import SOURCE_SHA256, SourceCache

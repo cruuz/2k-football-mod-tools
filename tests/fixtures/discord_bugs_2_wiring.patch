@@ -1,0 +1,273 @@
+--- a/mod_editor/gui/studio_qt.py
++++ b/mod_editor/gui/studio_qt.py
+@@ -86,7 +86,7 @@
+     UniformSet,
+     load_nfl2k5_uniform_catalog,
+ )
+-from mod_editor.core.nfl2k5_digit_sheet import split_digit_sheet
++from mod_editor.core.nfl2k5_digit_sheet import split_digit_sheet, SHEET_HELP, SHEET_LAYOUTS
+ from mod_editor.core.nfl2k5_extended_visual_catalog import (
+     ExtendedVisualAsset,
+     Nfl2k5ExtendedVisualCatalog,
+@@ -3251,11 +3251,7 @@
+         self.import_digit_sheet_button.setAccessibleName(
+             "Import a complete zero through nine digit sheet"
+         )
+-        self.import_digit_sheet_button.setToolTip(
+-            "Choose a horizontal or vertical 0–9 sheet at any resolution. "
+-            "Each cell is resized to that exact set's proved jersey, helmet, "
+-            "or arm-number dimensions before all ten digits are imported."
+-        )
++        self.import_digit_sheet_button.setToolTip(SHEET_HELP)
+         self.export_team_kit_button.clicked.connect(self._choose_team_kit_export)
+         self.import_team_kit_button.clicked.connect(self._choose_team_kit_import)
+         self.import_digit_sheet_button.clicked.connect(
+@@ -7012,9 +7008,16 @@
+         family = dict(choices).get(str(label))
+         if family is None:
+             return
++        layout_label, accepted = QInputDialog.getItem(
++            self, "Number sheet layout", SHEET_HELP,
++            [row[0] for row in SHEET_LAYOUTS], 0, False,
++        )
++        if not accepted:
++            return
++        orientation = dict(SHEET_LAYOUTS)[str(layout_label)]
+         filename, _ = QFileDialog.getOpenFileName(
+             self,
+-            f"Choose the {label.lower()} 0–9 sheet",
++            f"Choose the {label.lower()} 0-9 sheet (ten equal cells)",
+             str(Path.home()),
+             IMAGE_IMPORT_FILTER,
+         )
+@@ -7031,7 +7034,7 @@
+
+         def operation(progress: ProgressSink) -> object:
+             progress("Splitting the 0–9 sheet", 0, 12)
+-            outputs = split_digit_sheet(source, targets)
++            outputs = split_digit_sheet(source, targets, orientation=orientation)
+             with tempfile.TemporaryDirectory(prefix="2k5-digit-sheet-") as temporary:
+                 root = Path(temporary)
+                 kit = root / "team-kit"
+--- a/mod_editor/core/mod_build.py
++++ b/mod_editor/core/mod_build.py
+@@ -800,8 +800,10 @@
+         source, target = Path(plan.source).resolve(), Path(plan.target).absolute()
+         if source == target.resolve():
+             raise ValueError("target must not be the source")
+-        if target.exists() and not plan.overwrite:
+-            raise FileExistsError(f"{target} exists")
++        from .image_use import check_image_destination, publish_image
++        if target.exists() and os.path.samefile(source, target):
++            raise ValueError("target must not be the source")
++        previous_target = check_image_destination(target, overwrite=plan.overwrite)
+         with tempfile.TemporaryDirectory(prefix=".studio-build-", dir=target.parent) as folder:
+             directory = Path(folder)
+             edits = None
+@@ -824,7 +826,7 @@
+             receipt["outcome"] = measure(source, directory / target.name)
+             if progress:
+                 progress(receipt["outcome"]["message"], 0, 0)
+-            os.replace(directory / target.name, target)
++            publish_image(directory / target.name, target, previous_target)
+             receipt["target"] = str(target)
+             receipt["result"]["path"] = str(target)
+             return receipt
+--- a/mod_editor/core/nfl2k5_throw_tuning.py
++++ b/mod_editor/core/nfl2k5_throw_tuning.py
+@@ -1806,11 +1806,12 @@
+         _require(not target.is_symlink(), "target is not a regular file")
+         _require(source != target.resolve() and not (target.exists() and os.path.samefile(source, target)),
+                  "source and target are the same file")
+-        _require(not target.exists() or kwargs.get("overwrite", False), "target already exists")
++        from .image_use import check_image_destination, publish_image
++        previous_target = check_image_destination(target, overwrite=kwargs.get("overwrite", False))
+         with tempfile.TemporaryDirectory(prefix=".xbe-disc-", dir=target.parent) as folder:
+             stage = Path(folder) / target.name
+             receipt = writer(source, stage, **{**kwargs, "overwrite": False})
+-            os.replace(stage, target)
++            publish_image(stage, target, previous_target)
+             receipt["target"]["path"] = str(target)
+             return receipt
+     return write
+--- a/mod_editor/apf_studio/gui.py
++++ b/mod_editor/apf_studio/gui.py
+@@ -4742,6 +4742,7 @@
+         if output.suffix.casefold() != ".2ktexmaster":
+             output = output.with_suffix(".2ktexmaster")
+
++        selected_crest_asset_index = self.selected_crest().asset_index
+         self.run_task(
+             "Saving high-resolution helmet-logo authoring master",
+             lambda progress: save(
+@@ -4751,6 +4752,7 @@
+                 transform=draft.transform,
+                 editor_transform=draft.editor_transform,
+                 high_resolution_scale=scale,
++                crest_asset_index=selected_crest_asset_index,
+                 native_baseline_png=(
+                     draft.native_baseline_png
+                     if draft.native_canvas_edited
+@@ -4772,6 +4774,13 @@
+     @staticmethod
+     def _coverage_text(value: float) -> str:
+         return f"{value:.0%}" if value in {0.0, 1.0} else f"{value:.1%}"
++
++    def _selected_crest(self):
++        session = getattr(self.facade, "session", None)
++        slot = self.slot.currentData()
++        if session is None or slot is None:
++            return None
++        return session.crest_modification(slot.asset_index)
+
+     def _coverage_changed(self, *_args: object) -> None:
+         self._refresh_logo_ownership()
+@@ -4804,7 +4813,7 @@
+             self.fit_visible_mask.blockSignals(True)
+             self.fit_visible_mask.setChecked(False)
+             self.fit_visible_mask.blockSignals(False)
+-        if self._staged_png is not None:
++        if self._staged_png is not None or self._selected_crest() is not None:
+             # Keep tooltips/disableReason in sync via set_context (never silent-gray).
+             self.set_context()
+             profile_ready = self._staged_profile == self._selected_profile()
+@@ -4925,28 +4934,16 @@
+             self._populate_slots()
+         self._refresh_logo_ownership()
+         session = getattr(self.facade, "session", None)
+-        modification = (
+-            session.modification(HELMET_CREST_DESIGN_EDIT_ID)
+-            if session is not None and hasattr(session, "modification")
+-            else None
+-        )
++        modification = self._selected_crest()
++        selected_path = modification.replacement_path if modification else None
++        if self._staged_png != selected_path:
++            self._clear_texture_master_draft()
++            self._source_staged_png = None
++            self._staged_png = selected_path
++            self._clear_staged_detail_layer()
++            self._placement_source_rgba = None
++            self._placement_state = None
+         if modification is not None:
+-            wanted_asset_index = int(
+-                modification.metadata.get("crest_asset_index", -1)
+-            )
+-            wanted_slot = next(
+-                (
+-                    index
+-                    for index in range(self.slot.count())
+-                    if getattr(self.slot.itemData(index), "asset_index", -2)
+-                    == wanted_asset_index
+-                ),
+-                -1,
+-            )
+-            if wanted_slot >= 0 and wanted_slot != self.slot.currentIndex():
+-                self.slot.blockSignals(True)
+-                self.slot.setCurrentIndex(wanted_slot)
+-                self.slot.blockSignals(False)
+             wanted_profile = str(
+                 modification.metadata.get("profile", RETAIL_CREST_PROFILE)
+             )
+@@ -5978,7 +5975,9 @@
+             return
+         revert = getattr(self.facade, "revert", None)
+         if callable(revert):
+-            revert(HELMET_CREST_DESIGN_EDIT_ID)
++            modification = self._selected_crest()
++            if modification is not None:
++                revert(modification.asset_id)
+         self._staged_png = None
+         self._source_staged_png = None
+         self._clear_staged_detail_layer()
+@@ -6975,17 +6974,17 @@
+     ``divot_Grass*`` weather textures, and the SCNE/CurveAnim rows stay locked
+     in the inventory browser below.
+
+-    The panel never mutates the shared editing session, so it never marks
+-    unrelated project state modified, and it makes no in-game/runtime claim:
+-    what a changed field texture looks like in play is unproved without a Xenia
+-    capture.
++    Replacements belong to the shared project, Undo and Build Game Folder.
++    The separate copied-volume export is limited to a one-edit workspace.
++    Rendered appearance remains experimental and unwitnessed.
+     """
++
++    modifiedChanged = pyqtSignal()
+
+     def __init__(self, facade: ApfStudioFacade, run_task: TaskRunner):
+         super().__init__()
+         self.facade = facade
+         self.run_task = run_task
+-        self._staged: dict[tuple[int, int], Path] = {}
+         self._preview_dir: Path | None = None
+         self._preview_token = 0
+         self._display_alpha_note: str | None = None
+@@ -7176,7 +7175,20 @@
+         return FIELD_ART_COVERED_TARGETS[0]
+
+     def staged_path(self, target: _FieldArtTarget) -> Path | None:
+-        return self._staged.get(target.key)
++        from .field_art import field_art_metadata
++        session = self.facade.session
++        if session is None:
++            return None
++        asset_id, _metadata = field_art_metadata(*target.key)
++        modification = session.modification(asset_id)
++        return modification.replacement_path if modification else None
++
++    def _stage_session(self, target, path: Path) -> None:
++        def done(_result):
++            self.set_context()
++            self.modifiedChanged.emit()
++        self.run_task("Staging field art", lambda progress:
++            self.facade.replace_field_art(target.key, path, progress), done, True)
+
+     def focus_target(self, name: str) -> bool:
+         """Select one writable base texture by slot name or ``outer:inner``."""
+@@ -7539,8 +7551,7 @@
+             return
+
+         if not probe.changed:
+-            self._staged[target.key] = Path(path)
+-            self.set_context()
++            self._stage_session(target, Path(path))
+             return
+
+         answer = QMessageBox.question(
+@@ -7567,8 +7578,7 @@
+                 "image. No edit was staged.",
+             )
+             return
+-        self._staged[target.key] = staged
+-        self.set_context()
++        self._stage_session(target, staged)
+         QMessageBox.information(
+             self, "Resized",
+             f"Staged a {target.width}×{target.height} copy — {result.describe()}."
+@@ -7584,10 +7594,16 @@
+                 reason + "\n\nStage a Field Art replacement first.",
+             )
+             return
+-        self._staged.pop(self.current_target().key, None)
++        self.facade.revert_field_art(self.current_target().key)
+         self.set_context()
++        self.modifiedChanged.emit()
+
+     def _build_copied_volume(self) -> None:
++        if self.facade.session is not None and self.facade.session.modified_count > 1:
++            QMessageBox.information(self, "Build all project edits",
++                "Use Build Game Folder to include every staged logo and Field Art edit. "
++                "This export creates only the selected texture's 0A volume.")
++            return
+         reason = str(self.build_button.property("disableReason") or "").strip()
+         if reason:
+             QMessageBox.information(
+@@ -7737,6 +7753,7 @@
+         # The bounded authorship surface: only the slots the offline writer
+         # proved.  The inventory below stays browse/export-only.
+         self.editor = ApfFieldArtPanel(facade, run_task)
++        self.editor.modifiedChanged.connect(self.modifiedChanged)
+         layout.addWidget(self.editor)
+
+         semantic_panel = QFrame()

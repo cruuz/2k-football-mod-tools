@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="476" height="48" viewBox="0 0 476 48" role="img" aria-labelledby="tb-title tb-desc">
+  <title id="tb-title">Team block template</title>
+  <desc id="tb-desc">Away block x 104..222 and home block x 358..476 on the same 476x48 canvas as scorebug_bar_master.svg. build.py fills the data-fill nodes from teams.json (primary_hex, secondary_hex) and exports one PNG per block per team. The colour band is on the outer edge of each block (next to the ESPN cell for away, at the right cap for home) and fades to the frame dark before the abbreviation cell so the game's white or possession-yellow text stays readable.</desc>
+  <defs>
+    <clipPath id="body-clip"><rect x="1" y="1" width="474" height="46" rx="6.5"/></clipPath>
+    <linearGradient id="fade-away" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#101217" stop-opacity="0"/>
+      <stop offset="0.12" stop-color="#101217" stop-opacity="0.15"/>
+      <stop offset="0.27" stop-color="#101217" stop-opacity="0.74"/>
+      <stop offset="1" stop-color="#101217" stop-opacity="0.90"/>
+    </linearGradient>
+    <linearGradient id="fade-home" x1="1" y1="0" x2="0" y2="0">
+      <stop offset="0" stop-color="#101217" stop-opacity="0"/>
+      <stop offset="0.12" stop-color="#101217" stop-opacity="0.15"/>
+      <stop offset="0.27" stop-color="#101217" stop-opacity="0.74"/>
+      <stop offset="1" stop-color="#101217" stop-opacity="0.90"/>
+    </linearGradient>
+    <linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.22"/>
+      <stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0.05"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <g id="layer_away_block" clip-path="url(#body-clip)">
+    <rect id="away-primary" data-fill="away.primary_hex" x="104" y="1" width="118" height="46" fill="#000000"/>
+    <rect x="104" y="1" width="118" height="46" fill="url(#fade-away)"/>
+    <rect id="away-rail" data-fill="away.secondary_hex" x="104" y="1" width="118" height="2" fill="#A5ACAF"/>
+    <rect x="104" y="1" width="118" height="18" fill="url(#gloss)"/>
+    <rect x="104" y="44" width="118" height="3" fill="#000000" fill-opacity="0.40"/>
+  </g>
+
+  <g id="layer_home_block" clip-path="url(#body-clip)">
+    <rect id="home-primary" data-fill="home.primary_hex" x="358" y="1" width="118" height="46" fill="#03202F"/>
+    <rect x="358" y="1" width="118" height="46" fill="url(#fade-home)"/>
+    <rect id="home-rail" data-fill="home.secondary_hex" x="358" y="1" width="118" height="2" fill="#A71930"/>
+    <rect x="358" y="1" width="118" height="18" fill="url(#gloss)"/>
+    <rect x="358" y="44" width="118" height="3" fill="#000000" fill-opacity="0.40"/>
+  </g>
+</svg>

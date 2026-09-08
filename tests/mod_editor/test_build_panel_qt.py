@@ -112,6 +112,70 @@ class IntegrationBuildTests(unittest.TestCase):
         panel.apply_state(state)
         return panel
 
+    def test_beta62_optins_flight_exclusion_hires_summary_and_preset_reset(self):
+        panel = self.panel()
+        panel.hires_folder_field.setText("my Hi-res")
+        panel.hires_scale_combo.setCurrentIndex(1)
+        keys = ("all_stadiums", "team_names_2026", "coverage_slider", "scramble_tuning",
+                "flatter_deep_ball", "chop_block_toggle", "hires_pack")
+        for key in keys:
+            box = panel._boxes()[key]
+            self.assertTrue(box.isEnabled(), key)
+            self.assertLessEqual(len(box.text()), 60)
+            box.setChecked(True)
+        plan = panel.plan()
+        self.assertTrue(all(getattr(plan, key) for key in keys))
+        self.assertTrue(plan.throw)
+        self.assertEqual(plan.max_deep_yards, 80)
+        self.assertFalse(plan.realistic_flight or plan.arc_by_distance or plan.arc)
+        self.assertEqual((plan.hires_folder, plan.hires_scale, plan.hires_target),
+                         ("my Hi-res", 1, "xemu-64"))
+        self.assertIn("my Hi-res", " ".join(panel.selected_labels()))
+        self.assertFalse(panel.hires_target_combo.model().item(1).isEnabled())
+        self.assertIn("Washington Commanders", panel._team_names_details())
+        self.assertIn("Washington Cmdrs", panel._team_names_details())
+        panel.arc_by_distance_check.setChecked(True)
+        self.assertFalse(panel.plan().flatter_deep_ball)
+        for preset in mod_build.PRESETS:
+            panel.apply_preset(preset)
+            self.assertTrue(all(getattr(panel.plan(), key) is False for key in keys))
+            self.assertEqual(panel.plan().hires_folder, "my Hi-res")
+            self.assertEqual(panel.plan().hires_scale, 1)
+
+    def test_team_identity_facade_uses_short_forms_and_rechecks_staged_values(self):
+        from types import SimpleNamespace
+        from unittest.mock import Mock
+        from mod_editor.gui.studio_qt import _EmbeddedOperationGuardedHost
+        from mod_editor.core import nfl2k5_team_names_2026 as names
+        from mod_editor.core.nfl2k5_text_catalog import Nfl2k5TextCatalog, RosterTeam
+        assets = [SimpleNamespace(asset_id=f"nfl2k5.text.rost.5.{c['domain']}.{c['team_index']}.{c['field']}",
+                                  value=c['retail'], label=c['field']) for c in names.manifest()['cells']]
+        fields = tuple((key, f"nfl2k5.text.rost.5.team.25.{key}") for key in ('city','nickname','abbreviation'))
+        team = RosterTeam('washington', 5, 'Roster', False, 25, 'Washington Redskins', '00', fields, True, '')
+        catalog = Nfl2k5TextCatalog((), assets, (team,), (), ())
+        staged = {a.asset_id:a.value for a in assets}
+        raw = SimpleNamespace(text_catalog_snapshot=lambda _:catalog,
+                              text_value=lambda a:staged[a if isinstance(a,str) else a.asset_id],
+                              replace_text=Mock())
+        enabled = [True]
+        facade = _EmbeddedOperationGuardedHost(raw, requester='text', require_mutation_admission=lambda *_:None,
+                                               team_names_enabled=lambda:enabled[0])
+        asset_id = dict(fields)['nickname']
+        self.assertEqual(facade.text_value(asset_id), 'Cmdrs')
+        self.assertEqual(facade.text_catalog_snapshot(None).teams[0].display_name, 'Washington Cmdrs')
+        self.assertEqual(catalog.teams[0].display_name, 'Washington Redskins')
+        with self.assertRaisesRegex(ValueError,'Turn off'):
+            facade.replace_text(asset_id,'Manual',None)
+        raw.replace_text.assert_not_called()
+        enabled[0] = False
+        self.assertEqual(facade.text_value(asset_id), 'Redskins')
+        staged[asset_id] = 'Manual'
+        enabled[0] = True
+        with self.assertRaisesRegex(ValueError, 'manual edit'):
+            facade.text_value(asset_id)
+        staged[asset_id] = 'Redskins'
+        self.assertEqual(facade.text_value(asset_id), 'Cmdrs')
+
     def test_music_size_preview_includes_staging_and_rejects_stale_selection(self):
         panel = self.panel()
         panel.music_library_field.setText("my-library.json")

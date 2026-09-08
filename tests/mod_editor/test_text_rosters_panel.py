@@ -2,8 +2,12 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+import sys
 import tempfile
 import unittest
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.nfl2k5_text_catalog import (
@@ -259,9 +263,9 @@ class TextRosterPanelViewModelTests(unittest.TestCase):
             text_catalog_summary(self.catalog),
             "17 entries · 14 Editable · 3 View only",
         )
-        self.assertIn("ESPN 25th Anniversary", ESPN_25TH_COMING_SOON_NOTE)
-        self.assertIn("Team selectors", ESPN_25TH_COMING_SOON_NOTE)
-        self.assertIn("ownership is not proved", ESPN_25TH_COMING_SOON_NOTE)
+        self.assertIn("Rosters > ESPN Anniversary", ESPN_25TH_COMING_SOON_NOTE)
+        self.assertIn("Experimental and unwitnessed", ESPN_25TH_COMING_SOON_NOTE)
+        self.assertIn("installation is unavailable", ESPN_25TH_COMING_SOON_NOTE)
 
     def test_universal_filter_searches_current_values_bank_and_status(self) -> None:
         changed = "text.113.team.nickname"
@@ -465,7 +469,7 @@ class TextRosterPanelOffscreenTests(unittest.TestCase):
 
         self.assertEqual(
             [text_panel.tabs.tabText(index) for index in range(text_panel.tabs.count())],
-            ["All Text"],
+            ["All Text", "Modern mode names"],
         )
         self.assertEqual(
             [
@@ -531,6 +535,7 @@ class TextRosterPanelOffscreenTests(unittest.TestCase):
             [panel.tabs.tabText(index) for index in range(panel.tabs.count())],
             [
                 "All Text",
+                "Modern mode names",
                 "Current Roster Players",
                 "Historical Teams && Players",
             ],

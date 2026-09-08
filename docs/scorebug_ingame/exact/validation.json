@@ -1,0 +1,265 @@
+{
+  "complete": true,
+  "development_findings": [
+    "The first quarter measurement included a five-pixel capsule-rim fragment. Metric v4 excludes ROI-edge components and retains the old metrics as history.",
+    "A zero-advance possession FONT still drew one glyph per city letter. The owned callback now writes exactly one UTF-16 glyph into the native caller buffer.",
+    "A 333-to-99 score flip drew the cached 333 using the normal font and overlapped the pill. Selection now checks both current and cached scores, including stale bytes after a NUL.",
+    "The initial reload test assumed suppressed city labels use FONT4/FONT8. Native disassembly and the corrected test prove restoration from the actual nine retail slots.",
+    "Git diff encountered a concurrent truncation of scores.json during the live loop. Subsequent evidence publication uses a closed temporary file and os.replace; failed serialization preserves the previous snapshot.",
+    "Visible-ink measurements are now separate from the native-quad criterion. They exclude ROI-edge possession/rim fragments and retain the quarter label's 1.0148-pixel residual. The acceptance limits and regional objective were not weakened."
+  ],
+  "experimental": true,
+  "freeze_status": "OPEN / UNWITNESSED",
+  "integration_validation": "integration_validation.json",
+  "max_rss_kib": 516308,
+  "method": "Standalone unittest processes with pinned retail evidence plus the existing legacy Create-a-Play visibility fixture; bounded CPU execution; no disc build, emulator application or GUI.",
+  "passed": true,
+  "skips": 4,
+  "suites": [
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_exact.py -v",
+      "log": ".scratch/logs/final_exact_ink.log",
+      "returncode": 0,
+      "rss_kib": 292664,
+      "scope": "Includes the new visible-ink diagnostic regression and every previous assertion.",
+      "seconds": 49.49,
+      "skip_details": [],
+      "skips": 0,
+      "test_source_sha256": "7a1a070bf22a53c1932e4011341dce35d588a5615e430d32f6f42a98c05c7161",
+      "tests": 8,
+      "within_memory_limit": true
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_fonts.py -v",
+      "log": ".scratch/logs/final_test_nfl2k5_scorebug_fonts.log",
+      "returncode": 0,
+      "rss_kib": 306060,
+      "seconds": 36.332,
+      "skip_details": [],
+      "skips": 0,
+      "test_source_sha256": "f40abdad98be16aab13b96cb34067959264ee0b07d767af27499df6c1cac16b7",
+      "tests": 9,
+      "within_memory_limit": true
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_ingame.py -v",
+      "log": ".scratch/logs/final_test_nfl2k5_scorebug_ingame.log",
+      "returncode": 0,
+      "rss_kib": 139156,
+      "seconds": 8.513,
+      "skip_details": [],
+      "skips": 0,
+      "test_source_sha256": "3b0f8ee7768665662a1ded5704d9685210ddccbc1028fc610a8a122252404d4b",
+      "tests": 11,
+      "within_memory_limit": true
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_native.py -v",
+      "log": ".scratch/logs/final_test_nfl2k5_scorebug_native.log",
+      "returncode": 0,
+      "rss_kib": 217508,
+      "seconds": 131.515,
+      "skip_details": [],
+      "skips": 0,
+      "test_source_sha256": "891bcfa2f034a606ce464592d5a3518bc891e687fb7e4fbb99eeb7aff5fdc85f",
+      "tests": 4,
+      "within_memory_limit": true
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_projection.py -v",
+      "log": ".scratch/logs/final_test_nfl2k5_scorebug_projection.log",
+      "returncode": 0,
+      "rss_kib": 306112,
+      "seconds": 25.659,
+      "skip_details": [],
+      "skips": 0,
+      "test_source_sha256": "8f9d1f3ba673ca21542a69e68211e85a29f1ffc5d0d787fec9b492d9c5f74461",
+      "tests": 14,
+      "within_memory_limit": true
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_resources.py -v",
+      "log": ".scratch/logs/final_test_nfl2k5_scorebug_resources.log",
+      "returncode": 0,
+      "rss_kib": 168140,
+      "seconds": 98.933,
+      "skip_details": [],
+      "skips": 0,
+      "test_source_sha256": "ac1fb3a06596d919b7cba8700fdfdad10cffef8c1be25a103b4fd9261ca89eb7",
+      "tests": 6,
+      "within_memory_limit": true
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_runtime.py -v",
+      "log": ".scratch/logs/final_test_nfl2k5_scorebug_runtime.log",
+      "returncode": 0,
+      "rss_kib": 286776,
+      "seconds": 114.127,
+      "skip_details": [],
+      "skips": 0,
+      "test_source_sha256": "f7be676d8c9bd0b29e6fb85a2d54fdb71118e203ddae7c5abb26d865786f562c",
+      "tests": 12,
+      "within_memory_limit": true
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_source_art.py -v",
+      "log": ".scratch/logs/final_test_nfl2k5_scorebug_source_art.log",
+      "returncode": 0,
+      "rss_kib": 48552,
+      "seconds": 0.436,
+      "skip_details": [
+        "test_every_texture_span_is_identical_either_way (__main__.ByteIdentityTests.test_every_texture_span_is_identical_either_way) ... skipped 'legacy typed-importer audit evidence absent; v7 has independent pins'",
+        "test_the_scene_span_is_identical_either_way (__main__.ByteIdentityTests.test_the_scene_span_is_identical_either_way) ... skipped 'the developer copy of the retail scene is not in this tree'",
+        "test_the_step_writes_the_expected_resource_bytes (__main__.FullDiscWriteTests.test_the_step_writes_the_expected_resource_bytes) ... skipped 'the developer copies this is compared against are not in this tree'"
+      ],
+      "skips": 3,
+      "test_source_sha256": "ed7a4f50f47ac583ccab85c3f25d9c97f7fe593ed9483914e945e39e98f30922",
+      "tests": 13,
+      "within_memory_limit": true
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_template.py -v",
+      "log": ".scratch/logs/final_test_nfl2k5_scorebug_template.log",
+      "returncode": 0,
+      "rss_kib": 139916,
+      "seconds": 9.729,
+      "skip_details": [],
+      "skips": 0,
+      "test_source_sha256": "77432ea01666f061b8f5e6e253b3d8a5d8d9f735ce7f06841f4198f1864954b3",
+      "tests": 19,
+      "within_memory_limit": true
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_template_release.py -v",
+      "log": ".scratch/logs/final_test_nfl2k5_scorebug_template_release.log",
+      "returncode": 0,
+      "rss_kib": 33272,
+      "seconds": 0.615,
+      "skip_details": [],
+      "skips": 0,
+      "test_source_sha256": "2ebf1c40873a21852f8f9a884e4b62a79b00b7dd4921cce6a3471795dd7ecabe",
+      "tests": 5,
+      "within_memory_limit": true
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py -v",
+      "log": ".scratch/logs/final_test_nfl2k5_scorebug_unified_adapter.log",
+      "returncode": 0,
+      "rss_kib": 30208,
+      "seconds": 0.169,
+      "skip_details": [],
+      "skips": 0,
+      "test_source_sha256": "ada3f02b92a06cbbc182e3d0415b1a3a34128954b80c780aecf9746ee2b04c04",
+      "tests": 5,
+      "within_memory_limit": true
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py -v",
+      "log": ".scratch/logs/final_test_nfl2k5_scorebug_v10_ingame.log",
+      "returncode": 0,
+      "rss_kib": 149576,
+      "seconds": 8.469,
+      "skip_details": [],
+      "skips": 0,
+      "test_source_sha256": "c437172154874fff52dc46f3a20947f9d4640896fadf0c29fa987496eb01a824",
+      "tests": 11,
+      "within_memory_limit": true
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_v10_projection.py -v",
+      "log": ".scratch/logs/final_test_nfl2k5_scorebug_v10_projection.log",
+      "returncode": 0,
+      "rss_kib": 289076,
+      "seconds": 26.283,
+      "skip_details": [],
+      "skips": 0,
+      "test_source_sha256": "5a666a8ef31d6681999d411474b9be3d63ac9f91b9c11c3173f0d69a75d7f045",
+      "tests": 14,
+      "within_memory_limit": true
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_versions.py -v",
+      "log": ".scratch/logs/final_test_nfl2k5_scorebug_versions.log",
+      "returncode": 0,
+      "rss_kib": 159832,
+      "seconds": 3.949,
+      "skip_details": [],
+      "skips": 0,
+      "test_source_sha256": "65f3c1537c5bed888e3d8c63ef25977a59d932cf13bef1eafba3f2629b951e5a",
+      "tests": 4,
+      "within_memory_limit": true
+    },
+    {
+      "command": "python3 tests/mod_editor/test_xbe_patch_cave_references.py -v",
+      "log": ".scratch/logs/final_test_xbe_patch_cave_references.log",
+      "returncode": 0,
+      "rss_kib": 516308,
+      "seconds": 384.187,
+      "skip_details": [],
+      "skips": 0,
+      "test_source_sha256": "87d53dd37d59c846d2320f67d3f04af45920cdae77b32e761400f838ca161941",
+      "tests": 95,
+      "within_memory_limit": true
+    },
+    {
+      "command": "python3 tests/mod_editor/test_xbe_patch_memory_writes.py -v",
+      "log": ".scratch/logs/final_test_xbe_patch_memory_writes.log",
+      "returncode": 0,
+      "rss_kib": 314792,
+      "seconds": 296.093,
+      "skip_details": [],
+      "skips": 0,
+      "test_source_sha256": "6b4f4532ca7110ef4aa380bbfa9790df8adab76781b5baeb0e88eebc44539c81",
+      "tests": 79,
+      "within_memory_limit": true
+    },
+    {
+      "command": "NFL2K5_SCOREBUG_EMULATION_TEST=1 python3 tests/nfl2k5_scorebug_layout_test.py -v",
+      "log": ".scratch/logs/final_layout_opt_in.log",
+      "returncode": 0,
+      "rss_kib": 154044,
+      "scope": "Includes three opt-in legacy CPU visibility tests using their existing Create-a-Play source fixture.",
+      "seconds": 2.3,
+      "skip_details": [
+        "The mockup used to read an intermediate glTF that is not in a release (and gated the ... skipped 'the intermediate glTF research export is not in this tree'"
+      ],
+      "skips": 1,
+      "test_source_sha256": "556d90eccca0c82cd23f532b0a2a87754e4e55f05df2ede3bdc9c82f4e544021",
+      "tests": 15,
+      "within_memory_limit": true
+    }
+  ],
+  "superseded_checks": [
+    {
+      "command": "python3 tests/nfl2k5_scorebug_layout_test.py -v",
+      "log": ".scratch/logs/final_nfl2k5_scorebug_layout_test.log",
+      "returncode": 0,
+      "rss_kib": 146256,
+      "seconds": 2.136,
+      "skip_details": [
+        "test_ball_live_hide_gate_retail_vs_persistent (__main__.ScorebugEmulationTests.test_ball_live_hide_gate_retail_vs_persistent) ... skipped 'bounded CPU tests require unicorn and NFL2K5_SCOREBUG_EMULATION_TEST=1'",
+        "test_placement_mode_shows_one_mark_copy_and_one_frame (__main__.ScorebugEmulationTests.test_placement_mode_shows_one_mark_copy_and_one_frame) ... skipped 'bounded CPU tests require unicorn and NFL2K5_SCOREBUG_EMULATION_TEST=1'",
+        "test_possession_change_timed_show_retail_vs_persistent (__main__.ScorebugEmulationTests.test_possession_change_timed_show_retail_vs_persistent) ... skipped 'bounded CPU tests require unicorn and NFL2K5_SCOREBUG_EMULATION_TEST=1'",
+        "The mockup used to read an intermediate glTF that is not in a release (and gated the ... skipped 'the intermediate glTF research export is not in this tree'"
+      ],
+      "skips": 4,
+      "test_source_sha256": "556d90eccca0c82cd23f532b0a2a87754e4e55f05df2ede3bdc9c82f4e544021",
+      "tests": 15,
+      "within_memory_limit": true
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_exact.py -v",
+      "log": ".scratch/logs/final_test_nfl2k5_scorebug_exact.log",
+      "returncode": 0,
+      "rss_kib": 290124,
+      "seconds": 49.928,
+      "skip_details": [],
+      "skips": 0,
+      "test_source_sha256": "0e52bf77f987dd98ec28565a6996452395f1016dfeada723e1d7c9bf27a7f35e",
+      "tests": 7,
+      "within_memory_limit": true
+    }
+  ],
+  "tests": 324,
+  "witnessed": false
+}

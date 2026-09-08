@@ -8,6 +8,13 @@ import tempfile
 import unittest
 from unittest import mock
 
+import struct
+import sys
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.nfl2k5_build_service import BuildResult
 from mod_editor.core.nfl2k5_stadium_studio import StadiumGltfTextureWriteBack
@@ -17,6 +24,19 @@ from mod_editor.studio.project_archive import (
     project_target_identity,
 )
 from mod_editor.studio.session import StadiumProjectPreparationRequired
+
+
+def _fake_xemu_command(root: Path) -> str:
+    """A launchable-looking xemu path: POSIX keeps the plain name, Windows needs a real PE image."""
+    if sys.platform != "win32":
+        return "/usr/bin/xemu-test"
+    path = root / "xemu-test.exe"
+    optional = struct.pack("<H", 0x20B) + bytes(238)                 # PE32+ optional header, 240 bytes
+    coff = struct.pack("<HHIIIHH", 0x8664, 1, 0, 0, 0, len(optional), 0x22)
+    section = b".text".ljust(8, b"\0") + bytes(32)
+    dos = bytearray(64); dos[:2] = b"MZ"; struct.pack_into("<I", dos, 60, 64)
+    path.write_bytes(bytes(dos) + b"PE\0\0" + coff + optional + section)
+    return str(path)
 
 
 class _Catalog:
@@ -322,6 +342,8 @@ class StudioFacadeTests(unittest.TestCase):
         self.build_service = _BuildService(self.output)
         self.launches: list[tuple[str, ...]] = []
 
+        self.xemu_command = _fake_xemu_command(self.root)
+
         def launcher(argv: object, **_kwargs: object) -> object:
             self.launches.append(tuple(argv))
             return object()
@@ -331,7 +353,7 @@ class StudioFacadeTests(unittest.TestCase):
             source_cache=self.source_cache,  # type: ignore[arg-type]
             build_service=self.build_service,  # type: ignore[arg-type]
             session_factory=_Session,  # type: ignore[arg-type]
-            xemu_command=("/usr/bin/xemu-test",),
+            xemu_command=(self.xemu_command,),
             process_launcher=launcher,
             universal_index_factory=lambda _cache: _UniversalIndex(),  # type: ignore[arg-type]
             stadium_cache_coordinator=_StadiumCoordinator(),  # type: ignore[arg-type]
@@ -394,7 +416,7 @@ class StudioFacadeTests(unittest.TestCase):
         self.assertIn("xemu launched", launched.message)
         self.assertEqual(
             self.launches,
-            [("/usr/bin/xemu-test", "-dvd_path", str(self.output))],
+            [(self.xemu_command, "-dvd_path", str(self.output))],
         )
         self.assertIn(("Build complete", 4, 4), events)
         self.assertEqual(self.facade.resource_kinds(progress), (("TEST", 2),))

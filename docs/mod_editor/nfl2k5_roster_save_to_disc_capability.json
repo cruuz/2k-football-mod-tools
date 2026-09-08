@@ -1,0 +1,73 @@
+{
+  "backend": {
+    "command": "python3 -m mod_editor.core.nfl2k5_roster_save_to_disc --disc source.iso --save SAVEGAME.DAT --output roster_edits.json",
+    "module": "mod_editor/core/nfl2k5_roster_save_to_disc.py",
+    "operation": "write"
+  },
+  "classification": "offline-writer-proved",
+  "evidence": [
+    "ASTRA_ROSTER_SAVE_TO_DISC_REPORT.md",
+    "tests/mod_editor/test_roster_save_to_disc.py",
+    "tests/mod_editor/test_roster_save_to_disc_wiring.py"
+  ],
+  "game": "nfl2k5_xbox",
+  "gui": {
+    "default_enabled": false,
+    "expose": true,
+    "mode": "edit",
+    "reason": "EXPERIMENTAL / UNWITNESSED. Explicit Rosters export action; protected panel patch is in WIRING.md."
+  },
+  "id": "nfl2k5.rosters.save_to_disc",
+  "input_constraints": [
+    "Signature-verified Xbox roster or franchise save; direct containers bounded to 32 MiB / 4096 members. Current disc ROST version 17 or 18; save arena 0 or 1.",
+    "Names matched within pools, disambiguated by play-by-play ID, star tag and team membership. Renames need unique play-by-play ID plus unchanged birth bits. Ambiguous identities are skipped.",
+    "Added players require an unnamed, unowned NFL slot with no history, photo or play-by-play ID and enough fixed name space. Draft slots, templates and existing free agents are not free slots.",
+    "Names never truncate; unknown bits and disc identity tags stay with the target. Reserve moves, IR ownership, season state and history cannot travel through roster edits.",
+    "Pooled and retail position schemes cannot mix. Team pointer prefix stays at 65; combined reserve capacity and the existing minimum rule are enforced by replay.",
+    "Export is source-specific; regenerate after changing the source disc. No automatic Build preset, disc growth or executable patch."
+  ],
+  "portme": [
+    "Apply the protected Rosters/allowlist/runtime/registry handoff; complete Noah's played witness list."
+  ],
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+    "tooling": "source-and-schemas-only"
+  },
+  "runtime": {
+    "evidence": [],
+    "scope": "EXPERIMENTAL / UNWITNESSED. Offline replay, bounded image writes and offscreen GUI proofs only.",
+    "status": "not-tested"
+  },
+  "selectors": {
+    "fields": [
+      {
+        "allowed": "current Xbox disc image or extracted disc tree",
+        "name": "disc",
+        "required": true
+      },
+      {
+        "allowed": "signed Xbox SAVEGAME.DAT, directory or ZIP",
+        "name": "save",
+        "required": true
+      },
+      {
+        "allowed": "roster edits .json; receipt emitted beside it",
+        "name": "output",
+        "required": true
+      }
+    ],
+    "notes": "Ordinary 2k5_mod_studio_roster_edits/v1 JSON consumed by BuildPlan.roster_edits."
+  },
+  "source_container": {
+    "format": "Xbox disc ROST and signed save arena",
+    "hash_pins": [],
+    "resource": "main outer 5; 0x54 player records, fixed name pools, team and free-agent pointer lists",
+    "retail_file": "user-owned current disc and Xbox save"
+  },
+  "summary": "Compare a complete Xbox save roster with the current disc and export replay-verified roster edits plus matched/changed/unmatched/skip/team receipts.",
+  "surface": "players_rosters",
+  "title": "Use an Xbox save roster on the disc (experimental)",
+  "validation_command": "python3 -m tests.mod_editor.test_roster_save_to_disc"
+}

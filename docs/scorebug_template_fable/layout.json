@@ -1,0 +1,742 @@
+{
+  "template": "scorebug_template_fable",
+  "version": 1,
+  "authored": "2026-09-07",
+  "summary": "ESPN NFL 2K5 scorebar, broadcast layout, new art. One 476x48 bar inside the HUD rails [84,381,560,429]. Cells left to right: ESPN NFL mark | away block (colour band, abbreviation, score) | centre (red down-and-distance banner over the quarter / game clock / play clock pill) | home block (score, abbreviation, colour band). Live text is the game's own font at the anchors below; the art leaves those cells clear.",
+  "hud": {
+    "width": 640,
+    "height": 480,
+    "rails": [
+      84,
+      381,
+      560,
+      429
+    ],
+    "bar_size": [
+      476,
+      48
+    ],
+    "bar_local_to_hud": "hud_x = bar_x + 84 ; hud_y = bar_y + 381",
+    "mesh_units": "mesh_x = hud_x - 320 (scene root x = 320). Vertical: the v9 scene root is (320,408) before the native 16 px viewport Y offset with y up; the compiler owns that mapping. All numbers in this file are HUD pixels at 640x480 unless the key says bar_local.",
+    "widescreen_v3": "The wide hook contracts X by 27/32 about x = 320 and leaves Y unchanged (v9 report). The bar and every anchor contract together; nothing in the template changes for wide.",
+    "kick_meter_note": "The relocated kick meter spans about y 268..392 and overlaps the top 11 px of the bar when both show; the retail meter (80 units above the bottom edge) clears it. Unchanged from v9, which already used the full 48 px."
+  },
+  "scales": {
+    "1x": {
+      "dir": "layers/1x",
+      "bar": [
+        476,
+        48
+      ],
+      "pixels_per_hud_unit": 1
+    },
+    "2x": {
+      "dir": "layers/2x",
+      "bar": [
+        952,
+        96
+      ],
+      "pixels_per_hud_unit": 2
+    }
+  },
+  "sources": {
+    "master_svg": "scorebug_bar_master.svg",
+    "team_block_svg": "team_block_template.svg",
+    "teams": "teams.json",
+    "export": "build.py (inkscape export by group id; each layer PNG is the full 476x48 canvas, transparent outside the layer)"
+  },
+  "draw_order_note": "Layers are listed in draw order = atlas packing order. Every layer PNG is a full-canvas RGBA image (476x48 at 1x); the compiler composites them in this order, or crops each layer's rect_bar and draws it at rect_hud. Nothing is stretched unless the atlas tile says so.",
+  "layers": [
+    {
+      "name": "frame",
+      "file": "frame.png",
+      "svg_id": "layer_frame",
+      "rect_bar": [
+        0,
+        0,
+        476,
+        48
+      ],
+      "rect_hud": [
+        84,
+        381,
+        560,
+        429
+      ],
+      "enabled": true,
+      "what": "Outer 1 px rim, rounded body (#101217), the darker ESPN-cell tone (x 1..104) and its 1 px separator, top gloss, bottom shade. This is the mesh pair yscore_buga / yscore_buga1 (both copies identical).",
+      "repaint": "Repaint anything; keep the outer silhouette 476x48 with r=7 corners so both frame copies stay inside the rails."
+    },
+    {
+      "name": "away_block",
+      "file": "away_block.png",
+      "svg_id": "layer_away_block",
+      "rect_bar": [
+        104,
+        1,
+        222,
+        47
+      ],
+      "rect_hud": [
+        188,
+        382,
+        306,
+        428
+      ],
+      "enabled": true,
+      "what": "Away team panel. Neutral default = #131419 with a 2 px rail (#2C313A) and the gloss. Per-team art: teams/<scale>/<ABBR>_away.png (same canvas, same rect). Native parent 23 (away_score1 / zscore_buga).",
+      "sub_cells_bar": {
+        "colour_band": [
+          104,
+          1,
+          130,
+          47
+        ],
+        "abbreviation": [
+          132,
+          19,
+          172,
+          32
+        ],
+        "score": [
+          174,
+          10,
+          218,
+          36
+        ]
+      },
+      "repaint": "Keep x 132..218 quiet: the abbreviation and score are drawn by the game over it."
+    },
+    {
+      "name": "home_block",
+      "file": "home_block.png",
+      "svg_id": "layer_home_block",
+      "rect_bar": [
+        358,
+        1,
+        476,
+        47
+      ],
+      "rect_hud": [
+        442,
+        382,
+        560,
+        428
+      ],
+      "enabled": true,
+      "what": "Home team panel, mirrored (score inside, abbreviation, colour band on the right cap). Rounded right corners come from the body clip. Per-team art: teams/<scale>/<ABBR>_home.png. Native parent 26 (home_score1 / hscore_buga hook).",
+      "sub_cells_bar": {
+        "score": [
+          362,
+          10,
+          406,
+          36
+        ],
+        "abbreviation": [
+          408,
+          19,
+          448,
+          32
+        ],
+        "colour_band": [
+          450,
+          1,
+          476,
+          47
+        ]
+      },
+      "repaint": "Keep x 362..448 quiet for the game text."
+    },
+    {
+      "name": "score_cells",
+      "file": "score_cells.png",
+      "svg_id": "layer_score_cells",
+      "rect_bar": [
+        174,
+        10,
+        406,
+        36
+      ],
+      "rect_hud": [
+        258,
+        391,
+        490,
+        417
+      ],
+      "enabled": true,
+      "what": "Two faint rounded insets (black at 18 %) behind the scores, 44x26 each at bar x 174 and 362. Purely a visual cue; blank the layer if you do not want it.",
+      "pieces_bar": [
+        [
+          174,
+          10,
+          218,
+          36
+        ],
+        [
+          362,
+          10,
+          406,
+          36
+        ]
+      ],
+      "repaint": "Anything low-contrast; the score digits sit on top."
+    },
+    {
+      "name": "down_cell",
+      "file": "down_cell.png",
+      "svg_id": "layer_down_cell",
+      "rect_bar": [
+        226,
+        3,
+        354,
+        21
+      ],
+      "rect_hud": [
+        310,
+        384,
+        438,
+        402
+      ],
+      "enabled": true,
+      "what": "Red down-and-distance banner (#D0021B) recessed 2 px under the rim, 1 px dark rim, r=3 corners, gloss and a top highlight line. Replaces the retail dscore_buga sliding tab; the tab mesh stays collapsed and the text anchor points here.",
+      "repaint": "Keep the inner 126x16 readable under white text. Bar-local text cell 230..350 x 6..17."
+    },
+    {
+      "name": "clock_quarter_cell",
+      "file": "clock_quarter_cell.png",
+      "svg_id": "layer_clock_quarter_cell",
+      "rect_bar": [
+        228,
+        25,
+        352,
+        45
+      ],
+      "rect_hud": [
+        312,
+        406,
+        436,
+        426
+      ],
+      "enabled": true,
+      "what": "Rounded pill (#1B2027 on a #05070B rim, grey border) with two 1 px dividers at bar x 264.5 and 318.5 splitting quarter | game clock | play clock.",
+      "sub_cells_bar": {
+        "quarter": [
+          228,
+          25,
+          264,
+          45
+        ],
+        "game_clock": [
+          264,
+          25,
+          318,
+          45
+        ],
+        "play_clock": [
+          318,
+          25,
+          352,
+          45
+        ]
+      },
+      "repaint": "Keep the dividers where the anchors expect them, or move the anchors with them."
+    },
+    {
+      "name": "espn_mark",
+      "file": "espn_mark.png",
+      "svg_id": "layer_espn_mark",
+      "rect_bar": [
+        4,
+        12,
+        100,
+        36
+      ],
+      "rect_hud": [
+        88,
+        393,
+        184,
+        417
+      ],
+      "enabled": true,
+      "what": "The network mark, 96x24, white geometric ESPN lettering (split bar, 10 degree slant) + divider + NFL, built from Noah's espn_nfl_watermark.svg paths. Not a trademark bitmap. This is the mesh pair zz_ESPN_bug / zz_ESPN_bug1.",
+      "repaint": "Anything that fits 96x24 with transparent surround; this is where the real logo goes if you have rights to it."
+    },
+    {
+      "name": "timeout_marks",
+      "file": "timeout_marks.png",
+      "svg_id": "layer_timeout_marks",
+      "rect_bar": [
+        181,
+        38,
+        400,
+        41
+      ],
+      "rect_hud": [
+        265,
+        419,
+        484,
+        422
+      ],
+      "enabled": false,
+      "what": "Three angled white dashes under each score (bar x 181..212 and 369..400, y 38..41). Decorative: there is no live timeout binding in the static path. Off by default; set enabled true to bake them in as always-three.",
+      "pieces_bar": [
+        [
+          181,
+          38,
+          212,
+          41
+        ],
+        [
+          369,
+          38,
+          400,
+          41
+        ]
+      ],
+      "repaint": "Any small marks; stay under y 44."
+    }
+  ],
+  "cells_bar_local": {
+    "mark_cell": [
+      0,
+      0,
+      104,
+      48
+    ],
+    "away_block": [
+      104,
+      1,
+      222,
+      47
+    ],
+    "centre": [
+      222,
+      1,
+      358,
+      47
+    ],
+    "home_block": [
+      358,
+      1,
+      476,
+      47
+    ]
+  },
+  "text_note": "Eight live fields drawn by the game's FONT objects. x and y are HUD pixels; y is the text BASELINE. cap_height_px is the design intent for the glyph cap height; if the FONT object cannot scale, keep the native size and the cell padding absorbs it (each centre row is 20 px tall and holds a 14 px cap; the block rows hold 16 px). Colours are the text colour words the game writes; possession yellow stays the retail word.",
+  "text": [
+    {
+      "field": "away_abbreviation",
+      "x": 216,
+      "y": 413,
+      "align": "left",
+      "colour": "#FFFFFF",
+      "possession_colour": "retail FFC0C000 (unchanged)",
+      "max_chars": 4,
+      "cap_height_px": 13,
+      "cell_hud": [
+        216,
+        400,
+        256,
+        413
+      ],
+      "sample": "NO",
+      "native": "away_city anchor (transform 1/2), left-aligned"
+    },
+    {
+      "field": "away_score",
+      "x": 280,
+      "y": 413,
+      "align": "centre",
+      "colour": "#FFFFFF",
+      "max_chars": 3,
+      "cap_height_px": 16,
+      "cell_hud": [
+        258,
+        397,
+        302,
+        413
+      ],
+      "sample": "0",
+      "native": "away_score leaf under parent 23; the score flip pivots on the cell centre (280, 404)"
+    },
+    {
+      "field": "home_score",
+      "x": 468,
+      "y": 413,
+      "align": "centre",
+      "colour": "#FFFFFF",
+      "max_chars": 3,
+      "cap_height_px": 16,
+      "cell_hud": [
+        446,
+        397,
+        490,
+        413
+      ],
+      "sample": "0",
+      "native": "home_score leaf under parent 26; pivot (468, 404)"
+    },
+    {
+      "field": "home_abbreviation",
+      "x": 532,
+      "y": 413,
+      "align": "right",
+      "colour": "#FFFFFF",
+      "possession_colour": "retail FFC0C000 (unchanged)",
+      "max_chars": 4,
+      "cap_height_px": 13,
+      "cell_hud": [
+        492,
+        400,
+        532,
+        413
+      ],
+      "sample": "MIA",
+      "native": "home_city anchor (transform 3/4); retail is left-aligned, so the compiler right-aligns by measuring the string or left-aligns at 492 with max 4 chars"
+    },
+    {
+      "field": "down_distance",
+      "x": 374,
+      "y": 398,
+      "align": "centre",
+      "colour": "#FFFFFF",
+      "max_chars": 12,
+      "cap_height_px": 11,
+      "cell_hud": [
+        314,
+        387,
+        434,
+        398
+      ],
+      "sample": "1st & 10",
+      "longest": "4th & Inches",
+      "native": "drop_down record A959C8, formatter FC7D0 (\"%s & %s\"), direction zeroed, tab mesh collapsed"
+    },
+    {
+      "field": "quarter",
+      "x": 330,
+      "y": 421,
+      "align": "centre",
+      "colour": "#FFFFFF",
+      "max_chars": 3,
+      "cap_height_px": 10,
+      "cell_hud": [
+        314,
+        410,
+        348,
+        421
+      ],
+      "sample": "1st",
+      "longest": "OT2",
+      "native": "Quarter anchor (transform 5/6), centred"
+    },
+    {
+      "field": "game_clock",
+      "x": 375,
+      "y": 421,
+      "align": "centre",
+      "colour": "#FFFFFF",
+      "max_chars": 5,
+      "cap_height_px": 11,
+      "cell_hud": [
+        350,
+        410,
+        400,
+        421
+      ],
+      "sample": "13:10",
+      "longest": "15:00",
+      "native": "Gameclock anchors (transforms 7..10); retail right-aligns at the cell's right edge, so if centring is unavailable right-align at x 397"
+    },
+    {
+      "field": "play_clock",
+      "x": 419,
+      "y": 421,
+      "align": "centre",
+      "colour": "#FFFFFF",
+      "max_chars": 3,
+      "cap_height_px": 10,
+      "cell_hud": [
+        404,
+        410,
+        434,
+        421
+      ],
+      "sample": ":12",
+      "longest": ":40",
+      "native": "drop_clock record (cscore_buga), direction zeroed"
+    }
+  ],
+  "aux_text_note": "The four auxiliary event strings (FLAG, FUMBLE, punt hang time, ball position) keep their native records. Point them at the banner cell so they replace the down text visually while shown. The two-line Ball at / Midfield string would put its second line over the clock pill; bind it to the banner's upper baseline (y 398) and accept the overlap, or reformat it to one line if the formatter allows.",
+  "aux_text": [
+    {
+      "field": "flag",
+      "x": 374,
+      "y": 398,
+      "align": "centre",
+      "colour": "#FFFFFF",
+      "native": "drop_yellow (bscore_buga2)"
+    },
+    {
+      "field": "fumble",
+      "x": 374,
+      "y": 398,
+      "align": "centre",
+      "colour": "#FFFFFF",
+      "native": "drop_red (bscore_buga)"
+    },
+    {
+      "field": "hang_time",
+      "x": 374,
+      "y": 398,
+      "align": "centre",
+      "colour": "#FFFFFF",
+      "native": "drop_hangtime (hscore_buga)"
+    },
+    {
+      "field": "ball_position",
+      "x": 374,
+      "y": 398,
+      "align": "centre",
+      "colour": "#FFFFFF",
+      "native": "drop_ball_on (bscore_buga1), two lines"
+    }
+  ],
+  "atlas": {
+    "format": "one P8 texture, RGBA palette, at most 256 colours across every layer that is on the atlas; alpha lives in the palette entries",
+    "palette_target": 128,
+    "palette_note": "v9 found that two 256-colour candidates overflowed the retail VC-LZ overlap scratch and 128 colours fit, so the default set is quantized to 128. Team blocks are separate textures selected by the runtime hook (zscore_buga away / hscore_buga home) and each carry their own palette; keep each pair under 128 too. build.py measures and refuses more than 256.",
+    "packing_order": [
+      "frame",
+      "away_block",
+      "home_block",
+      "score_cells",
+      "down_cell",
+      "clock_quarter_cell",
+      "espn_mark",
+      "timeout_marks"
+    ],
+    "sheet_size": [
+      256,
+      128
+    ],
+    "file": "atlas/atlas_1x.png",
+    "tiles_file": "atlas/atlas.json",
+    "tiles_note": "Tiles are cut from the 1x layer PNGs (bar-local source rects) and drawn at their dest rects. mode exact = 1:1, stretch = bilinear stretch of a narrow strip, nine_slice = caps kept 1:1 and the middle stretched. The frame's left cap is 106 px wide so the darker ESPN-cell tone and its separator survive; delete those two SVG nodes and the frame becomes a plain 14 px 9-slice. The NEUTRAL blocks are horizontally uniform, so the default atlas stores an 8-column strip of each and stretches it; per-team blocks carry a horizontal colour band and must be stored at their full 118 px width, as their own textures (see team_set.hook). build.py places tiles tallest-first; packing_order is the draw order.",
+    "tiles": [
+      {
+        "layer": "frame",
+        "name": "frame_left",
+        "src_bar": [
+          0,
+          0,
+          106,
+          48
+        ],
+        "dst_bar": [
+          0,
+          0,
+          106,
+          48
+        ],
+        "mode": "exact"
+      },
+      {
+        "layer": "frame",
+        "name": "frame_body",
+        "src_bar": [
+          106,
+          0,
+          114,
+          48
+        ],
+        "dst_bar": [
+          106,
+          0,
+          462,
+          48
+        ],
+        "mode": "stretch"
+      },
+      {
+        "layer": "frame",
+        "name": "frame_right",
+        "src_bar": [
+          462,
+          0,
+          476,
+          48
+        ],
+        "dst_bar": [
+          462,
+          0,
+          476,
+          48
+        ],
+        "mode": "exact"
+      },
+      {
+        "layer": "away_block",
+        "name": "away_block_strip",
+        "src_bar": [
+          104,
+          1,
+          112,
+          47
+        ],
+        "dst_bar": [
+          104,
+          1,
+          222,
+          47
+        ],
+        "mode": "stretch",
+        "team_alternative": "teams/1x/<ABBR>_away.png crop [104,1,222,47] exact, own texture"
+      },
+      {
+        "layer": "home_block",
+        "name": "home_block_strip",
+        "src_bar": [
+          400,
+          1,
+          408,
+          47
+        ],
+        "dst_bar": [
+          358,
+          1,
+          468,
+          47
+        ],
+        "mode": "stretch",
+        "team_alternative": "teams/1x/<ABBR>_home.png crop [358,1,476,47] exact, own texture"
+      },
+      {
+        "layer": "home_block",
+        "name": "home_block_cap",
+        "src_bar": [
+          468,
+          1,
+          476,
+          47
+        ],
+        "dst_bar": [
+          468,
+          1,
+          476,
+          47
+        ],
+        "mode": "exact"
+      },
+      {
+        "layer": "score_cells",
+        "name": "score_inset",
+        "src_bar": [
+          174,
+          10,
+          218,
+          36
+        ],
+        "dst_bar": [
+          174,
+          10,
+          218,
+          36
+        ],
+        "mode": "exact",
+        "reuse_at": [
+          [
+            362,
+            10,
+            406,
+            36
+          ]
+        ]
+      },
+      {
+        "layer": "down_cell",
+        "name": "down_banner",
+        "src_bar": [
+          226,
+          3,
+          354,
+          21
+        ],
+        "dst_bar": [
+          226,
+          3,
+          354,
+          21
+        ],
+        "mode": "exact"
+      },
+      {
+        "layer": "clock_quarter_cell",
+        "name": "clock_pill",
+        "src_bar": [
+          228,
+          25,
+          352,
+          45
+        ],
+        "dst_bar": [
+          228,
+          25,
+          352,
+          45
+        ],
+        "mode": "exact"
+      },
+      {
+        "layer": "espn_mark",
+        "name": "espn_mark",
+        "src_bar": [
+          4,
+          12,
+          100,
+          36
+        ],
+        "dst_bar": [
+          4,
+          12,
+          100,
+          36
+        ],
+        "mode": "exact"
+      },
+      {
+        "layer": "timeout_marks",
+        "name": "timeout_marks",
+        "src_bar": [
+          181,
+          38,
+          212,
+          41
+        ],
+        "dst_bar": [
+          181,
+          38,
+          212,
+          41
+        ],
+        "mode": "exact",
+        "reuse_at": [
+          [
+            369,
+            38,
+            400,
+            41
+          ]
+        ]
+      }
+    ]
+  },
+  "team_set": {
+    "dir": "teams",
+    "files": "teams/1x/<ABBR>_away.png, teams/1x/<ABBR>_home.png (and teams/2x/...), 32 pairs from teams.json",
+    "default": "neutral (#131419) for both blocks; the static path cannot select per team yet",
+    "hook": "TEAM_MATERIAL_HOOK in the v9 report: away block through zscore_buga on parent 23, home block through hscore_buga on parent 26, element 2 material visibility coordinated by the runtime owner. Each block is its own texture and palette.",
+    "colour_band": "primary_hex on the outer 26 px of each block fading to the frame dark before the abbreviation cell; secondary_hex as the 2 px top rail"
+  },
+  "preview_text_stand_in": "build.py draws the live text with Arial Bold (msttcorefonts) and a 1 px shadow to preview the anchors. The game's own FONT objects draw the real thing; expect a slightly different face."
+}

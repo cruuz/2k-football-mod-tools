@@ -2,7 +2,16 @@
 
 from __future__ import annotations
 
+# Standalone invocation must not depend on a caller's PYTHONPATH.
+import sys
+from pathlib import Path
+sys.path[:0] = [str(Path(__file__).resolve().parents[2]), str(Path(__file__).resolve().parents[1])]
+
+from pathlib import Path
+import sys
 import unittest
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from mod_editor.core.capabilities import CapabilityRegistryLoader, Classification
 from mod_editor.core.product_catalog import (
@@ -52,56 +61,89 @@ class ProductCatalogTests(unittest.TestCase):
         first = build_nfl2k5_product_catalog(self.registry)
         second = build_nfl2k5_product_catalog(self.registry)
         expected = {
-            "nfl2k5.animations.inspect_export",
-            "nfl2k5.audio.audo_wav",
-            "nfl2k5.audio.ausb_fixed_range_wav",
-            "nfl2k5.audio.fixed_audo_wav",
-            "nfl2k5.audio.menu_back_wav",
-            "nfl2k5.catching_drops.behavior",
-            "nfl2k5.colors.unif_words",
-            "nfl2k5.cpu_ai_draft.logic",
-            "nfl2k5.crib.assets",
-            "nfl2k5.cross_title_model_conversion.to_apf",
-            "nfl2k5.franchise_restoration_cross_title.port",
-            "nfl2k5.gameplay.kickoff_relocated",
-            "nfl2k5.gameplay.momentum",
-            "nfl2k5.gameplay.xbe_space",
-            "nfl2k5.gameplay.zone_drop_cap",
-            "nfl2k5.gameplay_tuning_sliders.defensive_try",
-            "nfl2k5.gameplay_tuning_sliders.rating_view",
-            "nfl2k5.logos.team_select_cards",
-            "nfl2k5.menus.layouts",
-            "nfl2k5.mode_state_routing.state_graph",
-            "nfl2k5.models.guardian_cap_c_trial",
-            "nfl2k5.music.policy",
-            "nfl2k5.music.fixed_slot",
-            "nfl2k5.music.bank_rebuild",
-            "nfl2k5.scorebug_presentation.runtime",
-            "nfl2k5.models.scne_gltf",
-            "nfl2k5.models.scne_same_count_position",
-            "nfl2k5.models.scne_same_footprint_geometry",
-            "nfl2k5.models.scne_upper_deck_source_subset",
-            "nfl2k5.players.disc_roster",
-            "nfl2k5.portraits_faces.live_textures",
-            "nfl2k5.portraits_faces.roster_portraits",
-            "nfl2k5.saves.dashboard",
-            "nfl2k5.schedules_franchise.database",
-            "nfl2k5.schedules_franchise.season_cap",
-            "nfl2k5.scorebug_presentation.inventory",
-            "nfl2k5.scorebug_presentation.score_buga_runtime",
-            "nfl2k5.scorebug_presentation.shield_espn_runtime",
-            "nfl2k5.screens.timing",
-            "nfl2k5.scripts.director_playbook",
-            "nfl2k5.stadiums.create_team_field_art",
-            "nfl2k5.stadiums.geometry",
-            "nfl2k5.textures.all_p8",
-            "nfl2k5.uniforms.all_visual",
-            "nfl2k5.uniforms.detroit_away_runtime",
+            'nfl2k5.textures.hires_pack',
+            'nfl2k5.rosters.save_to_disc',
+            'nfl2k5.rosters.espn25_real_rosters',
+            'nfl2k5_xbox.position_pool_filters',
+            'nfl2k5.espn25.scenarios_rosters',
+            'nfl2k5.gameplay.franchise_autosave',
+            'nfl2k5.colors.unif_words',
+            'nfl2k5.logos.team_select_cards',
+            'nfl2k5.uniforms.all_visual',
+            'nfl2k5.uniforms.detroit_away_runtime',
+            'nfl2k5.players.team_names_2026',
+            'nfl2k5.equipment.guardian_overlay',
+            'nfl2k5.rosters.arena_growth',
+            'nfl2k5.players.disc_roster',
+            'nfl2k5.portraits_faces.live_textures',
+            'nfl2k5.portraits_faces.roster_portraits',
+            'nfl2k5.players.age_shift',
+            'nfl2k5.stadiums.create_team_field_art',
+            'nfl2k5.stadiums_fields.all_stadiums',
+            'nfl2k5.animations.inspect_export',
+            'nfl2k5.stadiums_fields.blender_textures',
+            'nfl2k5.models.guardian_cap_c_trial',
+            'nfl2k5.models.scne_gltf',
+            'nfl2k5.stadiums.geometry',
+            'nfl2k5.cross_title_model_conversion.to_apf',
+            'nfl2k5.models.scne_same_count_position',
+            'nfl2k5.models.scne_same_footprint_geometry',
+            'nfl2k5.models.scne_upper_deck_source_subset',
+            'nfl2k5.scorebug_presentation.inventory',
+            'nfl2k5.scorebug_presentation.runtime',
+            'nfl2k5.scorebug_presentation.score_buga_runtime',
+            'nfl2k5.scorebug_presentation.shield_espn_runtime',
+            'nfl2k5.scorebug_presentation.runtime_probes',
+            'nfl2k5.scorebug_presentation.template',
+            'nfl2k5.scorebug_presentation.studio',
+            'nfl2k5.menus.modern_naming',
+            'nfl2k5.mode.my_career',
+            'nfl2k5.mode.my_career_inline',
+            'nfl2k5.franchise.practice_squad_screen',
+            'nfl2k5.menus.layouts',
+            'nfl2k5.mode_state_routing.state_graph',
+            'nfl2k5.crib.movie_reclaim',
+            'nfl2k5.crib.assets',
+            'nfl2k5.music.fixed_slot',
+            'nfl2k5.music.bank_rebuild',
+            'nfl2k5.music.policy',
+            'nfl2k5.audio.ausb_fixed_range_wav',
+            'nfl2k5.audio.menu_back_wav',
+            'nfl2k5.audio.fixed_audo_wav',
+            'nfl2k5.music.playlist',
+            'nfl2k5.audio.audo_wav',
+            'nfl2k5.schedules_franchise.calendar_engine',
+            'nfl2k5.schedules_franchise.season_cap',
+            'nfl2k5.gameplay.zone_drop_cap',
+            'nfl2k5.gameplay.coverage_slider',
+            'nfl2k5.gameplay_tuning_sliders.defensive_try',
+            'nfl2k5.gameplay.flatter_deep_ball',
+            'nfl2k5.gameplay.kickoff_relocated',
+            'nfl2k5.gameplay.abilities_runtime',
+            'nfl2k5.gameplay.momentum',
+            'nfl2k5.gameplay.qb_spy',
+            'nfl2k5.gameplay.read_option_runtime',
+            'nfl2k5.gameplay.chop_block_toggle',
+            'nfl2k5.gameplay.screen_hooks',
+            'nfl2k5.gameplay.scramble_tuning',
+            'nfl2k5.cpu_ai_draft.logic',
+            'nfl2k5.schedules_franchise.database',
+            'nfl2k5.gameplay_tuning_sliders.rating_view',
+            'nfl2k5.saves.dashboard',
+            'nfl2k5.franchise.senior_bowl_preview',
+            'nfl2k5.schedules_franchise.rules_2026_inspection',
+            'nfl2k5.catching_drops.behavior',
+            'nfl2k5.franchise_restoration_cross_title.port',
+            'nfl2k5.gameplay.xbe_space',
+            'nfl2k5.scripts.director_playbook',
+            'nfl2k5.scripts.play_rules',
+            'nfl2k5.screens.timing',
+            'nfl2k5.textures.all_p8',
         }
         first_ids = [binding.capability_id for binding in first.capabilities]
         second_ids = [binding.capability_id for binding in second.capabilities]
 
-        self.assertEqual(len(first_ids), 45)
+        self.assertEqual(len(first_ids), 78)
         self.assertEqual(len(first_ids), len(set(first_ids)))
         self.assertEqual(set(first_ids), expected)
         self.assertEqual(first_ids, second_ids)
@@ -135,17 +177,17 @@ class ProductCatalogTests(unittest.TestCase):
     def test_category_and_global_counts_match_the_registry(self) -> None:
         catalog = build_nfl2k5_product_catalog(self.registry)
         expected = {
-            ProductCategory.UNIFORMS_EQUIPMENT: (4, 3, 0, 0, 0, 1, 0),
-            ProductCategory.ROSTERS_PLAYERS: (3, 3, 0, 0, 0, 0, 0),
+            ProductCategory.UNIFORMS_EQUIPMENT: (5, 4, 0, 0, 0, 1, 0),
+            ProductCategory.ROSTERS_PLAYERS: (11, 11, 0, 0, 0, 0, 0),
             ProductCategory.TEAM_IDENTITY: (0, 0, 0, 0, 0, 0, 0),
             ProductCategory.FIELD_ART_CREATE_TEAM: (1, 1, 0, 0, 0, 0, 0),
-            ProductCategory.STADIUMS: (8, 3, 1, 1, 0, 3, 0),
-            ProductCategory.SCOREBUG_PRESENTATION: (4, 2, 0, 0, 0, 2, 0),
-            ProductCategory.MENUS_UI: (2, 0, 2, 0, 0, 0, 0),
-            ProductCategory.CRIB: (1, 1, 0, 0, 0, 0, 0),
-            ProductCategory.AUDIO: (7, 6, 0, 1, 0, 0, 0),
-            ProductCategory.SLIDERS_GAMEPLAY: (11, 5, 4, 0, 0, 0, 2),
-            ProductCategory.PLAYBOOKS_PLAYS: (3, 3, 0, 0, 0, 0, 0),
+            ProductCategory.STADIUMS: (10, 6, 1, 0, 0, 3, 0),
+            ProductCategory.SCOREBUG_PRESENTATION: (7, 4, 0, 0, 0, 3, 0),
+            ProductCategory.MENUS_UI: (6, 3, 2, 0, 0, 1, 0),
+            ProductCategory.CRIB: (2, 2, 0, 0, 0, 0, 0),
+            ProductCategory.AUDIO: (8, 7, 0, 1, 0, 0, 0),
+            ProductCategory.SLIDERS_GAMEPLAY: (23, 15, 5, 0, 0, 0, 3),
+            ProductCategory.PLAYBOOKS_PLAYS: (4, 4, 0, 0, 0, 0, 0),
             ProductCategory.TEXTURES: (1, 1, 0, 0, 0, 0, 0),
         }
         for category, values in expected.items():
@@ -173,7 +215,7 @@ class ProductCatalogTests(unittest.TestCase):
                 catalog.counts.evidence,
                 catalog.counts.research,
             ),
-            (45, 28, 7, 2, 0, 6, 2),
+            (78, 58, 8, 1, 0, 8, 3),
         )
 
     def test_ambiguous_stadium_surface_and_team_identity_are_explicit(self) -> None:
@@ -226,7 +268,7 @@ class ProductCatalogTests(unittest.TestCase):
         )
         binding = catalog.binding("nfl2k5.audio.audo_wav")
 
-        self.assertEqual(len(seen), 45)
+        self.assertEqual(len(seen), 78)
         self.assertEqual(
             binding.findings_notes,
             ("850 AUDO records mapped", "Export stays local"),

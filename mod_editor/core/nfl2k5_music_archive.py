@@ -10,6 +10,8 @@ import hashlib
 import os
 from pathlib import Path
 import struct
+import shutil
+import tempfile
 import zlib
 
 from tools import nfl2k5_commentary_swap as audio
@@ -41,6 +43,56 @@ def file_hash(path):
         while data := stream.read(BLOCK):
             result.update(data)
         return result.hexdigest()
+
+
+def identity(path):
+    st = Path(path).stat()
+    return (st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns, st.st_ctime_ns)
+
+
+def transactional_copy(source, output, *, source_sha256, scratch_bytes,
+                       build, verify, overwrite=False, inputs=(), progress=None):
+    """Shared music/resource publication boundary. Callbacks see only a private copy.
+
+    ``build(directory, staged)`` must close every reader/writer before returning;
+    its result is passed to ``verify(staged, result)``. Both callbacks may raise
+    to cancel. Recheck source, authored inputs and destination before publication.
+    No image or pack is materialized in RAM.
+    """
+    progress = progress or (lambda *_: None)
+    require(not Path(output).is_symlink(), 'output cannot be a symlink')
+    source, output = Path(source).resolve(), Path(output).resolve()
+    require(source.is_file(), 'source image must be a regular file')
+    require(source != output and (not output.exists() or not os.path.samefile(source, output)),
+            'output must be a separate copy')
+    require(not output.exists() or overwrite, 'output exists; overwrite was not selected')
+    require(not output.exists() or output.is_file(), 'output must be a regular file')
+    require(output.parent.is_dir(), 'output parent does not exist')
+    inputs = tuple(Path(p).resolve() for p in inputs)
+    require(all(output != p and (not output.exists() or not os.path.samefile(output, p)) for p in inputs),
+            'output aliases a music source/recipe or texture input')
+    target_before = identity(output) if output.exists() else None
+    source_before = identity(source)
+    input_before = [(p, identity(p), file_hash(p)) for p in inputs]
+    require(file_hash(source) == source_sha256, 'source changed before build')
+    require(shutil.disk_usage(output.parent).free >= scratch_bytes, 'insufficient scratch space')
+    with tempfile.TemporaryDirectory(prefix='.archive-', dir=output.parent) as temp:
+        directory = Path(temp).resolve()
+        staged = directory / 'image.iso'
+        progress('copy', 0, source_before[2])
+        with source.open('rb') as reader, staged.open('wb') as writer:
+            while data := reader.read(BLOCK):
+                writer.write(data)
+        built = build(directory, staged)
+        checked = verify(staged, built)
+        require(identity(source) == source_before and file_hash(source) == source_sha256,
+                'source changed during build; output discarded')
+        require(all(identity(p) == before and file_hash(p) == digest_ for p, before, digest_ in input_before),
+                'authored input changed during build; output discarded')
+        require(not output.is_symlink() and
+                (identity(output) if output.exists() else None) == target_before, 'destination changed during build')
+        os.replace(staged, output)
+    return built, checked
 
 
 def chunks(payload):

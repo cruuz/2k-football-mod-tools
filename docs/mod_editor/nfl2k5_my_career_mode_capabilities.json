@@ -1,0 +1,72 @@
+[
+  {
+    "backend": {
+      "command": "python3 -m mod_editor.core.nfl2k5_my_career_mode apply default.xbe generic-default.xbe",
+      "module": "mod_editor/core/nfl2k5_my_career_mode.py",
+      "operation": "write"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "ASTRA_MYCAREER_MODE_REPORT.md",
+      "tests/mod_editor/test_nfl2k5_my_career_frontend.py",
+      "tests/mod_editor/test_nfl2k5_my_career_inline.py",
+      "tests/mod_editor/test_nfl2k5_my_career_control.py",
+      "tests/mod_editor/test_nfl2k5_my_career_generic_build.py",
+      "docs/mod_editor/nfl2k5_my_career_mode_receipt.json"
+    ],
+    "game": "nfl2k5_xbox",
+    "gui": {
+      "default_enabled": false,
+      "expose": false,
+      "mode": "edit",
+      "reason": "EXPERIMENTAL / UNWITNESSED. M2 playable-loop acceptance and protected Build wiring remain unfinished; do not enable a preset."
+    },
+    "id": "nfl2k5.mode.my_career_inline",
+    "input_constraints": [
+      "Pinned USA executable; reserve the complete owner union before installation.",
+      "No setup file, prepared franchise, player name or executable seed. Create MyPlayer in the game.",
+      "Mutually exclusive with the previous journal/prepared-save MyCareer install; rebuild from an original XBE.",
+      "Existing MyCareer budget only: 8192 RX and 4096 RW.",
+      "Career footer follows the complete native Franchise container. Sizes 720172 or 724268; ordinary saves are unchanged.",
+      "Draft is a coming-next-update notice. Supersim live resume, M3 management, art and autosave are not integrated."
+    ],
+    "portme": [
+      "Complete the M2/M3 exit checks and Noah witness list in ASTRA_MYCAREER_MODE_REPORT.md."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "evidence": [
+        "ASTRA_MYCAREER_MODE_REPORT.md"
+      ],
+      "scope": "Bounded native input, CAP, league initialization, serializers, HMAC/EXTRA, control decisions and cancellation routes. Two disposable disc builds cold-load both careers at different allocator addresses. No game boot or played witness.",
+      "status": "not-tested"
+    },
+    "selectors": {
+      "fields": [
+        {
+          "name": "my_career_mode",
+          "required": true,
+          "allowed": "explicit opt-in only; false in every preset"
+        }
+      ],
+      "notes": "Protected integration is specified in WIRING.md."
+    },
+    "source_container": {
+      "format": "XBE in XDVDFS",
+      "hash_pins": [
+        "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+      ],
+      "resource": "Game Modes row, pinned native hooks, owned 8192 RX/4096 RW and an appended 128-byte career save footer.",
+      "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+    },
+    "summary": "Seedless native creation, undrafted signing, owned apartment and inline career saves. Playable-loop acceptance is still in progress.",
+    "surface": "mode_state_routing",
+    "title": "In-game MyCareer (experimental, unwitnessed)",
+    "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_my_career_inline"
+  }
+]

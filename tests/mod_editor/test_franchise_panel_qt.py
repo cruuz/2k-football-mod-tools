@@ -122,7 +122,10 @@ class TabVisibilityTests(_PanelCase):
         self.assertEqual(pages.tabText(0), "Roster")
         self.assertEqual(pages.tabText(1), "Franchise")
         self.assertFalse(pages.isTabVisible(1))
-        self.assertFalse(pages.tabBar().isVisibleTo(self.panel))
+        # the tab bar itself stays: the ESPN Anniversary tab (disc-only) keeps it, disabled, beside Roster
+        self.assertTrue(pages.tabBar().isVisibleTo(self.panel))
+        self.assertEqual(pages.tabText(2), "ESPN Anniversary")
+        self.assertFalse(pages.isTabEnabled(2))
         self.assertFalse(self.page.active)
         self.load(synthetic_franchise_with_coach(year_field=7, user_team=0))
         self.assertTrue(self.page.active)
@@ -135,7 +138,8 @@ class TabVisibilityTests(_PanelCase):
         self.assertTrue(self.panel.load_save(plain))
         self.assertFalse(self.page.active)
         self.assertFalse(pages.isTabVisible(1))
-        self.assertFalse(pages.tabBar().isVisibleTo(self.panel))
+        self.assertTrue(pages.tabBar().isVisibleTo(self.panel))
+        self.assertFalse(pages.isTabEnabled(2))
         self.panel.load_document(rr.load_body(synthetic_body()), label="body")
         self.assertFalse(self.page.active)
         self.assertFalse(pages.isTabVisible(1))
@@ -162,7 +166,9 @@ class OverviewTests(_PanelCase):
         page = self.page
         self.assertIn("season 31 = index 30", page.year_rule_label.text())
         self.assertIn("EXPERIMENTAL / UNWITNESSED", page.season_cap_label.text())
-        self.assertIn("Franchise runs to 128 seasons. Dates and ages after 2099 are not repaired yet.",
+        self.assertIn("Use the calendar patch with your build's starting year for long franchises.",
+                      page.season_cap_label.text())
+        self.assertIn("A save alone does not identify that patch. Editing this year does not simulate seasons.",
                       page.season_cap_label.text())
         page.base_year_spin.setValue(2026)
         self.assertEqual(page.save.to_bytes(), payload)

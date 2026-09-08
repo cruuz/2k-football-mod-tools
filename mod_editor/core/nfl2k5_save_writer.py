@@ -246,19 +246,36 @@ def save_kind(payload: bytes) -> str:
         return "settings"
     if len(payload) == FRANCHISE_SAVE_SIZE:
         return "franchise"
+    if len(payload) in (FRANCHISE_SAVE_SIZE + 0x1000, FRANCHISE_SAVE_SIZE + 128,
+                        FRANCHISE_SAVE_SIZE + 0x1000 + 128):
+        from .nfl2k5_franchise_save import is_franchise_save
+        if is_franchise_save(payload):
+            return "franchise"
     return "unknown"
 
 
+def _franchise_shift(payload) -> int:
+    if len(payload) == FRANCHISE_SAVE_SIZE:
+        return 0
+    _require(len(payload) in (FRANCHISE_SAVE_SIZE + 0x1000, FRANCHISE_SAVE_SIZE + 128,
+                             FRANCHISE_SAVE_SIZE + 0x1000 + 128), "unsupported franchise container length")
+    from .nfl2k5_franchise_save import FranchiseSave
+    try:
+        save = FranchiseSave(payload)
+    except ValueError as exc:
+        raise SaveWriterError(str(exc)) from exc
+    return save.arena_end - 0x91320
+
+
 def read_franchise_fields(payload: bytes, *, base_year: int = FRANCHISE_DISPLAY_YEAR_BASE) -> dict[str, object]:
-    _require(len(payload) == FRANCHISE_SAVE_SIZE,
-             "save is not a 720,044-byte Franchise1 SAVEGAME.DAT")
-    state = payload[FRANCHISE_STATE_OFFSET : FRANCHISE_STATE_OFFSET + 4]
+    shift = _franchise_shift(payload)
+    state = payload[FRANCHISE_STATE_OFFSET + shift : FRANCHISE_STATE_OFFSET + shift + 4]
     validate_franchise_base_year(base_year)
-    year_field = payload[FRANCHISE_YEAR_OFFSET]
+    year_field = payload[FRANCHISE_YEAR_OFFSET + shift]
     return {
         "state_bytes": state.hex(),
-        "stage_weeks": payload[FRANCHISE_STAGE_WEEKS_OFFSET],
-        "week": payload[FRANCHISE_WEEK_OFFSET],
+        "stage_weeks": payload[FRANCHISE_STAGE_WEEKS_OFFSET + shift],
+        "week": payload[FRANCHISE_WEEK_OFFSET + shift],
         "season_ordinal": year_field + 1,
         "year_field": year_field,
         "base_year": base_year,
@@ -269,20 +286,19 @@ def read_franchise_fields(payload: bytes, *, base_year: int = FRANCHISE_DISPLAY_
 
 def apply_franchise_year(payload: bytearray, display_year: int, *,
                          base_year: int = FRANCHISE_DISPLAY_YEAR_BASE) -> dict[str, object]:
-    _require(len(payload) == FRANCHISE_SAVE_SIZE,
-             "save is not a 720,044-byte Franchise1 SAVEGAME.DAT")
+    shift = _franchise_shift(payload)
     validate_franchise_base_year(base_year)
     _require(type(display_year) is int, "franchise year must be an int")
     field = display_year - base_year
     _require(0 <= field <= FRANCHISE_MAX_YEAR_INDEX,
              f"franchise display year {display_year} implies field {field}; "
              "expected index 0..127 (the executable gate is separate)")
-    old_field = payload[FRANCHISE_YEAR_OFFSET]
+    old_field = payload[FRANCHISE_YEAR_OFFSET + shift]
     _require(old_field != field,
              f"franchise year already equals {display_year}")
-    payload[FRANCHISE_YEAR_OFFSET] = field
+    payload[FRANCHISE_YEAR_OFFSET + shift] = field
     return {
-        "offset": f"0x{FRANCHISE_YEAR_OFFSET:x}",
+        "offset": f"0x{FRANCHISE_YEAR_OFFSET + shift:x}",
         "old_year_field": old_field,
         "new_year_field": field,
         "bytes": 1,

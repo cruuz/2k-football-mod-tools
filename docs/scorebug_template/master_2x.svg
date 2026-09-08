@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1280" height="960" viewBox="0 0 640 480">
+<title>V10 static template layers, no baked live text</title>
+<g id="frame"><image x="84" y="381" width="476" height="48" preserveAspectRatio="none" xlink:href="1x/frame.png"/></g>
+<g id="left_mark"><image x="88" y="393" width="68" height="24" preserveAspectRatio="none" xlink:href="1x/left_mark.png"/></g>
+<g id="away_block"><image x="160" y="383" width="114" height="44" preserveAspectRatio="none" xlink:href="1x/away_block.png"/></g>
+<g id="home_block"><image x="438" y="383" width="120" height="44" preserveAspectRatio="none" xlink:href="1x/home_block.png"/></g>
+<g id="away_score"><image x="231" y="383" width="43" height="44" preserveAspectRatio="none" xlink:href="1x/away_score.png"/></g>
+<g id="home_score"><image x="438" y="383" width="45" height="44" preserveAspectRatio="none" xlink:href="1x/home_score.png"/></g>
+<g id="clock_quarter"><image x="278" y="405" width="156" height="22" preserveAspectRatio="none" xlink:href="1x/clock_quarter.png"/></g>
+<g id="down"><image x="278" y="383" width="156" height="21" preserveAspectRatio="none" xlink:href="1x/down.png"/></g>
+</svg>

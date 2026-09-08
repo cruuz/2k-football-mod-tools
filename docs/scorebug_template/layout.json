@@ -1,0 +1,275 @@
+{
+  "schema": "nfl2k5_scorebug_template/v1",
+  "source_scale": 1,
+  "atlas_size": [
+    64,
+    64
+  ],
+  "hud_space": [
+    640,
+    480
+  ],
+  "rails": [
+    84,
+    381,
+    560,
+    429
+  ],
+  "layers": {
+    "frame": {
+      "atlas_rect": [
+        0,
+        0,
+        64,
+        8
+      ],
+      "hud_rect": [
+        84,
+        381,
+        560,
+        429
+      ]
+    },
+    "left_mark": {
+      "atlas_rect": [
+        0,
+        8,
+        64,
+        24
+      ],
+      "hud_rect": [
+        88,
+        393,
+        156,
+        417
+      ]
+    },
+    "away_block": {
+      "atlas_rect": [
+        0,
+        24,
+        32,
+        40
+      ],
+      "hud_rect": [
+        160,
+        383,
+        274,
+        427
+      ]
+    },
+    "home_block": {
+      "atlas_rect": [
+        32,
+        24,
+        64,
+        40
+      ],
+      "hud_rect": [
+        438,
+        383,
+        558,
+        427
+      ]
+    },
+    "away_score": {
+      "atlas_rect": [
+        20,
+        24,
+        32,
+        40
+      ],
+      "hud_rect": [
+        231,
+        383,
+        274,
+        427
+      ]
+    },
+    "home_score": {
+      "atlas_rect": [
+        32,
+        24,
+        44,
+        40
+      ],
+      "hud_rect": [
+        438,
+        383,
+        483,
+        427
+      ]
+    },
+    "clock_quarter": {
+      "atlas_rect": [
+        0,
+        40,
+        64,
+        52
+      ],
+      "hud_rect": [
+        278,
+        405,
+        434,
+        427
+      ]
+    },
+    "down": {
+      "atlas_rect": [
+        0,
+        52,
+        64,
+        64
+      ],
+      "hud_rect": [
+        278,
+        383,
+        434,
+        404
+      ]
+    }
+  },
+  "live_text_anchors": {
+    "away_city": [
+      -158,
+      10,
+      -64
+    ],
+    "home_city": [
+      165,
+      10,
+      -64
+    ],
+    "away_score": [
+      -68,
+      -2,
+      -59
+    ],
+    "home_score": [
+      138,
+      -2,
+      -59
+    ],
+    "quarter": [
+      -21,
+      0,
+      -4
+    ],
+    "clock_a": [
+      72,
+      0,
+      -4
+    ],
+    "clock_b": [
+      72,
+      0,
+      -4
+    ],
+    "drop_down": [
+      36,
+      22,
+      -4
+    ],
+    "drop_clock": [
+      95,
+      0,
+      -4
+    ],
+    "drop_yellow": [
+      36,
+      22,
+      -4
+    ],
+    "drop_red": [
+      36,
+      22,
+      -4
+    ],
+    "drop_ball_on": [
+      36,
+      20,
+      -4
+    ],
+    "drop_hangtime": [
+      36,
+      22,
+      -4
+    ]
+  },
+  "live_timeouts": false,
+  "palette": {
+    "max_colours": 256,
+    "count_alpha": true,
+    "conversion": "exact RGBA; no reduction",
+    "vc_lz_span_bytes": 2432,
+    "wrapper_bytes": 32,
+    "wrapper_plus_0x14": 16,
+    "rule": "nfl_vc_lz_fill must preserve all wrapper bytes, including +0x14, and native overlapping decode"
+  },
+  "live_text_colours": {
+    "scores": "#FFFFFFFF",
+    "teams": "#FFFFFFFF",
+    "possession": "#FFC0C000",
+    "down": "#FFFFFFFF",
+    "quarter_clock_play_clock": "#FF111118"
+  },
+  "optional_timeouts": {
+    "file": "optional/1x/timeout_marks.png",
+    "installed": false,
+    "runtime_counts": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "atlas_rect": null,
+    "hud_rects": [
+      [
+        238,
+        423,
+        270,
+        425
+      ],
+      [
+        442,
+        423,
+        474,
+        425
+      ]
+    ]
+  },
+  "fonts": {
+    "installed": [
+      "font1",
+      "font2",
+      "font5"
+    ],
+    "new_sheet": "glyphs/1x/broadcast_glyphs.png",
+    "score_slot_fields": [
+      "0xA95950",
+      "0xA95988"
+    ],
+    "score_slot": 1,
+    "new_sheet_installed": false,
+    "contract": "glyphs/glyphs.json"
+  },
+  "team_selection": {
+    "static": "neutral",
+    "variants": "teams/1x/ABBR.png",
+    "runtime_bound": false,
+    "away_parent": 23,
+    "home_parent": 26,
+    "away_material": "zscore_buga",
+    "home_material": "hscore_buga",
+    "disable_element_material_visibility": 2
+  },
+  "provenance": {
+    "art": "new pixel paths and supplied SVG design lineage; no retail textures",
+    "photo": "scorebug_reference_2026-09-05.jpeg, research hub",
+    "lineage": [
+      "lineage/scorebug_master.svg",
+      "lineage/espn_nfl_watermark.svg"
+    ],
+    "adaptation": "left mark required by brief; broadcast photo has its watermark in upper right"
+  }
+}

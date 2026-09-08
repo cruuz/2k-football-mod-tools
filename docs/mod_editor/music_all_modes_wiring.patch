@@ -1,0 +1,298 @@
+--- a/mod_editor/core/mod_build.py
++++ b/mod_editor/core/mod_build.py
+@@ -748,6 +748,15 @@
+                 edits = _prepare_music_project(source, plan.music_project, directory, progress or (lambda *_: None))
+             receipt = _build(replace(plan, target=str(directory / target.name), overwrite=False), progress,
+                              music_edits=edits)
++            if plan.music_shuffle or plan.music_library:
++                library = _core_module("nfl2k5_music_banks")
++                expected = (plan.music_shuffle_selection or tt.music_playlist_patch.default_options()) if plan.music_shuffle else None
++                checked = library.revalidate_playlist(directory / target.name, expected=expected)
++                receipt["music_shuffle_validation"] = checked
++                for step in receipt["steps"]:
++                    preflight = step.get("music_shuffle_preflight")
++                    if preflight is not None:
++                        preflight.update(checked)
+             if progress:
+                 progress("Publishing verified disc", 0, 0)
+             os.replace(directory / target.name, target)
+@@ -1261,15 +1270,10 @@
+         if plan.music_shuffle:
+             playlist = tt.music_playlist_patch
+             playlist_selection = playlist.from_options(plan.music_shuffle_selection) if plan.music_shuffle_selection else playlist.Selection()
+-            counts = dict(playlist.BANK_COUNTS)  # retail AUSB descriptor counts
+-            if plan.music_library:
+-                preview = _core_module("nfl2k5_music_banks").plan(target, plan.music_library)
+-                for bank, info in (preview.get("layout", {}).get("banks") or {}).items():
+-                    if isinstance(info, dict) and type(info.get("count")) is int:
+-                        counts[bank] = info["count"]
+-            playlist.validate_source(playlist_selection, counts)
+-            playlist_preflight = {"descriptor_counts": counts, "records": len(playlist_selection.records),
+-                                  "enabled": len(playlist_selection.enabled), "revalidated_after_rebuild": False}
++            library = _core_module("nfl2k5_music_banks")
++            preview = library.plan(target, plan.music_library) if plan.music_library else None
++            playlist_selection, playlist_preflight = library.playlist_preflight(
++                target, plan.music_shuffle_selection, library_plan=preview)
+         patched, space_receipt = tt._apply_all(
+             _xbe_bytes(target), wanted=None, catch_slider=False, arc_table=False,
+             xbe_space=plan.xbe_space, kickoff_relocated=plan.kickoff_relocated,
+--- a/mod_editor/gui/build_panel_qt.py
++++ b/mod_editor/gui/build_panel_qt.py
+@@ -91,6 +91,7 @@
+     """One-stop build of every patch into a single copy."""
+ 
+     operation_state_changed = pyqtSignal(bool)
++    music_library_preview_ready = pyqtSignal(object, object)
+     built = pyqtSignal(dict)   # the receipt of the copy just written (Share pre-fills from it)
+ 
+     def __init__(self, facade: object | None = None, parent: QWidget | None = None) -> None:
+@@ -1158,7 +1159,7 @@
+             defensive_try=self.defensive_try_check.isChecked(), zone_drop_cap=self.zone_drop_cap_check.isChecked(),
+             all_stadiums=self.all_stadiums_check.isChecked(),
+             music_shuffle=self.music_shuffle_check.isChecked(),
+-            music_shuffle_selection=self._music_shuffle_selection if self.music_shuffle_check.isChecked() else None,
++            music_shuffle_selection=self.music_build_settings()["music_shuffle_selection"] if self.music_shuffle_check.isChecked() else None,
+             practice_squad_screen=self.practice_squad_screen_check.isChecked(),
+             abilities=self.abilities_check.isChecked(),
+             abilities_off_week=(self.abilities_week.currentData() if self.abilities_check.isChecked() else None),
+@@ -1476,9 +1477,23 @@
+         if document is None:
+             self._music_shuffle_selection = None
+             return
+-        self._music_shuffle_selection = tt.music_playlist_patch.from_options(document)
++        self._music_shuffle_selection = tt.music_playlist_patch.copy_options(document)
+         if self.music_shuffle_check.isChecked() != bool(document.get("music_shuffle")):
+             self.music_shuffle_check.setChecked(bool(document.get("music_shuffle")))
++        self._refresh()
++
++    def music_build_settings(self):
++        document = tt.music_playlist_patch.copy_options(self._music_shuffle_selection)
++        enabled = self.music_shuffle_check.isChecked()
++        if document is not None:
++            document["music_shuffle"] = enabled
++        return tt.music_playlist_patch.build_settings({
++            "music_shuffle": enabled, "music_shuffle_selection": document})
++
++    def restore_music_build_settings(self, state):
++        checked = tt.music_playlist_patch.build_settings(state)
++        self._music_shuffle_selection = checked.get("music_shuffle_selection")
++        self.music_shuffle_check.setChecked(checked.get("music_shuffle", False))
+         self._refresh()
+ 
+     def set_music_policy(self, values):
+@@ -1597,6 +1612,7 @@
+             from mod_editor.core import nfl2k5_music_banks
+             progress("Checking music library sizes...", 0, 0)
+             result = nfl2k5_music_banks.plan(source, recipe)
++            result["source_descriptor_counts"] = nfl2k5_music_banks.read_descriptor_counts(source)
+             progress("Music library sizes checked", 1, 1)
+             return result
+ 
+@@ -1622,6 +1638,8 @@
+         if self._music_preview_identity != (self.source_field.text().strip(), self.music_library_field.text().strip()):
+             self.music_preview_label.setText("The source or recipe changed. Preview again for current sizes.")
+             return
++        if "source_descriptor_counts" in result:
++            self.music_library_preview_ready.emit(result["source_descriptor_counts"], result)
+         output = result["layout"]["image_size"]
+         scratch = result["scratch_bytes"] + result["source_size"]
+         if self._include_session_project() or self.music_project_check.isChecked():
+@@ -1630,7 +1648,7 @@
+             f"Projected library output: {output:,} bytes ({output / 1024**3:.2f} GiB). "
+             f"Temporary space for this build: about {scratch:,} bytes ({scratch / 1024**3:.2f} GiB). "
+             "Other selected changes may increase these estimates. Sizes are checked again during the build. "
+-            "Create a fresh playlist after rebuilding.")
++            "Choose songs on the Music Playlist page, up to 100 per build.")
+ 
+     def _music_preview_failed(self, message):
+         self._finish_music_preview()
+--- a/mod_editor/gui/studio_qt.py
++++ b/mod_editor/gui/studio_qt.py
+@@ -1634,6 +1634,9 @@
+         self._stadium_browser: _StadiumBrowserState | None = None
+         self._audio_panel: AudioPanel | None = None
+         self._music_panel: MusicPanel | None = None
++        self._music_playlist_document = None
++        self._restoring_music_playlist = False
++        self._music_playlist_catalog = None
+         self._bump_panel: BumpPanel | None = None
+         self._save_panel: SavePanel | None = None
+         self._text_roster_panel: TextRosterPanel | None = None
+@@ -1869,17 +1872,92 @@
+             self._build_panel.set_music_policy(values)
+ 
+     def _music_playlist_changed(self, document):
+-        """The Music page's playlist choices feed the Build plan's music_shuffle flag and selection."""
+-        if self._build_panel is None:
+-            return
++        if self._restoring_music_playlist:
++            return
++        from mod_editor.core import nfl2k5_music_playlist as playlist
+         try:
+-            self._build_panel.set_music_shuffle_selection(dict(document) if document else None)
+-        except ValueError as exc:
+-            self.statusBar().showMessage(f"Playlist choices not accepted: {exc}", 8000)
+-            return
++            self._music_playlist_document = playlist.copy_options(document)
++            if self._build_panel is not None:
++                self._restoring_music_playlist = True
++                try:
++                    self._build_panel.set_music_shuffle_selection(self._music_playlist_document)
++                finally:
++                    self._restoring_music_playlist = False
++            self._capture_music_build_settings()
++        except (OSError, ValueError) as exc:
++            self.statusBar().showMessage(f"Playlist choices not saved: {exc}", 8000)
+         self._mark_workspace_changed()
+ 
++    def _capture_music_build_settings(self):
++        from mod_editor.core import nfl2k5_music_playlist as playlist
++        if self._build_panel is not None:
++            state = self._build_panel.music_build_settings()
++        else:
++            document = playlist.copy_options(self._music_playlist_document)
++            state = {} if document is None else {
++                "music_shuffle": document["music_shuffle"], "music_shuffle_selection": document}
++        setter = getattr(self.facade, "set_project_build_settings", None)
++        if callable(setter) and getattr(self.facade, "source_ready", False):
++            setter(state)
++        return state
++
++    def _restore_music_build_settings(self):
++        from mod_editor.core import nfl2k5_music_playlist as playlist
++        getter = getattr(self.facade, "project_build_settings", None)
++        state = playlist.build_settings(getter() if callable(getter) and getattr(self.facade, "source_ready", False) else {})
++        document = state.get("music_shuffle_selection")
++        self._restoring_music_playlist = True
++        try:
++            self._music_playlist_document = document
++            if self._build_panel is not None:
++                self._build_panel.restore_music_build_settings(state)
++            if self._music_panel is not None:
++                if self._music_playlist_catalog is not None:
++                    # Clear stale checks before replacing a source catalogue.
++                    self._music_panel.set_playlist_options(playlist.default_options(self._music_playlist_catalog))
++                    self._music_panel.set_playlist_catalog(self._music_playlist_catalog)
++                visible = document or playlist.default_options(self._music_panel.playlist_page._catalog)
++                visible = playlist.copy_options(visible)
++                visible["music_shuffle"] = state.get("music_shuffle", False)
++                self._music_panel.set_playlist_options(visible)
++        finally:
++            self._restoring_music_playlist = False
++
++    def _build_music_shuffle_changed(self, enabled):
++        if self._restoring_music_playlist:
++            return
++        try:
++            state = self._capture_music_build_settings()
++        except (OSError, ValueError) as exc:
++            self.statusBar().showMessage(f"Playlist choices not saved: {exc}", 8000)
++            self._mark_workspace_changed()
++            return
++        self._music_playlist_document = state["music_shuffle_selection"]
++        if self._music_panel is not None:
++            from mod_editor.core import nfl2k5_music_playlist as playlist
++            document = state["music_shuffle_selection"] or self._music_panel.playlist_options()
++            document = playlist.copy_options(document)
++            document["music_shuffle"] = bool(enabled)
++            self._restoring_music_playlist = True
++            try:
++                self._music_panel.set_playlist_options(document)
++            finally:
++                self._restoring_music_playlist = False
++        self._mark_workspace_changed()
++
++    def _music_library_preview_ready(self, counts, preview):
++        from mod_editor.core import nfl2k5_music_playlist as playlist
++        catalog = playlist.catalog_for_counts(counts, library_plan=preview)
++        self._music_playlist_catalog = catalog
++        if self._music_panel is not None:
++            try:
++                self._music_panel.set_playlist_catalog(catalog)
++            except ValueError as exc:
++                self.statusBar().showMessage(f"Playlist library not changed: {exc}", 8000)
++
+     def _music_changed(self):
++        if self._restoring_music_playlist:
++            return
+         if self._build_panel is not None:
+             self._build_panel.music_project_check.setChecked(bool(getattr(self.facade, "modified_count", 0)))
+         self._mark_workspace_changed()
+@@ -2650,6 +2728,7 @@
+                 self._music_panel.playlist_changed.connect(self._music_playlist_changed)
+                 self._music_panel.receipt_ready.connect(self._music_receipt_ready)
+                 self._music_panel.operation_state_changed.connect(self._music_operation_state_changed)
++                self._restore_music_build_settings()
+                 audio_tabs.addTab(self._music_panel, "Music")
+                 audio_tabs.currentChanged.connect(lambda _index: self._music_panel.stop_preview())
+                 self.navigation.currentRowChanged.connect(lambda _index: self._music_panel.stop_preview())
+@@ -7009,6 +7088,11 @@
+     ) -> None:
+         if self._refuse_while_audio_busy("save the project"):
+             return
++        try:
++            self._capture_music_build_settings()
++        except (OSError, ValueError) as exc:
++            self.statusBar().showMessage(f"Project settings could not be saved: {exc}", 8000)
++            return
+         was_dirty = self._workspace_dirty
+ 
+         def success(result: object) -> None:
+@@ -7133,6 +7217,7 @@
+                             f"{str(exc).strip()}"
+                         )
+             self._refresh_edit_state(rebuild_components=True)
++            self._restore_music_build_settings()
+ 
+             def refresh_loaded_project() -> None:
+                 if self._audio_panel is not None:
+@@ -7624,9 +7709,17 @@
+             self._source_inspect_pending = False
+             if not isinstance(state, dict):
+                 return
+-            for panel in (self._build_panel, self._gameplay_patches_panel, self._edge_panel):
+-                if panel is not None:
+-                    panel.apply_state(state)
++            self._restoring_music_playlist = True
++            try:
++                for panel in (self._build_panel, self._gameplay_patches_panel, self._edge_panel):
++                    if panel is not None:
++                        panel.apply_state(state)
++            finally:
++                self._restoring_music_playlist = False
++            self._music_playlist_catalog = state.get("music_playlist_catalog")
++            self._restore_music_build_settings()
++            if state.get("music_playlist_catalog_error"):
++                self.statusBar().showMessage(f"Playlist library unavailable: {state['music_playlist_catalog_error']}", 8000)
+             self._describe_source_pill(state)
+             self._refresh_welcome_state()
+ 
+@@ -7638,7 +7731,17 @@
+                 if panel is not None and hasattr(panel, "reading_failed"):
+                     panel.reading_failed(message)
+ 
+-        worker = _BackgroundTask(lambda progress: mod_build.inspect(source))
++        def inspect_source(progress):
++            state = mod_build.inspect(source)
++            if state.get("container") == "xiso" and state.get("music_library") == "available":
++                from mod_editor.core import nfl2k5_music_banks
++                try:
++                    state["music_playlist_catalog"] = nfl2k5_music_banks.read_playlist_catalog(source)
++                except (OSError, ValueError) as exc:
++                    state["music_playlist_catalog_error"] = str(exc)
++            return state
++
++        worker = _BackgroundTask(inspect_source)
+         self._workers.add(worker)
+         worker.signals.result.connect(bound(self, inspected))
+         worker.signals.error.connect(bound(self, inspect_failed))
+@@ -8296,6 +8399,9 @@
+         self._build_panel.source_field.textChanged.connect(self._refresh_team_names_preview)
+         self._build_panel.operation_guard = lambda: self._embedded_operation_denial("Build")
+         self._build_panel.operation_state_changed.connect(self._build_operation_state_changed)
++        self._build_panel.music_shuffle_check.toggled.connect(self._build_music_shuffle_changed)
++        self._build_panel.music_library_preview_ready.connect(self._music_library_preview_ready)
++        self._restore_music_build_settings()
+         if self._music_policy_values:
+             self._build_panel.set_music_policy(self._music_policy_values)
+         self._connect_star_players()

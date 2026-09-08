@@ -1,0 +1,508 @@
+{
+  "artifact_sha256": {
+    "docs/scorebug_ingame/rim/atl_at_gb_rim.png": "e967c6633fc446632bd4673a7a490e751a227125681402949ab4774bc0594ed3",
+    "docs/scorebug_ingame/rim/atl_at_gb_v3.png": "185ca4c0d08f9325a38afe5f93e80ee790f518e51b1f21a197d272d46b090501",
+    "docs/scorebug_ingame/rim/bal_at_jax_rim.png": "e6dad168e9f6badab1a97cebd12eed64a2f29756bf52ed23798e76f04740371e",
+    "docs/scorebug_ingame/rim/bal_at_jax_v3.png": "9ba19ecdec13b4956a0a2b773b6da78feac4e8eb175d32953f0afea67682915c",
+    "docs/scorebug_ingame/rim/colors.json": "c73e842011cf73833fbd83e167127372a45fe7cce8dd36963f20b6b08124c340",
+    "docs/scorebug_ingame/rim/comparison.png": "f623558ad11cb609b269911dcf2ca861e5e11ceaaa30e5341e853d3635accf2f",
+    "docs/scorebug_ingame/rim/forecasts.json": "45e2e35f2f5167689e630828399bcd2f2fa28ff562f5da4f542f6a045722504c",
+    "docs/scorebug_ingame/rim/live_min_at_nyj_rim.png": "8b7e6362f4d37431746e34799a68e81e185a5b5cbae48a4410474a6d484cfafc",
+    "docs/scorebug_ingame/rim/live_min_at_nyj_v3.png": "3697d877551e0531e0af054773d38d6cec0048232152369abfe525a56c25c691",
+    "docs/scorebug_ingame/rim/lv_at_hou_rim.png": "792517ac492f4e5e637678d2d95c3a4e59eb8ffd466fa9f6b97f72a4785309ea",
+    "docs/scorebug_ingame/rim/lv_at_hou_v3.png": "fb41678348e6d73f748e135dd11380423075b7e2e1810179702e99c1884ed388",
+    "docs/scorebug_ingame/rim/lv_mirror_secondary_silver_rim.png": "4e4868b7b11c5cdc03dcf691ff50c9061ba979c78a29e865909e091f69c033e3",
+    "docs/scorebug_ingame/rim/lv_mirror_secondary_silver_v3.png": "044209987024127f7c9f2924f46c0f2136535add8d85ee3b8b1ecc8a744fa4ee",
+    "docs/scorebug_ingame/rim/min_at_nyj_rim.png": "19c6437ab39a356b6d2843f5c2f3251de4f1160abf6df77e111cdd56cf28e1ed",
+    "docs/scorebug_ingame/rim/min_at_nyj_v3.png": "12f72e6542d1f6d429e558064417d067cc0c34c1cc78e04aa54b8ce6d087bacb",
+    "docs/scorebug_ingame/rim/missing_codes_silver_rim.png": "7ed4f27a3a8cb03c05ed1e03e7ab0b298f7411608215685c2cdd3e295fe71d1c",
+    "docs/scorebug_ingame/rim/missing_codes_silver_v3.png": "e859c4f98628412a3806cdeaf331d0a638cad0707893f2d307539290386f8887",
+    "docs/scorebug_ingame/rim/receipts.json": "6729ef6554b88c2d3b207db17344970de3ee2025a67f8ed00035244de07239b4",
+    "docs/scorebug_ingame/rim/visibility_and_color.s": "d1a618972ab6745ab18cba4879dbc51fd7904497bb43d9cbe73ca4d2b116c803"
+  },
+  "base": "45c0544a409202789f2d1abc9c1b174b6ebe8a21",
+  "commands_note": "Each suite ran standalone with /usr/bin/time -v python3 <path> -v. Qt suites ran offscreen; the legacy layout suite used NFL2K5_SCOREBUG_EMULATION_TEST=1. Logs reflect final reruns of v3, ingame and v10 ingame after fixes.",
+  "forecast_command": [
+    "python3",
+    "-m",
+    "tools.nfl2k5_scorebar_rim_witness",
+    "--extraction",
+    "/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)"
+  ],
+  "full_disc_or_pack_copies": 0,
+  "gameplay_witnessed": false,
+  "maximum_test_rss_kib": 926572,
+  "network_used": false,
+  "protected_paths_unchanged": [
+    "mod_editor/core/mod_build.py",
+    "mod_editor/core/nfl2k5_throw_tuning.py",
+    "mod_editor/gui/studio_qt.py",
+    "mod_editor/gui/build_panel_qt.py",
+    "mod_editor/gui/gameplay_patches_panel_qt.py",
+    "mod_editor/gui/gameplay_panel_qt.py",
+    "packaging/release-allowlist.txt",
+    "mod_editor/core/update_check.py",
+    ".github/workflows/ci.yml",
+    "data/nfl2k5_cave_reservations.json",
+    "packaging/check_2k5_mod_studio_runtime.py"
+  ],
+  "real_disc_writes": 0,
+  "schema": "nfl2k5_scorebar_rim_validation/v1",
+  "source_sha256": {
+    "mod_editor/core/nfl2k5_scorebar_v3.py": "406ed027b583e9d49dee9a671eab085af171c2d2b50ab5bc115e487ff45d5d91",
+    "mod_editor/core/nfl2k5_scorebug_exact.py": "3cd8455f641247979ed1b0bc2fc12342dfbecb81d3d2e9ff34400cc25a8c6b03",
+    "mod_editor/core/nfl2k5_scorebug_resources.py": "8e4addf4db21d0b23f5209ab15f336031a9e90961613cf05ebbf5cb9bcdafd9b",
+    "tests/fixtures/nfl2k5_scorebar_callbacks_v3.py": "768d1307511cc6965ea7746649515f2ffe1e4cd2a12a32bb788f276a326345da",
+    "tests/fixtures/nfl2k5_scorebug_exact_v3.py": "92dc368a99018159a3c2e84147138c81fe2424ec984c539f239d6f7bd9aa1772",
+    "tests/mod_editor/test_apf_scorebug_workspace_qt.py": "c9676e47fedb952aca718477d270b94cfeb9bc75a30b6262ae624b1ccdf8d268",
+    "tests/mod_editor/test_nfl2k5_scorebar_rim.py": "f4d9862a2c0fb0540d28d7483fc61859e9a9f0ca8582a1b9183818518f1c3481",
+    "tests/mod_editor/test_nfl2k5_scorebar_v3.py": "4fe0d68ff8c1538d3b04f17af070abc8b58f920df1c3c348d98044a3ceff43b0",
+    "tests/mod_editor/test_nfl2k5_scorebug_ingame.py": "37e3726e10028d06b80e73494b03bff017cc97d7f8411cf6b372ce1c9a8a445f",
+    "tests/mod_editor/test_nfl2k5_scorebug_projection.py": "83a41de1cf66fbf462c0fe3b94e7584326537357f77a8494f67e8d2c0b8efea7",
+    "tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py": "f3b3edc58b97ead1a8473bf2486ea3be9e3e1a895802e9d6009031468e6d5ab0",
+    "tests/mod_editor/test_xbe_patch_cave_references.py": "d28e310cecfaac6089c677757ba2ff4bb1f7708d2cd0a061b4240bcdf37ad1fd",
+    "tools/nfl2k5_scorebar_rim_witness.py": "66d27e7e0c8f408a23e99f366a0299f6b2d401c39bdf8b205222290e6b5d2e70",
+    "tools/nfl2k5_scorebug_projection.py": "65f50ca27cda1b452dc363d1ecbf3d64fb08ab2ae2e5c22a5c8cf4b1ae2fe8c7"
+  },
+  "summary": {
+    "errors": 1,
+    "failures": 0,
+    "passed": 437,
+    "skipped": 11,
+    "tests": 449
+  },
+  "template_pngs_layout_and_catalog_unchanged": true,
+  "tests": [
+    {
+      "command": [
+        "python3",
+        "tests/nfl2k5_scorebug_layout_test.py",
+        "-v"
+      ],
+      "errors": 0,
+      "exit_status": 0,
+      "failures": 0,
+      "log_sha256": "e7ff60ca522413036cbc9813d0ecba9bf97fe08309a6f307fe07f2cfb355cdbc",
+      "maximum_rss_kib": 154132,
+      "passed": 14,
+      "skip_reasons": [
+        "'the intermediate glTF research export is not in this tree'"
+      ],
+      "skipped": 1,
+      "tests": 15
+    },
+    {
+      "command": [
+        "python3",
+        "tests/nfl2k5_scorebug_mod_project_test.py",
+        "-v"
+      ],
+      "errors": 0,
+      "exit_status": 0,
+      "failures": 0,
+      "log_sha256": "974daaf1ebbf3914f154c865a6168c342d36b3e5428cf6c39ae695455c36eb1e",
+      "maximum_rss_kib": 23296,
+      "passed": 3,
+      "skip_reasons": [
+        "'legacy typed-project evidence absent: reports/assets/nfl2k5_scorebug_mod_project_example.json'",
+        "'legacy typed-project evidence absent: reports/assets/nfl2k5_scorebug_mod_project_example.json'",
+        "'legacy typed-project evidence absent: reports/assets/nfl2k5_scorebug_mod_project_example.json'",
+        "'legacy typed-project evidence absent: reports/assets/nfl2k5_scorebug_mod_project_example.json'",
+        "'legacy typed-project evidence absent: reports/assets/nfl2k5_scorebug_mod_project_example.json'",
+        "'legacy typed-project evidence absent: reports/assets/nfl2k5_scorebug_mod_project_example.json'",
+        "'legacy typed-project evidence absent: reports/assets/nfl2k5_scorebug_mod_project_example.json'"
+      ],
+      "skipped": 7,
+      "tests": 10
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_apf_scorebug_workspace_qt.py",
+        "-v"
+      ],
+      "errors": 0,
+      "exit_status": 0,
+      "failures": 0,
+      "log_sha256": "b53da0673fdb5a6b4281ba9b799e8ed7b66105ba6731e934b53f7e26ae6c20d5",
+      "maximum_rss_kib": 120416,
+      "passed": 11,
+      "skip_reasons": [],
+      "skipped": 0,
+      "tests": 11
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_cave_oracle.py",
+        "-v"
+      ],
+      "errors": 1,
+      "exit_status": 1,
+      "expected_base_error": "stale reservation source: mod_editor/core/nfl2k5_espn25_scenarios.py; regenerate manifest",
+      "failures": 0,
+      "log_sha256": "a7c9aae307497c22450617d709461f79e0c4a1f6b4e74dce4e54f249b23634e9",
+      "maximum_rss_kib": 926572,
+      "passed": 27,
+      "skip_reasons": [],
+      "skipped": 0,
+      "tests": 28
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebar_rim.py",
+        "-v"
+      ],
+      "errors": 0,
+      "exit_status": 0,
+      "failures": 0,
+      "log_sha256": "e9d35dfa12f57735fb563faa0c262083ad0226f9b80d006f9a35c4d69c17bed1",
+      "maximum_rss_kib": 207132,
+      "passed": 8,
+      "skip_reasons": [],
+      "skipped": 0,
+      "tests": 8
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebar_v3.py",
+        "-v"
+      ],
+      "errors": 0,
+      "exit_status": 0,
+      "failures": 0,
+      "log_sha256": "c8241c3609dbebe98a4309fcfdf2cb051480d3eb501af864085bbc825400a724",
+      "maximum_rss_kib": 516384,
+      "passed": 9,
+      "skip_reasons": [],
+      "skipped": 0,
+      "tests": 9
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_author.py",
+        "-v"
+      ],
+      "errors": 0,
+      "exit_status": 0,
+      "failures": 0,
+      "log_sha256": "9741603cfa9778194440226f60ab2dda7b3f9edf28e52664f27a546c40cfbf28",
+      "maximum_rss_kib": 45660,
+      "passed": 12,
+      "skip_reasons": [],
+      "skipped": 0,
+      "tests": 12
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_exact.py",
+        "-v"
+      ],
+      "errors": 0,
+      "exit_status": 0,
+      "failures": 0,
+      "log_sha256": "dd187d263ffc1614ec0c0d5ea19fa808fbbfc7948ba4e25b872fc439da963432",
+      "maximum_rss_kib": 308988,
+      "passed": 8,
+      "skip_reasons": [],
+      "skipped": 0,
+      "tests": 8
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_fonts.py",
+        "-v"
+      ],
+      "errors": 0,
+      "exit_status": 0,
+      "failures": 0,
+      "log_sha256": "725962b535614fa208ce0c6dfccf6a2df1ed7fa1e6ca5ec6811abd0c40cf67cd",
+      "maximum_rss_kib": 292196,
+      "passed": 9,
+      "skip_reasons": [],
+      "skipped": 0,
+      "tests": 9
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_freeze.py",
+        "-v"
+      ],
+      "errors": 0,
+      "exit_status": 0,
+      "failures": 0,
+      "log_sha256": "1f4e0f8a5d51cdaf8baf696a6b3a981234bf54c4f57df75fcd46ad4cf5a98311",
+      "maximum_rss_kib": 322056,
+      "passed": 7,
+      "skip_reasons": [],
+      "skipped": 0,
+      "tests": 7
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_ingame.py",
+        "-v"
+      ],
+      "errors": 0,
+      "exit_status": 0,
+      "failures": 0,
+      "log_sha256": "f27cf2f9bd9a968b8dec04a351acf442a270374d3deadce30f89c9ba36f6eb56",
+      "maximum_rss_kib": 150540,
+      "passed": 11,
+      "skip_reasons": [],
+      "skipped": 0,
+      "tests": 11
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py",
+        "-v"
+      ],
+      "errors": 0,
+      "exit_status": 0,
+      "failures": 0,
+      "log_sha256": "b263c2cf53dcc2c331848ac2bce3362a83d44efba093a4c58b03a9aa064a8614",
+      "maximum_rss_kib": 345452,
+      "passed": 9,
+      "skip_reasons": [],
+      "skipped": 0,
+      "tests": 9
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_native.py",
+        "-v"
+      ],
+      "errors": 0,
+      "exit_status": 0,
+      "failures": 0,
+      "log_sha256": "7e2f0c2c82ddb53d881bc596ec704b3d0b6939695b177559fa22d078984f0e54",
+      "maximum_rss_kib": 207620,
+      "passed": 4,
+      "skip_reasons": [],
+      "skipped": 0,
+      "tests": 4
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_projection.py",
+        "-v"
+      ],
+      "errors": 0,
+      "exit_status": 0,
+      "failures": 0,
+      "log_sha256": "03af3d1f8cd2995286b9f8ac1d282344d8873797012fecb8223b22f82264e7dc",
+      "maximum_rss_kib": 310936,
+      "passed": 14,
+      "skip_reasons": [],
+      "skipped": 0,
+      "tests": 14
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+        "-v"
+      ],
+      "errors": 0,
+      "exit_status": 0,
+      "failures": 0,
+      "log_sha256": "5c8a0d7d1e2175bf4efd7af5afe64996cbbc755be19bfa1b44b27a762eb492d4",
+      "maximum_rss_kib": 172696,
+      "passed": 6,
+      "skip_reasons": [],
+      "skipped": 0,
+      "tests": 6
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+        "-v"
+      ],
+      "errors": 0,
+      "exit_status": 0,
+      "failures": 0,
+      "log_sha256": "1711a1522845fd0f5e592078e68e8383da257c59a63b4de67e65964444ab9904",
+      "maximum_rss_kib": 261488,
+      "passed": 12,
+      "skip_reasons": [],
+      "skipped": 0,
+      "tests": 12
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_source_art.py",
+        "-v"
+      ],
+      "errors": 0,
+      "exit_status": 0,
+      "failures": 0,
+      "log_sha256": "a5a281f3c92cca13f3cf7ba3d810ad41e6d828f1d714523c1e11b2bfde666656",
+      "maximum_rss_kib": 48696,
+      "passed": 10,
+      "skip_reasons": [
+        "'legacy typed-importer audit evidence absent; v7 has independent pins'",
+        "'the developer copy of the retail scene is not in this tree'",
+        "'the developer copies this is compared against are not in this tree'"
+      ],
+      "skipped": 3,
+      "tests": 13
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_template.py",
+        "-v"
+      ],
+      "errors": 0,
+      "exit_status": 0,
+      "failures": 0,
+      "log_sha256": "7bf0cc66ca1b99efe53a641ba5b16c12cce457644460cb0511abfd8b32499ccf",
+      "maximum_rss_kib": 139780,
+      "passed": 19,
+      "skip_reasons": [],
+      "skipped": 0,
+      "tests": 19
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_template_release.py",
+        "-v"
+      ],
+      "errors": 0,
+      "exit_status": 0,
+      "failures": 0,
+      "log_sha256": "3f101be5954a006a7917aa3092de03e41d2873139eaadb9dbeabac845094ccbc",
+      "maximum_rss_kib": 32956,
+      "passed": 5,
+      "skip_reasons": [],
+      "skipped": 0,
+      "tests": 5
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py",
+        "-v"
+      ],
+      "errors": 0,
+      "exit_status": 0,
+      "failures": 0,
+      "log_sha256": "0650cdb8eeb209123eead6458317e7223c9e49957f7703289d3d8ce69ed8d1a1",
+      "maximum_rss_kib": 29620,
+      "passed": 5,
+      "skip_reasons": [],
+      "skipped": 0,
+      "tests": 5
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py",
+        "-v"
+      ],
+      "errors": 0,
+      "exit_status": 0,
+      "failures": 0,
+      "log_sha256": "aa753da6bd1c8b469089c953c3d4b1bfd38665ec3cb675739406a70e2a981e66",
+      "maximum_rss_kib": 149820,
+      "passed": 11,
+      "skip_reasons": [],
+      "skipped": 0,
+      "tests": 11
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_v10_projection.py",
+        "-v"
+      ],
+      "errors": 0,
+      "exit_status": 0,
+      "failures": 0,
+      "log_sha256": "509562402275b6e13a5bb984a31f90a3f791b66c699ad01121855fa3c033b847",
+      "maximum_rss_kib": 286764,
+      "passed": 14,
+      "skip_reasons": [],
+      "skipped": 0,
+      "tests": 14
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_versions.py",
+        "-v"
+      ],
+      "errors": 0,
+      "exit_status": 0,
+      "failures": 0,
+      "log_sha256": "616229a7030505cfbbc9a4f217a0418be56bb93ddccefd748ffc5be8c7565e5f",
+      "maximum_rss_kib": 148520,
+      "passed": 4,
+      "skip_reasons": [],
+      "skipped": 0,
+      "tests": 4
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_scorebug_studio_panel_qt.py",
+        "-v"
+      ],
+      "errors": 0,
+      "exit_status": 0,
+      "failures": 0,
+      "log_sha256": "62b351fe35fa873bbc19f415daa1b2a260c49fa9a1568c37aa504af43d744227",
+      "maximum_rss_kib": 115992,
+      "passed": 11,
+      "skip_reasons": [],
+      "skipped": 0,
+      "tests": 11
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_xbe_patch_cave_references.py",
+        "-v"
+      ],
+      "errors": 0,
+      "exit_status": 0,
+      "failures": 0,
+      "log_sha256": "7071f80584a82b63bc2edec9b556db3d9b6b725335a262b98963cd97b79e97bf",
+      "maximum_rss_kib": 505756,
+      "passed": 103,
+      "skip_reasons": [],
+      "skipped": 0,
+      "tests": 103
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_xbe_patch_memory_writes.py",
+        "-v"
+      ],
+      "errors": 0,
+      "exit_status": 0,
+      "failures": 0,
+      "log_sha256": "1491af69d8067803a83d8262c6c6d53ab699809f930bfa583279ff2fd61875b7",
+      "maximum_rss_kib": 316068,
+      "passed": 91,
+      "skip_reasons": [],
+      "skipped": 0,
+      "tests": 91
+    }
+  ]
+}

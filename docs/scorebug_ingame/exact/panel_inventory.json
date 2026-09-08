@@ -1,0 +1,962 @@
+[
+  {
+    "pair": {
+      "away": {
+        "name": "sb00a3",
+        "span_sha256": "719341b20492a308c6762b0b8d3149039cbb3c0912c5064603c40b329193c573"
+      },
+      "home": {
+        "name": "sb00h3",
+        "span_sha256": "031091c596b1c3f49ec96511643cbff2424b6f6599881d6218b15129bc4e4ff9"
+      }
+    },
+    "source": {
+      "asset_code": "00",
+      "chunk": 0,
+      "decoded_sha256": "dd07ea0d6d8d15bccba8455bb4d8d8fe2d04f1c14f38a8993314d12fa4cb99ab",
+      "format_name": "P8",
+      "height": 256,
+      "name": "00_teamlogo_00_h0",
+      "outer": 24,
+      "outer_id": 4145851365,
+      "pack_offset": 15939584,
+      "primary": "#97233F",
+      "roster_id": 7,
+      "secondary": "#000000",
+      "span_sha256": "ba9e20704d87babda9cb1b378e6b825a0b9d539aa829199ed866fef061cba217",
+      "span_size": 11968,
+      "width": 256
+    },
+    "team": "ARI"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb01a3",
+        "span_sha256": "96baabb2fad003a291720fbc2ccec261ec878ad56fee6735dff17fdba25c72f8"
+      },
+      "home": {
+        "name": "sb01h3",
+        "span_sha256": "6da476fb1f1833ddb309456e4ef2f8fe856e6e02c6ea798bfe9ae988115cf3d0"
+      }
+    },
+    "source": {
+      "asset_code": "01",
+      "chunk": 0,
+      "decoded_sha256": "3b21bcf1ad05a7c543250957e6f169f994055a9b7c3d06c8075dd9477fbee18d",
+      "format_name": "P8",
+      "height": 256,
+      "name": "01_teamlogo_00_h0",
+      "outer": 25,
+      "outer_id": 417251547,
+      "pack_offset": 16039936,
+      "primary": "#A71930",
+      "roster_id": 14,
+      "secondary": "#000000",
+      "span_sha256": "060f65cbb773910f99d2f675f64f9fa825c13fc68577277986e78730d51822e4",
+      "span_size": 10368,
+      "width": 256
+    },
+    "team": "ATL"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb02a3",
+        "span_sha256": "217a16ee3004899268ca52fd91c42507c64e785c267c1c5db491bc8fd68088b1"
+      },
+      "home": {
+        "name": "sb02h3",
+        "span_sha256": "d07fad1bc5cdd4ee462e389c1eb88c50715155ccaa1e4703f5f677f01bf1fec8"
+      }
+    },
+    "source": {
+      "asset_code": "02",
+      "chunk": 0,
+      "decoded_sha256": "6b6f38cc73b9b8adf46daf371eb19caccace189bd49a0b3721f31863edffc0e6",
+      "format_name": "P8",
+      "height": 256,
+      "name": "02_teamlogo_00_h0",
+      "outer": 26,
+      "outer_id": 4092165080,
+      "pack_offset": 16136192,
+      "primary": "#241773",
+      "roster_id": 24,
+      "secondary": "#000000",
+      "span_sha256": "712e682896dbb08438c287983969fa494f3834d38021501c79960400d1a3fde1",
+      "span_size": 12432,
+      "width": 256
+    },
+    "team": "BAL"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb03a3",
+        "span_sha256": "950f808bec8e5199c6133292e8f192f28d4a6c6056f445503f9f57c85b9743d5"
+      },
+      "home": {
+        "name": "sb03h3",
+        "span_sha256": "91f459fab4cb3bf408f8520210bea9c700ad138da3c19abd03dd5d3d7ed25693"
+      }
+    },
+    "source": {
+      "asset_code": "03",
+      "chunk": 0,
+      "decoded_sha256": "96d49259dcd3e5ba9f55b0503e734e7ed5b8db1dcebc2286fb1c629714c6d330",
+      "format_name": "P8",
+      "height": 256,
+      "name": "03_teamlogo_00_h0",
+      "outer": 27,
+      "outer_id": 472584422,
+      "pack_offset": 16236544,
+      "primary": "#00338D",
+      "roster_id": 3,
+      "secondary": "#C60C30",
+      "span_sha256": "5568f3dff35199fcc99ce4a85d3519dfa0eccb1e0bea85c126a3d8585124d917",
+      "span_size": 12752,
+      "width": 256
+    },
+    "team": "BUF"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb04a3",
+        "span_sha256": "92359e37382ea930b38134e421d21e2cb783980376a18e70f44efb0f671e947d"
+      },
+      "home": {
+        "name": "sb04h3",
+        "span_sha256": "70c787650b9fbceeb04e4473653d9621401a1d259da9cdd46e155e5dcc65fe87"
+      }
+    },
+    "source": {
+      "asset_code": "04",
+      "chunk": 0,
+      "decoded_sha256": "8b04936083b53a14d427c0591c6b05dcc16666c9dd1dbebd49c1d9f28a21c8f4",
+      "format_name": "P8",
+      "height": 256,
+      "name": "04_teamlogo_00_h0",
+      "outer": 28,
+      "outer_id": 4277603231,
+      "pack_offset": 16334848,
+      "primary": "#0085CA",
+      "roster_id": 20,
+      "secondary": "#101820",
+      "span_sha256": "fd4ad097f8f0c88e3ca54f2a473deb126cea52641b599c8978d20740761b3432",
+      "span_size": 11568,
+      "width": 256
+    },
+    "team": "CAR"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb05a3",
+        "span_sha256": "40985be11d74c0dbd634f60576faa45ab08a92d85ec21980f527fb008f96cbb6"
+      },
+      "home": {
+        "name": "sb05h3",
+        "span_sha256": "b3fa56536e0b0784f533032457246878d24ec65b22e86fef1e98ac71dc6737da"
+      }
+    },
+    "source": {
+      "asset_code": "05",
+      "chunk": 0,
+      "decoded_sha256": "c0ba592e83411daa250252fcaccccc7e196f8479f54d8346bcacdc26ef296fce",
+      "format_name": "P8",
+      "height": 256,
+      "name": "05_teamlogo_00_h0",
+      "outer": 29,
+      "outer_id": 288710817,
+      "pack_offset": 16433152,
+      "primary": "#0B162A",
+      "roster_id": 1,
+      "secondary": "#C83803",
+      "span_sha256": "4c4c41267db94a2d45edc77eaf9f45f2e038db1904dc3f83e41e903dfa5fb817",
+      "span_size": 9824,
+      "width": 256
+    },
+    "team": "CHI"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb06a3",
+        "span_sha256": "4474cf5ddb9ccaf4307e1a62b8f87231e3a8b44fed3102f7fabac05f44349e7f"
+      },
+      "home": {
+        "name": "sb06h3",
+        "span_sha256": "2488b0d1fbb09b4ca67d07e19d65cd6f0de68bbd0058d994086d90e718ce447b"
+      }
+    },
+    "source": {
+      "asset_code": "06",
+      "chunk": 0,
+      "decoded_sha256": "bbd62a2e8e613669d3eff1b8b1ea6d432eafdfcd09b14253dd43119fbb8cee49",
+      "format_name": "P8",
+      "height": 256,
+      "name": "06_teamlogo_00_h0",
+      "outer": 30,
+      "outer_id": 4194491298,
+      "pack_offset": 16531456,
+      "primary": "#FB4F14",
+      "roster_id": 2,
+      "secondary": "#000000",
+      "span_sha256": "9897a5ffd296a2e81a44f781f55d28a946ac4f4d56e23a32e0f85b885e589e86",
+      "span_size": 18352,
+      "width": 256
+    },
+    "team": "CIN"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb30a3",
+        "span_sha256": "41b4a2e8815137ccc9ed6da9a59151fcc013580e1a76837b118b466220a4688c"
+      },
+      "home": {
+        "name": "sb30h3",
+        "span_sha256": "607fb0a7a6fefa7326cb452288512476b74aada8953dcffba92f5bfb48f97a1e"
+      }
+    },
+    "source": {
+      "asset_code": "30",
+      "chunk": 0,
+      "decoded_sha256": "366b999c0b8cace06fffc5b43e0093f9bf65f30b48e72f0fe2b786e9a43fe108",
+      "format_name": "P8",
+      "height": 256,
+      "name": "30_teamlogo_00_h0",
+      "outer": 54,
+      "outer_id": 2156034325,
+      "pack_offset": 18968576,
+      "primary": "#311D00",
+      "roster_id": 5,
+      "secondary": "#FF3C00",
+      "span_sha256": "86ca90f3c4c7cfff362af7a9801ef7bc25b5494894ff3840d87b9f8b12a51418",
+      "span_size": 14800,
+      "width": 256
+    },
+    "team": "CLE"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb07a3",
+        "span_sha256": "16c78969c361a3047f36289c45b572e4d9990ff6f2aed5b0318a8c88c8beb770"
+      },
+      "home": {
+        "name": "sb07h3",
+        "span_sha256": "f2f8828444cd240d8ec15cda03934e7c2bffb770c995e92f77a703eda03ddaba"
+      }
+    },
+    "source": {
+      "asset_code": "07",
+      "chunk": 0,
+      "decoded_sha256": "0cb696fc7f6b53c8be75e24d98b7e5d40ac50ce1f8d501702b9f1e2591a1f1ba",
+      "format_name": "P8",
+      "height": 256,
+      "name": "07_teamlogo_00_h0",
+      "outer": 31,
+      "outer_id": 364949660,
+      "pack_offset": 16640000,
+      "primary": "#003594",
+      "roster_id": 11,
+      "secondary": "#869397",
+      "span_sha256": "a6d6a390e2bb7586b69b2704d2c7751849eed446f4e23682253b47079181aa8a",
+      "span_size": 13152,
+      "width": 256
+    },
+    "team": "DAL"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb08a3",
+        "span_sha256": "5348bb45237862162f8f15fb886796f938620e862d8b58fc879897f933ba666d"
+      },
+      "home": {
+        "name": "sb08h3",
+        "span_sha256": "123a8bd9c53cd35e956d41ff4d8b16bdc29e79153f03f5cba553fe8620c6a978"
+      }
+    },
+    "source": {
+      "asset_code": "08",
+      "chunk": 0,
+      "decoded_sha256": "2a6d23a42966276352a8532061156c1401eb832561ab08e020a7dfa54d68e9af",
+      "format_name": "P8",
+      "height": 256,
+      "name": "08_teamlogo_00_h0",
+      "outer": 32,
+      "outer_id": 3838569233,
+      "pack_offset": 16740352,
+      "primary": "#FB4F14",
+      "roster_id": 4,
+      "secondary": "#002244",
+      "span_sha256": "aa69d667a8f46d7431776dd5dd1b9888d95330ed8b03df7b47e13395bac03168",
+      "span_size": 11760,
+      "width": 256
+    },
+    "team": "DEN"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb09a3",
+        "span_sha256": "b49bdee2aac509aaff397385f5680d8b025a1480368ecf0b31ee32152d21d014"
+      },
+      "home": {
+        "name": "sb09h3",
+        "span_sha256": "a65711ec11f7469c3e935ba1feede3354a02175ea1836299fba36429a20c7936"
+      }
+    },
+    "source": {
+      "asset_code": "09",
+      "chunk": 0,
+      "decoded_sha256": "c60eea8456efff817bb57e080cbcbf7d95582145e1e164bd7d3e22fda9cc7d8a",
+      "format_name": "P8",
+      "height": 256,
+      "name": "09_teamlogo_00_h0",
+      "outer": 33,
+      "outer_id": 185172015,
+      "pack_offset": 16838656,
+      "primary": "#0076B6",
+      "roster_id": 18,
+      "secondary": "#B0B7BC",
+      "span_sha256": "e98e6964ef870ae9afd651e36f7bd1fc3f7616d47ba3cfd411e84a5c6bbd9267",
+      "span_size": 13264,
+      "width": 256
+    },
+    "team": "DET"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb10a3",
+        "span_sha256": "d402130459990f1628a9525819cb78e0483202310921a4bbbac5ba4d96e95dfd"
+      },
+      "home": {
+        "name": "sb10h3",
+        "span_sha256": "dd4e702c278dc83a04f9555f4ad6ec28af956be7dbd310a7a3ccb03067726708"
+      }
+    },
+    "source": {
+      "asset_code": "10",
+      "chunk": 0,
+      "decoded_sha256": "9e32ba6710eccedf3a0a9b3451ad1485947bf6dfa37cd52dd8af698277e96fa7",
+      "format_name": "P8",
+      "height": 256,
+      "name": "10_teamlogo_00_h0",
+      "outer": 34,
+      "outer_id": 1824122762,
+      "pack_offset": 16936960,
+      "primary": "#203731",
+      "roster_id": 19,
+      "secondary": "#FFB612",
+      "span_sha256": "61835665a75c0cffd427451e994b95a1aa3c008b7169304f70142529f851e976",
+      "span_size": 10576,
+      "width": 256
+    },
+    "team": "GB"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb37a3",
+        "span_sha256": "c4b1f10647ec709a056785e215a490479fbaf51be5067d30b483421a11885f43"
+      },
+      "home": {
+        "name": "sb37h3",
+        "span_sha256": "9f7b02735f8f2b5a139684677401a3c5720fe94d2daf30a764c32659ae2f5326"
+      }
+    },
+    "source": {
+      "asset_code": "37",
+      "chunk": 0,
+      "decoded_sha256": "d4b5eb05d6844295a081e20f11c55f654b44f7886ab072b48db54ba64ed76f85",
+      "format_name": "P8",
+      "height": 256,
+      "name": "37_teamlogo_00_h0",
+      "outer": 60,
+      "outer_id": 1650352748,
+      "pack_offset": 19605504,
+      "primary": "#03202F",
+      "roster_id": 29,
+      "secondary": "#A71930",
+      "span_sha256": "a7dfcb5709ce1453254ace8610cac688358006de16cf18f590f9ce2582328ea9",
+      "span_size": 14736,
+      "width": 256
+    },
+    "team": "HOU"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb11a3",
+        "span_sha256": "fcce3604629af996720ff7da8fd7895528692d3eb981dda847de14e32f193edb"
+      },
+      "home": {
+        "name": "sb11h3",
+        "span_sha256": "34083934582aa3fe9ab3ee5a89a2d148f033d8a26177b3757451a1623b22d4a4"
+      }
+    },
+    "source": {
+      "asset_code": "11",
+      "chunk": 0,
+      "decoded_sha256": "ee58a36e9f36b8837a87085444ca2c26d779a818fb01548cdfd4fc654ac9b4b4",
+      "format_name": "P8",
+      "height": 256,
+      "name": "11_teamlogo_00_h0",
+      "outer": 35,
+      "outer_id": 2205912244,
+      "pack_offset": 17031168,
+      "primary": "#002C5F",
+      "roster_id": 10,
+      "secondary": "#A2AAAD",
+      "span_sha256": "887e2a591c097fcf4eaea510b7ea2bbd088f323b3c256eb55ddc08eb248c3fc0",
+      "span_size": 10880,
+      "width": 256
+    },
+    "team": "IND"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb12a3",
+        "span_sha256": "bdd2aa4c6a29caa2a66207b9f9a6da38a01cfcb490ef97b8a75a359688ac0669"
+      },
+      "home": {
+        "name": "sb12h3",
+        "span_sha256": "2b9283bb647e5697fe9b9a67c6cb67552274c3fcc7914cbc8ee5549bfe3dc4fa"
+      }
+    },
+    "source": {
+      "asset_code": "12",
+      "chunk": 0,
+      "decoded_sha256": "5505cd05f276b9c9a08b7aecc6a909d985680d35c04844b237dd339202e6d8aa",
+      "format_name": "P8",
+      "height": 256,
+      "name": "12_teamlogo_00_h0",
+      "outer": 36,
+      "outer_id": 1749825463,
+      "pack_offset": 17127424,
+      "primary": "#006778",
+      "roster_id": 16,
+      "secondary": "#D7A22A",
+      "span_sha256": "afd470079920c75e3a238e364adeb4c3af2c8534b70aa574b75a45ad478cfd7c",
+      "span_size": 18448,
+      "width": 256
+    },
+    "team": "JAX"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb13a3",
+        "span_sha256": "0a815ac018bc33ede3c86ad2087712ddd5b9b1cea0f01430d1e970c3213f7e81"
+      },
+      "home": {
+        "name": "sb13h3",
+        "span_sha256": "c6720c1340fc080807649d27dcaf7b4f177e254af91d0da8c7cba1ac378444c4"
+      }
+    },
+    "source": {
+      "asset_code": "13",
+      "chunk": 0,
+      "decoded_sha256": "556be81af5ec8b8b78c827edab3f6971e2a16e8b5294bb1f11873d4790426f06",
+      "format_name": "P8",
+      "height": 256,
+      "name": "13_teamlogo_00_h0",
+      "outer": 37,
+      "outer_id": 2274253961,
+      "pack_offset": 17233920,
+      "primary": "#E31837",
+      "roster_id": 9,
+      "secondary": "#FFB81C",
+      "span_sha256": "4b4a78740219937ab10f024e782cdc35dc73f4a7951c2182f008bf8442727923",
+      "span_size": 13664,
+      "width": 256
+    },
+    "team": "KC"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb24a3",
+        "span_sha256": "e107d1f4280e98ff6edd832a021aaaee3251a8afb20007fa28138bee325b6e02"
+      },
+      "home": {
+        "name": "sb24h3",
+        "span_sha256": "ca38be7d2d3765254c4fc3b629ae3302d8e325ce82ebc755b762d64162f0bb2f"
+      }
+    },
+    "source": {
+      "asset_code": "24",
+      "chunk": 0,
+      "decoded_sha256": "2eaa74957b253e7bda3e0bb665bd168f4888bbacf93f2cd008b05d9b2e9ecc7f",
+      "format_name": "P8",
+      "height": 256,
+      "name": "24_teamlogo_00_h0",
+      "outer": 48,
+      "outer_id": 315397376,
+      "pack_offset": 18343936,
+      "primary": "#0080C6",
+      "roster_id": 8,
+      "secondary": "#FFC20E",
+      "span_sha256": "85080521b4d47bca908dc6e07ddb7d79a7892065a9591bd9803bec3e65ad1bb6",
+      "span_size": 16592,
+      "width": 256
+    },
+    "team": "LAC"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb23a3",
+        "span_sha256": "c32fbfc824659dd18d4bbce8dfd3de3be499b400e57750bd8ba5ee7bc0375b18"
+      },
+      "home": {
+        "name": "sb23h3",
+        "span_sha256": "61bf9a9186b01083469c4d8bb1edd5cd5d3d129b8eafcb9d2f9aae054a6bc0bc"
+      }
+    },
+    "source": {
+      "asset_code": "23",
+      "chunk": 0,
+      "decoded_sha256": "ec54365642bf7f009800e2350935460b0107fa922f1a046361ee231355cea51e",
+      "format_name": "P8",
+      "height": 256,
+      "name": "23_teamlogo_00_h0",
+      "outer": 47,
+      "outer_id": 4027616889,
+      "pack_offset": 18241536,
+      "primary": "#003594",
+      "roster_id": 23,
+      "secondary": "#FFD100",
+      "span_sha256": "f34ba90269552e64b0d4325e7b9461b30c72beade7c5a7a879dc6fd95511074b",
+      "span_size": 14432,
+      "width": 256
+    },
+    "team": "LAR"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb20a3",
+        "span_sha256": "21da378bb7490f9442a4b113b9e626cf07513495801c1765238810e17724a9ef"
+      },
+      "home": {
+        "name": "sb20h3",
+        "span_sha256": "ec4a657fd318c29db007ca98bb945a15e843ae6377e5939e6a58d58bb7519ef7"
+      }
+    },
+    "source": {
+      "asset_code": "20",
+      "chunk": 0,
+      "decoded_sha256": "7d182239adffdbf37728c77b845ce217f60ec3462d07210bade7952b37a22107",
+      "format_name": "P8",
+      "height": 256,
+      "name": "20_teamlogo_00_h0",
+      "outer": 44,
+      "outer_id": 455554426,
+      "pack_offset": 17934336,
+      "primary": "#000000",
+      "roster_id": 22,
+      "secondary": "#A5ACAF",
+      "span_sha256": "bb7e2ca4d69ef7c3e71d8633a5b25eef5b7f74be642865381a49cfb89afbc63f",
+      "span_size": 14736,
+      "width": 256
+    },
+    "team": "LV"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb14a3",
+        "span_sha256": "2839b08d06a8200154dc5732c7bfb3fcf0f44edf436803e7f3451a7914b932b8"
+      },
+      "home": {
+        "name": "sb14h3",
+        "span_sha256": "7ae169a8621f2cd2602f68877680cfdf263e0340cd07bfb5ca95a2c8ede0091b"
+      }
+    },
+    "source": {
+      "asset_code": "14",
+      "chunk": 0,
+      "decoded_sha256": "0079e1c7c460985618e1f7f45ccb1a12ff7924a1ed3c7207f98a2e45789eacb4",
+      "format_name": "P8",
+      "height": 256,
+      "name": "14_teamlogo_00_h0",
+      "outer": 38,
+      "outer_id": 1699891184,
+      "pack_offset": 17334272,
+      "primary": "#008E97",
+      "roster_id": 12,
+      "secondary": "#FC4C02",
+      "span_sha256": "0e59120ec9a965d3ce23593dadb4bc9f1f169f120018d3bacfef69a64086b3cd",
+      "span_size": 18784,
+      "width": 256
+    },
+    "team": "MIA"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb15a3",
+        "span_sha256": "6a954a1e8e649130b17aaf0dea3b74a5bcc95b8761b2916d509135684b8b2154"
+      },
+      "home": {
+        "name": "sb15h3",
+        "span_sha256": "7ee5b8f68c898cd98b00b27fc0d0e73f73270a98a221b7ecb7d79c92ddbe32c5"
+      }
+    },
+    "source": {
+      "asset_code": "15",
+      "chunk": 0,
+      "decoded_sha256": "3c94f12898183b9afeb2b17006b49aa7c3df62c9bcf524180bd7e6fcff43e787",
+      "format_name": "P8",
+      "height": 256,
+      "name": "15_teamlogo_00_h0",
+      "outer": 39,
+      "outer_id": 2324704462,
+      "pack_offset": 17440768,
+      "primary": "#4F2683",
+      "roster_id": 31,
+      "secondary": "#FFC62F",
+      "span_sha256": "da5c5e9cffc4ac263c75f023f5e93fd45522246631a669936eeb491d6cdb8c45",
+      "span_size": 19632,
+      "width": 256
+    },
+    "team": "MIN"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb16a3",
+        "span_sha256": "1b6d83f7959816696d130344d5bb9af6210c21149d5a01858cf3e278fb857e85"
+      },
+      "home": {
+        "name": "sb16h3",
+        "span_sha256": "eb360e57798dbc64739181a30ae47bf4c88acdfdc44537f58be9dfe00ef9d71d"
+      }
+    },
+    "source": {
+      "asset_code": "16",
+      "chunk": 0,
+      "decoded_sha256": "17d1f3ba48727c88695c22aa45a76526a2afcfdfb65e1540ef579ca0583650cb",
+      "format_name": "P8",
+      "height": 256,
+      "name": "16_teamlogo_00_h0",
+      "outer": 40,
+      "outer_id": 1638373325,
+      "pack_offset": 17547264,
+      "primary": "#002244",
+      "roster_id": 21,
+      "secondary": "#C60C30",
+      "span_sha256": "09d139314bb508002a56c77b5b991a4208080eacddae5233f83112742398bdd0",
+      "span_size": 8688,
+      "width": 256
+    },
+    "team": "NE"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb17a3",
+        "span_sha256": "ae19da9038837440470f189eb21afdda49999fad52040e8fe1221ea7d53dad3e"
+      },
+      "home": {
+        "name": "sb17h3",
+        "span_sha256": "052fb157449f8c2c146b4fff836d05135776fe48d8be0583ef4ffa3f43e5044f"
+      }
+    },
+    "source": {
+      "asset_code": "17",
+      "chunk": 0,
+      "decoded_sha256": "0018c432c0591c061c183ccb26a8d289b180845e0647ea0908e9978f70a3b72e",
+      "format_name": "P8",
+      "height": 256,
+      "name": "17_teamlogo_00_h0",
+      "outer": 41,
+      "outer_id": 2389048563,
+      "pack_offset": 17641472,
+      "primary": "#D3BC8D",
+      "roster_id": 26,
+      "secondary": "#101820",
+      "span_sha256": "c4867c1f8dd800dd95dc33fc9dd1c24b23dae83ece78729328fdffb1e517ac84",
+      "span_size": 14240,
+      "width": 256
+    },
+    "team": "NO"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb18a3",
+        "span_sha256": "42523e01b25deb69788e12410ecf4c76583851ae8f5d88dc47e61a07c981c831"
+      },
+      "home": {
+        "name": "sb18h3",
+        "span_sha256": "a23ffe5d5eac7f780ecfe40ea391cd00c4a6af17beae50a50f8c59c8c611e3da"
+      }
+    },
+    "source": {
+      "asset_code": "18",
+      "chunk": 0,
+      "decoded_sha256": "c35235f7c479172d4d09c5080e77e132558916b6b603484409dcd8f30d7809ae",
+      "format_name": "P8",
+      "height": 256,
+      "name": "18_teamlogo_00_h0",
+      "outer": 42,
+      "outer_id": 2137958270,
+      "pack_offset": 17743872,
+      "primary": "#0B2265",
+      "roster_id": 15,
+      "secondary": "#A71930",
+      "span_sha256": "63f48587fb336136c2606e17420b9afca6a380c75ff071bde3eef0db3f8af93a",
+      "span_size": 7344,
+      "width": 256
+    },
+    "team": "NYG"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb19a3",
+        "span_sha256": "b28f893414240ad3ea261ffe1607ae83c39884706652f532c7b8a2fe798fc468"
+      },
+      "home": {
+        "name": "sb19h3",
+        "span_sha256": "8683a21e0ddc06aaa3bec30de16ad18d0d3efb114099af696477e03e3711be0c"
+      }
+    },
+    "source": {
+      "asset_code": "19",
+      "chunk": 0,
+      "decoded_sha256": "53926954054c5fc695b8c317dd35fd6171ed4114af946eedc281920443ecdcbf",
+      "format_name": "P8",
+      "height": 256,
+      "name": "19_teamlogo_00_h0",
+      "outer": 43,
+      "outer_id": 2427243584,
+      "pack_offset": 17836032,
+      "primary": "#125740",
+      "roster_id": 17,
+      "secondary": "#000000",
+      "span_sha256": "4679c986e82f264bfec961364ba51231facdff3d6711d87b6d7f0e204cbc8d19",
+      "span_size": 12096,
+      "width": 256
+    },
+    "team": "NYJ"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb21a3",
+        "span_sha256": "61e55682c5948a985b69254b0989eea5de1a6faa5d665be214befdf32c2d368e"
+      },
+      "home": {
+        "name": "sb21h3",
+        "span_sha256": "159b519177995166e6912b7589f665496eaf5e2e82271ba4c1d4ec1cc8e2e0ab"
+      }
+    },
+    "source": {
+      "asset_code": "21",
+      "chunk": 0,
+      "decoded_sha256": "191c7f29ba89149dcd47b7105c0b7d537da9db2972b509e95d684dde4e7160cf",
+      "format_name": "P8",
+      "height": 256,
+      "name": "21_teamlogo_00_h0",
+      "outer": 45,
+      "outer_id": 4108672580,
+      "pack_offset": 18040832,
+      "primary": "#004C54",
+      "roster_id": 13,
+      "secondary": "#A5ACAF",
+      "span_sha256": "84ab53015ab7c0197996530ae6778221019c5007b4c118baa5a6a063633c71bd",
+      "span_size": 17760,
+      "width": 256
+    },
+    "team": "PHI"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb22a3",
+        "span_sha256": "e0fd187e393fe26ea315f0cec4dbd7a6a6ee784f1aab94cfa9286e388cfc9ee2"
+      },
+      "home": {
+        "name": "sb22h3",
+        "span_sha256": "c1564c861a8cf07f6195f7105b9646a3d0a3c7c90e4aa74e6113495c1e3a0fd7"
+      }
+    },
+    "source": {
+      "asset_code": "22",
+      "chunk": 0,
+      "decoded_sha256": "a2b57c08ad117eec4544519991e72e1277866a3151673bef7284724009c0f99e",
+      "format_name": "P8",
+      "height": 256,
+      "name": "22_teamlogo_00_h0",
+      "outer": 46,
+      "outer_id": 533914951,
+      "pack_offset": 18145280,
+      "primary": "#101820",
+      "roster_id": 28,
+      "secondary": "#FFB612",
+      "span_sha256": "7f27d62838d04b6221b48c7fd8206e602871c6ad842ee0bdc67d42389b6ddeea",
+      "span_size": 10480,
+      "width": 256
+    },
+    "team": "PIT"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb26a3",
+        "span_sha256": "879ee45da28abb64da0745cd31d409260f617eb643cbf86d88eae51e41c40396"
+      },
+      "home": {
+        "name": "sb26h3",
+        "span_sha256": "6c7ab460e745f77627fa8f77f5738e5cf87fe3b587756cd264ce41ecba98b228"
+      }
+    },
+    "source": {
+      "asset_code": "26",
+      "chunk": 0,
+      "decoded_sha256": "c54626a8e5cfe680cc96f5e8cfdfc77af95c0bebb256ac1829d19e733a3aa539",
+      "format_name": "P8",
+      "height": 256,
+      "name": "26_teamlogo_00_h0",
+      "outer": 50,
+      "outer_id": 372852029,
+      "pack_offset": 18552832,
+      "primary": "#002244",
+      "roster_id": 27,
+      "secondary": "#69BE28",
+      "span_sha256": "2b801336d6088139a27e902a3f8548af037d66883f4c67bf7c61ce0de48ded98",
+      "span_size": 8016,
+      "width": 256
+    },
+    "team": "SEA"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb25a3",
+        "span_sha256": "75f5af90d9258abe230bc5523682a4e010c8255ea805ee5882c6e7744585ba93"
+      },
+      "home": {
+        "name": "sb25h3",
+        "span_sha256": "d9b573aa6fe322dd6ce4a937eaf22c131f79a91c7147b9cdbdd6d3939c9c5ca4"
+      }
+    },
+    "source": {
+      "asset_code": "25",
+      "chunk": 0,
+      "decoded_sha256": "8061b40a314ead7fb4d86782afd574491a094f830d5f78f559f078f8a44fa694",
+      "format_name": "P8",
+      "height": 256,
+      "name": "25_teamlogo_00_h0",
+      "outer": 49,
+      "outer_id": 4245618238,
+      "pack_offset": 18450432,
+      "primary": "#AA0000",
+      "roster_id": 0,
+      "secondary": "#B3995D",
+      "span_sha256": "9c411080c1001f0f6cc003bbcc433156453b60c6df2c7a4e53ff70d9f77cee85",
+      "span_size": 14768,
+      "width": 256
+    },
+    "team": "SF"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb27a3",
+        "span_sha256": "7f1895c5f435c26738f159c52711988cdf1f75cedb14e6d61a9098b80bd638f9"
+      },
+      "home": {
+        "name": "sb27h3",
+        "span_sha256": "9860739390e46948f1eadf51a8e89cca393ab09e0d951cdbabe272e94db11366"
+      }
+    },
+    "source": {
+      "asset_code": "27",
+      "chunk": 0,
+      "decoded_sha256": "aa2ec1f9fad10cd70f53e267408278e6d3fc47688e3f46f823af985c08c1ee46",
+      "format_name": "P8",
+      "height": 256,
+      "name": "27_teamlogo_00_h0",
+      "outer": 51,
+      "outer_id": 4193988099,
+      "pack_offset": 18649088,
+      "primary": "#D50A0A",
+      "roster_id": 6,
+      "secondary": "#34302B",
+      "span_sha256": "e6d7a486baf2dca48c37a254807a15d24374e7d5b4a3c3f974b47a76141739b9",
+      "span_size": 20608,
+      "width": 256
+    },
+    "team": "TB"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb28a3",
+        "span_sha256": "a5b6a86d26ff5ff4a14026f51fce3bf0326a301fae07d26beab09585acf38b58"
+      },
+      "home": {
+        "name": "sb28h3",
+        "span_sha256": "be6b8af9a4ecc9e091e1d2eabf149ffb9853de4991a076cc713d49ce033bd1f3"
+      }
+    },
+    "source": {
+      "asset_code": "28",
+      "chunk": 0,
+      "decoded_sha256": "e44ab9d1612281868ce3adf60396bc3805c6a35ffee69bf5a202533f13cb2e7a",
+      "format_name": "P8",
+      "height": 256,
+      "name": "28_teamlogo_00_h0",
+      "outer": 52,
+      "outer_id": 149976462,
+      "pack_offset": 18759680,
+      "primary": "#0C2340",
+      "roster_id": 30,
+      "secondary": "#4B92DB",
+      "span_sha256": "5ec3d1babde8cb5f9f2f73a8158354fe7558908da45ed979dcf3256ff32c5199",
+      "span_size": 14624,
+      "width": 256
+    },
+    "team": "TEN"
+  },
+  {
+    "pair": {
+      "away": {
+        "name": "sb29a3",
+        "span_sha256": "283962cf0d57f285af15c87aa5d9deb3a9e037325c1f7f524c89a165d1e75628"
+      },
+      "home": {
+        "name": "sb29h3",
+        "span_sha256": "3169113f9fcd9f59c02f70287b48e1c629dabbb8f8c3d5baffe286ca82aca80f"
+      }
+    },
+    "source": {
+      "asset_code": "29",
+      "chunk": 0,
+      "decoded_sha256": "ca989b4be598f9da3bbb9ac2278ae9bdb1aa7dfa54247b688f9da748f6c022c4",
+      "format_name": "P8",
+      "height": 256,
+      "name": "29_teamlogo_00_h0",
+      "outer": 53,
+      "outer_id": 3878821552,
+      "pack_offset": 18860032,
+      "primary": "#5A1414",
+      "roster_id": 25,
+      "secondary": "#FFB612",
+      "span_sha256": "00a7f07682f5046165b9050d26f080effe34ec9f9642bb622ee3443e0b2c8c58",
+      "span_size": 21040,
+      "width": 256
+    },
+    "team": "WAS"
+  }
+]

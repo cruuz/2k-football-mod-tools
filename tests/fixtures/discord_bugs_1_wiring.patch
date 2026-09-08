@@ -1,0 +1,256 @@
+--- a/mod_editor/core/update_check.py
++++ b/mod_editor/core/update_check.py
+@@ -64,6 +64,8 @@
+     unforeseen tag scheme still gets announced rather than silently swallowed.
+     """
+
++    from .self_update import canonical_release_tag
++    latest, current = canonical_release_tag(latest), canonical_release_tag(current)
+     if latest == current:
+         return False
+     latest_number = _beta_number(latest)
+--- a/mod_editor/core/mod_build.py
++++ b/mod_editor/core/mod_build.py
+@@ -820,8 +820,10 @@
+                     preflight = step.get("music_shuffle_preflight")
+                     if preflight is not None:
+                         preflight.update(checked)
++            from .build_feedback import measure
++            receipt["outcome"] = measure(source, directory / target.name)
+             if progress:
+-                progress("Publishing verified disc", 0, 0)
++                progress(receipt["outcome"]["message"], 0, 0)
+             os.replace(directory / target.name, target)
+             receipt["target"] = str(target)
+             receipt["result"]["path"] = str(target)
+--- a/mod_editor/gui/build_panel_qt.py
++++ b/mod_editor/gui/build_panel_qt.py
+@@ -1682,36 +1682,12 @@
+         self._refresh()
+
+     def project_build_settings(self):
+-        from mod_editor.core import nfl2k5_build_settings as saved
+-        plan = self.plan()
+-        state = self.music_build_settings()
+-        defaults = saved.defaults()
+-        for key in saved.FEATURE_KEYS:
+-            value = getattr(plan, key)
+-            if value != defaults[key]:
+-                state[key] = value
+-        # Preparation settings survive while the unavailable event is off.
+-        for key, value in self._senior_bowl_options.items():
+-            if value != defaults[key]:
+-                state[key] = value
+-        return saved.build_settings(state)
++        from .gameplay_project_ui import capture
++        return capture(self)
+
+     def restore_project_build_settings(self, state):
+-        from mod_editor.core import nfl2k5_build_settings as saved
+-        checked = saved.build_settings(state)
+-        choices = {**saved.defaults(), **checked}
+-        self.restore_music_build_settings({key: checked[key] for key in saved.MUSIC_KEYS if key in checked})
+-        self.set_senior_bowl_options({key: choices[key] for key in
+-                                     ("senior_bowl", "senior_bowl_settings", "senior_bowl_seed")})
+-        self._guardian_players = choices["guardian_players"]
+-        self.guardian_everyone_practice_check.setChecked(choices["guardian_everyone_practice"])
+-        self.set_my_career_setup(choices["my_career_setup"])
+-        self._collision_last_positive = choices["momentum_collision_level"] or 50
+-        for key in r62_ui.KEYS:
+-            self._boxes()[key].setChecked(bool(choices[key]))
+-        for family, check in self._hires_family_checks.items():
+-            check.setChecked(family in choices["hires_families"])
+-        self._refresh()
++        from .gameplay_project_ui import restore
++        restore(self, state)
+
+     def music_build_settings(self):
+         document = tt.music_playlist_patch.copy_options(self._music_shuffle_selection)
+@@ -1886,9 +1862,7 @@
+         self.music_preview_label.setText(plain_failure("preview the music library", message))
+
+     def _include_session_project(self):
+-        return bool((self.team_names_2026_check.isChecked() or self.modern_naming_check.isChecked()
+-                     or (self.music_project_check.isChecked() and not self.music_project_field.text().strip()))
+-                    and getattr(self._facade, "_session", None) is not None
++        return bool(getattr(self._facade, "_session", None) is not None
+                     and getattr(self._facade, "modified_count", 0))
+
+     def _build_operation(self, plan, progress, include_session=False):
+@@ -1915,6 +1889,8 @@
+             result = facade.build_service.build(cache, session, staged,
+                 lambda event: progress(event.message, event.completed, event.total))
+             receipt = mod_build.build(replace(plan, source=str(staged)), progress)
++        from mod_editor.core.build_feedback import measure
++        receipt["outcome"] = measure(source, plan.target)
+         receipt["source"] = str(source)
+         receipt["steps"].insert(0, {"step": "shared_project", **asdict(result)})
+         return receipt
+@@ -1946,11 +1922,11 @@
+         assert isinstance(receipt, dict)
+         target = str(receipt.get("target"))
+         steps = ", ".join(str(s.get("step")) for s in receipt.get("steps", []))
+-        self.status_label.setText(f"Disc ready: {target}. Play latest disc in xemu, or open Share → Export mod file.")
++        from mod_editor.core.build_feedback import completion
++        title, message = completion(receipt)
++        self.status_label.setText(f"{title}: {target}. {message}")
+         self.built.emit(dict(receipt))
+-        QMessageBox.information(self, "Disc ready",
+-                                f"{target}\n\nPlay latest disc in xemu (bottom right), or open Share → Export mod file.\n\n"
+-                                f"Steps written: {steps}.")
++        QMessageBox.information(self, title, f"{target}\n\n{message}\n\nSteps checked: {steps}.")
+         try:
+             state = receipt["result"] if "pre_remap_inspection" in receipt else mod_build.inspect(Path(str(receipt.get("target"))))
+             self.apply_state(state)
+--- a/mod_editor/gui/gameplay_patches_panel_qt.py
++++ b/mod_editor/gui/gameplay_patches_panel_qt.py
+@@ -757,9 +757,9 @@
+         self._task = None
+         assert isinstance(receipt, dict)
+         target = Path(str(receipt.get("target")))
+-        self.status_label.setText(
+-            f"Disc ready: {target.name}. Open it in xemu." if tt.is_disc_image(target)
+-            else f"Patched executable saved: {target.name}.")
++        from mod_editor.core.build_feedback import completion
++        title, message = completion(receipt)
++        self.status_label.setText(f"{title}: {target.name}. {message}")
+         try:
+             self.apply_state(mod_build.inspect(Path(str(receipt.get("target")))))
+         except Exception:  # noqa: BLE001
+--- a/mod_editor/gui/studio_qt.py
++++ b/mod_editor/gui/studio_qt.py
+@@ -1947,6 +1947,9 @@
+             self._music_playlist_document = document
+             if self._build_panel is not None:
+                 self._build_panel.restore_project_build_settings(state)
++                link = getattr(self, "_gameplay_build_link", None)
++                if link is not None:
++                    link.refresh_from_build()
+             bowl_panel = getattr(self, "_senior_bowl_panel", None)
+             if bowl_panel is not None:
+                 choices = {**saved.defaults(), **state}
+@@ -2805,6 +2808,7 @@
+                 # sliders, acceleration ramp, franchise draft AI) with their
+                 # explanations, written through mod_build.
+                 self._gameplay_patches_panel = GameplayPatchesPanel(self.facade)
++                self._connect_gameplay_build()
+                 # The Xbox save editor (sliders + franchise year) is a gameplay tool, not a
+                 # uniform tool: one instance, moved here from Uniforms & Equipment (GP-02).
+                 self._save_panel = SavePanel(self.facade)
+@@ -3707,10 +3711,9 @@
+         title.setObjectName("heroTitleSmall")
+         blurb = QLabel(
+             "Search a player to see the face textures and portrait that belong "
+-            "to them. Faces are linked by the face_id stored in the player's own "
+-            "roster record; a portrait is matched by name, because nothing in "
+-            "the bytes ties a portrait number to a player — that is labelled so "
+-            "you know which is which."
++            "to them. The Photo ID in the roster selects the numbered portrait. "
++            "Renaming a player does not replace that picture. Replace its PNG and "
++            "include the portrait project and roster edits in the same disc build."
+         )
+         blurb.setObjectName("mutedLabel")
+         blurb.setWordWrap(True)
+@@ -3786,6 +3789,8 @@
+                 "outer_index": player.outer_index,
+                 "name": player.display_name,
+                 "face_id": f"{int(player.face_id):04d}",
++                "photo_id": int(player.face_id),  # text catalog reads record +0x06
++
+                 "identity_asset_ids": (
+                     player.first_name_asset_id, player.last_name_asset_id,
+                 ),
+@@ -3831,7 +3836,7 @@
+         lines = [f"{row.name} — face_id {row.face_id}"]
+         for asset in row.assets:
+             origin = ("linked by the roster record"
+-                      if asset.link == "face_id" else "matched by name")
++                      if asset.link in ("face_id", "photo_id") else "matched by name")
+             lines.append(
+                 f"  • {asset.label}  ({asset.width}×{asset.height}, {origin})"
+             )
+@@ -7550,6 +7555,15 @@
+         box.exec_()
+
+     def _choose_build_output(self) -> None:
++        panel = getattr(self, "_build_panel", None)
++        if panel is not None and panel.has_work():
++            blocker = panel.blocker()
++            if blocker:
++                self._set_status(blocker)
++                return
++            self._capture_music_build_settings()
++            panel._build()
++            return
+         if self._refuse_while_audio_busy("build a modded XISO"):
+             return
+         preferred = Path.home() / "2K5 Mod Studio Builds"
+@@ -8324,7 +8338,9 @@
+         self.revert_all_button.setEnabled(
+             ready and count + metadata_count > 0 and not global_busy
+         )
+-        self.build_button.setEnabled(ready and count > 0 and not global_busy)
++        build_panel = getattr(self, "_build_panel", None)
++        selected_build = bool(build_panel and build_panel.has_work())
++        self.build_button.setEnabled(ready and (count > 0 or selected_build) and not global_busy)
+         # A disabled button that gives no reason reads as a broken one.  A modder
+         # reported being unable to rebuild the XISO, and loading a disc then
+         # pressing Build before making an edit does exactly nothing: no dialog, no
+@@ -8334,7 +8350,7 @@
+         # text the same way.
+         self.build_button.setToolTip(
+             _build_blocker_message(
+-                ready=ready, edit_count=count, busy=global_busy
++                ready=ready, edit_count=count or int(selected_build), busy=global_busy
+             )
+         )
+         self.build_button.setAccessibleDescription(self.build_button.toolTip())
+@@ -8496,6 +8512,9 @@
+         tabs.setObjectName("buildShareTabs")
+         tabs.setAccessibleName("Build and share workspaces")
+         self._build_panel = BuildPanel(self.facade)
++        from .gameplay_project_ui import observe_build_choices
++        observe_build_choices(self._build_panel, self._gameplay_build_changed)
++        self._connect_gameplay_build()
+         self._build_panel.team_names_2026_check.toggled.connect(self._refresh_team_names_preview)
+         self._build_panel.modern_naming_check.toggled.connect(self._refresh_team_names_preview)
+         self._build_panel.source_field.textChanged.connect(self._refresh_team_names_preview)
+@@ -8531,6 +8550,27 @@
+             models_panel.disc_written.connect(self._register_external_disc)
+         tabs.setCurrentIndex(0)
+         return tabs
++
++    def _connect_gameplay_build(self):
++        build = getattr(self, "_build_panel", None)
++        gameplay = getattr(self, "_gameplay_patches_panel", None)
++        if build is None or gameplay is None or getattr(self, "_gameplay_build_link", None) is not None:
++            return
++        from .gameplay_project_ui import GameplayBuildLink
++        self._gameplay_build_link = GameplayBuildLink(
++            build, gameplay, self._gameplay_build_changed,
++            suspended=lambda: self._restoring_music_playlist)
++
++    def _gameplay_build_changed(self, *_args):
++        if self._restoring_music_playlist or not getattr(self.facade, "source_ready", False):
++            return
++        try:
++            self._capture_music_build_settings()
++        except (ValueError, OSError) as exc:
++            self.statusBar().showMessage(f"Build choices could not be saved: {exc}", 8000)
++            return
++        self._mark_workspace_changed()
++        self._refresh_edit_state()
+
+     def _connect_star_players(self) -> None:
+         """★ Star ticks in Rosters & Players are the Build tab's ``player_tags``.
+--- a/mod_editor/gui/roster_editor_panel_qt.py
++++ b/mod_editor/gui/roster_editor_panel_qt.py
+@@ -2114,6 +2114,8 @@
+             self._show_player(player)
+         self._refresh_grid_row(player)
+         self._refresh_actions()
++        if name == "photo_id" and self.document is not None:
++            self._set_status(rr.portrait_confirmation(self.document, player))
+
+     def _name_changed(self, player: rr.Player) -> bool:
+         """True when this player's name or college text differs from the roster we loaded."""

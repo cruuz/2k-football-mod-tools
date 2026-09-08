@@ -3,10 +3,10 @@
   "game": "nfl2k5_xbox",
   "surface": "gameplay_tuning_sliders",
   "title": "Player momentum (experimental, unwitnessed)",
-  "summary": "Adjust fast turning and ordinary braking, with an optional bounded running-start contact bonus.",
+  "summary": "Adjust fast turning and ordinary braking, with separate capped running-start and weight-and-velocity contact options.",
   "classification": "offline-writer-proved",
   "backend": {
-    "command": "python3 -c \"import importlib, sys; from pathlib import Path; module = importlib.import_module(sys.argv[1][:-3].replace('/', '.')); payload, receipt = module.apply(Path(sys.argv[2]).read_bytes()); Path(sys.argv[3]).open('xb').write(payload); print(receipt)\" mod_editor/core/nfl2k5_momentum.py <source.xbe> <new-copy.xbe>",
+    "command": "python3 -m mod_editor.core.nfl2k5_momentum <source.xbe> --output <new-copy.xbe> --level 0 --collisions --collision-level 50",
     "module": "mod_editor/core/nfl2k5_momentum.py",
     "operation": "write"
   },
@@ -17,14 +17,15 @@
     "reason": "EXPERIMENTAL / UNWITNESSED. Opt in manually after protected build integration; all presets default off."
   },
   "input_constraints": [
-    "Pinned USA retail hook/table bytes and supported XBE geometry; all spans and section digests validated.",
-    "Integer level 0..100; contact requires a positive level; all presets retail/off.",
-    "Combined named grown allocation requests chosen before installing any owner; rebuild to change settings.",
-    "Ordinary running only for braking/contact history; special states fall back to retail. Legacy rating ramp must be off for parity witnesses."
+    "Pinned USA native resolver, accessor, pair calculation, reaction dispatcher, turn tables and hooks; complete sections and code seals validated.",
+    "Integer momentum and momentum_collision_level 0..100; Boolean momentum_contact and momentum_collisions. Run-up requires positive momentum; positive collision level requires its separate flag.",
+    "All presets off/0. Collisions can be enabled with movement momentum 0 and run-up off. Both levels 0 leave retail bytes identical.",
+    "Combined named requests chosen before installing any owner; collisions require allocator scale-out. Rebuild from the supported base to change settings or upgrade model 1.",
+    "Live ordinary attached ball carrier only; collision gain capped at six effective rating points, combined run-up/collision gain at eight. Legacy rating ramp must be off for parity witnesses."
   ],
   "portme": [
-    "Integrate and test both orders with the absent defensive-try owner.",
-    "Witness cuts, stop-and-go, contact, catches, pursuit, both controllers and CPU movement."
+    "Wire the two new independent collision fields and component status into the protected dispatcher, BuildPlan and UI using WIRING.md.",
+    "Witness selected tackle/reaction animations, yards after contact, boot, lifecycle and both human and CPU play; a matched native fixture does not remove retail controller-side branches."
   ],
   "public_distribution": {
     "game_data": "never-bundle-retail-data",
@@ -35,9 +36,10 @@
   "runtime": {
     "status": "not-tested",
     "evidence": [
-      "ASTRA_MOMENTUM_BUILD_REPORT.md"
+      "ASTRA_MOMENTUM_BUILD_REPORT.md",
+      "ASTRA_MOMENTUM_CONTACT_REPORT.md"
     ],
-    "scope": "Bounded Unicorn hooks and deterministic retail resolver fixtures passed. Loader, animation assets, gameplay feel and full tackle reactions remain unwitnessed."
+    "scope": "Bounded native contact resolver and reaction-dispatch branch selection, mass/speed/standing comparisons, ABI and matched-context CPU/human parity. Animation entry is a fixture boundary. Gameplay and loader remain unwitnessed."
   },
   "selectors": {
     "fields": [
@@ -50,9 +52,19 @@
         "name": "momentum_contact",
         "required": true,
         "allowed": "Boolean, default false; true requires momentum > 0"
+      },
+      {
+        "name": "momentum_collisions",
+        "required": true,
+        "allowed": "Boolean, default false"
+      },
+      {
+        "name": "momentum_collision_level",
+        "required": true,
+        "allowed": "integer 0..100, default 0; positive requires momentum_collisions"
       }
     ],
-    "notes": "The two controls share one configured executable owner. Exact zero adds no Momentum hooks or history."
+    "notes": "Model 2 uses one owner. Collision-only mode leaves movement hooks/tables retail. Omitted replay settings retain configuration. In-place upgrades of model 1 refuse."
   },
   "source_container": {
     "format": "XBE in XDVDFS",
@@ -67,7 +79,9 @@
     "tests/mod_editor/test_nfl2k5_momentum.py",
     "tests/mod_editor/test_xbe_patch_memory_writes.py",
     "tests/mod_editor/test_xbe_patch_cave_references.py",
-    "ASTRA_INTEGRATION_3_REPORT.md"
+    "ASTRA_INTEGRATION_3_REPORT.md",
+    "ASTRA_MOMENTUM_CONTACT_REPORT.md",
+    "tests/mod_editor/test_nfl2k5_momentum_collisions.py"
   ],
-  "validation_command": "python3 tools/validate_beta61_integrated_features.py"
+  "validation_command": "python3 -m mod_editor.core.nfl2k5_momentum <source.xbe>"
 }

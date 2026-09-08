@@ -408,8 +408,11 @@ class CaveOracleTests(unittest.TestCase):
         actual = {t: {e.source for e in refs} for t, refs in targets.items()}
         assert actual == expected
         instance = gate.CaveReferenceTests()
+        instance.retail, instance.patched = retail, retail  # the boundary proof reads pinned retail bytes
         for a, b in instance._caves():
-            assert legacy_external_references(targets, a, b) == []
+            # The gate proves one bytewise E9 inside the preseason range is a JG displacement, not a rel32.
+            assert [e for e in legacy_external_references(targets, a, b)
+                    if not instance._calendar_noninstruction(e.source, e.start)] == []
         for a, size, _ in OCCUPIED:
             assert legacy_external_references(targets, a, a + size) == []
         assert 0x1AC260 in targets

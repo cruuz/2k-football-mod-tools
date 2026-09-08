@@ -56,8 +56,8 @@ class ControlsTests(unittest.TestCase):
         doc.demote_active(0, 1)
         live = self.load(doc.to_body())
         item = self.group('team')
-        self.assertEqual(item.text(), 'IND · 2 active + 1 reserve')
-        self.assertEqual(self.group('reserve').text().strip(), 'Reserves · 1')
+        self.assertEqual(item.text(), 'IND · 2 active + 1/12 reserve')
+        self.assertEqual(self.group('reserve').text().strip(), 'Reserves · 1/12')
         player = self.panel.selected_player()
         self.assertEqual((player.pool, player.index), ('primary', 1))
         self.assertEqual(self.panel.player_table.item(0, 5).text(), 'IND Reserves')
@@ -81,7 +81,7 @@ class ControlsTests(unittest.TestCase):
         self.panel.undo()
         self.assertEqual(self.panel.selected_player(), player)
         self.assertEqual(player.record.get('speed'), 77)
-        self.assertEqual(self.group('reserve', 1).text().strip(), 'Reserves · 0')
+        self.assertEqual(self.group('reserve', 1).text().strip(), 'Reserves · 0/12')
 
     def test_locks_independent_transfer_undo_unlock_and_arrows(self):
         self.panel.load_document(rr.load_body(synthetic_body()))

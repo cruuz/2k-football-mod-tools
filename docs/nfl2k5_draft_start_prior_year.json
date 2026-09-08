@@ -1,0 +1,354 @@
+{
+  "audit": {
+    "callback_table": [
+      "0x102190",
+      "0x1071e0",
+      "0x107480",
+      "0x1048d0",
+      "0x107940",
+      "0x108240",
+      "0x109a00",
+      "0x1047e0",
+      "0x1072c0",
+      "0x10a100",
+      "0x104a80",
+      "0x104af0",
+      "0x104c60",
+      "0x10a4b0",
+      "0x10a4b0",
+      "0x10a4b0",
+      "0x10a4b0",
+      "0x10ae10",
+      "0x10aea0"
+    ],
+    "pause_row": {
+      "action": "0x6efe0",
+      "kind": 9,
+      "text": "0xe626c4"
+    },
+    "pause_text": "Simulate To End",
+    "retail_xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+    "spans": {
+      "advance_stage": {
+        "sha256": "44e7ab5553cf0d5ca7c3dc24434a396bcc5685087ae577fb5230667b3cba1613",
+        "size": 1536,
+        "va": "0x2480b0"
+      },
+      "draft_class_generator": {
+        "sha256": "806eae312dfdd7ad6c22c18f740282ce4f20d047370572f13d85d8698c3557ca",
+        "size": 75,
+        "va": "0x2be900"
+      },
+      "draft_cpu_pick_and_sign": {
+        "sha256": "e5c5699cecd4899a0761a654ddfccfc874a032ca718cdf1e4f0a4fdebdae1210",
+        "size": 430,
+        "va": "0x325b50"
+      },
+      "draft_on_clock": {
+        "sha256": "77a2842feb19a62d33dbd0cc986949386b11989aec4bc855b9a9b555c62dd8ac",
+        "size": 32,
+        "va": "0x3254d0"
+      },
+      "franchise_start": {
+        "sha256": "df12338c88b5ae82773ee9162b32e6537c0599d23c350d83fd62ed7d2794ef61",
+        "size": 576,
+        "va": "0x13ee10"
+      },
+      "generic_uniform_names": {
+        "sha256": "09e614d5e4e157c66d8dc4b55766ddf271cff6cd74616e42e6782833a1e7f051",
+        "size": 356,
+        "va": "0x615a0"
+      },
+      "inner_game_update": {
+        "sha256": "07afac56fb84a9ec9e8b19b619a5d6bfe5960d08cb0ee5d015428dd40922bb07",
+        "size": 304,
+        "va": "0x11a7c0"
+      },
+      "match_roster_clone": {
+        "sha256": "019b3b03a0b9d58f4ccc6cd8f980cdce29a433d2b93b2bac37d3ce0219765778",
+        "size": 171,
+        "va": "0x61730"
+      },
+      "outer_game_update": {
+        "sha256": "42a067fc98503af32527b66430b97a2b8d67b7fa9102aac48b1c27b83a967954",
+        "size": 1360,
+        "va": "0x64cd0"
+      },
+      "pause_finish_sequence": {
+        "sha256": "3b985d256c739b41361ba83b58243bc41a9a77ef41638d054baabaa1351ff18c",
+        "size": 96,
+        "va": "0x6ee50"
+      },
+      "pause_simulate_handler": {
+        "sha256": "16efa74c7587fc67423f65ff9fb3ce646b090262c0d50eceb299f374269c3042",
+        "size": 112,
+        "va": "0x6efe0"
+      },
+      "pause_simulate_row": {
+        "sha256": "a00c8e2482ac952bc7d6090e06fe423f16ef2cae537e3e05007cd60700085624",
+        "size": 52,
+        "va": "0x4e8d08"
+      },
+      "play_callback_table": {
+        "sha256": "8da356581e9fb5733c7598ddcc342151e16964a809d0e7669ce3aa4860754426",
+        "size": 76,
+        "va": "0xa96930"
+      },
+      "play_step": {
+        "sha256": "bda5c1eebd8514955870e7368859bbb896a80d8377ed5b036c5a145168a99f88",
+        "size": 48,
+        "va": "0x10b250"
+      },
+      "played_fixture_commit": {
+        "sha256": "c5419e1a079da777588f9197e82673fbfc0fd81bb156cd871cdb77377a56eeba",
+        "size": 79,
+        "va": "0xc5d60"
+      },
+      "scenario_restore": {
+        "sha256": "bbd0f4eeeb81ff53211751b566d33e02fe8db4a01127cc6be7cfb6f9d2e96352",
+        "size": 644,
+        "va": "0x10bd80"
+      },
+      "sim_initializer": {
+        "sha256": "9649bbd9cc764470d623b3f8d116510aa2c6c8171c7bf9ac066ec94313eebee7",
+        "size": 1728,
+        "va": "0x10b280"
+      },
+      "sim_wrappers": {
+        "sha256": "6804a5bf2a2e3c46fdcb5db7f1c393b4e34b30782d4bebf2acd0f91033d44cfe",
+        "size": 176,
+        "va": "0x10b940"
+      },
+      "stage_table": {
+        "sha256": "268afd7c2828b6bbbb7adb3964b82eb59a0e3252847bc985dfbcf63e663ea707",
+        "size": 160,
+        "va": "0x515140"
+      },
+      "terminal_finalizer": {
+        "sha256": "fa0764ceef5996aaa20f7d3e628f9e6abb29b2d32c46e7f4f3880b7a1e78d234",
+        "size": 57,
+        "va": "0x1053b0"
+      },
+      "visual_simulator_controls": {
+        "sha256": "2bd2245b7339d85d6c3f39d81c9735e186ed5798d89b73e6c7b11b0dc9dd9026",
+        "size": 736,
+        "va": "0xec390"
+      },
+      "visual_simulator_speed": {
+        "sha256": "beb70f6265e1ff1f8e0deb0bdef91f1a6734f9aa88b179aa46b0bdb879925d60",
+        "size": 192,
+        "va": "0x27b820"
+      },
+      "year_rollover": {
+        "sha256": "f2d6aa8c8509d02a1905ed7be7ede2e92210a6f76ebb430ec08dc1169393cea7",
+        "size": 450,
+        "va": "0x247b40"
+      }
+    }
+  },
+  "experimental": true,
+  "prior_year": {
+    "class_count": 380,
+    "class_stable_at_draft_entry": true,
+    "leaves": [
+      [
+        1538448,
+        "progress text/render only"
+      ],
+      [
+        1369376,
+        "informational dialog display/acknowledgement only"
+      ]
+    ],
+    "myplayer_assigned_to_temporary_club": false,
+    "native_calls": {
+      "0x1356d0": 268,
+      "0x247b40": 1,
+      "0xc7a20": 268
+    },
+    "notifications": [],
+    "squad_sizes": [
+      53,
+      53
+    ],
+    "temporary_club_owner": 0,
+    "transitions": [
+      {
+        "end_week": 17,
+        "stage": 8,
+        "week": 0,
+        "year": 0
+      },
+      {
+        "end_week": 17,
+        "stage": 8,
+        "week": 1,
+        "year": 0
+      },
+      {
+        "end_week": 17,
+        "stage": 8,
+        "week": 2,
+        "year": 0
+      },
+      {
+        "end_week": 17,
+        "stage": 8,
+        "week": 3,
+        "year": 0
+      },
+      {
+        "end_week": 17,
+        "stage": 8,
+        "week": 4,
+        "year": 0
+      },
+      {
+        "end_week": 17,
+        "stage": 8,
+        "week": 5,
+        "year": 0
+      },
+      {
+        "end_week": 17,
+        "stage": 8,
+        "week": 6,
+        "year": 0
+      },
+      {
+        "end_week": 17,
+        "stage": 8,
+        "week": 7,
+        "year": 0
+      },
+      {
+        "end_week": 17,
+        "stage": 8,
+        "week": 8,
+        "year": 0
+      },
+      {
+        "end_week": 17,
+        "stage": 8,
+        "week": 9,
+        "year": 0
+      },
+      {
+        "end_week": 17,
+        "stage": 8,
+        "week": 10,
+        "year": 0
+      },
+      {
+        "end_week": 17,
+        "stage": 8,
+        "week": 11,
+        "year": 0
+      },
+      {
+        "end_week": 17,
+        "stage": 8,
+        "week": 12,
+        "year": 0
+      },
+      {
+        "end_week": 17,
+        "stage": 8,
+        "week": 13,
+        "year": 0
+      },
+      {
+        "end_week": 17,
+        "stage": 8,
+        "week": 14,
+        "year": 0
+      },
+      {
+        "end_week": 17,
+        "stage": 8,
+        "week": 15,
+        "year": 0
+      },
+      {
+        "end_week": 17,
+        "stage": 8,
+        "week": 16,
+        "year": 0
+      },
+      {
+        "end_week": 17,
+        "stage": 8,
+        "week": 17,
+        "year": 0
+      },
+      {
+        "end_week": 22,
+        "stage": 9,
+        "week": 17,
+        "year": 0
+      },
+      {
+        "end_week": 22,
+        "stage": 9,
+        "week": 18,
+        "year": 0
+      },
+      {
+        "end_week": 22,
+        "stage": 9,
+        "week": 19,
+        "year": 0
+      },
+      {
+        "end_week": 22,
+        "stage": 9,
+        "week": 20,
+        "year": 0
+      },
+      {
+        "end_week": 22,
+        "stage": 9,
+        "week": 21,
+        "year": 0
+      },
+      {
+        "end_week": 22,
+        "stage": 9,
+        "week": 22,
+        "year": 0
+      },
+      {
+        "end_week": 1,
+        "stage": 1,
+        "week": 0,
+        "year": 1
+      },
+      {
+        "end_week": 1,
+        "stage": 2,
+        "week": 0,
+        "year": 1
+      },
+      {
+        "end_week": 1,
+        "stage": 3,
+        "week": 0,
+        "year": 1
+      },
+      {
+        "end_week": 1,
+        "stage": 4,
+        "week": 0,
+        "year": 1
+      },
+      {
+        "end_week": 1,
+        "stage": 5,
+        "week": 0,
+        "year": 1
+      }
+    ]
+  },
+  "runtime_witnessed": false,
+  "schema": 1
+}

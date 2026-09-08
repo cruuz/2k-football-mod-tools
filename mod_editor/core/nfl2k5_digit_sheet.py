@@ -1,8 +1,8 @@
 """Split one user-authored 0–9 sheet into exact NFL 2K5 digit slots.
 
 The game stores every digit as its own fixed-size texture, while font artists
-normally work on one horizontal or vertical sheet.  This bridge accepts either
-layout at any sensible authoring resolution, resamples each cell independently,
+normally work on a strip or grid. This bridge accepts four explicit layouts,
+resamples each equal cell independently,
 and returns ten exact RGBA PNGs in digit order.  Per-target dimensions come from
 the live uniform catalog; no family-wide 64x64 assumption is made.
 """
@@ -18,11 +18,25 @@ from typing import Iterable, Literal
 from PIL import Image, ImageOps, UnidentifiedImageError
 
 from .errors import ValidationError
+from .nfl2k5_digit_texture import resize_cell
 
 
 MAX_SHEET_BYTES = 128 * 1024 * 1024
-MAX_SHEET_PIXELS = 160_000_000
-Orientation = Literal["auto", "horizontal", "vertical"]
+MAX_SHEET_PIXELS = 16_000_000
+Orientation = Literal["auto", "horizontal", "vertical", "grid_5x2", "grid_2x5"]
+SHEET_LAYOUTS = (
+    ("One row: 0 1 2 3 4 5 6 7 8 9", "horizontal"),
+    ("One column: 0 at top, 9 at bottom", "vertical"),
+    ("Five columns, two rows: 0-4 above 5-9", "grid_5x2"),
+    ("Two columns, five rows: 0 1, then 2 3", "grid_2x5"),
+)
+SHEET_HELP = (
+    "Use ten equal cells in digit order, with no gaps, labels or outside border. "
+    "Choose one row, one column, five columns by two rows, or two columns by five rows. "
+    "PNG with transparency is recommended. Keep each digit's padding inside its cell. "
+    "Each complete cell is resized to the selected jersey, helmet or arm slot. "
+    "See docs/mod_editor/number_sheets.md for examples."
+)
 
 
 @dataclass(frozen=True)
@@ -32,6 +46,14 @@ class DigitSheetPng:
     width: int
     height: int
     png: bytes
+    layout: str = ""
+    cell_size: tuple[int, int] = (0, 0)
+    warnings: tuple[str, ...] = ()
+
+    @property
+    def mapping_note(self) -> str:
+        return (f"{self.layout}: {self.cell_size[0]}x{self.cell_size[1]} cell to "
+                f"{self.width}x{self.height} slot for digit {self.digit}.")
 
 
 def _targets(assets: Iterable[object]) -> tuple[object, ...]:
@@ -81,8 +103,8 @@ def split_digit_sheet(
     """Return ten exact target-sized PNGs without modifying *source*."""
 
     targets = _targets(assets)
-    if orientation not in {"auto", "horizontal", "vertical"}:
-        raise ValidationError("Digit sheet orientation must be automatic, horizontal, or vertical.")
+    if orientation not in {"auto", *(key for _label, key in SHEET_LAYOUTS)}:
+        raise ValidationError("Choose a supported digit sheet layout. " + SHEET_HELP)
     requested = Path(source).expanduser()
     try:
         info = requested.lstat()
@@ -97,34 +119,56 @@ def split_digit_sheet(
     path = requested.resolve(strict=True)
     try:
         with Image.open(path) as opened:
+            if opened.width * opened.height > MAX_SHEET_PIXELS:
+                raise ValidationError("That digit sheet exceeds the 16 million pixel limit.")
             opened.seek(0)
             image = ImageOps.exif_transpose(opened).convert("RGBA")
-    except (OSError, UnidentifiedImageError, ValueError) as exc:
+    except (OSError, UnidentifiedImageError, ValueError, Image.DecompressionBombError) as exc:
         raise ValidationError(f"Could not read that digit-sheet image: {exc}") from exc
-    if image.width * image.height > MAX_SHEET_PIXELS:
-        raise ValidationError("That digit sheet is too large to process safely.")
     chosen = orientation
     if chosen == "auto":
+        if max(image.size) < 5 * min(image.size):
+            raise ValidationError(
+                f"Cannot infer the layout of a {image.width}x{image.height} sheet. "
+                "Choose its row, column or grid layout explicitly. " + SHEET_HELP
+            )
         chosen = "horizontal" if image.width >= image.height else "vertical"
-    primary = image.width if chosen == "horizontal" else image.height
-    secondary = image.height if chosen == "horizontal" else image.width
-    if primary < 10 or secondary < 1:
+    columns, rows = {"horizontal": (10, 1), "vertical": (1, 10),
+                     "grid_5x2": (5, 2), "grid_2x5": (2, 5)}[chosen]
+    if image.width % columns or image.height % rows:
+        raise ValidationError(
+            f"The {image.width}x{image.height} sheet in {chosen} layout cannot have equal cells "
+            f"({image.width / columns:g}x{image.height / rows:g} pixels per cell): "
+            f"width must be divisible by {columns} and height by {rows}. "
+            "Remove outside borders and gaps, or select the correct layout."
+        )
+    cell_width, cell_height = image.width // columns, image.height // rows
+    if min(cell_width, cell_height) < 1:
         raise ValidationError("The digit sheet is too small to contain ten cells.")
 
     outputs: list[DigitSheetPng] = []
     for digit, target in enumerate(targets):
-        first = round(primary * digit / 10)
-        last = round(primary * (digit + 1) / 10)
-        box = (
-            (first, 0, last, secondary)
-            if chosen == "horizontal"
-            else (0, first, secondary, last)
-        )
+        x, y = digit % columns * cell_width, digit // columns * cell_height
+        box = (x, y, x + cell_width, y + cell_height)
         cell = image.crop(box)
         width = int(getattr(target, "width"))
         height = int(getattr(target, "height"))
+        notes = []
         if cell.size != (width, height):
-            cell = cell.resize((width, height), Image.Resampling.LANCZOS)
+            notes.append(
+                f"{chosen} layout: {cell_width}x{cell_height} cell will be resized to "
+                f"{width}x{height} for digit {digit}, including its padding."
+            )
+            if cell_width * height != cell_height * width:
+                notes.append("The cell and slot have different shapes; the digit will stretch.")
+            if cell_width < width or cell_height < height:
+                notes.append("Enlarging the cell cannot restore missing edge detail.")
+        alpha = cell.getchannel("A")
+        bounds = alpha.getbbox()
+        if bounds and (bounds[0] == 0 or bounds[1] == 0
+                       or bounds[2] == cell_width or bounds[3] == cell_height):
+            notes.append(f"Digit {digit} touches a cell edge; check for clipping, gaps or a background.")
+        cell = resize_cell(cell, (width, height))
         stream = BytesIO()
         cell.save(stream, format="PNG", optimize=False, compress_level=9)
         outputs.append(DigitSheetPng(
@@ -133,8 +177,11 @@ def split_digit_sheet(
             width=width,
             height=height,
             png=stream.getvalue(),
+            layout=chosen,
+            cell_size=(cell_width, cell_height),
+            warnings=tuple(notes),
         ))
     return tuple(outputs)
 
 
-__all__ = ["DigitSheetPng", "MAX_SHEET_BYTES", "split_digit_sheet"]
+__all__ = ["DigitSheetPng", "MAX_SHEET_BYTES", "SHEET_LAYOUTS", "SHEET_HELP", "split_digit_sheet"]

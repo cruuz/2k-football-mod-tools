@@ -1,0 +1,513 @@
+{
+  "schema": "nfl2k5_modern_naming/v1",
+  "version": 1,
+  "experimental": true,
+  "witnessed": false,
+  "xbe_section": {
+    "index": 14,
+    "name": ".string_",
+    "flags": 38,
+    "virtual_address": 15074080,
+    "raw_offset": 11464704,
+    "raw_size": 381856,
+    "virtual_size": 381857
+  },
+  "resource": {
+    "outer_index": 4248,
+    "outer_id": "0xc61a9833",
+    "outer_size": 5131344,
+    "chunk_index": 1,
+    "chunk_offset": 108848,
+    "resource_size": 6112,
+    "wrapper_hex": "53545247c0170000000000000000000000000000000000000000000000000000",
+    "structure_size": 192,
+    "structure_sha256": "3d1602a7b7a40c2efb63b4654b9a7d3b760c2f85ba81f1ad2ce837b3124a2e51",
+    "structure_hex": "53545247c017000000000000000000000000000000000000000000000000000000000000000000000000000053545247110000001d000000000000000000000073007400720069006e0067007300000009000000c6a552bd1a9e76ce00000000c6a552bd135737a8ad010000c6a552bd971bcbc041030000c6a552bd95b9e36a80040000c6a552bdd877d929e3050000c6a552bd9ab7a48d3e070000c6a552bd41e13798d3080000c6a552bdfbb373d36f0a0000c6a552bd95152834700a0000",
+    "pool_allocations": [
+      {
+        "index": 0,
+        "resource_offset": 192,
+        "allocation_bytes": 858
+      },
+      {
+        "index": 1,
+        "resource_offset": 1050,
+        "allocation_bytes": 808
+      },
+      {
+        "index": 2,
+        "resource_offset": 1858,
+        "allocation_bytes": 638
+      },
+      {
+        "index": 3,
+        "resource_offset": 2496,
+        "allocation_bytes": 710
+      },
+      {
+        "index": 4,
+        "resource_offset": 3206,
+        "allocation_bytes": 694
+      },
+      {
+        "index": 5,
+        "resource_offset": 3900,
+        "allocation_bytes": 810
+      },
+      {
+        "index": 6,
+        "resource_offset": 4710,
+        "allocation_bytes": 824
+      },
+      {
+        "index": 7,
+        "resource_offset": 5534,
+        "allocation_bytes": 2
+      },
+      {
+        "index": 8,
+        "resource_offset": 5536,
+        "allocation_bytes": 572
+      }
+    ]
+  },
+  "cells": [
+    {
+      "asset_id": "nfl2k5.text.strg.4248.1.3",
+      "bank_id": "nfl2k5.text-bank.strg.4248.1",
+      "selector": "strg:4248:1:message:3",
+      "domain": "strg",
+      "pool_index": 3,
+      "resource_offset": 2496,
+      "allocation_bytes": 710,
+      "retail": "Franchise Milestones are achieved in Franchise Mode by the team you've assigned to your VIP.\n\nThese Milestones are based on the statistical and win/loss record accomplishments of both individuals on your team as well as the team as a whole.\n\nThere are no Option Settings requirements for these Milestones and they may also be achieved in Simulation Mode.",
+      "desired": "MyNFL Milestones are achieved in MyNFL Mode by the team you've assigned to your VIP.\n\nThese Milestones are based on the statistical and win/loss record accomplishments of both individuals on your team as well as the team as a whole.\n\nThere are no Option Settings requirements for these Milestones and they may also be achieved in Simulation Mode.",
+      "fallbacks": [],
+      "location": "Crib Franchise Milestones help text",
+      "location_evidence": "PROVED STRG lookup; exact screen transition unwitnessed",
+      "references": [
+        {
+          "index": 3,
+          "id_a": 3176310214,
+          "id_b": 1793309077,
+          "offset": 88
+        }
+      ]
+    },
+    {
+      "asset_id": "nfl2k5.text.xbe.00e6cf04",
+      "bank_id": "nfl2k5.text-bank.xbe.string",
+      "domain": "xbe",
+      "va": 15126276,
+      "retail_file_offset": 11516900,
+      "allocation_bytes": 20,
+      "retail": "Franchise",
+      "desired": "MyNFL",
+      "fallbacks": [],
+      "location": "Milestone category lookup",
+      "location_evidence": "PROVED reference; screen meaning inferred from descriptor/text unless stated",
+      "references": [
+        "0x4f7f14"
+      ]
+    },
+    {
+      "asset_id": "nfl2k5.text.xbe.00e6ffd0",
+      "bank_id": "nfl2k5.text-bank.xbe.string",
+      "domain": "xbe",
+      "va": 15138768,
+      "retail_file_offset": 11529392,
+      "allocation_bytes": 52,
+      "retail": "Become a Franchise player",
+      "desired": "Become a MyNFL player",
+      "fallbacks": [],
+      "location": "Crib milestone goal",
+      "location_evidence": "PROVED reference; screen meaning inferred from descriptor/text unless stated",
+      "references": [
+        "0x4f82a0"
+      ]
+    },
+    {
+      "asset_id": "nfl2k5.text.xbe.00e70004",
+      "bank_id": "nfl2k5.text-bank.xbe.string",
+      "domain": "xbe",
+      "va": 15138820,
+      "retail_file_offset": 11529444,
+      "allocation_bytes": 46,
+      "retail": "Entered Franchise Mode",
+      "desired": "Entered MyNFL Mode",
+      "fallbacks": [],
+      "location": "Crib milestone completion",
+      "location_evidence": "PROVED reference; screen meaning inferred from descriptor/text unless stated",
+      "references": [
+        "0x4f82a4"
+      ]
+    },
+    {
+      "asset_id": "nfl2k5.text.xbe.00e7d5b0",
+      "bank_id": "nfl2k5.text-bank.xbe.string",
+      "domain": "xbe",
+      "va": 15193520,
+      "retail_file_offset": 11584144,
+      "allocation_bytes": 20,
+      "retail": "Franchise",
+      "desired": "MyNFL",
+      "fallbacks": [],
+      "location": "Options menu link",
+      "location_evidence": "PROVED reference; screen meaning inferred from descriptor/text unless stated",
+      "references": [
+        "0x501464"
+      ]
+    },
+    {
+      "asset_id": "nfl2k5.text.xbe.00e7dacc",
+      "bank_id": "nfl2k5.text-bank.xbe.string",
+      "domain": "xbe",
+      "va": 15194828,
+      "retail_file_offset": 11585452,
+      "allocation_bytes": 36,
+      "retail": "Franchise Options",
+      "desired": "MyNFL Options",
+      "fallbacks": [],
+      "location": "Franchise Options screen title",
+      "location_evidence": "PROVED reference; screen meaning inferred from descriptor/text unless stated",
+      "references": [
+        "0x500dc8"
+      ]
+    },
+    {
+      "asset_id": "nfl2k5.text.xbe.00e7dfe4",
+      "bank_id": "nfl2k5.text-bank.xbe.string",
+      "domain": "xbe",
+      "va": 15196132,
+      "retail_file_offset": 11586756,
+      "allocation_bytes": 36,
+      "retail": "Franchise Options",
+      "desired": "MyNFL Options",
+      "fallbacks": [],
+      "location": "Options menu link to Franchise Settings",
+      "location_evidence": "PROVED reference; screen meaning inferred from descriptor/text unless stated",
+      "references": [
+        "0x5032bc"
+      ]
+    },
+    {
+      "asset_id": "nfl2k5.text.xbe.00e7f954",
+      "bank_id": "nfl2k5.text-bank.xbe.string",
+      "domain": "xbe",
+      "va": 15202644,
+      "retail_file_offset": 11593268,
+      "allocation_bytes": 30,
+      "retail": "Save Franchise",
+      "desired": "Save MyNFL",
+      "fallbacks": [],
+      "location": "Save menu link",
+      "location_evidence": "PROVED reference; screen meaning inferred from descriptor/text unless stated",
+      "references": [
+        "0x508e24"
+      ]
+    },
+    {
+      "asset_id": "nfl2k5.text.xbe.00e82d68",
+      "bank_id": "nfl2k5.text-bank.xbe.string",
+      "domain": "xbe",
+      "va": 15215976,
+      "retail_file_offset": 11606600,
+      "allocation_bytes": 20,
+      "retail": "Franchise",
+      "desired": "MyNFL",
+      "fallbacks": [],
+      "location": "Load/save file-type display table (screen routing unproved)",
+      "location_evidence": "PROVED reference; screen meaning inferred from descriptor/text unless stated",
+      "references": [
+        "0xaa33f4"
+      ]
+    },
+    {
+      "asset_id": "nfl2k5.text.xbe.00e89060",
+      "bank_id": "nfl2k5.text-bank.xbe.string",
+      "domain": "xbe",
+      "va": 15241312,
+      "retail_file_offset": 11631936,
+      "allocation_bytes": 186,
+      "retail": "Congratulations for completing the ESPN NFL 2K5 franchise. Try again to improve your record!",
+      "desired": "Congratulations for completing the ESPN NFL 2K5 MyNFL. Try again to improve your record!",
+      "fallbacks": [],
+      "location": "Completed franchise prompt",
+      "location_evidence": "PROVED reference; screen meaning inferred from descriptor/text unless stated",
+      "references": [
+        "0x2480db"
+      ]
+    },
+    {
+      "asset_id": "nfl2k5.text.xbe.00e89400",
+      "bank_id": "nfl2k5.text-bank.xbe.string",
+      "domain": "xbe",
+      "va": 15242240,
+      "retail_file_offset": 11632864,
+      "allocation_bytes": 214,
+      "retail": "Your time as a coach is over. No more user teams exist. You should quit your Franchise game and try again.",
+      "desired": "Your time as a coach is over. No more user teams exist. You should quit your MyNFL game and try again.",
+      "fallbacks": [],
+      "location": "No user teams remain prompt",
+      "location_evidence": "PROVED reference; screen meaning inferred from descriptor/text unless stated",
+      "references": [
+        "0x2483c2"
+      ]
+    },
+    {
+      "asset_id": "nfl2k5.text.xbe.00e8ad5c",
+      "bank_id": "nfl2k5.text-bank.xbe.string",
+      "domain": "xbe",
+      "va": 15248732,
+      "retail_file_offset": 11639356,
+      "allocation_bytes": 44,
+      "retail": "for Franchise Options",
+      "desired": "for MyNFL Options",
+      "fallbacks": [],
+      "location": "Franchise Options controller help",
+      "location_evidence": "PROVED reference; screen meaning inferred from descriptor/text unless stated",
+      "references": [
+        "0x24d1d4"
+      ]
+    },
+    {
+      "asset_id": "nfl2k5.text.xbe.00e8b138",
+      "bank_id": "nfl2k5.text-bank.xbe.string",
+      "domain": "xbe",
+      "va": 15249720,
+      "retail_file_offset": 11640344,
+      "allocation_bytes": 22,
+      "retail": "Quick Game",
+      "desired": "Play Now",
+      "fallbacks": [],
+      "location": "Main menu link to Quick Game",
+      "location_evidence": "PROVED reference; screen meaning inferred from descriptor/text unless stated",
+      "references": [
+        "0x5154c4"
+      ]
+    },
+    {
+      "asset_id": "nfl2k5.text.xbe.00e8bfe4",
+      "bank_id": "nfl2k5.text-bank.xbe.string",
+      "domain": "xbe",
+      "va": 15253476,
+      "retail_file_offset": 11644100,
+      "allocation_bytes": 38,
+      "retail": "Franchise Trophies",
+      "desired": "MyNFL Trophies",
+      "fallbacks": [],
+      "location": "Crib trophy category and display",
+      "location_evidence": "PROVED reference; screen meaning inferred from descriptor/text unless stated",
+      "references": [
+        "0x519f64",
+        "0xac7348"
+      ]
+    },
+    {
+      "asset_id": "nfl2k5.text.xbe.00e8d948",
+      "bank_id": "nfl2k5.text-bank.xbe.string",
+      "domain": "xbe",
+      "va": 15259976,
+      "retail_file_offset": 11650600,
+      "allocation_bytes": 184,
+      "retail": "CELEBRITY PHONE\n\nThe Celebrity Phone is only active outside Franchise and Tournament modes.",
+      "desired": "CELEBRITY PHONE\n\nThe Celebrity Phone is only active outside MyNFL and Tournament modes.",
+      "fallbacks": [],
+      "location": "Crib Celebrity Phone restriction help",
+      "location_evidence": "PROVED reference; screen meaning inferred from descriptor/text unless stated",
+      "references": [
+        "0x2772fb"
+      ]
+    },
+    {
+      "asset_id": "nfl2k5.text.xbe.00e9acf4",
+      "bank_id": "nfl2k5.text-bank.xbe.string",
+      "domain": "xbe",
+      "va": 15314164,
+      "retail_file_offset": 11704788,
+      "allocation_bytes": 34,
+      "retail": "Franchise Status",
+      "desired": "MyNFL Status",
+      "fallbacks": [],
+      "location": "ESPN.com Franchise Status action row",
+      "location_evidence": "PROVED reference; screen meaning inferred from descriptor/text unless stated",
+      "references": [
+        "0x52516c"
+      ]
+    },
+    {
+      "asset_id": "nfl2k5.text.xbe.00e9afec",
+      "bank_id": "nfl2k5.text-bank.xbe.string",
+      "domain": "xbe",
+      "va": 15314924,
+      "retail_file_offset": 11705548,
+      "allocation_bytes": 28,
+      "retail": "Player Create",
+      "desired": "MyPlayer",
+      "fallbacks": [],
+      "location": "Player Create menu link",
+      "location_evidence": "PROVED reference; screen meaning inferred from descriptor/text unless stated",
+      "references": [
+        "0x525764"
+      ]
+    },
+    {
+      "asset_id": "nfl2k5.text.xbe.00e9cd18",
+      "bank_id": "nfl2k5.text-bank.xbe.string",
+      "domain": "xbe",
+      "va": 15322392,
+      "retail_file_offset": 11713016,
+      "allocation_bytes": 38,
+      "retail": "Franchise Settings",
+      "desired": "MyNFL Settings",
+      "fallbacks": [],
+      "location": "Franchise Settings screen title",
+      "location_evidence": "PROVED reference; screen meaning inferred from descriptor/text unless stated",
+      "references": [
+        "0x52bdd8"
+      ]
+    },
+    {
+      "asset_id": "nfl2k5.text.xbe.00eaf3bc",
+      "bank_id": "nfl2k5.text-bank.xbe.string",
+      "domain": "xbe",
+      "va": 15397820,
+      "retail_file_offset": 11788444,
+      "allocation_bytes": 28,
+      "retail": "Create Player",
+      "desired": "MyPlayer",
+      "fallbacks": [],
+      "location": "Create Player and player selection screen titles",
+      "location_evidence": "PROVED reference; screen meaning inferred from descriptor/text unless stated",
+      "references": [
+        "0x56e9c4",
+        "0x56f050"
+      ]
+    },
+    {
+      "asset_id": "nfl2k5.text.xbe.00eb7890",
+      "bank_id": "nfl2k5.text-bank.xbe.string",
+      "domain": "xbe",
+      "va": 15431824,
+      "retail_file_offset": 11822448,
+      "allocation_bytes": 248,
+      "retail": "If you need some help with things, feel free to turn things over to your staff by visiting |LINK|Franchise Options|LINK| %s",
+      "desired": "If you need some help with things, feel free to turn things over to your staff by visiting |LINK|MyNFL Options|LINK| %s",
+      "fallbacks": [],
+      "location": "Coach help link to Franchise Options",
+      "location_evidence": "PROVED reference; screen meaning inferred from descriptor/text unless stated",
+      "references": [
+        "0xaecfb8"
+      ]
+    },
+    {
+      "asset_id": "nfl2k5.text.xbe.00eb8388",
+      "bank_id": "nfl2k5.text-bank.xbe.string",
+      "domain": "xbe",
+      "va": 15434632,
+      "retail_file_offset": 11825256,
+      "allocation_bytes": 140,
+      "retail": "To see more about your goals, look at |LINK|Franchise Status|LINK| %s",
+      "desired": "To see more about your goals, look at |LINK|MyNFL Status|LINK| %s",
+      "fallbacks": [],
+      "location": "Coach goal help links to Franchise Status (12 aliases)",
+      "location_evidence": "PROVED reference; screen meaning inferred from descriptor/text unless stated",
+      "references": [
+        "0xaed368",
+        "0xaed39c",
+        "0xaed3d0",
+        "0xaed404",
+        "0xaed438",
+        "0xaed46c",
+        "0xaed4a0",
+        "0xaed4d4",
+        "0xaed508",
+        "0xaed53c",
+        "0xaed570",
+        "0xaed5a4"
+      ]
+    },
+    {
+      "asset_id": "nfl2k5.text.xbe.00eb98d0",
+      "bank_id": "nfl2k5.text-bank.xbe.string",
+      "domain": "xbe",
+      "va": 15440080,
+      "retail_file_offset": 11830704,
+      "allocation_bytes": 34,
+      "retail": "Franchise Status",
+      "desired": "MyNFL Status",
+      "fallbacks": [],
+      "location": "Franchise Status screen title",
+      "location_evidence": "PROVED reference; screen meaning inferred from descriptor/text unless stated",
+      "references": [
+        "0x585548"
+      ]
+    },
+    {
+      "asset_id": "nfl2k5.text.xbe.00ebcbb0",
+      "bank_id": "nfl2k5.text-bank.xbe.string",
+      "domain": "xbe",
+      "va": 15453104,
+      "retail_file_offset": 11843728,
+      "allocation_bytes": 22,
+      "retail": "Quick Game",
+      "desired": "Play Now",
+      "fallbacks": [],
+      "location": "Navigation name table: Quick Game (individual consumers unproved)",
+      "location_evidence": "PROVED reference; screen meaning inferred from descriptor/text unless stated",
+      "references": [
+        "0x58d904"
+      ]
+    },
+    {
+      "asset_id": "nfl2k5.text.xbe.00ebcc0c",
+      "bank_id": "nfl2k5.text-bank.xbe.string",
+      "domain": "xbe",
+      "va": 15453196,
+      "retail_file_offset": 11843820,
+      "allocation_bytes": 20,
+      "retail": "Franchise",
+      "desired": "MyNFL",
+      "fallbacks": [],
+      "location": "Navigation name table: Franchise (individual consumers unproved)",
+      "location_evidence": "PROVED reference; screen meaning inferred from descriptor/text unless stated",
+      "references": [
+        "0x58d910"
+      ]
+    }
+  ],
+  "career_labels": [
+    {
+      "role": "menu_row",
+      "retail": "My Career",
+      "desired": "MyCareer",
+      "fallbacks": [],
+      "allocation_bytes": 20,
+      "owner": "nfl2k5_my_career",
+      "binding": "Owner must request label bytes; no retail slot is repurposed"
+    },
+    {
+      "role": "screen_title",
+      "retail": "My Career",
+      "desired": "MyCareer",
+      "fallbacks": [],
+      "allocation_bytes": 20,
+      "owner": "nfl2k5_my_career",
+      "binding": "Owner must request label bytes; no retail slot is repurposed"
+    }
+  ],
+  "decisions": {
+    "franchise": "MyNFL is the chosen NFL adaptation; not an official released 2K mode name.",
+    "create_team": "Keep Team Create / Create Team. MyTeam denotes card collection; no such mode is implemented.",
+    "keep": [
+      "Practice",
+      "Tournament",
+      "Season",
+      "Coach's Desk",
+      "The Crib",
+      "Crib Credits",
+      "User Career Milestones"
+    ],
+    "generic_franchise": "Preserve organization nouns in messages/trivia and internal resource identifiers."
+  }
+}

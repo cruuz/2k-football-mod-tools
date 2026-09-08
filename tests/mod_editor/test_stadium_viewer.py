@@ -8,6 +8,12 @@ import struct
 import tempfile
 import unittest
 
+import sys
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 from mod_editor.core.errors import ValidationError
 from mod_editor.gui.stadium_viewer import GltfWireframeModel, _view_coordinates
 

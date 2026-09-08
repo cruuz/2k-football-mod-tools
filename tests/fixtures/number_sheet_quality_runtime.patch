@@ -1,0 +1,83 @@
+--- a/mod_editor/core/providers.py
++++ b/mod_editor/core/providers.py
+@@ -563,6 +563,7 @@
+         "mod_editor/core/nfl2k5_depth_chart_storage.py": "acb37c1fbb13e327880574df1142d6cb1262e97b307bfd182a167647d0892a1e",
+         "mod_editor/core/nfl2k5_depth_locks.py": "39a0948c3fc26721f15495acd66a3a48c8db1cb6bcda6e4911b07d353bffd61c",
+         "mod_editor/core/nfl2k5_disc_identity.py": "bb9701f911996e4fd208f2eabbdce0c00b1519cc036055518830c19f06e223a4",
++        "mod_editor/core/nfl2k5_digit_texture.py": "11af53184b52d3197620c60d9004ebcdd755c360590b9dcf70e5e3196573c69b",
+         "mod_editor/core/nfl2k5_draft_ai.py": "b90f8e84cd6e30c03758158a917773cdb44f3089f5f0aa2413503f39fb4a9a16",
+         "mod_editor/core/nfl2k5_dynamic_kickoff.py": "b4b99749b40c0b4fb74ba7faeaae6938c401ce0277aa6ec035521ab99f8ec852",
+         "mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py": "39f7953d98306f7ddeaf888b6bf79d855c4e1fbf00ab28498047d09263b3384d",
+@@ -716,7 +717,7 @@
+         "tools/nfl_live_face_texture_targets.py": "c9748ee6cbb0441fded6c961ef25ec913e3294218c7892eacb731456c315f8d4",
+         "tools/nfl_live_helmet_txtr_png_import.py": "0ab06a1d199e434f73d1b012cf4f2429a0c1890132903b6af815c688c327b9fe",
+         "tools/nfl_live_helmet_txtr_targets.py": "26b18b9aa8f0afd71e0b137eef52f2cbfd0f2108cb63546979883446bc93325f",
+-        "tools/nfl_live_numbers_nameplate_png_import.py": "e76f7c3949ad3c2e507ffdb8cadb49a629f9562f968c8e1b1439ce09c7ef21ad",
++        "tools/nfl_live_numbers_nameplate_png_import.py": "60b6d98c011187022e981bdfb501e6c6e38a1e8da70bba59b376314966e01f18",
+         "tools/nfl_live_numbers_nameplate_targets.py": "e122e41055e4d3b02ab35041db2e3cbd828fcf90c1b8f258abeb8718c20fc6a4",
+         "tools/nfl_outer.py": "0f27ac4157f13704e4303dbf2e146427cc56d1d910a3e242fac4081a04d9ee6d",
+         "tools/nfl_pants_tset_png_import.py": "414c4d37ff8421574ab7a5fc40fb0a411dd348a126425b90f9718e5d2ddc114d",
+@@ -734,7 +735,7 @@
+         "tools/nfl_team_select_card_png_import.py": "7012a7d75a4203016b532e301f9727ebf5d58f9f88dc1271087c5461e493af1d",
+         "tools/nfl_team_select_card_targets.py": "125361ee0aefbcbb46da8d466a1d850c91c3d9f33ea0eced3f2240f4563d5766",
+         "tools/nfl_tset_fixed_span_verify.py": "d9a60349538962cb7c3ea8e3d2461b118fbbc10d05e9b68f0fe010f8cc1c2eb1",
+-        "tools/nfl_tset_png_import.py": "4cbab011c2cd73fa30746663519ed9640ae8b2a5e24ddaf0557f3496fc9500ba",
++        "tools/nfl_tset_png_import.py": "7a56ddab5dd8e1a6004f9a858307ec6c7ac18a980cf4671dde8c8b2d2964a953",
+         "tools/nfl_tset_png_import_dynamic_validate.py": "da20c1dff0145780c0d485970a527a0f172ab8a8653977784deae5e7c7ce6a03",
+         "tools/nfl_tset_png_import_verify.py": "777ca0ed729e54c41f7b522c4b121f577a573f5b010a851ab36218fff472076b",
+         "tools/nfl_tset_png_import_xiso_generic_patch.py": "a84699a55b7e34ff49a28913a7b892ce673fac4b78d427929683c2afc0c68cc2",
+@@ -1266,7 +1267,7 @@
+         "tools/nfl_outer.py": "0f27ac4157f13704e4303dbf2e146427cc56d1d910a3e242fac4081a04d9ee6d",
+         "tools/nfl_scene_probe.py": "31b17ded825d4379b517affece54fc5cd96abea49330017296a10a029216fc26",
+         "tools/nfl_scorebug_png_import.py": "0dbef5f87476633d91ebea19aeb86451dd5ac434743ef80a5a694cf4e3975440",
+-        "tools/nfl_tset_png_import.py": "4cbab011c2cd73fa30746663519ed9640ae8b2a5e24ddaf0557f3496fc9500ba",
++        "tools/nfl_tset_png_import.py": "7a56ddab5dd8e1a6004f9a858307ec6c7ac18a980cf4671dde8c8b2d2964a953",
+         "tools/nfl_txtr.py": "0896e3f409f38116602d37a8902f1403e8afe6ad9e17e9ee9d36244ae97a5107",
+         "tools/nfl_uniform_color_xiso_direct_patch.py": "bbd4f5147d19afe3ad3ff0079c5bc0693108b58956bed74444c659718aef4ceb",
+         "tools/nfl_uniform_inventory.py": "d991b5a509d3fc44f61546eef418fa37b121eb1b669fac488db083024a2ec037",
+--- a/packaging/release-allowlist.txt
++++ b/packaging/release-allowlist.txt
+@@ -83,6 +83,8 @@
+ mod_editor/core/nfl2k5_crib_scene_texture_writer.py
+ mod_editor/core/nfl2k5_crib_standalone_texture_writer.py
+ mod_editor/core/nfl2k5_digit_sheet.py
++mod_editor/core/nfl2k5_digit_texture.py
++mod_editor/core/nfl2k5_digit_preview.py
+ mod_editor/core/nfl2k5_extended_visual_catalog.py
+ mod_editor/core/nfl2k5_extended_visual_io.py
+ mod_editor/core/nfl2k5_formation_play_writer.py
+--- a/packaging/check_2k5_mod_studio_runtime.py
++++ b/packaging/check_2k5_mod_studio_runtime.py
+@@ -99,13 +99,13 @@
+     "mod_editor/gui/audio_panel_qt.py":
+         "64ac47e2f3d28c374d4b0b8d44e5eba16b69ce5d70bbbeb6288ddadeb2be10ed",
+     "mod_editor/gui/studio_qt.py":
+-        "6ae2ba04efe92077acadcdbe20a146cf7495b8a066d35842f32ceb1de42d3352",
++        "e923e812b091d73bfe8458c2bd224c3f9cffe27aeccef77ad05b39d54afdce59",
+     "mod_editor/studio/audio_annotations.py":
+         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
+     "mod_editor/studio/audio_replacement_pack.py":
+         "68b6887e0778391916a6465a722b062d1c09afe3a376c318026e9db8bd7ed23a",
+     "mod_editor/studio/facade.py":
+-        "a6423e1455a673cb115f71037a132d6d858ea8d1a39d5d2c923580dd35f77d6d",
++        "4f1818d3777523fb02418539dbdeda79255cd1f111644a55a6445f0c84124d15",
+     "mod_editor/studio/project_archive.py":
+         "2ea69b3d6ff6424a338129b4c7beff65b3bacb89ff5af9aac2f9bf7975332c3a",
+     "mod_editor/studio/session.py":
+@@ -128,6 +128,7 @@
+         "mod_editor/core/nfl2k5_crib_geometry_writer.py",
+         "mod_editor/core/nfl2k5_crib_scene_texture_writer.py",
+         "mod_editor/core/nfl2k5_crib_standalone_texture_writer.py",
++        "mod_editor/core/nfl2k5_digit_texture.py",
+         "mod_editor/core/nfl2k5_formation_play_writer.py",
+         "mod_editor/core/nfl2k5_playbook_inspector.py",
+         "mod_editor/core/nfl2k5_playbook_route_writer.py",
+@@ -1807,6 +1808,8 @@
+         "mod_editor.core.build_feedback",
+         "mod_editor.core.image_use",
+         "mod_editor.core.nfl2k5_digit_sheet",
++        "mod_editor.core.nfl2k5_digit_texture",
++        "mod_editor.core.nfl2k5_digit_preview",
+         "mod_editor.core.nfl2k5_scorebug_exact",
+         "mod_editor.core.nfl2k5_scorebug_fonts",
+         "mod_editor.core.nfl2k5_music_policy",

@@ -236,15 +236,16 @@ class TeamKitBundleTests(unittest.TestCase):
         self.assertFalse(self.session.can_undo)
         self.assertEqual(tuple(self.session.replacements.iterdir()), ())
 
-    def test_stale_baseline_and_manifest_changes_fail_closed(self) -> None:
+    def test_untouched_bundle_preserves_newer_edit_and_manifest_changes_fail_closed(self) -> None:
         bundle = self.root / "stale-kit"
         self.service.export(("09A0",), bundle)
         torso = self.catalog.get_asset("nfl2k5.uniform.09a0.torso")
         newer = self.root / "newer.png"
         newer.write_bytes(_png(torso, (60, 70, 80, 255)))
         self.session.replace(torso, newer)
-        with self.assertRaisesRegex(TeamKitBundleError, "working pixels changed"):
-            self.service.import_edited(bundle)
+        result = self.service.import_edited(bundle)
+        self.assertEqual(result.changed_count, 0)
+        self.assertEqual(result.skipped_unchanged_count, ASSETS_PER_SET)
         self.assertEqual(self.session.modified_asset_ids, {torso.asset_id})
         self.assertEqual(self.session.undo(), f"Replace {torso.label}")
 

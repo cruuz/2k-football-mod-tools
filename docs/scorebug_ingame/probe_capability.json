@@ -1,0 +1,71 @@
+[
+  {
+    "backend": {
+      "command": "python3 -m tools.nfl2k5_scorebug_reference apply --runtime-probe full",
+      "module": "tools/nfl2k5_scorebug_reference.py",
+      "operation": "write"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "ASTRA_SCOREBUG_FIX_REPORT.md",
+      "docs/scorebug_ingame/fix_receipts.json",
+      "tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_native.py"
+    ],
+    "game": "nfl2k5_xbox",
+    "gui": {
+      "default_enabled": false,
+      "expose": false,
+      "mode": "edit",
+      "reason": "CLI-only diagnostics; no new BuildPlan field or GUI option."
+    },
+    "id": "nfl2k5.scorebug_presentation.runtime_probes",
+    "input_constraints": [
+      "User-owned USA XISO with pinned retail HUD resources; padded images are read through logical XDVDFS extents.",
+      "Use a separate output copy and a clean retail source for each profile. v7/v1 and different profiles refuse rather than migrating mixed bytes.",
+      "Pair includes TB, NE and neutral fallback in both orientations; transport and resources install no runtime hooks."
+    ],
+    "portme": [
+      "Apply the r62 scorebug section of WIRING.md, disable automatic runtime selection and regenerate the protected reservation manifest.",
+      "Run the six-profile matrix and static 4:3/widescreen witness list in ASTRA_SCOREBUG_FIX_REPORT.md."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Distribute the compiler and recipes; derive native resources from the user's own disc. Do not distribute generated game resources, executables or discs.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "evidence": [
+        "ASTRA_SCOREBUG_FIX_REPORT.md",
+        "docs/scorebug_ingame/witness_r61b.md"
+      ],
+      "scope": "The earlier v1 runtime build froze entering gameplay in xemu on macOS; that failure is not reproduced or fixed here. v2 has bounded native collection, allocation, decompression, lookup and event checks. OS asynchronous lifetime, GPU consumption and live memory pressure remain unproved.",
+      "status": "not-tested"
+    },
+    "selectors": {
+      "fields": [
+        {
+          "allowed": "transport | hooks | resources | neutral | pair | full",
+          "name": "runtime_probe",
+          "required": true
+        }
+      ],
+      "notes": "CLI --runtime-probe selects the profile. --runtime is shorthand for full. Pair is TB/NE plus neutral. Status requires the matching profile. No additional allocator owner."
+    },
+    "source_container": {
+      "format": "XBE and native TXTR/SCNE resources in XDVDFS pack 0",
+      "hash_pins": [
+        "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+        "2c23410c05c1ec266c3176b8b201f9a48b4a45ac148110ca569e5df25984e7c8",
+        "5f56ff615439fa8d1f87a833393f29e565873250f523c31134e6f2fae4004c49"
+      ],
+      "resource": "owned RX/RW hook allocations plus HUD outer 346 and its archive index",
+      "retail_file": "user-owned default.xbe and vc_53450030/0 in an NFL 2K5 USA disc"
+    },
+    "summary": "Make independent transport, hooks, resources, neutral, TB/NE pair and full diagnostic disc copies.",
+    "surface": "scorebug_presentation",
+    "title": "Scorebug freeze probes (experimental, unwitnessed)",
+    "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_scorebug_resources"
+  }
+]

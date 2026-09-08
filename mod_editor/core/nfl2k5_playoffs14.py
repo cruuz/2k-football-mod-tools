@@ -352,13 +352,21 @@ def game_table_bytes() -> bytes:
     return b"".join(bytes([row, slot, home, away, fa, fb, 0, 0]) for row, slot, home, away, fa, fb in GAME_TABLE)
 
 
-def builder_bytes(calendar: Sequence[tuple[int, int, int, int]] = CALENDAR_2026_14) -> bytes:
+def builder_bytes(calendar: Sequence[tuple[int, int, int, int]] = CALENDAR_2026_14,
+                  *, redate: int | None = None, date_offsets: Sequence[int] = (),
+                  code_va: int | None = None, tables_va: int | None = None) -> bytes:
     """Replaces 0x2A7E57..0x2A8152 of FUN_002a7e50.  On entry: ``sub esp,0x34; push esi; push edi``
     done, esi = the caller's flag (force the user's team in).  Locals: AFC seeds [esp+0..0x1c),
     NFC seeds [esp+0x1c..0x38) as team pointers, then the same 14 entries as index bytes at
     [esp+0..0xe), the scratch record at [esp+0x10], the wild-card row at [esp+0x18]."""
 
-    a = _Asm(BUILDER_VA)
+    a = _Asm(BUILDER_VA if code_va is None else code_va)
+
+    def table_operand(opcode: str, label: str, offset: int) -> None:
+        if tables_va is None:
+            a.lea_label(opcode, label)
+        else:
+            a.b(opcode + _imm(tables_va + offset))
     a.b("8d1424")                        # lea edx,[esp]
     a.b("33c9")                          # xor ecx,ecx
     a.call(SEED_FN_VA)                   # AFC seeds 1..6
@@ -412,11 +420,16 @@ def builder_bytes(calendar: Sequence[tuple[int, int, int, int]] = CALENDAR_2026_
     a.b("89442418")                      # mov [esp+0x18],eax     ; wild-card row
     a.b("33ff")                          # xor edi,edi
     a.label("game")
-    a.lea_label("8d34fd", "games")       # lea esi,[edi*8+games]
-    a.lea_label("8b04fd", "dates")       # mov eax,[edi*8+dates]
+    table_operand("8d34fd", "games", 0)       # lea esi,[edi*8+games]
+    table_operand("8b04fd", "dates", 104)     # mov eax,[edi*8+dates]
     a.b("89442410")                      # mov [esp+0x10],eax
-    a.lea_label("8b04fd", "dates_hi")    # mov eax,[edi*8+dates+4]
+    table_operand("8b04fd", "dates_hi", 108)  # mov eax,[edi*8+dates+4]
     a.b("89442414")                      # mov [esp+0x14],eax
+    if redate is not None:
+        _require(len(date_offsets) == POSTSEASON_GAMES_14, "calendar needs 13 date offsets")
+        table_operand("0fbf14bd", "date_offsets", 208)  # movsx edx,word [edi*4+offsets]
+        a.b("8d4c2413")                  # ecx = scratch record's date bytes
+        a.call(redate)                    # preserve seeds, matchup, flags and kickoff time
     a.b("0fb64602")                      # movzx eax,byte [esi+2] ; home seed byte
     a.b("3cff")                          # cmp al,0xff
     a.j8("74", "game_home_done")
@@ -453,6 +466,9 @@ def builder_bytes(calendar: Sequence[tuple[int, int, int, int]] = CALENDAR_2026_
     a.b("8b742418")                      # mov esi,[esp+0x18]
     a.b("83c603")                        # add esi,3              ; the Super Bowl row for the tail
     a.jmp_abs(BUILDER_END_VA)
+    if tables_va is not None:
+        _require(code_va is not None and redate is not None, "external tables require the calendar builder")
+        return a.assemble()
     a.b("cccccccc")                      # padding to an 8-byte boundary for the tables
     while (a.base + sum(a._size(i) for i in a.items)) % 8:
         a.b("cc")
@@ -463,6 +479,9 @@ def builder_bytes(calendar: Sequence[tuple[int, int, int, int]] = CALENDAR_2026_
     a.raw(dates[:4])
     a.label("dates_hi")
     a.raw(dates[4:])
+    if redate is not None:
+        a.label("date_offsets")
+        a.raw(b"".join(struct.pack("<i", n) for n in date_offsets))
     code = a.assemble()
     _require(len(code) <= BUILDER_SIZE, f"builder is {len(code)} bytes, over {BUILDER_SIZE}")
     return code + b"\xcc" * (BUILDER_SIZE - len(code))

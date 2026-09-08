@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="224" height="54" viewBox="0 0 224 54" role="img" aria-labelledby="watermark-title watermark-description">
+  <title id="watermark-title">ESPN NFL corner watermark</title>
+  <desc id="watermark-description">Original geometric vector lettering on a 64 percent charcoal backing, legible over grass and white field markings. Transparent outside the backing.</desc>
+  <!-- Hand-built paths, no trademark bitmap, traced asset, or font dependency.
+       Sized for a 224 × 54 top-right overlay. See the report for safe placement.
+       The backing is deliberately present at every point beneath the white letters. -->
+  <defs>
+    <linearGradient id="watermark-sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.07"/>
+      <stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.08"/>
+    </linearGradient>
+    <clipPath id="espn-split"><path d="M-2-1H123V6.5H-2ZM-2 9H123V26H-2Z"/></clipPath>
+    <filter id="watermark-shadow" x="-0.05" y="-0.2" width="1.1" height="1.4" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="1.3"/></filter>
+  </defs>
+  <g id="watermark-protection">
+    <rect x="4" y="8" width="216" height="40" rx="9" fill="#000000" opacity="0.24" filter="url(#watermark-shadow)"/>
+    <rect id="watermark-backing" x="4" y="6" width="216" height="40" rx="9" fill="#091018" fill-opacity="0.64"/>
+    <rect x="4" y="6" width="216" height="40" rx="9" fill="url(#watermark-sheen)"/>
+    <path d="M14 6.5H210" stroke="#FFFFFF" stroke-opacity="0.12"/>
+  </g>
+  <g id="watermark-lettering" fill="#FFFFFF">
+    <g id="espn-lettering" transform="translate(23 13.5) skewX(-10)" clip-path="url(#espn-split)" aria-label="ESPN">
+      <path id="espn-e" d="M0 0H24V6H7V10H22V16H7V19H24V25H0Z"/>
+      <path id="espn-s" d="M34 0H58V6H36V10H51Q58 10 58 17V18Q58 25 51 25H28V19H50V16H35Q28 16 28 9V7Q28 0 34 0Z"/>
+      <path id="espn-p" fill-rule="evenodd" d="M63 0H83Q91 0 91 8V9Q91 17 83 17H70V25H63ZM70 6V11H81Q84 11 84 8.5Q84 6 81 6Z"/>
+      <path id="espn-n" d="M96 0H103L114 14V0H121V25H114L103 11V25H96Z"/>
+    </g>
+    <path id="watermark-divider" d="M151 16V37" stroke="#FFFFFF" stroke-opacity="0.35"/>
+    <g id="nfl-lettering" transform="translate(160 14)" aria-label="NFL">
+      <path id="nfl-n" d="M0 0H5L12 13V0H17V24H12L5 11V24H0Z"/>
+      <path id="nfl-f" d="M21 0H36V5H26V10H35V15H26V24H21Z"/>
+      <path id="nfl-l" d="M40 0H45V19H54V24H40Z"/>
+    </g>
+  </g>
+</svg>

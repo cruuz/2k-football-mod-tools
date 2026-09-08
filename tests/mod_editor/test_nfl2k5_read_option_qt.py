@@ -64,8 +64,9 @@ class OptionQtTests(unittest.TestCase):
         self.assertEqual([p.option_back.itemData(i) for i in range(p.option_back.count())], [9, 10])
         text = ' '.join(label.text() for label in p.option_box.findChildren(QLabel))
         self.assertIn('EXPERIMENTAL / UNWITNESSED', text)
-        self.assertIn('position/velocity based', text)
-        self.assertIn('later runtime tier', text)
+        self.assertIn('one-second read window', text)
+        self.assertIn('release or do nothing after snapping to give', text)
+        self.assertIn('hold snap and press the named receiver', text)
         self.assertIn('not guaranteed to remain unblocked', text)
         self.assertNotIn('—', text)
         for preset in lib.OPTION_PRESETS:

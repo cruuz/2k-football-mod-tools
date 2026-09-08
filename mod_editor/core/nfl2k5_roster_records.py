@@ -110,7 +110,7 @@ OBJ_OFF = 0x40
 # where the roster object sits relative to the ROST preamble, by version: 17 = the disc resource layout (object at
 # +0x40); 0 = the runtime arena the game serialises into SAVEGAME.DAT (object at +0x20; the file-relative wrapper at
 # 0x2E0, preamble at 0x300, object at 0x320, arena of 0x91000 bytes ending at 0x91320 in every real save examined)
-ROST_VERSIONS = {17: 0x40, 0: 0x20}
+ROST_VERSIONS = {17: 0x40, 0: 0x20, 18: 0x40, 1: 0x20}
 PLAYER_SIZE = 0x54
 TEAM_SIZE = 0x1F4
 TEAM_SLOTS = 65
@@ -423,9 +423,10 @@ ABILITY_LABELS = {"speedster": "Speedster", "right_stick_moves": "Right-Stick Mo
                   "juke": "Juke (phase 2)", "spin": "Spin (phase 2)",
                   "truck": "Shoulder Charge / Truck (phase 2)",
                   "hurdle": "Hurdle (phase 2)", "stiff_arm": "Stiff-Arm (phase 2)"}
-VIRTUAL_FIELDS = ("power_run_style_bucket", "throw_style")
+VIRTUAL_FIELDS = ("power_run_style_bucket", "throw_style", "guardian_cap")
 
 ENUMS: dict[str, Sequence[str]] = {
+    "guardian_cap": YES_NO,
     "position": POSITIONS, "hand": HANDS, "body": BODIES, "helmet": HELMETS,
     "face_shield": FACE_SHIELDS, "dreads": YES_NO, "eye_black": YES_NO, "mouthpiece": YES_NO,
     "left_glove": GLOVES, "right_glove": GLOVES, "left_wrist": WRISTS, "right_wrist": WRISTS,
@@ -471,7 +472,7 @@ POWER_RUN_STYLE_THRESHOLDS = (33, 66)          # < 33 Finesse, < 66 Balanced, el
 
 # Scramble: the magnitude presets the game's own templates use, and the parity toggle.
 SCRAMBLE_PRESETS = (("Pocket", 10), ("Balanced", 50), ("Scrambling", 90))
-THROW_STYLES = ("A", "B")          # the parity bit: even = A, odd = B
+THROW_STYLES = ("Even", "Odd")     # compatible throw_style key; odd = scrambler
 SCRAMBLE_AGILITY_THRESHOLD = 1.5               # 0.01*Scramble + 0.01*Agility, [0x004E6D0C]
 
 # Kicking Style: retail's three values.  EXPERIMENTAL -- no consumer proved.
@@ -837,12 +838,16 @@ def franchise_reference_year(payload: bytes | bytearray, preamble: int,
     """
     from . import nfl2k5_save_writer as writer
     writer.validate_franchise_base_year(base_year)
-    if (len(payload) == writer.FRANCHISE_SAVE_SIZE and preamble == 0x300
+    native_size = len(payload)
+    from . import nfl2k5_my_career_save as career
+    if native_size in career.SIZES:
+        native_size = career.native_size(payload)
+    if (native_size in (writer.FRANCHISE_SAVE_SIZE, writer.FRANCHISE_SAVE_SIZE + 0x1000) and preamble == 0x300
             and payload[0x2E0:0x2E4] == b"ROST"
-            and struct.unpack_from("<I", payload, 0x2E4)[0] == 0x91020
+            and struct.unpack_from("<I", payload, 0x2E4)[0] == 0x91020 + native_size - writer.FRANCHISE_SAVE_SIZE
             and payload[0x30C:0x310] == b"ROST"
-            and struct.unpack_from("<I", payload, 0x310)[0] == 0):
-        return base_year + payload[writer.FRANCHISE_YEAR_OFFSET]
+            and struct.unpack_from("<I", payload, 0x310)[0] == (1 if native_size > writer.FRANCHISE_SAVE_SIZE else 0)):
+        return base_year + payload[writer.FRANCHISE_YEAR_OFFSET + native_size - writer.FRANCHISE_SAVE_SIZE]
     return None
 
 
@@ -894,6 +899,17 @@ class PlayerRecord:
         self.values[field] = self.values[field] | bit if enabled else self.values[field] & ~bit
 
     # ------------------------------------------------------------------ raw field access
+    @property
+    def guardian_cap(self) -> bool:
+        """The overlay selection at physical +0x53 bit 5, separate from abilities."""
+        return bool(self.values["unknown_53_high"] & 0x10)
+
+    @guardian_cap.setter
+    def guardian_cap(self, enabled: bool) -> None:
+        _require(type(enabled) is bool, "Guardian cap requires a Boolean")
+        value = self.values["unknown_53_high"]
+        self.values["unknown_53_high"] = value | 0x10 if enabled else value & ~0x10
+
     def get(self, name: str) -> int:
         if name in ABILITY_BITS:
             return int(self.abilities[name])
@@ -903,6 +919,12 @@ class PlayerRecord:
         return self.values[name]
 
     def set(self, name: str, value: int) -> None:
+        if name == "guardian_cap":
+            _require(type(value) in (int, bool) and value in (0, 1), "Guardian cap accepts 0 or 1")
+            self.guardian_cap = bool(value)
+            return
+        if name in STYLE_RATINGS or name in VIRTUAL_FIELDS:
+            _require(type(value) is int, f"{name} requires a whole number")
         if name in ABILITY_BITS:
             _require(value in (0, 1), "ability accepts 0 or 1")
             self.set_ability(name, bool(value))
@@ -1008,7 +1030,7 @@ class PlayerRecord:
 
     @power_run_style_bucket.setter
     def power_run_style_bucket(self, index: int) -> None:
-        _require(0 <= index < len(POWER_RUN_STYLE_VALUES),
+        _require(type(index) is int and 0 <= index < len(POWER_RUN_STYLE_VALUES),
                  f"power run style accepts 0..{len(POWER_RUN_STYLE_VALUES) - 1}, got {index}")
         self.values["power_run_style"] = POWER_RUN_STYLE_VALUES[index]
 
@@ -1020,13 +1042,13 @@ class PlayerRecord:
 
     @throw_style.setter
     def throw_style(self, style: int) -> None:
-        _require(style in (0, 1), f"throw style is 0 or 1, got {style}")
+        _require(type(style) is int and style in (0, 1), f"throw style is 0 or 1, got {style}")
         self.values["scramble"] = (self.values["scramble"] & ~1) | style
 
     def set_scramble_magnitude(self, value: int) -> None:
         """Move the Scramble rating without disturbing the throw-style bit."""
 
-        _require(0 <= value <= 255, f"scramble accepts 0..255, got {value}")
+        _require(type(value) is int and 0 <= value <= 255, f"scramble accepts 0..255, got {value}")
         self.values["scramble"] = (value & ~1) | (self.values["scramble"] & 1)
 
     @property
@@ -1271,6 +1293,9 @@ class TeamRecord:
     scheme: int = 0
     clean_parse: bool = True                               # count byte == pointers we could resolve
     repaired: bool = False                                 # a repair rewrote the count / the whole list
+    stadium_index: int | None = None                       # record ordinal, not the stadium's asset ID
+    kind: int | None = None
+    asset_id: int | None = None
 
     @property
     def reordered(self) -> bool:
@@ -1284,7 +1309,7 @@ class TeamRecord:
 
     @property
     def is_club(self) -> bool:
-        return self.index < CLUB_TEAM_COUNT
+        return self.index < 32 or (self.kind in (2, 4) if self.kind is not None else self.index < CLUB_TEAM_COUNT)
 
     @property
     def display(self) -> str:
@@ -1395,6 +1420,11 @@ class RosterDocument:
         self.version = self.u32(base + 0x10)
         _require(self.version in ROST_VERSIONS, f"ROST version {self.version} (expected 17 for a disc "
                                                  "resource or 0 for a save arena)")
+        if self.version in (1, 18):
+            # The grown schema owns a fixed tail and moved tables. Validate all
+            # pointers against that boundary before the editor follows them.
+            from .nfl2k5_save_rost import decode
+            decode(bytes(b), base_year=self.base_year, reference_year=self.reference_year)
         root = self.rel(base + 0x14)
         expected_root = base + ROST_VERSIONS[self.version]
         _require(root == expected_root, f"the roster object should sit at +0x{ROST_VERSIONS[self.version]:x}, "
@@ -1439,6 +1469,20 @@ class RosterDocument:
                 college_strings.append(target)
                 self.colleges.append(read_utf16z(b, target)[0])
         self.college_record_index = {offset: i for i, offset in enumerate(self.college_offsets)}
+        from . import nfl2k5_roster_storage as storage
+        arena_end = len(b)
+        if base >= 0x20 and b[base - 0x20:base - 0x1C] == b"ROST":
+            arena_end = base + self.u32(base - 0x1C)
+        from . import nfl2k5_roster_arena as arena
+        try:
+            self.overflow = arena.read(b, root, arena_end, self.version)
+        except arena.ArenaError as exc:
+            raise RosterRecordError(str(exc)) from exc
+        self.arena_end = arena_end
+        try:
+            self.stadiums = storage.read_stadiums(b, root=root, end=arena_end)
+        except storage.RosterStorageError as exc:
+            raise RosterRecordError(str(exc)) from exc
         # teams
         self.teams: list[TeamRecord] = []
         team_count = self.u32(ob + TEAM_COUNT_FIELD)
@@ -1457,12 +1501,19 @@ class RosterDocument:
                 slots.append(target)
                 self.by_offset[target].teams.append(index)
             coach = self.rel(offset + TEAM_COACH)
+            try:
+                stadium = storage.team_stadium(b, offset, self.stadiums)
+            except storage.RosterStorageError as exc:
+                raise RosterRecordError(f"team {index}: {exc}") from exc
             team = TeamRecord(index=index, offset=offset,
                               nickname=self._string_at(offset + TEAM_NICKNAME),
                               abbreviation=self._string_at(offset + TEAM_ABBREVIATION),
                               city=self._string_at(offset + TEAM_CITY),
                               player_count=count, slots=slots, original_slots=tuple(slots),
                               coach_offset=coach,
+                              stadium_index=stadium.index if stadium else None,
+                              kind=self.u32(offset + 0x128),
+                              asset_id=struct.unpack_from('<H', b, offset + 0x118)[0],
                               scheme=struct.unpack_from("<H", b, offset + TEAM_SCHEME_WORD)[0],
                               clean_parse=(count == len(slots) and count <= TEAM_SLOTS))
             self.teams.append(team)
@@ -1491,14 +1542,15 @@ class RosterDocument:
             # Any reserve metadata must pass the strict storage decoder.
             try:
                 ids = ps.reserve_list(raw, team_offset=team.offset,
-                                      player_pool_offset=self.primary_table) if metadata != (0, 0, 0) else ()
+                                      player_pool_offset=self.primary_table, overflow=self.overflow,
+                                      team_index=team.index) if metadata != (0, 0, 0) else ()
                 for index in ids:
                     key = ("primary", index)
                     _require(key not in self.reserve_owner, "duplicate reserve owner")
                     target = self.primary_table + index * PLAYER_SIZE
                     _require(target in self.by_offset and self.by_offset[target].pool == "primary",
                              "reserve index outside primary pool")
-                    _require(not any(t < CLUB_TEAM_COUNT for t in self.by_offset[target].teams)
+                    _require(not any(self.teams[t].is_club for t in self.by_offset[target].teams)
                              and target not in self.free_agents, "reserve has another owner")
                     self.reserve_owner[key] = team.index
                 self.reserves[team.index] = ids
@@ -1754,11 +1806,17 @@ class RosterDocument:
         return [self.by_offset[self.primary_table + index * PLAYER_SIZE]
                 for index in self.reserves.get(team_index, ())]
 
+    def reserve_limit(self, team_index: int) -> int:
+        """The selected save's capacity, including its explicit eligibility bit."""
+        from . import nfl2k5_practice_squad as ps
+        return self.overflow.limit(team_index) if self.overflow is not None and team_index < 32 else ps.RESERVE_LIMIT
+
     def adopt_body(self, payload: bytes) -> None:
         """Publish re-decoded bytes, retaining objects held by the UI and undo commands."""
         _require(len(payload) == len(self.body), "the roster arena changed size")
         fresh = RosterDocument(payload, base=self.base, source=self.source, container=self.container,
-                               resource_header=self.resource_header, scheme=self.scheme)
+                               resource_header=self.resource_header, scheme=self.scheme,
+                               reference_year=self.reference_year, base_year=self.base_year)
         old_players = {(p.pool, p.index): p for p in self.players}
         _require(set(old_players) == {(p.pool, p.index) for p in fresh.players},
                  "pool remapping requires an explicit complete identity map")
@@ -1835,7 +1893,7 @@ class RosterDocument:
         owner = self.reserve_owner.get((player.pool, player.index))
         if owner is not None:
             return owner
-        clubs = [index for index in player.teams if index < CLUB_TEAM_COUNT]
+        clubs = [index for index in player.teams if self.teams[index].is_club]
         return min(clubs) if clubs else None
 
     def is_free_agent(self, player: Player) -> bool:
@@ -1869,9 +1927,10 @@ class RosterDocument:
             raise MembershipRefused(MSG_FREE_AGENT_IR)
 
     def membership_limit(self, team_index: int) -> int:
-        from .nfl2k5_franchise_save import is_franchise_save, SEASON_BLOCK, S_STAGE
-        limit = TEAM_SLOTS - len(self.reserves.get(team_index, ()))
-        if is_franchise_save(bytes(self.body)) and self.body[SEASON_BLOCK + S_STAGE] >= 8:
+        from .nfl2k5_franchise_save import is_franchise_save, FranchiseSave
+        capacity = 70 if self.overflow is not None and team_index < 32 else TEAM_SLOTS
+        limit = min(TEAM_SLOTS, capacity - len(self.reserves.get(team_index, ())))
+        if is_franchise_save(bytes(self.body)) and FranchiseSave(bytes(self.body)).header.stage >= 8:
             limit = min(limit, 53)
         return limit
 
@@ -2113,11 +2172,14 @@ class RosterDocument:
 
     def _read_reserve_lists(self, body: bytes | bytearray) -> dict[int, tuple[int, ...]]:
         from . import nfl2k5_practice_squad as ps
+        from . import nfl2k5_roster_arena as arena
+        overflow = arena.read(body, self.obj_base + OBJ_OFF, self.arena_end, self.version)
         result = {}
         for team in self.teams:
             raw = body[team.offset:team.offset + TEAM_SIZE]
             result[team.index] = (ps.reserve_list(raw, team_offset=team.offset,
-                                                  player_pool_offset=self.primary_table)
+                                                  player_pool_offset=self.primary_table,
+                                                  overflow=overflow, team_index=team.index)
                                   if (raw[ps.VERSION_OFFSET], raw[ps.COUNT], raw[ps.MARKER_OFFSET]) != (0, 0, 0) else ())
         return result
 
@@ -2220,10 +2282,15 @@ class RosterDocument:
             raw = bytes(out[team.offset:team.offset + TEAM_SIZE])
             # Snapshot reserves before moving the active boundary.
             active = [(offset - self.primary_table) // PLAYER_SIZE for offset in team.slots]
-            out[team.offset:team.offset + TEAM_SIZE] = ps.repack_team(
-                raw, active, self.reserves[team.index], team_offset=team.offset,
-                player_pool_offset=self.primary_table, player_count=len(self.by_pool("primary")),
-                mark=bool(raw[ps.VERSION_OFFSET]))
+            if self.overflow is not None:
+                from . import nfl2k5_roster_arena as arena
+                from .nfl2k5_save_rost import decode
+                arena.repack(out, decode(bytes(self.body)), team.index, active, self.reserves[team.index])
+            else:
+                out[team.offset:team.offset + TEAM_SIZE] = ps.repack_team(
+                    raw, active, self.reserves[team.index], team_offset=team.offset,
+                    player_pool_offset=self.primary_table, player_count=len(self.by_pool("primary")),
+                    mark=bool(raw[ps.VERSION_OFFSET]))
         if tuple(self.free_agents) != self.original_free_agents:
             _require(self.free_agent_list is not None, "this roster has no free-agent list")
             _require(len(self.original_free_agents) == self.free_agent_count_field,
@@ -2239,7 +2306,7 @@ class RosterDocument:
                     struct.pack_into("<i", out, field_offset, self.free_agents[index] - field_offset + 1)
                 else:
                     struct.pack_into("<i", out, field_offset, 0)
-        if self.version == 0 and any(self.body[t.offset + 0x19b] == 1 for t in self.teams):
+        if self.version in (0, 1) and any(self.body[t.offset + 0x19b] in (1, 2) for t in self.teams):
             from . import nfl2k5_practice_squad as ps
             try:
                 for team in self.teams[:32]:
@@ -2329,7 +2396,7 @@ def _entry(archive) -> Any:
     entries = archive.entries
     _require(len(entries) > ROST_OUTER_INDEX, f"the archive has no outer entry {ROST_OUTER_INDEX}")
     entry = entries[ROST_OUTER_INDEX]
-    _require(entry.size == RESOURCE_SIZE,
+    _require(entry.size in (RESOURCE_SIZE, 0x92060),
              f"outer entry {ROST_OUTER_INDEX} is 0x{entry.size:x} bytes, not the main roster")
     return entry
 
@@ -2367,7 +2434,7 @@ def load_image(path: Path | str, *, scheme: str = "retail", detect: bool = False
     with _outer_image()(path) as archive:
         entry = _entry(archive)
         resource = archive.read(entry.virtual_offset, entry.size)
-    _require(resource[:4] == b"ROST" and len(resource) == RESOURCE_SIZE, "the roster resource is foreign")
+    _require(resource[:4] == b"ROST" and len(resource) in (RESOURCE_SIZE, 0x92060), "the roster resource is foreign")
     document = RosterDocument(resource[RESOURCE_HEADER_SIZE:], base=0, source=str(path),
                               resource_header=resource[:RESOURCE_HEADER_SIZE], scheme=scheme,
                               reference_year=reference_year)
@@ -2380,7 +2447,7 @@ def load_image(path: Path | str, *, scheme: str = "retail", detect: bool = False
 def resource_status(resource: bytes) -> str:
     """retail | edited | foreign for an outer-entry-5 payload."""
 
-    if len(resource) != RESOURCE_SIZE or resource[:4] != b"ROST":
+    if len(resource) not in (RESOURCE_SIZE, 0x92060) or resource[:4] != b"ROST":
         return "foreign"
     body = resource[RESOURCE_HEADER_SIZE:]
     if hashlib.sha256(body).hexdigest() == RETAIL_BODY_SHA256:
@@ -2669,7 +2736,7 @@ def save_document(document: RosterDocument, target: Path | str, *, overwrite: bo
     payload = document.to_body()        # for a save-loaded document this is the whole arena
     _require(len(payload) == len(document.container.savegame), "the arena changed size; refusing to write")
     from .nfl2k5_practice_squad import validate_save
-    if document.version == 0 or any(document.reserves.values()):
+    if document.version in (0, 1) or any(document.reserves.values()):
         validate_save(payload)
     return document.container.write(target, payload, overwrite=overwrite)
 
@@ -2680,10 +2747,10 @@ def edits_document(document: RosterDocument, *, name: str = "", author: str = ""
 
     document.check_depth_locks()
     from . import nfl2k5_practice_squad as ps
+    original_reserves = document._read_reserve_lists(document.original)
     for team in document.teams:
         raw = document.original[team.offset:team.offset + TEAM_SIZE]
-        old = (ps.reserve_list(raw, team_offset=team.offset, player_pool_offset=document.primary_table)
-               if (raw[ps.VERSION_OFFSET], raw[ps.COUNT], raw[ps.MARKER_OFFSET]) != (0, 0, 0) else ())
+        old = original_reserves[team.index]
         _require(old == document.reserves[team.index],
                  "Reserve moves require a signed-save copy; Build & Share cannot represent these moves")
     edits = []
@@ -2839,7 +2906,7 @@ def replay_moves(roster: RosterDocument, moves: Sequence[Mapping[str, Any]], log
 
     Every mover is detached from the lists first and attached to the destination lists second, so
     a swap between two full teams and a chain of moves both land; then the END STATE is checked
-    against the rules (42 minimum, 54 cap, no player on two clubs, the free-agent capacity).  If it
+    against the rules (42 minimum, active/reserve capacity, no player on two clubs, free-agent capacity). If it
     fails, the lists go back to what the target roster had and the reason is logged -- the fields
     are still applied.  Returns the number of players moved."""
 
@@ -2860,6 +2927,9 @@ def replay_moves(roster: RosterDocument, moves: Sequence[Mapping[str, Any]], log
                        f"{entry.get('first', '')} {expected_last}".strip())
         if roster.is_draft_class(player):
             log.append(f"{key}: {MSG_DRAFT_CLASS} {DRAFT_CLASS_WHY} (move skipped)")
+            continue
+        if key in roster.reserve_owner:
+            log.append(f"{key}: reserve moves require a signed-save copy (move skipped)")
             continue
         movers.append((player, entry))
     # phase 1: detach every mover from every team list, and from the free-agent list only when
@@ -2899,7 +2969,7 @@ def replay_moves(roster: RosterDocument, moves: Sequence[Mapping[str, Any]], log
     roster._reindex_membership()
     # phase 3: the end state must obey the rules the editor enforced when the document was made --
     # relative to what the target roster already had, so a club that was under 42 before the moves
-    # is only a problem if the moves took it lower, and one over 54 only if they took it higher
+    # is only a problem if the moves took it lower. The current codec owns the active/reserve cap.
     problems: list[str] = []
     before_counts = {index: len(slots) for index, slots in snapshot["teams"].items()}
     touched = {t for _s, t, _p in placements}
@@ -2913,12 +2983,13 @@ def replay_moves(roster: RosterDocument, moves: Sequence[Mapping[str, Any]], log
             problems.append(f"{team.display} did not parse cleanly")
         if team.is_club and 0 < now < TEAM_MIN_PLAYERS and now < before:
             problems.append(f"{team.display} would drop to {now} players (minimum {TEAM_MIN_PLAYERS})")
-        if now > TEAM_MAX_PLAYERS and now > before:
-            problems.append(f"{team.display} would grow to {now} players (cap {TEAM_MAX_PLAYERS})")
+        limit = roster.membership_limit(team_index)
+        if now > limit and now > before:
+            problems.append(f"{team.display} would grow to {now} players (cap {limit}, including reserve storage)")
         if now > TEAM_SLOTS:
             problems.append(f"{team.display} would need {now} pointer slots (the record holds {TEAM_SLOTS})")
     for player, _entry in movers:
-        if len([t for t in player.teams if t < CLUB_TEAM_COUNT]) > 1:
+        if len([t for t in player.teams if roster.teams[t].is_club]) > 1:
             problems.append(f"{player.display} would be on two clubs")
     if len(roster.free_agents) > roster.free_agent_capacity:
         problems.append(f"the free-agent list would hold {len(roster.free_agents)} of {roster.free_agent_capacity}")
@@ -2965,7 +3036,7 @@ CSV_IDENTITY = ("pool", "index", "team", "first", "last", "position", "jersey", 
                 "face_mask", "face_shield", "mouthpiece", "turtleneck", "sleeves", "neck_roll",
                 "left_glove", "right_glove", "left_wrist", "right_wrist", "left_elbow",
                 "right_elbow", "left_shoe", "right_shoe", "depth_rank", "depth_side", "player_type")
-CSV_COLUMNS = CSV_IDENTITY + RATING_BYTE_ORDER + tuple(ABILITY_BITS)
+CSV_COLUMNS = CSV_IDENTITY + RATING_BYTE_ORDER + tuple(ABILITY_BITS) + ("guardian_cap",)
 CSV_READ_ONLY = frozenset({"pool", "index"})
 FREE_AGENT_CSV_WORDS = frozenset({"free_agent", "free agents", "free agent", "fa"})
 
@@ -3005,6 +3076,7 @@ def _csv_row(document: RosterDocument, player: Player) -> dict[str, Any]:
         "player_type": record.values["player_type"],
     }
     row.update({name: int(value) for name, value in record.abilities.items()})
+    row["guardian_cap"] = int(record.guardian_cap)
     row.update(record.ratings())
     return row
 
@@ -3151,7 +3223,7 @@ def _apply_csv_cell(document: RosterDocument, player: Player, column: str,
             new = instead
     else:
         new = _enum_value(column, value) if column in ENUMS else int(value)
-    if (record.get(column) if column in ABILITY_BITS else record.values.get(column)) == new:
+    if (record.get(column) if column in ABILITY_BITS or column == "guardian_cap" else record.values.get(column)) == new:
         return 0, note
     record.set(column, new)
     return 1, note
@@ -3230,6 +3302,21 @@ def pbp_name_index(document: RosterDocument | None = None) -> dict[int, str]:
     for index, surname in enumerate(RETAIL_LASTS):
         out.setdefault(RETAIL_AUDIO_BASE + index, f"{surname} (recorded surname bank)")
     return dict(sorted(out.items()))
+
+
+def portrait_confirmation(document: RosterDocument, player: Player,
+                          report_path: Path | str | None = None) -> str:
+    """Confirm the stored selector without claiming art has been written or played."""
+    photo = player.record.values["photo_id"]
+    entries, meta = portrait_index(document, report_path)
+    prefix = f"{player.display}: Photo {photo:04d} is staged in the roster. "
+    if meta["reason"]:
+        return prefix + "The portrait catalog is unavailable, so this ID could not be checked. " + meta["reason"]
+    if photo not in entries:
+        return prefix + "This ID has no cataloged portrait. Choose an existing Photo ID to avoid the no-photo image."
+    return (prefix + f"Replace Portrait {photo:04d} with your 128x128 PNG, then include both the portrait "
+            "project and roster edits in the same disc build. Renaming a player does not replace the picture. "
+            "An existing in-game save keeps its own Photo ID; edit that save too if you use it.")
 
 
 def portrait_index(document: RosterDocument | None = None,
@@ -3796,6 +3883,14 @@ def validate(document: RosterDocument, players: Sequence[Player] | None = None) 
         if record.birth_date is None and record.values["birth_month"]:
             findings.append({"level": "warning", "player": player.display, "check": "birth date",
                              "detail": "the stored month/day/year is not a real date"})
+        if (record.birth_date is not None and document.reference_year is not None
+                and player.pool == "primary" and record.values["player_type"] & FLAG_NFL_PLAYER):
+            from .nfl2k5_roster_ages import age_on_september_1, MIN_AGE, MAX_AGE
+            age = age_on_september_1(record.birth_date, document.reference_year)
+            if not MIN_AGE <= age <= MAX_AGE:
+                findings.append({"level": "warning", "player": player.display, "check": "season age",
+                                 "detail": f"age {age} on September 1, {document.reference_year} is outside "
+                                           f"{MIN_AGE}..{MAX_AGE}; review the birth date and source season"})
         if record.values["headless"]:
             findings.append({"level": "error", "player": player.display, "check": "headless",
                              "detail": "+0x0C bit 7 is set; this model renders without a head "
@@ -3831,7 +3926,7 @@ def validate_membership(document: RosterDocument) -> list[dict[str, Any]]:
                                        "(the game carries up to 65 through the off-season and trims "
                                        "the tail at the season gate)"})
     for player in document.players:
-        if len([t for t in player.teams if t < CLUB_TEAM_COUNT]) > 1:
+        if len([t for t in player.teams if document.teams[t].is_club]) > 1:
             findings.append({"level": "error", "player": player.display, "check": "team list",
                              "detail": "listed on two clubs: "
                                        + ", ".join(document.teams[t].abbreviation for t in player.teams)})

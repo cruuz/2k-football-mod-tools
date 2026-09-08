@@ -1,4 +1,4 @@
-"""Animations inspection workspace. Import is intentionally disabled pending gates."""
+"""EXPERIMENTAL / UNWITNESSED animation imports, gated per source and bundle."""
 from __future__ import annotations
 
 import json
@@ -13,6 +13,9 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.core import nfl2k5_animation as animation
+from mod_editor.core import nfl2k5_animation_import as importing
+from mod_editor.core import nfl2k5_animation_bones as bones
+from mod_editor.core import nfl2k5_animation_xbe as embedded
 from mod_editor.gui.task_delivery import bound
 
 
@@ -80,15 +83,18 @@ class AnimationsPanel(QWidget):
         self._catalog = {'archive':[],'embedded_xbe':[]}
         self._clip = None
         self._skeleton = None
+        self._preview_clip = None
         self._busy = False
         self._generation = 0
         self._task = None
+        self._import_plan = None
+        self._plan_kind = None
         self._pool = QThreadPool(self)
         self._pool.setMaxThreadCount(1)
         layout = QVBoxLayout(self)
         self.badge = QLabel('EXPERIMENTAL / UNWITNESSED')
         layout.addWidget(self.badge)
-        intro = QLabel('Inspect and export local animation poses. Import is disabled until the checks and game testing are complete.')
+        intro = QLabel('Inspect poses and check edits before writing a new copy. Animation and limb edits still need game testing.')
         intro.setWordWrap(True)
         layout.addWidget(intro)
         top = QHBoxLayout()
@@ -102,6 +108,14 @@ class AnimationsPanel(QWidget):
         xbe_browse.clicked.connect(self._choose_xbe)
         top.addWidget(xbe_browse)
         layout.addLayout(top)
+        self.image_field = QLineEdit()
+        self.image_field.setPlaceholderText('Source disc image for the edited copy')
+        image_row = QHBoxLayout()
+        image_row.addWidget(self.image_field, 1)
+        choose_image = QPushButton('Choose source disc')
+        choose_image.clicked.connect(self._choose_image)
+        image_row.addWidget(choose_image)
+        layout.addLayout(image_row)
         split = QSplitter(Qt.Horizontal)
         left = QWidget()
         ll = QVBoxLayout(left)
@@ -152,22 +166,35 @@ class AnimationsPanel(QWidget):
         self.export_button.clicked.connect(self._export)
         export_row.addWidget(self.export_button)
         self.keys_field = QLineEdit()
-        self.keys_field.setPlaceholderText('Edited animation.keys.json for a change preview')
-        self.keys_field.textChanged.connect(self._refresh)
+        self.keys_field.setPlaceholderText('Edited primary.gltf and its native files')
+        self.keys_field.textChanged.connect(self._invalidate)
         export_row.addWidget(self.keys_field,1)
-        self.browse_keys_button = QPushButton('Choose edited keys')
+        self.browse_keys_button = QPushButton('Choose edited clip')
         self.browse_keys_button.clicked.connect(self._choose_keys)
         export_row.addWidget(self.browse_keys_button)
         self.check_button = QPushButton('What would change')
         self.check_button.clicked.connect(self.check_changes)
         export_row.addWidget(self.check_button)
-        self.import_button = QPushButton('Import disabled')
-        self.import_button.setToolTip('Import is unavailable until byte checks and in-game tests pass.')
+        self.import_button = QPushButton('Import to a new copy')
+        self.import_button.setToolTip('Available after the source, native files, poses and output ranges pass checks. Still unwitnessed in game.')
+        self.import_button.clicked.connect(self._import)
         export_row.addWidget(self.import_button)
         layout.addLayout(export_row)
+        limb_row = QHBoxLayout()
+        self.limb_button = QPushButton('Check left forearm +1%')
+        self.limb_button.setToolTip('Coordinate both body detail levels, hand and forearm joints, and mesh positions. Experimental.')
+        self.limb_button.clicked.connect(self.check_limb)
+        limb_row.addWidget(self.limb_button)
+        self.variant_button = QPushButton('Check new referee gesture')
+        self.variant_button.setToolTip('A modest arm gesture replaces the selected referee clip within its original space.')
+        self.variant_button.clicked.connect(self.check_variant)
+        limb_row.addWidget(self.variant_button)
+        layout.addLayout(limb_row)
         self.status_label = QLabel('Open your NFL 2K5 disc to list animations.')
         self.status_label.setWordWrap(True)
         layout.addWidget(self.status_label)
+        self.image_field.textChanged.connect(self._invalidate)
+        self.xbe_field.textChanged.connect(self._invalidate)
         self._refresh()
 
     def _source_paths(self):
@@ -185,12 +212,20 @@ class AnimationsPanel(QWidget):
     def _refresh(self,*_):
         self.reload_button.setEnabled(bool(self._source_paths()) and not self._busy)
         self.export_button.setEnabled(self._clip is not None and not self._busy)
-        self.check_button.setEnabled(self._clip is not None and self._clip.kind == 'SMCD' and
+        self.check_button.setEnabled(self._clip is not None and self._clip.kind in ('SMCD','XBE_ROOT') and
                                      bool(self.keys_field.text().strip()) and not self._busy)
-        # No code path connects this button to a writer or enables it.
-        self.import_button.setEnabled(False)
+        self.import_button.setEnabled(animation.IMPORT_ENABLED and self._import_plan is not None and not self._busy)
+        self.limb_button.setEnabled(bool(self._source_paths()) and bool(self.image_field.text()) and not self._busy)
+        self.variant_button.setEnabled(self._clip is not None and self._clip.identity == 'archive:3107/27' and
+                                       bool(self.image_field.text()) and not self._busy)
         for widget in (self.clip_list,self.search,self.scope_combo,self.root_combo,self.scrubber,self.plane_combo):
             widget.setEnabled(not self._busy)
+
+    def _invalidate(self,*_):
+        self._generation += 1
+        self._import_plan = self._plan_kind = None
+        self._preview_clip = None
+        self._refresh()
 
     def _run(self,operation,done):
         if self._busy:
@@ -205,6 +240,7 @@ class AnimationsPanel(QWidget):
         def fail(message):
             self._busy = False
             if generation == self._generation:
+                self._import_plan = self._plan_kind = None
                 self.status_label.setText(message)
             self._refresh()
         task.signals.done.connect(bound(self,finish))
@@ -237,6 +273,8 @@ class AnimationsPanel(QWidget):
         self._refresh()
 
     def _filter(self,*_):
+        self._import_plan = self._plan_kind = None
+        self._preview_clip = None
         self.clip_list.blockSignals(True)
         self.clip_list.clear()
         query = self.search.text().casefold()
@@ -276,6 +314,8 @@ class AnimationsPanel(QWidget):
         self._run(operation,lambda result:self.apply_clip(*result))
 
     def apply_clip(self,clip,skeleton=None):
+        self._import_plan = self._plan_kind = None
+        self._preview_clip = None
         self._clip,self._skeleton = clip,skeleton
         self.root_combo.blockSignals(True)
         self.root_combo.clear()
@@ -304,7 +344,7 @@ class AnimationsPanel(QWidget):
         frame = self.scrubber.value()
         seconds = frame/(r.rate*r.multiplier)
         try:
-            segments = animation.project_pose(self._clip,seconds,self._skeleton,root_index,
+            segments = animation.project_pose(self._preview_clip or self._clip,seconds,self._skeleton,root_index,
                                                self.plane_combo.currentData(),loop=False)
             self.preview.set_segments(segments)
             self.frame_label.setText(f'Frame {frame+1} / {r.frames} | {seconds:.4f} seconds | native samples')
@@ -318,9 +358,14 @@ class AnimationsPanel(QWidget):
             self.xbe_field.setText(path)
 
     def _choose_keys(self):
-        path,_ = QFileDialog.getOpenFileName(self,'Choose edited primary keys','','Animation keys (*.json)')
+        path,_ = QFileDialog.getOpenFileName(self,'Choose edited clip','','Animation files (*.gltf *.json)')
         if path:
             self.keys_field.setText(path)
+
+    def _choose_image(self):
+        path,_ = QFileDialog.getOpenFileName(self,'Choose source disc','','Disc images (*.iso)')
+        if path:
+            self.image_field.setText(path)
 
     def _export(self):
         if self._clip is None or self._busy:
@@ -339,16 +384,94 @@ class AnimationsPanel(QWidget):
                   lambda result:self.status_label.setText(f"Exported glTF and native files to {result['directory']}"))
 
     def check_changes(self):
-        if self._clip is None or self._clip.kind != 'SMCD':
+        if self._clip is None or self._clip.kind not in ('SMCD','XBE_ROOT'):
             return
+        self._import_plan = self._plan_kind = None
         clip,path = self._clip,Path(self.keys_field.text())
+        source, skeleton = self._source, self._skeleton
+        input_path = Path(self.xbe_field.text() if clip.kind == 'XBE_ROOT' else self.image_field.text())
         def operation():
+            if path.suffix == '.gltf':
+                fresh = source.load(clip.identity) if source else clip
+                plan = importing.compile_import(fresh,path,skeleton)
+                if clip.kind == 'XBE_ROOT':
+                    embedded.apply(importing._read(input_path),plan.replacement)
+                else:
+                    animation.require(clip.map_id is not None,'Import needs a proved skeleton family')
+                    importing.image_edits(input_path,(plan,))
+                return plan
             if path.stat().st_size > 64*1024*1024:
                 raise animation.AnimationError('Edited key file exceeds 64 MiB')
             return animation.check_key_document(clip,json.loads(path.read_text(encoding='utf-8'))).receipt
-        def done(receipt):
+        def done(result):
+            if isinstance(result,importing.ImportPlan):
+                self._arm(result,'embedded' if clip.kind == 'XBE_ROOT' else 'clip')
+                return
+            receipt = result
             self.details.setPlainText(change_report(receipt))
             self.status_label.setText('Change preview complete. Nothing was written to your game.')
+        self._run(operation,done)
+
+    def _arm(self,plan,kind):
+        self._import_plan,self._plan_kind = plan,kind
+        self.details.setPlainText(json.dumps(plan.receipt,indent=2))
+        self.status_label.setText('Checks passed. Choose Import to write a new copy. EXPERIMENTAL / UNWITNESSED.')
+        if kind in ('clip','variant'):
+            from dataclasses import replace
+            self._preview_clip = replace(plan.clip,original=plan.replacement.after,body=plan.replacement.after[32:])
+            self._scrub()
+
+    def check_limb(self):
+        if not self._source_paths() or self._busy:
+            return
+        self._import_plan = self._plan_kind = None
+        paths,image = self._source_paths(),Path(self.image_field.text())
+        def operation():
+            from mod_editor.core.nfl2k5_models import ModelSource
+            plan = bones.compile_limb(ModelSource(*map(Path,paths)))
+            bones.image_edits(plan,image)
+            return plan
+        self._run(operation,lambda plan:self._arm(plan,'limb'))
+
+    def check_variant(self):
+        if self._clip is None or self._busy:
+            return
+        self._import_plan = self._plan_kind = None
+        clip,source,image = self._clip,self._source,Path(self.image_field.text())
+        def operation():
+            fresh = source.load(clip.identity) if source else clip
+            plan = importing.author_referee_variant(fresh)
+            importing.image_edits(image,(plan,))
+            return plan
+        self._run(operation,lambda plan:self._arm(plan,'variant'))
+
+    def _import(self):
+        if self._import_plan is None or self._busy:
+            return
+        path,_ = QFileDialog.getSaveFileName(self,'Write edited game to a new copy','','Game copies (*.iso *.xbe)')
+        if path:
+            self.import_to(Path(path))
+
+    def import_to(self,destination):
+        if self._import_plan is None or self._busy:
+            return
+        plan,kind = self._import_plan,self._plan_kind
+        image = Path(self.xbe_field.text() if kind == 'embedded' else self.image_field.text())
+        bundle,skeleton = Path(self.keys_field.text()),self._skeleton
+        self._import_plan = self._plan_kind = None
+        def operation():
+            if kind in ('clip','embedded'):
+                fresh = importing.compile_import(plan.clip,bundle,skeleton)
+                animation.require(fresh.bundle_hashes == plan.bundle_hashes and fresh.replacement.after == plan.replacement.after,
+                                  'Edited files changed after preflight; check them again')
+            if kind == 'embedded':
+                return embedded.write_import_copy(plan,image,destination)
+            if kind == 'limb':
+                return bones.write_limb_copy(plan,image,destination)
+            return importing.write_import_copy(plan,image,destination)
+        def done(receipt):
+            self.details.setPlainText(json.dumps(receipt,indent=2))
+            self.status_label.setText(f"Wrote the edited copy to {receipt['output']}. Game testing is still required.")
         self._run(operation,done)
 
     def wait_idle(self,timeout_ms=30000):
@@ -379,7 +502,7 @@ def change_report(receipt):
     changes = receipt['changed_keys']
     lines = ['EXPERIMENTAL / UNWITNESSED',f"{len(changes)} changed keys; {receipt['changed_bytes']} changed bytes.",
              'Events, movement samples, clip length and root settings are retained.',
-             'Nothing was written to your game. Import remains disabled.','']
+             'Nothing was written to your game. Choose primary.gltf to check an import.','']
     lines += [f"Frame {c['frame']+1}, channel {c['packed_channel']}, joint {c['logical_joint']}: "
               f"native offset {c['offset']:#x}, word {c['before_word']:08x} -> {c['after_word']:08x}" for c in changes]
     lines += ['', 'Exact byte ranges:',json.dumps(receipt['write_spans'],indent=2),

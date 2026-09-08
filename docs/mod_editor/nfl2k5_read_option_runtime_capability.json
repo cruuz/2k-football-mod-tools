@@ -1,0 +1,71 @@
+{
+  "backend": {
+    "module": "mod_editor/core/nfl2k5_read_option_runtime.py",
+    "operation": "write",
+    "command": "python3 -m mod_editor.core.nfl2k5_read_option_runtime apply source.xbe --output new-read-option.xbe --table compiled-intent.bin"
+  },
+  "classification": "offline-writer-proved",
+  "evidence": [
+    "ASTRA_READ_OPTION_RUNTIME_REPORT.md",
+    "tests/mod_editor/test_nfl2k5_read_option_runtime.py",
+    "tests/mod_editor/test_nfl2k5_read_option_unicorn.py",
+    "tools/nfl2k5_read_option_runtime.S",
+    "ASTRA_READ_OPTION_CONTROLS_REPORT.md",
+    "tests/mod_editor/test_nfl2k5_read_option_controls.py",
+    "ASTRA_READ_OPTION_V3_REPORT.md",
+    "tests/mod_editor/test_nfl2k5_read_option_frames.py"
+  ],
+  "game": "nfl2k5_xbox",
+  "gui": {
+    "default_enabled": false,
+    "expose": true,
+    "mode": "edit",
+    "reason": "EXPERIMENTAL / UNWITNESSED. All presets off. One-second mesh, native per-frame control priority, handoff ownership event, EDGE cue and RPO request have bounded instruction proofs. Protected integration is in WIRING.md."
+  },
+  "id": "nfl2k5.gameplay.read_option_runtime",
+  "input_constraints": [
+    "Pinned USA XBE or verified composed input; reserve the complete owner union before installing bytes.",
+    "At most two authored read plays, bound to exact PLAY/compiler receipt pairs. Empty table is dormant.",
+    "RPO receiver must be slot 7 or 8; receiver slot 6 shares the snap button. Native speed options are excluded.",
+    "Installed v1/v2 owners require rebuilding from the supported base. An explicit automatic-EDGE table uses snap assignments instead of an authored defender."
+  ],
+  "portme": [
+    "Run Noah's I Jokers 155/157, Gun Zone Read 134, hold/release/default give, RPO receiver, live EDGE and lifecycle witness list in ASTRA_READ_OPTION_V3_REPORT.md."
+  ],
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+    "tooling": "source-and-schemas-only"
+  },
+  "runtime": {
+    "status": "not-tested",
+    "scope": "Bounded native per-frame dispatcher replays prove paired final-book lookup, one second of game time, stick priority suppression, give/take initialization, native ownership transfer on the supplied animation event, keep control, and the RPO native throw-request store. Native projection and atlas submission prove the EDGE marker path. Collision-free actor poses, animation timing, asset allocation, post-transfer notifications, GPU submission and aim calculation are fixture inputs or boundaries. Boot, rendered mesh/throw/fake animation and defense remain unwitnessed.",
+    "evidence": [
+      "ASTRA_READ_OPTION_CONTROLS_REPORT.md",
+      "ASTRA_READ_OPTION_V3_REPORT.md"
+    ]
+  },
+  "selectors": {
+    "fields": [
+      {
+        "name": "read_option_runtime",
+        "required": true,
+        "allowed": "false in Basic, Advanced and Experimental; explicit opt-in"
+      }
+    ],
+    "notes": "Two paired authored reads. Hold snap for the whole one-second window to keep; release or no input gives. On RPO, hold snap and press the intended receiver during the window. Left stick waits until the read ends. Supports native I and the supported Gun recipes."
+  },
+  "source_container": {
+    "format": "XBE in XDVDFS",
+    "hash_pins": [
+      "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+    ],
+    "resource": "Six pinned live hooks; rebuild the existing owner from base with 2048 RX, 256 RW and 88 RO bytes.",
+    "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+  },
+  "summary": "Paired custom reads latch give, keep or pass with modern hold-to-keep controls and a CPU edge read.",
+  "surface": "gameplay_tuning_sliders",
+  "title": "Read option mesh controls (experimental, unwitnessed)",
+  "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_read_option_controls"
+}

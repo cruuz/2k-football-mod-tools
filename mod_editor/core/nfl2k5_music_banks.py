@@ -84,6 +84,101 @@ def _xbe(disc):
     return disc.read(entry.size, entry.byte_offset)
 
 
+def _descriptor_counts(disc):
+    counts = {name: len(bank.boundaries) - 1 for name, bank in disc.banks.items()}
+    stereo, mono = disc.banks.get('cribmusic'), disc.banks.get('crib22')
+    if stereo is not None or mono is not None:
+        require(stereo is not None and mono is not None and stereo.channels == 2 and mono.channels == 1
+                and stereo.boundaries == tuple(b * 2 for b in mono.boundaries),
+                'stereo/mono twins disagree')
+    return counts
+
+
+def read_descriptor_counts(source):
+    """Fresh, bounded AUSB reads, including alias, extent and twin validation.
+
+    Never infer counts from jukebox titles, retail constants or a preview.
+    Closes the image on success and on every validation failure.
+    """
+    before = _identity(source)
+    with archive.Disc(source) as disc:
+        counts = _descriptor_counts(disc)
+    require(_identity(source) == before, 'image changed while reading music descriptors')
+    return counts
+
+
+def playlist_preflight(source, document=None, *, library_plan=None):
+    """Validate Build choices against actual source counts plus planned changes.
+
+    A plan is provisional. revalidate_playlist reads the final installed image.
+    """
+    from . import nfl2k5_music_playlist as playlist
+    selected = playlist.Selection() if document is None else playlist.from_options(document)
+    counts = read_descriptor_counts(source)
+    if library_plan is not None:
+        require(library_plan.get('schema') == PLAN_SCHEMA, 'invalid music plan')
+        names = ('cribmusic', 'crib22') if library_plan['bank'] == 'cribmusic' else ('femusic',)
+        for name in names:
+            boundaries = library_plan['boundaries'][name]
+            require(len(boundaries) - 1 == library_plan['count'], 'invalid planned bank count')
+            counts[name] = len(boundaries) - 1
+    playlist.validate_source(selected, counts)
+    return selected, dict(descriptor_counts=counts, records=len(selected.records), enabled=len(selected.enabled),
+                         revalidated_after_rebuild=False)
+
+
+def read_playlist_catalog(source):
+    """Browse a rebuilt image using its descriptors and installed jukebox titles."""
+    from . import nfl2k5_music_playlist as playlist
+    before = _identity(source)
+    with archive.Disc(source) as disc:
+        counts = _descriptor_counts(disc)
+        songs = _existing_songs(_xbe(disc))
+        require(len(songs) == counts['cribmusic'], 'jukebox titles and descriptor count disagree')
+        rows = playlist.catalog_for_counts(counts)
+        for row in rows:
+            if row['bank'] == 'cribmusic':
+                song = songs[row['index']]
+                row['title'] = f"{song['title']} / {song['artist']}"
+                row['spoken'] = song['artist'] == 'Dan & Steve' and song['title'].startswith('Outtake ')
+        rows = playlist.validate_catalog(rows)
+    require(_identity(source) == before, 'image changed while reading playlist catalogue')
+    return rows
+
+
+def _validate_playlist(disc, expected=None):
+    from . import nfl2k5_music_playlist as playlist
+    counts = _descriptor_counts(disc)
+    selected = None
+    if 'default.xbe' in disc.entries:
+        state, selected = playlist._inspect(_xbe(disc))
+        require(state in ('retail', 'applied'), 'foreign installed music playlist')
+    if expected is not None:
+        if isinstance(expected, dict):
+            expected = playlist.from_options(expected)
+        require(isinstance(expected, playlist.Selection) and selected == expected,
+                'installed playlist differs from Build choices')
+    if selected is not None:
+        playlist.validate_source(selected, counts)
+    return dict(descriptor_counts=counts, installed=selected is not None,
+                records=len(selected.records) if selected is not None else 0,
+                enabled=len(selected.enabled) if selected is not None else 0,
+                revalidated_after_rebuild=selected is not None)
+
+
+def revalidate_playlist(source, *, expected=None):
+    """Publication gate: validate the installed XBE's actual selection, not a plan.
+
+    Build calls this on its final private image after all resource edits and
+    before os.replace. Library rebuilds also call it automatically in verify.
+    """
+    before = _identity(source)
+    with archive.Disc(source) as disc:
+        checked = _validate_playlist(disc, expected)
+    require(_identity(source) == before, 'image changed while validating installed playlist')
+    return checked
+
+
 def _text(payload, va):
     at = metadata._offset(payload, va, 2)
     end = at
@@ -407,8 +502,10 @@ def verify(source, output, planned, *, track_hashes=None, progress=None):
                             decoded.update(decode_xbox_ima_time_block(data[j:j+36*bank.channels],bank.channels))
                     samples.append(dict(bank=name,index=index,frames=(end-start)//(36*bank.channels)*64,
                                         decoded_pcm_sha256=decoded.hexdigest()))
+        playlist_check = _validate_playlist(result)
         return dict(status='verified', unaffected_outers=unaffected, outer_sha256=outer_hashes,
                     unrelated_files=unrelated, decoded_samples=samples,
+                    music_shuffle=playlist_check,
                     output_sha256=archive.digest(result.read,result.image_size))
 
 
@@ -420,7 +517,6 @@ def rebuild(source, output, recipe, *, expected_plan=None, overwrite=False, prog
     source, output = Path(source).resolve(), Path(output).resolve()
     require(source != output and (not output.exists() or not os.path.samefile(source,output)), 'output must be a separate copy')
     require(not output.exists() or overwrite, 'output exists; overwrite was not selected')
-    target_before = _identity(output) if output.exists() else None
     planned = plan(source,recipe)
     inputs = [Path(t['wav']) for t in planned['tracks'] if 'wav' in t]
     if isinstance(recipe,(str,Path)):
@@ -435,19 +531,12 @@ def rebuild(source, output, recipe, *, expected_plan=None, overwrite=False, prog
         require(wanted == fresh, 'stale music plan; source or recipe changed')
     require(output.parent.is_dir(), 'output parent does not exist')
     require(shutil.disk_usage(output.parent).free >= planned['scratch_bytes'], 'insufficient scratch space')
-    source_before = _identity(source)
-    with tempfile.TemporaryDirectory(prefix='.music-',dir=output.parent) as temp:
-        directory = Path(temp).resolve()
-        staged = directory/'image.iso'
+
+    def build(directory, staged):
         with archive.Disc(source) as disc:
             geometry, _, containers, new_xbe, _, _ = _project(planned['recipe'],disc,planned['tracks'])
             require(geometry == planned['layout'], 'source layout changed after planning')
             banks, hashes = _stage(disc,planned,directory,progress)
-            progress('copy',0,disc.image_size)
-            # Copy from the same open reader used by the plan projection.
-            with staged.open('wb') as stream:
-                for at in range(0,disc.image_size,archive.BLOCK):
-                    stream.write(disc.read(min(archive.BLOCK,disc.image_size-at),at))
             fd = os.open(staged,os.O_RDWR | getattr(os,'O_BINARY',0))
             try:
                 _write_archive(fd,disc,geometry,containers,banks,progress)
@@ -457,12 +546,12 @@ def rebuild(source, output, recipe, *, expected_plan=None, overwrite=False, prog
                 os.fsync(fd)
             finally:
                 os.close(fd)
-        checked = verify(source,staged,planned,track_hashes=hashes,progress=progress)
-        require(_identity(source) == source_before and archive.file_hash(source) == planned['source_sha256'],
-                'source changed during build; output discarded')
-        require((_identity(output) if output.exists() else None) == target_before, 'destination changed during build')
-        # Every reader/writer is closed, including failed-constructor readers.
-        os.replace(staged,output)
+        return hashes
+
+    hashes, checked = archive.transactional_copy(source, output,
+        source_sha256=planned['source_sha256'], scratch_bytes=planned['scratch_bytes'],
+        build=build, verify=lambda staged, hashes: verify(source, staged, planned,
+            track_hashes=hashes, progress=progress), overwrite=overwrite, inputs=inputs, progress=progress)
     return dict(schema='nfl2k5_music_receipt/v1',experimental=True,runtime_witnessed=False,
                 output=str(output),plan=planned,track_sha256=hashes,verification=checked,
                 elapsed_seconds=time.monotonic()-start)

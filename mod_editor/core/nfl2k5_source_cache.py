@@ -212,14 +212,18 @@ class Nfl2k5SourceCache:
             )
 
         self._ensure_private_cache_root()
-        final = self.cache_root / SOURCE_SHA256
+        # An edited archive may retain the retail executable. Keep that disc's
+        # extracted bytes separate even when its directory/index still parses.
+        # A canonical cache must never be populated by a different container.
+        final = self.cache_root / source.sha256
         cached = self._load_existing(final, source)
         if cached is not None:
+            self._verify_cached_source(selected, cached, progress)
             _emit(progress, "Game index ready", 1, 1)
             return cached
 
         temporary = Path(tempfile.mkdtemp(
-            prefix=f".{SOURCE_SHA256[:12]}.indexing-", dir=self.cache_root))
+            prefix=f".{source.sha256[:12]}.indexing-", dir=self.cache_root))
         try:
             # ``mkdtemp`` creates 0o700 on POSIX and an ordinary directory on
             # Windows, which has no directory modes; re-verify whichever of
@@ -232,7 +236,10 @@ class Nfl2k5SourceCache:
             inventory = self._build_inventory(temporary, progress)
             pack0 = temporary / PACK_FOLDER / "0"
             if pack0.stat().st_size != PACK0_SIZE or _digest(pack0) != PACK0_SHA256:
-                raise ValidationError("The private archive cache did not match your XISO")
+                raise ValidationError(
+                    "This disc's archive differs from the supported retail archive. "
+                    "Open the original disc and your saved .2k5mod project to continue editing. "
+                    "The studio cannot preview this modified archive as an editable source.")
             if inventory.stat().st_size != INVENTORY_SIZE or \
                     _digest(inventory) != INVENTORY_SHA256:
                 raise ValidationError("The generated game index did not match NFL 2K5")
@@ -246,8 +253,8 @@ class Nfl2k5SourceCache:
                 "packs": self._pack_ledger(temporary / PACK_FOLDER),
                 "schema": CACHE_SCHEMA,
                 "source": {
-                    "sha256": SOURCE_SHA256,
-                    "size": SOURCE_SIZE,
+                    "sha256": source.sha256,
+                    "size": source.size,
                 },
                 "summary": summary,
             }
@@ -274,6 +281,48 @@ class Nfl2k5SourceCache:
             raise ValidationError("Game index publication failed")
         _emit(progress, "Game index ready", 1, 1)
         return result
+
+    @staticmethod
+    def _verify_cached_source(selected: Path, cached: SourceCache,
+                              progress: IndexProgress | None) -> None:
+        """A cached archive is usable only if this dump still has the same packs.
+
+        Container padding and file placement may differ. Compare bounded spans
+        at this image's actual directory offsets; never substitute stock artwork
+        for a modified archive, and never allocate a disc-sized comparison buffer.
+        """
+        descriptor = os.open(selected, os.O_RDONLY | getattr(os, "O_BINARY", 0)
+                             | getattr(os, "O_NOFOLLOW", 0))
+        try:
+            before = os.fstat(descriptor)
+            entries, _ = xiso.parse_xdvdfs(descriptor, before.st_size)
+            for index, name in enumerate("0123456789ABCDEF"):
+                # XDVDFS names are case-insensitive: the retail directory lists a to f
+                # in lowercase while the cache folder keeps the uppercase names.
+                entry = entries.get(f"vc_53450030/{name}") or entries.get(f"vc_53450030/{name.lower()}")
+                reference = cached.root / PACK_FOLDER / name
+                message = (
+                    f"Archive pack {name} differs from the supported retail source. "
+                    "Open the original disc and your saved .2k5mod project to continue editing. "
+                    "Stock textures have not been substituted for this disc's textures.")
+                if entry is None or entry.attributes & 0x10 or entry.size != reference.stat().st_size:
+                    raise ValidationError(message)
+                _emit(progress, f"Checking this disc's archive ({name})", index, 16)
+                with reference.open("rb") as stream:
+                    position, remaining = entry.byte_offset, entry.size
+                    while remaining:
+                        size = min(COPY_BLOCK, remaining)
+                        block = platform_compat.pread(descriptor, size, position)
+                        if len(block) != size or block != stream.read(size):
+                            raise ValidationError(message)
+                        remaining -= size
+                        position += size
+            after = os.fstat(descriptor)
+            if (before.st_size, before.st_mtime_ns, before.st_ctime_ns) != (
+                    after.st_size, after.st_mtime_ns, after.st_ctime_ns):
+                raise ValidationError("The disc changed while checking its cached artwork. Open it again.")
+        finally:
+            os.close(descriptor)
 
     @staticmethod
     def _require_private_directory(path: Path, label: str) -> None:
@@ -335,7 +384,7 @@ class Nfl2k5SourceCache:
             return None
         if (
             marker.get("schema") != CACHE_SCHEMA
-            or marker.get("source") != {"sha256": SOURCE_SHA256, "size": SOURCE_SIZE}
+            or marker.get("source") != {"sha256": source.sha256, "size": source.size}
         ):
             return None
         pack_folder = root / PACK_FOLDER

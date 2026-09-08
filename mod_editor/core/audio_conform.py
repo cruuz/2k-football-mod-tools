@@ -279,6 +279,124 @@ def music_downmix(pcm):
     return mono, cancellation
 
 
+MUSIC_MAX_SECONDS = 600
+FFMPEG_INSTALL = "Install FFmpeg (including FFprobe) from ffmpeg.org/download.html, then restart Mod Studio."
+QUIET_MUSIC_WARNING = "This file is very quiet; the game will add hiss. Use a louder copy."
+
+
+def music_quality_warnings(*, sample_rate, bits=0, bit_rate=0, gain_capped=False):
+    """Advisories only. A lossy source must never be refused for its quality."""
+    notes = []
+    if 0 < sample_rate < 22050:
+        notes.append("This file has little sound detail. Use a higher-quality original copy.")
+    if 0 < bits <= 8:
+        notes.append("This file uses 8-bit sound and may sound rough. Use the original copy.")
+    if 0 < bit_rate < 64000:
+        notes.append("This file is heavily compressed and may sound crushed. Use a higher-quality copy.")
+    if gain_capped:
+        notes.append(QUIET_MUSIC_WARNING)
+    return tuple(notes)
+
+
+def conform_song(supplied, destination, *, reference_rms, cancelled=None):
+    """Free-length song, stereo PCM16, without truncating or padding to a slot.
+
+    Decode at most ten minutes plus the shared converter's half-second sentinel.
+    Check actual frames, not MP3 container duration (which includes encoder delay).
+    Float resampling precedes one gain/peak pass and one PCM quantization. Largest
+    decoded buffer is about 106 MB; no disc or archive is opened here.
+    """
+    import array
+    import json
+    import math
+    import wave
+
+    def check():
+        if cancelled and cancelled():
+            raise AudioConformError("Music import cancelled; nothing was changed")
+
+    check()
+    if not math.isfinite(reference_rms) or reference_rms < 0:
+        raise AudioConformError("The game's music volume could not be read")
+    module = _convert_module()
+    if module is None:
+        raise AudioConformError("The audio converter is unavailable")
+    source = module._open_source(supplied)
+    samples = None
+    rate = bits = bitrate = 0
+    if source.suffix.lower() == ".wav":
+        try:
+            with wave.open(str(source), "rb") as wav:
+                rate, bits = wav.getframerate(), wav.getsampwidth()*8
+                frames, channels = wav.getnframes(), wav.getnchannels()
+                if frames > MUSIC_MAX_SECONDS*rate:
+                    raise AudioConformError("This song is over 10 minutes; choose a shorter copy.")
+                if rate == 22050 and bits == 16 and channels in (1, 2):
+                    pcm = wav.readframes(frames)
+                    if len(pcm) != frames*channels*2:
+                        raise AudioConformError("This song is incomplete; choose another copy.")
+                    values = _pcm_samples(pcm)
+                    samples = array.array("f", (v/32768 for x in values
+                                               for v in ((x, x) if channels == 1 else (x,))))
+        except (wave.Error, EOFError):
+            pass
+    if samples is None:
+        if not module.ffmpeg_available():
+            raise AudioConformError(FFMPEG_INSTALL)
+        info = module.probe(source, cancelled=cancelled)
+        rate = info.sample_rate
+        result = module._run_process((module._tool("ffprobe"), "-v", "error", "-select_streams", "a:0",
+            "-show_entries", "stream=bits_per_sample,bits_per_raw_sample,bit_rate", "-of", "json", str(source)),
+            timeout=module.DEFAULT_TIMEOUT_SECONDS, cancelled=cancelled)
+        if result.returncode == 0:
+            streams = json.loads(result.stdout).get("streams", [])
+            fields = streams[0] if streams else {}
+            def number(key):
+                try:
+                    return int(fields.get(key, 0))
+                except (ValueError, TypeError):
+                    return 0
+            bits = bits or number("bits_per_raw_sample") or number("bits_per_sample")
+            bitrate = number("bit_rate")
+        decoded = module._decode(info, shape_for(2, 22050, MUSIC_MAX_SECONDS*22050),
+                                 module.DEFAULT_TIMEOUT_SECONDS, cancelled=cancelled)
+        if len(decoded) % 8:
+            raise AudioConformError("This song is incomplete; choose another copy.")
+        samples = array.array("f", decoded)
+        del decoded
+        if sys.byteorder != "little":
+            samples.byteswap()
+    check()
+    frames = len(samples)//2
+    if not frames:
+        raise AudioConformError("This file has no sound; choose another copy.")
+    if frames > MUSIC_MAX_SECONDS*22050:
+        raise AudioConformError("This song is over 10 minutes; choose a shorter copy.")
+    if any(not math.isfinite(v) for v in samples):
+        raise AudioConformError("This file contains damaged sound; choose another copy.")
+    rms = math.sqrt(sum(v*v for v in samples)/len(samples))
+    wanted = reference_rms/rms if rms > 1/32768 and reference_rms > 1/32768 else 1.0
+    capped = wanted > 10**(12/20)
+    peak = max(abs(v) for v in samples)
+    gain = min(wanted, 10**(12/20), 10**(-1/20)/peak if peak else 1.0)
+    for i in range(len(samples)):
+        if i % 32768 == 0:
+            check()
+        samples[i] *= gain
+    # Quantize in bounded chunks so cancellation remains responsive.
+    with wave.open(str(destination), "wb") as wav:
+        wav.setparams((2, 2, 22050, frames, "NONE", "not compressed"))
+        for i in range(0, len(samples), 32768):
+            check()
+            wav.writeframesraw(module._quantize(samples[i:i+32768]))
+    check()
+    notes = music_quality_warnings(sample_rate=rate, bits=bits, bit_rate=bitrate,
+                                   gain_capped=capped or (rms <= 1/32768 and reference_rms > 1/32768))
+    return dict(seconds=frames/22050, frames=frames, sample_rate=rate, bits=bits,
+                bit_rate=bitrate, input_rms=rms, reference_rms=reference_rms,
+                gain_db=20*math.log10(gain), gain_capped=capped, notes=list(notes))
+
+
 def conform_music(supplied, shape, original_pcm: bytes, *, match_volume=True,
                   cancelled=None):
     """Return exact PCM and a report without changing the other panels' defaults.

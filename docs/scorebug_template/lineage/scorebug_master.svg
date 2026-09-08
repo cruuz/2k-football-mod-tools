@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="112" viewBox="0 0 920 112" role="img" aria-labelledby="scorebug-title scorebug-description">
+  <title id="scorebug-title">Raiders at Texans — 0 to 0</title>
+  <desc id="scorebug-description">1st and 10. First quarter, 13:10. Play clock 12. Neutral abbreviation badges stand in for licensed team logos.</desc>
+  <!-- DESIGN MASTER. Body: (10,10)–(910,100), 900 × 90. Transparent export padding.
+       data-fill="away|home.FIELD" marks literal, converter-safe team color bindings.
+       data-field marks live text. render.py fills these nodes using ElementTree.
+       Lettering is ordinary type, never an NFL team wordmark. No embedded images. -->
+  <defs>
+    <clipPath id="bar-clip"><rect x="10" y="10" width="900" height="90" rx="11"/></clipPath>
+    <linearGradient id="panel-shade-left" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="0.26" stop-color="#000000" stop-opacity="0.22"/>
+      <stop offset="0.29" stop-color="#000000" stop-opacity="0.66"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.84"/>
+    </linearGradient>
+    <linearGradient id="panel-shade-right" x1="1" y1="0" x2="0" y2="0">
+      <stop offset="0" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="0.26" stop-color="#000000" stop-opacity="0.22"/>
+      <stop offset="0.29" stop-color="#000000" stop-opacity="0.66"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.84"/>
+    </linearGradient>
+    <linearGradient id="top-gloss" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.28"/>
+      <stop offset="0.45" stop-color="#FFFFFF" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="banner-shade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.13"/>
+      <stop offset="0.40" stop-color="#FFFFFF" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.25"/>
+    </linearGradient>
+    <linearGradient id="frame-edge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#EBEEF2" stop-opacity="0.72"/>
+      <stop offset="0.48" stop-color="#EBEEF2" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#EBEEF2" stop-opacity="0.42"/>
+    </linearGradient>
+    <filter id="bar-shadow" x="-0.03" y="-0.3" width="1.06" height="1.6" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="2.6"/>
+    </filter>
+  </defs>
+  <g id="scorebug" font-family="DejaVu Sans, Arial, sans-serif" font-weight="700">
+    <g id="shadow" aria-hidden="true">
+      <rect x="11" y="14" width="898" height="88" rx="11" fill="#000000" opacity="0.55" filter="url(#bar-shadow)"/>
+    </g>
+    <g id="frame">
+      <rect x="9" y="9" width="902" height="92" rx="12" fill="#080B10"/>
+      <g id="panels" clip-path="url(#bar-clip)">
+        <rect x="10" y="10" width="900" height="90" fill="#101217"/>
+        <g id="team-left-background">
+          <rect id="primary-left" data-fill="away.primary_hex" x="10" y="10" width="344" height="90" fill="#000000"/>
+          <rect x="10" y="10" width="344" height="90" fill="url(#panel-shade-left)"/>
+          <path id="secondary-left" data-fill="away.secondary_hex" d="M21 11H345L350 15H21Z" fill="#A5ACAF"/>
+        </g>
+        <g id="team-right-background">
+          <rect id="primary-right" data-fill="home.primary_hex" x="566" y="10" width="344" height="90" fill="#03202F"/>
+          <rect x="566" y="10" width="344" height="90" fill="url(#panel-shade-right)"/>
+          <path id="secondary-right" data-fill="home.secondary_hex" d="M575 11H899V15H570Z" fill="#A71930"/>
+        </g>
+        <g id="gloss" aria-hidden="true">
+          <rect x="10" y="11" width="900" height="24" fill="url(#top-gloss)"/>
+          <path d="M19 96H901" stroke="#000000" stroke-opacity="0.55" stroke-width="3"/>
+        </g>
+      </g>
+      <rect x="10.5" y="10.5" width="899" height="89" rx="10.5" fill="none" stroke="url(#frame-edge)"/>
+    </g>
+    <g id="team-left" data-team="LV">
+      <!-- Replace only logo-left's children with licensed art; local safe circle r=27.
+           Slot origin is (60,55). Outer radius 32; keep art inside (-27,-27)–(27,27). -->
+      <g id="logo-left" transform="translate(60 55)" aria-label="LV placeholder badge">
+        <circle r="33" fill="#080B10" stroke="#FFFFFF" stroke-opacity="0.32"/>
+        <circle r="30" data-fill="away.secondary_hex" fill="#A5ACAF"/>
+        <circle r="27" data-fill="away.primary_hex" fill="#000000"/>
+        <text id="abbr-left" data-field="away.abbr" data-fill="away.text_on_primary" x="0" y="8" text-anchor="middle" font-size="23" fill="#FFFFFF">LV</text>
+      </g>
+      <g id="identity-left" fill="#FFFFFF">
+        <text id="nickname-left" data-field="away.nickname" x="111" y="53" font-family="DejaVu Sans, Arial, sans-serif" font-size="20" letter-spacing="0.5">RAIDERS</text>
+        <text id="role-left" x="112" y="73" font-size="9" letter-spacing="2.6" fill="#C9CFD6">AWAY</text>
+      </g>
+      <text id="score-left" data-field="away_score" x="308" y="72" text-anchor="middle" font-size="54" letter-spacing="-2" fill="#FFFFFF">0</text>
+      <g id="line-score-left" fill="#FFFFFF" aria-label="Three decorative score markers; not live timeouts">
+        <path d="M280 83H293L291 87H278Z M302 83H315L313 87H300Z M324 83H337L335 87H322Z"/>
+      </g>
+    </g>
+    <g id="team-right" data-team="HOU">
+      <g id="logo-right" transform="translate(860 55)" aria-label="HOU placeholder badge">
+        <circle r="33" fill="#080B10" stroke="#FFFFFF" stroke-opacity="0.32"/>
+        <circle r="30" data-fill="home.secondary_hex" fill="#A71930"/>
+        <circle r="27" data-fill="home.primary_hex" fill="#03202F"/>
+        <text id="abbr-right" data-field="home.abbr" data-fill="home.text_on_primary" x="0" y="8" text-anchor="middle" font-size="21" fill="#FFFFFF">HOU</text>
+      </g>
+      <g id="identity-right" fill="#FFFFFF">
+        <text id="nickname-right" data-field="home.nickname" x="809" y="53" text-anchor="end" font-family="DejaVu Sans, Arial, sans-serif" font-size="20" letter-spacing="0.5">TEXANS</text>
+        <text id="role-right" x="808" y="73" text-anchor="end" font-size="9" letter-spacing="2.6" fill="#C9CFD6">HOME</text>
+      </g>
+      <text id="score-right" data-field="home_score" x="612" y="72" text-anchor="middle" font-size="54" letter-spacing="-2" fill="#FFFFFF">0</text>
+      <g id="line-score-right" fill="#FFFFFF" aria-label="Three decorative score markers; not live timeouts">
+        <path d="M584 83H597L595 87H582Z M606 83H619L617 87H604Z M628 83H641L639 87H626Z"/>
+      </g>
+    </g>
+    <g id="game-state">
+      <g id="down-banner">
+        <path d="M342 11H578Q570 14 570 22V36Q570 49 557 49H363Q350 49 350 36V22Q350 14 342 11Z" fill="#080B10"/>
+        <path id="down-banner-fill" data-fill="accent" d="M350 13H570Q566 17 566 23V36Q566 45 557 45H363Q354 45 354 36V23Q354 17 350 13Z" fill="#D0021B"/>
+        <path d="M350 13H570Q566 17 566 23V36Q566 45 557 45H363Q354 45 354 36V23Q354 17 350 13Z" fill="url(#banner-shade)"/>
+        <path d="M358 15H562" stroke="#FFFFFF" stroke-opacity="0.28"/>
+        <text id="down-distance" data-field="down_distance" x="460" y="37" text-anchor="middle" font-size="25" fill="#FFFFFF">1st &amp; 10</text>
+      </g>
+      <g id="clock-strip">
+        <rect x="355" y="54" width="210" height="37" rx="18.5" fill="#05070B" stroke="#747A82" stroke-opacity="0.58"/>
+        <rect x="358" y="57" width="204" height="31" rx="15.5" fill="#1B2027"/>
+        <path id="clock-dividers" d="M407 63V82M518 63V82" stroke="#59616C" stroke-width="1"/>
+        <text id="quarter" data-field="quarter_label" x="383" y="79" text-anchor="middle" font-size="16" fill="#E4E8ED">1ST</text>
+        <text id="clock" data-field="clock" x="462" y="80" text-anchor="middle" font-size="26" letter-spacing="-0.8" fill="#FFFFFF">13:10</text>
+        <text id="play-clock" data-field="play_clock" x="540" y="79" text-anchor="middle" font-size="19" fill="#FFFFFF">12</text>
+      </g>
+    </g>
+  </g>
+</svg>

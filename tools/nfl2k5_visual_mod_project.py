@@ -119,7 +119,7 @@ def _load_p8_texture_adapter() -> Any:
 
 
 def _load_uniform_equipment_adapter() -> Any:
-    """Load the package-local shared-index P8 palette compiler."""
+    """Load the package-local equipment palette/independent-chain compiler."""
 
     path = ROOT / "mod_editor/core/nfl2k5_uniform_equipment_writer.py"
     spec = importlib.util.spec_from_file_location(
@@ -4772,11 +4772,18 @@ def claims_for(edits: list[PreparedEdit]) -> dict[str, Any]:
             "public_project_contains_retail_play_bytes": False,
         })
     if UNIFORM_EQUIPMENT_KIND in kinds:
+        independent_equipment = any(
+            edit.kind == UNIFORM_EQUIPMENT_KIND and edit.target.get("format") == "P8 independent mip chains"
+            for edit in edits
+        )
         claims.update({
             "uniform_equipment_fixed_tset_spans_only": True,
-            "uniform_equipment_selected_palettes_only": True,
+            "fixed_span_importers_reused_without_codec_changes": not independent_equipment,
+            "uniform_equipment_selected_palettes_only": not independent_equipment,
             "uniform_equipment_shared_indices_preserved": True,
             "uniform_equipment_unselected_siblings_preserved": True,
+            "uniform_equipment_independent_chains_requested": independent_equipment,
+            "uniform_equipment_vc_lz_format_preserved": True,
         })
     if UNIVERSAL_FIXED_TEXT_KIND in kinds:
         claims.update({

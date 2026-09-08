@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+from collections import OrderedDict
 import hashlib
 import json
 import os
 from pathlib import Path
 import shutil
 import sys
+from threading import Lock
 from typing import Any
 
 from . import platform_compat
@@ -38,6 +40,63 @@ from nfl_txtr import decode_chunk, encode_rgba_png, texture_to_rgba  # noqa: E40
 from nfl_uniform_inventory import read_and_validate_span  # noqa: E402
 
 
+class _ReplacementDecodeCache:
+    """Bound repeated validation by content, never by a file's path or mtime.
+
+    Save/autosave re-reads and hashes every PNG and original. Reusing an exact
+    previously validated decode avoids repeating Python pixel loops for every
+    existing edit. New bytes still pass the complete strict PNG decoder.
+    """
+
+    def __init__(
+        self, max_bytes: int = 64 * 1024 * 1024, max_entries: int = 1024,
+    ) -> None:
+        self.max_bytes = max_bytes
+        self.max_entries = max_entries
+        self._rows: OrderedDict[
+            tuple[bytes, tuple[int, int]], tuple[int, int, bytes]
+        ] = OrderedDict()
+        self._size = 0
+        self._lock = Lock()
+
+    def clear(self) -> None:
+        with self._lock:
+            self._rows.clear()
+            self._size = 0
+
+    def decode(
+        self, payload: bytes, dimensions: tuple[int, int],
+    ) -> tuple[int, int, bytes]:
+        key = (hashlib.sha256(payload).digest(), dimensions)
+        with self._lock:
+            found = self._rows.get(key)
+            if found is not None:
+                self._rows.move_to_end(key)
+                return found
+        decoded = png_codec.decode_rgba_png(payload, dimensions)
+        size = len(decoded[2])
+        if size <= self.max_bytes and self.max_entries > 0:
+            with self._lock:
+                previous = self._rows.pop(key, None)
+                if previous is not None:
+                    self._size -= len(previous[2])
+                while self._rows and (
+                    self._size + size > self.max_bytes
+                    or len(self._rows) >= self.max_entries
+                ):
+                    self._size -= len(self._rows.popitem(last=False)[1][2])
+                self._rows[key] = decoded
+                self._size += size
+        return decoded
+
+
+_replacement_decode_cache = _ReplacementDecodeCache()
+
+
+def _decode_png(payload: bytes, dimensions: tuple[int, int]) -> tuple[int, int, bytes]:
+    return _replacement_decode_cache.decode(payload, dimensions)
+
+
 ORIGINAL_SCHEMA = "2k5_mod_studio_original_png/v1"
 
 
@@ -51,7 +110,7 @@ def _safe_key(asset_id: str) -> str:
 
 def _canonical_png(width: int, height: int, rgba: bytes) -> bytes:
     payload = encode_rgba_png(width, height, rgba)
-    parsed = png_codec.decode_rgba_png(payload, (width, height))
+    parsed = _decode_png(payload, (width, height))
     if parsed != (width, height, rgba):
         raise ValidationError("The exported PNG failed its image round-trip")
     return payload
@@ -121,7 +180,7 @@ class Nfl2k5AssetIO:
                     )
                 ):
                     raise ValueError("invalid cached dimensions")
-                width, height, rgba = png_codec.decode_rgba_png(
+                width, height, rgba = _decode_png(
                     payload,
                     (recorded_dimensions[0], recorded_dimensions[1]),
                 )
@@ -157,7 +216,7 @@ class Nfl2k5AssetIO:
             stale = True
         png, rgba = self._decode_original(asset)
         try:
-            width, height, reparsed = png_codec.decode_rgba_png(
+            width, height, reparsed = _decode_png(
                 png, (int(asset.width), int(asset.height))
             )
         except ValueError as exc:
@@ -208,12 +267,15 @@ class Nfl2k5AssetIO:
         if not supplied.is_file() or supplied.is_symlink():
             raise ValidationError("Choose a regular PNG file, not a folder or link")
         if supplied.suffix.lower() != ".png":
-            raise ValidationError("This asset needs a PNG file")
+            raise ValidationError(
+                f"{asset.label} needs a {asset.width}x{asset.height} PNG. "
+                "DDS import is not supported here; export the base image as PNG "
+                "from Photoshop or another image editor, keeping its size and alpha channel.")
         if supplied.stat().st_size > 32 * 1024 * 1024:
             raise ValidationError("That PNG is larger than the 32 MiB input limit")
         payload = supplied.read_bytes()
         try:
-            width, height, rgba = png_codec.decode_rgba_png(
+            width, height, rgba = _decode_png(
                 payload, (int(asset.width), int(asset.height)))
         except ValueError as exc:
             raise ValidationError(

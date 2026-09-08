@@ -1210,7 +1210,8 @@ def validate_defense_operands(chain: Sequence) -> None:
     This is deliberately narrower than decoding retail bytes. Receiver selectors
     are opponents; only Man operand 5 names a friendly exchange partner.
     """
-    for op, values in chain:
+    for node in chain:
+        op, values = node[:2]
         if op not in (0x01, 0x0B, 0x0D, 0x0E, 0x18, 0x1B):
             raise ValueError(f"Opcode {op:#04x} is not an established defensive building block")
         specs = OPERAND_SCHEMAS[op]

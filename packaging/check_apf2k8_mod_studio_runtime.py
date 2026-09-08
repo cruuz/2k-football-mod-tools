@@ -129,6 +129,8 @@ PRODUCT_MODULES = (
 # game reads and no GUI work; a missing product dependency fails here rather
 # than on a modder's first build.
 TOOL_MODULES = (
+    "apf_field_art_patch",
+    "apf_logocache_patch",
     "apf_audio",
     "apf_audo_exact_slot",
     "apf_ausb_audio",
@@ -1182,7 +1184,7 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         check_files=False,
     )
     require(
-        len(registry.capabilities) == 83
+        len(registry.capabilities) == 116
         and len(registry.for_game(core_model.GameId.APF2K8)) == 37,
         "shared/APF capability registry counts changed",
     )

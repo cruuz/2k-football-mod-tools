@@ -185,6 +185,11 @@ class PlanTests(unittest.TestCase):
         apf_root = Path(self.tmp.name).resolve() / "apf"
         (apf_root / "tools").mkdir(parents=True)
         (apf_root / "tools" / "launch_apf2k8_mod_studio.sh").write_text("")
+        document["assets"].append({
+            "name": "apf2k8-mod-studio-0.9.0.tar.gz.sha256",
+            "browser_download_url": "https://example.invalid/apf.sha256",
+            "size": 1,
+        })
         plan = U.plan_update(document, U.detect_install(apf_root, "apf", platform="linux"), "apf")
         self.assertEqual(plan.asset.name, "apf2k8-mod-studio-0.9.0.tar.gz")
 

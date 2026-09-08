@@ -2,6 +2,11 @@
 
 from __future__ import annotations
 
+# Standalone invocation must not depend on a caller's PYTHONPATH.
+import sys
+from pathlib import Path
+sys.path[:0] = [str(Path(__file__).resolve().parents[2]), str(Path(__file__).resolve().parents[1])]
+
 import contextlib
 import errno
 import hashlib
@@ -148,9 +153,12 @@ class AllCapabilityValidationTests(unittest.TestCase):
         )
 
     def test_canonical_registry_has_exact_validation_coverage(self) -> None:
-        registry, _snapshot = load_registry_snapshot(
-            ROOT / "mod_editor/capabilities/registry.v1.json"
-        )
+        from mod_editor.capabilities.validate_registry import load_and_validate, _command_module
+        registry = load_and_validate(ROOT / "mod_editor/capabilities/registry.v1.json", check_files=False)
+        for row in registry["capabilities"]:
+            if row["backend"]["command"]:
+                self.assertEqual(_command_module(row["backend"]["command"], row["id"]), row["backend"]["module"])
+                self.assertTrue((ROOT / row["backend"]["module"]).is_file())
         plan, unvalidated = build_validation_plan(registry, self._launchers())
         covered = sum(len(entry.capability_ids) for entry in plan)
         self.assertEqual(len(registry["capabilities"]), EXPECTED_CAPABILITIES)
@@ -159,6 +167,22 @@ class AllCapabilityValidationTests(unittest.TestCase):
         self.assertEqual(len(plan), EXPECTED_UNIQUE_VALIDATORS)
         self.assertEqual(unvalidated, EXPECTED_DEFERRED_IDS)
         self.assertEqual(len({entry.command for entry in plan}), len(plan))
+
+    def test_full_registry_evidence_when_available(self):
+        from mod_editor.capabilities.validate_registry import load_and_validate
+        registry = load_and_validate(ROOT / "mod_editor/capabilities/registry.v1.json", check_files=False)
+        missing = sorted({p for row in registry["capabilities"] for p in row["evidence"] if not (ROOT / p).is_file()})
+        if missing:
+            self.skipTest(f"{len(missing)} historical evidence files absent; first: {missing[0]}")
+        load_registry_snapshot(ROOT / "mod_editor/capabilities/registry.v1.json")
+
+    def test_local_module_validators_keep_args_and_pin_the_entrypoint(self):
+        command = "python3 -m mod_editor.core.nfl2k5_modern_naming check"
+        self.assertEqual(parse_validation_command(command),
+                         ("python3", "-m", "mod_editor.core.nfl2k5_modern_naming", "check"))
+        for command in ("python3 -m os", "python3 -m tests..bad", "python3 -m tools.nfl2k5_xbe_space --output /tmp/x", "python3 -m tools.missing"):
+            with self.assertRaises((OSError, ValidationRunError)):
+                parse_validation_command(command)
 
     def test_shell_syntax_and_unreviewed_launchers_are_refused(self) -> None:
         bad = (
@@ -330,10 +354,10 @@ class AllCapabilityValidationTests(unittest.TestCase):
         self.assertIn(ROOT / "tools/validate_all_mod_editor_capabilities.py", paths)
         self.assertIn(ROOT / "mod_editor/capabilities/registry.schema.json", paths)
         self.assertIn(ROOT / "tests/mod_editor/test_validate_all_capabilities.py", paths)
-        self.assertIn(
-            ROOT / "tools/vendor/XenonRecomp/build/XenonUtils/libXenonUtils.a",
-            paths,
-        )
+        from tools.validate_all_mod_editor_capabilities import _control_excluded
+        optional_library = ROOT / "tools/vendor/XenonRecomp/build/XenonUtils/libXenonUtils.a"
+        self.assertFalse(_control_excluded(optional_library))
+        self.assertEqual(optional_library in paths, optional_library.is_file())
         self.assertNotIn(ROOT / "ESPN NFL 2K5 (USA).xiso.iso", paths)
         self.assertFalse(any("__pycache__" in path.parts for path in paths))
         self.assertFalse(any(path.is_relative_to(ROOT / "assets/intermediate") for path in paths))

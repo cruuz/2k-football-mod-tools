@@ -1,4 +1,9 @@
-"""ESPN scorebug inputs, resolved from the user's own disc instead of shipped files.
+"""ESPN scorebug input helpers, including retained legacy art exporters.
+
+V10's public preview/install path reads the shipped modular template in
+docs/scorebug_template. Its PNG pixels and geometric mark are newly authored;
+only native resource structure and live FONT objects come from the user's disc.
+The following historical resolvers do not supply v10's installed artwork.
 
 The public preview and availability helpers now use the v7 reference writer and
 its shipped metadata. The following legacy-art resolvers remain for older tools;
@@ -549,14 +554,14 @@ def _legacy_available() -> bool:
     return AUDIT.is_file()
 
 
-def preview_mockup(source: Path | None) -> Path | None:
-    """Studio preview of the installable v7 data, without claiming live team logos."""
+def preview_mockup(source: Path | None, *, scorebug_folder=None) -> Path | None:
+    """Studio preview of the current static bar, without claiming live team logos."""
     if source is None:
         return None
     try:
         from . import nfl2k5_scorebug_ingame as reference
         layout = _tools_module("nfl2k5_scorebug_layout")
-        mesh, texture = reference.preview_data(Path(source))
+        mesh, texture = reference.preview_data(Path(source), scorebug_folder=scorebug_folder)
         folder = cache_dir(create=True).resolve()
         import tempfile
         fd, name = tempfile.mkstemp(prefix=".reference-", suffix=".png", dir=folder)
@@ -564,7 +569,7 @@ def preview_mockup(source: Path | None) -> Path | None:
         temporary = Path(name).resolve()
         try:
             layout.preview_reference(mesh, texture, temporary)
-            output = folder / "preview_reference_v7.png"
+            output = folder / ("preview_" + reference.VERSION + ".png")
             os.replace(temporary, output)
         finally:
             temporary.unlink(missing_ok=True)
@@ -574,10 +579,12 @@ def preview_mockup(source: Path | None) -> Path | None:
 
 
 def available() -> bool:
-    """V7 uses its shipped metadata pins, independent of the old research audit."""
+    """The shipped template and Pillow suffice; no legacy art export is needed."""
     try:
         from . import nfl2k5_scorebug_ingame, nfl2k5_scorebug_resources
+        from .nfl2k5_scorebug_template import compile_folder
         import PIL.Image
+        compile_folder()
         return bool(nfl2k5_scorebug_resources.PATCHED_SHA256)
-    except ImportError:
+    except (ImportError, ValueError, OSError):
         return False

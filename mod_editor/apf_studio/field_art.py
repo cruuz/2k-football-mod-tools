@@ -31,6 +31,31 @@ if TYPE_CHECKING:
 FIELD_ART_RECORD_COUNT = 258
 FIELD_ART_PACKAGE_COUNT = 125
 
+FIELD_ART_EDIT_KIND = "field_art_texture"
+
+
+def field_art_metadata(entry_index: int, file_index: int) -> tuple[str, dict[str, object]]:
+    """Bind a project edit to the existing fixed-allocation writer contract."""
+    from .backend import ensure_tools_importable
+    ensure_tools_importable()
+    import apf_field_art_patch
+    if type(entry_index) is not int or type(file_index) is not int:
+        raise ValueError("Field Art needs integer package and texture selectors")
+    contract = apf_field_art_patch._CONTRACTS.get((entry_index, file_index))
+    if contract is None:
+        raise ValueError(f"Field Art texture {entry_index}/{file_index} is not a supported writable slot")
+    return f"apf:field_art:{entry_index}:{file_index}", {
+        "entry_index": entry_index, "file_index": file_index,
+        "width": contract.width, "height": contract.height, "name": contract.name,
+    }
+
+
+def validate_field_art_metadata(asset_id: str, supplied: Mapping[str, object]) -> dict[str, object]:
+    expected_id, expected = field_art_metadata(supplied.get("entry_index"), supplied.get("file_index"))
+    if asset_id != expected_id or dict(supplied) != expected:
+        raise ValueError("Field Art project target metadata changed")
+    return expected
+
 
 class FieldArtInventoryError(ValueError):
     """The live APF field-art catalog no longer matches the reviewed model."""

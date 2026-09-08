@@ -1,0 +1,136 @@
+[
+  {
+    "backend": {
+      "command": "python3 -m mod_editor.core.nfl2k5_my_career prepare source.zip output --first My --last Player --position WR --template 1",
+      "module": "mod_editor/core/nfl2k5_my_career.py",
+      "operation": "write"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "FABLE_MYCAREER_REPORT.md",
+      "ASTRA_MY_CAREER_REPORT.md",
+      "tests/mod_editor/test_nfl2k5_my_career.py",
+      "tests/mod_editor/test_nfl2k5_my_career_unicorn.py",
+      "tests/mod_editor/test_nfl2k5_my_career_panel.py"
+    ],
+    "game": "nfl2k5_xbox",
+    "gui": {
+      "default_enabled": false,
+      "expose": true,
+      "mode": "edit",
+      "reason": "EXPERIMENTAL / UNWITNESSED. Own MyCareer studio page; protected shell integration remains in WIRING.md. Both options default off."
+    },
+    "id": "nfl2k5.mode.my_career",
+    "input_constraints": [
+      "Pinned USA executable; reserve the full selected owner union before installation.",
+      "Create setup from a signed, real NFL Draft stage Franchise save with an eligible unassigned primary-pool prospect at the chosen position (any of the 17 retail codes).",
+      "Positions with retail create-a-player templates take one of their three templates or the generated ratings; C, G, T, DT and DE keep the generated prospect ratings.",
+      "Configure MyCareer.json (schema v2) in Build, import its paired MyCareer.zip and choose MyCareer where First Person Football was in Game Modes. All presets off.",
+      "First Person Football stays a Franchise Settings toggle; its exhibition entry row is replaced.",
+      "Native journal I/O, on-field control per position, camera and gameplay require the witness list. Missing or mismatched checkpoints disable MyPlayer control."
+    ],
+    "portme": [
+      "Complete Noah's witness list in FABLE_MYCAREER_REPORT.md before claiming played runtime acceptance."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "evidence": [
+        "FABLE_MYCAREER_REPORT.md",
+        "ASTRA_MY_CAREER_REPORT.md"
+      ],
+      "scope": "Bounded native function execution (menu row dispatch through the retail list dispatcher, identity, binding, checkpoint) and offline writers are tested. No Xbox boot, graphics, controller play or console filesystem witness.",
+      "status": "not-tested"
+    },
+    "selectors": {
+      "fields": [
+        {
+          "allowed": "false in Basic, Advanced and Experimental; explicit opt-in",
+          "name": "my_career",
+          "required": true
+        }
+      ],
+      "notes": "Protected dispatcher, Build, UI shell, closure and registry integration is specified in WIRING.md."
+    },
+    "source_container": {
+      "format": "XBE in XDVDFS",
+      "hash_pins": [
+        "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+      ],
+      "resource": "Game Modes First Person Football row rewritten to the MyCareer action, pinned hooks; allocator-owned 8192 RX and 4096 RW bytes; fixed signed Franchise save and bounded checkpoint journal.",
+      "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+    },
+    "summary": "A created player, MyPlayer, at any of the 17 positions follows native Franchise drafting with fixed player control, CPU management, whole-game fixtures and bounded weekly XP; MyCareer replaces First Person Football in Game Modes.",
+    "surface": "mode_state_routing",
+    "title": "MyCareer (experimental, unwitnessed)",
+    "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_my_career"
+  },
+  {
+    "backend": {
+      "command": "python3 -m mod_editor.core.nfl2k5_crib_reclaim rebuild source.iso output.iso",
+      "module": "mod_editor/core/nfl2k5_crib_reclaim.py",
+      "operation": "write"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "ASTRA_MY_CAREER_REPORT.md",
+      "tests/mod_editor/test_nfl2k5_crib_reclaim.py"
+    ],
+    "game": "nfl2k5_xbox",
+    "gui": {
+      "default_enabled": false,
+      "expose": true,
+      "mode": "edit",
+      "reason": "EXPERIMENTAL / UNWITNESSED. Own MyCareer studio page; protected shell integration remains in WIRING.md. Both options default off."
+    },
+    "id": "nfl2k5.crib.movie_reclaim",
+    "input_constraints": [
+      "Pinned USA Crib dispatcher and exact resource IDs, sizes and hashes; mixed or foreign states refuse.",
+      "Separate source/output images; transaction verifies every retained outer and named file before publication.",
+      "An XBE-only hook reclaims zero disc bytes. Use the independent image rebuild option.",
+      "Streaming buffers at most 1 MiB for archive/disc copying; large builds require scratch capacity plus 100 GiB remaining free."
+    ],
+    "portme": [
+      "Complete Noah's precise witness list in ASTRA_MY_CAREER_REPORT.md before claiming played runtime acceptance."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "evidence": [
+        "ASTRA_MY_CAREER_REPORT.md"
+      ],
+      "scope": "Bounded native function execution and offline writers are tested. No Xbox boot, graphics, controller play or console filesystem witness.",
+      "status": "not-tested"
+    },
+    "selectors": {
+      "fields": [
+        {
+          "allowed": "false in Basic, Advanced and Experimental; explicit opt-in",
+          "name": "crib_reclaim",
+          "required": true
+        }
+      ],
+      "notes": "Protected dispatcher, Build, UI shell, closure and registry integration is specified in WIRING.md."
+    },
+    "source_container": {
+      "format": "XBE in XDVDFS",
+      "hash_pins": [
+        "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+      ],
+      "resource": "Pinned Crib movie dispatcher and 23 exact MOV outer entries; streaming 16-pack archive and XDVDFS shrink.",
+      "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+    },
+    "summary": "Disable the 23 Crib movies and compact a separate image while preserving the Trophy Room, awards, profile, shared room, games and furniture.",
+    "surface": "crib_assets",
+    "title": "Crib movie cut (experimental, unwitnessed)",
+    "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_crib_reclaim"
+  }
+]

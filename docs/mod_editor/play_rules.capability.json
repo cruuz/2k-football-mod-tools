@@ -1,0 +1,73 @@
+{
+  "backend": {
+    "command": "python3 -m tools.nfl2k5_visual_mod_project build --project <project.json> --source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> --manifest <manifest.json> --artifact-dir <artifact-dir>",
+    "module": "tools/nfl2k5_visual_mod_project.py",
+    "operation": "write"
+  },
+  "classification": "offline-writer-proved",
+  "evidence": [
+    "ASTRA_PLAY_RULES_REPORT.md",
+    "docs/mod_editor/play_rules.json",
+    "docs/mod_editor/play_rules.evidence.json",
+    "docs/mod_editor/play_rules.md",
+    "mod_editor/core/nfl2k5_play_rules.py",
+    "mod_editor/core/nfl2k5_formation_play_writer.py",
+    "mod_editor/gui/play_rules_panel_qt.py",
+    "mod_editor/gui/play_info_panel_qt.py",
+    "tests/mod_editor/test_nfl2k5_play_rules.py",
+    "tests/mod_editor/test_nfl2k5_play_rules_qt.py"
+  ],
+  "game": "nfl2k5_xbox",
+  "gui": {
+    "default_enabled": false,
+    "expose": true,
+    "mode": "edit",
+    "reason": "Applying selected rules is an explicit authoring action. Read-only Info works without game assets. Top-level Studio registration is specified in WIRING.md."
+  },
+  "id": "nfl2k5.scripts.play_rules",
+  "input_constraints": [
+    "Library presets contain selectors, not retail node payloads. Extract from the currently loaded book; source body SHA-256 and exact position/ordinal codes bind the bundle.",
+    "Copy complete declared chains, including alternate terminal paths. Preserve explicit flags. Friendly exchange/transfer/synchronization dependencies cannot be split; opponent selectors are not friendly slots.",
+    "Partial copies need matching families, run/pass/play-action headers and defensive component. Unlinked plays and special teams are inspectable; the wizard refuses their application.",
+    "No new double-team, automatic slide, modern match, spy or zone-read AI policy is authored. Combo Inside Zone is defense; Inside Zone Read and Slide protection have no exact-name retail donors.",
+    "Reuse identical donor pointers; changed chains use the existing fixed-capacity writer with full validator, menu and synchronization checks. Same-resource byte identity applies only without other edits.",
+    "Project/pack exports may contain copied operands and explicit flags. Keep extracted exports local; they are not Studio release assets. No cross-book automatic bundle application."
+  ],
+  "portme": [
+    "Noah must capture copied coverage exchanges, blocking/slide behavior, screens and both native option paths in gameplay before any runtime-proved classification.",
+    "83 callback/consumer addresses lack independent Ghidra blocks; preserve raw labels for unresolved semantics."
+  ],
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "rule": "Ship selectors, parsers, parameter schemas and explanatory reference. Do not bundle extracted node payloads, private audit exports or Ghidra blocks.",
+    "tooling": "source-and-schemas-only"
+  },
+  "runtime": {
+    "evidence": [],
+    "scope": "Offline census: 37 books, 9251 validated plays, 91833 exact node round trips and 12 unchanged whole-resource rule applications. Offscreen project/pack persistence proved; no disc or gameplay witness.",
+    "status": "not-tested"
+  },
+  "selectors": {
+    "fields": [
+      {
+        "allowed": "Current canonical book, linked source formation/play, assignment slots 0 through 10 and matching native target personnel",
+        "name": "source_rules",
+        "required": true
+      }
+    ],
+    "notes": "Named presets and any-play search resolve from loaded source bytes; schema v3 carries explicit node flags through pack serialization."
+  },
+  "source_container": {
+    "format": "Fixed-span little-endian PLAY resource with 32-byte wrapper and 0x13390-byte body",
+    "hash_pins": [
+      "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+    ],
+    "resource": "37 canonical PLAY books; individual resource reads only",
+    "retail_file": "ESPN NFL 2K5 (USA).xiso.iso"
+  },
+  "summary": "Extract exact per-position retail assignment bundles in Create a Play, preserve linked exchanges and branch flags, validate through the existing writer, and inspect complete chains beside a searchable read-only Info reference. EXPERIMENTAL / UNWITNESSED.",
+  "surface": "scripts_config",
+  "title": "Retail rules library and PLAY reference",
+  "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_play_rules"
+}

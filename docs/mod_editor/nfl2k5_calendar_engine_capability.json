@@ -1,0 +1,68 @@
+[
+  {
+    "backend": {
+      "command": "python3 -m mod_editor.core.nfl2k5_calendar_engine --xbe <source.xbe> --output <new-copy.xbe>",
+      "module": "mod_editor/core/nfl2k5_calendar_engine.py",
+      "operation": "write"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "ASTRA_CALENDAR_ENGINE_REPORT.md",
+      "tests/mod_editor/test_nfl2k5_calendar_engine.py",
+      "tests/mod_editor/test_nfl2k5_calendar_engine_unicorn.py",
+      "tests/mod_editor/test_nfl2k5_calendar_engine_delivery.py"
+    ],
+    "game": "nfl2k5_xbox",
+    "gui": {
+      "default_enabled": false,
+      "expose": true,
+      "mode": "edit",
+      "reason": "The combined season_cap build option enables the calendar, gate, 2026 schedule resources and allocator. Basic and Advanced leave it off; Experimental enables it. EXPERIMENTAL / UNWITNESSED."
+    },
+    "id": "nfl2k5.schedules_franchise.calendar_engine",
+    "input_constraints": [
+      "Pinned USA executable and a complete allocator union.",
+      "Recognized complete season owners; base year 2004 or 2026. The executable-only CLI cannot install or certify external regular/preseason templates; use the combined 2026 image build for the shipped matching resources.",
+      "Current dates encode year minus 2000; historical/templates retain their source context. No automatic migration of ambiguous older wrapped dates.",
+      "Extracted executable only, at most 12,300,288 bytes; output must be a new file. Full owner union must be reserved before any allocator owner is installed."
+    ],
+    "portme": [
+      "EXPERIMENTAL / UNWITNESSED: Noah must witness natural rollovers, boot and save/reload at 2053, 2098..2101, 2104 and indices 127/128; see ASTRA_CALENDAR_ENGINE_REPORT.md.",
+      "Current schedules encode year minus 2000. Historical/template paths keep their source context; ambiguous wrapped old saves and permanent century archives are not migrated.",
+      "Schedule rule follows the shipped template: opening Thursday is 77 days before the fourth Thursday in November; preseason begins 35 days earlier; postseason uses fixed day offsets from that opening. This is not a future real-world NFL schedule prediction."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Do not distribute generated executables, discs or saves.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "evidence": [],
+      "scope": "Bounded isolated x86 instructions and synthetic-league generators only. No naturally advanced franchise, loader or save/reload gameplay witness.",
+      "status": "not-tested"
+    },
+    "selectors": {
+      "fields": [
+        {
+          "allowed": "Boolean. The combined Build option implies calendar_engine, season_2026 and xbe_space; off in Basic/Advanced, on in Experimental.",
+          "name": "season_cap",
+          "required": true
+        }
+      ],
+      "notes": "season_cap is the existing combined image-build control, not a save edit. The backend CLI retains the recognized executable starting year and writes a new XBE copy; it does not install disc schedule resources or migrate saves."
+    },
+    "source_container": {
+      "format": "XBE",
+      "hash_pins": [
+        "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+      ],
+      "resource": "Pinned date, live DOB, season-label and completion-gate sites; nfl2k5_calendar owns 1,024 RX and 2,048 immutable RO bytes, with no new writable or persistent state.",
+      "retail_file": "user-owned USA Xbox default.xbe"
+    },
+    "summary": "Gregorian current-franchise dates, moving live birth-year century and full year labels, with the existing bounded history and save schema.",
+    "surface": "schedules_franchise",
+    "title": "128-season franchise calendar (experimental, unwitnessed)",
+    "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_calendar_engine"
+  }
+]

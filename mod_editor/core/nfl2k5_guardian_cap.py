@@ -57,6 +57,7 @@ class Target:
     first_vertex: int = 0
     shell_vertices: int = 0
     shape_offset: int = 0
+    shell_name: str = "HI_HELMET_C"
 
 
 # These are pack-relative extents, NOT fixed XISO addresses. Whole-resource
@@ -169,7 +170,7 @@ def _shell(source: models.ModelSpanSource, target: Target):
     shape = scene["shapes"][0]
     _require(shape["record_offset"] == target.shape_offset, "Player shape moved")
     material = next(m for m in scene["materials"] if m["index"] == target.shell_material)
-    _require(material["name"] == "HI_HELMET_C", "Helmet C material identity changed")
+    _require(material["name"] == target.shell_name, "Helmet shell material identity changed")
     topology = models._tools_module("nfl_scne_gltf")
     shell_ids, other_ids = set(), set()
     for submesh in scene["submeshes"]:
@@ -177,7 +178,7 @@ def _shell(source: models.ModelSpanSource, target: Target):
             decoded, submesh["command_offset"], submesh["primary_command_word_count"]) for i in batch}
         (shell_ids if submesh["material_index"] == target.shell_material else other_ids).update(indices)
     _require(shell_ids == set(range(target.first_vertex, target.first_vertex + target.shell_vertices))
-             and not shell_ids.intersection(other_ids), "C shell shares or changed vertex ownership")
+             and not shell_ids.intersection(other_ids), "Helmet shell shares or changed vertex ownership")
     lanes = models._shape_lanes(scene, shape, decoded)
     positions = models.read_positions(decoded, shape, lanes)
     return resource, decoded, scene, shape, lanes, sorted(shell_ids), positions
@@ -224,7 +225,7 @@ def _compile_model(payload: bytes, target: Target, folder: Path) -> tuple[bytes,
     allowed = {base + i * lanes.position_stride + lanes.position_offset + b for i in ids for b in range(6)}
     changed = {i for i, (a, b) in enumerate(zip(before, after)) if a != b}
     _require(len(after) == len(before) and changed and changed <= allowed,
-             "Model differences escaped C-shell position lanes")
+             "Model differences escaped shell position lanes")
     _require(sum(s.positions_changed for s in compiled.shapes) == len(ids)
              and not any(s.rescaled for s in compiled.shapes), "Shell import changed coverage/range")
     decoded_positions = models.read_positions(after, shape, lanes)

@@ -23,6 +23,7 @@ import zipfile
 
 from mod_editor.core import platform_compat
 from mod_editor.core.errors import ValidationError
+from mod_editor.core.nfl2k5_build_settings import build_settings as music_build_settings
 from mod_editor.core.json_stream import read_bounded_regular_file
 from mod_editor.core.nfl2k5_audio_origin_authorization import (
     AuthorizedPcm16Wav,
@@ -218,6 +219,7 @@ class LoadedProject:
     formation_creates: tuple[Mapping[str, object], ...] = ()
     play_creates: tuple[Mapping[str, object], ...] = ()
     formation_links: tuple[Mapping[str, object], ...] = ()
+    build_settings: Mapping[str, object] | None = None
 
     def cleanup(self) -> None:
         shutil.rmtree(self.staging_root, ignore_errors=True)
@@ -346,10 +348,15 @@ def save_project_archive(
     formation_creates: Iterable[Mapping[str, object]] = (),
     play_creates: Iterable[Mapping[str, object]] = (),
     formation_links: Iterable[Mapping[str, object]] = (),
+    build_settings: Mapping[str, object] | None = None,
 ) -> Path:
     """Atomically save only user-authored replacements and annotation metadata."""
 
     output = _destination(destination)
+    try:
+        saved_build_settings = music_build_settings({} if build_settings is None else build_settings)
+    except ValueError as exc:
+        raise ValidationError(str(exc)) from exc
     if expected_target is not None:
         try:
             current_path = output.resolve(strict=True)
@@ -390,7 +397,9 @@ def save_project_archive(
         payload, rgba = asset_io.validate_replacement(asset, edit.replacement_path)
         original = asset_io.ensure_original(asset)
         _original_payload, original_rgba = asset_io.validate_replacement(asset, original)
-        if rgba == original_rgba:
+        from mod_editor.core.nfl2k5_equipment_import_intent import same_visual_import
+
+        if same_visual_import(asset, payload, rgba, _original_payload, original_rgba):
             raise ValidationError(
                 f"{asset.label} matches the retail original and was excluded. Revert it first."
             )
@@ -541,6 +550,7 @@ def save_project_archive(
     ))
     empty_project = (
         not rows
+        and not saved_build_settings
         and text_payload is None
         and not audio_rows
         and annotations_payload is None
@@ -560,6 +570,8 @@ def save_project_archive(
         "payload_policy": "user-replacements-only",
         "schema": PROJECT_SCHEMA,
     }
+    if saved_build_settings:
+        manifest["build_settings"] = saved_build_settings
     if empty_project:
         # This explicit marker distinguishes an intentional, canonical empty
         # document (for Save-after-Revert and recovery) from a malformed archive
@@ -711,6 +723,7 @@ def load_project_archive(
                 raise ValidationError(f"Project manifest is not valid JSON: {exc}") from exc
             base_fields = {"edits", "game", "payload_policy", "schema"}
             optional_fields = {
+                "build_settings",
                 "text_replacements", "audio_edits", "audio_annotations",
                 "uniform_colors", "empty_project",
                 "play_route_edits", "playbook_creates", "playbook_links",
@@ -725,6 +738,10 @@ def load_project_archive(
                 or document.get("payload_policy") != "user-replacements-only"
             ):
                 raise ValidationError("Project was not created for NFL 2K5 Mod Studio.")
+            try:
+                loaded_build_settings = music_build_settings(document.get("build_settings", {}))
+            except ValueError as exc:
+                raise ValidationError(str(exc)) from exc
             empty_marker_present = "empty_project" in document
             empty_marker = document.get("empty_project")
             if empty_marker_present and empty_marker is not True:
@@ -997,6 +1014,7 @@ def load_project_archive(
                 and not loaded_play_routes
                 and not loaded_creates
                 and not loaded_links
+                and not loaded_build_settings
             ):
                 if empty_marker is not True:
                     raise ValidationError(
@@ -1064,7 +1082,9 @@ def load_project_archive(
                     raise ValidationError(f"Replacement pixels failed validation for {asset_id}.")
                 original = asset_io.ensure_original(asset)
                 _original_payload, original_rgba = asset_io.validate_replacement(asset, original)
-                if rgba == original_rgba:
+                from mod_editor.core.nfl2k5_equipment_import_intent import same_visual_import
+
+                if same_visual_import(asset, payload, rgba, _original_payload, original_rgba):
                     raise ValidationError(
                         f"{asset.label} matches the retail original; the project is not replacement-only."
                     )
@@ -1094,6 +1114,7 @@ def load_project_archive(
             row for row in loaded_creates if row["kind"] == PLAY_CREATE_KIND
         ),
         formation_links=tuple(loaded_links),
+        build_settings=loaded_build_settings,
     )
 
 

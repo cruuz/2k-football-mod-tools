@@ -141,9 +141,9 @@ class Machine:
         self.play=self.alloc(512);self.put(0xe602ec,self.play);self.put(self.play+4,1)
         self.put(0xe60280,0xe5fc20);self.put(0xe602b4,4);self.put(0xa95a70,1);self.put(0xa95a00,1)
         self.uc.mem_write(0xfc9c0,b'\xc2\x04\x00')
-        self.writes=[];self.visits=[]
-        self.uc.hook_add(uc.UC_HOOK_MEM_WRITE,lambda _u,_a,addr,size,value,_d:self.writes.append((addr,size,value)))
-        self.uc.hook_add(uc.UC_HOOK_CODE,lambda _u,addr,_s,_d:self.visits.append(addr))
+        self.writes=[];self.visits=[];self.record=True
+        self.uc.hook_add(uc.UC_HOOK_MEM_WRITE,lambda _u,_a,addr,size,value,_d:self.writes.append((addr,size,value)) if self.record else None)
+        self.uc.hook_add(uc.UC_HOOK_CODE,lambda _u,addr,_s,_d:self.visits.append(addr) if self.record else None)
 
     def alloc(self,size):
         at=(self.cursor+127)&-128;self.cursor=at+size;return at
@@ -179,13 +179,15 @@ class Machine:
     def update(self,dt=1/60):self.run(self.labels['update'],(struct.unpack('<I',struct.pack('<f',dt))[0],))
 
 
-@unittest.skipUnless(XBE.is_file() and PACK.is_file() and HAVE_UC,'retail XBE/pack 0 and Unicorn required for bounded native execution')
+@unittest.skipUnless(XBE.is_file() and PACK.is_file() and HAVE_UC and importlib.util.find_spec('PIL'),
+                     'retail XBE/pack 0, Pillow and Unicorn required for bounded native execution')
 class ExecutionTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.payload=kickoff.apply(r.apply(space.apply(XBE.read_bytes(),r.REQUESTS+kickoff.REQUESTS)[0])[0])[0]
         with PACK.open('rb') as stream:
             record=art.RESOURCES['score_buga'];stream.seek(record['pack_offset']);cls.template=stream.read(record['span_size'])
+            cls.font_spans = art.scoped_fonts.compile_collection(art.PackView.from_fd(stream.fileno(), 0, PACK.stat().st_size))
         # Native descriptor, pixels and names are real compiler output; single
         # neutral source pixels suffice for ABI tests across all texture names.
         cls.panel=next(art.panel_states(b'',None,'away'))
@@ -248,7 +250,7 @@ class ExecutionTests(unittest.TestCase):
             for flags,visible in ((0,1),(2,1),(4,1),(0,0)):
                 m.float(m.clock+16,seconds);m.put(m.clock+24,flags);m.put(0xa95a70,visible);m.update()
                 urgent=0<=seconds<5 and flags==0 and visible==1
-                self.assertEqual(m.get(0xa95a48),r.RED if urgent else r.DARK)
+                self.assertEqual(m.get(0xa95a48),r.RED if urgent else r.PLAY_CLOCK_NORMAL)
     def test_native_collection_reader_uses_grown_end_and_wrapper_sizes(self):
         m=Machine(self.payload)
         # IO completion and collection-finished notification are host boundaries.
@@ -265,11 +267,16 @@ class ExecutionTests(unittest.TestCase):
         m.put(0xb09598,start)
         m.run(0x43a20,ecx=m.context,limit=200)
         self.assertIn(0x48ff0,m.visits)  # old retail end is no longer EOF
-        for i in range(art.RUNTIME_TEXTURE_COUNT):
-            m.put(0xb09598,start+i*art.RUNTIME_TEXTURE_SPAN+32)
+        at = start
+        spans = self.spans + list(self.font_spans)
+        for i, span in enumerate(spans):
+            m.uc.mem_write(header, span[:32])
+            m.put(0xb09598,at+32)
             m.run(0x438d0,(m.context,),edx=0xb09598,limit=250)
-            self.assertEqual(m.get(0xb09598),start+(i+1)*art.RUNTIME_TEXTURE_SPAN)
-            self.assertIn(0x48ff0 if i+1<art.RUNTIME_TEXTURE_COUNT else 0x43880,m.visits)
+            at += len(span)
+            self.assertEqual(m.get(0xb09598),at)
+            self.assertIn(0x48ff0 if i+1<len(spans) else 0x43880,m.visits)
+        self.assertEqual(at, end)
         self.assertNotIn(0x48ff0,m.visits)
 
     def test_native_visibility_and_slide_driver_after_new_down(self):

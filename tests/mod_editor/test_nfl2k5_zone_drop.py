@@ -198,7 +198,11 @@ class RetailTests(unittest.TestCase):
                                 and row["size"] == size for row in spans))
         manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail))
         self.assertEqual(manifest.overlaps(zone.HOOK_VA, zone.CONTINUE_VA, exclude_owner=zone.OWNER), [])
-        self.assertEqual(space.allocation_evidence(self.retail, manifest)["encoded_references"], [])
+        proof = space.allocation_evidence(self.retail, manifest)
+        # The dormant union is v3 since beta 62: the legacy pages stay encoding-free, the
+        # large runs disclose their raw candidates and never overlap a retail mapping.
+        self.assertEqual(proof["legacy_encoded_references"], [])
+        self.assertEqual(proof["retail_mapping_overlaps"], [])
         self.assertFalse(XbeImage(self.patched).runtime_writable(a["va"], a["size"]))
         self.assertEqual([r for r in space.layout(self.patched)["allocations"] if r["owner"] == zone.OWNER], [a])
 

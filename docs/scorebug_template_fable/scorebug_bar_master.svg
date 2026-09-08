@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="476" height="48" viewBox="0 0 476 48" role="img" aria-labelledby="bar-title bar-desc">
+  <title id="bar-title">ESPN NFL 2K5 scorebar template, neutral default</title>
+  <desc id="bar-desc">One 476 x 48 canvas = the frame rails [84,381,560,429] of the 640x480 HUD. Every top-level group whose id starts with layer_ is exported as its own PNG by build.py. Live text (abbreviations, scores, quarter, clock, down and distance, play clock) is drawn by the game, not by this file; the guides group shows where.</desc>
+  <!--
+    HOW TO REPAINT
+      * Bar-local coordinates: (0,0) is the top-left of the frame rails, 1 unit = 1 HUD pixel at 640x480.
+      * Keep every layer inside its rectangle listed in layout.json; the game stretches nothing, it draws
+        each layer where layout.json says.
+      * Keep the text cells (guides group, hidden) free of busy art: the game's own font draws there.
+      * Colours: the whole default set must stay under 256 distinct RGBA colours after export; keep
+        gradients short and avoid photographic textures.  build.py reports the count.
+      * Team blocks: this file holds the neutral default (#131419).  Per-team blocks come from
+        team_block_template.svg + teams.json; do not paint team colours here.
+  -->
+  <defs>
+    <clipPath id="body-clip"><rect x="1" y="1" width="474" height="46" rx="6.5"/></clipPath>
+    <clipPath id="espn-split"><path d="M-2-1H123V6.5H-2ZM-2 9H123V26H-2Z"/></clipPath>
+    <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#EBEEF2" stop-opacity="0.45"/>
+      <stop offset="0.5" stop-color="#EBEEF2" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#EBEEF2" stop-opacity="0.28"/>
+    </linearGradient>
+    <linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.22"/>
+      <stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0.05"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="banner-shade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.16"/>
+      <stop offset="0.4" stop-color="#FFFFFF" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.28"/>
+    </linearGradient>
+    <linearGradient id="strip-shade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.07"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.14"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 1. FRAME: rim, body, mark-cell tone, top gloss, bottom shade.  Drawn first. -->
+  <g id="layer_frame">
+    <rect x="0" y="0" width="476" height="48" rx="7" fill="#080B10"/>
+    <rect x="0.5" y="0.5" width="475" height="47" rx="6.5" fill="none" stroke="url(#rim)" stroke-width="1"/>
+    <g clip-path="url(#body-clip)">
+      <rect x="1" y="1" width="474" height="46" fill="#101217"/>
+      <rect id="mark-cell-tone" x="1" y="1" width="103" height="46" fill="#0B0E13"/>
+      <rect x="1" y="1" width="474" height="18" fill="url(#gloss)"/>
+      <rect x="1" y="44" width="474" height="3" fill="#000000" fill-opacity="0.40"/>
+      <path id="mark-cell-separator" d="M104.5 4V44" stroke="#262B33" stroke-width="1"/>
+    </g>
+  </g>
+
+  <!-- 2. AWAY BLOCK (neutral): x 104..222.  Team-coloured versions come from team_block_template.svg. -->
+  <g id="layer_away_block" clip-path="url(#body-clip)">
+    <rect x="104" y="1" width="118" height="46" fill="#131419"/>
+    <rect id="away-rail" x="104" y="1" width="118" height="2" fill="#2C313A"/>
+    <rect x="104" y="1" width="118" height="18" fill="url(#gloss)"/>
+    <rect x="104" y="44" width="118" height="3" fill="#000000" fill-opacity="0.40"/>
+  </g>
+
+  <!-- 3. HOME BLOCK (neutral): x 358..476, rounded right corners from the body clip. -->
+  <g id="layer_home_block" clip-path="url(#body-clip)">
+    <rect x="358" y="1" width="118" height="46" fill="#131419"/>
+    <rect id="home-rail" x="358" y="1" width="118" height="2" fill="#2C313A"/>
+    <rect x="358" y="1" width="118" height="18" fill="url(#gloss)"/>
+    <rect x="358" y="44" width="118" height="3" fill="#000000" fill-opacity="0.40"/>
+  </g>
+
+  <!-- 4. SCORE CELLS: a faint inset behind each score so the cell reads on any block. -->
+  <g id="layer_score_cells">
+    <rect x="174" y="10" width="44" height="26" rx="3" fill="#000000" fill-opacity="0.18"/>
+    <rect x="362" y="10" width="44" height="26" rx="3" fill="#000000" fill-opacity="0.18"/>
+  </g>
+
+  <!-- 5. DOWN CELL: the red down-and-distance banner, recessed 2 px under the rim, x 226..354, y 3..21. -->
+  <g id="layer_down_cell">
+    <path d="M226 6Q226 3 229 3H351Q354 3 354 6V18Q354 21 351 21H229Q226 21 226 18Z" fill="#080B10"/>
+    <path id="down-banner-fill" d="M227 6Q227 4 229 4H351Q353 4 353 6V17.5Q353 20 350.5 20H229.5Q227 20 227 17.5Z" fill="#D0021B"/>
+    <path d="M227 6Q227 4 229 4H351Q353 4 353 6V17.5Q353 20 350.5 20H229.5Q227 20 227 17.5Z" fill="url(#banner-shade)"/>
+    <path d="M230 5.5H350" stroke="#FFFFFF" stroke-opacity="0.26" stroke-width="1"/>
+  </g>
+
+  <!-- 6. CLOCK / QUARTER CELL: the pill under the banner, x 228..352, y 25..45.
+       Sub-cells: quarter 228..264, game clock 264..318, play clock 318..352. -->
+  <g id="layer_clock_quarter_cell">
+    <rect x="228.5" y="25.5" width="123" height="19" rx="9.5" fill="#05070B" stroke="#747A82" stroke-opacity="0.58" stroke-width="1"/>
+    <rect x="230" y="27" width="120" height="16" rx="8" fill="#1B2027"/>
+    <rect x="230" y="27" width="120" height="16" rx="8" fill="url(#strip-shade)"/>
+    <path id="clock-dividers" d="M264.5 29.5V40.5M318.5 29.5V40.5" stroke="#59616C" stroke-width="1"/>
+  </g>
+
+  <!-- 7. ESPN MARK: original geometric lettering from espn_nfl_watermark.svg (no trademark bitmap),
+       re-laid into the 96x24 left cell (4,12)..(100,36). -->
+  <g id="layer_espn_mark" fill="#FFFFFF">
+    <g transform="translate(9 17.8) scale(0.48) skewX(-10)" clip-path="url(#espn-split)" aria-label="ESPN">
+      <path d="M0 0H24V6H7V10H22V16H7V19H24V25H0Z"/>
+      <path d="M34 0H58V6H36V10H51Q58 10 58 17V18Q58 25 51 25H28V19H50V16H35Q28 16 28 9V7Q28 0 34 0Z"/>
+      <path fill-rule="evenodd" d="M63 0H83Q91 0 91 8V9Q91 17 83 17H70V25H63ZM70 6V11H81Q84 11 84 8.5Q84 6 81 6Z"/>
+      <path d="M96 0H103L114 14V0H121V25H114L103 11V25H96Z"/>
+    </g>
+    <path d="M71.5 16.5V31.5" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="1"/>
+    <g transform="translate(75.5 18.6) scale(0.44)" aria-label="NFL">
+      <path d="M0 0H5L12 13V0H17V24H12L5 11V24H0Z"/>
+      <path d="M21 0H36V5H26V10H35V15H26V24H21Z"/>
+      <path d="M40 0H45V19H54V24H40Z"/>
+    </g>
+  </g>
+
+  <!-- 8. TIMEOUT MARKS (optional, off by default): three angled dashes under each score.
+       Decorative only until the runtime owner binds live timeouts. -->
+  <g id="layer_timeout_marks" fill="#FFFFFF" fill-opacity="0.92">
+    <path d="M182 38H190L189 41H181Z M193 38H201L200 41H192Z M204 38H212L211 41H203Z"/>
+    <path d="M370 38H378L377 41H369Z M381 38H389L388 41H380Z M392 38H400L399 41H391Z"/>
+  </g>
+
+  <!-- GUIDES (never exported): the live-text cells the game draws into.  Toggle display to see them. -->
+  <g id="guides" display="none" fill="none" stroke="#00FFFF" stroke-width="0.5">
+    <rect x="132" y="19" width="40" height="13"/>  <!-- away abbreviation, left-aligned, baseline 32 -->
+    <rect x="174" y="16" width="44" height="16"/>  <!-- away score, centred, baseline 32 -->
+    <rect x="362" y="16" width="44" height="16"/>  <!-- home score, centred, baseline 32 -->
+    <rect x="408" y="19" width="40" height="13"/>  <!-- home abbreviation, right-aligned at 448, baseline 32 -->
+    <rect x="230" y="6" width="120" height="11"/>  <!-- down and distance, centred at 290, baseline 17 -->
+    <rect x="230" y="29" width="34" height="11"/>  <!-- quarter, centred at 246, baseline 40 -->
+    <rect x="266" y="29" width="50" height="11"/>  <!-- game clock, centred at 291, baseline 40 -->
+    <rect x="320" y="29" width="30" height="11"/>  <!-- play clock, centred at 335, baseline 40 -->
+  </g>
+</svg>

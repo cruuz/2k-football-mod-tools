@@ -1,0 +1,143 @@
+{
+  "base": "b1674723c7f8a3b063ca61c15dabd78c5e6b5d48",
+  "suites": [
+    {
+      "command": "python3 tests/nfl2k5_scorebug_layout_test.py",
+      "tests": 15,
+      "skips": 4,
+      "seconds": 1.982,
+      "peak_rss_kib": 146592,
+      "result": "PASS"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_exact.py",
+      "tests": 7,
+      "skips": 0,
+      "seconds": 126.83,
+      "peak_rss_kib": 228104,
+      "result": "PASS"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_ingame.py",
+      "tests": 11,
+      "skips": 0,
+      "seconds": 8.343,
+      "peak_rss_kib": 138504,
+      "result": "PASS"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_native.py",
+      "tests": 4,
+      "skips": 0,
+      "seconds": 101.141,
+      "peak_rss_kib": 203660,
+      "result": "PASS"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_projection.py",
+      "tests": 14,
+      "skips": 0,
+      "seconds": 358.633,
+      "peak_rss_kib": 339156,
+      "result": "PASS"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+      "tests": 6,
+      "skips": 0,
+      "seconds": 98.578,
+      "peak_rss_kib": 168844,
+      "result": "PASS"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+      "tests": 12,
+      "skips": 0,
+      "seconds": 93.797,
+      "peak_rss_kib": 243992,
+      "result": "PASS"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_source_art.py",
+      "tests": 13,
+      "skips": 3,
+      "seconds": 0.31,
+      "peak_rss_kib": 48604,
+      "result": "PASS"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_template.py",
+      "tests": 19,
+      "skips": 0,
+      "seconds": 10.126,
+      "peak_rss_kib": null,
+      "result": "PASS"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_template_release.py",
+      "tests": 5,
+      "skips": 0,
+      "seconds": 0.497,
+      "peak_rss_kib": 33012,
+      "result": "PASS"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py",
+      "tests": 5,
+      "skips": 0,
+      "seconds": 0.053,
+      "peak_rss_kib": 29720,
+      "result": "PASS"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py",
+      "tests": 11,
+      "skips": 0,
+      "seconds": 8.234,
+      "peak_rss_kib": 149148,
+      "result": "PASS"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_v10_projection.py",
+      "tests": 14,
+      "skips": 0,
+      "seconds": 353.663,
+      "peak_rss_kib": 362092,
+      "result": "PASS"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_versions.py",
+      "tests": 4,
+      "skips": 0,
+      "seconds": 3.733,
+      "peak_rss_kib": 148572,
+      "result": "PASS"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_xbe_patch_memory_writes.py",
+      "tests": 79,
+      "skips": 0,
+      "seconds": 298.191,
+      "peak_rss_kib": 315296,
+      "result": "PASS"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_xbe_patch_cave_references.py",
+      "tests": 95,
+      "skips": 0,
+      "seconds": 379.871,
+      "peak_rss_kib": 516692,
+      "result": "PASS"
+    }
+  ],
+  "passed": 307,
+  "skipped": 7,
+  "failures": 0,
+  "free_bytes": 102138925056,
+  "development_failures": [
+    "Version preview test compared float64 to stored float32; corrected expected serialization.",
+    "Preview SCNE parser omitted v10 static pin; both explicit pins now recognized.",
+    "Historical v8 negative control used new exact rails; restored its original rails. Entire v10 projection rerun: 14 passed."
+  ],
+  "limits": "Bounded CPU fixtures, not a game/GPU witness. Historical evidence skips remain precise."
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "file": "beta-60-basic.2k5patch",
+    "source_commit": "b8d55f4f2b9a50c2433efa52c3565f61a99c2108",
+    "format": 1,
+    "base_size": 75795,
+    "result_size": 75795,
+    "base_sha256": "e83e2d97c6ebb66f0a95b22e0dbe057e4e10a7256034aec9c6903e28269f6cc5",
+    "result_sha256": "a34eccf207e100f96ffe9314d8b4b2f5214e2f31aad74e3dd8d45401eb39a793",
+    "pack_sha256": "9a0d9d9db10dbd56176d92406a9de927eb001f1970f14cca44cfbb5aa5b47a6e"
+  },
+  {
+    "file": "beta-60-advanced.2k5patch",
+    "source_commit": "b8d55f4f2b9a50c2433efa52c3565f61a99c2108",
+    "format": 2,
+    "base_size": 12021779,
+    "result_size": 24045568,
+    "base_sha256": "ce26bf1716fe446a74f574d4535c40dbcc8632f81df8adb0731757fed9789885",
+    "result_sha256": "a31e610fb09dac057ca493fa70cffa12bd3f6ec548b674b683b9edc57eebeda6",
+    "pack_sha256": "d6c1c171e21affd29a462e4aa6cc47a4b95e32a344c5d31ebd5fdb8876ce1b43",
+    "regenerated": "2026-09-08: same tag exporter, re-exported after the position-pools fixture gained the OLB filter-list sites"
+  },
+  {
+    "file": "beta-61-basic.2k5patch",
+    "source_commit": "75b7b2ac51a88ecf9581a9f316a28fa9919e8b1c",
+    "format": 1,
+    "base_size": 75795,
+    "result_size": 75795,
+    "base_sha256": "e83e2d97c6ebb66f0a95b22e0dbe057e4e10a7256034aec9c6903e28269f6cc5",
+    "result_sha256": "89f1393d40410f3e1807d12b8c197220a71b38f795f233381264d929b44cffa0",
+    "pack_sha256": "08860a3ec7d8a13a59c6bf686f212e180bcd4136df477298cb11c3a3218d7278"
+  },
+  {
+    "file": "beta-61-advanced.2k5patch",
+    "source_commit": "75b7b2ac51a88ecf9581a9f316a28fa9919e8b1c",
+    "format": 2,
+    "base_size": 12021779,
+    "result_size": 24045568,
+    "base_sha256": "ce26bf1716fe446a74f574d4535c40dbcc8632f81df8adb0731757fed9789885",
+    "result_sha256": "0df1966fc7aaadeb76607a3b6cf61338d42a6c571fdb7f29083ed3f8468bea34",
+    "pack_sha256": "86ce884ae1d31758eed73c335013e47640ba6684e0d4d4bf797831862ef72c75",
+    "regenerated": "2026-09-08: same tag exporter, re-exported after the position-pools fixture gained the OLB filter-list sites"
+  }
+]

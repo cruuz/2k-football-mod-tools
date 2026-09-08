@@ -59,7 +59,7 @@ class RosterWordsTests(unittest.TestCase):
         self.assertIn("cut penalty", panel.header_contract.text())
         self.assertNotIn("(code", panel.header_profile.text())
         self.assertIn("key ratings", panel.header_profile.text())
-        self.assertIn("age in Sep 2004", panel.header_stats.text())
+        self.assertIn("age on Sep 1, 2004", panel.header_stats.text())
         self.assertEqual(panel.cards["height"].caption.text(), "Height (inches)")
         self.assertEqual(panel.cards["weight"].caption.text(), "Weight (lb)")
         self.assertTrue(panel.cards["contract_value"].caption.text().startswith("Contract value ($10,000 units)"))

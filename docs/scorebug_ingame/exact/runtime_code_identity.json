@@ -1,0 +1,7 @@
+{
+  "code_for_ast_sha256": "51e79a858581d4465ef2036f3497da984acacba824465c9bac59486e46d3634e",
+  "hook_functions_identical": true,
+  "only_edit": "requires_resources receipt version",
+  "new_owner": false,
+  "requests_unchanged": true
+}

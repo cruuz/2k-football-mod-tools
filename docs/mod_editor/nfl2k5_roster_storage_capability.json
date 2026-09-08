@@ -1,0 +1,66 @@
+[
+  {
+    "backend": {
+      "command": "python3 -c \"import importlib, sys; from pathlib import Path; module = importlib.import_module(sys.argv[1][:-3].replace('/', '.')); payload, receipt = module.apply(Path(sys.argv[2]).read_bytes())\nwith Path(sys.argv[3]).open('xb') as output:\n    output.write(payload)\nprint(receipt)\" mod_editor/core/nfl2k5_roster_storage.py <source.xbe> <new-copy.xbe>",
+      "module": "mod_editor/core/nfl2k5_roster_storage.py",
+      "operation": "write"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "ASTRA_STORAGE_GROWTH_REPORT.md",
+      "docs/mod_editor/nfl2k5_roster_storage_census.json",
+      "tests/mod_editor/test_nfl2k5_roster_storage.py"
+    ],
+    "game": "nfl2k5_xbox",
+    "gui": {
+      "default_enabled": false,
+      "expose": true,
+      "mode": "edit",
+      "reason": "EXPERIMENTAL / UNWITNESSED. Opt-in witness disc only; off in every preset."
+    },
+    "id": "nfl2k5.stadiums_fields.all_stadiums",
+    "input_constraints": [
+      "Pinned USA retail executable or a recognized composed stack with the complete owner union reserved.",
+      "All 82 original stadium records must be present in the loaded ROST. This is not a custom stadium importer.",
+      "Reserves remain limited to 12, teams to their existing records. No larger reserve or team save schema is implemented."
+    ],
+    "portme": [
+      "Run the stadium preview, controller wrap, Create a Team, game-load and signed-save witnesses in ASTRA_STORAGE_GROWTH_REPORT.md."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "evidence": [
+        "ASTRA_STORAGE_GROWTH_REPORT.md"
+      ],
+      "scope": "Static instruction and byte-reference audits, complete owner composition and host save round trips. No native game execution, preview or save lifecycle witness.",
+      "status": "not-tested"
+    },
+    "selectors": {
+      "fields": [
+        {
+          "allowed": "false in Basic, Advanced and Experimental; explicit opt-in only",
+          "name": "all_stadiums",
+          "required": true
+        }
+      ],
+      "notes": "Implies xbe_space and adds nfl2k5_roster_storage.REQUESTS to the full owner union before first growth."
+    },
+    "source_container": {
+      "format": "XBE in XDVDFS",
+      "hash_pins": [
+        "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+      ],
+      "resource": "Ten existing instruction operands plus an 82-byte immutable named allocation in a preloaded RX page. No save arena growth.",
+      "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+    },
+    "summary": "Relocate the stadium picker ID list and update every discovered search, preview and controller bound. Keep the existing roster and save layout.",
+    "surface": "stadiums_fields",
+    "title": "All 82 Create a Team stadiums (experimental, unwitnessed)",
+    "validation_command": "python3 tests/mod_editor/test_nfl2k5_roster_storage.py"
+  }
+]

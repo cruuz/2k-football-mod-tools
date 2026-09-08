@@ -52,7 +52,7 @@ class WriterTests(unittest.TestCase):
         self.assertEqual(receipt["changed_bytes"], 0)
         self.assertFalse(receipt["runtime_witnessed"])
         self.assertEqual(self.receipt["changed_bytes"], sum(a != b for a, b in zip(self.retail, self.patched)) + len(self.patched) - len(self.retail))
-        self.assertEqual(len(self.patched), space.FILE_SIZE)
+        self.assertEqual(len(self.patched), space.SCALE_FILE_SIZE)
 
     def test_each_hook_refuses_mixed_or_foreign_before_mutation(self):
         for name, (va, before, _) in {**patch.BRANCHES, **patch.HOOKS}.items():
@@ -144,7 +144,9 @@ class Machine:
 
     def __init__(self, payload):
         self.u = uc.Uc(uc.UC_ARCH_X86, uc.UC_MODE_32)
-        self.u.mem_map(0x10000, 0x14AC000)
+        image = XbeImage(payload)
+        image_end = max(s.end for s in image.sections)
+        self.u.mem_map(0x10000, ((image_end + 4095) & ~4095) - 0x10000)
         self.u.mem_map(self.STOP, 0x40000)
         self.image = XbeImage(payload)
         for s in self.image.sections:
@@ -217,6 +219,9 @@ class Machine:
         self.stubs[address] = (value, pop, action)
 
     def _step(self, u, address, size, _):
+        if address == getattr(self, "_end", None):
+            u.emu_stop()
+            return
         if address in self.redirects:
             self.calls.append(address)
             self.reg(UC_X86_REG_EIP,self.redirects[address])
@@ -240,6 +245,7 @@ class Machine:
         for reg, val in (registers or {}).items():
             self.reg(reg, val)
         end = stop or self.STOP
+        self._end = end
         self.u.emu_start(start, end, count=20000)
         if self.reg(UC_X86_REG_EIP) != end:
             raise AssertionError(f"instruction budget exhausted at {self.reg(UC_X86_REG_EIP):#x}")
@@ -572,7 +578,7 @@ class InstructionTests(unittest.TestCase):
         for phase in (3,4):
             old,new=Machine(self.patched),Machine(self.patched)
             code,data=patch._sites(self.patched)
-            _,labels=patch.code_for(code["va"],data["va"])
+            *_,labels=patch.assembled(self.patched)
             results=[]
             for m,start in ((old,0x22E050),(new,labels["descriptor"])):
                 m.set(patch.PHASE,phase)
@@ -626,16 +632,12 @@ class InstructionTests(unittest.TestCase):
                         self.assertEqual(m.get(plan+0x30),0 if team==0 else 0x8000)
                     self.assertEqual(m.reg(UC_X86_REG_ESP),m.STACK+4)
 
-    def test_stat_commit_rebuilds_separate_conversion_line_without_double_count(self):
+    def test_stat_commit_rebuilds_from_player_counters_without_double_count(self):
         m=Machine(self.patched)
         code,data=patch._sites(self.patched)
-        m.set(0xE53800,130)
-        # Return on an offensive TD, return on a defensive TD, ordinary 2PT,
-        # and safety: only the first two enter the independent new category.
-        m.set(patch.DRIVE_RING,(1<<26)|(5<<29))
-        m.set(patch.DRIVE_RING+4,(6<<26)|(5<<29))
-        m.set(patch.DRIVE_RING+8,(1<<26)|(2<<29))
-        m.set(patch.DRIVE_RING+12,(1<<26)|(7<<29))
+        # Native player ids 2/3 are the first player on each team. The season
+        # merged flag is deliberately included; it does not erase game totals.
+        m.u.mem_write(data["va"] + 4, struct.pack("<HH", 1, 0x8001))
         for _ in range(2):
             m.set(m.STACK+52,m.STOP)
             m.run(0x1EEA96)
@@ -644,9 +646,8 @@ class InstructionTests(unittest.TestCase):
             self.assertEqual(stats["teams"],[1,1])
             self.assertEqual(stats["points"],[2,2])
             self.assertTrue(stats["committed"])
-            self.assertFalse(stats["persistent"])
-        # A reset/rebuild with no drives clears the prior game's tally.
-        m.set(0xE53800,-1)
+            self.assertTrue(stats["persistent"])
+        m.u.mem_write(data["va"], bytes(512))
         m.set(m.STACK+52,m.STOP)
         m.run(0x1EEA96)
         self.assertEqual(patch.read_runtime_stats(self.patched,m.u.mem_read)["teams"],[0,0])

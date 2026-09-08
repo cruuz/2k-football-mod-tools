@@ -6,7 +6,11 @@ import importlib.util
 import os
 from pathlib import Path
 import struct
+import sys
 import unittest
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
 
 from mod_editor.core import nfl2k5_franchise_practice as fp
 from mod_editor.core import nfl2k5_practice_reserves as pr

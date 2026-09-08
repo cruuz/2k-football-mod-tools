@@ -1,0 +1,64 @@
+{
+  "id": "nfl2k5.schedules_franchise.rules_2026_inspection",
+  "game": "nfl2k5_xbox",
+  "surface": "schedules_franchise",
+  "title": "2026 franchise kernel inspection (rules unavailable)",
+  "summary": "Read-only inspection of the dormant kernel and pinned native integration hazards. Host transactions and bounded R1-R5 proofs exist; native franchise enforcement is incomplete.",
+  "classification": "read-only-mapped",
+  "backend": {
+    "command": "python3 -m mod_editor.core.nfl2k5_franchise_2026 --self-check",
+    "module": "mod_editor/core/nfl2k5_franchise_2026.py",
+    "operation": "inspect"
+  },
+  "gui": {
+    "expose": false,
+    "mode": "view",
+    "default_enabled": false,
+    "reason": "No retail hooks call the dormant kernel. Saved native counters and result identity adapters are not implemented."
+  },
+  "input_constraints": [
+    "EXPERIMENTAL / UNWITNESSED. Apply installs a dormant proof kernel only; Build must call require_runtime_ready and refuse true requests.",
+    "Host companions bind the exact SAVEGAME.DAT digest and must be explicitly retained. Native saving cannot persist this companion.",
+    "Existing capacities remain 53 active, 12 PS, 65 team references and five IR slots. Rules use the supplied R1-R5 memo snapshot; no claim of full modern IR capacity."
+  ],
+  "evidence": [
+    "ASTRA_FRANCHISE_2026_REPORT.md",
+    "tests/mod_editor/test_nfl2k5_franchise_2026.py",
+    "tests/mod_editor/test_nfl2k5_franchise_2026_unicorn.py",
+    "tools/nfl2k5_franchise_2026.c",
+    "tools/nfl2k5_franchise_2026.S"
+  ],
+  "portme": [
+    "Finish native save transport, pool lifecycle, all result identity adapters and CPU/cutdown/trade hooks before enabling this option."
+  ],
+  "runtime": {
+    "status": "not-tested",
+    "scope": "Bounded kernel instructions and retail hazard snippets only. No hooked game, console boot, native save reload, rendered screen or Noah witness.",
+    "evidence": []
+  },
+  "selectors": {
+    "fields": [
+      {
+        "name": "franchise_2026_rules",
+        "required": false,
+        "allowed": "False in all presets; true refuses preflight while native enforcement is unavailable."
+      }
+    ],
+    "notes": "Host session and companion are explicit APIs. There is no native manual screen."
+  },
+  "source_container": {
+    "format": "Original Xbox XBE and fixed 720044-byte franchise SAVEGAME.DAT",
+    "hash_pins": [
+      "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+    ],
+    "resource": "Dormant allocator kernel plus a separate 4168-byte host counter companion; no retail/save span is borrowed.",
+    "retail_file": "ESPN NFL 2K5 (USA)/default.xbe; user-owned SAVEGAME.DAT"
+  },
+  "validation_command": "python3 -m mod_editor.core.nfl2k5_franchise_2026 --self-check",
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "none-until-safe",
+    "tooling": "source-and-schemas-only",
+    "rule": "Distribute original source and evidence only; never retail executable, disc, save or generated companion payloads."
+  }
+}

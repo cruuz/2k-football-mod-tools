@@ -39,7 +39,7 @@ untouched save is byte-identical to the input.  Unwitnessed in game except where
 from __future__ import annotations
 
 import struct
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Sequence
 
@@ -184,6 +184,7 @@ STAGE_NAMES = {7: "preseason", 8: "regular season", 9: "postseason"}
 DISPLAY_YEAR_BASE = 2004
 GAME_SCHEDULED, GAME_PLAYED, GAME_FILLER = 0, 3, 7
 ROW_NAMES = {17: "wild card", 18: "divisional", 19: "conference", 20: "super bowl", 21: "pro bowl"}
+POSTSEASON_ROUNDS = tuple(ROW_NAMES.values())
 IR_EMPTY = 0xFFFF
 IR_MARK = 0xEE                                                          # player +0x28 while on injured reserve
 
@@ -247,10 +248,25 @@ class Game:
     minute: int
     flags: int              # the u16 at S_GRID_FLAGS for this cell
     scores: tuple[tuple[int, ...], tuple[int, ...]] | None       # (first five bytes, last five) when played
+    regular_season_weeks: int = 17
 
     @property
     def row_name(self) -> str:
-        return ROW_NAMES.get(self.row, f"week {self.row + 1}")
+        round_index = self.row - self.regular_season_weeks
+        return (POSTSEASON_ROUNDS[round_index] if 0 <= round_index < len(POSTSEASON_ROUNDS)
+                else f"week {self.row + 1}")
+
+    @property
+    def exists(self) -> bool:
+        return self.kind in (GAME_SCHEDULED, GAME_PLAYED) and bool(self.home or self.away or self.month)
+
+    @property
+    def home_known(self) -> bool:
+        return self.played or self.row < self.regular_season_weeks or bool(self.flags & 0xFF)
+
+    @property
+    def away_known(self) -> bool:
+        return self.played or self.row < self.regular_season_weeks or bool(self.flags >> 8)
 
     @property
     def played(self) -> bool:
@@ -328,14 +344,34 @@ class FranchiseSave:
         except ValueError as exc:
             raise FranchiseSaveError(str(exc)) from exc
         data = bytes(payload)
-        _require(len(data) == FRANCHISE_SAVE_SIZE,
-                 f"a franchise save is {FRANCHISE_SAVE_SIZE:,} bytes; this is {len(data):,}")
+        from . import nfl2k5_my_career_save as career
+        self.career_offset = None
+        native_size = len(data)
+        if len(data) in career.SIZES:
+            try:
+                native_size = career.native_size(data)
+                self.career_offset = native_size
+            except ValueError as exc:
+                raise FranchiseSaveError(str(exc)) from exc
+        _require(native_size in (FRANCHISE_SAVE_SIZE, FRANCHISE_SAVE_SIZE + 0x1000),
+                 f"unsupported franchise container length: {len(data):,}; expected "
+                 "720,044 or 724,140 native bytes, optionally followed by a 128-byte career block")
+        growth = native_size - FRANCHISE_SAVE_SIZE
+        self.arena_end = ARENA_END + growth
+        self.season_block = SEASON_BLOCK + growth
+        self.front_office_block = FRONT_OFFICE_BLOCK + growth
         _require(data[ARENA_WRAPPER:ARENA_WRAPPER + 4] == b"ROST"
-                 and struct.unpack_from("<I", data, ARENA_WRAPPER + 4)[0] == ARENA_DECLARED,
-                 "no runtime ROST arena wrapper at 0x2E0 (declared 0x91020)")
+                 and struct.unpack_from("<I", data, ARENA_WRAPPER + 4)[0] == ARENA_DECLARED + growth,
+                 "runtime ROST arena wrapper and franchise length disagree")
         _require(data[ARENA_PREAMBLE + 0x0C:ARENA_PREAMBLE + 0x10] == b"ROST"
-                 and struct.unpack_from("<I", data, ARENA_PREAMBLE + 0x10)[0] == 0,
-                 "the ROST preamble at 0x300 is not version 0")
+                 and struct.unpack_from("<I", data, ARENA_PREAMBLE + 0x10)[0] == (1 if growth else 0),
+                 "runtime ROST version 0/1 and franchise length disagree")
+        if growth:
+            from . import nfl2k5_roster_arena as arena
+            try:
+                arena.read(data, ARENA_ROOT, self.arena_end, arena.SAVE_VERSION)
+            except arena.ArenaError as exc:
+                raise FranchiseSaveError(str(exc)) from exc
         self.original = data
         self.buffer = bytearray(data)
         self.container = container
@@ -392,7 +428,7 @@ class FranchiseSave:
         if value == 0:
             return None
         target = field + value - 1
-        _require(ARENA_ROOT <= target < ARENA_END, f"relative pointer at 0x{field:x} leaves the arena")
+        _require(ARENA_ROOT <= target < self.arena_end, f"relative pointer at 0x{field:x} leaves the arena")
         return target
 
     def wstr(self, field: int) -> str:
@@ -400,7 +436,7 @@ class FranchiseSave:
         if target is None:
             return ""
         end = target
-        limit = min(ARENA_END, target + 4096)
+        limit = min(self.arena_end, target + 4096)
         while end + 2 <= limit and self.buffer[end:end + 2] != b"\0\0":
             end += 2
         return self.buffer[target:end].decode("utf-16-le", errors="replace")
@@ -479,7 +515,7 @@ class FranchiseSave:
     # ------------------------------------------------------------------ season header
     @property
     def header(self) -> SeasonHeader:
-        base = SEASON_BLOCK
+        base = self.season_block
         return SeasonHeader(
             mode=self.u8(base + S_MODE), stage=self.u8(base + S_STAGE), substate=self.u8(base + S_SUBSTATE),
             team_count=self.u8(base + S_TEAM_COUNT), stage_weeks=self.u8(base + S_STAGE_WEEKS),
@@ -490,7 +526,7 @@ class FranchiseSave:
 
     def set_year_field(self, value: int) -> None:
         _require(type(value) is int, "year field must be an integer index")
-        self._set(SEASON_BLOCK + S_YEAR, "<B", value, label="year field", high=FRANCHISE_MAX_YEAR_INDEX)
+        self._set(self.season_block + S_YEAR, "<B", value, label="year field", high=FRANCHISE_MAX_YEAR_INDEX)
         if self._roster is not None:
             self._roster.set_reference_year(self.header.display_year)
 
@@ -500,25 +536,59 @@ class FranchiseSave:
 
     @property
     def divisions(self) -> tuple[int, ...]:
-        base = SEASON_BLOCK + S_DIVISIONS
+        base = self.season_block + S_DIVISIONS
         return struct.unpack_from(f"<{LEAGUE_SLOTS}I", self.buffer, base)
 
     @property
     def user_control(self) -> tuple[int, ...]:
-        return struct.unpack_from(f"<{LEAGUE_SLOTS}I", self.buffer, SEASON_BLOCK + S_USER_CONTROL)
+        return struct.unpack_from(f"<{LEAGUE_SLOTS}I", self.buffer, self.season_block + S_USER_CONTROL)
 
     def user_teams(self) -> list[int]:
         return [index for index, flag in enumerate(self.user_control[:NFL_TEAMS]) if flag]
 
     def set_user_control(self, team: int, controlled: bool) -> None:
         _require(0 <= team < NFL_TEAMS, f"team {team} is not an NFL team index")
-        struct.pack_into("<I", self.buffer, SEASON_BLOCK + S_USER_CONTROL + 4 * team, 1 if controlled else 0)
+        struct.pack_into("<I", self.buffer, self.season_block + S_USER_CONTROL + 4 * team, 1 if controlled else 0)
 
     @property
     def team_order(self) -> tuple[int, ...]:
-        return tuple(self.buffer[SEASON_BLOCK + S_TEAM_ORDER:SEASON_BLOCK + S_TEAM_ORDER + LEAGUE_SLOTS])
+        return tuple(self.buffer[self.season_block + S_TEAM_ORDER:self.season_block + S_TEAM_ORDER + LEAGUE_SLOTS])
 
     # ------------------------------------------------------------------ the grid
+    @property
+    def regular_season_weeks(self) -> int:
+        """Recognize the shipped 17/18-week layouts without guessing from the display year.
+
+        The regular-stage bound and saved 256/272-game template are durable evidence.
+        In a save without either, use the occupied tail: a Pro Bowl is retail, an NFL
+        championship in row 21 or extra games in the earlier rounds means 18 weeks.
+        An empty/ambiguous tail defaults to retail. Never extend the 22-row grid.
+        """
+        header = self.header
+        if header.stage == 8 and header.stage_weeks in (17, 18):
+            return header.stage_weeks
+        count, table = self.template_table
+        if table and table + count * GAME_SIZE <= ARENA_END and count in (256, 272):
+            return 18 if count == 272 else 17
+
+        def records(row: int) -> list[bytearray]:
+            start = SEASON_BLOCK + S_GRID + row * GRID_SLOTS * GAME_SIZE
+            return [raw for slot in range(GRID_SLOTS)
+                    if (raw := self.buffer[start + slot * GAME_SIZE:start + (slot + 1) * GAME_SIZE])
+                    and raw[0] in (GAME_SCHEDULED, GAME_PLAYED) and (raw[1] or raw[2] or raw[3])]
+
+        final = records(21)
+        if any({raw[1], raw[2]} == {32, 33} for raw in final):
+            return 17
+        if final or len(records(20)) > 1 or len(records(18)) > 4 or len(records(17)) > 6:
+            return 18
+        return 17
+
+    def schedule_row_name(self, row: int) -> str:
+        self.cell(row, 0)
+        round_index = row - self.regular_season_weeks
+        return (POSTSEASON_ROUNDS[round_index] if round_index >= 0 else f"week {row + 1}")
+
     @staticmethod
     def cell(row: int, slot: int) -> int:
         _require(0 <= row < GRID_ROWS and 0 <= slot < GRID_SLOTS, f"grid cell ({row}, {slot}) is outside 22 x 17")
@@ -526,51 +596,64 @@ class FranchiseSave:
 
     def game(self, row: int, slot: int) -> Game:
         index = self.cell(row, slot)
-        offset = SEASON_BLOCK + S_GRID + index * GAME_SIZE
+        offset = self.season_block + S_GRID + index * GAME_SIZE
         raw = self.buffer[offset:offset + GAME_SIZE]
-        flags = self.u16(SEASON_BLOCK + S_GRID_FLAGS + index * 2)
+        flags = self.u16(self.season_block + S_GRID_FLAGS + index * 2)
         scores = None
         if raw[0] == GAME_PLAYED:
-            score_offset = SEASON_BLOCK + S_SCORES + index * SCORE_BYTES
+            score_offset = self.season_block + S_SCORES + index * SCORE_BYTES
             block = self.buffer[score_offset:score_offset + SCORE_BYTES]
             scores = (tuple(block[:5]), tuple(block[5:]))
-        return Game(row, slot, offset, raw[0], raw[1], raw[2], raw[3], raw[4], raw[5], raw[6], raw[7], flags, scores)
+        return Game(row, slot, offset, raw[0], raw[1], raw[2], raw[3], raw[4], raw[5], raw[6], raw[7], flags, scores,
+                    self.regular_season_weeks)
 
     def games(self, *, rows: Sequence[int] | None = None) -> list[Game]:
-        """Every real game in the grid (fillers and empty cells skipped), row by row."""
+        """Every saved game, including undecided matchups and cells after a filler.
+
+        Visit all 17 slots in each bounded row; a filler is not a safe end-of-row
+        assumption for edited saves. Preserve physical row/slot order and identity.
+        """
 
         out: list[Game] = []
         for row in (rows if rows is not None else range(GRID_ROWS)):
             for slot in range(GRID_SLOTS):
                 game = self.game(row, slot)
-                if game.kind == GAME_FILLER:
-                    break
-                if game.kind in (GAME_SCHEDULED, GAME_PLAYED) and (game.home or game.away or game.month):
+                if game.exists:
                     out.append(game)
         return out
 
     def set_game(self, row: int, slot: int, *, home: int | None = None, away: int | None = None,
                  month: int | None = None, day: int | None = None, hour: int | None = None,
                  minute: int | None = None, slot_code: int | None = None, allow_played: bool = False) -> Game:
-        """Edit a scheduled grid cell in place.  Played cells are refused unless ``allow_played``."""
+        """Atomically edit one existing grid cell; played cells need ``allow_played``.
+
+        Postseason flags distinguish a real team zero from an undecided matchup.
+        Undecided teams stay untouched, but do not block date and kickoff edits.
+        """
 
         current = self.game(row, slot)
         _require(current.kind != GAME_FILLER, f"({row}, {slot}) is the row filler, not a game")
+        _require(current.exists, f"({row}, {slot}) is empty or has an unsupported game type")
         _require(allow_played or current.kind != GAME_PLAYED, f"({row}, {slot}) has been played; pass allow_played")
         values = {"home": home, "away": away, "month": month, "day": day, "hour": hour, "minute": minute,
                   "slot_code": slot_code}
         limits = {"home": (0, LEAGUE_SLOTS - 1), "away": (0, LEAGUE_SLOTS - 1), "month": (1, 12), "day": (1, 31),
                   "hour": (0, 12), "minute": (0, 59), "slot_code": (0, 255)}
         offsets = {"home": 1, "away": 2, "month": 3, "day": 4, "slot_code": 5, "hour": 6, "minute": 7}
+        record = bytearray(self.buffer[current.offset:current.offset + GAME_SIZE])
         for name, value in values.items():
             if value is None:
                 continue
             low, high = limits[name]
             _require(isinstance(value, int) and low <= value <= high, f"{name}: {value!r} is outside {low}..{high}")
-            self.buffer[current.offset + offsets[name]] = value
-        updated = self.game(row, slot)
-        _require(updated.home != updated.away, "a team cannot play itself")
-        return updated
+            if name in ("home", "away") and value != getattr(current, name):
+                _require(getattr(current, f"{name}_known"), f"the {name} team is still to be decided")
+            record[offsets[name]] = value
+        if current.home_known and current.away_known:
+            _require(record[1] != record[2], "a team cannot play itself")
+        # All validation precedes the one bounded write, including for direct codec callers.
+        self.buffer[current.offset:current.offset + GAME_SIZE] = record
+        return self.game(row, slot)
 
     # ------------------------------------------------------------------ the template (arena)
     @property
@@ -597,13 +680,26 @@ class FranchiseSave:
     def salary_cap(self) -> int:
         """League salary cap in $1000 units (80,500 = the 2004 $80.5M cap)."""
 
-        return self.u32(FRONT_OFFICE_BLOCK + F_SALARY_CAP)
+        return self.u32(self.front_office_block + F_SALARY_CAP)
 
     def set_salary_cap(self, value: int) -> None:
-        self._set(FRONT_OFFICE_BLOCK + F_SALARY_CAP, "<I", value, label="salary cap ($1000)", low=1, high=0x7FFFFFFF)
+        self._set(self.front_office_block + F_SALARY_CAP, "<I", value, label="salary cap ($1000)", low=1, high=0x7FFFFFFF)
 
     def team_salary(self, team: int) -> int:
         return self.u32(self.team_offset(team) + TEAM_SALARY)
+
+    def team_stadium(self, team: int):
+        """Current stadium record identity, including the 15 added picker choices.
+
+        Read the composed buffer, avoiding the lazily cached roster document.
+        The +114 field still uses the ordinary retail save relocation.
+        """
+        from . import nfl2k5_roster_storage as storage
+        try:
+            stadiums = storage.read_stadiums(self.buffer, root=ARENA_ROOT, end=self.arena_end)
+            return storage.team_stadium(self.buffer, self.team_offset(team), stadiums)
+        except storage.RosterStorageError as exc:
+            raise FranchiseSaveError(str(exc)) from exc
 
     def team_salaries(self) -> list[int]:
         return [self.team_salary(team) for team in range(self.league_team_count)]
@@ -612,7 +708,7 @@ class FranchiseSave:
         out = []
         for team in range(NFL_TEAMS):
             for slot in range(IR_SLOTS):
-                offset = FRONT_OFFICE_BLOCK + F_INJURED_RESERVE + (team * IR_SLOTS + slot) * IR_ENTRY
+                offset = self.front_office_block + F_INJURED_RESERVE + (team * IR_SLOTS + slot) * IR_ENTRY
                 index = self.u16(offset)
                 if index == IR_EMPTY and not include_empty:
                     continue
@@ -637,7 +733,7 @@ class FranchiseSave:
         field = self.team_offset(team) + 4 * slot
         struct.pack_into("<i", self.buffer, field, 0 if target is None else target - field + 1)
 
-    def place_on_injured_reserve(self, team: int, player_index: int) -> InjuredReserveEntry:
+    def place_on_injured_reserve(self, team: int, player_index: int, *, legacy_marker: bool = True) -> InjuredReserveEntry:
         """Finn's IR move: compact the team's pointer list, count -1, player +0x28 = 0xEE, fill an IR slot.
 
         Reproduces the 17-byte diff between the two 8007Fran fixtures byte for byte (test).  The game
@@ -649,10 +745,12 @@ class FranchiseSave:
         from . import nfl2k5_practice_squad as ps
         count, slots = self._team_slots(team)
         _require(target in slots[:count], f"player {player_index} is not on team {team}")
-        _require(self.buffer[target + 0x28] != IR_MARK, f"player {player_index} is already marked injured reserve")
+        _require(type(legacy_marker) is bool, "legacy_marker must be boolean")
+        _require(not legacy_marker or self.buffer[target + 0x28] != IR_MARK,
+                 f"player {player_index} is already marked injured reserve")
         free = None
         for slot in range(IR_SLOTS):
-            offset = FRONT_OFFICE_BLOCK + F_INJURED_RESERVE + (team * IR_SLOTS + slot) * IR_ENTRY
+            offset = self.front_office_block + F_INJURED_RESERVE + (team * IR_SLOTS + slot) * IR_ENTRY
             if self.u16(offset) == IR_EMPTY:
                 free = (slot, offset)
                 break
@@ -660,29 +758,45 @@ class FranchiseSave:
         assert free is not None
         squads = self._validate_ownership()
         candidate = bytearray(self.buffer)
+        removed_slot = slots[:count].index(target)
         active = [self.player_index(o) for o in slots[:count] if o != target]
         self._repack_candidate(candidate, team, active, squads[team])
-        candidate[target + 0x28] = IR_MARK
+        if legacy_marker:
+            candidate[target + 0x28] = IR_MARK
         candidate[target + 0x52] &= ~0x1f
-        struct.pack_into("<H", candidate, free[1], player_index)
-        if candidate[self.team_offset(team) + ps.VERSION_OFFSET] == ps.VERSION:
-            try:
-                candidate = bytearray(ps.recompute_salary(bytes(candidate), team))
-            except ValueError as exc:
-                raise FranchiseSaveError(str(exc)) from exc
+        if not legacy_marker:
+            # Preserve the explicit Finn byte-for-byte import operation; modern
+            # host transactions additionally maintain native special-role slots.
+            for field in range(self.team_offset(team) + 0x194, self.team_offset(team) + 0x19a):
+                value = candidate[field]
+                if value == removed_slot:
+                    candidate[field] = 0xff
+                elif removed_slot < value < 0x80:
+                    candidate[field] -= 1
+        struct.pack_into("<I", candidate, free[1], player_index)
+        try:
+            candidate = bytearray(ps.recompute_salary(bytes(candidate), team))
+        except ValueError as exc:
+            raise FranchiseSaveError(str(exc)) from exc
         self._validate_ownership(bytes(candidate))
         self.buffer = candidate
         self._roster = None
         return InjuredReserveEntry(team, free[0], free[1], player_index, self.player_name(player_index))
 
-    def activate_from_injured_reserve(self, team: int, player_index: int) -> None:
-        """The inverse of ``place_on_injured_reserve`` (HYPOTHESIS: unwitnessed in game)."""
+    def activate_from_injured_reserve(self, team: int, player_index: int, *, clear_legacy_marker: bool = True) -> None:
+        """Legacy host repair, not a modern eligibility decision (UNWITNESSED).
+
+        Preserve real packed injury fields. Only undo the explicit Finn EE marker;
+        compact all five IR slots so native fifth-slot fullness stays correct.
+        Modern return eligibility uses the explicit ``franchise_2026_session``.
+        """
 
         _require(0 <= team < self.league_team_count, f"team {team} is not an NFL team in this arena")
+        _require(type(clear_legacy_marker) is bool, "clear_legacy_marker must be boolean")
         target = self.player_offset(player_index)
         found = None
         for slot in range(IR_SLOTS):
-            offset = FRONT_OFFICE_BLOCK + F_INJURED_RESERVE + (team * IR_SLOTS + slot) * IR_ENTRY
+            offset = self.front_office_block + F_INJURED_RESERVE + (team * IR_SLOTS + slot) * IR_ENTRY
             if self.u16(offset) == player_index:
                 found = offset
                 break
@@ -690,22 +804,45 @@ class FranchiseSave:
         from . import nfl2k5_practice_squad as ps
         squads = self._validate_ownership()
         count, slots = self._team_slots(team)
-        limit = min(53 if self.header.stage >= 8 else 65, 65 - len(squads[team]))
+        capacity = 70 if self.roster.overflow is not None and team < 32 else 65
+        limit = min(53 if self.header.stage >= 8 else 65, capacity - len(squads[team]))
         _require(count < limit, f"team {team} has no free roster slot (active limit {limit})")
         assert found is not None
         candidate = bytearray(self.buffer)
-        struct.pack_into("<H", candidate, found, IR_EMPTY)
-        candidate[target + 0x28] = 0
+        ir_base = self.front_office_block + F_INJURED_RESERVE + team * IR_SLOTS * IR_ENTRY
+        remaining = [self.u16(ir_base + slot * IR_ENTRY) for slot in range(IR_SLOTS)
+                     if self.u16(ir_base + slot * IR_ENTRY) not in (IR_EMPTY, player_index)]
+        for slot, index in enumerate(remaining + [IR_EMPTY] * (IR_SLOTS - len(remaining))):
+            struct.pack_into("<I", candidate, ir_base + slot * IR_ENTRY, index)
+        if clear_legacy_marker and candidate[target + 0x28] == IR_MARK:
+            candidate[target + 0x28] = 0
         active = [self.player_index(o) for o in slots[:count]] + [player_index]
         self._repack_candidate(candidate, team, active, squads[team])
-        if candidate[self.team_offset(team) + ps.VERSION_OFFSET] == ps.VERSION:
-            try:
-                candidate = bytearray(ps.recompute_salary(bytes(candidate), team))
-            except ValueError as exc:
-                raise FranchiseSaveError(str(exc)) from exc
+        try:
+            candidate = bytearray(ps.recompute_salary(bytes(candidate), team))
+        except ValueError as exc:
+            raise FranchiseSaveError(str(exc)) from exc
         self._validate_ownership(bytes(candidate))
         self.buffer = candidate
         self._roster = None
+
+    def franchise_2026_session(self, companion: bytes | None = None):
+        """Explicit host-only counters bound to this exact save, never native enforcement.
+
+        With no companion, existing IR migrates as legacy season-ending entries.
+        Export the returned session's companion separately. Native saving does
+        not serialize it; a changed SAVEGAME.DAT refuses an old companion.
+        """
+        from .nfl2k5_franchise_2026 import HostSession
+        return HostSession(self, companion)
+
+    def export_franchise_2026_counters(self, state) -> bytes:
+        from .nfl2k5_franchise_2026 import export_counters
+        return export_counters(self, state)
+
+    def import_franchise_2026_counters(self, companion: bytes):
+        from .nfl2k5_franchise_2026 import import_counters
+        return import_counters(self, companion)
 
     def _validate_ownership(self, payload: bytes | None = None):
         from . import nfl2k5_practice_squad as ps
@@ -715,13 +852,13 @@ class FranchiseSave:
             raise FranchiseSaveError(str(exc)) from exc
 
     def _repack_candidate(self, candidate: bytearray, team: int, active: list[int], reserves) -> None:
-        from . import nfl2k5_practice_squad as ps
-        off = self.team_offset(team)
-        count, pool = self.player_table
-        raw = bytes(candidate[off:off + rr.TEAM_SIZE])
-        candidate[off:off + rr.TEAM_SIZE] = ps.repack_team(
-            raw, active, reserves, team_offset=off, player_pool_offset=pool,
-            player_count=count, mark=bool(raw[ps.VERSION_OFFSET]))
+        from . import nfl2k5_roster_arena as arena
+        from .nfl2k5_save_rost import decode
+        try:
+            arena.repack(candidate, decode(self.to_bytes()), team, active, reserves,
+                         mark=bool(candidate[self.team_offset(team) + 0x19B]))
+        except ValueError as exc:
+            raise FranchiseSaveError(str(exc)) from exc
 
     def promote_reserve(self, team: int, player_index: int) -> dict[str, Any]:
         return self._reserve_move(team, player_index, promote=True)
@@ -743,23 +880,23 @@ class FranchiseSave:
         """One of the 14 per-team byte tables at F+0 (table 0 = a team permutation; HYPOTHESIS: draft order)."""
 
         _require(0 <= table < F_ORDER_TABLES, f"order table {table} is outside 0..13")
-        base = FRONT_OFFICE_BLOCK + F_ORDERS + table * NFL_TEAMS * 4
+        base = self.front_office_block + F_ORDERS + table * NFL_TEAMS * 4
         return tuple(value & 0xFF for value in struct.unpack_from(f"<{NFL_TEAMS}I", self.buffer, base))
 
     def team_ranks(self) -> tuple[int, ...]:
-        base = FRONT_OFFICE_BLOCK + F_TEAM_RANK
+        base = self.front_office_block + F_TEAM_RANK
         return tuple(self.buffer[base:base + NFL_TEAMS])
 
     def team_floats(self) -> tuple[float, ...]:
-        return struct.unpack_from(f"<{NFL_TEAMS}f", self.buffer, FRONT_OFFICE_BLOCK + F_TEAM_FLOATS)
+        return struct.unpack_from(f"<{NFL_TEAMS}f", self.buffer, self.front_office_block + F_TEAM_FLOATS)
 
     def transactions(self) -> list[dict[str, int]]:
         """The 12-byte log at F+0x708 (HYPOTHESIS: transaction/news log; kind = bits 7-12 of the first word)."""
 
-        count = min(self.u16(FRONT_OFFICE_BLOCK + F_LOG_COUNT), F_LOG_CAPACITY)
+        count = min(self.u16(self.front_office_block + F_LOG_COUNT), F_LOG_CAPACITY)
         out = []
         for index in range(count):
-            offset = FRONT_OFFICE_BLOCK + F_LOG + index * F_LOG_SIZE
+            offset = self.front_office_block + F_LOG + index * F_LOG_SIZE
             packed, a, b = struct.unpack_from("<III", self.buffer, offset)
             out.append({"index": index, "offset": offset, "packed": packed, "kind": (packed >> 7) & 0x3F,
                         "bit0": packed & 1, "field_1_6": (packed >> 1) & 0x3F, "field_13_19": (packed >> 13) & 0x7F,
@@ -769,10 +906,10 @@ class FranchiseSave:
     def ledger(self) -> list[dict[str, Any]]:
         """The 600-record table at F+0x3330 (HYPOTHESIS: franchise history ledger; count at F+0x332C)."""
 
-        count = min(self.u32(FRONT_OFFICE_BLOCK + F_LEDGER_COUNT), F_LEDGER_CAPACITY)
+        count = min(self.u32(self.front_office_block + F_LEDGER_COUNT), F_LEDGER_CAPACITY)
         out = []
         for index in range(count):
-            offset = FRONT_OFFICE_BLOCK + F_LEDGER + index * F_LEDGER_SIZE
+            offset = self.front_office_block + F_LEDGER + index * F_LEDGER_SIZE
             packed, player, word, team = struct.unpack_from("<IHHB", self.buffer, offset)
             out.append({"index": index, "offset": offset, "packed": packed, "player_index": player,
                         "player": self.player_name(player) if player != IR_EMPTY and player < self.player_table[0] else "",
@@ -784,7 +921,7 @@ class FranchiseSave:
 
         out = []
         for index in range(F_TRADE_COUNT):
-            offset = FRONT_OFFICE_BLOCK + F_TRADES + index * F_TRADE_SIZE
+            offset = self.front_office_block + F_TRADES + index * F_TRADE_SIZE
             raw = self.buffer[offset:offset + F_TRADE_SIZE]
             out.append({"index": index, "offset": offset, "kind": raw[0], "raw": bytes(raw)})
         return out
@@ -794,7 +931,7 @@ class FranchiseSave:
 
         out = []
         for index in range(F_FA_BID_COUNT):
-            offset = FRONT_OFFICE_BLOCK + F_FA_BIDS + index * F_FA_BID_SIZE
+            offset = self.front_office_block + F_FA_BIDS + index * F_FA_BID_SIZE
             raw = self.buffer[offset:offset + F_FA_BID_SIZE]
             player = struct.unpack_from("<H", raw, 0)[0]
             out.append({"index": index, "offset": offset, "player_index": player, "raw": bytes(raw)})
@@ -898,7 +1035,14 @@ class FranchiseSave:
 
     # ------------------------------------------------------------------ the map
     def regions(self) -> list[Region]:
-        return list(REGIONS)
+        growth = self.arena_end - ARENA_END
+        regions = [replace(region, size=region.size + growth) if region.offset == ARENA_ROOT else
+                replace(region, offset=region.offset + growth) if region.offset >= ARENA_END else region
+                for region in REGIONS]
+        if self.career_offset is not None:
+            regions.append(Region(self.career_offset, 128, "MyCareer version 1", "PROVED",
+                                  "inline identity and progression; native signature covers the full container"))
+        return regions
 
 
 def _regions() -> list[Region]:

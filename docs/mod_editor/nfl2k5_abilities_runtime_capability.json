@@ -1,0 +1,70 @@
+{
+  "backend": {
+    "module": "mod_editor/core/nfl2k5_abilities_runtime.py",
+    "operation": "write",
+    "command": "python3 -c \"import sys; from pathlib import Path; from mod_editor.core import nfl2k5_abilities_runtime as m; result, receipt = m.apply(Path(sys.argv[1]).read_bytes())\nwith Path(sys.argv[2]).open('xb') as output:\n    output.write(result)\nprint(receipt)\" <source.xbe> <new-copy.xbe>"
+  },
+  "classification": "offline-writer-proved",
+  "evidence": [
+    "ASTRA_ABILITIES_RUNTIME_REPORT.md",
+    "tests/mod_editor/test_nfl2k5_abilities_runtime.py",
+    "tests/mod_editor/test_nfl2k5_abilities_unicorn.py"
+  ],
+  "game": "nfl2k5_xbox",
+  "gui": {
+    "default_enabled": false,
+    "expose": true,
+    "mode": "edit",
+    "reason": "EXPERIMENTAL / UNWITNESSED. Explicit opt-in; new switches off in all presets. Protected Build/Gameplay integration is in WIRING.md."
+  },
+  "id": "nfl2k5.gameplay.abilities_runtime",
+  "input_constraints": [
+    "Pinned USA XBE with supported composed owners; foreign/mixed bytes and settings refuse.",
+    "Reserve the complete allocator owner union first. Seven shipped roster flags; no automatic assignment or save migration.",
+    "abilities_off_week is None or integer zero-based regular-season row 0..17. All presets off.",
+    "The special-move meter is restricted to live ball carriers. Right-stick actions also require Right-Stick Moves; unclassified charge consumers are denied."
+  ],
+  "portme": [
+    "Complete Noah's witness list in ASTRA_ABILITIES_RUNTIME_REPORT.md, including noncarrier meter impact and all controller layouts."
+  ],
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+    "tooling": "source-and-schemas-only"
+  },
+  "runtime": {
+    "evidence": [
+      "ASTRA_ABILITIES_RUNTIME_REPORT.md"
+    ],
+    "scope": "Bounded native clamps, command gates, initializer and native meter only. No game, loader, save-lifecycle or simulated-game witness.",
+    "status": "not-tested"
+  },
+  "selectors": {
+    "fields": [
+      {
+        "name": "abilities",
+        "required": true,
+        "allowed": "false by default in Basic, Advanced and Experimental; explicit opt-in"
+      },
+      {
+        "name": "abilities_off_week",
+        "required": false,
+        "allowed": "None or integer 0..17; meaningful only with abilities enabled"
+      }
+    ],
+    "notes": "Week displayed 1..18 maps to zero-based 0..17. Existing week only; simulation unaffected."
+  },
+  "source_container": {
+    "format": "XBE in XDVDFS",
+    "hash_pins": [
+      "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+    ],
+    "resource": "seven pinned hook spans and a named 1072-byte immutable RX allocation; zero new writable state",
+    "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+  },
+  "summary": "Stored player permissions control movement Speed, special moves and native charge; one optional existing regular-season week disables them.",
+  "surface": "gameplay_tuning_sliders",
+  "title": "Player abilities (experimental, unwitnessed)",
+  "validation_command": "python3 tests/mod_editor/test_nfl2k5_abilities_runtime.py"
+}

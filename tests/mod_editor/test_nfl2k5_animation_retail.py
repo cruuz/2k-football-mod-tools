@@ -58,8 +58,7 @@ class RetailTests(unittest.TestCase):
             sidecar = A.native_sidecar(clip)
             A.verify_sidecar(sidecar,clip)
             self.assertEqual(clip.original,base64.b64decode(sidecar['original_bytes_base64']))
-            with self.assertRaises(A.AnimationError):
-                A.compile_replacement(clip,A.native_rotations(clip))
+            self.assertEqual(A.compile_replacement(clip,A.native_rotations(clip)).after,clip.original)
             with tempfile.TemporaryDirectory() as folder:
                 destination = Path(folder)/'embedded'
                 A.export_clip(clip,destination)

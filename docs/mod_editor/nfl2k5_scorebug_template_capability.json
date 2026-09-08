@@ -1,0 +1,76 @@
+[
+  {
+    "backend": {
+      "command": "python3 -m mod_editor.core.nfl2k5_scorebug_template apply",
+      "module": "mod_editor/core/nfl2k5_scorebug_template.py",
+      "operation": "write"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "ASTRA_SCOREBUG_V10_REPORT.md",
+      "docs/scorebug_template/README.md",
+      "tests/mod_editor/test_nfl2k5_scorebug_template.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_projection.py"
+    ],
+    "game": "nfl2k5_xbox",
+    "gui": {
+      "default_enabled": false,
+      "expose": true,
+      "mode": "edit",
+      "reason": "EXPERIMENTAL / UNWITNESSED. Retail: original scoreboard. Patch: new repaintable art, dark team blocks, live text and larger scores. Team selection and live timeouts require runtime work."
+    },
+    "id": "nfl2k5.scorebug_presentation.template",
+    "input_constraints": [
+      "A supported USA disc output copy and the supplied fixed-cell layout.json with PNG layers at their exact 1x or 2x sizes.",
+      "At most 256 distinct RGBA colours across all selected layers. Native 64x64 P8 atlas, fixed VC-LZ span and unchanged wrapper +0x14.",
+      "Same template and fully matching resources for replay; rebuild from a clean supported base to change versions or artwork.",
+      "Static template is incompatible with simultaneous scorebug_runtime or the Hi-res scorebug family."
+    ],
+    "portme": [
+      "Apply the v10 scorebug_folder and release asset handoff in WIRING.md.",
+      "Keep scorebug_runtime off and complete Noah's witness list in ASTRA_SCOREBUG_V10_REPORT.md."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship the new SVG/PNG template, compiler and metadata. Generate native resources from the user's own game; never bundle an XBE, disc or native retail resource.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "evidence": [
+        "ASTRA_SCOREBUG_V10_REPORT.md",
+        "docs/scorebug_ingame/v10_native_audit.json"
+      ],
+      "scope": "Native relocation, formatters, font selection, glyphs, score phases, camera contraction and overlapping decompression are bounded CPU evidence. Raster output is a software model. No gameplay or GPU witness; team selection, live timeouts and isolated new-font binding are deferred.",
+      "status": "not-tested"
+    },
+    "selectors": {
+      "fields": [
+        {
+          "name": "scorebug",
+          "required": true,
+          "allowed": "boolean; Basic/Advanced false, Experimental true as already configured"
+        },
+        {
+          "name": "scorebug_folder",
+          "required": false,
+          "allowed": "empty for shipped v10; otherwise a local modular template folder"
+        }
+      ],
+      "notes": "Uses the existing static option. The protected GUI folder wiring is documented, not applied in this worktree."
+    },
+    "source_container": {
+      "format": "XBE plus fixed SCNE/TXTR in XDVDFS pack 0",
+      "hash_pins": [
+        "afa1481f7ce356c2cfb95cbeccebc18af183f6aa4ba13cd2981247a3619a8476",
+        "b17fe5ddc714bc2f508e38cbff5143d86828e9bca4748011dd54200624583b21"
+      ],
+      "resource": "score_bug scene and score_buga atlas, plus existing scoreboard XBE fields",
+      "retail_file": "user-owned USA default.xbe and vc_53450030/0"
+    },
+    "summary": "New modular source art compiled into the existing static scorebar option, with exact palette and fixed allocation checks.",
+    "surface": "scorebug_presentation",
+    "title": "Repaintable ESPN scorebar (experimental)",
+    "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_scorebug_template"
+  }
+]

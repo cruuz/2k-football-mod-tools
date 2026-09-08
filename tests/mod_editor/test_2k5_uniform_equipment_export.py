@@ -171,7 +171,7 @@ class ProductInventoryTests(unittest.TestCase):
 class StudioTruthfulEquipmentBoundaryTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.source = (_ROOT / "mod_editor/gui/studio_qt.py").read_text()
+        cls.source = (_ROOT / "mod_editor/gui/studio_qt.py").read_text(encoding="utf-8")
         tree = ast.parse(cls.source)
         cls.string_literals = {
             node.value
@@ -253,8 +253,23 @@ class _EquipmentResizeFacade(BrowseOnlyFacade):
         self.received.append((asset.asset_id, Path(path), size))  # type: ignore[attr-defined]
         return SimpleNamespace(message="Equipment palette is ready to build.")
 
+    def replace_equipment_texture(self, asset: object, path: Path, progress: object, *,
+                                  independent: bool = False, scale: int = 1) -> object:
+        # the glove/shoe route: the default dialog answer is palette-only, which reaches this same writer
+        assert independent is False and scale == 1
+        return self.replace_asset(asset, path, progress)
+
 
 class EquipmentResizeOffscreenTests(unittest.TestCase):
+    """The equipment replace route now opens the modal glove/shoe import dialog; these offscreen tests
+    answer it with the default palette-only choice so the fitted PNG reaches the session as before."""
+
+    def _auto_accept_equipment_dialog(self):
+        from PyQt5.QtWidgets import QDialog
+        stub = SimpleNamespace(exec_=lambda: QDialog.Accepted, Accepted=QDialog.Accepted, independent=False, scale=1)
+        patcher = patch("mod_editor.gui.equipment_texture_import_dialog.EquipmentTextureImportDialog", return_value=stub)
+        patcher.start(); self.addCleanup(patcher.stop)
+
     """Actual All Textures dialog/drop events must reach the shared fitter."""
 
     @classmethod
@@ -262,6 +277,7 @@ class EquipmentResizeOffscreenTests(unittest.TestCase):
         cls.application = QApplication.instance() or QApplication([])
 
     def setUp(self) -> None:
+        self._auto_accept_equipment_dialog()
         self.temporary = tempfile.TemporaryDirectory(prefix="2k5-equipment-qt-")
         self.root = Path(self.temporary.name)
         self.source = self.root / "oversize-socks.png"

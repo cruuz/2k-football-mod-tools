@@ -83,6 +83,31 @@ class SharePanelTests(unittest.TestCase):
         self.assertIn("Couldn't open this mod file", panel.pack_summary.text())
         self.assertFalse(panel.check_button.isEnabled())
 
+    def test_build_pair_exports_two_grown_files_and_retained_xbe_through_panel(self) -> None:
+        from test_modpack_growth import make_image, write_file, assert_same
+        base, built = self.tmp / "retail.iso", self.tmp / "experimental.iso"
+        make_image(base)
+        shutil.copyfile(base, built)
+        write_file(built, "default.xbe", b"XBEH" + b"intermediate" * 300)
+        write_file(built, "vc_53450030/0", b"grown pack" * 500)
+        write_file(built, "default.xbe", b"XBEH" + b"final executable" * 500)
+        source_hash = modpack.hash_file(base)
+        panel = self.panel
+        panel.prefill_from_build({"source": str(base), "target": str(built),
+                                 "plan": {"name": "Experimental two-growth fixture"}})
+        panel.start_export()
+        wait_for(panel, self.app)
+        self.assertIsNotNone(panel.last_export, panel.export_status.text())
+        growths = [op for op in panel.last_export["ops"] if op["type"] == 3]
+        self.assertEqual([op["path"] for op in growths], ["vc_53450030/0", "default.xbe"])
+        self.assertEqual([op["version"] for op in growths], [2, 1])
+        pack = Path(panel.out_field.text())
+        self.assertEqual(modpack.check(pack, base)["state"], "ready")
+        output = self.tmp / "applied.iso"
+        modpack.apply(pack, base, output)
+        assert_same(self, output, built)
+        self.assertEqual(modpack.hash_file(base), source_hash)
+
     def test_export_check_and_apply_run_in_the_background_and_round_trip(self) -> None:
         panel = self.panel
         pack_path = self.tmp / "panel.2k5patch"

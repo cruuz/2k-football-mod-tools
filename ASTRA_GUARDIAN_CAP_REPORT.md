@@ -1,5 +1,7 @@
 # Guardian cap route B, 2026-09-05
 
+Public path notation: `<home>` and `<media>` identify the original local home and mounted input directories. Recorded hashes, measurements and outcomes are unchanged.
+
 **EXPERIMENTAL / UNWITNESSED.** Built the data-only C-family replacement and
 one neutral quilt repaint through the existing import codecs. Both model
 LODs fit their original spans. All three wrappers remain byte-identical;
@@ -153,7 +155,7 @@ The end-to-end CLI was run successfully:
 
 ```sh
 python3 -m mod_editor.core.nfl2k5_guardian_cap \
-  --index '/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/vc_53450030/0' \
+  --index '<media>/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/vc_53450030/0' \
   --output .scratch/guardian/final-witness
 ```
 

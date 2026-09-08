@@ -6,7 +6,8 @@ tabs from a zero-terminated list of 17 descriptor pointers at .rdata 0x54A254: Q
 vote scanner ``cb_003213e0`` reads directly; nothing indexes a tab by its ordinal and no other screen
 shares the list (Player Stats, League Leaders and Rookie Watch hold stat categories; the depth chart
 uses the unit slot records). Moving the two kicking pointers to the end therefore changes only the
-order a player pages through: QB HB FB WR TE C G T DT DE OLB ILB CB SS FS K P. Unwitnessed in game.
+order a player pages through: QB HB FB WR TE C G T DT DE OLB ILB CB SS FS K P. The r64 position-pools profile removes OLB from either ordering, leaving two NULLs in the
+original span. Both owners preserve the other's choice and refuse every other shape. Unwitnessed in game.
 """
 
 from __future__ import annotations
@@ -39,20 +40,31 @@ class ProBowlOrderError(ValueError):
     """The executable does not carry the retail Pro Bowl tab list."""
 
 
-def sites() -> list[tuple[str, int, bytes, bytes]]:
+def sites(*, pooled: bool = False) -> list[tuple[str, int, bytes, bytes]]:
+    if pooled:
+        # Position pools owns OLB membership; this owner owns kicking order.
+        # Keep two NULLs inside the original span after removing that pointer.
+        before = _words(t for t in RETAIL_TABS if t != 0x5498E0) + bytes(4)
+        after = _words(t for t in PATCHED_TABS if t != 0x5498E0) + bytes(4)
+        return [("probowl_tab_list", TAB_LIST_VA, before, after)]
     return [("probowl_tab_list", TAB_LIST_VA, RETAIL_LIST, PATCHED_LIST)]
 
 
 def status(payload: bytes) -> str:
-    return rdata.status(payload, sites())
+    for pooled in (False, True):
+        state = rdata.status(payload, sites(pooled=pooled))
+        if state != "foreign":
+            return state
+    return "foreign"
 
 
 def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
+    pooled = rdata.status(payload, sites(pooled=True)) != "foreign"
     try:
-        patched, receipt = rdata.apply(payload, sites(), "Pro Bowl order")
+        patched, receipt = rdata.apply(payload, sites(pooled=pooled), "Pro Bowl order")
     except rdata.RdataSiteError as exc:
         raise ProBowlOrderError(str(exc)) from exc
-    return patched, {**receipt, "order": list(PATCHED_NAMES)}
+    return patched, {**receipt, "order": [n for n in PATCHED_NAMES if not (pooled and n == "OLB")]}
 
 
 __all__ = ["TAB_LIST_VA", "RETAIL_TABS", "PATCHED_TABS", "RETAIL_NAMES", "PATCHED_NAMES", "ProBowlOrderError",

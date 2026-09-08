@@ -1,0 +1,73 @@
+{
+  "schema": "mycareer_backdrop_recipe/v1",
+  "name": "crib_skyline_day",
+  "note": "Alternate for review only: the same view by day (crib_scene_texture:skybox_day:0), shaded harder so white text survives.",
+  "canvas": [
+    512,
+    512
+  ],
+  "background": [
+    6,
+    6,
+    12
+  ],
+  "seed": 20260907,
+  "layers": [
+    {
+      "selector": "crib_scene_texture:skybox_day:0",
+      "asset_id": "nfl2k5.crib.scene.c0005.t000",
+      "rect": [
+        0,
+        112,
+        512,
+        368
+      ],
+      "fit": "exact",
+      "core": true,
+      "extend": {
+        "top": 112,
+        "bottom": 144,
+        "fade_to": [
+          30,
+          40,
+          70
+        ],
+        "strength": 0.7,
+        "grain": 2.0
+      }
+    }
+  ],
+  "shade": {
+    "from_x": 0,
+    "to_x": 260,
+    "min": 0.28,
+    "power": 1.1,
+    "top": {
+      "min": 0.55,
+      "to_y": 140
+    }
+  },
+  "grain": {
+    "sigma": 1.0
+  },
+  "smooth_rects": {
+    "sky": [
+      40,
+      120,
+      470,
+      190
+    ],
+    "top_extension": [
+      40,
+      64,
+      470,
+      110
+    ],
+    "bottom_extension": [
+      40,
+      380,
+      470,
+      446
+    ]
+  }
+}

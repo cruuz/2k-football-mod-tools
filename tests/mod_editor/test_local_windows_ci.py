@@ -147,10 +147,10 @@ FAILED (failures=1)
 
     def test_classification_is_complete_and_report_table_agrees(self):
         rows = runner.CLASSIFICATIONS["files"]
-        self.assertEqual(len(rows), 73)
-        self.assertEqual(len({r["name"] for r in rows}), 73)
+        self.assertEqual(len(rows), 76)
+        self.assertEqual(len({r["name"] for r in rows}), 76)
         self.assertEqual(Counter(r["category"] for r in rows), {
-            "LEAN CHECKOUT": 27, "WINE GAP": 44, "RUNNER BUG": 1, "UNKNOWN": 1})
+            "LEAN CHECKOUT": 27, "WINE GAP": 46, "RUNNER BUG": 1, "UNKNOWN": 2})
         report = (ROOT / "ASTRA_WIN_LOCAL_CI_REPORT.md").read_text()
         table = dict(re.findall(r"^\| `(test_\w+\.py)` \| ([A-Z ]+) \|", report, re.M))
         self.assertEqual(table, {r["name"]: r["category"] for r in rows})

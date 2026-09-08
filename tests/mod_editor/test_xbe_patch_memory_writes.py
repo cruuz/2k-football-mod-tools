@@ -89,18 +89,38 @@ class SectionTableTests(unittest.TestCase):
 class PatchWriteTests(unittest.TestCase):
     """Every absolute memory write in every patch's changed code targets writable memory."""
 
+    def test_static_scorebar_v3_composes_and_writes_only_existing_native_state(self):
+        from mod_editor.core import nfl2k5_scorebug_ingame as scorebug, nfl2k5_scorebar_v3 as v3
+        from mod_editor.core.nfl2k5_cave_oracle import absolute_writes
+        self.assertEqual(scorebug.xbe_status(self.patched), 'applied')
+        self.assertEqual(scorebug.apply_xbe(self.patched)[0], self.patched)
+        allowed={0xa95a00,0xa95a70,0xa95ae0,0xa95b50,0xa95bc0,0xa95c30,0xba2f10}
+        for write in absolute_writes(self.patched,[(v3.VISIBILITY_VA,v3.VISIBILITY_VA+len(v3.VISIBILITY_CODE))]):
+            if write['target'] is not None:
+                self.assertIn(int(write['target'],0),allowed)
+                self.assertTrue(write['writable'],write)
+        # The colour destination is an indirect native material +18 field.
+        # The v3 native suite records every actual write and proves its bound.
+        self.assertIn(bytes.fromhex('89443918'),v3.VISIBILITY_CODE)
+
     @classmethod
     def setUpClass(cls) -> None:
         from mod_editor.core import nfl2k5_throw_tuning as tt
         cls.retail = XBE.read_bytes()
+        from mod_editor.core import nfl2k5_penalties as penalties, nfl2k5_throw_arc as flight
+        # Standalone toggle composes before the bundled profile; flight preserves 80 yd.
+        seed, _ = penalties.apply_chop_block(cls.retail)
+        seed, _ = tt.plan_patch(seed, tt.curves_for(tt.TuningSettings(80)))
+        seed, _ = flight.apply(seed)
         cls.table = sections(cls.retail)
         flags = {name: True for name in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "returner_fix", "progression",
-                                          "scheme_labels", "camera", "kick_rules", "widescreen", "overtime", "team_column", "seven_on_seven")}
-        cls.patched, cls.receipt = tt._apply_all(cls.retail, None, **flags, arc_table=False, kick_power=False, penalties="nfl", uniform_choice="choice", kick_laces=True, franchise_practice=True, prospect_names="modern", player_star=True, dynamic_kickoff=True, practice_squad=True)
+                                          "scheme_labels", "kick_rules", "widescreen", "overtime", "team_column", "seven_on_seven")}
+        cls.patched, cls.receipt = tt._apply_all(seed, None, **flags, arc_table=False, kick_power=False, penalties="nfl", uniform_choice="choice", kick_laces=True, franchise_practice=True, prospect_names="modern", player_star=True, dynamic_kickoff=True, practice_squad=True)
         # Pools and Tier 2 run after the shared XBE pass in mod_build.
         from mod_editor.core import nfl2k5_position_pools as pools
         from mod_editor.core import nfl2k5_depth_chart_rows as rows
-        cls.patched, _ = pools.apply(cls.patched)
+        cls.patched, cls.pools_receipt = pools.apply(
+            cls.patched, roster_has_olb=bool(getattr(cls, "reverse_owners", False)))
         cls.patched, cls.rows_receipt = rows.apply(cls.patched)
         if rows.status(cls.patched) != "applied":
             raise AssertionError("SPECIAL rows and summary spacing did not compose")
@@ -114,10 +134,114 @@ class PatchWriteTests(unittest.TestCase):
             raise AssertionError("season-cap owner missing from the composed XBE")
         from tests.nfl2k5_allocator_stack import compose
         cls.before_allocator = cls.patched
-        cls.patched, cls.music_receipt = compose(cls.patched, reverse=getattr(cls, "reverse_owners", False))
+        # Camera now needs 64 owned code bytes; the full union installs it. No
+        # allocation may be sealed by the earlier protected dispatcher pass.
+        cls.patched, cls.music_receipt = compose(cls.patched, reverse=getattr(cls, "reverse_owners", False), scaleout=getattr(cls, "scaleout", False))
+        if getattr(cls, "reverse_owners", False):
+            cls.patched, cls.pools_receipt = pools.apply(cls.patched, roster_has_olb=False)
+        if pools.filter_list_status(cls.patched) != "applied":
+            raise AssertionError("empty OLB selectors survived complete composition")
+        from mod_editor.core import nfl2k5_franchise_autosave as autosave
+        if autosave.status(cls.patched) != "applied" or autosave.apply(cls.patched)[0] != cls.patched:
+            raise AssertionError("Franchise Auto Save missing from the complete owner union")
+        from mod_editor.core import nfl2k5_camera as camera
+        if camera.status(cls.patched) != "applied" or camera.apply(cls.patched)[0] != cls.patched:
+            raise AssertionError("Paired Standard/Far framing and pass limits missing from complete owner union")
+        for descriptors, values in ((camera.STANDARD_DESCRIPTORS, camera.STANDARD_VALUES),
+                                   (camera.FAR_DESCRIPTORS, camera.PRESETS['far_look'])):
+            for state, va in descriptors.items():
+                actual = camera.decode_descriptor(camera._read(cls.patched, va, 80))
+                if (actual['target'], actual['fov'], actual['offset']) != values[state]:
+                    raise AssertionError("camera recipient differs in the complete owner union")
+        from mod_editor.core import nfl2k5_animation_xbe as animation_xbe
+        if animation_xbe.status(cls.patched) != "applied":
+            raise AssertionError("Embedded animation owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_guardian_overlay as guardian
+        if guardian.status(cls.patched) != "applied":
+            raise AssertionError("Guardian overlay missing from the composed XBE")
+        from mod_editor.core import nfl2k5_momentum as momentum
+        settings = momentum.read_settings(cls.patched)
+        if not settings.get("momentum_collisions") or settings.get("momentum_collision_level") != 100:
+            raise AssertionError("collision momentum missing from the composed XBE")
+        from mod_editor.core import nfl2k5_defensive_try as defensive_try
+        if defensive_try.status(cls.patched) != "applied":
+            raise AssertionError("defensive conversion stat extension missing from the composed XBE")
+        defensive_try._stats_sites(cls.patched)  # both named RX/RO reservations
+        from mod_editor.core import nfl2k5_franchise_2026 as franchise_2026
+        if franchise_2026.status(cls.patched) != "applied":
+            raise AssertionError("franchise rule proof kernel missing from composed XBE")
+        # The owner is dormant: composition is not native franchise enforcement.
+        if franchise_2026.RUNTIME_READY:
+            raise AssertionError("update the franchise shipping-gate evidence before enabling")
+        from mod_editor.core import nfl2k5_roster_storage as roster_storage
+        if roster_storage.status(cls.patched) != "applied":
+            raise AssertionError("stadium-list owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_music_playlist as playlist
+        if playlist.status(cls.patched) != "applied":
+            raise AssertionError("playlist owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_practice_squad_screen as practice_screen
+        if practice_screen.status(cls.patched) != "applied":
+            raise AssertionError("Practice Squad screen missing from the composed XBE")
+        from mod_editor.core import nfl2k5_abilities_runtime as abilities
+        if abilities.status(cls.patched) != "applied":
+            raise AssertionError("abilities owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_qb_spy_runtime as qb_spy
+        if qb_spy.status(cls.patched) != "applied":
+            raise AssertionError("Zone/man/rush QB spy owner missing from the composed XBE")
+        # The wider CB tiers remain deferred. Verify the shipped cap, Spy's
+        # exclusive callback detours and separate Coverage/catch dependencies
+        # on the real complete union in every inherited installation order.
+        from mod_editor.core import nfl2k5_zone_facing as zone_facing
+        cls.zone_evidence = zone_facing.assess(cls.patched)
+        if cls.zone_evidence["states"]["initial_drop"] != "applied":
+            raise AssertionError("Initial zone-drop owner missing from tier evidence")
+        from mod_editor.core import nfl2k5_my_career_mode as my_career, nfl2k5_crib_reclaim as crib_reclaim
+        if my_career.status(cls.patched) != "applied" or crib_reclaim.status(cls.patched) != "applied":
+            raise AssertionError("MyCareer or Crib movie cut missing from the composed XBE")
+        from mod_editor.core import nfl2k5_calendar_engine as calendar
+        if calendar.status(cls.patched) != "applied":
+            raise AssertionError("calendar owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_widescreen as wide
+        if wide.status(cls.patched) != "applied" or wide.apply(cls.patched)[0] != cls.patched:
+            raise AssertionError("widescreen v3 sites/context did not compose and replay")
+        from mod_editor.core import nfl2k5_read_option_runtime as read_option
+        if read_option.status(cls.patched) != "applied":
+            raise AssertionError("read option owner missing from the composed XBE")
+        if read_option.read_settings(cls.patched)["model_version"] != 3:
+            raise AssertionError("revised read option controls missing from the composed XBE")
+        from mod_editor.core import nfl2k5_senior_bowl as senior_bowl
+        if senior_bowl.status(cls.patched) != "applied":
+            raise AssertionError("Senior Bowl dormant components missing from the composed XBE")
+        from mod_editor.core import nfl2k5_screen_hooks as screen_hooks
+        if screen_hooks.status(cls.patched) != "applied":
+            raise AssertionError("screen hooks owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_modern_naming as modern_naming
+        cls.patched, _ = modern_naming.apply(cls.patched)
+        if modern_naming.status(cls.patched) != "applied":
+            raise AssertionError("Modern mode text missing from the composed XBE")
+        from mod_editor.core import nfl2k5_roster_arena_growth as arena_growth
+        if arena_growth.status(cls.patched) != "applied":
+            raise AssertionError("arena growth missing from the composed XBE")
+        from mod_editor.core import nfl2k5_modern_naming as modern_naming
+        from mod_editor.core import nfl2k5_screen_hooks as screen
         cls.table = sections(cls.patched)
         cls.md = Cs(CS_ARCH_X86, CS_MODE_32)
         cls.md.detail = True
+
+    def test_olb_filter_tables_are_pinned_data_edits_in_existing_owner(self):
+        from mod_editor.core import nfl2k5_position_pools as pools, nfl2k5_probowl_order as probowl
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        image = XbeImage(self.patched)
+        sites = pools.filter_list_sites(probowl_ordered=probowl.status(self.patched) == "applied")
+        edits = [e for e in self.pools_receipt["edits"] if e["group"] == "filter_lists"]
+        self.assertEqual(len(edits), 16)
+        for site, edit in zip(sites, edits):
+            self.assertEqual(image.section(site.va).name, ".rdata")
+            self.assertEqual(image.section(site.va).flags, XbeImage(self.retail).section(site.va).flags)
+            self.assertEqual(image.read(site.va, site.size), site.after)
+            self.assertEqual(edit["after"], site.after.hex())
+            self.assertEqual(site.after[-8:], bytes(8))
+        self.assertEqual(pools.apply(self.patched, roster_has_olb=False)[0], self.patched)
 
     def _changed_ranges(self) -> list[tuple[int, int]]:
         text = next(s for s in self.table if s[0] == ".text")
@@ -140,6 +264,16 @@ class PatchWriteTests(unittest.TestCase):
             else:
                 merged.append([a, b])
         return [(a - 16, b + 16) for a, b in merged]
+
+    def test_stadium_ids_are_owned_immutable_data(self) -> None:
+        from mod_editor.core import nfl2k5_roster_storage as storage
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        image = XbeImage(self.patched)
+        allocation = storage.site(self.patched)
+        self.assertEqual(image.read(allocation["va"], 82), storage.STADIUM_IDS)
+        self.assertFalse(image.runtime_writable(allocation["va"], 82))
+        self.assertNotEqual(image.section(allocation["va"]).name, ".text")
+        self.assertTrue(image.section(allocation["va"]).flags & 2)
 
     def test_every_absolute_write_in_changed_code_targets_writable_memory(self) -> None:
         offenders = []
@@ -181,7 +315,8 @@ class PatchWriteTests(unittest.TestCase):
     def test_playoff_presentation_storage_and_complete_callback_spans(self) -> None:
         from mod_editor.core import nfl2k5_playoff_picture as picture, nfl2k5_season_length as season
         from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
-        dependency, _ = season.apply(self.patched, groups=("playoffs_14",))
+        self.assertEqual(season.group_status(self.patched, "playoffs_14"), "applied")
+        dependency = self.patched
         patched, _ = picture.apply(dependency)
         image = XbeImage(patched)
         self.assertTrue(image.runtime_writable(picture.WIDGET_REGION, len(picture.widget_bytes())))
@@ -228,6 +363,17 @@ class PatchWriteTests(unittest.TestCase):
             self.assertGreater(checked, 0)
             self.assertFalse(image.runtime_writable(code["va"], code["size"]))
             self.assertTrue(image.runtime_writable(data["va"], data["size"]))
+
+    def test_kickoff_fixes_retain_the_existing_code_and_state_budget(self) -> None:
+        from mod_editor.core import nfl2k5_dynamic_kickoff as kickoff
+        from mod_editor.core import nfl2k5_dynamic_kickoff_relocated as relocated
+        code, data = relocated._sites(self.patched)
+        self.assertEqual((code["size"], data["size"]), (1939, 10))
+        self.assertEqual(len(kickoff.HOOKS), 20)
+        self.assertTrue({"eligibility", "root_motion", "block_target", "diagram", "separation",
+                         "ready", "head_pose", "block_tick", "commentary"}
+                        <= kickoff.HOOKS.keys())
+        self.assertEqual(relocated.status(self.patched), "applied")
 
     def test_defensive_try_grown_storage_and_writes(self) -> None:
         from mod_editor.core import nfl2k5_defensive_try as defensive_try
@@ -301,6 +447,151 @@ class PatchWriteTests(unittest.TestCase):
         # Indexed state/stack writes are checked by bounded instruction tests
         # with protected executable pages in test_nfl2k5_momentum.py.
 
+    def test_playlist_full_code_writes_only_writable_state(self):
+        from mod_editor.core import nfl2k5_music_playlist as playlist
+        from mod_editor.core import nfl2k5_music_playlist_code as assembly
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        code, data, ro = playlist.sites(self.patched)
+        image = XbeImage(self.patched)
+        self.assertTrue(image.runtime_writable(data["va"], data["size"]))
+        self.assertFalse(image.runtime_writable(ro["va"], ro["size"]))
+        self.assertFalse(image.runtime_writable(code["va"], code["size"]))
+        writes = absolute_writes(self.patched, [(code["va"], code["va"] + len(assembly.CODE))])
+        checked = 0
+        for write in writes:
+            if write["target"] is not None:
+                checked += 1
+                self.assertTrue(write["writable"], write)
+                target = int(write["target"], 0)
+                if target >= 0x14BA000:
+                    self.assertTrue(data["va"] <= target < data["va"] + data["size"], write)
+        self.assertGreater(checked, 0)
+
+    def test_abilities_code_and_tables_are_read_only_and_writes_are_indirect(self):
+        from mod_editor.core import nfl2k5_abilities_runtime as abilities
+        from mod_editor.core import nfl2k5_abilities_runtime_code as code
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        image = XbeImage(self.patched)
+        owner = abilities.allocation(self.patched)
+        self.assertNotEqual(image.section(owner["va"]).name, ".text")
+        self.assertFalse(image.runtime_writable(owner["va"], owner["size"]))
+        self.assertTrue(image.section(owner["va"]).executable)
+        writes = absolute_writes(self.patched, [(owner["va"], owner["va"] + code.LABELS["instructions_end"])])
+        self.assertTrue(writes)
+        self.assertTrue(all(write["target"] is None for write in writes), writes)
+        # Actual indirect destinations are bounded in the instruction suite.
+
+    def test_read_option_immutable_code_table_and_indirect_runtime_writes(self) -> None:
+        from mod_editor.core import nfl2k5_read_option_runtime as read_option
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        image = XbeImage(self.patched)
+        places = read_option.allocations(self.patched)
+        self.assertEqual(set(places), {'code', 'data', 'read_only'})
+        for kind, row in places.items():
+            self.assertEqual(image.runtime_writable(row['va'], row['size']), kind == 'data')
+            self.assertNotEqual(image.section(row['va']).name, '.text')
+        code = places['code']
+        self.assertTrue(image.section(code['va']).executable)
+        writes = absolute_writes(self.patched, [(code['va'], code['va']+read_option.assembly.LABELS['config'])])
+        self.assertTrue(writes)
+        data = places['data']
+        for row in writes:
+            if row['target'] is not None:
+                target = int(row['target'], 0)
+                self.assertTrue(row['writable'], row)
+                # Displaced retail snap store plus exclusively owned new state.
+                self.assertTrue(data['va'] <= target < data['va']+data['size']
+                                or target == 0xE602C8, row)
+
+    def test_senior_bowl_dormant_components_write_only_owned_or_caller_buffers(self):
+        from mod_editor.core import nfl2k5_senior_bowl as bowl, nfl2k5_senior_bowl_code as code
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        image = XbeImage(self.patched)
+        places = bowl.allocations(self.patched)
+        rx, rw = places["code"], places["data"]
+        self.assertFalse(image.runtime_writable(rx["va"], rx["size"]))
+        self.assertTrue(image.runtime_writable(rw["va"], rw["size"]))
+        self.assertEqual(image.read(rw["va"], rw["size"]), bytes(rw["size"]))
+        writes = absolute_writes(self.patched, [(rx["va"], rx["va"] + code.LABELS["code_end"])])
+        absolute = [w for w in writes if w["target"] is not None]
+        self.assertTrue(absolute)
+        for write in absolute:
+            self.assertTrue(write["writable"], write)
+            address = int(write["target"], 0)
+            self.assertTrue(rw["va"] <= address < rw["va"]+rw["size"], write)
+        self.assertFalse(bowl.NATIVE_EVENT_AVAILABLE)
+    def test_guardian_code_is_owned_rx_and_all_runtime_writes_are_indirect(self):
+        from mod_editor.core import nfl2k5_guardian_overlay as guardian
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        image = XbeImage(self.patched)
+        owner = guardian.allocation(self.patched)
+        self.assertNotEqual(image.section(owner["va"]).name, ".text")
+        self.assertFalse(image.runtime_writable(owner["va"], owner["size"]))
+        self.assertTrue(image.section(owner["va"]).executable)
+        writes = absolute_writes(self.patched, [(owner["va"], owner["va"] + guardian.assembly.LABELS["instructions_end"])])
+        self.assertTrue(writes)
+        self.assertTrue(all(write["target"] is None for write in writes), writes)
+
+    def test_qb_spy_complete_code_and_immutable_lookup_permissions(self) -> None:
+        from mod_editor.core import nfl2k5_qb_spy_runtime as spy
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        image = XbeImage(self.patched)
+        places = spy.allocations(self.patched)
+        code, data, ro = (places[k] for k in ("code", "data", "read_only"))
+        self.assertFalse(image.runtime_writable(code["va"], code["size"]))
+        self.assertFalse(image.runtime_writable(ro["va"], ro["size"]))
+        self.assertTrue(image.runtime_writable(data["va"], data["size"]))
+        self.assertEqual(image.read(data["va"], data["size"]), bytes(768))
+        self.assertEqual(spy.validate_intent_table(image.read(ro["va"], ro["size"])), 0)
+        # Initializers retain their native dispatch-table destinations. Only
+        # the immediate callback address changes, into this owner's RX span.
+        for name, (va, old) in spy.INITIALIZERS.items():
+            installed = image.read(va, len(old))
+            self.assertEqual(installed[:6], old[:6])
+            target = int.from_bytes(installed[6:], 'little')
+            self.assertEqual(target, code['va']+spy.assembly.LABELS[name])
+        writes = absolute_writes(self.patched, [(code["va"], code["va"] + spy.assembly.LABELS["config"])])
+        absolute = [w for w in writes if w["target"] is not None]
+        self.assertTrue(absolute)
+        for write in absolute:
+            self.assertTrue(write["writable"], write)
+            address = int(write["target"], 0)
+            self.assertTrue(data["va"] <= address < data["va"]+data["size"] or address == 0xE602B8, write)
+
+    def test_screen_hooks_have_no_persistent_state_or_absolute_writes(self) -> None:
+        from mod_editor.core import nfl2k5_screen_hooks as screen
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        image = XbeImage(self.patched)
+        code = screen.allocation(self.patched)
+        self.assertFalse(image.runtime_writable(code["va"], code["size"]))
+        self.assertTrue(image.section(code["va"]).executable)
+        self.assertNotEqual(image.section(code["va"]).name, ".text")
+        self.assertEqual(screen.REQUESTS, ((screen.OWNER, "code", 640, 16),))
+        writes = absolute_writes(self.patched, [(code["va"], code["va"]+len(screen.assembly.CODE))])
+        self.assertTrue(writes)
+        self.assertTrue(all(row["target"] is None for row in writes), writes)
+        # Bounded Unicorn proves destinations: the native QB task+0x60 and
+        # temporary stack saves. No persistent classifier state exists.
+
+    def test_franchise_autosave_uses_owned_rw_and_native_save_context_only(self):
+        from mod_editor.core import nfl2k5_franchise_autosave as autosave
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        owned = autosave.allocations(self.patched)
+        image = XbeImage(self.patched)
+        self.assertFalse(image.section(owned['code']['va']).writable)
+        self.assertTrue(image.section(owned['code']['va']).executable)
+        self.assertTrue(image.section(owned['data']['va']).writable)
+        self.assertFalse(image.section(owned['data']['va']).executable)
+        self.assertFalse(image.section(owned['read_only']['va']).writable)
+        writes = absolute_writes(self.patched, [(owned['code']['va'], owned['code']['va']+len(autosave.assembly.CODE))])
+        self.assertTrue(writes)
+        for write in writes:
+            if write['target'] is None:
+                continue  # Bounded native tests cover serializer destination and stack.
+            va = int(write['target'], 0)
+            self.assertTrue(write['writable'], write)
+            self.assertTrue(owned['data']['va'] <= va < owned['data']['va']+autosave.DATA_SIZE
+                            or va in (0xE5FFE4, 0xBDBDA4), write)
 
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
 class ScorebugReferenceWrites(unittest.TestCase):
@@ -315,7 +606,19 @@ class ScorebugReferenceWrites(unittest.TestCase):
                 continue  # existing reserved header constants, never runtime writes
             section=image.section(va,len(new))
             if section.name != ".text":
-                self.assertTrue(image.runtime_writable(va,len(new)),label)
+                if va in (0xe6c484,0xe6c4a8,0xe6c4c4):
+                    # Immutable scorebug-only format strings, not runtime
+                    # state. Native formatting writes the caller's buffer.
+                    # Retail marks .string_ executable (0x26), but read-only.
+                    # This is an in-place literal edit with identical section
+                    # permissions, not newly allocated executable data.
+                    self.assertEqual((section.name,section.flags),(".string_",0x26))
+                    self.assertEqual(section,XbeImage(retail).section(va,len(old)))
+                    self.assertFalse(image.runtime_writable(va,len(new)))
+                    self.assertEqual(new,old.replace(b'\x0a\x00',b'\x20\x00'))
+                    self.assertEqual(len(old),len(new))
+                else:
+                    self.assertTrue(image.runtime_writable(va,len(new)),label)
             else:
                 for write in absolute_writes(patched,[(va,va+len(new))]):
                     if write["target"] is not None:
@@ -329,7 +632,19 @@ class ReverseOwnerOrderTests(PatchWriteTests):
 
     def test_both_installation_orders_are_byte_identical(self):
         from tests.nfl2k5_allocator_stack import compose
-        self.assertEqual(compose(self.before_allocator)[0], self.patched)
+        from mod_editor.core import nfl2k5_modern_naming as modern_naming
+        from mod_editor.core import nfl2k5_position_pools as pools
+        forward = pools.apply(self.before_allocator, roster_has_olb=False)[0]
+        self.assertEqual(modern_naming.apply(compose(forward, scaleout=getattr(self, "scaleout", False))[0])[0], self.patched)
+
+
+class ScaleoutOwnerTests(PatchWriteTests):
+    """All existing owner gates against the v3 page map."""
+    scaleout = True
+
+
+class ScaleoutReverseOwnerTests(ReverseOwnerOrderTests):
+    scaleout = True
 
 
 if __name__ == "__main__":

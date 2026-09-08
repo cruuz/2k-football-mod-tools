@@ -863,7 +863,8 @@ def audit_release(root: Path, allowlist_path: Path) -> dict[str, object]:
             raise ReleaseCheckError(f"special filesystem entry is forbidden: {relative}")
         if info.st_nlink != 1:
             raise ReleaseCheckError(f"hardlinked release file is forbidden: {relative}")
-        if info.st_mode & stat.S_IWOTH:
+        # Windows reports 0o666 on every regular file; the mode bits carry no meaning there.
+        if info.st_mode & stat.S_IWOTH and os.name != "nt":
             raise ReleaseCheckError(f"world-writable release file is forbidden: {relative}")
         if relative not in declared:
             raise ReleaseCheckError(f"file is absent from the APF release allowlist: {relative}")

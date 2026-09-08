@@ -24,7 +24,9 @@ class BuildIntegrationTests(unittest.TestCase):
                              ('retail', False, False))
             self.assertEqual((selected.music_library, selected.music_project), ('mine.json', 'mine.2k5music'))
             self.assertEqual(selected.scorebug, name == 'softdrink_experimental')
-            self.assertEqual(selected.scorebug_runtime, name == 'softdrink_experimental')
+            # Beta 62: the runtime scorebug (logos, live events) is off in every preset until the
+            # community freeze report is resolved; the static bar still rides Experimental.
+            self.assertFalse(selected.scorebug_runtime)
             self.assertEqual(build.BuildPlan('source', 'target', **selected.to_recipe()).to_recipe(), selected.to_recipe())
 
     def test_library_metadata_is_a_selected_content_transaction(self):
@@ -56,7 +58,10 @@ class BuildIntegrationTests(unittest.TestCase):
                     if fail:
                         raise ValueError('cancelled during music rebuild')
                     return {'status':'applied', 'source_sha256':'intermediate', 'runtime_witnessed':False}
-                modules = {'nfl2k5_music_banks':SimpleNamespace(plan=plan,rebuild=rebuild),
+                def revalidate_playlist(path, *, expected=None):
+                    self.assertIsNone(expected)  # no shuffle selected: the library-only validation
+                    return {'status': 'validated', 'expected': None}
+                modules = {'nfl2k5_music_banks':SimpleNamespace(plan=plan,rebuild=rebuild,revalidate_playlist=revalidate_playlist),
                            'nfl2k5_scorebug_ingame':SimpleNamespace(runtime_apply_in_place=runtime)}
                 selected = build.BuildPlan(str(source), str(target), overwrite=True,
                                             scorebug_runtime=True, music_library='recipe.json')

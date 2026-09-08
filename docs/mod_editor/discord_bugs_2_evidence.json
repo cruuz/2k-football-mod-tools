@@ -1,0 +1,2012 @@
+{
+  "schema": "discord_bugs_2_read_only_evidence/v1",
+  "classification": "PROVED static bytes and direct calls only; no gameplay or asynchronous I/O witness",
+  "xbe_size": 11948032,
+  "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+  "functions": [
+    {
+      "va": 478192,
+      "ranges": [
+        {
+          "va": 478192,
+          "offset": 412656,
+          "size": 57,
+          "sha256": "72830588b312d84fd70ac0d5651a545dc4abd3127479fda4a07f19390f27c143"
+        },
+        {
+          "va": 478256,
+          "offset": 412720,
+          "size": 40,
+          "sha256": "0c07f44cfc5d0059a53f3b9ffe9130b34e4d107d6167813699a120cb021cf63f"
+        }
+      ],
+      "direct_calls_in_address_order": [
+        {
+          "pc": 478199,
+          "target": 239264
+        },
+        {
+          "pc": 478204,
+          "target": 474816
+        },
+        {
+          "pc": 478209,
+          "target": 233392
+        },
+        {
+          "pc": 478216,
+          "target": 263728
+        },
+        {
+          "pc": 478221,
+          "target": 3986432
+        },
+        {
+          "pc": 478226,
+          "target": 336016
+        },
+        {
+          "pc": 478231,
+          "target": 233408
+        },
+        {
+          "pc": 478236,
+          "target": 246768
+        },
+        {
+          "pc": 478241,
+          "target": 477344
+        },
+        {
+          "pc": 478261,
+          "target": 477072
+        },
+        {
+          "pc": 478270,
+          "target": 475728
+        },
+        {
+          "pc": 478275,
+          "target": 246784
+        },
+        {
+          "pc": 478280,
+          "target": 233120
+        },
+        {
+          "pc": 478285,
+          "target": 336048
+        }
+      ],
+      "corpus": "pseudo_c/shard_002048_002559.c"
+    },
+    {
+      "va": 477344,
+      "ranges": [
+        {
+          "va": 477344,
+          "offset": 411808,
+          "size": 846,
+          "sha256": "db1d162055a8f14b067fb6c74982df6126149e5bcf271786e2d11f9491915e29"
+        }
+      ],
+      "direct_calls_in_address_order": [
+        {
+          "pc": 477355,
+          "target": 794368
+        },
+        {
+          "pc": 477360,
+          "target": 1468496
+        },
+        {
+          "pc": 477365,
+          "target": 1468256
+        },
+        {
+          "pc": 477370,
+          "target": 1469872
+        },
+        {
+          "pc": 477375,
+          "target": 1473744
+        },
+        {
+          "pc": 477380,
+          "target": 1475872
+        },
+        {
+          "pc": 477385,
+          "target": 1476800
+        },
+        {
+          "pc": 477390,
+          "target": 1476976
+        },
+        {
+          "pc": 477395,
+          "target": 1477376
+        },
+        {
+          "pc": 477400,
+          "target": 1477664
+        },
+        {
+          "pc": 477405,
+          "target": 1478208
+        },
+        {
+          "pc": 477410,
+          "target": 1478512
+        },
+        {
+          "pc": 477415,
+          "target": 1478720
+        },
+        {
+          "pc": 477420,
+          "target": 1479072
+        },
+        {
+          "pc": 477425,
+          "target": 1479280
+        },
+        {
+          "pc": 477430,
+          "target": 1479728
+        },
+        {
+          "pc": 477435,
+          "target": 1479936
+        },
+        {
+          "pc": 477440,
+          "target": 1480144
+        },
+        {
+          "pc": 477445,
+          "target": 1468048
+        },
+        {
+          "pc": 477450,
+          "target": 1467760
+        },
+        {
+          "pc": 477455,
+          "target": 1467536
+        },
+        {
+          "pc": 477460,
+          "target": 910672
+        },
+        {
+          "pc": 477465,
+          "target": 1467264
+        },
+        {
+          "pc": 477470,
+          "target": 1466832
+        },
+        {
+          "pc": 477475,
+          "target": 1466368
+        },
+        {
+          "pc": 477480,
+          "target": 1466032
+        },
+        {
+          "pc": 477485,
+          "target": 1465840
+        },
+        {
+          "pc": 477490,
+          "target": 1480592
+        },
+        {
+          "pc": 477495,
+          "target": 420096
+        },
+        {
+          "pc": 477505,
+          "target": 420144
+        },
+        {
+          "pc": 477510,
+          "target": 1542576
+        },
+        {
+          "pc": 477515,
+          "target": 1199472
+        },
+        {
+          "pc": 477520,
+          "target": 1541888
+        },
+        {
+          "pc": 477525,
+          "target": 902832
+        },
+        {
+          "pc": 477530,
+          "target": 1006704
+        },
+        {
+          "pc": 477535,
+          "target": 275152
+        },
+        {
+          "pc": 477545,
+          "target": 1006944
+        },
+        {
+          "pc": 477556,
+          "target": 475344
+        },
+        {
+          "pc": 477565,
+          "target": 474688
+        },
+        {
+          "pc": 477590,
+          "target": 474688
+        },
+        {
+          "pc": 477602,
+          "target": 297952
+        },
+        {
+          "pc": 477607,
+          "target": 474688
+        },
+        {
+          "pc": 477614,
+          "target": 298416
+        },
+        {
+          "pc": 477619,
+          "target": 1296272
+        },
+        {
+          "pc": 477628,
+          "target": 233392
+        },
+        {
+          "pc": 477649,
+          "target": 278960
+        },
+        {
+          "pc": 477658,
+          "target": 233392
+        },
+        {
+          "pc": 477679,
+          "target": 278960
+        },
+        {
+          "pc": 477688,
+          "target": 233392
+        },
+        {
+          "pc": 477709,
+          "target": 278352
+        },
+        {
+          "pc": 477718,
+          "target": 233392
+        },
+        {
+          "pc": 477739,
+          "target": 278352
+        },
+        {
+          "pc": 477748,
+          "target": 233392
+        },
+        {
+          "pc": 477769,
+          "target": 278352
+        },
+        {
+          "pc": 477778,
+          "target": 1541840
+        },
+        {
+          "pc": 477792,
+          "target": 475520
+        },
+        {
+          "pc": 477802,
+          "target": 275184
+        },
+        {
+          "pc": 477807,
+          "target": 1541856
+        },
+        {
+          "pc": 477812,
+          "target": 1193648
+        },
+        {
+          "pc": 477817,
+          "target": 1025568
+        },
+        {
+          "pc": 477822,
+          "target": 980384
+        },
+        {
+          "pc": 477827,
+          "target": 1486944
+        },
+        {
+          "pc": 477832,
+          "target": 1481824
+        },
+        {
+          "pc": 477837,
+          "target": 460432
+        },
+        {
+          "pc": 477842,
+          "target": 1249504
+        },
+        {
+          "pc": 477847,
+          "target": 578064
+        },
+        {
+          "pc": 477852,
+          "target": 424464
+        },
+        {
+          "pc": 477857,
+          "target": 816432
+        },
+        {
+          "pc": 477862,
+          "target": 490784
+        },
+        {
+          "pc": 477867,
+          "target": 858864
+        },
+        {
+          "pc": 477872,
+          "target": 564848
+        },
+        {
+          "pc": 477877,
+          "target": 1201152
+        },
+        {
+          "pc": 477882,
+          "target": 1465072
+        },
+        {
+          "pc": 477887,
+          "target": 1463824
+        },
+        {
+          "pc": 477892,
+          "target": 1306096
+        },
+        {
+          "pc": 477897,
+          "target": 1458176
+        },
+        {
+          "pc": 477902,
+          "target": 1447008
+        },
+        {
+          "pc": 477907,
+          "target": 910000
+        },
+        {
+          "pc": 477912,
+          "target": 473472
+        },
+        {
+          "pc": 477917,
+          "target": 1008512
+        },
+        {
+          "pc": 477922,
+          "target": 1443600
+        },
+        {
+          "pc": 477927,
+          "target": 1241200
+        },
+        {
+          "pc": 477932,
+          "target": 536608
+        },
+        {
+          "pc": 477937,
+          "target": 1443104
+        },
+        {
+          "pc": 477942,
+          "target": 439984
+        },
+        {
+          "pc": 477947,
+          "target": 1507424
+        },
+        {
+          "pc": 477952,
+          "target": 1539168
+        },
+        {
+          "pc": 477986,
+          "target": 452160
+        },
+        {
+          "pc": 477991,
+          "target": 408496
+        },
+        {
+          "pc": 477996,
+          "target": 1535200
+        },
+        {
+          "pc": 478001,
+          "target": 959296
+        },
+        {
+          "pc": 478013,
+          "target": 422896
+        },
+        {
+          "pc": 478018,
+          "target": 359200
+        },
+        {
+          "pc": 478023,
+          "target": 1213792
+        },
+        {
+          "pc": 478028,
+          "target": 1003888
+        },
+        {
+          "pc": 478042,
+          "target": 475520
+        },
+        {
+          "pc": 478047,
+          "target": 1008096
+        },
+        {
+          "pc": 478061,
+          "target": 475520
+        },
+        {
+          "pc": 478066,
+          "target": 1008176
+        },
+        {
+          "pc": 478080,
+          "target": 475520
+        },
+        {
+          "pc": 478091,
+          "target": 474688
+        },
+        {
+          "pc": 478117,
+          "target": 475488
+        },
+        {
+          "pc": 478124,
+          "target": 476976
+        },
+        {
+          "pc": 478134,
+          "target": 1249584
+        },
+        {
+          "pc": 478158,
+          "target": 1540432
+        },
+        {
+          "pc": 478179,
+          "target": 475488
+        }
+      ],
+      "corpus": "pseudo_c/shard_002048_002559.c"
+    },
+    {
+      "va": 794368,
+      "ranges": [
+        {
+          "va": 794368,
+          "offset": 728832,
+          "size": 79,
+          "sha256": "1ffd2c08ad85815ac48587bc51d1d7a2219c45c666e6e993ab90dbc47e6a119d"
+        }
+      ],
+      "direct_calls_in_address_order": [
+        {
+          "pc": 794408,
+          "target": 276128
+        },
+        {
+          "pc": 794423,
+          "target": 233392
+        },
+        {
+          "pc": 794435,
+          "target": 296704
+        }
+      ],
+      "corpus": "pseudo_c/shard_003584_004095.c"
+    },
+    {
+      "va": 794160,
+      "ranges": [
+        {
+          "va": 794160,
+          "offset": 728624,
+          "size": 76,
+          "sha256": "379b8d859f833a1677e9166383ff1ba7f0af16c081727596636ff99cc17430e7"
+        }
+      ],
+      "direct_calls_in_address_order": [
+        {
+          "pc": 794171,
+          "target": 199744
+        },
+        {
+          "pc": 794207,
+          "target": 200704
+        },
+        {
+          "pc": 794224,
+          "target": 787712
+        }
+      ],
+      "corpus": "pseudo_c/shard_003584_004095.c"
+    },
+    {
+      "va": 1008176,
+      "ranges": [
+        {
+          "va": 1008176,
+          "offset": 942640,
+          "size": 90,
+          "sha256": "f29669d3ee649ab8dcae271e711c176d403961bb4ea3e1eab1e954602843f710"
+        }
+      ],
+      "direct_calls_in_address_order": [
+        {
+          "pc": 1008189,
+          "target": 233392
+        },
+        {
+          "pc": 1008210,
+          "target": 278352
+        },
+        {
+          "pc": 1008230,
+          "target": 946496
+        },
+        {
+          "pc": 1008235,
+          "target": 1007824
+        },
+        {
+          "pc": 1008240,
+          "target": 992000
+        },
+        {
+          "pc": 1008245,
+          "target": 521920
+        },
+        {
+          "pc": 1008250,
+          "target": 436304
+        }
+      ],
+      "corpus": "pseudo_c/shard_004608_005119.c"
+    },
+    {
+      "va": 1007824,
+      "ranges": [
+        {
+          "va": 1007824,
+          "offset": 942288,
+          "size": 99,
+          "sha256": "328d583d4f8486de399b5f55fe469d32e8cce19201c2b3363e5739da471964d2"
+        }
+      ],
+      "direct_calls_in_address_order": [
+        {
+          "pc": 1007847,
+          "target": 233392
+        },
+        {
+          "pc": 1007868,
+          "target": 278960
+        },
+        {
+          "pc": 1007877,
+          "target": 233392
+        },
+        {
+          "pc": 1007898,
+          "target": 278960
+        },
+        {
+          "pc": 1007908,
+          "target": 1465376
+        }
+      ],
+      "corpus": "pseudo_c/shard_004608_005119.c"
+    },
+    {
+      "va": 411024,
+      "ranges": [
+        {
+          "va": 411024,
+          "offset": 345488,
+          "size": 63,
+          "sha256": "7180a1eaafc84274c1d30ed2accc5509914fa7ee1c71a4e36231fd51757e3d2e"
+        }
+      ],
+      "direct_calls_in_address_order": [
+        {
+          "pc": 411030,
+          "target": 1008912
+        },
+        {
+          "pc": 411035,
+          "target": 1008272
+        },
+        {
+          "pc": 411040,
+          "target": 1008144
+        },
+        {
+          "pc": 411045,
+          "target": 1007584
+        },
+        {
+          "pc": 411050,
+          "target": 410928
+        },
+        {
+          "pc": 411055,
+          "target": 404448
+        },
+        {
+          "pc": 411064,
+          "target": 410976
+        },
+        {
+          "pc": 411071,
+          "target": 1004416
+        },
+        {
+          "pc": 411076,
+          "target": 1006896
+        }
+      ],
+      "corpus": "pseudo_c/shard_001536_002047.c"
+    },
+    {
+      "va": 1045344,
+      "ranges": [
+        {
+          "va": 1045344,
+          "offset": 979808,
+          "size": 753,
+          "sha256": "9e191a042441cfb9ebf32f956afbb544847b17dcaf8f84abf480920a4f6473d6"
+        }
+      ],
+      "direct_calls_in_address_order": [
+        {
+          "pc": 1045392,
+          "target": 461216
+        },
+        {
+          "pc": 1045429,
+          "target": 175488
+        },
+        {
+          "pc": 1045434,
+          "target": 430464
+        },
+        {
+          "pc": 1045441,
+          "target": 175232
+        },
+        {
+          "pc": 1045488,
+          "target": 461216
+        },
+        {
+          "pc": 1045533,
+          "target": 3619124
+        },
+        {
+          "pc": 1045578,
+          "target": 1044384
+        },
+        {
+          "pc": 1045661,
+          "target": 429584
+        },
+        {
+          "pc": 1045800,
+          "target": 1331760
+        },
+        {
+          "pc": 1045810,
+          "target": 981072
+        },
+        {
+          "pc": 1045856,
+          "target": 145168
+        },
+        {
+          "pc": 1045867,
+          "target": 137584
+        },
+        {
+          "pc": 1045905,
+          "target": 289056
+        },
+        {
+          "pc": 1045919,
+          "target": 289280
+        },
+        {
+          "pc": 1045933,
+          "target": 289632
+        },
+        {
+          "pc": 1045947,
+          "target": 289616
+        },
+        {
+          "pc": 1045960,
+          "target": 289200
+        },
+        {
+          "pc": 1046014,
+          "target": 289392
+        },
+        {
+          "pc": 1046027,
+          "target": 990320
+        },
+        {
+          "pc": 1046085,
+          "target": 175232
+        }
+      ],
+      "corpus": "pseudo_c/shard_005120_005631.c"
+    },
+    {
+      "va": 474816,
+      "ranges": [
+        {
+          "va": 474816,
+          "offset": 409280,
+          "size": 102,
+          "sha256": "930743b42c5fc052f09f3fc1c83ee1c287d47af745d420842053b5fb46af045a"
+        }
+      ],
+      "direct_calls_in_address_order": [
+        {
+          "pc": 474826,
+          "target": 161952
+        },
+        {
+          "pc": 474841,
+          "target": 161952
+        },
+        {
+          "pc": 474856,
+          "target": 161952
+        },
+        {
+          "pc": 474866,
+          "target": 195600
+        },
+        {
+          "pc": 474886,
+          "target": 162800
+        },
+        {
+          "pc": 474912,
+          "target": 335968
+        }
+      ],
+      "corpus": "pseudo_c/shard_002048_002559.c"
+    },
+    {
+      "va": 263728,
+      "ranges": [
+        {
+          "va": 263728,
+          "offset": 198192,
+          "size": 7,
+          "sha256": "966588fb99b48a302a1daafecc4460d018def0e805aad499c101975e80ec40d7"
+        }
+      ],
+      "direct_calls_in_address_order": [],
+      "corpus": "pseudo_c/shard_001024_001535.c"
+    }
+  ],
+  "probes": [
+    {
+      "label": "roster_capacity_store",
+      "va": 794413,
+      "offset": 728877,
+      "size": 10,
+      "hex": "c7050828b70000100900",
+      "sha256": "79f4dad5a91b4b0e2efdc96271f5985db64053c8f6ea5873a4c35798013cb046"
+    },
+    {
+      "label": "roster_alloc_size",
+      "va": 794428,
+      "offset": 728892,
+      "size": 5,
+      "hex": "ba00100900",
+      "sha256": "2464fa9ea4fd34b88121565fa6d320f6ec1856e25b4d0eecc04ca0731ac2c927"
+    },
+    {
+      "label": "legalpage_string",
+      "va": 15084944,
+      "offset": 11475568,
+      "size": 20,
+      "hex": "6c006500670061006c0070006100670065000000",
+      "sha256": "4241b3693e5466b081c00c35d5077e368966dbc75b49f02643f38b1aa84bdcd7"
+    },
+    {
+      "label": "segalogo_string",
+      "va": 15084964,
+      "offset": 11475588,
+      "size": 18,
+      "hex": "73006500670061006c006f0067006f000000",
+      "sha256": "567fa01a0a26bfa0f50da891abc05c8093ff1a07a83f04e0607819c0902e3577"
+    },
+    {
+      "label": "logo_sequence",
+      "va": 5150496,
+      "offset": 5106752,
+      "size": 48,
+      "hex": "902de6000000a040a42de60000000040b82de60000000000d82de60000000000e02de60000000000002ee60000000000",
+      "sha256": "c9697cb9f0df49bc45c6453e7a8218df0a43d17b272984016474bdd4e9a60893"
+    },
+    {
+      "label": "frontend_string",
+      "va": 15122580,
+      "offset": 11513204,
+      "size": 26,
+      "hex": "660072006f006e00740065006e0064002e006900660066000000",
+      "sha256": "22ab00d07fd0b62d7ca68a9badff553c78baf6724e44b0318a2949c8e0bcdf50"
+    },
+    {
+      "label": "no_huddle_indicator",
+      "va": 15125456,
+      "offset": 11516080,
+      "size": 20,
+      "hex": "6e006f00200068007500640064006c0065000000",
+      "sha256": "888d975ba50bfed2d87684bd7a3bd1b8c605bb8eafe8dbd9603ca8bfdd541fc3"
+    },
+    {
+      "label": "no_huddle_indicator_ref",
+      "va": 1045840,
+      "offset": 980304,
+      "size": 5,
+      "hex": "10d0cbe600",
+      "sha256": "2d76a72a86e540c1590ca480fe6a016bf7ebba2a97d84b19b50ef94b2cfc7cb3"
+    },
+    {
+      "label": "crib_movie_open",
+      "va": 2566804,
+      "offset": 2501268,
+      "size": 5,
+      "hex": "e857911500",
+      "sha256": "0f2e447b6d32fd0f7cf671976c13540d065087b2fe36914378ace226fb8f4f9e"
+    },
+    {
+      "label": "kickoff_collision",
+      "va": 1935680,
+      "offset": 1870144,
+      "size": 6,
+      "hex": "8b48248b5120",
+      "sha256": "2da79b7bd70c848c725531b9ef5c9087118c994eca6d5420d3eb9c5dcd67673c"
+    },
+    {
+      "label": "kickoff_nearest_selector",
+      "va": 3125232,
+      "offset": 3059696,
+      "size": 8,
+      "hex": "558bec83e4f081ec",
+      "sha256": "cccf327c5c0119d8ff4b447421c425714fbca9d5398752a2396f6cce73bf8c67"
+    },
+    {
+      "label": "block_completion",
+      "va": 2354386,
+      "offset": 2288850,
+      "size": 9,
+      "hex": "d94660d81d80414e00",
+      "sha256": "646a3394cd026d223c652d469d1e542f787ebfd342490f360b89b196edef9667"
+    },
+    {
+      "label": "qb_screen_timer",
+      "va": 1689577,
+      "offset": 1624041,
+      "size": 7,
+      "hex": "8b4c240c894e60",
+      "sha256": "452bc797ca1a8c0c7ba409c7cecf578001d61f5dc82a43a21fd39c1328c25bcd"
+    },
+    {
+      "label": "charge_consumer",
+      "va": 2967360,
+      "offset": 2901824,
+      "size": 7,
+      "hex": "568b7110d94644",
+      "sha256": "24b0ffc29abbe42fe360cfeaf7719544737a3e9c00c6512e12b5d3289ef7eccd"
+    },
+    {
+      "label": "guardian_bind",
+      "va": 585774,
+      "offset": 520238,
+      "size": 5,
+      "hex": "8b55ec8bc2",
+      "sha256": "227a18f6e0574b388374fd4570bf4b8e919e6d8e0f6e51dcc5f6033b4c7c13c0"
+    },
+    {
+      "label": "ps_menu_pointer",
+      "va": 5382560,
+      "offset": 5338816,
+      "size": 4,
+      "hex": "201f5200",
+      "sha256": "805abc9b6c8aba1ee6672798e5afcc2e62d1a5661f714e91c50dc960285f7e28"
+    }
+  ],
+  "prior_report_inventory": [
+    {
+      "path": "ASTRA_ABILITIES_RUNTIME_REPORT.md",
+      "sha256": "dc297df106b0a52dc6de4892f32afd82bf375aa6c454dafd42e7a284ddac722d",
+      "headings": [
+        "# r62 abilities runtime, 2026-09-05",
+        "## Decisions and implemented contract",
+        "## PROVED: consumers, hooks, ABI and allocation",
+        "## Verification",
+        "## HYPOTHESIS and Noah's required witness list",
+        "## Final gates and delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_ALLOCATOR_SCALEOUT_REPORT.md",
+      "sha256": "d35fd240a5465c31b697ffbabb157466468203f5e409efcde0ff94b91a368f52",
+      "headings": [
+        "# Beta 62 owned XBE allocator scale-out",
+        "## Delivered and decisions",
+        "## PROVED: section and header accounting",
+        "## PROVED mapping boundary; raw reference candidates remain visible",
+        "## Beta-62 owner budgets",
+        "## Verification and real-disc evidence",
+        "## Noah's witness list and remaining limits",
+        "## Delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_APF_PORT_RESEARCH_REPORT.md",
+      "sha256": "2445b0680a561777de059c0a67809a876d84d1cdccf3d6e4c1e91745dd0a9af2",
+      "headings": [
+        "# APF port research delivery",
+        "## Results",
+        "## Checks actually run",
+        "## Decisions, gaps and witness"
+      ]
+    },
+    {
+      "path": "ASTRA_BONE_ANIM_REPORT.md",
+      "sha256": "4563921f6114da42070527f6bc80e376d26fda86411818be39d31b7131b2fdd4",
+      "headings": [
+        "# Animations workspace: r61b-bone-anim",
+        "## Delivered",
+        "## Scope and decisions",
+        "## Export and replacement contract",
+        "## Validation results",
+        "### Pre-existing global guard failures",
+        "## Noah's witness plan before Claude enables import",
+        "## Known gaps and evidence limits"
+      ]
+    },
+    {
+      "path": "ASTRA_BONE_IMPORT_REPORT.md",
+      "sha256": "6e56a2aecfafefa87fef50a1012459ffbcdf75b9bf3454258ef0db8464891ce3",
+      "headings": [
+        "# r62-bone-import, 2026-09-06",
+        "## Delivered behavior",
+        "## PROVED: native interchange and output transport",
+        "## PROVED: embedded roots and composition",
+        "## PROVED: one coordinated limb adjustment",
+        "## PROVED: the first authored clip within the original budget",
+        "## Exact validation commands and results",
+        "## Noah's witness plan before promising import",
+        "## Known limits and delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_CALENDAR_ENGINE_REPORT.md",
+      "sha256": "8063fa1cf5eb66d765cebe298bc0302a6b8c0898108f889fd381bf5600006c5d",
+      "headings": [
+        "# r62 calendar engine continuation",
+        "## Delivery and review decisions",
+        "## PROVED: exact schedule contract",
+        "## PROVED: dates, DOBs, labels and boundaries",
+        "## PROVED: ownership, refusal and composition",
+        "## Tests and delivery evidence",
+        "## Noah's required witness list",
+        "## HYPOTHESIS and known gaps",
+        "## Commit delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_CAMERA_FAR_REPORT.md",
+      "sha256": "47f14f53ee4b4d57a9d199812c6074f30943b18c896c38de74ddb310892dea69",
+      "headings": [
+        "# r63 camera Far: actual selection and raised framing",
+        "## Evidence and diagnosis",
+        "## Selection, settings and modes",
+        "## Exact Far geometry",
+        "## Projection receipt and limits",
+        "## Ownership, safety and integration",
+        "## Validation",
+        "## Noah's witnesses and required next play checks",
+        "## Delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_CAMERA_V2_REPORT.md",
+      "sha256": "ee6556a7e51f3f0eb5675e693cae5a19324bbc84adc298ada66bfedb4a95a84d",
+      "headings": [
+        "# r63 camera v2: paired presets and a bounded pass pullback",
+        "## Delivered behavior and decisions",
+        "## PROVED: the previous fixture omitted part of the native eye position",
+        "## PROVED: selection and pass transition",
+        "## Exact instruction edits added by this revision",
+        "## Exact Standard field deltas",
+        "## The four requested cameras, every table state",
+        "## PROVED: native distances and FOV, before and after",
+        "## Projection acceptance and limits",
+        "## Ownership, integration and fail-closed behavior",
+        "## Validation",
+        "## Noah's witness and required play list",
+        "## Delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_DEEP_ZONE_TIERS_REPORT.md",
+      "sha256": "f2bb1a1acaccd4f7f609cc107d77ccd7a80337f2d83e88796d482452f3bfcb6a",
+      "headings": [
+        "# r62 deep-zone tiers: certified boundary and native proofs",
+        "## Decision against each requested tier",
+        "## What was built",
+        "## PROVED in this session",
+        "## Capacity, source safety and manifest",
+        "## Validation",
+        "## Noah's witness list, memo section 5",
+        "## Known gaps and delivery boundary",
+        "## Delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_DEFENSE_PLAY_REPORT.md",
+      "sha256": "e7139d2c3c71df253a3f9a3c66dcf6c9c24100bf197968a960802090e468443a",
+      "headings": [
+        "# ASTRA defense play report",
+        "## Delivered",
+        "## PROVED in this worktree",
+        "## Noah's witness list (all pending)",
+        "## HYPOTHESIS and integration limits",
+        "## Validation commands and results",
+        "## Commit delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_DEFENSIVE_TRY_BOXSCORE_REPORT.md",
+      "sha256": "21b42fcccacdebe9587fb23539004033e2a195aa068584a31e3f5f291362bcee",
+      "headings": [
+        "# r62 defensive try box score, 2026-09-06",
+        "## Implementation and native evidence",
+        "### The category and its lifetime",
+        "### Field 59 is unused and handled by the native saved stream",
+        "### Native presentation and failed attempts",
+        "### CPU scope",
+        "## Allocation, refusal and composition",
+        "## Verification",
+        "## Known limits and Noah's witness list",
+        "## Delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_DEFENSIVE_TRY_REPORT.md",
+      "sha256": "a8e35986133948e6df9f772872e1a4aa48d6c6055ae366f80e71a18d850e2094",
+      "headings": [
+        "# Defensive try implementation, 2026-09-05",
+        "## Inputs and constraints",
+        "## Implementation and evidence",
+        "## Storage, representation and writer contract",
+        "## Known gaps and hypotheses",
+        "## Verification",
+        "## Commit delivery",
+        "## Noah's witness list"
+      ]
+    },
+    {
+      "path": "ASTRA_DEPTH_LOCKS_REPORT.md",
+      "sha256": "88e111c46e4a43945824ca71236ca0d81c108e015587f757b93d305eb78560f0",
+      "headings": [
+        "# Depth locks delivery — 2026-09-05",
+        "## PROVED: when and why assignments change",
+        "## PROVED: left/right and screen actions",
+        "## Storage, allocation and lifecycle",
+        "## Exact patch ownership and safety",
+        "## Why not split T/G positions",
+        "## Validation and remaining witness"
+      ]
+    },
+    {
+      "path": "ASTRA_DISCORD_BUGS_1_REPORT.md",
+      "sha256": "3cf79e73f0abaff404b8086670559f701f574f9aaa7d635c3140c92a47c59d02",
+      "headings": [
+        "# r63 Discord bugs 1",
+        "## B3. Update available never clears",
+        "## B7. Duplicate choices allegedly corrupt the xiso",
+        "## B9. Validation refusal followed by apparent success with no changes",
+        "## B22. Gameplay selections lost from a saved project",
+        "## B17. Build and Check my images stay grey",
+        "## B11. Reopened modded image shows stock pants",
+        "## B14. First name limited to three letters",
+        "## B16. WinError 193 launching xemu",
+        "## B12. Portraits absent after roster edits",
+        "## B10. Photoshop PNG/DDS imports",
+        "## Validation and limits",
+        "## Noah's witness list and known gaps",
+        "## Delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_EXPORTER_GROWTH_REPORT.md",
+      "sha256": "2252fc67d0d3d88c238cd3ef4842daed368fc46f82038a015dcbfaa9857590ad",
+      "headings": [
+        "# r62 exporter growth",
+        "## Delivered and compatibility decisions",
+        "## PROVED: retail Experimental round-trip",
+        "## PROVED: the historical OOM command and measured memory defect",
+        "## Validation, decisions and remaining witnesses",
+        "### Final verification results",
+        "## Commit delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_FRANCHISE_2026_REPORT.md",
+      "sha256": "99668af309d012c8caba466a1669207f60cd9a3c7be7188c6a7d5f173f959cd6",
+      "headings": [
+        "# r62 franchise 2026, 2026-09-06",
+        "## Scope and decisions",
+        "## Delivered code and behavior",
+        "## Exact counter layout",
+        "## Native kernel, ownership and byte evidence",
+        "## Verification",
+        "## Remaining required implementation and witness list",
+        "## Delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_FRANCHISE_PRACTICE_EXIT_REPORT.md",
+      "sha256": "1a2d786aa95b7050c0b8acc27cc75866221d9ed7275b86eae571c5c1df2c6bb3",
+      "headings": [
+        "# Franchise Practice exit correction",
+        "## Result and scope",
+        "## Retail evidence and exact route",
+        "### Settings START was a restart, not initial game entry",
+        "### Game screen and teardown",
+        "### Franchise game end as the return model",
+        "### Completion and source roster",
+        "## Patch mechanics and evidence boundaries",
+        "## Composition and validation",
+        "## Noah's required played witness",
+        "## Delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_GAMEPLAY_LEVERS_REPORT.md",
+      "sha256": "fef14392379e06515c0d92bd1eb6498477cb2c2486ec95ec8b374f52a177b6eb",
+      "headings": [
+        "# r62 gameplay levers",
+        "## Delivered and integration boundary",
+        "## Research decisions and corrections",
+        "## Coverage: exact mapping",
+        "## Slow QB: bounded native acceleration",
+        "## Flatter deep flight",
+        "## Chop Block: ignored setting, existing detector",
+        "## Validation and receipts",
+        "## Noah's required witnesses",
+        "## Remaining limits and delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_GUARDIAN_CAP_REPORT.md",
+      "sha256": "572a55acb92319317569ed7c6dd0dded83a551d556109dee74c26e6d60e31e7b",
+      "headings": [
+        "# Guardian cap route B, 2026-09-05",
+        "## What was built",
+        "## PROVED byte and geometry results",
+        "## API, artifacts and refusal behavior",
+        "## Tests and results",
+        "## HYPOTHESIS and Noah's witness plan",
+        "## Precise later route A specification",
+        "## Scope and commit discipline"
+      ]
+    },
+    {
+      "path": "ASTRA_GUARDIAN_OVERLAY_REPORT.md",
+      "sha256": "bec1f641bbfbd3ac0092d4afa7e1823550d1051c392c190bc6c61545ba563272",
+      "headings": [
+        "# r62 Guardian overlay, route A",
+        "## Delivered",
+        "## Decisions and PROVED executable behavior",
+        "## PROVED resource and archive results",
+        "## Verification",
+        "## HYPOTHESIS, known gaps and Noah's witness plan",
+        "## Delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_HIRES_MORE_REPORT.md",
+      "sha256": "6f1a0a8dcc9636ce94f430c18882b9284fd2c9e10e0befdc9156ae79c3831c37",
+      "headings": [
+        "# r62 hires-more: family compiler and the limits of the memory proof",
+        "## What was built",
+        "## Consumer evidence: PROVED within the named paths",
+        "## Memory: proved allocator shape, unproved live headroom",
+        "### Live-scenario video bytes",
+        "### Preflight allocation model, complete catalog selected at 2x",
+        "### Why xemu-128 remains refused",
+        "## Reproduction and validation",
+        "## Noah's witness list and remaining limits"
+      ]
+    },
+    {
+      "path": "ASTRA_HIRES_PACK_REPORT.md",
+      "sha256": "07a0a22373b5ab428bdbbd9e2d6ae6d5b93ee255f17bea98863392848f22f355",
+      "headings": [
+        "# r62 Hi-res pack pilot",
+        "## Delivered behavior and decisions",
+        "## PROVED: scoped consumer and format evidence",
+        "## PROVED: modeled allocation and real offline builds",
+        "## Validation run",
+        "## HYPOTHESIS and Noah's required xemu witness"
+      ]
+    },
+    {
+      "path": "ASTRA_HOTFIX_WINPATH_REPORT.md",
+      "sha256": "9994c61ca7633cc33b0632eaf253beec6546a476e443c6680cbd8d1ef81e1a91",
+      "headings": [
+        "# Beta 60 Windows path hotfix",
+        "## Decisions and behavior",
+        "## Every staging site changed",
+        "## Length arithmetic",
+        "## Validation",
+        "## Integrity and scope"
+      ]
+    },
+    {
+      "path": "ASTRA_INTEGRATION_2_REPORT.md",
+      "sha256": "cdc548cd7dc3429aecaf07ab5f4be16f20d41b6e7b3fab047a4811a96f511f35",
+      "headings": [
+        "# Astra integration 2",
+        "## Commits and delivery",
+        "## Integration decisions",
+        "## CI fixes and ownership",
+        "## Real builds",
+        "## Verification",
+        "## Witness limits"
+      ]
+    },
+    {
+      "path": "ASTRA_INTEGRATION_3_REPORT.md",
+      "sha256": "895ac38613e07dc0f3a195ce8b3e9b1fb8b785c19902e5bc61792601fcbe7ce4",
+      "headings": [
+        "# Astra integration 3",
+        "## Delivery and provenance",
+        "## Allocator capacity and ownership",
+        "## Wiring and product decisions",
+        "## Final manifest",
+        "## Real build receipts",
+        "## Verification and failure accounting",
+        "## Witness limits"
+      ]
+    },
+    {
+      "path": "ASTRA_INTEGRATION_62_3_REPORT.md",
+      "sha256": "8fb54b1190c0647c1dc6f56772bb6222548d192d5a5fbed3fae573d3b3553d39",
+      "headings": [
+        "# Beta 62 integration 3",
+        "## Implemented behavior and decisions",
+        "## Registry and release",
+        "## PROVED and HYPOTHESIS",
+        "## Remaining evidence limits and intentionally unwired surfaces",
+        "## Noah's witness list",
+        "## Manifest reproduction",
+        "## Protected edit locations",
+        "## Acceptance ledger",
+        "### Direct validation commands",
+        "### Real-disc manifest receipt",
+        "## Delivery and cleanup"
+      ]
+    },
+    {
+      "path": "ASTRA_KICKOFF_FIXES_REPORT.md",
+      "sha256": "89d70072439673fc1e002cebdd6c0f15df5e053d83da5cffc2a3768a53803087",
+      "headings": [
+        "# Kickoff fixes A-D",
+        "## Evidence and decisions",
+        "### A: coordinate and scoring trace",
+        "### B: stationary players, live animation",
+        "### C: fixed PLAY resources and local blocking",
+        "### D: projection audit extension",
+        "## Allocation, pins and receipts",
+        "## Validation and delivery",
+        "## Noah's witness list",
+        "## Commit delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_KICKOFF_V2_REPORT.md",
+      "sha256": "a51e7a366f624a8a5b1f9e7905c929a206d013351dddc5748ce15caae0d14fba",
+      "headings": [
+        "# Dynamic kickoff v2: fixed hold, nearest blocker, fitted card",
+        "## B2: held-player jitter",
+        "## C2: nearest approaching coverage and actual engagement",
+        "## D2: all eleven circles within the card",
+        "## Pins, PLAY data, receipts and limits",
+        "## Validation",
+        "## Noah's witness list"
+      ]
+    },
+    {
+      "path": "ASTRA_KICKOFF_V3_REPORT.md",
+      "sha256": "acecab042c66b8284aeedf04b064f33b46c56faedbf57fce7bbcf658f18a7ca3",
+      "headings": [
+        "# r63 kickoff v3: late collision and pose writers",
+        "## PROVED: the writers outside v2's slice",
+        "## Implementation and scope",
+        "## Complete-frame fixture and observations",
+        "## Per-frame writer table",
+        "## Receipts and validation",
+        "## HYPOTHESIS, known gaps, and Noah's witness list",
+        "## Delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_MODERN_NAMING_REPORT.md",
+      "sha256": "65faac539dc08410b06c98ce4e203f578ffd0ebc89df1e694fd575a4ed0cd3a2",
+      "headings": [
+        "# r62 Modern 2K naming report",
+        "## Naming decisions and research",
+        "## Preserved retail labels",
+        "## Retail census and fixed-allocation proof",
+        "## Implementation and integration boundary",
+        "## Screen coverage and limits",
+        "## Noah's precise witness list",
+        "## Validation results",
+        "## Delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_MOMENTUM_BUILD_REPORT.md",
+      "sha256": "3f2ca9b3b0065606aacd271286d195491f8c62ec99b37f4896206909ce7e4e86",
+      "headings": [
+        "# Momentum model 1 build report",
+        "## Delivered",
+        "## Decisions and exact calibration",
+        "### Turning: the smallest effective table experiment",
+        "### Braking: one input envelope around native locomotion",
+        "### Runtime identity and contact",
+        "## Ownership, composition and receipts",
+        "## Verification",
+        "## Noah's witness list",
+        "## Commit delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_MOMENTUM_CONTACT_REPORT.md",
+      "sha256": "9a13daf98a739e79c3a79d766d839eca663fc635d6addd928e59a77618db37be",
+      "headings": [
+        "# r62 momentum-contact, 2026-09-06",
+        "## Authority and decisions",
+        "## Exact model 2 rule",
+        "## Native sites, identity, ownership and parity",
+        "## Tier A/B audit against beta 61",
+        "## Verification and disposable evidence",
+        "## Noah's witness list, all pending",
+        "## Final validation and delivery evidence"
+      ]
+    },
+    {
+      "path": "ASTRA_MUSIC_ALL_MODES_REPORT.md",
+      "sha256": "fa41e7bca44a6da52655e64191b4b3fb87156f81bfcefeac0cd4290d3a51a028",
+      "headings": [
+        "# Music tier 4b: all named routing contracts and rebuilt-library validation",
+        "## Delivered",
+        "## PROVED: bounded context matrix",
+        "## Native ownership and composition",
+        "## PROVED: larger libraries and publication",
+        "## PROVED: project persistence and protected handoff",
+        "## Tests and limits",
+        "## HYPOTHESIS and Noah's witness list"
+      ]
+    },
+    {
+      "path": "ASTRA_MUSIC_BANKS_REPORT.md",
+      "sha256": "d8cdfdb403d68b232cf71d8da5b38577569a15040005e95de2de0d734aaf5d6f",
+      "headings": [
+        "# r61b music banks",
+        "## Delivered",
+        "## XBE ownership and decisions",
+        "## PROVED: disposable retail image acceptance",
+        "## PROVED: 200-entry native list and scroll experiment",
+        "## Realistic 200 x 3-minute estimate",
+        "## Validation commands and results",
+        "## HYPOTHESIS, known gaps, and Noah's witness list",
+        "## Commit scope"
+      ]
+    },
+    {
+      "path": "ASTRA_MUSIC_BUILD_REPORT.md",
+      "sha256": "d1bfbad34ed996147b1fd0636ad66432734b2f10f864261e45206199b9865512",
+      "headings": [
+        "# ASTRA music build report",
+        "## Delivered",
+        "## Decisions and boundaries",
+        "## Evidence: PROVED versus HYPOTHESIS",
+        "## Exact validation run",
+        "## Noah's witness matrix for tiers 1 and 2",
+        "## Remaining limits"
+      ]
+    },
+    {
+      "path": "ASTRA_MUSIC_PLAYLIST_REPORT.md",
+      "sha256": "d01bf10d5b782582dc302c6728ed320d8acca69083f91902fd2fc78c84bb5511",
+      "headings": [
+        "# r62 music playlist",
+        "## What was built and decisions",
+        "## Position, stream and context policies",
+        "## Allocation and coexistence",
+        "## Exact final validation",
+        "## Noah's witness matrix",
+        "## Commit delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_MYCAREER_COMPOSE_REPORT.md",
+      "sha256": "becde6732cb714e6a4972cdc81c6bf6edb24a1f7bd06fea8885028d91b9e0f7a",
+      "headings": [
+        "# MyCareer composition correction",
+        "## PROVED: conflicts and correction",
+        "## Regression coverage and integration repairs",
+        "## Current ownership evidence and protected handoff",
+        "## Exact validation",
+        "## HYPOTHESIS, known gaps and Noah's witness list",
+        "## Delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_MY_CAREER_REPORT.md",
+      "sha256": "1a15fd2bfbfbf5c74ef5b88482c4f2c7e406fbdde71ebf38bffc284d691ab21c",
+      "headings": [
+        "# MyCareer MVP and the Crib movie cut",
+        "## Delivered",
+        "## Decisions and actual mode flow",
+        "## Identity, checkpoint and memory contract",
+        "## Crib movie cut and exact retail plan",
+        "## PROVED by offline and bounded execution",
+        "## HYPOTHESIS and known limits",
+        "## Validation commands and results",
+        "## Noah's played witness list",
+        "## Completion record"
+      ]
+    },
+    {
+      "path": "ASTRA_PLAYOFF_EDITOR_REPORT.md",
+      "sha256": "00a48c14382c8742f10ea4392f1a4ee113d318952b09929e13e189541d6b88f0",
+      "headings": [
+        "# r62 Franchise playoff editor correction",
+        "## Delivered",
+        "## Exact root causes and reproduction boundary",
+        "## Preserved real-save inventory",
+        "## Synthetic 14-team inventory and layout decisions",
+        "## Validation",
+        "## BigTimeEmpire / Noah witness list",
+        "## Delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_PLAY_RULES_REPORT.md",
+      "sha256": "4bacc20e6849415c319f6655509107aa83c74340f6cfbb311a177064dd97a93c",
+      "headings": [
+        "# Astra play rules editor report",
+        "## Completed work",
+        "## Representative complete-chain audit",
+        "## Runtime evidence",
+        "## Implementation decisions and limits",
+        "## Validation",
+        "## Noah's witness list"
+      ]
+    },
+    {
+      "path": "ASTRA_PRACTICE_EXIT_V2_REPORT.md",
+      "sha256": "61c67f89f158ed16c63c0340d07a2142fb0ca980592415cefc4c9f49fd62129c",
+      "headings": [
+        "# Franchise Practice exit v2",
+        "## Result",
+        "## PROVED: source identity and the actual route",
+        "### START and the missing parent",
+        "### Pause-menu Quit through Coach's Desk resume",
+        "## Implementation and ownership",
+        "## PROVED tests and explicit limits",
+        "### Final validation",
+        "## Noah's required played witness",
+        "## Delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_PS_NATIVE_SCREEN_REPORT.md",
+      "sha256": "203a7c8b82f677a0824c1baff6edcc2634a074e384039f3241f7de4a5170df39",
+      "headings": [
+        "# r62 native Practice Squad screen",
+        "## Built and decisions",
+        "## PROVED: guards, allocations and composition",
+        "## Bounded native proof scope",
+        "## Validation",
+        "## Noah's witness list: memo section 4 items 4-6",
+        "## Known gaps and delivery boundary"
+      ]
+    },
+    {
+      "path": "ASTRA_QB_SPY_MAN_RUSH_REPORT.md",
+      "sha256": "235bb91c3ab56478233a059ae53859087172c0cc6d2c481d0832a41590b59618",
+      "headings": [
+        "# r62 QB spy from man and rush",
+        "## Implementation and decisions",
+        "## Retail hooks and native behavior",
+        "## Verification and evidence limits",
+        "## Noah's witness list and remaining hypotheses",
+        "## Final validation and delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_QB_SPY_RUNTIME_REPORT.md",
+      "sha256": "8eb179f4eb1cb0b37654c4092c6e94fce79d2a08366f218dd6788db4297201cf",
+      "headings": [
+        "# Dedicated zone QB spy runtime, beta 62",
+        "## Delivered",
+        "## Decisions and budget",
+        "## PROVED instruction and identity evidence",
+        "## Tier 2: exact deferred man/rush specification",
+        "## Validation and corrections",
+        "## Noah's witness list and remaining hypotheses",
+        "## Commit delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_READOPTION_SCREENHOOKS_COMPOSE_REPORT.md",
+      "sha256": "df5e5519eaf1c93a2e3fe97cd7205da0217a5207d235c2e36fea60a0ee6009be",
+      "headings": [
+        "# r62 read-option / screen-hooks composition repair",
+        "## Built and decisions",
+        "## PROVED: native boundary and offline behavior",
+        "## Complete-union evidence and remaining blockers",
+        "## Exact validation results",
+        "## HYPOTHESIS and Noah's witness list",
+        "## Resource and delivery discipline"
+      ]
+    },
+    {
+      "path": "ASTRA_READ_OPTION_BUILD_REPORT.md",
+      "sha256": "9c771ed311cc40aaf454a9c1cb5af1eb2be80cb7bc59025cb773a2a238a4082f",
+      "headings": [
+        "# Read option / RPO build continuation, 2026-09-05",
+        "## What was built and verified",
+        "## Shipped SOFTDRINK option pack",
+        "## HYPOTHESIS and limits",
+        "## Exact verification",
+        "## Noah's witness list: all pending",
+        "## Commit delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_READ_OPTION_CONTROLS_REPORT.md",
+      "sha256": "8f12fe6a86847f4252b425be841c9d60bf9771c54a15f85992c4fabaed10b556",
+      "headings": [
+        "# Read-option controls v2, 2026-09-06"
+      ]
+    },
+    {
+      "path": "ASTRA_READ_OPTION_RUNTIME_REPORT.md",
+      "sha256": "a3d262e63ccc13c7800151445ab977ceb9e9a709652a383bb4b971f19bb37042",
+      "headings": [
+        "# ASTRA read-option runtime report, 2026-09-06"
+      ]
+    },
+    {
+      "path": "ASTRA_ROSTERS_DATA_REPORT.md",
+      "sha256": "d48a28954899953c64f6d6a19b8fcf437e7f33036bc08b553aa6ebe6b39a365a",
+      "headings": [
+        "# r62 Rosters data report",
+        "## Delivered and decisions",
+        "## Every team difference and the exact space limits",
+        "## Integrity and measured retail results",
+        "## Tests actually run",
+        "## HYPOTHESIS, known limits and Noah's witness list",
+        "## Delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_ROSTERS_UI_REPORT.md",
+      "sha256": "a32b090e0820ff0225accbe5851caeb69182462f3383ac5e5ed536df4f71f3e4",
+      "headings": [
+        "# Rosters beta-61 UI report, 2026-09-05",
+        "## What was built and decided",
+        "### Locks",
+        "### Reserves and one composed save",
+        "### Abilities, data only",
+        "## Evidence boundary",
+        "## Tests run",
+        "## Noah's required witnesses",
+        "### Reserve memo section 4, witnesses 1-3",
+        "### Depth-lock checklist",
+        "### Abilities storage witnesses",
+        "## Remaining release work",
+        "## Commit delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_ROSTER_ARENA_GROWTH_REPORT.md",
+      "sha256": "3c366162848e63847d39dc5012716cc6a048f6cb00537a52cf3fc71480cc0ddc",
+      "headings": [
+        "# r62 roster arena growth",
+        "## Built",
+        "### Format and decisions",
+        "### Native consumer inventory",
+        "### Host and archive integration",
+        "## PROVED offline and under bounded CPU execution",
+        "## HYPOTHESIS, limitations and Noah's witness list",
+        "## Validation results and delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_ROWS_SPECIAL_REPORT.md",
+      "sha256": "7071fcd362bdb7ff223cf067dbfc0e4b2aac67a561e2d610e993ec342e85dc8f",
+      "headings": [
+        "# SPECIAL rows and formation roles — 2026-09-05",
+        "## Implemented and proved within the stated bounds",
+        "## Storage decision and proof boundary",
+        "## Formation policy, retail corrections and counts",
+        "## Verification",
+        "## Noah's in-game checklist — HYPOTHESES until witnessed",
+        "## Explicit change paths"
+      ]
+    },
+    {
+      "path": "ASTRA_SCOREBUG_ESPN_REPORT.md",
+      "sha256": "2dbbe2620567007db3ff11af43d9911b6f9b79d2ce3f606119e1707a8c72c008",
+      "headings": [
+        "# r63 ESPN scorebug: native witness audit and runtime boundary",
+        "## Witness, corrected reconstruction and target",
+        "## What the native paths actually prove",
+        "### The lower row is caused by native score transforms",
+        "### The text bindings already exist",
+        "### Contrast and the red tab",
+        "### The 2.0 fields are not font scale",
+        "### Visible frame selection, wide placement and missing mark",
+        "## Why team colours require the runtime owner",
+        "## Reproduction, receipts and verification",
+        "## Noah's witness list and remaining limits",
+        "## Delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_SCOREBUG_EXACT2_INTEGRATION_REPORT.md",
+      "sha256": "563f468304fcaf5207dd866f226643472f34a32591e3bfcdb3294805cc21bd4c",
+      "headings": [
+        "# Exact scorebug integration on b167472",
+        "## Validation and delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_SCOREBUG_EXACT_REPORT.md",
+      "sha256": "ad4ccf6943efb6f24abc62767c2d7619d257a7811e7ca88cdec92b31ab917b84",
+      "headings": [
+        "# r63-scorebug-exact2 delivery",
+        "## Reference and review artifacts",
+        "## Measurement and stopping decision",
+        "## What changed and what is proved",
+        "## Remaining hypotheses and gameplay witness",
+        "## Validation and protected-file handoff"
+      ]
+    },
+    {
+      "path": "ASTRA_SCOREBUG_FIX_REPORT.md",
+      "sha256": "f7b93ac490f8e3612e6f3f79cc941a91635ca55b306a8a44e512dc9d161441a3",
+      "headings": [
+        "# r62 scorebug layout repair and runtime freeze investigation",
+        "## Root cause and evidence boundary",
+        "## Static fix and exact receipts",
+        "### Pinned installation bytes",
+        "### Writer fixes supporting the matrix",
+        "## Bisect matrix for xemu, approximately one hour",
+        "# Static v8 control and complete-frame capture first.",
+        "# Run one profile, boot it, record the result and retain its receipt.",
+        "# Repeat this block with hooks, resources, neutral, pair, then full.",
+        "### Noah's witness list",
+        "## Native runtime investigation",
+        "### Real waits consistent with the symptom, still HYPOTHESIS",
+        "## Resident memory budget and relevance to Hi-res packs",
+        "## Padded-rip tooling decision",
+        "## Validation and handoff"
+      ]
+    },
+    {
+      "path": "ASTRA_SCOREBUG_INGAME_REPORT.md",
+      "sha256": "dd7117f55820026818a5f64531f0e8cbf348ca991309aee85b5ac6996fa9bfb4",
+      "headings": [
+        "# ESPN reference scorebug, r61b",
+        "## Built and reviewable",
+        "## Reproduce without loose retail assets",
+        "## Resource proof",
+        "## Team texture identities and future binding contract",
+        "## Animation catalogue and event specification",
+        "## Integrity and verification",
+        "## Noah's witness list"
+      ]
+    },
+    {
+      "path": "ASTRA_SCOREBUG_RUNTIME_REPORT.md",
+      "sha256": "a71787fe7e5b6f016594e863af06dba3318998a8482e163bdea7e7ddb91e85ce",
+      "headings": [
+        "# Runtime scorebug, r61b",
+        "## Resource decision and native evidence",
+        "## Runtime hooks and event behaviour",
+        "## Allocator composition and ownership",
+        "## Disc transport, previews and private artifacts",
+        "## Exact verification",
+        "## HYPOTHESIS and Noah's witness list",
+        "## Delivery and scope decisions"
+      ]
+    },
+    {
+      "path": "ASTRA_SCOREBUG_V10_REPORT.md",
+      "sha256": "780d4c6ae649ee7cc80497cecc0b320787cfdb6e84f8330cd8280d28a9c1617d",
+      "headings": [
+        "# Static ESPN scorebar v10 and repaintable template",
+        "## Reference decision and comparison",
+        "## What was built",
+        "## Font and runtime decisions",
+        "## PROVED",
+        "## Tests and reproduction",
+        "## HYPOTHESIS and Noah's witness list",
+        "## Protected integration and delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_SCOREBUG_V9_REPORT.md",
+      "sha256": "4a0c113217ccf668ad377cb4320817e496fb9d592ca46b0ec43890e36ff9bb33",
+      "headings": [
+        "# Static ESPN scorebug v9",
+        "## Before, after and supplied target",
+        "## PROVED: static repair",
+        "## PROVED: transport, replay and ownership",
+        "## Runtime work and HYPOTHESIS",
+        "## Reproduction and verification",
+        "## Noah's witness list",
+        "## Delivery and protected handoff"
+      ]
+    },
+    {
+      "path": "ASTRA_SCREEN_HOOKS_REPORT.md",
+      "sha256": "ef90c8cb2fdc0609bd6495a7c7a8072be2d55c830dcdc385483d5e0e801f2844",
+      "headings": [
+        "# r62-screen-hooks: second screen timing experiment",
+        "## Decisions and implemented behavior",
+        "## Actual grammar and intended receiver",
+        "## Allocation, refusal and ownership",
+        "## Tests and resource limits",
+        "## Noah's paired-snap witness protocol",
+        "## Remaining limits and delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_SCREEN_PASS_REPORT.md",
+      "sha256": "917b741cce656199ddf89d53802ff6b57e90f593237da228a08118fe27a35538",
+      "headings": [
+        "# r61b screen-pass report, 2026-09-05",
+        "## What was built and proved",
+        "## Create a Play and exact GUI edit boundary",
+        "## Tests actually run",
+        "## Noah's paired-snap witness protocol",
+        "## Remaining limits and integration decisions",
+        "## Per-book resource measurements",
+        "## Eligible plays: exact D receipt counts",
+        "## All 65 skipped named screens"
+      ]
+    },
+    {
+      "path": "ASTRA_SEASON_CAP_REPORT.md",
+      "sha256": "b2e59a973a38612d07a85a239aba251b6b5c0547f237dded514baf04002bf637",
+      "headings": [
+        "# r61b season cap: experimental gate and Studio year/DOB fixes",
+        "## What was built and what is proved",
+        "## Wave 2: complete bounded 128-season engine",
+        "### Calendar contract and shared helper ABI",
+        "### Hook and consumer inventory",
+        "### Preseason, regular season, postseason and DOB behavior",
+        "### Grown-section allocation and composition budget",
+        "## Tests run and results",
+        "## Noah's required witness list",
+        "## Delivery boundary and remaining gaps"
+      ]
+    },
+    {
+      "path": "ASTRA_SENIOR_BOWL_REPORT.md",
+      "sha256": "32a311947437e2d8304b49075b2e52c0aa295ab0aec50f1ef8257cbf3d0bf3b9",
+      "headings": [
+        "# r62 Senior Bowl: preparation and dormant components",
+        "## Delivered",
+        "## PROVED: selection, event and placement components",
+        "## PROVED: bounded instructions, budget and installation",
+        "## Exact validation results",
+        "## Native gaps and exact implementation specification",
+        "## Noah's acceptance checklist (memo section 4)",
+        "## Commit delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_SPECIAL_TAB_REPORT.md",
+      "sha256": "df41c430f5548a876ee7373d44e40b1e65ef92ebfdf2ba83111d0d2cf856aa46",
+      "headings": [
+        "# SPECIAL tab r61b, 2026-09-05",
+        "## PROVED: the third names were suppressed by the sheet's column boundary",
+        "## PROVED: the smallest integral row-spacing change fits all thirteen",
+        "## Labels, chains and build compatibility",
+        "## Before and after previews",
+        "## Validation",
+        "## HYPOTHESIS and remaining witness work"
+      ]
+    },
+    {
+      "path": "ASTRA_STADIUM_BLENDER_ADDONS_REPORT.md",
+      "sha256": "910d5a6b45853fe0b7225c9b4ace1b5a6befd7ca75b549861ba85956e1dd4f8e",
+      "headings": [
+        "# r62 community stadium Blender add-ons review",
+        "## Inputs and evidence scope",
+        "## Contract audit",
+        "## Actual headless round trip",
+        "## Models import acceptance",
+        "## Safety review and fix decision",
+        "## Reproduction and tests",
+        "## Resource discipline, integration and remaining witnesses"
+      ]
+    },
+    {
+      "path": "ASTRA_STADIUM_EDITOR_REPORT.md",
+      "sha256": "ee6f9a2556b6debc4a5d0cb0e74bc762c6cf9d2007bbcc0c4a895348c798c969",
+      "headings": [
+        "# r62 Stadium editor",
+        "## Built",
+        "### F2: textured Stadiums exports",
+        "### F3: Blender images back to the P8 writer",
+        "### No-op preservation and fixed-span compression",
+        "## PROVED offline",
+        "## F1 decision and exact research plan",
+        "## F4 workflow and integration boundary",
+        "## Tests and resource discipline",
+        "## MisterAlex's witness list",
+        "## Noah's witness list",
+        "## Delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_STORAGE_GROWTH_REPORT.md",
+      "sha256": "b6e757af66eda708a4070d40f5e4afb04bc51abac91b1ec1e488c253e63efcb2",
+      "headings": [
+        "# r62 roster storage growth",
+        "## Design decision",
+        "## Implemented primitive and proof boundary",
+        "### Complete discovered stadium-list consumers",
+        "### Save and Studio contract",
+        "## Deferred 16/17-player reserve implementation",
+        "### Why a widened prefix is larger in scope",
+        "## Deferred created teams and arena relocation",
+        "## Consumer inventory and remaining certification gap",
+        "## Validation and exact results",
+        "## HYPOTHESIS, known gaps and Noah's witness list",
+        "## Delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_WIDESCREEN_POLISH_REPORT.md",
+      "sha256": "166fa3c3d6d4c7d1886f82408cd6531f802292cdd5567d8e5f1beba01eb5d791",
+      "headings": []
+    },
+    {
+      "path": "ASTRA_WIN_HANDLE_REPORT.md",
+      "sha256": "b6cc8b99e83fb0c3f1bfc86fb59965b64f3283c6fcb5059394f32e2ebd5fae8a",
+      "headings": []
+    },
+    {
+      "path": "ASTRA_WIN_LOCAL_CI_REPORT.md",
+      "sha256": "92d6b18199503773a472c5c3742d1a3bfb07692fead2d120200a7a6580b0f30f",
+      "headings": [
+        "# Local Windows CI: full-matrix classification and hydration",
+        "## Accepted Windows behavior",
+        "## Full matrix and classification decisions",
+        "## Precise Wine skips",
+        "## Runner fix and parallelism",
+        "## Hydration behavior",
+        "## Expected results and external follow-up",
+        "## Validation and delivery",
+        "## Explicit-path commit blocked by the filesystem",
+        "## Follow-up 2",
+        "### Why hydration copied zero and the checkout was not lean",
+        "### The six remaining logs",
+        "### Output truncation was also a runner defect",
+        "### Replay and expected clean numbers",
+        "### Exact developer commands",
+        "### Validation and delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_XBE_SPACE_REPORT.md",
+      "sha256": "efdddf9bad3f60266ddc19d6ea8364eeb1fc8f2ce126c5d67da80c09bc32b190",
+      "headings": [
+        "# r61 XBE space report, 2026-09-05",
+        "## What was built",
+        "## PROVED: structural section strategy and header accounting",
+        "## PROVED: page selection, allocations and SPECIAL composition",
+        "## PROVED: kickoff equivalence and bounded execution",
+        "## Test commands and final results",
+        "## HYPOTHESIS and known gaps",
+        "## Noah's witness list",
+        "## Commit delivery"
+      ]
+    },
+    {
+      "path": "ASTRA_ZONE_DROP_REPORT.md",
+      "sha256": "982f578fcd05b3b4d3c53e83757e63ab63d66216bd02efc30e446f0014cc8cbd",
+      "headings": [
+        "# Initial corner deep-zone drop cap",
+        "## Implementation and decisions",
+        "## PROVED: bounded execution and ownership",
+        "## Limits and required integration",
+        "## Noah's witness list from memo section 5",
+        "## Validation and reproducible input/output identity"
+      ]
+    }
+  ],
+  "size_deltas": {
+    "xbe_scaleout": 352256,
+    "hires_pilot_video": 536448,
+    "hires_pilot_physical": 452044800,
+    "hires_family_modeled_allocation": 4146176,
+    "music_menu_200_physical": 1327202304,
+    "music_jukebox_200_physical": 1475637248,
+    "scorebug_texture_system_video": 1385472,
+    "crib_archive_reclaim": 417122304,
+    "roster_arena": 4096
+  }
+}

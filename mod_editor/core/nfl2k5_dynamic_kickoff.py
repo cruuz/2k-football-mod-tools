@@ -2,7 +2,7 @@
 
 Pair with kick_rules (35-yard tee) and the playbook kickoff_alignment tool.
 No timer releases the hold: ground/player contact latches the first field class.
-See ASTRA_KICKOFF_FIX_REPORT.md for the lineup clamp and pre-launch hold fix.
+See ASTRA_KICKOFF_V6_REPORT.md for the native touchback presentation proof.
 
 Runtime storage is ten previously unreferenced bytes on the writable shared
 .rdata/.data page. 0xA69970 and 0xA69974..7F belong to other patches. Settings
@@ -59,7 +59,45 @@ HOOKS = {
     "spot": (0xB65CC, bytes.fromhex("a18002e600")),
     "reset": (0x1C9399, bytes.fromhex("a1a0d95000")),
     "lineup": (0x183F60, bytes.fromhex("558bec83e4f0")),
+    "eligibility": (0xB6760, bytes.fromhex("83ec0c8b4738")),
+    "root_motion": (0x2CC570, bytes.fromhex("83ec1c568b4210")),
+    "block_target": (0x2FAFF0, bytes.fromhex("558bec83e4f0")),
+    "diagram": (0x1802BB, bytes.fromhex("8b450c85c0")),
+    "separation": (0x1D8940, bytes.fromhex("8b48248b5120")),
+    "ready": (0x1FF940, bytes.fromhex("8b41108b5004")),
+    "head_pose": (0x1DF430, bytes.fromhex("558bec83e4f0")),
+    "block_tick": (0x23CE70, bytes.fromhex("558bec83e4f0")),
+    "commentary": (0xA7930, bytes.fromhex("e9bb181400")),
 }
+
+
+class _CompactAsm(_Asm):
+    """Relax local branches before emission, keeping the existing allocation.
+
+    Only assembler items are shortened; absolute calls and pinned instructions
+    are never searched or rewritten. Recompute labels after every relaxation.
+    """
+
+    def assemble(self):
+        while True:
+            super().assemble()
+            pos, changed = 0, False
+            for n, item in enumerate(self.items):
+                size = self._size(item)
+                if isinstance(item, tuple) and item[0] == "j32":
+                    op, target = item[1:]
+                    short = (b"\xeb" if op == b"\xe9" else
+                             bytes([op[1] - 0x10]) if len(op) == 2 and op[0] == 0x0F else None)
+                    delta = self.labels[target] - (pos + size)
+                    # Backward jumps grow by the saved instruction bytes.
+                    if delta < 0:
+                        delta += size - 2
+                    if short is not None and -128 <= delta <= 127:
+                        self.items[n] = ("j8", short, target)
+                        changed = True
+                pos += size
+            if not changed:
+                return super().assemble()
 
 
 class DynamicKickoffError(ValueError):
@@ -99,64 +137,79 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     AIM_PROB, TB_PROB, KICK_SPOT = FLAGS + 1, FLAGS + 2, FLAGS + 3
     TB_YARD = storage_ranges[1][0]
     TARGET_MIN, TARGET_MAX = TB_YARD + 1, TB_YARD + 2
-    a = _Asm(cave_va)
+    a = _CompactAsm(cave_va)
     imm = _imm
     def b(code): a.b(code)
     def label(name): a.label(name)
     def j(op, name): a.j32(op, name)
     def call(name): a.j32("e8", name)
-    def save(): b("9c60")  # pushfd, pushad (36 bytes)
-    def restore(): b("619d")
+    def save(flags=True): b("9c60" if flags else "60")
+    def restore(flags=True): b("619d" if flags else "61")
     def replay(name):
         va, original = HOOKS[name]
-        b(original.hex())
-        a.jmp_abs(va + len(original))
+        if name == "commentary":
+            # The displaced instruction is a relative JMP thunk, not a prologue.
+            a.jmp_abs(0x1E91F0)
+        else:
+            b(original.hex())
+            a.jmp_abs(va + len(original))
     def guard(done, live=False):
-        b("833d" + imm(PHASE) + "02"); j("0f85", done)
-        b("f605" + imm(FLAGS) + "08"); j("0f84", done)
-        if live:
-            b("833d" + imm(PLAY_STATE) + "0e"); j("0f85", done)
+        call("active_live" if live else "active"); j("0f84", done)
     def signed_z():  # ST0 := ball/contact z in kicking direction, balanced by caller
-        b("d94208")  # fld [edx+8]
-        b("f605" + imm(FLAGS) + "10")
-        unique = "positive_" + str(len(a.items))
-        j("0f84", unique); b("d9e0"); label(unique)
+        b("d94208"); call("direction_z")
     def compare_pop(va):
         b("d81d" + imm(va) + "dfe0f6c441")  # fcomp, fnstsw ax, test ah, C0|C3
     def percent_roll(va):
         a.call(RAND)
-        b("31d2b964000000f7f1")  # unsigned RNG % 100 -> edx
-        b("0fb605" + imm(va) + "39c2")  # cmp edx,eax
+        b("31d26a6459f7f1")  # unsigned RNG % 100 -> edx
+        b("3a15" + imm(va))  # DL is 0..99; compare the byte probability
+
+    label("active_live")
+    b("833d" + imm(PLAY_STATE) + "0e"); j("0f85", "inactive")
+    label("active")
+    b("833d" + imm(PHASE) + "02"); j("0f85", "inactive")
+    b("f605" + imm(FLAGS) + "08c3")
+    label("inactive"); b("31c0c3")
+
+    label("direction_z")
+    b("f605" + imm(FLAGS) + "10"); j("0f84", "direction_done")
+    b("d9e0")
+    label("direction_done"); b("c3")
 
     label("launch")
-    save()
+    save(False)
     b("c605" + imm(FLAGS) + "00")
     b("833d" + imm(PHASE) + "02"); j("0f85", "launch_done")
-    b("8b74242c")  # original [esp+8] is kicker
+    b("8b742428")  # original [esp+8] is kicker, plus PUSHAD (32 bytes)
     b("85f6"); j("0f84", "launch_done")
     b("8b462085c0"); j("0f84", "launch_done")
     # Query the retail Ball Action opcode (8) on BOTH normal and squib paths.
-    b("6a0089e2526a008d881c040000ba08000000")
+    b("6a0089e2526a008d881c0400006a085a")
     a.call(0x1B8CA0)
     b("5a85c0"); j("0f84", "launch_done")
     b("83fa02"); j("0f84", "launch_done")  # declared onside
     b("a1" + imm(CTX) + "85c0"); j("0f84", "launch_done")
-    b("8b50188915" + imm(KICK_SPOT))  # exact penalty-adjusted LOS float
-    for name, va, value in (("aim_prob", AIM_PROB, settings["cpu_landing_probability"]),
-                            ("tb_prob", TB_PROB, settings["cpu_touchback_probability"]),
-                            ("tb_yard", TB_YARD, settings["touchback_yard"]),
-                            ("target_min", TARGET_MIN, settings["cpu_target_yards"][0]),
-                            ("target_max", TARGET_MAX, settings["cpu_target_yards"][1])):
-        label("config_" + name)
-        b("c605" + imm(va) + f"{value:02x}")
-    b("c605" + imm(FLAGS) + "08")
+    b("8b5018")  # exact penalty-adjusted LOS, retained in EDX until config stores
+    # Adjacent configuration bytes share a word store. Labels identify the
+    # immediate bytes themselves, including both bytes of each word.
+    b("c705" + imm(FLAGS) + "08")
+    label("config_aim_prob"); b(f'{settings["cpu_landing_probability"]:02x}')
+    label("config_tb_prob"); b(f'{settings["cpu_touchback_probability"]:02x}' + "00")
+    # The fourth byte is the first KICK_SPOT byte, also owned here. Restore
+    # the entire exact float immediately, before any calls or branch can use it.
+    b("8915" + imm(KICK_SPOT))
+    b("66c705" + imm(TB_YARD))
+    label("config_tb_yard"); b(f'{settings["touchback_yard"]:02x}')
+    label("config_target_min"); b(f'{settings["cpu_target_yards"][0]:02x}')
+    b("c605" + imm(TARGET_MAX))
+    label("config_target_max"); b(f'{settings["cpu_target_yards"][1]:02x}')
     b("8b46388b40088b400cf7400400000080")  # direction's float sign bit
     j("0f84", "launch_positive")
     b("800d" + imm(FLAGS) + "10")
     label("launch_positive")
     percent_roll(TB_PROB); j("0f83", "launch_done")
     b("800d" + imm(FLAGS) + "20")
-    label("launch_done"); restore(); replay("launch")
+    label("launch_done"); restore(False); replay("launch")
 
     label("reset")
     b("c605" + imm(FLAGS) + "00")  # mov does not change flags
@@ -172,32 +225,30 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     a.call(RAND)
     b("0fb60d" + imm(TARGET_MAX) + "0fb61d" + imm(TARGET_MIN))
     b("29d94131d2f7f101da")  # selected receiving yard = lo + RNG % (hi-lo+1)
-    b("b83200000029d050db0424d80d" + imm(YARD))  # (50-yard)*91.44
-    b("f605" + imm(FLAGS) + "10"); j("0f84", "aim_positive")
-    b("d9e0")
-    label("aim_positive")
+    b("6a325829d050db0424d80d" + imm(YARD))  # (50-yard)*91.44
+    call("direction_z")
     b("d825" + imm(KICK_SPOT) + "d9e1")  # abs(target z - exact kick spot)
     b("d95c246083c404")  # original [esp+0x38], accounting for saved regs + temp
     b("c744243800200000")  # original [esp+0x14] elevation = 45 degrees
-    b("31c0f605" + imm(FLAGS) + "10"); j("0f84", "aim_heading")
-    b("b800800000")
+    b("0fb605" + imm(FLAGS) + "2410c1e00b")
     label("aim_heading"); b("8944243c")  # original [esp+0x18] heading, straight
     label("aim_done"); restore(); replay("aim")
 
     # Classifier uses the event position, not predicted landing or elapsed time.
     # Returning EAX does NOT mutate the first-contact history.
     label("classify")
-    signed_z(); compare_pop(GOAL); j("0f84", "class_end")
-    # Include the goal line itself in the end zone (ZF represented by C3).
-    b("f6c440"); j("0f85", "class_end")
-    b("d902d9e1"); compare_pop(HALF_WIDTH); j("0f84", "class_out")
-    b("f6c440"); j("0f85", "class_out")
-    signed_z(); compare_pop(LANDING_EDGE)
+    # SAHF exposes x87 C0/C3 as CF/ZF. Preserve the existing inclusive and
+    # unordered branches while saving bytes for the separation guard.
+    signed_z(); b("d81d" + imm(GOAL) + "dfe09e")
+    j("0f83", "class_end"); j("0f84", "class_end")
+    b("d902d9e1d81d" + imm(HALF_WIDTH) + "dfe09e")
+    j("0f83", "class_out"); j("0f84", "class_out")
+    signed_z(); b("d81d" + imm(LANDING_EDGE) + "dfe0")
     b("f6c401"); j("0f85", "class_short")
-    b("b801000000c3")
-    label("class_end"); b("b802000000c3")
-    label("class_short"); b("b803000000c3")
-    label("class_out"); b("b804000000c3")
+    b("6a0158c3")
+    label("class_end"); b("6a0258c3")
+    label("class_short"); b("6a0358c3")
+    label("class_out"); b("6a0458c3")
 
     label("contact")
     call("classify")
@@ -205,29 +256,36 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     b("0805" + imm(FLAGS))  # latch first class, never overwrite it
     label("contact_done"); b("c3")
 
+    # Share invalid-contact classification. Player contacts defer the whistle
+    # until bookkeeping completes; the ground callback can end it immediately.
+    label("invalid_contact")
+    b("83f804"); j("0f84", "invalid_set")
+    b("a0" + imm(FLAGS) + "24073c03"); j("0f85", "invalid_done")
+    label("invalid_set")
+    b("f605" + imm(FLAGS) + "40"); j("0f85", "invalid_done")
+    b("800d" + imm(FLAGS) + "80")
+    label("invalid_done"); b("c3")
+
     label("ground")
-    save(); guard("ground_done", live=True)
+    save(False); guard("ground_done", live=True)
     b("3b0d" + imm(BALL)); j("0f85", "ground_done")
     # EDX is the collision-resolved transform passed by 0x1C841F.
     call("contact")
-    b("800d" + imm(TB_PROB) + "80")  # high bit: an actual ground contact occurred
-    b("83f804"); j("0f84", "ground_invalid")
-    b("0fb605" + imm(FLAGS) + "83e00783f803"); j("0f85", "ground_done")
-    label("ground_invalid")
     b("f605" + imm(FLAGS) + "40"); j("0f85", "ground_done")
-    b("800d" + imm(FLAGS) + "80")
+    # An untouched kick grounded in the end zone is dead by rule. This is
+    # independent of a returner's controller and the CPU kneel preference.
+    b("83f802"); j("0f84", "ground_finish")
+    call("invalid_contact")
+    b("f605" + imm(FLAGS) + "80"); j("0f84", "ground_done")
+    label("ground_finish")
     call("finish")
-    label("ground_done"); restore(); replay("ground")
+    label("ground_done"); restore(False); replay("ground")
 
     label("touch")
     save(); guard("touch_done", live=True)
     b("a1" + imm(BALL) + "85c0"); j("0f84", "touch_done")
     b("8b5014"); call("contact")
-    b("83f804"); j("0f84", "touch_invalid")
-    b("0fb605" + imm(FLAGS) + "83e00783f803"); j("0f85", "touch_done")
-    label("touch_invalid")
-    b("f605" + imm(FLAGS) + "40"); j("0f85", "touch_done")
-    b("800d" + imm(FLAGS) + "80")
+    call("invalid_contact")
     # Defer the whistle until the next dispatcher/dead event, so retail contact
     # bookkeeping completes before the next-play record is constructed.
     label("touch_done"); restore(); replay("touch")
@@ -236,93 +294,231 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     # behind the tee at 184050. This runs BEFORE launch, so ACTIVE is not a
     # valid guard. Only normal kickoff coverage bypasses the retail clamp.
     label("lineup")
-    save()
+    save(False)
     b("8b41383b05" + imm(POSSESSION)); j("0f85", "lineup_go")
-    call("aligned_roles"); b("85c0"); j("0f84", "lineup_go")
-    restore(); b("c3")
-    label("lineup_go"); restore(); replay("lineup")
+    call("aligned_roles"); j("0f84", "lineup_go")
+    restore(False); b("c3")
+    label("lineup_go"); restore(False); replay("lineup")
 
     # State 12 is still lining up; 158C90 advances to 13 only when both teams
     # are ready. State 14 starts before the animation's 222CA0 ball launch.
-    # Hold through that approach as well as flight, without freezing setup.
+    # Hold completed players through that approach as well as flight.
     label("held")
-    b("a1" + imm(PLAY_STATE) + "83e80d83f801"); j("0f87", "held_no")
+    b("a1" + imm(PLAY_STATE) + "83e80d83f801"); j("0f86", "held_contact")
+    # Global lineup state 12 outlasts individual lineup completion. The native
+    # setup task writes player-state +3E4=13 only after reaching its mark and
+    # facing it. A new lineup resets that field to 12. Never freeze travel.
+    b("40"); j("0f85", "held_no")
+    # The late head pass also visits officials/presentation actors. Their +20
+    # field is not necessarily a player-state object, so reject them first.
+    b("83791c01"); j("0f85", "held_no")
+    b("8b412085c0"); j("0f84", "held_no")
+    b("83b8e40300000d"); j("0f85", "held_no")
+    label("held_contact")
     b("f605" + imm(FLAGS) + "07"); j("0f85", "held_no")
     # EAX=1 only for the 19 coverage/setup slots of a normal kickoff. The
     # selected kicking formation is available before CTX+1C4 (last kicker).
     # Onside type 10 and safety phase 1 retain their retail behavior.
     label("aligned_roles")
     b("833d" + imm(PHASE) + "02"); j("0f85", "held_no")
-    b("83791c01"); j("0f85", "held_no")
-    b("83794800"); j("0f85", "held_no")
+    b("8b411c480b4148"); j("0f85", "held_no")
     b("80792e0b"); j("0f83", "held_no")
     b("8b15" + imm(POSSESSION) + "85d2"); j("0f84", "held_no")
     b("8b420c85c0"); j("0f84", "held_no")
     b("8b400885c0"); j("0f84", "held_no")
-    b("8b400425003f00003d00080000"); j("0f85", "held_no")
+    b("8a4005243f3c08"); j("0f85", "held_no")
     b("8b413839d0"); j("0f85", "held_receiving")
     b("80792e00"); j("0f84", "held_no")
     j("e9", "held_yes")
     label("held_receiving")
     b("3b02"); j("0f85", "held_no")
     b("80792e02"); j("0f82", "held_no")
-    label("held_yes"); b("b801000000c3")
+    # Return both EAX and ZF so every hook can branch without another TEST.
+    label("held_yes"); b("31c040c3")
     label("held_no"); b("31c0c3")
 
+    # 1881E0 must accept every completed held stance without waiting on a
+    # frozen animation transition. The free kicker and every out-of-scope
+    # player still execute the native descriptor query.
+    # held clobbers only EAX/EDX, both overwritten by the displaced prologue.
+    label("ready")
+    call("held"); j("0f85", "ready_yes"); replay("ready")
+    label("ready_yes"); b("c3")
+
     label("plan")
-    save(); call("returner")
+    save(False); call("returner")
     # Restore the input ECX after any retail calls made by returner().
-    b("8b4c2418"); call("held"); b("85c0"); j("0f84", "plan_go")
-    restore(); b("c3")
-    label("plan_go"); restore(); replay("plan")
+    b("8b4c2418"); call("held"); j("0f84", "plan_go")
+    restore(False); b("c3")
+    label("plan_go"); restore(False); replay("plan")
 
     label("motion")
-    save(); b("89f1"); call("held"); b("85c0"); j("0f84", "motion_go")
-    # Skip both root motion and animation time; mark the animation as updated.
-    b("8b4614c7405401000000")
-    restore(); b("c3")
-    label("motion_go"); restore(); replay("motion")
+    save(False); b("89f1"); call("held"); j("0f84", "motion_go")
+    # Preserve the selected stance. Calling 1CD550 with "idle" each frame
+    # invokes 2388D0, which redirects individual states 12/13 back to ready;
+    # 200D00 -> 1FFFE0 then samples the receiving player's foot height again.
+    # Stop the existing channels without re-entering that animation lifecycle.
+    b("8b460c83601000836018fd")
+    b("8b46388b40088b400c8b5004c1ea1fc1e20f")
+    b("8b460c895014")
+    b("89f1")  # EDX is still the canonical heading; no initializer clobbers it
+    a.call(0x1A89E0)
+    # The later 28E360 pose pass consumes a separate turn/lean spring even
+    # when both clip clocks are zero. Neutralize its residual input/state;
+    # retain the native spring coefficients at transform+7C/+80.
+    b("8b7e1883c76831c06a0559fcf3ab")
+    # Expire old separation impulses before 28C5B0's native clear. The new
+    # separation hook prevents fresh impulses and direct position additions.
+    b("8b7e24894734")  # EAX remains zero after STOSD; collision+34 = 0
+    # 31BD40 has already selected the new channels. Finish both blends, sample
+    # their fixed frame zero and pass dt=0 to 31BEB0. Root callbacks and the
+    # collision setter below are suppressed, so no restore fights an integrator.
+    b("8b461483601cf98b5058836204008b507483620400")
+    restore(False); b("31c0"); a.jmp_abs(0x218015)
+    label("motion_go"); restore(False)
+    label("motion_native"); replay("motion")
 
     label("position")
-    save(); call("held"); b("85c0"); j("0f84", "position_go")
-    # 28DFE0 snapshots the previous transform at +0..2F before each frame.
-    # 28CC30 ends collision correction through this setter. Restore position,
-    # orientation and velocity together, including human-selected coverage men.
-    b("8b4c24188b71188d7e30b90c000000fcf3a5")
-    restore(); b("c20800")
-    label("position_go"); restore(); replay("position")
+    save(False); call("held"); j("0f84", "position_go")
+    restore(False); b("c20800")
+    label("position_go"); restore(False); replay("position")
+
+    label("root_motion")
+    save(False); call("held"); j("0f84", "root_go")
+    restore(False); b("c3")
+    label("root_go"); restore(False); replay("root_motion")
+
+    # 1D898D/1D8997 add a fresh collision impulse directly, bypassing 2CC4F0,
+    # then retain it for the later 28D06D/28D081 integration. Stop the producer
+    # for held players. EAX is the player; one stack argument, no ST0 return.
+    label("separation")
+    save(False); b("89c1"); call("held"); j("0f84", "separation_go")
+    restore(False); b("c20400")
+    label("separation_go"); restore(False); replay("separation")
+
+    # 28F310 can request a new head-look target after motion. At the later
+    # 1DF430 pass, mode 0 samples the fixed clip's head without interpolation.
+    # Keep the task's target intact so native tracking resumes on contact.
+    label("head_pose")
+    save(False); b("89c1"); call("held"); j("0f84", "head_go")
+    b("8b411083a0a801000000")
+    label("head_go"); restore(False); replay("head_pose")
+
+    # Revalidate before native drive pursuit, including the first release
+    # frame. 23CD60 uses the same selector and keeps an engaged pair intact.
+    label("block_tick")
+    save(False); call("block_scope"); j("0f84", "block_tick_go")
+    b("89cf")  # 23CD60 preserves EDI; keep the player for a no-target stop
+    a.call(0x23CD60)
+    # Our selector writes task+40 before returning. 23CDC5 loads that selected
+    # target into EAX and its equal-target path preserves EAX through RET.
+    b("85c0"); j("0f85", "block_tick_go")
+    # Native 23CFCB otherwise replaces drive with 23B040's fallback, which can
+    # pursue the kicker. Keep this task waiting; no target means zero throttle.
+    label("block_wait")
+    b("8b4f0c83611000"); restore(False); b("31c0c3")
+    label("block_tick_go"); restore(False); replay("block_tick")
+
+    label("receiving")
+    b("8b15" + imm(CTX) + "8b92c401000085d2"); j("0f84", "receiving_no")
+    b("8b52388b123b5138"); j("0f85", "receiving_no")
+    b("31c040c3")
+    label("receiving_no"); b("31c0c3")
+
+    label("block_scope")
+    guard("block_scope_no", live=True)
+    b("f605" + imm(FLAGS) + "07"); j("0f84", "block_scope_no")
+    b("8b411c480b4148"); j("0f85", "block_scope_no")
+    b("80792e0b"); j("0f83", "block_scope_no")
+    b("8b4124f6403802"); j("0f85", "block_scope_no")  # let an engaged native pair finish
+    b("a1" + imm(BALL) + "3908"); j("0f84", "block_scope_no")
+    j("e9", "receiving")
+    label("block_scope_no"); b("31c0c3")
+
+    # Selector ABI: ECX=blocker, EDX=origin; seven stack operands, ST0=threshold.
+    # Only released, normal kickoff return blockers use this nearest rule.
+    label("block_target")
+    save(False); call("block_scope"); j("0f84", "block_go")
+    b("837c242802"); j("0f85", "block_go")  # native drive mode
+    b("8b41388b00")  # kicking team, from the verified receiving player
+    j("e9", "block_start")
+    label("block_go"); restore(False); replay("block_target")
+    label("block_start")
+    b("8b71188b780431db6a165d680000807f")  # self transform, opponent list, best, bound, +inf
+    label("block_loop")
+    b("85ff"); j("0f84", "block_end")
+    b("837f4800"); j("0f85", "block_next")
+    b("8a472efec83c09"); j("0f87", "block_next")  # coverage slots 1..10
+    b("8b5718d94238d86638")  # candidate z - self z
+    b("f605" + imm(FLAGS) + "10"); j("0f85", "block_front")
+    b("d9e0")  # receiving direction is opposite kicking direction
+    label("block_front")
+    b("d9e4dfe0ddd89e"); j("0f82", "block_next")
+    # Approaching includes zero velocity on the first release frame.
+    b("0f2842300f5c46300f28c80f594a400f12d10f57dbf30f58ca0f2fcb")
+    j("0f87", "block_next"); j("0f8a", "block_next")
+    # Prefer arrivals in the player's lane: 4*dx^2 + dz^2. No fixed slot pairing
+    # survives a crossing coverage player. SSE1 only; reject NaN/infinity and
+    # preserve deterministic list-order ties. State remains in the native task.
+    b("f30f58c00f59c00f12c8f30f58c10f2f0424")
+    j("0f83", "block_next"); j("0f8a", "block_next")
+    b("f30f11042489fb")
+    label("block_next"); b("8b7f344d"); j("0f85", "block_loop")
+    label("block_end"); b("83c404")
+    # The refresh caller otherwise retains a farther target within 4.5 feet.
+    # Its current task exists before both initialization and refresh calls.
+    b("8b41208b8010030000895840")
+    # Strong primary score, no deeper fallback; native drive engagement follows.
+    b("8d742430fcad8918adc7000000803f31d2ad8910ad8910")
+    restore(False); b("d9056c694e00c21c00")
+
+    # This point is reached only in diagram mode, after retail x compression.
+    # Recognize the dynamic type-8 coverage row; world and other forms replay.
+    label("diagram")
+    b("a120fcbd008b500480e63f80fe08"); j("0f85", "diagram_go")
+    b("66817830ee08"); j("0f85", "diagram_go")
+    b("837d0c00"); j("0f84", "diagram_go")
+    b("681f052044d94108d80d046f4e00d82424d9590858")  # z / 8 - 640.08
+    a.jmp_abs(0x180407)
+    label("diagram_go"); replay("diagram")
 
     label("returner")
     guard("return_done", live=True)
     b("f605" + imm(FLAGS) + "80"); j("0f85", "return_finish")
     b("a1" + imm(BALL) + "85c0"); j("0f84", "return_done")
-    b("8b1085d2"); j("0f84", "return_loose")
+    b("8b1085d2"); j("0f84", "return_done")
     b("39ca"); j("0f85", "return_done")  # only actual holder's dispatcher
-    j("e9", "return_player")
-    label("return_loose")
-    # A CPU deep returner may leave a grounded end-zone ball downed. Never
-    # whistle an airborne, unfielded ball just because it crossed the goal line.
-    b("f605" + imm(TB_PROB) + "80"); j("0f84", "return_done")
-    b("80792e02"); j("0f83", "return_done")
     label("return_player")
     b("83791c01"); j("0f85", "return_done")
-    b("8b15" + imm(CTX) + "8b92c401000085d2"); j("0f84", "return_done")
-    b("8b52388b123b5138"); j("0f85", "return_done")  # receiving team
+    call("receiving"); j("0f84", "return_done")
+    b("a1" + imm(BALL))
     b("8b5014"); call("contact")
     b("83f802"); j("0f84", "return_end")
-    b("a1" + imm(BALL) + "833800"); j("0f84", "return_done")
     b("800d" + imm(FLAGS) + "40c3")  # field entered under possession
     label("return_end")
-    b("f605" + imm(FLAGS) + "40"); j("0f85", "return_done")
-    b("f605" + imm(FLAGS) + "20"); j("0f84", "return_done")
+    b("a0" + imm(FLAGS) + "24603c20"); j("0f85", "return_done")
     b("8b410c85c0"); j("0f84", "return_done")
     b("8338ff"); j("0f85", "return_done")
     b("8b4120f6808405000020"); j("0f85", "return_done")
-    label("return_finish"); call("finish")
+    # Native task waits for the catch animation to unlock, clears the old task,
+    # and requests action 0x63. Its retail clip event 0x5F ends the play later.
+    a.jmp_abs(0x2EE090)
+    label("return_finish"); j("e9", "finish")
     label("return_done"); b("c3")
 
+    # Use the retail touchback/dead-play transition, retaining kick ownership
+    # bookkeeping. force-40 overrides the spot afterward. The short/OOB
+    # announcement/penalty-choice UI remains a witness item, not a claim.
+    label("finish")
+    b("b80000803ff605" + imm(FLAGS) + "10"); j("0f84", "finish_positive")
+    b("0fbae81f")
+    label("finish_positive")
+    b("8b0d" + imm(CTX) + "89817c010000")
+    b("31c9")  # param_1=0 for next-spot builder through A0390
+    a.jmp_abs(0xA0390)
+
     label("dead")
-    save(); guard("dead_go", live=True)
+    save(False); guard("dead_go", live=True)
     b("f605" + imm(FLAGS) + "40"); j("0f85", "dead_go")
     b("3b0d" + imm(BALL)); j("0f85", "dead_go")
     b("8b5114"); call("contact")
@@ -331,20 +527,35 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     b("83f804"); j("0f85", "dead_go")
     b("800d" + imm(FLAGS) + "80")
     label("dead_finish"); call("finish")
-    restore(); b("c3")
-    label("dead_go"); restore(); replay("dead")
+    restore(False); b("c3")
+    label("dead_go"); restore(False); replay("dead")
 
-    # Use the retail touchback/dead-play transition, retaining kick ownership
-    # bookkeeping. force-40 overrides the spot afterward. The short/OOB
-    # announcement/penalty-choice UI remains a witness item, not a claim.
-    label("finish")
-    b("b80000803ff605" + imm(FLAGS) + "10"); j("0f84", "finish_positive")
-    b("0d00000080")
-    label("finish_positive")
-    b("508b0d" + imm(CTX) + "89817c010000")
-    b("83c40431c9")  # param_1=0 for next-spot builder through A0390
-    a.call(0xA0390)
-    b("c3")
+    # Retail B6760 accepts the 5103A0 animation descriptor independently of
+    # position. A receiving carrier with the ball inside the landing zone must
+    # not become an end-zone touchback merely by entering that state.
+    label("eligibility")
+    save(False); guard("eligibility_go", live=True)
+    b("a1" + imm(BALL) + "85c0"); j("0f84", "eligibility_go")
+    b("3938"); j("0f85", "eligibility_go")
+    b("89f9"); call("receiving"); j("0f84", "eligibility_go")
+    b("a1" + imm(BALL))
+    b("8b5014"); call("classify")
+    b("83f801"); j("0f85", "eligibility_go")
+    restore(False); b("31c0c3")
+    label("eligibility_go"); restore(False); replay("eligibility")
+
+    # Defer the per-frame catch/clear-lane producer while a kickoff ball is
+    # in the end zone and has never entered the field under possession. The
+    # native kneel (3A), touchback (5B), and possession (5D) producers are separate.
+    # Guard after the whistle too: 1E91F0 processes a pending catch before its
+    # live-state check. Replay the thunk target with its original one-arg ABI.
+    label("commentary")
+    save(False); guard("comment_go")
+    b("f605" + imm(FLAGS) + "40"); j("0f85", "comment_go")
+    b("a1" + imm(BALL) + "8b5014"); call("classify")
+    b("83f802"); j("0f85", "comment_go")
+    restore(False); b("c20400")
+    label("comment_go"); restore(False); replay("commentary")
 
     label("spot")
     save(); guard("spot_done")
@@ -354,15 +565,13 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     b("0fb615" + imm(FLAGS) + "83e20783fa01"); j("0f84", "spot_20")
     b("83fa02"); j("0f85", "spot_done")
     b("0fb615" + imm(TB_YARD)); j("e9", "spot_calc")
-    label("spot_20"); b("ba14000000"); j("e9", "spot_calc")
-    label("spot_40"); b("ba28000000")
+    label("spot_20"); b("6a145a"); j("e9", "spot_calc")
+    label("spot_40"); b("6a285a")
     label("spot_calc")
-    b("b93200000029d151db0424d80d" + imm(YARD))
-    b("f605" + imm(FLAGS) + "10"); j("0f84", "spot_positive")
-    b("d9e0")
-    label("spot_positive")
+    b("6a325929d151db0424d80d" + imm(YARD))
+    call("direction_z")
     b("d95c244083c404")  # original [esp+0x18] after save + temp
-    b("c744243400000000")  # original [esp+0x10] = centered x
+    b("8364243400")  # original [esp+0x10] = centered x
     label("spot_done"); restore(); replay("spot")
     code = a.assemble()
     _require(len(code) <= CAVE_SIZE, f"dynamic kickoff code {len(code)} exceeds cave {CAVE_SIZE}")
@@ -393,7 +602,7 @@ def _hook_bytes(name, labels):
 
 def _decode_legacy_settings(payload):
     labels = cave_labels()
-    vals = {key: payload[_offset(payload, labels["config_" + key] + 6, 1)]
+    vals = {key: payload[_offset(payload, labels["config_" + key], 1)]
             for key in ("aim_prob", "tb_prob", "tb_yard", "target_min", "target_max")}
     return _settings(vals["tb_yard"], vals["aim_prob"],
                      (vals["target_min"], vals["target_max"]), vals["tb_prob"])
@@ -490,4 +699,7 @@ def apply(payload: bytes, *, touchback_yard=35, cpu_landing_probability=90,
     return result, {"status": "applied", "experimental": True, **settings,
                     "changed_bytes": sum(x != y for x, y in zip(payload, result)),
                     "sections_repinned": sorted(touched),
-                    "edits": [{"label": n, "va": hex(va), "bytes": len(data)} for n, va, data in edits]}
+                    "edits": [{"label": n, "va": hex(va), "bytes": len(data),
+                               "offset": _offset(payload, va, len(data)),
+                               "before_sha256": hashlib.sha256(payload[_offset(payload, va, len(data)):_offset(payload, va, len(data)) + len(data)]).hexdigest(),
+                               "after": data.hex()} for n, va, data in edits]}
