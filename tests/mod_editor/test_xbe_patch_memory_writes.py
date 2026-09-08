@@ -89,6 +89,18 @@ class SectionTableTests(unittest.TestCase):
 class PatchWriteTests(unittest.TestCase):
     """Every absolute memory write in every patch's changed code targets writable memory."""
 
+    def test_coverage_trail_owns_no_runtime_storage(self):
+        from mod_editor.core import nfl2k5_coverage_trail as trail, nfl2k5_xbe_space as space
+        from mod_editor.core import nfl2k5_coverage_trail_code as code
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        row = next(a for a in space.layout(self.patched)["allocations"] if a["owner"] == trail.OWNER)
+        image = XbeImage(self.patched)
+        self.assertEqual((row["kind"], row["size"]), ("code", trail.CODE_SIZE))
+        self.assertFalse(image.runtime_writable(row["va"], row["size"]))
+        writes = absolute_writes(self.patched, [(row["va"], row["va"] + code.LABELS["constants"])])
+        self.assertTrue(writes)
+        self.assertTrue(all(w["target"] is None for w in writes), writes)
+
     def test_static_scorebar_v3_composes_and_writes_only_existing_native_state(self):
         from mod_editor.core import nfl2k5_scorebug_ingame as scorebug, nfl2k5_scorebar_v3 as v3
         from mod_editor.core.nfl2k5_cave_oracle import absolute_writes
@@ -144,6 +156,9 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_espn25_rosters as espn25
         if espn25.xbe_status(cls.patched) != "applied" or espn25.apply_xbe(cls.patched)[0] != cls.patched:
             raise AssertionError("Historic team reload repair missing from the complete owner union")
+        from mod_editor.core import nfl2k5_coverage_trail as coverage_trail
+        if coverage_trail.status(cls.patched) != "applied" or coverage_trail.apply(cls.patched)[0] != cls.patched:
+            raise AssertionError("Coverage trail missing from the complete owner union")
         from mod_editor.core import nfl2k5_franchise_autosave as autosave
         if autosave.status(cls.patched) != "applied" or autosave.apply(cls.patched)[0] != cls.patched:
             raise AssertionError("Franchise Auto Save missing from the complete owner union")

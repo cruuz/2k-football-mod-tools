@@ -51,7 +51,7 @@ class PlannerTests(unittest.TestCase):
             self.assertIn(list(request), requests)
         report = space.plan(requests)
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [53264, 4096, 8104])  # r63: the 64-byte camera owner and the Franchise Auto Save owner (1,536 code + 128 data + 512 read-only) joined the documented table
+                         [52624, 4096, 8104])  # r64: coverage trail reserves 640 RX bytes; RW/RO headroom is unchanged
 
     def test_every_kind_exact_capacity_alignment_and_overflow(self):
         for kind, capacity in [('code', 98304), ('data', 81920), ('read_only', 16384)]:

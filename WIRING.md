@@ -205,6 +205,166 @@ The safety gates explicitly compose the diagnostic in both installation orders,
 including scale-out. Their shared `compose` helper defaults to normal v3 for
 other callers. No cave exemption, allocation increase, canonical fingerprint
 edit, version change or release-test change is part of this work.
+# r64 Defender circling integration (2026-09-08)
+
+EXPERIMENTAL / UNWITNESSED. New independent Boolean `coverage_trail`.
+**Opt-in, False in Basic, Advanced and Experimental.** The native close-pursuit
+orbit is reproduced; the full reported man-coverage failure and rendered pivots
+are not established. This is the brief's explicit fallback when proof is not
+clean. See [ASTRA_DEFENDER_CIRCLING_REPORT.md](ASTRA_DEFENDER_CIRCLING_REPORT.md).
+This section is additive; the other jobs' instructions below still apply.
+
+## Dispatcher, allocator and all four status dictionaries
+
+In protected `mod_editor/core/nfl2k5_throw_tuning.py`:
+
+```python
+from . import nfl2k5_coverage_trail as coverage_trail_patch
+```
+
+Add a keyword `coverage_trail: bool = False` to `_apply_all`, `write_xbe_copy`
+and `write_image_copy`. Validate it with `_validate_lever_flags` before writes;
+include it in both writers' nonempty-selection checks. Forward it through every
+call, including the deferred image pass and the final call after growth.
+This owner takes no settings adapter.
+
+Add keyword `coverage_trail=False` to `_selected_space_requests` and
+`_xbe_space_adapter.__init__`, pass it through the adapter, and append
+`coverage_trail_patch.REQUESTS if coverage_trail else ()` to the request union.
+Forward it to `_defensive_try_adapter` as well: that earlier adapter can be the
+first allocator caller. Include it in all allocation-needed predicates and
+`extra_requests` unions used for deferred music/arena growth. Every first
+allocation must reserve the complete selected union, even when only this new
+option is selected. Do not append a reservation after another owner allocates.
+
+In `_apply_all`'s final owners tuple, **after the allocator entry**, add:
+
+```python
+(coverage_trail, coverage_trail_patch, "coverage_trail_patch",
+ "Close pursuit recovery (experimental)"),
+```
+
+Add this field to `_grown_status_fields(payload)`:
+
+```python
+"coverage_trail": coverage_trail_patch.status(payload),
+```
+
+Retain/verify the helper expansion in each of these four returned dictionaries:
+
+| Function | Bytes supplied to `_grown_status_fields` |
+| --- | --- |
+| `read_xbe` | `payload` |
+| `read_image` | `payload` |
+| `write_xbe_copy` | `result` |
+| `write_image_copy` | `after` |
+
+The values are exactly `retail`, `applied`, or `foreign`. The receipt key is
+`coverage_trail_patch`. Do not present an already patched input as retail when
+the flag is disabled; opting out means rebuilding from a supported base.
+
+## BuildPlan and presets
+
+In protected `mod_editor/core/mod_build.py`, add
+`BuildPlan.coverage_trail: bool = False`. Set `coverage_trail=False` explicitly
+in **all three** preset dictionaries. Add it to selection detection,
+normalization, Boolean validation, feature/module availability checks and the
+list of deferred grown owners. Set it False in the early-pass `replace(...)`;
+include the original value in the final union and final `_apply_all` call.
+It can independently request allocator growth. Existing acceleration, coverage,
+momentum and zone options keep their selected values; this flag requires none
+of them. Include the actual receipt in the build summary.
+
+## Gameplay Patches, Build controls and retail opt-out
+
+In protected `mod_editor/gui/gameplay_patches_panel_qt.py`, add this PATCHES
+row and add `coverage_trail` to `NEEDS_IMAGE`:
+
+```python
+("coverage_trail", "Keep the retail coverage pursuit",
+ tt.coverage_trail_patch.HELP_TEXT),
+```
+
+This row is an **inverse checkbox**: checked means `coverage_trail=False`;
+unchecked means `coverage_trail=True`. Invert the UI value on initialization,
+preset load, settings load, status display, selection collection and save.
+Store only the canonical positive Boolean, never a second persistent retail
+flag. Default the retail checkbox to checked in every preset. Use the existing
+image requirement and foreign-state refusal. Do not accidentally pass its raw
+`isChecked()` value to the writer. Add this sentence to the row's help:
+"Uncheck to try the recovery. Rebuild from your base to switch back."
+
+`HELP_TEXT` is the exact new module constant. It contains the required words
+**Retail** and **Patch**, the EXPERIMENTAL / UNWITNESSED label, the three-yard
+scope, stationary arrival, preserved mistakes/special animations and the
+unproved man-coverage/rendered behavior. Do not advertise a confirmed universal
+DB circling fix.
+
+In protected `mod_editor/gui/build_panel_qt.py`, add the ordinary positive
+Build option, initially False:
+
+```python
+self.coverage_trail_check = self._option(
+    g, "coverage_trail", "Close pursuit recovery (experimental)",
+    tt.coverage_trail_patch.HELP_TEXT, needs_image=True)
+```
+
+The caption is 37 characters, below 60. Include the control in preset/status
+updates, enablement, plan serialization and the nonempty-build predicate;
+construct the plan with
+`coverage_trail=self.coverage_trail_check.isChecked()`. Synchronize both panels
+through that same canonical Boolean. Shared forwarding in other protected GUI
+panels must carry that field if they construct plans or writer kwargs.
+
+## Packaging, registry and release manifest
+
+Add these exact allowlist lines to protected `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_coverage_trail.py
+mod_editor/core/nfl2k5_coverage_trail_code.py
+docs/mod_editor/nfl2k5_coverage_trail_capability.json
+```
+
+Add these runtime-closure imports to protected
+`packaging/check_2k5_mod_studio_runtime.py`:
+
+```python
+"mod_editor.core.nfl2k5_coverage_trail",
+"mod_editor.core.nfl2k5_coverage_trail_code",
+```
+
+Their existing transitive helpers are `nfl2k5_gameplay_lever`,
+`nfl2k5_xbe_space`, `nfl2k5_bump_strength`, and `nfl2k5_cave_oracle`; retain that
+existing closure. The assembler, GNU as, Capstone, Unicorn and frame receipts
+are development/evidence dependencies, not product runtime requirements.
+
+Merge the schema-valid object in
+`docs/mod_editor/nfl2k5_coverage_trail_capability.json` into the registry, sorted
+by ID `nfl2k5.gameplay.coverage_trail`. It uses existing surface
+`gameplay_tuning_sliders`, classification `offline-writer-proved`, GUI default
+False and runtime status `not-tested`. Its actual new-file CLI is:
+
+```text
+python3 -m mod_editor.core.nfl2k5_coverage_trail --xbe source.xbe --apply --output new-coverage-trail.xbe
+python3 -m tests.mod_editor.test_nfl2k5_coverage_trail
+```
+
+Claude must regenerate protected `data/nfl2k5_cave_reservations.json` with
+`tools/nfl2k5_cave_oracle.py manifest` after all jobs and protected wiring merge.
+The builder's imports, request union, recorder owner lists and dormant-owner
+application are already changed here. Reserve 640 RX bytes aligned to 16,
+zero owner RW/RO bytes, and the six-byte live hook at `0x2FC9F0`. Two immutable
+floats are inside the RX reservation. Both gates use the actual sealed union
+and a pinned test-only hook projection. The scratch oracle manifest retains
+every original reservation and verified fingerprint, adding only this owner's
+three source fingerprints; it is **not** a regenerated disc manifest and must
+never replace the protected release artifact.
+
+After wiring, run the preset/dispatcher/runtime closure checks and both XBE
+gates with the regenerated manifest. Those product integration checks cannot
+be claimed by this isolated owner handoff. Noah's played acceptance is listed
+in the report.
 
 # r64 Read option v3 integration (2026-09-08)
 

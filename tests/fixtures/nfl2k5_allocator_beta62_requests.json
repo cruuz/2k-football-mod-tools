@@ -256,5 +256,11 @@
   "read_only",
   512,
   16
+ ],
+ [
+  "nfl2k5_coverage_trail",
+  "code",
+  640,
+  16
  ]
 ]

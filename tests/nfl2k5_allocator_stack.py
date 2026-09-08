@@ -27,6 +27,7 @@ from mod_editor.core import nfl2k5_screen_hooks as screen_hooks
 from mod_editor.core import nfl2k5_roster_arena_growth as arena_growth
 from mod_editor.core import nfl2k5_franchise_autosave as autosave
 from mod_editor.core import nfl2k5_espn25_rosters as espn25
+from mod_editor.core import nfl2k5_coverage_trail as coverage_trail
 
 
 LEGACY_REQUESTS = (kickoff.REQUESTS + runtime.REQUESTS + momentum.REQUESTS
@@ -35,7 +36,7 @@ LEGACY_REQUESTS = (kickoff.REQUESTS + runtime.REQUESTS + momentum.REQUESTS
 # Both installation orders use this same union and require rebuild from base.
 REQUESTS = (camera.REQUESTS + LEGACY_REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS
             + playlist.REQUESTS + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS
-            + defensive_try.REQUESTS[2:] + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS + guardian.REQUESTS + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS + autosave.REQUESTS + espn25.REQUESTS)
+            + defensive_try.REQUESTS[2:] + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS + guardian.REQUESTS + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS + autosave.REQUESTS + espn25.REQUESTS + coverage_trail.REQUESTS)
 SONGS = [dict(title=f"Tone {i+1:03}", artist="Synthetic", frames=256) for i in range(200)]
 
 
@@ -78,7 +79,7 @@ def compose(payload, *, reverse=False, scaleout=False, extra_requests=(), read_o
               (music, dict(song_records=SONGS)), (roster_storage, {}), (coverage, {}), (scramble, {}), (playlist, {}),
               (practice_screen, {}), (abilities, dict(abilities_off_week=7)), (qb_spy, {}), (calendar, {}),
               (read_option, dict(diagnostic=read_option_diagnostic)), (franchise_2026, {}), (senior_bowl, {}), (animation_xbe, {}), (guardian, {}),
-              (my_career, {}), (crib_reclaim, {}), (autosave, {}),
+              (my_career, {}), (crib_reclaim, {}), (autosave, {}), (coverage_trail, {}),
               (screen_hooks, {}),
               (arena_growth, dict(created_teams_extra=2)))
     order = tuple(reversed(owners)) if reverse else owners
@@ -214,6 +215,15 @@ def manifest_for_allocated_union(manifest, retail, allocated):
             spans.append(dict(start=hex(installed.va), end=hex(installed.va + installed.size),
                               size=installed.size, owner="nfl2k5_position_pools",
                               basis=f"test-only pinned data edit: {installed.label}"))
+    if coverage_trail.status(allocated) == "applied":
+        allocation = current[(coverage_trail.OWNER, "code")]
+        for name, va, before, after in coverage_trail.sites(allocation["va"]):
+            if image.read(va, len(before)) != before or installed_image.read(va, len(after)) != after:
+                raise AssertionError(f"Coverage trail live edit pin differs: {name}")
+            if manifest.overlaps(va, va + len(before), exclude_owner=coverage_trail.OWNER):
+                raise AssertionError(f"Coverage trail overlaps a different owner: {name}")
+            spans.append(dict(start=hex(va), end=hex(va + len(before)), size=len(before),
+                              owner=coverage_trail.OWNER, basis=f"test-only pinned live edit: {name}"))
     document = {**manifest.document, "spans": spans, "allocator_layout": layout,
-                "model": "Test-only allocation projection plus pinned kickoff, Auto Save and pools data edits"}
+                "model": "Test-only allocation projection plus pinned kickoff, Auto Save, coverage trail and pools data edits"}
     return ReservationManifest(document, XbeImage(retail))
