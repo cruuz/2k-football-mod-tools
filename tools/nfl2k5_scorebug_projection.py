@@ -96,7 +96,9 @@ class StaticMachine:
         self._hooks = [self.uc.hook_add(uc.UC_HOOK_CODE, lambda _u, va, _s, _d: self.visits.append(va)),
                        self.uc.hook_add(uc.UC_HOOK_MEM_WRITE,
                                         lambda _u, _a, va, size, value, _d: self.writes.append((va, size, value)))]
-        self.put(0xb09578, self.alloc(128))  # Native resource lookup context.
+        context = self.alloc(128)  # Resident GAMEDATA resource lookup context.
+        self.put(0xb09578, context)
+        self.put(context + 8, 0xe614b8)
         self.put(0xb09590, 0)
         self.put(0xa6afb4, wide.ACTIVE_CAMERA_VA)
         self.home, self.away = self.alloc(64), self.alloc(64)

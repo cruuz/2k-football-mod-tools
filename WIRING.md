@@ -15115,3 +15115,171 @@ uses the existing strict named-allocation projection. Its disc fields are
 explicitly historical; no new disc was built. Never publish that test manifest
 as the release manifest. For oracle and owner suites that read the manifest,
 use `NFL2K5_CAVE_MANIFEST=.scratch/franchise-runtime-manifest.json`.
+## R65 scorebug freeze v2, 2026-09-08
+
+See `ASTRA_SCOREBUG_FREEZE_V2_REPORT.md` and the updated
+`docs/mod_editor/nfl2k5_scorebug_runtime_capability.json`. This section supersedes
+earlier scorebug runtime repair claims and handoff text. The new binding revision
+is 5; its resource contract remains `scorebug-runtime-v4-scoped-fonts` because
+the compiler, texture atlas, FONTs and SCNE bytes have not changed.
+
+The reproduced entry stall comes from the runtime binding hook searching all
+resource collections, which can evict an unrelated cached texture and wait on
+its GPU fence before HUD initialization finishes. The fixture supplies that
+cache state and withholds GPU completion. This proves a native failure path
+and its removal, not the identity of the testers' actual heap or an intrinsic
+deadlock with a healthy GPU. Keep EXPERIMENTAL / UNWITNESSED and all runtime
+presets off until Noah's played comparison. Keep all six diagnostic profiles.
+
+### Dispatcher and four status dictionaries
+
+The existing integration is sufficient; preserve it when merging other owners.
+In `mod_editor/core/nfl2k5_throw_tuning.py`, keep the import
+`from . import nfl2k5_scorebug_runtime as scorebug_runtime_patch` and the exact
+final `_apply_all` tuple after the allocator adapter:
+
+```python
+(scorebug_runtime, scorebug_runtime_patch, "scorebug_runtime_patch", "experimental scorebug effects"),
+```
+
+Keep `scorebug_runtime: bool = False` in `_apply_all`, `write_xbe` and
+`write_image`, forwarding `scorebug_runtime=scorebug_runtime` to final applies.
+The image's early pass deliberately passes false while the grown owners are
+deferred. `_selected_space_requests(runtime=scorebug_runtime, ...)` must include
+`scorebug_runtime_patch.REQUESTS`; `_xbe_space_adapter` must reserve that same
+complete union before owner installation. No new adapter, owner or kwarg is
+needed. Code/state requests remain 1,408/128 bytes, both aligned to 16.
+
+Preserve these four dictionary entries, evaluated against the final bytes at
+the write surfaces (line numbers refer to the r65 base):
+
+| Surface | Runtime entry | Static companion entry |
+| --- | --- | --- |
+| XBE inspect, line 668 | `"scorebug_runtime": scorebug_runtime_patch.status(payload)` | `"scorebug_xbe": scorebug_reference.xbe_status(payload)` |
+| Image inspect, line 797 | `"scorebug_runtime": scorebug_runtime_patch.status(payload)` | `"scorebug_xbe": scorebug_reference.xbe_status(payload)` |
+| XBE write result, line 1794 | `"scorebug_runtime": scorebug_runtime_patch.status(result)` | `"scorebug_xbe": scorebug_reference.xbe_status(result)` |
+| Image write result, line 2139 | `"scorebug_runtime": scorebug_runtime_patch.status(after)` | `"scorebug_xbe": scorebug_reference.xbe_status(after)` |
+
+Keep image resource status separately:
+`"scorebug_runtime_resources": scorebug_reference.runtime_image_status(path)`
+for inspection and the same call with `target` after writing. Preserve the
+resource/installation receipt under `scorebug_runtime_patch`. An old generated
+hook installation now reports `foreign` and asks for a supported-base rebuild;
+do not treat an unchanged v4 resource profile as proof that its XBE is current.
+
+### BuildPlan and presets
+
+Keep `BuildPlan.scorebug_runtime: bool = False`. Basic, Advanced and Experimental
+all set `scorebug_runtime` false. The separate blank-folder static `scorebug`
+option stays false in Basic/Advanced and true in Experimental, selecting v3.
+Manual runtime selection implies `scorebug=True, xbe_space=True`. A painted
+`scorebug_folder` still cannot be combined with runtime. These are existing
+rules, not new controls.
+
+Preserve runtime deferral in `mod_build._build`. Skip the earlier static
+resource apply when runtime is selected, calculate `all_requests` once, then
+call `nfl2k5_scorebug_ingame.runtime_apply_in_place` with that union (excluding
+runtime/kickoff rows already added by that adapter). Replay any other selected
+owners in the final `_apply_all` pass with `scorebug_runtime=True`. Applying
+the static v3 XBE before or after runtime is byte-identical; do not run a static
+resource overwrite over the runtime collection. `inspect_source` keeps the
+runtime, static-XBE and image-resource statuses already present.
+
+### Gameplay Patches and Build captions
+
+Keep the PATCHES row in `gameplay_patches_panel_qt.py`:
+
+```python
+("scorebug_runtime", "Scorebug effects (diagnostic only)", r62_ui.SCOREBUG_RUNTIME_HELP),
+```
+
+Retain `scorebug_runtime` in `NEEDS_IMAGE`. Claude should replace the shared
+`SCOREBUG_RUNTIME_HELP` in `mod_editor/gui/beta62_options.py` with this plain text
+(that shared GUI file was not edited in this worktree):
+
+> Retail: Uses the original team panels and text. Patch: Adds team gradients,
+> logos, live timeout marks, resized text, a white possession marker and room
+> for three-digit scores to the experimental scorebar. Diagnostic only and off
+> in every preset. EXPERIMENTAL / UNWITNESSED. The entry-stall repair still needs
+> a game check. Keep the six probe choices and rebuild from a clean source.
+
+Keep the Build `_option` caption `Scorebug effects (diagnostic only)`
+(34 characters, below 60), its existing help constant and `needs_image=True`
+availability gate. Do not announce the community freeze as witnessed or fixed.
+
+### Packaging, capability and gates
+
+Existing allowlist entries cover the production change and its import closure:
+
+```text
+mod_editor/core/nfl2k5_scorebug_runtime.py
+mod_editor/core/nfl2k5_scorebug_resources.py
+mod_editor/core/nfl2k5_scorebug_fonts.py
+mod_editor/core/nfl2k5_scorebug_ingame.py
+mod_editor/core/nfl2k5_scorebug_exact.py
+mod_editor/core/nfl2k5_scorebar_v3.py
+mod_editor/core/nfl2k5_xbe_space.py
+tools/nfl2k5_scorebug_reference.py
+docs/mod_editor/nfl2k5_scorebug_runtime_capability.json
+```
+
+No new production import or bundled game data is required. Keep runtime-closure
+imports of `mod_editor.core.nfl2k5_scorebug_runtime`,
+`mod_editor.core.nfl2k5_scorebug_resources`,
+`mod_editor.core.nfl2k5_scorebug_ingame`,
+`mod_editor.core.nfl2k5_scorebug_fonts`,
+`mod_editor.core.nfl2k5_scorebug_exact`,
+`mod_editor.core.nfl2k5_scorebar_v3` and
+`mod_editor.core.nfl2k5_xbe_space` in the runtime checker. The old-code fixture,
+entry harness and trace are development evidence; they need no runtime import.
+If release feature reports/evidence are bundled, add explicit allowlist lines
+for `ASTRA_SCOREBUG_FREEZE_V2_REPORT.md`,
+`docs/scorebug_ingame/freeze_v2/trace.json` and
+`docs/scorebug_ingame/freeze_v2/validation.json`.
+
+No new capability ID or surface. In `mod_editor/capabilities/registry.v1.json`,
+replace the existing `nfl2k5.scorebug_presentation.runtime` object with the
+updated capability JSON handoff. Keep `classification=offline-writer-proved`,
+`runtime.status=not-tested`, `gui.default_enabled=false` and the diagnostic
+caption. Backend command remains
+`python3 -m tools.nfl2k5_scorebug_reference apply --runtime`; validation becomes
+`python3 -m tests.mod_editor.test_nfl2k5_scorebug_freeze_v2`. File-check validation
+must use the full registry with this object replaced, not the handoff list alone.
+The 117-entry replacement passes schema validation here, and every path and
+command module in the changed object exists. Full-registry file checking stops
+on the base's unrelated missing `docs/research/apf_audio.md`; restore the
+release evidence before claiming that broader check passes.
+
+Runtime and static v3 already belong to the allocator stack and both XBE gates.
+The static adapter is now reusable and both are explicitly in the pairwise
+matrix. The manifest builder's owner/request lists already include runtime;
+no request or reservation change is needed. Claude must regenerate the protected
+`data/nfl2k5_cave_reservations.json` with the normal
+`tools/nfl2k5_cave_oracle.py manifest` command after integration. This session's
+scratch manifest only refreshes stale source fingerprints while retaining the
+base spans; the gate fixtures also project their current owner union. That is
+not a regenerated production manifest. Do not copy it into the protected file.
+
+Two existing owner-manifest harness issues also need integration attention.
+`test_nfl2k5_read_option_diagnostic_manifest.py` imports `DEFAULT_MANIFEST`
+directly and ignores `NFL2K5_CAVE_MANIFEST`; honor the environment as the other
+manifest suites do. This session supplies that constant through a scratch
+runner without changing the test or its assertions.
+
+The Guardian observer misses raw offset `0xb2319` (VA `0xc2319`) because the
+existing historic-team `XbePatch.apply = staticmethod(apply_xbe)` caches its
+writer before observation. In the excluded `nfl2k5_espn25_rosters.py`, Claude
+should make that adapter resolve `apply_xbe` when called:
+
+```python
+@staticmethod
+def apply(payload):
+    return apply_xbe(payload)
+```
+
+The module is unchanged here. A scratch runner forwards only that class alias
+to the same actual module writer; the complete original Guardian observer test
+then passes with every final byte attributed. No reservation or assertion is
+waived. Both scratch runner sources and the original failures are preserved in
+`docs/scorebug_ingame/freeze_v2/validation.json`. The reusable static scorebar
+test adapter also forwards dynamically so its writes remain observable.

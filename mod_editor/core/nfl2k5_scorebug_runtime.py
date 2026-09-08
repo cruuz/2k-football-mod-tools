@@ -3,6 +3,10 @@
 The companion compiler loads native TXTRs and private FONTs with the HUD collection.
 Only loader-returned descriptors are bound; no raw pixel pointer is used.
 Reserve the union of REQUESTS and other owners before applying either patch.
+
+Private resources are resolved in GAMEDATA, the resident HUD collection.
+The global registry also visits caches and type-blind indexed collections;
+it is not a safe namespace for the private FONT/TXTR names.
 """
 from __future__ import annotations
 
@@ -31,6 +35,16 @@ SCORE_POINTERS = (0xE5FC28, 0xE5FC68)
 SCORE_COLORS = (0xA95958, 0xA95990)
 DARK, RED, WHITE, ACCENT = 0xFF111118, 0xFFD0021B, 0xFFFFFFFF, 0xFFFFD166
 PLAY_CLOCK_NORMAL = WHITE
+HUD_COLLECTION_NAME = 0xE614B8  # UTF-16 GAMEDATA, used by the retail loader.
+# The loader at 6310E opens gamedata.iff into B33D5C with ordinary context
+# fields. Pin its call, both names and the named-context lookup dependency.
+LOOKUP_GUARDS = (
+    (0x6310E, 30, "92cf59f757d1dd7ae9d4881e2111c386dc28224035aafa39a1daa7fa0ffd8483"),
+    (HUD_COLLECTION_NAME, 18, "64bf5caa58cd2d97b65e1fd6ebe6ea773d2613e0b83a109a24db9e6f94d91660"),
+    (0xE614CC, 26, "9b1d922215249ee1a24d32042b258442536b1312d420248e595b44414ce698da"),
+    (0x42F50, 44, "9193d3ee49c7eabfc4646ffbae6c3e12a76e43a051e890a4f8971b2dba4fc81b"),
+    (0x43F50, 606, "9bf8b19d176dc9169c8d7b13af5887ce474ed202990d91f77b5601baccd21b71"),
+)
 
 
 def _u(value):
@@ -191,7 +205,7 @@ def code_for(code_va, data_va):
     a.label("populated"); store(data_va + POPULATED, 1)
     a.label("update_done"); _restore(a); b("c20400")
 
-    # Four native TXTR lookups for this side at setup. UTF-16 names are built on
+    # Four HUD-scoped TXTR lookups for this side at setup. UTF-16 names are built on
     # stack. Validate two numeric asset-code chars and reject created-team kinds.
     a.label("load_side")
     b("83ec10 c7042473006200 c74424042d002d00 6689542408 c744240a30000000")
@@ -206,19 +220,19 @@ def code_for(code_va, data_va):
     a.label("identity_ok"); b("8b00 89442404")
     a.label("neutral"); b("31f6")
     a.label("texture_loop")
-    b("8d4630 668944240a 8d0424 50 ba54585452 31c9")
+    b("8d4630 668944240a 8d0424 50 ba54585452 b9" + _u(HUD_COLLECTION_NAME))
     a.call(0x449E0)
     # Retry neutral for a missing team texture, retaining count and orientation.
     b("85c0"); jump("0f85", "texture_found")
     b("817c24042d002d00"); jump("0f84", "texture_found")
-    b("8b542404 52 c74424082d002d00 8d442404 50 ba54585452 31c9")
+    b("8b542404 52 c74424082d002d00 8d442404 50 ba54585452 b9" + _u(HUD_COLLECTION_NAME))
     a.call(0x449E0); b("5a 89542404")
     a.label("texture_found"); b("8904b7 46 83fe04"); jump("0f82", "texture_loop")
     b("83c410 c3")
-    # Forward the original UTF-16 name through the real stdcall registry.
+    # Forward the original UTF-16 name through the HUD's real stdcall registry.
     # Its RET 4 consumes the copy; ours consumes the original argument.
     a.label("find_font")
-    b("ff742404 ba464f4e54 31c9"); a.call(0x449e0); b("c20400")
+    b("ff742404 ba464f4e54 b9" + _u(HUD_COLLECTION_NAME)); a.call(0x449e0); b("c20400")
     if fonts.CHEVRON:
         # Native city callbacks fill the caller's UTF-16 scratch buffer.
         # Exactly one glyph avoids team-name-length-dependent alpha overdraw.
@@ -276,7 +290,7 @@ def _abi_valid(payload):
             return False
     normal = [(va, old) for va, old, _, _ in scene.xbe_specs()]
     normal += list(HOOKS.values())
-    for va, size, sha in (*RUNTIME_ABI_GUARDS, *fonts.CODE_GUARDS):
+    for va, size, sha in (*RUNTIME_ABI_GUARDS, *fonts.CODE_GUARDS, *LOOKUP_GUARDS):
         off = scene.layout.sbpos.va_to_off(payload, va)
         body = bytearray(payload[off:off + size])
         for address, old in normal:
@@ -337,7 +351,7 @@ def apply(payload):
         edits.append(dict(label=name, va=hex(va), size=5, before=original.hex(), after=after.hex()))
     # Build-time descriptor defaults only. The static layer restores white
     # team names; this owner uses those same records for a one-sided chevron.
-    # Leave setup/binding, missing-name handling and both hook ABIs unchanged.
+    # Binding is scoped to the resident HUD; both hook ABIs remain unchanged.
     for va in (0xa95894, 0xa958bc):
         off = scene.layout.sbpos.va_to_off(installed, va)
         edits.append(dict(label="runtime identity default", va=hex(va), size=4,
@@ -350,6 +364,7 @@ def apply(payload):
     return result, dict(status="applied", experimental=True, runtime_witnessed=False,
                         changed_bytes=sum(a != b for a, b in zip(payload, result)) + len(result) - len(payload),
                         code_va=hex(code["va"]), data_va=hex(data["va"]), edits=edits,
+                        binding_collection="GAMEDATA", binding_revision=5,
                         allocation=ar, installation=ir, scorebug=sr,
                         reservations=space.reservations(result),
                         requires_resources="scorebug-runtime-v4-scoped-fonts; XBE alone does not install logos")

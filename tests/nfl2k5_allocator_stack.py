@@ -45,8 +45,22 @@ REQUESTS = (camera.REQUESTS + LEGACY_REQUESTS + roster_storage.REQUESTS + covera
 SONGS = [dict(title=f"Tone {i+1:03}", artist="Synthetic", frames=256) for i in range(200)]
 
 
-def compose(payload, *, reverse=False, scaleout=False, extra_requests=(), read_option_diagnostic=False):
+class StaticScorebar:
+    """Expose the static writer to the gate union and the pairwise matrix."""
     from mod_editor.core import nfl2k5_scorebug_ingame as scene
+    OWNER = 'nfl2k5_scorebug_ingame'
+
+    @staticmethod
+    def apply(payload):
+        # Resolve at call time so the manifest recorder observes this writer.
+        return StaticScorebar.scene.apply_xbe(payload)
+
+    @staticmethod
+    def status(payload):
+        return StaticScorebar.scene.xbe_status(payload)
+
+
+def compose(payload, *, reverse=False, scaleout=False, extra_requests=(), read_option_diagnostic=False):
     from mod_editor.core import nfl2k5_practice_squad as ps, nfl2k5_franchise_practice as fp
     from mod_editor.core import nfl2k5_practice_reserves as pr
     from mod_editor.core import nfl2k5_widescreen as wide
@@ -72,10 +86,6 @@ def compose(payload, *, reverse=False, scaleout=False, extra_requests=(), read_o
     payload, _ = ps.apply(payload)
     payload, _ = fp.apply(payload)
     payload, _ = pr.apply(payload)
-    class StaticScorebar:
-        OWNER = 'nfl2k5_scorebug_ingame'
-        apply = staticmethod(scene.apply_xbe)
-        status = staticmethod(scene.xbe_status)
     class HistoricReload:
         OWNER = espn25.OWNER
         status = staticmethod(espn25.xbe_status)

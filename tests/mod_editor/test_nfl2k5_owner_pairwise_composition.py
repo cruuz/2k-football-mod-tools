@@ -49,6 +49,8 @@ OWNERS = (
     ("my_career_generic", stack.my_career),
     ("franchise_autosave", stack.autosave),
     ("coverage_trail", stack.coverage_trail),
+    ("scorebug_runtime", stack.runtime),
+    ("static_scorebar_v3", stack.StaticScorebar),
     ("cpu_money_downs", stack.money_downs),
     ("franchise_edit_player", stack.edit_player),
 )
@@ -98,7 +100,10 @@ class PairwiseCompositionTests(unittest.TestCase):
                     self.assertEqual(owner.status(result), "applied", owner.OWNER)
                     replay, receipt = owner.apply(result)
                     self.assertEqual(replay, result, owner.OWNER)
-                    self.assertEqual(receipt["changed_bytes"], 0, owner.OWNER)
+                    if owner is stack.StaticScorebar:
+                        self.assertEqual(receipt["state_before"], "applied", owner.OWNER)
+                    else:
+                        self.assertEqual(receipt["changed_bytes"], 0, owner.OWNER)
                 self.assertEqual(space.apply(result, stack.REQUESTS, scaleout=True)[0], result)
                 digests.append(hashlib.sha256(result).digest())
         if len(digests) == 2:

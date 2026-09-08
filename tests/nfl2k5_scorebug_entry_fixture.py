@@ -213,6 +213,64 @@ class EntryCollection(Collection):
         self.m.run(0xfce70, (0x3c888889,), limit=250000)
         return self.trace.result()
 
+    def prepare_draw(self):
+        """Supply field/camera inputs and stop only at scene/GPU submission.
+
+        FONT selection, strings, ranges, glyph walks and vertices remain native.
+        This extends the entry fixture beyond its former first-update return.
+        """
+        from mod_editor.core import nfl2k5_widescreen as wide
+        m = self.m
+        direction = m.alloc(32)
+        m.float(direction + 4, 1)
+        for score in (m.home, m.away):
+            m.put(score + 12, direction)
+        for team, context in ((0xe5fc20, r.HOME_CONTEXT), (0xe5fc60, r.AWAY_CONTEXT)):
+            m.put(team + 0x1c, context)
+        m.put(0xe60284, 0xe5fc60)
+        StaticMachine.identity(m, home='NE', away='TB')
+        m.float(m.play + 0x28, 914)
+        m.float(m.play + 0x38, -1371.6)
+        clock = m.alloc(64)
+        m.put(0xe6028c, clock)
+        m.float(clock + 16, 60)
+        m.put(0xe602c4, 1)
+        m.put(0xa6afb4, wide.ACTIVE_CAMERA_VA)
+        for va, code, reason in (
+                (wide.RENDER_LIST_VA, '31c0c3', 'scene submission boundary'),
+                (0x8ab40, '31c0c3', 'world suppression predicate = 0'),
+                (0x21860, '31c0c3', 'scorebug mesh submission boundary'),
+                (0xfc760, 'd9eec3', 'field boundary = 0'),
+                (0x2d2a0, 'c20c00', 'GPU text primitive begin'),
+                (0x2cb90, 'c20800', 'GPU text texture coordinates'),
+                (0x2cbe0, 'c3', 'GPU text color'),
+                (0x2ca70, 'c3', 'GPU text vertex'),
+                (0x2ca00, 'c3', 'GPU text primitive end')):
+            m.uc.mem_write(va, bytes.fromhex(code))
+            self.boundaries.append(dict(pc=hex(va), result=reason))
+
+    def draw(self):
+        import unicorn
+        m, submissions = self.m, []
+
+        def submit(_uc, pc, _size, _data):
+            if pc == 0x47420:
+                obj = m.uc.reg_read(m.x.UC_X86_REG_ECX)
+                text = m.uc.reg_read(m.x.UC_X86_REG_EDX)
+                submissions.append(dict(font=hex(m.get(obj)),
+                                         text=StaticMachine.read_string(m, text), vertices=0))
+            elif pc == 0x2ca70 and submissions:
+                submissions[-1]['vertices'] += 1
+
+        handle = m.uc.hook_add(unicorn.UC_HOOK_CODE, submit)
+        m.put(0xa95524, 1)
+        self.trace.reset()
+        try:
+            m.run(0xfc360, limit=250000)
+            return dict(trace=self.trace.result(), submissions=submissions)
+        finally:
+            m.uc.hook_del(handle)
+
     def completion_pump(self, *, deliver=True):
         """Route host disk completions through the real 38f50/38cd0 pump.
 
@@ -291,6 +349,7 @@ def special_lookup_context(c, field, state):
         entries.append((m.uc.reg_read(m.x.UC_X86_REG_EAX), descriptors[f'sb--h{count}']))
     context, special = m.alloc(128), m.alloc(0x200)
     m.put(context, m.context)
+    m.put(context + 8, m.string('OTHER_COLLECTION'))
     m.put(context + field, special)
     m.put(0xb09578, context)
     if field == 0x10:
