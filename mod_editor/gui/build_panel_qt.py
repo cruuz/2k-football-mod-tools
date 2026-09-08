@@ -643,6 +643,8 @@ class BuildPanel(QWidget):
         self.espn25_plan_status.setWordWrap(True)
         self.espn25_plan_status.hide()
         r.addWidget(self.espn25_plan_status)
+        self.espn25_rosters_check = self._option(r, "espn25_rosters", "Historic moments: real rosters",
+                                                 tt.espn25_rosters_patch.HELP_TEXT, needs_image=True)
         self._espn25_plan_cache: tuple[tuple[str, int, int] | None, str] = (None, "")
         self.player_star_check = self._option(r, "player_star", "Show a star under selected players",
                                              "A white star outline under every tagged player on the field; not yet tested in-game.", badge=NOT_TESTED,
@@ -981,7 +983,7 @@ class BuildPanel(QWidget):
         for key, label in (("catch_slider", "catch/INT sliders"), ("accel_ramp", "acceleration ramp"),
                            ("draft_ai", "draft AI"), ("returner_fix", "returner fix"), ("progression", "progression"), ("team_column", "TEAM column"), ("team_history", "team history"), ("career_stats", "career stats"), ("prospect_names", "prospect names"),
                            ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season franchise"), ("music_shuffle", "music shuffle"), ("practice_squad_screen", "Practice Squad screen"), ("abilities", "player abilities"), ("qb_spy", "QB spy"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"), ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"),
-                           ("player_star", "star decal"), ("player_tags", "star tags"), ("roster_edits", "roster edits"), ("espn25_plan", "Anniversary edits"),
+                           ("player_star", "star decal"), ("player_tags", "star tags"), ("roster_edits", "roster edits"), ("espn25_plan", "Anniversary edits"), ("espn25_rosters", "historic rosters"),
                            ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"), ("position_pools", "one-pool positions"), ("depth_roles", "depth roles"), ("depth_chart_rows", "depth-chart rows"),
                            ("camera", "camera"), ("widescreen", "widescreen"),
                            ("scorebug", "ESPN scorebug")):
@@ -1107,6 +1109,7 @@ class BuildPanel(QWidget):
         gate(self.scheme_labels_check, "scheme_labels")
         gate(self.position_pools_check, "position_pools", needs_image=True)
         gate(self.position_pools_keep_olb_check, "position_pools_keep_olb", needs_image=True)
+        gate(self.espn25_rosters_check, "espn25_rosters", needs_image=True)
         self._sync_keep_olb(self.position_pools_check.isChecked())
         gate(self.depth_roles_check, "depth_roles", needs_image=True)
         gate(self.depth_chart_rows_check, "depth_chart_rows", needs_image=True)
@@ -1251,7 +1254,7 @@ class BuildPanel(QWidget):
             "kick_laces": self.kick_laces_check, "franchise_practice": self.franchise_practice_check,
             "practice_squad": self.practice_squad_check, "depth_locks": self.depth_locks_check,
             "player_star": self.player_star_check, "roster_edits": self.roster_edits_check,
-            "espn25_plan": self.espn25_plan_check,
+            "espn25_plan": self.espn25_plan_check, "espn25_rosters": self.espn25_rosters_check,
             "realistic_flight": self.realistic_check, "arc_by_distance": self.arc_by_distance_check,
         }
 
@@ -1318,6 +1321,7 @@ class BuildPanel(QWidget):
             kick_rules=self.kick_rules_check.isChecked(), kick_power=self.kick_power_check.isChecked(),
             position_pools=self.position_pools_check.isChecked(),
             position_pools_keep_olb=self.position_pools_keep_olb_check.isChecked() and self.position_pools_check.isChecked(),
+            espn25_rosters=self.espn25_rosters_check.isChecked(),
             depth_roles=self.depth_roles_check.isChecked(),
             depth_chart_rows=self.depth_chart_rows_check.isChecked(),
             kickoff_alignment=self.kickoff_alignment_check.isChecked(),

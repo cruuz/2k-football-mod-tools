@@ -417,6 +417,8 @@ class StudioFacade(Protocol):
         progress: ProgressSink,
     ) -> object: ...
 
+    def preview_digit_sheet(self, outputs: Sequence[object], progress: ProgressSink) -> object: ...
+
     def import_team_kit(
         self, source: Path, progress: ProgressSink,
         *, expected_set_selectors: Sequence[str] | None = None,
@@ -7004,6 +7006,42 @@ class StudioMainWindow(QMainWindow):
             blocking=True,
         )
 
+    def _review_digit_sheet_preview(self, preview: object) -> bool:
+        """Review the encoded mips before the single Team Kit mutation."""
+        from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QPlainTextEdit
+
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Number sheet: encoded game preview")
+        layout = QVBoxLayout(dialog)
+        note = QLabel(
+            "EXPERIMENTAL / UNWITNESSED. These are the saved number textures at "
+            "small sizes. The game adds jersey lighting and chooses detail by camera distance. "
+            "Check every digit and the size notes before importing.", dialog,
+        )
+        note.setWordWrap(True)
+        layout.addWidget(note)
+        pixels = QPixmap()
+        if not pixels.loadFromData(preview.png, "PNG"):
+            raise ValidationError("The encoded number preview could not be displayed.")
+        picture = QLabel(dialog)
+        picture.setPixmap(pixels)
+        picture.setFixedSize(pixels.size())
+        scroll = QScrollArea(dialog)
+        scroll.setWidget(picture)
+        layout.addWidget(scroll, 1)
+        details = QPlainTextEdit(dialog)
+        details.setReadOnly(True)
+        details.setPlainText(preview.details)
+        details.setMaximumHeight(160)
+        layout.addWidget(details)
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, dialog)
+        buttons.button(QDialogButtonBox.Ok).setText("Import all ten digits")
+        buttons.accepted.connect(dialog.accept)
+        buttons.rejected.connect(dialog.reject)
+        layout.addWidget(buttons)
+        dialog.resize(800, 740)
+        return dialog.exec_() == QDialog.Accepted
+
     def _choose_digit_sheet_import(self) -> None:
         """Split a 0–9 font sheet and import all ten exact slots atomically."""
 
@@ -7062,9 +7100,18 @@ class StudioMainWindow(QMainWindow):
         )
         source = Path(filename)
 
-        def operation(progress: ProgressSink) -> object:
-            progress("Splitting the 0–9 sheet", 0, 12)
+        source_identity = getattr(self.facade, "source_sha256", None)
+        prepared_outputs = ()
+
+        def prepare(progress: ProgressSink) -> object:
             outputs = split_digit_sheet(source, targets, orientation=orientation)
+            preview = self.facade.preview_digit_sheet(outputs, progress)
+            return outputs, preview
+
+        def operation(progress: ProgressSink) -> object:
+            if getattr(self.facade, "source_sha256", None) != source_identity:
+                raise ValidationError("The game source changed. Preview the sheet again.")
+            outputs = prepared_outputs
             with tempfile.TemporaryDirectory(prefix="2k5-digit-sheet-") as temporary:
                 root = Path(temporary).resolve(strict=True)
                 kit = root / "team-kit"
@@ -7124,11 +7171,20 @@ class StudioMainWindow(QMainWindow):
             self.team_kit_imported.emit(changed)
             self._show_team_kit_import_result(result, "Digit sheet import complete")
 
+        def review(prepared: object) -> None:
+            nonlocal prepared_outputs
+            prepared_outputs, preview = prepared
+            if not self._review_digit_sheet_preview(preview):
+                return
+            self._start_task(
+                operation, success,
+                label=f"Importing {label.lower()} 0-9 sheet", blocking=True,
+            )
+
         self._start_task(
-            operation,
-            success,
-            label=f"Importing {label.lower()} 0–9 sheet",
-            blocking=True,
+            prepare,
+            lambda prepared: self._defer_until_blocking_task_finished(lambda: review(prepared)),
+            label="Preparing encoded number preview", blocking=True,
         )
 
     def _save_project(

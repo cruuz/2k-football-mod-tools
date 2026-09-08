@@ -86,7 +86,8 @@
     "depth_locks": true,
     "prospect_names": "modern",
     "player_star": true,
-    "espn25_plan": ""
+    "espn25_plan": "",
+    "espn25_rosters": false
   },
   "extra_owners": [
     "nfl2k5_seven_on_seven",
@@ -1802,7 +1803,7 @@
     "all_stadiums"
   ],
   "source_sha256": {
-    "mod_editor/core/mod_build.py": "fd579ac02f57ba5d2d4fabf91b45db4e204f62a2844bb7cc101bbd79a462150e",
+    "mod_editor/core/mod_build.py": "f60d73d5a51881195f913b8c26b5b99b5b41582d2ac8123b76c68872f13f8460",
     "mod_editor/core/nfl2k5_abilities_runtime.py": "7d425857b3e96ef03229962812b43ca120f81d7868c8690a221f62519c26918a",
     "mod_editor/core/nfl2k5_abilities_runtime_code.py": "e669415b75928ccbc3fce88fac0435654c87ad7573891274c0d7637f39f9da3b",
     "mod_editor/core/nfl2k5_accel_ramp.py": "95014c753d46faed2e75e545d992794bb62965a9bbe6407057d3626395c6e862",
@@ -1828,6 +1829,7 @@
     "mod_editor/core/nfl2k5_dynamic_kickoff.py": "b4b99749b40c0b4fb74ba7faeaae6938c401ce0277aa6ec035521ab99f8ec852",
     "mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py": "39f7953d98306f7ddeaf888b6bf79d855c4e1fbf00ab28498047d09263b3384d",
     "mod_editor/core/nfl2k5_edge_rename.py": "1a47e378e17ca4fe8a2e9440778893826a32905efe64359463ac121110353695",
+    "mod_editor/core/nfl2k5_espn25_rosters.py": "d6a18931816d9f67b4c811d665461981e2119179b3a8496c230b4af6874d8fd9",
     "mod_editor/core/nfl2k5_espn25_scenarios.py": "0d06135c849f8efe9f24e070723bfa9a7ee8ff65482d00bd1a858e2be4981559",
     "mod_editor/core/nfl2k5_formation_play_writer.py": "fb09bdd724874d0a03488e12a046d8107221e99b52c77df21c04a7181d3508bf",
     "mod_editor/core/nfl2k5_franchise_2026.py": "328c4bc9d22eeb77c426833f62d48bea8f3f95648d362156f897b548bd7bd41e",
@@ -1926,7 +1928,7 @@
     "mod_editor/core/nfl2k5_team_names_2026.py": "60c5c6be99a1d24098a63422fadbd1af8010df599822548d11195d1f03f8e082",
     "mod_editor/core/nfl2k5_text_catalog.py": "5d9e254b9688c50e1085794de710eaaee6b9071bec6ca345653d0febfb987b38",
     "mod_editor/core/nfl2k5_throw_arc.py": "0fbf33d12fe27a0f940fb7e13f375390b88701c4ccb7e89a1de895d8f66b9c3c",
-    "mod_editor/core/nfl2k5_throw_tuning.py": "d1ac966ad0320755c152ae2cadb8aa691ba4cdaf4024134b084d8ecc5bae8ca9",
+    "mod_editor/core/nfl2k5_throw_tuning.py": "60f5edf54398764f9c48e39544131ad5556ec57b03198e9d542fae6565381b83",
     "mod_editor/core/nfl2k5_uniform_choice.py": "485a0b64855836d03573381281b079a9cdab814996fa83b894046d8b29f93d6a",
     "mod_editor/core/nfl2k5_universal_asset_index.py": "9df3c0a754abcb60fa4db3afd0f9b8af364f60551014d259e2713f5387491421",
     "mod_editor/core/nfl2k5_widescreen.py": "e3c24be27e02098ef981349aa9a1008b26d022bf655c0c0c6e4e70557c0f0f43",

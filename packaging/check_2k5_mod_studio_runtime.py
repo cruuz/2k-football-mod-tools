@@ -99,13 +99,13 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "64ac47e2f3d28c374d4b0b8d44e5eba16b69ce5d70bbbeb6288ddadeb2be10ed",
     "mod_editor/gui/studio_qt.py":
-        "1909e78855b83924246038003c8f94c53d1bfbbc4c1b865e4b00ff48421dcb8b",
+        "7d196fa04a51eeb3f65b5ea009a3c72ae2a4496a5155f11f6fd65b158ec135a9",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
         "68b6887e0778391916a6465a722b062d1c09afe3a376c318026e9db8bd7ed23a",
     "mod_editor/studio/facade.py":
-        "a6423e1455a673cb115f71037a132d6d858ea8d1a39d5d2c923580dd35f77d6d",
+        "4f1818d3777523fb02418539dbdeda79255cd1f111644a55a6445f0c84124d15",
     "mod_editor/studio/project_archive.py":
         "2ea69b3d6ff6424a338129b4c7beff65b3bacb89ff5af9aac2f9bf7975332c3a",
     "mod_editor/studio/session.py":
@@ -114,6 +114,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 
 REQUIRED_UNIFIED_PROVIDER_CLOSURE = frozenset(
     {
+        "mod_editor/core/nfl2k5_digit_texture.py",
         "mod_editor/core/nfl2k5_audio_containment_fingerprints.py",
         "mod_editor/core/nfl2k5_audio_origin_authorization.py",
         "mod_editor/core/nfl2k5_audio_source_containment.py",
@@ -1793,6 +1794,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_player_tags",
         "mod_editor.core.nfl2k5_roster_records",
         "mod_editor.core.nfl2k5_espn25_scenarios",
+        "mod_editor.core.nfl2k5_espn25_rosters",
         "mod_editor.gui.models_panel_qt",
         "mod_editor.gui.roster_editor_panel_qt",
         "mod_editor.gui.espn25_panel_qt",
@@ -1808,7 +1810,9 @@ def main() -> int:
         "mod_editor.core.nfl2k5_scorebug_author",
         "mod_editor.core.build_feedback",
         "mod_editor.core.image_use",
+        "mod_editor.core.nfl2k5_digit_preview",
         "mod_editor.core.nfl2k5_digit_sheet",
+        "mod_editor.core.nfl2k5_digit_texture",
         "mod_editor.core.nfl2k5_scorebar_v3",
         "mod_editor.core.nfl2k5_scorebug_exact",
         "mod_editor.core.nfl2k5_scorebug_fonts",
@@ -2050,11 +2054,11 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 113,
+    require(len(registry.capabilities) == 114,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
-    require(len(product_catalog.capabilities) == 75,
+    require(len(product_catalog.capabilities) == 76,
             "NFL 2K5 product capability count changed")
     _exercise_default_provider_controller(
         modules["mod_editor.core.controller"],
@@ -2457,7 +2461,7 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=113 sections=12 nfl2k5_capabilities=75 "
+        "registry=114 sections=12 nfl2k5_capabilities=76 "
         "reports=16 reviewed_metadata=24 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "

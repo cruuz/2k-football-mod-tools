@@ -78,6 +78,7 @@ from . import nfl2k5_guardian_overlay as guardian_overlay_patch
 from . import nfl2k5_guardian_resources as guardian_resources
 from . import nfl2k5_my_career as my_career_patch
 from . import nfl2k5_franchise_autosave as franchise_autosave_patch
+from . import nfl2k5_espn25_rosters as espn25_rosters_patch
 from . import nfl2k5_position_pools as position_pools_patch
 from . import nfl2k5_crib_reclaim as crib_reclaim_patch
 from . import nfl2k5_screen_hooks as screen_hooks_patch
@@ -624,6 +625,14 @@ def _guardian_image_status(path: Path) -> str:
         return "foreign"
 
 
+def _espn25_rosters_image_status(path: Path) -> str:
+    # The historic moment rosters live in the archive, never in the executable: retail / applied / foreign.
+    try:
+        return espn25_rosters_patch.image_status(path)
+    except Exception:  # noqa: BLE001 - an unreadable resource is never an applied patch
+        return "foreign"
+
+
 def read_xbe(xbe_path: Path | str) -> dict[str, object]:
     path = _resolve_source(xbe_path)
     payload = path.read_bytes()
@@ -656,6 +665,7 @@ def read_xbe(xbe_path: Path | str) -> dict[str, object]:
         "kickoff_relocated": kickoff_relocated_patch.status(payload),
         "scorebug_runtime": scorebug_runtime_patch.status(payload),
         "scorebug_xbe": scorebug_reference.xbe_status(payload),
+        "espn25_rosters": "n/a",
         "music_metadata_patch": music_metadata_patch.status(payload),
         **_music_status(payload),
         "kickoff_relocated_settings": kickoff_relocated_patch.read_settings(payload),
@@ -774,6 +784,7 @@ def read_image(image_path: Path | str) -> dict[str, object]:
         "depth_locks": depth_locks_patch.status(payload),
         "screen_timing": "unchecked",
         "guardian_cap": _guardian_image_status(path),
+        "espn25_rosters": _espn25_rosters_image_status(path),
         "guardian_overlay_resources": guardian_resources.image_status(path),
         "roster_arena_resource": roster_arena_image.image_status(path),
         "scorebug_runtime_resources": scorebug_reference.runtime_image_status(path),
@@ -1693,6 +1704,7 @@ def write_xbe_copy(
     my_career_setup=None,
     crib_reclaim=False,
     modern_naming=False,
+    espn25_rosters=False,
 ) -> dict[str, object]:
     """Write a patched COPY of ``source_xbe`` to ``target_xbe``."""
 
@@ -1707,12 +1719,14 @@ def write_xbe_copy(
     momentum_on = momentum > 0 or (momentum_collisions and momentum_collision_level > 0)
     _validate_lever_flags(coverage_slider, scramble_tuning, flatter_deep_ball, chop_block_toggle, all_stadiums, defensive_try, zone_drop_cap)
     _validate_wave_a_flags(music_shuffle, music_shuffle_selection, practice_squad_screen, abilities, abilities_off_week, qb_spy, qb_spy_intent_table, calendar_engine)
+    _require(type(espn25_rosters) is bool, "espn25_rosters must be boolean")
+    _require(not espn25_rosters, "Historic moment rosters need a disc image")
     if flatter_deep_ball and settings is not None:
         flatter_flight_patch.curves_for(settings)  # refuse conflicting flight choices before copying
     wanted = _resolve_wanted(settings, curves) if (settings is not None or curves is not None) else None
     _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties or uniform_choice or kick_laces or franchise_practice or bool(prospect_names) or player_star or dynamic_kickoff or depth_chart_rows or practice_squad or depth_locks or season_cap or xbe_space or kickoff_relocated or scorebug_runtime or momentum > 0 or momentum_contact or defensive_try or zone_drop_cap or all_stadiums or coverage_slider or scramble_tuning or flatter_deep_ball or chop_block_toggle or music_policy != "retail" or music_unlock or music_userlist or music_metadata is not None
              or music_shuffle or practice_squad_screen or abilities or qb_spy or calendar_engine
-         or momentum_collisions or read_option_runtime or franchise_2026_rules or senior_bowl or guardian_overlay or my_career or screen_hooks or reserves_16 or created_teams_extra or crib_reclaim or modern_naming or franchise_autosave,
+         or momentum_collisions or read_option_runtime or franchise_2026_rules or senior_bowl or guardian_overlay or my_career or screen_hooks or reserves_16 or created_teams_extra or crib_reclaim or modern_naming or franchise_autosave or espn25_rosters,
              "nothing requested")
     source = _resolve_source(source_xbe)
     target = Path(target_xbe).expanduser()
@@ -1768,6 +1782,7 @@ def write_xbe_copy(
         "kickoff_relocated": kickoff_relocated_patch.status(result),
         "scorebug_runtime": scorebug_runtime_patch.status(result),
         "scorebug_xbe": scorebug_reference.xbe_status(result),
+        "espn25_rosters": "n/a",
         "music_metadata_patch": music_metadata_patch.status(result),
         **_music_status(result),
         "kickoff_relocated_settings": kickoff_relocated_patch.read_settings(result),
@@ -1898,6 +1913,7 @@ def write_image_copy(
     modern_naming=False,
     guardian_players=None,
     _defer_image_resources=False,
+    espn25_rosters=False,
 ) -> dict[str, object]:
     """Copy a disc image and patch ``default.xbe`` inside the COPY.
 
@@ -1923,18 +1939,22 @@ def write_image_copy(
         accel_ramp = False
     _validate_lever_flags(coverage_slider, scramble_tuning, flatter_deep_ball, chop_block_toggle, all_stadiums, defensive_try, zone_drop_cap)
     _validate_wave_a_flags(music_shuffle, music_shuffle_selection, practice_squad_screen, abilities, abilities_off_week, qb_spy, qb_spy_intent_table, calendar_engine)
+    _require(type(espn25_rosters) is bool, "espn25_rosters must be boolean")
     if flatter_deep_ball and settings is not None:
         flatter_flight_patch.curves_for(settings)  # refuse conflicting flight choices before copying
     wanted = _resolve_wanted(settings, curves) if (settings is not None or curves is not None) else None
     _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties or uniform_choice or kick_laces or franchise_practice or bool(prospect_names) or player_star or dynamic_kickoff or depth_chart_rows or practice_squad or depth_locks or season_cap or xbe_space or kickoff_relocated or scorebug_runtime or momentum > 0 or momentum_contact or defensive_try or zone_drop_cap or all_stadiums or coverage_slider or scramble_tuning or flatter_deep_ball or chop_block_toggle or music_policy != "retail" or music_unlock or music_userlist or music_metadata is not None
              or music_shuffle or practice_squad_screen or abilities or qb_spy or calendar_engine
-         or momentum_collisions or read_option_runtime or franchise_2026_rules or senior_bowl or guardian_overlay or my_career or screen_hooks or reserves_16 or created_teams_extra or crib_reclaim or modern_naming or franchise_autosave,
+         or momentum_collisions or read_option_runtime or franchise_2026_rules or senior_bowl or guardian_overlay or my_career or screen_hooks or reserves_16 or created_teams_extra or crib_reclaim or modern_naming or franchise_autosave or espn25_rosters,
              "nothing requested")
     source = _resolve_source(source_image)
     target = Path(target_image).expanduser()
     report: ProgressSink = progress or (lambda stage, done, total: None)
 
     naming_digest = _naming_source_preflight(source, modern_naming)
+    if espn25_rosters:
+        # compile every historic moment roster against the source before copying anything
+        espn25_rosters_patch.apply(espn25_rosters_patch.read_resources(source))
     if crib_reclaim:
         crib_reclaim_patch.plan(source)  # includes the free-space refusal before copying
     src = _open_binary(source, os.O_RDONLY)
@@ -2054,6 +2074,9 @@ def write_image_copy(
     receipt["legacy_accel_ramp_disabled_by_momentum_profile"] = bool(legacy_disabled)
     if modern_naming and not _defer_image_resources:
         receipt["modern_naming_resources_patch"] = _finish_naming_image(target, naming_digest, report)
+    if espn25_rosters:
+        # data-only pass on the private copy, after every executable and relocation pass
+        receipt["espn25_rosters_patch"] = espn25_rosters_patch.apply_to_image(target)
     if reserves_16 or created_teams_extra:
         receipt["roster_arena_resource_patch"] = _finish_roster_arena_image(target, reserves_16, created_teams_extra, report)
     if crib_reclaim and not _defer_image_resources:
@@ -2094,6 +2117,7 @@ def write_image_copy(
         "depth_locks": depth_locks_patch.status(after),
         "screen_timing": "unchecked",
         "guardian_cap": _guardian_image_status(target),
+        "espn25_rosters": _espn25_rosters_image_status(target),
         "guardian_overlay_resources": guardian_resources.image_status(target),
         "roster_arena_resource": roster_arena_image.image_status(target),
         "scorebug_runtime_resources": scorebug_reference.runtime_image_status(target),

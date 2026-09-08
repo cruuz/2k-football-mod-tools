@@ -249,6 +249,7 @@ PATCHES = (
     ("espn25_plan", "ESPN Anniversary setup and rosters (experimental)",
      "Retail uses 25 moments and shared historic teams. Patch applies your saved Anniversary setup and roster edits. "
      "Extra moments remain unavailable. Experimental and unwitnessed."),
+    ("espn25_rosters", "Historic moments: real rosters", tt.espn25_rosters_patch.HELP_TEXT),
 )
 # Rows that are informational here: their page action opens the page that authors the content, and they
 # never pass a Boolean through the BuildPlan (the field is a plan path chosen on Rosters / Build).
@@ -331,6 +332,7 @@ PATCHES = (*PATCHES, *r62_ui.OPTIONS)
 NEEDS_IMAGE.update(r62_ui.KEYS)
 NEEDS_IMAGE.add("position_pools")
 NEEDS_IMAGE.add("espn25_plan")
+NEEDS_IMAGE.add("espn25_rosters")
 
 TEXT_PATCHES = (
     ("edge_rename", "Rename DE to EDGE everywhere",

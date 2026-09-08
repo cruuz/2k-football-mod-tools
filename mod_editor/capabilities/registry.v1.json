@@ -6285,6 +6285,72 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_espn25_rosters build source.iso historic.iso --receipt historic-receipt.json",
+        "module": "mod_editor/core/nfl2k5_espn25_rosters.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_ESPN25_ROSTERS_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_espn25_rosters.py",
+        "tests/mod_editor/test_nfl2k5_espn25_rosters_native.py",
+        "docs/mod_editor/nfl2k5_espn25_inventory.json"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. All presets off because supplied season lists cannot establish exact game starters or numbers. Protected wiring in WIRING.md."
+      },
+      "id": "nfl2k5.rosters.espn25_real_rosters",
+      "input_constraints": [
+        "User-owned USA archive with the 35 pinned retail resources or the entire exact installed profile; partial or foreign states refuse before writing.",
+        "Original 25 moment bindings and historical descriptor/main college table identities. Shared-resource authoring changes can conflict.",
+        "Season rosters are incomplete: named same-franchise nearby-season role fillers and retained unknown numbers are disclosed per player."
+      ],
+      "portme": [
+        "Apply the protected Build and image-resource-pass handoff in WIRING.md.",
+        "Noah must load each of the 25 moments and check on-field and pause-menu identities, numbers, formations and gameplay."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Source and generated CC-BY-4.0 attributed roster CSV recipes. Do not distribute resource binaries, executables or disc images. Full decoded retail inventory is local research evidence.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_ESPN25_ROSTERS_REPORT.md"
+        ],
+        "scope": "Bounded native selection/import/setup traces for all 25 moments; substituted archive I/O, controller, weather and presentation. No game played.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "boolean; false in Basic, Advanced and Experimental; opt-in only",
+            "name": "espn25_rosters",
+            "required": true
+          }
+        ],
+        "notes": "Retail: position-name placeholders. Patch: inferred historical identities, with shared-season and incomplete-data limits."
+      },
+      "source_container": {
+        "format": "uncompressed ROST resources in XDVDFS outer archive",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "35 whole-resource pins in data/nfl2k5_espn25_moment_rosters/manifest.json; no XBE edit",
+        "retail_file": "user-owned NFL 2K5 USA disc or extraction"
+      },
+      "summary": "Replace the 35 shared Anniversary rosters with 53 real identities each, using explicitly documented season and reserve approximations.",
+      "surface": "players_rosters",
+      "title": "Historic moments: real rosters (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_espn25_rosters"
+    },
+    {
+      "backend": {
         "command": "python3 tools/nfl2k5_xbox_save_inventory.py --image <read-only-xemu-hdd.raw> --expected-image-sha256 <sha256> --json-out <inventory.json> --inventory-tsv-out <inventory.tsv> --slider-tsv-out <sliders.tsv>",
         "module": "tools/nfl2k5_xbox_save_inventory.py",
         "operation": "inspect"

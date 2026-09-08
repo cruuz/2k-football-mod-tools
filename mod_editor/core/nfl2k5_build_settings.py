@@ -20,7 +20,7 @@ FEATURE_KEYS += (
     "team_names_2026", "widescreen", "overtime", "team_column", "seven_on_seven", "team_history",
     "career_stats", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces",
     "franchise_practice", "practice_squad", "depth_locks", "prospect_names", "player_star",
-    "player_tags", "roster_edits", "espn25_plan", "playbook_packs", "screen_timing", "depth_roles", "edge_rename",
+    "player_tags", "roster_edits", "espn25_plan", "espn25_rosters", "playbook_packs", "screen_timing", "depth_roles", "edge_rename",
     "hires_pack", "hires_folder", "hires_scale", "hires_target", "guardian_cap", "scorebug",
     "scorebug_runtime", "scorebug_folder", "music_policy", "music_unlock", "music_userlist",
     "music_project", "music_library", "commentary", "name", "author", "notes",
