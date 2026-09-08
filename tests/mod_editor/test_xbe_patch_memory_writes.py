@@ -89,6 +89,16 @@ class SectionTableTests(unittest.TestCase):
 class PatchWriteTests(unittest.TestCase):
     """Every absolute memory write in every patch's changed code targets writable memory."""
 
+    def test_contracts_editor_uses_only_owned_read_only_tables(self):
+        from mod_editor.core import nfl2k5_franchise_edit_player as edit
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        row = edit.allocation(self.patched)
+        image = XbeImage(self.patched)
+        self.assertEqual((row["kind"], row["size"]), ("read_only", 704))
+        self.assertFalse(image.section(row["va"]).writable)
+        self.assertFalse(image.section(row["va"]).executable)
+        self.assertEqual(image.read(row["va"], 704), edit.read_only_bytes())
+
     def test_coverage_trail_owns_no_runtime_storage(self):
         from mod_editor.core import nfl2k5_coverage_trail as trail, nfl2k5_xbe_space as space
         from mod_editor.core import nfl2k5_coverage_trail_code as code
@@ -156,6 +166,9 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_espn25_rosters as espn25
         if espn25.xbe_status(cls.patched) != "applied" or espn25.apply_xbe(cls.patched)[0] != cls.patched:
             raise AssertionError("Historic team reload repair missing from the complete owner union")
+        from mod_editor.core import nfl2k5_franchise_edit_player as edit_player
+        if edit_player.status(cls.patched) != "applied" or edit_player.apply(cls.patched)[0] != cls.patched:
+            raise AssertionError("Contracts Edit Player did not compose/replay")
         from mod_editor.core import nfl2k5_coverage_trail as coverage_trail
         if coverage_trail.status(cls.patched) != "applied" or coverage_trail.apply(cls.patched)[0] != cls.patched:
             raise AssertionError("Coverage trail missing from the complete owner union")

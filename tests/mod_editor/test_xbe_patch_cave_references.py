@@ -43,6 +43,19 @@ def sections(xbe: bytes):
 
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
 class CaveReferenceTests(unittest.TestCase):
+    def test_contracts_editor_uses_only_owned_read_only_tables(self):
+        from mod_editor.core import nfl2k5_franchise_edit_player as edit
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        row = edit.allocation(self.patched)
+        image = XbeImage(self.patched)
+        self.assertEqual((row["kind"], row["size"]), ("read_only", 704))
+        self.assertFalse(image.section(row["va"]).writable)
+        self.assertFalse(image.section(row["va"]).executable)
+        self.assertEqual(image.read(row["va"], 704), edit.read_only_bytes())
+        for _, va, before, _ in edit.sites(row["va"]):
+            self.assertEqual(self.manifest.overlaps(va, va + len(before), exclude_owner=edit.OWNER), [])
+            self.assertTrue(self.manifest.overlaps(va, va + len(before)))
+
     def test_coverage_trail_hook_is_owned_and_code_is_allocated(self):
         from mod_editor.core import nfl2k5_coverage_trail as trail, nfl2k5_xbe_space as space
         row = next(a for a in space.layout(self.patched)["allocations"] if a["owner"] == trail.OWNER)
@@ -96,6 +109,9 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_espn25_rosters as espn25
         if espn25.xbe_status(cls.patched) != "applied" or espn25.apply_xbe(cls.patched)[0] != cls.patched:
             raise AssertionError("Historic team reload repair missing from the complete owner union")
+        from mod_editor.core import nfl2k5_franchise_edit_player as edit_player
+        if edit_player.status(cls.patched) != "applied" or edit_player.apply(cls.patched)[0] != cls.patched:
+            raise AssertionError("Contracts Edit Player did not compose/replay")
         from mod_editor.core import nfl2k5_coverage_trail as coverage_trail
         if coverage_trail.status(cls.patched) != "applied" or coverage_trail.apply(cls.patched)[0] != cls.patched:
             raise AssertionError("Coverage trail missing from the complete owner union")

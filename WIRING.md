@@ -13796,3 +13796,229 @@ Complete the report's witness list, including pause navigation and camera
 switches during real plays, before making a runtime acceptance claim. Protected
 release files, build modules, GUI panels and the release manifest were not
 edited in this worktree.
+# r65 Franchise Player Contracts Edit Player handoff (2026-09-08)
+
+New owner: `mod_editor/core/nfl2k5_franchise_edit_player.py`. Evidence:
+`ASTRA_FRANCHISE_EDIT_PLAYER_REPORT.md`. This appendix specifies all protected
+product changes. The backend, CLI, capability object, standalone tests,
+allocator budget, manifest builder and both gate unions are implemented.
+**EXPERIMENTAL / UNWITNESSED. Opt-in, off in every preset.**
+
+## Dispatcher and four status dictionaries
+
+In protected `mod_editor/core/nfl2k5_throw_tuning.py`, import:
+
+```python
+from . import nfl2k5_franchise_edit_player as franchise_edit_player_patch
+```
+
+Add strict Boolean `franchise_edit_player=False` to `_apply_all`,
+`write_xbe_copy`, `write_image_copy`, `_validate_r62_options`,
+`_selected_space_requests`, and `_xbe_space_adapter.__init__`. Include it in the
+Boolean validator and in both `R62_RUNTIME_KEYS` and `R62_SPACE_KEYS`. Thread it
+through validation, public writer no-op predicates, `_r62_options`,
+`_r62_space_options`, `_deferred_r62_options` and all forwarding calls. Existing
+comprehensions that derive these dictionaries from key tuples should carry the
+new key automatically; verify the resulting kwargs rather than duplicating it.
+
+Append this request term in `_selected_space_requests`:
+
+```python
++ (franchise_edit_player_patch.REQUESTS if franchise_edit_player else ())
+```
+
+Pass `franchise_edit_player=franchise_edit_player` into that selector from
+`_xbe_space_adapter`. Include it in `self.scaleout` and every predicate selecting
+an allocator pass, including the allocator row in `_apply_all`. Reserve the
+entire chosen union on a clean base before installing any owner. The request is
+704 RO bytes, aligned to 16, with no code/data request. An already-grown image
+with a different union must rebuild from base; the backend refuses it.
+
+Add this exact row to the final `_apply_all` owner tuple after the allocator:
+
+```python
+(franchise_edit_player, franchise_edit_player_patch,
+ "franchise_edit_player_patch", "Franchise Edit Player (experimental)")
+```
+
+No settings adapter is needed: `apply(payload)` accepts only bytes and returns
+`(bytes, receipt)`. It applies the existing `nfl2k5_position_row` prerequisite
+itself, so selecting this feature alone must not require another user checkbox.
+Enable the dispatcher's earlier Position row when either `position_row` or
+`franchise_edit_player` is true. This records the prerequisite under its existing
+owner before the new final owner runs; the backend's own dependency call then
+replays without changes. Forward
+this owner's subreceipt and changed-byte accounting to the public write/build
+receipts; the subreceipt includes its Position dependency receipt.
+
+The four public status dictionaries must expose:
+
+```python
+"franchise_edit_player": franchise_edit_player_patch.status(payload)
+```
+
+Use each function's final bytes (`payload`, `result` or `after`) in `read_xbe`,
+`read_image`, `write_xbe_copy`, and `write_image_copy`. The existing
+`_grown_status_fields` is expanded by all four, so add this key there once and
+verify all four outputs. `retail`, `applied` and `foreign` describe the installed
+XBE, not the current game mode or a runtime success witness.
+
+For `write_image_copy`, include the flag in `defer_grown`, in the complete
+selector kwargs passed to grown/paired writers, and the final `_apply_all` pass.
+Force it False in every early pass that must keep the retail executable size.
+Use the existing grown-XBE writer to relocate the extent. There is no PLAY,
+ROST, texture or archive pass for this feature.
+
+## BuildPlan, normalization, presets, deferral and final pass
+
+In protected `mod_editor/core/mod_build.py`:
+
+```python
+franchise_edit_player: bool = False
+```
+
+Add the field to `BuildPlan`, `wants_xbe_patch()`, strict option validation,
+scan/status keys and the capability/module-availability table:
+
+```python
+("franchise_edit_player", "nfl2k5_franchise_edit_player")
+```
+
+Set it **False** in `basic`, `softdrink_advanced` and `softdrink_experimental`.
+Keep the standalone BuildPlan default False. This is an explicit opt-in and
+requires no settings path. Normalize enabled selection to `xbe_space=True` and `position_row=True`.
+Allow selection when the feature backend and its existing Position/allocator
+helpers import. No dependency on selecting Franchise Practice or MyCareer.
+
+Include the field in the grown-owner deferral predicates near `momentum_on`, in
+the early `replace(..., camera=False, ...)` as `franchise_edit_player=False`, in
+the final grown-owner predicate and the final `tt.write_copy` kwargs. Existing
+`_build_r62_values` must pick it up through the updated key list; do not pass an
+explicit duplicate beside `**r62`. Keep one immutable selected request union
+across later camera/scoreboard/roster passes. Include the owner receipt in the
+build step/status summary and use the normal foreign-state refusal.
+
+If a coordinating preset later enables this feature, also add
+`franchise_edit_player=False` to the manifest builder's separate retail-size
+seed `replace(...)`. On this handoff's all-False presets, that seed already
+leaves it disabled. The manifest builder explicitly installs the dormant owner
+using its complete union independently of the protected dispatcher.
+
+## Gameplay Patches and Build controls
+
+In protected `mod_editor/gui/gameplay_patches_panel_qt.py`, add this `PATCHES`
+row and add `franchise_edit_player` to `NEEDS_IMAGE`:
+
+```python
+("franchise_edit_player", "Franchise Edit Player (experimental)",
+ tt.franchise_edit_player_patch.HELP_TEXT)
+```
+
+The exact `HELP_TEXT` reads:
+
+> EXPERIMENTAL / UNWITNESSED. Retail Player Contracts has no Edit Player action.
+> Patch: adds Edit Player after Assign Jersey Number for the team you coach.
+> Use the game's roster editor, including Position, appearance and ratings,
+> then return to Player Contracts. Changes take effect immediately, including
+> when you press Back. Review the depth chart after changing a position.
+
+It contains both **Retail** and **Patch**, with no em dash or implementation
+jargon. Use the normal positive checkbox: checked enables the patch. Include
+it in source eligibility, status/availability, selection and writer kwargs.
+The Studio image surface must route through the grown-image pipeline even
+though the standalone module can operate directly on a new XBE output.
+
+In protected `mod_editor/gui/build_panel_qt.py`, use:
+
+```python
+self.franchise_edit_player_check = self._option(
+    pl, "franchise_edit_player", "Franchise Edit Player (experimental)",
+    tt.franchise_edit_player_patch.HELP_TEXT, needs_image=True)
+```
+
+The caption is 36 characters, below 60. Add refresh/preset/reset wiring,
+capability gating, selected-options summary, BuildPlan serialization and the
+nonempty-build predicate. Use the same canonical Boolean in both panels.
+In `studio_qt.py` and `gameplay_panel_qt.py`, forward it wherever shared patch
+selections or source-status fields are copied. No separate feature panel or
+second toggle state is required.
+
+## Packaging, runtime closure and capability registry
+
+Add these literal lines to protected `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_franchise_edit_player.py
+docs/mod_editor/nfl2k5_franchise_edit_player_capability.json
+ASTRA_FRANCHISE_EDIT_PLAYER_REPORT.md
+```
+
+If the existing package policy ships development test sources, also include:
+
+```text
+tests/nfl2k5_franchise_edit_player_fixture.py
+tests/mod_editor/test_nfl2k5_franchise_edit_player.py
+tests/mod_editor/test_nfl2k5_franchise_edit_player_unicorn.py
+```
+
+Retain the existing Position-row source in the allowlist. Never include the
+brief, scratch directory, retail bytes, synthetic memory dump or generated XBE.
+No bitmap, template binary or assembler output is required.
+
+Add this literal import to protected
+`packaging/check_2k5_mod_studio_runtime.py`:
+
+```python
+"mod_editor.core.nfl2k5_franchise_edit_player",
+```
+
+Retain the existing transitive closure: `nfl2k5_position_row`,
+`nfl2k5_rdata_sites`, `nfl2k5_xbe_space`, `nfl2k5_bump_strength`,
+`nfl2k5_cave_oracle`, `nfl2k5_my_career_mode`, `nfl2k5_my_career`, their code
+helpers, and `nfl2k5_music_playlist`. MyCareer and playlist imports validate
+complete companion installations when shared native entry points differ.
+The product writer requires neither Capstone nor Unicorn; those are optional
+proof dependencies.
+
+Merge the exact schema-valid object from
+`docs/mod_editor/nfl2k5_franchise_edit_player_capability.json` into
+`mod_editor/capabilities/registry.v1.json`, sorted by ID
+`nfl2k5.gameplay.franchise_edit_player`. It uses the existing
+`gameplay_tuning_sliders` surface, classification `offline-writer-proved`, GUI
+default false and runtime `not-tested`. Backend and validation commands are
+module commands:
+
+```text
+python3 -m mod_editor.core.nfl2k5_franchise_edit_player apply source.xbe contracts-editor.xbe
+python3 -m tests.mod_editor.test_nfl2k5_franchise_edit_player
+```
+
+The feature test validates the merged registry schema and strictly checks every
+new evidence path and command module. Whole-registry file-check mode can still
+fail on the baseline's missing `docs/research/apf_audio.md`; do not forge that
+unrelated evidence or weaken validation. Nothing here requires a version bump,
+release-tag test change, update-check change or CI configuration edit.
+
+## Coordinating acceptance and release manifest
+
+Implemented in this worktree: request union and owner tuple in
+`tests/nfl2k5_allocator_stack.py`, both explicit gate checks in both installation
+orders, the pair matrix, budget fixture, `space.dormant_union()`, and manifest
+builder append/reservation whitelists, request/import/observer/final/synthetic/
+status/extra-owner lists. Gate projections reserve only this owner's exact
+pinned instructions after complete applied-state validation and overlap checks.
+They do not grant ownership to arbitrary nearby code.
+
+Claude must regenerate protected `data/nfl2k5_cave_reservations.json` using
+`tools/nfl2k5_cave_oracle.py manifest` after the final product wiring lands.
+The task's scratch manifest refreshes source pins on the existing release
+reservation document to run the local gates; it is not a newly observed disc
+manifest and must not be shipped. The report records all pre-existing drift.
+
+After wiring, verify the feature alone selects v3, installs Position, writes
+and reopens a grown XBE through the actual image pipeline, and reports applied
+in all four status dictionaries. Repeat with the complete selected union,
+forward/reverse/replay, configured MyCareer and playlist, and with the option
+off. Confirm all three presets leave it off. Use temporary disposable discs
+under the brief's capacity rules, then run both gates and the two standalone
+feature suites. Noah's precise runtime witness list is in the report.

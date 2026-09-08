@@ -38,7 +38,7 @@ class PlannerTests(unittest.TestCase):
         self.assertEqual([report['capacity'][k]['capacity_bytes'] for k in ('code', 'data', 'read_only')],
                          [106496, 86016, 20480])
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [4096, 0, 7072])  # r63: Franchise Auto Save holds 512 read-only bytes
+                         [4096, 0, 6368])  # r65: Contracts Edit Player adds 704 read-only bytes
         self.assertEqual(len(report['pages']), 52)
         for a in report['allocations']:
             self.assertEqual(a['va'] % a['align'], 0)
@@ -51,7 +51,7 @@ class PlannerTests(unittest.TestCase):
             self.assertIn(list(request), requests)
         report = space.plan(requests)
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [52624, 4096, 8104])  # r64: coverage trail reserves 640 RX bytes; RW/RO headroom is unchanged
+                         [52624, 4096, 7400])  # r65: Contracts Edit Player adds 704 RO bytes; RX/RW unchanged
 
     def test_every_kind_exact_capacity_alignment_and_overflow(self):
         for kind, capacity in [('code', 98304), ('data', 81920), ('read_only', 16384)]:

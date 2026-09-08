@@ -566,13 +566,14 @@ def dormant_union():
     from . import nfl2k5_screen_hooks as screen_hooks, nfl2k5_camera as camera
     from . import nfl2k5_franchise_autosave as autosave, nfl2k5_espn25_rosters as espn25
     from . import nfl2k5_coverage_trail as coverage_trail
+    from . import nfl2k5_franchise_edit_player as edit_player
     # keep this in step with tests/nfl2k5_allocator_stack.REQUESTS and the manifest builder's all_requests
     return (camera.REQUESTS + relocated.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + runtime.REQUESTS
             + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS
             + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS + guardian.REQUESTS
             + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS
             + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS + autosave.REQUESTS
-            + espn25.REQUESTS + coverage_trail.REQUESTS)
+            + espn25.REQUESTS + coverage_trail.REQUESTS + edit_player.REQUESTS)
 
 
 def is_scaleout(payload):

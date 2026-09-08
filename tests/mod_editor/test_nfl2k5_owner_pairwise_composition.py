@@ -47,6 +47,7 @@ OWNERS = (
     ("my_career_generic", stack.my_career),
     ("franchise_autosave", stack.autosave),
     ("coverage_trail", stack.coverage_trail),
+    ("franchise_edit_player", stack.edit_player),
 )
 
 
