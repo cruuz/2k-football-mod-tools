@@ -2902,7 +2902,7 @@ def replay_moves(roster: RosterDocument, moves: Sequence[Mapping[str, Any]], log
 
     Every mover is detached from the lists first and attached to the destination lists second, so
     a swap between two full teams and a chain of moves both land; then the END STATE is checked
-    against the rules (42 minimum, 54 cap, no player on two clubs, the free-agent capacity).  If it
+    against the rules (42 minimum, active/reserve capacity, no player on two clubs, free-agent capacity). If it
     fails, the lists go back to what the target roster had and the reason is logged -- the fields
     are still applied.  Returns the number of players moved."""
 
@@ -2923,6 +2923,9 @@ def replay_moves(roster: RosterDocument, moves: Sequence[Mapping[str, Any]], log
                        f"{entry.get('first', '')} {expected_last}".strip())
         if roster.is_draft_class(player):
             log.append(f"{key}: {MSG_DRAFT_CLASS} {DRAFT_CLASS_WHY} (move skipped)")
+            continue
+        if key in roster.reserve_owner:
+            log.append(f"{key}: reserve moves require a signed-save copy (move skipped)")
             continue
         movers.append((player, entry))
     # phase 1: detach every mover from every team list, and from the free-agent list only when
@@ -2962,7 +2965,7 @@ def replay_moves(roster: RosterDocument, moves: Sequence[Mapping[str, Any]], log
     roster._reindex_membership()
     # phase 3: the end state must obey the rules the editor enforced when the document was made --
     # relative to what the target roster already had, so a club that was under 42 before the moves
-    # is only a problem if the moves took it lower, and one over 54 only if they took it higher
+    # is only a problem if the moves took it lower. The current codec owns the active/reserve cap.
     problems: list[str] = []
     before_counts = {index: len(slots) for index, slots in snapshot["teams"].items()}
     touched = {t for _s, t, _p in placements}
@@ -2976,8 +2979,9 @@ def replay_moves(roster: RosterDocument, moves: Sequence[Mapping[str, Any]], log
             problems.append(f"{team.display} did not parse cleanly")
         if team.is_club and 0 < now < TEAM_MIN_PLAYERS and now < before:
             problems.append(f"{team.display} would drop to {now} players (minimum {TEAM_MIN_PLAYERS})")
-        if now > TEAM_MAX_PLAYERS and now > before:
-            problems.append(f"{team.display} would grow to {now} players (cap {TEAM_MAX_PLAYERS})")
+        limit = roster.membership_limit(team_index)
+        if now > limit and now > before:
+            problems.append(f"{team.display} would grow to {now} players (cap {limit}, including reserve storage)")
         if now > TEAM_SLOTS:
             problems.append(f"{team.display} would need {now} pointer slots (the record holds {TEAM_SLOTS})")
     for player, _entry in movers:

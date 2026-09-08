@@ -76,3 +76,35 @@ results remain experimental and unwitnessed until the listed comparisons are pla
   settings, scene, and frame counter. Compare one owner at a time from the same
   original source. A larger disc file does not mean the entire disc is in RAM.
   The research verdicts and witness recipes are in ASTRA_DISCORD_BUGS_2_REPORT.md.
+
+- **How do I play an Xbox roster save (seskid)?** Open the save in Rosters,
+  use **Save Xbox save copy...**, and copy the resulting `SAVEGAME.DAT` and
+  its matching `EXTRA` back together to the Xbox HDD save folder. Load that
+  roster in the game. This also keeps the season progress in a franchise save.
+- **How do I bake that save's roster into my project/disc (seskid)?** Open
+  the disc you will build, then open the Xbox save in Rosters and choose
+  **Use this save's roster on the disc...**. With a disc roster open, the same
+  action in **Tools** lets you choose a save directly. Save `roster_edits.json`,
+  review the counts and skipped players, then Build with **Include exported
+  Rosters edits**. The action supplies the Build path automatically and writes
+  a neighboring `roster_edits.receipt.json` with the full comparison.
+  **EXPERIMENTAL / UNWITNESSED:** this action requires the r64 Rosters wiring
+  patch in builds that do not yet show it.
+
+  Ordinary **Export roster edits (.json)...** exports only changes made in
+  the editor session. Opening a complete community save and exporting without
+  changing anything does not export that save's roster. The new action compares
+  the whole loaded save, including edits made here, with the current disc.
+  Export again with the new action after changing the save or the source disc.
+
+  Names must fit the disc's existing name pool or reuse an existing string;
+  oversized names are skipped, never shortened. Ambiguous identities, missing
+  player slots, unavailable colleges, team capacity limits, reserve changes and
+  injured-reserve ownership are reported. An added player needs an empty,
+  unowned NFL record and enough name space; a draft prospect, template or an
+  existing free agent is not an empty record. Disc-only players are retained.
+  A pooled-position disc and a retail-position save are refused rather than
+  silently changing what a player's position means. Franchise saves use their
+  roster arena, but season progress, schedule, statistics and reserve/IR
+  ownership remain in the save. The game can load an HDD roster or franchise
+  instead of the disc roster, so test a fresh disc-roster load as well.

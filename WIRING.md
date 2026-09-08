@@ -11830,3 +11830,79 @@ Run that proposal mode before wiring, then ordinary mode after wiring.
 Run the ordinary release allowlist, literal import closure and staged runtime
 gates after applying both fixtures; this branch does not claim a packaged build.
 See the report for private-evidence environment variables and exact results.
+
+# r64 roster save to disc, 2026-09-07
+
+EXPERIMENTAL / UNWITNESSED. This exports ordinary
+`2k5_mod_studio_roster_edits/v1` against the CURRENT disc; it does not install
+an executable owner. The new backend, shared replay capacity/reserve correction,
+FAQ and tests are implemented. Protected files remain unchanged on this branch.
+
+Apply the exact Rosters proposal from the repository root:
+
+```sh
+git apply --check tests/fixtures/roster_save_to_disc_wiring.patch
+git apply tests/fixtures/roster_save_to_disc_wiring.patch
+QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_roster_save_to_disc_wiring.py
+python3 tests/mod_editor/test_roster_save_to_disc.py
+```
+
+The patch changes only `mod_editor/gui/roster_editor_panel_qt.py`. It adds
+**Use this save's roster on the disc...** below the export row when a save is
+open, and the same Tools action (choosing a save file) when a disc is open.
+It keeps the loaded document and undo journal intact. The source is the current
+signed save including in-session edits; the target is freshly loaded from the
+project facade's current disc, falling back to the page's disc or a disc picker.
+The result dialog names that disc and output, displays counts, and includes
+all skipped identities/reasons and per-team counts in its details.
+
+`save_edits_to(path, *, document=None)` remains the single existing export path.
+The optional argument supplies the full comparison instead of the session diff;
+canonical JSON matches the receipt's edits SHA-256. The receipt is written
+beside it before the export signal is emitted. Existing calls still export
+session diffs. Existing `roster_edits_changed` wiring in Studio picks up this
+path, checks the Build option and saves project settings. Further save edits
+must be exported with the new action again. Tests execute the entire patched
+module in memory before wiring, or the wired module afterward; they exercise
+real widgets, the signal, file writes, BuildPanel's path and dialog details.
+
+Required protected integration fields:
+
+| Field | Required change |
+| --- | --- |
+| Dispatcher `_apply_all` tuple + kwarg + four status dicts | None. No XBE owner, hook or new Build operation. |
+| `_selected_space_requests`, allocator adapter, `_grown_status_fields`, owner unions | None. No allocation and no cave manifest regeneration. |
+| `BuildPlan` field + normalization/deferral/final pass | Reuse existing `roster_edits: str`; no new field or pass. The shared `nfl2k5_roster_records.apply` consumes the generated v1 file. |
+| Basic / Advanced / Experimental presets | No change. Explicit file export enables the existing user-selected content path. |
+| Gameplay Patches `PATCHES` text + `NEEDS_IMAGE` | No new row. Existing roster edits require an image. Retail: the disc roster. Patch: the user's exported roster changes. |
+| Build `_option` caption, <=60 characters | Keep `Include exported Rosters edits` (29 characters). |
+| Studio signal | Keep existing `roster_edits_changed` connection; no new signal or Studio edit. |
+| Release allowlist | Add the two exact lines below; FAQ is already allowlisted. Do not include tests, patch fixture, brief, report or scratch artifacts in the runtime archive. |
+| Runtime closure | Add `mod_editor.core.nfl2k5_roster_save_to_disc` to the `modules` import list in `packaging/check_2k5_mod_studio_runtime.py` beside `mod_editor.core.nfl2k5_roster_records`. Existing records/franchise/arena imports cover the other dependencies; no new tools dependency. |
+| Capability registry | Append the exact object from `docs/mod_editor/nfl2k5_roster_save_to_disc_capability.json` to `mod_editor/capabilities/registry.v1.json`, sort/canonicalize through the usual validator. Existing surface `players_rosters`, new ID `nfl2k5.rosters.save_to_disc`, `offline-writer-proved`, runtime `not-tested`. Backend and validation commands use `python3 -m`. |
+| Release tags / CI workflow / reservation manifest | No edits. |
+
+Allowlist additions:
+
+```text
+mod_editor/core/nfl2k5_roster_save_to_disc.py
+docs/mod_editor/nfl2k5_roster_save_to_disc_capability.json
+```
+
+The existing allowlisted `docs/mod_editor/discord_bugs_2_faq.md` now answers
+seskid's PLAY vs BAKE question. Retain its note that the action requires this
+wiring in an older build; it gives an accurate explanation when the button is
+absent. No new FAQ path is needed.
+
+The importer explicitly supplies pure depth-order moves because the older
+session exporter omits reorder-only entries. Replay uses the same current
+`membership_limit()` as the roster codec (65 active pointer slots, reserve
+storage deducted, grown 70-total storage, season 53 where applicable), instead
+of its stale unconditional 54-player end-state cap. A reserve cannot be moved
+through a forged ordinary move entry. Both details ship in core, without a
+protected Build modification.
+
+Run the existing roster-record, roster-editor, reserve/franchise, Build core,
+Build panel and beta62 Build integration suites after wiring. Run the normal
+allowlist, capability and staged runtime closure checks after the protected
+integration; this branch does not claim a packaged release or a played result.
