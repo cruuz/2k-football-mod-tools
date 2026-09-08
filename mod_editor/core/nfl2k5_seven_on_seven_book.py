@@ -1,10 +1,21 @@
-"""7-on-7 practice content for the Basic Training playbook ``PRACTICE-pb.iff`` (outer entry 334).
+"""EXPERIMENTAL / UNWITNESSED 7-on-7 v2 content for ``PRACTICE-pb.iff`` (outer 334).
 
 The engine fields eleven per side (eleven formation slots, eleven play chains, the lineup builder
-``FUN_0018a5d0`` loops 0..10 and the validator refuses an empty chain), so "seven on seven" is
-built the way retail's own Basic Training drills do it: the four linemen of each side stand at the
-sideline, in bounds, with the retail inert chain (``Start`` then ``Start``, the two-node chain
-every tutorial defence gives its idle players), and the seven who play get real assignments.
+``FUN_0018a5d0`` loops 0..10 and the validator refuses an empty chain), so "seven on seven" keeps
+the eleven and makes the linemen inert: the offensive line stands at the retail line spots in the
+retail pass set (``Start`` then ``Block Leg`` type 1, the chain every retail offensive play gives
+its tackles and guards), the defensive line stands at the retail 4-3 spots with the retail inert
+chain (``Start`` then ``Start``, the two-node chain the Stiff Arm / Juke / Charge drills give their
+idle linemen), and the seven who play get real assignments.
+
+Why the linemen are on the line and not parked wide: the first cut parked them at x = +/-2300 cm
+and the huddle never broke.  Practice puts the ball on a hash (``FUN_00158160``, +/-281.94 cm) and
+the line-up target is ``slot.x + ball.x`` (``FUN_00190d50``), so a parked lineman's spot sat 1.5 yd
+past the sideline (2438 cm); the walker (``FUN_001853d0``) never reported him settled, and the
+quarterback's huddle-break predicate (``FUN_001ffdb0``, which waits until every teammate passes
+``FUN_001ff940``) held forever.  Parking stays a later option once the huddle break is witnessed:
+it would need ``|x| <= ~2090`` (in bounds on both hashes) and, on defence, the deep parking retail's
+own drills use, never the sideline.
 
 What this module writes into a COPY of the practice book (the PLAY resource is uncompressed and
 fixed-size, 0x20 wrapper + 0x13390 body, so every edit is in place; the wrapper is byte-identical):
@@ -13,10 +24,11 @@ fixed-size, 0x20 wrapper + 0x13390 body, so every edit is in place; the wrapper 
   WR, HB), ``7-ON-7 PASS 4WR`` (Flush row), ``7-ON-7 PASS 2TE`` (Ace row), ``7-ON-7 COVERAGE 3LB``
   (the 4-3 row), ``7-ON-7 COVERAGE 5DB`` (the Nickel row) -- all eleven-code rows copied from the
   retail team books, so the depth chart fills them exactly as it fills the stock sets;
-* five formations (three offence, two defence) whose linemen slots sit at x = +/-25.2 yd (the
-  sideline is 26.7) behind the ball / behind the line, and whose first defensive line slot is the
-  **timer rusher**: a defender 7.5 yd off the ball whose Rush Lane opcode carries the retail delay
-  field set to 4.0 s, so the quarterback has a four-second count before a free rusher arrives;
+* five formations (three offence, two defence): tackles at x = +/-304, guards at +/-152 and the
+  centre at 0 on the line, exactly the retail I Pro / Doubles line; defensive ends at +/-365 and
+  tackles at +/-150, the retail 4-3 line; the right end (slot 0) is the **timer rusher**: the retail
+  Base rush chain (``Defense Start`` then ``Rush Lane``, lane 11) with the delay field set to
+  4.0 s, so the quarterback has a four-second count before the end comes;
 * nine offensive pass plays (three per set) and six coverages (shared by both defensive sets),
   every one accepted by the ported game validator; the offence keeps a real centre to snap
   (family-0 plays must contain a Snap To) so an offensive set is QB + snapper + five skill players;
@@ -27,8 +39,9 @@ fixed-size, 0x20 wrapper + 0x13390 body, so every edit is in place; the wrapper 
 
 Companion of :mod:`nfl2k5_seven_on_seven` (the executable side: the fifth Practice Type that loads
 this book for both teams).  Retail geometry, chain shapes and zone/man operand tuples are copied
-from the retail practice and team books; what is new is the parking and the 4.0 s delay, both
-unverified at runtime.
+from the retail practice and team books; what is new is the 4.0 s delay (retail uses up to 1.7 s
+on the same field) and the idle chain on defensive linemen outside Basic Training, both unverified
+at runtime.
 """
 
 from __future__ import annotations
@@ -72,24 +85,42 @@ RETAIL_RESOURCE_SHA256 = "56de927e6969f010dccf0e1a3d7f216bcb8010393e543769de12a7
 #: Only the category table's defensive slot codes differ, so the 7-on-7 sets are written on top of it with
 #: their own personnel groups recoded by the same rule; the result is byte-identical to recoding a 7-on-7 book.
 RECODED_RESOURCE_SHA256 = "83ac912b3b44505ced3598b76cecc5ea71789e2273cb2bbd331b91d5b8d97cfb"
-KNOWN_SOURCE_STATES = {RETAIL_RESOURCE_SHA256: "retail", RECODED_RESOURCE_SHA256: "recoded"}
+# The existing depth-role writer changes exactly 12 retail bytes, independently
+# of the six pooled-position bytes. Accept only these complete known resources.
+KNOWN_SOURCE_STATES = {
+    RETAIL_RESOURCE_SHA256: "retail", RECODED_RESOURCE_SHA256: "recoded",
+    "6983c525df582b063028281b94e26554744ea5ea44a509047974e7f7fd6a937e": "retail_depth_roles",
+    "e521c58f206fa32eae8f06d31ac62eb2796d8377636b895b371c66f9596bfe80": "recoded_depth_roles",
+}
+# Full output pins include the wrapper, unused space, old drills, all links,
+# personnel, geometry and node operands. Structural validation alone cannot
+# distinguish a foreign but syntactically valid route from an exact replay.
+APPLIED_RESOURCE_STATES = {
+    "e4f62632e0dbff7298aa5ee2a5c68bf9ed702cc23bda94e15a2cc47ffd39d2e7": "retail",
+    "3844d1f9a56d34b69ab9b99e08b35cbc6f5601d068b305b4c0e80986c6348639": "recoded",
+    "fd9b6c9999340dea5883f149fbc74c4d90b027ba2b96c88e14373434786b0b8f": "retail_depth_roles",
+    "80334a4d82ec7524c466cf4ed2c00f9d5e1509d655e18a571275f6c6edc10fbb": "recoded_depth_roles",
+}
+VERSION = 2
 RETAIL_FORMATIONS = 23
 RETAIL_PLAYS = 27
 RETAIL_CATEGORIES = 11
 POOL_COUNT_WORD = 0x1083C
-EMPTY_LINK = 0x1FF
 LINK_GROUP = 3                     # the selection group every tutorial link in this book uses
 LINK_PRESENT = 0x8000              # set on every real link word in every retail book
 EMPTY_LINK = 0x7FF                 # the retail fill for an unused menu slot
 AI_EXCLUDED = 0x400000             # play header bit 22: retail Take Knee / Spike Ball; FUN_00204930 skips it
 YD = codec.YD_CM
+HASH_LIMIT_CM = 282                # conservative bound on the retail +/-281.94 cm hash
+SIDELINE_CM = 2438                 # conservative bound on the retail +/-2438.4 cm sideline
 
-PARK_X = 2300                      # 25.2 yd from the centre line; the sideline is 2438 (26.7 yd)
-OFFENSE_PARK = ((PARK_X, -900), (-PARK_X, -900), (PARK_X, -1050), (-PARK_X, -1050))   # T0 T1 G0 G1
-DEFENSE_PARK = ((-PARK_X, 250), (PARK_X, 250), (-PARK_X, 400))                       # slots 1, 2, 3
-RUSHER_POSITION = (0, 686)         # 7.5 yd off the ball, over the centre
+# Retail line geometry (centimetres, + = offence's right). The offensive line is the retail I Pro /
+# Doubles line of the practice book; the defensive line is the practice book's 4-3 (formation 19).
+OFFENSE_LINE = ((304, 0), (-304, 0), (152, 0), (-152, 0))   # slots 1 T, 2 T, 4 G, 5 G
+DEFENSE_LINE = ((-365, 0), (150, 0), (-150, 0))            # slots 1 DE, 2 DT, 3 DT (idle)
+RUSHER_POSITION = (365, 0)         # slot 0: the right end, the retail 4-3 spot
 RUSH_DELAY_SECONDS = 4.0
-RUSH_LANE = 8                      # the interior lane retail's Base rush uses for a tackle
+RUSH_LANE = 11                     # the lane retail's Base rush gives that end (practice book play 6, slot 0)
 
 # Personnel rows (eleven position codes, kind | ordinal << 5) copied from the ATL team book.
 KINGS_ROW = bytes.fromhex("0005250607270809" "49290a")      # QB T T C G G TE0 WR0 WR2 WR1 HB0
@@ -114,19 +145,19 @@ HB = (0, -632)
 #  the eleven (x, z) centimetre positions, offense?)
 FORMATIONS: tuple[tuple[str, int, int, tuple[tuple[int, int], ...], bool], ...] = (
     ("7-On-7 Trips", 6, 0,
-     (QB_UNDER_CENTER, *OFFENSE_PARK[:2], CENTER, *OFFENSE_PARK[2:],
+     (QB_UNDER_CENTER, *OFFENSE_LINE[:2], CENTER, *OFFENSE_LINE[2:],
       (457, 0), (1371, 0), (869, -219), (-1371, 0), HB), True),          # TE0 R, WR0 R wide, WR2 R slot, WR1 L, HB
     ("7-On-7 Spread", 4, 1,
-     (QB_UNDER_CENTER, *OFFENSE_PARK[:2], CENTER, *OFFENSE_PARK[2:],
+     (QB_UNDER_CENTER, *OFFENSE_LINE[:2], CENTER, *OFFENSE_LINE[2:],
       (-869, -219), (869, -219), (1371, 0), (-1371, 0), HB), True),      # WR1 L slot, WR3 R slot, WR2 R, WR0 L, HB
     ("7-On-7 Ace", 8, 2,
-     (QB_UNDER_CENTER, *OFFENSE_PARK[:2], CENTER, *OFFENSE_PARK[2:],
+     (QB_UNDER_CENTER, *OFFENSE_LINE[:2], CENTER, *OFFENSE_LINE[2:],
       (-457, 0), (-1371, -219), (1371, 0), (457, 0), HB), True),         # TE0 L, WR1 L wide, WR0 R wide, TE1 R, HB
     ("7-On-7 Cover 43", 19, 3,
-     (RUSHER_POSITION, *DEFENSE_PARK,
+     (RUSHER_POSITION, *DEFENSE_LINE,
       (457, 411), (0, 457), (-457, 411), (640, 1097), (-640, 1097), (1280, 548), (-1280, 548)), False),
     ("7-On-7 Nickel", 19, 4,
-     (RUSHER_POSITION, *DEFENSE_PARK,
+     (RUSHER_POSITION, *DEFENSE_LINE,
       (366, 411), (-366, 411), (-869, 457), (640, 1097), (-640, 1097), (1280, 548), (-1280, 548)), False),
 )
 OFFENSE_DONOR_PLAY = 7      # "50 All Go": dropback class, family 0
@@ -137,7 +168,14 @@ Chain = list
 
 # The retail inert chain (every tutorial defence's idle player): Start, then Start with TERM|ACTION.
 IDLE: Chain = [lib.start(3), (0x01, [0, 0, 0, 0.1, 0.0, 0.0])]
+# The retail Base end rush (practice book play 6, slot 0) with its delay field raised to 4.0 s.
 TIMER_RUSHER: Chain = [(0x1B, [0, 0, 0.0, 0.0, 0, 0]), (0x0B, [1, RUSH_LANE, RUSH_DELAY_SECONDS])]
+# The retail pass set of "50 All Go" (practice book play 7): Start, then Block Leg type 1 (pass set)
+# with the tackles' 3-yd kick (turn 1 right / 0 left) and the guards' 1-yd set; the centre snaps first.
+PASS_SET_T_RIGHT: Chain = [lib.start(3), (0x11, [1, 0.0, 1, 1, 1, 0.0, -274.32, 0])]
+PASS_SET_T_LEFT: Chain = [lib.start(3), (0x11, [1, 0.0, 1, 1, 0, 0.0, -274.32, 0])]
+PASS_SET_G: Chain = [lib.start(3), (0x11, [1, 0.0, 1, 1, 2, 0.0, -91.44, 0])]
+CENTER_SNAP: Chain = [lib.start(2), (0x02, [0]), (0x11, [1, 0.0, 1, 1, 2, 0.0, -60.96, 0])]
 
 # Defensive opener / landmark tuples copied from the retail practice book (Cover 3, 2 Man).
 DS0 = (0x1B, [0, 0, 0.0, 0.0, 0, 0])
@@ -169,13 +207,13 @@ def _route(name: str, depth: float | None = None) -> Chain:
 
 
 def _offense_play(routes: Mapping[int, Chain]) -> tuple[Chain, ...]:
-    """Eleven chains: QB dropback, parked linemen idle, the centre snaps and pass-sets, skill routes."""
+    """Eleven chains: QB dropback, the line in its retail pass sets, the centre snaps, skill routes."""
 
     chains: list[Chain] = [
         lib.qb_pass_chain(False, 5.0),      # slot 0 QB: take the snap, five-yard drop, throw
-        IDLE, IDLE,                          # slots 1, 2: tackles parked at the sideline
-        lib.center_chain(0, "pass", False),  # slot 3 C: snap to the QB, pass set
-        IDLE, IDLE,                          # slots 4, 5: guards parked
+        PASS_SET_T_RIGHT, PASS_SET_T_LEFT,   # slots 1, 2: tackles, retail pass set
+        CENTER_SNAP,                         # slot 3 C: snap to the QB, pass set
+        PASS_SET_G, PASS_SET_G,              # slots 4, 5: guards, retail pass set
     ]
     for slot in range(6, 11):
         chains.append(routes[slot])
@@ -183,7 +221,7 @@ def _offense_play(routes: Mapping[int, Chain]) -> tuple[Chain, ...]:
 
 
 def _defense_play(cover: Mapping[int, Chain]) -> tuple[Chain, ...]:
-    chains: list[Chain] = [TIMER_RUSHER, IDLE, IDLE, IDLE]
+    chains: list[Chain] = [TIMER_RUSHER, IDLE, IDLE, IDLE]   # right end rushes after 4 s; the other three stand
     for slot in range(4, 11):
         chains.append(cover[slot])
     return tuple(chains)
@@ -346,8 +384,12 @@ def build_replacement(raw: bytes) -> tuple[bytes, dict[str, Any]]:
     """The 7-on-7 practice book built from the retail resource; returns (resource, report)."""
 
     _require(len(raw) == RESOURCE_SIZE and raw[:4] == b"PLAY", "not a fixed NFL 2K5 PLAY resource")
+    if _sha256(raw) in APPLIED_RESOURCE_STATES:
+        return raw, {**verify(raw), "already_applied": True, "source_state": "applied",
+                     "source_sha256": _sha256(raw), "replacement_sha256": _sha256(raw),
+                     "changed_byte_count": 0}
     source_state = KNOWN_SOURCE_STATES.get(_sha256(raw))
-    _require(source_state is not None, "this practice book is neither the retail PRACTICE-pb.iff nor its one-pool recode")
+    _require(source_state is not None, "this practice book is not a pinned retail, pooled-position or depth-role source; rebuild from base")
     with_categories, category_indices = _add_categories(raw)
     source = parse_playbook_resource(with_categories, asset_id=ASSET_ID)
     donor_flags = {p.index: p.flags_or_id for p in source.plays}
@@ -366,13 +408,16 @@ def build_replacement(raw: bytes) -> tuple[bytes, dict[str, Any]]:
     for play_index in range(RETAIL_PLAYS):
         field = PLAY_BASE + play_index * PLAY_SIZE + 4
         struct.pack_into("<I", body, field, struct.unpack_from("<I", body, field)[0] | AI_EXCLUDED)
-    if source_state == "recoded":
+    if source_state.startswith("recoded"):
         for k, (_name, id_byte, row) in enumerate(CATEGORIES):
             record = CATEGORY_BASE + category_indices[k] * CATEGORY_SIZE
             _require(body[record + 4] == id_byte and bytes(body[record + 5: record + 16]) == row,
                      "the personnel group rows moved during compilation")
             body[record + 5: record + 16] = _recode_row(id_byte, row)
     result = raw[:RESOURCE_HEADER_SIZE] + bytes(body)
+    if source_state.endswith("_depth_roles"):
+        from . import nfl2k5_depth_roles as roles
+        result = roles.normalise(result).replacement
     report = verify(result)
     report.update({"source_state": source_state, "source_sha256": _sha256(raw), "replacement_sha256": _sha256(result),
                    "new_formation_indices": new_formations, "new_play_indices": new_plays,
@@ -382,7 +427,8 @@ def build_replacement(raw: bytes) -> tuple[bytes, dict[str, Any]]:
 
 
 def verify(resource: bytes) -> dict[str, Any]:
-    """Prove the 7-on-7 book: capacity, eleven slots with four parked idle linemen, every play valid."""
+    """Prove the 7-on-7 book: capacity, eleven slots with the line on its retail spots (pass sets on
+    offence, idle on defence, the timed end rush), retail-shaped menu links, every play valid."""
 
     _require(len(resource) == RESOURCE_SIZE, "resource size changed")
     body = resource[RESOURCE_HEADER_SIZE:]
@@ -409,10 +455,14 @@ def verify(resource: bytes) -> dict[str, Any]:
     for name, _donor, cat, positions, offense in FORMATIONS:
         index = names[name]
         record = lib.formation_record(body, index)
-        parked = [s for s, slot in enumerate(record.slots) if abs(slot.x[0]) == PARK_X]
-        expected = [1, 2, 4, 5] if offense else [1, 2, 3]
-        _require(parked == expected, f"{name}: parked slots {parked}, expected {expected}")
-        _require(all(abs(slot.x[0]) < 2438 for slot in record.slots), f"{name}: a slot is out of bounds")
+        line = [1, 2, 4, 5] if offense else [1, 2, 3]
+        spots = dict(zip(line, OFFENSE_LINE if offense else DEFENSE_LINE))
+        for s, spot in spots.items():
+            _require((record.slots[s].x[0], record.slots[s].z[0]) == spot, f"{name}: slot {s} is not on its retail line spot")
+        if not offense:
+            _require((record.slots[0].x[0], record.slots[0].z[0]) == RUSHER_POSITION, f"{name}: slot 0 is not the retail end spot")
+        _require(all(abs(x) + HASH_LIMIT_CM < SIDELINE_CM for slot in record.slots for x in slot.x),
+                 f"{name}: a slot is out of bounds on a hash")
         _require([(slot.x[0], slot.z[0]) for slot in record.slots] == [tuple(p) for p in positions], f"{name}: positions differ")
         _require(lib.formation_category(body, index) == book.categories[RETAIL_CATEGORIES + cat].index, f"{name}: personnel group differs")
         links = [link.play_index for link in book.formations[index].play_links]
@@ -423,37 +473,43 @@ def verify(resource: bytes) -> dict[str, Any]:
                      f"{name}: menu link {word:#06x} is not a retail-shaped play link")
         for play_index in links:
             _flags, chains = lib.play_chains(body, play_index)
-            for slot in expected:
+            for slot in line:
                 ops = [n[0] for n in chains[slot][1]]
-                _require(ops == [0x01, 0x01], f"{name}: slot {slot} of play {play_index} is not the idle chain")
-            if not offense:
+                if offense:
+                    _require(ops == [0x01, 0x11], f"{name}: slot {slot} of play {play_index} is not a pass set")
+                    leg = codec.decode_operands(0x11, struct.unpack_from("<I", chains[slot][1][1], 4)[0])
+                    _require(int(leg[0]) == 1, f"{name}: slot {slot} of play {play_index} is not block-leg type 1 (pass set)")
+                else:
+                    _require(ops == [0x01, 0x01], f"{name}: slot {slot} of play {play_index} is not the idle chain")
+            if offense:
+                _require([n[0] for n in chains[3][1]] == [0x01, 0x02, 0x11], f"{name}: the centre of play {play_index} does not snap")
+            else:
                 ops = [n[0] for n in chains[0][1]]
                 _require(ops == [0x1B, 0x0B], f"{name}: slot 0 of play {play_index} is not the timer rusher")
-                delay = codec.decode_operands(0x0B, struct.unpack_from("<I", chains[0][1][1], 4)[0])[2]
-                _require(abs(delay - RUSH_DELAY_SECONDS) < 0.05, f"{name}: rusher delay is {delay}")
-        formations_report.append({"name": name, "index": index, "plays": links, "parked_slots": parked,
+                rush = codec.decode_operands(0x0B, struct.unpack_from("<I", chains[0][1][1], 4)[0])
+                _require(int(rush[1]) == RUSH_LANE, f"{name}: rusher lane is {rush[1]}, not {RUSH_LANE}")
+                _require(abs(rush[2] - RUSH_DELAY_SECONDS) < 0.05, f"{name}: rusher delay is {rush[2]}")
+        formations_report.append({"name": name, "index": index, "plays": links, "line_slots": line,
                                   "category": book.categories[RETAIL_CATEGORIES + cat].name})
     node_count = struct.unpack_from("<I", body, 0x40)[0]
-    return {"formations": formations_report, "formation_count": len(book.formations), "play_count": len(book.plays),
+    _require(_sha256(resource) in APPLIED_RESOURCE_STATES,
+             "the practice book differs from every complete 7-on-7 v2 output; rebuild from base")
+    return {"version": VERSION, "experimental": True, "witnessed": False,
+            "formations": formations_report, "formation_count": len(book.formations), "play_count": len(book.plays),
             "category_count": len(book.categories), "node_count": node_count,
             "capacity": {"formations": 50, "plays": 270, "categories": CATEGORY_CAPACITY, "nodes": (STRING_BASE - 0x9ADC) // 8},
             "wrapper": resource[:RESOURCE_HEADER_SIZE].hex(), "ai_excluded_retail_plays": ai_excluded}
 
 
 def resource_status(resource: bytes) -> str:
-    """retail | recoded | applied | foreign for one PRACTICE-pb.iff resource (``recoded`` = the retail
-    book after the one-pool position recode, a source this writer builds on just like retail)."""
+    """Exact source state, applied, or foreign for one complete PRACTICE resource."""
 
     if len(resource) != RESOURCE_SIZE or resource[:4] != b"PLAY":
         return "foreign"
     known = KNOWN_SOURCE_STATES.get(_sha256(resource))
     if known is not None:
         return known
-    try:
-        verify(resource)
-    except Exception:  # noqa: BLE001
-        return "foreign"
-    return "applied"
+    return "applied" if _sha256(resource) in APPLIED_RESOURCE_STATES else "foreign"
 
 
 # ---------------------------------------------------------------------------------------------
@@ -489,20 +545,33 @@ def apply(path: Path | str, progress: Callable[[str], None] | None = None) -> di
         before = archive.read(entry.virtual_offset, entry.size)
         state = resource_status(before)
         if state == "applied":
-            return {"status": "applied", "already_applied": True, "outer_index": PRACTICE_OUTER_INDEX}
-        _require(state in ("retail", "recoded"), f"the practice book is {state}, not retail; refusing")
+            return {"status": "applied", "already_applied": True, "outer_index": PRACTICE_OUTER_INDEX,
+                    "version": VERSION, "experimental": True, "witnessed": False,
+                    "virtual_offset": f"0x{entry.virtual_offset:x}", "changed_byte_count": 0,
+                    "source_sha256": _sha256(before), "replacement_sha256": _sha256(before)}
+        _require(state in KNOWN_SOURCE_STATES.values(), f"the practice book is {state}, not a known source; refusing")
         say("Building the 7-on-7 practice book")
         replacement, report = build_replacement(before)
         _require(replacement[:RESOURCE_HEADER_SIZE] == before[:RESOURCE_HEADER_SIZE], "the resource wrapper changed")
         say("Writing PRACTICE-pb.iff")
-        count = archive.write(entry.virtual_offset, replacement)
-        _require(count == len(replacement), "short write of the practice book")
-        check = archive.read(entry.virtual_offset, entry.size)
-        _require(check == replacement, "read-back of the practice book differs")
+        _require(archive.read(entry.virtual_offset, entry.size) == before,
+                 "the practice book changed since preflight")
+        try:
+            count = archive.write(entry.virtual_offset, replacement)
+            _require(count == len(replacement), "short write of the practice book")
+            check = archive.read(entry.virtual_offset, entry.size)
+            _require(check == replacement, "read-back of the practice book differs")
+        except Exception as exc:
+            try:
+                _require(archive.write(entry.virtual_offset, before) == len(before), "short rollback write")
+                _require(archive.read(entry.virtual_offset, entry.size) == before, "rollback read-back differs")
+            except Exception as rollback:
+                raise SevenOnSevenBookError(f"{exc}; rollback failed: {rollback}; discard this output copy") from exc
+            raise
     return {"status": "applied", "outer_index": PRACTICE_OUTER_INDEX, "virtual_offset": f"0x{entry.virtual_offset:x}",
             **{k: v for k, v in report.items() if k != "wrapper"}}
 
 
-__all__ = ["ASSET_ID", "CATEGORIES", "FORMATIONS", "PRACTICE_OUTER_INDEX", "RECODED_RESOURCE_SHA256", "RETAIL_RESOURCE_SHA256", "RESOURCE_SIZE",
-           "RUSH_DELAY_SECONDS", "SevenOnSevenBookError", "apply", "build_replacement", "plays", "resource_status",
-           "status", "verify"]
+__all__ = ["ASSET_ID", "CATEGORIES", "DEFENSE_LINE", "FORMATIONS", "OFFENSE_LINE", "PRACTICE_OUTER_INDEX", "RECODED_RESOURCE_SHA256",
+           "RETAIL_RESOURCE_SHA256", "RESOURCE_SIZE", "RUSHER_POSITION", "RUSH_DELAY_SECONDS", "RUSH_LANE", "SevenOnSevenBookError",
+           "apply", "build_replacement", "plays", "resource_status", "status", "verify"]

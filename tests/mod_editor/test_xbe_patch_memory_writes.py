@@ -158,7 +158,7 @@ class PatchWriteTests(unittest.TestCase):
         seed, _ = flight.apply(seed)
         cls.table = sections(cls.retail)
         flags = {name: True for name in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "returner_fix", "progression",
-                                          "scheme_labels", "kick_rules", "widescreen", "overtime", "team_column", "seven_on_seven")}
+                                          "scheme_labels", "kick_rules", "widescreen", "overtime", "team_column")}
         cls.patched, cls.receipt = tt._apply_all(seed, None, **flags, arc_table=False, kick_power=False, penalties="nfl", uniform_choice="choice", kick_laces=True, franchise_practice=True, prospect_names="modern", player_star=True, dynamic_kickoff=True, practice_squad=True)
         # Pools and Tier 2 run after the shared XBE pass in mod_build.
         from mod_editor.core import nfl2k5_position_pools as pools
@@ -181,6 +181,9 @@ class PatchWriteTests(unittest.TestCase):
         # Camera's code and immutable Broadcast record are in the full union. No
         # allocation may be sealed by the earlier protected dispatcher pass.
         cls.patched, cls.music_receipt = compose(cls.patched, read_option_diagnostic=True, reverse=getattr(cls, "reverse_owners", False), scaleout=getattr(cls, "scaleout", False))
+        from mod_editor.core import nfl2k5_seven_on_seven as seven
+        if seven.status(cls.patched) != "applied" or seven.apply(cls.patched)[0] != cls.patched:
+            raise AssertionError("7-on-7 v2 missing from the complete owner union")
         if getattr(cls, "reverse_owners", False):
             cls.patched, cls.pools_receipt = pools.apply(cls.patched, roster_has_olb=False)
         if pools.filter_list_status(cls.patched) != "applied":

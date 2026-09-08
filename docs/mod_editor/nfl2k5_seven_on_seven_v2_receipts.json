@@ -1,0 +1,653 @@
+{
+  "schema": "nfl2k5_seven_on_seven_v2_evidence/v1",
+  "experimental": true,
+  "witnessed": false,
+  "base_commit": "be99b324",
+  "ported_v2_commit": "f3428647a3b6c6ab6244b2777ddc283acf313f40",
+  "xbe": {
+    "source_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+    "replacement_sha256": "47e0f8d1e1b3892c0c4387a7a3d083aabbb5a9de5c0acd611a4d625f16f022a8",
+    "size": 11948032,
+    "receipt": {
+      "version": 2,
+      "experimental": true,
+      "witnessed": false,
+      "edits": [
+        {
+          "label": "practice_type_max",
+          "file_offset": "0x138860",
+          "bytes": 7
+        },
+        {
+          "label": "practice_type_wrap",
+          "file_offset": "0x138899",
+          "bytes": 10
+        },
+        {
+          "label": "practice_type_register",
+          "file_offset": "0x138900",
+          "bytes": 7
+        },
+        {
+          "label": "practice_type_text",
+          "file_offset": "0x138a75",
+          "bytes": 7
+        },
+        {
+          "label": "practice_type_switch",
+          "file_offset": "0xd33ff",
+          "bytes": 7
+        },
+        {
+          "label": "book_loader",
+          "file_offset": "0x52d0c",
+          "bytes": 9
+        },
+        {
+          "label": "cave",
+          "file_offset": "0x19c170",
+          "bytes": 240
+        }
+      ],
+      "changed_bytes": 274,
+      "sections_repinned": [
+        0
+      ],
+      "code_bytes": 103,
+      "cave": "0x1ac170..0x1ac260",
+      "practice_type_value": 4,
+      "practice_type_name": "7-On-7"
+    }
+  },
+  "books": [
+    {
+      "version": 2,
+      "experimental": true,
+      "witnessed": false,
+      "formations": [
+        {
+          "name": "7-On-7 Trips",
+          "index": 23,
+          "plays": [
+            27,
+            28,
+            29
+          ],
+          "line_slots": [
+            1,
+            2,
+            4,
+            5
+          ],
+          "category": "7-ON-7 PASS 3WR"
+        },
+        {
+          "name": "7-On-7 Spread",
+          "index": 24,
+          "plays": [
+            30,
+            31,
+            32
+          ],
+          "line_slots": [
+            1,
+            2,
+            4,
+            5
+          ],
+          "category": "7-ON-7 PASS 4WR"
+        },
+        {
+          "name": "7-On-7 Ace",
+          "index": 25,
+          "plays": [
+            33,
+            34,
+            35
+          ],
+          "line_slots": [
+            1,
+            2,
+            4,
+            5
+          ],
+          "category": "7-ON-7 PASS 2TE"
+        },
+        {
+          "name": "7-On-7 Cover 43",
+          "index": 26,
+          "plays": [
+            36,
+            37,
+            38,
+            39,
+            40,
+            41
+          ],
+          "line_slots": [
+            1,
+            2,
+            3
+          ],
+          "category": "7-ON-7 COVERAGE 3LB"
+        },
+        {
+          "name": "7-On-7 Nickel",
+          "index": 27,
+          "plays": [
+            36,
+            37,
+            38,
+            39,
+            40,
+            41
+          ],
+          "line_slots": [
+            1,
+            2,
+            3
+          ],
+          "category": "7-ON-7 COVERAGE 5DB"
+        }
+      ],
+      "formation_count": 28,
+      "play_count": 42,
+      "category_count": 16,
+      "node_count": 703,
+      "capacity": {
+        "formations": 50,
+        "plays": 270,
+        "categories": 26,
+        "nodes": 3500
+      },
+      "ai_excluded_retail_plays": 27,
+      "source_state": "retail",
+      "source_sha256": "56de927e6969f010dccf0e1a3d7f216bcb8010393e543769de12a794e9ccdfb9",
+      "replacement_sha256": "e4f62632e0dbff7298aa5ee2a5c68bf9ed702cc23bda94e15a2cc47ffd39d2e7",
+      "new_formation_indices": [
+        23,
+        24,
+        25,
+        26,
+        27
+      ],
+      "new_play_indices": [
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41
+      ],
+      "category_indices": [
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "new_node_count": 703,
+      "changed_byte_count": 4135
+    },
+    {
+      "version": 2,
+      "experimental": true,
+      "witnessed": false,
+      "formations": [
+        {
+          "name": "7-On-7 Trips",
+          "index": 23,
+          "plays": [
+            27,
+            28,
+            29
+          ],
+          "line_slots": [
+            1,
+            2,
+            4,
+            5
+          ],
+          "category": "7-ON-7 PASS 3WR"
+        },
+        {
+          "name": "7-On-7 Spread",
+          "index": 24,
+          "plays": [
+            30,
+            31,
+            32
+          ],
+          "line_slots": [
+            1,
+            2,
+            4,
+            5
+          ],
+          "category": "7-ON-7 PASS 4WR"
+        },
+        {
+          "name": "7-On-7 Ace",
+          "index": 25,
+          "plays": [
+            33,
+            34,
+            35
+          ],
+          "line_slots": [
+            1,
+            2,
+            4,
+            5
+          ],
+          "category": "7-ON-7 PASS 2TE"
+        },
+        {
+          "name": "7-On-7 Cover 43",
+          "index": 26,
+          "plays": [
+            36,
+            37,
+            38,
+            39,
+            40,
+            41
+          ],
+          "line_slots": [
+            1,
+            2,
+            3
+          ],
+          "category": "7-ON-7 COVERAGE 3LB"
+        },
+        {
+          "name": "7-On-7 Nickel",
+          "index": 27,
+          "plays": [
+            36,
+            37,
+            38,
+            39,
+            40,
+            41
+          ],
+          "line_slots": [
+            1,
+            2,
+            3
+          ],
+          "category": "7-ON-7 COVERAGE 5DB"
+        }
+      ],
+      "formation_count": 28,
+      "play_count": 42,
+      "category_count": 16,
+      "node_count": 703,
+      "capacity": {
+        "formations": 50,
+        "plays": 270,
+        "categories": 26,
+        "nodes": 3500
+      },
+      "ai_excluded_retail_plays": 27,
+      "source_state": "retail_depth_roles",
+      "source_sha256": "6983c525df582b063028281b94e26554744ea5ea44a509047974e7f7fd6a937e",
+      "replacement_sha256": "fd9b6c9999340dea5883f149fbc74c4d90b027ba2b96c88e14373434786b0b8f",
+      "new_formation_indices": [
+        23,
+        24,
+        25,
+        26,
+        27
+      ],
+      "new_play_indices": [
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41
+      ],
+      "category_indices": [
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "new_node_count": 703,
+      "changed_byte_count": 4135
+    },
+    {
+      "version": 2,
+      "experimental": true,
+      "witnessed": false,
+      "formations": [
+        {
+          "name": "7-On-7 Trips",
+          "index": 23,
+          "plays": [
+            27,
+            28,
+            29
+          ],
+          "line_slots": [
+            1,
+            2,
+            4,
+            5
+          ],
+          "category": "7-ON-7 PASS 3WR"
+        },
+        {
+          "name": "7-On-7 Spread",
+          "index": 24,
+          "plays": [
+            30,
+            31,
+            32
+          ],
+          "line_slots": [
+            1,
+            2,
+            4,
+            5
+          ],
+          "category": "7-ON-7 PASS 4WR"
+        },
+        {
+          "name": "7-On-7 Ace",
+          "index": 25,
+          "plays": [
+            33,
+            34,
+            35
+          ],
+          "line_slots": [
+            1,
+            2,
+            4,
+            5
+          ],
+          "category": "7-ON-7 PASS 2TE"
+        },
+        {
+          "name": "7-On-7 Cover 43",
+          "index": 26,
+          "plays": [
+            36,
+            37,
+            38,
+            39,
+            40,
+            41
+          ],
+          "line_slots": [
+            1,
+            2,
+            3
+          ],
+          "category": "7-ON-7 COVERAGE 3LB"
+        },
+        {
+          "name": "7-On-7 Nickel",
+          "index": 27,
+          "plays": [
+            36,
+            37,
+            38,
+            39,
+            40,
+            41
+          ],
+          "line_slots": [
+            1,
+            2,
+            3
+          ],
+          "category": "7-ON-7 COVERAGE 5DB"
+        }
+      ],
+      "formation_count": 28,
+      "play_count": 42,
+      "category_count": 16,
+      "node_count": 703,
+      "capacity": {
+        "formations": 50,
+        "plays": 270,
+        "categories": 26,
+        "nodes": 3500
+      },
+      "ai_excluded_retail_plays": 27,
+      "source_state": "recoded",
+      "source_sha256": "83ac912b3b44505ced3598b76cecc5ea71789e2273cb2bbd331b91d5b8d97cfb",
+      "replacement_sha256": "3844d1f9a56d34b69ab9b99e08b35cbc6f5601d068b305b4c0e80986c6348639",
+      "new_formation_indices": [
+        23,
+        24,
+        25,
+        26,
+        27
+      ],
+      "new_play_indices": [
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41
+      ],
+      "category_indices": [
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "new_node_count": 703,
+      "changed_byte_count": 4135
+    },
+    {
+      "version": 2,
+      "experimental": true,
+      "witnessed": false,
+      "formations": [
+        {
+          "name": "7-On-7 Trips",
+          "index": 23,
+          "plays": [
+            27,
+            28,
+            29
+          ],
+          "line_slots": [
+            1,
+            2,
+            4,
+            5
+          ],
+          "category": "7-ON-7 PASS 3WR"
+        },
+        {
+          "name": "7-On-7 Spread",
+          "index": 24,
+          "plays": [
+            30,
+            31,
+            32
+          ],
+          "line_slots": [
+            1,
+            2,
+            4,
+            5
+          ],
+          "category": "7-ON-7 PASS 4WR"
+        },
+        {
+          "name": "7-On-7 Ace",
+          "index": 25,
+          "plays": [
+            33,
+            34,
+            35
+          ],
+          "line_slots": [
+            1,
+            2,
+            4,
+            5
+          ],
+          "category": "7-ON-7 PASS 2TE"
+        },
+        {
+          "name": "7-On-7 Cover 43",
+          "index": 26,
+          "plays": [
+            36,
+            37,
+            38,
+            39,
+            40,
+            41
+          ],
+          "line_slots": [
+            1,
+            2,
+            3
+          ],
+          "category": "7-ON-7 COVERAGE 3LB"
+        },
+        {
+          "name": "7-On-7 Nickel",
+          "index": 27,
+          "plays": [
+            36,
+            37,
+            38,
+            39,
+            40,
+            41
+          ],
+          "line_slots": [
+            1,
+            2,
+            3
+          ],
+          "category": "7-ON-7 COVERAGE 5DB"
+        }
+      ],
+      "formation_count": 28,
+      "play_count": 42,
+      "category_count": 16,
+      "node_count": 703,
+      "capacity": {
+        "formations": 50,
+        "plays": 270,
+        "categories": 26,
+        "nodes": 3500
+      },
+      "ai_excluded_retail_plays": 27,
+      "source_state": "recoded_depth_roles",
+      "source_sha256": "e521c58f206fa32eae8f06d31ac62eb2796d8377636b895b371c66f9596bfe80",
+      "replacement_sha256": "80334a4d82ec7524c466cf4ed2c00f9d5e1509d655e18a571275f6c6edc10fbb",
+      "new_formation_indices": [
+        23,
+        24,
+        25,
+        26,
+        27
+      ],
+      "new_play_indices": [
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41
+      ],
+      "category_indices": [
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "new_node_count": 703,
+      "changed_byte_count": 4135
+    }
+  ],
+  "geometry": {
+    "retail_hash_cm": 281.94,
+    "retail_sideline_cm": 2438.4,
+    "old_park_cm": 2300,
+    "old_overrun_cm": 143.54,
+    "tested_hashes_cm": [
+      -281.94,
+      0,
+      281.94
+    ],
+    "directions": [
+      -1,
+      1
+    ],
+    "slot_cases": 330,
+    "minimum_authored_margin_cm": 785.46
+  },
+  "allocator": {
+    "new_requests": [],
+    "code_used": 103,
+    "reserved_cave_bytes": 240,
+    "existing_writable_flag_bytes": 1,
+    "union_requests": 42,
+    "union_xbe_bytes": 12300288
+  },
+  "manifest": {
+    "model": "Observed pure XBE safety-gate composition with all allocator owners; no disc or resource build",
+    "spans": 10599,
+    "writer_calls": 107,
+    "source_fingerprints": 275,
+    "sha256": "2d07ad917df12eeffe32b1cbb5a658b5570a7428ab26ca920692fea3b4238bbc",
+    "stack_xbe_sha256": "3ba8c6700ae7d7b217fa85ee6d86c0695892a700e75d73a36e4f9bae2befb107",
+    "image_steps": []
+  },
+  "game_booted": false,
+  "full_disc_built": false,
+  "protected_wiring": "WIRING.md#r65-7-on-7-practice-v2-2026-09-08"
+}

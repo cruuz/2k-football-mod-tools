@@ -239,6 +239,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
         raise OracleError("manifest generation requires the pinned USA retail XBE")
     from . import mod_build as build, nfl2k5_throw_tuning as tt
     from . import nfl2k5_position_pools as pools, nfl2k5_season_length as season
+    from . import nfl2k5_seven_on_seven as seven
     from . import nfl2k5_seven_on_seven_book as seven_book
     from . import nfl2k5_xbe_space as space, nfl2k5_dynamic_kickoff_relocated as relocated
     from . import nfl2k5_scorebug_runtime as runtime, nfl2k5_scorebug_ingame as scorebug_ingame
@@ -273,7 +274,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     from . import nfl2k5_franchise_edit_player as edit_player
     from . import nfl2k5_camera as camera
     from . import nfl2k5_espn25_rosters as espn25
-    all_requests = camera.REQUESTS + relocated.REQUESTS + runtime.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS + guardian.REQUESTS + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS + autosave.REQUESTS + espn25.REQUESTS + coverage_trail.REQUESTS + playbook_pair.REQUESTS + weekly_prep.REQUESTS + money_downs.REQUESTS + edit_player.REQUESTS
+    all_requests = camera.REQUESTS + relocated.REQUESTS + runtime.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS + guardian.REQUESTS + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS + autosave.REQUESTS + espn25.REQUESTS + coverage_trail.REQUESTS + seven.REQUESTS + playbook_pair.REQUESTS + weekly_prep.REQUESTS + money_downs.REQUESTS + edit_player.REQUESTS
     if type(synthetic_owner_bytes) is not int or synthetic_owner_bytes < 0:
         raise OracleError("synthetic owner size must be a nonnegative integer")
     probe_requests = (("synthetic_scaleout", "code", synthetic_owner_bytes, space.PAGE),) if synthetic_owner_bytes else ()
@@ -287,7 +288,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     modules = {m.__name__: m for m in vars(tt).values() if isinstance(m, ModuleType)
                and m.__name__.startswith("mod_editor.core.nfl2k5_")}
     modules.update({m.__name__: m for m in (tt, pools, season, space, relocated, runtime, scorebug_ingame, music, momentum, defensive_try, zone_drop, roster_storage)})
-    modules.update({m.__name__: m for m in (camera, coverage, scramble, flight, playlist, practice_screen, ps, fp, pr, abilities, qb_spy, calendar, read_option, franchise_2026, senior_bowl, animation_xbe, guardian, my_career, crib_reclaim, screen_hooks, arena_growth, autosave, espn25, coverage_trail, playbook_pair, weekly_prep, money_downs, edit_player)})
+    modules.update({m.__name__: m for m in (camera, coverage, scramble, flight, playlist, practice_screen, ps, fp, pr, abilities, qb_spy, calendar, read_option, franchise_2026, senior_bowl, animation_xbe, guardian, my_career, crib_reclaim, screen_hooks, arena_growth, autosave, espn25, coverage_trail, seven, playbook_pair, weekly_prep, money_downs, edit_player)})
     for name in ("nfl2k5_scorebug_layout", "nfl2k5_scorebug_position_patch"):
         module = build._tools_module(name)
         if module is None:
@@ -348,6 +349,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
             final, _ = pr.apply(final)
             allocation_base = final
             final, _ = space.apply(final, all_requests, scaleout=True)
+            final, _ = seven.apply(final)
             final, _ = espn25.apply_xbe(final)
             final, _ = autosave.apply(final)
             final, _ = coverage_trail.apply(final)
@@ -405,7 +407,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
         if synthetic_owner_bytes:
             progress(f"Building synthetic {synthetic_owner_bytes}-byte owner on the real disposable disc")
             probe, _ = space.apply(allocation_base, all_requests + probe_requests, scaleout=True)
-            for module, kwargs in ((money_downs, {}), (espn25.XbePatch, {}), (autosave, {}), (playbook_pair, {}), (weekly_prep, {}), (edit_player, {}), (camera, {}), (defensive_try, {}), (zone_drop, {}), (relocated, {}), (runtime, {}),
+            for module, kwargs in ((seven, {}), (money_downs, {}), (espn25.XbePatch, {}), (autosave, {}), (playbook_pair, {}), (weekly_prep, {}), (edit_player, {}), (camera, {}), (defensive_try, {}), (zone_drop, {}), (relocated, {}), (runtime, {}),
                                    (momentum, dict(momentum=100, momentum_contact=True, momentum_collisions=True, momentum_collision_level=100)),
                                    (roster_storage, {}), (coverage, {}), (scramble, {}), (playlist, {}),
                                    (practice_screen, {}), (abilities, dict(abilities_off_week=7)), (qb_spy, {}), (calendar, {}), (read_option, {}),
@@ -414,7 +416,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                    (music, dict(song_records=[dict(title=f'Tone {i+1:03}', artist='Synthetic', frames=256) for i in range(200)]))):
                 probe, _ = module.apply(probe, **kwargs)
             probe, _ = space.install_code(probe, "synthetic_scaleout", b"\xc3" + b"\x90" * (synthetic_owner_bytes - 1))
-            if any(module.status(probe) != "applied" for module in (space, camera, relocated, runtime, momentum, defensive_try, zone_drop, music, roster_storage, coverage, scramble, playlist, practice_screen, abilities, qb_spy, calendar, read_option, screen_hooks, arena_growth, autosave, espn25.XbePatch, playbook_pair, weekly_prep, money_downs, edit_player)):
+            if any(module.status(probe) != "applied" for module in (space, seven, camera, relocated, runtime, momentum, defensive_try, zone_drop, music, roster_storage, coverage, scramble, playlist, practice_screen, abilities, qb_spy, calendar, read_option, screen_hooks, arena_growth, autosave, espn25.XbePatch, playbook_pair, weekly_prep, money_downs, edit_player)):
                 raise OracleError("synthetic owner does not compose with the complete real owner union")
             descriptor = os.open(target, os.O_RDWR | getattr(os, "O_BINARY", 0))
             try:

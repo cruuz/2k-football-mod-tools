@@ -1,5 +1,5 @@
-"""7-on-7 practice mode: the executable patch (fifth Practice Type + practice-book loader + rush
-gates) and the practice-book content.
+"""7-on-7 practice mode: the executable patch (fifth Practice Type + practice-book loader) and the
+practice-book content.
 
 Layers:
 * static -- site shapes, no overlaps, the cave fits, the tables and the name are where the code says;
@@ -7,9 +7,10 @@ Layers:
   retail spans (no private data needed);
 * retail (needs the private default.xbe) -- status/apply on the real executable, order independence
   with the returner fix and the draft AI, and (with unicorn) the patched Practice Type switch, the
-  book loader and the two Power Pocket gates run for real;
+  book loader run for real;
 * book (needs the private extracted packs) -- the 7-on-7 practice book round trip: capacity, eleven
-  slots with the parked linemen on the retail idle chain, the 4-second timer rusher, every play
+  slots with the line on its retail spots (pass sets on offence, idle on defence), the 4-second end
+  rush, every play
   through the ported game validator, the AI-excluded flag on the retail plays, the wrapper untouched,
   and the archive write path against a fake archive.
 """
@@ -53,6 +54,11 @@ def _seed(payload: bytes) -> bytes:
     for _label, va, before, _after in s7.sites():
         off = s7._offset(payload, va)
         buf[off: off + len(before)] = before
+    for va, before in s7.RETAIL_RUSH_READS:
+        off = s7._offset(payload, va)
+        buf[off: off + len(before)] = before
+    for section in _sections(buf):
+        buf[section.header_offset + 36:section.header_offset + 56] = section_digest(buf, section)
     return bytes(buf)
 
 
@@ -66,7 +72,7 @@ class StaticTests(unittest.TestCase):
         spans.sort()
         for (a0, a1, la), (b0, _b1, lb) in zip(spans, spans[1:]):
             self.assertLessEqual(a1, b0, f"{la} overlaps {lb}")
-        self.assertEqual(len(s7.sites()), 9)
+        self.assertEqual(len(s7.sites()), 7)
         self.assertEqual(len(s7.RETAIL_CAVE), s7.CAVE_SIZE)
 
     def test_cave_layout(self) -> None:
@@ -99,11 +105,9 @@ class StaticTests(unittest.TestCase):
         self.assertEqual(loader[0], 0xE9)
         self.assertEqual(s7.LOADER_SITE_VA + 5 + struct.unpack_from("<i", loader, 1)[0], labels["loader"])
         self.assertEqual(loader[5:], b"\x90" * 4)
-        gate = sites["rush_gate"]
-        self.assertEqual(s7.RUSH_GATE_SITE_VA + 5 + struct.unpack_from("<i", gate, 1)[0], labels["rush_gate"])
-        shed = sites["shed_gate"]
-        self.assertEqual(s7.SHED_GATE_SITE_VA + 5 + struct.unpack_from("<i", shed, 1)[0], labels["shed_gate"])
-        self.assertEqual(shed[5], 0x90)
+        self.assertNotIn("rush_gate", sites)
+        self.assertNotIn("shed_gate", sites)
+        self.assertFalse(hasattr(s7, "POWER_POCKET_VA"))
 
     @unittest.skipUnless(HAVE_CAPSTONE, "capstone not installed")
     def test_cave_code_decodes_and_targets_the_retail_stubs(self) -> None:
@@ -129,9 +133,10 @@ class SyntheticTests(unittest.TestCase):
         patched, receipt = s7.apply(seeded)
         self.assertEqual(s7.status(patched), "applied")
         self.assertEqual(receipt["practice_type_value"], 4)
-        self.assertEqual(len(receipt["edits"]), 9)
-        with self.assertRaises(s7.SevenOnSevenError):
-            s7.apply(patched)
+        self.assertEqual(len(receipt["edits"]), 7)
+        replay, replay_receipt = s7.apply(patched)
+        self.assertEqual(replay, patched)
+        self.assertEqual(replay_receipt["changed_bytes"], 0)
         for section in _sections(patched):
             if section.index in receipt["sections_repinned"]:
                 self.assertEqual(patched[section.header_offset + 36: section.header_offset + 56], section_digest(patched, section))
@@ -145,7 +150,7 @@ class SyntheticTests(unittest.TestCase):
 
     def test_build_plan_and_presets_know_the_toggle(self) -> None:
         self.assertFalse(mod_build.BuildPlan(source="s", target="t").seven_on_seven)
-        self.assertEqual(mod_build.PRESETS["softdrink_experimental"]["seven_on_seven"], mod_build.SEVEN_ON_SEVEN_RELEASED)
+        self.assertFalse(mod_build.PRESETS["softdrink_experimental"]["seven_on_seven"])
         self.assertFalse(mod_build.PRESETS["softdrink_basic"]["seven_on_seven"])
         self.assertFalse(mod_build.PRESETS["softdrink_advanced"]["seven_on_seven"])
         self.assertTrue(mod_build.BuildPlan(source="s", target="t", seven_on_seven=True).wants_xbe_patch())
@@ -182,7 +187,7 @@ class RetailTests(unittest.TestCase):
     STACK, SENTINEL = 0x7FF00000, 0x0BADF000
 
     def _load(self, payload: bytes):
-        from unicorn import UC_ARCH_X86, UC_MODE_32, Uc
+        from unicorn import UC_ARCH_X86, UC_MODE_32, UC_PROT_READ, UC_PROT_EXEC, Uc
 
         uc = Uc(UC_ARCH_X86, UC_MODE_32)
         uc.mem_map(IMAGE_BASE, 0xEC0000 - IMAGE_BASE)
@@ -190,6 +195,9 @@ class RetailTests(unittest.TestCase):
         for s in _sections(payload):
             if s.virtual_address + s.raw_size <= 0xEC0000:
                 uc.mem_write(s.virtual_address, payload[s.raw_offset: s.raw_offset + s.raw_size])
+        # Model the kernel's real protection that caused the first crash.
+        text = _sections(payload)[0]
+        uc.mem_protect(text.virtual_address, (text.raw_size + 0xFFF) & ~0xFFF, UC_PROT_READ | UC_PROT_EXEC)
         uc.mem_map(self.STACK - 0x100000, 0x200000)
         uc.mem_map(self.SENTINEL & ~0xFFF, 0x1000)
         return uc
@@ -210,6 +218,37 @@ class RetailTests(unittest.TestCase):
     @staticmethod
     def _u32(uc, va: int) -> int:
         return struct.unpack("<I", bytes(uc.mem_read(va, 4)))[0]
+
+    @unittest.skipUnless(HAVE_UNICORN, "unicorn not installed")
+    def test_native_menu_wraps_five_choices_and_clears_stale_flags(self) -> None:
+        from unicorn.x86_const import UC_X86_REG_EIP, UC_X86_REG_ESP
+        uc = self._load(self.patched)
+        for callback, sequence in ((0x148860, (1, 2, 3, 4, 0) * 2),
+                                   (0x148890, (4, 3, 2, 1, 0) * 2)):
+            for expected in sequence:
+                self._run(uc, callback)
+                self.assertEqual(uc.reg_read(UC_X86_REG_EIP), self.SENTINEL)
+                self.assertEqual(uc.reg_read(UC_X86_REG_ESP), self.STACK - 0x1000 + 4)
+                self.assertEqual(self._u32(uc, s7.PRACTICE_TYPE_VA), expected)
+                self.assertEqual(bytes(uc.mem_read(s7.FLAG_VA, 1)), bytes([expected == 4]))
+
+    @unittest.skipUnless(HAVE_UNICORN, "unicorn not installed")
+    def test_native_power_pocket_reads_follow_the_user_option_in_both_flag_states(self) -> None:
+        from unicorn.x86_const import UC_X86_REG_EAX, UC_X86_REG_ESI, UC_X86_REG_EFLAGS
+        for flag in (0, 1):
+            for option in (0, 1):
+                uc = self._load(self.patched)
+                uc.mem_write(s7.FLAG_VA, bytes([flag]))
+                uc.mem_write(0xE600D0, struct.pack("<I", option))
+                uc.reg_write(UC_X86_REG_ESI, 0)
+                for va, before in s7.RETAIL_RUSH_READS:
+                    hit = self._run(uc, va, stop_at=(va + len(before),))
+                    self.assertEqual(hit, [va + len(before)])
+                    if before[0] == 0xA1:
+                        self.assertEqual(uc.reg_read(UC_X86_REG_EAX), option)
+                    else:
+                        self.assertEqual((uc.reg_read(UC_X86_REG_EFLAGS) >> 6) & 1, int(option == 0))
+                self.assertEqual(self._u32(uc, 0xE600D0), option)
 
     @unittest.skipUnless(HAVE_UNICORN, "unicorn not installed")
     def test_emulated_practice_type_switch(self) -> None:
@@ -252,25 +291,6 @@ class RetailTests(unittest.TestCase):
         self.assertEqual(loader(self.patched, 1, 0), ([s7.LOADER_TEAMS_VA], [False, False]))   # Full Scrimmage: per team
         self.assertEqual(loader(self.patched, 2, 1), ([s7.LOADER_TEAMS_VA], [False, False]))   # a stale flag never leaks into Offense Only
         self.assertEqual(loader(self.patched, 4, 1), ([s7.LOADER_TEAMS_VA], [False, False]))   # ... or a real game
-
-    @unittest.skipUnless(HAVE_UNICORN, "unicorn not installed")
-    def test_emulated_power_pocket_gates_follow_the_flag(self) -> None:
-        from unicorn.x86_const import UC_X86_REG_EAX, UC_X86_REG_EFLAGS, UC_X86_REG_ESI
-
-        labels = s7.cave_labels()
-        for flag, option, expected in ((0, 0, 0), (1, 0, 1), (0, 1, 1), (1, 1, 1)):
-            uc = self._load(self.patched)
-            uc.mem_write(s7.FLAG_VA, bytes([flag]))
-            uc.mem_write(s7.POWER_POCKET_VA, struct.pack("<I", option))
-            self._run(uc, labels["rush_gate"])
-            self.assertEqual(uc.reg_read(UC_X86_REG_EAX), expected, f"rush gate flag={flag} option={option}")
-            uc = self._load(self.patched)
-            uc.mem_write(s7.FLAG_VA, bytes([flag]))
-            uc.mem_write(s7.POWER_POCKET_VA, struct.pack("<I", option))
-            uc.reg_write(UC_X86_REG_ESI, 0)
-            self._run(uc, labels["shed_gate"])
-            zero_flag = (uc.reg_read(UC_X86_REG_EFLAGS) >> 6) & 1
-            self.assertEqual(zero_flag, 0 if expected else 1, f"shed gate flag={flag} option={option}")
 
 
 class _FakeEntry:
@@ -334,21 +354,33 @@ class BookTests(unittest.TestCase):
         again, _ = book.build_replacement(self.retail)
         self.assertEqual(again, self.built)
 
-    def test_every_new_formation_has_eleven_slots_with_parked_idle_linemen(self) -> None:
+    def test_every_new_formation_has_eleven_slots_with_the_line_on_its_retail_spots(self) -> None:
         body = self.built[0x20:]
         parsed = parse_playbook_resource(self.built, asset_id="PRACTICE")
+        retail_body = self.retail[0x20:]
+        i_pro = lib.formation_record(retail_body, 1)         # retail "I Pro": the offensive line spots
+        four_three = lib.formation_record(retail_body, 19)   # retail "4-3": the defensive line spots
+        _f, all_go = lib.play_chains(retail_body, 7)         # retail "50 All Go": the pass-set chains
         for entry in self.report["formations"]:
             record = lib.formation_record(body, entry["index"])
             self.assertEqual(len(record.slots), 11)
-            self.assertEqual(len(entry["parked_slots"]), 4 if entry["name"].startswith("7-On-7 T") or "Spread" in entry["name"] or "Ace" in entry["name"] else 3)
+            offence = entry["line_slots"] == [1, 2, 4, 5]
             for slot in record.slots:
-                self.assertLess(abs(slot.x[0]), 2438)
+                self.assertLess(abs(slot.x[0]) + 282, 2438, "in bounds on either hash")
+            for s in entry["line_slots"]:
+                donor = i_pro if offence else four_three
+                self.assertEqual((record.slots[s].x[0], record.slots[s].z[0]), (donor.slots[s].x[0], donor.slots[s].z[0]), (entry["name"], s))
             for play_index in entry["plays"]:
                 _flags, chains = lib.play_chains(body, play_index)
-                for slot in entry["parked_slots"]:
-                    self.assertEqual([n[0] for n in chains[slot][1]], [0x01, 0x01], (entry["name"], play_index, slot))
-                    self.assertEqual(chains[slot][1][0], bytes.fromhex("0100000001034080"))
-                    self.assertEqual(chains[slot][1][1], bytes.fromhex("0106000004004080"))
+                for s in entry["line_slots"]:
+                    if offence:
+                        self.assertEqual(chains[s][1], all_go[s][1], (entry["name"], play_index, s))   # byte-identical retail pass set
+                    else:
+                        self.assertEqual(chains[s][1][0], bytes.fromhex("0100000001034080"))
+                        self.assertEqual(chains[s][1][1], bytes.fromhex("0106000004004080"))
+                if offence:
+                    self.assertEqual(chains[3][1], all_go[3][1], (entry["name"], play_index, "centre"))
+                    self.assertEqual(chains[0][1][:2], all_go[0][1][:2], (entry["name"], play_index, "QB opener + snap"))
         offence = [f for f in parsed.formations if f.name.startswith("7-On-7") and "Cover" not in f.name and "Nickel" not in f.name]
         self.assertEqual([f.name for f in offence], ["7-On-7 Trips", "7-On-7 Spread", "7-On-7 Ace"])
         for formation in offence:
@@ -361,11 +393,17 @@ class BookTests(unittest.TestCase):
                 continue
             record = lib.formation_record(body, entry["index"])
             self.assertEqual((record.slots[0].x[0], record.slots[0].z[0]), book.RUSHER_POSITION)
+            self.assertEqual(book.RUSHER_POSITION, (365, 0))       # the retail 4-3 right end
             self.assertEqual(len(entry["plays"]), 6)
+            _f, base = lib.play_chains(self.retail[0x20:], 6)       # retail "Base": slot 0 is the end rush
             for play_index in entry["plays"]:
                 _flags, chains = lib.play_chains(body, play_index)
                 self.assertEqual([n[0] for n in chains[0][1]], [0x1B, 0x0B])
-                delay = codec.decode_operands(0x0B, struct.unpack_from("<I", chains[0][1][1], 4)[0])[2]
+                self.assertEqual(chains[0][1][0], base[0][1][0])    # same Defense Start as retail
+                mode, lane, delay = codec.decode_operands(0x0B, struct.unpack_from("<I", chains[0][1][1], 4)[0])
+                retail_mode, retail_lane, retail_delay = codec.decode_operands(0x0B, struct.unpack_from("<I", base[0][1][1], 4)[0])
+                self.assertEqual((mode, lane), (retail_mode, retail_lane))
+                self.assertEqual((lane, retail_delay), (11, 0.0))
                 self.assertAlmostEqual(delay, 4.0, places=3)
                 self.assertFalse(any(n[0] in (0x0B, 0x0C) for slot in range(1, 11) for n in chains[slot][1]))
 

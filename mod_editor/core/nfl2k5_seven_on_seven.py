@@ -1,4 +1,4 @@
-"""7-on-7 practice mode: a fifth Practice Type in Scrimmage Settings (executable patch, xemu-only).
+"""EXPERIMENTAL / UNWITNESSED 7-on-7 v2: a fifth Practice Type in Scrimmage Settings.
 
 What the retail game has (all addresses are Xbox virtual addresses in ``default.xbe``):
 
@@ -15,9 +15,9 @@ What the retail game has (all addresses are Xbox virtual addresses in ``default.
 * Game start ``FUN_00062be0`` at ``0x62D0C`` does ``cmp [0xE5FF80],3; jne 0x62D39``: Basic
   Training formats ``PRACTICE-pb.iff`` into BOTH team book objects (``0xB307D0`` / ``0xB30810``);
   every other mode loads ``<abbr>-pb.iff`` per team through ``FUN_000628d0``.
-* The pass rush is gated by *Power Pocket* (``0xE600D0``) at ``FUN_00232ce0`` (``0x232E5C``: the
-  rusher-vs-blocker resolution returns "blocked" when it is on in mode 1) and ``FUN_00233320``
-  (``0x2333B3``: the shed roll becomes a fixed 0.5).
+* The pass rush is gated by the Scrimmage Settings' own *Power Pocket* option (``0xE600D0``,
+  ``FUN_00232ce0`` / ``FUN_00233320``); the patch leaves that option to the user (the 7-on-7 book
+  has no rushing linemen, and its timed end rush must be allowed to beat the pass set).
 
 The patch adds value 4, "7-On-7":
 
@@ -29,14 +29,12 @@ The patch adds value 4, "7-On-7":
   jump to the retail stubs (so Special Move / Full Scrimmage / Offense Only / Kickoff are exactly
   retail, kick word included); entry 4 sets the flag and writes mode 1 (Full Scrimmage);
 * the loader compare becomes ``jmp cave``: mode 3, or mode 1 with the flag set, takes the retail
-  Basic Training path (``PRACTICE-pb.iff`` for both teams); anything else takes the per-team path;
-* the two Power Pocket reads become calls that OR the flag into the option, so the pass rush
-  behaves as if Power Pocket were on without changing the user's saved option.
+  Basic Training path (``PRACTICE-pb.iff`` for both teams); anything else takes the per-team path.
 
-The flag byte, both tables, the ``7-On-7`` string and ~90 bytes of code live in the first 256
-bytes of ``FUN_001ac170`` (0x1AC170..0x1AC37D), a 525-byte routine with no call, jump or pointer
-to it anywhere in the image (scan 2026-09-03; the kick-rules and overtime caves are its siblings
-at 0x1AFCC0 / 0x1AFDF0).  The 7-on-7 playbook content itself is data in ``PRACTICE-pb.iff``
+Both tables, the ``7-On-7`` string and ~100 bytes of code live in the 240 bytes of ``FUN_001ac170``
+(0x1AC170..0x1AC25F), a routine with no call, jump or pointer to it anywhere in the image (scan
+2026-09-03; the kick-rules and overtime caves are its siblings at 0x1AFCC0 / 0x1AFDF0); the flag
+byte lives in writable memory (FLAG_VA).  The 7-on-7 playbook content itself is data in ``PRACTICE-pb.iff``
 (``nfl2k5_seven_on_seven_book``).  Pattern-checked against the retail bytes, ``.text`` digest
 recomputed, idempotent.  Unverified at runtime.
 """
@@ -50,10 +48,14 @@ from .nfl2k5_bump_strength import _sections, _section_for_offset, section_digest
 from .nfl2k5_draft_ai import _Asm
 
 IMAGE_BASE = 0x10000
+OWNER = "nfl2k5_seven_on_seven"
+# This existing owner retains its reserved 240-byte retail cave and RW flag.
+# It takes no new allocator space; the complete beta-62 union still installs it.
+REQUESTS = ()
+VERSION = 2
 
 MODE_VA = 0x00E5FF80              # game-mode word (0 Special Move, 1 Full Scrimmage, 2 Offense Only, 3 Basic Training)
 PRACTICE_TYPE_VA = 0x00E601D4     # Scrimmage Settings -> Practice Type
-POWER_POCKET_VA = 0x00E600D0      # Scrimmage Settings -> Power Pocket
 KICK_WORD_VA = 0x00B34258         # FUN_00061fe0's store (Kickoff practice = 2); never touched here
 
 RETAIL_STRING_TABLE_VA = 0x004F2508   # 'Special Move', 'Full Scrimmage', 'Offense Only', 'Kickoff'
@@ -101,10 +103,11 @@ SWITCH_SITE_VA = 0x000E33FF       # FUN_000e33f0: `jmp dword [eax*4+0xE3434]`
 RETAIL_SWITCH_SITE = bytes.fromhex("ff248534340e00")
 LOADER_SITE_VA = 0x00062D0C       # FUN_00062be0: `cmp dword [0xE5FF80],3; jne 0x62D39`
 RETAIL_LOADER_SITE = bytes.fromhex("833d80ffe500037524")
-RUSH_GATE_SITE_VA = 0x00232E5C    # FUN_00232ce0: `mov eax,[0xE600D0]` (then test eax,eax; je; cmp [mode],1)
-RETAIL_RUSH_GATE_SITE = bytes.fromhex("a1d000e600")
-SHED_GATE_SITE_VA = 0x002333B3    # FUN_00233320: `cmp dword [0xE600D0],esi` (then jne -> the fixed 0.5 roll)
-RETAIL_SHED_GATE_SITE = bytes.fromhex("3935d000e600")
+# V2 leaves the user's Power Pocket choice alone. Rebuild v1 or mixed installs.
+RETAIL_RUSH_READS = (
+    (0x00232E5C, bytes.fromhex("a1d000e600")),
+    (0x002333B3, bytes.fromhex("3935d000e600")),
+)
 
 
 class SevenOnSevenError(ValueError):
@@ -136,7 +139,7 @@ CODE_VA = CAVE_VA + CODE_OFFSET
 
 
 def _code() -> tuple[bytes, dict[str, int]]:
-    """The cave code: four flag-clearing stubs, the 7-on-7 stub, the loader test, the two rush gates."""
+    """The cave code: four flag-clearing stubs, the 7-on-7 stub and the loader test."""
 
     a = _Asm(CODE_VA)
     for k, stub in enumerate(RETAIL_STUBS):
@@ -158,16 +161,6 @@ def _code() -> tuple[bytes, dict[str, int]]:
     a.jmp_abs(LOADER_PRACTICE_VA)               # PRACTICE-pb.iff into both team book objects
     a.label("teams")
     a.jmp_abs(LOADER_TEAMS_VA)                  # <abbr>-pb.iff per team
-    a.label("rush_gate")
-    a.b("a1" + _imm(POWER_POCKET_VA))           # mov eax,[0xE600D0]
-    a.b("0a05" + _imm(FLAG_VA))                 # or al,[flag]
-    a.b("c3")                                   # ret
-    a.label("shed_gate")
-    a.b("3935" + _imm(POWER_POCKET_VA))         # cmp dword [0xE600D0],esi   (esi = 0 at the call site)
-    a.j8("75", "shed_done")                     # jne shed_done              ; option on: not equal, as retail
-    a.b("803d" + _imm(FLAG_VA) + "00")         # cmp byte [flag],0          ; flag on: not equal; off: equal
-    a.label("shed_done")
-    a.b("c3")                                   # ret
     code = a.assemble()
     labels = {name: CODE_VA + pos for name, pos in a.labels.items()}
     return code, labels
@@ -179,7 +172,7 @@ def cave_labels() -> dict[str, int]:
 
 
 def cave_bytes() -> bytes:
-    """Flag byte, string table, jump table, the name and the code, int3-padded to 256 bytes."""
+    """Reserved byte, string table, jump table, the name and the code, int3-padded to the cave size."""
 
     code, labels = _code()
     body = bytearray(b"\xcc" * CAVE_SIZE)
@@ -223,8 +216,6 @@ def sites() -> list[tuple[str, int, bytes, bytes]]:
         ("practice_type_text", TEXT_SITE_VA, RETAIL_TEXT_SITE, bytes.fromhex("8b0485") + struct.pack("<I", STRING_TABLE_VA)),
         ("practice_type_switch", SWITCH_SITE_VA, RETAIL_SWITCH_SITE, bytes.fromhex("ff2485") + struct.pack("<I", JUMP_TABLE_VA)),
         ("book_loader", LOADER_SITE_VA, RETAIL_LOADER_SITE, _rel32(b"\xe9", LOADER_SITE_VA, labels["loader"]) + b"\x90" * 4),
-        ("rush_gate", RUSH_GATE_SITE_VA, RETAIL_RUSH_GATE_SITE, _rel32(b"\xe8", RUSH_GATE_SITE_VA, labels["rush_gate"])),
-        ("shed_gate", SHED_GATE_SITE_VA, RETAIL_SHED_GATE_SITE, _rel32(b"\xe8", SHED_GATE_SITE_VA, labels["shed_gate"]) + b"\x90"),
         ("cave", CAVE_VA, RETAIL_CAVE, cave_bytes()),
     ]
 
@@ -236,6 +227,11 @@ def _located(payload: bytes) -> list[tuple[str, int, bytes, bytes]]:
 def status(payload: bytes) -> str:
     try:
         located = _located(payload)
+        if any(s.raw_size and s.stored_digest != section_digest(payload, s) for s in _sections(payload)):
+            return "foreign"
+        if any(payload[_offset(payload, va):_offset(payload, va) + len(before)] != before
+               for va, before in RETAIL_RUSH_READS):
+            return "foreign"
     except (SevenOnSevenError, ValueError, struct.error):
         return "foreign"
     states = set()
@@ -251,6 +247,9 @@ def status(payload: bytes) -> str:
 
 def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     state = status(payload)
+    if state == "applied":
+        return payload, {"already_applied": True, "edits": [], "changed_bytes": 0,
+                         "version": VERSION, "experimental": True, "witnessed": False}
     _require(state == "retail", f"7-on-7 practice sites are {state}, not retail")
     buf = bytearray(payload)
     sections = _sections(payload)
@@ -269,7 +268,8 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     _require(status(patched) == "applied", "post-apply verification failed")
     changed = sum(1 for a, b in zip(payload, patched) if a != b)
     code, _labels = _code()
-    return patched, {"edits": edits, "changed_bytes": changed, "sections_repinned": sorted(touched),
+    return patched, {"version": VERSION, "experimental": True, "witnessed": False,
+                     "edits": edits, "changed_bytes": changed, "sections_repinned": sorted(touched),
                      "code_bytes": len(code), "cave": f"0x{CAVE_VA:x}..0x{CAVE_VA + CAVE_SIZE:x}",
                      "practice_type_value": NEW_VALUE, "practice_type_name": PRACTICE_TYPE_NAME}
 
@@ -280,7 +280,7 @@ def code_report() -> dict[str, object]:
             "runtime_verified": False}
 
 
-__all__ = ["SevenOnSevenError", "CAVE_VA", "CAVE_SIZE", "RETAIL_CAVE", "FLAG_VA", "STRING_TABLE_VA", "JUMP_TABLE_VA",
-           "NAME_VA", "MODE_VA", "PRACTICE_TYPE_VA", "POWER_POCKET_VA", "KICK_WORD_VA", "NEW_VALUE", "PRACTICE_TYPE_NAME",
+__all__ = ["OWNER", "REQUESTS", "VERSION", "SevenOnSevenError", "CAVE_VA", "CAVE_SIZE", "RETAIL_CAVE", "FLAG_VA", "STRING_TABLE_VA", "JUMP_TABLE_VA",
+           "NAME_VA", "MODE_VA", "PRACTICE_TYPE_VA", "KICK_WORD_VA", "NEW_VALUE", "PRACTICE_TYPE_NAME",
            "LOADER_SITE_VA", "LOADER_PRACTICE_VA", "LOADER_TEAMS_VA", "SWITCH_SITE_VA", "apply", "cave_bytes", "cave_labels",
            "code_report", "sites", "status"]

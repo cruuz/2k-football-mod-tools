@@ -15283,3 +15283,153 @@ then passes with every final byte attributed. No reservation or assertion is
 waived. Both scratch runner sources and the original failures are preserved in
 `docs/scorebug_ingame/freeze_v2/validation.json`. The reusable static scorebar
 test adapter also forwards dynamically so its writes remain observable.
+## r65 7-on-7 practice v2, 2026-09-08
+
+This section supersedes earlier 7-on-7 descriptions of sideline parking and
+forced Power Pocket. The owner and its standalone tests are implemented on
+`astra/r65-seven-on-seven-v2`. Product status is **EXPERIMENTAL / UNWITNESSED**.
+The protected edits below are the remaining integration work for Claude.
+
+### Dispatcher, allocator and four status dictionaries
+
+`mod_editor/core/nfl2k5_throw_tuning.py` already imports
+`nfl2k5_seven_on_seven as seven_on_seven_patch`. Keep the `_apply_all` kwarg
+`seven_on_seven: bool = False` and this existing tuple:
+
+```python
+(seven_on_seven, seven_on_seven_patch, "seven_on_seven_patch", "7-on-7 practice"),
+```
+
+Add `"seven_on_seven_patch"` to the tuple of receipt keys whose exact applied
+state calls `module.apply(patched)` again. Its v2 replay is now idempotent and
+returns `changed_bytes=0`, `version=2`, `experimental=True`, `witnessed=False`.
+Keep the existing Boolean forwarding from `write_copy` and `write_image_copy`.
+Keep all four status dictionaries, in `read_xbe`, `read_image`,
+`write_xbe_copy`, and `write_image_copy`, reporting the same expression:
+
+```python
+"seven_on_seven": seven_on_seven_patch.status(payload),
+```
+
+Use each function's existing payload variable (`payload`, `result`, `after`).
+All four entries already exist; this is an audit requirement, not a second
+status key. The owner rejects mixed v1/v2 code and stale section digests.
+Rebuild old installations from their base.
+
+`REQUESTS=()` is intentional: v2 retains the existing, reserved 240-byte cave
+at `0x1AC170..0x1AC260` and the one-byte writable flag at `0xA69970`. It allocates
+zero additional RX/RW/RO bytes, so `_selected_space_requests`,
+`_xbe_space_adapter`, `_grown_status_fields`, the budget fixture and allocator
+page counts need no new rows. The complete test union and manifest builder
+explicitly include the owner; both safety gates install it through that union
+in both orders. The retired Power Pocket sites are dependencies, not writes.
+
+### BuildPlan, availability, presets and receipts
+
+In `mod_editor/core/mod_build.py`, retain `BuildPlan.seven_on_seven: bool = False`
+and its disc-image requirement. Change `SEVEN_ON_SEVEN_RELEASED` to `True` to
+make the existing opt-in available. Replace its obsolete hold comment with:
+
+```python
+#: 7-on-7 v2 is available as an EXPERIMENTAL / UNWITNESSED disc-image opt-in.
+#: All presets leave it off; Noah must witness huddle break and repeated snaps.
+SEVEN_ON_SEVEN_RELEASED = True
+```
+
+Keep `seven_on_seven=False` in **Basic, Advanced and Experimental**. Update the
+BuildPlan field comment to describe retail line spots, offensive pass sets,
+three idle defensive linemen and one end with a requested four-second delay.
+Availability still requires both owner modules. Existing inspection returns
+`seven_on_seven` for XBE and `seven_on_seven_book` for the resource.
+
+Keep the resource order: position-pool recode, kickoff writers, 7-on-7 book,
+other selected playbook packs, then depth roles. The book now accepts exactly
+four source states: `retail`, `recoded`, `retail_depth_roles`, and
+`recoded_depth_roles`. Every ordering of pools, roles and 7-on-7 has the same
+final bytes. Four complete v2 output hashes allow exact replay after the final
+role pass. Foreign routes, links, padding, wrappers and v1 books refuse.
+The final result must report both owner and book as `applied`.
+
+Add `"seven_on_seven_patch"` beside `"seven_on_seven"` in the XBE step receipt
+filter. Retain the existing `seven_on_seven_book` step; its receipt now includes
+version, experimental/witness flags, exact hashes, changed-byte count and
+fixed resource offset. There is no new normalization or deferred allocator
+pass for this owner.
+
+### Gameplay Patches and Build controls
+
+In `mod_editor/gui/gameplay_patches_panel_qt.py`, keep the existing PATCHES key
+`seven_on_seven`, replace its description with the following complete text,
+and add `"seven_on_seven"` to `NEEDS_IMAGE`:
+
+> Retail: Practice offers Special Move, Full Scrimmage, Offense Only and
+> Kickoff. Patch: Practice > Scrimmage > Practice Type gains 7-On-7. Both teams
+> use the practice book, with Trips, Spread and Ace passing sets, nine pass
+> plays and six coverages. Eleven players still appear on each side. The
+> offensive line uses normal pass blocks; three defensive linemen wait at
+> normal line positions. One defensive end is assigned a four-second delay
+> before rushing. Power Pocket stays your choice; turn it Off to test the
+> delayed rush. Needs a disc image. EXPERIMENTAL / UNWITNESSED: huddle break,
+> repeated snaps and the actual delay still need Noah's play test.
+
+Use this LABELS row so the qualification stays visible outside Details:
+
+```python
+"seven_on_seven": (
+    "7-on-7 practice (experimental)",
+    "Retail line positions with passing sets and a delayed end rush. UNWITNESSED.",
+    NOT_TESTED,
+),
+```
+
+Changing the release flag makes the existing conditional PATCHES filter retain
+this row. In `mod_editor/gui/build_panel_qt.py`, use:
+
+```python
+self.seven_on_seven_check = self._option(
+    f, "seven_on_seven", "7-on-7 practice (experimental)",
+    "Practice Type 7-On-7, retail line positions and a delayed end rush. UNWITNESSED.",
+    badge=NOT_TESTED, needs_image=True,
+)
+```
+
+The caption is 30 characters, below 60. The existing Build-plan round trip,
+availability gate and receipt summary already use this Boolean. Update
+`test_ux_build_plan_coverage_qt.py`'s historical disabled-in-this-release
+assertion: the row is reachable and enabled for a supported image, defaults
+off, remains disabled for a bare XBE, and keeps the unwitnessed badge. This is
+an existing Build/Gameplay surface; it introduces no new registry ID or count.
+
+### Packaging, runtime closure and manifest
+
+The required allowlist lines already exist:
+
+```text
+mod_editor/core/nfl2k5_seven_on_seven.py
+mod_editor/core/nfl2k5_seven_on_seven_book.py
+mod_editor/core/nfl2k5_depth_roles.py
+```
+
+The runtime import closure must retain:
+
+```python
+"mod_editor.core.nfl2k5_seven_on_seven",
+"mod_editor.core.nfl2k5_seven_on_seven_book",
+"mod_editor.core.nfl2k5_depth_roles",
+```
+
+The first two explicit imports already exist. Add the depth-role module to
+that explicit list; the current release already includes its source. No assembler, research
+file, retail binary, test fixture or scratch manifest is a runtime dependency.
+Refresh provider/runtime source pins with the integration workflow; their
+protected manifests are not edited here.
+
+Regenerate `data/nfl2k5_cave_reservations.json` using the normal real-disc oracle
+command after integrating these protected edits and satisfying the disk floor.
+The scratch manifest for this job observes the actual complete XBE gate stack,
+checks source fingerprints and rejects unattributed bytes. It proves executable
+ownership only. Its `image_steps=[]` and model explicitly exclude a disc/resource
+build. It must not replace the production manifest. The real-disc builder now
+also includes v2 in its request/installation/status lists. Its dormant book
+attempt should report `applied` on the supported depth-role source, rather than
+the old foreign-book refusal.
