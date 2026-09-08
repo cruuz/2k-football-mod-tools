@@ -41,6 +41,8 @@ LEGACY_REQUESTS = (kickoff.REQUESTS + runtime.REQUESTS + momentum.REQUESTS
 # Abilities v2 expands the existing immutable owner; use its live REQUESTS.
 # Read option v2 grows the existing owner; its live REQUESTS include RW/RO.
 # Both installation orders use this same union and require rebuild from base.
+# MyCareer M3 includes its separate final RW page; its relocated 16 KiB code
+# leaves every other owner at the previous union's address.
 REQUESTS = (camera.REQUESTS + LEGACY_REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS
             + playlist.REQUESTS + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS
             + defensive_try.REQUESTS[2:] + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS + guardian.REQUESTS + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS + autosave.REQUESTS + espn25.REQUESTS + coverage_trail.REQUESTS + deep_zone.REQUESTS + playbook_pair.REQUESTS + weekly_prep.REQUESTS + money_downs.REQUESTS + edit_player.REQUESTS + seven.REQUESTS)

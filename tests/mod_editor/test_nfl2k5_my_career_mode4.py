@@ -109,12 +109,13 @@ class Mode4Tests(unittest.TestCase):
             slot = m.call('mode_next_fixture')
             self.assertEqual(slot // 17, 1)
             self.assertEqual(m.get(0xE576B4), 0)
-            expected = ['Play next game', 'Practice', 'MyPlayer', 'Start MyPlayer', 'Save', 'Quit to main menu']
+            expected = ['Play next game', 'Practice', 'MyPlayer', 'Start MyPlayer', 'Save', 'Quit to main menu', 'Upgrades']
             draws = self.glyphs(m.draw())
             self.assertEqual({r['text'] for r in m.native_rows if r['text']}, set(expected))
-            self.assertEqual(len(draws), 1)  # fixture footer only
-            self.assertIn('49ers', draws[-1]['text'])
-            self.assertIn('Off field: CPU plays', draws[-1]['text'])
+            self.assertEqual(len(draws), 2)  # fixture footer and calendar card
+            self.assertIn('49ers', draws[0]['text'])
+            self.assertIn('Off field: CPU plays', draws[0]['text'])
+            self.assertIn('Week ', draws[1]['text'])
             # Negative control: removing our callback removes only the
             # footer. Native rows still submit through the loaded layout.
             m.put(m.labels['apartment'] + 8, 0xF3E90)
@@ -150,7 +151,7 @@ class Mode4Tests(unittest.TestCase):
             self.assertEqual(m.uc.mem_read(0xE57C40, len(grid)), grid)
             self.assertEqual(m.call('mode_next_fixture'), slot)
             m.native_rows.clear()
-            self.assertEqual(len(self.glyphs(m.draw())), 1)
+            self.assertEqual(len(self.glyphs(m.draw())), 2)
             self.assertEqual({r['text'] for r in m.native_rows if r['text']}, set(expected))
             m.select(0)
             self.assertEqual(m.top(), 0x51B908)
@@ -275,7 +276,7 @@ class Mode4Tests(unittest.TestCase):
         for payload in (self.payload, self.union):
             code, data = mode.legacy.allocations(payload)
             emitted, labels = mode.code_for(code['va'], data['va'])
-            self.assertEqual((len(emitted), data['size']), (8192, 4096))
+            self.assertEqual((len(emitted), data['size']), (16384, 4096))
             self.assertLessEqual(labels['content_end'] - code['va'], mode.TAG_OFFSET)
             self.assertEqual(mode.apply(payload)[0], payload)
 

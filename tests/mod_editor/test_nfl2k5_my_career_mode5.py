@@ -125,7 +125,7 @@ class Mode5Tests(unittest.TestCase):
             m.frontend(self.roster); m.fonts(fonts)
             m.call(0x6E390,ecx=m.manager,edx=0x5015CC); m.select(1)
             navigation(m, resources())
-            for label, count in (('entry_menu',4),('apartment',6),('team_menu',2)):
+            for label, count in (('entry_menu',4),('apartment',7),('team_menu',2)):
                 # Existing initialized owned descriptors, native stack replace.
                 m.call(0x6E2E0,ecx=m.manager,edx=m.labels[label])
                 m.put(m.manager+8*m.depth()+4,1)

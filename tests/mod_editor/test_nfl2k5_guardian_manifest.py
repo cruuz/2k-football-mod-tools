@@ -52,7 +52,18 @@ class ManifestTests(unittest.TestCase):
                 for name in ("apply","apply_xbe","xbe_apply","plan_patch","apply_arc_table","patch_xbe","apply_chop_block"):
                     function=getattr(module,name,None)
                     if inspect.isfunction(function) and function.__module__==module.__name__:
-                        stack.enter_context(patch.object(module,name,recorder.wrapper(module,name)))
+                        observed=recorder.wrapper(module,name)
+                        stack.enter_context(patch.object(module,name,observed))
+                        # A static adapter retains the original function even
+                        # when the module attribute is wrapped. Observe that
+                        # actual writer entry as well (the historic-team XBE
+                        # adapter is used by the complete allocator stack).
+                        for adapter in vars(module).values():
+                            if not isinstance(adapter,type) or adapter.__module__!=module.__name__:
+                                continue
+                            for method,descriptor in vars(adapter).items():
+                                if isinstance(descriptor,staticmethod) and descriptor.__func__ is function:
+                                    stack.enter_context(patch.object(adapter,method,staticmethod(observed)))
             # The anniversary adapter captured apply_xbe at module import, before
             # observation. Route its alias through the same real writer wrapper;
             # otherwise its C2319 edit is absent from the observed manifest.

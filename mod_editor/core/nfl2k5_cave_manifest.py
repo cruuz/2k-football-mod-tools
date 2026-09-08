@@ -71,7 +71,7 @@ class Recorder:
 
     def observe(self, module: ModuleType, function: str, before: bytes, after: bytes, receipt: dict):
         owner = module.__name__.split(".")[-1]
-        if owner == "nfl2k5_qb_spy_runtime":
+        if owner in ("nfl2k5_qb_spy_runtime", "nfl2k5_my_career_mode"):
             owner = module.OWNER  # allocator budget retains the research owner name
         post_image = XbeImage(after)
         allow_append = False
@@ -112,6 +112,9 @@ class Recorder:
                            "after_sha256": hashlib.sha256(after).hexdigest(),
                            "changed_bytes": sum(b - a for a, b in runs),
                            "file_runs": [[hex(a), hex(b)] for a, b in runs]})
+        # MyCareer M3's second RW page and defensive_try's stat extension are
+        # named children of their complete request unions. finish() publishes
+        # them from the final layout, never from a different probe layout.
         # defensive_try is one writer with two named allocator owners. finish()
         # publishes both children, including the immutable stat descriptors.
         if owner in ("nfl2k5_xbe_space", "nfl2k5_camera", "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime", "nfl2k5_music_metadata", "nfl2k5_momentum", "nfl2k5_defensive_try", "nfl2k5_zone_drop", "nfl2k5_roster_storage", "nfl2k5_coverage_slider", "nfl2k5_scramble_tuning", "nfl2k5_music_playlist", "nfl2k5_practice_squad_screen", "nfl2k5_abilities_runtime", "nfl2k5_qb_spy", "nfl2k5_calendar_engine", "nfl2k5_read_option_runtime", "nfl2k5_franchise_2026", "nfl2k5_senior_bowl", "nfl2k5_guardian_overlay", "nfl2k5_my_career", "nfl2k5_screen_hooks", "nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", "nfl2k5_roster_arena_growth", "nfl2k5_franchise_autosave", "nfl2k5_coverage_trail", "nfl2k5_deep_zone", "nfl2k5_playbook_pair", "nfl2k5_weekly_prep", "nfl2k5_cpu_money_downs", "nfl2k5_franchise_edit_player") and space.status(after) == "applied":
@@ -450,7 +453,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                 "stack_image_size": XbeImage(final).image_size,
                 "model": "observed experimental disc build plus dormant seven-on-seven, grown kickoff, scorebug runtime music metadata, Momentum, defensive try and zone drop; exact diffs union owned pages and named allocations",
                 "preset": "softdrink_experimental", "preset_values": preset,
-                "extra_owners": ["nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", space.OWNER, relocated.OWNER, runtime.OWNER, music.OWNER, momentum.OWNER, defensive_try.OWNER, zone_drop.OWNER, roster_storage.OWNER, coverage.OWNER, scramble.OWNER, flight.OWNER, playlist.OWNER, practice_screen.OWNER, abilities.OWNER, qb_spy.OWNER, calendar.OWNER, read_option.OWNER, franchise_2026.OWNER, senior_bowl.OWNER, animation_xbe.OWNER, guardian.OWNER, my_career.OWNER, crib_reclaim.OWNER, screen_hooks.OWNER, arena_growth.OWNER, autosave.OWNER, espn25.OWNER, coverage_trail.OWNER, deep_zone.OWNER, coverage_trail.OWNER, playbook_pair.OWNER, weekly_prep.OWNER, money_downs.OWNER, edit_player.OWNER],
+                "extra_owners": ["nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", space.OWNER, relocated.OWNER, runtime.OWNER, music.OWNER, momentum.OWNER, defensive_try.OWNER, zone_drop.OWNER, roster_storage.OWNER, coverage.OWNER, scramble.OWNER, flight.OWNER, playlist.OWNER, practice_screen.OWNER, abilities.OWNER, qb_spy.OWNER, calendar.OWNER, read_option.OWNER, franchise_2026.OWNER, senior_bowl.OWNER, animation_xbe.OWNER, guardian.OWNER, my_career.OWNER, my_career.EXTRA_OWNER, crib_reclaim.OWNER, screen_hooks.OWNER, arena_growth.OWNER, autosave.OWNER, espn25.OWNER, coverage_trail.OWNER, deep_zone.OWNER, coverage_trail.OWNER, playbook_pair.OWNER, weekly_prep.OWNER, money_downs.OWNER, edit_player.OWNER],
                 "alternative_flight_probe": "flatter flight on retail; final stack keeps the selected existing flight mode",
                 "seven_on_seven_book": book_note,
                 "disc_size": xiso.stat().st_size, "disc_xbe_sha256": RETAIL_SHA256,

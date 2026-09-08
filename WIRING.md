@@ -15606,3 +15606,123 @@ build. It must not replace the production manifest. The real-disc builder now
 also includes v2 in its request/installation/status lists. Its dormant book
 attempt should report `applied` on the supported depth-role source, rather than
 the old foreign-book refusal.
+## MyCareer M3: draft, preparation and upgrades (2026-09-08)
+
+This section supersedes earlier MyCareer statements that the draft is a
+placeholder or that its reservation is 8 KiB. EXPERIMENTAL / UNWITNESSED.
+No protected file was edited in this worktree. The existing generic owner,
+not another toggle, carries M3. Senior Bowl remains preparation only.
+
+### Dispatcher and BuildPlan
+
+In `mod_editor/core/nfl2k5_throw_tuning.py`, change the MyCareer term in
+`_selected_space_requests` from `my_career_patch.REQUESTS` to
+`my_career_mode_patch.REQUESTS`. It must reserve all three rows before any
+owner installs: `nfl2k5_my_career/code/16384/16`,
+`nfl2k5_my_career/data/4096/16`, and
+`nfl2k5_my_career_m3/data/4096/16`. Reserving the extra row for a legacy
+prepared-save setup is harmless. The current protected selector omits that
+row, so a generic Build using it correctly refuses until this line is wired.
+Keep `_xbe_space_adapter(..., my_career=my_career)` and the existing
+`R62_SPACE_KEYS` / `R62_RUNTIME_KEYS` entries. No new boolean is needed.
+
+Retain the final `_apply_all` owner tuple, after the allocator:
+
+```python
+(my_career, _my_career_adapter(my_career_setup),
+ "my_career_patch", "MyCareer (experimental)")
+```
+
+The adapter continues to call `my_career_mode_patch.apply(payload)` when
+`my_career_setup is None`, otherwise the legacy prepared-save adapter.
+Keep both `my_career=` and `my_career_setup=` kwargs through the build final
+pass and all deferral/normalization paths. For generic MyCareer opt-in,
+enable the existing `draft_ai` option before allocation; this reuses its
+ratings/need implementation and receipt, with no new draft-AI patch here.
+Both fully retail and fully applied draft-AI bytes remain recognized for
+standalone component use; partial or foreign bytes refuse.
+
+Keep `"my_career": my_career_patch.status(payload)` in
+`_grown_status_fields`. Its generic dispatch validates M3's entire code,
+hooks, both zero-initialized RW blocks, and companion contexts. Preserve
+the expansion in all four dictionaries: `read_xbe(payload)`,
+`read_image(payload)`, the XBE write result (`result`) and image write result
+(`after`). Preserve the existing `draft_ai` status entry in each dictionary.
+
+In `mod_editor/core/mod_build.py`, retain `BuildPlan.my_career: bool = False`
+and `BuildPlan.my_career_setup: str | None = None`. Basic, advanced and
+experimental presets all keep MyCareer **off**; explicit user opt-in selects
+M3. Preserve the optional legacy setup validation, wants-XBE decision,
+grown-owner deferral and final pass. The generic path needs no setup file.
+Use the complete M3 request union above in any duplicated budget selector.
+Do not turn on native Senior Bowl simulation as a dependency.
+Do not add arena growth as a MyCareer dependency: the inherited CAP admission
+guard still refuses version-2 reserve metadata. M3's signed input reader
+accepts the larger container, but that does not establish native creation
+with reserve overflow; the report records this boundary explicitly.
+
+### UI, runtime closure and capability handoff
+
+Gameplay Patches retains the `my_career` PATCHES key and NEEDS_IMAGE
+membership. Use title `MyCareer: draft and upgrades` and this help text
+(both required words are present):
+
+> EXPERIMENTAL / UNWITNESSED. Retail: Franchise controls a team. Patch:
+> Create MyPlayer, enter the draft or sign as an undrafted rookie, and return
+> to the Apartment. Senior Bowl preparation includes MyPlayer; its game is
+> unavailable. Spend played-game XP on upgrades with position caps and see
+> the next fixture date. Rebuild an older MyCareer executable from base.
+
+The protected Build tab `_option` caption is
+`MyCareer: draft and upgrades` (28 characters, below 60), with
+`needs_image=True`. Keep the optional legacy setup caption distinct from
+generic in-game creation. The owned core `HELP_TEXT` has been updated;
+existing feature-panel consumers inherit it. No other GUI panel was edited.
+
+Add the one new runtime allowlist line, preserving existing MyCareer lines:
+
+```text
+mod_editor/core/nfl2k5_my_career_progression.py
+```
+
+Retain allowlist entries for `nfl2k5_my_career.py`,
+`nfl2k5_my_career_code.py`, `nfl2k5_my_career_mode.py`,
+`nfl2k5_my_career_mode_code.py`, `nfl2k5_my_career_save.py`,
+`nfl2k5_senior_bowl.py` (all under `mod_editor/core/`),
+`mod_editor/gui/my_career_panel_qt.py`, and
+`docs/mod_editor/nfl2k5_my_career_mode_capabilities.json`.
+Development probes, generated measurement receipts and tests are not runtime
+dependencies; add the report only if reports are distributed.
+
+In `packaging/check_2k5_mod_studio_runtime.py`, add import
+`mod_editor.core.nfl2k5_my_career_progression`; preserve the existing
+MyCareer/core/Senior Bowl/roster-record imports. The new policy imports the
+already shipped `nfl2k5_roster_records`. No new package dependency is required.
+
+Merge the updated owned capability fragment
+`docs/mod_editor/nfl2k5_my_career_mode_capabilities.json` into the registry's
+existing `nfl2k5.mode.my_career_inline` object. There is no new surface or ID.
+Keep `gui.expose=false`, `gui.default_enabled=false` and
+`runtime.status=not-tested` until Noah's witness. Its schema-valid commands
+are `python3 -m mod_editor.core.nfl2k5_my_career_mode apply default.xbe
+generic-default.xbe` and
+`python3 -m tests.mod_editor.test_nfl2k5_my_career_draft`.
+
+### Allocator and release manifest
+
+All owned gate, budget and manifest-builder unions now contain the M3 row.
+The allocator leaves the original 8 KiB code footprint as padding and places
+the expanded MyCareer code after the other code allocations. Its old 4 KiB
+state stays put; the extra named 4 KiB state occupies the previously spare
+last RW page at `0x1505000`. It adds no page and moves no other owner.
+The complete before/after budget is in `tools/mycareer_mode/m3_budget.json`.
+Old 8 KiB reservations and incomplete M3 reservations require rebuild from
+the original XBE, before any code/hook install.
+
+Claude must regenerate protected `data/nfl2k5_cave_reservations.json` with
+`tools/nfl2k5_cave_oracle.py manifest` after protected integration and when a
+disposable disc can preserve Noah's free-space floor. This session's
+`tools/mycareer_mode/refresh_m3_manifest.py` output is an explicitly labelled
+XBE-only scratch projection: it retains parent retail reservations and
+records actual current XBE owner writes. Historical disc fields are not a
+new acceptance build. Do not ship or promote that scratch manifest.

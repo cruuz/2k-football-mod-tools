@@ -136,8 +136,10 @@ mode_creation_done:
  mov edx,OFFSET FLAT:entry_menu
  call 0x6e450
  pop ecx
- mov DWORD PTR [state+2680],2
- mov edx,OFFSET FLAT:team_menu
+ push ecx
+ call m3_creation_route
+ pop ecx
+ mov edx,eax
  jmp 0x6e390
 1: jmp 0x6e450
 mode_handler:
@@ -146,6 +148,8 @@ mode_handler:
  call mode_event
  pop edx
  pop ecx
+ cmp edx,6
+ je mode_frame
  cmp edx,7
  je mode_draw_frame
  jmp 0xf3e90

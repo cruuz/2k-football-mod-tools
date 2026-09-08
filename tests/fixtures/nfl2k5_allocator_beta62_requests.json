@@ -200,7 +200,7 @@
  [
   "nfl2k5_my_career",
   "code",
-  8192,
+  16384,
   16
  ],
  [
@@ -267,6 +267,12 @@
   "nfl2k5_coverage_trail",
   "code",
   640,
+  16
+ ],
+ [
+  "nfl2k5_my_career_m3",
+  "data",
+  4096,
   16
  ],
  [

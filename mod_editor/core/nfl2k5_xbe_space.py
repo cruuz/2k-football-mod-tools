@@ -544,6 +544,11 @@ DEBUG_POINTERS = ((332, 68040), (336, 68093), (340, 68004))
 DIRECTORY_OWNER = "nfl2k5_xbe_space_directory"
 MAX_REQUESTS = 96
 MAX_REQUEST_BYTES = 96 * PAGE
+# M3 keeps the original MyCareer RW block and explicitly requests the final
+# scale-out RW page. Its code moves behind the old packing, leaving every
+# other owner's address unchanged, including in partial request unions.
+MYCAREER_M3_STATE_OWNER = "nfl2k5_my_career_m3"
+MYCAREER_M3_STATE_VA = 0x1505000
 # XSPACE2 is retained as the header envelope for the shipped boot-logo reader.
 # SP03 and the sealed external directory distinguish the v3 interpretation.
 SCALE_TAG = EXT_MAGIC + b"SP03"
@@ -562,7 +567,7 @@ def dormant_union():
     from . import nfl2k5_guardian_overlay as guardian
     from . import nfl2k5_read_option_runtime as read_option, nfl2k5_franchise_2026 as franchise_2026
     from . import nfl2k5_senior_bowl as senior_bowl, nfl2k5_roster_arena_growth as arena_growth
-    from . import nfl2k5_animation_xbe as animation_xbe, nfl2k5_my_career as my_career
+    from . import nfl2k5_animation_xbe as animation_xbe, nfl2k5_my_career_mode as my_career
     from . import nfl2k5_screen_hooks as screen_hooks, nfl2k5_camera as camera
     from . import nfl2k5_franchise_autosave as autosave, nfl2k5_espn25_rosters as espn25
     from . import nfl2k5_coverage_trail as coverage_trail
@@ -648,8 +653,17 @@ def _scale_allocations(requests):
     # This late arena owner must not displace shipped beta-62 allocations or
     # their protected manifest extents. Existing request sets pack identically.
     requests = sorted(_requests(requests), key=lambda r: (r[0] == 'nfl2k5_roster_arena_growth', r))
+    extra = [r for r in requests if r[0] == MYCAREER_M3_STATE_OWNER]
+    _require(not extra or extra == [(MYCAREER_M3_STATE_OWNER, "data", PAGE, 16)],
+             "MyCareer M3 state has a fixed 4096-byte reservation")
+    requests = [r for r in requests if r[0] != MYCAREER_M3_STATE_OWNER]
+    promoted = next((r for r in requests if r[0:2] == ("nfl2k5_my_career", "code") and r[2] > 8192), None)
+    if promoted:
+        requests = [(o, k, 8192 if (o, k) == promoted[:2] else s, a) for o, k, s, a in requests]
     out = _legacy_allocations([r for r in requests if r[0] in LEGACY_OWNERS])
     regions = _scale_regions()[3:]
+    if extra:
+        regions = [dict(r, size=r["size"] - PAGE) if r["kind"] == "data" else r for r in regions]
     cursors = {r["va"]: PAGE if r["kind"] == "read_only" else 0 for r in regions}
     for owner, kind, size, align in requests:
         if owner in LEGACY_OWNERS:
@@ -670,6 +684,20 @@ def _scale_allocations(requests):
             if not remaining:
                 break
         _require(not remaining, f"{kind} page capacity exceeded for {owner}; no unreserved page may be used")
+    if promoted:
+        # The old footprint participates in packing but is not an allocation.
+        # Old directories still decode with the unmodified 8192-byte request.
+        out = [a for a in out if (a["owner"], a["kind"]) != promoted[:2]]
+        r = next(r for r in regions if r["kind"] == "code")
+        owner, kind, size, align = promoted
+        at = (cursors[r["va"]] + align - 1) & -align
+        _require(at + size <= r["size"], "MyCareer M3 exceeds remaining RX capacity")
+        out.append(dict(owner=owner, kind=kind, size=size, align=align,
+                        va=r["va"] + at, raw=r["raw"] + at, owner_offset=0))
+    if extra:
+        r = next(r for r in _scale_regions() if r["kind"] == "data" and r["va"] <= MYCAREER_M3_STATE_VA < r["va"] + r["size"])
+        out.append(dict(owner=MYCAREER_M3_STATE_OWNER, kind="data", size=PAGE, align=16,
+                        va=MYCAREER_M3_STATE_VA, raw=r["raw"] + MYCAREER_M3_STATE_VA - r["va"], owner_offset=0))
     out.append(dict(owner=DIRECTORY_OWNER, kind="read_only", size=PAGE, align=PAGE,
                     va=SCALE_DIRECTORY_VA, raw=SCALE_DIRECTORY))
     return out

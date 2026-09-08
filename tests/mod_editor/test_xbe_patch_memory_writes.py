@@ -283,6 +283,9 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_my_career_mode as my_career, nfl2k5_crib_reclaim as crib_reclaim
         if my_career.status(cls.patched) != "applied" or crib_reclaim.status(cls.patched) != "applied":
             raise AssertionError("MyCareer or Crib movie cut missing from the composed XBE")
+        m3_state = [a for a in my_career.space.layout(cls.patched)["allocations"] if a["owner"] == my_career.EXTRA_OWNER]
+        if len(m3_state) != 1 or (m3_state[0]["kind"], m3_state[0]["va"], m3_state[0]["size"]) != ("data", my_career.EXTRA_VA, 4096):
+            raise AssertionError("MyCareer M3 state missing from the complete owner union")
         from mod_editor.core import nfl2k5_calendar_engine as calendar
         if calendar.status(cls.patched) != "applied":
             raise AssertionError("calendar owner missing from the composed XBE")

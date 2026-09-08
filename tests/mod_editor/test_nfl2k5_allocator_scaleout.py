@@ -25,8 +25,8 @@ from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
 from tests.mod_editor.test_nfl2k5_xbe_space import synthetic, PublicTests, RETAIL, repin
 from tests.nfl2k5_allocator_stack import LEGACY_REQUESTS, REQUESTS, compose
 
-LARGE = (("synthetic_scaleout", "code", 36 * 1024, 4096),  # sized to fit beside every landed beta-63 owner (40 KiB before deep zone)
-         ("synthetic_scaleout", "data", 4 * 1024, 4096),
+LARGE = (("synthetic_scaleout", "code", 20 * 1024, 4096),  # sized to fit beside every landed beta-63 owner (40 KiB before deep zone and MyCareer M3)
+         # no writable request: MyCareer M3's fixed state page takes the last RW page of the beta-63 union
          ("synthetic_scaleout", "read_only", 1024, 16))
 
 
@@ -38,7 +38,7 @@ class PlannerTests(unittest.TestCase):
         self.assertEqual([report['capacity'][k]['capacity_bytes'] for k in ('code', 'data', 'read_only')],
                          [106496, 86016, 20480])
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [0, 0, 2192])  # beta 63 stack: playbook pair 8192 RX / 512 RW / 4096 RO, CPU money downs 2048 RX, deep zone 2048 RX / 256 RW, weekly prep, Contracts Edit Player 704 RO; the 36 KiB synthetic RX fills the code pages exactly
+                         [0, 0, 2192])  # beta 63 stack: playbook pair 8192 RX / 512 RW / 4096 RO, CPU money downs 2048 RX, deep zone 2048 RX / 256 RW, MyCareer M3 (16 KiB code, fixed state page), weekly prep, Contracts Edit Player 704 RO; the 20 KiB synthetic RX fills the code pages exactly
         self.assertEqual(len(report['pages']), 52)
         for a in report['allocations']:
             self.assertEqual(a['va'] % a['align'], 0)
@@ -51,7 +51,7 @@ class PlannerTests(unittest.TestCase):
             self.assertIn(list(request), requests)
         report = space.plan(requests)
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [38432, 4096, 3224])  # beta 63 stack: playbook pair (8192 RX, 512 RW in the alignment gap, 4096 RO), CPU money downs (2048 RX), deep zone (2048 RX, 256 RW), weekly prep, Contracts Edit Player (704 RO), Broadcast camera v5 (+96 RX, +80 RO)
+                         [22048, 0, 3224])  # beta 63 stack: playbook pair (8192 RX, 512 RW in the alignment gap, 4096 RO), CPU money downs (2048 RX), deep zone (2048 RX, 256 RW), MyCareer M3 (16 KiB code, fixed 4 KiB state page = the last RW page), weekly prep, Contracts Edit Player (704 RO), Broadcast camera v5 (+96 RX, +80 RO)
 
     def test_every_kind_exact_capacity_alignment_and_overflow(self):
         for kind, capacity in [('code', 98304), ('data', 81920), ('read_only', 16384)]:

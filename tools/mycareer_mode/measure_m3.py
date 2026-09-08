@@ -1,103 +1,49 @@
-"""Compile an M3 purchase-core lower bound without installing it.
+"""Measure the installed M3 runtime and unchanged peer allocations.
 
-The normal owner still enforces its exact 8192-byte reservation. This probe
-does not enlarge the owner or produce an executable. The omitted M3 UI,
-calendar, transactions, draft and texture binding require additional space.
+The historical pre-M3 lower bound remains in docs/nfl2k5_my_career_m3_budget.json.
+This tool builds only the bounded runtime object; it creates no XBE or disc.
 """
 from pathlib import Path
 import argparse
 import hashlib
 import json
-import re
 import sys
-import tempfile
-from types import SimpleNamespace
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from mod_editor.core import nfl2k5_my_career_mode as mode
+from mod_editor.core import nfl2k5_xbe_space as space
 from tools.mycareer_mode import build_runtime
 
 
 def measure():
-    source = build_runtime.SOURCE
-    c = (source / "runtime.c").read_text(encoding="utf-8")
-    extra = (source / "upgrade_candidate.c").read_text(encoding="utf-8")
-    base = mode.assembly
     if build_runtime.generate() != build_runtime.TARGET.read_text(encoding="utf-8"):
-        raise ValueError("baseline generated runtime differs")
-    _, labels = mode.code_for(0, 0)
-    with tempfile.TemporaryDirectory(prefix="mycareer-m3-budget-") as folder:
-        d = Path(folder).resolve()
-        (d / "runtime.c").write_text(c + "\n" + extra, encoding="utf-8")
-        (d / "runtime.S").write_bytes((source / "runtime.S").read_bytes())
-        compiled = {}
-        # Only the locally generated Python byte/relocation literals execute.
-        exec(compile(build_runtime.generate(d), "<generated-m3-capacity>", "exec"), compiled)
-        reference = {}
-        exec(compile(build_runtime.generate(d, optimize="-Os"), "<generated-m3-os-capacity>", "exec"), reference)
-    mode.assembly = SimpleNamespace(**compiled)
-    try:
-        try:
-            candidate, candidate_labels = mode.code_for(0, 0)
-        except mode.legacy.MyCareerError as exc:
-            error = str(exc)
-            match = re.fullmatch(r"generic MyCareer needs (\d+) bytes; exceeds its 8192-byte budget by (\d+) bytes", error)
-            if match is None:
-                raise
-            required, shortfall = map(int, match.groups())
-            refused = True
-        else:
-            required = candidate_labels["content_end"] + len(mode.TAG)
-            shortfall, refused, error = 0, False, ""
-            del candidate
-    finally:
-        mode.assembly = base
-    mode.assembly = SimpleNamespace(**reference)
-    try:
-        try:
-            mode.code_for(0, 0)
-        except mode.legacy.MyCareerError as exc:
-            match = re.fullmatch(r"generic MyCareer needs (\d+) bytes; exceeds its 8192-byte budget by (\d+) bytes", str(exc))
-            if match is None:
-                raise
-            os_required, os_shortfall = map(int, match.groups())
-        else:
-            raise ValueError("the Os design now fits; revise the capacity conclusion")
-    finally:
-        mode.assembly = base
+        raise ValueError("generated M3 runtime differs")
+    requests = json.loads((ROOT / "tests/fixtures/nfl2k5_allocator_beta62_requests.json").read_text())
+    previous = [(o, k, 8192 if (o, k) == (mode.OWNER, "code") else n, a)
+                for o, k, n, a in requests if o != mode.EXTRA_OWNER]
+    before, after = space.plan(previous), space.plan(requests)
+    old = {(r["owner"], r["kind"]): r for r in before["allocations"]}
+    current = {(r["owner"], r["kind"]): r for r in after["allocations"]}
+    peers = [r for key, r in old.items() if key != (mode.OWNER, "code")]
+    if not all(current[r["owner"], r["kind"]] == r for r in peers):
+        raise ValueError("M3 changed another allocation")
+    code, data = current[mode.OWNER, "code"], current[mode.OWNER, "data"]
+    blob, labels = mode.code_for(code["va"], data["va"])
     return {
-        "schema": "nfl2k5.mycareer.m3-capacity.v1", "experimental": True,
-        "runtime_witnessed": False, "runtime_installed": False,
-        "compiler_flags": "build_runtime.py: gcc -m32 -Oz -fomit-frame-pointer",
-        "reservation_rx": mode.CODE_SIZE, "reservation_rw": mode.DATA_SIZE,
+        "schema": "nfl2k5.mycareer.m3-installed-budget.v1",
+        "experimental": True, "runtime_witnessed": False,
+        "requests": mode.REQUESTS,
+        "machine_code_bytes": len(mode.assembly.CODE),
+        "content_bytes": labels["content_end"]-code["va"],
         "format_tag_bytes": len(mode.TAG),
-        "baseline_machine_bytes": len(base.CODE),
-        "baseline_content_bytes": labels["content_end"],
-        "baseline_remaining_bytes": mode.TAG_OFFSET - labels["content_end"],
-        "candidate_machine_bytes": len(compiled["CODE"]),
-        "candidate_machine_delta": len(compiled["CODE"]) - len(base.CODE),
-        "candidate_required_rx_bytes": required, "candidate_shortfall_bytes": shortfall,
-        "normal_owner_refused": refused, "refusal": error,
-        "baseline_menu_rw_bytes": labels["menu_bytes"],
-        "nine_row_hub_menu_rw_bytes": labels["menu_bytes"] + 4 * 52,
-        "current_menu_rw_capacity": 1080,
-        "candidate_quote_rw_range": [3328, 3368],
-        "candidate_source_sha256": hashlib.sha256(extra.encode()).hexdigest(),
-        "candidate_machine_sha256": hashlib.sha256(compiled["CODE"]).hexdigest(),
-        "uninstalled_os_reference": {
-            "candidate_machine_bytes": len(reference["CODE"]),
-            "candidate_required_rx_bytes": os_required,
-            "candidate_shortfall_bytes": os_shortfall,
-            "candidate_machine_sha256": hashlib.sha256(reference["CODE"]).hexdigest(),
-            "claim": "The previous Os compiler setting also exceeds the owner; no runtime or UI acceptance claimed.",
-        },
-        "included": ["existing M2 runtime and menus", "rating quote, tier cost and atomic debit",
-                     "identity/token/value/balance revalidation, cancel and replay refusal"],
-        "excluded": ["purchase UI and confirmation wiring", "nine-row hub RX tables",
-                     "calendar", "Team/depth UI", "trade/release execution and native logs",
-                     "draft and played Senior Bowl", "art registration and drawing"],
-        "claim": "Measured lower bound for this design, not an exact size of all M3 or a proof that every possible refactor exceeds the reservation.",
+        "spare_rx_bytes": mode.TAG_OFFSET-(labels["content_end"]-code["va"]),
+        "immutable_code_sha256_at_budget_address": hashlib.sha256(blob).hexdigest(),
+        "before": before, "after": after,
+        "unchanged_peer_allocations": peers,
+        "same_file_size": before["file_size"] == after["file_size"],
+        "historical_measurement": "docs/nfl2k5_my_career_m3_budget.json",
+        "senior_bowl_playable": False,
     }
 
 

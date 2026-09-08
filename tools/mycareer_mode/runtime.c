@@ -1,5 +1,5 @@
 /* MyCareer native adapters. EXPERIMENTAL / UNWITNESSED.
- * All mutable bytes are inside the existing 4096-byte state allocation.
+ * Mutable bytes use the named 4096-byte base and 4096-byte M3 allocations.
  * Functions marked FC use the retail ECX/EDX fastcall convention.
  */
 typedef unsigned char u8;
@@ -11,6 +11,9 @@ typedef unsigned int u32;
 #define B(p,n) (((u8 *)(p))[n])
 #define G(n) (*(u32 *)(n))
 extern u8 state[4096];
+extern u8 m3[4096];
+#define M(n) W(m3,n)
+extern const u8 m3_menu_template[],m3_menu_bytes[];
 extern u32 primary(void);
 extern void resolve_team(void), settle(void);
 extern void rebind(void);
@@ -22,6 +25,7 @@ extern const u8 text_template[], text_bytes[];
 static NI void init_menus(void) {
     const u8 *p=menu_template,*q; u8 *dst=state+200; u32 i;
     for(i=0;i<(u32)text_bytes;i++) ((u16 *)(state+1408))[i]=text_template[i];
+    for(i=0;i<(u32)m3_menu_bytes;i++) m3[256+i]=m3_menu_template[i];
     while((i=*p++)) {
         q=p;
         if(i&128) { i=(i&127)+3; q=dst-*(const u16 *)p; p+=2; }
@@ -65,7 +69,7 @@ void FC inline_encode(u8 *b) {
 }
 void inline_decode(void) {
     u8 *b=STAGED; u32 i;
-    zero(state,200); init_menus();
+    zero(state,200); zero(m3,256); zero(m3+3600,496); init_menus();
     S(4)=0x31303030; S(8)=1280;
     move_bytes(state+40,b+16,16);
     for(i=0;i<14;i++) if(save_words[i]) S(4*save_words[i])=W(b,32+4*i);
@@ -152,6 +156,14 @@ u32 FC mode_human(u8 *t) {
 #define N1(a) ((u32 (FC *)(u32))(a))
 #define N2(a) ((u32 (FC *)(u32,u32))(a))
 extern const u8 entry_menu[], apartment[], team_menu[], practice_menu[], club_menu[];
+extern const u8 m3_progress_menu[],m3_prep_menu[],m3_draft_menu[],m3_upgrade_menu[];
+extern const u16 m3_progress_note[],m3_prep_note[],m3_draft_note[],m3_unsigned_text[];
+extern const u16 m3_calendar_format[],m3_pick_format[];
+void FC m3_boot_tick(u32 manager);
+void FC m3_draft_tick(u32 manager);
+void FC mode_create(u32 manager);
+void FC m3_draw_upgrade(u32 manager);
+u32 FC m3_creation_route(u32 manager);
 extern const u16 watch_text[], fixture_text[];
 u32 mode_next_fixture(void);
 extern const u16 draft_notice[], refusal_notice[];
@@ -181,11 +193,25 @@ static NI void rollback(void) {
 }
 void FC mode_entry(u32 manager) {
     if(!manager || W((u8 *)manager,0x100)>=30 || S(2672)) return;
-    S(0)=0; S(2580)=1; S(2672)=manager; S(2684)=0;
+    S(0)=0; S(2580)=1; S(2672)=manager; S(2684)=0; zero(m3,4096);
     init_menus();
     CALL2(0x6e390,manager,(u32)entry_menu);
 }
-void FC mode_draft(u32 manager) { notice(manager,draft_notice); }
+void FC mode_draft(u32 manager) {
+    if(!owner(manager) || S(2676) || inline_active()) return;
+    /* Cancelling CAP preserves the already generated class for a retry. */
+    if(M(0)==2 && G(0xE576A4)==4 && G(0xE576B8)==1) { mode_create(manager); return; }
+    if(M(0)) return;
+    if(!CALL1(0x148ab0,manager)) return;
+    CALL0(0x148c60); G(0xE6011C)=0; G(0xE60120)=0;
+    CALL0(0x10ea10); CALL0(0x13ee10);
+    M(0)=1; M(4)=0;
+    CALL2(0x6e390,manager,(u32)m3_progress_menu);
+}
+void FC mode_undrafted(u32 manager) {
+    if(M(0)) notice(manager,draft_notice);
+    else mode_create(manager);
+}
 void FC mode_load(u32 manager) {
     if(owner(manager)) CALL2(0x6e390,manager,0x508df0);
 }
@@ -236,6 +262,15 @@ void FC mode_event(u32 manager,u32 event) {
     if(event==3 && top==(u32)apartment) { resolve_team(); settle(); }
     if(event==6 && top==(u32)apartment) mode_autosave(manager,top);
 }
+void FC mode_frame(u32 manager) {
+    u32 top=W((u8 *)manager,8*W((u8 *)manager,0x100));
+    /* Save and Quit are handled before another league operation. A new
+     * descriptor gets a visible frame before its first expensive update. */
+    CALL2(0xf3e90,manager,6);
+    if(!owner(manager) || top!=W((u8 *)manager,8*W((u8 *)manager,0x100))) return;
+    if(top==(u32)m3_progress_menu) m3_boot_tick(manager);
+    if(top==(u32)m3_draft_menu) m3_draft_tick(manager);
+}
 void FC mode_team_confirm(u32 manager) {
     u32 row=W((u8 *)manager,8*W((u8 *)manager,0x100)+4);
     if(owner(manager) && S(2680)==2 && row<32) {
@@ -278,6 +313,25 @@ void FC mode_draw(u32 manager) {
      * This pass supplies only the two extra pieces of career information. */
     if(d==apartment) text(footer(),0,320,432,0);
     if(d==team_menu) text((const u16 *)W(team(S(2684)),0x104),0,320,380,1);
+    if(d==m3_progress_menu) text(m3_progress_note,0,320,404,0);
+    if(d==m3_prep_menu) text(m3_prep_note,0,320,404,0);
+    if(d==m3_draft_menu) {
+        u32 args[2]={G(0xE3C0A8)+1,G(0xE3C0A4)+1};
+        ((void (FC *)(u8 *,u32,const u16 *,u32 *))0x49f00)(m3+2700,400,m3_pick_format,args);
+        text((const u16 *)(m3+2700),0,320,380,0);
+        text(m3_draft_note,0,320,432,0);
+    }
+    if(d==m3_upgrade_menu) m3_draw_upgrade(manager);
+    if(d==apartment) {
+        u32 slot=mode_next_fixture(),args[6];
+        const u8 *p=(const u8 *)(0xE57C40+8*slot);
+        if(slot<374) {
+            args[0]=slot/17+1; args[1]=p[3]; args[2]=p[4];
+            args[3]=2000+(u32)p[5]; args[4]=p[6]; args[5]=p[7];
+            ((void (FC *)(u8 *,u32,const u16 *,u32 *))0x49f00)(m3+2700,400,m3_calendar_format,args);
+            text((const u16 *)(m3+2700),0,320,404,0);
+        }
+    }
 }
 
 void mode_visuals(void) {
@@ -321,25 +375,52 @@ static NI void capture(u8 *p) {
     state[190]=255; S(0)=0x4251434d; S(2580)=2;
     S(2676)=S(2680)=0; resolve_team();
 }
+extern const u16 m3_sign_text[],m3_sign_cut_text[];
+static NI u32 m3_sign_limit(u8 *t) {
+    u32 n;
+    if(B((u8 *)0xc3ee0,0)==0xe9) {
+        /* The complete Practice Squad installation is validated offline.
+         * Its stable ps_limit entry also dispatches arena-grown reserves. */
+        n=CALL1(0x3ee10c,(u32)t);
+        return n<54?n:54;
+    }
+    if(t[0x11c]>64 || t[0x19b] || t[0x1f2] || t[0x1f3] || W(t,4*t[0x11c])) return 0;
+    return 54;
+}
 void FC mode_sign(u32 manager) {
-    u8 *p=(u8 *)S(2676),*t=team(S(2684)); u32 i,count=0;
+    u32 continuing=inline_active() && S(24)==4;
+    u8 *p=continuing?(u8 *)primary():(u8 *)S(2676),*t=team(S(2684)); u32 i,count=0,limit,old;
     if(!owner(manager) || S(2680)!=2 || !t || !p || !player_bounds(p) || p[0x35]>=17) return;
-    /* Match native acquisition's 54-player limit, including occupied tail
-     * slots. Never displace a player or hide an invalid/full destination. */
-    if(t[0x11c]>=54 || t[0x19b] || W(t,4*t[0x11c])) { notice(manager,refusal_notice); return; }
+    /* Native preseason cuts leave all clubs at 54. An undrafted career can
+     * ask the chosen club to make room using its native cut policy. Fresh
+     * free-agent entry retains the existing 54-player admission rule. */
+    limit=continuing?m3_sign_limit(t):54;
+    if(!limit || (!continuing && (t[0x11c]>=54 || t[0x19b] || W(t,4*t[0x11c])))) {
+        notice(manager,refusal_notice); return;
+    }
     for(i=0;i<W(ROOT,0x38);i++) if(W((u8 *)W(ROOT,0x3c),4*i)==(u32)p) count++;
     if(count!=1 || !(p[8]&4)) { notice(manager,refusal_notice); return; }
-    if(!CALL1(0x148ab0,manager)) return; /* Native confirmation, before mutation. */
-    CALL0(0x148c60);
-    G(0xE6011C)=0; /* Native Weekly Preparation off in player career. */
-    CALL0(0x10ea10);
-    CALL0(0x13ee10);
+    if(continuing) {
+        if(!CALL2(0x14e540,manager,(u32)(t[0x11c]>=limit?m3_sign_cut_text:m3_sign_text))) return;
+        while(t[0x11c]>=limit) {
+            old=t[0x11c]; CALL2(0x2bf9a0,(u32)t,limit-1);
+            limit=m3_sign_limit(t);
+            if(!limit || t[0x11c]>=old) { notice(manager,refusal_notice); return; }
+        }
+    } else if(!CALL1(0x148ab0,manager)) return;
+    if(!continuing) {
+        CALL0(0x148c60);
+        G(0xE6011C)=0; /* Native Weekly Preparation off in player career. */
+        CALL0(0x10ea10);
+        CALL0(0x13ee10);
+    }
     CALL2(0x2425c0,(u32)ROOT+0x38,(u32)p);
     ((void (FC *)(u32,u32,u32,u32))0x3228a0)((u32)p,1,1,0);
     ((void (FC *)(u32,u32,u32))0x2bd260)((u32)p,(u32)t,1);
     CALL2(0xc3ee0,(u32)t,(u32)p); CALL1(0x243790,(u32)t); CALL1(0xc3f00,(u32)t);
     CALL1(0x13ec90,(u32)t);
-    capture(p);
+    if(continuing) { S(2680)=0; resolve_team(); }
+    else capture(p);
     start_player();
     CALL1(0x13f1b0,manager);
 }
@@ -388,12 +469,12 @@ void FC mode_practice_init(u32 manager) {
 }
 void FC mode_card(u32 manager) {
     u32 p;
-    if(hub(manager) && (p=primary())) {
+    if(owner(manager) && inline_active() && (p=primary())) {
         ((void (FC *)(u32,u32,u32))0x320e90)(manager,p,S(2588));
     }
 }
 void FC mode_save_menu(u32 manager) {
-    if(hub(manager)) CALL2(0x6e390,manager,0x507ec8);
+    if(owner(manager) && inline_active()) CALL2(0x6e390,manager,0x507ec8);
 }
 void FC mode_postgame(u32 manager) {
     /* Preserve the native postgame parent and its complete week processing.
@@ -404,13 +485,13 @@ void FC mode_postgame(u32 manager) {
 }
 void FC mode_quit(u32 manager) {
     if(!owner(manager)) return;
-    if(inline_active()) {
+    if(inline_active() || M(0)) {
         CALL1(0xc8190,manager);
         if(G(0xE576A0)==2) return; /* User cancelled the native exit dialog. */
     } else {
         rollback(); CALL2(0x6e450,manager,0x515660);
     }
-    S(0)=S(2580)=S(2672)=S(2560)=S(2564)=S(2568)=0;
+    S(0)=S(2580)=S(2672)=S(2560)=S(2564)=S(2568)=M(0)=0;
 }
 u32 FC mode_route(u32 manager,u32 target) {
     if(!owner(manager) || !inline_active()) return target;
@@ -433,7 +514,11 @@ u32 FC mode_return(u32 manager,u32 target) {
 u32 FC mode_loaded(u32 manager,u32 target) {
     if(inline_active()) {
         S(2672)=manager;
-        CALL1(0x13ec90,S(2588));
+        M(0)=0;
+        if(S(2588)) CALL1(0x13ec90,S(2588));
+        if(G(0xE576A4)==4 && S(24)==2) return (u32)m3_prep_menu;
+        if(G(0xE576A4)==5) return (u32)m3_draft_menu;
+        if(S(24)==4) { S(2680)=2; return (u32)team_menu; }
         return (u32)apartment;
     }
     return target;
@@ -441,4 +526,174 @@ u32 FC mode_loaded(u32 manager,u32 target) {
 void mode_load_error(void) {
     extern const u16 load_notice[];
     if(S(2672)) notice(S(2672),load_notice);
+}
+
+/* M3 draft entry. Native year/stage/round state is already serialized by
+ * Franchise. The existing pointer-free career footer owns the prospect.
+ * A zero-depth owned menu context is used only for native league processing;
+ * the visible progress menu stays on the real manager's stack. No fabricated
+ * standings, class generator, contract or pick is substituted. */
+#define LEAGUE_MENU ((u32)(m3+3600))
+void FC m3_boot_tick(u32 manager) {
+    u32 stage=G(0xE576A4),week=G(0xE576B4),year=G(0xE576B8);
+    if(!owner(manager) || M(0)!=1) return;
+    if(stage==4 && year==1) {
+        M(0)=2;
+        CALL2(0x6e450,manager,(u32)entry_menu);
+        mode_create(manager);
+        return;
+    }
+    if(++M(4)>40 || year>1 || stage<1 || stage>9) goto failed;
+    if(stage>=7 && week<G(0xE576B0)) CALL1(0x247d40,LEAGUE_MENU);
+    else {
+        if(stage==9) CALL2(0xc4d30,(u32)team(0),1);
+        CALL1(0x2480b0,LEAGUE_MENU);
+    }
+    if(stage==G(0xE576A4) && week==G(0xE576B4) && year==G(0xE576B8)) goto failed;
+    return;
+failed:
+    M(0)=3; notice(manager,draft_notice);
+}
+
+static const u8 m3_quotas[17]={3,1,1,6,5,2,2,3,2,3,4,3,2,4,4,4,4};
+/* Include CAP as a 381st prospect, then exchange it with a same-position
+ * selected record if needed. Both records and their original name/history
+ * pointers survive. No generated prospect is removed or rerated, and no
+ * shared name string is overwritten. Selection exactly matches the Senior
+ * Bowl data tier's index rotation with seed 1. */
+u32 FC m3_place(u32 manager) {
+    u8 *p=(u8 *)S(2676),*q,*chosen=0,tmp[84];
+    u32 counts[17]={0},i,j,pos,total=0,n,offset,k,one_pool;
+    if(!owner(manager) || M(0)!=2 || S(2680)!=2 || !p || !player_bounds(p) ||
+       G(0xE576A4)!=4 || G(0xE576B8)!=1 || G(0xE576B4)!=0 ||
+       G(0xE576B0)!=1 || p[0x35]>=17 || (p[8]&0x34)!=4) return 0;
+    n=W(ROOT,0); pos=p[0x35];
+    /* The native CAP must have exactly one FA reference before conversion. */
+    k=0;
+    for(i=0;i<W(ROOT,0x38);i++) if(W((u8 *)W(ROOT,0x3c),4*i)==(u32)p) k++;
+    if(k!=1) return 0;
+    counts[pos]=1;
+    for(i=0,q=(u8 *)W(ROOT,4);i<n;i++,q+=84) if((q[8]&0x34)==0x14) {
+        if(q[0x35]>=17) return 0;
+        counts[q[0x35]]++; total++;
+    }
+    if(total<106 || total>=512) return 0;
+    one_pool=counts[10]==0;
+    for(i=0;i<17;i++) {
+        k=m3_quotas[i];
+        if(one_pool && i==10) k=0;
+        if(one_pool && i==11) k+=m3_quotas[10];
+        if(counts[i]<2*k) return 0;
+    }
+    offset=(1U^(pos*0x9e3779b9U))%counts[pos];
+    for(i=0,j=0,q=(u8 *)W(ROOT,4);i<n;i++,q+=84)
+        if(q[0x35]==pos && (q==p || (q[8]&0x34)==0x14) && j++==offset) { chosen=q; break; }
+    if(!chosen) return 0;
+    /* Scan membership before the two-record exchange, including all-star
+     * aliases, reserve tails and the entire free-agent prefix. */
+    for(i=0;i<W(ROOT,0x18);i++) {
+        q=(u8 *)(W(ROOT,0x1c)+500*i);
+        for(j=0;j<65;j++) if(W(q,j*4)==(u32)p || W(q,j*4)==(u32)chosen) return 0;
+    }
+    if(chosen!=p) for(i=0;i<W(ROOT,0x38);i++)
+        if(W((u8 *)W(ROOT,0x3c),4*i)==(u32)chosen) return 0;
+    CALL2(0x2425c0,(u32)ROOT+0x38,(u32)p);
+    p[8]|=0x10;
+    if(chosen!=p) {
+        move_bytes(tmp,p,84); move_bytes(p,chosen,84); move_bytes(chosen,tmp,84);
+    }
+    capture(chosen); M(0)=0;
+    return (u32)chosen;
+}
+u32 FC m3_creation_route(u32 manager) {
+    S(2680)=2;
+    if(M(0)==2) {
+        if(m3_place(manager)) return (u32)m3_prep_menu;
+        rollback(); notice(manager,draft_notice);
+        return (u32)entry_menu;
+    }
+    return (u32)team_menu;
+}
+void FC m3_begin_draft(u32 manager) {
+    if(!owner(manager) || !inline_active() || S(24)!=2 || !primary() || G(0xE576A4)!=4) return;
+    CALL1(0x2480b0,LEAGUE_MENU);
+    if(G(0xE576A4)==5) CALL2(0x6e2e0,manager,(u32)m3_draft_menu);
+    else notice(manager,draft_notice);
+}
+void FC m3_draft_tick(u32 manager) {
+    u32 option;
+    if(!owner(manager) || !inline_active() || !primary() || G(0xE576A4)!=5) return;
+    option=G(0xE60134); G(0xE60134)=1;
+    if(!CALL0(0x325d00)) {
+        CALL1(0x325b90,LEAGUE_MENU);
+        CALL0(0x325a50);
+    }
+    if(CALL0(0x325d00)) {
+        CALL1(0x2480b0,LEAGUE_MENU); /* full native cleanup, logs and stage 6 */
+        if(G(0xE576A4)==6) CALL1(0x2480b0,LEAGUE_MENU);
+        resolve_team();
+        if(S(24)==3) {
+            CALL1(0x13ec90,S(2588)); start_player();
+            CALL2(0x6e2e0,manager,(u32)apartment);
+        } else if(S(24)==4) {
+            S(2680)=2; S(2684)=0;
+            CALL2(0x6e2e0,manager,(u32)team_menu);
+            notice(manager,m3_unsigned_text);
+        }
+    }
+    G(0xE60134)=option;
+}
+
+/* M3 purchases. A quote captures the identity, value, balance and manager;
+ * cancel, stale confirmation and replay consume it before any write. */
+extern const u8 m3_fields[25],m3_caps[17][25];
+extern const u16 *const m3_rating_names[25];
+extern const u16 m3_upgrade_format[],m3_confirm_text[],m3_unavailable_text[];
+static u32 m3_cost(u32 value) {
+    return value<70?10:value<80?15:value<90?25:value<95?40:value<99?60:0;
+}
+static u32 m3_field_index(u32 field) {
+    u32 i; for(i=0;i<25;i++) if(m3_fields[i]==field) return i;
+    return 25;
+}
+u32 FC m3_upgrade_quote(u32 manager,u32 field) {
+    u8 *p; u32 value,cost,i=m3_field_index(field);
+    M(32)=0;
+    if(!hub(manager) || S(24)!=3 || i>=25 || !(p=(u8 *)primary())) return 0;
+    value=p[field]; cost=m3_cost(value);
+    if(value>=m3_caps[state[149]][i] || !cost || S(64)<cost) return 0;
+    M(36)=field; M(40)=value; M(44)=S(64); M(48)=S(28);
+    move_bytes(m3+52,state+40,16); M(68)=manager; M(32)=(u32)p;
+    return cost;
+}
+u32 FC m3_upgrade_commit(u32 manager,u32 answer) {
+    u8 *p=(u8 *)M(32); u32 field=M(36),value=M(40),cost=m3_cost(value),i=m3_field_index(field);
+    M(32)=0;
+    if(answer!=1 || manager!=M(68) || !hub(manager) || S(24)!=3 || !p ||
+       primary()!=(u32)p || S(28)!=M(48) || i>=25 || value>=m3_caps[state[149]][i] ||
+       p[field]!=value || !cost || S(64)!=M(44) || S(64)<cost) return 0;
+    for(i=0;i<16;i++) if(state[40+i]!=m3[52+i]) return 0;
+    p[field]=(u8)(value+1); S(64)-=cost;
+    return 1;
+}
+void FC m3_upgrade_open(u32 manager) {
+    if(hub(manager) && primary()) { M(72)=0; M(32)=0; CALL2(0x6e390,manager,(u32)m3_upgrade_menu); }
+}
+void FC m3_upgrade_previous(u32 manager) { if(hub(manager)) { M(72)=(M(72)+24)%25; M(32)=0; } }
+void FC m3_upgrade_next(u32 manager) { if(hub(manager)) { M(72)=(M(72)+1)%25; M(32)=0; } }
+void FC m3_back(u32 manager) { if(hub(manager)) { M(32)=0; CALL1(0x6e400,manager); } }
+void FC m3_upgrade_buy(u32 manager) {
+    u32 answer;
+    if(M(72)>=25 || !m3_upgrade_quote(manager,m3_fields[M(72)])) { notice(manager,m3_unavailable_text); return; }
+    answer=CALL2(0x14e540,manager,(u32)m3_confirm_text);
+    m3_upgrade_commit(manager,answer);
+}
+void FC m3_draw_upgrade(u32 manager) {
+    u8 *p; u32 i=M(72),args[5],v;
+    if(!hub(manager) || i>=25 || !(p=(u8 *)primary())) return;
+    v=p[m3_fields[i]];
+    args[0]=(u32)m3_rating_names[i]; args[1]=v; args[2]=m3_caps[state[149]][i];
+    args[3]=v<args[2]?m3_cost(v):0; args[4]=S(64);
+    ((void (FC *)(u8 *,u32,const u16 *,u32 *))0x49f00)(m3+2700,400,m3_upgrade_format,args);
+    text((const u16 *)(m3+2700),0,320,380,0);
 }

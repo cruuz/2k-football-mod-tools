@@ -63,12 +63,13 @@ class FrontendTests(unittest.TestCase):
                 self.assertEqual(m.top(), expected)
         self.assertEqual(m.get(m.state + 2680), 2)
 
-    def test_game_modes_input_draft_notice_and_only_explicit_exit(self):
+    def test_game_modes_input_draft_confirmation_cancel_and_only_explicit_exit(self):
         with Machine(self.payload) as m:
             self.enter(m)
             before = bytes(m.uc.mem_read(m.root, len(self.roster) - 64))
+            m.dialog_answer = 1  # native Franchise confirmation: cancel
             m.select(0)
-            self.assertIn(("notice", "Draft is not ready."), m.events)
+            self.assertEqual(m.get(mode.EXTRA_VA), 0)
             self.assertEqual(m.get(m.state + 2676), 0)
             m.frame(0x200)
             self.assertEqual(m.top(), m.labels["entry_menu"])
@@ -150,8 +151,10 @@ class FrontendTests(unittest.TestCase):
             self.assertIn(("notice", "Career load failed."), m.events)
             self.assertEqual(m.get(m.state), 0)
             self.assertEqual(m.top(), m.labels["entry_menu"])
+            m.dialog_answer = 1
             m.select(0)
-            self.assertIn(("notice", "Draft is not ready."), m.events)
+            self.assertEqual(m.get(mode.EXTRA_VA), 0)
+            self.assertEqual(m.top(), m.labels["entry_menu"])
 
     def test_team_limit_and_confirmation_cancel_leave_no_partial_franchise(self):
         with Machine(self.payload) as m:

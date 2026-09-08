@@ -252,9 +252,10 @@ def prospects_from_document(document):
         _require(target in offsets, "free-agent list references a missing primary player")
         occupied.add(offsets[target])
     if document.base == rr.SAVE_BLOCK_OFFSET:
-        _require(len(body) == fs.FRANCHISE_SAVE_SIZE, "unsupported franchise save size")
+        _require(len(body) in (fs.FRANCHISE_SAVE_SIZE, fs.FRANCHISE_SAVE_SIZE + 4096), "unsupported franchise save size")
+        growth = len(body) - fs.FRANCHISE_SAVE_SIZE
         for i in range(32 * 5):
-            index = struct.unpack_from("<H", body, fs.FRONT_OFFICE_BLOCK + fs.F_INJURED_RESERVE + 4*i)[0]
+            index = struct.unpack_from("<H", body, fs.FRONT_OFFICE_BLOCK + growth + fs.F_INJURED_RESERVE + 4*i)[0]
             _require(index == 0xFFFF or index < len(primary), "invalid injured-reserve index")
             if index != 0xFFFF:
                 occupied.add(index)
@@ -271,13 +272,20 @@ def prospects_from_document(document):
 def read_franchise(path, *, scheme="retail"):
     """Bounded, signed SAVEGAME.DAT input; no recursive container/pack reads."""
     from . import nfl2k5_franchise_save as fs
+    from . import nfl2k5_my_career_save as career
     source = Path(path).expanduser().resolve(strict=True)
     if source.is_dir():
         source = source / "SAVEGAME.DAT"
-    payload = _read_exact(source, fs.FRANCHISE_SAVE_SIZE)
+    size = source.stat().st_size
+    _require(size in career.BASE_SIZES + career.SIZES, "unsupported franchise save size")
+    payload = _read_exact(source, size)
     signature = _read_exact(source.with_name("EXTRA"), 20)
     _require(rr.verify_extra(payload, signature), "EXTRA does not match SAVEGAME.DAT")
+    block = career.read(payload) if size in career.SIZES else None
+    if block is not None:
+        payload = payload[:-career.SIZE]
     document = rr.RosterDocument(payload, base=rr.SAVE_BLOCK_OFFSET, scheme=scheme, source=str(source))
+    document.mycareer = block
     players = prospects_from_document(document)
     return document, players
 
