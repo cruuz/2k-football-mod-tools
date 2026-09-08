@@ -37,7 +37,8 @@ class NativeTests(unittest.TestCase):
         before = e.read_resources(RETAIL)
         if e.status(before) != "retail":
             raise unittest.SkipTest("retail USA ROST evidence pins differ")
-        cls.resources, cls.receipt = e.apply(before)
+        # Offline candidate evidence; production publication remains blocked.
+        cls.resources, cls.receipt = e._compile_resources(before)
         with rr._outer_image()(RETAIL) as archive:
             for i in (5, 22):
                 entry = archive.entries[i]

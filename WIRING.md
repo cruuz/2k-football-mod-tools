@@ -13341,3 +13341,115 @@ lookup and unload path. A future binding must clone/register private resource
 names and prove enter/back/load/quit lifetime and compatibility with Game
 Modes, Team Select and the Crib. Do not replace shared Crib or navigation
 textures with the Fable backdrop. This session changes no archive bytes.
+## R64 ESPN25 in-game investigation, 2026-09-08
+
+This section supersedes earlier ESPN25 instructions that describe the option as
+data only or ready for opt-in builds. See `ASTRA_ESPN25_IN_GAME_REPORT.md`.
+The duplicate-team importer fault has a bounded native repair, but the reported
+Ice Bowl #14 and the loading music wait loop remain unresolved. The all-moments
+option is blocked through `BUILD_BLOCK_REASON` and `require_build_ready()`.
+There is no force switch. Do not clear the hold on the strength of roster bytes,
+kit existence, a completed export, or the native tests alone.
+
+The hold already runs in `apply` / `apply_resources`, `preflight_image`,
+`apply_to_image`, and `build_image`. Thus the existing protected dispatchers'
+resource preflight refuses before copying. This is tested with the actual
+bn-style BuildPlan, with only unrelated image presentation preflights mocked.
+The full Experimental plan still refuses One-pool positions first.
+
+Protected dispatcher changes for Claude:
+
+1. In `mod_build._build`, replace
+   `_, roster_preview = module.apply(module.read_resources(source))` with
+   `roster_preview = module.preflight_image(source)`.
+   In `nfl2k5_throw_tuning.write_image`, replace the matching resource-only
+   preflight with `espn25_rosters_patch.preflight_image(source)`. This also
+   validates the pinned native release routine before a copy if the hold is
+   eventually lifted. Keep the final `apply_to_image` pass after relocations.
+   It now owns both the 35 resource slices and exact executable/digest spans.
+   Change the two old "data-only" comments. Do not write main ROST or SITU.
+2. The current all-moments image adapter already pairs the repair with the
+   resources, so no executable dispatcher change is needed to enforce this
+   blocked delivery. If the shared dispatcher records the native owner when
+   the option is later cleared, use exactly this `_apply_all` tuple:
+   `(espn25_rosters, espn25_rosters_patch.XbePatch,
+   "espn25_rosters_load_fix", "Historic team reload fix")`.
+   Add the internal kwarg `espn25_rosters=False` and forward it through each
+   image `_apply_all` call, including the deferred final call. Preserve the
+   public bare-XBE refusal. Do not add an independent user toggle that could
+   separate the rosters from their repair. `REQUESTS = ()`: no allocator
+   request, budget row, page, cave or runtime-data reservation is needed.
+3. Keep `espn25_rosters` in the four existing status dictionaries. Bare-XBE
+   inspect and bare-XBE copy report `n/a`; image inspect and image-copy result
+   call `_espn25_rosters_image_status`. The recognizer now reports
+   `needs load fix` for the complete old roster profile on the old executable,
+   and `applied` only for the paired candidate. These are byte states, not
+   gameplay approval. For the optional tuple above, add the distinct
+   `espn25_rosters_load_fix: espn25_rosters_patch.xbe_status(payload)` to
+   `_grown_status_fields`, which reaches all four dictionaries; use the final
+   result payload at the two write surfaces. The owner receipt is separate
+   from those statuses and from `espn25_rosters_patch`'s resource receipt.
+
+Keep `BuildPlan.espn25_rosters: bool = False`, its normalization, its exclusion
+of `espn25_plan`, and the retail-position guard. Basic, Advanced and Experimental
+all remain false. The bn-style native fixture has position_pools,
+position_pools_keep_olb, depth_roles, edge_rename and depth_chart_rows off.
+Full Experimental is not compatible and is not an additional accepted runtime
+configuration. While the hold exists, `_espn25_rosters_available()` should return
+false after checking `module.BUILD_BLOCK_REASON`; retain read-only inspection
+and show the reason rather than silently dropping the option.
+
+Gameplay Patches PATCHES remains keyed by `espn25_rosters` with the shared
+`HELP_TEXT`, and `NEEDS_IMAGE` retains `espn25_rosters`. The updated text already
+contains both required words:
+"Retail: many historic players have position names in shared rosters. Patch:
+use Pro Football Reference game starters and season jersey numbers with the
+nflverse roster base. Short lists still need named reserves from nearby seasons.
+Shared teams cannot match every game. Requires the retail position layout.
+Build blocked while the Wide Right loading freeze remains unresolved.
+EXPERIMENTAL / UNWITNESSED. See the in-game report."
+The Build `_option` caption remains `Historic moments: real rosters`
+(29 characters), `needs_image=True`. Neither caption nor help may claim the
+loading freeze or #14 has been fixed.
+
+Existing allowlist lines remain:
+
+```text
+mod_editor/core/nfl2k5_espn25_rosters.py
+mod_editor/core/nfl2k5_espn25_scenarios.py
+mod_editor/core/nfl2k5_rdata_sites.py
+mod_editor/core/nfl2k5_bump_strength.py
+docs/mod_editor/nfl2k5_espn25_rosters_capability.json
+```
+
+The existing dataset directory entries stay unchanged. Add
+`ASTRA_ESPN25_IN_GAME_REPORT.md` if the release includes feature reports.
+The new native harness and tests are development files, not runtime modules.
+Runtime-closure imports remain `mod_editor.core.nfl2k5_espn25_rosters` and
+`mod_editor.core.nfl2k5_espn25_scenarios`, plus the already shipped
+`mod_editor.core.nfl2k5_rdata_sites`, `mod_editor.core.nfl2k5_bump_strength`, and
+`mod_editor.core.nfl2k5_throw_tuning`. The last import is lazy and only obtains
+the existing XDVDFS reader, avoiding an import cycle. Update the runtime checker
+if it assumes that a historic-roster apply is always available: inspection and
+`validate-dataset` still work; a build must now return the explicit hold.
+
+No new capability ID or surface is introduced. In the existing
+`nfl2k5.rosters.espn25_real_rosters` object and its capability JSON handoff,
+set `gui.expose` false while blocked, retain `gui.default_enabled` false and
+`runtime.status` `not-tested`, and set `gui.reason` to `BUILD_BLOCK_REASON`
+plus the EXPERIMENTAL / UNWITNESSED label. Add this report and
+`tests/mod_editor/test_nfl2k5_espn25_in_game.py` to evidence/runtime evidence.
+Replace the obsolete `source_container.resource` suffix "no XBE edit" with
+"candidate paired with the pinned 12-byte C2300 release-loop repair; builds
+blocked". Describe the all-50-side trace as bounded native player selection,
+not a played game. Keep the schema-valid backend command
+`python3 -m mod_editor.core.nfl2k5_espn25_rosters build source.iso historic.iso
+--receipt historic-receipt.json` and use validation command
+`python3 -m tests.mod_editor.test_nfl2k5_espn25_in_game`.
+
+The gate union and all manifest-builder owner lists already include the native
+adapter. Claude must regenerate the protected manifest with the normal oracle
+manifest command after integration. This session used a scratch copy of
+manifest 26 with current source fingerprints and only the pinned live edit
+added; it did not manufacture a new real-disc manifest or allocate a cave.
+Do not copy that scratch manifest over the production file.

@@ -84,6 +84,9 @@ class CaveReferenceTests(unittest.TestCase):
             cls.patched, cls.pools_receipt = pools.apply(cls.patched, roster_has_olb=False)
         if pools.filter_list_status(cls.patched) != "applied":
             raise AssertionError("empty OLB selectors survived complete composition")
+        from mod_editor.core import nfl2k5_espn25_rosters as espn25
+        if espn25.xbe_status(cls.patched) != "applied" or espn25.apply_xbe(cls.patched)[0] != cls.patched:
+            raise AssertionError("Historic team reload repair missing from the complete owner union")
         from mod_editor.core import nfl2k5_franchise_autosave as autosave
         if autosave.status(cls.patched) != "applied" or autosave.apply(cls.patched)[0] != cls.patched:
             raise AssertionError("Franchise Auto Save missing from the complete owner union")

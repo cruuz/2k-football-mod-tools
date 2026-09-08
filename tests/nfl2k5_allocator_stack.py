@@ -26,6 +26,7 @@ from mod_editor.core import nfl2k5_crib_reclaim as crib_reclaim
 from mod_editor.core import nfl2k5_screen_hooks as screen_hooks
 from mod_editor.core import nfl2k5_roster_arena_growth as arena_growth
 from mod_editor.core import nfl2k5_franchise_autosave as autosave
+from mod_editor.core import nfl2k5_espn25_rosters as espn25
 
 
 LEGACY_REQUESTS = (kickoff.REQUESTS + runtime.REQUESTS + momentum.REQUESTS
@@ -34,7 +35,7 @@ LEGACY_REQUESTS = (kickoff.REQUESTS + runtime.REQUESTS + momentum.REQUESTS
 # Both installation orders use this same union and require rebuild from base.
 REQUESTS = (camera.REQUESTS + LEGACY_REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS
             + playlist.REQUESTS + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS
-            + defensive_try.REQUESTS[2:] + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS + guardian.REQUESTS + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS + autosave.REQUESTS)
+            + defensive_try.REQUESTS[2:] + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS + guardian.REQUESTS + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS + autosave.REQUESTS + espn25.REQUESTS)
 SONGS = [dict(title=f"Tone {i+1:03}", artist="Synthetic", frames=256) for i in range(200)]
 
 
@@ -72,7 +73,7 @@ def compose(payload, *, reverse=False, scaleout=False, extra_requests=(), read_o
     payload, policy_receipt = policy.apply(payload, music_unlock=True, music_userlist=True)
     payload, _ = space.apply(payload, REQUESTS + tuple(extra_requests), scaleout=scaleout)
     # One apply/status transaction owns both try rules and the stat extension.
-    owners = ((StaticScorebar, {}), (camera, {}), (defensive_try, {}), (kickoff, {}), (runtime, {}),
+    owners = ((espn25.XbePatch, {}), (StaticScorebar, {}), (camera, {}), (defensive_try, {}), (kickoff, {}), (runtime, {}),
               (momentum, dict(momentum=100, momentum_contact=True, momentum_collisions=True, momentum_collision_level=100)), (zone_drop, {}),
               (music, dict(song_records=SONGS)), (roster_storage, {}), (coverage, {}), (scramble, {}), (playlist, {}),
               (practice_screen, {}), (abilities, dict(abilities_off_week=7)), (qb_spy, {}), (calendar, {}),
@@ -150,6 +151,14 @@ def manifest_for_allocated_union(manifest, retail, allocated):
     from mod_editor.core import nfl2k5_dynamic_kickoff as legacy_kickoff
     image = XbeImage(retail)
     installed_image = XbeImage(allocated)
+    if espn25.xbe_status(allocated) == "applied":
+        va, size = espn25.XBE_SITE_VA, len(espn25.XBE_BEFORE)
+        if image.read(va, size) != espn25.XBE_BEFORE or installed_image.read(va, size) != espn25.XBE_AFTER:
+            raise AssertionError("historic reload loop pin differs")
+        if any(r.detail.split(":", 1)[0] != espn25.OWNER for r in manifest.overlaps(va, va + size)):
+            raise AssertionError("historic reload loop overlaps another owner")
+        spans.append(dict(start=hex(va), end=hex(va + size), size=size, owner=espn25.OWNER,
+                          basis="test-only pinned live edit: historic_team_release"))
     owner = None
     if kickoff.status(allocated) == "applied":
         code, data = kickoff._sites(allocated)
