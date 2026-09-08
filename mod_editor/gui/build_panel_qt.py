@@ -2051,6 +2051,8 @@ class BuildPanel(QWidget):
         steps = ", ".join(str(s.get("step")) for s in receipt.get("steps", []))
         from mod_editor.core.build_feedback import completion
         title, message = completion(receipt)
+        if receipt.get("play_intents_summary"):
+            message += "\n\n" + receipt["play_intents_summary"]
         self.status_label.setText(f"{title}: {target}. {message}")
         self.built.emit(dict(receipt))
         QMessageBox.information(self, title, f"{target}\n\n{message}\n\nSteps checked: {steps}.")

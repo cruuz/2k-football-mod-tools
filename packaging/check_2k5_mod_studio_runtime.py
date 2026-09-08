@@ -1735,6 +1735,7 @@ def main() -> int:
         "mod_editor.core.ps2_save_service",
         "mod_editor.gui.ps2_save_dialog_qt",
         "mod_editor.core.nfl2k5_playbook_inspector",
+        "mod_editor.core.nfl2k5_play_intents",
         "mod_editor.core.nfl2k5_playbook_pack",
         "mod_editor.core.playbook_package_rule_spike",
         "mod_editor.core.nfl2k5_universal_asset_index",
