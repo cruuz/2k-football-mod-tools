@@ -1259,6 +1259,97 @@ def apply_pack_to_resource(resource: bytes, pack: PlaybookPack, *, asset_id: str
     return compile_formation_play_creations(resource, formation_rows, play_rows, link_rows)
 
 
+FINAL_INTENT_REPORT_SCHEMA = "nfl2k5_final_play_intent_compilation/v1"
+
+
+def recompile_final_intents(resource: bytes, play_requests, *, native_codes=None):
+    """Re-report final PLAY through the formation/play and personnel compilers.
+
+The native authoring validator deliberately refuses pooled defense codes. Its
+explicit native view is permitted here only when the existing pool/role writers
+reproduce the COMPLETE final resource. Only personnel codes can differ between
+the two views. Names, flags, descriptors, pointers and nodes always come from
+the final bytes. No source report is copied or given a replacement hash.
+
+Return (final compilation, native validation compilation). Neither writes PLAY.
+The versioned final report carries enough information to repeat the entire
+proof when a runtime table is compiled, including after a JSON round trip.
+"""
+    from . import nfl2k5_depth_roles as roles
+    from .nfl2k5_formation_play_writer import (
+        PlayCreateRequest, compile_formation_play_creations, compile_personnel_categories,
+    )
+
+    requests = tuple(play_requests)
+    if not requests or any(not isinstance(r, PlayCreateRequest)
+                           or r.donor_play_index != r.replace_index or r.assignments is not None
+                           or r.custom_name is not None or r.play_flags is not None
+                           or not (r.option_intent or r.spy_slots) for r in requests):
+        raise PlaybookPackError("Final intent compilation needs unchanged self-donor intent requests")
+    requests = tuple(sorted(requests, key=lambda r: r.replace_index))
+    asset_id = requests[0].asset_id
+    if len(resource) != RESOURCE_SIZE:
+        raise PlaybookPackError("Final intent compilation needs one fixed-size PLAY resource")
+    book = parse_playbook_resource(resource, asset_id=asset_id)
+    codes = {str(c.index): lib.category_positions(resource[32:], c.index) for c in book.categories}
+    if native_codes is not None:
+        if not isinstance(native_codes, Mapping) or any(k not in codes for k in native_codes):
+            raise PlaybookPackError("Invalid native personnel group translation")
+        codes.update(native_codes)
+    native_resource = compile_personnel_categories(resource, {int(k): v for k, v in codes.items()},
+                                                   asset_id=asset_id)
+    codes = {str(c.index): lib.category_positions(native_resource[32:], c.index) for c in book.categories}
+    # Decide from exact bytes, never from a caller's claimed transformation name.
+    transformation = []
+    if native_resource != resource:
+        if roles.normalise(native_resource).replacement == resource:
+            transformation = ["depth_roles"]
+        else:
+            recode = _outer_image()
+            native_body = native_resource[32:]
+            pooled = compile_personnel_categories(native_resource, {
+                c.index: recode.recode_codes(codes[str(c.index)],
+                    native_body[roles.insp.CATEGORY_BASE + c.index * roles.insp.CATEGORY_SIZE + 4])[0]
+                for c in book.categories}, asset_id=asset_id)
+            if pooled == resource:
+                transformation = ["position_pools"]
+            elif roles.normalise(pooled).replacement == resource:
+                transformation = ["position_pools", "depth_roles"]
+            else:
+                changed = [c.index for c in book.categories
+                           if lib.category_positions(resource[32:], c.index) != codes[str(c.index)]]
+                raise PlaybookPackError(f"Personnel groups {changed} changed outside the verified pool/depth-role writers")
+    for req in requests:
+        if type(req.replace_index) is not int or not 0 <= req.replace_index < len(book.plays):
+            raise PlaybookPackError("Final intent play is outside the book")
+        flags, assignments = lib.play_chains(resource[32:], req.replace_index)
+        codec.validate_sync(assignments)
+        error = codec.validate_play(flags, assignments)
+        if error:
+            raise PlaybookPackError(f"Play {req.replace_index} fails the retail validator: {error}")
+    native = compile_formation_play_creations(native_resource, play_requests=requests, allow_unchanged=True)
+    if native.replacement != native_resource:
+        raise PlaybookPackError("Final intent compiler attempted to change an authored play")
+    rebuilt = compile_personnel_categories(native.replacement, {
+        c.index: lib.category_positions(resource[32:], c.index) for c in book.categories}, asset_id=asset_id)
+    if rebuilt != resource:
+        raise PlaybookPackError("Final intent compiler failed exact PLAY read-back")
+    digest = hashlib.sha256(rebuilt).hexdigest()
+    # A new compiler report, with final-byte identity and explicit validation
+    # provenance. Keeping the native report separately makes the translation
+    # reviewable and prevents treating its hash as the installed resource hash.
+    report = dict(schema=FINAL_INTENT_REPORT_SCHEMA, asset_id=asset_id,
+                  source_sha256=hashlib.sha256(resource).hexdigest(), replacement_sha256=digest,
+                  new_play_indices=list(native.new_play_indices),
+                  resolved_names=[book.plays[pi].name for pi in native.new_play_indices],
+                  spy_intent=native.report["spy_intent"], option_intent=native.report["option_intent"],
+                  native_personnel_codes=codes, personnel_transforms=transformation,
+                  native_compiler_report=native.report, changed_ranges=[], changed_bytes=0,
+                  experimental=True, runtime_witnessed=False)
+    return _dc_replace(native, source_sha256=report["source_sha256"], replacement_sha256=digest,
+                       replacement=rebuilt, parsed_replacement=book, report=report), native
+
+
 # ---------------------------------------------------------------------------------------------
 # Retargeting (indices re-resolved BY NAME)
 # ---------------------------------------------------------------------------------------------
@@ -1931,11 +2022,11 @@ __all__ = [
     "PACK_EXTENSION", "PLAY_TYPES", "PackBase", "PackBook", "PackCheck", "PackDonor",
     "PackFormation", "PackPlay", "PackPreview", "PlanRow", "PlaybookPack", "PlaybookPackError",
     "Resolution",
-    "SCHEMA", "TEAM_BOOKS", "apply_pack_to_resource", "apply_packs_to_archive",
+    "SCHEMA", "FINAL_INTENT_REPORT_SCHEMA", "TEAM_BOOKS", "apply_pack_to_resource", "apply_packs_to_archive",
     "apply_packs_to_image", "book_fingerprint",
     "budget_totals", "check_pack", "install_plan", "load_pack", "loads_pack", "pack_from_json",
     "pack_from_staged_rows", "pack_requests", "permute_assignments", "preview_pack",
-    "retarget_pack", "save_pack",
+    "retarget_pack", "save_pack", "recompile_final_intents",
 ]
 
 

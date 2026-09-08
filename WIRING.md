@@ -12258,3 +12258,175 @@ automatic animation-driven snaps, a whole CPU drive, or the combined
 off-field/all-position/special-teams matrix. Keep the existing runtime
 not-tested and Experimental / Unwitnessed product labels. No M2b or M3
 acceptance marker or live Supersim readiness is inferred from these tests.
+## r64 read-option final-book pairing (2026-09-08)
+
+This section supersedes the earlier requirement to reuse pack-time PLAY pairs
+unchanged at the final executable pass. EXPERIMENTAL / UNWITNESSED. The new
+resolver and compiler entry point are implemented. Protected integration is
+specified here and in the exact reviewable
+`tests/fixtures/read_option_pairing_wiring.patch`; no protected file was edited.
+
+### mod_build.py: exact local sequence and receipts
+
+Apply the three hunks in `tests/fixtures/read_option_pairing_wiring.patch`.
+`tests/mod_editor/test_nfl2k5_play_intents_build.py` applies those same hunks to
+a copied module, checks their equivalence, and supports an already-wired build.
+The retained `spy_pairs` list still collects **both** option and Spy intents.
+The only sequence change is at the existing final pairing block:
+
+1. Retain `(compiled.replacement, compiled.report)` at each existing option,
+   defense and offense pack pass through `collector=spy_pairs`.
+2. Keep every existing resource writer in its current position. In particular,
+   pool recoding, kickoff resources, offense packs, depth roles and screen
+   timing still execute in their existing order. Resolve at the existing
+   pairing block after the `all_requests` calculation, after these writers
+   and before the final `_apply_all`.
+3. If either runtime is selected, load `_core_module("nfl2k5_play_intents")` and
+   require it to be available. Replace the retained local list with:
+
+   ```python
+   spy_pairs = resolver.resolve_final_pairs(
+       target, spy_pairs, progress=lambda msg: progress(msg, 0, 0))
+   ```
+
+4. Compile `read_table, read_receipt` and `spy_table, spy_table_receipt` from
+   this resolved list, conditional on their existing flags. Keep the nonzero
+   read-count refusal. Remove the old later Spy compilation inside the
+   `xbe_space` conditional, since it is now next to the read compilation.
+5. Run `_verify_play_intents(target, spy_pairs)` against the **resolved** final
+   pairs after both selected tables compile. Keep the verifier's complete
+   resource equality check. Refusal still occurs before either table installs.
+6. Add top-level `receipt["play_intents_final"]` from
+   `resolver.resolution_receipt(spy_pairs)`, extended with `read_option_count`
+   and `qb_spy_count` from the selected table receipts, or zero when off.
+   Include this same object in the final `xbe_space` step. Continue passing
+   `read_option_intent_table=read_table` and `qb_spy_intent_table=spy_table` to
+   the existing final `_apply_all`; retain both existing table receipts there.
+
+`read_option_preflight` remains the initial preview receipt against the source
+and selected packs. It is not evidence about final bytes and is not overwritten.
+The final receipt provides `resolved_books`, `resolved_plays`, per-book final
+SHA-256, retained SHA-256, old/final indices, names and exact node/descriptor
+equality. Native speed options count as resolved authored plays, but do not
+count as runtime reads: the shipped pack resolves **8 plays, 1 book, 2 reads**.
+The shipped option pack authors no Spy assignment, so adding `qb_spy=True`
+installs its native runtime with an authored-Spy count of zero. The nonempty
+Spy final-pair path is separately tested with an authored ATL MLB Spy.
+
+The patch adds `receipt["play_intents_summary"]` with this exact text for the
+shipped read pack (the two counts are substituted from the final receipts):
+
+> Final playbooks paired: 2 read option plays, 0 QB spy assignments. EXPERIMENTAL / UNWITNESSED.
+
+In protected `mod_editor/gui/build_panel_qt.py`, inside `_done`, immediately
+after `title, message = completion(receipt)`, append the summary when present:
+
+```python
+if receipt.get("play_intents_summary"):
+    message += "\n\n" + receipt["play_intents_summary"]
+```
+
+That puts the same measured counts in the existing status label and completion
+dialog. The core build patch does not depend on the GUI edit.
+
+### Compiler contract and the position-pool discovery
+
+The existing compiler also refuses pooled defense personnel, independently of
+the stale-resource check. `nfl2k5_playbook_pack.recompile_final_intents` accepts
+the final resource and self-donor intent requests, decodes every selected final
+play, runs the existing synchronization/retail validators, and uses the real
+formation/play and personnel compilers to reproduce the final resource exactly.
+For native defense checks only, it constructs a personnel view from retained
+native codes. The existing pool and depth-role writers must reproduce the
+complete final resource from that view. Unknown transformations refuse.
+Names, flags, descriptors, pointers and node bytes are identical in both views.
+The native compiler's report is retained separately as validation provenance;
+it is never passed off as the final compiler report by replacing its hash.
+
+The new versioned final report is produced from the final bytes. Both runtime
+table entry points repeat the compilation and compare the entire final report
+before using its certified native fixture view. Table identity hashes and
+capacity remain unchanged. Table receipts identify the installed final resource.
+The native authoring APIs still reject recoded donors outside this explicit,
+verified translation path. No global validator or fingerprint set is patched.
+
+### Existing dispatcher, flags, presets and user-facing options
+
+No new owner, allocation, runtime flag or capability surface is introduced.
+Keep the existing `_selected_space_requests` and `_xbe_space_adapter` flags
+and both final dispatcher entries after allocator installation:
+
+```python
+(qb_spy, _qb_spy_adapter(qb_spy_intent_table), "qb_spy_patch",
+ "QB spy for zone, man and rush (experimental)"),
+(read_option_runtime, _read_option_adapter(read_option_intent_table),
+ "read_option_runtime_patch", "read option mesh controls (experimental)"),
+```
+
+Keep kwargs `qb_spy=False`, `qb_spy_intent_table=None`,
+`read_option_runtime=False`, `read_option_intent_table=None`, their validation,
+and first-pass deferral. The four status dictionaries in `read_xbe`,
+`read_image`, `write_xbe_copy` and `write_image_copy` already include
+`_grown_status_fields`; retain `qb_spy`, `read_option_runtime` and
+`read_option_runtime_settings` there. The report-only compiler change creates
+no new status key in these dictionaries.
+
+Keep BuildPlan fields `read_option_runtime: bool = False` and
+`qb_spy: bool = False`. Basic, Advanced and Experimental keep both **off**;
+acceptance explicitly selects them after applying the Experimental preset.
+Keep the existing Gameplay Patches rows and NEEDS_IMAGE membership, including
+the read option row supplied through `beta62_options`. Their existing help
+strings already contain **Retail** and **Patch** and retain the controls and
+EXPERIMENTAL / UNWITNESSED label. Build `_option` captions remain:
+
+- `Read option mesh controls (experimental)` (40 characters).
+- `QB spy for zone, man and rush (experimental)` (44 characters).
+
+The existing registry IDs `nfl2k5.gameplay.read_option_runtime` and
+`nfl2k5.gameplay.qb_spy` retain their surfaces and commands. No new registry
+object is needed for an internal final-book resolver.
+
+### Packaging and manifest handoff
+
+Add exactly this line to protected `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_play_intents.py
+```
+
+Add exactly this import to the runtime-closure import list in protected
+`packaging/check_2k5_mod_studio_runtime.py`:
+
+```python
+"mod_editor.core.nfl2k5_play_intents",
+```
+
+The pack, formation/play writer, depth roles, role helpers, library, runtime
+modules and `nfl2k5_playbook_position_recode` already belong to that closure.
+Keep their existing allowlist/import rows. No allocator budget, owner union or
+cave span changes. Claude must regenerate the protected reservation manifest
+after integration, including the already-stale ESPN source pin and the changed
+host compiler/runtime source fingerprints. This branch never refreshes pins
+to make a stale manifest appear current.
+
+### Acceptance and witness boundary
+
+```sh
+python3 tests/mod_editor/test_nfl2k5_play_intents.py
+NFL2K5_PAIRING_REAL_BUILD=1 python3 tests/mod_editor/test_nfl2k5_play_intents_build.py -v
+```
+
+The second command retains the exact patched module in
+`.scratch/read-option-pairing/mod_build.py`, logs disk refusals/receipts, and
+uses a resolved `TemporaryDirectory` for each real image. Its preflight keeps
+100 GB free after two output copies and a 512 MB growth margin. A skipped real
+build is **not** a successful acceptance build. See the pairing report for the
+observed disk refusal and the passing bounded retail-resource/XBE proof.
+
+The shipped `SD Zone Read EXPERIMENTAL` and `SD RPO EXPERIMENTAL` are in **MIN,
+I Jokers**, indices 155 and 157. They are not Shotgun plays. The separate
+existing Shotgun recipes are **MIN, Gun: Doubles Right**, `SD Gun Zone Read`
+(134) and `SD Gun RPO Slant` (31); the new resolver tests also prove these
+through both personnel passes. Do not describe the shipped pack as placing
+its two names in Shotgun. Noah's controls remain hold snap to keep, release
+during the mesh window to give, and a receiver press during the RPO mesh.

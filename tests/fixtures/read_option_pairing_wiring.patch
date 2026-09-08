@@ -1,0 +1,48 @@
+--- a/mod_editor/core/mod_build.py
++++ b/mod_editor/core/mod_build.py
+@@ -1566,11 +1566,28 @@
+         abilities=plan.abilities, qb_spy=plan.qb_spy, calendar_engine=plan.calendar_engine,
+         **tt._r62_space_options(r62), camera=plan.camera)
+     if plan.read_option_runtime or plan.qb_spy:
+-        _verify_play_intents(target, spy_pairs)
++        resolver = _core_module("nfl2k5_play_intents")
++        if resolver is None:
++            raise RuntimeError("The final playbook pairing module is not available in this build")
++        spy_pairs = resolver.resolve_final_pairs(
++            target, spy_pairs, progress=lambda msg: progress(msg, 0, 0))
+     read_table, read_receipt = (tt.read_option_patch.compile_intent_table(spy_pairs)
+                                 if plan.read_option_runtime else (None, None))
++    spy_table, spy_table_receipt = (tt.qb_spy_patch.compile_intent_table(spy_pairs)
++                                    if plan.qb_spy else (None, None))
+     if plan.read_option_runtime and not read_receipt["count"]:
+         raise ValueError("Read option mesh controls need at least one paired authored read recipe")
++    if plan.read_option_runtime or plan.qb_spy:
++        _verify_play_intents(target, spy_pairs)
++        receipt["play_intents_final"] = {
++            **resolver.resolution_receipt(spy_pairs),
++            "read_option_count": read_receipt["count"] if read_receipt else 0,
++            "qb_spy_count": spy_table_receipt["count"] if spy_table_receipt else 0,
++        }
++        counts = receipt["play_intents_final"]
++        receipt["play_intents_summary"] = (
++            f"Final playbooks paired: {counts['read_option_count']} read option plays, "
++            f"{counts['qb_spy_count']} QB spy assignments. EXPERIMENTAL / UNWITNESSED.")
+     if plan.scorebug_runtime:
+         progress("Installing team logos and scorebug effects (unwitnessed)", 0, 0)
+         rec = _core_module("nfl2k5_scorebug_ingame").runtime_apply_in_place(target, with_kickoff=plan.kickoff_relocated,
+@@ -1587,7 +1604,6 @@
+             or plan.reserves_16 or plan.created_teams_extra or plan.defensive_try or plan.zone_drop_cap or plan.all_stadiums or plan.coverage_slider or plan.scramble_tuning
+             or plan.music_shuffle or plan.practice_squad_screen or plan.abilities or plan.qb_spy or plan.calendar_engine or plan.camera or plan.franchise_autosave):
+         progress("Adding experimental extra patch space", 0, 0)
+-        spy_table, spy_table_receipt = (tt.qb_spy_patch.compile_intent_table(spy_pairs) if plan.qb_spy else (None, None))
+         playlist_selection, playlist_preflight = None, None
+         if plan.music_shuffle:
+             playlist = tt.music_playlist_patch
+@@ -1610,6 +1626,7 @@
+         receipt["steps"].append({"step": "xbe_space", **space_receipt,
+                                  **tt._grown_status_fields(patched),
+                                  "read_option_intent_table": read_receipt, "qb_spy_intent_table": spy_table_receipt, "music_shuffle_preflight": playlist_preflight,
++                                 "play_intents_final": receipt.get("play_intents_final"),
+                                  "xbe_space": tt.xbe_space_patch.status(patched),
+                                  "kickoff_relocated": tt.kickoff_relocated_patch.status(patched),
+                                  "kickoff_relocated_settings": tt.kickoff_relocated_patch.read_settings(patched)})

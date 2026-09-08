@@ -60,8 +60,11 @@ def compile_intent_table(compilations=(), *, use_authored_edge=True):
     opponent fixture still validates the legal native condition encoding.
     """
     from .nfl2k5_play_library import compile_read_option_intent_table
+    from .nfl2k5_play_intents import table_compiler_pairs, final_table_receipt
     _require(type(use_authored_edge) is bool, "Expected an authored EDGE policy Boolean")
-    table, receipt = compile_read_option_intent_table(compilations)
+    pairs, final_hashes = table_compiler_pairs(compilations)
+    table, receipt = compile_read_option_intent_table(pairs)
+    final_table_receipt(receipt, final_hashes)
     if use_authored_edge:
         return table, receipt
     rows = []

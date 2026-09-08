@@ -130,6 +130,8 @@ def compile_intent_table(compilations=()) -> tuple[bytes, dict]:
     """
     from . import nfl2k5_playbook_inspector as inspector
     from . import nfl2k5_play_library as library
+    from .nfl2k5_play_intents import table_compiler_pairs, final_table_receipt
+    compilations, final_hashes = table_compiler_pairs(compilations)
     rows, receipts, identities = [], [], {}
     for resource, receipt in compilations:
         _require(isinstance(resource, bytes) and isinstance(receipt, Mapping), "Expected PLAY bytes and compiler receipt")
@@ -170,9 +172,9 @@ def compile_intent_table(compilations=()) -> tuple[bytes, dict]:
     table = HEADER.pack(b"QBS1", 1, len(rows), 0) + b"".join(ordered)
     table = table.ljust(TABLE_SIZE, b"\0")
     validate_intent_table(table)
-    return table, dict(schema=TABLE_SCHEMA, records=sorted(receipts, key=lambda r: r["record"]),
+    return table, final_table_receipt(dict(schema=TABLE_SCHEMA, records=sorted(receipts, key=lambda r: r["record"]),
                        count=len(rows), capacity=MAX_RECORDS, table_sha256=hashlib.sha256(table).hexdigest(),
-                       experimental=True, runtime_witnessed=False)
+                       experimental=True, runtime_witnessed=False), final_hashes)
 
 
 def validate_intent_table(table):
