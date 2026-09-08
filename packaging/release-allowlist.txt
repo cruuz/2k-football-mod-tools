@@ -111,6 +111,7 @@ mod_editor/core/build_feedback.py
 mod_editor/core/image_use.py
 docs/mod_editor/number_sheets.md
 docs/mod_editor/discord_bugs_2_faq.md
+mod_editor/gui/equipment_texture_import_dialog.py
 mod_editor/gui/gameplay_project_ui.py
 docs/mod_editor/discord_bugs_1_faq.md
 mod_editor/gui/scorebug_studio_panel_qt.py
@@ -330,6 +331,7 @@ mod_editor/core/uniform_sharing.py
 mod_editor/core/update_check.py
 mod_editor/data/camera_options_inspection.v1.json
 mod_editor/data/nfl2k5_crib_catalog.v1.json
+mod_editor/data/nfl2k5_equipment_chain_pins.v1.json
 mod_editor/data/nfl2k5_uniform_equipment_export_catalog.v1.json
 mod_editor/data/nfl2k5_gameplay_inspection.v1.json
 mod_editor/data/nfl2k5_main_menu_inspection.v1.json
@@ -482,6 +484,9 @@ mod_editor/core/nfl2k5_catch_slider.py
 mod_editor/core/nfl2k5_disc_identity.py
 mod_editor/core/nfl2k5_draft_ai.py
 mod_editor/core/nfl2k5_edge_rename.py
+mod_editor/core/nfl2k5_equipment_import.py
+mod_editor/core/nfl2k5_equipment_import_intent.py
+mod_editor/core/nfl2k5_equipment_lz.py
 mod_editor/core/nfl2k5_hud_layout.py
 mod_editor/core/nfl2k5_kick_rules.py
 mod_editor/core/nfl2k5_kickoff_returns.py
