@@ -166,6 +166,8 @@ Following Noah's direction to use the modern 2K Sports naming system, the studio
 
 - **The build-ordering test follows the OLB removal.** The explainable-build suite's ordering test stubs the one-pool writer and the roster reclassifier; after the final Outside Linebackers filter pass landed it needed the roster scan stub and now expects the `position_pool_filters` step after `depth_roles`. The local sweep on the ship candidate caught it (one error in 16 tests); the fix is test-only.
 
+- **The CI test jobs get 45 minutes.** The suite reached 495 files with tonight's native frame replays (MyCareer mode 4, read option v3, kickoff v6); Linux finishes in 22 minutes and the Windows runners ran out of the old 30-minute job budget at 471 files with nothing failed, so the job budget is 45 minutes. The per-file 420-second budget is unchanged.
+
 - **Counts.** The capability registry holds 116 rows (78 for NFL 2K5; 83 rows at beta 61), the release allowlist 749 exact files, the unified provider closure 243 pinned modules, the runtime closure 206 product modules and 34 tools, and the reservation manifest 28 extra owners, 10,808 reservations from 125 observed writer calls and 144 pinned source files (manifest 26, regenerated after the last landing on 2026-09-08). The Scorebar page joins the sidebar between MyCareer and Build & Share.
 
 ### What is honestly partial
