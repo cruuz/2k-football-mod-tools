@@ -488,6 +488,64 @@ source/project/save/build/undo/revert/close actions wait for that operation to
 finish; this prevents one panel from changing the game session underneath the
 other. Audio's waveform Cancel remains reachable when Audio owns the lane.
 
+### Music: Add your music
+
+Music is **EXPERIMENTAL / UNWITNESSED**. The editor checks the prepared files;
+Noah still needs to check how they sound in the game.
+
+1. Open your game source, then open **Music > Songs**.
+2. Click **Add songs...** and choose your MP3, M4A, FLAC, OGG or WAV files.
+   You can also drop several files anywhere on the Songs page. Use the original,
+   best-quality copies you have. The editor prepares each whole song and matches
+   its volume to the game's own music. If a converter is missing, install
+   **FFmpeg, including FFprobe**, from **ffmpeg.org/download.html**, then restart
+   Mod Studio. You do not need to convert files yourself.
+3. Find your songs marked **yours**. Double-click a title to rename it or add an
+   optional artist. Click that song's **Play** to hear the prepared sound the
+   game will decode. Read any warning below the list. Use **Remove**, **Move up**
+   and **Move down** to arrange your additions. **Save Music project** keeps your
+   added audio, titles and Playlist choices together; **Open Music project**
+   brings them back, even if you move or delete the original music files.
+4. Open **Playlist** to choose what plays. New songs are checked. Turn on
+   **Shuffle selected songs in menus, Crib and games** if you want that shared
+   music selection. Shuffle can include 100 songs at a time; when it fills up,
+   the newest additions take priority and all other songs stay in your library.
+   You can choose a different selection here. A single import of more than 100
+   new songs checks the newest 100.
+5. Read the line below Songs, such as **“12 of your songs will be added; the
+   game keeps its 66.”** Open **Build & Share** and build a new game copy with
+   **Include my music library** selected. The Music page supplies the prepared
+   files automatically. Songs may be up
+   to 10 minutes each, with 200 songs in this view including the game's 66.
+   Keep your Music project for reopening or sharing your added audio; a normal
+   Studio project's saved Build choices refer to the local prepared files.
+
+**Advanced: edit existing recordings** reveals the existing **Recordings**
+page. Use it when you deliberately want to replace a particular original or
+presentation sound. Its Replace, Restore, Undo, Redo and export tools retain
+those fixed recording lengths. For adding a complete song, use **Add songs...**.
+The advanced **Build music copy** includes added songs and recording replacements;
+use Build & Share to include the shared shuffle and other selected game edits.
+
+#### My song sounds crushed or like an old console
+
+Three common causes are:
+
+- **The supplied copy already lost detail.** An 8-bit conversion, a low sample
+  rate such as 11 kHz, or a tiny MP3 can sound rough. Go back to the original,
+  higher-quality file and add it directly. Converting a poor copy again cannot
+  restore missing detail. The editor warns about these files and still lets
+  you use them.
+- **A complete song was put into Sounds or Recordings.** Some sounds there are
+  short or use a different format. Remove that replacement or use Restore,
+  then add the song with **Music > Songs > Add songs...**.
+- **The original recording is very quiet.** The game's sound compression can
+  add audible hiss to quiet passages. Automatic volume matching helps, but its
+  boost stops at a safe limit. If you see **“This file is very quiet; the game
+  will add hiss. Use a louder copy.”**, find a louder original or adjust the
+  original's level without clipping, then add it again. Listen with **Play**
+  before building.
+
 ### Audio
 
 The Audio tab opens on **All Playable Audio** and has five scopes, so soundtrack

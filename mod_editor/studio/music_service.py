@@ -8,6 +8,7 @@ session batch and preserves unrelated edits. No original audio is transported.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+from contextlib import ExitStack
 import hashlib
 import io
 import json
@@ -19,6 +20,7 @@ import re
 import tempfile
 import threading
 import zipfile
+import uuid
 
 from mod_editor.core import audio_conform, platform_compat
 from mod_editor.core.nfl2k5_audio_catalog import _wav_info, read_entry_range
@@ -26,11 +28,14 @@ from mod_editor.core.nfl2k5_ausb_fixed_slots import (
     encode_strict_pcm16_wav, verify_xbox_ima_stream, decode_xbox_ima_time_block,
 )
 from mod_editor.core.nfl2k5_music_catalog import MusicCatalog
-from mod_editor.core.nfl2k5_music_build import EncodedMusicEdit, build_copy, export_patch
+from mod_editor.core.nfl2k5_music_build import (
+    EncodedMusicEdit, build_copy, export_patch, song_library_recipe, encode_library_song,
+)
 from mod_editor.core.nfl2k5_music_policy import POLICIES
 from .audio_bundle import AudioBundleRow, export_audio_bundle
 
 SCHEMA = "nfl2k5_music_project/v1"
+LIBRARY_PROJECT_SCHEMA = "nfl2k5_music_project/v2"
 ENCODER = "nfl2k5_ausb_fixed_slots/pcm16-v1"
 MAX_PROJECT_BYTES = 2*1024**3
 
@@ -85,9 +90,11 @@ class PreparedMusicBatch:
     token: object
     replacements: tuple
     rows: tuple
+    adopted: bool = False
 
     def close(self):
-        shutil.rmtree(self.directory, ignore_errors=True)
+        if not self.adopted:
+            shutil.rmtree(self.directory, ignore_errors=True)
 
 
 class MusicService:
@@ -99,7 +106,7 @@ class MusicService:
 
     def __init__(self, session, *, lock=None):
         if session.audio_service is None:
-            raise ValueError("Open a game source and prepare its Audio workspace first")
+            raise ValueError("Open a game source to add music")
         self.session = session
         self.audio = session.audio_service
         self.catalog = MusicCatalog(self.audio.catalog)
@@ -113,6 +120,220 @@ class MusicService:
         self._originals = {}
         self._redo = None
         self.policy = {"music_policy": "retail", "music_unlock": False, "music_userlist": False}
+        self._songs = []
+        self._library_recipe = None
+        self.library_playlist = None
+        self._reference_rms = None
+        self._library_state = self.root/"songs.json"
+        if self._library_state.exists():
+            from mod_editor.core.json_stream import read_bounded_regular_file
+            _, payload = read_bounded_regular_file(self._library_state, "Music library", maximum=1024**2)
+            state = json.loads(payload)
+            if state.get("source_sha256") != self.source_identity:
+                raise ValueError("These songs belong to another game source; reopen the Music project.")
+            self._songs = self._validate_songs(state["songs"])
+            self._library_recipe = state["recipe"]
+            if self._library_recipe is not None:
+                self._owned_song_path(self._library_recipe)
+
+    def _owned_song_path(self, value):
+        path = Path(value)
+        if path.is_symlink() or not path.resolve().is_relative_to(self.root):
+            raise ValueError("Music project contains an unsafe audio path")
+        return path.resolve()
+
+    def _validate_songs(self, rows):
+        if not isinstance(rows, list) or len(rows) > 134:
+            raise ValueError("The game can hold 200 songs here, including its 66.")
+        seen = set()
+        for row in rows:
+            if (not isinstance(row, dict) or set(row) != {"id", "title", "artist", "source_name", "wav",
+                    "encoded", "preview", "wav_sha256", "encoded_sha256", "decoded_pcm_sha256", "fit"}
+                    or not isinstance(row["id"], str) or not re.fullmatch(r"[0-9a-f]{32}", row["id"])
+                    or row["id"] in seen):
+                raise ValueError("Music project contains an invalid song")
+            seen.add(row["id"])
+            for key in ("wav", "encoded", "preview"):
+                self._owned_song_path(row[key])
+            for key in ("wav_sha256", "encoded_sha256", "decoded_pcm_sha256"):
+                if not isinstance(row[key], str) or not re.fullmatch(r"[0-9a-f]{64}", row[key]):
+                    raise ValueError("Music project contains an invalid song fingerprint")
+            fit = row["fit"]
+            if (not isinstance(fit, dict) or type(fit.get("seconds")) not in (int, float)
+                    or not 0 < fit["seconds"] <= 600 or not isinstance(fit.get("notes"), list)
+                    or len(fit["notes"]) > 32 or any(not isinstance(n, str) or len(n) > 2000 for n in fit["notes"])
+                    or not isinstance(row["source_name"], str) or len(row["source_name"]) > 4096):
+                raise ValueError("Music project contains an invalid song description")
+            if (set(fit) != {"seconds", "frames", "sample_rate", "bits", "bit_rate", "input_rms", "reference_rms",
+                            "gain_db", "gain_capped", "notes"}
+                    or any(type(fit[k]) is not int or fit[k] < 0 for k in ("frames", "sample_rate", "bits", "bit_rate"))
+                    or not 0 < fit["frames"] <= 600*22050 or abs(fit["seconds"]-fit["frames"]/22050) > 1e-9
+                    or type(fit["gain_capped"]) is not bool
+                    or any(type(fit[k]) not in (int, float) or not math.isfinite(fit[k])
+                           for k in ("input_rms", "reference_rms", "gain_db"))):
+                raise ValueError("Music project contains an invalid song fit")
+        song_library_recipe(rows)
+        return json.loads(json.dumps(rows))
+
+    def library_songs(self):
+        with self.lock:
+            return json.loads(json.dumps(self._songs))
+
+    def library_recipe_path(self):
+        """Signal payload for the existing Build music_library field, or None."""
+        return self._library_recipe
+
+    def _publish_songs(self, rows, *, commit=None):
+        """One atomic manifest publication; recipes are immutable per revision."""
+        rows = self._validate_songs(rows)
+        recipe = self.root/f"library-{uuid.uuid4().hex}.json" if rows else None
+        temporary = self.root/f"songs-{uuid.uuid4().hex}.tmp"
+        rollback = self.root/f"songs-{uuid.uuid4().hex}.rollback"
+        had_state, published = self._library_state.exists(), False
+        try:
+            if had_state:
+                shutil.copyfile(self._library_state, rollback)
+            if recipe:
+                recipe.write_bytes(_json(song_library_recipe(rows)))
+            with temporary.open("xb") as out:
+                out.write(_json(dict(source_sha256=self.source_identity, songs=rows,
+                                     recipe=str(recipe) if recipe else None)))
+                out.flush()
+                os.fsync(out.fileno())
+            os.replace(temporary, self._library_state)
+            published = True
+            if commit:
+                commit()
+        except BaseException:
+            if published:
+                if had_state:
+                    os.replace(rollback, self._library_state)
+                else:
+                    self._library_state.unlink(missing_ok=True)
+            if recipe:
+                recipe.unlink(missing_ok=True)
+            raise
+        finally:
+            temporary.unlink(missing_ok=True)
+            rollback.unlink(missing_ok=True)
+        self._songs, self._library_recipe = rows, str(recipe) if recipe else None
+        self.generation += 1
+
+    def library_reference_rms(self, *, cancelled=None, progress=None):
+        """Median RMS of three original game songs, independent of replacements."""
+        if self._reference_rms is None:
+            import statistics
+            values = []
+            for index in (0, 1, 2):
+                target = self.catalog.get(f"cribmusic:{index}").primary
+                path = self.original_path(target, cancelled=cancelled, progress=progress)
+                value = audio_conform.music_rms(_wav_info(path.read_bytes())[3])
+                if value > 1/32768:
+                    values.append(value)
+            self._reference_rms = statistics.median(values) if values else 0.0
+        return self._reference_rms
+
+    def prepare_songs(self, paths, *, cancelled=None, progress=None):
+        """Stage a whole drop without exposing partially prepared songs."""
+        paths, token = tuple(Path(p) for p in paths), self.token()
+        self._check(token, cancelled)
+        if not paths:
+            raise ValueError("Choose at least one song.")
+        if len(self._songs)+len(paths)+66 > 200:
+            raise ValueError("The game can hold 200 songs here, including its 66; remove a song before adding more.")
+        directory = Path(tempfile.mkdtemp(prefix="songs-", dir=self.root)).resolve()
+        rows = []
+        cancel = lambda: bool(cancelled and cancelled()) or token != self.token()
+        try:
+            baseline = self.library_reference_rms(cancelled=cancel, progress=progress)
+            for number, supplied in enumerate(paths):
+                self._check(token, cancelled)
+                if not audio_conform.is_supported_suffix(supplied):
+                    raise ValueError(f"{supplied.name}: choose a music file.")
+                source = audio_conform._convert_module()._open_source(supplied)
+                def stamp():
+                    stat = source.stat()
+                    return stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns
+                before = stamp()
+                snapshot = directory/("source"+source.suffix.lower())
+                shutil.copyfile(source, snapshot)
+                if stamp() != before:
+                    raise ValueError(f"{supplied.name}: the file changed; add it again.")
+                key = uuid.uuid4().hex
+                wav, encoded, preview = (directory/f"{key}{suffix}" for suffix in (".wav", ".bin", "-preview.wav"))
+                if progress:
+                    progress(f"Adding {number+1} of {len(paths)}: {supplied.name}", number, len(paths))
+                try:
+                    fit = audio_conform.conform_song(snapshot, wav, reference_rms=baseline, cancelled=cancel)
+                    result = encode_library_song(wav, encoded, preview, cancelled=cancel, progress=progress)
+                except ValueError as exc:
+                    raise ValueError(f"{supplied.name}: {exc}") from exc
+                finally:
+                    snapshot.unlink(missing_ok=True)
+                title = "".join(c if ord(c) >= 32 else " " for c in supplied.stem).strip()[:120] or "My song"
+                rows.append(dict(id=key, title=title, artist="", source_name=supplied.name,
+                    wav=str(wav), encoded=str(encoded), preview=str(preview), wav_sha256=sha(wav.read_bytes()),
+                    fit=fit, **result))
+            self._check(token, cancelled)
+            return PreparedMusicBatch(directory, token, (), tuple(rows))
+        except BaseException:
+            shutil.rmtree(directory, ignore_errors=True)
+            raise
+
+    def commit_songs(self, batch, *, cancelled=None):
+        try:
+            with self.lock:
+                self._check(batch.token, cancelled)
+                for row in batch.rows:
+                    self._verify_song(row, cancelled=cancelled)
+                self._publish_songs(self._songs+list(batch.rows))
+                batch.adopted = True
+                return self.library_songs()
+        except BaseException:
+            batch.close()
+            raise
+        # Successful batch directory becomes owned library storage.
+
+    def add_songs(self, paths, **kwargs):
+        return self.commit_songs(self.prepare_songs(paths, **kwargs), cancelled=kwargs.get("cancelled"))
+
+    def _verify_song(self, row, *, cancelled=None):
+        from mod_editor.core.nfl2k5_music_archive import file_hash
+        for key, digest in (("wav", "wav_sha256"), ("encoded", "encoded_sha256")):
+            self._check(cancelled=cancelled)
+            path = self._owned_song_path(row[key])
+            if not path.is_file() or path.stat().st_size > 64*1024**2:
+                raise ValueError("The prepared sound is missing or oversized; add the song again.")
+            if file_hash(path) != row[digest]:
+                raise ValueError(f"{row['title']}: prepared sound changed; add the song again.")
+        path = self._owned_song_path(row["preview"])
+        if not path.is_file() or path.stat().st_size > 64*1024**2:
+            raise ValueError("The prepared preview is missing or oversized; add the song again.")
+        from mod_editor.core.json_stream import read_bounded_regular_file
+        _, payload = read_bounded_regular_file(path, "Song preview", maximum=64*1024**2)
+        if sha(_wav_info(payload)[3]) != row["decoded_pcm_sha256"]:
+            raise ValueError(f"{row['title']}: prepared preview changed; add the song again.")
+
+    def song_playback_path(self, song_id, *, cancelled=None, progress=None):
+        token = self.token()
+        row = next(r for r in self.library_songs() if r["id"] == song_id)
+        self._verify_song(row, cancelled=cancelled)
+        self._check(token, cancelled)
+        return Path(row["preview"])
+
+    def edit_song(self, song_id, *, title=None, artist=None, move=0, remove=False):
+        with self.lock:
+            self._check()
+            rows = self.library_songs()
+            index = next(i for i, r in enumerate(rows) if r["id"] == song_id)
+            row = rows.pop(index)
+            if not remove:
+                if title is not None:
+                    row["title"] = title.strip()
+                if artist is not None:
+                    row["artist"] = artist.strip()
+                rows.insert(max(0, min(len(rows), index+move)), row)
+            self._publish_songs(rows)
 
     @property
     def source_identity(self):
@@ -429,10 +650,36 @@ class MusicService:
     def build_copy(self, source, destination, *, cancelled=None, progress=None):
         token = self.token()
         edits = self.encoded_edits(cancelled=cancelled, progress=progress)
+        if self._songs:
+            from mod_editor.core import nfl2k5_music_banks as banks
+            songs = self.library_songs()
+            for song in songs:
+                self._verify_song(song, cancelled=cancelled)
+            recipe = song_library_recipe(songs)
+            destination = Path(destination).resolve()
+            if destination.exists():
+                raise ValueError("Music output already exists; choose a new copy")
+            def report(stage, done, total):
+                self._check(token, cancelled)
+                if progress:
+                    progress(stage, done, total)
+            with tempfile.TemporaryDirectory(prefix=".songs-build-", dir=destination.parent) as directory:
+                directory = Path(directory).resolve()
+                fixed = directory/"fixed.iso"
+                fixed_receipt = build_copy(source, fixed, edits, progress=report,
+                    cancelled=lambda: bool(cancelled and cancelled()) or self.token() != token, **self.policy)
+                result = directory/"songs.iso"
+                receipt = banks.rebuild(fixed, result, recipe, progress=report)
+                self._check(token, cancelled)
+                platform_compat.publish_no_replace(result, destination)
+            receipt.update(output=str(destination), fixed_music=fixed_receipt)
+            return receipt
         return build_copy(source, destination, edits, progress=progress,
             cancelled=lambda: bool(cancelled and cancelled()) or self.token() != token, **self.policy)
 
     def export_patch(self, source, destination, *, cancelled=None, progress=None):
+        if self._songs:
+            raise ValueError("To share added songs, save a Music project or export your finished build from Build & Share.")
         token = self.token()
         edits = self.encoded_edits(cancelled=cancelled, progress=progress)
         cancel = lambda: bool(cancelled and cancelled()) or self.token() != token
@@ -442,7 +689,7 @@ class MusicService:
             return export_patch(source, built, destination, edits, cancelled=cancel,
                                 progress=progress, **self.policy)
 
-    def save_project(self, destination, *, cancelled=None, progress=None):
+    def save_project(self, destination, *, cancelled=None, progress=None, playlist_options=None):
         """Music subset: exact authored PCM/encoded hashes plus source identity.
 
         Originals are recovered from the recipient's verified selected source.
@@ -450,6 +697,8 @@ class MusicService:
         encoded copy needs to be duplicated in the portable project.
         """
         token, rows = self.token(), []
+        from mod_editor.core import nfl2k5_music_playlist as playlist
+        choices = playlist.copy_options(playlist_options if playlist_options is not None else self.library_playlist)
         destination = Path(destination).expanduser().absolute().resolve()
         with tempfile.TemporaryDirectory(prefix=".music-project-", dir=destination.parent) as folder:
             stage = Path(folder).resolve()/"project.zip"
@@ -481,26 +730,47 @@ class MusicService:
                             "original_sha256": self._original_hashes[target.asset_id]})
                     rows.append({"row_id": row.row_id, "targets": targets,
                                  "metadata": self.metadata(row.row_id)})
-                archive.writestr("music.json", _json({"schema": SCHEMA, "encoder": ENCODER,
-                    "source_sha256": self.source_identity, "policy": self.policy, "rows": rows}))
+                document = {"schema": SCHEMA, "encoder": ENCODER,
+                    "source_sha256": self.source_identity, "policy": self.policy, "rows": rows}
+                if self._songs or choices is not None:
+                    songs = []
+                    for row in self.library_songs():
+                        self._check(token, cancelled)
+                        self._verify_song(row, cancelled=cancelled)
+                        member = f"songs/{row['wav_sha256']}.wav"
+                        if member not in archive.namelist():
+                            from mod_editor.core.json_stream import read_bounded_regular_file
+                            _, payload = read_bounded_regular_file(Path(row["wav"]), "Prepared song", maximum=44+600*22050*4)
+                            if sha(payload) != row["wav_sha256"]:
+                                raise ValueError("The prepared song changed before project export")
+                            archive.writestr(member, payload)
+                        songs.append({k: v for k, v in row.items() if k not in ("wav", "encoded", "preview")})
+                    document.update(schema=LIBRARY_PROJECT_SCHEMA, songs=songs, playlist=choices)
+                if sum(i.file_size for i in archive.infolist()) > MAX_PROJECT_BYTES-1024**2:
+                    raise ValueError("This Music project exceeds the portable project size limit.")
+                archive.writestr("music.json", _json(document))
             self._check(token, cancelled)
             platform_compat.publish_no_replace(stage, destination)
         return destination
 
     def load_project(self, source, *, cancelled=None, progress=None):
         token, replacements, metadata = self.token(), [], []
-        with tempfile.TemporaryDirectory(prefix="project-", dir=self.root) as folder:
+        with tempfile.TemporaryDirectory(prefix="project-", dir=self.root) as folder, ExitStack() as cleanup:
             folder = Path(folder).resolve()
             with zipfile.ZipFile(source, "r") as archive:
                 infos = archive.infolist()
                 names = [info.filename for info in infos]
-                if (len(names) != len(set(names)) or len(names) > 146 or
+                if (len(names) != len(set(names)) or len(names) > 280 or
                     sum(i.file_size for i in infos) > MAX_PROJECT_BYTES or "music.json" not in names or
                     archive.getinfo("music.json").file_size > 1024**2):
                     raise ValueError("Music project is duplicated, oversized or lacks its manifest")
                 document = json.loads(archive.read("music.json"))
-                if (not isinstance(document, dict) or set(document) != {"schema", "encoder", "source_sha256", "policy", "rows"} or
-                        document.get("schema") != SCHEMA or document.get("encoder") != ENCODER or
+                version = document.get("schema") if isinstance(document, dict) else None
+                fields = {"schema", "encoder", "source_sha256", "policy", "rows"}
+                if version == LIBRARY_PROJECT_SCHEMA:
+                    fields |= {"songs", "playlist"}
+                if (not isinstance(document, dict) or set(document) != fields or
+                        version not in (SCHEMA, LIBRARY_PROJECT_SCHEMA) or document.get("encoder") != ENCODER or
                         document.get("source_sha256") != self.source_identity):
                     raise ValueError("Music project needs its original source and supported encoder")
                 policy = document["policy"]
@@ -509,6 +779,37 @@ class MusicService:
                     (policy["music_userlist"] and policy["music_policy"] != "jukebox_menus")):
                     raise ValueError("Music project policy is invalid")
                 used, seen = {"music.json"}, set()
+                songs, choices = [], None
+                if version == LIBRARY_PROJECT_SCHEMA:
+                    from mod_editor.core import nfl2k5_music_playlist as playlist
+                    choices = playlist.copy_options(document["playlist"])
+                    records = document["songs"]
+                    if not isinstance(records, list) or len(records) > 134:
+                        raise ValueError("Music project contains too many songs")
+                    song_dir = Path(tempfile.mkdtemp(prefix="restored-songs-", dir=self.root)).resolve()
+                    cleanup.callback(shutil.rmtree, song_dir, ignore_errors=True)
+                    for number, record in enumerate(records):
+                        self._check(token, cancelled)
+                        if not isinstance(record, dict) or not re.fullmatch(r"[0-9a-f]{64}", str(record.get("wav_sha256", ""))):
+                            raise ValueError("Music project contains an invalid song fingerprint")
+                        member = f"songs/{record['wav_sha256']}.wav"
+                        if not 44 < archive.getinfo(member).file_size <= 44+600*22050*4:
+                            raise ValueError("Music project song is empty or over 10 minutes")
+                        wav, encoded, preview = (song_dir/f"{number}{suffix}" for suffix in (".wav", ".bin", "-preview.wav"))
+                        with archive.open(member) as incoming, wav.open("xb") as out:
+                            shutil.copyfileobj(incoming, out, 1024*1024)
+                        if sha(wav.read_bytes()) != record["wav_sha256"]:
+                            raise ValueError("Music project song fingerprint differs")
+                        import wave
+                        with wave.open(str(wav)) as reader:
+                            if record.get("fit", {}).get("frames") != reader.getnframes():
+                                raise ValueError("Music project song length differs")
+                        result = encode_library_song(wav, encoded, preview, cancelled=cancelled, progress=progress)
+                        if any(record.get(k) != v for k, v in result.items()):
+                            raise ValueError("Music project song encoder outcome differs")
+                        songs.append(dict(record, wav=str(wav), encoded=str(encoded), preview=str(preview)))
+                        used.add(member)
+                    self._validate_songs(songs)
                 if not isinstance(document["rows"], list) or len(document["rows"]) > 86:
                     raise ValueError("Music project rows must be a bounded list")
                 for record in document["rows"]:
@@ -553,11 +854,13 @@ class MusicService:
                 self._check(token, cancelled)
                 changed = [(t,p) for t,p in replacements
                            if p.read_bytes() != self.session.current_audio_path(t).read_bytes()]
-                if changed:
-                    self.session.replace_audio_batch(replacements, label="Open music project")
+                self._publish_songs(songs, commit=(lambda: self.session.replace_audio_batch(
+                    replacements, label="Open music project")) if changed else None)
                 self.policy = dict(policy)
+                self.library_playlist = choices
                 self.generation += 1
                 for value in metadata:
                     self._metadata[tuple(t["wav_sha256"] for t in value["targets"])] = value
                 self._redo = None
-        return len(seen)
+                cleanup.pop_all()  # The validated song files now belong to this session.
+        return len(seen)+len(songs)

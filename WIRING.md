@@ -12722,3 +12722,95 @@ checks. Both XBE composition gates already pass on this branch. The oracle's
 only failure is the brief's expected stale
 `mod_editor/core/nfl2k5_espn25_scenarios.py` reservation pin. The report contains
 Noah's close/distance, clean/dirty, glove and game-memory witness list.
+
+## r64 Music simple: Add songs (2026-09-08)
+
+This is an additive host UI/service change, **EXPERIMENTAL / UNWITNESSED**.
+Apply the exact, reviewable handoff in
+`docs/mod_editor/music_simple_wiring.patch`. It changes only the protected
+`mod_editor/gui/studio_qt.py` and `mod_editor/core/mod_build.py`. The patch was
+checked with `git apply --check` and executed in memory by the standalone
+`tests/mod_editor/test_music_simple_wiring.py`; those protected files were not
+changed in this worktree.
+
+### Studio and Build handoff
+
+- Connect `MusicPanel.library_changed(object)` to the supplied
+  `_music_library_changed(path)` handler. Its payload is the absolute path of
+  an immutable, already prepared `nfl2k5_music_library/v1` JSON recipe, or `None`
+  after the last added song is removed. The handler fills the existing
+  `music_library_field` and checks `music_library_check`, under the existing
+  restore guard, then captures the normal project Build settings. An explicit
+  Add/Remove/Edit action owns this choice; ordinary refresh does not emit it.
+- Retain that path when Music opens before Build, using
+  `_music_library_recipe` in `_capture_music_build_settings`. When Build opens
+  later, replay `MusicPanel.library_recipe_path()` after restoring its saved
+  controls. When a recreated service already has an owned song manifest,
+  replay its recipe through the same handler. Detaching a service with added
+  songs emits `None` to clear its automatic Build path before another source
+  is loaded. All existing changed, policy,
+  playlist, receipt and operation-state signals and public methods are kept.
+- Mount `MusicService` as soon as the session has its catalogued audio service,
+  without waiting for `audio_editing_ready`. Adding fresh library songs does
+  not invoke fixed-replacement fingerprint authorization. Original music reads
+  still use the existing range decoder and IMA validator. Fixed replacements
+  still go through their unchanged source-origin authorizations; if their
+  private inventory has not been prepared, Audio Cues retains that preparation
+  workflow. No authorization check has been removed from an existing writer.
+- `_prepare_music_project` gains an optional `library_result` output list while
+  preserving its encoded-edit tuple return API. A portable v2 Music project
+  contributes its restored library recipe to that list. The outer Build wrapper
+  assigns that recipe to its private `BuildPlan` before `_build`, with all
+  restored song paths kept alive in the existing build TemporaryDirectory.
+  A separate explicit library and a v2 project's own library together refuse
+  with a clear choice, rather than silently dropping either. A v1 project
+  continues through its existing fixed-replacement path.
+- Keep the existing `_build` order: fixed replacements, then the existing
+  library plan/rebuild against the working image, then final installed playlist
+  validation before publication. Do not replay original source-index entries
+  against the untouched input after other patches have changed the working image.
+- The normal `.2k5mod` Build-settings map already accepts `music_library` and
+  preserves its local path. The dedicated **Save Music project** is the portable
+  song container: v2 embeds only prepared authored audio, titles, order, warnings,
+  source identity and Playlist choices. It carries no game audio or host paths.
+  Normal Studio Save retains its existing contract of storing external recipe
+  paths, not embedding arbitrary library inputs. Keep the walkthrough's advice
+  to save a Music project when moving or sharing added audio. Both v1 and v2
+  `.2k5music` remain accepted. The advanced fixed-only patch exporter tells users
+  with additions to share a Music project or export the finished Build & Share
+  output; it cannot silently omit their added songs.
+
+### Required integration inventory
+
+| Integration item | Exact disposition |
+| --- | --- |
+| Dispatcher `_apply_all` tuple and kwarg | No new owner, tuple entry or kwarg. Existing `music_shuffle` and `music_shuffle_selection`, `music_policy`, `music_unlock`, `music_userlist` dispatch stays intact. Songs uses the existing host `music_library` build pass. |
+| Four status dictionaries | No added status key in the original/applied/foreign/unsupported dispatcher maps. Existing `music_library` availability and playlist statuses are reused. |
+| `_selected_space_requests`, `_xbe_space_adapter`, `_grown_status_fields` | No changes, requests, new adapter or grown field. The existing library metadata and playlist owners remain responsible for their bytes. |
+| `BuildPlan` field | Reuse `music_library: str | None = None`; v2 project handoff sets it on the private plan. Reuse `music_project` and `music_shuffle_selection`. No added fields. |
+| Basic / Advanced / Experimental presets | All keep personal libraries unselected. Only adding songs or choosing a saved project/library supplies a personal path. No preset or runtime capacity change. |
+| Gameplay Patches `PATCHES` + `NEEDS_IMAGE` | No new executable patch row. If updating the existing music help, use: `Retail: keep the game's songs. Patch: add your prepared songs when you build a new game copy.` Existing music library/replacement `NEEDS_IMAGE` restrictions stay in force. |
+| Build `_option` caption | Reuse `Include my music library (experimental)` (38 characters, below 60). Existing manual recipe chooser remains usable. |
+| Release allowlist | Existing exact lines already cover `mod_editor/gui/music_panel_qt.py`, `mod_editor/studio/music_service.py`, `mod_editor/core/audio_conform.py`, `mod_editor/core/nfl2k5_music_build.py`, `mod_editor/core/nfl2k5_music_banks.py`, `tools/game_audio_convert.py`, `tools/xbox_ima_encoder.py`, and the getting-started doc. No new product module or allowlist line is required. Screenshots, handoff patch, tests and report are development evidence. |
+| Runtime closure | Existing Music smoke imports `mod_editor.core.nfl2k5_music_build` and `mod_editor.studio.music_service`. Preserve their existing `audio_conform`, `nfl2k5_music_banks`, `nfl2k5_music_archive`, `nfl2k5_ausb_fixed_slots`, `nfl2k5_music_playlist`, `json_stream`, `platform_compat`, `tools.game_audio_convert` and `tools.xbox_ima_encoder` closure. New imports are standard-library `uuid`, `statistics`, `wave`, `array`, `json`, `math`, and `contextlib.ExitStack`; no new dependency. |
+| Capability registry | Reuse `nfl2k5.music.bank_rebuild` on the existing `audio` surface, not a second executable capability. Suggested title: `Add your music (experimental)`. Summary: `Add original music files, check the prepared sound, and keep the game's 66 songs when building a new copy.` Keep runtime status `not-tested`, expose/edit true, default_enabled false and authored-only distribution. Add evidence paths `ASTRA_MUSIC_SIMPLE_REPORT.md`, `tests/mod_editor/test_music_simple.py`, `tests/mod_editor/test_music_simple_qt.py`, `tests/mod_editor/test_music_simple_wiring.py`. Use `backend.command = python3 -m tools.nfl2k5_music_banks --help` and `validation_command = python3 -m tests.mod_editor.test_music_simple` to satisfy dotted-module file checks. Backend module stays `mod_editor/core/nfl2k5_music_banks.py`. |
+| Manifest and executable gates | No owner or byte changes. Do not regenerate the protected reservation JSON for this UI task. The brief's existing stale-reservation-source gate remains an integration issue. |
+
+### Explicit limits to carry into release notes
+
+The simple page keeps the original order of the game's 66 songs and allows
+134 additions, 200 total. Only rows marked **yours** can be renamed, moved or
+removed. The existing advanced library API keeps its own larger bank bounds.
+The existing shuffle runtime stores 100 selected records. New songs get priority
+and are checked by making room in that selection. If a single import adds more
+than 100 songs, its newest 100 are checked; all imported songs remain in the
+library. The UI, walkthrough and report disclose this boundary. Satisfying
+"every newly added song checked" even for a 134-song batch would require changing
+the executable owner, explicitly outside this brief. No hidden capacity increase
+or invalid playlist document is emitted.
+
+Removing songs does not rewrite earlier immutable recipe revisions. Their
+prepared files remain in the session cache so an already captured Build path
+cannot silently acquire different content. Music projects contain only the
+current song list. Existing shared Undo/Redo continues to own fixed replacements;
+added songs use the explicit Remove and Move controls.

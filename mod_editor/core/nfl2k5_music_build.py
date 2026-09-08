@@ -56,6 +56,74 @@ def slot_for_stream(stream):
         stream.sample_rate, stream.frame_count, (), tuple(spans))
 
 
+def song_library_recipe(songs):
+    """Keep the 7 menu and 59 jukebox songs; append at most 134 authored songs.
+
+    Existing BuildPlan.music_library consumes this unchanged v1 recipe. The
+    menu recordings live outside this recipe and remain untouched by rebuild.
+    """
+    songs = tuple(songs)
+    if len(songs)+66 > 200:
+        raise ValueError("The game can hold 200 songs here, including its 66; remove a song before adding more.")
+    tracks = [{"source_index": i} for i in range(59)]
+    for song in songs:
+        title, artist = song["title"], song.get("artist", "")
+        if any(not isinstance(s, str) or len(s) > 120 or any(ord(c) < 32 for c in s)
+               for s in (title, artist)) or not title.strip():
+            raise ValueError("Use a title and optional artist of up to 120 characters, on one line.")
+        row = dict(wav=str(Path(song["wav"]).resolve()), title=title)
+        if artist.strip():
+            row["artist"] = artist
+        tracks.append(row)
+    return dict(schema="nfl2k5_music_library/v1", bank="cribmusic", tracks=tracks)
+
+
+def encode_library_song(source, encoded_path, preview_path, *, cancelled=None, progress=None):
+    """The library writer's exact encoder, chunking and final-frame padding.
+
+    Preview decodes the emitted bytes, never plays the conformed source. Only
+    one encoder chunk is held in memory. No audio process is started here.
+    """
+    import wave
+    from . import nfl2k5_music_banks as banks
+    from .nfl2k5_ausb_fixed_slots import decode_xbox_ima_time_block
+    encoded_hash, decoded_hash = hashlib.sha256(), hashlib.sha256()
+    def check():
+        if cancelled and cancelled():
+            raise ValueError("Music import cancelled; nothing was changed")
+    check()
+    with wave.open(str(source), "rb") as wav, Path(encoded_path).open("xb") as out, \
+            wave.open(str(preview_path), "wb") as preview:
+        frames = wav.getnframes()
+        if (wav.getnchannels(), wav.getsampwidth(), wav.getframerate(), wav.getcomptype()) != (2, 2, 22050, "NONE"):
+            raise ValueError("The prepared song changed; add it again.")
+        if not 0 < frames <= banks.MAX_FRAMES:
+            raise ValueError("Songs must contain sound and be at most 10 minutes.")
+        preview.setparams((2, 2, 22050, (frames+63)//64*64, "NONE", "not compressed"))
+        remaining = frames
+        while remaining:
+            check()
+            count = min(banks.ENCODE_FRAMES, remaining)
+            pcm = wav.readframes(count)
+            if len(pcm) != count*4:
+                raise ValueError("The prepared song is incomplete; add it again.")
+            remaining -= count
+            if not remaining:
+                pcm += pcm[-4:]*((-count) % 64)
+            encoded = banks.encode_stream(pcm, 2)
+            banks._ima_headers(encoded, 2)
+            out.write(encoded)
+            encoded_hash.update(encoded)
+            decoded = b"".join(decode_xbox_ima_time_block(encoded[i:i+72], 2)
+                               for i in range(0, len(encoded), 72))
+            preview.writeframesraw(decoded)
+            decoded_hash.update(decoded)
+            if progress:
+                progress("Preparing the sound you will hear in game", frames-remaining, frames)
+    check()
+    return dict(encoded_sha256=encoded_hash.hexdigest(), decoded_pcm_sha256=decoded_hash.hexdigest())
+
+
 def _plan(disc, edits, *, music_policy="retail", music_unlock=False, music_userlist=False,
           cancelled=None):
     writes, rows, states = [], [], set()
