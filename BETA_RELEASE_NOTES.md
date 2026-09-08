@@ -1,38 +1,79 @@
 # beta-62 — RC86 / alpha.84
 
-**Date:** 2026-09-06
+**Date:** 2026-09-07
 
 **2K5 Mod Studio:** `v1.0-RC86`
 
 **APF 2K8 Mod Studio:** `v0.1.0-alpha.84` (unchanged)
 
-Everything the beta-61 research tables listed as buildable was built, and everything they listed as research-only was
-audited to a verdict. Built by GPT-6 Astra under Claude's review; nothing new has been played unless the changelog says so,
-and every new option is off in every preset unless stated. See the RC86 section of `docs/mod_editor/2k5_mod_studio_changelog.md`
-for the complete list.
+The biggest beta in the series. Everything the beta-61 research tables listed as buildable was built, everything
+they listed as research-only was audited to a verdict, and then a week of corrections followed Noah's own play tests
+and the Discord ledger. Built by GPT-6 Astra under Claude's review; nothing new has been played unless it says so
+below, and every new option is off in every preset unless stated. The RC86 section of
+`docs/mod_editor/2k5_mod_studio_changelog.md` describes every change since beta 60 in full, grouped by area, with a
+commit-by-commit index at the end.
 
 ## New
 
-- Read option and RPO with modern controls: hold the snap button to keep, let go in time to hand off, read the edge rusher (opt-in).
-- MyCareer: a MyPlayer quarterback drafted into a franchise from a signed save (opt-in). Modern 2K names in the game: MyNFL, Play Now, MyPlayer (Experimental preset).
-- Widescreen v3, the static ESPN scorebar v8, and a runtime-scorebug diagnostic instead of a guess at the freeze.
-- Momentum collisions, defensive two-point box score and saved stats, screen timing hooks, QB spy from man and rush, player abilities off-week, Guardian cap overlay, roster arena growth (16 reserves, two more created teams), native Practice Squad screen, shared music shuffle with all named routes, six hi-res texture families, bone and animation import, stadium texture round trips, Rules library and Info tab in Create a Play, 82 Create a Team stadiums, gameplay levers, 128-season calendar.
-- Owned executable space scaled out to 104 KiB of code, 84 KiB of state and 16 KiB read-only; every owner installs in every order.
+- Dynamic kickoff v2 to v5: the hold from each player's own lineup, the receiving team's stance, blocks that take the
+  nearest coverage man, fitted play art (Experimental; witnessed as good on the final disc).
+- Cameras: paired Standard and Far, the new Standard starts every game and practice, throws pull back less (Advanced
+  and Experimental; witnessed).
+- The ESPN scorebar rebuilt to the broadcast reference and then fixed in game as the v3 static bar: live team names,
+  each team's colour on its panel, separate clock cells, the middle stays through the play (Experimental; witnessed).
+  Scorebar Studio, a new page that paints your own bar with plain controls and hands the folder to Build.
+- Franchise Auto Save: the First Person Football setting rows become Auto Save; save once by hand, then every completed
+  game saves on the return to the Coach's Desk (Advanced and Experimental, switch starts Off; witnessed).
+- MyCareer at any of the 17 positions, launched from the Game Modes row (opt-in). Modern 2K names in the game: MyNFL,
+  Play Now, MyPlayer (Experimental; MyNFL witnessed).
+- The empty Outside Linebackers group is removed after a complete roster scan (Advanced and Experimental), with a
+  "Keep Outside Linebackers for existing saves" switch for old and custom saves.
+- ESPN 25th Anniversary: a Rosters subtab edits the historic roster behind each moment and the moment setup, applied
+  with "Use saved ESPN Anniversary edits" (opt-in); "Historic moments: real rosters" fills the 35 historic files with
+  real season names from nflverse (opt-in).
+- Read option and RPO with modern controls: hold the snap button to keep, let go in time to hand off, read the edge
+  rusher (opt-in).
+- Widescreen v3, momentum collisions, defensive two-point box score and saved stats, screen timing hooks, QB spy from
+  man and rush, player abilities with an off week, Guardian cap overlay, roster arena growth (16 reserves, two more
+  created teams), native Practice Squad screen, shared music shuffle, six hi-res texture families, bone and animation
+  import, stadium texture round trips, Rules library and Info tab in Create a Play, 82 Create a Team stadiums, gameplay
+  levers, the 128-season calendar (Experimental).
+- Owned executable space scaled out to 104 KiB of code, 84 KiB of state and 16 KiB read-only; every owner installs in
+  every order.
 
 ## Fixed
 
-- Franchise Practice quits to the Coach's Desk instead of the main menu (second attempt; witnessed).
+- Franchise Practice quits to the Coach's Desk instead of the main menu (second correction; witnessed).
+- Team Kit bundles import into any project, with a receipt of imported, skipped and overwritten components; a 351-edit
+  project saves in a tenth of a second instead of 23 seconds.
+- Number sheets: a layout chooser for the four 0-9 arrangements, smaller digit textures built as true coverage averages
+  instead of blocky steps, and an encoded preview of every digit before anything is staged.
+- Ten editor bugs from the Discord ledger: the updater no longer says "Update available" after updating, Gameplay
+  Patches and Build stay in sync and a project keeps its gameplay choices, an unchanged copy says "No changes written",
+  Make disc and Check my images work for gameplay-only builds, a modded image no longer shows stock art from a stale
+  cache, the first-name limit is explained, portrait selectors are confirmed in Rosters, the wrong xemu binary is
+  refused with a message, Photoshop PNG variants are accepted and DDS is refused with advice.
+- A build checks its destination before any expensive work and refuses to replace an image another program holds open.
+- A preset pressed right after inspecting a disc is no longer wiped by the project restore.
 - The Franchise schedule lists every playoff game and lets you edit dates and kickoff times before the teams are known.
 - The experimental patch pack exports again (chained growth of two files).
+- The Crib movie cut and the animation import ask for the real scratch bytes plus a margin, not 100 GiB.
 - Rosters: exact undo on play-style buckets; the scramble parity toggle says what it does.
 
-## First witnesses
+## Witnessed by Noah (2026-09-07, xemu, Experimental preset discs)
 
-- MyNFL shows in game. Free Practice in Franchise quits to the Coach's Desk after the second correction. Dynamic kickoff: a touchback near the 1, a returner frozen from the previous play, weak return blocking. Kickoff play art misplaced under widescreen. Every opt-in at once hangs at the SEGA screen (preset alone boots; bisect in progress).
+- MyNFL in the game; Free Practice in Franchise quits to the Coach's Desk; the kickoff good after v5 (open: a kick
+  caught in the end zone shows no kneel while commentary calls a return); both cameras, with the new Standard as the
+  default; the v3 scorebar good (open: the rim is red on the right and silver on the left); Franchise Auto Save saving
+  on the return to the Coach's Desk. Every opt-in at once still hangs at the SEGA screen (the preset alone boots; the
+  bisect order is in the changelog). Everything else in this beta is unwitnessed.
 
 ## Not in this release
 
-- Senior Bowl simulation (preparation page only), franchise 2026 roster rules enforcement, deep-zone corner facing and bail, 7-on-7, a root cause for the runtime scorebug freeze, any hi-res memory-fit guarantee, the community Blender stadium add-ons (audited and withheld).
+- Senior Bowl simulation (preparation page only), franchise 2026 roster rules enforcement, MyCareer created inside the
+  game (designed, native prerequisites proved, art authored, not built), deep-zone corner facing and bail, 7-on-7, a
+  root cause for the runtime scorebug freeze (probe matrix reduced to two profiles), more than 25 Anniversary moments,
+  any hi-res memory-fit guarantee, the community Blender stadium add-ons (audited and withheld).
 
 # beta-61 — RC85 / alpha.84
 
@@ -110,10 +151,6 @@ Nothing was removed, only folded away.
   the reviewed H7A encoder refuse itself silently); the encoder now says why when it is refused.
 - The overall-rating estimate on ★ Rosters was a flat average for EDGE and LB under one pool.
 
-## First witnesses
-
-- MyNFL shows in game. Free Practice in Franchise quits to the Coach's Desk after the second correction. Dynamic kickoff: a touchback near the 1, a returner frozen from the previous play, weak return blocking. Kickoff play art misplaced under widescreen. Every opt-in at once hangs at the SEGA screen (preset alone boots; bisect in progress).
-
 ## Not in this release
 
 7-on-7 practice stays hidden. The in-game checklists for every experimental patch are in the
@@ -157,10 +194,6 @@ and the three audible slots.
   retail name so one group shows.
 - TEAM column: rows the history data did not cover now show the player's 2004 club (logged as
   inferred); only folded rows and 2004 free agents show "--".
-
-## First witnesses
-
-- MyNFL shows in game. Free Practice in Franchise quits to the Coach's Desk after the second correction. Dynamic kickoff: a touchback near the 1, a returner frozen from the previous play, weak return blocking. Kickoff play art misplaced under widescreen. Every opt-in at once hangs at the SEGA screen (preset alone boots; bisect in progress).
 
 ## Not in this release
 
@@ -207,10 +240,6 @@ roster-editor phase 2. Everything new is unwitnessed in game unless a tester say
 - Build & Share left the texture-project buttons greyed after a build and Launch Latest Build did
   not know about the copy; both fixed. Help gains Join the Discord.
 
-## First witnesses
-
-- MyNFL shows in game. Free Practice in Franchise quits to the Coach's Desk after the second correction. Dynamic kickoff: a touchback near the 1, a returner frozen from the previous play, weak return blocking. Kickoff play art misplaced under widescreen. Every opt-in at once hangs at the SEGA screen (preset alone boots; bisect in progress).
-
 ## Not in this release
 
 7-on-7 practice is built but hidden until it is witnessed through a snap. The SOFTDRINK patch
@@ -256,10 +285,6 @@ and EXPERIMENTAL presets. Unwitnessed in game so far; please report what you see
   it. On xemu with the Complex BIOS the old discs boot regardless; this closes the risk elsewhere.
 - A disc save name typed without an extension produced a file xemu's picker could not see. A bare
   name now gets `.xiso.iso`.
-
-## First witnesses
-
-- MyNFL shows in game. Free Practice in Franchise quits to the Coach's Desk after the second correction. Dynamic kickoff: a touchback near the 1, a returner frozen from the previous play, weak return blocking. Kickoff play art misplaced under widescreen. Every opt-in at once hangs at the SEGA screen (preset alone boots; bisect in progress).
 
 ## Not in this release
 

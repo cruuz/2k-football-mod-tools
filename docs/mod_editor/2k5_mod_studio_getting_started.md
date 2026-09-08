@@ -1173,7 +1173,8 @@ In a build, the roster-edits step runs **last** of the roster passes, so the sta
 history, the modern prospect names and the one-pool positions all survive it. Unwitnessed in game.
 
 **Franchise saves (Beta 60).** Open a franchise save and the page grows a second tab, **Franchise**,
-beside **Roster** — the half of Finn's editor the studio lacked, in our words. **Overview** has the
+beside **Roster**. Flying Finn's editor already turned into a franchise editor when you loaded a
+franchise save; this is the studio's version of that page, which it did not have before. **Overview** has the
 season year (the game stores `year − 2004`; the rule is printed next to the box), the stage and week
 read-only, a checkable list of the user-controlled teams, the salary cap in millions with the raw
 $1000-unit value the game keeps, and every team's salary against the cap. **Schedule** shows the
@@ -1283,10 +1284,11 @@ one of the three preset buttons: **Basic** keeps the game in 2004 and ticks only
 the 2K5 fixes (throw ceiling 80 with realistic flight, real Catching and
 Interception sliders, draft and free-agency AI, real returners, kicking power);
 **Advanced** adds everything that modernises the game (EDGE, modern kicking and
-overtime, acceleration, progression, arc by distance, the ESPN scorebug, scheme
-labels, one-pool positions, the Far-look camera, the 2026 franchise);
-**Experimental** adds widescreen hor+ (set xemu's Display aspect to 16x9) and the
-dynamic-kickoff line-up. Untick anything you do not want, choose where the
+overtime, acceleration, progression, arc by distance, scheme
+labels, one-pool positions, the paired Standard and Far cameras with the new Standard as the
+default, Franchise Auto Save, the 2026 franchise);
+**Experimental** adds widescreen hor+ (set xemu's Display aspect to 16x9), the
+dynamic-kickoff line-up and the ESPN scorebar. Untick anything you do not want, choose where the
 patched **copy** goes, and Build. The original is never touched; a receipt is
 written beside the copy. The **Share** tab turns that copy into a `.2k5patch`
 file anyone can check and apply to their own image.
@@ -1307,9 +1309,9 @@ free-agency, trade and scouting screens each own a fixed position-filter list wi
 roster code, and beta 58 renamed both linebacker rows "Linebackers", which is why those screens
 listed "Linebackers" twice in a row. Only the real LB code is renamed now, so each screen shows
 one "Linebackers" row; the retired "Outside Linebackers" row is still there and lists nobody,
-the same way "Fullbacks" lists nobody on a team without one. (A row cannot be removed: the lists
-have no count word and abut each other in the executable, so dropping one would mean moving
-every following record and could only be proved by playing the game.) If you import a roster
+the same way "Fullbacks" lists nobody on a team without one. (That was the RC83 understanding;
+RC86 removes the empty row after a complete roster scan, see "Merge positions and remove the
+empty OLB group" below.) If you import a roster
 that still carries OLB players, they show up under "Outside Linebackers" with the OLB badge
 instead of hiding inside a second "Linebackers".
 
@@ -1326,8 +1328,10 @@ shows the season-end team. Saves stay
 loadable with or without the patch. Unwitnessed in game so far: it is executed under
 an emulator in the test suite, so please report what you see.
 
-**The ESPN scorebug** (Build tab and Presentation, ADVANCED and EXPERIMENTAL; disc images
-only): one horizontal ESPN-style bar at the bottom centre that never swaps sides — ESPN mark,
+**The ESPN scorebug** (Build tab and Presentation, EXPERIMENTAL only since RC85; disc images
+only; RC86 replaces this bar with the v3 static bar and adds Scorebar Studio, both described
+below, so the rest of this paragraph is the RC83 history): one horizontal ESPN-style bar at
+the bottom centre that never swaps sides — ESPN mark,
 both abbreviations and scores, down & distance, quarter, clock, play clock — replacing the
 retail two-row bug, its drive-direction side swap and the drop-box animations. It is built
 entirely from your own disc: the retail scorebug scene and the frame, mark and digit atlases
@@ -1392,10 +1396,118 @@ whether a drafted Smith is called by name and a drafted Diggs by number.
 
 ## Beta-62 owner integration 3
 
-All new gameplay experiments remain unwitnessed. Build exposes weight/speed collisions independently of movement, paired read-option controls, a second screen-pass experiment, Guardian overlays, MyCareer setup, a Crib movie cut, 16 reserves and two extra created teams. All are off in every preset. The scorebug effects option is also off in every preset; the static v8 bar remains in Experimental. Diagnostic scorebug probes are CLI-only.
+All new gameplay experiments remain unwitnessed. Build exposes weight/speed collisions independently of movement, paired read-option controls, a second screen-pass experiment, Guardian overlays, MyCareer setup, a Crib movie cut, 16 reserves and two extra created teams. All are off in every preset. The scorebug effects option is also off in every preset; the static bar (v3 in RC86, see below) remains in Experimental. Diagnostic scorebug probes are CLI-only.
 
-Create a Play now includes an Info reference; the wizard retains its Rules page. Gameplay includes Senior Bowl preparation, with native simulation disabled. The 2026 franchise rules option remains unavailable until its owner supports saved counters and native player outcomes. MyCareer prepares a created quarterback called MyPlayer and supplies the paired setup to Build. Larger roster saves require the matching disc and an explicit signed-copy migration on Rosters; no team automatically receives a seventeenth reserve.
+Create a Play now includes an Info reference; the wizard retains its Rules page. Gameplay includes Senior Bowl preparation, with native simulation disabled. The 2026 franchise rules option remains unavailable until its owner supports saved counters and native player outcomes. MyCareer prepares a created player called MyPlayer at any of the 17 positions and supplies the paired setup to Build. Larger roster saves require the matching disc and an explicit signed-copy migration on Rosters; no team automatically receives a seventeenth reserve.
 
 [Modern mode names](modern_2k_mode_names.md) previews Play Now, MyNFL and MyPlayer in Game Text. The checkbox shares the source binding with Build, and Experimental enables it only when every current manifest span fits. Use the original source to restore retail names. [Animation import](nfl2k5_animation_import.md) exposes the bounded clip and limb workflows. [Stadium Blender textures](nfl2k5_stadium_blender_workflow.md) exports PNG textures with UV coordinates and stages only changed pixels; it does not import changed UVs or geometry.
 
 Hi-res Build has six selectable families. Its worker checks the modeled texture cost before encoding and disc copying, and rejects stale replies after a folder or selection changes. A result below the ceiling does not prove whole-game fit; headroom is unknown. The 128 MiB target remains disabled because the game limits texture addresses to the first 64 MiB.
+
+## Scorebar Studio (RC86)
+
+**Scorebar** is a new page in the sidebar, between MyCareer and Build & Share, for the people who asked
+for an easy scorebug editor. The game's bar is one small picture cut into eight fixed cells; this page
+paints those cells and the game draws everything else (team names, scores, down and distance, quarter,
+clock and play clock in its own fonts, the team with the ball in yellow). Pick a preset on the right
+(**Reference (v10)**, the **Fable ESPN template**, **Plain dark**, or **Retail-like**, an approximation
+from colours alone), press **Start from this preset**, then click a part on the left and use **Colour**,
+**Blend two or three colours**, **Corner rounding**, **Draw a border** and **Opacity**, or **Use my
+image...** to fit your own picture into the part. The preview updates at once, at 4:3 or 16:9, in four
+sample states, and the line under it counts the colours against the limit and estimates the game's
+2,400-byte slot; undo and redo work on every step. **Save folder...** writes a complete template folder
+(the same format the Build tab's scorebar folder field takes), **Open folder...** reads one back
+losslessly, and **Use in Build** fills that field for you; you still tick **Experimental ESPN scorebar**
+on the Build tab and build a disc copy. Limits, stated on the page: one bar for every team (team colours
+are preview only), no live fonts, cells or timeout marks, and nothing painted here has been seen in a game
+yet. The two-minute guide with pictures is `docs/mod_editor/scorebug_studio.md`.
+
+## Rosters > ESPN Anniversary, and "Use saved ESPN Anniversary edits" (RC86)
+
+The 25 ESPN 25th Anniversary moments do not use the live teams: each side loads one of 35 shared historic
+roster files on the disc (53 players each), matched by team name and year. Open a game disc (an Xbox save
+has no scenarios) and **★ Rosters** grows an **ESPN Anniversary** subtab: pick a moment and a side, read
+which historic file it loads and which other moments share it, tick the acknowledgement that every use of
+that historic roster will change, then edit the 53 players in the grid, **Import roster CSV** in the
+Rosters format (**Export roster CSV** gives you a starting file), or paste scenario edits (scores, clock,
+field position, sides, conditions) as JSON in the box. **Save build edits** validates the plan and writes
+it; on the Build tab tick **Use saved ESPN Anniversary edits** and choose that plan. It runs last, after
+every other resource pass, refuses a plan whose source bytes no longer match the disc, and cannot be
+combined with the merged position pools or the roster arena growth. Editing a historic roster changes that
+team wherever the game uses it, not only in that moment. More than 25 moments is research only and is
+refused. Never part of a preset; unwitnessed in game.
+
+## Historic moments: real rosters (RC86)
+
+**Historic moments: real rosters** (Build tab and Gameplay Patches; disc images only; off in every
+preset) fills the 35 shared historic roster files with 53 real names each from the nflverse season
+rosters (1960 to 2004, CC-BY), keeping every retail slot's position, ratings and appearance. It is not the
+exact game-day lineup: the source has no starters or depth order, 105 slots are filled from neighbouring
+seasons, 1,173 jersey numbers are unknown for their year, and 12 moments share a file with a moment from
+another season, so the file carries one season. The report lists every approximation per moment. It needs
+the retail position layout (it refuses the merged position pools) and cannot be combined with a saved
+Anniversary plan in the same build. Unwitnessed in game.
+
+## Team Kit import into another project, and the receipt (RC86)
+
+A Team Kit bundle exported from one project now imports into another project made from the same source.
+The importer decides per component: a PNG that still equals its export baseline is skipped and never
+overwrites an edit already in your project (a number sheet, another style's jersey); a PNG you changed is
+imported, and if your project already had a different edit in that slot the import goes through and says
+so. Choose the matching team, style and sides in Team Kit before importing. Under the private-export
+warning the page keeps a receipt of the last import (imported, skipped unchanged, overwritten), the status
+line repeats it, and the dialog's **Details** list every component by set, group and label. Bad bundles
+(wrong team or style, missing or duplicate files, wrong size or format) still refuse before anything
+changes. Big projects save fast again: a 351-edit save takes a tenth of a second instead of 23 seconds.
+On an older build, export a fresh bundle from the main project, copy your edited PNGs over it and import
+that.
+
+## Number-sheet preview (RC86)
+
+**Import number sheet 0-9...** now asks two questions: the digit family (jersey, helmet, arm and
+shoulder) and the sheet layout (one row, one column, five columns by two rows, or two columns by five
+rows; digits 0 to 9 read left to right, then top to bottom, in ten equal cells). Before anything is
+staged, the **Number sheet: encoded game preview** dialog shows every digit exactly as the game will
+store it, at jersey size on light and dark backgrounds, with the size notes; **Import all ten digits**
+imports, Cancel stages nothing. The smaller textures are now true coverage averages that share one
+palette with the outline colours kept, so thin outlines no longer come out as stair steps; the game still
+adds lighting and picks detail by camera distance, so in-game placement needs a witness. Layout, padding
+and transparency rules are in `docs/mod_editor/number_sheets.md`.
+
+## Franchise Auto Save (RC86)
+
+**Franchise Auto Save (experimental)** (Build tab and Gameplay Patches; on in Advanced and Experimental,
+off in Basic) turns the First Person Football rows in Franchise setup and in Coach's Desk > Options >
+Franchise Options into an **Auto Save** switch, Off or On, starting Off. Save or load the franchise once
+by hand so the game knows the slot; then, with the switch On, every completed played or simulated game
+saves to that slot through the game's own save screen when you return to the Coach's Desk, one attempt
+per result, with the game's own progress and error dialogs and a notice if the slot is gone. The setting
+lives in the save's old First Person Football word, so saves keep their size and signing. Noah saw it save
+on the return to the Coach's Desk on one disc; long sessions and a lost destination are untested.
+
+## Merge positions and remove the empty OLB group (RC86)
+
+The one-pool positions option is now called **Merge positions and remove the empty OLB group** (Build tab;
+on in Advanced and Experimental). It still creates the EDGE, interior-line and linebacker pools, and after
+the last roster writer it scans every roster on the disc: only a complete scan proving no outside
+linebacker remains removes the empty "Outside Linebackers" group from the roster, draft, free-agency,
+trade and scouting screens; any player still carrying the position keeps his group, and Fullbacks and
+every other group are unchanged. If you will load an older or custom roster or franchise save on the
+disc, also tick **Keep Outside Linebackers for existing saves** (off in every preset) so those players
+stay selectable. The build receipt says which happened. Unwitnessed in game.
+
+## MyCareer: create MyPlayer, then play him in the game (RC86)
+
+What ships: the **MyCareer** page (below the categories) creates MyPlayer from a signed Franchise save at
+the NFL Draft. Choose the save, a first and last name, a position (any of the 17; C, G, T, DT and DE take
+the generated prospect ratings, the others one of that position's three retail templates), the controller,
+a Standard or Far camera, optionally **Lock MyPlayer as a starter at his first club**, and an output
+folder, then press **Create MyPlayer**. It writes a signed `MyCareer.zip`, its JSON and a receipt; tick
+**MyCareer (experimental)** on the Build tab and point it at that setup (an older setup without a position
+is refused with a message to create MyPlayer again). In the built game, MyCareer sits on the Game Modes
+row where First Person Football was and opens the native Load and Save screen; a build without a setup
+only explains itself. The CPU calls plays, snaps and kicks and manages the club; input stays on MyPlayer's
+body. Off in every preset and nothing has been booted. What does not ship yet: creating MyPlayer from
+inside the game, the apartment hub and the career save. That mode is designed, its native prerequisites
+are proved and its hub art is authored, and the Build caption "MyCareer: create MyPlayer in the game" is
+reserved for it; until it lands, the studio page above is the only way in.
