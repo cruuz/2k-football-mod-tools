@@ -1,8 +1,18 @@
 # 2K5 Mod Studio — v1.0 RC87 Release Status
 
-## Beta 63 (RC87, in progress 2026-09-08) — the wave-5 landings
+## Beta 63 (RC87, 2026-09-08) — the last 2K5 beta before APF 2K8
 
-Source/UI versions are **2K5 RC87** and **APF alpha.84**. Section written at ship time from the RC87 changelog.
+Source/UI versions are **2K5 RC87** and **APF alpha.84**.
+
+- Fourteen wave-5 Astra sessions landed under Claude's review: read option v5 (identity by the loaded book, native
+  give/keep/pitch/RPO controls), close pursuit recovery (the circling defender), Franchise Edit Player, CPU fourth downs
+  and first downs (Retail/Modern/Aggressive), Weekly Preparation (safety drills, CPU prep, remembered plans), separate
+  offensive and defensive playbooks (game-only; refuses with read option/QB spy), match coverage census and pack,
+  abilities rules v2 with move locks and a Rosters Abilities page, Broadcast camera, deep-zone corner tiers, 7-on-7 v2
+  released as an opt-in, plus research holds (throws to backs, Franchise 2026 runtime). Corrections from the beta-62
+  play tests: MyCareer mode 5, ESPN 25 team-reuse repair (in-game option refuses), read option v4 diagnostic, the
+  fresh-rip Stadium Studio cache fix (also the beta-62 hotfix). Every new option is experimental and off or Retail in
+  every preset; nothing new is witnessed. See the RC87 changelog section.
 
 ## Beta 62 (RC86, 2026-09-06) — the whole wave-2 backlog, wired
 

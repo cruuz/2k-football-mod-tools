@@ -1,5 +1,267 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC87, the last 2K5 beta before APF 2K8: read option v5, Franchise Edit Player, CPU fourth downs, weekly preparation, separate playbooks, match coverage, abilities rules v2 with move locks, close pursuit recovery, Broadcast camera, deep-zone tiers, 7-on-7 v2, MyCareer draft and the fresh-rip fix (2026-09-08)
+
+Beta 63 was built by GPT-6 Astra under Claude's review in one wave of fourteen bounded sessions plus the four
+correction sessions that followed beta 62's play tests, each landed on the stack by Claude with the protected
+wiring (dispatcher, BuildPlan, presets, Gameplay Patches and Build rows, packaging, capability registry and count
+pins) done by hand and every union merged three ways. Every executable owner passed the retail byte pins, both
+executable safety gates composed with every owner in both installation orders, the pairwise composition matrix and
+the reservation manifest regenerated once from the retail executable and disc after the last landing. Nothing in this
+section has been played in xemu or on a console unless it says so: Noah's witnesses are listed first and everything
+else is unwitnessed. Every new option is labelled experimental and defaults to off or retail in every preset unless
+stated, and every entry names its Build option and its presets. This is Noah's ledger for the beta: it covers every
+commit on the stack since beta 62, grouped by area, with a commit index at the end.
+
+### Noah's witnesses (2026-09-08, xemu, discs bn and bo, beta 62 stack plus the first beta 63 fixes)
+
+- **Read option v4 diagnostic (disc bo).** After the snap the top left of the screen showed `READ miss 48`, the
+  quarterback no longer took off on his own, and there was still no handoff: the RPO played as a play-action pass.
+  That single line settled two things. The hooks run on a real play (the diagnostic text is drawn by the patch), and
+  the paired lookup was keyed by the wrong number: the authored plays were paired as resource 155 (Zone Read) and
+  157 (RPO) while the live lookup produced 48. Read option v5 below is the answer.
+- **ESPN 25th Anniversary rosters (disc bn).** The Ice Bowl put a number 14 at quarterback for the Packers instead
+  of Bart Starr's 15; Wide Right showed two Cowboys teams; MyCareer menu rows appeared doubled; the RPOs played the
+  same as before. The scorebug was solid and the kickoff was fine. The duplicate-Cowboys defect is root-caused and
+  repaired below; the number 14 and the loading loop were not reproduced and the in-game option now refuses.
+- **The DB circling bug.** Noah asked for it in this beta by name. The close pursuit recovery below is the reproduced
+  orbit fixed on native code; his exact man-coverage circle is not confirmed to be the same defect.
+
+### Gameplay
+
+- **Read option v5: the paired play is found by the loaded book, not by a menu number (same "Read option mesh
+  controls (experimental)" option, `read_option_runtime`, off in every preset, same 2,048 RX / 256 RW / 88 RO
+  reservation and two-record table).** Noah's `READ miss 48` was the clue. On disc bo the gameplay loader keeps Zone
+  Read at resource 155 and RPO at 157, and 48 is PA Z Slant, so the old number could not have been the selected play.
+  Proved by executing the real gameplay loader `0xE0D90`, the native menu accessor `0xE13F0` (zero-based entries 6, 7
+  and 10 of bo's I Jokers menu select 155, 157 and 48) and the assignment selector `0x1CEAC0`: none of them turns 155
+  into 48. The v4 diagnostic itself was the weak link: its buffer-relative lookup stored its quotient into the
+  displayed number before the caller checked the snapping quarterback, so a later lookup for another slot-zero actor
+  could overwrite the field with 48 while the recorded quarterback was unchanged. v5 resolves the paired resource from
+  the loaded team book's play pointer and fingerprints (`identity_model=loaded_team_book_fingerprints/v5`), refuses
+  duplicate live fingerprints when compiling the table, and installs native give, keep, pitch and RPO controls:
+  do nothing and the quarterback gives; Xbox Black pulls and pitches; release A after the snap and press A again to
+  pull and keep; X or the named receiver pulls and passes on an RPO. Cancellation stays open until the native
+  exchange event, including a delayed mesh past one second (the one-second interval Noah saw is the CPU read's
+  fallback deadline). v5 waits through native snap reception before starting the give or take; the diagnostic variant
+  shows `READ <resource> snap` during that interval and `pend` when the quarterback has the ball. The diagnostic
+  defaults CPU reads to give; the normal variant keeps the CPU edge read. The recipe pack is 1.0.2. Old v1 to v4
+  executables must be rebuilt from the supported base. 458 tests, both gates, the pairwise matrix. The exact runtime
+  state that produced the live 48 is not recoverable from a screenshot and is documented as unproved. Witness list in
+  `ASTRA_READ_OPTION_V5_REPORT.md`.
+- **Close pursuit recovery, the circling defender (Build: "Close pursuit recovery (experimental)",
+  `coverage_trail`, off in every preset).** In the bounded native pursuit replay a defender at full throttle with a
+  capped turn radius is carried past a close opponent again and again because the close-pursuit branch never brakes on
+  arrival: he orbits. The owner is one six-byte hook at `0x2FC9F0` (pinned `8b510cd94210`, returning to `0x2FC9F6`)
+  into a 520-byte routine in a 640-byte RX reservation, zero RW, zero RO. It removes the reproduced orbit and improves
+  stationary arrival in the supplied man fixtures; the crossing fixture shows an early separation cost that the report
+  documents rather than hides. A 5,760-frame numerical receipt, native and integrity suites, and a frame fixture on the
+  kickoff skeleton harness. Noah's full man-coverage circle is not confirmed to be this defect, which is why the option
+  is off in every preset. `ASTRA_DEFENDER_CIRCLING_REPORT.md`.
+- **CPU fourth downs and first downs (Build: "CPU fourth downs and first downs (experimental)", `cpu_money_downs`,
+  Retail / Modern / Aggressive; retail in every preset).** Retail already reads distance to the marker: the category
+  decision `0x20B180` asks the field-goal routine `0x20AF80` and the punt routine `0x209CA0` first, and the punt routine
+  is conservative (own half punts, beyond midfield more than a yard commonly punts) with late, score, timeout and
+  range exceptions. The patch adds a measured fourth-down policy for CPU offenses only in ordinary phase 4 and
+  regulation quarters: own 20 to 40 goes on 1 yard (Aggressive 2), 40 to 60 on 2 (3), 60 to 80 on 3 (5), 80 to 100 on 2
+  (3); below the own 20 retail decides; the final 30 seconds of the first half and the final two minutes of a
+  one-score fourth quarter stay retail; late leads subtract a yard, late deficits add up to four; overtime and
+  anything odd delegates to retail. When the policy accepts, the hook enters the native ordinary-offense category
+  generator; when it declines, it replays the displaced instruction. Replays of the real decision instructions: own 50
+  and 2 in the second quarter went from punt to offense, opponent 30 and 2 from field goal to offense, own 30 and 7
+  stayed a punt, opponent 20 and 2 down three with 100 seconds stayed a field goal. The passing change intercepts the
+  play's native score at `0x20980D` on CPU third and fourth downs and multiplies it by 1.5 (Modern) or 2 (Aggressive)
+  only when the supported primary route reaches the marker, judged from the loaded PLAY buffers with a conservative
+  classifier (explicit first read, one straight leg, at most one terminal break; screens and multi-break routes keep
+  retail weights). On the ARI formation-8 sample with 256 seeds the primary reaching a 3-yard marker went from 47% to
+  75% (Modern) and 88% (Aggressive), a 12-yard marker from 24% to 51% and 71%. 2,048 RX bytes, 17 hook bytes, no RO
+  or RW. Build and Gameplay show a level combo beside the checkbox (checking selects Modern, unchecking returns to
+  Retail); an executable with a different installed level refuses. `ASTRA_CPU_MONEY_DOWNS_REPORT.md`, replays in
+  `docs/mod_editor/nfl2k5_cpu_money_downs_replays.json`.
+- **Separate offensive and defensive playbooks (Build: "Separate offensive and defensive playbooks (experimental)",
+  `playbook_pair`, off in every preset).** The expert's dual-playbook ask. Two rows, HOME Defensive playbook and AWAY
+  Defensive playbook, join the two pregame Options lists right after the original book rows (which become HOME and AWAY
+  Offensive playbook); both human and CPU sides get them; each defaults to Same as offense with the 32 club books,
+  Generic and West Coast as alternatives. A pair takes ordinary offense and all special teams from the first book and
+  the whole ordinary defense, fronts and coverages included, from the second, building one self-contained live PLAY
+  body before the native play-call initialization caches pointers. The choice lasts one game and the first
+  non-default selection says so on screen: it is not saved to Franchise, paired sides do not use VIP learning or
+  replay, and no profile, save or 38th stock book byte changes. A missing resource, allocation failure or malformed
+  graph keeps that side's original book and says which side failed; native User A/User B sources are refused before
+  extra loads. 8,192 RX + 512 RW (in an existing alignment gap) + 4,096 RO. Limit: this build refuses the pair together
+  with the read option or QB spy controls until those identity lookups support composite roots; the message is plain
+  and shown before any output is written. The 2K8-style editor verdict is in the report: 2K5 already has a bounded
+  native custom playbook manager (Manage Playbooks, Add Plays, Manage Audibles, Save and Load Playbook on two writable
+  User buffers, serializer `0x161A70`, Playbook save type 6, all executed in a bounded proof); what is not proved is
+  automatic attachment to every profile, a 38th disc book and independent per-Franchise-team two-book selection, so
+  no such editor is advertised. `ASTRA_PLAYBOOK_PAIR_REPORT.md`.
+- **Match coverage census and pack (no XBE owner; Build > Playbook packs > "Add match coverage experiments").** All 37
+  books, 9,251 plays, 3,332 defensive plays and 91,833 pool nodes decoded and validated: 59 defensive play records carry
+  explicit man/zone exchanges across 105 formation menus (Combo Inside Zone 28, Combo Strong Zone 12, Zone Double
+  Steal 4, Weak Combo Strong Zone 4, Strong and Weak Bracket 1 3 each, Combo Weak Zone 3, Open Cover 5 1, Inside Zone
+  Odd 1); 53 have reciprocal partners and six nonreciprocal ones are left exactly as found. Both man-to-zone and
+  zone-to-man vocabulary exist as opposite sides of one native exchange. 105 retail formation diagrams and five
+  authored-call diagrams are rendered under `docs/mod_editor/match_coverage` with the census (JSON, CSV, table), the
+  native evidence pins, a compiler receipt and a guide; the Rules library gains structural match bundles and the Info
+  panel reads the new `match_coverage` section. The optional pack `data/playbooks/softdrink_match_coverage.2k5book`
+  adds five experimental calls built from those rules (122 nodes, 976 bytes, no formations; OAK, the reference book and
+  TEN select 4-3 when Nickel lacks five free destinations). Full Rip/Liz, quarters-match and Palms receiver keys are
+  not implemented and the pack does not claim them. `ASTRA_MATCH_COVERAGE_REPORT.md`.
+- **Player abilities rules v2 with the editor locks Noah asked for (Build: "Player abilities rules v2 (experimental)",
+  `abilities`, off in every preset; three lock checkboxes on the same option, all on by default).** The abilities
+  owner grows to 1,344 RX bytes inside its 1,536-byte budget with one six-byte entry hook at `0x17B010` wrapping the
+  common effective-attribute getter. Five bounded live effects attach to the existing permissions during live phase
+  14 for tiered players, after native injury, condition, slider arithmetic and both clamps: Juke adds to Agility,
+  Stiff-Arm to Strength, Hurdle to Jumping, Truck to Tackle Shed, Spin to Pass Rush, by 0.02 per tier (Star,
+  Superstar, X-Factor), capped at 1, never reviving a zero, never writing a rating byte. Tiers are stored in the
+  record's two spare bits with limits of 2, 4 and 7 abilities; tier 0 keeps legacy permissions. The locks: right-stick
+  moves need the ability, each special move needs its own permission, Speedster is required for speed above 99; both
+  move locks off restores the retail charge meter, either one on keeps the restricted charge policy. The Rosters
+  Abilities page is new: tier and per-ability checks for the selected player, a reviewed full-league assignment
+  (rank within the position scheme by the mean of the key ratings; rank 1 X-Factor, the next third Superstar, the
+  rest Star; free agents, templates, historic-only players and prospects untouched), receipts you can save, and every
+  transaction on the shared Rosters undo stack; lock settings flow from Rosters to Build and back. CLI:
+  `python3 -m mod_editor.core.nfl2k5_abilities_editor --roster <disc> --top-n 10 --output <json>`. Six suggested
+  independent abilities are refused in the report because no storage or complete native outcome proof exists in the
+  budget. 599 tests. `ASTRA_ABILITIES_V2_REPORT.md`.
+- **Deep-zone corner tiers (Build: "Deep-zone QB facing (experimental)" and "Press corner bail (experimental)",
+  `deep_zone_facing` and `deep_zone_bail`, off in every preset; one owner, 2,048 RX + 256 RW).** The two rows the
+  beta-62 audit deferred. Facing keeps CPU deep-zone corners oriented toward the quarterback on a slower directional
+  drop until a pass, a run, or their selected receiver gets a yard past them. Press bail gives selected three-deep
+  calls a press start within two yards and a directional bail; alone it ends at seven yards. Native target selection
+  and player control keep their rules; native frame evidence is in `docs/mod_editor/nfl2k5_deep_zone_native_frames.json`.
+  An executable whose installed tiers differ refuses (rebuild from base). The press-bail PLAY authoring staging
+  (`deep_zone_bail_calls`) is carried on the plan but not wired in this build; the runtime bail serves already authored
+  press calls. `ASTRA_DEEP_ZONE_TIERS_V2_REPORT.md`.
+- **Throws to backs: research, no repair.** Astra's native probes execute the target solver `0x2DA8E0`, the launch
+  routine `0x1CBDB0` and the ball predictor `0x1CC820` and pin fourteen native entry spans, but none of the four
+  reported symptoms (pass behind a moving back, ball off the helmet, no catch attempt, needless dive with lost yards)
+  was reproduced through a complete frame, and the moving-route lead is already shared by backs and receivers. No
+  option, no preset change, 16 tests and the hold documented in `ASTRA_BACK_THROWS_REPORT.md`.
+- **7-on-7 practice v2, released as an opt-in (Build: "7-on-7 practice (experimental)", `seven_on_seven`, off in
+  every preset; `SEVEN_ON_SEVEN_RELEASED` is now True).** The beta-58 version parked the linemen on the sideline and
+  the huddle stalled because those spots were out of bounds. v2 puts the tackles and guards at the retail I Pro line
+  positions with the retail 50 All Go pass sets, keeps the centre's retail snap, gives the defensive line the retail
+  4-3 positions with the tutorial idle assignment for three and the retail lane-11 rush for the right end with its
+  delay raised to four seconds, and drops the two Power Pocket detours (turn Power Pocket off to test the delayed rush).
+  Practice > Scrimmage > Practice Type gains 7-On-7; both teams use the practice book with Trips, Spread and Ace
+  passing sets, nine pass plays and six coverages; eleven still appear on each side. The replay is idempotent and the
+  book accepts retail, recoded and depth-role sources with identical final bytes. 533 tests. Huddle break and repeated
+  snaps still need Noah's play test. `ASTRA_SEVEN_ON_SEVEN_V2_REPORT.md`.
+
+### Franchise
+
+- **Edit Player on Player Contracts (Build: "Franchise Edit Player (experimental)", `franchise_edit_player`, off in
+  every preset; implies the Position row).** X_Ray's ask. Player Contracts is descriptor `0x540650` on the native
+  generic table screen; its popup table at `0x521340` has ten 60-byte records with fifteen dwords each (label, action
+  id, eligibility and phase predicates). The owner appends Edit Player after Assign Jersey Number for the team you
+  coach, keeping all ten existing conditional records and their order, and opens the game's own roster editor on the
+  live selected player with the beta-58 Position row after Last Name; Contracts, Front Office and Coach's Desk stay
+  beneath it and there is no new exit hook or runtime state, so changes take effect immediately, including on Back.
+  704 RO bytes, no code. Native Contracts and Desk return proofs, 411 tests. The main-menu return Noah flagged is on
+  the witness list. `ASTRA_FRANCHISE_EDIT_PLAYER_REPORT.md`.
+- **Weekly Preparation (Build: "Fix safety drills (experimental)", "CPU teams prepare too" and "Remember my weekly
+  prep"; `weekly_prep`, `weekly_prep_cpu`, `weekly_prep_remember`; off in every preset; unchecking the first clears
+  the other two, checking either of them checks the first).** The expert's TE and safety complaint, root-caused: retail
+  DB drills test only CB position 4 and exclude FS 5 and SS 6, so safeties never got the DB drill effects; the TE row
+  has a valid filter and drill rows matching HB and FB, so the reported TE deficit is not root-caused and no TE bonus
+  was invented. The owner (649 bytes in a 1,536-byte RX reservation, zero RW and RO) fixes the safety filter,
+  optionally runs the native prep routine for CPU clubs before their games with equal low full-drill time for starters
+  and backups followed by two rest days, and optionally keeps a human club's valid activities and reapplies the saved
+  plan before games until changed; these are the game's own temporary bonuses, not progression, and no save field is
+  added. The native plan reader and writer (`nfl2k5_weekly_prep_save.py`) refuse applied state 2, unknown states, bad
+  activities and out-of-pool targets before mutation; the decoded drill and attribute tables are in
+  `docs/mod_editor/weekly_preparation.md`. Auto Save's prerequisite validator accepts the wrapped hook. 28 feature tests,
+  202 gate tests. `ASTRA_WEEKLY_PREP_REPORT.md`.
+- **Franchise 2026 rules stay unavailable.** The remaining blockers are proved on native code: the 2026 ledger is not
+  persisted by the save, roster staging ignores elevations, and elevated copies resolve to the wrong permanent player.
+  The inspector and self-check are updated and the Gameplay row keeps the disabled "2026 franchise rules (unavailable)"
+  caption with the owner's own text. `ASTRA_FRANCHISE_2026_RUNTIME_REPORT.md`.
+
+### Presentation and modes
+
+- **Broadcast camera (existing "Standard, Far and Broadcast cameras (experimental)" option, `camera`, Basic off,
+  Advanced on, Experimental on; no new switch).** Camera v5 adds Broadcast after Custom in the game's Camera options
+  (engine index 7; First Person 6 stays skipped). It is a following adaptation of a proved retail sideline descriptor:
+  the retail TV row mixes descriptor types, inherited eye positions and scripted shots, and exposing those pointers
+  verbatim does not initialize a playable view, so the exact coach-mode television sequence is not reproduced and the
+  report says so. Standard still starts every game and practice, Far keeps its v4 framing, the choice lasts the session,
+  Coach Mode and player control are unchanged in the bounded fixtures, and both MyCareer implementations compose with
+  it. Requests grow to 160 RX + 80 RO. 311 tests, both gates, 15 pairs. `ASTRA_CAMERA_V5_REPORT.md`.
+- **MyCareer mode 5 (existing "MyCareer: create MyPlayer in the game" option, `my_career`, off in every preset).**
+  The four owned lists (MyCareer entry, Choose team and Sign, the scrolling 32-club picker, Apartment) use the retail
+  navigation renderer with the selected row in yellow; signing puts the created record at depth 1 of its position and
+  shifts the former starter to depth 2 with both native rank and side fields and the depth-lock bits set; Apartment
+  gains a Start MyPlayer action between MyPlayer and Save; signing, Start MyPlayer, Practice and Play next game share
+  the same bounded insertion. Hub art is still blocked. `ASTRA_MYCAREER_MODE_5_REPORT.md`.
+- **ESPN 25th Anniversary in the game: the duplicate-Cowboys defect fixed, the option refuses until the rest is
+  proved.** `0xC2300` clears the active count at team +0x11C but leaves released player pointers at +0 to +0x100, so
+  Practice Squad's reserve count rejects the next `0xC1030` import while `0x20CB30` ignores the failure and publishes
+  the last successful Cowboys team for both sides: that is Wide Right's two Cowboys teams, repaired with a 12-byte
+  native fix proved on all 25 moments of the bn executable and resources. The Packers number 14 was not reproduced
+  (bn's native depth builder and formation picker choose Bart Starr 15 and Don Meredith 17) and the loading loop was
+  not located, so the in-game option refuses with a plain Wide Right message before copying anything. The exact
+  lineups in the editor are unchanged. `ASTRA_ESPN25_IN_GAME_REPORT.md`.
+- **Scorebug entry-stall repair v2 ("Scorebug effects (diagnostic only)", `scorebug_runtime`, off in every preset).**
+  The reproduced stall: the runtime binding hook searched every resource collection, could evict an unrelated cached
+  texture and then wait on its GPU fence before HUD initialization finished. The three private TXTR and FONT lookups
+  now name the resident `GAMEDATA` collection through the native named-collection lookup and the HUD's typed resident
+  list; a missing named HUD falls back to the hidden panel and native font instead of borrowing another collection.
+  The two native call hooks (`0xFCE56` and `0xFCFA2`) are unchanged. This is a counterexample to the old binding's
+  safety, not proof of the testers' freeze. `ASTRA_SCOREBUG_FREEZE_V2_REPORT.md`, trace and validation under
+  `docs/scorebug_ingame/freeze_v2`.
+
+### Studio
+
+- **Fresh rips can open Stadium Studio again (also shipped as the beta 62 hotfix).** Two testers with a fresh ISO hit
+  "The private NFL 2K5 source cache is not the canonical game cache". `_validate_source_cache` compared the cache
+  folder name with the project's own rip digest while `SourceCache` names the folder after the opened disc's digest,
+  so any legal dump whose bytes differ from the project rip was refused. It now accepts the opened disc's own digest or
+  the canonical one and the message says "does not belong to the opened game disc". Regression test added.
+- **Build and Gameplay rows for every new owner**, a level combo for CPU fourth downs, parent and child linking for
+  weekly prep, the three abilities lock checkboxes restored from an installed v2 source, a new Rosters Abilities page
+  inside a scroll host with the Guardian caps group, and the "Add match coverage experiments" button.
+- **The allocator ownership proof matches the manifest builder.** `dormant_union` stopped at beta 62 and never listed
+  the camera owner, so the retail-only manifest tests refused with "new pages overlap another manifest owner" on any
+  stack with more owners; it now equals the gate union and the builder's request list (51 requests). Capacity pins
+  reflect the whole beta 63 union (38,432 RX, 4,096 RW and 3,224 RO bytes free in the documented budget); the
+  scale-out stress owner shrinks to 36 KiB so the synthetic union still fills the code pages exactly.
+- **Counts.** Capability registry 124 rows, 86 for Xbox NFL 2K5; provider closure 257 pinned modules; release
+  allowlist 905 files including the 118 match-coverage files (directory entries are forbidden by the packaging
+  test); registry rows refreshed for the read option, abilities runtime, scorebug runtime and franchise 2026 objects.
+
+### Not in this release
+
+- Throws to backs (research only), Franchise 2026 rules enforcement, the exact coach-mode TV camera, full modern
+  match coverage (Rip/Liz, quarters, Palms), a persistent 2K8-style in-game playbook editor, press-bail PLAY authoring
+  staging, the ESPN 25th Anniversary in-game option, and any played witness of the new owners.
+
+### Commit index (every commit since beta 62, newest first)
+
+Everything below is beta 63; the paragraph each one belongs to is named in plain words. Manifest, release text and the
+MyCareer draft commits are listed in the ship record when they land.
+
+- Deep zone: 3d0e5f0 wiring (two options, tier-mismatch refusal, capacity pins); 466dedc facing and press bail tiers.
+- Release pins: 247c246 version 1.0.0rc87 and tag beta-63.
+- Scorebug and 7-on-7: 7c87033 wiring (help text, 7-on-7 released as an opt-in, idempotent replay key); b00b2e9 7-on-7
+  v2 with retail line positions; 87a5e81 scorebug binding scoped to the resident HUD collection.
+- Franchise 2026: a17bbef help text from the owner, report, registry row; 16dda1c the remaining runtime blockers proved.
+- Read option: 838f67c registry row and pins; ce131da v5 identity and cancelable native handoff.
+- Match coverage and abilities: fbcc08b wiring (pack button, seed check, Rosters Abilities page, lock sync, closure
+  fix); b65b186 abilities v2 effects, tiers and locks; 1f081df match coverage census, rule bundles and pack.
+- Playbooks: b94dab3 wiring (refuses with read option or QB spy, integrated capacity pins); 9bcf7e6 native playbook
+  pairing and the editor verdict.
+- Weekly preparation: e7071ea wiring (three options, parent and child linking); d419835 safety drills, CPU prep and
+  remembered plans.
+- CPU downs: 4f19151 wiring (level combo, installed-level refusal); 1b5e124 fourth-down policy and marker preference.
+- Edit Player: b3aeb3b wiring (implies Position row); 4e3b9b9 Player Contracts editor.
+- Camera: 3c2e1ac wiring (caption, explicit closure imports); aa2abbe Broadcast camera v5.
+- Research: 0b8a880 throws to backs, held.
+- Studio and allocator: 2df5e1f dormant_union equals the gate union; a67d7f8 fresh-rip cache check (the beta 62 hotfix).
+- Circling: be99b32 wiring; bf3b68b close pursuit recovery owner.
+- Beta 62 corrections: ad6d239 ESPN 25 team reuse repair and the refusing option; a009a87 MyCareer mode 5;
+  e3e4ec5 read option v4 diagnostic and the bm identity proof.
+
 ## v1.0 RC86, the biggest beta yet: kickoff v5 and the paired cameras witnessed, the ESPN scorebar v3 and Scorebar Studio, Franchise Auto Save, MyCareer at any position, ESPN Anniversary rosters, read option with modern controls, widescreen v3, the play rules library, 82 stadiums, roster arena growth, the scaled-out executable space and twenty more experimental owners (2026-09-07)
 
 Beta 62 was built by GPT-6 Astra under Claude's review: one bounded session per feature, three integration sessions on

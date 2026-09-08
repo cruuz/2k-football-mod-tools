@@ -1,3 +1,72 @@
+# beta-63 — RC87 / alpha.84
+
+**Date:** 2026-09-08
+
+**2K5 Mod Studio:** `v1.0-RC87`
+
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.84` (unchanged)
+
+The last NFL 2K5 beta before the studio turns to APF 2K8. Fourteen bounded GPT-6 Astra sessions landed under Claude's
+review in one wave, plus the four corrections that followed the beta-62 play tests. Nothing new has been played unless it
+says so below, and every new option is off (or Retail) in every preset. The RC87 section of
+`docs/mod_editor/2k5_mod_studio_changelog.md` describes every change since beta 62 in full, grouped by area, with a
+commit-by-commit index at the end.
+
+## New
+
+- Read option v5: the paired play is found by the loaded team book, not by a menu number (Noah's "READ miss 48"
+  on the diagnostic disc was a lookup keyed by the wrong number); native give, keep, pitch and RPO controls; cancel until
+  the native exchange event (existing option, off in every preset).
+- Close pursuit recovery: the reproduced circling-defender orbit (the close-pursuit branch never braked on arrival)
+  fixed by one hook into a 520-byte routine (opt-in).
+- Franchise Edit Player: Edit Player after Assign Jersey Number on Player Contracts for the team you coach, opening the
+  game's own roster editor with the Position row (opt-in).
+- CPU fourth downs and first downs: Retail / Modern / Aggressive; measured fourth-down attempts by field band and a
+  preference for primary routes that reach the marker on CPU third and fourth downs (Retail in every preset).
+- Weekly Preparation: safeties join the DB drills (a proved missing position filter), CPU teams prepare before their
+  games, your plan is remembered and reapplied (three opt-ins). The expert's TE deficit is not root-caused and no TE
+  bonus was invented.
+- Separate offensive and defensive playbooks: HOME and AWAY Defensive playbook rows in the pregame Options lists for one
+  game; not saved to Franchise; refuses together with the read option or QB spy in this build (opt-in). The 2K8-style
+  editor verdict: 2K5 already has a bounded native custom playbook manager; profile attachment and a 38th book are not
+  proved.
+- Match coverage: a census of every explicit native man/zone exchange (59 records across 105 menus), 110 diagrams and
+  Rules/Info bundles, and an optional pack of five experimental calls (full Rip/Liz, quarters and Palms keys are not
+  implemented).
+- Player abilities rules v2: five bounded live effects on tiers (Star, Superstar, X-Factor), a new Rosters Abilities
+  page with a reviewed league-wide assignment, and the locks Noah asked for: right-stick moves and special moves behind
+  their abilities, Speedster for speed above 99 (option off in every preset).
+- Broadcast camera row in the game's Camera options (a following adaptation of the retail sideline mount; the exact
+  coach-mode TV shots are not reproduced).
+- Deep-zone corner tiers: QB facing on a slower drop, and a press start with a directional bail (two opt-ins).
+- 7-on-7 practice v2 released as an opt-in: retail line positions instead of sideline parking, passing sets, a delayed
+  end rush.
+- Franchise 2026 rules research: the remaining runtime blockers proved; the option stays unavailable.
+- Throws to backs: research only, no repair; none of the four symptoms reproduced through a full frame.
+
+## Fixed
+
+- Fresh rips of the disc can open Stadium Studio again (the beta-62 "not the canonical game cache" error).
+- ESPN 25th Anniversary in the game: the duplicate-Cowboys importer failure (Wide Right) repaired in 12 bytes; the
+  Packers number 14 and the loading loop were not reproduced, so the in-game option refuses until proved.
+- MyCareer mode 5: native list rendering with yellow selection, the created player at depth 1, Start MyPlayer in the
+  Apartment.
+- Scorebug runtime binding scoped to the resident HUD collection (a reproduced entry stall; the testers' freeze still
+  needs a game check).
+- The allocator ownership proof carries every manifest owner; capacity pins reflect the whole union.
+
+## Witnessed by Noah (2026-09-08, xemu, discs bn and bo)
+
+- Read option v4 diagnostic: "READ miss 48" after the snap, no handoff, the QB no longer ran off on his own.
+- Anniversary rosters: Packers QB number 14 in the Ice Bowl, two Cowboys teams in Wide Right, doubled MyCareer rows;
+  scorebug and kickoff good.
+- Nothing in this beta's new owners has been played yet.
+
+## Not in this release
+
+- A played witness of any new owner; throws to backs; Franchise 2026 enforcement; the exact coach-mode TV camera; full
+  modern match coverage; a persistent in-game playbook editor; press-bail PLAY authoring; the Anniversary in-game option.
+
 # beta-62 — RC86 / alpha.84
 
 **Date:** 2026-09-08
