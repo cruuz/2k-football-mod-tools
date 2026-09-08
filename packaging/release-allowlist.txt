@@ -919,3 +919,6 @@ docs/mod_editor/match_coverage/sd-match-02.png
 docs/mod_editor/match_coverage/sd-match-03.png
 docs/mod_editor/match_coverage/sd-match-04.png
 ASTRA_FRANCHISE_2026_RUNTIME_REPORT.md
+ASTRA_SCOREBUG_FREEZE_V2_REPORT.md
+docs/scorebug_ingame/freeze_v2/trace.json
+docs/scorebug_ingame/freeze_v2/validation.json

@@ -121,13 +121,18 @@ class BuildPlanCoverageTests(unittest.TestCase):
             panel.uniform_choice_mode.setCurrentIndex(1)
             self.assertEqual(panel.plan().uniform_choice, "rule")
 
-    def test_seven_on_seven_is_reachable_but_disabled_in_this_release(self) -> None:
+    def test_seven_on_seven_is_reachable_defaults_off_and_stays_unwitnessed(self) -> None:
+        """v2 (beta 63): the row is available for a supported image, off by default, badged unwitnessed."""
         panel = self.panel
-        self.assertFalse(mod_build.SEVEN_ON_SEVEN_RELEASED)
+        self.assertTrue(mod_build.SEVEN_ON_SEVEN_RELEASED)
         self.assertFalse(panel.seven_on_seven_check.isHidden())
+        self.assertFalse(panel.seven_on_seven_check.isChecked())
+        self.assertFalse(panel.plan().seven_on_seven)
+        for name in ("softdrink_basic", "softdrink_advanced", "softdrink_experimental"):
+            self.assertFalse(mod_build.PRESETS[name]["seven_on_seven"], name)
+        # the coverage panel holds a bare synthetic XBE: a disc-only option reports "Full disc required" there
+        self.assertEqual(panel._badges["seven_on_seven"].text(), "Full disc required")
         self.assertFalse(panel.seven_on_seven_check.isEnabled())
-        self.assertIn("Not available in this release", panel.seven_on_seven_check.toolTip())
-        self.assertEqual(panel._badges["seven_on_seven"].text(), "Not available in this release")
 
     def test_a_ticked_option_with_a_missing_required_file_names_the_file(self) -> None:
         panel = self.panel

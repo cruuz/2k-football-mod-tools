@@ -186,7 +186,7 @@ class BuildPlan:
     # 7-on-7 practice: a fifth Practice Type (Practice -> Scrimmage -> Practice Type -> 7-On-7) that plays as
     # Full Scrimmage with the practice book loaded for both teams, plus the 7-on-7 sets/plays written into
     # PRACTICE-pb.iff (linemen parked at the sideline, a 4-second timer rusher); needs a disc image; unwitnessed
-    seven_on_seven: bool = False
+    seven_on_seven: bool = False  # v2: Practice Type 7-On-7 with retail line spots, offensive pass sets, three idle defensive linemen and one end on a four-second delay; experimental, off in every preset
     # real team history for the roster's past seasons on the Player Card: "retail" = the shipped nflverse CSV
     # (data/nfl2k5_retail_team_history.csv), a path = a user CSV, "" = off; disc images only; shows in franchises
     # CREATED from the copy; costs one pool dword per season row (the game folds the oldest seasons a bit earlier).
@@ -774,11 +774,9 @@ def _write_xbe_bytes(target: Path, payload: bytes) -> None:
         target.write_bytes(payload)
 
 
-#: The 7-on-7 practice mode is built and tested but not released yet (Noah's call, 2026-09-03: it is
-#: witnessed through the Practice Type screen and the play-call, not yet through a snap). While False the
-#: checkboxes are hidden, every preset leaves it off and Build reports it unavailable; the modules and their
-#: tests stay so the branch that finishes it merges cleanly.
-SEVEN_ON_SEVEN_RELEASED = False
+#: 7-on-7 v2 is available as an EXPERIMENTAL / UNWITNESSED disc-image opt-in.
+#: All presets leave it off; Noah must witness huddle break and repeated snaps.
+SEVEN_ON_SEVEN_RELEASED = True
 
 IMAGE_SUFFIXES = (".iso", ".xiso", ".img")
 

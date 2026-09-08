@@ -591,8 +591,8 @@ class BuildPanel(QWidget):
                                                       "rewrites KR and PR every week. With this patch, moving a player on the depth chart or confirming a "
                                                       "returner locks that choice in the player's record and the weekly sort keeps it; unlock from the "
                                                       "Rosters tab. Works with the retail rows or the SPECIAL tab. Experimental.")
-        self.seven_on_seven_check = self._option(f, "seven_on_seven", "7-on-7 practice",
-                                                 "Practice Type 7-On-7 with 7-on-7 sets in the practice playbook.",
+        self.seven_on_seven_check = self._option(f, "seven_on_seven", "7-on-7 practice (experimental)",
+                                                 "Practice Type 7-On-7, retail line positions and a delayed end rush. UNWITNESSED.",
                                                  badge=NOT_TESTED, needs_image=True)
         ol.addWidget(franchise)
 

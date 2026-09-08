@@ -7375,7 +7375,9 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "ASTRA_SCOREBUG_FIX_REPORT.md",
+        "ASTRA_SCOREBUG_FREEZE_V2_REPORT.md",
+        "docs/scorebug_ingame/freeze_v2/trace.json",
+        "tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py",
         "tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
         "tests/mod_editor/test_nfl2k5_scorebug_resources.py",
         "tests/mod_editor/test_nfl2k5_scorebug_native.py"
@@ -7385,17 +7387,17 @@
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "EXPERIMENTAL / UNWITNESSED v2. A tester reports a v1 entry-to-game freeze; keep runtime off in all presets pending the diagnostic matrix."
+        "reason": "EXPERIMENTAL / UNWITNESSED. The HUD-scoped binding repair passes native entry and draw controls. The reported tester freeze still needs a played comparison; runtime stays off in every preset."
       },
       "id": "nfl2k5.scorebug_presentation.runtime",
       "input_constraints": [
         "User-owned pinned NFL 2K5 USA disc with retail HUD resources, or a completely recognized runtime installation.",
         "Use a disposable output copy; reserve the selected allocator owner union before installing hooks.",
-        "An XBE alone cannot install the required 264 native panel textures. Rebuild from base when changing the owner set."
+        "An XBE alone cannot install the required 264 native panel textures. Rebuild from a supported base for the new hooks or a changed owner set; old hook code is refused."
       ],
       "portme": [
-        "Apply the r62 scorebug section of WIRING.md, disable automatic runtime selection and regenerate the protected reservation manifest.",
-        "Run the six-profile matrix and static 4:3/widescreen witness list in ASTRA_SCOREBUG_FIX_REPORT.md."
+        "Apply the R65 scorebug freeze v2 section of WIRING.md, keep runtime off in every preset and regenerate the protected reservation manifest.",
+        "Run the six-profile and static 4:3/widescreen witness list in ASTRA_SCOREBUG_FREEZE_V2_REPORT.md."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -7405,10 +7407,11 @@
       },
       "runtime": {
         "evidence": [
-          "ASTRA_SCOREBUG_FIX_REPORT.md",
+          "ASTRA_SCOREBUG_FREEZE_V2_REPORT.md",
+          "docs/scorebug_ingame/freeze_v2/trace.json",
           "docs/scorebug_ingame/witness_r61b.md"
         ],
-        "scope": "The earlier v1 runtime build froze entering gameplay in xemu on macOS; that failure is not reproduced or fixed here. v2 has bounded native collection, allocation, decompression, lookup and event checks. OS asynchronous lifetime, GPU consumption and live memory pressure remain unproved.",
+        "scope": "With a synthetic unrelated cache and withheld GPU completion, the old binding enters a native texture-eviction fence wait before HUD initialization returns; the HUD-scoped repair and disabled-hook control return with the same fence pending. Native frames and glyph draws pass for all six profiles. The actual tester heap, healthy GPU completion, asynchronous lifetime and gameplay remain unproved; this is not a played fix confirmation.",
         "status": "not-tested"
       },
       "selectors": {
@@ -7422,7 +7425,7 @@
         "notes": "Implies scorebug and xbe_space. Relocated kickoff is independent and requires its existing alignment prerequisites."
       },
       "source_container": {
-        "format": "XBE and native TXTR/SCNE resources in XDVDFS pack 0",
+        "format": "XBE and native TXTR/FONT/SCNE resources in XDVDFS pack 0",
         "hash_pins": [
           "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
           "2c23410c05c1ec266c3176b8b201f9a48b4a45ac148110ca569e5df25984e7c8",
@@ -7431,10 +7434,10 @@
         "resource": "owned RX/RW hook allocations plus HUD outer 346 and its archive index",
         "retail_file": "user-owned default.xbe and vc_53450030/0 in an NFL 2K5 USA disc"
       },
-      "summary": "Native team panels and scorebug events, with reduced-resource CLI probes for a reported entry-to-game freeze.",
+      "summary": "Native team panels and scorebug events with HUD-scoped resource binding and six diagnostic profiles for the reported entry freeze.",
       "surface": "scorebug_presentation",
       "title": "Scorebug effects (diagnostic only)",
-      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_scorebug_runtime"
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_scorebug_freeze_v2"
     },
     {
       "backend": {

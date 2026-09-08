@@ -12,11 +12,11 @@ SCOREBUG_HELP = (
     "A scorebar folder selects your painted template (the v10 layout). Moves the kick meter up and hides the "
     "lineup strip. EXPERIMENTAL / UNWITNESSED (the outline revision is unwitnessed); rebuild from a clean source.")
 SCOREBUG_RUNTIME_HELP = (
-    "Retail: Uses the original team panels and text. Patch: Adds team "
-    "gradients, logos, live timeout marks, resized text, a white possession "
-    "marker and room for three-digit scores to the experimental scorebar. "
-    "Diagnostic only and off in every preset. EXPERIMENTAL / UNWITNESSED; "
-    "the game-entry freeze remains unresolved. Keep the six probe choices.")
+    "Retail: Uses the original team panels and text. Patch: Adds team gradients, "
+    "logos, live timeout marks, resized text, a white possession marker and room "
+    "for three-digit scores to the experimental scorebar. Diagnostic only and off "
+    "in every preset. EXPERIMENTAL / UNWITNESSED. The entry-stall repair still needs "
+    "a game check. Keep the six probe choices and rebuild from a clean source.")
 PRACTICE_HELP = (
     "Retail: Practice is available from Game Modes. Patch: adds Practice below Schedule on the Coach's Desk. "
     "Practice uses your franchise roster and returns to the Coach's Desk when you quit. "

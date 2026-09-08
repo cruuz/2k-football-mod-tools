@@ -1617,7 +1617,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         state = module.status(patched)
         # the star patch knows a "legacy" state (the beta-58..60 gate-only version) and upgrades it in place;
         # every other module still only ever goes retail -> applied
-        if state == "retail" or (state == "legacy" and key == "player_star_patch") or (state == "applied" and key in ("chop_block_toggle_patch", "flatter_deep_ball_patch", "widescreen_patch", "modern_naming_patch")):
+        if state == "retail" or (state == "legacy" and key == "player_star_patch") or (state == "applied" and key in ("chop_block_toggle_patch", "flatter_deep_ball_patch", "widescreen_patch", "modern_naming_patch", "seven_on_seven_patch")):
             patched, sub_receipt = module.apply(patched)
             if state == "legacy":
                 sub_receipt = {**sub_receipt, "upgraded_from": "legacy"}

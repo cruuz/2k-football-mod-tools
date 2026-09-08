@@ -172,13 +172,13 @@ PATCHES = (
      "generator announces players with a replacement surname by jersey number instead of a wrong name. Only "
      "franchises created from the copy see it. Unwitnessed in game."),
     ("franchise_practice", "Free Practice inside Franchise", r62_ui.PRACTICE_HELP),
-    ("seven_on_seven", "7-on-7 practice mode",
-     "Retail Practice offers Special Move, Full Scrimmage, Offense Only and Kickoff. Patch: Practice -> Scrimmage -> "
-     "Practice Type gains 7-On-7, which plays as Full Scrimmage with the practice playbook loaded for both teams and "
-     "the pass rush off; the practice book gains three 7-on-7 passing sets (Trips, Spread, Ace: QB, a centre to snap, "
-     "five skill players) with nine pass concepts and two coverage sets (4-3 and Nickel looks) with six coverages. The "
-     "engine always fields eleven, so the four linemen of each side stand idle at the sideline by design, and one "
-     "parked defender rushes after a 4-second count as the throw timer. Needs a disc image; unwitnessed in game."),
+    ("seven_on_seven", "7-on-7 practice (experimental)",
+     "Retail: Practice offers Special Move, Full Scrimmage, Offense Only and Kickoff. Patch: Practice > Scrimmage > "
+     "Practice Type gains 7-On-7. Both teams use the practice book, with Trips, Spread and Ace passing sets, nine pass "
+     "plays and six coverages. Eleven players still appear on each side. The offensive line uses normal pass blocks; "
+     "three defensive linemen wait at normal line positions. One defensive end is assigned a four-second delay before "
+     "rushing. Power Pocket stays your choice; turn it Off to test the delayed rush. Needs a disc image. "
+     "EXPERIMENTAL / UNWITNESSED: huddle break, repeated snaps and the actual delay still need Noah's play test."),
     ("player_star", "White star outline under the players you tag",
      "Retail: the game draws a coloured circle under the player a controller is driving and nothing under anyone else. "
      "Patch: every player you tag under Names, Numbers & Faces (★ Star) gets a closed white five-point outline at his feet "
@@ -309,7 +309,7 @@ LABELS: dict[str, tuple[str, str, str]] = {
     "kick_laces": ("Laces face the posts on kicks", "On field goals and PATs the held ball is turned so the laces face the posts.", NOT_TESTED),
     "prospect_names": ("Modern draft-prospect names", "New franchises only; some new surnames are announced by number.", "New franchises only"),
     "franchise_practice": ("Practice below Schedule in Franchise", r62_ui.PRACTICE_HELP, NOT_TESTED),
-    "seven_on_seven": ("7-on-7 practice", "Practice Type 7-On-7 with 7-on-7 sets in the practice playbook.", NOT_TESTED),
+    "seven_on_seven": ("7-on-7 practice (experimental)", "Retail line positions with passing sets and a delayed end rush. UNWITNESSED.", NOT_TESTED),
     "player_star": ("Show a star under selected players", "Select players under Names, Numbers & Faces; every tagged player on the field gets a white star outline.", NOT_TESTED),
     "depth_roles": ("X / Z / SLWR receivers and nickel / dime corners", "Changes who lines up in every playbook, not how they play.", NOT_TESTED),
     "depth_chart_rows": ("SPECIAL: 13 rows and complete player names (experimental)",
@@ -323,7 +323,7 @@ LABELS: dict[str, tuple[str, str, str]] = {
 # BuildPlan fields that are profile names rather than booleans: the value a ticked box writes
 STRING_TOGGLES = {"music_policy": "jukebox_menus", "penalties": "nfl", "prospect_names": "modern", "uniform_choice": "choice"}
 # toggles whose other half lives in pack 0: a bare default.xbe cannot take them
-NEEDS_IMAGE = {"camera", "music_shuffle", "practice_squad_screen", "abilities", "qb_spy", "season_cap", "calendar_engine", "coverage_slider", "scramble_tuning", "team_names_2026", "all_stadiums", "momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "scorebug", "scorebug_runtime", "screen_timing", "guardian_cap", "xbe_space", "kickoff_relocated", "prospect_names", "depth_roles", "dynamic_kickoff", "depth_chart_rows"}
+NEEDS_IMAGE = {"camera", "seven_on_seven", "music_shuffle", "practice_squad_screen", "abilities", "qb_spy", "season_cap", "calendar_engine", "coverage_slider", "scramble_tuning", "team_names_2026", "all_stadiums", "momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "scorebug", "scorebug_runtime", "screen_timing", "guardian_cap", "xbe_space", "kickoff_relocated", "prospect_names", "depth_roles", "dynamic_kickoff", "depth_chart_rows"}
 
 PATCHES = (*PATCHES, *r62_ui.OPTIONS)
 NEEDS_IMAGE.update(r62_ui.KEYS)
