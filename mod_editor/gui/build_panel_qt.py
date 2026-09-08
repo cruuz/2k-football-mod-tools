@@ -394,6 +394,10 @@ class BuildPanel(QWidget):
         g.addWidget(self.cpu_money_downs_level)
         self.cpu_money_downs_level.currentIndexChanged.connect(self._money_downs_changed)
         self.cpu_money_downs_check.toggled.connect(self._money_downs_toggled)
+        for parent, children in r62_ui.CHILDREN.items():
+            getattr(self, parent + "_check").toggled.connect(lambda on, p=parent: self._parent_toggled(p, on))
+            for child in children:
+                getattr(self, child + "_check").toggled.connect(lambda on, p=parent: self._child_toggled(p, on))
         self.momentum_collision_level = QComboBox()
         for caption, value in (("Retail (0)", 0), ("Light (25)", 25), ("Medium (50)", 50), ("Heavy (100)", 100)):
             self.momentum_collision_level.addItem(caption, value)
@@ -1616,6 +1620,18 @@ class BuildPanel(QWidget):
             raise ValueError("Senior Bowl is preparation only; use a seed from 0 to 2147483647")
         import copy
         self._senior_bowl_options = copy.deepcopy(options)
+        self._refresh()
+
+    def _parent_toggled(self, parent, on):
+        if not on:
+            for child in r62_ui.CHILDREN[parent]:
+                getattr(self, child + "_check").setChecked(False)
+        self._refresh()
+
+    def _child_toggled(self, parent, on):
+        box = getattr(self, parent + "_check")
+        if on and not box.isChecked() and box.isEnabled():
+            box.setChecked(True)
         self._refresh()
 
     def _money_downs_level(self) -> str:

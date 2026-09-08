@@ -35,6 +35,18 @@ OPTIONS = (
     ("coverage_trail", "Close pursuit recovery (experimental)", tt.coverage_trail_patch.HELP_TEXT),
     ("franchise_edit_player", "Franchise Edit Player (experimental)", tt.franchise_edit_player_patch.HELP_TEXT),
     ("cpu_money_downs", tt.cpu_money_downs_patch.BUILD_CAPTION, tt.cpu_money_downs_patch.HELP_TEXT),
+    ("weekly_prep", "Fix safety drills (experimental)",
+     "EXPERIMENTAL / UNWITNESSED. Retail: DB drills skip both safety positions. "
+     "Patch: include safeties in the same drills as corners. TE drill rows already exist."),
+    ("weekly_prep_cpu", "CPU teams prepare too",
+     "EXPERIMENTAL / UNWITNESSED. Retail: CPU clubs skip weekly prep. Patch: run "
+     "the native routine before their games with equal low full-drill time for "
+     "starters and backups, then two rest days. Weekly Preparation must be On."),
+    ("weekly_prep_remember", "Remember my weekly prep",
+     "EXPERIMENTAL / UNWITNESSED. Retail: only marked repeat activities survive "
+     "weekly cleanup and the next season clears the plan. Patch: keep valid "
+     "activities and apply your saved plan before games until you change it. "
+     "Weekly Preparation must be On. An empty plan does nothing."),
     ("franchise_2026_rules", "2026 franchise rules (unavailable)", FRANCHISE_HELP),
     ("senior_bowl", "Senior Bowl native event (not available)", tt.senior_bowl_patch.HELP_TEXT),
     ("guardian_overlay", "Guardian caps (experimental)", tt.guardian_overlay_patch.HELP_TEXT),
@@ -53,6 +65,8 @@ OPTIONS = (
 )
 KEYS = tuple(row[0] for row in OPTIONS)
 # String-valued option rows: the checkbox means "not retail"; the adjacent combo picks the level.
+# Parent option -> child options: unchecking the parent clears the children; checking a child checks the parent.
+CHILDREN = {"weekly_prep": ("weekly_prep_cpu", "weekly_prep_remember")}
 LEVELS = {"cpu_money_downs": (("Retail", "retail"), ("Modern", "modern"), ("Aggressive", "aggressive"))}
 UNAVAILABLE = {"franchise_2026_rules": FRANCHISE_HELP, "senior_bowl": tt.senior_bowl_patch.NATIVE_BLOCKER}
 HIRES_FAMILIES = (

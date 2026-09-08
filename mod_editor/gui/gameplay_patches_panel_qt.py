@@ -469,6 +469,11 @@ class GameplayPatchesPanel(QWidget):
                 check.setAccessibleDescription(helper or label)
                 check.toggled.connect(lambda _c: self._refresh())
                 head.addWidget(check)
+            if key in r62_ui.CHILDREN:
+                check.toggled.connect(lambda on, p=key: self._parent_toggled(p, on))
+            for parent, children in r62_ui.CHILDREN.items():
+                if key in children:
+                    check.toggled.connect(lambda on, p=parent: self._child_toggled(p, on))
             if key == "cpu_money_downs":
                 self.cpu_money_downs_level = QComboBox()
                 for text, value in r62_ui.LEVELS["cpu_money_downs"]:
@@ -683,6 +688,19 @@ class GameplayPatchesPanel(QWidget):
         path, _ = QFileDialog.getOpenFileName(self, "Choose paired MyCareer setup", "", "MyCareer setup (*.json)")
         if path:
             self.my_career_setup_field.setText(path)
+
+    def _parent_toggled(self, parent, on):
+        if not on:
+            for child in r62_ui.CHILDREN[parent]:
+                if child in self.checks:
+                    self.checks[child].setChecked(False)
+        self._refresh()
+
+    def _child_toggled(self, parent, on):
+        box = self.checks.get(parent)
+        if box is not None and on and not box.isChecked() and box.isEnabled():
+            box.setChecked(True)
+        self._refresh()
 
     def _money_downs_changed(self):
         level = str(self.cpu_money_downs_level.currentData() or "retail")
