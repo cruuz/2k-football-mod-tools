@@ -696,7 +696,7 @@ class ScorebugReferenceReservations(unittest.TestCase):
             section=image.section(va,len(new))
             if section is not None and section.name == ".text":
                 from mod_editor.core import nfl2k5_scorebar_v3 as v3
-                if va in (v3.VISIBILITY_VA, 0xfc010, 0xfc030, 0xfbe30):
+                if va in (v3.VISIBILITY_VA, 0xfc010, 0xfc030, 0xfbe30, 0xfc285, 0xfc305):
                     # Complete live instruction spans, never an allocation in
                     # padding. Every new branch has a native or owned target.
                     offset=scorebug.layout.sbpos.va_to_off(retail,va)
@@ -704,7 +704,7 @@ class ScorebugReferenceReservations(unittest.TestCase):
                     self.assertEqual(len(old),len(new))
                     insns=list(md.disasm(new,va))
                     self.assertEqual(sum(i.size for i in insns),len(new))
-                    native={0xabe90,0x30ab0,0x30f20,0x68d70,0x61c50,0x61c60,0xfbb10,0xfbe4e,0x4a400}
+                    native={0xabe90,0x30ab0,0x30f20,0x68d70,0x68dc0,0x61c50,0x61c60,0xfbb10,0xfbe4e,0x4a400}
                     starts={i.address for i in md.disasm(v3.VISIBILITY_CODE,v3.VISIBILITY_VA)}
                     starts.update(i.address for i in insns)
                     for ins in insns:

@@ -505,7 +505,15 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
             if abs((b[0] - a[0]) * (c[1] - a[1]) - (c[0] - a[0]) * (b[1] - a[1])) > 1e-6:
                 live.update(triangle)
         objects[name] = bounds(sorted(live) if live else range(lo, hi + 1))
-    frame_name = next(name for name in ('yscore_buga', 'yscore_buga1') if name in visible)
+    frame_order = ('yscore_buga1', 'yscore_buga') if mode == 0 else ('yscore_buga', 'yscore_buga1')
+    frame_name = next(name for name in frame_order if name in visible)
+    frame_bounds = objects[frame_name]
+    if all(name in visible for name in ('yscore_buga', 'yscore_buga1')):
+        # The rim revision uses the former alternate frames as independent
+        # home/away halves. Their union, not either half, defines the rails.
+        halves = [objects[name] for name in ('yscore_buga', 'yscore_buga1')]
+        frame_bounds = [min(v[0] for v in halves), min(v[1] for v in halves),
+                        max(v[2] for v in halves), max(v[3] for v in halves)]
     root_matrix = list(floats(matrices, 16))
     viewport = list(floats(wide.ACTIVE_CAMERA_VA + 0x250, 8))
     if capture is not None:
@@ -525,8 +533,9 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
                 score_phase=score_phase, score_values=list(score_values), previous_scores=list(previous_scores),
                 visible_elements=list(visible_elements),
                 native_visibility=visibility_state, visibility_trace=visibility_trace,
-                frame=objects[frame_name], frame_material=frame_name,
-                clock=bounds(range(48, 64)), down=bounds(range(64, 80)),
+                frame=frame_bounds, frame_material=frame_name,
+                clock=bounds(range(48, 52 if all(name in visible for name in ('yscore_buga', 'yscore_buga1')) else 64)),
+                down=bounds(range(64, 80)),
                 frame_instructions=frame_instructions, widescreen=widescreen, mode=mode,
                 text_scale_x=27 / 32 if widescreen else 1,
                 scene_sha256=r.digest(decoded),

@@ -238,9 +238,11 @@ class ProjectionTests(unittest.TestCase):
             proof=render_native(self.after,self.atlas,self.fonts,self.normal,target)
             self.assertNotIn('zz_ESPN_bug',proof['winding'])
             self.assertEqual(proof['winding']['score_buga'],dict(positive=0,negative=2))
-            self.assertEqual(proof['winding']['yscore_buga1'],dict(positive=0,negative=30))
+            self.assertEqual(proof['winding']['yscore_buga1'],dict(positive=0,negative=18))
+            self.assertEqual(proof['winding']['yscore_buga'],dict(positive=0,negative=18))
+            self.assertEqual(proof['winding']['zz_ESPN_bug1'],dict(positive=0,negative=4))
             self.assertEqual(proof['winding']['dscore_buga'],dict(positive=0,negative=2))
-            self.assertEqual(proof['winding']['cscore_buga'],dict(positive=0,negative=2))
+            self.assertEqual(proof['winding']['cscore_buga'],dict(positive=0,negative=4))
             self.assertFalse(proof['raster_policy']['gpu_state_proved'])
             culled=Path(tmp).resolve()/'culled.png'
             render_native(self.after,self.atlas,self.fonts,self.normal,culled,cull_positive=True)

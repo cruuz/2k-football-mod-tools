@@ -140,7 +140,8 @@ class NativeV3Tests(unittest.TestCase):
                     self.assertEqual(m.uc.reg_read(getattr(m.x,'UC_X86_REG_'+name.upper())),value)
                 for at,n,value in m.writes:
                     self.assertTrue(m.STACK<=at and at+n<=m.STACK+0x10000 or
-                                    dest<=at and at+n<=dest+128 or at==target and n==4,(hex(at),n))
+                                    dest<=at and at+n<=dest+128 or
+                                    at in (target, base+128*v3.RIM_INDICES[side]+24) and n==4,(hex(at),n))
                 # Callback copies/uppercases its output, never the roster string.
                 self.assertEqual(m.read_string(m.get(context+0x13c)),team.lower())
                 # The mesh precedes callbacks in FC360. Its tint must survive

@@ -138,20 +138,6 @@ def atlas(*, revision=3, red_bias=None):
     d.rectangle((0, 61, 3, 63), fill=(248, 250, 243, 255))
     d.rectangle((4, 61, 7, 63), fill=FRAME_COLOR)
     d.rectangle((8, 61, 11, 63), fill=(255, 255, 255, 255))
-    # Static rim mask is independent of the photographed silver/red tile.
-    # It is generated here, not read from the explicit-folder v10 PNG layers.
-    d.rectangle((24, 0, 47, 23), fill=(0, 0, 0, 0))
-    d.rounded_rectangle((24, 0, 47, 23), 3, outline=(255, 255, 255, 255))
-    d.line((27, 1, 44, 1), fill=(166, 166, 166, 255))
-    d.line((27, 22, 44, 22), fill=(166, 166, 166, 255))
-    d.line((27, 23, 44, 23), fill=(23, 23, 23, 255))
-    # Neutral backing and decorative timeout marks never inherit team tint.
-    d.rectangle((48, 0, 63, 23), fill=FRAME_COLOR)
-    d.line((48, 0, 63, 0), fill=(74, 75, 73, 255))
-    d.line((48, 23, 63, 23), fill=(74, 75, 73, 255))
-    d.rectangle((12, 61, 37, 63), fill=(0, 0, 0, 0))
-    for x in (12, 22, 32):
-        d.rectangle((x, 61, x+5, 63), fill=(248, 250, 243, 255))
     return im
 
 
@@ -190,17 +176,19 @@ def mesh(retail, *, runtime=False, revision=2):
     a, b, c, d = FRAME
     xs, ys = (a, a + 3, c - 3, c), (b, b + 3, d - 3, d)
     for material_groups in (groups, groups2):
-        if not runtime:
-            # Existing alternate frames become the two independent rims.
-            # Material 9/groups is home; material 7/groups2 is away.
-            left, right = ((PANELS["home"][0], c) if material_groups is groups
-                           else (a, PANELS["away"][2]))
-            xs = (left, left + 3, right - 3, right)
         for iy in range(3):
             for ix in range(3):
-                uvx, uvy = ((0, 3, 21, 24) if runtime else (24, 27, 45, 48)), (24, 21, 3, 0)
+                uvx, uvy = (0, 3, 21, 24), (24, 21, 3, 0)
                 quad(material_groups[iy * 3 + ix], (xs[ix], ys[iy], xs[ix + 1], ys[iy + 1]),
                      (uvx[ix], uvy[iy + 1], uvx[ix + 1], uvy[iy]))
+        if not runtime:
+            for i, source in enumerate(((716, 1032, 735, 1039), (747, 1032, 766, 1039),
+                                        (777, 1032, 796, 1039), (1120, 1032, 1139, 1039),
+                                        (1150, 1032, 1169, 1039), (1180, 1032, 1199, 1039))):
+                box = list(scene_box(source))
+                shift = -24 if i < 3 else 25.5
+                box[0] += shift; box[2] += shift
+                quad(material_groups[9 + i], box, (1.5, 62.5, 1.5, 62.5), z=-2)
     # cscore's first live triangle starts at index 48 after a duplicate. Its
     # strip parity is opposite the down strip's first triangle.
     quad(range(48, 64), STRIP if runtime else STATIC_STRIP, REGIONS["strip"], z=-3)
@@ -239,27 +227,6 @@ def mesh(retail, *, runtime=False, revision=2):
         for material in (0x4c0, 0x6c0):
             struct.pack_into("<I", m.buf, material+0x14, 0xffffffff)
             struct.pack_into("<I", m.buf, material+0x18, 0xff252625)
-    if not runtime:
-        # The unused second corner mark has four disjoint triangles. Two
-        # make each side's neutral decorative marks. The clock's unused final
-        # quad holds the neutral backing. No material,
-        # vertex, command, string, or decoded-size allocation is added.
-        def mark_quad(vertices, box, tile, z):
-            x0, y0, x1, y1 = box
-            u0, v0, u1, v1 = tile
-            for vertex, (x, y) in zip(vertices, ((0, 0), (1, 0), (0, 1),
-                                                (0, 1), (1, 0), (1, 1))):
-                m.pos[vertex] = [x0 + (x1-x0)*x, y0 + (y1-y0)*y, z]
-                m.uv_edit[vertex] = ((u0 + (u1-u0)*x)/32-1,
-                                     (v1 + (v0-v1)*y)/32-1)
-        quad(range(60, 64), FRAME, (48.5, 0, 63.5, 24), z=1)
-        for vertices, source, shift in ((range(274, 280), (716,1032,796,1039), -24),
-                                         (range(280, 286), (1120,1032,1199,1039), 25.5)):
-            box = list(scene_box(source))
-            box[0] += shift; box[2] += shift
-            mark_quad(vertices, box, (12,61,38,64), -2)
-        for material in (0x540, 0x640):
-            struct.pack_into("<I", m.buf, material+0x18, 0xffd1d2d3)
     if runtime:
         # UV helper units are 1/64; these are the texel centres of 128x32.
         quad(range(230, 246), PANELS["away"], (.25, 1, 63.75, 63), z=-2)

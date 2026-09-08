@@ -116,10 +116,11 @@ class RetailTests(unittest.TestCase):
         self.assertEqual(at(0xa959e0,"<3f"),(0,0,0))
         self.assertEqual(at(0xa95cac,"<I"),at(0xa95cb4,"<I"))
         self.assertEqual(at(0xa95cac,"<I")[0],0xe6c6e8)
-        # The animation code is pinned unchanged, not simulated by a replacement.
+        # Normalize only recognized in-place edits. The new visibility-prefix
+        # guard includes the existing v10 persistent-bar CALL-to-NOP edit.
         for va,size,sha,label in r.XBE_GUARDS:
             off=r.layout.sbpos.va_to_off(self.patched_xbe,va)
-            self.assertEqual(r.digest(self.patched_xbe[off:off+size]),sha,label)
+            self.assertEqual(r.digest(r.guard_bytes(self.patched_xbe,va,size)),sha,label)
 
     def test_mixed_xbe_and_foreign_driver_refuse(self):
         for va,old,new,label in r.xbe_specs(scorebug_folder=template.DEFAULT_FOLDER):

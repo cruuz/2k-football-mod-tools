@@ -12430,3 +12430,47 @@ existing Shotgun recipes are **MIN, Gun: Doubles Right**, `SD Gun Zone Read`
 through both personnel passes. Do not describe the shipped pack as placing
 its two names in Shotgun. Noah's controls remain hold snap to keep, release
 during the mesh window to give, and a receiver press during the RPO mesh.
+## r64 scorebar rim, 2026-09-08
+
+EXPERIMENTAL / UNWITNESSED. Integrate `ASTRA_SCOREBAR_RIM_REPORT.md` and its
+reviewed commit/bundle. This extends the existing static v3 writer. There is
+no new executable owner, allocator request, entry hook, cached team pointer,
+resource lookup, artwork-folder schema or product option.
+
+| Integration point | Concrete final action |
+| --- | --- |
+| Dispatcher `_apply_all` tuple and kwarg | No new tuple entry or kwarg. Retain the existing static image writer and forwarding of `scorebug_folder=plan.scorebug_folder or None`. Keep the existing diagnostic runtime tuple and `scorebug_runtime_patch` kwarg separate and off in presets. The color helper supplies spans to `nfl2k5_scorebug_ingame.apply_xbe`; it is not another dispatcher owner. |
+| Four status dictionaries | Keep `scorebug_xbe: scorebug_reference.xbe_status(...)` in XBE inspection, image inspection, XBE apply result and image apply result (`payload`, image XBE, `result`, `after` respectively). Keep resource inspection and the separate `scorebug_runtime` fields. No new key. The current exact bytes recognize rim-v3 and explicit-folder v10; the previous v3 bytes now refuse and require a clean-source rebuild. |
+| `BuildPlan` and presets | Keep `scorebug`, `scorebug_folder`, `scorebug_runtime`. Basic and Advanced keep static scorebug off; Experimental keeps it on. All three presets keep runtime effects off. Blank folder selects the rim revision; an explicit folder keeps v10 byte for byte. No new normalization, allocator, deferral or final-pass fields. |
+| Gameplay Patches `PATCHES` and `NEEDS_IMAGE` | Retain `("scorebug", "Experimental ESPN scorebar", r62_ui.SCOREBUG_HELP)` and membership of `scorebug` in `NEEDS_IMAGE`. Replace only the existing shared `SCOREBUG_HELP` text in `mod_editor/gui/beta62_options.py` with the copy below. |
+| Build `_option` caption | Keep `Experimental ESPN scorebar` (26 characters), `needs_image=True`, the experimental badge and optional artwork-folder field. Keep diagnostic effects off. |
+| Release allowlist | No new lines. Existing lines for `mod_editor/core/nfl2k5_scorebar_v3.py`, `mod_editor/core/nfl2k5_scorebug_exact.py`, `mod_editor/core/nfl2k5_scorebug_resources.py`, `mod_editor/core/nfl2k5_scorebug_ingame.py`, `mod_editor/core/nfl2k5_scorebug_template.py` and the template README continue to cover the runtime changes. Proof tools, assembly, screenshots, test fixtures and report JSON are development evidence, not new runtime dependencies. |
+| Runtime-closure imports | No new imports to add. Retain `mod_editor.core.nfl2k5_scorebar_v3`, `mod_editor.core.nfl2k5_scorebug_exact`, `mod_editor.core.nfl2k5_scorebug_resources`, `mod_editor.core.nfl2k5_scorebug_ingame` and `mod_editor.core.nfl2k5_scorebug_template` in the existing closure. The new native callback bytes need no host assembler, native CPU fixture, Pillow import in the callback helper, or proof-file access. |
+| Capability registry | No new surface or entry. Existing scorebar/template IDs keep their commands and explicit-folder semantics. Describe the blank-folder default as live team panels and outlines, with neutral centre/marks and silver fallback. Keep this revision unwitnessed. |
+| Protected cave manifest | Claude must regenerate `data/nfl2k5_cave_reservations.json` after the final combined stack, using the existing manifest workflow. The complete owned `FCA87..FCCCC` span remains 581 bytes; `FC285..FC288` and `FC305..FC308` are new three-byte rewrites of existing material visibility instructions. The existing trace owner and source scan already include these modules; no union owner list or budget fixture addition is needed. Do not classify either instruction as a cave. |
+
+Exact shared help text:
+
+```python
+SCOREBUG_HELP = (
+    "Retail keeps the game's original scorebar. Patch adds the experimental "
+    "ESPN bar with live team panels and outlines. Each outline uses a team "
+    "colour that differs from its panel, or silver when no suitable colour "
+    "is available. The centre and decorative timeout marks stay neutral. "
+    "The down box and clocks stay through the play. A blank artwork folder "
+    "selects this bar; an explicit folder keeps the v10 artwork layout. "
+    "This outline revision is unwitnessed. Rebuild from a clean source."
+)
+```
+
+The installed rim was generated in `nfl2k5_scorebug_exact.atlas`, not painted
+in the shipped v10 PNG layers. Its own white mask now occupies an unused
+part of the same atlas. Therefore no PNG split, template schema change,
+catalog change, Scorebar Studio panel change or release PNG-pin change is
+needed. The explicit-folder output pins remain unchanged.
+
+The companion resources metadata was updated only for exact generated
+static scene/atlas identities and the diagnostic HUD digest containing the
+same atlas. No protected file was changed. The diagnostic scene, fonts,
+appendix, hooks and activation policy are unchanged; this does not assert
+that the historical runtime freeze is fixed.

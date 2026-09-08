@@ -11,11 +11,14 @@ still fits the 1040-wide shell minimum.
 from __future__ import annotations
 
 import os
+from pathlib import Path
+import sys
 import struct
 from types import SimpleNamespace
 import unittest
 
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from PyQt5.QtWidgets import QApplication, QTabWidget  # noqa: E402

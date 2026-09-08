@@ -2,15 +2,13 @@
 
 No allocator request, loading hook, resource lookup or cached team binding.
 The native visibility function's own removed clock-hide logic makes room for
-its shared draw callback. See docs/scorebug_ingame/rim/visibility_and_color.s.
+its shared draw callback. See docs/scorebug_ingame/v3/visibility_and_color.s.
 """
 from __future__ import annotations
 
 import struct
 
 MATERIAL_INDICES = {"home": 6, "away": 10}
-RIM_INDICES = {"home": 9, "away": 7}
-SILVER = 0xffd1d2d3
 COLOR_TABLE = (0x4e7fe0, 0x4e88a0, 0x1c)
 
 
@@ -21,22 +19,9 @@ def contrast_color(argb):
     return 0xff000000 | (((argb & 0x00fefefe) >> 1) - ((argb & 0x00f0f0f0) >> 4))
 
 
-def rim_color(primary, secondary, *, known=True):
-    """Use the opaque retail primary, then a distinct secondary, else silver.
-
-    The pinned retail table has no absent colour words. A missing team/code
-    or the native accessor's unknown-code default is not a team palette.
-    """
-    if not known or primary == 0xff0065e6:
-        return SILVER
-    panel = contrast_color(primary) if primary is not None else 0xff252625
-    candidate = secondary if primary is None or primary == panel else primary
-    return SILVER if candidate is None or candidate == panel else candidate
-
-
 def xbe_specs():
     specs = [(VISIBILITY_VA, RETAIL_VISIBILITY, VISIBILITY_CODE,
-              "persistent middle and lazy panel/rim colours in native visibility span")]
+              "persistent middle and lazy panel colour in native visibility span")]
     for va, getter, side in ((0xfc010, 0x61c50, "home"), (0xfc030, 0x61c60, "away")):
         def branch(opcode, source, target):
             return bytes((opcode,)) + struct.pack("<i", target-source-5)
@@ -47,7 +32,7 @@ def xbe_specs():
         new += branch(0xe8, va+len(new), COLOR_VA)
         new += b"\x8b\xce\x5e"
         new += branch(0xe9, va+len(new), 0x30f20)
-        specs.append((va, old, new.ljust(len(old), b"\x90"), "live "+side+" name and panel/rim colours"))
+        specs.append((va, old, new.ljust(len(old), b"\x90"), "live "+side+" name and panel colour"))
     # Reuse one obsolete corner-mark material for the home panel. Its new
     # name is an existing immutable literal; no new string or texture lookup.
     specs.append((0xa95cb0, struct.pack("<I", 0xe6c780), struct.pack("<I", 0xe6c6e8),
@@ -57,17 +42,11 @@ def xbe_specs():
     new[4:9] = b"\xe8" + struct.pack("<i", CLOCK_VA-0xfbe39)
     new[19:23] = struct.pack("<I", 0xe6c43a)
     specs.append((0xfbe30, old, bytes(new), "live play clock or -- without changing its cell"))
-    # Both half-frame materials and the neutral marks are now used in both
-    # placement modes. Keep the native material walk; clear its hidden bit in
-    # both branches instead of hiding the alternate full frame/corner mark.
-    for va in (0xfc285, 0xfc305):
-        specs.append((va, bytes.fromhex("83c801"), bytes.fromhex("83e0fe"),
-                      "both rim sides and neutral marks visible in either mode"))
     return specs
 
 VISIBILITY_VA = 0xfca87
-COLOR_VA = 0x000fcbf2
-CLOCK_VA = 0x000fcca7
+COLOR_VA = 0xfcc1f
+CLOCK_VA = 0xfcca6
 RETAIL_VISIBILITY = bytes.fromhex(
     "8b35b402e6003bf70f842f020000538b1dec02e60039bb60010000751639bb98000000740a8d83900000003bc7750433"
     "d2eb05ba01000000a18002e6003bc78b0db802e6008915505ba9000f84050100008b400c83c0040f84f90000008b4004"
@@ -84,26 +63,19 @@ RETAIL_VISIBILITY = bytes.fromhex(
     "c408c20400"
 )
 VISIBILITY_CODE = bytes.fromhex(
-    "8b35b402e60039fe0f84550100005355bdb05ba9008b1dec02e60031d239bb60010000751039bb9800000074"
-    "0981fb70ffffff740142a18002e60039f88b0db802e6008955a0747b8b400c83c00474738b400439f8746c8b"
-    "4004c1e80883e03f83f80a753183f90e755939fa7555d98584000000c78530ffffff01000000d85d74dfe0f6"
-    "c4447b0689bd30ffffff897d10e9bc00000083f80c752883fe0374238d41f483f801771b39fa75176a015989"
-    "0d102fba0089bd30ffffff894d10e98f000000d945a48b15fc02e600d85d9489bd30ffffffdfe0f6c4447a3e"
-    "84f6783ad98584000000d85d74dfe0f6c4447a2a83fe04752583f90e7420393d142fba006a015e7510397c24"
-    "10741283f90c740583f90d7508897510eb066a015e897d1083f90e751bd945a4d85d94dfe0f6c4447a0e39bb"
-    "9801000089b580000000750689bd80000000e8bef2faff85c074038975106a0158898550feffff8985c0feff"
-    "ff5d5b5f5e83c408c204006089d789c385c074258b903c01000085d2741b89f1e8a43ef3ff83bb0c01000000"
-    "741089d9e854c1f6ff89c5eb0d66c7060000b8252625ff50eb4da980808000751089c181c10f0f0f00f7c180"
-    "808000741489c125fefefe00d1e881e1f0f0f000c1e90429c80d000000ff5081fde66500ff741439e8750e89"
-    "d9e84fc1f6ff89c53b04247402eb05bdd3d2d1ff588b0d2855a90085c9741b83791c0b75158b492085c9740e"
-    "89443918d1ef29f989a91806000061c38b0d9402e600e30bf64118067505e956eeffff58c7062d002d0066c7"
-    "46040000e982f1ffff"
+    "8b35b402e60039fe0f8482010000538b1dec02e60039bb60010000751639bb98000000740a8d839000000039f8750431"
+    "d2eb05ba01000000a18002e60039f88b0db802e6008915505ba9000f84860000008b400c83c004747e8b400439f87477"
+    "8b4004c1e80883e03f83f80a753783f90e756439fa7560d905345ca900c705e05aa90001000000d81d245ca900dfe0f6"
+    "c4447b06893de05aa900893dc05ba900e9dd00000083f80c752d83fe03742889c883e80c740348751e39fa751a6a0159"
+    "890d102fba00893de05aa900890dc05ba900e9ab000000d905545ba9008b15fc02e600d81d445ba900893de05aa900df"
+    "e0f6c4447a4684f67842d905345ca900d81d245ca900dfe0f6c4447a2f83fe04752a83f90e7425393d142fba00be0100"
+    "00007510397c240c741783f90c740583f90d750d8935c05ba900eb0bbe01000000893dc05ba90083f90e7521d905545b"
+    "a900d81d445ba900dfe0f6c4447a0e39bb980100008935305ca9007506893d305ca900e891f2faff85c074068935c05b"
+    "a9006a0158a3005aa900a3705aa9005b5f5e83c408c20400535789d789c385c074258b903c01000085d2741b89f1e876"
+    "3ef3ff89d983bb0c01000000750231c9e824c1f6ffeb0a66c7060000b8252625ffa980808000751089c181c10f0f0f00"
+    "f7c180808000741489c125fefefe00d1e881e1f0f0f000c1e90429c80d000000ff8b0d2855a90085c9741183791c0b75"
+    "0b8b492085c97404894439185f5bc3a19402e60085c0740bf64018067505e956eeffff58c7062d002d0066c746040000"
+    "e982f1ffff"
 ).ljust(len(RETAIL_VISIBILITY), b"\x90")
 
 GUARDS = [(1034887, 581, 'e563e5240911c235ffb43a773f40a319fe53e9af03aa6b98403f38b2931ef44d', 'scorebar visibility and lazy colour span'), (429424, 67, 'f427d83eb8f774be881e8818e9bf807f3c265c83ccedcfe2005c6e5a3c088ee5', 'native team primary accessor'), (199568, 174, '0e2eee1e67c709089c59e72bd3de909c3c9e22f9de49da13a47d9ed9d64a9de2', 'native asset-code comparison'), (5144544, 2240, '0713d8ca89333142d86dad04904d4804ea76687301a50df7265b5407302036e6', 'retail team colour table'), (400464, 22, 'b70dd350e789fd545dc95d77207f46034dab8c79080209a477ba31f0a18a295d', 'live team contexts')]
-
-GUARDS += [(0x68dc0, 67, "7412c79b246c86230e92cc796226fa92088f9441f6c9771f23656d6a8333a5dc", "native team secondary accessor"),
-           (0xfc200, 298, "94527caeaa8869858229bb24ea66f39025d0338110601c47b1d83e490c383da6", "native frame material visibility")]
-
-GUARDS += [(0xfc9c0, 0xc7, "461564bc4edab82c22f91d74fecfb8e00c4d8bea8b01586febfde695721d6296",
-            "native visibility prefix and zero-register invariant")]

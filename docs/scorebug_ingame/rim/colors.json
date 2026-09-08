@@ -1,0 +1,345 @@
+{
+  "all_primary_and_secondary_words_present_and_opaque": true,
+  "missing_colour_scope": "Missing retail palette/code has neither word. No pinned row has a missing primary with a present secondary.",
+  "rows": [
+    {
+      "native_colour_word_reads": [
+        "0x4e8020",
+        "0x4e8024"
+      ],
+      "panel": "0xff31145c",
+      "primary": "0xff31145c",
+      "rim": "0xff101010",
+      "secondary": "0xff101010",
+      "side": "away",
+      "submission": {
+        "argb": "0xff101010",
+        "code_pins": [
+          {
+            "end": "0x241fb",
+            "sha256": "462b702fa06bbbb2c1f48f60b7417665f94d00297a7936167be33d49bae6645a",
+            "start": "0x241ec"
+          },
+          {
+            "end": "0x23c93",
+            "sha256": "e88770fb550c363af9c1ecfa5af25129a347038e2879b59017008b9ec1504d30",
+            "start": "0x23bf0"
+          }
+        ],
+        "command_bytes": 28,
+        "gpu_executed": false,
+        "header": [
+          "0x41ea4",
+          "0x6",
+          "0x100b80"
+        ],
+        "material_field": "+0x18",
+        "rgba_half_scale": [
+          0.0313725508749485,
+          0.0313725508749485,
+          0.0313725508749485,
+          0.5
+        ],
+        "unchanged_color_second_submission_bytes": 0
+      },
+      "team": "BAL"
+    },
+    {
+      "native_colour_word_reads": [
+        "0x4e8138",
+        "0x4e813c"
+      ],
+      "panel": "0xff0c586d",
+      "primary": "0xff0c586d",
+      "rim": "0xff03031b",
+      "secondary": "0xff03031b",
+      "side": "home",
+      "submission": {
+        "argb": "0xff03031b",
+        "code_pins": [
+          {
+            "end": "0x241fb",
+            "sha256": "462b702fa06bbbb2c1f48f60b7417665f94d00297a7936167be33d49bae6645a",
+            "start": "0x241ec"
+          },
+          {
+            "end": "0x23c93",
+            "sha256": "e88770fb550c363af9c1ecfa5af25129a347038e2879b59017008b9ec1504d30",
+            "start": "0x23bf0"
+          }
+        ],
+        "command_bytes": 28,
+        "gpu_executed": false,
+        "header": [
+          "0x41ea4",
+          "0x6",
+          "0x100b80"
+        ],
+        "material_field": "+0x18",
+        "rgba_half_scale": [
+          0.005882353521883488,
+          0.005882353521883488,
+          0.052941180765628815,
+          0.5
+        ],
+        "unchanged_color_second_submission_bytes": 0
+      },
+      "team": "JAX"
+    },
+    {
+      "native_colour_word_reads": [
+        "0x4e818c",
+        "0x4e8190"
+      ],
+      "panel": "0xff422259",
+      "primary": "0xff422259",
+      "rim": "0xffffffff",
+      "secondary": "0xffffffff",
+      "side": "away",
+      "submission": {
+        "argb": "0xffffffff",
+        "code_pins": [
+          {
+            "end": "0x241fb",
+            "sha256": "462b702fa06bbbb2c1f48f60b7417665f94d00297a7936167be33d49bae6645a",
+            "start": "0x241ec"
+          },
+          {
+            "end": "0x23c93",
+            "sha256": "e88770fb550c363af9c1ecfa5af25129a347038e2879b59017008b9ec1504d30",
+            "start": "0x23bf0"
+          }
+        ],
+        "command_bytes": 28,
+        "gpu_executed": false,
+        "header": [
+          "0x41ea4",
+          "0x6",
+          "0x100b80"
+        ],
+        "material_field": "+0x18",
+        "rgba_half_scale": [
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "unchanged_color_second_submission_bytes": 0
+      },
+      "team": "MIN"
+    },
+    {
+      "native_colour_word_reads": [
+        "0x4e81fc",
+        "0x4e8200"
+      ],
+      "panel": "0xff253f36",
+      "primary": "0xff253f36",
+      "rim": "0xffffffff",
+      "secondary": "0xffffffff",
+      "side": "home",
+      "submission": {
+        "argb": "0xffffffff",
+        "code_pins": [
+          {
+            "end": "0x241fb",
+            "sha256": "462b702fa06bbbb2c1f48f60b7417665f94d00297a7936167be33d49bae6645a",
+            "start": "0x241ec"
+          },
+          {
+            "end": "0x23c93",
+            "sha256": "e88770fb550c363af9c1ecfa5af25129a347038e2879b59017008b9ec1504d30",
+            "start": "0x23bf0"
+          }
+        ],
+        "command_bytes": 28,
+        "gpu_executed": false,
+        "header": [
+          "0x41ea4",
+          "0x6",
+          "0x100b80"
+        ],
+        "material_field": "+0x18",
+        "rgba_half_scale": [
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "unchanged_color_second_submission_bytes": 0
+      },
+      "team": "NYJ"
+    },
+    {
+      "native_colour_word_reads": [
+        "0x4e8218",
+        "0x4e821c"
+      ],
+      "panel": "0xff101010",
+      "primary": "0xff101010",
+      "rim": "0xffd1d2d3",
+      "secondary": "0xffd1d2d3",
+      "side": "away",
+      "submission": {
+        "argb": "0xffd1d2d3",
+        "code_pins": [
+          {
+            "end": "0x241fb",
+            "sha256": "462b702fa06bbbb2c1f48f60b7417665f94d00297a7936167be33d49bae6645a",
+            "start": "0x241ec"
+          },
+          {
+            "end": "0x23c93",
+            "sha256": "e88770fb550c363af9c1ecfa5af25129a347038e2879b59017008b9ec1504d30",
+            "start": "0x23bf0"
+          }
+        ],
+        "command_bytes": 28,
+        "gpu_executed": false,
+        "header": [
+          "0x41ea4",
+          "0x6",
+          "0x100b80"
+        ],
+        "material_field": "+0x18",
+        "rgba_half_scale": [
+          0.40980395674705505,
+          0.4117647409439087,
+          0.41372552514076233,
+          0.5
+        ],
+        "unchanged_color_second_submission_bytes": 0
+      },
+      "team": "LV"
+    },
+    {
+      "native_colour_word_reads": [
+        "0x4e83d8",
+        "0x4e83dc"
+      ],
+      "panel": "0xff061638",
+      "primary": "0xff061638",
+      "rim": "0xffab253c",
+      "secondary": "0xffab253c",
+      "side": "home",
+      "submission": {
+        "argb": "0xffab253c",
+        "code_pins": [
+          {
+            "end": "0x241fb",
+            "sha256": "462b702fa06bbbb2c1f48f60b7417665f94d00297a7936167be33d49bae6645a",
+            "start": "0x241ec"
+          },
+          {
+            "end": "0x23c93",
+            "sha256": "e88770fb550c363af9c1ecfa5af25129a347038e2879b59017008b9ec1504d30",
+            "start": "0x23bf0"
+          }
+        ],
+        "command_bytes": 28,
+        "gpu_executed": false,
+        "header": [
+          "0x41ea4",
+          "0x6",
+          "0x100b80"
+        ],
+        "material_field": "+0x18",
+        "rgba_half_scale": [
+          0.33529412746429443,
+          0.07254902273416519,
+          0.11764706671237946,
+          0.5
+        ],
+        "unchanged_color_second_submission_bytes": 0
+      },
+      "team": "HOU"
+    },
+    {
+      "native_colour_word_reads": [
+        "0x4e8004",
+        "0x4e8008"
+      ],
+      "panel": "0xff101010",
+      "primary": "0xff101010",
+      "rim": "0xffb51441",
+      "secondary": "0xffb51441",
+      "side": "away",
+      "submission": {
+        "argb": "0xffb51441",
+        "code_pins": [
+          {
+            "end": "0x241fb",
+            "sha256": "462b702fa06bbbb2c1f48f60b7417665f94d00297a7936167be33d49bae6645a",
+            "start": "0x241ec"
+          },
+          {
+            "end": "0x23c93",
+            "sha256": "e88770fb550c363af9c1ecfa5af25129a347038e2879b59017008b9ec1504d30",
+            "start": "0x23bf0"
+          }
+        ],
+        "command_bytes": 28,
+        "gpu_executed": false,
+        "header": [
+          "0x41ea4",
+          "0x6",
+          "0x100b80"
+        ],
+        "material_field": "+0x18",
+        "rgba_half_scale": [
+          0.3549019694328308,
+          0.03921568766236305,
+          0.12745098769664764,
+          0.5
+        ],
+        "unchanged_color_second_submission_bytes": 0
+      },
+      "team": "ATL"
+    },
+    {
+      "native_colour_word_reads": [
+        "0x4e8100",
+        "0x4e8104"
+      ],
+      "panel": "0xff006419",
+      "primary": "0xff006419",
+      "rim": "0xffe0b02a",
+      "secondary": "0xffe0b02a",
+      "side": "home",
+      "submission": {
+        "argb": "0xffe0b02a",
+        "code_pins": [
+          {
+            "end": "0x241fb",
+            "sha256": "462b702fa06bbbb2c1f48f60b7417665f94d00297a7936167be33d49bae6645a",
+            "start": "0x241ec"
+          },
+          {
+            "end": "0x23c93",
+            "sha256": "e88770fb550c363af9c1ecfa5af25129a347038e2879b59017008b9ec1504d30",
+            "start": "0x23bf0"
+          }
+        ],
+        "command_bytes": 28,
+        "gpu_executed": false,
+        "header": [
+          "0x41ea4",
+          "0x6",
+          "0x100b80"
+        ],
+        "material_field": "+0x18",
+        "rgba_half_scale": [
+          0.4392157196998596,
+          0.3450980484485626,
+          0.08235294371843338,
+          0.5
+        ],
+        "unchanged_color_second_submission_bytes": 0
+      },
+      "team": "GB"
+    }
+  ],
+  "rows_in_table": 80,
+  "table_sha256": "0713d8ca89333142d86dad04904d4804ea76687301a50df7265b5407302036e6",
+  "unknown_primary_default_not_in_table": true
+}
