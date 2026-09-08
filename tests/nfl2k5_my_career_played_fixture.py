@@ -26,8 +26,8 @@ class Machine(FrontendMachine):
         self.call(0x343460)
         for _ in range(4):
             self.frame(0x10)
-        for _ in range(club):
-            self.call("mode_team_right")
+        self.select(0)
+        self.select(club)
         self.select(1, budget=500000000)
         self.replace_stub(0x13EE10, None)
         if self.top() != self.labels["apartment"] or self.call("primary") != player:
@@ -44,8 +44,8 @@ class Machine(FrontendMachine):
         for rng in (0xB12680, 0xE5FCA0):
             self.call(0x48BE0, ecx=rng, edx=12345)
 
-    def launch(self):
-        self.select(0)
+    def launch(self, *, budget=1000000):
+        self.select(0, budget=budget)
         if self.top() != 0x51B908:
             raise AssertionError(f"expected Team Select, found {self.top():#x}")
         self.frame(0x10)

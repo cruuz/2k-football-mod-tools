@@ -53,14 +53,12 @@ class WeekTests(unittest.TestCase):
             self.assertEqual(simulated, [(0, slot) for slot in pending])
             self.assertEqual(committed, simulated)
             self.assertEqual(m.get(0xE576B4), 1)
-            self.assertEqual(m.top(), m.labels["apartment"])
+            self.assertEqual(m.top(), 0x51B908)
             self.assertEqual(m.get(m.state + 64), 0)
             self.assertTrue(all(m.uc.mem_read(0xE57C40 + slot * 8, 1)[0] >= 2
                                 for slot in pending))
             next_own = m.call("mode_next_fixture")
             self.assertEqual(next_own // 17, 1)
-            m.select(0)
-            self.assertEqual(m.top(), 0x51B908)
             self.assertEqual((m.get(0xE576B4), m.get(0xE576BC)),
                              (next_own // 17, next_own % 17))
             self.assertEqual(len(simulated), 15)

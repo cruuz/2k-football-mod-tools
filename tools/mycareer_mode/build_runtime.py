@@ -10,7 +10,7 @@ SOURCE = Path(__file__).resolve().parent
 TARGET = ROOT / "mod_editor/core/nfl2k5_my_career_mode_code.py"
 
 
-def generate(source=SOURCE, *, optimize="-Os"):
+def generate(source=SOURCE, *, optimize="-Oz"):
     source = Path(source).resolve()
     if optimize not in ("-Os", "-Oz"):
         raise ValueError("unsupported MyCareer size optimization")

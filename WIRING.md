@@ -12848,3 +12848,78 @@ writer bytes or executable owner. Protected files remain untouched.
   DATASET_SHA256 and HELP_TEXT changed. Regenerate
   `data/nfl2k5_cave_reservations.json` once with the complete integration stack,
   as the brief instructs; do not carry an ad hoc pin from this worktree.
+
+## r64 MyCareer mode 4: visible native lists and player presentation
+
+This section supersedes mode 3's drawing, current-week launch, camera and
+57-byte headroom descriptions. EXPERIMENTAL / UNWITNESSED. The protected
+sources are unchanged. Claude must regenerate
+`data/nfl2k5_cave_reservations.json` after integration; the mode-4 scratch
+manifest is review evidence only. Rebuild the executable from a supported
+retail base. The previous mode's complete installation is not accepted as
+an in-place upgrade.
+
+The existing `_apply_all` tuple remains
+`(my_career, _my_career_adapter(my_career_setup), "my_career_patch", "MyCareer (experimental)")`.
+Keep `my_career` and optional `my_career_setup` kwargs, complete-union
+allocation, normalization, deferral and final apply. The adapter already
+calls `nfl2k5_my_career_mode.apply` for a missing setup. All four status
+surfaces (XBE inspection, image inspection, executable/copy apply, copied
+image result), and `_grown_status_fields`, already use the shared
+MyCareer recognizer; retain their `my_career` status and separate
+`my_career_patch` receipt. No new dispatcher or status key is needed.
+
+Retain `BuildPlan.my_career: bool = False` and
+`my_career_setup: str | None = None`. Basic, Advanced and Experimental all
+leave MyCareer off. Existing Auto Save selection and native preferences
+are unchanged. Both owners still compose in either order.
+
+Keep `my_career` in Gameplay Patches `NEEDS_IMAGE`. Suggested replacement
+PATCHES text, retaining the required Retail/Patch words:
+`Retail controls a franchise team. Patch adds experimental MyCareer creation,
+team selection, a visible Apartment and inline saves. Play opens your next
+fixture after any required league processing. MyPlayer gets the retail
+indicator, receiver icons and play art. Off field, the CPU plays at normal
+speed. Supersim is not available. Experimental / Unwitnessed.`
+The Build `_option` caption remains
+`MyCareer: create MyPlayer in the game` (37 characters).
+
+Existing allowlist lines and corresponding dotted runtime imports remain:
+
+```text
+mod_editor/core/nfl2k5_my_career.py
+mod_editor/core/nfl2k5_my_career_code.py
+mod_editor/core/nfl2k5_my_career_mode.py
+mod_editor/core/nfl2k5_my_career_mode_code.py
+mod_editor/core/nfl2k5_my_career_save.py
+mod_editor/core/nfl2k5_franchise_autosave.py
+mod_editor/core/nfl2k5_franchise_autosave_code.py
+docs/mod_editor/nfl2k5_my_career_mode_capabilities.json
+```
+
+There is no new capability surface or registry ID. Keep the existing
+runtime-not-tested and default-off/expose policy. The new fixtures,
+`measure_mode4.py`, `fastforward_candidate.c` and `mode4_budget.json` are
+development evidence and need no runtime-closure import or release entry.
+The candidate is never installed or executed. Its 48-byte machine delta
+exceeds the current tested layouts by 40/42 RX bytes even before scene,
+resume and UI implementation. The owner remains exactly 8192 RX / 4096 RW.
+The updated `measure_m3.py` uses the installed Oz compiler setting and
+reports the former Os setting separately; historical M3 receipts remain
+historical, not current headroom claims.
+
+The protected camera owner and Abilities owner require no changes. The
+camera adaptation is a MyCareer-only branch/focus wrapper. Play art wraps
+only the bound player's input call at `1212A5`, outside Abilities' complete
+`120A20` dependency pin. Its temporary side mask is restored before the
+caller returns. Both owners retain their full validators.
+
+One older, unrelated test still needs Claude's shared harness cleanup:
+`test_nfl2k5_defensive_try_manifest.py` reads the protected
+`DEFAULT_MANIFEST` directly and ignores `NFL2K5_CAVE_MANIFEST`. Its source
+was left unchanged. The three original assertions pass when a runpy
+harness supplies the freshly generated, fully validated scratch manifest
+as that imported default. Keep the source-drift refusal; only add the
+same explicit environment-path selection already used by the MyCareer
+and screen-hooks manifest suites. The report distinguishes this run from
+ordinary standalone commands.

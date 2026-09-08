@@ -3,6 +3,20 @@
 .text
 .global inline_size, inline_save, inline_load_begin, inline_admission
 .global inline_read, inline_load_end, inline_roster_size
+.global inline_active
+inline_active:
+ /* Share the binder's complete magic/Franchise/phase admission. */
+ call enabled
+ jz 1f
+ cmp DWORD PTR [state+2580],2
+ jne 1f
+ cmp DWORD PTR [state+24],1
+ je 1f
+ push 1
+ pop eax
+ ret
+1: xor eax,eax
+ ret
 /* Only the Franchise total-size calculation gets the footer. */
 inline_size:
  call inline_active
@@ -127,7 +141,14 @@ mode_handler:
  call mode_event
  pop edx
  pop ecx
+ cmp edx,7
+ je mode_draw_frame
  jmp 0xf3e90
+mode_draw_frame:
+ push ecx
+ call 0xf3e90
+ pop ecx
+ jmp mode_draw
 
 .global mode_dispatch, mode_practice_return, mode_loaded_replace
 .global mode_cap_template
@@ -204,6 +225,52 @@ human_eax:
  pop eax
  test ecx,ecx
  ret
+.global mode_art_input
+.global mode_camera_focus
+mode_camera_focus:
+ /* Phase 7 is the pre-lineup presentation. Its descriptor and skeleton
+  * focus already supply framing; keep that focus untouched.
+  * Gameplay phases retain the existing MyPlayer camera hook verbatim. */
+ pushfd
+ cmp DWORD PTR [0xb616c0],7
+ jne 1f
+ popfd
+ jmp 0x5f760
+1: popfd
+ jmp camera_focus
+.global mode_camera_pick
+mode_camera_pick:
+ /* Native 89590's last camera-only choice; earlier play/task work is done.
+  * A present MyPlayer follows the same branch as a retail human side. */
+ pushad
+ call mode_unit_present
+ test eax,eax
+ popad
+ jnz 0x89722
+ mov eax,DWORD PTR [0xe5fc50]
+ test eax,eax
+ jmp 0x89712
+mode_art_input:
+ /* Only the bound player's input decoder sees the temporary art-side mask.
+  * Native play/task selection and controller assignment run outside it. */
+ push ebx
+ call mode_unit_present
+ test eax,eax
+ jz 1f
+ mov edx,DWORD PTR [eax+0xc]
+ cmp edx,DWORD PTR [esp+12]
+ jne 1f
+ mov ebx,DWORD PTR [eax+0x38]
+ push DWORD PTR [ebx+0x24]
+ mov DWORD PTR [ebx+0x24],1
+ push DWORD PTR [esp+16]
+ push DWORD PTR [esp+16]
+ call 0x120a20
+ pop DWORD PTR [ebx+0x24]
+ pop ebx
+ ret 8
+1: pop ebx
+ jmp 0x120a20
 human_defense:
  /* JMP adapter for CMP [ESI+30],EBX; PUSH EBX; JNE. EBX is zero. */
  push eax

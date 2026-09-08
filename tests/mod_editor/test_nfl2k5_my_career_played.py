@@ -93,7 +93,7 @@ class PlayedTests(unittest.TestCase):
             self.assertGreater(m.get(m.state + 68), 0)
             self.assertEqual(m.get(m.state + 196), 0)
 
-    def test_actual_bye_dispatches_week_and_season_end_dispatches_stage(self):
+    def test_bye_selects_next_own_fixture_and_season_end_dispatches_stage(self):
         # These assertions prove routing at the native operation boundary.
         # The separate long native probe executes the week implementation.
         with Machine(self.payload) as m:
@@ -109,12 +109,17 @@ class PlayedTests(unittest.TestCase):
             m.put(0xE576B4, bye)
             calls = []
             for va in (0x247D40, 0x2480B0):
-                m.replace_stub(va, lambda address=va: (calls.append((address, m.reg("ECX"))), m.ret()))
-            m.replace_stub(0xC79F0, lambda: self.fail("bye opened Team Select"))
+                m.replace_stub(va, lambda address=va: (calls.append((address, m.reg("ECX"))),
+                    m.put(0xE576B4, m.get(0xE576B4) + 1), m.ret()))
+            next_slot = m.call('mode_next_fixture')
             m.select(0)
             self.assertEqual(calls, [(0x247D40, m.manager)])
-            self.assertIn(("notice", "No game pending. Advancing."), m.events)
-            self.assertEqual(m.top(), m.labels["apartment"])
+            self.assertEqual(m.top(), 0x51B908)
+            self.assertEqual(m.get(0xE576B4) * 17 + m.get(0xE576BC), next_slot)
+            self.assertEqual(m.uc.mem_read(0xE57C40, len(grid)), grid)
+            m.frame(0x200)
+            m.frame()
+            self.assertEqual(m.top(), m.labels['apartment'])
             for i in range(374):
                 if grid[8*i] < 2:
                     grid[8*i] = 3
@@ -122,6 +127,7 @@ class PlayedTests(unittest.TestCase):
             m.put(0xE576B4, m.get(0xE576B0))
             m.select(0)
             self.assertEqual(calls[-1], (0x2480B0, m.manager))
+            self.assertIn(("notice", "No game pending. Advancing."), m.events)
             self.assertEqual(m.top(), m.labels["apartment"])
 
 

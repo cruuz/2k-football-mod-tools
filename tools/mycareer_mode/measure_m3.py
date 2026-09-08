@@ -34,8 +34,8 @@ def measure():
         compiled = {}
         # Only the locally generated Python byte/relocation literals execute.
         exec(compile(build_runtime.generate(d), "<generated-m3-capacity>", "exec"), compiled)
-        smaller = {}
-        exec(compile(build_runtime.generate(d, optimize="-Oz"), "<generated-m3-oz-capacity>", "exec"), smaller)
+        reference = {}
+        exec(compile(build_runtime.generate(d, optimize="-Os"), "<generated-m3-os-capacity>", "exec"), reference)
     mode.assembly = SimpleNamespace(**compiled)
     try:
         try:
@@ -53,7 +53,7 @@ def measure():
             del candidate
     finally:
         mode.assembly = base
-    mode.assembly = SimpleNamespace(**smaller)
+    mode.assembly = SimpleNamespace(**reference)
     try:
         try:
             mode.code_for(0, 0)
@@ -61,15 +61,15 @@ def measure():
             match = re.fullmatch(r"generic MyCareer needs (\d+) bytes; exceeds its 8192-byte budget by (\d+) bytes", str(exc))
             if match is None:
                 raise
-            oz_required, oz_shortfall = map(int, match.groups())
+            os_required, os_shortfall = map(int, match.groups())
         else:
-            raise ValueError("the Oz design now fits; revise the capacity conclusion")
+            raise ValueError("the Os design now fits; revise the capacity conclusion")
     finally:
         mode.assembly = base
     return {
         "schema": "nfl2k5.mycareer.m3-capacity.v1", "experimental": True,
         "runtime_witnessed": False, "runtime_installed": False,
-        "compiler_flags": "build_runtime.py: gcc -m32 -Os -fomit-frame-pointer",
+        "compiler_flags": "build_runtime.py: gcc -m32 -Oz -fomit-frame-pointer",
         "reservation_rx": mode.CODE_SIZE, "reservation_rw": mode.DATA_SIZE,
         "format_tag_bytes": len(mode.TAG),
         "baseline_machine_bytes": len(base.CODE),
@@ -81,16 +81,16 @@ def measure():
         "normal_owner_refused": refused, "refusal": error,
         "baseline_menu_rw_bytes": labels["menu_bytes"],
         "nine_row_hub_menu_rw_bytes": labels["menu_bytes"] + 4 * 52,
-        "current_menu_rw_capacity": 1024,
+        "current_menu_rw_capacity": 1080,
         "candidate_quote_rw_range": [3328, 3368],
         "candidate_source_sha256": hashlib.sha256(extra.encode()).hexdigest(),
         "candidate_machine_sha256": hashlib.sha256(compiled["CODE"]).hexdigest(),
-        "uninstalled_oz_alternative": {
-            "candidate_machine_bytes": len(smaller["CODE"]),
-            "candidate_required_rx_bytes": oz_required,
-            "candidate_shortfall_bytes": oz_shortfall,
-            "candidate_machine_sha256": hashlib.sha256(smaller["CODE"]).hexdigest(),
-            "claim": "Additional compiler compaction still exceeds the owner; no runtime or UI acceptance claimed.",
+        "uninstalled_os_reference": {
+            "candidate_machine_bytes": len(reference["CODE"]),
+            "candidate_required_rx_bytes": os_required,
+            "candidate_shortfall_bytes": os_shortfall,
+            "candidate_machine_sha256": hashlib.sha256(reference["CODE"]).hexdigest(),
+            "claim": "The previous Os compiler setting also exceeds the owner; no runtime or UI acceptance claimed.",
         },
         "included": ["existing M2 runtime and menus", "rating quote, tier cost and atomic debit",
                      "identity/token/value/balance revalidation, cancel and replay refusal"],

@@ -31,6 +31,13 @@ SAVE_HOOKS = (
     ("inline_load_end", 0x16E815, "e8661f1600", 0xE8),
 )
 MODE_HOOKS = (
+    ("mode_camera_pick", 0x8970B, "a150fce50085c0", 0xE9),
+    ("mode_art_input", 0x1212A5, "e876f7ffff", 0xE8),
+    ("mode_result", 0xC5D60, "e80beef9ff", 0xE8),
+    ("mode_result", 0xC5D69, "e802eef9ff", 0xE8),
+    ("mode_result", 0xC74E3, "e888d6f9ff", 0xE8),
+    ("mode_result", 0xC74EC, "e87fd6f9ff", 0xE8),
+    ("mode_visuals", 0x11A8F5, "e896b4f5ff", 0xE8),
     ("mode_stats_commit", 0xC5D9E, "e89de30600", 0xE8),
     ("human_esi", 0x1891DE, "8b463085c0", 0xE8),
     ("human_ecx", 0xA1412, "8b413085c0", 0xE8),
@@ -48,6 +55,21 @@ MODE_HOOKS = (
     ("mode_loaded_replace", 0x16DDE0, "e9fb04f0ff", 0xE9),
 )
 GUARDS = (
+    (0x1211E0, 0xD0, "cdf04ccd4ba54547e9f51089891248244ccbd893c2d15d6e694827f2f1c2137c"),
+    (0xa88460, 0x50, "0ce3ab700261bc38b8597990ecfbc72eb8cc9dcfd007138dcebc2ddd0c04ec83"),
+    (0x896e9, 0x8d, "33f20f68556e2ebb244f5e45ccb4cb5d7f62cd629a9547327a77dda4c15adf29"),
+    (0xa4650, 0x17a, "637ec6cc6060f3e6873bc773a648918cdc66e3007b75d41b8e5e5de7d16726f3"),
+    (0x6bc30, 0x23d, "f7ee67e89a1f031057d6ff3d7ee46ac59a76558bf0269862aaf0ecef4a53ee7e"),
+    (0x46920, 0x90, "eb1885e56619b0b7e653fa72af949e5ada2e8452bf19b1867dcc8591b267e7d7"),
+    (0xef850, 0x9, "abfc77963bcc467afc49221d7f61ae661e915fe5710ebd7b9be44d1c6a88c5f9"),
+    (0x75d40, 0x50, "2da6c72df0c1539de0b9f6fd2034f7930f0abaecbb883a691356ae94088eb3a1"),
+    (0x75d90, 0x6ed, "348a220b359012d8fd386cc8e1ea8258fa2b02412e7ea1a918a16cd8aebfb65f"),
+    (0x120a20, 0x775, "17308ced725f4ca7d221cc803adc4b254d6903bfe90cc3a98a0417c645f25f2c"),
+    (0x49f00, 0x4d9, "908d559d09574449caa7b433d83fbd92ea17718ab1d728f5824406c309a4f790"),
+    (0xf3e90, 0xed, "ec3b1d1e23628198be072193dcf9959fbbe68c218226c7e17eec07ecea427077"),
+    (0x150260, 0x94, "b92b5c935f2c864568e123dc9e925663e413613bfa77882a9fc7e7cfec2586de"),
+    (0x14ff80, 0xa0, "b9caaad84cde3c36bcce67af26a1a2e943756591e160f25abb916021a9f36a2e"),
+    (0x4f03f8, 0xe8, "414cd90aad9ac27f35fac2eb5b0b45f03e622550d7599f9d07075e30b2ebf6e1"),
     (0x247D40, 0x1C, "bf2327b23418946929186e588ffb7fd28b68712d3e92fe29a7a4f154bbb9013f"),
     (0x2480B0, 0x1C, "f0fa650aa4f5631ef3b4cf8168809000b1ab2c320621fad9d2647b00b9c1104d"),
     (0xC79F0, 0x29, "8ab13e288a240ce89a92c4d2a2408dfaf3d71f22b47aeb332c24d70fc98fb91c"),
@@ -97,7 +119,13 @@ def code_for(code_va, data_va):
         out.extend(bytes(size))
         return at
 
+    text_pool = bytearray()
+
     def string(name, value):
+        if name not in ("mode_text", "team_text"):
+            labels[name] = data_va + 1408 + 2 * len(text_pool)
+            text_pool.extend((value + "\0").encode("ascii"))
+            return
         content = (value + "\0").encode("utf-16le")
         at = reserve(name, len(content))
         out[at:at + len(content)] = content
@@ -106,23 +134,30 @@ def code_for(code_va, data_va):
         ("mode_text", "MyCareer"), ("apartment_text", "Apartment"),
         ("draft_text", "Enter the draft"), ("udfa_text", "Undrafted free agent"),
         ("load_text", "Load career"), ("quit_text", "Quit to main menu"),
-        ("team_text", "Choose your team"), ("sign_text", "Sign and start career"),
-        ("play_text", "Play next game"), ("card_text", "MyPlayer"),
+        ("team_text", "Choose team"), ("sign_text", "Sign"),
+        ("play_text", "Play next game"), ("card_text", "MyPlayer"), ("save_text", "Save"),
         ("advance_notice", "No game pending. Advancing."),
-        ("watch_text", "Select. Off field: CPU at normal speed"),
-        ("draft_notice", "Draft entry is not ready."),
-        ("refusal_notice", "Not enough roster space."),
-        ("load_notice", "Career save could not be loaded."),
+        ("watch_text", "Off field: CPU at normal speed"),
+        ("fixture_text", "%s at %s. %s"),
+        ("wait_text", "CPU plays until MyPlayer's unit is on the field"),
+        ("draft_notice", "Draft is not ready."),
+        ("refusal_notice", "Roster is full."),
+        ("load_notice", "Career load failed."),
     ):
         string(name, value)
+    legacy.require(2 * len(text_pool) <= 1152, "MyCareer text RW exceeds 1408..2559")
+    at = reserve("text_template", len(text_pool))
+    out[at:at + len(text_pool)] = text_pool
+    labels["text_bytes"] = len(text_pool)
     menu = bytearray()
 
     def menu_reserve(name, size):
         at = len(menu)
-        labels[name] = data_va + 256 + at
+        labels[name] = data_va + 200 + at
         menu.extend(bytes(size))
         return at
 
+    menu_reserve("club_menu", 56)
     for name in ("entry_menu", "apartment", "team_menu", "practice_menu"):
         menu_reserve(name, 44)
 
@@ -138,42 +173,57 @@ def code_for(code_va, data_va):
     rows("entry_rows", (("draft_text", "mode_draft"), ("udfa_text", "mode_create"),
                         ("load_text", "mode_load"), ("quit_text", "mode_quit")))
     rows("hub_rows", (("play_text", "mode_play"), (0xE9C3BC, "mode_practice"),
-                      ("card_text", "mode_card"), (0xE7F954, "mode_save_menu"), ("quit_text", "mode_quit")))
-    at = rows("team_rows", (("team_text", "mode_sign"), ("sign_text", "mode_sign")))
-    struct.pack_into("<13I", menu, at, 5, labels["team_text"], 0,
-                     labels["mode_team_max"], 0x148DA0, labels["mode_team_get"],
-                     labels["mode_team_left"], labels["mode_team_right"], labels["mode_team_name"], 0, 0, 0, 0)
+                      ("card_text", "mode_card"), ("save_text", "mode_save_menu"), ("quit_text", "mode_quit")))
+    rows("team_rows", (("team_text", "mode_team_open"), ("sign_text", "mode_sign")))
     for name, title, table, flags in (("entry_menu", "mode_text", "entry_rows", 3),
                                       ("apartment", "apartment_text", "hub_rows", 3),
                                       ("team_menu", "team_text", "team_rows", 0x13)):
-        struct.pack_into("<11I", menu, labels[name] - data_va - 256, labels[title], 0, labels["mode_handler"],
+        struct.pack_into("<11I", menu, labels[name] - data_va - 200, labels[title], 0, labels["mode_handler"],
                          0, labels[table], 0, labels["watch_text"] if name == "apartment" else 0xE7F928,
                          0, 0x02400044, 0x018D0052, flags)
+    struct.pack_into("<11I", menu, 0, labels["team_text"], 0, labels["mode_handler"],
+                     0, data_va + 432, 0, 0xE7F928, 0, 0x02400044, 0x018D0052, 0x13)
     # Own Practice descriptor: native settings, teams, input and Back lifecycle.
     hooks = menu_reserve("practice_hooks", 20)
     enter = menu_reserve("practice_enter", 72)
     struct.pack_into("<18I", menu, enter, 1, labels["mode_practice_init"], *([0] * 16))
     struct.pack_into("<5I", menu, hooks, 11, 0x5015F8, 1, labels["practice_enter"], 0)
-    struct.pack_into("<11I", menu, labels["practice_menu"] - data_va - 256,
+    struct.pack_into("<11I", menu, labels["practice_menu"] - data_va - 200,
                      0xE7D8B0, labels["practice_hooks"], 0xF3FC0, 0,
                      0x5016C8, 0, 0xE7D7E0, 0xAC9800, 0x02400044, 0x018D0052, 0x55)
-    legacy.require(len(menu) <= 1024, "MyCareer menu RW exceeds 256..1279")
-    # Word RLE: zero count, literal count, literal words; (0, 0) terminates.
+    legacy.require(len(menu) <= 1080, "MyCareer menu RW exceeds 200..1279")
+    # Bounded LZ: 1..127 literal bytes; 128..255 encode length 3..130 and
+    # a little-endian backward distance. Zero ends this immutable template.
     encoded = bytearray()
-    words = list(struct.unpack(f"<{len(menu) // 4}I", menu))
+    literal = bytearray()
+
+    def flush():
+        if literal:
+            encoded.append(len(literal))
+            encoded.extend(literal)
+            literal.clear()
+
     i = 0
-    while i < len(words):
-        skip = count = 0
-        while i < len(words) and words[i] == 0 and skip < 255:
-            skip += 1
+    while i < len(menu):
+        count = distance = 0
+        for j in range(i):
+            n = 0
+            while n < 130 and i + n < len(menu) and menu[j + n] == menu[i + n]:
+                n += 1
+            if n > count:
+                count, distance = n, i - j
+        if count >= 4:
+            flush()
+            encoded.append(128 + count - 3)
+            encoded.extend(struct.pack('<H', distance))
+            i += count
+        else:
+            literal.append(menu[i])
             i += 1
-        start = i
-        while i < len(words) and words[i] != 0 and count < 255:
-            count += 1
-            i += 1
-        encoded.extend(bytes((skip, count)))
-        encoded.extend(struct.pack(f"<{count}I", *words[start:i]))
-    encoded.extend(bytes(2))
+            if len(literal) == 127:
+                flush()
+    flush()
+    encoded.append(0)
     at = reserve("menu_template", len(encoded))
     out[at:at + len(encoded)] = encoded
     labels["menu_bytes"] = len(menu)
@@ -196,7 +246,7 @@ def sites(code_va, data_va):
     labels = code_for(code_va, data_va)[1]
     hooks = [(name, va, pin, handler, op) for name, va, pin, handler, op in legacy.HOOKS if name in COMMON]
     hooks += [(name, va, pin, name, op) for name, va, pin, op in (*SAVE_HOOKS, *MODE_HOOKS)]
-    edits = [(name, va, bytes.fromhex(pin), legacy.branch(va, labels[handler], len(bytes.fromhex(pin)), op))
+    edits = [(name, va, bytes.fromhex(pin), legacy.branch(va, labels["mode_camera_focus" if handler == "camera_focus" else handler], len(bytes.fromhex(pin)), op))
              for name, va, pin, handler, op in hooks]
     for name, va, before, after in (("entry_kind", 0x501494, 0, 9),
                                     ("entry_label", 0x501498, 0xE7D5C4, labels["mode_text"]),
@@ -311,16 +361,17 @@ def apply(payload):
     legacy.require(state != "foreign", "foreign/mixed generic MyCareer; rebuild from original")
     common = {"owner": OWNER, "experimental": True, "runtime_witnessed": False,
               "in_game_mode": True, "inline_save_version": 1, "save_growth": 128,
-              "code_bytes": code_for(0, 0)[1]["content_end"],
               "machine_code_bytes": len(assembly.CODE), "code_capacity": CODE_SIZE, "data_capacity": DATA_SIZE,
               "executable_seed_bytes": 0, "journal_files": 0}
-    if state == "applied":
-        return payload, {**common, "already_applied": True, "changed_bytes": 0, "edits": []}
     original = payload
     if space.status(payload) == "retail":
         payload, _ = space.apply(payload, REQUESTS, scaleout=True)
     code, data = legacy.allocations(payload)
-    blob, _ = code_for(code["va"], data["va"])
+    blob, labels = code_for(code["va"], data["va"])
+    common["code_bytes"] = labels["content_end"] - code["va"]
+    common["code_spare_bytes"] = TAG_OFFSET - common["code_bytes"]
+    if state == "applied":
+        return payload, {**common, "already_applied": True, "changed_bytes": 0, "edits": []}
     payload, install = space.install_code(payload, OWNER, blob)
     result, receipt = rdata.apply(payload, sites(code["va"], data["va"]), OWNER)
     legacy.require(status(result) == "applied", "generic MyCareer postcondition failed")

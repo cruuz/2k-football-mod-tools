@@ -68,7 +68,7 @@ class FrontendTests(unittest.TestCase):
             self.enter(m)
             before = bytes(m.uc.mem_read(m.root, len(self.roster) - 64))
             m.select(0)
-            self.assertIn(("notice", "Draft entry is not ready."), m.events)
+            self.assertIn(("notice", "Draft is not ready."), m.events)
             self.assertEqual(m.get(m.state + 2676), 0)
             m.frame(0x200)
             self.assertEqual(m.top(), m.labels["entry_menu"])
@@ -137,7 +137,7 @@ class FrontendTests(unittest.TestCase):
                 self.assertEqual(m.top(), m.labels["entry_menu"])
                 self.assertEqual(m.uc.mem_read(m.root, len(before)), before)
                 self.assertEqual(m.get(m.state + 2676), 0)
-                self.assertIn(("notice", "Not enough roster space."), m.events)
+                self.assertIn(("notice", "Roster is full."), m.events)
 
     def test_signed_but_invalid_career_shows_error_and_keeps_entry_usable(self):
         from tests.mod_editor.test_nfl2k5_my_career_inline import block_for
@@ -147,21 +147,22 @@ class FrontendTests(unittest.TestCase):
         with Machine(self.payload) as m:
             self.enter(m)
             m.native_load(bad)
-            self.assertIn(("notice", "Career save could not be loaded."), m.events)
+            self.assertIn(("notice", "Career load failed."), m.events)
             self.assertEqual(m.get(m.state), 0)
             self.assertEqual(m.top(), m.labels["entry_menu"])
             m.select(0)
-            self.assertIn(("notice", "Draft entry is not ready."), m.events)
+            self.assertIn(("notice", "Draft is not ready."), m.events)
 
     def test_team_limit_and_confirmation_cancel_leave_no_partial_franchise(self):
         with Machine(self.payload) as m:
             self.enter(m)
             m.select(1)
             self.complete_cap(m)
-            self.assertEqual(m.call("mode_team_max"), 31)
-            for _ in range(32):
-                m.call("mode_team_right")
-            self.assertEqual(m.call("mode_team_get"), 0)
+            m.select(0)
+            self.assertEqual(m.top(), m.labels["club_menu"])
+            self.assertEqual(m.get(m.state + 432 + 32 * 52), 3)
+            m.select(0)
+            self.assertEqual(m.get(m.state + 2684), 0)
             t = m.get(m.root + 0x1C)
             count = bytes(m.uc.mem_read(t + 0x11C, 1))
             m.uc.mem_write(t + 0x11C, b"6")
@@ -189,8 +190,8 @@ class FrontendTests(unittest.TestCase):
                 m.uc.mem_write(p + 0x35, bytes((position,)))
                 m.call(0x343460)
                 self.complete_cap(m)
-                for _ in range(club):
-                    m.call("mode_team_right")
+                m.select(0)
+                m.select(club)
                 trace = []
                 for va in (0x148C60, 0x10EA10, 0x13EE10, 0x246F00, 0x2BEC20,
                            0x3228A0, 0x2BD260, 0x13EC90, 0x13F1B0):
