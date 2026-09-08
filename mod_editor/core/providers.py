@@ -571,7 +571,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_dynamic_kickoff.py": "0f2a618ce8ad2443a472145fa69a7d06e0f78af1e9f7ce211ed9b35b00e6a6e7",
         "mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py": "211063695451178000aa7088245ddef8c31973f08fad490341a378bf6e8a6b4f",
         "mod_editor/core/nfl2k5_edge_rename.py": "1a47e378e17ca4fe8a2e9440778893826a32905efe64359463ac121110353695",
-        "mod_editor/core/nfl2k5_espn25_rosters.py": "d6a18931816d9f67b4c811d665461981e2119179b3a8496c230b4af6874d8fd9",
+        "mod_editor/core/nfl2k5_espn25_rosters.py": "3b0ced59559ba6274403f0f1d934e5670a0fe513181c009bb1e8590616b3e173",
         "mod_editor/core/nfl2k5_extended_visual_catalog.py": "03e838de98c626322f30df461c91bb9f648617fcc472eb8a7a1024cbb9957708",
         "mod_editor/core/nfl2k5_extended_visual_io.py": "df333b8d89b5b6f9259e300f688967500e413b5d31c5bfb73a3e719657e13ba0",
         "mod_editor/core/nfl2k5_formation_play_writer.py": "fb09bdd724874d0a03488e12a046d8107221e99b52c77df21c04a7181d3508bf",
