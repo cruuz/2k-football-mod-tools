@@ -457,7 +457,7 @@ def main(argv=None):
             temporary.unlink(missing_ok=True)
         text = json.dumps(receipt, indent=2, sort_keys=True) + "\n"
         if args.receipt:
-            args.receipt.write_text(text, encoding="utf-8")
+            args.receipt.write_text(text, encoding="utf-8", newline="\n")
         print(text, end="")
         return 0
     except (OSError, ValueError, KeyError, TypeError) as exc:
