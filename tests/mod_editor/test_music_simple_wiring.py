@@ -21,16 +21,34 @@ except ImportError:
     QApplication = None
 
 
+def _already_wired(name):
+    """The shipped file already carries every added line of the patch (integration applied it)."""
+    lines = (ROOT/'docs/mod_editor/music_simple_wiring.patch').read_text(encoding='utf-8').splitlines(True)
+    source = (ROOT/name).read_text(encoding='utf-8')
+    added, current = [], None
+    for line in lines:
+        if line.startswith('--- a/'):
+            current = line[6:].strip()
+        elif current == name and line.startswith('+') and not line.startswith('+++'):
+            added.append(line[1:])
+    return bool(added) and all(text in source for text in added)
+
+
 def proposed_sources():
-    """Apply exact-context unified hunks to strings; no protected file writes."""
-    lines = (ROOT/'docs/mod_editor/music_simple_wiring.patch').read_text().splitlines(True)
+    """Apply exact-context unified hunks to strings; no protected file writes.
+
+    After integration the protected files already contain the hunks; use the shipped sources then."""
+    lines = (ROOT/'docs/mod_editor/music_simple_wiring.patch').read_text(encoding='utf-8').splitlines(True)
+    names = [line[6:].strip() for line in lines if line.startswith('--- a/')]
+    if all(_already_wired(name) for name in names):
+        return {name: (ROOT/name).read_text(encoding='utf-8') for name in names}
     sources = {}
     index = 0
     while index < len(lines):
         assert lines[index].startswith('--- a/')
         name = lines[index][6:].strip()
         assert lines[index+1].strip() == '+++ b/'+name
-        original = (ROOT/name).read_text().splitlines(True)
+        original = (ROOT/name).read_text(encoding='utf-8').splitlines(True)
         result, cursor = [], 0
         index += 2
         while index < len(lines) and not lines[index].startswith('--- a/'):

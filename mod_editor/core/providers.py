@@ -513,12 +513,12 @@ class Nfl2k5UnifiedVisualProvider:
     )
     backend_module_sha256 = "f6c578880cdfcf3a4c01e9a4458651db8a2e869a89632f40f67c5c49d5a47997"
     module_pins: Mapping[str, str] = {
-        "mod_editor/core/audio_conform.py": "466f8f4352da350a02b65092bdc5736f6059c1a6e45525f3aca271111bc984d0",
+        "mod_editor/core/audio_conform.py": "db40b6f28dedf1deea7fad6306fe0afebf842a5ee113d5067f6b5b7721686c0f",
         "mod_editor/core/build_feedback.py": "443027a2518955998bc77a092565e56bb1697b8d256205bca8f0d9ca38e4a097",
         "mod_editor/core/errors.py": "4624e80f063f1e7db69ec6c20d2703f01eec49728b02c88792ccb309bd742de0",
         "mod_editor/core/image_use.py": "78794c08fcf52debcb24d54cf62c8b1936463aedbe74929cdb5037f117b9c14d",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
-        "mod_editor/core/mod_build.py": "3775880e11137cd1ef2e9f662b777eee01070bb47641b9a24acc17d9a7154a31",
+        "mod_editor/core/mod_build.py": "f6619fb00bbb7ebc88ceeb3a696f59d3bc269f4fd54cd36f867bd9eb7c0a2faa",
         "mod_editor/core/model.py": "292f0c5444e32f5cea000fd3cabd6963d7d805a5434dcbc364a36ca2c0f0d228",
         "mod_editor/core/modpack.py": "7524c5de4d03c23997f88355c6888f1e013e5d5e62a995d07e8b963d1be9fd2a",
         "mod_editor/core/modpack_ops.py": "897f364a0cfe42bb8fbd33f8bc97166ea25520a379a612431f00d8aefca8e5c5",
@@ -603,7 +603,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_momentum_code.py": "a56830bdfaf46ac987b0699f926745c177be183754baa422bbe192fc9e305b08",
         "mod_editor/core/nfl2k5_music_archive.py": "47479bf3c41fb1765b72bdba0384368ba68efc418e8648bfc74263192286baa8",
         "mod_editor/core/nfl2k5_music_banks.py": "50f8693728d2fbdd5c5e946d7d5ac636e98f03e82b8022e149892a480b41db2b",
-        "mod_editor/core/nfl2k5_music_build.py": "4660ab7c77b95b410a36afc0ba7ed660e00fb0a0709c6daf9afb1e115f029a0f",
+        "mod_editor/core/nfl2k5_music_build.py": "1bd8b072530467c8570047d39624be718ccc6012feb8fb52cc3102b8e7ab34b3",
         "mod_editor/core/nfl2k5_music_catalog.py": "e54417c33f0ff7c7dfa19dbad57f61f578b3e819d17ff7e2b3693b8ecee61e48",
         "mod_editor/core/nfl2k5_music_metadata.py": "c5861fd3466052217c1f5fc8f7daf9dc0947654b8ea26eb07058a41317ca3af3",
         "mod_editor/core/nfl2k5_music_playlist.py": "3fdf645e76ae17c5cf0fe288d10cf6c2c19a7dae7380583ca069ae93620692be",
@@ -700,7 +700,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/texture_master.py": "2597b4d177703f8c81e3c10eb9ded655390ccfa47f36bfab8d06fab1b0e79098",
         "mod_editor/studio/audio_annotations.py": "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
         "mod_editor/studio/audio_bundle.py": "fafc659024246d1cff782ab07f6c744c97a563f64fedca8a288f3126fbeb4604",
-        "mod_editor/studio/music_service.py": "ed4aea79bd965b244afe7941f6de892c85a843e8074d1f81d7629143c2a06c3b",
+        "mod_editor/studio/music_service.py": "594e9e51859e1387c887da8f5f7a2299bd3657ef44443936d23b4e80d1838a04",
         "mod_editor/studio/project_archive.py": "3556062a7cf178ef416706543e71270783d04439494420810fb7a10ca7f01479",
         "mod_editor/studio/session.py": "731b5f757d13ceebea0eb6b37dc9380cd0e1d9a29de1e02c136303a5d68df5f0",
         "tools/apf_inner.py": "4175688c9df2cb8d8253f5b4d08570a3a3486cb9856d000a4146e5a952982847",

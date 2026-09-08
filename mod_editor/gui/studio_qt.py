@@ -1895,10 +1895,10 @@ class StudioMainWindow(QMainWindow):
         if panel is None or panel.operation_in_progress or self._blocking:
             return
         session = getattr(self.facade, "_session", None)
-        if session is None or not getattr(self.facade, "audio_editing_ready", False):
+        if session is None or getattr(session, "audio_service", None) is None:
             if panel.service is not None:
                 panel.set_service(None)
-            panel.status.setText("Open a disc and prepare audio editing in Audio Cues to edit music.")
+            panel.status.setText("Open a game source to add your music.")
             return
         if panel.service is None or panel.service.session is not session:
             try:
@@ -1906,8 +1906,23 @@ class StudioMainWindow(QMainWindow):
                 if self._music_policy_values:
                     service.set_policy(**self._music_policy_values)
                 panel.set_service(service)
+                if service.library_recipe_path() is not None:
+                    self._music_library_changed(service.library_recipe_path())
             except ValueError as exc:
                 panel.status.setText(str(exc))
+
+    def _music_library_changed(self, path):
+        """Accept the Songs page's prepared recipe through the existing Build option."""
+        self._music_library_recipe = path
+        if self._build_panel is not None:
+            previous = self._restoring_music_playlist
+            self._restoring_music_playlist = True
+            try:
+                self._build_panel.music_library_field.setText(path or "")
+                self._build_panel.music_library_check.setChecked(bool(path))
+            finally:
+                self._restoring_music_playlist = previous
+        self._capture_music_build_settings()
 
     def _music_policy_changed(self, values):
         self._music_policy_values = dict(values)
@@ -1939,6 +1954,8 @@ class StudioMainWindow(QMainWindow):
             document = playlist.copy_options(self._music_playlist_document)
             state = {} if document is None else {
                 "music_shuffle": document["music_shuffle"], "music_shuffle_selection": document}
+        if self._build_panel is None and hasattr(self, "_music_library_recipe"):
+            state["music_library"] = self._music_library_recipe
         setter = getattr(self.facade, "set_project_build_settings", None)
         if callable(setter) and getattr(self.facade, "source_ready", False):
             setter(state)
@@ -2797,6 +2814,7 @@ class StudioMainWindow(QMainWindow):
                 self._music_panel.changed.connect(self._music_changed)
                 self._music_panel.policy_changed.connect(self._music_policy_changed)
                 self._music_panel.playlist_changed.connect(self._music_playlist_changed)
+                self._music_panel.library_changed.connect(self._music_library_changed)
                 self._music_panel.receipt_ready.connect(self._music_receipt_ready)
                 self._music_panel.operation_state_changed.connect(self._music_operation_state_changed)
                 self._restore_music_build_settings()
@@ -8633,6 +8651,8 @@ class StudioMainWindow(QMainWindow):
         self._build_panel.music_shuffle_check.toggled.connect(self._build_music_shuffle_changed)
         self._build_panel.music_library_preview_ready.connect(self._music_library_preview_ready)
         self._restore_music_build_settings()
+        if self._music_panel is not None and self._music_panel.library_recipe_path() is not None:
+            self._music_library_changed(self._music_panel.library_recipe_path())
         if self._music_policy_values:
             self._build_panel.set_music_policy(self._music_policy_values)
         self._connect_star_players()

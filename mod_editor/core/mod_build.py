@@ -824,7 +824,7 @@ def _music_library_document(path):
     return _core_module("nfl2k5_music_banks")._load(path)
 
 
-def _prepare_music_project(source, project, directory, progress):
+def _prepare_music_project(source, project, directory, progress, *, library_result=None):
     from .nfl2k5_source_cache import Nfl2k5SourceCache
     from .nfl2k5_audio_catalog import Nfl2k5AudioCatalog, Nfl2k5AudioService
     from .nfl2k5_audio_origin_preparation import Nfl2k5AudioOriginPreparation
@@ -841,6 +841,10 @@ def _prepare_music_project(source, project, directory, progress):
     service = MusicService(session)
     try:
         service.load_project(project, progress=progress)
+        if service.library_recipe_path() is not None:
+            if library_result is None:
+                raise ValueError("This Music project includes added songs; use the complete music build path.")
+            library_result.append(service.library_recipe_path())
         return service.encoded_edits(progress=progress)
     finally:
         service.invalidate()
@@ -863,7 +867,13 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
             if plan.music_project:
                 if not tt.is_disc_image(source):
                     raise ValueError("Music replacements need a disc image")
-                edits = _prepare_music_project(source, plan.music_project, directory, progress or (lambda *_: None))
+                project_library = []
+                edits = _prepare_music_project(source, plan.music_project, directory,
+                    progress or (lambda *_: None), library_result=project_library)
+                if project_library:
+                    if plan.music_library:
+                        raise ValueError("Choose the Music project or the separate music library, then build again.")
+                    plan = replace(plan, music_library=project_library[0])
             receipt = _build(replace(plan, target=str(directory / target.name), overwrite=False), progress,
                              music_edits=edits, r62_options=r62)
             if plan.music_shuffle or plan.music_library:
