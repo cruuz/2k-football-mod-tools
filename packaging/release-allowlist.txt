@@ -105,6 +105,7 @@ mod_editor/core/nfl2k5_scorebug_exact.py
 mod_editor/core/nfl2k5_scorebug_fonts.py
 tools/nfl2k5_scorebug_template_art.py
 packaging/nfl2k5_scorebug_template_pngs.json
+docs/mod_editor/nfl2k5_coverage_trail_capability.json
 docs/mod_editor/nfl2k5_scorebug_template_capability.json
 mod_editor/core/nfl2k5_scorebug_author.py
 mod_editor/core/build_feedback.py
@@ -653,6 +654,8 @@ mod_editor/core/nfl2k5_team_names_2026.py
 data/nfl2k5_team_names_2026.json
 mod_editor/core/nfl2k5_gameplay_lever.py
 mod_editor/core/nfl2k5_coverage_slider.py
+mod_editor/core/nfl2k5_coverage_trail.py
+mod_editor/core/nfl2k5_coverage_trail_code.py
 mod_editor/core/nfl2k5_scramble_tuning.py
 mod_editor/core/nfl2k5_throw_arc.py
 mod_editor/core/nfl2k5_hires_pack.py

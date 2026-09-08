@@ -99,6 +99,7 @@ class ProductCatalogTests(unittest.TestCase):
             'nfl2k5.menus.modern_naming',
             'nfl2k5.mode.my_career',
             'nfl2k5.mode.my_career_inline',
+            'nfl2k5.gameplay.coverage_trail',
             'nfl2k5.franchise.practice_squad_screen',
             'nfl2k5.menus.layouts',
             'nfl2k5.mode_state_routing.state_graph',
@@ -143,7 +144,7 @@ class ProductCatalogTests(unittest.TestCase):
         first_ids = [binding.capability_id for binding in first.capabilities]
         second_ids = [binding.capability_id for binding in second.capabilities]
 
-        self.assertEqual(len(first_ids), 78)
+        self.assertEqual(len(first_ids), 79)
         self.assertEqual(len(first_ids), len(set(first_ids)))
         self.assertEqual(set(first_ids), expected)
         self.assertEqual(first_ids, second_ids)
@@ -186,7 +187,7 @@ class ProductCatalogTests(unittest.TestCase):
             ProductCategory.MENUS_UI: (6, 3, 2, 0, 0, 1, 0),
             ProductCategory.CRIB: (2, 2, 0, 0, 0, 0, 0),
             ProductCategory.AUDIO: (8, 7, 0, 1, 0, 0, 0),
-            ProductCategory.SLIDERS_GAMEPLAY: (23, 15, 5, 0, 0, 0, 3),
+            ProductCategory.SLIDERS_GAMEPLAY: (24, 16, 5, 0, 0, 0, 3),
             ProductCategory.PLAYBOOKS_PLAYS: (4, 4, 0, 0, 0, 0, 0),
             ProductCategory.TEXTURES: (1, 1, 0, 0, 0, 0, 0),
         }
@@ -215,7 +216,7 @@ class ProductCatalogTests(unittest.TestCase):
                 catalog.counts.evidence,
                 catalog.counts.research,
             ),
-            (78, 58, 8, 1, 0, 8, 3),
+            (79, 59, 8, 1, 0, 8, 3),
         )
 
     def test_ambiguous_stadium_surface_and_team_identity_are_explicit(self) -> None:
@@ -268,7 +269,7 @@ class ProductCatalogTests(unittest.TestCase):
         )
         binding = catalog.binding("nfl2k5.audio.audo_wav")
 
-        self.assertEqual(len(seen), 78)
+        self.assertEqual(len(seen), 79)
         self.assertEqual(
             binding.findings_notes,
             ("850 AUDO records mapped", "Export stays local"),

@@ -6,7 +6,7 @@ FEATURE_KEYS = (
     "momentum_collisions", "momentum_collision_level", "read_option_runtime",
     "franchise_2026_rules", "senior_bowl", "senior_bowl_settings", "senior_bowl_seed",
     "guardian_overlay", "guardian_everyone_practice", "guardian_players",
-    "my_career", "my_career_setup", "franchise_autosave", "crib_reclaim", "screen_hooks", "modern_naming",
+    "my_career", "my_career_setup", "franchise_autosave", "crib_reclaim", "screen_hooks", "coverage_trail", "modern_naming",
     "reserves_16", "created_teams_extra", "hires_families",
 )
 FEATURE_KEYS += (

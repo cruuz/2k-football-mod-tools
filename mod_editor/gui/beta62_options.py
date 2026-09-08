@@ -32,6 +32,7 @@ OPTIONS = (
     ("momentum_collisions", "Weight and speed in contact (experimental)", tt.momentum_patch.COLLISION_HELP_TEXT),
     ("read_option_runtime", "Read option mesh controls (experimental)", tt.read_option_patch.HELP_TEXT),
     ("screen_hooks", "Screen pass timing hooks (second experiment)", tt.screen_hooks_patch.HELP_TEXT),
+    ("coverage_trail", "Close pursuit recovery (experimental)", tt.coverage_trail_patch.HELP_TEXT),
     ("franchise_2026_rules", "2026 franchise rules (unavailable)", FRANCHISE_HELP),
     ("senior_bowl", "Senior Bowl native event (not available)", tt.senior_bowl_patch.HELP_TEXT),
     ("guardian_overlay", "Guardian caps (experimental)", tt.guardian_overlay_patch.HELP_TEXT),
