@@ -677,7 +677,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_seven_on_seven_book.py": "d48f15e64e45a196960b247205b4ffdf3ded7e1034fe4a50cad49efe5055f16b",
         "mod_editor/core/nfl2k5_source_cache.py": "91ba6711fbe675a7a23d296a8989d6e985e6a262c89cb320ee5a06742876fac7",
         "mod_editor/core/nfl2k5_special_roles.py": "5c51ee9bcaae8e6a9c520430a9d6ad5c711b08043d2332d5161420022438d967",
-        "mod_editor/core/nfl2k5_stadium_cache.py": "24bc748223ba18aaad0f1c8347fddd9967a2c5a01dd5caaa2e843985ca00349e",
+        "mod_editor/core/nfl2k5_stadium_cache.py": "af3f8983f4312f755f27456684e6e27505d41eda07539ebcd813b90c81a88762",
         "mod_editor/core/nfl2k5_stadium_studio.py": "7ec5b2b65b3e6be605e91ae772dd15c3eb71ac46398e2ecab0a1c181cf4fef7d",
         "mod_editor/core/nfl2k5_stadium_texture_writer.py": "dc1bf06c20c86411ff4c91e09003c9f561f3c7aada142ed522ca237d7d0d18f5",
         "mod_editor/core/nfl2k5_team_column.py": "465ae89093c76404e71653004c3bb1a0cd60ef9c1ebec4df7b639f4fe94e6337",

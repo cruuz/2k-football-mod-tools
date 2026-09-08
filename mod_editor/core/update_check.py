@@ -38,19 +38,20 @@ COMMUNITY_DISCORD = "https://discord.gg/dpMJCnJZD"
 #: The release this build was cut from. Packaging updates it when a release is
 #: tagged; the check compares it with the newest published tag, which works
 #: across the two products' different version schemes without parsing either.
-BUILD_RELEASE_TAG = "beta-62"
+BUILD_RELEASE_TAG = "beta-62.1"
 
 DEFAULT_TIMEOUT_SECONDS = 6.0
 MAX_RESPONSE_BYTES = 1024 * 1024
 _TAG = re.compile(r"^[A-Za-z0-9._-]{1,64}$")
-#: Every release this project has ever published is ``beta-<n>``. Reading that
-#: number lets the check refuse to advertise a *backwards* move.
-_BETA = re.compile(r"^beta-(\d{1,6})$")
+#: Every release this project has ever published is ``beta-<n>``, plus the
+#: occasional ``beta-<n>.<m>`` hotfix (beta-62.1 was the first). Reading those
+#: numbers lets the check refuse to advertise a *backwards* move.
+_BETA = re.compile(r"^beta-(\d{1,6})(?:\.(\d{1,3}))?$")
 
 
-def _beta_number(tag: str) -> int | None:
+def _beta_number(tag: str) -> tuple[int, int] | None:
     match = _BETA.match(tag.strip())
-    return int(match.group(1)) if match else None
+    return (int(match.group(1)), int(match.group(2) or 0)) if match else None
 
 
 def _is_newer(latest: str, current: str) -> bool:

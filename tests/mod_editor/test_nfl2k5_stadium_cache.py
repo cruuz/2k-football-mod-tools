@@ -270,6 +270,39 @@ class StadiumCacheCoordinatorTests(unittest.TestCase):
         self.assertTrue(elsewhere.is_dir())
         self.assertTrue(published.is_dir())
 
+    def test_a_fresh_rip_with_its_own_cache_folder_is_accepted(self) -> None:
+        """A legal rip that is not byte-identical to the project's dump gets a cache folder named by
+        its own digest (that is how SourceCache names every folder). Beta 62 refused it at open with
+        "not the canonical game cache"; the fingerprint and the pinned pack/inventory are the identity."""
+
+        digest = "c" * 64
+        rip_root = Path(self.temporary.name).resolve() / digest
+        rip_root.mkdir()
+        (rip_root / "extracted" / "game").mkdir(parents=True)
+        (rip_root / "extracted" / "game" / "0").write_bytes(b"synthetic private pack zero")
+        (rip_root / "indexes").mkdir()
+        (rip_root / "indexes" / "inventory.json").write_text('{"synthetic":true}\n', encoding="utf-8")
+        (rip_root / "originals").mkdir()
+        rip = replace(
+            self.cache,
+            root=rip_root,
+            pack0=rip_root / "extracted" / "game" / "0",
+            inventory=rip_root / "indexes" / "inventory.json",
+            source=replace(
+                self.cache.source,
+                selected_path="/private/user/fresh-rip.iso",
+                inspected_path="/private/user/fresh-rip.iso",
+                sha256=digest,
+                size=6_300_958_720,
+            ),
+        )
+        runner = SyntheticSuccessfulRunner()
+        coordinator = Nfl2k5StadiumCacheCoordinator(runner=runner, free_space_reserve=0)
+        self.assertIsNone(coordinator.load_existing(rip))
+        built = coordinator.ensure(rip)
+        self.assertEqual(coordinator.load_existing(rip), built)
+        self.assertEqual(len(runner.calls), 1)
+
     def test_shared_cache_reuses_stadiums_across_legal_container_layouts(self) -> None:
         """XISO padding/layout is not the identity of derived game content."""
 

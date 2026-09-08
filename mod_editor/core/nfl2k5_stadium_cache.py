@@ -625,9 +625,16 @@ class Nfl2k5StadiumCacheCoordinator:
         ):
             raise StadiumCacheError("The private NFL 2K5 source cache is not a safe directory")
         root = cache.root.resolve(strict=True)
-        if root.name != SOURCE_SHA256:
+        # The source cache names its folder after the digest of the disc the user opened
+        # (every legal rip of the USA disc gets its own folder; an edited disc can never
+        # poison another). The canonical-dump digest is therefore NOT a valid folder-name
+        # test: it refused every rip that is not byte-identical to the project's own dump
+        # ("The private NFL 2K5 source cache is not the canonical game cache", reported by
+        # two testers with fresh rips on beta 62). The pack 0 and inventory pins below,
+        # plus the recognized fingerprint above, are the identity that matters.
+        if root.name not in (cache.source.sha256, SOURCE_SHA256):
             raise StadiumCacheError(
-                "The private NFL 2K5 source cache is not the canonical game cache"
+                "The private NFL 2K5 source cache does not belong to the opened game disc"
             )
         pack0 = _regular_file(cache.pack0, "private archive pack 0")
         inventory = _regular_file(cache.inventory, "private resource inventory")
