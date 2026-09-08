@@ -97,6 +97,8 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.core import nfl2k5_roster_records as rr
+from mod_editor.core import nfl2k5_abilities_editor as abilities_editor
+from mod_editor.gui.abilities_panel_qt import AbilitiesPanel
 from mod_editor.gui.espn25_panel_qt import Espn25Panel
 from mod_editor.gui.franchise_panel_qt import FranchisePanel
 from mod_editor.gui.ux_text import Details, show_operation_error, suggest_copy_name
@@ -869,6 +871,7 @@ class RosterEditorPanel(QWidget):
     disc_written = pyqtSignal(str)                  # a disc copy this page wrote (Play latest can start it)
     roster_edits_stale = pyqtSignal()               # the roster changed after the last export (M08)
     espn25_plan_changed = pyqtSignal(str)           # path of the saved ESPN Anniversary plan (Build's espn25_plan)
+    abilities_lock_settings_changed = pyqtSignal(object)  # rules v2 lock settings from the Abilities page (Build pending settings)
     ESPN25_RECOVERY_SCHEMA = "2k5_mod_studio_espn25_recovery/v1"
 
     def __init__(self, facade: object | None = None, parent: QWidget | None = None) -> None:
@@ -1287,32 +1290,51 @@ class RosterEditorPanel(QWidget):
     def _build_abilities_page(self) -> QWidget:
         host = QWidget()
         box = QVBoxLayout(host)
-        note = QLabel("Stored abilities. They affect play only with Player abilities rules v1 on the game disc "
-                      "(Build tab, experimental and unwitnessed). Existing franchise saves keep their own flags.")
-        note.setWordWrap(True)
-        box.addWidget(note)
-        self.ability_checks = {}
-        for name, caption in rr.ABILITY_LABELS.items():
-            check = QCheckBox(caption)
-            check.setAccessibleName(caption)
-            check.toggled.connect(lambda enabled, key=name: self._ability_changed(key, enabled))
-            self.ability_checks[name] = check
-            box.addWidget(check)
-        self.ability_bulk_button = QPushButton("Apply these abilities to all shown players")
-        self.ability_bulk_button.clicked.connect(lambda: self.set_abilities(
-            self.visible_players(), {name: check.isChecked() for name, check in self.ability_checks.items()}))
-        box.addWidget(self.ability_bulk_button)
+        # Rules v2 page: tiers, per-ability checks, reviewed full-league assignment, lock settings and receipts.
+        self.abilities_panel = AbilitiesPanel()
+        self.abilities_panel.edit_committed.connect(self._abilities_edit_committed)
+        self.abilities_panel.lock_settings_changed.connect(self.abilities_lock_settings_changed.emit)
+        box.addWidget(self.abilities_panel)
+        self.ability_checks = self.abilities_panel.ability_checks  # the page owns the per-ability boxes
+        guardian_group = QGroupBox("Guardian caps")
+        guardian_box = QVBoxLayout(guardian_group)
         self.guardian_cap_check = QCheckBox("Guardian cap (experimental)")
         self.guardian_cap_check.setToolTip("Stored selection for the Guardian overlay Build option. Works with either helmet. Experimental and unwitnessed.")
         self.guardian_cap_check.toggled.connect(lambda on: self.set_guardian_caps(
             [self.selected_player()] if self.selected_player() else [], on))
-        box.addWidget(self.guardian_cap_check)
+        guardian_box.addWidget(self.guardian_cap_check)
         self.guardian_bulk_button = QPushButton("Apply cap choice to all shown players")
         self.guardian_bulk_button.clicked.connect(lambda: self.set_guardian_caps(
             self.visible_players(), self.guardian_cap_check.isChecked()))
-        box.addWidget(self.guardian_bulk_button)
+        guardian_box.addWidget(self.guardian_bulk_button)
+        box.addWidget(guardian_group)
         box.addStretch(1)
-        return host
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setWidget(host)
+        return scroll
+
+    def _abilities_edit_committed(self, edit) -> None:
+        """The page already applied its plan; record the transaction once on the shared undo stack."""
+        receipt = edit.receipt
+        keys = {(row["identity"]["pool"], row["identity"]["index"]) for row in receipt["plan"]["rows"] if row["mask"]}
+
+        def touched() -> None:
+            if self.document is None:
+                return
+            for player in self.document.players:
+                if (player.pool, player.index) in keys:
+                    self._after_edit(player)
+
+        def replay(reverse: bool) -> None:
+            # resolve against the CURRENT document (another page may have replaced the composed body)
+            abilities_editor.apply_plan(self.document, receipt["plan"], reverse=reverse)
+            self.abilities_panel.set_document(self.document)
+            self.abilities_panel.set_player(self.selected_player())
+            touched()
+
+        touched()
+        self.undo_stack.push(UndoEntry(edit.label, lambda: replay(True), lambda: replay(False)))
 
     def set_guardian_caps(self, players, enabled):
         if type(enabled) is not bool:
@@ -1332,30 +1354,33 @@ class RosterEditorPanel(QWidget):
         self.undo_stack.push(UndoEntry("Guardian caps", lambda: put(False), lambda: put(True)))
         return len(edits)
 
-    def _ability_changed(self, name: str, enabled: bool) -> None:
-        player = self.selected_player()
-        if player is not None:
-            self.set_abilities([player], {name: enabled})
-
     def set_abilities(self, players: Sequence[rr.Player], changes: Mapping[str, bool]) -> int:
+        """Bulk flags through the rules v2 plan validator (tier limits apply); one undo entry per call."""
         if self.document is None:
             return 0
         if any(name not in rr.ABILITY_BITS or not isinstance(enabled, bool) for name, enabled in changes.items()):
             raise rr.RosterRecordError("Abilities require named Boolean flags")
         if any(self.document.by_offset.get(p.offset) is not p for p in players):
             raise rr.RosterRecordError("player belongs to another document")
-        edits = [(p, name, p.record.abilities[name], enabled) for p in players
-                 for name, enabled in changes.items() if p.record.abilities[name] != enabled]
-        if not edits:
+        rows = []
+        for player in players:
+            abilities = dict(player.record.abilities)
+            abilities.update(changes)
+            wanted = [name for name in abilities_editor.MASKS if abilities.get(name)]
+            tier = max(player.record.ability_tier, next((t for t, limit in enumerate(abilities_editor.LIMITS)
+                                                          if limit >= len(wanted)), len(abilities_editor.LIMITS) - 1))
+            row = abilities_editor.plan_player(self.document, player, tier=tier, abilities=wanted)["rows"][0]
+            if row["mask"]:
+                rows.append(row)
+        if not rows:
             return 0
-        def put(after: bool) -> None:
-            for player, name, old, new in edits:
-                player.record.set_ability(name, new if after else old)
-            for player in {p.offset: p for p, *_ in edits}.values():
-                self._after_edit(player)
-        put(True)
-        self.undo_stack.push(UndoEntry("Abilities", lambda: put(False), lambda: put(True)))
-        return len(edits)
+        plan = abilities_editor._plan(self.document, rows, kind="bulk")
+        receipt = abilities_editor.apply_plan(self.document, plan, require_fresh=True)
+        self.abilities_panel.set_document(self.document)
+        self.abilities_panel.set_player(self.selected_player())
+        from mod_editor.gui.abilities_panel_qt import AbilitiesEdit
+        self._abilities_edit_committed(AbilitiesEdit("Abilities", receipt, lambda: None, lambda: None))
+        return len(rows)
 
     def _depth_text(self, player: rr.Player) -> str:
         if self.document is not None and (player.pool, player.index) in self.document.reserve_owner:
@@ -1437,6 +1462,7 @@ class RosterEditorPanel(QWidget):
 
     def _restore_composed(self, payload: bytes, edits) -> None:
         self.document.adopt_body(payload)
+        self.abilities_panel.set_document(self.document)
         page = self.franchise_panel
         page._edits = list(edits)
         page._cursor = len(edits)
@@ -1717,6 +1743,7 @@ class RosterEditorPanel(QWidget):
         """Adopt a parsed roster (the tests and the studio both use this)."""
 
         self.document = document
+        self.abilities_panel.set_document(document)
         self.age_shift_receipts = []
         self._baseline = None
         self._source_path = source
@@ -2150,12 +2177,7 @@ class RosterEditorPanel(QWidget):
 
     # ------------------------------------------------------------------ editor pane
     def _show_player(self, player: rr.Player | None) -> None:
-        for name, check in self.ability_checks.items():
-            check.blockSignals(True)
-            check.setChecked(player.record.abilities[name] if player is not None else False)
-            check.setEnabled(player is not None)
-            check.blockSignals(False)
-        self.ability_bulk_button.setEnabled(player is not None)
+        self.abilities_panel.set_player(player)
         self.guardian_cap_check.blockSignals(True)
         self.guardian_cap_check.setChecked(player.record.guardian_cap if player else False)
         self.guardian_cap_check.setEnabled(player is not None)

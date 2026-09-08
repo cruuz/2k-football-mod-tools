@@ -65,12 +65,7 @@ PATCHES = (
      "testing. Team and reserve limits stay the same."),
     ("music_shuffle", "Shared music shuffle (experimental)", "Retail: Uses the original music selections. Patch: " + tt.music_playlist_patch.HELP_TEXT),
     ("practice_squad_screen", "Practice Squad screen (experimental)", tt.practice_squad_screen_patch.HELP_TEXT),
-    ("abilities", "Player abilities (experimental)",
-     "Retail ignores stored ability flags. Patch: Speedster permits movement Speed above 99. Each special "
-     "move requires its stored permission, and right-stick moves also require Right-Stick Moves. The "
-     "special-move charge meter works only for live ball carriers with an allowed move, including CPU "
-     "players. Abilities must be assigned in Rosters or the save first. An optional existing franchise "
-     "week turns them off temporarily. EXPERIMENTAL / UNWITNESSED. Simulated games are unchanged."),
+    ("abilities", "Player abilities rules v2 (experimental)", tt.abilities_patch.HELP_TEXT),
     ("qb_spy", "QB spy for zone, man and rush (experimental)", tt.qb_spy_patch.HELP_TEXT),
     ("defensive_try", "Defensive two-point returns (experimental)", tt.defensive_try_patch.UI_TEXT),
     ("zone_drop_cap", "Initial deep-zone corner drop (experimental)", r62_ui.ZONE_HELP),

@@ -344,9 +344,10 @@ def match_coverage_pack(book, body, team=None):
 
 
 def main(argv=None):
-    # The tool owns filesystem exports and the optional offscreen Qt renderer.
-    from tools.nfl2k5_match_coverage import main as command
-    return command(argv)
+    # The tool owns filesystem exports and the optional offscreen Qt renderer; it is loaded by name so the
+    # GUI renderer never joins the provider's pinned import closure of this core module.
+    import importlib
+    return importlib.import_module("tools.nfl2k5_match_coverage").main(argv)
 
 
 if __name__ == '__main__':

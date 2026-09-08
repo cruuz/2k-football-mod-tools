@@ -149,6 +149,9 @@ class BuildPlan:
     practice_squad_screen: bool = False  # native Coach's Desk Practice Squad screen (experimental, unwitnessed)
     abilities: bool = False  # player abilities rules v1 (experimental, unwitnessed)
     abilities_off_week: int | None = None  # zero-based regular-season row 0..17 with abilities off, or None
+    abilities_lock_right_stick: bool = True    # rules v2: right-stick moves need the ability (settings of the abilities owner, not separate owners)
+    abilities_lock_special_moves: bool = True  # rules v2: each special move needs its stored permission
+    abilities_lock_speedster: bool = True      # rules v2: Speed above 99 needs Speedster
     qb_spy: bool = False  # zone, man and rush QB spy runtime (experimental, unwitnessed)
     calendar_engine: bool = False  # the complete 128-season calendar (implementation half of the 128-season option)
     coverage_slider: bool = False
@@ -317,7 +320,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "franchise_autosave": False,
         "screen_hooks": False, "coverage_trail": False, "franchise_edit_player": False, "cpu_money_downs": "retail", "weekly_prep": False, "weekly_prep_cpu": False, "weekly_prep_remember": False, "playbook_pair": False, "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
         "music_shuffle": False, "music_shuffle_selection": None, "practice_squad_screen": False,
-        "abilities": False, "abilities_off_week": None, "qb_spy": False, "calendar_engine": False, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
+        "abilities": False, "abilities_off_week": None, "abilities_lock_right_stick": True, "abilities_lock_special_moves": True, "abilities_lock_speedster": True, "qb_spy": False, "calendar_engine": False, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
         "music_policy": "retail", "music_unlock": False, "music_userlist": False,
         "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": False,
         "catch_slider": True, "accel_ramp": False, "draft_ai": True, "returner_fix": True, "progression": False,
@@ -334,7 +337,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "franchise_autosave": True,
         "screen_hooks": False, "coverage_trail": False, "franchise_edit_player": False, "cpu_money_downs": "retail", "weekly_prep": False, "weekly_prep_cpu": False, "weekly_prep_remember": False, "playbook_pair": False, "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
         "music_shuffle": False, "music_shuffle_selection": None, "practice_squad_screen": False,
-        "abilities": False, "abilities_off_week": None, "qb_spy": False, "calendar_engine": False, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
+        "abilities": False, "abilities_off_week": None, "abilities_lock_right_stick": True, "abilities_lock_special_moves": True, "abilities_lock_speedster": True, "qb_spy": False, "calendar_engine": False, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
         "music_policy": "retail", "music_unlock": False, "music_userlist": False,
         "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": True,
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
@@ -351,7 +354,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "franchise_autosave": True,
         "screen_hooks": False, "coverage_trail": False, "franchise_edit_player": False, "cpu_money_downs": "retail", "weekly_prep": False, "weekly_prep_cpu": False, "weekly_prep_remember": False, "playbook_pair": False, "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
         "music_shuffle": False, "music_shuffle_selection": None, "practice_squad_screen": False,
-        "abilities": False, "abilities_off_week": None, "qb_spy": False, "calendar_engine": True, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
+        "abilities": False, "abilities_off_week": None, "abilities_lock_right_stick": True, "abilities_lock_special_moves": True, "abilities_lock_speedster": True, "qb_spy": False, "calendar_engine": True, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
         "music_policy": "retail", "music_unlock": False, "music_userlist": False,
         "guardian_cap": True,
         "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": True,
@@ -996,6 +999,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("experimental switches must be boolean")
     tt._validate_lever_flags(plan.music_shuffle, plan.practice_squad_screen, plan.abilities, plan.qb_spy, plan.calendar_engine, plan.season_cap)
     tt.abilities_patch._week(plan.abilities_off_week)
+    tt.abilities_patch._locks(lock_right_stick=plan.abilities_lock_right_stick, lock_special_moves=plan.abilities_lock_special_moves,
+                              lock_speedster=plan.abilities_lock_speedster)
     if plan.abilities_off_week is not None and not plan.abilities:
         raise ValueError("abilities_off_week needs abilities")
     if plan.music_shuffle_selection is not None and not isinstance(plan.music_shuffle_selection, dict):
@@ -1649,7 +1654,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             scorebug_runtime=plan.scorebug_runtime, momentum=plan.momentum, momentum_contact=plan.momentum_contact,
             defensive_try=plan.defensive_try, zone_drop_cap=plan.zone_drop_cap, all_stadiums=plan.all_stadiums, coverage_slider=plan.coverage_slider, scramble_tuning=plan.scramble_tuning,
             music_shuffle=plan.music_shuffle, music_shuffle_selection=playlist_selection, practice_squad_screen=plan.practice_squad_screen,
-            abilities=plan.abilities, abilities_off_week=plan.abilities_off_week, qb_spy=plan.qb_spy, qb_spy_intent_table=spy_table,
+            abilities=plan.abilities, abilities_off_week=plan.abilities_off_week, abilities_lock_right_stick=plan.abilities_lock_right_stick,
+            abilities_lock_special_moves=plan.abilities_lock_special_moves, abilities_lock_speedster=plan.abilities_lock_speedster,
+            qb_spy=plan.qb_spy, qb_spy_intent_table=spy_table,
             calendar_engine=plan.calendar_engine, camera=plan.camera, season_cap=plan.season_cap, practice_squad=plan.practice_squad, franchise_practice=plan.franchise_practice,
             dynamic_kickoff_settings=plan.dynamic_kickoff_settings,
             **{**r62, "read_option_intent_table": read_table, "modern_naming": False, "crib_reclaim": False})

@@ -93,6 +93,7 @@ class BuildPanel(QWidget):
 
     operation_state_changed = pyqtSignal(bool)
     music_library_preview_ready = pyqtSignal(object, object)
+    abilities_locks_changed = pyqtSignal(dict)  # rules v2 lock settings (runtime key names) for the Rosters page
     built = pyqtSignal(dict)   # the receipt of the copy just written (Share pre-fills from it)
 
     def __init__(self, facade: object | None = None, parent: QWidget | None = None) -> None:
@@ -367,7 +368,7 @@ class BuildPanel(QWidget):
         self.music_shuffle_check = self._option(g, "music_shuffle", "Shuffle songs in menus, Crib and games",
             "Experimental, not yet tested in game. Uses the Music tab playlist. "
             "Loading and shows keep their timed music.", badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
-        self.abilities_check = self._option(g, "abilities", "Player abilities (experimental)",
+        self.abilities_check = self._option(g, "abilities", "Player abilities rules v2 (experimental)",
             tt.abilities_patch.HELP_TEXT, badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
         self.abilities_week = QComboBox()
         self.abilities_week.addItem("No abilities-off week", None)
@@ -378,6 +379,19 @@ class BuildPanel(QWidget):
         self.abilities_week.setAccessibleName("Week with abilities off")
         self.abilities_week.setToolTip("Use an existing regular-season week. Player ability flags stay saved and return the following week.")
         g.addWidget(self.abilities_week)
+        self.abilities_lock_checks = {}
+        for key, caption in (("abilities_lock_right_stick", "Lock right-stick moves behind the ability"),
+                             ("abilities_lock_special_moves", "Lock special moves behind their abilities"),
+                             ("abilities_lock_speedster", "Lock Speedster speed")):
+            box = QCheckBox(caption)
+            box.setChecked(True)
+            box.setEnabled(False)
+            box.setToolTip("Rules v2 setting of the Player abilities option. Both move locks off restores the retail "
+                           "charge meter; either one on keeps the restricted charge policy. A rebuilt disc is required.")
+            box.toggled.connect(lambda _on: self._abilities_locks_changed())
+            g.addWidget(box)
+            self.abilities_lock_checks[key] = box
+        self._abilities_lock_sync = False
         self.abilities_check.toggled.connect(self._abilities_toggled)
         self.abilities_week.currentIndexChanged.connect(lambda _index: self._refresh())
         self.qb_spy_check = self._option(g, "qb_spy", "QB spy for zone, man and rush (experimental)",
@@ -851,6 +865,13 @@ class BuildPanel(QWidget):
         self.packs_remove_button.clicked.connect(self._remove_playbook_pack)
         prow.addWidget(self.packs_remove_button)
         prow.addWidget(self.modern_defense_button)
+        self.match_coverage_button = QPushButton("Add match coverage experiments")
+        self.match_coverage_button.setToolTip(
+            "EXPERIMENTAL / UNWITNESSED. Retail: some calls exchange man and zone assignments. "
+            "Patch: the optional match coverage pack adds five experimental calls built from those rules. "
+            "Full Rip/Liz, quarters and Palms receiver keys are not implemented.")
+        self.match_coverage_button.clicked.connect(self._add_match_coverage_pack)
+        prow.addWidget(self.match_coverage_button)
         self.option_pack_button = QPushButton("SOFTDRINK option (experimental)")
         self.option_pack_button.setToolTip("Eight replacement calls in MIN I Jokers. Experimental and unwitnessed. Use the selected defensive test formation. Incompatible with the stock MIN Modern Gun Core seed.")
         self.option_pack_button.clicked.connect(self._add_option_pack)
@@ -1323,6 +1344,7 @@ class BuildPanel(QWidget):
             practice_squad_screen=self.practice_squad_screen_check.isChecked(),
             abilities=self.abilities_check.isChecked(),
             abilities_off_week=(self.abilities_week.currentData() if self.abilities_check.isChecked() else None),
+            **{key: box.isChecked() for key, box in self.abilities_lock_checks.items()},
             qb_spy=self.qb_spy_check.isChecked(),
             calendar_engine=self.season_cap_check.isChecked(),
             coverage_slider=self.coverage_slider_check.isChecked(),
@@ -1554,6 +1576,9 @@ class BuildPanel(QWidget):
         self.momentum_collision_level.setCurrentIndex(self.momentum_collision_level.findData(value))
         self.momentum_collision_level.blockSignals(False)
         self.momentum_collision_level.setEnabled(collision.isEnabled())
+        installed_abilities = (self._state or {}).get("abilities_settings") or None
+        if isinstance(installed_abilities, dict) and installed_abilities.get("model_version") == 2:
+            self.set_abilities_lock_settings({key: installed_abilities.get(key) for key in ("lock_right_stick", "lock_special_moves", "lock_speedster")})
         money = self.cpu_money_downs_check
         installed_money = (self._state or {}).get("cpu_money_downs_settings") or None
         self.cpu_money_downs_level.blockSignals(True)
@@ -1851,10 +1876,35 @@ class BuildPanel(QWidget):
 
     def _abilities_toggled(self, on):
         self.abilities_week.setEnabled(bool(on))
+        for box in self.abilities_lock_checks.values():
+            box.setEnabled(bool(on))  # choices are kept while the parent is off
         if not on:
             self.abilities_week.blockSignals(True)
             self.abilities_week.setCurrentIndex(0)
             self.abilities_week.blockSignals(False)
+        self._refresh()
+
+    def abilities_lock_settings(self) -> dict:
+        """Runtime key names (lock_right_stick, ...) -> bool, as the Rosters page expects."""
+        return {key.removeprefix("abilities_"): box.isChecked() for key, box in self.abilities_lock_checks.items()}
+
+    def set_abilities_lock_settings(self, settings: dict) -> None:
+        """From the Rosters page or a source inspection; emits no change signal back to Rosters."""
+        self._abilities_lock_sync = True
+        try:
+            for key, box in self.abilities_lock_checks.items():
+                value = settings.get(key.removeprefix("abilities_"), settings.get(key))
+                if value is not None:
+                    box.blockSignals(True)
+                    box.setChecked(bool(value))
+                    box.blockSignals(False)
+        finally:
+            self._abilities_lock_sync = False
+        self._refresh()
+
+    def _abilities_locks_changed(self):
+        if not self._abilities_lock_sync:
+            self.abilities_locks_changed.emit(self.abilities_lock_settings())
         self._refresh()
 
     def set_music_shuffle_selection(self, document):
@@ -1899,6 +1949,13 @@ class BuildPanel(QWidget):
         seed = str(mod_build.ROOT / "data/playbooks/softdrink_option.2k5book")
         if Path(seed).resolve() not in {Path(p).resolve() for p in self.playbook_packs}:
             self.set_playbook_packs([*self.playbook_packs, seed])
+
+    def _add_match_coverage_pack(self) -> None:
+        seed = str(mod_build.ROOT / "data/playbooks/softdrink_match_coverage.2k5book")
+        paths = list(self.playbook_packs)
+        if Path(seed).resolve() not in {Path(path).resolve() for path in paths}:
+            paths.append(seed)
+        self.set_playbook_packs(paths)
 
     def _add_modern_defense_pack(self) -> None:
         seed = str(mod_build.ROOT / "data/playbooks/softdrink_modern_defense.2k5book")

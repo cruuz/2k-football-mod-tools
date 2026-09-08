@@ -42,6 +42,9 @@ NOT_A_CONTROL = {
     "hires_families": "six family checkboxes under the Hi-res option",
     # sub-settings bound through another control on the page or elsewhere in the shell
     "abilities_off_week": "the Week with abilities off combo next to the Player abilities option",
+    "abilities_lock_right_stick": "the rules v2 lock checkbox under the Player abilities option (abilities_lock_checks)",
+    "abilities_lock_special_moves": "the rules v2 lock checkbox under the Player abilities option (abilities_lock_checks)",
+    "abilities_lock_speedster": "the rules v2 lock checkbox under the Player abilities option (abilities_lock_checks)",
     "music_shuffle_selection": "the Music page's playlist document, delivered by the shell",
     "calendar_engine": "carried by the combined 128-season franchise option (season_cap)",
     "hires_folder": "the Hi-res folder field of the hi-res pack option",

@@ -137,6 +137,8 @@ class ControlsTests(unittest.TestCase):
         p.record.values['unknown_52'] = 0x13
         p.record.set('star_tag', 1)
         self.panel.select_player(p)
+        # rules v2: a tier must permit the ability before a flag can be set (tier 0 permits none)
+        self.panel.abilities_panel.tier_combo.setCurrentIndex(1)
         self.panel.ability_checks['speedster'].click()
         self.assertTrue(p.record.abilities['speedster'])
         # Independent later bit edits must survive an ability-only undo.

@@ -60,6 +60,8 @@ def restore(panel, state):
                              ("hires_target_combo", choices["hires_target"])):
             _combo(getattr(panel, field), value)
         panel.screen_timing_combo.setCurrentText(choices["screen_timing"] or "D")
+        for key, box in getattr(panel, "abilities_lock_checks", {}).items():
+            box.setChecked(bool(choices.get(key, True)))
         for key in ("team_history", "career_stats", "prospect_names", "roster_edits", "espn25_plan", "music_project",
                     "music_library", "hires_folder", "scorebug_folder", "my_career_setup", "name", "author"):
             getattr(panel, key + "_field").setText(choices[key] or "")
