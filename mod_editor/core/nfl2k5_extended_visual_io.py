@@ -280,6 +280,10 @@ class Nfl2k5ExtendedVisualIO:
                 "Live face/head textures must be fully opaque. "
                 "Set the PNG alpha channel to 255 everywhere and try again."
             )
+        if asset.kind == "uniform_equipment_texture":
+            from .nfl2k5_equipment_import_intent import import_mode
+
+            import_mode(payload, asset.asset_id, rgba)
         return payload, rgba
 
     @property

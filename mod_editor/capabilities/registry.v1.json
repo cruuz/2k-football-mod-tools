@@ -7839,7 +7839,11 @@
         "reports/assets/nfl2k5_all_txtr_inventory_v2.json",
         "reports/assets/nfl2k5_p8_texture_inventory.json",
         "mod_editor/data/nfl2k5_uniform_equipment_export_catalog.v1.json",
-        "mod_editor/core/nfl2k5_uniform_equipment_writer.py"
+        "mod_editor/core/nfl2k5_uniform_equipment_writer.py",
+        "ASTRA_EQUIPMENT_TEXTURE_CHAIN_REPORT.md",
+        "mod_editor/data/nfl2k5_equipment_chain_pins.v1.json",
+        "tests/mod_editor/test_nfl2k5_equipment_texture_chain.py",
+        "tests/mod_editor/test_nfl2k5_equipment_texture_native.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -7854,7 +7858,7 @@
         "The catalog keeps all 11,395 standalone targets editable: 7,315 reviewed P8 targets and all 4,080 reviewed explicit-size A1R5G5B5 p001..p006/p011..p016 player strips. Outer 581 p005 is a proved transactional two-piece span across physical packs 0 and 1. A8R8G8B8, DXT1, VC_P8_LINEAR, crowdbase, seat, and unreviewed A1R5G5B5 layouts remain refused.",
         "The 1,585 team-linked slots in logos.cdf, mini.cdf, and flipchip.cdf are raw P8 fixed-slot resources: imports preserve their wrapper, descriptor/system bytes, exact resource span, and 96-byte slot padding, regenerate only swizzled indices plus palette, and never invoke VC-LZ. The 170 franchise-office and draft/PDA logo resources retain their exact compressed P8 spans.",
         "All Textures also edits 28,530 reviewed package-local socks, elbow-pad, glove, long-sleeve, shoe, and wristband P8 palettes. Each import preserves that TSET's shared retail index/mip chain and every unselected sibling palette and decoded image.",
-        "Package-local equipment imports are palette-constrained: they recolour the retail equipment shape rather than replacing its shared silhouette. Deterministic colour tiers are tried until the complete VC-LZ TSET fits its original allocation.",
+        "Package-local equipment defaults to recolouring the shared retail shape. An explicit experimental, unwitnessed glove or shoe import can append a private coverage mip chain, preserving all sibling bytes. Original, half or quarter width and height are explicit choices; smaller images lose detail and all private chains use more game memory. Deterministic colour tiers and lossless compression must fit the complete TSET inside its original file span before staging.",
         "Compressed replacements are recompressed into the original byte span, while reviewed raw replacements retain the complete fixed-slot structure; an image that cannot satisfy its owning transport is refused rather than moving anything on the disc.",
         "Targets are addressed by outer package index and texture name. Uniform and menu-presentation targets also carry typed team names, abbreviations, asset code, style, physical-set selectors, archive name, and consumer scope; unresolved stadium targets still use package indices and preview identification.",
         "Franchise-office team logos are presentation assets, not midfield art. Stock midfield center_logo exists only in the create-team packages."
@@ -8021,7 +8025,11 @@
         "docs/research/uniform_texture_sharing.md",
         "reports/assets/nfl2k5_uniform_inventory.json",
         "reports/assets/uniform_texture_sharing.v2.json",
-        "reports/gameplay_tuning/nfl2k5_ps2_fixture_availability.json"
+        "reports/gameplay_tuning/nfl2k5_ps2_fixture_availability.json",
+        "ASTRA_EQUIPMENT_TEXTURE_CHAIN_REPORT.md",
+        "mod_editor/data/nfl2k5_equipment_chain_pins.v1.json",
+        "tests/mod_editor/test_nfl2k5_equipment_texture_chain.py",
+        "tests/mod_editor/test_nfl2k5_equipment_texture_native.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -8038,7 +8046,7 @@
         "Player portraits are exact 128x128 RGBA8 PNGs selected by a proved four-digit numeric portrait ID; cross-pack slots are reconstructed as bounded physical spans.",
         "Crib Team Photos are exact 128x128 RGBA8 PNGs selected by a canonical crib_team_photo:##_photo_0# selector; all five fixed P8 mips are regenerated.",
         "The Stadium texture route accepts an exact 64x64 RGBA8 PNG only for nfl2k5.stadium.o3280.c0005.scene2648.texture0002 (cement01); all 33 linked surfaces change together, and fixed-allocation compression overflow is refused.",
-        "Package-local uniform equipment accepts only the 28,530 reviewed swizzled P8 palette selectors. Shared shape/mip indices and every unselected sibling remain exact; grouped TSET compression overflow is refused.",
+        "Package-local uniform equipment accepts 28,530 reviewed swizzled P8 selectors with palette-only import by default. The explicit experimental, unwitnessed glove/shoe choice appends an independent coverage mip chain and changes only selected descriptors and palettes; original shared indices and every unselected sibling remain exact. Image size is explicitly original, half or quarter width and height. Grouped TSET overflow is refused before staging; the decoded game-memory allocation grows.",
         "Menu Back accepts only mono PCM16LE at exactly 16,000 Hz and 5,696 frames; it is encoded into the one proved fixed AUDO payload while preserving its wrapper and metadata.",
         "Additional standalone audio accepts any of 849 non-Menu-Back catalog asset IDs plus a strict PCM16LE WAV matching that row's exact channel count, rate, and frame count; 697 alias-related rows carry a prominent warning because their runtime cue meaning remains unproved.",
         "Equal decoded uniform content across selectors is not shared storage: all 3,170 audited torso, pants, sleeve, and live-helmet targets have distinct non-overlapping XISO spans.",

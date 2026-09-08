@@ -1,0 +1,60 @@
+--- a/mod_editor/gui/studio_qt.py
++++ b/mod_editor/gui/studio_qt.py
+@@ -379,6 +379,11 @@
+
+     def replace_asset(
+         self, asset: UniformAsset, supplied_png: Path, progress: ProgressSink
++    ) -> object: ...
++
++    def replace_equipment_texture(
++        self, asset: object, supplied_png: Path, progress: ProgressSink, *,
++        independent: bool = False, scale: int = 1,
+     ) -> object: ...
+
+     def save_texture_authoring_master(
+@@ -5312,6 +5317,14 @@
+         fitted = self._fit_for_slot(path, asset.width, asset.height, asset.label)
+         if fitted is None:
+             return
++        equipment_choice: tuple[bool, int] | None = None
++        if asset.kind == "uniform_equipment_texture":
++            from mod_editor.gui.equipment_texture_import_dialog import EquipmentTextureImportDialog
++
++            dialog = EquipmentTextureImportDialog(asset, self)
++            if dialog.exec_() != dialog.Accepted:
++                return
++            equipment_choice = (dialog.independent, dialog.scale)
+         existing_master = self._texture_master_drafts.get(asset.asset_id)
+         pending_master: _TextureMasterDraft | None = None
+         if native_canvas_edit is None:
+@@ -5328,6 +5341,12 @@
+         path = fitted
+
+         def success(result: object) -> None:
++            if getattr(result, "changed_asset_ids", None) == ():
++                if pending_master is not None:
++                    pending_master.source_image.unlink(missing_ok=True)
++                    pending_master.native_baseline_png.unlink(missing_ok=True)
++                self._set_status(_result_message(result, "Equipment artwork already matches."))
++                return
+             modified = bool(getattr(result, "modified", True))
+             if native_canvas_edit is not None:
+                 if modified and existing_master is not None:
+@@ -5374,8 +5393,16 @@
+                 pending_master.source_image.unlink(missing_ok=True)
+                 pending_master.native_baseline_png.unlink(missing_ok=True)
+
++        def replace_texture(progress: ProgressSink) -> object:
++            if equipment_choice is not None:
++                independent, scale = equipment_choice
++                return self.facade.replace_equipment_texture(
++                    asset, path, progress, independent=independent, scale=scale,
++                )
++            return self.facade.replace_asset(asset, path, progress)
++
+         self._start_task(
+-            lambda progress: self.facade.replace_asset(asset, path, progress),
++            replace_texture,
+             success,
+             label=f"Checking and replacing {asset.label}",
+             blocking=True,

@@ -1382,6 +1382,8 @@ class StudioSession:
         return destination.resolve(strict=True)
 
     def replace(self, asset: Any, supplied_png: Path) -> ReplaceResult:
+        from mod_editor.core.nfl2k5_equipment_import_intent import same_visual_import
+
         if not bool(getattr(asset, "editable", True)):
             raise ValidationError(
                 f"{asset.label} is preview/export-only because its texture "
@@ -1395,7 +1397,8 @@ class StudioSession:
             asset, supplied_png
         )
         previous = self._snapshot_previous(asset.asset_id)
-        if supplied_rgba == original_rgba:
+        if same_visual_import(asset, supplied_payload, supplied_rgba,
+                              _original_payload, original_rgba):
             existing = self._edits.pop(asset.asset_id, None)
             if existing is not None:
                 existing.replacement_path.unlink(missing_ok=True)
@@ -1490,6 +1493,8 @@ class StudioSession:
             rgba: bytes
             original_rgba: bytes
             current_rgba: bytes | None
+            original_payload: bytes
+            current_payload: bytes | None
 
         validated: list[_ValidatedBatchRow] = []
         # This entire loop is read-only with respect to session edit state.
@@ -1503,6 +1508,7 @@ class StudioSession:
             payload, rgba = self.asset_io.validate_replacement(asset, supplied_path)
             current = self._edits.get(asset.asset_id)
             current_rgba: bytes | None = None
+            current_payload: bytes | None = None
             if current is not None:
                 current_payload, current_rgba = self.asset_io.validate_replacement(
                     asset, current.replacement_path
@@ -1516,14 +1522,18 @@ class StudioSession:
                         "Replace it again before importing a bundle."
                     )
             validated.append(_ValidatedBatchRow(
-                asset, payload, rgba, original_rgba, current_rgba
+                asset, payload, rgba, original_rgba, current_rgba,
+                _original_payload, current_payload,
             ))
+
+        from mod_editor.core.nfl2k5_equipment_import_intent import same_visual_import
 
         changed = tuple(
             row for row in validated
-            if row.rgba != (
-                row.current_rgba
-                if row.current_rgba is not None else row.original_rgba
+            if not same_visual_import(
+                row.asset, row.payload, row.rgba,
+                row.current_payload if row.current_payload is not None else row.original_payload,
+                row.current_rgba if row.current_rgba is not None else row.original_rgba,
             )
         )
         requested_ids = tuple(row.asset.asset_id for row in validated)
@@ -1550,7 +1560,8 @@ class StudioSession:
             # Materialize exact bytes read above before touching live session
             # destinations. Rows restoring source pixels need no staged file.
             for row in changed:
-                if row.rgba == row.original_rgba:
+                if same_visual_import(row.asset, row.payload, row.rgba,
+                                      row.original_payload, row.original_rgba):
                     continue
                 staged = self.replacements / (
                     f".team-kit-{transaction}-{_asset_key(row.asset.asset_id)}.png"
@@ -1570,7 +1581,8 @@ class StudioSession:
             for row in changed:
                 asset_id = row.asset.asset_id
                 destination = self.replacements / f"{_asset_key(asset_id)}.png"
-                if row.rgba == row.original_rgba:
+                if same_visual_import(row.asset, row.payload, row.rgba,
+                                      row.original_payload, row.original_rgba):
                     committed_ids.add(asset_id)
                     destination.unlink(missing_ok=True)
                     new_edits.pop(asset_id, None)

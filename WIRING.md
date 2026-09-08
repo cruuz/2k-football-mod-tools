@@ -12556,3 +12556,169 @@ Existing capability registry entries suffice. Keep kickoff alignment and
 36-book return blocking in their current build order. Rebuild from supported
 retail input: all v1 through v5 legacy/grown executables and mixed new hooks
 are refused before mutation, rather than partially upgraded.
+
+## R64: independent glove and shoe texture chains
+
+Owner: `ASTRA_EQUIPMENT_TEXTURE_CHAIN_REPORT.md`. **EXPERIMENTAL /
+UNWITNESSED**. The owned writer, three core helpers, dialog, facade method,
+project transport and tests are implemented. The original-size independent
+chains did not fit the sampled retail slots. The positive retail proof uses
+an explicit 64 x 64 shoe image with all four levels. Do not present this as a
+universal native-size importer or a played result.
+
+### Protected Studio integration
+
+Apply the exact fixture only after reviewing it against the combined stack:
+
+```sh
+git apply --check tests/fixtures/equipment_texture_chain_wiring.patch
+git apply tests/fixtures/equipment_texture_chain_wiring.patch
+QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_nfl2k5_equipment_import_wiring.py
+QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_nfl2k5_equipment_import.py
+```
+
+The fixture edits only `mod_editor/gui/studio_qt.py`. Before integration the
+wiring test applies the complete diff in memory, compiles the complete proposed
+module, and executes the actual proposed `_replace_visual_asset` method. After
+integration it executes the shipped method. No protected panel was changed in
+this worktree.
+
+Add this facade protocol signature alongside `replace_asset`:
+
+```python
+def replace_equipment_texture(
+    self, asset: object, supplied_png: Path, progress: ProgressSink, *,
+    independent: bool = False, scale: int = 1,
+) -> object: ...
+```
+
+In `_replace_visual_asset`, after a successful `_fit_for_slot` and before
+preparing a full-resolution authoring master, open
+`mod_editor.gui.equipment_texture_import_dialog.EquipmentTextureImportDialog`
+for `asset.kind == "uniform_equipment_texture"`. Return on cancellation.
+Capture `dialog.independent` and `dialog.scale` on the GUI thread. Its own
+`Accepted` constant avoids adding an undeclared global `QDialog` reference.
+The existing fitted PNG, not the original mismatched image, goes to
+`facade.replace_equipment_texture(..., independent=..., scale=...)` inside
+`_start_task`; all other textures retain `facade.replace_asset`.
+
+The checkbox is exactly **Give this glove or shoe its own texture** (39
+characters). It starts unchecked. The size chooser starts at the original
+catalog size and offers original, half or quarter width/height; it is enabled
+only for the checked, reviewed glove/shoe families. The PNG stays at its
+catalog dimensions; the writer derives the selected smaller base and all
+remaining mips. The dialog explains lost fine detail, additional game memory,
+separate dirty variants, compression refusal and the unwitnessed status.
+
+Use the result's `message`, `modified` and `changed_asset_ids`. On replay
+(`changed_asset_ids == ()`), delete only a newly prepared pending authoring
+master, retain the previous master, show the result message and return without
+marking the workspace dirty. Existing failure cleanup removes the pending
+master after preflight failure. Accepted changes keep the existing preview,
+filter and authoring-master flow. The current editing preview shows the
+full-size authored PNG; generated build previews show the actual quantized,
+encoded base. The result message states the selected game dimensions and
+whether colours were approximated.
+
+Team Kit's equipment browser and All Textures share this visual import route,
+including file selection and drag/drop. Any future Rosters texture picker
+must call this same method/service rather than bypassing the preflight. The
+current Rosters equipment type/colour fields do not import PNGs and require no
+panel change. No unrelated GUI panel is part of this handoff.
+
+### Required dispatcher and Build fields
+
+| Required integration field | Decision |
+| --- | --- |
+| `_apply_all` dispatcher tuple | N/A. This is a grouped `uniform_equipment_texture` resource edit through the existing unified visual provider, not an XBE patch owner. Add no tuple entry. |
+| Dispatcher kwarg | N/A. Mode and scale travel inside the frozen authored PNG; add no global build flag. |
+| Four dispatcher status dictionaries | N/A for all four. There is no executable byte status for this data edit; exact before/after span hashes remain in the existing physical edit receipt. |
+| `_selected_space_requests`, `_xbe_space_adapter`, `_grown_status_fields`, allocator union and manifest owner lists | No changes. No RX/RW/RO allocation, `REQUESTS`, cave or XBE mutation. |
+| `BuildPlan` field | No new field. Existing visual project assets carry this edit. |
+| Basic / Advanced / Experimental presets | None enable it automatically. All retain palette-only import by default; the user explicitly chooses the new mode per variant. |
+| Normalization, deferral and final Build pass | No new normalization or pass. Existing one-span grouping and source-bound visual compiler perform the write. |
+| Gameplay Patches `PATCHES` text and `NEEDS_IMAGE` | No new row or set member. Retail: named equipment shares image indices and distance copies. Patch: the explicitly selected glove or shoe gets its own image and distance copies inside the original compressed file span. This belongs to texture import, not a gameplay toggle. |
+| Build tab `_option` caption, <=60 characters | No new `_option`. The owned import checkbox caption above is 39 characters. |
+| Capability registry | Existing `nfl2k5.textures.all_p8` and `nfl2k5.uniforms.all_visual` constraints/evidence were updated in place. No new surface or ID; runtime status was not promoted. |
+| Cave reservations, release tags, update checker and CI workflow | Do not change for this feature. Claude alone resolves the base's stale ESPN 25 reservation source when regenerating the combined protected manifest. |
+
+### Protected release allowlist and runtime checker
+
+Add these exact lines to `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_equipment_import.py
+mod_editor/core/nfl2k5_equipment_import_intent.py
+mod_editor/core/nfl2k5_equipment_lz.py
+mod_editor/gui/equipment_texture_import_dialog.py
+mod_editor/data/nfl2k5_equipment_chain_pins.v1.json
+```
+
+Existing allowlisted writer, digit encoder, extended visual IO, session,
+project archive, facade, provider and unified project tool remain required.
+The census tool, proof fixture, tests, patch fixture, report, brief and scratch
+artifacts are development evidence; they need no runtime allowlist entries.
+No executable or retail texture bytes are in the new JSON catalog.
+
+In `packaging/check_2k5_mod_studio_runtime.py`, add these exact dotted names to
+the existing runtime `modules` import list alongside the digit/equipment code:
+
+```python
+"mod_editor.core.nfl2k5_equipment_import",
+"mod_editor.core.nfl2k5_equipment_import_intent",
+"mod_editor.core.nfl2k5_equipment_lz",
+"mod_editor.gui.equipment_texture_import_dialog",
+```
+
+Add the following two paths to `REQUIRED_UNIFIED_PROVIDER_CLOSURE`:
+
+```python
+"mod_editor/core/nfl2k5_equipment_import_intent.py",
+"mod_editor/core/nfl2k5_equipment_lz.py",
+```
+
+`Nfl2k5UnifiedVisualProvider` already pins these two execution dependencies,
+all changed existing execution dependencies, and the new hash catalog. The
+strict closure expectation is updated from 235 to 237 modules in
+`test_provider_integrity.py`. The GUI service and dialog are runtime imports,
+not backend execution dependencies; do not add unrelated GUI modules to the
+sealed compiler closure.
+
+Require the staged catalog at
+`mod_editor/data/nfl2k5_equipment_chain_pins.v1.json`, exactly 145,141 bytes,
+SHA-256 `cb15ecd9ef3f87f45c3cfc4a7fc583636b236835fbbedec073c50dc45706b0bc`,
+and confirm 1,902 rows. The existing provider data-pin validation also checks
+it before executing a build.
+
+Update the following entries in `RC29_AUDIO_ANNOTATION_RUNTIME_PINS` to the
+combined final file hashes. These are the exact hashes from this branch:
+
+| Path | SHA-256 |
+| --- | --- |
+| `mod_editor/studio/facade.py` | `fa81aff426da2a3556f7e5435598cfc1cf005e7ef65b1eb99609e63d9d29a04c` |
+| `mod_editor/studio/session.py` | `731b5f757d13ceebea0eb6b37dc9380cd0e1d9a29de1e02c136303a5d68df5f0` |
+| `mod_editor/studio/project_archive.py` | `3556062a7cf178ef416706543e71270783d04439494420810fb7a10ca7f01479` |
+| `mod_editor/gui/studio_qt.py`, after this exact fixture on this base | `9aef38f0dfcd7a43a0298b9bea43798f1a416437f28fde75db2513c82d6796f6` |
+
+If another landing also changes these files, recompute their hashes after
+combining the changes. Do not copy this branch's proposed Studio hash onto a
+different merged panel. The other pinned Audio files are unchanged by this
+feature. The protected checker was not edited or treated as an already-green
+packaged release check here.
+
+For execution-pin review, the updated writer is
+`188bb18fc44d49f050cca11891652bdca7e44dea9c64c4df5996a5bb8d9bb06c`,
+the intent helper is
+`ef50b20ff389b0067046c53eb62fc254a3c1319eedd7eb1a8d1aaba8f2cfb8c4`,
+the lossless compression helper is
+`c09e5a518177c4b473f71ca0f14a2562d8c0ca1e322f2bab0c32a5cf46350571`,
+and `tools/nfl2k5_visual_mod_project.py` is
+`f6c578880cdfcf3a4c01e9a4458651db8a2e869a89632f40f67c5c49d5a47997`.
+Both the backend hash and its duplicated module-pin entry have been updated.
+
+After wiring, run the four new standalone suites, existing equipment/export,
+Studio/Team Kit, provider integrity, capability and staged-runtime release
+checks. Both XBE composition gates already pass on this branch. The oracle's
+only failure is the brief's expected stale
+`mod_editor/core/nfl2k5_espn25_scenarios.py` reservation pin. The report contains
+Noah's close/distance, clean/dirty, glove and game-memory witness list.

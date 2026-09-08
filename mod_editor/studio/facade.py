@@ -3284,6 +3284,21 @@ class Nfl2k5StudioFacade:
         progress(f"{asset.label} ready", 1, 1)
         return result
 
+    def replace_equipment_texture(
+        self, asset: object, supplied_png: Path, progress: ProgressSink, *,
+        independent: bool = False, scale: int = 1,
+    ) -> object:
+        """Compile the selected equipment choice before changing the project."""
+        from mod_editor.core.nfl2k5_equipment_import import stage_equipment_import
+
+        progress("Checking equipment artwork and available space", 0, 1)
+        with self._lock:
+            result = stage_equipment_import(
+                self._require_session(), asset, supplied_png, independent=independent, scale=scale,
+            )
+        progress("Equipment import checked", 1, 1)
+        return result
+
     def revert_asset(self, asset: UniformAsset, progress: ProgressSink) -> object:
         progress(f"Reverting {asset.label}", 0, 1)
         with self._lock:

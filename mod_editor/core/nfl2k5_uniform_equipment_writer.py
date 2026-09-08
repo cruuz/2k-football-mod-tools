@@ -1,4 +1,4 @@
-"""Bounded package-local uniform-equipment P8 palette imports.
+"""Bounded package-local equipment recolours and independent P8 mip imports.
 
 The uniform ``TSET`` resources in chunks 4 through 10 do not contain one
 independent index image per named texture.  Every named sock, glove, shoe, and
@@ -6,18 +6,18 @@ similar variant in a chunk shares one swizzled mip/index chain and owns only an
 independent 256-entry BGRA palette.  Replacing that shared chain for one name
 would silently reshape every sibling.
 
-This writer therefore projects an authored PNG onto the retail shared indices
-and changes only the selected palette allocation.  Unselected palettes, the
-shared indices, descriptors, names, and all other decoded bytes remain exact.
-The complete TSET is recompressed into its original fixed span; deterministic
-palette tiers are tried when the richest projection does not fit.  Unsupported
-formats and layouts fail closed.
+Palette projection remains the default. An explicit glove/shoe choice appends
+an aligned, coverage-filtered index chain and repoints only its descriptor.
+Sibling descriptors, palettes and every shared mip remain exact. The decoded
+video allocation grows, but the recompressed TSET stays inside its original
+file span. EXPERIMENTAL / UNWITNESSED: gameplay residency and rendering need a
+close/distant witness. Unsupported layouts and compression overflow fail closed.
 """
 
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass, replace
 import hashlib
 import json
 import os
@@ -26,6 +26,9 @@ import stat
 import struct
 import sys
 from typing import Any, Iterable
+
+from mod_editor.core.errors import ValidationError
+from mod_editor.core.nfl2k5_equipment_import_intent import OWN_TEXTURE, PALETTE_ONLY, import_mode, import_settings
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -41,9 +44,12 @@ from nfl_txtr import (  # noqa: E402
     TextureInfo,
     TxtrError,
     decode_chunk,
+    compress_vc_lz,
     encode_rgba_png,
     parse_chunks,
     rebuild_compressed_chunk_fixed_span,
+    minimum_vc_lz_overlap_scratch,
+    swizzle_2d,
     texture_to_rgba,
     unswizzle_2d,
 )
@@ -61,6 +67,11 @@ PALETTE_BYTES = 1_024
 PALETTE_LIMITS = (256, 128, 64, 32, 16, 8, 4, 2)
 SUPPORTED_CHUNKS = frozenset(range(4, 11))
 SUPPORTED_FORMAT = 0x0B
+MAX_PACKAGE_BYTES = 32 * 1024 * 1024
+MAX_DECODED_BYTES = 2 * 1024 * 1024
+CHAIN_PINS = ROOT / "mod_editor/data/nfl2k5_equipment_chain_pins.v1.json"
+# Filled by the streaming retail census tool; contains hashes, never retail art.
+CHAIN_PINS_SHA256 = "cb15ecd9ef3f87f45c3cfc4a7fc583636b236835fbbedec073c50dc45706b0bc"
 CATALOG_COLUMNS = (
     "outer_index",
     "set_selector",
@@ -385,12 +396,149 @@ def _read_png(path: Path, target: EquipmentTarget) -> tuple[bytes, bytes, list[A
         width, height, rgba = palette_tools.decode_rgba_png(
             payload, (target.width, target.height)
         )
-        levels = p8_writer.generate_mips(
-            rgba, width, height, target.mip_levels
-        )
+        if import_mode(payload, target.asset_id, rgba) == OWN_TEXTURE:
+            from mod_editor.core.nfl2k5_digit_texture import make_digit_mips
+
+            levels = make_digit_mips(rgba, width, height, target.mip_levels)
+            scale = import_settings(payload, target.asset_id, rgba)[1]
+            shift = scale.bit_length() - 1
+            _require(shift < len(levels), "Equipment image size removes every mip level")
+            levels = [replace(level, level=number) for number, level in enumerate(levels[shift:])]
+        else:
+            levels = p8_writer.generate_mips(
+                rgba, width, height, target.mip_levels
+            )
     except (ValueError, p8_writer.TextureWorkflowError) as exc:
         raise UniformEquipmentWriterError(str(exc)) from exc
     return payload, rgba, levels
+
+
+def _chain_pins() -> dict[tuple[int, int], str]:
+    payload = CHAIN_PINS.read_bytes()
+    _require(_digest(payload) == CHAIN_PINS_SHA256, "Equipment source pin catalog changed")
+    document = json.loads(payload)
+    _require(document.get("schema") == "nfl2k5_equipment_chain_pins/v1",
+             "Equipment source pin schema changed")
+    return {(outer, chunk): digest for outer, chunk, digest in document["rows"]}
+
+
+def _rebuild_grown_video(template_span: bytes, candidate: bytes):
+    """Use the existing VC-LZ codec and overlap validator with a larger video heap.
+
+    TSET loader 0x451D0 allocates system + video + scratch from the wrapper;
+    0x45280 reads exactly stored_size bytes. No outer size/offset changes.
+    """
+    chunk = parse_chunks(template_span)[0]
+    _require(chunk.kind == "TSET" and chunk.compressed
+             and chunk.reserved0 == chunk.reserved1 == 0,
+             "Independent equipment requires the reviewed compressed TSET wrapper")
+    _require(chunk.output_size <= len(candidate) <= MAX_DECODED_BYTES,
+             "Independent equipment exceeds the bounded decoded allocation")
+    _decoded, original = decode_chunk(template_span, chunk)
+    assert original is not None
+    # As in the fixed-span Stadium writer, try the source geometry first,
+    # then the retail-observed 10/11/12-bit distance tiers. Long runs in a new
+    # chain need a different distance/length split than detailed shared art.
+    # This changes only the lossless transport, never a sibling's decoded data.
+    bit_candidates = tuple(dict.fromkeys((original.offset_bits, 10, 11, 12)))
+    for offset_bits in bit_candidates:
+        try:
+            encoded, _info = compress_vc_lz(
+                candidate, stream_tag=original.stream_tag, offset_bits=offset_bits,
+                max_encoded_size=chunk.stored_size, verify_roundtrip=True,
+            )
+            strategy = "retail_greedy"
+            break
+        except TxtrError as exc:
+            if not (str(exc).startswith("VC-LZ stream needs more than the ")
+                    or (str(exc).startswith("VC-LZ stream is ") and " exceeds " in str(exc))):
+                raise
+            from mod_editor.core.nfl2k5_equipment_lz import compress_equipment_optimal
+
+            try:
+                encoded = compress_equipment_optimal(
+                    candidate, stream_tag=original.stream_tag, offset_bits=offset_bits,
+                    max_encoded_size=chunk.stored_size,
+                )
+                strategy = "optimal_token_parse"
+                break
+            except TxtrError as optimal_error:
+                if not (str(optimal_error).startswith("VC-LZ stream is ")
+                        and " exceeds " in str(optimal_error)):
+                    raise
+                if offset_bits == bit_candidates[-1]:
+                    raise
+    padding = chunk.stored_size - len(encoded)
+    minimum = minimum_vc_lz_overlap_scratch(encoded, chunk.stored_size, len(candidate))
+    scratch = max(chunk.overlap_scratch_bytes, (max(padding, minimum) + 15) & ~15)
+    video = len(candidate) - chunk.system_bytes
+    rebuilt = HEADER.pack(
+        b"TSET", chunk.stored_size, chunk.system_bytes, video,
+        chunk.compression_magic, scratch, chunk.reserved0, chunk.reserved1,
+    ) + encoded + bytes(padding)
+    actual, checked = decode_chunk(rebuilt, replace(chunk, video_bytes=video,
+                                                   overlap_scratch_bytes=scratch))
+    _require(actual == candidate and checked is not None
+             and checked.consumed_bytes == len(encoded),
+             "Independent equipment failed its compressed round trip")
+    # The existing receipt type keeps callers and palette-only receipts stable.
+    from nfl_txtr import FixedSpanRebuildInfo
+
+    @dataclass(frozen=True)
+    class EquipmentRebuildInfo(FixedSpanRebuildInfo):
+        strategy: str
+
+    return rebuilt, EquipmentRebuildInfo(
+        kind="TSET", stored_size=chunk.stored_size, system_bytes=chunk.system_bytes,
+        video_bytes=video, stream_tag=original.stream_tag, offset_bits=offset_bits,
+        original_consumed_bytes=original.consumed_bytes,
+        original_unused_bytes=chunk.stored_size - original.consumed_bytes,
+        recompressed_bytes=len(encoded), zero_padding_bytes=padding,
+        original_overlap_scratch_bytes=chunk.overlap_scratch_bytes,
+        exact_minimum_overlap_scratch_bytes=minimum,
+        required_overlap_scratch_bytes=(max(padding, minimum) + 15) & ~15,
+        rebuilt_overlap_scratch_bytes=scratch,
+        overlap_scratch_changed=scratch != chunk.overlap_scratch_bytes,
+        loader_in_place_end_guard=scratch >= padding,
+        loader_in_place_alias_guard=scratch >= minimum,
+        template_decoded_matches_input=False, compressed_stream_matches_template=False,
+        complete_span_matches_template=False, decoded_sha256=_digest(candidate),
+        rebuilt_span_sha256=_digest(rebuilt),
+        strategy=strategy,
+    )
+
+
+def decode_equipment_levels(decoded: bytes, chunk: Any, texture: TextureInfo) -> list[bytes]:
+    """Decode every declared level using its descriptor and one BGRA palette."""
+    levels = []
+    cursor = texture.pixel_offset
+    for level in range(texture.mip_levels):
+        width, height = max(1, texture.width >> level), max(1, texture.height >> level)
+        levels.append(texture_to_rgba(decoded, chunk, replace(
+            texture, pixel_offset=cursor, width=width, height=height, mip_levels=1,
+        )))
+        cursor += width * height
+    return levels
+
+
+def apply_equipment_span(current: bytes, replacement: bytes,
+                         receipt: dict[str, Any]) -> tuple[bytes, dict[str, Any]]:
+    """Exact-span replay gate used by offline proofs and bounded callers.
+
+    The disc compositor already provides the same before/after hash gate for
+    physical writes. This pure operation cannot append twice or accept a mixed
+    chunk, and validates the replacement before returning any changed bytes.
+    """
+    target, after = receipt["target"], receipt["replacement"]
+    _require(len(current) == len(replacement) == target["span_size"] == after["span_size"]
+             and _digest(replacement) == after["span_sha256"],
+             "Equipment replacement or fixed span changed")
+    digest = _digest(current)
+    _require(digest in (target["span_sha256"], after["span_sha256"]),
+             "Equipment TSET contains mixed or foreign bytes")
+    return replacement, {"changed": digest != after["span_sha256"],
+                         "before_sha256": digest, "after_sha256": after["span_sha256"],
+                         "span_size": len(replacement)}
 
 
 def _project_palette(
@@ -489,7 +637,7 @@ def build_unified_uniform_equipment_imports(
     _require(0 <= outer_index < len(archive.entries),
              "Uniform-equipment outer selector is outside the private archive")
     entry = archive.entries[outer_index]
-    _require(len(entry.segments) == 1,
+    _require(entry.size <= MAX_PACKAGE_BYTES and len(entry.segments) == 1,
              "Uniform-equipment package crosses pack extents and is read-only")
     segment = entry.segments[0]
     package = read_entry_bytes(archive, entry)
@@ -500,16 +648,22 @@ def build_unified_uniform_equipment_imports(
     _require(len(matches) == 1,
              "Uniform-equipment TSET selector is absent or ambiguous")
     chunk = matches[0]
+    _require(chunk.output_size <= MAX_DECODED_BYTES,
+             "Equipment decoded allocation exceeds the reviewed size bound")
     template_span = package[chunk.offset:chunk.end_offset]
     decoded, decode_info = decode_chunk(package, chunk)
     _require(decode_info is not None, "Uniform-equipment TSET is not compressed")
     textures, indices = _validate_layout(decoded, chunk, rows)
 
     authored: dict[int, tuple[EquipmentTarget, bytes, bytes, list[Any]]] = {}
+    independent: set[int] = set()
     input_rows: list[dict[str, Any]] = []
     for target, path in selected:
         payload, rgba, levels = _read_png(path, target)
         authored[target.reference_index] = (target, payload, rgba, levels)
+        mode = import_mode(payload, target.asset_id, rgba)
+        if mode == OWN_TEXTURE:
+            independent.add(target.reference_index)
         input_rows.append({
             "target": target.asset_id,
             "path": str(path.resolve(strict=True)),
@@ -518,28 +672,79 @@ def build_unified_uniform_equipment_imports(
             "rgba_sha256": _digest(rgba),
             "width": target.width,
             "height": target.height,
+            "import_mode": mode,
         })
+
+    if independent:
+        _require(_chain_pins().get((outer_index, chunk_index)) == _digest(template_span),
+                 "Independent equipment TSET no longer matches the complete retail source pin")
+
+    # Allocate after ALL original bytes, including palette alignment gaps. Only
+    # these selected descriptors move; no sibling ever references the append.
+    updated_textures = dict(textures)
+    video_end = chunk.video_bytes
+    for reference in sorted(independent):
+        texture = textures[reference]
+        levels = authored[reference][3]
+        width, height, count = levels[0].width, levels[0].height, len(levels)
+        packed = (texture.packed_format & ~0x0FFF0000) | (count << 16) \
+            | ((width.bit_length() - 1) << 20) | ((height.bit_length() - 1) << 24)
+        texture = replace(texture, width=width, height=height, mip_levels=count, packed_format=packed)
+        start = (video_end + 127) & ~127
+        updated_textures[reference] = replace(texture, pixel_offset=start)
+        video_end = start + sum(
+            max(1, texture.width >> level) * max(1, texture.height >> level)
+            for level in range(texture.mip_levels)
+        )
+    if independent:
+        video_end = (video_end + 127) & ~127
+    _require(chunk.system_bytes + video_end <= MAX_DECODED_BYTES,
+             "Independent equipment exceeds the bounded decoded allocation")
 
     attempts: list[dict[str, Any]] = []
     rebuilt_decoded: bytes | None = None
     rebuilt_span: bytes | None = None
     rebuild_info: Any | None = None
     selected_entries: dict[int, int] = {}
-    tried: set[tuple[int, ...]] = set()
-    for maximum in PALETTE_LIMITS:
-        candidate = bytearray(decoded)
+    selected_quality: dict[int, Any] = {}
+    tried: set[str] = set()
+    for maximum in (PALETTE_LIMITS[:5] if independent else PALETTE_LIMITS):
+        candidate = bytearray(decoded + bytes(video_end - chunk.video_bytes))
         entries: dict[int, int] = {}
-        for reference, (target, _payload, _rgba, levels) in authored.items():
-            palette, actual_entries = _project_palette(indices, levels, maximum)
-            entries[reference] = actual_entries
-            start = chunk.system_bytes + target.palette_offset
-            candidate[start:start + PALETTE_BYTES] = palette
-        signature = tuple(entries[reference] for reference in sorted(entries))
+        qualities: dict[int, Any] = {}
+        try:
+            for reference, (target, _payload, _rgba, levels) in sorted(authored.items()):
+                if reference in independent:
+                    from mod_editor.core.nfl2k5_digit_texture import quantize_digit_levels
+
+                    colors, index_levels, quality = quantize_digit_levels(levels, maximum)
+                    palette, actual_entries = palette_tools.palette_bytes(colors), len(colors)
+                    qualities[reference] = quality
+                    texture = updated_textures[reference]
+                    struct.pack_into("<I", candidate, texture.descriptor_offset + 4,
+                                     texture.pixel_offset)
+                    struct.pack_into("<I", candidate, texture.descriptor_offset + 12,
+                                     texture.packed_format)
+                    cursor = chunk.system_bytes + texture.pixel_offset
+                    for level, level_indices in zip(levels, index_levels):
+                        swizzled = swizzle_2d(level_indices, level.width, level.height, 1)
+                        candidate[cursor:cursor + len(swizzled)] = swizzled
+                        cursor += len(swizzled)
+                else:
+                    palette, actual_entries = _project_palette(indices, levels, maximum)
+                entries[reference] = actual_entries
+                start = chunk.system_bytes + target.palette_offset
+                candidate[start:start + PALETTE_BYTES] = palette
+        except ValidationError as exc:
+            attempts.append({"maximum_palette_entries": maximum,
+                             "result": "coverage_quality_refused", "reason": str(exc)})
+            continue
+        signature = _digest(candidate)
         if signature in tried:
             continue
         tried.add(signature)
         try:
-            span, info = rebuild_compressed_chunk_fixed_span(
+            span, info = (_rebuild_grown_video if independent else rebuild_compressed_chunk_fixed_span)(
                 template_span, bytes(candidate)
             )
         except TxtrError as exc:
@@ -559,6 +764,7 @@ def build_unified_uniform_equipment_imports(
         rebuilt_span = span
         rebuild_info = info
         selected_entries = entries
+        selected_quality = qualities
         attempts.append({
             "encoded_bytes": info.recompressed_bytes,
             "maximum_palette_entries": maximum,
@@ -568,8 +774,10 @@ def build_unified_uniform_equipment_imports(
         break
     _require(
         rebuilt_decoded is not None and rebuilt_span is not None,
-        f"This equipment art cannot fit a usable two-color version inside the "
-        f"retail {chunk.stored_size:,}-byte TSET. Simplify the image and try again.",
+        f"This equipment art cannot fit inside the retail {chunk.stored_size:,}-byte TSET "
+        + ("while keeping its complete smaller images and edge coverage. " if independent
+           else "even with a two-colour palette. ")
+        + "Choose a smaller game image, fewer colours or simpler shapes and try again.",
     )
     assert rebuild_info is not None
 
@@ -581,7 +789,7 @@ def build_unified_uniform_equipment_imports(
             kind=chunk.kind,
             stored_size=chunk.stored_size,
             system_bytes=chunk.system_bytes,
-            video_bytes=chunk.video_bytes,
+            video_bytes=video_end,
             compression_magic=chunk.compression_magic,
             overlap_scratch_bytes=chunk.overlap_scratch_bytes,
             reserved0=chunk.reserved0,
@@ -600,12 +808,20 @@ def build_unified_uniform_equipment_imports(
         )
         for target, _path in selected
     }
+    selected_ranges.update(
+        (textures[reference].descriptor_offset + 4, textures[reference].descriptor_offset + 8)
+        for reference in independent
+    )
+    selected_ranges.update(
+        (textures[reference].descriptor_offset + 12, textures[reference].descriptor_offset + 16)
+        for reference in independent
+    )
     cursor = 0
     for start, end in sorted(selected_ranges):
         _require(decoded[cursor:start] == rebuilt_decoded[cursor:start],
                  "Uniform-equipment rebuild changed bytes outside selected palettes")
         cursor = end
-    _require(decoded[cursor:] == rebuilt_decoded[cursor:],
+    _require(decoded[cursor:] == rebuilt_decoded[cursor:len(decoded)],
              "Uniform-equipment rebuild changed bytes outside selected palettes")
 
     previews: list[tuple[str, bytes]] = []
@@ -614,16 +830,19 @@ def build_unified_uniform_equipment_imports(
         before = texture_to_rgba(
             decoded, chunk, textures[target.reference_index]
         )
-        after = texture_to_rgba(
-            rebuilt_decoded, chunk, textures[target.reference_index]
+        texture = updated_textures[target.reference_index]
+        after_levels = decode_equipment_levels(
+            rebuilt_decoded, replace(chunk, video_bytes=video_end), texture,
         )
+        after = after_levels[0]
         authored_rgba = authored[target.reference_index][2]
-        _require(before != after, f"Replacement equals retail for {target.asset_id}")
+        _require(before != after or target.reference_index in independent,
+                 f"Replacement equals retail for {target.asset_id}")
         preview_name = (
             f"equipment_{outer_index}_{chunk_index}_"
             f"{target.reference_index}_{target.name}.png"
         )
-        preview = encode_rgba_png(target.width, target.height, after)
+        preview = encode_rgba_png(texture.width, texture.height, after)
         previews.append((preview_name, preview))
         edit_reports.append({
             "asset_id": target.asset_id,
@@ -632,17 +851,40 @@ def build_unified_uniform_equipment_imports(
             "palette_offset": target.palette_offset,
             "preview_file": preview_name,
             "preview_sha256": _digest(preview),
-            "projection_quality": _quality(authored_rgba, after),
+            "projection_quality": _quality(
+                authored[target.reference_index][3][0].rgba
+                if target.reference_index in independent else authored_rgba, after,
+            ),
             "reference_index": target.reference_index,
             "set_selector": target.set_selector,
+            "import_mode": OWN_TEXTURE if target.reference_index in independent else PALETTE_ONLY,
+            "descriptor_offset": texture.descriptor_offset,
+            "pixel_offset": texture.pixel_offset,
+            "requested_dimensions": [target.width, target.height],
+            "encoded_dimensions": [texture.width, texture.height],
+            "mip_levels": texture.mip_levels,
+            "size_reduction": target.width // texture.width,
+            "mip_filter": ("premultiplied_rgba_area_from_base"
+                           if target.reference_index in independent else "retail_index_projection"),
+            "palette_quality": selected_quality.get(target.reference_index),
+            "levels": [
+                {"level": level.level, "width": level.width, "height": level.height,
+                 "pixel_offset": texture.pixel_offset + sum(
+                     previous.width * previous.height
+                     for previous in authored[target.reference_index][3][:level.level]
+                 ), "input_rgba_sha256": _digest(level.rgba),
+                 "decoded_rgba_sha256": _digest(actual),
+                 "quality": _quality(level.rgba, actual)}
+                for level, actual in zip(authored[target.reference_index][3], after_levels)
+            ],
         })
 
     selected_references = set(authored)
     for target in rows:
         if target.reference_index in selected_references:
             continue
-        before = texture_to_rgba(decoded, chunk, textures[target.reference_index])
-        after = texture_to_rgba(
+        before = decode_equipment_levels(decoded, chunk, textures[target.reference_index])
+        after = decode_equipment_levels(
             rebuilt_decoded, chunk, textures[target.reference_index]
         )
         _require(before == after,
@@ -657,7 +899,7 @@ def build_unified_uniform_equipment_imports(
     selector = f"uniform-equipment-tset:{outer_index}:{chunk_index}"
     target_record = {
         "chunk_index": chunk_index,
-        "format": "P8 shared-index palettes",
+        "format": "P8 independent mip chains" if independent else "P8 shared-index palettes",
         "outer_index": outer_index,
         "pack_offset": pack_offset,
         "selector": selector,
@@ -673,6 +915,18 @@ def build_unified_uniform_equipment_imports(
     }
     report = {
         "schema": "nfl2k5_uniform_equipment_texture_import/v1",
+        "experimental_unwitnessed": bool(independent),
+        "allocation": {
+            "original_video_bytes": chunk.video_bytes, "video_bytes": video_end,
+            "added_video_bytes": video_end - chunk.video_bytes,
+            "system_bytes": chunk.system_bytes,
+            "load_allocation_bytes": chunk.system_bytes + video_end
+                                     + rebuild_info.rebuilt_overlap_scratch_bytes,
+            "independent_variant_count": len(independent),
+        },
+        "compression": asdict(rebuild_info),
+        "lossless_offset_bit_candidates": (list(dict.fromkeys((decode_info.offset_bits, 10, 11, 12)))
+                                            if independent else [decode_info.offset_bits]),
         "bounded_palette_fit": {
             "attempts": attempts,
             "selected_encoded_bytes": rebuild_info.recompressed_bytes,
@@ -689,10 +943,12 @@ def build_unified_uniform_equipment_imports(
         "target": target_record,
         "claims": {
             "fixed_tset_span_only": True,
-            "selected_palette_allocations_only": True,
+            "selected_palette_allocations_only": not independent,
             "shared_index_and_mip_chain_preserved": True,
             "unselected_palette_bytes_and_pixels_preserved": True,
-            "system_descriptors_and_names_preserved": True,
+            "system_descriptors_and_names_preserved": not independent,
+            "only_selected_pixel_pointers_and_format_words_changed": bool(independent),
+            "all_sibling_mips_preserved": True,
             "runtime_visibility_proved": False,
         },
     }
@@ -706,5 +962,7 @@ __all__ = [
     "EquipmentTarget",
     "UniformEquipmentWriterError",
     "build_unified_uniform_equipment_imports",
+    "decode_equipment_levels",
+    "apply_equipment_span",
     "load_targets",
 ]

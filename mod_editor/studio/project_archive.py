@@ -397,7 +397,9 @@ def save_project_archive(
         payload, rgba = asset_io.validate_replacement(asset, edit.replacement_path)
         original = asset_io.ensure_original(asset)
         _original_payload, original_rgba = asset_io.validate_replacement(asset, original)
-        if rgba == original_rgba:
+        from mod_editor.core.nfl2k5_equipment_import_intent import same_visual_import
+
+        if same_visual_import(asset, payload, rgba, _original_payload, original_rgba):
             raise ValidationError(
                 f"{asset.label} matches the retail original and was excluded. Revert it first."
             )
@@ -1080,7 +1082,9 @@ def load_project_archive(
                     raise ValidationError(f"Replacement pixels failed validation for {asset_id}.")
                 original = asset_io.ensure_original(asset)
                 _original_payload, original_rgba = asset_io.validate_replacement(asset, original)
-                if rgba == original_rgba:
+                from mod_editor.core.nfl2k5_equipment_import_intent import same_visual_import
+
+                if same_visual_import(asset, payload, rgba, _original_payload, original_rgba):
                     raise ValidationError(
                         f"{asset.label} matches the retail original; the project is not replacement-only."
                     )

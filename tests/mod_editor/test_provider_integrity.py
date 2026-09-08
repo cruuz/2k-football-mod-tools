@@ -199,7 +199,7 @@ class ProviderIntegrityTests(unittest.TestCase):
             # formation/play clone writer, fixed-slot audio, the fail-closed
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
-            [241, 9, 8, 9, 8, 9]  # +6 seedless MyCareer (mode, code, save), final-book play intents, depth roles and special roles; +1 number-sheet digit texture encoder, +1 ESPN 25th real rosters data owner, +1 scorebar v3 helper, +2 Franchise Auto Save owner + byte template, +10 wave-A runtime modules and their byte templates, +1 scorebar template compiler, +1 broadcast-exact scorebar, +1 build outcome measure, +1 image destination check, +1 scorebar fonts (beta 62); the hi-res and 2026-name modules load via mod_build, not the backend closure,
+            [243, 9, 8, 9, 8, 9]  # +2 equipment chain helpers (explicit PNG intent, bounded lossless compression), +6 seedless MyCareer (mode, code, save), final-book play intents, depth roles and special roles; +1 number-sheet digit texture encoder, +1 ESPN 25th real rosters data owner, +1 scorebar v3 helper, +2 Franchise Auto Save owner + byte template, +10 wave-A runtime modules and their byte templates, +1 scorebar template compiler, +1 broadcast-exact scorebar, +1 build outcome measure, +1 image destination check, +1 scorebar fonts (beta 62); the hi-res and 2026-name modules load via mod_build, not the backend closure,
         )
         for provider in providers:
             entries = [provider.backend_module]
@@ -272,6 +272,8 @@ class ProviderIntegrityTests(unittest.TestCase):
             {
                 "mod_editor/data/nfl2k5_crib_catalog.v1.json":
                     "c78801144df2f070e003ba458c5affa15a52cc00221cc1a3d9983f1fbf172cd8",
+                "mod_editor/data/nfl2k5_equipment_chain_pins.v1.json":
+                    "cb15ecd9ef3f87f45c3cfc4a7fc583636b236835fbbedec073c50dc45706b0bc",
                 "mod_editor/data/nfl2k5_uniform_equipment_export_catalog.v1.json":
                     "fa2c9ca9bcc267b6981735347bf6daf6243d6ab8b83fba268804c280cfd94173",
                 "reports/specs/nfl2k5_stadium_static_target_catalog.v1.json":
