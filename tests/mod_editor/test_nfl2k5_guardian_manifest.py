@@ -51,6 +51,11 @@ class ManifestTests(unittest.TestCase):
                     function=getattr(module,name,None)
                     if inspect.isfunction(function) and function.__module__==module.__name__:
                         stack.enter_context(patch.object(module,name,recorder.wrapper(module,name)))
+            # The anniversary adapter captured apply_xbe at module import, before
+            # observation. Route its alias through the same real writer wrapper;
+            # otherwise its C2319 edit is absent from the observed manifest.
+            from mod_editor.core import nfl2k5_espn25_rosters as espn25
+            stack.enter_context(patch.object(espn25.XbePatch, "apply", staticmethod(espn25.apply_xbe)))
             gate.PatchWriteTests.setUpClass()
             final=gate.PatchWriteTests.patched
         spans=recorder.finish(final)  # rejects every unattributed changed byte

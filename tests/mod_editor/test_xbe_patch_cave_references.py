@@ -86,7 +86,7 @@ class CaveReferenceTests(unittest.TestCase):
             raise AssertionError("season-cap owner missing from the composed XBE")
         from tests.nfl2k5_allocator_stack import compose
         cls.before_allocator = cls.patched
-        # Camera now needs 64 owned code bytes; the full union installs it. No
+        # Camera's code and immutable Broadcast record are in the full union. No
         # allocation may be sealed by the earlier protected dispatcher pass.
         cls.patched, cls.music_receipt = compose(cls.patched, read_option_diagnostic=True, reverse=getattr(cls, "reverse_owners", False), scaleout=getattr(cls, "scaleout", False))
         if getattr(cls, "reverse_owners", False):
@@ -662,10 +662,15 @@ class CaveReferenceTests(unittest.TestCase):
             for target in range(va+1, va+len(before)):
                 self.assertFalse(self.targets.get(target, []), hex(target))
         allocation = camera.allocation(self.patched)
-        self.assertEqual((allocation['kind'], allocation['size']), ('code', 64))
+        self.assertEqual((allocation['kind'], allocation['size']), ('code', camera.CODE_SIZE))
         self.assertFalse(image.section(allocation['va']).writable)
         self.assertEqual({va: refs for va, refs in self.targets.items()
-                          if allocation['va'] <= va < allocation['va']+64}, {})
+                          if allocation['va'] <= va < allocation['va']+camera.CODE_SIZE}, {})
+        descriptor = camera.allocation(self.patched, 'read_only')
+        self.assertFalse(image.section(descriptor['va']).writable)
+        self.assertFalse(image.section(descriptor['va']).executable)
+        self.assertEqual(camera._read(self.patched, descriptor['va'], descriptor['size']),
+                         camera.broadcast_descriptor())
         self.assertEqual(camera.status(self.patched), 'applied')
         # Existing descriptors and complete instruction edits allocate no
         # retail cave. Check the expanded v3 edit list against every owner.

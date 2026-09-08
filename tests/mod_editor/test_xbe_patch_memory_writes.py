@@ -146,7 +146,7 @@ class PatchWriteTests(unittest.TestCase):
             raise AssertionError("season-cap owner missing from the composed XBE")
         from tests.nfl2k5_allocator_stack import compose
         cls.before_allocator = cls.patched
-        # Camera now needs 64 owned code bytes; the full union installs it. No
+        # Camera's code and immutable Broadcast record are in the full union. No
         # allocation may be sealed by the earlier protected dispatcher pass.
         cls.patched, cls.music_receipt = compose(cls.patched, read_option_diagnostic=True, reverse=getattr(cls, "reverse_owners", False), scaleout=getattr(cls, "scaleout", False))
         if getattr(cls, "reverse_owners", False):
@@ -171,6 +171,9 @@ class PatchWriteTests(unittest.TestCase):
                 actual = camera.decode_descriptor(camera._read(cls.patched, va, 80))
                 if (actual['target'], actual['fov'], actual['offset']) != values[state]:
                     raise AssertionError("camera recipient differs in the complete owner union")
+        for actual in camera.read_broadcast(cls.patched).values():
+            if (actual['target'], actual['fov'], actual['offset']) != camera.BROADCAST_VALUES:
+                raise AssertionError("Broadcast recipient differs in the complete owner union")
         from mod_editor.core import nfl2k5_animation_xbe as animation_xbe
         if animation_xbe.status(cls.patched) != "applied":
             raise AssertionError("Embedded animation owner missing from the composed XBE")

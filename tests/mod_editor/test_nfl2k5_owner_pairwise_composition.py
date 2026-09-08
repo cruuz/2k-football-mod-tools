@@ -31,6 +31,7 @@ XBE = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION", "/media/noah/Storage/for c
 # The ten integration owners requested in the brief, plus both screen partners.
 # QB spy includes the landed man/rush hooks; Read option uses v2 REQUESTS.
 OWNERS = (
+    ("camera_v5", stack.camera),
     ("screen_hooks", stack.screen_hooks),
     ("read_option_v2", stack.read_option),
     ("qb_spy_man_rush", stack.qb_spy),

@@ -236,7 +236,13 @@
  [
   "nfl2k5_camera",
   "code",
-  64,
+  160,
+  16
+ ],
+ [
+  "nfl2k5_camera",
+  "read_only",
+  80,
   16
  ],
  [

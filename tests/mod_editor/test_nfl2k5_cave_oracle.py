@@ -389,6 +389,13 @@ class CaveOracleTests(unittest.TestCase):
         for start in (0xA69970, 0xA69974, 0xA69978, 0xA6997C, 0x10A10, 0x10CD0):
             assert oracle.assess(start, 1, kind="data")["verdict"] == "reserved"
         assert manifest.document["section_digests_verified"]
+
+    def test_release_manifest_includes_resource_build_steps(self):
+        manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail()), source_root=ROOT)
+        if (os.environ.get("NFL2K5_CAVE_MANIFEST") and manifest.document.get("model") ==
+                "Observed pure XBE safety-gate composition with all allocator owners; no disc or resource build"):
+            self.assertEqual(manifest.document["image_steps"], [])
+            self.skipTest("observed scratch manifest proves XBE only; resource-build evidence is absent")
         assert "scorebug_runtime" in manifest.document["image_steps"]
         assert "season_2026" in manifest.document["image_steps"]
 

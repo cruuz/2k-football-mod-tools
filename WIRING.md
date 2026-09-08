@@ -13684,3 +13684,115 @@ until those conditions are met; initial exposure should be opt-in only.
    CLI; no such backend currently exists. The current validation command is
    `python3 -m tests.mod_editor.test_nfl2k5_back_throws` and validates research
    components only. Do not register an invented runnable backend.
+## r65 Broadcast camera v5 (2026-09-08)
+
+This section supersedes the earlier camera capacity and menu descriptions.
+EXPERIMENTAL / UNWITNESSED. `ASTRA_CAMERA_V5_REPORT.md` records the exact
+coach-mode director gap: Broadcast is a following adaptation of a proved
+native sideline mount. Native selection and control fixtures pass; no played
+game or exact coach-toggle shot match is claimed.
+
+There is no new Build option or preset change. The existing camera owner adds
+Broadcast to the game's Camera enum. Choices are Standard, Far, Side, Iso,
+Blimp, Custom and Broadcast, using engine indices `0,1,2,3,4,5,7`. First Person
+index 6 is skipped. Standard remains the startup/game-entry default; Far is
+unchanged. Choices last for the session under the existing v4 policy.
+
+### Dispatcher and BuildPlan
+
+The existing protected wiring already consumes the new `camera_patch.REQUESTS`.
+Keep `_apply_all(..., camera=False, ...)`, its final owner tuple
+`(camera, camera_patch, "camera_patch", "camera")` immediately after the
+allocator, and `camera=camera` in `_selected_space_requests`,
+`_xbe_space_adapter` and the deferred image pass. Preserve
+`"camera": camera_patch.status(...)` in all four status dictionaries: plain
+inspection (currently line 654), image inspection (779), `write_copy` result
+(1780), and image-write result (2121), plus `_grown_status_fields` (1333).
+No settings adapter or new status key is needed.
+
+Keep `BuildPlan.camera: bool = False`, normalization, XBE deferral and final
+`camera=plan.camera` pass. Keep **Basic off, Advanced on, Experimental on**.
+Correct its stale Far-default comment to `Standard default, Far and Broadcast
+session choices; experimental`. This is a menu row within the existing patch,
+not another Build switch.
+
+Requests are now exactly:
+
+```python
+(("nfl2k5_camera", "code", 160, 16),
+ ("nfl2k5_camera", "read_only", 80, 16))
+```
+
+Reserve both in the complete selected union before any owner installs. This
+adds 96 RX and 80 RO bytes, zero RW, with no allocator page-count change.
+The budget fixture is updated. `tests/nfl2k5_allocator_stack.py` and all three
+manifest-builder owner/request lists already include this owner and import
+its requests; they need no duplicate entry. Old 64-byte camera allocations
+are foreign: rebuild from a supported source instead of upgrading in place.
+
+### Protected UI text
+
+In `mod_editor/gui/gameplay_patches_panel_qt.py`, use this existing-key PATCHES
+row and retain `camera` in `NEEDS_IMAGE`:
+
+```python
+("camera", "Standard, Far and Broadcast cameras (experimental)",
+ "Retail: Camera offers Standard, Far, Side, Iso, Blimp and Custom. "
+ "Patch: Standard starts each game and practice. Far keeps its framing, "
+ "and Broadcast adds a following sideline view without changing Coach Mode. "
+ "Choose Broadcast in the game's Camera options. The choice lasts for the session. "
+ "Broadcast adapts the native sideline view; the exact coach-mode TV shots "
+ "are not reproduced. EXPERIMENTAL / UNWITNESSED.")
+```
+
+In `mod_editor/gui/build_panel_qt.py`, retain `_option(pl, "camera", ...)` and
+use caption `Standard, Far and Broadcast cameras (experimental)` (50 chars).
+Help: `Standard starts each game and practice. Far keeps its framing. Choose
+Broadcast in the game's Camera options for a following sideline view without
+changing Coach Mode. Session choice only. EXPERIMENTAL / UNWITNESSED.` Keep
+any compact evidence row at `NOT_TESTED`; bounded CPU fixtures are not Noah's
+gameplay witness. No other GUI panel needs a camera-specific change.
+
+### Packaging, capabilities and manifest
+
+Retain these existing allowlist/closure sources:
+
+```text
+mod_editor/core/nfl2k5_camera.py
+mod_editor/core/nfl2k5_xbe_space.py
+mod_editor/core/nfl2k5_bump_strength.py
+mod_editor/core/nfl2k5_draft_ai.py
+```
+
+In `packaging/check_2k5_mod_studio_runtime.py`, add an explicit
+`mod_editor.core.nfl2k5_camera` entry to the import tuple (the current tuple
+omits it). Include `mod_editor.core.nfl2k5_xbe_space`,
+`mod_editor.core.nfl2k5_bump_strength` and `mod_editor.core.nfl2k5_draft_ai`
+if absent; these are its unchanged relative dependencies. Check `VERSION == 5`,
+the exact two requests above and `status(b"") == "foreign"`. Run the clean
+runtime closure after integration. No new runtime module, resource, CLI or
+studio surface was added. There is no new capability
+registry object: this extends the existing camera Build/PATCHES surface with
+an in-game choice. The separate camera-options inspector still describes the
+retail game and must retain its six-choice bound. Tests, proof tools, fixture,
+JSON, PNG and report are development evidence, not runtime imports or release
+payloads. The unified provider's camera SHA-256 is already updated here.
+
+Claude must regenerate protected `data/nfl2k5_cave_reservations.json` with the
+normal oracle manifest command after integration. Include the two final named
+camera children, the four enum edits and the 13 row-7 pointer edits. Do not
+reuse a v4 64-byte allocation or a stale declaration from another union.
+This session uses an observed **pure-XBE** scratch manifest through
+`NFL2K5_CAVE_MANIFEST`; it is not a resource/disc build receipt. The observation
+test now routes the anniversary adapter's captured staticmethod through the
+same real writer wrapper, so its `C2319` change is attributed without editing
+that protected owner. No oracle exemption or manufactured free cave was added.
+The standalone oracle suite keeps executable ownership assertions mandatory
+and tests resource-build steps separately. The latter explicitly skips only
+when a selected scratch manifest declares this exact observed XBE-only model;
+the normal release-manifest test still requires both resource-build steps.
+
+Complete the report's witness list, including pause navigation and camera
+switches during real plays, before making a runtime acceptance claim. Protected
+release files, build modules, GUI panels and the release manifest were not
+edited in this worktree.
