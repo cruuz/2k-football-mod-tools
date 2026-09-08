@@ -550,7 +550,7 @@ SCALE_TAG = EXT_MAGIC + b"SP03"
 
 
 def dormant_union():
-    """Every allocator owner the manifest builder installs on its disposable disc (beta 61 + beta 62)."""
+    """Every allocator owner the manifest builder installs on its disposable disc (beta 61 through beta 63)."""
     from . import nfl2k5_dynamic_kickoff_relocated as relocated
     from . import nfl2k5_momentum as momentum, nfl2k5_defensive_try as defensive_try
     from . import nfl2k5_scorebug_runtime as runtime, nfl2k5_zone_drop as zone_drop
@@ -563,13 +563,16 @@ def dormant_union():
     from . import nfl2k5_read_option_runtime as read_option, nfl2k5_franchise_2026 as franchise_2026
     from . import nfl2k5_senior_bowl as senior_bowl, nfl2k5_roster_arena_growth as arena_growth
     from . import nfl2k5_animation_xbe as animation_xbe, nfl2k5_my_career as my_career
-    from . import nfl2k5_screen_hooks as screen_hooks
+    from . import nfl2k5_screen_hooks as screen_hooks, nfl2k5_camera as camera
+    from . import nfl2k5_franchise_autosave as autosave, nfl2k5_espn25_rosters as espn25
+    from . import nfl2k5_coverage_trail as coverage_trail
     # keep this in step with tests/nfl2k5_allocator_stack.REQUESTS and the manifest builder's all_requests
-    return (relocated.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + runtime.REQUESTS + zone_drop.REQUESTS
-            + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS
+    return (camera.REQUESTS + relocated.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + runtime.REQUESTS
+            + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS
             + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS + guardian.REQUESTS
             + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS
-            + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS)
+            + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS + autosave.REQUESTS
+            + espn25.REQUESTS + coverage_trail.REQUESTS)
 
 
 def is_scaleout(payload):
