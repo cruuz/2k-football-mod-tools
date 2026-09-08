@@ -4261,6 +4261,81 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_deep_zone apply source.xbe --output new-deep-zone.xbe --tier both",
+        "module": "mod_editor/core/nfl2k5_deep_zone.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_DEEP_ZONE_TIERS_V2_REPORT.md",
+        "docs/mod_editor/nfl2k5_deep_zone_native_frames.json",
+        "tests/mod_editor/test_nfl2k5_deep_zone.py",
+        "tests/mod_editor/test_nfl2k5_deep_zone_frames.py",
+        "tests/nfl2k5_deep_zone_frame.py",
+        "tools/nfl2k5_deep_zone.S"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Explicit opt-in; off in Basic, Advanced and Experimental. Native instruction fixtures prove controller and pass identity; real animations and gameplay need Noah. Protected integration is specified in WIRING.md."
+      },
+      "id": "nfl2k5.gameplay.deep_zone_tiers",
+      "input_constraints": [
+        "Pinned USA XBE or completely verified composition; reserve REQUESTS in the full union before owner installation.",
+        "CPU exact CB, ordinary native deep record and zone callback, no player lock, special action or Spy assignment.",
+        "Facing ends on native pass identity, possession/QB change, QB crossing LOS, or the retail selected receiver getting one yard beyond the corner.",
+        "Bail arms only with exactly three native deep records and actual starting depth at most two yards; bail alone releases at seven yards.",
+        "Use the separate fixed-span PLAY writer for an explicitly selected native-personnel three-deep pair. Real movement, release transitions, human takeover and authored alignment remain unwitnessed."
+      ],
+      "portme": [
+        "Apply the protected integration and production manifest regeneration in WIRING.md.",
+        "Run Noah's pass, scramble, receiver-crossing, presnap-adjustment and on/off witness matrix in ASTRA_DEEP_ZONE_TIERS_V2_REPORT.md."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute generated game executable or disc bytes.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_DEEP_ZONE_TIERS_V2_REPORT.md"
+        ],
+        "scope": "Bounded native zone initializer/callbacks, complete pass animation callback and event chain, directional bank, root sampler and 27-phase full dispatcher with synthetic player/clip inputs. Hardware/audio and roster-attribute leaves are enumerated; supplied object callbacks include constant height and empty task handlers. No console gameplay witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "Boolean; false in every preset; explicit opt-in",
+            "name": "deep_zone_facing",
+            "required": true
+          },
+          {
+            "allowed": "Boolean; false in every preset; explicit opt-in",
+            "name": "deep_zone_bail",
+            "required": true
+          }
+        ],
+        "notes": "Retail: corners can turn to run. Patch: try QB-facing directional drops and a selected three-deep press bail. Native animation rows give an orientation cone, not exact eye tracking."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Three pinned live hooks at 0x1A4170, 0x1A66D5 and 0x2FCADD; 2048 RX and 256 RW via the allocator. Separate selected PLAY chains stay within one fixed resource.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Optional CPU corner orientation through native directional movement, with a separate three-deep press-start writer.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Deep-zone QB facing and press bail (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_deep_zone"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_throw_arc <source.xbe> <new-copy.xbe>",
         "module": "mod_editor/core/nfl2k5_throw_arc.py",
         "operation": "write"

@@ -922,3 +922,8 @@ ASTRA_FRANCHISE_2026_RUNTIME_REPORT.md
 ASTRA_SCOREBUG_FREEZE_V2_REPORT.md
 docs/scorebug_ingame/freeze_v2/trace.json
 docs/scorebug_ingame/freeze_v2/validation.json
+mod_editor/core/nfl2k5_deep_zone.py
+mod_editor/core/nfl2k5_deep_zone_code.py
+mod_editor/core/nfl2k5_deep_zone_bail.py
+docs/mod_editor/nfl2k5_deep_zone_capability.json
+ASTRA_DEEP_ZONE_TIERS_V2_REPORT.md

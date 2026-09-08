@@ -34,6 +34,12 @@ OPTIONS = (
     ("franchise_edit_player", "Franchise Edit Player (experimental)", tt.franchise_edit_player_patch.HELP_TEXT),
     ("cpu_money_downs", tt.cpu_money_downs_patch.BUILD_CAPTION, tt.cpu_money_downs_patch.HELP_TEXT),
     ("playbook_pair", "Separate offensive and defensive playbooks (experimental)", tt.playbook_pair_patch.HELP_TEXT),
+    ("deep_zone_facing", "Deep-zone QB facing (experimental)",
+     "Retail: corners can turn to run. Patch: try a slower QB-facing deep drop until a pass, run, or the selected "
+     "receiver gets beyond the corner. EXPERIMENTAL / UNWITNESSED."),
+    ("deep_zone_bail", "Press corner bail (experimental)",
+     "Retail: the selected call keeps its starting alignment. Patch: use a selected three-deep press start and "
+     "directional bail. Ends at seven yards when used alone. EXPERIMENTAL / UNWITNESSED."),
     ("weekly_prep", "Fix safety drills (experimental)",
      "EXPERIMENTAL / UNWITNESSED. Retail: DB drills skip both safety positions. "
      "Patch: include safeties in the same drills as corners. TE drill rows already exist."),
