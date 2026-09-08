@@ -225,6 +225,22 @@ class FinalPairsTests(unittest.TestCase):
         self.assertEqual({r["play_index"] for r in read.compile_intent_table(pairs)[1]["records"]}, {156, 157})
         self.assertEqual(pairs[0][1]["resolved_names"], ["SD Zone Read EXPERIMENTAL", "SD RPO EXPERIMENTAL"])
 
+    def test_v5_rejects_duplicate_live_fingerprint_even_when_original_slot_matches(self):
+        duplicate = clone_to(self.final, 155, 48)
+        pairs, _, _ = resolve({"MIN": duplicate}, [self.read_pair])
+        with self.assertRaisesRegex(intents.PlayIntentError, 'ambiguous loaded read fingerprint'):
+            read.compile_intent_table(pairs)
+
+    def test_v5_receipt_certifies_every_final_play_and_names_display_index(self):
+        pairs, _, _ = resolve({"MIN": self.final}, [self.read_pair])
+        _, receipt = read.compile_intent_table(pairs)
+        self.assertEqual(receipt['identity_model'], 'loaded_team_book_fingerprints/v5')
+        self.assertEqual(receipt['diagnostic_index'], 'final_resource_index')
+        for row in receipt['records']:
+            self.assertEqual(row['identity_matches'], [row['play_index']])
+            self.assertEqual(row['diagnostic_index'], row['play_index'])
+            self.assertGreater(row['plays_checked'], row['play_index'])
+
     def test_missing_renamed_and_ambiguous_plays_refuse(self):
         missing = clone_to(self.final, 24, 155)
         duplicate = clone_to(self.final, 155, 156)

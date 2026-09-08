@@ -1,12 +1,9 @@
-"""Metadata-backed mesh read. EXPERIMENTAL / UNWITNESSED, all presets off.
+"""Cancelable native read mesh. EXPERIMENTAL / UNWITNESSED, all presets off.
 
-The normal v3 install is byte-identical. V4 adds an explicit human engagement
-diagnostic within the same 2,048 RX, 256 RW and 88 RO reservation. It replaces
-the EDGE cue and CPU edge search, so diagnostic CPU reads always give.
-Rebuild from the supported base with the complete revised request union;
-v1 allocations are deliberately refused, never upgraded in place. The v1
-64-byte PLAY lookup remains compatible. Private state is reset at each snap
-and native new-play reset, and scoped to actor/roster/assignment identity.
+V5 uses the team's loaded book and exact paired fingerprints, starts native
+GIVE/TAKE on snap reception, and samples pull controls until native transfer.
+The human diagnostic retains the v4 CPU-give policy within the same reservation.
+Old executable variants require a clean rebuild; no in-place upgrades.
 """
 from __future__ import annotations
 
@@ -24,19 +21,18 @@ MESH_SECONDS, CRASH_SAMPLES = 1.0, 3
 # Nominal samples at 60 Hz, including the initial sample; expiry uses time.
 MESH_FRAMES = 61
 AUTO_EDGE = 255
-# Retain the v2 RO layout. The first four floats are unused legacy HUD
-# coordinates; the final two remain the CPU prediction time and read radius.
-PROMPT = struct.pack("<6f", 360, 96, 0, 1, .2, 228.6)
-DIAGNOSTIC_PROMPT = "READ ".encode("utf-16le").ljust(16, b"\0") + PROMPT[16:]
+# Retain the RO layout: close pitch radius, legacy HUD fields, prediction
+# time and read radius. Diagnostic marker replaces one unused HUD field.
+PROMPT = struct.pack("<6f", 91.44, 96, 0, 1, .2, 228.6)
+DIAGNOSTIC_PROMPT = PROMPT[:4] + b"RDV5" + PROMPT[8:]
 # Offsets within the owner's named RW allocation, NOT fixed Xbox addresses.
-DIAGNOSTIC_FIELDS = dict(actor=0, task=4, descriptor=8, roster=12,
-    sample_clock=16, samples=20, controller=28, receiver=32, deadline=44,
-    snap_seen=48, lookup_row=52, snap_qb=56, play_index=60,
-    snap_descriptor=64, dispatch_descriptor=68, raw_held=84, raw_pressed=88,
-    input_context=92, controller_layout=96, input_command=100, input_throttle=104,
-    dispatch_callback=112, dispatch_controller=120, snap_lookup_row=124,
-    hud_calls=128, text_calls=132, font_pointer=136, condition_calls=140,
-    decision=144, dispatch_node=148, dispatch_calls=152, text=160)
+DIAGNOSTIC_FIELDS = dict(actor=0, descriptor=4, roster=8, lookup_row=12,
+    sample_clock=16, samples=20, controller=24, decision=28, back=32,
+    receiver=36, edge=40, deadline=44, snap_seen=48, play_index=52,
+    native_play_index=56, book=60, keep_armed=64, confidence=68,
+    crash=72, started=76, lane=80, depth=84, raw_held=88, raw_pressed=92)
+DECISIONS = {0: "keep", 1: "give", 2: "pass", 3: "pitch", 4: "stop", 0xFFFFFFFF: "pend"}
+
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16),
             (OWNER, "read_only", RO_SIZE, 16))
 TABLE_SCHEMA = "nfl2k5_read_option_lookup/v1"
@@ -50,30 +46,26 @@ HOOKS = {
     "pass_init": (0x19C849, bytes.fromhex("c70660bb1900")),
     "snap": (0xB6FBD, bytes.fromhex("8935c802e600")),
     "reset": (0x1AD9C3, bytes.fromhex("b95a000000")),
+    "exchange": (0x313520, bytes.fromhex("558bec83e4f0")),
 }
 HELP_TEXT = (
-    "EXPERIMENTAL / UNWITNESSED. Retail: option plays use the original pitch "
-    "and position rules. Patch: paired authored reads use release to give and "
-    "hold the snap button for the whole one-second window to keep. "
-    "Releasing it, including a quick tap to snap, gives to the back. "
-    "Doing nothing after the snap gives. The stick waits until the read ends. "
-    "The snap-button icon marks the unblocked edge to watch. CPU QBs read "
-    "that edge's sustained movement. On an RPO, hold snap and press the "
-    "named receiver during the window to throw. These are intended controls: "
-    "Noah's v3 play test showed no handoff and live engagement is unconfirmed. "
+    "EXPERIMENTAL / UNWITNESSED. Retail: original option controls. Patch: "
+    "paired reads begin a native handoff after the snap. Do nothing to give. "
+    "Before the ball leaves the QB, press Black to pull and pitch, or release "
+    "A after snapping and press A again to pull and keep. On an RPO, press X "
+    "or the named receiver button to pull and pass. These are Xbox button "
+    "names; use your controller mapping. The stick waits until the decision. "
+    "The CPU reads the unblocked edge. Noah witnessed the v4 snap hook and "
+    "READ line, but these new controls and the animated exchange are unwitnessed. "
     "All presets are off."
 )
 DIAGNOSTIC_HELP_TEXT = (
     "EXPERIMENTAL / UNWITNESSED. Retail: original option controls. Patch: "
-    "human engagement diagnostic, selected only with the Read option runtime. "
-    "Photograph READ plus the play number, snap/pend/give/keep/pass, sample "
-    "count and absolute clock deadline in seconds. READ miss means the paired "
-    "identity was not found. An absent line cannot distinguish a missed snap "
-    "hook from unavailable HUD text. Human v3 controls are unchanged: hold "
-    "snap through the window to keep, release or do nothing to give, or hold "
-    "snap and press the RPO receiver. This diagnostic replaces the edge icon "
-    "and CPU edge search; CPU reads give. A cancelable animated mesh and "
-    "new pass/pitch/explicit-keep controls wait for a live engagement witness."
+    "human read diagnostic. READ shows the resolved resource play number, "
+    "then snap, pend, give, keep, pitch or pass. Photograph the line and the "
+    "ball exchange separately. A miss shows the actual loaded-table index, "
+    "not an assumed editor-buffer offset. Human controls are the same as v5. "
+    "CPU reads give in this diagnostic variant."
 )
 
 
@@ -93,10 +85,11 @@ def compile_intent_table(compilations=(), *, use_authored_edge=True):
     opponent fixture still validates the legal native condition encoding.
     """
     from .nfl2k5_play_library import compile_read_option_intent_table
-    from .nfl2k5_play_intents import table_compiler_pairs, final_table_receipt
+    from .nfl2k5_play_intents import table_compiler_pairs, final_table_receipt, certify_read_identities
     _require(type(use_authored_edge) is bool, "Expected an authored EDGE policy Boolean")
     pairs, final_hashes = table_compiler_pairs(compilations)
     table, receipt = compile_read_option_intent_table(pairs)
+    certify_read_identities(pairs, receipt)
     final_table_receipt(receipt, final_hashes)
     if use_authored_edge:
         return table, receipt
@@ -121,14 +114,17 @@ def validate_intent_table(table):
              "Foreign read option table header")
     rows = [table[16+i*24:40+i*24] for i in range(count)]
     _require(rows == sorted(rows) and len(set(rows)) == len(rows), "Unsorted or duplicate read option rows")
-    keys = set()
+    keys, fingerprints = set(), set()
     for row in rows:
         book, offset, qb, back, name, back_slot, read_slot, receiver, flags = RECORD.unpack(row)
         key = (book, offset)
+        fingerprint = (book, qb, back, name, back_slot)
         _require(0 <= offset - 0x3404 < 270*96 and (offset - 0x3404) % 96 == 0
                  and back_slot in (9, 10) and (read_slot < 11 or read_slot == AUTO_EDGE) and receiver in (0, 7, 8)
-                 and flags == 0 and key not in keys, "Foreign read option identity or fields")
+                 and flags == 0 and key not in keys and fingerprint not in fingerprints,
+                 "Foreign read option identity or fields")
         keys.add(key)
+        fingerprints.add(fingerprint)
     _require(not any(table[16+count*24:]), "Foreign read option table padding")
     return count
 
@@ -140,7 +136,12 @@ def code_for(code_va, table_va, data_va, *, diagnostic=False):
                    state_data=data_va, hud_native=0xFA0B0, draw_icon=0xF97F0,
                    hud_tail=0x646A6, pass_tail=0x19C84F, snap_tail=0xB6FC3,
                    reset_tail=0x1AD9C8, schedule_tail=0x215170, schedule_mesh=0x215367,
-                   draw_text=0x47420)
+                   draw_text=0x47420, exchange_tail=0x313526,
+                   animation_change=0x1cd550, set_node=0x1b8790,
+                   decode_node=0x1b84e0, transition=0x214b90,
+                   give_init=0x300b00, pass_native=0x19c740,
+                   carry_init=0x2e36f0)
+    symbols['schedule_human'] = 0x215275
     result = bytearray(assembly.DIAGNOSTIC_CODE if diagnostic else assembly.CODE)
     for offset, kind, symbol, value in (assembly.DIAGNOSTIC_RELOCATIONS if diagnostic else assembly.RELOCATIONS):
         target = symbols[symbol] + value + struct.unpack_from("<I", result, offset)[0]
@@ -200,6 +201,20 @@ def _inspect_owner(payload, image):
 
 def _check_dependencies(image, checked_sites):
     """Normalize only hook spans already checked against their complete owner."""
+    checked_sites = list(checked_sites)
+    from . import nfl2k5_abilities_runtime as abilities
+    va, before = abilities.HOOKS['initialize']
+    if image.read(va, len(before)) != before:
+        # Cancellation uses the same native animation entry. Validate the
+        # complete sealed abilities owner before normalizing its prologue.
+        _require(abilities.status(image.data) == 'applied', 'Foreign abilities animation neighbor')
+        checked_sites.append(('abilities_initialize', va, before, None))
+    from . import nfl2k5_defensive_try as defensive_try
+    va, before_hex, _kind = defensive_try.HOOKS['cpu_return']
+    before = bytes.fromhex(before_hex)
+    if image.read(va, len(before)) != before:
+        _require(defensive_try.status(image.data) == 'applied', 'Foreign defensive try carry neighbor')
+        checked_sites.append(('defensive_try_cpu_return', va, before, None))
     for va, size, digest in GUARDS:
         content = bytearray(image.read(va, size))
         for _name, address, before, _after in checked_sites:
@@ -245,14 +260,17 @@ def decode_diagnostic_state(data):
     values = {name: struct.unpack_from('<I', data, offset)[0]
               for name, offset in DIAGNOSTIC_FIELDS.items() if name != 'text'}
     import math
-    for name in ('sample_clock', 'deadline', 'input_throttle'):
+    for name in ('sample_clock', 'deadline', 'lane', 'depth'):
         value = struct.unpack_from('<f', data, DIAGNOSTIC_FIELDS[name])[0]
         values[name + '_bits'] = hex(values[name])
         values[name] = value if math.isfinite(value) else str(value)
     values['phase'] = ('off' if not values['snap_seen'] else
-        'miss' if not values['lookup_row'] else 'snap' if not values['samples'] else
-        {0: 'keep', 1: 'give', 2: 'pass', 0xFFFFFFFF: 'pend'}.get(values['decision'], 'unknown'))
-    values['text'] = data[DIAGNOSTIC_FIELDS['text']:].decode('utf-16le', 'replace').split('\0', 1)[0]
+        'miss' if not values['lookup_row'] else 'snap' if not values['started'] else
+        DECISIONS.get(values['decision'], 'unknown'))
+    number = values['native_play_index'] if values['phase'] == 'miss' else values['play_index']
+    label = '???' if number == 0xFFFFFFFF else str(number)
+    values['text'] = ('' if values['phase'] == 'off' else 'READ miss '+label
+                      if values['phase'] == 'miss' else 'READ '+label+' '+values['phase'])
     values['runtime_witnessed'] = False
     return values
 
@@ -271,13 +289,14 @@ def read_settings(payload):
         if state != 'applied':
             return None
         diagnostic = _diagnostic_installed(payload)
-        return dict(model_version=4 if diagnostic else 3, diagnostic=diagnostic,
+        return dict(model_version=5, diagnostic=diagnostic,
                     authored_reads=validate_intent_table(table),
                     table_sha256=hashlib.sha256(table).hexdigest(), mesh_seconds=MESH_SECONDS,
                     mesh_frames=MESH_FRAMES, crash_samples=CRASH_SAMPLES,
                     edge_policy="diagnostic CPU gives" if diagnostic else "snap assignments, live unblocked replacement",
-                    prompt="native READ engagement line" if diagnostic else "native snap-button icon on selected edge during human mesh",
-                    human_control='hold snap through window to keep; release or no input to give',
+                    prompt="native READ resource-identity line" if diagnostic else "none",
+                    identity="actual loaded book and paired book/name/participant fingerprints",
+                    human_control="no input gives; new A keeps; Black pitches; X or receiver passes",
                     experimental=True, runtime_witnessed=False)
     except (ValueError, TypeError, KeyError, IndexError, struct.error):
         return None
@@ -308,7 +327,7 @@ def apply(payload: bytes, *, intent_table: bytes | None = None,
         table = compile_intent_table()[0]
     count = validate_intent_table(table)
     labels = assembly.DIAGNOSTIC_LABELS if diagnostic else assembly.LABELS
-    receipt = dict(experimental=True, runtime_witnessed=False, tier="mesh", model_version=4 if diagnostic else 3,
+    receipt = dict(experimental=True, runtime_witnessed=False, tier="mesh", model_version=5,
                    diagnostic=diagnostic,
                    mesh_seconds=MESH_SECONDS,
                    authored_reads=count, table_sha256=hashlib.sha256(table).hexdigest(),
@@ -389,7 +408,35 @@ GUARDS = (
     (0xa9b4b0, 108, "688da526368a7181635c7fb0b4f97119514675040bd84ee63df9849a1e9c9ce0"),
 )
 
-# The normal v3 mode acquires no new dependencies. Only the diagnostic calls
+# V5 native animation cancellation, task dispatch, decoded pitch and exchange.
+GUARDS += (
+    (0x39380, 89, "8e5d5a3bee554b57b2c4b4ea47fa8fad6f643245cfb379dc670f0dda9fe32c2a"),
+    (0x393e0, 1491, "33071743027c99bcb73e6b67ec4b59d5109437d053123095ee9223c60d82e8df"),
+    (0x1b84e0, 142, "0c2df9ec89384a307f207975ea43e6f9bdfa1d88e31eab028e99bb2cf9a5d4f4"),
+    # QB Spy owns the three rush/man stores between these slices. The
+    # paired back uses only native release/take entries, never those stores.
+    (0x1b85a0, 184, "bfa665c54b321f123228f24b5d935765ae653036261970ae67a0aac6b6805ebf"),
+    (0x1b8676, 274, "031e0d21c35b9c62373977713bdb3198e66a255d3ee9314a862ac2c762d586a5"),
+    (0x1b8790, 74, "a4dd08a60a27e7151f71d9b4e41c2c9e8b146f70e653f533163691ad9bb4ad84"),
+    (0x1b8c40, 96, "03d6410993f38054e7855f6e3e820da9f3766808bb04df4f00c9f6cc99709378"),
+    (0x1b8ca0, 58, "c4a42a1bcc6b0f25a43a7ad493606154f27bec62ef9b0d63743b234642730de6"),
+    (0x1cd550, 59, "fa171719f06965537ecd42af3764d5a6c174115c2f4ae100e646c77d23307997"),
+    (0x2146c0, 98, "9cd9a1096382a52e29fa471eec65cad3e811747b4d13f1b2884e3a472112c6c4"),
+    (0x214b90, 24, "f4147fb1c90bcd40b8d37cd38abe7c1b2449c4ba219b0b31005fb6844e6ab412"),
+    (0x215275, 74, "0409dcc40f84192cb33a537b9f78ed6e2d48e43cb6de4a2e8c8d0b348f5f63c7"),
+    (0x2e36f0, 261, "da791f861c7d8bcc101f8d54074933616990248724be0494e558f2ed08ad73ef"),
+    (0x2ff450, 74, "434114b32e0a929331cf052badb55129c18956684c8e5cdc03694f8a65322a99"),
+    (0x2ff7c0, 723, "b70c7f93f05f6c1591b1bb8e94b0a305b06e495d70b1f5659d98ccddf61506b7"),
+    (0x300810, 78, "ed71fc6b821b98c2503cc7fdbe98eb53a768d28ffb1da7a0b91e395ed1e8c653"),
+    (0x300860, 672, "6c906522249fbad6c530fd51ba7f327c96fe12a39b813c329ae2420578fb3ca9"),
+    (0x300b00, 1342, "ed787d8fde8dcebceeb794a32c6e41dc2c6fd8261628fac9c422452da53e3f7f"),
+    (0x3133a0, 26, "67f537e2f5b43dc9458a8c4648b06b75878e1b4fc6285ec9e45a795dfa1a821e"),
+    (0x313520, 507, "ade6a901dcf24aa58172c49e3569f1d2a3a8ca00068ae3ba37316284b6cb2f17"),
+    (0x50f4ec, 24, "d3667d699ed6d70d23a0e9172b9477eafaf922527e0f57acfb29d7d7c284dbc9"),
+    (0x531a08, 24, "a7a851afac0bd24902d547c36cdc4e151eaa3026c148d11e4317039d1e3ff83c"),
+)
+
+# Only the diagnostic calls
 # this native text renderer. Its passicons FONT initializer is already pinned
 # by GUARDS at 0xF9F40; font/position storage is cloned to the stack at runtime.
 # Pin the actual 2D glyph helpers, line walker/table and string wrapper. The

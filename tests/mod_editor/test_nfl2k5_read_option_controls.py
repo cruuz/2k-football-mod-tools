@@ -187,188 +187,61 @@ class ControlsInstructionTests(unittest.TestCase):
         cls.payload = patch.apply(cls.retail, intent_table=cls.table)[0]
 
     def machine(self, *, payload=None, **kwargs):
+        from tests.mod_editor.test_nfl2k5_read_option_frames import FrameMachine
         gc.collect()
-        return ControlsMachine(payload or self.payload, self.resource, **kwargs)
+        return FrameMachine(payload or self.payload, self.resource, **kwargs)
 
-    def test_prompt_uses_native_atlas_draw_only_for_human_during_mesh(self):
-        m = self.machine(controller=0)
-        self.assertEqual(m.hud(), [])
-        m.frames(1)
-        vertices = m.hud()
-        self.assertEqual(len(vertices), 4)
-        self.assertIn(0xFA0B0, m.hits)
-        self.assertIn(0xF97F0, m.hits)
-        uv = [struct.unpack('<2f', struct.pack('<2I', *args))
-              for address, args in m.submissions if address == 0x2CB90]
-        self.assertEqual(uv, [(0, 0), (.25, 0), (0, .5), (.25, .5)])
-        self.assertEqual(m.hud(ready=False), [])
-        m.finish()
-        self.assertEqual(m.hud(), [])
-        m = self.machine(); m.frames(1)
-        self.assertEqual(m.hud(), [])
+    def test_blocked_or_removed_authored_edge_selects_snap_replacement(self):
+        for missing in (False,True):
+            m=self.machine();p=m.second_edge()
+            if missing:m.u32(m.DEF+4,p)
+            else:m.u32(m.RB+0xE40,m.P)
+            m.frame(.05)
+            self.assertEqual(m.get(m.state_va+40),p)
 
-    def test_prompt_invalidates_on_phase_ownership_task_roster_assignment_and_control_change(self):
-        for change in ('phase', 'ball', 'task', 'roster', 'assignment', 'node', 'controller', 'clock'):
-            m = self.machine(controller=2)
-            m.frames(1)
-            self.assertEqual(len(m.hud()), 4)
-            if change == 'phase': m.u32(0xE602B8, 15)
-            elif change == 'ball': m.u32(m.BALL, m.RB)
-            elif change == 'task': m.u32(m.qs+0x310, m.RB+0xE00)
-            elif change == 'roster': m.u32(m.QB+0x3C, m.RB+0xD00)
-            elif change == 'assignment': m.u32(m.interp, m.get(m.interp)+96)
-            elif change == 'node': m.uc.mem_write(m.qs+0x450, b'\x03')
-            elif change == 'controller': m.u32(m.QB+0x100, -1)
-            else: m.f32(m.GAME+0x410, 1.8)
-            with self.subTest(change=change): self.assertEqual(m.hud(), [])
+    def test_auto_edge_prefers_outer_play_side_rush_and_authored_hint(self):
+        auto=patch.apply(self.retail,intent_table=self.auto_table)[0]
+        for direction in (-1,1):
+            for role in (10,16):
+                m=self.machine(payload=auto,direction=direction)
+                p=m.second_edge(role=role,x=-2.4*direction)
+                m.frame(.05);self.assertEqual(m.get(m.state_va+40),p)
+        m=self.machine();m.second_edge(x=-2.4);m.frame(.05)
+        self.assertEqual(m.get(m.state_va+40),m.P)
 
-    def test_blocked_or_absent_authored_edge_selects_unblocked_live_replacement(self):
-        for missing in (False, True):
-            m = self.machine()
-            replacement = m.second_edge()
-            if missing: m.u32(m.DEF+4, replacement)
-            else: m.u32(m.RB+0xE40, m.P)
-            m.finish()
-            self.assertEqual(m.get(m.task+0x40), replacement)
-            self.assertEqual(m.get(m.task+0x44), 0)
-            self.assertEqual(m.back_result(), 0)
+    def test_foreign_roles_assignments_members_and_blocked_candidates_give(self):
+        for change in ('dt','deep','coverage','roster','assignment','inactive','blocked','other_side'):
+            m=self.machine()
+            p=m.second_edge(role=15 if change=='dt' else 10,
+                x=2 if change=='other_side' else -2,depth=-5 if change=='deep' else -1,
+                rushing=change!='coverage')
+            m.u32(m.RB+0xE40,m.P)
+            if change=='roster':m.u32(p+0x3C,m.P+0xD00)
+            elif change=='assignment':m.u32(p+0xA1C,m.base+0x3404+24)
+            elif change=='inactive':m.u32(p+0x48,1)
+            elif change=='blocked':m.u32(m.OTHER+0xE40,p)
+            m.frame(.05)
+            self.assertEqual(m.get(m.state_va+40),0,change)
+            self.assertEqual(m.frame(1.1)['decision'],1)
 
-    def test_auto_edge_chooses_play_side_rushing_end_or_olb_and_preserves_authored_preference(self):
-        auto = patch.apply(self.retail, intent_table=self.auto_table)[0]
-        for direction in (-1, 1):
-            for role in (10, 16):
-                m = self.machine(payload=auto, direction=direction)
-                p = m.second_edge(role=role, x=-2.4*direction)
-                m.frames(1)
-                self.assertEqual(m.get(m.task+0x40), p)
-        m = self.machine()
-        m.second_edge(x=-2.4)
-        m.frames(1)
-        self.assertEqual(m.get(m.task+0x40), m.P)
+    def test_physical_button_binding_all_controller_slots_and_layouts(self):
+        for controller in range(4):
+            for layout in range(3):
+                for context in (8,10):
+                    m=self.machine(controller=controller,layout=layout,context=context,rpo=True)
+                    m.frame(.05,held=True);m.frame(.1)
+                    self.assertEqual(m.frame(.15,held=True,press=0x100)['decision'],0)
+                    self.assertEqual(m.frame(.2,stick=1)['throttle'],1)
 
-    def test_replacement_refuses_interior_deep_coverage_substituted_or_changed_assignment(self):
-        for change in ('dt', 'deep', 'coverage', 'roster', 'assignment', 'inactive', 'blocked', 'other_side'):
-            m = self.machine()
-            p = m.second_edge(role=15 if change == 'dt' else 10,
-                              x=2 if change == 'other_side' else -2,
-                              depth=-5 if change == 'deep' else -1,
-                              rushing=change != 'coverage')
-            m.u32(m.RB+0xE40, m.P)
-            if change == 'roster': m.u32(p+0x3C, m.P+0xD00)
-            elif change == 'assignment': m.u32(p+0x600+0x41C, m.base+0x3404+24)
-            elif change == 'inactive': m.u32(p+0x48, 1)
-            elif change == 'blocked': m.u32(m.OTHER+0xE40, p)
-            m.finish()
-            with self.subTest(change=change):
-                self.assertEqual(m.get(m.task+0x40), 0)
-                self.assertEqual(m.get(m.task+0x44), 1)
-
-    def test_hysteresis_rejects_one_tick_twitch_and_survives_one_wide_sample(self):
-        m = self.machine()
-        m.edge(vx=0); m.frames(patch.MESH_FRAMES-2)
-        m.edge(vx=4); m.frames(1)
-        m.edge(vx=0); m.finish()
-        self.assertEqual(m.get(m.task+0x44), 1)
-        m = self.machine()
-        m.frames(patch.MESH_FRAMES-1)
-        m.edge(vx=0); m.finish()
-        self.assertEqual(m.get(m.task+0x44), 0)
-        m = self.machine()
-        m.frames(patch.MESH_FRAMES-3)
-        m.edge(vx=0); m.finish()
-        self.assertEqual(m.get(m.task+0x44), 1)
-
-    def test_clock_duplicates_do_not_sample_and_frame_deadline_ignores_late_input(self):
-        m = self.machine(controller=0)
-        m.tick(.1)
-        for _ in range(5): m.tick(.1, held=False)
-        self.assertEqual(m.get(m.state_va+20), 1)
-        m.frames(patch.MESH_FRAMES-2)
-        m.tick(m.readf(m.state_va+44), held=False)
-        self.assertEqual(m.get(m.task+0x44), 0)
-        m = self.machine(controller=0)
-        m.frames(patch.MESH_FRAMES-2); m.frames(1, held=False); m.finish()
-        self.assertEqual(m.get(m.task+0x44), 1)
-        m = self.machine(controller=0)
-        m.tick(.2); m.tick(.1, held=False)
-        self.assertEqual(m.get(m.task+0x44), 0)
-
-    def test_native_snap_and_new_play_clear_all_owned_state_and_preserve_flags(self):
-        m = self.machine(controller=0, rpo=True)
-        m.frames(1, throw=True)
-        m.run(0x1AD9C0, stop_at=0x1AD9DE)
-        self.assertEqual(bytes(m.uc.mem_read(m.state_va, patch.DATA_SIZE)), bytes(patch.DATA_SIZE))
-        for flags in (0x202, 0x247, 0xA93):
-            m.run(0xB6FBD, stop_at=0xB6FC3, eflags=flags)
-            self.assertEqual(m.uc.reg_read(x86.UC_X86_REG_EFLAGS), flags)
-            self.assertEqual(m.get(m.state_va), 0)
-            self.assertEqual(m.get(m.state_va+64), m.P)
-
-    def test_shotgun_hold_keep_release_give_and_rpo_native_pass(self):
-        _, compiled = shotgun_reads()
-        table = patch.compile_intent_table([(compiled.replacement, compiled.report)])[0]
-        payload = patch.apply(self.retail, intent_table=table)[0]
-        for held, expected in ((True, 0), (False, 1)):
-            gc.collect()
-            m = ControlsMachine(payload, compiled.replacement, controller=0, play_index=134)
-            m.finish(held=held)
-            self.assertEqual(m.get(m.task+0x44), expected)
-            self.assertEqual(m.back_result(), expected)
-        gc.collect()
-        m = ControlsMachine(payload, compiled.replacement, controller=0, rpo=True, play_index=31)
-        m.frames(1, throw=True); m.finish()
-        m.pass_initializer()
-        self.assertEqual(m.get(m.task), 0x19BAE0)
-        self.assertEqual(m.get(m.task+0x40), m.OTHER)
-
-    def test_shotgun_x_receiver_press_and_unready_target_at_pass_entry(self):
-        _, compiled = shotgun_reads(receiver_slot=8)
-        table = patch.compile_intent_table([(compiled.replacement, compiled.report)])[0]
-        payload = patch.apply(self.retail, intent_table=table)[0]
-        for ready in (True, False):
-            gc.collect()
-            m = ControlsMachine(payload, compiled.replacement, controller=3, layout=2,
-                                context=10, rpo=True, play_index=31)
-            m.uc.mem_write(m.OTHER+0x2E, b'\x08')
-            m.throw_mask = 0x400
-            m.frames(1, throw=True); m.finish()
-            self.assertEqual(m.get(m.task+0x44), 2)
-            m.ready(ready)
-            m.pass_initializer()
-            self.assertEqual(m.get(m.task), 0x19BAE0 if ready else 0x19BB60)
-            self.assertEqual(m.get(m.state_va+32), 0)
-            if ready:
-                m.uc.mem_write(0xBDFCD0+8*2, b'\x02')
-                m.boundaries = {0x198C20: (4, 'float')}
-                m.run(m.get(m.task), ecx=m.QB)
-                self.assertEqual(m.get(m.QB+0x100+0x1C), 0x43)
-
-    def test_receiver_press_crosses_full_native_pass_initializer(self):
-        m = self.machine(controller=1, rpo=True)
-        m.frames(1, throw=True)
-        m.finish(held=False)
-        self.assertEqual(m.get(m.task+0x44), 2)
-        self.assertEqual(m.get(m.state_va+32), m.OTHER)
-        m.pass_initializer()
-        self.assertEqual(m.get(m.task), 0x19BAE0)
-        self.assertEqual(m.get(m.task+0x40), m.OTHER)
-        self.assertEqual(m.get(m.state_va+32), 0)
-        self.assertIn(0x1565F0, m.hits)
-        self.assertIn(0x19B800, m.hits)
-        # Execute the installed native request callback. Aim calculation is
-        # the sole stub; slot lookup, readiness and the native command store run.
-        m.uc.mem_write(0xBDFCD0+7*2, b'\x01')
-        m.boundaries = {0x198C20: (4, 'float')}
-        m.run(m.get(m.task), ecx=m.QB)
-        self.assertEqual(m.get(m.QB+0x100+0x1C), 0x42)
-        self.assertEqual(m.get(0xBE47C4), 0x3F800000)
-        self.assertIn(0x1907D0, m.hits)
-        self.assertIn(0x19B800, m.hits)
-        self.assertIn(0x199260, m.hits)
-        self.assertEqual(m.get(m.BALL), m.QB)
-        # A second initializer cannot replay a consumed mesh press.
-        m.run(0x19C849, stop_at=0x19C84F, esi=m.task)
-        self.assertEqual(m.get(m.task), 0x19BB60)
+    def test_nonfinite_samples_cannot_pull_and_new_play_clears_state(self):
+        for value in (float('nan'),float('inf'),-float('inf'),1e20):
+            m=self.machine();m.edge(vx=value)
+            for t in (.05,.15,.25,1.1):row=m.frame(t)
+            self.assertEqual(row['decision'],1)
+        m=self.machine(controller=0);m.frame(.05)
+        m.run(0x1AD9C0,stop_at=0x1AD9DE)
+        self.assertEqual(bytes(m.uc.mem_read(m.state_va,256)),bytes(256))
+        self.assertEqual(bytes(m.uc.mem_read(0xBE4E28,88*4)),b'\xff'*(88*4))
 
 
 if __name__ == '__main__':

@@ -14835,3 +14835,133 @@ allocator configurations. The cave-reference result is a dedicated retry;
 the first parallel attempt terminated with status 143 before any test output.
 No test failure is inferred from that terminated attempt. This PLAY-only
 feature needs no executable owner added to either gate or allocator union.
+## ASTRA read option v5: loaded identity and cancelable native handoff
+
+This section supersedes the read-option v3/v4 control text and the claim that
+normal v3 bytes remain unchanged. See `ASTRA_READ_OPTION_V5_REPORT.md`.
+EXPERIMENTAL / UNWITNESSED; all preset defaults remain off. Protected files
+were left untouched. No new owner, surface, BuildPlan field or allocation is
+needed. Rebuild old v1-v4 executables from the supported base.
+
+Keep the existing `_apply_all` tuple after the allocator:
+
+```python
+(read_option_runtime, _read_option_adapter(read_option_intent_table),
+ "read_option_runtime_patch", "read option mesh controls (experimental)"),
+```
+
+Retain kwargs `read_option_runtime=False` and
+`read_option_intent_table=None`, their strict Boolean/bytes validation,
+`R62_SPACE_KEYS`, `R62_RUNTIME_KEYS`, `_selected_space_requests` and
+`_xbe_space_adapter` forwarding. The adapter passes
+`read_option_patch.apply(payload, intent_table=self.table)`. Its existing
+request row remains 2048 RX / 256 RW / 88 RO with two 24-byte records in a
+64-byte table. No allocator fixture change is needed.
+
+For the next explicitly instrumented witness build, use the existing scoped
+adapter technique to call `apply(..., diagnostic=True)` during the final
+installation. The development CLI also accepts `--diagnostic`. Both variants
+now report `model_version=5`; inspect `diagnostic` separately. Do not enable a
+new preset or rely on an in-place variant conversion. The diagnostic gives on
+CPU plays; the normal variant retains the CPU edge read.
+
+All four status dictionaries (`read_xbe`, `read_image`, `write_xbe_copy`,
+`write_image_copy`) must continue merging `_grown_status_fields(payload)`:
+
+```python
+"read_option_runtime": read_option_patch.status(payload),
+"read_option_runtime_settings": read_option_patch.read_settings(payload),
+```
+
+Settings now include the loaded-book identity model, explicit human controls,
+`diagnostic`, `model_version=5` and the unchanged reservation/table counts.
+The existing screen-hook and abilities status fields remain their own owners.
+V5 validates the complete abilities owner before accepting its hook at the
+shared native animation entry `0x1CD550`. The read runtime does not own that
+entry; it adds only the handoff exchange hook `0x313520..0x313526`.
+
+Keep `BuildPlan.read_option_runtime: bool = False`. Basic, Advanced and
+Experimental all keep it false; explicit selection is required. Keep the first
+XBE pass deferred with `read_option_runtime=False` and the owner requests
+reserved. After the last PLAY writer, execute `resolve_final_pairs`, then
+`compile_intent_table`, then install the resulting table in the final XBE
+pass. Do not derive a key from menu ordinal 48. The v5 receipt adds
+`identity_model=loaded_team_book_fingerprints/v5`,
+`diagnostic_index=final_resource_index` and per-record `identity_matches`,
+`plays_checked`, `diagnostic_index`. Retain these fields in the final pairing
+receipt; the compiler refuses duplicate live fingerprints even when the
+original resource slot still matches. The table bytes and maximum count stay
+compatible with the final bo book.
+
+Gameplay Patches keeps the existing `read_option_runtime` PATCHES row and
+NEEDS_IMAGE membership. Use current `nfl2k5_read_option_runtime.HELP_TEXT`;
+it contains both **Retail** and **Patch**. It must say: do nothing gives;
+Xbox Black pulls and pitches; release A after snapping and press A again to
+pull and keep; X or the named receiver pulls and passes on RPO. The old
+hold-through-to-keep and EDGE-icon instructions are obsolete. The Build tab
+`_option` caption remains `Read option mesh controls (experimental)`
+(40 characters, below 60), default false, with the updated HELP_TEXT. Pack
+cards use updated `OPTION_NOTICE` and the regenerated recipe pack 1.0.2.
+No PLAY scripts changed.
+
+Keep/add these exact release-allowlist lines, without duplicates:
+
+```text
+mod_editor/core/nfl2k5_read_option_runtime.py
+mod_editor/core/nfl2k5_read_option_runtime_code.py
+mod_editor/core/nfl2k5_play_intents.py
+mod_editor/core/nfl2k5_play_library.py
+mod_editor/core/nfl2k5_playbook_pack.py
+data/playbooks/softdrink_option.2k5book
+docs/mod_editor/nfl2k5_read_option_runtime_capability.json
+```
+
+The runtime-closure import list must contain these dotted modules:
+
+```python
+"mod_editor.core.nfl2k5_read_option_runtime",
+"mod_editor.core.nfl2k5_read_option_runtime_code",
+"mod_editor.core.nfl2k5_play_intents",
+"mod_editor.core.nfl2k5_play_library",
+"mod_editor.core.nfl2k5_playbook_pack",
+"mod_editor.core.nfl2k5_abilities_runtime",
+"mod_editor.core.nfl2k5_abilities_runtime_code",
+"mod_editor.core.nfl2k5_screen_hooks",
+"mod_editor.core.nfl2k5_xbe_space",
+```
+
+The abilities, screen hooks, allocator, codec, formation compiler, position
+pool and depth-role dependencies already ship; preserve their existing
+closure entries. Keep the existing capability ID
+`nfl2k5.gameplay.read_option_runtime` on `gameplay_tuning_sliders`, using the
+updated capability JSON. Its backend and validation commands remain dotted
+`python3 -m ...` commands. There is no new capability surface.
+
+Claude must regenerate protected `data/nfl2k5_cave_reservations.json` with the
+real `tools/nfl2k5_cave_oracle.py manifest` after integration and sufficient
+disk capacity. The scratch projection observes the current bounded XBE union
+and final PLAY compiler, and explicitly inherits historical disc-only fields;
+it is not a new production disc build. It reserves the seventh hook and
+retains source fingerprint checks. No protected manifest or dispatcher file
+was changed by this task, and no image copy was built below Noah's 100 GB
+free-space floor.
+
+The same dependency-validation path also accepts defensive try's complete,
+sealed `cpu_return` hook at `0x2E3786`; preserve the existing
+`mod_editor.core.nfl2k5_defensive_try` closure entry. Human cancellation stays
+available until the native exchange event, including a delayed mesh past one
+second. The reported one-second interval is the CPU read's fallback deadline.
+
+During production manifest observation, also route the existing
+`espn25.XbePatch.apply` static adapter through the recorder's wrapped
+`espn25.apply_xbe`. The adapter captures the function at import time; wrapping
+only the module entry misses its first write at `0xC2319` and observes only
+later no-op replays. The v5 scratch fixture observes that adapter explicitly
+and requires nonzero writes from each changed XBE owner. This is a recorder
+integration note; no ESPN implementation changed here.
+
+V5 waits through native snap reception before starting GIVE/TAKE. The snap
+hook precedes actual ball transfer, and the QB receive callback may already
+advance to the condition while the ball is in flight. The diagnostic shows
+`READ <resource> snap` during that interval, then `pend` when the QB receives
+the ball and starts the handoff. No extra dispatcher setting is required.

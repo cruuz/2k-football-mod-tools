@@ -64,9 +64,10 @@ class OptionQtTests(unittest.TestCase):
         self.assertEqual([p.option_back.itemData(i) for i in range(p.option_back.count())], [9, 10])
         text = ' '.join(label.text() for label in p.option_box.findChildren(QLabel))
         self.assertIn('EXPERIMENTAL / UNWITNESSED', text)
-        self.assertIn('one-second read window', text)
-        self.assertIn('release or do nothing after snapping to give', text)
-        self.assertIn('hold snap and press the named receiver', text)
+        self.assertIn('native handoff after the snap', text)
+        self.assertIn('Do nothing to give', text)
+        self.assertIn('press Xbox Black to pull and pitch', text)
+        self.assertIn('press X or the named receiver button', text)
         self.assertIn('not guaranteed to remain unblocked', text)
         self.assertNotIn('—', text)
         for preset in lib.OPTION_PRESETS:

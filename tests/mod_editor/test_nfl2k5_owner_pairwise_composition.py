@@ -29,13 +29,13 @@ from mod_editor.core.nfl2k5_cave_oracle import RETAIL_SHA256, XbeImage
 
 XBE = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION", "/media/noah/Storage/for codex 1.0/extracted")) / "ESPN NFL 2K5 (USA)/default.xbe"
 # The ten integration owners requested in the brief, plus both screen partners.
-# QB spy includes the landed man/rush hooks; Read option uses v2 REQUESTS.
+# QB spy includes the landed man/rush hooks; Read option v5 retains its existing reservation.
 OWNERS = (
     ("camera_v5", stack.camera),
     ("abilities_v2", stack.abilities),
     ("momentum", stack.momentum),
     ("screen_hooks", stack.screen_hooks),
-    ("read_option_v2", stack.read_option),
+    ("read_option_v5", stack.read_option),
     ("qb_spy_man_rush", stack.qb_spy),
     ("franchise_2026", stack.franchise_2026),
     ("senior_bowl", stack.senior_bowl),
