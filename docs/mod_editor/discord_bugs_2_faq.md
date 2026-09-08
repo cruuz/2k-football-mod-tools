@@ -25,6 +25,24 @@ results remain experimental and unwitnessed until the listed comparisons are pla
   five columns by two rows, or two columns by five rows, and select that layout.
   Read left to right, then top to bottom, starting at 0. See
   [number sheet instructions](number_sheets.md) for dimensions, padding and alpha.
+- **Why do some imported numbers look blocky even at 64x64?** The old digit
+  encoder rebuilt the smaller textures by choosing a winning colour in each
+  group of four pixels. Thin outlines and soft transparency could become thick,
+  uneven steps. It could also reduce a difficult sheet to very few colours to
+  fit the game's fixed slot. This is reproduced offline; it does not establish
+  the exact cause of Coach Edwards's photographed game without his PNG/project.
+  The r64 correction is **EXPERIMENTAL / UNWITNESSED**: it averages colour with
+  transparency, preserves fractional coverage in smaller textures, shares one
+  palette across every level, and refuses excessive colour loss. Making the
+  drawing smaller inside its cell does not change that slot or the old filter;
+  it gives the digit fewer pixels and can make a thin outline disappear.
+  A 64x64 cell alone cannot guarantee quality. Use the exact target shape,
+  straight-alpha transparency and a few flat fill/outline colours. Avoid noise,
+  tiny outlines and repeated resizing. See the [clean digit recipe](number_sheets.md#clean-digit-recipe).
+  After the protected preview dialog is integrated, inspect every digit at small
+  size on both light and dark backgrounds before choosing **Import all ten digits**.
+  The preview decodes the actual encoded textures. Its camera-size views are
+  estimates; verify broadcast and close views in the game.
 - **How do I combine APF logos and endzones?** Load the original game folder,
   stage every supported texture in one project, save `.apf2k8mod`, then use
   Build Game Folder. Field Art's separate copied-0A export contains only its

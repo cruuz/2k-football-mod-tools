@@ -5,11 +5,14 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+import sys
 from types import SimpleNamespace
 import tempfile
 import unittest
 from unittest import mock
 
+ROOT = Path(__file__).resolve().parents[2]
+sys.path[:0] = [str(ROOT), str(ROOT / "tools")]
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from PyQt5.QtCore import Qt  # noqa: E402
@@ -36,6 +39,13 @@ if os.environ.get("ASTRA_TEST_TEAMKIT_PROPOSAL") == "1":
     from tests.mod_editor.test_teamkit_import_wiring import proposed_source
     _proposal_namespace = dict(studio_qt.__dict__)
     exec(compile(proposed_source(), "<Team Kit GUI proposal>", "exec"), _proposal_namespace)
+    StudioMainWindow = _proposal_namespace["StudioMainWindow"]
+
+if os.environ.get("ASTRA_TEST_NUMBER_QUALITY_PROPOSAL") == "1":
+    from mod_editor.gui import studio_qt
+    from tests.mod_editor.test_number_sheet_quality_wiring import proposed_source
+    _proposal_namespace = dict(studio_qt.__dict__)
+    exec(compile(proposed_source(), "<Number sheet quality GUI proposal>", "exec"), _proposal_namespace)
     StudioMainWindow = _proposal_namespace["StudioMainWindow"]
 
 
@@ -368,6 +378,11 @@ class TeamKitOffscreenGuiTests(unittest.TestCase):
         self.facade.import_team_kit = import_private  # type: ignore[method-assign]
         receipts: list[str] = []
         with (
+            # Encoding and dialog pixels have their own real-writer/offscreen
+            # suite. This existing test keeps its per-slot/atomic-kit scope on
+            # both the landed GUI and the proposed preview callback.
+            mock.patch.object(self.facade, "preview_digit_sheet", return_value=object(), create=True),
+            mock.patch.object(self.window, "_review_digit_sheet_preview", return_value=True, create=True),
             mock.patch(
                 "mod_editor.gui.studio_qt.QInputDialog.getItem",
                 side_effect=[("Arm / shoulder numbers", True), ("One row: 0 1 2 3 4 5 6 7 8 9", True)],

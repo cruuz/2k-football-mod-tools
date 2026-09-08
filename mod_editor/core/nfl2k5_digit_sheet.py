@@ -18,6 +18,7 @@ from typing import Iterable, Literal
 from PIL import Image, ImageOps, UnidentifiedImageError
 
 from .errors import ValidationError
+from .nfl2k5_digit_texture import resize_cell
 
 
 MAX_SHEET_BYTES = 128 * 1024 * 1024
@@ -45,6 +46,14 @@ class DigitSheetPng:
     width: int
     height: int
     png: bytes
+    layout: str = ""
+    cell_size: tuple[int, int] = (0, 0)
+    warnings: tuple[str, ...] = ()
+
+    @property
+    def mapping_note(self) -> str:
+        return (f"{self.layout}: {self.cell_size[0]}x{self.cell_size[1]} cell to "
+                f"{self.width}x{self.height} slot for digit {self.digit}.")
 
 
 def _targets(assets: Iterable[object]) -> tuple[object, ...]:
@@ -128,7 +137,8 @@ def split_digit_sheet(
                      "grid_5x2": (5, 2), "grid_2x5": (2, 5)}[chosen]
     if image.width % columns or image.height % rows:
         raise ValidationError(
-            f"The {image.width}x{image.height} sheet cannot have equal cells: "
+            f"The {image.width}x{image.height} sheet in {chosen} layout cannot have equal cells "
+            f"({image.width / columns:g}x{image.height / rows:g} pixels per cell): "
             f"width must be divisible by {columns} and height by {rows}. "
             "Remove outside borders and gaps, or select the correct layout."
         )
@@ -143,8 +153,22 @@ def split_digit_sheet(
         cell = image.crop(box)
         width = int(getattr(target, "width"))
         height = int(getattr(target, "height"))
+        notes = []
         if cell.size != (width, height):
-            cell = cell.resize((width, height), Image.Resampling.LANCZOS)
+            notes.append(
+                f"{chosen} layout: {cell_width}x{cell_height} cell will be resized to "
+                f"{width}x{height} for digit {digit}, including its padding."
+            )
+            if cell_width * height != cell_height * width:
+                notes.append("The cell and slot have different shapes; the digit will stretch.")
+            if cell_width < width or cell_height < height:
+                notes.append("Enlarging the cell cannot restore missing edge detail.")
+        alpha = cell.getchannel("A")
+        bounds = alpha.getbbox()
+        if bounds and (bounds[0] == 0 or bounds[1] == 0
+                       or bounds[2] == cell_width or bounds[3] == cell_height):
+            notes.append(f"Digit {digit} touches a cell edge; check for clipping, gaps or a background.")
+        cell = resize_cell(cell, (width, height))
         stream = BytesIO()
         cell.save(stream, format="PNG", optimize=False, compress_level=9)
         outputs.append(DigitSheetPng(
@@ -153,6 +177,9 @@ def split_digit_sheet(
             width=width,
             height=height,
             png=stream.getvalue(),
+            layout=chosen,
+            cell_size=(cell_width, cell_height),
+            warnings=tuple(notes),
         ))
     return tuple(outputs)
 

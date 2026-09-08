@@ -532,6 +532,8 @@ def quantize_levels_to_vc_lz_bound(
     stream_tag: int,
     offset_bits: int,
     max_encoded_size: int,
+    quantizer: Callable | None = None,
+    minimum_palette_limit: int = 2,
 ) -> BoundedPaletteFit:
     """Quantize art as richly as practical while honoring a retail VC-LZ cap.
 
@@ -548,11 +550,16 @@ def quantize_levels_to_vc_lz_bound(
     require(bool(levels), "bounded quantizer needs at least one mip level")
     require(max_encoded_size >= 10,
             "bounded quantizer VC-LZ span is shorter than a usable stream")
+    require(minimum_palette_limit in _BOUNDED_PALETTE_LIMITS,
+            "minimum palette limit must be a supported quality tier")
+    quantizer = quantizer or quantize_levels
     attempts: list[dict[str, object]] = []
     tried_entry_counts: set[int] = set()
     last_overflow: TxtrError | None = None
     for maximum in _BOUNDED_PALETTE_LIMITS:
-        palette, index_levels, quantization = quantize_levels(levels, maximum)
+        if maximum < minimum_palette_limit:
+            break
+        palette, index_levels, quantization = quantizer(levels, maximum)
         actual_entries = len(palette)
         # If the input already contains fewer colours than this tier, the same
         # palette was just tested at the preceding tier.  Do not recompress it.
@@ -601,6 +608,13 @@ def quantize_levels_to_vc_lz_bound(
     # attempted at the first tier (its actual palette has one entry); reaching
     # here means even the minimally useful two-colour representation cannot fit.
     if last_overflow is not None:
+        if minimum_palette_limit > 2:
+            raise TxtrError(
+                f"Digit artwork cannot fit its {max_encoded_size}-byte texture slot "
+                f"without dropping below the {minimum_palette_limit}-colour quality budget. "
+                "Use flat fill and outline colours, remove noise or extra edge detail, "
+                "and preview again. No lower-quality texture was accepted."
+            ) from last_overflow
         raise TxtrError(
             f"VC-LZ target cannot fit a usable two-color version inside its "
             f"{max_encoded_size}-byte bound; simplify the image by removing "

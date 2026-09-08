@@ -3266,6 +3266,15 @@ class Nfl2k5StudioFacade:
                 )
             return service.import_edited(source, progress=progress)
 
+    def preview_digit_sheet(self, outputs: Sequence[object], progress: ProgressSink) -> object:
+        """Encode a frozen sheet against the active source, without staging it."""
+        from mod_editor.core.nfl2k5_digit_preview import preview_digit_sheet
+
+        with self._lock:
+            session = self._require_session()
+            targets = tuple(self.uniform_catalog.get_asset(output.asset_id) for output in outputs)
+            return preview_digit_sheet(session.cache.pack0, targets, outputs, progress)
+
     def replace_asset(
         self, asset: UniformAsset, supplied_png: Path, progress: ProgressSink
     ) -> object:

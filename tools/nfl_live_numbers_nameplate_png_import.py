@@ -23,6 +23,9 @@ from pathlib import Path as _Path
 _here = str(_Path(__file__).resolve().parent)
 if _here not in _sys.path:
     _sys.path.insert(0, _here)
+_product_root = str(_Path(__file__).resolve().parents[1])
+if _product_root not in _sys.path:
+    _sys.path.insert(0, _product_root)
 
 from nfl_outer import parse_archive, read_entry_range
 from nfl_txtr import (HEADER, decode_chunk, encode_rgba_png, parse_chunks,
@@ -389,7 +392,18 @@ def build_import(index_path: Path, compatibility_path: Path, family: str,
             "canonical index changed while reading target")
 
     png, png_payload, rgba = read_png(png_path, (target.width, target.height))
-    input_mips = make_mips(rgba, target.width, target.height, target.mip_levels)
+    is_digit = target.family in {"jersey_digit", "helmet_digit", "arm_digit"}
+    quality_options = {}
+    mip_filter = "unpremultiplied_rgba_2x2_majority_ties_to_rarer_region"
+    if is_digit:
+        from mod_editor.core.nfl2k5_digit_texture import (
+            MIP_FILTER, PALETTE_POLICY, make_digit_mips, quantize_digit_levels,
+        )
+        input_mips = make_digit_mips(rgba, target.width, target.height, target.mip_levels)
+        quality_options = {"quantizer": quantize_digit_levels, "minimum_palette_limit": 16}
+        mip_filter = MIP_FILTER
+    else:
+        input_mips = make_mips(rgba, target.width, target.height, target.mip_levels)
     template_video = decoded[target.system_bytes:]
     gap_first = target.index_chain_bytes
     gap_after = gap_first + target.pre_palette_gap_bytes
@@ -429,6 +443,7 @@ def build_import(index_path: Path, compatibility_path: Path, family: str,
         stream_tag=target.stream_tag,
         offset_bits=target.offset_bits,
         max_encoded_size=target.stored_size,
+        **quality_options,
     )
     palette = bounded.palette
     index_levels = bounded.index_levels
@@ -506,10 +521,16 @@ def build_import(index_path: Path, compatibility_path: Path, family: str,
                       "strict_rgba8_noninterlaced": True},
         "mips": {"level_count": target.mip_levels,
                  "dimensions": [[level.width, level.height] for level in input_mips],
-                 "filter": "unpremultiplied_rgba_2x2_majority_ties_to_rarer_region",
+                 "filter": mip_filter,
                  "storage": target.mip_storage,
-                 "index_bytes": [len(level) for level in index_levels]},
+                 "index_bytes": [len(level) for level in index_levels],
+                 "decoded_rgba_sha256": [digest(level.rgba) for level in decoded_levels],
+                 "input_rgba_sha256": [digest(level.rgba) for level in input_mips]},
         "quantization": quantization,
+        **({"digit_quality": {"palette_policy": PALETTE_POLICY,
+                              "minimum_palette_budget": 16,
+                              "alpha_bits": 8,
+                              "evidence": "EXPERIMENTAL / UNWITNESSED"}} if is_digit else {}),
         **({"bounded_palette_fit": {
             "attempts": list(bounded.attempts),
             "selected_palette_entries": len(palette),

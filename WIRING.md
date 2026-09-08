@@ -11648,3 +11648,101 @@ executable allocation and does not change either gate or the cave manifest.
 Noah's full 25-moment played witness remains required; native import success
 alone says nothing about complete formations, rendering, completion or exact
 historical starting lineups.
+
+# r64 number-sheet quality: protected integration handoff (2026-09-07)
+
+**EXPERIMENTAL / UNWITNESSED.** This section supersedes the earlier number-sheet
+quality and runtime-pin guidance only. Base `76434d6108a25ca7deac0160fb05f717badd7bd0`.
+See [ASTRA_NUMBER_SHEET_QUALITY_REPORT.md](ASTRA_NUMBER_SHEET_QUALITY_REPORT.md).
+Protected source files and the shared provider registry have not been edited.
+
+Apply the two exact, independently checked fixtures from the repository root:
+
+```sh
+git apply --check tests/fixtures/number_sheet_quality_wiring.patch
+git apply --check tests/fixtures/number_sheet_quality_runtime.patch
+git apply tests/fixtures/number_sheet_quality_wiring.patch
+git apply tests/fixtures/number_sheet_quality_runtime.patch
+```
+
+The Studio fixture preserves the existing four layouts, physical set/family
+selection, frozen ten PNGs, one Team Kit transaction, one Undo, source lock,
+component receipts and dirty/refresh events. It adds `preview_digit_sheet` to
+`StudioFacade`, and `_review_digit_sheet_preview` to `StudioMainWindow`.
+`_choose_digit_sheet_import` first splits and encodes all ten digits in a worker.
+It queues review through `_defer_until_blocking_task_finished`, so result delivery
+cannot race the worker's later `finished` signal and block the next operation.
+Review shows the encoded textures at native preview size in a scroll area, all
+saved levels, 24/12-pixel estimated views, light/dark backgrounds and mapping or
+palette-fit notes. Cancel or an encoding error stages nothing. Acceptance imports
+the already previewed PNG tuple, even if the source PNG is subsequently saved
+externally. A changed game-source hash refuses the import. Preview cannot infer
+the game's camera LOD, UVs, alpha test, lighting or jersey material.
+
+The runtime fixture contains these exact shared-file edits:
+
+- `packaging/release-allowlist.txt`: add
+  `mod_editor/core/nfl2k5_digit_texture.py` and
+  `mod_editor/core/nfl2k5_digit_preview.py`. Existing splitter, facade, writer,
+  `docs/mod_editor/number_sheets.md` and `docs/mod_editor/discord_bugs_2_faq.md`
+  lines remain sufficient. The research renders, report generator and test
+  fixtures do not belong in the product runtime.
+- `packaging/check_2k5_mod_studio_runtime.py`: add imports
+  `mod_editor.core.nfl2k5_digit_texture` and
+  `mod_editor.core.nfl2k5_digit_preview` beside the existing splitter import;
+  add `mod_editor/core/nfl2k5_digit_texture.py` to
+  `REQUIRED_UNIFIED_PROVIDER_CLOSURE`. Update the existing
+  `RC29_AUDIO_ANNOTATION_RUNTIME_PINS` hashes for the proposed Studio and the
+  modified facade. The fixture holds exact SHA-256 values, tested against the
+  files and proposed GUI; recompute if integration makes further changes.
+- `mod_editor/core/providers.py`: in
+  `Nfl2k5UnifiedVisualProvider.module_pins`, repin
+  `tools/nfl_live_numbers_nameplate_png_import.py` and
+  `tools/nfl_tset_png_import.py`, and add the new dependency
+  `mod_editor/core/nfl2k5_digit_texture.py`. Also repin
+  `tools/nfl_tset_png_import.py` in `Nfl2k5ScorebugProvider.module_pins` because
+  that provider shares the generic compressor. The default generic palette
+  policy and scorebug output are unchanged. Every pin in both proposed
+  provider dictionaries is checked by the standalone wiring test. Omitting
+  this step would cause the frozen provider bundle to refuse or lack the new
+  digit dependency. This registry change is supplied as a fixture, not applied.
+
+Other required integration fields, explicitly reviewed:
+
+| Field | Required change |
+| --- | --- |
+| Dispatcher `_apply_all` tuple, kwarg, four status dictionaries | None. This changes texture encoding, with no executable patch owner. |
+| `_selected_space_requests`, allocator adapter, `_grown_status_fields` | None; no requests, allocations, cave entries or manifest regeneration. |
+| `BuildPlan` field, normalization, deferral/final pass | None; existing staged uniform edits use the corrected writer automatically. |
+| Basic / Advanced / Experimental presets | No added flag and no preset change. |
+| Gameplay Patches `PATCHES` text, Retail / Patch, `NEEDS_IMAGE` | No new row or flag; the existing number-sheet editor action owns this workflow. |
+| Build tab `_option` caption (60-character maximum) | No new option or caption. |
+| Capability registry | No new capability/command; keep the existing number-sheet/Team Kit surface. Do not alter unrelated missing research evidence. |
+| Release tags, CI workflow, reservation manifest | No changes. |
+
+Validation before and after integration (the fixture tests execute proposals
+in memory before wiring, and the real source after wiring):
+
+```sh
+export PYTHONPATH="$PWD:$PWD/tools"
+export QT_QPA_PLATFORM=offscreen
+python3 tests/mod_editor/test_number_sheet_quality_wiring.py
+python3 tests/mod_editor/test_nfl2k5_digit_sheet_quality.py
+python3 tests/mod_editor/test_2k5_bounded_vclz_palette.py
+python3 tests/mod_editor/test_nfl2k5_digit_sheet.py
+python3 tests/mod_editor/test_team_kit_product_integration.py
+python3 tests/mod_editor/test_uniform_bundle_cross_project.py
+python3 tests/mod_editor/test_teamkit_import_wiring.py
+python3 tests/mod_editor/test_discord_bugs_2_wiring.py
+```
+
+The existing Team Kit and bugs-2 wiring fixtures retain their original assertions.
+The Team Kit product integration suite now also supports
+`ASTRA_TEST_NUMBER_QUALITY_PROPOSAL=1` to execute the entire proposed Studio class
+before integration. Its per-slot/atomic-import test supplies preview stubs;
+the separate quality wiring suite executes the real review dialog and checks
+worker result/finished ordering, cancel, encoding failure and source changes.
+Run that proposal mode before wiring, then ordinary mode after wiring.
+Run the ordinary release allowlist, literal import closure and staged runtime
+gates after applying both fixtures; this branch does not claim a packaged build.
+See the report for private-evidence environment variables and exact results.
