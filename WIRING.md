@@ -1,3 +1,209 @@
+# r65 Player abilities rules v2 (2026-09-08)
+
+This section supersedes earlier abilities v1 wiring only. EXPERIMENTAL /
+UNWITNESSED. The existing owner is upgraded, not duplicated. Its live request
+is `("nfl2k5_abilities_runtime", "code", 1344, 16)` within its 1536-byte budget;
+no RW/RO request or new page. Both shared unions and all existing manifest
+owner lists already import this same owner and its live REQUESTS. The budget
+fixture and both gate assertions are updated in this delivery.
+
+The new page, writer, codec, native effects and tests are implemented. These
+protected product connections are deliberately left for Claude. Do not call
+the feature witnessed or silently upgrade an installed v1 allocation. Rebuild
+from the supported base. The production reservation JSON still needs Claude's
+normal regeneration; the scratch proof manifest is explicitly XBE-only.
+
+## Dispatcher and all four status dictionaries
+
+In `mod_editor/core/nfl2k5_throw_tuning.py`, retain the existing
+`abilities_patch` import. Add these explicit keyword arguments to `_apply_all`,
+`write_xbe_copy`, and `write_image_copy` and forward them through both direct
+and final deferred calls:
+
+```python
+abilities_lock_right_stick: bool = True,
+abilities_lock_special_moves: bool = True,
+abilities_lock_speedster: bool = True,
+```
+
+Validate strictly with `abilities_patch._locks(lock_right_stick=...,
+lock_special_moves=..., lock_speedster=...)` alongside the existing week
+validation. Keep disabled parent settings, including False lock choices, in
+the plan; they select no owner by themselves. `abilities_off_week` still
+requires `abilities=True`.
+
+Extend `_abilities_adapter.__init__` to take `off_week` and all three Boolean
+locks, store `self.settings` with the runtime key names, and implement:
+
+```python
+def apply(self, payload):
+    return abilities_patch.apply(payload, **self.settings)
+```
+
+Keep its existing strict `status`. The `_apply_all` owner tuple immediately
+after allocator reservation is:
+
+```python
+(abilities,
+ _abilities_adapter(abilities_off_week, abilities_lock_right_stick,
+                    abilities_lock_special_moves, abilities_lock_speedster),
+ "abilities_patch", "experimental player abilities rules v2"),
+```
+
+`_selected_space_requests` and `_xbe_space_adapter` already select
+`abilities_patch.REQUESTS` only when `abilities` is true. Retain those paths;
+the lock values do not create separate requests. The initial image pass still
+defers `abilities=False, abilities_off_week=None` with the other grown owners;
+retain the three chosen locks for the final pass. Do not allocate v1 size 1072
+or take settings from a previous arbitrary image.
+
+All FOUR result/status dictionaries must retain `**_grown_status_fields(...)`:
+`read_xbe(payload)`, `read_image(payload)`, `write_xbe_copy(result)`, and
+`write_image_copy(after)`. That helper already returns
+`abilities=abilities_patch.status(payload)` and
+`abilities_settings=abilities_patch.read_settings(payload)`. The latter now
+contains `model_version=2`, the off-week, and `lock_right_stick`,
+`lock_special_moves`, `lock_speedster`. Preserve the nested settings rather
+than converting an unchecked lock into a false "retail" owner status. On
+source inspection, restore all three actual stored values to Build controls.
+
+## BuildPlan and presets
+
+In `mod_editor/core/mod_build.py`, change the existing abilities comment to v2
+and add the three fields above beside `abilities_off_week`. Basic
+(`softdrink_basic`), Advanced (`softdrink_advanced`) and Experimental
+(`softdrink_experimental`) all keep `abilities=False`, off-week None, and all
+three lock values True. No preset auto-assigns any player or changes a tier.
+Validate the three Booleans during normalization. Do not count locks alone as
+an operation or force abilities on merely because a settings value is True.
+
+Forward all three settings in the final `tt._apply_all` call where
+`abilities=plan.abilities, abilities_off_week=plan.abilities_off_week` already
+appear. Keep the initial `tt.write_image_copy` abilities deferral and the
+complete `_selected_space_requests` union. `available_options`, inspect's
+`abilities`/`abilities_settings` pair, XBE growth handling and receipts use
+the existing owner and need no second Boolean feature. Build continues to
+consume ordinary `BuildPlan.roster_edits` for exported footer edits.
+
+## Rosters page and shared undo
+
+In protected `mod_editor/gui/roster_editor_panel_qt.py`, import
+`AbilitiesPanel` from `mod_editor.gui.abilities_panel_qt`. Replace the old
+abilities controls in `_build_abilities_page` with this page, inside a
+resizable `QScrollArea` like the card pages. Keep the Guardian cap controls
+from the old page in a separate group on that same scroll host. The Guardian
+toggles and their existing masked transaction remain independent.
+
+Create `self.abilities_panel`, call `set_document(document)` on every load or
+replacement (including `_restore_composed`), and call `set_player(player)` in
+`_show_player`, including None. Remove the old ability-check loop and
+`ability_bulk_button` references there. Do not run a tier assignment on load.
+Overfull legacy records show their existing flags until the user chooses a
+tier. Native v2 honors tier0 legacy permissions; overfilled tiers 1..3 receive
+no stored permissions/bonuses until corrected.
+
+Connect `edit_committed` to the parent chronological undo stack. The emitted
+`AbilitiesEdit` has ALREADY applied its change and contains `label`, exact
+`receipt`, and guarded `undo`/`redo` callables. Call `_after_edit` for each
+changed player and push ONE `UndoEntry` for the transaction. Wrap replay
+callables with the same dirty/grid/status refresh. Do not invoke the apply
+again when adding history. `set_document` must also be called when another
+page restores a composed document. For replay after that replacement, resolve
+the receipt against the current document using
+`nfl2k5_abilities_editor.apply_plan(self.document, edit.receipt["plan"],
+reverse=True/False)` rather than a callback closed over the replaced document.
+Clear the shared stack on a new source, as today. Identity/mask checks must
+remain enabled; never fall back to an unchecked whole-record restore.
+
+Retire the old raw `set_abilities` bulk path or route it through a prevalidated
+v2 plan. The new page offers the reviewed full-league assignment; every
+transaction has a receipt and joins the same undo stack. Existing CSV and
+sparse JSON use the compatible footer fields; CSV now also carries the named
+`ability_tier`. Signed-save editing uses the existing codec, not a new save
+footer or output format. The cosmetic `star_tag` stays independent, and the
+existing `player_star` patch draws it as before. There are no new tier decals.
+
+Expose the page's `save_receipt(path)` via the parent save-dialog action if
+desired; it writes a new JSON and refuses replacement. The authoring CLI
+outputs an envelope with `receipt` and `roster_edits`: extract `roster_edits`
+as a normal roster-edits JSON before selecting it in Build. The ordinary
+Rosters export already writes this compatible JSON directly.
+
+## Lock controls, Gameplay Patches and Build tab
+
+Forward the page's `lock_settings_changed(dict)` through a new Rosters signal
+to the Build panel in protected `studio_qt.py`. Map runtime keys to plan keys
+by prefixing `abilities_`. The signal changes pending Build settings only;
+the existing `abilities` opt-in remains the enable switch. Reflect Build
+inspection/restoration back through `AbilitiesPanel.set_lock_settings` (which
+emits no signal), including explicit False values. Preserve choices across
+source selection and parent option toggles; a rebuilt disc is required.
+
+In protected `mod_editor/gui/gameplay_patches_panel_qt.py`, update the existing
+PATCHES row's title to `Player abilities rules v2 (experimental)` and use
+`tt.abilities_patch.HELP_TEXT`. It contains both required words "Retail" and
+"Patch" and names the carrier-only charge consequence. Keep `abilities` in
+`NEEDS_IMAGE`. The three switches are settings for this row, not three
+independent patch owners. If this panel exports option dictionaries, preserve
+all three `abilities_lock_*` values when merging with Build choices.
+
+In protected `mod_editor/gui/build_panel_qt.py`, update the existing `_option`
+caption to `Player abilities rules v2 (experimental)` (39 characters, under
+60), retaining `needs_image=True` and the EXPERIMENTAL / UNWITNESSED badge.
+Keep the existing Week 1..18 chooser. Add three checkboxes initialized True:
+
+```text
+Lock right-stick moves behind the ability
+Lock special moves behind their abilities
+Lock Speedster speed
+```
+
+Put them beside the existing ability controls and explain that both move
+locks off restores retail charge, while either one on retains v1's restricted
+charge policy. Include them in plan construction, project/settings save/load,
+source-state restore and preset reset. Disable their widgets with the parent
+off without resetting their choices. Build-to-Rosters synchronization must
+not recursively emit change signals.
+
+## Packaging, runtime closure, capability registry and release checks
+
+Keep all existing abilities/runtime/assembler allowlist lines. Add these exact
+lines to protected `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_abilities_editor.py
+mod_editor/gui/abilities_panel_qt.py
+```
+
+If release evidence JSONs are included in the current packaging policy, also
+include `docs/mod_editor/nfl2k5_abilities_editor_capability.json`; do not bundle
+the private retail receipt, XBE, report-inventory JSON, or scratch manifest.
+
+In protected `packaging/check_2k5_mod_studio_runtime.py`, add imports
+`mod_editor.core.nfl2k5_abilities_editor` and
+`mod_editor.gui.abilities_panel_qt` to the closure. The runtime and generated
+code module are already imported. The new editor depends only on the shipped
+roster codec/runtime and stdlib; the page uses the existing PyQt5 dependency.
+Recompute the unified provider hashes for the changed core modules and add the
+new page/editor dependency if the provider closure enumerates them. Regenerate
+counts rather than copying historical pin numbers into release tests.
+
+Replace registry row `nfl2k5.gameplay.abilities_runtime` from
+`docs/mod_editor/nfl2k5_abilities_runtime_capability.json` and add
+`nfl2k5.rosters.abilities_v2` from
+`docs/mod_editor/nfl2k5_abilities_editor_capability.json`, sorted by ID. These
+use existing `gameplay_tuning_sliders` and `players_rosters` surfaces. Both
+backend and validation commands use `python3 -m <dotted.module>`. They claim
+offline writer proofs and untested gameplay, with no default enablement.
+
+Claude's final integration checks: regenerate the protected production cave
+manifest from the final sources when the disposable-disc disk budget permits;
+run both XBE gates with that manifest, the oracle/owner manifests, standalone
+abilities/roster/Qt/Momentum suites, the pairwise matrix, packaging closure and
+capability registry file checks. Verify a rebuilt configured XBE reports v2
+and all three chosen lock values. Follow Noah's exact gameplay list in
+`ASTRA_ABILITIES_V2_REPORT.md` before declaring anything witnessed.
+
 # r64 Read option v4 engagement diagnostic (2026-09-08)
 
 EXPERIMENTAL / UNWITNESSED. This section supersedes the v3 claim of live

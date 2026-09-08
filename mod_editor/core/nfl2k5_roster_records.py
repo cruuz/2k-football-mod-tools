@@ -423,9 +423,11 @@ ABILITY_LABELS = {"speedster": "Speedster", "right_stick_moves": "Right-Stick Mo
                   "juke": "Juke (phase 2)", "spin": "Spin (phase 2)",
                   "truck": "Shoulder Charge / Truck (phase 2)",
                   "hurdle": "Hurdle (phase 2)", "stiff_arm": "Stiff-Arm (phase 2)"}
-VIRTUAL_FIELDS = ("power_run_style_bucket", "throw_style", "guardian_cap")
+ABILITY_TIERS = ("Unranked", "Star", "Superstar", "X-Factor")
+VIRTUAL_FIELDS = ("power_run_style_bucket", "throw_style", "guardian_cap", "ability_tier")
 
 ENUMS: dict[str, Sequence[str]] = {
+    "ability_tier": ABILITY_TIERS,
     "guardian_cap": YES_NO,
     "position": POSITIONS, "hand": HANDS, "body": BODIES, "helmet": HELMETS,
     "face_shield": FACE_SHIELDS, "dreads": YES_NO, "eye_black": YES_NO, "mouthpiece": YES_NO,
@@ -897,6 +899,16 @@ class PlayerRecord:
         _require(isinstance(enabled, bool), "enabled must be a boolean")
         field, bit = ABILITY_BITS[name]
         self.values[field] = self.values[field] | bit if enabled else self.values[field] & ~bit
+
+    @property
+    def ability_tier(self) -> int:
+        """Rules v2 tier, physical footer +0x53 bits 6..7. No inferred star."""
+        return (self.values["unknown_53_high"] >> 5) & 3
+
+    @ability_tier.setter
+    def ability_tier(self, value: int) -> None:
+        _require(type(value) is int and 0 <= value <= 3, "ability tier accepts 0..3")
+        self.values["unknown_53_high"] = (self.values["unknown_53_high"] & 0x1f) | value << 5
 
     # ------------------------------------------------------------------ raw field access
     @property
@@ -3036,7 +3048,7 @@ CSV_IDENTITY = ("pool", "index", "team", "first", "last", "position", "jersey", 
                 "face_mask", "face_shield", "mouthpiece", "turtleneck", "sleeves", "neck_roll",
                 "left_glove", "right_glove", "left_wrist", "right_wrist", "left_elbow",
                 "right_elbow", "left_shoe", "right_shoe", "depth_rank", "depth_side", "player_type")
-CSV_COLUMNS = CSV_IDENTITY + RATING_BYTE_ORDER + tuple(ABILITY_BITS) + ("guardian_cap",)
+CSV_COLUMNS = CSV_IDENTITY + RATING_BYTE_ORDER + tuple(ABILITY_BITS) + ("guardian_cap", "ability_tier")
 CSV_READ_ONLY = frozenset({"pool", "index"})
 FREE_AGENT_CSV_WORDS = frozenset({"free_agent", "free agents", "free agent", "fa"})
 
@@ -3077,6 +3089,7 @@ def _csv_row(document: RosterDocument, player: Player) -> dict[str, Any]:
     }
     row.update({name: int(value) for name, value in record.abilities.items()})
     row["guardian_cap"] = int(record.guardian_cap)
+    row["ability_tier"] = record.ability_tier
     row.update(record.ratings())
     return row
 
@@ -3223,7 +3236,7 @@ def _apply_csv_cell(document: RosterDocument, player: Player, column: str,
             new = instead
     else:
         new = _enum_value(column, value) if column in ENUMS else int(value)
-    if (record.get(column) if column in ABILITY_BITS or column == "guardian_cap" else record.values.get(column)) == new:
+    if (record.get(column) if column in ABILITY_BITS or column in VIRTUAL_FIELDS else record.values.get(column)) == new:
         return 0, note
     record.set(column, new)
     return 1, note

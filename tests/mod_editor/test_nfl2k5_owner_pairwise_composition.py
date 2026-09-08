@@ -32,6 +32,8 @@ XBE = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION", "/media/noah/Storage/for c
 # QB spy includes the landed man/rush hooks; Read option uses v2 REQUESTS.
 OWNERS = (
     ("camera_v5", stack.camera),
+    ("abilities_v2", stack.abilities),
+    ("momentum", stack.momentum),
     ("screen_hooks", stack.screen_hooks),
     ("read_option_v2", stack.read_option),
     ("qb_spy_man_rush", stack.qb_spy),

@@ -36,6 +36,7 @@ from mod_editor.core import nfl2k5_franchise_edit_player as edit_player
 
 LEGACY_REQUESTS = (kickoff.REQUESTS + runtime.REQUESTS + momentum.REQUESTS
                    + defensive_try.REQUESTS[:2] + zone_drop.REQUESTS)
+# Abilities v2 expands the existing immutable owner; use its live REQUESTS.
 # Read option v2 grows the existing owner; its live REQUESTS include RW/RO.
 # Both installation orders use this same union and require rebuild from base.
 REQUESTS = (camera.REQUESTS + LEGACY_REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS

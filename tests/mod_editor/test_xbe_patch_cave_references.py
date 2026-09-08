@@ -186,6 +186,8 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_abilities_runtime as abilities
         if abilities.status(cls.patched) != "applied":
             raise AssertionError("abilities owner missing from the composed XBE")
+        if abilities.read_settings(cls.patched)["model_version"] != 2:
+            raise AssertionError("abilities v2 effects missing from the composed XBE")
         from mod_editor.core import nfl2k5_qb_spy_runtime as qb_spy
         if qb_spy.status(cls.patched) != "applied":
             raise AssertionError("QB spy owner missing from the composed XBE")
