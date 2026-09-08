@@ -1847,6 +1847,9 @@ def main() -> int:
         "mod_editor.core.nfl2k5_modern_naming",
         "mod_editor.core.nfl2k5_my_career",
         "mod_editor.core.nfl2k5_my_career_code",
+        "mod_editor.core.nfl2k5_my_career_mode",
+        "mod_editor.core.nfl2k5_my_career_mode_code",
+        "mod_editor.core.nfl2k5_my_career_save",
         "mod_editor.core.nfl2k5_patch_cli",
         "mod_editor.core.nfl2k5_play_rules",
         "mod_editor.core.nfl2k5_read_option_runtime",
@@ -2055,11 +2058,11 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 115,
+    require(len(registry.capabilities) == 116,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
-    require(len(product_catalog.capabilities) == 77,
+    require(len(product_catalog.capabilities) == 78,
             "NFL 2K5 product capability count changed")
     _exercise_default_provider_controller(
         modules["mod_editor.core.controller"],
@@ -2462,7 +2465,7 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=115 sections=12 nfl2k5_capabilities=77 "
+        "registry=116 sections=12 nfl2k5_capabilities=78 "
         "reports=16 reviewed_metadata=24 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "

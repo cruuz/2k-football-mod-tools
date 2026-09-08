@@ -945,9 +945,12 @@ def _validated_r62_plan_options(plan):
     if plan.guardian_players is not None and not plan.guardian_overlay:
         raise ValueError("Guardian player selections need guardian_overlay")
     if plan.my_career:
-        if not plan.my_career_setup:
-            raise ValueError("MyCareer needs the paired MyCareer.json setup from the MyCareer page")
-        r62["my_career_setup"] = tt.my_career_patch.read_setup(plan.my_career_setup)
+        # No setup selects the generic in-game creation format (MyPlayer is created in the game, careers save
+        # inline); an explicit MyCareer.json keeps the legacy prepared-save route.
+        if plan.my_career_setup:
+            r62["my_career_setup"] = tt.my_career_patch.read_setup(plan.my_career_setup)
+        else:
+            r62["my_career_setup"] = None
     elif plan.my_career_setup is not None:
         raise ValueError("MyCareer setup needs my_career")
     return r62

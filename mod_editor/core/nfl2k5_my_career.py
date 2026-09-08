@@ -36,14 +36,13 @@ SAVE_SIZE = 720044
 POSITION_COUNT = 17
 PENDING, PROSPECT, ACTIVE, UNSIGNED, RESERVE, LOST = range(1, 7)
 HELP_TEXT = (
-    "EXPERIMENTAL / UNWITNESSED. Retail: Franchise controls a team and Game Modes "
-    "offers First Person Football. Patch: the First Person Football row becomes "
-    "MyCareer, which follows one created player, MyPlayer, at any of the 17 "
-    "positions through the normal draft. The CPU manages the club, the depth chart "
-    "and the other players; input stays on MyPlayer's body, with a Standard or Far "
-    "camera. Other fixtures use whole-game simulation. Create a setup from a "
-    "Franchise save at the draft, then include it in Build. First Person Football "
-    "remains a Franchise Settings toggle."
+    "EXPERIMENTAL / UNWITNESSED. Retail: Franchise controls a team and Game Modes offers First Person Football. "
+    "Patch: the First Person Football row becomes MyCareer. Create MyPlayer in the game as an undrafted free agent "
+    "(the game's own Create Player screen, then any of the 32 clubs), live in an Apartment with Play next game, Practice, "
+    "MyPlayer, Save and Quit, and save the career inline. Play selects your next game; off the field the CPU plays at "
+    "normal speed. With Franchise Auto Save installed and on, completed results save to the slot chosen by a manual Save "
+    "or Load. The draft entry is not ready yet. A legacy MyCareer.json setup from a draft-stage save still works. "
+    "The complete playable loop is still under verification."
 )
 WITNESS_LIST = (
     "From Game Modes choose MyCareer: a build without a setup only explains itself; a configured build opens Load / Save.",

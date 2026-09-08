@@ -77,6 +77,7 @@ from . import nfl2k5_senior_bowl as senior_bowl_patch
 from . import nfl2k5_guardian_overlay as guardian_overlay_patch
 from . import nfl2k5_guardian_resources as guardian_resources
 from . import nfl2k5_my_career as my_career_patch
+from . import nfl2k5_my_career_mode as my_career_mode_patch
 from . import nfl2k5_franchise_autosave as franchise_autosave_patch
 from . import nfl2k5_espn25_rosters as espn25_rosters_patch
 from . import nfl2k5_position_pools as position_pools_patch
@@ -1119,8 +1120,8 @@ def _validate_r62_options(*, momentum_collisions=False, momentum_collision_level
     if read_option_intent_table is not None:
         read_option_patch.validate_intent_table(read_option_intent_table)
     _require(my_career or my_career_setup is None, "MyCareer setup needs my_career")
-    if my_career:
-        my_career_patch.read_setup(my_career_setup)
+    if my_career and my_career_setup is not None:
+        my_career_patch.read_setup(my_career_setup)   # legacy prepared-save route; None = generic in-game creation
 
 
 def _selected_space_requests(with_kickoff=False, runtime=False, momentum=0, defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False, scramble_tuning=False, music_shuffle=False, practice_squad_screen=False, abilities=False, qb_spy=False, calendar_engine=False, *, momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False, franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False, screen_hooks=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False):
@@ -1215,12 +1216,18 @@ class _guardian_overlay_adapter:
 
 
 class _my_career_adapter:
+    """MyCareer owner dispatch: no setup selects the generic in-game creation format (mode 2/3); an explicit
+    prepared-save setup keeps the legacy route. The legacy status recognizes the generic tag and delegates
+    complete validation, so one status covers both formats."""
+
     def __init__(self, setup):
         self.setup = None if setup is None else my_career_patch.read_setup(setup)
 
     status = staticmethod(my_career_patch.status)
 
     def apply(self, payload):
+        if self.setup is None:
+            return my_career_mode_patch.apply(payload)
         return my_career_patch.apply(payload, setup=self.setup)
 
 

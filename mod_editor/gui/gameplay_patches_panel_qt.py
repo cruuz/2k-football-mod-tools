@@ -482,7 +482,7 @@ class GameplayPatchesPanel(QWidget):
                 head.addWidget(self.guardian_everyone_practice_check)
             if key == "my_career":
                 self.my_career_setup_field = QLineEdit()
-                self.my_career_setup_field.setPlaceholderText("MyCareer.json from the paired draft save")
+                self.my_career_setup_field.setPlaceholderText("Optional: legacy MyCareer.json (leave empty to create MyPlayer in the game)")
                 self.my_career_setup_field.textChanged.connect(self._refresh)
                 head.addWidget(self.my_career_setup_field)
                 button = QPushButton("Choose setup...")
@@ -746,7 +746,7 @@ class GameplayPatchesPanel(QWidget):
             if on and "guardian_cap" in self.checks:
                 self.checks["guardian_cap"].setChecked(False)
         any_on = any(c.isChecked() for c in self.checks.values())
-        configured = not ("my_career" in self.checks and self.checks["my_career"].isChecked() and not self.my_career_setup_field.text().strip())
+        configured = True   # MyCareer no longer needs a setup file: an empty field selects in-game creation
         self.write_button.setEnabled(configured and any_on and bool(self.source_field.text()) and bool(self.target_field.text())
                                      and self._task is None and not self._reading)
 

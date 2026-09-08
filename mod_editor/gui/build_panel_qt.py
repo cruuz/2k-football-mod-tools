@@ -399,7 +399,7 @@ class BuildPanel(QWidget):
         self.guardian_everyone_practice_check.toggled.connect(self._refresh)
         career_row = QHBoxLayout()
         self.my_career_setup_field = QLineEdit()
-        self.my_career_setup_field.setPlaceholderText("MyCareer.json from the paired draft save")
+        self.my_career_setup_field.setPlaceholderText("Optional: legacy MyCareer.json (leave empty to create MyPlayer in the game)")
         self.my_career_setup_field.textChanged.connect(self._refresh)
         career_row.addWidget(self.my_career_setup_field, 1)
         self.my_career_setup_button = QPushButton("Choose MyCareer setup...")
@@ -1444,8 +1444,6 @@ class BuildPanel(QWidget):
                 return "Choose a " + key.replace("_", " ") + " before building."
         if self.hires_pack_check.isChecked() and not self.hires_folder_field.text().strip():
             return "Choose your Hi-res artwork folder before building."
-        if self.my_career_check.isChecked() and not self.my_career_setup_field.text().strip():
-            return "Choose the paired MyCareer.json setup from the MyCareer page."
         if self.hires_pack_check.isChecked():
             if self._hires_budget_identity != self._hires_identity() or self._hires_budget_receipt is None:
                 return self._hires_budget_error or "Checking the selected Hi-res memory budget."
