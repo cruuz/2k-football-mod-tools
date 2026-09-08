@@ -12146,3 +12146,115 @@ them. Retain all M2 closure entries above. No new capability surface or ID is
 introduced; merge the existing fragment by ID instead of appending duplicates.
 Regenerate the protected release reservation JSON after integration. The M2a
 scratch manifest is review evidence only and does not replace that file.
+
+## r64 MyCareer mode 3 continuation: direct Play and paired disc recipe
+
+This section supersedes the earlier Schedule START route, draft update
+promise, 305/257-byte headroom and mode-only generic disc description.
+The shipped continuation still has five Apartment rows. Play selects the
+first own unplayed fixture explicitly through `C79F0`, then pushes native
+postgame parent `4F19E8` and Team Select `51B908`. It does not expose Schedule
+game-card actions. A bye/no-current-game notice enters the existing native
+week or stage advance. Native result/stat commit, `settle`, Auto Save queue,
+postgame return and quiet-Apartment save ordering are unchanged.
+
+Protected dispatcher handoff remains exact: `_apply_all` keeps
+`(my_career, _my_career_adapter(my_career_setup), "my_career_patch",
+"MyCareer (experimental)")` and the existing Auto Save tuple after the
+allocator. The `my_career`/`franchise_autosave` kwargs participate in
+`_selected_space_requests`, `_xbe_space_adapter`, both selected owner lists,
+normalization/deferral and final image apply. With `my_career_setup is None`,
+the adapter calls `nfl2k5_my_career_mode.apply`; explicit legacy setup keeps
+the legacy route. Each of the four status dicts (executable inspection,
+image inspection, executable/copy apply result, copied-image result) and
+`_grown_status_fields` uses both validated owner statuses, with separate
+`my_career_patch` and `franchise_autosave_patch` receipts.
+
+Retain `BuildPlan.my_career=False`, optional `my_career_setup`, and
+`BuildPlan.franchise_autosave=False`. MyCareer remains off in Basic, Advanced
+and Experimental presets. Auto Save installation remains Basic off,
+Advanced/Experimental on; its native setting is still respected. The standalone
+generic disc recipe now deliberately reserves/installs **both** owners even
+with the minimal caller union. Product builds must honor their explicit
+selections and show that automatic saving requires Auto Save installed,
+enabled and a slot established by successful manual Save/Load. Do not silently
+rewrite stored user preferences or claim first-slot automatic creation.
+
+Gameplay `NEEDS_IMAGE` retains both keys. Replacement MyCareer `PATCHES`
+text: `Retail controls a franchise team. Patch adds experimental MyCareer
+creation, an Apartment and inline saves. Play selects your next game. Off
+field, the CPU plays at normal speed. The complete playable loop remains
+under verification. Experimental / Unwitnessed.` Do not advertise calendar,
+depth editing, purchases, requests, draft, live Supersim or hub art as built.
+Build `_option` remains `MyCareer: create MyPlayer in the game` (37 characters).
+The draft action now displays `Draft entry is not ready.`
+
+Release allowlist entries remain:
+
+```text
+mod_editor/core/nfl2k5_my_career_mode.py
+mod_editor/core/nfl2k5_my_career_mode_code.py
+mod_editor/core/nfl2k5_my_career_save.py
+mod_editor/core/nfl2k5_franchise_autosave.py
+mod_editor/core/nfl2k5_franchise_autosave_code.py
+docs/mod_editor/nfl2k5_my_career_mode_capabilities.json
+```
+
+The runtime closure needs the corresponding five dotted core imports;
+the existing capability fragment is merged/replaced by ID and keeps GUI
+expose/default false and runtime not-tested. There is no new capability ID
+or owner. `tools/mycareer_mode/check_discs.py`, `measure_m3.py`, the candidate
+C source, Unicorn and compiler tooling are development-only, not runtime
+closure imports or enabled product surfaces.
+
+The generic disc command above now returns a final XBE hash after both
+installs, separate Auto Save receipt, and explicit `m3_accepted=False` and
+`hub_art_bound=False`. Reserving the complete union still does not install
+every other selected patch; normal adapters install those owners. Acceptance
+can be reproduced with:
+
+```sh
+python3 tools/mycareer_mode/check_discs.py '/path/to/retail.xiso.iso' \
+  --requests tests/fixtures/nfl2k5_allocator_beta62_requests.json \
+  --receipt '/path/to/new-mode3-disc-check.json'
+```
+
+That check deletes each temporary disc, validates two different layouts,
+then cold-loads two native-created careers on both bounded executables.
+The new public receipts are `docs/nfl2k5_my_career_mode3_disc_receipts.json`.
+Claude must regenerate the protected reservation manifest after integration;
+the continuation scratch manifest has 10,628 spans / 123 writer calls and
+does not replace the protected file.
+
+The installed owner uses 8,118 bytes of RX content plus its 17-byte tag,
+leaving 57 bytes in 8,192; RW stays 4,096. The separate capacity probe
+`python3 tools/mycareer_mode/measure_m3.py` measures 8,539 required RX bytes
+for the current mode plus an uninstalled purchase core, an exact 347-byte
+shortfall for that included design. It excludes purchase UI, other M3
+screens/transactions, draft/Senior Bowl and drawing. Nine rows also require
+1,204 bytes in the current 1,024-byte menu subrange. These are lower-bound
+inputs to Claude's reservation/layout decision, not a claim that 347 more
+bytes completes M3. The uninstalled `-Oz` alternative in the same receipt
+requires 8,443 RX bytes, still 251 bytes over the existing reservation.
+No second reservation is taken here. The full off-field
+drive matrix and those M3 implementations remain acceptance blockers.
+
+The direct Play/week proof now includes the complete native advance after
+the owned game: all 15 remaining fixtures are simulated and committed before
+week 1, then Play selects the next own fixture without further simulation.
+The final-season test also executes native postseason construction, result
+commit and year rollover into a usable Apartment. Earlier result-grid inputs
+and the played-engine end signal are declared fixture preconditions; these
+are bounded instruction proofs, not gameplay witnesses.
+
+The continuation now also proves complete native CPU choice with the pinned
+full PLAY resource, 60 complete frame dispatches with finite actor/model
+state, and declared snap/possession/dead-ball boundaries through native
+turnover rules and post-play logging. Separate fresh-career tests cover CPU
+timeout debit and callback return, halftime/OT boundary return, and native
+injury application, backup selection and recovery. Presentation, animation
+events and recovery elapsed time are explicit inputs. These do not close
+automatic animation-driven snaps, a whole CPU drive, or the combined
+off-field/all-position/special-teams matrix. Keep the existing runtime
+not-tested and Experimental / Unwitnessed product labels. No M2b or M3
+acceptance marker or live Supersim readiness is inferred from these tests.

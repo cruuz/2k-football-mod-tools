@@ -16,6 +16,7 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from mod_editor.core import nfl2k5_my_career_mode as mode
+from mod_editor.core import nfl2k5_franchise_autosave as autosave
 from mod_editor.core import nfl2k5_throw_tuning as disc
 from mod_editor.core import nfl2k5_depth_chart_storage as storage
 from mod_editor.core import platform_compat as io
@@ -40,8 +41,17 @@ def build(source, target, requests):
         executable = io.pread(original.fileno(), length, off)
         if len(executable) != length:
             raise ValueError("short read of source default.xbe")
-        allocated, allocation = mode.space.apply(executable, requests, scaleout=True)
+        # Reserve both owners before either install. Preserve caller budgets
+        # verbatim, rejecting conflicting rows through the allocator.
+        selected = [tuple(row) for row in requests]
+        for row in (*mode.REQUESTS, *autosave.REQUESTS):
+            if row not in selected:
+                selected.append(row)
+        allocated, allocation = mode.space.apply(executable, selected, scaleout=True)
         patched, patch = mode.apply(allocated)
+        patched, save_patch = autosave.apply(patched)
+        if mode.status(patched) != "applied" or autosave.status(patched) != "applied":
+            raise ValueError("MyCareer / Auto Save composition did not validate")
         allowance = before.st_size + len(patched) + 2048
         free = shutil.disk_usage(target.parent).free
         if shutil.disk_usage(root).free < MIN_FREE:
@@ -79,7 +89,10 @@ def build(source, target, requests):
                 "output_size": size, "file_growth": size - before.st_size,
                 "source_xbe_sha256": hashlib.sha256(executable).hexdigest(),
                 "output_xbe_sha256": hashlib.sha256(patched).hexdigest(),
-                "allocation": allocation, "patch": patch, "relocation": relocation,
+                "allocation": allocation, "patch": patch, "autosave": save_patch,
+                "relocation": relocation,
+                "autosave_requires_manual_slot_and_enabled_setting": True,
+                "m3_accepted": False, "hub_art_bound": False,
                 "setup_files": 0, "executable_seed_bytes": 0, "journal_files": 0,
             }
             # Every reader/writer of the stage is closed before replacement.

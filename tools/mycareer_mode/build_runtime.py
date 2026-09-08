@@ -10,16 +10,20 @@ SOURCE = Path(__file__).resolve().parent
 TARGET = ROOT / "mod_editor/core/nfl2k5_my_career_mode_code.py"
 
 
-def generate():
+def generate(source=SOURCE, *, optimize="-Os"):
+    source = Path(source).resolve()
+    if optimize not in ("-Os", "-Oz"):
+        raise ValueError("unsupported MyCareer size optimization")
     with tempfile.TemporaryDirectory(prefix="mycareer-mode-code-") as folder:
         d = Path(folder).resolve()
-        subprocess.run(["gcc", "-m32", "-Os", "-ffreestanding", "-fno-builtin", "-fno-pic", "-fno-pie",
+        subprocess.run(["gcc", "-m32", optimize, "-ffreestanding", "-fno-builtin", "-fno-pic", "-fno-pie",
                         "-fno-stack-protector", "-fno-asynchronous-unwind-tables", "-fno-unwind-tables",
+                        "-fomit-frame-pointer",
                         "-mpreferred-stack-boundary=2", "-mno-sse", "-mno-mmx", "-Wall", "-Wextra", "-Werror",
-                        "-c", str(SOURCE / "runtime.c"), "-o", str(d / "c.o")], check=True)
-        for source, name, extra in ((SOURCE / "runtime.S", "s", []),
+                        "-c", str(source / "runtime.c"), "-o", str(d / "c.o")], check=True)
+        for input_path, name, extra in ((source / "runtime.S", "s", []),
                                     (ROOT / "tools/nfl2k5_my_career.S", "binder", ["--defsym", "MYCAREER_INLINE=1"])):
-            subprocess.run(["as", "--32", *extra, str(source), "-o", str(d / (name + ".o"))], check=True)
+            subprocess.run(["as", "--32", *extra, str(input_path), "-o", str(d / (name + ".o"))], check=True)
         (d / "link.ld").write_text("SECTIONS { .text 0 : { *(.text*) *(.rodata*) } "
                                   "/DISCARD/ : { *(.comment) *(.note*) *(.eh_frame*) } }")
         subprocess.run(["ld", "-r", "-m", "elf_i386", "-T", str(d / "link.ld"),

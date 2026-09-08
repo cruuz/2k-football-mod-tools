@@ -68,7 +68,7 @@ class FrontendTests(unittest.TestCase):
             self.enter(m)
             before = bytes(m.uc.mem_read(m.root, len(self.roster) - 64))
             m.select(0)
-            self.assertIn(("notice", "Coming in the next update"), m.events)
+            self.assertIn(("notice", "Draft entry is not ready."), m.events)
             self.assertEqual(m.get(m.state + 2676), 0)
             m.frame(0x200)
             self.assertEqual(m.top(), m.labels["entry_menu"])
@@ -151,7 +151,7 @@ class FrontendTests(unittest.TestCase):
             self.assertEqual(m.get(m.state), 0)
             self.assertEqual(m.top(), m.labels["entry_menu"])
             m.select(0)
-            self.assertIn(("notice", "Coming in the next update"), m.events)
+            self.assertIn(("notice", "Draft entry is not ready."), m.events)
 
     def test_team_limit_and_confirmation_cancel_leave_no_partial_franchise(self):
         with Machine(self.payload) as m:
@@ -180,8 +180,7 @@ class FrontendTests(unittest.TestCase):
 
     def test_two_fresh_careers_all_native_initialization_and_cold_disc_relocation(self):
         careers = []
-        # Club 2 owns the first native preseason fixture, so the launch fixture
-        # need not execute unrelated whole-game simulations before Team Select.
+        # Both clubs launch their own earliest fixture directly.
         for position, club, payload in ((0, 2, self.payload), (4, 31, self.second)):
             with self.subTest(position=position, club=club), Machine(payload) as m:
                 self.enter(m)
@@ -228,7 +227,7 @@ class FrontendTests(unittest.TestCase):
                     self.assertEqual(cold.top(), cold.labels["apartment"])
                     self.assertEqual(cold.depth(), 0)
                     card = 0x535E70 if career[-89] == 0 else 0x5365A8
-                    for row, child in ((0, 0x522828), (1, cold.labels["practice_menu"]),
+                    for row, child in ((1, cold.labels["practice_menu"]),
                                        (2, card), (3, 0x507EC8)):
                         cold.select(row)
                         self.assertEqual(cold.top(), child)
@@ -253,12 +252,11 @@ class FrontendTests(unittest.TestCase):
                     self.assertEqual(cold.top(), cold.labels["apartment"])
                     self.assertEqual(cold.get(cold.state + 64), balance)
                     if career[-89] == 0:
-                        # Native Schedule START -> Play -> Team Select -> Game.
+                        # Direct career fixture -> Team Select -> Game.
                         # Engine stepping is still a service seam, not a played
                         # match. The postgame parent must execute before return.
                         cold.dialog_answer = 0
                         cold.select(0)
-                        cold.frame(0x10, budget=20000000)
                         self.assertEqual(cold.top(), 0x51B908)
                         cold.frame(0x10)
                         self.assertEqual(cold.top(), 0x4E7EC0)
@@ -279,7 +277,6 @@ class FrontendTests(unittest.TestCase):
                         # postgame parent, then returns to a usable apartment.
                         cold.game_services(load=False)
                         cold.select(0)
-                        cold.frame(0x10, budget=20000000)
                         self.assertEqual(cold.top(), 0x51B908)
                         cold.frame(0x10)
                         self.assertEqual(cold.top(), 0x4F19E8)

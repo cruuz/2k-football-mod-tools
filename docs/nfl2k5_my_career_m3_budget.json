@@ -1,0 +1,50 @@
+{
+  "baseline_content_bytes": 8118,
+  "baseline_machine_bytes": 7107,
+  "baseline_menu_rw_bytes": 996,
+  "baseline_remaining_bytes": 57,
+  "candidate_machine_bytes": 7511,
+  "candidate_machine_delta": 404,
+  "candidate_machine_sha256": "8dc8c461f835441d7f7f3d5997d7e78fbdc1ccb6bb24d2919449b4552a172716",
+  "candidate_quote_rw_range": [
+    3328,
+    3368
+  ],
+  "candidate_required_rx_bytes": 8539,
+  "candidate_shortfall_bytes": 347,
+  "candidate_source_sha256": "f23378891189d2f9517b31262c2ae10b0f793bc14af7672ef9ab8fdfba59b1ea",
+  "claim": "Measured lower bound for this design, not an exact size of all M3 or a proof that every possible refactor exceeds the reservation.",
+  "compiler_flags": "build_runtime.py: gcc -m32 -Os -fomit-frame-pointer",
+  "current_menu_rw_capacity": 1024,
+  "excluded": [
+    "purchase UI and confirmation wiring",
+    "nine-row hub RX tables",
+    "calendar",
+    "Team/depth UI",
+    "trade/release execution and native logs",
+    "draft and played Senior Bowl",
+    "art registration and drawing"
+  ],
+  "experimental": true,
+  "format_tag_bytes": 17,
+  "included": [
+    "existing M2 runtime and menus",
+    "rating quote, tier cost and atomic debit",
+    "identity/token/value/balance revalidation, cancel and replay refusal"
+  ],
+  "nine_row_hub_menu_rw_bytes": 1204,
+  "normal_owner_refused": true,
+  "refusal": "generic MyCareer needs 8539 bytes; exceeds its 8192-byte budget by 347 bytes",
+  "reservation_rw": 4096,
+  "reservation_rx": 8192,
+  "runtime_installed": false,
+  "runtime_witnessed": false,
+  "schema": "nfl2k5.mycareer.m3-capacity.v1",
+  "uninstalled_oz_alternative": {
+    "candidate_machine_bytes": 7413,
+    "candidate_machine_sha256": "a312e4be63d83ed4ca7b258651da4408de5611cdf93a3da37ecced612474a648",
+    "candidate_required_rx_bytes": 8443,
+    "candidate_shortfall_bytes": 251,
+    "claim": "Additional compiler compaction still exceeds the owner; no runtime or UI acceptance claimed."
+  }
+}

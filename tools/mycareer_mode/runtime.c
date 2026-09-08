@@ -272,8 +272,33 @@ void FC mode_sign(u32 manager) {
     capture(p);
     N1(0x13f1b0)(manager);
 }
+/* Return the first playable career fixture, never a selected Schedule card.
+ * Retail rows have 17 eight-byte entries; 0/1 are the unplayed states.
+ * The native week operation owns other fixtures and league progression, and
+ * is entered only when this week has no pending career game. */
+u32 mode_next_fixture(void) {
+    u32 i; const u8 *p=(const u8 *)0xE57C40;
+    if(G(0xE576A4)<7 || G(0xE576A4)>9 || S(56)>=32) return 374;
+    for(i=0;i<374;i++,p+=8)
+        if(p[0]<2 && (p[1]==S(56) || p[2]==S(56))) return i;
+    return 374;
+}
 void FC mode_play(u32 manager) {
-    if(hub(manager) && primary()) N2(0x6e390)(manager,0x522828);
+    u32 slot;
+    extern const u16 advance_notice[];
+    if(!hub(manager) || !primary()) return;
+    resolve_team();
+    if(S(56)>=32) return;
+    slot=mode_next_fixture();
+    if(slot<374 && slot/17<=G(0xE576B4)) {
+        if(!((u32 (FC *)(u32,u32,u32))0xC79F0)(slot/17,slot%17,0)) {
+            N2(0x6e390)(manager,0x4F19E8);
+            N2(0x6e390)(manager,0x51B908);
+        }
+    } else {
+        notice(manager,advance_notice);
+        N1(G(0xE576B4)<G(0xE576B0)?0x247D40:0x2480B0)(manager);
+    }
 }
 void FC mode_practice(u32 manager) {
     if(hub(manager) && primary()) N2(0x6e390)(manager,(u32)practice_menu);

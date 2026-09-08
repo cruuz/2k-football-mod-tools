@@ -48,6 +48,10 @@ MODE_HOOKS = (
     ("mode_loaded_replace", 0x16DDE0, "e9fb04f0ff", 0xE9),
 )
 GUARDS = (
+    (0x247D40, 0x1C, "bf2327b23418946929186e588ffb7fd28b68712d3e92fe29a7a4f154bbb9013f"),
+    (0x2480B0, 0x1C, "f0fa650aa4f5631ef3b4cf8168809000b1ab2c320621fad9d2647b00b9c1104d"),
+    (0xC79F0, 0x29, "8ab13e288a240ce89a92c4d2a2408dfaf3d71f22b47aeb332c24d70fc98fb91c"),
+    (0xC73B0, 0x12B, "07fef36f39b8423857ac0c5cc693363c00752cd7bf06fe92dfefd490e8b83b86"),
     (0xC74E0, 0x43, "bb1906f9f029ea81788d579b295586805684d2a185ca8402e8d31483e27f6cc2"),
     (0xC5D60, 0x49, "57f2d784b1dd7419bab67951363f82a169fa5cb2d9f06529fdf56ea864f03941"),
     (0x1891B0, 0x53, "ee2e72b5f39d739e4e46aa79a71aba77b446b5544599483c8b1e26674c98e1a3"),
@@ -104,7 +108,9 @@ def code_for(code_va, data_va):
         ("load_text", "Load career"), ("quit_text", "Quit to main menu"),
         ("team_text", "Choose your team"), ("sign_text", "Sign and start career"),
         ("play_text", "Play next game"), ("card_text", "MyPlayer"),
-        ("draft_notice", "Coming in the next update"),
+        ("advance_notice", "No game pending. Advancing."),
+        ("watch_text", "Select. Off field: CPU at normal speed"),
+        ("draft_notice", "Draft entry is not ready."),
         ("refusal_notice", "Not enough roster space."),
         ("load_notice", "Career save could not be loaded."),
     ):
@@ -141,7 +147,8 @@ def code_for(code_va, data_va):
                                       ("apartment", "apartment_text", "hub_rows", 3),
                                       ("team_menu", "team_text", "team_rows", 0x13)):
         struct.pack_into("<11I", menu, labels[name] - data_va - 256, labels[title], 0, labels["mode_handler"],
-                         0, labels[table], 0, 0xE7F928, 0, 0x02400044, 0x018D0052, flags)
+                         0, labels[table], 0, labels["watch_text"] if name == "apartment" else 0xE7F928,
+                         0, 0x02400044, 0x018D0052, flags)
     # Own Practice descriptor: native settings, teams, input and Back lifecycle.
     hooks = menu_reserve("practice_hooks", 20)
     enter = menu_reserve("practice_enter", 72)
@@ -178,7 +185,9 @@ def code_for(code_va, data_va):
         if kind == 2:
             target -= code_va + off
         struct.pack_into("<I", out, off, target & 0xFFFFFFFF)
-    legacy.require(len(out) <= TAG_OFFSET, "generic MyCareer exceeds its 8192-byte budget")
+    legacy.require(len(out) <= TAG_OFFSET,
+                   f"generic MyCareer needs {len(out) + len(TAG)} bytes; "
+                   f"exceeds its 8192-byte budget by {max(0, len(out) - TAG_OFFSET)} bytes")
     labels["content_end"] = code_va + len(out)
     return bytes(out).ljust(TAG_OFFSET, b"\xcc") + TAG, labels
 

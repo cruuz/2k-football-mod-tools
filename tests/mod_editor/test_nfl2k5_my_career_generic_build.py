@@ -80,6 +80,7 @@ class GenericBuildTests(unittest.TestCase):
 
     def test_generic_disc_recipe_relocates_only_xbe_and_keeps_neighbour(self):
         from tools.mycareer_mode import build_disc
+        from mod_editor.core import nfl2k5_franchise_autosave as autosave
         from tests.mod_editor.test_nfl2k5_xbe_space import image_with_xbe
         import shutil
         if shutil.disk_usage(Path(tempfile.gettempdir()).anchor).free < build_disc.MIN_FREE + 100 * 1024**2:
@@ -96,6 +97,11 @@ class GenericBuildTests(unittest.TestCase):
                 off, size = build_disc.disc.image_xbe_extent(stream.fileno(), target.stat().st_size)
                 executable = build_disc.io.pread(stream.fileno(), size, off)
                 self.assertEqual(mode.status(executable), "applied")
+                self.assertEqual(autosave.status(executable), "applied")
+                self.assertEqual(mode.apply(executable)[0], executable)
+                self.assertEqual(autosave.apply(executable)[0], executable)
+                self.assertEqual(receipt["output_xbe_sha256"], hashlib.sha256(executable).hexdigest())
+                self.assertEqual(receipt["autosave"]["after_sha256"], receipt["output_xbe_sha256"])
                 self.assertEqual(build_disc.io.pread(stream.fileno(), 8, body.index(b"KEEPTHIS")), b"KEEPTHIS")
             self.assertFalse(list(d.glob("mycareer-disc-*")))
             self.assertEqual(receipt["setup_files"], 0)
