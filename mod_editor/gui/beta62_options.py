@@ -3,13 +3,14 @@ from mod_editor.core import nfl2k5_throw_tuning as tt
 
 SCOREBUG_HELP = (
     "Retail: Uses the original scoreboard. Patch: Uses each team's primary "
-    "color with readable white scores and yellow possession highlighting. "
+    "color on its panel with readable white scores and yellow possession highlighting; "
+    "each outline uses a team colour that differs from its panel, or silver when no "
+    "suitable colour is available, and the centre and decorative timeout marks stay neutral. "
     "The red down box and separate clock cells stay visible through the play "
     "with live values. The play clock shows -- when unavailable. Ball-on "
     "and event labels replace the down text while the clock cells stay visible. "
-    "The three timeout marks on each side are decorative. A scorebar folder "
-    "selects your painted template. Moves the kick meter up and hides the "
-    "lineup strip. EXPERIMENTAL / UNWITNESSED; rebuild from a clean source.")
+    "A scorebar folder selects your painted template (the v10 layout). Moves the kick meter up and hides the "
+    "lineup strip. EXPERIMENTAL / UNWITNESSED (the outline revision is unwitnessed); rebuild from a clean source.")
 SCOREBUG_RUNTIME_HELP = (
     "Retail: Uses the original team panels and text. Patch: Adds team "
     "gradients, logos, live timeout marks, resized text, a white possession "
