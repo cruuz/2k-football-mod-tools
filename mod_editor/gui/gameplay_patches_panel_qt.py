@@ -469,6 +469,14 @@ class GameplayPatchesPanel(QWidget):
                 check.setAccessibleDescription(helper or label)
                 check.toggled.connect(lambda _c: self._refresh())
                 head.addWidget(check)
+            if key == "cpu_money_downs":
+                self.cpu_money_downs_level = QComboBox()
+                for text, value in r62_ui.LEVELS["cpu_money_downs"]:
+                    self.cpu_money_downs_level.addItem(text, value)
+                self.cpu_money_downs_level.setAccessibleName("CPU fourth downs and first downs level")
+                self.cpu_money_downs_level.currentIndexChanged.connect(self._money_downs_changed)
+                check.toggled.connect(self._money_downs_toggled)
+                head.addWidget(self.cpu_money_downs_level)
             if key == "momentum_collisions":
                 self.momentum_collision_level = QComboBox()
                 for text, value in (("Retail (0)", 0), ("Light (25)", 25), ("Medium (50)", 50), ("Heavy (100)", 100)):
@@ -641,6 +649,9 @@ class GameplayPatchesPanel(QWidget):
             elif key == "momentum_collisions":
                 plan.momentum_collisions = on
                 plan.momentum_collision_level = int(self.momentum_collision_level.currentData() or 50) if on else 0
+            elif key == "cpu_money_downs":
+                level = str(self.cpu_money_downs_level.currentData() or "modern")
+                plan.cpu_money_downs = ("modern" if level == "retail" else level) if on else "retail"
             elif key == "momentum":
                 plan.momentum = int(self.momentum_level.currentData() or 50) if on else 0
             elif key == "music_policy":
@@ -672,6 +683,22 @@ class GameplayPatchesPanel(QWidget):
         path, _ = QFileDialog.getOpenFileName(self, "Choose paired MyCareer setup", "", "MyCareer setup (*.json)")
         if path:
             self.my_career_setup_field.setText(path)
+
+    def _money_downs_changed(self):
+        level = str(self.cpu_money_downs_level.currentData() or "retail")
+        check = self.checks["cpu_money_downs"]
+        check.setChecked(level != "retail" and check.isEnabled())
+        self._refresh()
+
+    def _money_downs_toggled(self, on):
+        combo = self.cpu_money_downs_level
+        combo.blockSignals(True)
+        if on and str(combo.currentData()) == "retail":
+            combo.setCurrentIndex(max(0, combo.findData("modern")))
+        elif not on:
+            combo.setCurrentIndex(max(0, combo.findData("retail")))
+        combo.blockSignals(False)
+        self._refresh()
 
     def _collision_changed(self):
         value = int(self.momentum_collision_level.currentData() or 0)
@@ -727,6 +754,20 @@ class GameplayPatchesPanel(QWidget):
             for key in ("momentum", "momentum_contact", "momentum_collisions"):
                 if key in self.checks:
                     self.checks[key].setEnabled(False)
+        if "cpu_money_downs" in self.checks:
+            money = self.checks["cpu_money_downs"]
+            installed_money = (self._state or {}).get("cpu_money_downs_settings") or None
+            combo = self.cpu_money_downs_level
+            combo.blockSignals(True)
+            if installed_money and installed_money.get("level"):
+                level = str(installed_money["level"])
+                if combo.findData(level) < 0:
+                    combo.addItem(f"Installed ({level})", level)
+                combo.setCurrentIndex(combo.findData(level))
+            elif not money.isChecked():
+                combo.setCurrentIndex(max(0, combo.findData("retail")))
+            combo.blockSignals(False)
+            combo.setEnabled(money.isEnabled())
         if "momentum_collisions" in self.checks:
             check = self.checks["momentum_collisions"]
             installed = settings.get("status") == "applied"

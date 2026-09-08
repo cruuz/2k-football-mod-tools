@@ -34,6 +34,7 @@ OPTIONS = (
     ("screen_hooks", "Screen pass timing hooks (second experiment)", tt.screen_hooks_patch.HELP_TEXT),
     ("coverage_trail", "Close pursuit recovery (experimental)", tt.coverage_trail_patch.HELP_TEXT),
     ("franchise_edit_player", "Franchise Edit Player (experimental)", tt.franchise_edit_player_patch.HELP_TEXT),
+    ("cpu_money_downs", tt.cpu_money_downs_patch.BUILD_CAPTION, tt.cpu_money_downs_patch.HELP_TEXT),
     ("franchise_2026_rules", "2026 franchise rules (unavailable)", FRANCHISE_HELP),
     ("senior_bowl", "Senior Bowl native event (not available)", tt.senior_bowl_patch.HELP_TEXT),
     ("guardian_overlay", "Guardian caps (experimental)", tt.guardian_overlay_patch.HELP_TEXT),
@@ -51,6 +52,8 @@ OPTIONS = (
      "EXPERIMENTAL / UNWITNESSED. The franchise league stays at 32 teams."),
 )
 KEYS = tuple(row[0] for row in OPTIONS)
+# String-valued option rows: the checkbox means "not retail"; the adjacent combo picks the level.
+LEVELS = {"cpu_money_downs": (("Retail", "retail"), ("Modern", "modern"), ("Aggressive", "aggressive"))}
 UNAVAILABLE = {"franchise_2026_rules": FRANCHISE_HELP, "senior_bowl": tt.senior_bowl_patch.NATIVE_BLOCKER}
 HIRES_FAMILIES = (
     ("helmets", "All teams' helmets (experimental)"),

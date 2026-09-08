@@ -385,6 +385,15 @@ class BuildPanel(QWidget):
         for key, caption, help_text in r62_ui.OPTIONS:
             setattr(self, key + "_check", self._option(g, key, caption, help_text,
                     badge="EXPERIMENTAL / UNWITNESSED", needs_image=True))
+        self.cpu_money_downs_level = QComboBox()
+        for caption, value in r62_ui.LEVELS["cpu_money_downs"]:
+            self.cpu_money_downs_level.addItem(caption, value)
+        self.cpu_money_downs_level.setAccessibleName("CPU fourth downs and first downs level")
+        self.cpu_money_downs_level.setToolTip("Retail keeps the original CPU choices. Modern adds measured fourth-down attempts and "
+                                              "first-down targets. Aggressive goes further. EXPERIMENTAL / UNWITNESSED.")
+        g.addWidget(self.cpu_money_downs_level)
+        self.cpu_money_downs_level.currentIndexChanged.connect(self._money_downs_changed)
+        self.cpu_money_downs_check.toggled.connect(self._money_downs_toggled)
         self.momentum_collision_level = QComboBox()
         for caption, value in (("Retail (0)", 0), ("Light (25)", 25), ("Medium (50)", 50), ("Heavy (100)", 100)):
             self.momentum_collision_level.addItem(caption, value)
@@ -1189,6 +1198,9 @@ class BuildPanel(QWidget):
         self.momentum_collision_level.blockSignals(True)
         self.momentum_collision_level.setCurrentIndex(0)
         self.momentum_collision_level.blockSignals(False)
+        self.cpu_money_downs_level.blockSignals(True)
+        self.cpu_money_downs_level.setCurrentIndex(0)
+        self.cpu_money_downs_level.blockSignals(False)
         self.my_career_setup_field.clear()
         self.screen_timing_combo.setCurrentText(values.get("screen_timing") or "D")
         boxes = self._boxes()
@@ -1198,7 +1210,7 @@ class BuildPanel(QWidget):
         for key, box in boxes.items():
             if key not in values:
                 continue
-            want = values[key] != "retail" if key == "music_policy" else bool(values[key])
+            want = values[key] != "retail" if key in ("music_policy", *r62_ui.LEVELS) else bool(values[key])
             if want and not box.isEnabled() and key not in ("realistic_flight", "arc_by_distance"):
                 skipped.append(key)
                 continue
@@ -1366,6 +1378,7 @@ class BuildPanel(QWidget):
             plan.depth_roles = plan.depth_roles or state.get("depth_roles") != "applied"
         for key in r62_ui.KEYS:
             setattr(plan, key, getattr(self, key + "_check").isChecked())
+        plan.cpu_money_downs = self._money_downs_level() if self.cpu_money_downs_check.isChecked() else "retail"
         plan.created_teams_extra = 2 if self.created_teams_extra_check.isChecked() else 0
         plan.momentum_collision_level = int(self.momentum_collision_level.currentData() or 50) if plan.momentum_collisions else 0
         plan.guardian_everyone_practice = self.guardian_everyone_practice_check.isChecked()
@@ -1381,7 +1394,7 @@ class BuildPanel(QWidget):
     def has_work(self) -> bool:
         p = self.plan()
         return bool(self._include_session_project() or p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression
-                    or any(getattr(p, key) for key in r62_ui.KEYS) or p.scorebug_runtime or p.momentum > 0 or p.defensive_try or p.zone_drop_cap or p.all_stadiums or p.coverage_slider or p.scramble_tuning or p.flatter_deep_ball or p.chop_block_toggle or p.team_names_2026 or p.music_shuffle or p.practice_squad_screen or p.abilities or p.qb_spy or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.hires_pack or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
+                    or any(getattr(p, key) for key in r62_ui.KEYS if key not in r62_ui.LEVELS) or p.cpu_money_downs != "retail" or p.scorebug_runtime or p.momentum > 0 or p.defensive_try or p.zone_drop_cap or p.all_stadiums or p.coverage_slider or p.scramble_tuning or p.flatter_deep_ball or p.chop_block_toggle or p.team_names_2026 or p.music_shuffle or p.practice_squad_screen or p.abilities or p.qb_spy or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.hires_pack or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
                     or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.espn25_plan
                     or p.commentary or p.playbook_packs)
 
@@ -1537,6 +1550,18 @@ class BuildPanel(QWidget):
         self.momentum_collision_level.setCurrentIndex(self.momentum_collision_level.findData(value))
         self.momentum_collision_level.blockSignals(False)
         self.momentum_collision_level.setEnabled(collision.isEnabled())
+        money = self.cpu_money_downs_check
+        installed_money = (self._state or {}).get("cpu_money_downs_settings") or None
+        self.cpu_money_downs_level.blockSignals(True)
+        if installed_money and installed_money.get("level"):
+            level = str(installed_money["level"])
+            if self.cpu_money_downs_level.findData(level) < 0:
+                self.cpu_money_downs_level.addItem(f"Installed ({level})", level)
+            self.cpu_money_downs_level.setCurrentIndex(self.cpu_money_downs_level.findData(level))
+        elif not money.isChecked():
+            self.cpu_money_downs_level.setCurrentIndex(max(0, self.cpu_money_downs_level.findData("retail")))
+        self.cpu_money_downs_level.blockSignals(False)
+        self.cpu_money_downs_level.setEnabled(money.isEnabled())
         for key, reason in r62_ui.UNAVAILABLE.items():
             getattr(self, key + "_check").setEnabled(False)
             getattr(self, key + "_check").setToolTip(reason)
@@ -1591,6 +1616,25 @@ class BuildPanel(QWidget):
             raise ValueError("Senior Bowl is preparation only; use a seed from 0 to 2147483647")
         import copy
         self._senior_bowl_options = copy.deepcopy(options)
+        self._refresh()
+
+    def _money_downs_level(self) -> str:
+        return str(self.cpu_money_downs_level.currentData() or "modern")
+
+    def _money_downs_changed(self):
+        level = str(self.cpu_money_downs_level.currentData() or "retail")
+        self.cpu_money_downs_check.setChecked(level != "retail" and self.cpu_money_downs_check.isEnabled())
+        self._refresh()
+
+    def _money_downs_toggled(self, on):
+        combo = self.cpu_money_downs_level
+        combo.blockSignals(True)
+        if on and str(combo.currentData()) == "retail":
+            combo.setCurrentIndex(max(0, combo.findData("modern")))
+        elif not on:
+            combo.setCurrentIndex(max(0, combo.findData("retail")))
+        combo.blockSignals(False)
+        combo.setEnabled(self.cpu_money_downs_check.isEnabled())
         self._refresh()
 
     def _collision_changed(self):

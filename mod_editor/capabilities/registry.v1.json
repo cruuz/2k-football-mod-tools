@@ -4091,6 +4091,78 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_cpu_money_downs --xbe source.xbe --apply --level modern --output new-money-downs.xbe",
+        "module": "mod_editor/core/nfl2k5_cpu_money_downs.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_CPU_MONEY_DOWNS_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_cpu_money_downs.py",
+        "tests/mod_editor/test_nfl2k5_cpu_money_downs_unicorn.py",
+        "tests/mod_editor/test_nfl2k5_cpu_money_downs_manifest.py",
+        "tests/nfl2k5_cpu_money_downs_native.py",
+        "docs/mod_editor/nfl2k5_cpu_money_downs_replays.json",
+        "tools/nfl2k5_cpu_money_downs.S"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Retail in every preset; explicit Modern or Aggressive selection. Shared product integration is specified in WIRING.md."
+      },
+      "id": "nfl2k5.gameplay.cpu_money_downs",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input; reserve the complete allocator union before installation. Mixed or foreign bytes refuse before mutation.",
+        "CPU offense, ordinary phase 4. Fourth-down table applies in regulation; third/fourth passing preferences retain native eligibility and scoring.",
+        "Primary route preference requires an explicit first read and supported straight or straight-then-lateral route. Unsupported scripts keep retail weights.",
+        "Target bonus follows native viability and threshold checks. Better short targets can still win. No forced catch or conversion.",
+        "Select Retail, Modern or Aggressive on a verified base; changing an installed level requires rebuilding."
+      ],
+      "portme": [
+        "Apply protected dispatcher, BuildPlan, three-level UI, packaging and capability-registry wiring in WIRING.md; regenerate the production cave manifest.",
+        "Run Noah's fourth-down, play-call and target-choice witness list in ASTRA_CPU_MONEY_DOWNS_REPORT.md."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and numerical replay evidence; never distribute generated executables or retail PLAY resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_CPU_MONEY_DOWNS_REPORT.md",
+          "docs/mod_editor/nfl2k5_cpu_money_downs_replays.json"
+        ],
+        "scope": "Bounded native decision, loaded PLAY, actual play selector/roulette and target ranking replay with supplied state. Kicker range is supplied for category replay. Trajectory generation, actual throws/catches, full game scheduling and conversion outcomes remain unwitnessed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "retail | modern | aggressive; retail in Basic, Advanced and Experimental",
+            "name": "cpu_money_downs",
+            "required": true
+          }
+        ],
+        "notes": "Retail: original CPU choices. Patch: more measured fourth-down attempts and stronger preferences for supported primary routes and viable receivers reaching the first-down line."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Pinned live hooks 20B180 (5 bytes), 20980D (6 bytes), 1987B5 (6 bytes); 2048 RX bytes, immutable constants, zero runtime state.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Opt-in fourth-down attempts and stronger third/fourth-down route and viable receiver preferences for reaching the first-down line.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "CPU fourth downs and first downs (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_cpu_money_downs"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_throw_arc <source.xbe> <new-copy.xbe>",
         "module": "mod_editor/core/nfl2k5_throw_arc.py",
         "operation": "write"
