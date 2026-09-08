@@ -692,12 +692,13 @@ class PlayTypePage(QWizardPage):
         self.option_receiver = QComboBox()
         form.addRow("RPO quick slant receiver", self.option_receiver)
         note = QLabel(lib.OPTION_NOTICE + " Native I formations, or Shotgun with a back for Zone read and RPO. "
-            "Speed option keeps stock supporting blocks. Read mesh: 1 yard to the run side, "
-            "3 yards back. Keep: 4 yards opposite, 3 up. Back: 2 yards to the run side, 5 up. "
-            "The selected defender is not guaranteed to remain unblocked. "
-            "RPO uses a 3-yard slant and a nominal 0.3-second pass delay. "
-            "These are data-only recipes. Select Read option mesh controls in Build "
-            "to enable the separate runtime controls.")
+            "Speed option keeps stock supporting blocks. With Read option mesh controls, "
+            "the QB holds for one second and the back approaches beside him. Hold snap "
+            "through the window to keep; release or do nothing to give. On an RPO, hold "
+            "snap and press the named receiver to throw. Watch the edge marked by the "
+            "snap-button icon. The selected defender is not guaranteed to remain unblocked. "
+            "Without the runtime, these are experimental retail "
+            "position-based recipes. Blocks and exchange animation need play tests.")
         note.setWordWrap(True); form.addRow(note)
         layout.addWidget(self.option_box)
         for combo in (self.option_preset, self.option_side, self.option_back, self.option_defense, self.option_receiver):
