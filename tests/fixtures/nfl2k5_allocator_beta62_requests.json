@@ -270,6 +270,18 @@
   16
  ],
  [
+  "nfl2k5_deep_zone",
+  "code",
+  2048,
+  16
+ ],
+ [
+  "nfl2k5_deep_zone",
+  "data",
+  256,
+  16
+ ],
+ [
   "nfl2k5_playbook_pair",
   "code",
   8192,

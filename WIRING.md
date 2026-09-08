@@ -203,6 +203,179 @@ abilities/roster/Qt/Momentum suites, the pairwise matrix, packaging closure and
 capability registry file checks. Verify a rebuilt configured XBE reports v2
 and all three chosen lock values. Follow Noah's exact gameplay list in
 `ASTRA_ABILITIES_V2_REPORT.md` before declaring anything witnessed.
+# r65 Deep-zone facing and press bail (2026-09-08)
+
+EXPERIMENTAL / UNWITNESSED. This implementation supersedes the two deferred
+implementation rows in the historical `nfl2k5_zone_facing` audit. That audit
+remains read-only. See `ASTRA_DEEP_ZONE_TIERS_V2_REPORT.md` for native evidence,
+limits and Noah's witness list. All protected files remain untouched here.
+
+## Dispatcher and receipts: nfl2k5_throw_tuning.py
+
+Import `nfl2k5_deep_zone as deep_zone_patch`. Add Boolean kwargs
+`deep_zone_facing=False, deep_zone_bail=False` to `_apply_all`, `apply_to_xbe`,
+`apply_to_xiso`, `_validate_r62_options`, `_selected_space_requests` and
+`_xbe_space_adapter`. Put both names in `R62_SPACE_KEYS` and `R62_RUNTIME_KEYS`;
+forward them through `_r62_options`, `_r62_space_options` and every selected
+request call, including music's final allocation path. Require exact bools.
+Either True selects `deep_zone_patch.REQUESTS` ONCE and forces the v3 allocator.
+Both False select no owner. Preserve both flags in the final pass and clear both
+in `_deferred_r62_options` for the initial fixed-size pass.
+
+Use this settings adapter; its status must reject an installed opposite tier
+combination instead of silently treating it as the requested build:
+
+```python
+class _deep_zone_adapter:
+    def __init__(self, facing, bail):
+        self.settings = dict(facing=facing, bail=bail)
+
+    def status(self, payload):
+        state = deep_zone_patch.status(payload)
+        if state == "applied":
+            have = deep_zone_patch.read_settings(payload)
+            if any(have[k] != v for k, v in self.settings.items()):
+                raise ValueError("Different deep-zone tiers; rebuild from base")
+        return state
+
+    def apply(self, payload):
+        return deep_zone_patch.apply(payload, **self.settings)
+```
+
+Add this tuple to the final owner loop AFTER the allocator entry:
+
+```python
+(deep_zone_facing or deep_zone_bail,
+ _deep_zone_adapter(deep_zone_facing, deep_zone_bail),
+ "deep_zone_patch", "deep-zone corner tiers (experimental)"),
+```
+
+Include either flag in the allocator-entry condition and the two entry-point
+"at least one patch selected" checks. Defaults at the direct owner API select
+both tiers; the dispatcher MUST pass both Boolean settings explicitly. Omitted
+owner API settings preserve an already-installed variant. Never call the owner
+with both False. Rebuild from base to disable or change an installed variant.
+
+In `_grown_status_fields`, add `deep_zone_settings` and the component keys
+`deep_zone_facing` / `deep_zone_bail`. First call `status`; on `foreign`, report
+all three as foreign (settings as `{status: 'foreign'}`), since `read_settings`
+raises on foreign input. Otherwise call `read_settings` once. A component is
+`applied` only if installed and its setting is True, otherwise `retail`.
+The four status dictionaries using this helper MUST receive the fields:
+`inspect_xbe` (`payload`, currently near 665), `inspect_xiso` (`payload`, near
+794), the standalone XBE result (`result`, near 1791), and the XISO result
+(`after`, near 2136). Include the fields in the accepted inspector/result keys
+in `mod_build.py`. Preserve `experimental=True, runtime_witnessed=False`.
+
+The small QB-spy dependency validator change is included in this delivery.
+Install it with this owner: both owners verify the complete partner context
+through a bounded, nonrecursive validation path. No runtime Spy bytes changed.
+
+## BuildPlan, PLAY staging and final pass: mod_build.py
+
+Add `deep_zone_facing: bool = False`, `deep_zone_bail: bool = False` and
+`deep_zone_bail_calls: tuple = ()`. Each explicit staged bail call contains a
+logical PLAY asset selector plus `formation_index`, `front_play_index` and
+`coverage_play_index`, resolved against the user's current source. Include both
+flags in `wants_xbe_patch`, recipe serialization, availability, project restore,
+and final allocation need. Basic=False, Advanced=False, Experimental=False for
+BOTH. Do not auto-enable with zone-drop, Coverage, catch or coverage-trail.
+
+Normalization requires exact bools, unique selected asset/coverage-row pairs,
+and `deep_zone_bail=True` when authoring calls are present. Force `xbe_space=True`
+for either flag. The runtime bail option can also serve an already-authored
+press call; an empty authoring selection means no PLAY changes. Show that fact
+in the build review. These flags do not imply each other or the older cap.
+
+For selected authoring calls, resolve one bounded PLAY resource at a time via
+the existing asset service. After other formation/play authoring, call
+`nfl2k5_deep_zone_bail.apply(resource, formation_index=..., front_play_index=...,
+coverage_play_index=..., asset_id=...)`. Stage its replacement using the existing
+fixed-span PLAY/archive writer and retain its exact compiler receipt. Its
+selected coverage row changes at all of its existing formation links; display
+`affected_formations`. Different linked formation lanes refuse. Never loop over
+all calls or patch shared nodes directly. Surface compiler refusal before a
+build. No whole pack or disc read is permitted.
+
+Clear both XBE flags in the initial deferred build call (the `replace(plan,
+...)` near 1255 and the initial XISO adapter), while preserving staged PLAY
+edits. Forward both true effective values through the final `_apply_all` call,
+selected union/music allocation and grown owner/result pass (near 1578,
+1618-1642 and 1716). Include them in the condition deciding that the final pass
+is needed. A bail-only build must install its runtime as well as selected PLAY
+edits; facing-only builds require no PLAY edits.
+
+## Protected GUI surfaces
+
+`gameplay_patches_panel_qt.py`: import the owner's captions/help and add:
+
+```python
+("deep_zone_facing", "Deep-zone QB facing (experimental)",
+ "Retail: corners can turn to run. Patch: try a slower QB-facing deep drop until a pass, run, or the selected receiver gets beyond the corner. EXPERIMENTAL / UNWITNESSED."),
+("deep_zone_bail", "Press corner bail (experimental)",
+ "Retail: the selected call keeps its starting alignment. Patch: use a selected three-deep press start and directional bail. Ends at seven yards when used alone. EXPERIMENTAL / UNWITNESSED."),
+```
+
+Add BOTH keys to `NEEDS_IMAGE`, availability, checked-value forwarding, recipe
+restore and reset loops. Keep `zone_drop_cap` as its independent checkbox.
+Selecting bail alone does not secretly author every play. The play designer's
+selected front/coverage pair can stage an explicit `deep_zone_bail_calls` row;
+review its affected formation links. Disable staging when native personnel or
+coverage validation refuses. Do not promise match quarters or exact eye tracking.
+
+`build_panel_qt.py`: add `_option` rows named `deep_zone_facing` and
+`deep_zone_bail` with captions `Deep-zone QB facing (experimental)` (34 chars)
+and `Press corner bail (experimental)` (32 chars). Both are under 60 characters.
+Use the same help, default False, enable-on-source behavior, plan construction,
+restore/preset/reset lists and work-present check. `studio_qt.py` and
+`gameplay_panel_qt.py`: forward both flags and explicit authoring selections
+through existing feature-routing/project plumbing; no extra window is required.
+
+## Packaging, capability and release validation
+
+Add these exact `packaging/release-allowlist.txt` lines:
+
+```text
+mod_editor/core/nfl2k5_deep_zone.py
+mod_editor/core/nfl2k5_deep_zone_code.py
+mod_editor/core/nfl2k5_deep_zone_bail.py
+docs/mod_editor/nfl2k5_deep_zone_capability.json
+```
+
+Add runtime-closure imports in `packaging/check_2k5_mod_studio_runtime.py`:
+
+```text
+mod_editor.core.nfl2k5_deep_zone
+mod_editor.core.nfl2k5_deep_zone_code
+mod_editor.core.nfl2k5_deep_zone_bail
+```
+
+Their existing transitive closure must include `nfl2k5_xbe_space`,
+`nfl2k5_rdata_sites`, `nfl2k5_cave_oracle`, `nfl2k5_zone_drop`,
+`nfl2k5_qb_spy_runtime`, `nfl2k5_dynamic_kickoff`,
+`nfl2k5_formation_play_writer`, `nfl2k5_play_codec`,
+`nfl2k5_play_library`, `nfl2k5_playbook_inspector` and `nfl2k5_playbook_pack`.
+Capstone, Unicorn and GNU as remain development-only. Standard-library-only
+runtime imports do not load private game data.
+
+Merge `docs/mod_editor/nfl2k5_deep_zone_capability.json` by its id
+`nfl2k5.gameplay.deep_zone_tiers` into the release capability registry. It has
+schema-valid module commands for writing and validation, opt-in settings and an
+explicit not-tested gameplay runtime status. Retire any product presentation
+that describes the historical audit as the available implementation of these
+tiers. Keep its read-only audit command available for historical evidence.
+
+The allocator stack, budget fixture, both gates and manifest builder lists are
+already updated here. Regenerate the protected production manifest with
+`tools/nfl2k5_cave_oracle.py manifest` after all shared wiring lands. This session
+uses a scratch source-pin refresh and exact gate allocation projection, not a
+new disc-build manifest. `df -h /` reported 98G free initially and 92G during the
+final audit. No disposable disc was created, preserving the remaining headroom.
+Release CI/update-check
+and tag files need no feature change; run the existing release checks after the
+shared integration and production manifest regeneration.
+
+---
 
 # r64 Read option v4 engagement diagnostic (2026-09-08)
 

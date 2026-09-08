@@ -43,6 +43,13 @@ def sections(xbe: bytes):
 
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
 class CaveReferenceTests(unittest.TestCase):
+    def test_deep_zone_hooks_have_exclusive_live_ownership(self):
+        from mod_editor.core import nfl2k5_deep_zone as patch
+        self.assertEqual(patch.status(self.patched), "applied")
+        for va, before in patch.HOOKS.values():
+            self.assertTrue(self.manifest.overlaps(va, va+len(before)))
+            self.assertEqual(self.manifest.overlaps(va, va+len(before), exclude_owner=patch.OWNER), [])
+
     def test_money_downs_hooks_are_owned_and_code_is_allocated(self):
         from mod_editor.core import nfl2k5_cpu_money_downs as patch, nfl2k5_xbe_space as space
         row = next(a for a in space.layout(self.patched)["allocations"] if a["owner"] == patch.OWNER)
@@ -122,6 +129,9 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_espn25_rosters as espn25
         if espn25.xbe_status(cls.patched) != "applied" or espn25.apply_xbe(cls.patched)[0] != cls.patched:
             raise AssertionError("Historic team reload repair missing from the complete owner union")
+        from mod_editor.core import nfl2k5_deep_zone as deep_zone
+        if deep_zone.status(cls.patched) != "applied" or deep_zone.apply(cls.patched)[0] != cls.patched:
+            raise AssertionError("Deep-zone owner failed gate composition/replay")
         from mod_editor.core import nfl2k5_cpu_money_downs as money_downs
         if money_downs.status(cls.patched) != "applied" or money_downs.apply(cls.patched)[0] != cls.patched:
             raise AssertionError("CPU money downs missing from the complete owner union")

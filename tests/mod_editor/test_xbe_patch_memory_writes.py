@@ -89,6 +89,18 @@ class SectionTableTests(unittest.TestCase):
 class PatchWriteTests(unittest.TestCase):
     """Every absolute memory write in every patch's changed code targets writable memory."""
 
+    def test_deep_zone_code_is_rx_and_runtime_records_are_rw(self):
+        from mod_editor.core import nfl2k5_deep_zone as patch
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        places, image = patch.allocations(self.patched), XbeImage(self.patched)
+        self.assertFalse(image.runtime_writable(places["code"]["va"], patch.CODE_SIZE))
+        self.assertTrue(image.runtime_writable(places["data"]["va"], patch.DATA_SIZE))
+        self.assertEqual(image.read(places["data"]["va"], patch.DATA_SIZE), bytes(patch.DATA_SIZE))
+        for write in absolute_writes(self.patched, [(places["code"]["va"],
+                places["code"]["va"]+patch.assembly.LABELS["config"])]):
+            if write["target"] is not None:
+                self.assertTrue(image.runtime_writable(int(write["target"], 0), write["size"]), write)
+
     def test_playbook_pair_state_and_tables_have_separate_permissions(self):
         from mod_editor.core import nfl2k5_playbook_pair as pair
         from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
@@ -191,6 +203,9 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_espn25_rosters as espn25
         if espn25.xbe_status(cls.patched) != "applied" or espn25.apply_xbe(cls.patched)[0] != cls.patched:
             raise AssertionError("Historic team reload repair missing from the complete owner union")
+        from mod_editor.core import nfl2k5_deep_zone as deep_zone
+        if deep_zone.status(cls.patched) != "applied" or deep_zone.apply(cls.patched)[0] != cls.patched:
+            raise AssertionError("Deep-zone owner failed gate composition/replay")
         from mod_editor.core import nfl2k5_cpu_money_downs as money_downs
         if money_downs.status(cls.patched) != "applied" or money_downs.apply(cls.patched)[0] != cls.patched:
             raise AssertionError("CPU money downs missing from the complete owner union")

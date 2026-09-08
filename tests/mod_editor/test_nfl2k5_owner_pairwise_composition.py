@@ -50,6 +50,8 @@ OWNERS = (
     ("my_career_generic", stack.my_career),
     ("franchise_autosave", stack.autosave),
     ("coverage_trail", stack.coverage_trail),
+    ("deep_zone", stack.deep_zone),
+    ("zone_drop", stack.zone_drop),
     ("scorebug_runtime", stack.runtime),
     ("static_scorebar_v3", stack.StaticScorebar),
     ("cpu_money_downs", stack.money_downs),
