@@ -1,4 +1,8 @@
-# 2K5 Mod Studio — v1.0 RC86 Release Status
+# 2K5 Mod Studio — v1.0 RC87 Release Status
+
+## Beta 63 (RC87, in progress 2026-09-08) — the wave-5 landings
+
+Source/UI versions are **2K5 RC87** and **APF alpha.84**. Section written at ship time from the RC87 changelog.
 
 ## Beta 62 (RC86, 2026-09-06) — the whole wave-2 backlog, wired
 
