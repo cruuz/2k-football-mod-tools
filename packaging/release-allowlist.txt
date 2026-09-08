@@ -774,3 +774,6 @@ mod_editor/gui/stadium_blender_panel_qt.py
 tools/blender/nfl2k5_stadium.py
 tools/nfl_stadium_editor_proof.py
 tools/nfl_stadium_texture_bundle.py
+mod_editor/core/nfl2k5_franchise_edit_player.py
+docs/mod_editor/nfl2k5_franchise_edit_player_capability.json
+ASTRA_FRANCHISE_EDIT_PLAYER_REPORT.md

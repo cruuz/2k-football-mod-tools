@@ -4220,6 +4220,73 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_franchise_edit_player apply source.xbe contracts-editor.xbe",
+        "module": "mod_editor/core/nfl2k5_franchise_edit_player.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_FRANCHISE_EDIT_PLAYER_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_franchise_edit_player.py",
+        "tests/mod_editor/test_nfl2k5_franchise_edit_player_unicorn.py",
+        "tests/nfl2k5_franchise_edit_player_fixture.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Opt-in; off in Basic, Advanced and Experimental presets. Protected product wiring is specified in WIRING.md."
+      },
+      "id": "nfl2k5.gameplay.franchise_edit_player",
+      "input_constraints": [
+        "Pinned USA default.xbe or a fully verified composition; reserve the entire selected owner union before applying grown owners.",
+        "Edit Player is offered for the coached team using the native team and pending-offer filters. Other-team and free-agent rows retain retail actions.",
+        "The existing Position-row owner is installed as a prerequisite. Position changes cycle the native 17 positions and preserve ratings and depth locks.",
+        "Edits take effect immediately, including Back. Review the depth chart after a position change. No save/load or rendered gameplay witness is claimed."
+      ],
+      "portme": [
+        "Apply the exact protected dispatcher, BuildPlan, preset, GUI, packaging and manifest handoff in WIRING.md.",
+        "Run Noah's witness list in ASTRA_FRANCHISE_EDIT_PLAYER_REPORT.md before enabling by default."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute source and patch recipes. Never distribute the generated executable or retail disc bytes.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_FRANCHISE_EDIT_PLAYER_REPORT.md"
+        ],
+        "scope": "Bounded installed x86 tests execute Contracts selection, native popup filtering, controller field edits, all retail editor pages, Finish, Back and the return through Front Office to Coach's Desk. Heap, preview, graphics, input hardware and modals are test services. Visual behavior, saving, reloading and gameplay remain unwitnessed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "boolean; default false in Basic, Advanced and Experimental",
+            "name": "franchise_edit_player",
+            "required": true
+          }
+        ],
+        "notes": "Retail Player Contracts has no Edit Player action. Patch adds Edit Player after Assign Jersey Number for the team you coach, preserving the native return stack."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "37 pinned native instructions plus the existing Position-row prerequisite; 704 allocator-owned RO bytes, zero RX or RW bytes; no archive or save-format changes",
+        "retail_file": "user-owned NFL 2K5 USA default.xbe"
+      },
+      "summary": "Adds Edit Player after Assign Jersey Number in the Player Contracts popup for the coached team, including the retail editor pages and Position.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Franchise Edit Player (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_franchise_edit_player"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_patch_cli dynamic_kickoff_relocated <source.xbe> <new-copy.xbe>",
         "module": "mod_editor/core/nfl2k5_patch_cli.py",
         "operation": "write"

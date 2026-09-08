@@ -28,7 +28,7 @@ class PublicTests(unittest.TestCase):
         self.assertTrue(set(edit.REQUESTS) <= set(REQUESTS))
         self.assertTrue(set(edit.REQUESTS) <= set(space.dormant_union()))
         plan = space.plan(rows, scaleout=True)
-        self.assertEqual(plan['capacity']['read_only']['available_bytes'], 7400)
+        self.assertEqual(plan['capacity']['read_only']['available_bytes'], 7320)  # 7400 before Broadcast camera v5 took 80 RO bytes
         self.assertEqual(len(edit.read_only_bytes()), 704)
         self.assertEqual(edit.EDIT_ROW[2:5], (1, 0, 0))
         self.assertEqual(edit.EDIT_ROW[5:], (1,) * 10)
