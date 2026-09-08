@@ -71,7 +71,7 @@ MAX_PACKAGE_BYTES = 32 * 1024 * 1024
 MAX_DECODED_BYTES = 2 * 1024 * 1024
 CHAIN_PINS = ROOT / "mod_editor/data/nfl2k5_equipment_chain_pins.v1.json"
 # Filled by the streaming retail census tool; contains hashes, never retail art.
-CHAIN_PINS_SHA256 = "cb15ecd9ef3f87f45c3cfc4a7fc583636b236835fbbedec073c50dc45706b0bc"
+CHAIN_PINS_SHA256 = "32ab51a7a70aea4e5bec1cff6b3f6542fb7a3f198b494939b8864313bc099628"
 CATALOG_COLUMNS = (
     "outer_index",
     "set_selector",

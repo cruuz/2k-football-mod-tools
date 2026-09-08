@@ -273,7 +273,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "mod_editor/data/nfl2k5_crib_catalog.v1.json":
                     "c78801144df2f070e003ba458c5affa15a52cc00221cc1a3d9983f1fbf172cd8",
                 "mod_editor/data/nfl2k5_equipment_chain_pins.v1.json":
-                    "cb15ecd9ef3f87f45c3cfc4a7fc583636b236835fbbedec073c50dc45706b0bc",
+                    "32ab51a7a70aea4e5bec1cff6b3f6542fb7a3f198b494939b8864313bc099628",
                 "mod_editor/data/nfl2k5_uniform_equipment_export_catalog.v1.json":
                     "fa2c9ca9bcc267b6981735347bf6daf6243d6ab8b83fba268804c280cfd94173",
                 "reports/specs/nfl2k5_stadium_static_target_catalog.v1.json":

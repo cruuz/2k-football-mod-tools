@@ -612,7 +612,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_music_storage.py": "db13a224f6e04e2ebbe0f7639946e2e6c9626500939614a44f2539a25137904b",
         "mod_editor/core/nfl2k5_my_career.py": "2234af1fcd55c49744a4e26dec7a53c4ac3faf927d58c0976c7fc8b9f3ae6c79",
         "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
-        "mod_editor/core/nfl2k5_my_career_mode.py": "700881a4eb41f8d22e8382182410ca8e96e4b6195a81d44516eae9c90453f232",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "06bc3e9f779a3a841fcb25d1622c34558ab4a181d8a43ec817c4ae9f4f4a7586",
         "mod_editor/core/nfl2k5_my_career_mode_code.py": "72a7c40e72bcdb08f268c3001642cf550a4eaf660772e2c0913726b7c9ed8da0",
         "mod_editor/core/nfl2k5_my_career_save.py": "3e28ce0062f424f4e0dd73fb8f32cf87bdf7189a953fa690a899f3d73308f7b1",
         "mod_editor/core/nfl2k5_overtime.py": "9621106101e1ce6d0bccb35ab5a2051cc8d68e9ed2fcdf2af87a13342855bbd5",
@@ -688,7 +688,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_unif_color_writer.py": "5e950cc404e25c1fbeff7ee5aa2a3fad235115aeddd743e95be6862677a88324",
         "mod_editor/core/nfl2k5_uniform_catalog.py": "7731d18e01a547f60caac05680618fc3c488cb37e8a2eaecf574d4a7303887ab",
         "mod_editor/core/nfl2k5_uniform_choice.py": "485a0b64855836d03573381281b079a9cdab814996fa83b894046d8b29f93d6a",
-        "mod_editor/core/nfl2k5_uniform_equipment_writer.py": "188bb18fc44d49f050cca11891652bdca7e44dea9c64c4df5996a5bb8d9bb06c",
+        "mod_editor/core/nfl2k5_uniform_equipment_writer.py": "3e0a1ec6a5f6623f62fff86f3f39ff889fd7bf1a407670dfbb5a1e184b717442",
         "mod_editor/core/nfl2k5_universal_asset_index.py": "9df3c0a754abcb60fa4db3afd0f9b8af364f60551014d259e2713f5387491421",
         "mod_editor/core/nfl2k5_widescreen.py": "e3c24be27e02098ef981349aa9a1008b26d022bf655c0c0c6e4e70557c0f0f43",
         "mod_editor/core/nfl2k5_xbe_space.py": "409f932d2ceedcf478a5738b5d02db2805b028b07b43bc67e393b785684ecf91",
@@ -760,7 +760,7 @@ class Nfl2k5UnifiedVisualProvider:
     data_pins: Mapping[str, str] = {
         "mod_editor/data/nfl2k5_crib_catalog.v1.json":
             "c78801144df2f070e003ba458c5affa15a52cc00221cc1a3d9983f1fbf172cd8",
-        "mod_editor/data/nfl2k5_equipment_chain_pins.v1.json": "cb15ecd9ef3f87f45c3cfc4a7fc583636b236835fbbedec073c50dc45706b0bc",
+        "mod_editor/data/nfl2k5_equipment_chain_pins.v1.json": "32ab51a7a70aea4e5bec1cff6b3f6542fb7a3f198b494939b8864313bc099628",
         "mod_editor/data/nfl2k5_uniform_equipment_export_catalog.v1.json":
             "fa2c9ca9bcc267b6981735347bf6daf6243d6ab8b83fba268804c280cfd94173",
         "reports/specs/nfl2k5_stadium_static_target_catalog.v1.json":
