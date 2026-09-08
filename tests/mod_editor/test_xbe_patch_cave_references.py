@@ -486,7 +486,7 @@ class CaveReferenceTests(unittest.TestCase):
         code, data = relocated._sites(self.patched)
         expected, labels = relocated.code_for(kickoff._settings(), code["va"], data["va"])
         self.assertEqual(image.read(code["va"], code["size"]), expected)
-        for name in ("eligibility", "separation", "ready", "head_pose"):
+        for name in ("eligibility", "separation", "ready", "head_pose", "block_tick"):
             va, original = kickoff.HOOKS[name]
             overlaps = manifest.overlaps(va, va + len(original))
             self.assertTrue(overlaps)

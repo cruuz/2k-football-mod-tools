@@ -31,6 +31,9 @@ FIELDS = ('transform', 'primary_blend', 'secondary_blend', 'sampled_pose',
 
 
 class FrameMachine(NativeMachine):
+    instruction_limit = 2_000_000
+    frame_timeout_us = 0
+
     def __init__(self, payload, *, radius=30, tasks=True, **kwargs):
         self.visited = Counter()
         self.watches, self.writes, self.phase_entries = [], [], []
@@ -112,8 +115,8 @@ class FrameMachine(NativeMachine):
         for site in sorted(set(PHASES) | SITES | set(self.stub_pops)
                            | set(self.fpu_stubs) | {dk.RAND}):
             self.uc.hook_add(uni.UC_HOOK_CODE, self._hook, begin=site, end=site)
-        self.uc.hook_add(uni.UC_HOOK_MEM_WRITE, self._write,
-                         begin=0x2060000, end=0x21AFFFF)
+        self.frame_write_hook = self.uc.hook_add(uni.UC_HOOK_MEM_WRITE, self._write,
+                                                begin=0x2060000, end=0x21AFFFF)
         self.visited.clear()
         self.calls.clear()
 
@@ -247,8 +250,9 @@ class FrameMachine(NativeMachine):
         self.uc.reg_write(x86.UC_X86_REG_ESP, self.STACK)
         self.put(self.STACK, self.STOP)
         self.f32(self.STACK + 4, 1 / 60)
-        self.uc.emu_start(0x11A7C0, self.STOP, count=2_000_000)
-        assert self.uc.reg_read(x86.UC_X86_REG_EIP) == self.STOP, 'frame instruction cap reached'
+        self.uc.emu_start(0x11A7C0, self.STOP, count=self.instruction_limit,
+                          timeout=self.frame_timeout_us)
+        assert self.uc.reg_read(x86.UC_X86_REG_EIP) == self.STOP, 'frame execution bound reached'
         assert tuple(self.phase_entries) == PHASES, self.phase_entries
         assert self.uc.reg_read(x86.UC_X86_REG_ESP) == self.STACK + 8, 'frame ABI imbalance'
         return self.snapshot()

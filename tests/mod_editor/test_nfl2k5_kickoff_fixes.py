@@ -85,12 +85,13 @@ class RuntimeTests(unittest.TestCase):
                 m.run(0xB6760)
                 self.assertEqual(m.uc.reg_read(x86.UC_X86_REG_EAX), 1, case)
 
-    def test_idle_selection_heading_root_hold_and_release_both_allocations(self):
+    def test_selected_stance_heading_root_hold_and_release_both_allocations(self):
         for payload, state in self.variants():
             for direction in (-1, 1):
                 m = Machine(payload, direction=direction, state_va=state)
                 m.launch()
                 for who, sign in ((m.COVERAGE, direction), (m.BLOCKER, -direction)):
+                    selected = (m.get(who + 0x904), m.get(who + 0x91C))
                     m.f32(who + 0x110, 1)  # stale running input
                     m.put(who + 0x118, 2)  # stale turning mode
                     for offset in (0x90C, 0x910, 0xC28, 0xB50):
@@ -104,9 +105,8 @@ class RuntimeTests(unittest.TestCase):
                         self.assertEqual(m.get(m.COUNTER), before)
                         m.run(dk.HOOKS['motion'][0], esi=who)
                         self.assertEqual(m.get(m.COUNTER), before + 1)
-                        self.assertEqual(m.get(who + 0x904), 0x50F4EC)
-                        self.assertEqual(m.get(who + 0x91C), who + 0xDC0)
-                        self.assertEqual(m.clips[-1], (who, who + 0xDF0))
+                        self.assertEqual((m.get(who + 0x904), m.get(who + 0x91C)), selected)
+                        self.assertEqual(m.clips, [])
                         self.assertEqual(m.readf(who + 0x110), 0)
                         for offset in (0x114, 0x90C, 0xC28, 0xB50):
                             self.assertEqual(m.get(who + offset), 0 if sign > 0 else 0x8000)

@@ -452,6 +452,90 @@ the shared help contains both "Retail" and "Patch". No new dispatcher flag,
 Build option or capability registry entry is needed. The repaintable template
 compiler, source PNG catalog and its release checks remain intact.
 
+# r64 kickoff v5, 2026-09-07
+
+EXPERIMENTAL/UNWITNESSED. See `ASTRA_KICKOFF_V5_REPORT.md` and
+`docs/nfl2k5_kickoff_v5_receipts.json`. Held players keep their selected native
+stance without restarting its receiving-side foot sampler. Released drive
+blockers refresh a lane-weighted nearest target before pursuit and wait with
+zero throttle when none remains. Existing native paired contacts continue.
+This uses 1,937/1,939 RX bytes and 10 RW bytes, with nineteen hooks.
+
+Claude must regenerate protected `data/nfl2k5_cave_reservations.json` using
+`python3 tools/nfl2k5_cave_oracle.py manifest` after integration. The owner
+already appears in the manifest builder and complete gate union; its declared
+edits supply all pins. Add the new `block_tick` live span below and refresh both
+kickoff source fingerprints. The tests project only verified retail pins and
+exact installed jumps, reject foreign overlaps, and transfer ownership to
+`nfl2k5_dynamic_kickoff_relocated` when relocated. No product manifest was
+regenerated in this worktree.
+
+Every live overwritten span is half-open:
+
+| Hook | Span | Retail pin |
+| --- | --- | --- |
+| `launch` | `222CA0..222CA5` | `83ec205355` |
+| `aim` | `222E67..222E6C` | `d944243851` |
+| `ground` | `0A06E0..0A06E6` | `558bec83e4f0` |
+| `touch` | `0B78C9..0B78CE` | `a1ec02e600` |
+| `dead` | `0B7BB0..0B7BB6` | `558bec83e4f0` |
+| `plan` | `1CD5D0..1CD5D7` | `56578bf98b470c` |
+| `motion` | `218010..218015` | `a10c1db700` |
+| `position` | `2CC4F0..2CC4F7` | `518b4114d94048` |
+| `spot` | `0B65CC..0B65D1` | `a18002e600` |
+| `reset` | `1C9399..1C939E` | `a1a0d95000` |
+| `lineup` | `183F60..183F66` | `558bec83e4f0` |
+| `eligibility` | `0B6760..0B6766` | `83ec0c8b4738` |
+| `root_motion` | `2CC570..2CC577` | `83ec1c568b4210` |
+| `block_target` | `2FAFF0..2FAFF6` | `558bec83e4f0` |
+| `diagram` | `1802BB..1802C0` | `8b450c85c0` |
+| `separation` | `1D8940..1D8946` | `8b48248b5120` |
+| `ready` | `1FF940..1FF946` | `8b41108b5004` |
+| `head_pose` | `1DF430..1DF436` | `558bec83e4f0` |
+| `block_tick` | `23CE70..23CE76` | `558bec83e4f0` |
+
+The existing legacy RX reservation is `2890F0..289883`. RW remains exactly
+`A69969..A69970` and `A69971..A69974`; the intervening byte is untouched.
+The relocated owner keeps `(code, 1939, align 16)` and `(data, 10, align 4)`.
+Its actual addresses come from the complete allocator union. No budget row,
+new owner, page, or runtime storage in RX is requested. The packed launch
+configuration writes include only owned bytes; the temporary fourth byte of
+its first store is immediately replaced by the complete saved kick-spot float.
+
+Dispatcher `_apply_all` retains the existing
+`(dynamic_kickoff, _dynamic_kickoff_adapter(dynamic_kickoff_settings),
+"dynamic_kickoff_patch", "dynamic-kickoff")` tuple and post-allocator
+`(kickoff_relocated, kickoff_relocated_patch, "kickoff_relocated_patch",
+"experimental relocated kickoff")` tuple. Keep kwargs `dynamic_kickoff`,
+`dynamic_kickoff_settings`, `kickoff_relocated`, `_selected_space_requests`,
+`_xbe_space_adapter`, request selection and deferred final application. The
+four status dictionaries (file inspection, image inspection, file patch result,
+image patch result) retain `dynamic_kickoff`, `dynamic_kickoff_settings`,
+`kickoff_relocated`, `kickoff_relocated_settings` with their current status and
+read-settings calls. No dispatcher edit is required.
+
+`BuildPlan` retains `dynamic_kickoff`, its settings and `kickoff_relocated`,
+normalization and deferral. Basic and Advanced disable dynamic kickoff;
+Experimental enables it. Relocation stays disabled in all three defaults and
+implies the allocator and dynamic kickoff when selected. Gameplay Patches
+retains both PATCHES entries and both `NEEDS_IMAGE` keys. Keep the dynamic text
+containing "Retail: on a kickoff everyone sprints at the kick" and
+"Patch: the 2024/2025 rule", the role exceptions, and the unwitnessed label.
+Keep the relocation text containing "Retail: the extra patch space is unused.
+Patch: moves the dynamic kickoff there with the same settings."
+
+Build tab `_option` keeps `Dynamic kickoff: ready stance and close blocks`
+(46 characters), `needs_image=True` and `NOT_TESTED`. Allowlist lines remain
+`mod_editor/core/nfl2k5_dynamic_kickoff.py` and
+`mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py`. Runtime-closure imports
+remain `mod_editor.core.nfl2k5_dynamic_kickoff` and
+`mod_editor.core.nfl2k5_dynamic_kickoff_relocated`. Both existing source pins
+in `providers.py` are refreshed. No new capability registry entry is needed.
+All protected dispatcher, GUI, registry, packaging and manifest files remain
+untouched. Existing PLAY alignment/returns and fitted card stay enabled in
+the same order. Rebuild from supported retail input: v1 through v4 executable
+patches are foreign, including an attempted partial upgrade.
+
 # r64 kickoff v4: completed lineup and late head pose (2026-09-07)
 
 EXPERIMENTAL/UNWITNESSED. See `ASTRA_KICKOFF_V4_REPORT.md`. Existing dynamic

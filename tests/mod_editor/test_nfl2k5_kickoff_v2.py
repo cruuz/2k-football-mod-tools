@@ -360,8 +360,11 @@ class V2Tests(unittest.TestCase):
                             m.run(0x2CC4F0, ecx=who, args=(0x447A0000, 0x447A0000))
                             self.assertEqual(m.readf(who + 0xB30), 1000)
 
-    def test_stale_clip_and_blends_enter_native_idle_once_and_stay_fixed(self):
-        for payload, state in self.variants():
+    def test_stale_clip_and_blends_stay_fixed_without_reentering_ready(self):
+        # Retain the recorded v2 initializer proof and test v5's stronger
+        # contract: freeze the selected channels without restarting a stance.
+        for payload, state in [(v2_payload(self.base), dk.FLAGS)] + list(self.variants()):
+            historical = payload == v2_payload(self.base)
             for direction in (-1, 1):
                 m = NativeMachine(payload, direction=direction, state_va=state)
                 m.launch(); who = m.BLOCKER
@@ -373,11 +376,17 @@ class V2Tests(unittest.TestCase):
                     m.f32(m.get(who + field) + 4, .02)
                 m.put(who + 0xC1C, 7); m.put(who + 0x904, 0x50F4EC)
                 m.f32(who + 0x110, 1); m.put(who + 0x118, 2)
-                m.put(who + 0xB50, 0x4000)
+                # A real turn updates the descriptor, sampler and transform
+                # heading caches together. Keep the stale-clip input valid.
+                m.run(0x1A89E0, ecx=who, edx=0x4000)
+                self.assertEqual(m.get(who + 0xB50), 0x4000)
                 m.run(0x218010, esi=who)
-                self.assertIn(0x2D6B70, m.trace); self.assertIn(0x31BD40, m.trace)
+                if historical:
+                    self.assertIn(0x2D6B70, m.trace); self.assertIn(0x31BD40, m.trace)
+                else:
+                    self.assertNotIn(0x2D6B70, m.trace)
                 for field in (0xC58, 0xC74):
-                    self.assertEqual(m.get(m.get(who + field)), idle)
+                    self.assertEqual(m.get(m.get(who + field)), idle if historical else stale)
                     self.assertEqual(m.readf(m.get(who + field) + 4), 0)
                 self.assertEqual(m.get(who + 0xC1C) & 6, 0)
                 self.assertEqual(m.get(who + 0xB50), 0 if direction < 0 else 0x8000)

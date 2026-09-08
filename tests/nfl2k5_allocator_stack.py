@@ -102,7 +102,7 @@ def manifest_for_allocated_union(manifest, retail, allocated):
     its complete wrapper at the recorded preset's allocation; recognize that
     one complete span by re-planning the recorded preset. Unknown or changed
     ownership refuses.
-    The additional v3/v4 kickoff live hooks are pinned against both retail and
+    The additional v3/v4/v5 kickoff live hooks are pinned against both retail and
     the composed owner before adding their reservations.
     This is not a regenerated disc manifest and is never written to the product.
     """
@@ -157,7 +157,7 @@ def manifest_for_allocated_union(manifest, retail, allocated):
     elif legacy_kickoff.status(allocated) == "applied":
         _, labels = legacy_kickoff._code(legacy_kickoff._settings())
         owner = "nfl2k5_dynamic_kickoff"
-    for name in ("separation", "ready", "head_pose"):
+    for name in ("separation", "ready", "head_pose", "block_tick"):
         va, original = legacy_kickoff.HOOKS[name]
         if image.read(va, len(original)) != original:
             raise AssertionError(f"kickoff {name} retail pin differs")

@@ -257,14 +257,14 @@ class Machine:
             self.uc.reg_write(x86.UC_X86_REG_EAX, 0)
             self._ret(self.stub_pops[address])
 
-    def run(self, address, *, stop=None, ecx=0, edx=0, esi=0, args=()):
+    def run(self, address, *, stop=None, ecx=0, edx=0, esi=0, args=(), budget=30_000):
         for reg, value in ((x86.UC_X86_REG_ESP, self.STACK), (x86.UC_X86_REG_ECX, ecx),
                            (x86.UC_X86_REG_EDX, edx), (x86.UC_X86_REG_ESI, esi)):
             self.uc.reg_write(reg, value)
         self.put(self.STACK, self.STOP)
         for i, arg in enumerate(args): self.put(self.STACK + 4 + 4 * i, arg)
         target = self.STOP if stop is None else stop
-        self.uc.emu_start(address, target, count=30_000)
+        self.uc.emu_start(address, target, count=budget)
         if self.uc.reg_read(x86.UC_X86_REG_EIP) != target:
             raise AssertionError(f"instruction budget exhausted at {self.uc.reg_read(x86.UC_X86_REG_EIP):#x}")
 
@@ -342,8 +342,9 @@ class RetailExecutionTests(unittest.TestCase):
                         before = bytes(m.uc.mem_read(who, 0x1000))
                         m.run(dk.HOOKS["plan"][0], ecx=who)
                         m.run(dk.HOOKS["motion"][0], esi=who)
-                        self.assertEqual(m.get(who + 0x904), 0x50F4EC)
-                        self.assertEqual(m.get(who + 0xC54), 1)
+                        self.assertEqual(m.get(who + 0x904), struct.unpack_from('<I', before, 0x904)[0])
+                        for field in (0xC58, 0xC74):
+                            self.assertEqual(m.readf(m.get(who + field) + 4), 0)
                         self.assertEqual(bytes(m.uc.mem_read(who + 0xB30, 16)), before[0xB30:0xB40])
                     for who in (m.KICKER, m.RETURNER):
                         old = m.get(m.COUNTER)

@@ -1,7 +1,7 @@
 """EXPERIMENTAL/UNWITNESSED dynamic kickoff in owned grown RX/RW pages.
 
 Use after every existing patch, including dynamic_kickoff. The old cave is
-retained byte-identically (or left retail); all eighteen hooks enter the new
+retained byte-identically (or left retail); all nineteen hooks enter the new
 page. The same assembler generates both implementations. No retail function
 bytes are distributed and no opcode search-and-replace relocation is used.
 """
@@ -34,7 +34,7 @@ def code_for(settings, code_va, data_va):
 def _installed(payload):
     code, data = _sites(payload)
     _, labels = code_for(kickoff._settings(), code["va"], data["va"])
-    vals = {key: payload[code["raw"] + labels["config_" + key] - code["va"] + 6]
+    vals = {key: payload[code["raw"] + labels["config_" + key] - code["va"]]
             for key in ("aim_prob", "tb_prob", "tb_yard", "target_min", "target_max")}
     settings = kickoff._settings(vals["tb_yard"], vals["aim_prob"],
                                  (vals["target_min"], vals["target_max"]), vals["tb_prob"])

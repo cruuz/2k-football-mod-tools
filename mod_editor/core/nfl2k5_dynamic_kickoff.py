@@ -2,7 +2,7 @@
 
 Pair with kick_rules (35-yard tee) and the playbook kickoff_alignment tool.
 No timer releases the hold: ground/player contact latches the first field class.
-See ASTRA_KICKOFF_V4_REPORT.md for the native pre-kick state investigation.
+See ASTRA_KICKOFF_V5_REPORT.md for the native pre-kick state investigation.
 
 Runtime storage is ten previously unreferenced bytes on the writable shared
 .rdata/.data page. 0xA69970 and 0xA69974..7F belong to other patches. Settings
@@ -66,6 +66,7 @@ HOOKS = {
     "separation": (0x1D8940, bytes.fromhex("8b48248b5120")),
     "ready": (0x1FF940, bytes.fromhex("8b41108b5004")),
     "head_pose": (0x1DF430, bytes.fromhex("558bec83e4f0")),
+    "block_tick": (0x23CE70, bytes.fromhex("558bec83e4f0")),
 }
 
 
@@ -183,15 +184,20 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     b("5a85c0"); j("0f84", "launch_done")
     b("83fa02"); j("0f84", "launch_done")  # declared onside
     b("a1" + imm(CTX) + "85c0"); j("0f84", "launch_done")
-    b("8b50188915" + imm(KICK_SPOT))  # exact penalty-adjusted LOS float
-    for name, va, value in (("aim_prob", AIM_PROB, settings["cpu_landing_probability"]),
-                            ("tb_prob", TB_PROB, settings["cpu_touchback_probability"]),
-                            ("tb_yard", TB_YARD, settings["touchback_yard"]),
-                            ("target_min", TARGET_MIN, settings["cpu_target_yards"][0]),
-                            ("target_max", TARGET_MAX, settings["cpu_target_yards"][1])):
-        label("config_" + name)
-        b("c605" + imm(va) + f"{value:02x}")
-    b("c605" + imm(FLAGS) + "08")
+    b("8b5018")  # exact penalty-adjusted LOS, retained in EDX until config stores
+    # Adjacent configuration bytes share a word store. Labels identify the
+    # immediate bytes themselves, including both bytes of each word.
+    b("c705" + imm(FLAGS) + "08")
+    label("config_aim_prob"); b(f'{settings["cpu_landing_probability"]:02x}')
+    label("config_tb_prob"); b(f'{settings["cpu_touchback_probability"]:02x}' + "00")
+    # The fourth byte is the first KICK_SPOT byte, also owned here. Restore
+    # the entire exact float immediately, before any calls or branch can use it.
+    b("8915" + imm(KICK_SPOT))
+    b("66c705" + imm(TB_YARD))
+    label("config_tb_yard"); b(f'{settings["touchback_yard"]:02x}')
+    label("config_target_min"); b(f'{settings["cpu_target_yards"][0]:02x}')
+    b("c605" + imm(TARGET_MAX))
+    label("config_target_max"); b(f'{settings["cpu_target_yards"][1]:02x}')
     b("8b46388b40088b400cf7400400000080")  # direction's float sign bit
     j("0f84", "launch_positive")
     b("800d" + imm(FLAGS) + "10")
@@ -319,9 +325,9 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     label("held_yes"); b("31c040c3")
     label("held_no"); b("31c0c3")
 
-    # 1881E0 otherwise waits forever for the ready-stance descriptor that our
-    # fixed idle replaces. Completed held roles are ready; the free kicker and
-    # every out-of-scope player still execute the native descriptor query.
+    # 1881E0 must accept every completed held stance without waiting on a
+    # frozen animation transition. The free kicker and every out-of-scope
+    # player still execute the native descriptor query.
     # held clobbers only EAX/EDX, both overwritten by the displaced prologue.
     label("ready")
     call("held"); j("0f85", "ready_yes"); replay("ready")
@@ -336,12 +342,14 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
 
     label("motion")
     save(False); b("89f1"); call("held"); j("0f84", "motion_go")
-    # Select the native zero-speed clip. Re-entry also handles an old running
-    # clip in the same descriptor; 2FCAC0 installs only when the clip differs.
+    # Preserve the selected stance. Calling 1CD550 with "idle" each frame
+    # invokes 2388D0, which redirects individual states 12/13 back to ready;
+    # 200D00 -> 1FFFE0 then samples the receiving player's foot height again.
+    # Stop the existing channels without re-entering that animation lifecycle.
     b("8b460c83601000836018fd")
     b("8b46388b40088b400c8b5004c1ea1fc1e20f")
-    b("8b460c89501489f1baecf45000"); a.call(0x1CD550)
-    b("8b460c8b501489f1")
+    b("8b460c895014")
+    b("89f1")  # EDX is still the canonical heading; no initializer clobbers it
     a.call(0x1A89E0)
     # The later 28E360 pose pass consumes a separate turn/lean spring even
     # when both clip clocks are zero. Neutralize its residual input/state;
@@ -384,16 +392,43 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     b("8b411083a0a801000000")
     label("head_go"); restore(False); replay("head_pose")
 
+    # Revalidate before native drive pursuit, including the first release
+    # frame. 23CD60 uses the same selector and keeps an engaged pair intact.
+    label("block_tick")
+    save(False); call("block_scope"); j("0f84", "block_tick_go")
+    b("89cf")  # 23CD60 preserves EDI; keep the player for a no-target stop
+    a.call(0x23CD60)
+    # Our selector writes task+40 before returning. 23CDC5 loads that selected
+    # target into EAX and its equal-target path preserves EAX through RET.
+    b("85c0"); j("0f85", "block_tick_go")
+    # Native 23CFCB otherwise replaces drive with 23B040's fallback, which can
+    # pursue the kicker. Keep this task waiting; no target means zero throttle.
+    label("block_wait")
+    b("8b4f0c83611000"); restore(False); b("31c0c3")
+    label("block_tick_go"); restore(False); replay("block_tick")
+
+    label("receiving")
+    b("8b15" + imm(CTX) + "8b92c401000085d2"); j("0f84", "receiving_no")
+    b("8b52388b123b5138"); j("0f85", "receiving_no")
+    b("31c040c3")
+    label("receiving_no"); b("31c0c3")
+
+    label("block_scope")
+    guard("block_scope_no", live=True)
+    b("f605" + imm(FLAGS) + "07"); j("0f84", "block_scope_no")
+    b("8b411c480b4148"); j("0f85", "block_scope_no")
+    b("80792e0b"); j("0f83", "block_scope_no")
+    b("8b4124f6403802"); j("0f85", "block_scope_no")  # let an engaged native pair finish
+    b("a1" + imm(BALL) + "3908"); j("0f84", "block_scope_no")
+    j("e9", "receiving")
+    label("block_scope_no"); b("31c0c3")
+
     # Selector ABI: ECX=blocker, EDX=origin; seven stack operands, ST0=threshold.
     # Only released, normal kickoff return blockers use this nearest rule.
     label("block_target")
-    save(False); guard("block_go", live=True)
-    b("f605" + imm(FLAGS) + "07"); j("0f84", "block_go")
+    save(False); call("block_scope"); j("0f84", "block_go")
     b("837c242802"); j("0f85", "block_go")  # native drive mode
-    b("8b411c480b4148"); j("0f85", "block_go")
-    b("80792e0b"); j("0f83", "block_go")
-    b("a1" + imm(BALL) + "3908"); j("0f84", "block_go")
-    b("a1" + imm(CTX) + "8b80c40100008b40388b10395138"); j("0f85", "block_go")
+    b("8b41388b00")  # kicking team, from the verified receiving player
     j("e9", "block_start")
     label("block_go"); restore(False); replay("block_target")
     label("block_start")
@@ -401,18 +436,19 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     label("block_loop")
     b("85ff"); j("0f84", "block_end")
     b("837f4800"); j("0f85", "block_next")
-    b("0fb6472e4883f809"); j("0f87", "block_next")  # coverage slots 1..10
+    b("8a472efec83c09"); j("0f87", "block_next")  # coverage slots 1..10
     b("8b5718d94238d86638")  # candidate z - self z
     b("f605" + imm(FLAGS) + "10"); j("0f85", "block_front")
     b("d9e0")  # receiving direction is opposite kicking direction
     label("block_front")
-    b("d9e4dfe0ddd8f6c405"); j("0f85", "block_next")
+    b("d9e4dfe0ddd89e"); j("0f82", "block_next")
     # Approaching includes zero velocity on the first release frame.
-    b("d94230d86630d84a40d94238d86638d84a48dec1")
-    b("d9e4dfe0ddd89e"); j("0f87", "block_next"); j("0f8a", "block_next")
-    # SSE1 only, like the retail selector on the Xbox's Pentium III. Keep the
-    # best squared distance on the stack; reject NaN/infinity and preserve ties.
-    b("0f2842300f5c46300f59c00f12c8f30f58c10f2f0424")
+    b("0f2842300f5c46300f28c80f594a400f12d10f57dbf30f58ca0f2fcb")
+    j("0f87", "block_next"); j("0f8a", "block_next")
+    # Prefer arrivals in the player's lane: 4*dx^2 + dz^2. No fixed slot pairing
+    # survives a crossing coverage player. SSE1 only; reject NaN/infinity and
+    # preserve deterministic list-order ties. State remains in the native task.
+    b("f30f58c00f59c00f12c8f30f58c10f2f0424")
     j("0f83", "block_next"); j("0f8a", "block_next")
     b("f30f11042489fb")
     label("block_next"); b("8b7f344d"); j("0f85", "block_loop")
@@ -448,8 +484,8 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     b("80792e02"); j("0f83", "return_done")
     label("return_player")
     b("83791c01"); j("0f85", "return_done")
-    b("8b15" + imm(CTX) + "8b92c401000085d2"); j("0f84", "return_done")
-    b("8b52388b123b5138"); j("0f85", "return_done")  # receiving team
+    call("receiving"); j("0f84", "return_done")
+    b("a1" + imm(BALL))
     b("8b5014"); call("contact")
     b("83f802"); j("0f84", "return_end")
     b("a1" + imm(BALL) + "833800"); j("0f84", "return_done")
@@ -483,8 +519,8 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     save(False); guard("eligibility_go", live=True)
     b("a1" + imm(BALL) + "85c0"); j("0f84", "eligibility_go")
     b("3938"); j("0f85", "eligibility_go")
-    b("8b15" + imm(CTX) + "8b92c401000085d2"); j("0f84", "eligibility_go")
-    b("8b52388b123b5738"); j("0f85", "eligibility_go")
+    b("89f9"); call("receiving"); j("0f84", "eligibility_go")
+    b("a1" + imm(BALL))
     b("8b5014"); call("classify")
     b("83f801"); j("0f85", "eligibility_go")
     restore(False); b("31c0c3")
@@ -547,7 +583,7 @@ def _hook_bytes(name, labels):
 
 def _decode_legacy_settings(payload):
     labels = cave_labels()
-    vals = {key: payload[_offset(payload, labels["config_" + key] + 6, 1)]
+    vals = {key: payload[_offset(payload, labels["config_" + key], 1)]
             for key in ("aim_prob", "tb_prob", "tb_yard", "target_min", "target_max")}
     return _settings(vals["tb_yard"], vals["aim_prob"],
                      (vals["target_min"], vals["target_max"]), vals["tb_prob"])

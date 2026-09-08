@@ -1,6 +1,6 @@
 """Native pre-kick state/pose proofs, exact executable replay and public receipts.
 
-Run standalone with python3; --record explicitly refreshes only v4 evidence.
+Run standalone with python3; historical v4 receipts remain pinned to v4.
 Synthetic clocks/clips/controller samples are inputs, never a console witness.
 """
 from collections import Counter
@@ -106,7 +106,8 @@ def exercise(test, payload, *, state, direction, historical=False):
             test.assertEqual(m.visited[phase], 241)
             test.assertNotIn(phase, m.stub_pops)
         for who in m.held:
-            test.assertEqual(m.get(who + 0x904), 0x50F4EC)
+            # V5 preserves the completed ready stance; v4 selected fixed idle.
+            test.assertIn(m.get(who + 0x904), (0x50F4EC, 0x50F1E4))
             test.assertEqual(m.get(who + 0xAA8), 0)
         before = m.flags()
         m.position(0, direction * 3600, m.RETURNER)
@@ -156,11 +157,18 @@ class V4Tests(unittest.TestCase):
 
     def test_exact_replay_status_digests_and_mixed_new_hooks(self):
         receipt = json.loads(RECEIPT.read_text())
-        for key, value in self.evidence.items():
-            self.assertEqual(digest(value), digest(receipt[key]), key)
+        from mod_editor.core import nfl2k5_xbe_space as space
+        historical = replay_edits(self.base, receipt, 'legacy')
+        allocated = space.apply(historical, tuple(tuple(r) for r in receipt['union_requests']),
+                                scaleout=True)[0]
+        self.assertEqual(hashlib.sha256(allocated).hexdigest(), receipt['union_allocated_sha256'])
+        for old in (historical, replay_edits(allocated, receipt, 'relocated')):
+            self.assertEqual(dk.status(old), 'foreign')
+            with self.assertRaises(ValueError):
+                dk.apply(old)
         for source, expected, name in ((self.base, self.legacy, 'legacy'),
                                        (self.allocated, self.grown, 'relocated')):
-            self.assertEqual(replay_edits(source, receipt, name), expected)
+            self.assertEqual(replay_edits(source, self.evidence, name), expected)
             self.assertEqual(dk.status(expected), 'applied')
             self.assertEqual(dk.apply(expected)[0], expected)
             for section in _sections(expected):
@@ -187,7 +195,11 @@ class V4Tests(unittest.TestCase):
                 key = f'{placement}_{direction:+d}'
                 with self.subTest(case=key):
                     summary, trace = exercise(self, payload, state=state, direction=direction)
-                    self.assertEqual(summary, receipt['cases'][key])
+                    # Preserve v4's behavioral proof while the new owner moves
+                    # writer PCs and keeps the ready descriptor's lifecycle.
+                    for field in ('global_state_writes', 'per_frame_changed_players',
+                                  'free_changed_frames', 'contact', 'windows'):
+                        self.assertEqual(summary[field], receipt['cases'][key][field], field)
                     self.assertEqual(digest(trace), summary['trace_sha256'])
 
     def test_historical_v3_pre_kick_counterexample(self):
@@ -364,6 +376,8 @@ class PublicReceiptTests(unittest.TestCase):
 
 def record():
     V4Tests.setUpClass()
+    if V4Tests.evidence['legacy_output_sha256'] != json.loads(RECEIPT.read_text())['legacy_output_sha256']:
+        raise SystemExit('v4 evidence is historical; use the current version recorder')
     test = V4Tests()
     result = dict(V4Tests.evidence, cases={})
     traces = {}
