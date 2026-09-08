@@ -1,0 +1,78 @@
+{
+  "backend": {
+    "module": "mod_editor/core/nfl2k5_weekly_prep.py",
+    "operation": "write",
+    "command": "python3 -m mod_editor.core.nfl2k5_weekly_prep apply source.xbe new-weekly-prep.xbe --cpu on --remember on"
+  },
+  "classification": "offline-writer-proved",
+  "evidence": [
+    "ASTRA_WEEKLY_PREP_REPORT.md",
+    "docs/mod_editor/weekly_preparation.md",
+    "tests/mod_editor/test_nfl2k5_weekly_prep.py",
+    "tests/mod_editor/test_nfl2k5_weekly_prep_unicorn.py",
+    "tools/nfl2k5_weekly_prep.S"
+  ],
+  "game": "nfl2k5_xbox",
+  "gui": {
+    "default_enabled": false,
+    "expose": true,
+    "mode": "edit",
+    "reason": "EXPERIMENTAL / UNWITNESSED. Off in every preset; protected integration is specified in WIRING.md. The reported TE deficit is not root-caused."
+  },
+  "id": "nfl2k5.franchise.weekly_preparation",
+  "input_constraints": [
+    "Pinned USA XBE or fully verified composed input; reserve the complete owner union before applying.",
+    "Franchise, 32 clubs, preseason/regular season/playoffs and native Weekly Preparation On. CPU clubs prepare for each game; byes have no game bonus.",
+    "Human automatic preparation requires an existing nonempty valid plan. A state-2 plan is already applied and cannot be edited until its game ends.",
+    "Build options are immutable XBE settings. Plans, states, seeds, snapshots and repeat flags already have native save fields. Rebuild from a clean base to change options."
+  ],
+  "portme": [
+    "Wire protected Build/Gameplay Patches/Franchise surfaces and regenerate the production cave manifest before release.",
+    "Witness safety drills, CPU and human prep, played/simulated cleanup, reload and next-season plan reuse."
+  ],
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "rule": "Ship source and recipes; never distribute generated game executable or disc bytes.",
+    "tooling": "source-and-schemas-only"
+  },
+  "runtime": {
+    "status": "not-tested",
+    "scope": "Bounded native instructions on signed Franchise copies prove the safety filter, position/rank mapping, TE/HB/FB same-input parity, CPU native routine parity, automatic dispatch and native serialization. No game boot or played witness.",
+    "evidence": [
+      "ASTRA_WEEKLY_PREP_REPORT.md"
+    ]
+  },
+  "selectors": {
+    "fields": [
+      {
+        "name": "weekly_prep",
+        "required": true,
+        "allowed": "Boolean; false in Basic, Advanced and Experimental; explicit opt-in"
+      },
+      {
+        "name": "weekly_prep_cpu",
+        "required": true,
+        "allowed": "Boolean; false in Basic, Advanced and Experimental; explicit opt-in"
+      },
+      {
+        "name": "weekly_prep_remember",
+        "required": true,
+        "allowed": "Boolean; false in Basic, Advanced and Experimental; explicit opt-in"
+      }
+    ],
+    "notes": "Retail: safeties miss DB drills and CPU clubs skip prep. Patch: repair the filter, optionally prepare CPU clubs and reuse the human plan."
+  },
+  "source_container": {
+    "format": "XBE in XDVDFS",
+    "hash_pins": [
+      "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+    ],
+    "resource": "Eight pinned instruction hooks; 1536-byte RX allocation, no owner RW or RO. Native saved plans retain their existing size and signing contract.",
+    "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+  },
+  "summary": "Include safeties in DB drills, prepare CPU game participants and remember native weekly plans across seasons.",
+  "surface": "schedules_franchise",
+  "title": "Weekly preparation (experimental, unwitnessed)",
+  "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_weekly_prep"
+}

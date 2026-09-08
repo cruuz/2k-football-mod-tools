@@ -14180,3 +14180,184 @@ Boolean levels, early deferral, final union selection, four status surfaces,
 level-change refusal, standalone capability validation and runtime closure.
 No release version, tag, release tests, CI workflow or unrelated GUI changes
 are requested by this job.
+## R65 weekly preparation: protected integration, 2026-09-08
+
+EXPERIMENTAL / UNWITNESSED. Implemented owner: `mod_editor/core/nfl2k5_weekly_prep.py`.
+Native plan reader/writer: `mod_editor/core/nfl2k5_weekly_prep_save.py`.
+Evidence and remaining limits: `ASTRA_WEEKLY_PREP_REPORT.md` and
+`docs/mod_editor/weekly_preparation.md`. Safeties have a proved missing DB
+filter; TE's valid row matches the backs and its reported deficit remains
+unexplained. Do not advertise a proved TE-specific correction.
+
+### Dispatcher and the four status dictionaries
+
+In protected `mod_editor/core/nfl2k5_throw_tuning.py`, import
+`nfl2k5_weekly_prep as weekly_prep_patch`. Add Boolean keyword arguments
+`weekly_prep=False`, `weekly_prep_cpu=False`, `weekly_prep_remember=False` to
+`_apply_all`, `write_xbe_copy` and `write_image_copy`. Forward all three through
+their callers and deferred/final passes. Validate exact bools, including direct
+API calls. Treat either suboption as selecting the owner:
+`weekly_prep = weekly_prep or weekly_prep_cpu or weekly_prep_remember`.
+
+Add `weekly_prep` to `R62_SPACE_KEYS`, all three names to `R62_RUNTIME_KEYS`,
+the validation helper and `_deferred_r62_options` handling. Add the owner flag
+to `_selected_space_requests` and `_xbe_space_adapter`; append
+`weekly_prep_patch.REQUESTS if weekly_prep else ()` to the complete request
+union, and select scaleout when this flag is true. Reserve the full union
+before any grown owner installs code. Add `weekly_prep` to every relevant
+`defer_grown` and any-enabled check so an early pass cannot seal an incomplete
+allocation directory.
+
+Use this settings adapter, with `status` consulting the actual installed bytes:
+
+```python
+class _weekly_prep_adapter:
+    status = staticmethod(weekly_prep_patch.status)
+
+    def __init__(self, cpu, remember):
+        self.cpu, self.remember = cpu, remember
+
+    def apply(self, payload):
+        return weekly_prep_patch.apply(payload, cpu=self.cpu, remember=self.remember)
+```
+
+Add this exact `_apply_all` owner tuple after the allocator entry:
+
+```python
+(weekly_prep, _weekly_prep_adapter(weekly_prep_cpu, weekly_prep_remember),
+ "weekly_prep_patch", "Weekly preparation (experimental, unwitnessed)"),
+```
+
+Extend `_grown_status_fields(payload)` with these fields, deriving suboption
+status from `weekly_prep_patch.read_settings(payload)` rather than requested
+checkbox values:
+
+```python
+prep = weekly_prep_patch.read_settings(payload)
+def prep_component(key):
+    return ("foreign" if prep["status"] == "foreign" else
+            "applied" if prep["status"] == "applied" and prep.get(key) else "retail")
+# Merge into the existing return dictionary:
+"weekly_prep": prep["status"],
+"weekly_prep_cpu": prep_component("cpu"),
+"weekly_prep_remember": prep_component("remember"),
+"weekly_prep_settings": prep,
+```
+
+All four dictionaries already expand `_grown_status_fields`: `read_xbe`
+with `payload`, `read_image` with `payload`, `write_xbe_copy` with `result`,
+and `write_image_copy` with `after`. Verify all four expose these fields.
+Changing CPU/remember settings in an installed owner raises a rebuild error;
+do not turn that refusal into a success receipt. `apply(payload)` without
+explicit options replays installed settings, while its clean-base defaults
+enable both options. The product adapter must always pass explicit booleans.
+
+### Build plan, presets and controls
+
+In protected `mod_editor/core/mod_build.py`, add `BuildPlan` bool fields
+`weekly_prep`, `weekly_prep_cpu`, `weekly_prep_remember`, all defaulting to
+False. Explicitly set all three False in `softdrink_basic`,
+`softdrink_advanced`, and `softdrink_experimental`. This is an opt-in feature
+pending Noah's witness. Validate exact bools, normalize a selected suboption
+to select `weekly_prep`, include the owner in `wants_xbe_patch()` and
+availability, preserve all three fields through project serialization and
+normalization, and forward them through inspection/build/final XBE passes.
+Set all three False in any temporary `replace(plan, ...)` that defers grown
+owners, then restore their requested values together in the final pass.
+No additional archive resource is required.
+
+In protected `mod_editor/gui/gameplay_patches_panel_qt.py`, add these
+`PATCHES` rows and all three keys to `NEEDS_IMAGE`:
+
+```python
+("weekly_prep", "Fix safety drills (experimental)",
+ "EXPERIMENTAL / UNWITNESSED. Retail: DB drills skip both safety positions. "
+ "Patch: include safeties in the same drills as corners. TE drill rows already exist."),
+("weekly_prep_cpu", "CPU teams prepare too",
+ "EXPERIMENTAL / UNWITNESSED. Retail: CPU clubs skip weekly prep. Patch: run "
+ "the native routine before their games with equal low full-drill time for "
+ "starters and backups, then two rest days. Weekly Preparation must be On."),
+("weekly_prep_remember", "Remember my weekly prep",
+ "EXPERIMENTAL / UNWITNESSED. Retail: only marked repeat activities survive "
+ "weekly cleanup and the next season clears the plan. Patch: keep valid "
+ "activities and apply your saved plan before games until you change it. "
+ "Weekly Preparation must be On. An empty plan does nothing."),
+```
+
+In protected `mod_editor/gui/build_panel_qt.py`, use `_option` captions
+`Fix safety drills (experimental)` (32 chars), `CPU teams prepare too`
+(21 chars), and `Remember my weekly prep` (23 chars). Each is under 60 chars.
+Connect suboptions to the owner dependency and project settings. If the owner
+is unchecked, uncheck its suboptions; checking a suboption checks the owner.
+Keep the EXPERIMENTAL / UNWITNESSED help visible. The game's existing Weekly
+Preparation Off switch stops automatic application immediately. The two
+Build suboptions independently disable CPU/human automation on a rebuild.
+Native cleanup can still remove an already applied CPU plan with CPU Off.
+
+### Protected Franchise panel
+
+In `mod_editor/gui/franchise_panel_qt.py`, optionally show the selected league
+club's plan using `read_plan(franchise.to_bytes(), league_ordinal)`. Display
+day, hours, activity ID or a verified localized label, target, repeat flag and
+native state. Use the saved league ordinal, not a team database ID. Say
+`No weekly plan saved. Create one in Weekly Preparation in the game.` for an
+empty plan. Show `Applied for this game` for state 2. Never imply the Build
+remember option itself is a flag in the save. Label the field `Saved weekly
+plan`; automatic behavior depends on the installed XBE settings.
+
+For any future plan editor, use `replace_plan`; it refuses state 2, unknown
+state, malformed activities, unsupported hours/day and out-of-pool player
+targets before mutation. Present that refusal. Pass the resulting body
+through the panel's existing signed-copy container writer and verify readback.
+`replace_plan` returns `signed=False` deliberately; signing happens only in
+the existing writer. Do not write a companion JSON and call it saved in-game.
+The existing native plans/state/seeds/snapshots/repeat bits are serialized by
+the game, including after cold reload. No spare field, footer or new save
+format is needed. Do not repurpose the career footer or native season tail.
+
+### Packaging, capability and release validation
+
+Add these lines to protected `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_weekly_prep.py
+mod_editor/core/nfl2k5_weekly_prep_code.py
+mod_editor/core/nfl2k5_weekly_prep_save.py
+docs/mod_editor/weekly_preparation.md
+docs/mod_editor/nfl2k5_weekly_prep_capability.json
+```
+
+Add `mod_editor.core.nfl2k5_weekly_prep`,
+`mod_editor.core.nfl2k5_weekly_prep_code`, and
+`mod_editor.core.nfl2k5_weekly_prep_save` to the lazy runtime-closure import
+list in protected `packaging/check_2k5_mod_studio_runtime.py`. These runtime
+modules require only stdlib and existing shipped core modules. GNU assembler,
+Capstone and Unicorn are development/test dependencies, not runtime imports.
+
+Merge the complete object in
+`docs/mod_editor/nfl2k5_weekly_prep_capability.json` into
+`mod_editor/capabilities/registry.v1.json`. It uses the existing
+`schedules_franchise` surface, classification `offline-writer-proved`, runtime
+`not-tested`, and schema/file-check compatible `python3 -m` commands. Do not
+promote it to a played witness based on instruction tests.
+The draft passed strict registry rules and all of its new file/module checks.
+Full file checking of the inherited registry currently stops at the missing
+`docs/research/apf_audio.md`; resolve that pre-existing packaging/evidence
+issue during integration as well.
+
+The gate union, all manifest owner/request lists and the budget fixture are
+already updated. The Auto Save prerequisite validator now accepts only a
+fully recognized weekly-prep wrapper on the separate pre-simulation call.
+Both owners retain their original complete validation. No MyCareer, read
+option, ESPN or coverage-trail implementation was edited. The gate helper
+resolves the existing Historic Reload public writer at call time so the
+recorder sees the real byte edit instead of a captured unobserved adapter.
+
+Claude must regenerate protected `data/nfl2k5_cave_reservations.json` with the
+normal `tools/nfl2k5_cave_oracle.py manifest` command after wiring. This work
+uses an observed XBE-only scratch manifest for standalone ownership tests;
+it is not a new disc build or release manifest. The system drive was already
+below the 100 GB reserve, so no disposable disc was built. Re-run both XBE
+gates, weekly-prep suites, Auto Save suites, registry checks and clean-stage
+runtime closure after protected integration. Keep all features explicitly
+experimental until Noah completes the report's witness list.

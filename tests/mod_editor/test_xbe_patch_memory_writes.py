@@ -185,6 +185,9 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_coverage_trail as coverage_trail
         if coverage_trail.status(cls.patched) != "applied" or coverage_trail.apply(cls.patched)[0] != cls.patched:
             raise AssertionError("Coverage trail missing from the complete owner union")
+        from mod_editor.core import nfl2k5_weekly_prep as weekly_prep
+        if weekly_prep.status(cls.patched) != "applied" or weekly_prep.apply(cls.patched)[0] != cls.patched:
+            raise AssertionError("Weekly prep missing from the complete owner union")
         from mod_editor.core import nfl2k5_franchise_autosave as autosave
         if autosave.status(cls.patched) != "applied" or autosave.apply(cls.patched)[0] != cls.patched:
             raise AssertionError("Franchise Auto Save missing from the complete owner union")
