@@ -25,9 +25,7 @@ ZONE_HELP = (
     "EXPERIMENTAL / UNWITNESSED. Retail: a shallow deep-zone corner can start by running. "
     "Patch: cap the initial depth request. Later movement can still turn him away. "
     "This does not add bail technique or change ball reaction.")
-FRANCHISE_HELP = (
-    "Retail: Owned players form the game roster and IR has no in-season returns. Patch: 2026 franchise rules "
-    "are not available yet. Saved counters and correct player results still need integration. EXPERIMENTAL / UNWITNESSED.")
+FRANCHISE_HELP = tt.franchise_2026_patch.UI_TEXT
 OPTIONS = (
     ("momentum_collisions", "Weight and speed in contact (experimental)", tt.momentum_patch.COLLISION_HELP_TEXT),
     ("read_option_runtime", "Read option mesh controls (experimental)", tt.read_option_patch.HELP_TEXT),

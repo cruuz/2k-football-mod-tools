@@ -918,3 +918,4 @@ docs/mod_editor/match_coverage/sd-match-01.png
 docs/mod_editor/match_coverage/sd-match-02.png
 docs/mod_editor/match_coverage/sd-match-03.png
 docs/mod_editor/match_coverage/sd-match-04.png
+ASTRA_FRANCHISE_2026_RUNTIME_REPORT.md

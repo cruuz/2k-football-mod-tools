@@ -579,7 +579,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_extended_visual_catalog.py": "03e838de98c626322f30df461c91bb9f648617fcc472eb8a7a1024cbb9957708",
         "mod_editor/core/nfl2k5_extended_visual_io.py": "df333b8d89b5b6f9259e300f688967500e413b5d31c5bfb73a3e719657e13ba0",
         "mod_editor/core/nfl2k5_formation_play_writer.py": "fb09bdd724874d0a03488e12a046d8107221e99b52c77df21c04a7181d3508bf",
-        "mod_editor/core/nfl2k5_franchise_2026.py": "328c4bc9d22eeb77c426833f62d48bea8f3f95648d362156f897b548bd7bd41e",
+        "mod_editor/core/nfl2k5_franchise_2026.py": "ce242e8cb9842868b91425cf0de6dc3352f9f4fdf95202e8f220fc64c89d4b49",
         "mod_editor/core/nfl2k5_franchise_2026_code.py": "3aaa62bc4282a7605823b30d20936d388916d2f5c51a4a4774f85c0af67efcfa",
         "mod_editor/core/nfl2k5_franchise_autosave.py": "39fefc51d2b95fb56730ff1359c3fa9b73e0a4aa9302f38a32905efea791e3d3",
         "mod_editor/core/nfl2k5_franchise_autosave_code.py": "bf06126a790642048aae92d57d3815d445560bc012ed02df5917648bcceec183",
