@@ -29,6 +29,7 @@ try:
 except ImportError:
     uni = None
     Cs = None
+    x86 = None
 
 RETAIL = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION", "/media/noah/Storage/for codex 1.0/extracted")) / "ESPN NFL 2K5 (USA)" / "default.xbe"
 PRIVATE_REASON = f"private NFL 2K5 USA default.xbe required at {RETAIL}; no proprietary fixture is distributed"

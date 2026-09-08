@@ -212,7 +212,9 @@ class FranchisePanel(QWidget):
         if not visible and self._host.currentIndex() == self._host_index:
             self._host.setCurrentIndex(0)
         self._host.setTabVisible(self._host_index, visible)
-        self._host.tabBar().setVisible(visible)
+        # the bar stays whenever another page besides Roster exists (the disc-only ESPN Anniversary tab)
+        others = any(self._host.isTabVisible(i) for i in range(self._host.count()) if i not in (0, self._host_index))
+        self._host.tabBar().setVisible(visible or others)
 
     @property
     def active(self) -> bool:

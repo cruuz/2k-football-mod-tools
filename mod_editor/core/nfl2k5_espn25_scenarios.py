@@ -597,7 +597,7 @@ def main(argv=None):
             if args.command == "inspect":
                 result = {"label": LABEL, "moments": [{**catalog.moment(i), "bindings": {s: catalog.binding(i, s) for s in ("away", "home")}} for i in range(25)], "csv_columns": CSV_COLUMNS}
             elif args.command == "export-csv":
-                Path(args.output).write_text(catalog.export_csv(args.moment, args.side), encoding="utf-8")
+                Path(args.output).write_text(catalog.export_csv(args.moment, args.side), encoding="utf-8", newline="\n")
                 result = {"csv": args.output, "shared_uses": catalog.shared_uses(catalog.binding(args.moment, args.side)["outer"])}
             elif args.command == "plan":
                 result = catalog.prepare(read_json(args.edits))

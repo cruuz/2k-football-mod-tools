@@ -27,7 +27,7 @@ from number_sheet_quality_cases import author_sheet
 
 def proposed_source():
     path = "mod_editor/gui/studio_qt.py"
-    original = (ROOT / path).read_text()
+    original = (ROOT / path).read_text(encoding="utf-8")
     if "def _review_digit_sheet_preview(" in original:
         return original
     return apply_fixture(original, path, "number_sheet_quality_wiring.patch")
@@ -35,7 +35,7 @@ def proposed_source():
 
 def apply_fixture(original, path, fixture):
     source = original.splitlines(True)
-    sections = (ROOT / "tests/fixtures" / fixture).read_text().split("--- a/")[1:]
+    sections = (ROOT / "tests/fixtures" / fixture).read_text(encoding="utf-8").split("--- a/")[1:]
     section = next(s for s in sections if s.startswith(path + "\n"))
     lines = ("--- a/" + section).splitlines(True)
     assert lines[:2] == [f"--- a/{path}\n", f"+++ b/{path}\n"]
@@ -58,7 +58,7 @@ def apply_fixture(original, path, fixture):
 
 class NumberSheetRuntimeWiringTests(unittest.TestCase):
     def proposal(self, path):
-        original = (ROOT / path).read_text()
+        original = (ROOT / path).read_text(encoding="utf-8")
         if ('"mod_editor.core.nfl2k5_digit_preview"' in original
                 or 'mod_editor/core/nfl2k5_digit_texture.py' in original):
             return original

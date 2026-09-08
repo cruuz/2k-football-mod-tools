@@ -18,19 +18,19 @@ from mod_editor.core.errors import ValidationError
 
 
 def proposed_sources():
-    lines = (ROOT / 'tests/fixtures/discord_bugs_2_wiring.patch').read_text().splitlines(True)
+    lines = (ROOT / 'tests/fixtures/discord_bugs_2_wiring.patch').read_text(encoding="utf-8").splitlines(True)
     paths = [line[6:].strip() for line in lines if line.startswith('--- a/')]
     # The proposal was integrated on the stack on 2026-09-07 (the protected patch is applied),
     # so these checks run against the wired modules. ASTRA_TEST_PROPOSAL=1 re-applies the
     # historical fixture in memory, which only works against the pre-integration base.
     if os.environ.get('ASTRA_TEST_PROPOSAL') != '1':
-        return {path: (ROOT / path).read_text() for path in paths}
+        return {path: (ROOT / path).read_text(encoding="utf-8") for path in paths}
     result, i = {}, 0
     while i < len(lines):
         assert lines[i].startswith('--- a/')
         path = lines[i][6:].strip()
         assert lines[i+1].strip() == '+++ b/' + path
-        original = (ROOT / path).read_text().splitlines(True)
+        original = (ROOT / path).read_text(encoding="utf-8").splitlines(True)
         output, cursor = [], 0
         i += 2
         while i < len(lines) and lines[i].startswith('@@'):

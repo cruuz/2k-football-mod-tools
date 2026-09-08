@@ -585,7 +585,8 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
             continue
         if not stat.S_ISREG(info.st_mode):
             raise ReleaseCheckError(f"special release filesystem entry is forbidden: {relative}")
-        if info.st_nlink != 1:
+        # more than one link is a hard link; Windows directory-listing stats report 0 (unknown), never 1
+        if info.st_nlink > 1:
             raise ReleaseCheckError(f"hardlinked release file is forbidden: {relative}")
         if info.st_mode & stat.S_IWOTH:
             raise ReleaseCheckError(f"world-writable release file is forbidden: {relative}")

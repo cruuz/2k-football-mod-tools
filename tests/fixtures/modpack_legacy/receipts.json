@@ -15,9 +15,10 @@
     "format": 2,
     "base_size": 12021779,
     "result_size": 24045568,
-    "base_sha256": "f42565e2fe3c17307423972ff14bb54f5edfc102be51d62605cb765bf224a36e",
-    "result_sha256": "fc9f93fee1b012eefe02c945f396187779f758a33ff981f820d9da94f030782e",
-    "pack_sha256": "1af56821a6bcd6f669ca489998be544970db00b94bbeaa142bcb4c5e7cb9f40d"
+    "base_sha256": "ce26bf1716fe446a74f574d4535c40dbcc8632f81df8adb0731757fed9789885",
+    "result_sha256": "a31e610fb09dac057ca493fa70cffa12bd3f6ec548b674b683b9edc57eebeda6",
+    "pack_sha256": "d6c1c171e21affd29a462e4aa6cc47a4b95e32a344c5d31ebd5fdb8876ce1b43",
+    "regenerated": "2026-09-08: same tag exporter, re-exported after the position-pools fixture gained the OLB filter-list sites"
   },
   {
     "file": "beta-61-basic.2k5patch",
@@ -35,8 +36,9 @@
     "format": 2,
     "base_size": 12021779,
     "result_size": 24045568,
-    "base_sha256": "f42565e2fe3c17307423972ff14bb54f5edfc102be51d62605cb765bf224a36e",
-    "result_sha256": "0aff3171f27dcb28fde33895dd90912f166caac65a1fda9dc8e6d9cd8db47979",
-    "pack_sha256": "1419c9cfb95172a7e3d7424973d8be5259692884f52b22a3a5b672f2a4d8d938"
+    "base_sha256": "ce26bf1716fe446a74f574d4535c40dbcc8632f81df8adb0731757fed9789885",
+    "result_sha256": "0df1966fc7aaadeb76607a3b6cf61338d42a6c571fdb7f29083ed3f8468bea34",
+    "pack_sha256": "86ce884ae1d31758eed73c335013e47640ba6684e0d4d4bf797831862ef72c75",
+    "regenerated": "2026-09-08: same tag exporter, re-exported after the position-pools fixture gained the OLB filter-list sites"
   }
 ]

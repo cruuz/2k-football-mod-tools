@@ -20,11 +20,11 @@ from tests.mod_editor.test_roster_save_to_disc import signed, save_files, image_
 
 def proposed_source():
     path = 'mod_editor/gui/roster_editor_panel_qt.py'
-    text = (ROOT / path).read_text()
+    text = (ROOT / path).read_text(encoding="utf-8")
     if '    def save_roster_to_disc(' in text:
         return text
     source = text.splitlines(True)
-    lines = (ROOT / 'tests/fixtures/roster_save_to_disc_wiring.patch').read_text().splitlines(True)
+    lines = (ROOT / 'tests/fixtures/roster_save_to_disc_wiring.patch').read_text(encoding="utf-8").splitlines(True)
     assert lines[:2] == [f'--- a/{path}\n', f'+++ b/{path}\n']
     output, cursor, i = [], 0, 2
     while i < len(lines):
@@ -103,8 +103,8 @@ class WiringTests(unittest.TestCase):
         self.panel.roster_edits_changed.connect(emitted.append)
         result = self.panel.save_roster_to_disc(self.output)
         self.assertEqual(emitted, [str(self.output)])
-        self.assertEqual(self.output.read_text(), importer.json_text(result.edits))
-        self.assertEqual(self.output.with_suffix('.receipt.json').read_text(), result.details)
+        self.assertEqual(self.output.read_text(encoding="utf-8"), importer.json_text(result.edits))
+        self.assertEqual(self.output.with_suffix('.receipt.json').read_text(encoding="utf-8"), result.details)
         self.assertEqual(self.panel._edits_path, self.output)
         self.assertEqual(self.panel.document.to_body(), prior)
         self.assertEqual(self.panel._source_kind, 'save')

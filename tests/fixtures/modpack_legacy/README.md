@@ -19,3 +19,7 @@ offset 123: `beta-60 basic`, `beta-60 advanced`, `beta-61 basic`, or
 `beta-61 advanced`. Export uses `recipe=False`. The regression reconstructs
 these expected images independently, checks every byte in blocks, and pins
 both before/result SHA-256s and the unchanged archive SHA-256.
+
+The two Advanced packs were re-exported on 2026-09-08 with the same tag exporters (unchanged `modpack.py` and
+`modpack_ops.py` from `beta-60` and `beta-61`, loaded over the current package) because the synthetic retail fixture
+gained the Outside Linebackers filter-list sites with the one-pool positions change; the Basic packs are untouched.

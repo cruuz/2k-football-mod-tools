@@ -163,7 +163,7 @@ class Espn25Panel(QtWidgets.QWidget):
             with tempfile.TemporaryDirectory(prefix="espn25-authoring-") as temporary:
                 path = Path(temporary).resolve() / "edits.json"
                 espn.require(len(text.encode("utf-8")) <= espn.MAX_JSON, "JSON exceeds 2 MiB")
-                path.write_text(text, encoding="utf-8")
+                path.write_text(text, encoding="utf-8", newline="\n")
                 edits = espn.read_json(path)
         else:
             edits = {"schema": espn.SCHEMA}
@@ -205,7 +205,7 @@ class Espn25Panel(QtWidgets.QWidget):
             return
         path, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Export Anniversary roster", "", "CSV (*.csv)")
         if path:
-            self._guard(lambda: Path(path).write_text(self.csv_text(), encoding="utf-8"))
+            self._guard(lambda: Path(path).write_text(self.csv_text(), encoding="utf-8", newline="\n"))
 
     def _json_dialog(self):
         path, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Load scenario edits", "", "JSON (*.json)")
