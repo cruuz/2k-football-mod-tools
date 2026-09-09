@@ -158,6 +158,10 @@ class _Source:
 
 
 class _Facade:
+    def revert_field_art(self, key):
+        self.reverted_field_key = key
+        return False  # This fixture stages a panel-only PNG, not a session edit.
+
     def __init__(self, catalog: ApfCatalog, *, ready: bool = True):
         self.catalog = catalog
         self.source_ready = ready
@@ -573,6 +577,7 @@ class ApfFieldArtGuiTests(unittest.TestCase):
                 self.assertEqual(page.editor.status.text(), "● Staged")
 
                 page.editor._revert()
+                self.assertEqual(page.editor.facade.reverted_field_key, page.editor.current_target().key)
                 self.application.processEvents()
                 self.assertIsNone(page.editor.staged_path(target))
                 self.assertTrue(page.editor.build_button.isEnabled())

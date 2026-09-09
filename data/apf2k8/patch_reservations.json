@@ -1,0 +1,10 @@
+{
+  "schema": "apf2k8_patch_reservations/v1",
+  "runtime_status": "UNWITNESSED",
+  "ranges": [
+    {"owner": "legacy_franchise_example", "start": "0x84D09100", "end_inclusive": "0x84D0DFFF"},
+    {"owner": "apf2k8_playcall_patch", "start": "0x84D0E000", "end_inclusive": "0x84D0EFFF"},
+    {"owner": "legacy_franchise_example", "start": "0x84D0F000", "end_inclusive": "0x84D0FFFF"}
+  ],
+  "note": "Exclusive integration ownership, not automatic patch composition. The pass-fetch generator checks the entire 4096-byte page. External franchise recipes must honor this split before co-enabling patches."
+}

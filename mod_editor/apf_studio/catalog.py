@@ -794,6 +794,9 @@ def _capability_category(surface: str, capability_id: str) -> ApfCategory:
         return ApfCategory.PLAYBOOKS
     if surface in {"schedules_franchise", "franchise_restoration_cross_title", "saves"}:
         return ApfCategory.FRANCHISE
+    if (capability_id.startswith("apf2k8.cpu_ai_draft.play_design.")
+            or capability_id == "apf2k8.gameplay_tuning_sliders.coverage_geometry"):
+        return ApfCategory.PLAYBOOKS
     if surface in {"catching_drops", "cpu_ai_draft", "gameplay_tuning_sliders"}:
         return ApfCategory.GAMEPLAY
     return ApfCategory.ALL_ASSETS

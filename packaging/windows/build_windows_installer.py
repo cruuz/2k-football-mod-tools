@@ -57,8 +57,12 @@ WHEELS = (
     "PyQt5-Qt5==5.15.2",
     "PyQt5-sip==12.18.0",
     "Pillow==11.3.0",
+    "capstone==5.0.7",
 )
 WHEEL_SHA256 = {
+    # PyPI capstone 5.0.7 release metadata, including its native Windows DLL.
+    "capstone-5.0.7-py3-none-win_amd64.whl":
+        "4ab8bcb7da8f221ff45926ca168ca33e76f7237d06fbf3c10780002faa2670e1",
     "PyQt5-5.15.11-cp38-abi3-win_amd64.whl":
         "bdde598a3bb95022131a5c9ea62e0a96bd6fb28932cc1619fd7ba211531b7517",
     "PyQt5_Qt5-5.15.2-py3-none-win_amd64.whl":

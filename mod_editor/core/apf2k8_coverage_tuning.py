@@ -41,7 +41,7 @@ KNOB_RANGES = {
 def status() -> dict[str, object]:
     return {"schema": SCHEMA, "status": "offline writer and reparse verifier; in-game UNWITNESSED",
             "provider_kind": PROVIDER_KIND, "runtime_witnessed": False,
-            "registered": False, "rendered": False, "lane": "MASTER PLAY pack data",
+            "registered": True, "rendered": True, "lane": "MASTER PLAY pack data",
             "scope": "shared opcode-0x0D coordinates and extents; no carry/match rule",
             "base_and_tu": "same proved decoder layout; no XEX patch required"}
 

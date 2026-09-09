@@ -8,7 +8,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import (
     QAbstractItemView, QComboBox, QFileDialog, QFormLayout, QHBoxLayout,
     QLabel, QPlainTextEdit, QPushButton, QTableWidget, QTableWidgetItem,
@@ -25,9 +25,13 @@ from mod_editor.core.errors import ValidationError
 class BookIdentityPanel(QWidget):
     """Review serialized sharing, then build one clone or a scheme selection."""
 
-    def __init__(self, run_task):
+    modifiedChanged = pyqtSignal()
+
+    def __init__(self, run_task, *, facade=None):
         super().__init__()
         self.run_task = run_task
+        self.facade = facade
+        self._busy = False
         self.source_index = None
         self.reviewed = None
         self._generation = 0
@@ -72,6 +76,14 @@ class BookIdentityPanel(QWidget):
         self.build = QPushButton("Build new game folder…")
         row.addWidget(self.review)
         row.addWidget(self.build)
+        self.stage = QPushButton("Stage scheme presets in project")
+        self.revert_presets = QPushButton("Revert staged presets")
+        self.stage.setVisible(facade is not None)
+        self.revert_presets.setVisible(facade is not None)
+        row.addWidget(self.stage)
+        row.addWidget(self.revert_presets)
+        self.stage.clicked.connect(self._stage_presets)
+        self.revert_presets.clicked.connect(lambda: self._stage_presets(clear=True))
         layout.addLayout(row)
         self.status = QLabel("Choose a game to inspect all 40 teams and their shared books.")
         self.status.setWordWrap(True)
@@ -102,11 +114,40 @@ class BookIdentityPanel(QWidget):
         self.build.setEnabled(False)
         if self.source_index is not None:
             self.status.setText("Select an action and review its current result before building.")
+        self.set_context()
         cloning = self.action.currentData() == "clone"
         for box in (self.team, self.label, self.donor):
             box.setEnabled(cloning and self.source_index is not None)
         self.review.setEnabled(self.source_index is not None and
                                (not cloning or self.label.currentData() is not None))
+
+    def set_context(self):
+        ready = self.facade is not None and self.facade.source_ready and not self._busy
+        self.stage.setEnabled(ready and self.action.currentData() != "clone")
+        self.revert_presets.setEnabled(ready)
+
+    refresh = set_context
+
+    def set_busy(self, busy):
+        self._busy = busy
+        self.set_context()
+
+    def _stage_presets(self, _checked=False, *, clear=False):
+        selected = self.action.currentData()
+        ids = () if clear else presets.PRESET_IDS if selected == "all-presets" else (selected,)
+        session = self.facade.session
+        snapshot = tuple(session.modifications)
+        def work(progress):
+            with self.facade._session_lock:
+                if self.facade.session is not session or tuple(session.modifications) != snapshot:
+                    raise ValidationError("The source/project changed before preset staging; review it again.")
+                return self.facade.apply_scheme_presets(ids, progress)
+        def complete(reports):
+            self.receipt.setPlainText(json.dumps(reports, indent=2, sort_keys=True))
+            self.status.setText("Scheme presets staged after current CPU edits. Build the complete project. "
+                                "Presets own membership/tags in their recipe records. Gameplay UNWITNESSED.")
+            self.modifiedChanged.emit()
+        self.run_task("Staging scheme presets", work, complete, True)
 
     def _choose_source(self):
         folder = QFileDialog.getExistingDirectory(self, "Choose built APF game folder")

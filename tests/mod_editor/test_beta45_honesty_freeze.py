@@ -22,7 +22,7 @@ class Beta45HonestyFreezeTests(unittest.TestCase):
         from mod_editor.core.update_check import BUILD_RELEASE_TAG
 
         self.assertEqual(mod_editor.__version__, "1.0.0rc87")
-        self.assertEqual(apf_version, "0.1.0-alpha.84")
+        self.assertEqual(apf_version, "0.1.0-alpha.85")
         self.assertEqual(BUILD_RELEASE_TAG, "beta-63.1")
 
     def test_the_shell_shows_both_release_identities(self) -> None:

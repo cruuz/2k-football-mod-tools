@@ -44,8 +44,23 @@ def check_composition(modifications) -> None:
     designs = [m for m in items if m.kind == PROVIDER_KIND]
     if len(designs) > 1:
         raise ValidationError("Only one atomic APF design plan may be staged.")
-    if designs and any(m.kind in {"formation_package_map", "play_assignment_route", "formation_alignment", "splb_book_membership"} for m in items):
-        raise ValidationError("Design Play/Formation owns MASTER and its CPU additions. Move the staged route, alignment, package or Fine-tune edits into the design plan, or revert them before staging.")
+    conflicts = {
+        "formation_package_map": "Who lines up (formation_package_map)",
+        "play_assignment_route": "Assignment Routes (play_assignment_route)",
+        "formation_alignment": "Formation Alignment (formation_alignment)",
+        "splb_book_membership": "Fine-tune Plays / CPU Audibles (splb_book_membership)",
+        "coverage_geometry": "Coverage Geometry (coverage_geometry)",
+        "apf_scheme_presets": "Scheme Presets (apf_scheme_presets)",
+    }
+    if designs:
+        for item in items:
+            if item.kind in conflicts:
+                raise ValidationError(
+                    "Design Play/Formation (apf_play_design) conflicts with "
+                    + conflicts[item.kind]
+                    + ". Build them separately or revert one before staging; "
+                    "a common MASTER/CPU compiler is required.")
+
 
 
 def stage_plan(session, plan: dict) -> dict:

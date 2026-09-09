@@ -86,7 +86,7 @@ jobs:
       - name: Install Python dependencies (PyQt5, Pillow)
         run: |
           python -m pip install --upgrade pip
-          python -m pip install PyQt5 Pillow
+          python -m pip install PyQt5 Pillow capstone==5.0.7
 
       # The reviewed product catalogs and bundled extract-xiso binaries are
       # intentionally gitignored so a normal checkout stays lean. Hydrate only
@@ -404,7 +404,7 @@ jobs:
       - name: Install Python dependencies (PyQt5, Pillow)
         run: |
           python -m pip install --upgrade pip
-          python -m pip install PyQt5 Pillow
+          python -m pip install PyQt5 Pillow capstone==5.0.7
 
       - name: Stage and run BOTH retail-free release gates
         shell: bash

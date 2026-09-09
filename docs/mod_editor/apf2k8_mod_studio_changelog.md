@@ -1,5 +1,37 @@
 # APF 2K8 Mod Studio Changelog
 
+## Unreleased (APF wave 2026-09-09)
+
+Product identity: **0.1.0-alpha.85**. All new gameplay is **UNWITNESSED**.
+
+- Design Plays / Formations: native APF codec, bounded play/formation authoring,
+  all three alignment variants, concept recipes, defensive assignments and
+  CPU-book calls are offline-proved and integrated with projects and Build.
+  Spy and five-step cadence remain hidden/deferred.
+- Coverage Geometry (experimental): four shared-zone knobs, source defaults,
+  complete shared-use previews, Undo/Revert and numeric projects. Coverage
+  precedes package maps/routes in one verified MASTER build. Base/TU consumers
+  are mapped; receiver-carry behavior remains unproved.
+- Book Identity: every Build reports final team/resource sharing. Independent
+  CPU-book cloning is an offline-proved final copy step after all pack edits;
+  runtime consumption and TU compatibility remain UNWITNESSED.
+- Wide Zone, Spread-to-Run and Pro Power: offline-proved preset review/copy
+  builds and normal project staging after existing CPU-book selectors.
+- CPU Play Calling: offline-proved audible balancing, personnel availability,
+  empty/unreachable formation guards and secondary-mask warnings. General CPU
+  situational selection and cross-formation audibles remain unproved.
+- BASE/TU pass-fetch TE bias: verified authored Xenia TOML export, every down,
+  emulator-only, UNWITNESSED; main CPU weighted picker unchanged. The patch
+  exclusively reserves 0x84D0E000..0x84D0EFFF. Capstone 5.0.7 is packaged for
+  Windows and checked in the configured runtime.
+- PS3 APFe bundles: paired logo/endzone import, destination review, dirty state,
+  project refresh and Revert. Crest mips regenerate; Field Art preserves old
+  mip tails and format-59 endzones remain read-only. Allocation checks remain
+  mandatory. PS3 roster/texture probes remain read-only diagnostics.
+- Registries, APF release closure, desktop/runtime gates and offscreen replay
+  cover the integrated wave. See [wave guide](apf_wave_2026_09_09.md) for scope
+  and [PS3 import guide](ps3_bundle_import.md) for format restrictions.
+
 ## 0.1.0-alpha.84 — maintenance identity for Beta 53 — 2026-09-02
 
 No APF feature change. This identity rides along with Beta 53, the 2K5 release

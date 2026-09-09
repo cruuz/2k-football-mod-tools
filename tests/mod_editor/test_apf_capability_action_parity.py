@@ -85,7 +85,17 @@ class CapabilityActionParityTests(unittest.TestCase):
                     self.assertTrue(
                         hasattr(importlib.import_module(module_name), function_name)
                     )
-                    self.assertIn("copied", binding.output_kind)
+                    if capability_id == "apf2k8.playbooks.pass_fetch_te_bias":
+                        # This one-shot writer exports authored emulator code,
+                        # not a copied game. Pin its complete export contract.
+                        self.assertEqual(binding.output_kind, "authored-xenia-patch-toml")
+                        self.assertEqual(binding.one_shot_target,
+                                         "mod_editor.core.apf2k8_playcall_patch:write_patch")
+                        self.assertIn(ApfProductAction.EXPORT, binding.actions)
+                        self.assertIsNone(binding.replace_method)
+                        self.assertIn("UNWITNESSED", importlib.import_module(module_name).status().upper())
+                    else:
+                        self.assertIn("copied", binding.output_kind)
                 else:
                     self.assertIn(ApfProductAction.REPLACE, binding.actions)
                     self.assertIn(ApfProductAction.REVERT, binding.actions)

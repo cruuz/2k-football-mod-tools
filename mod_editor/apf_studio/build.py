@@ -37,6 +37,9 @@ from mod_editor.core.apf2k8_splb_writer import (
     decode_membership_payload as decode_splb_membership_payload,
 )
 from mod_editor.core.errors import ValidationError
+from mod_editor.core import apf2k8_coverage_tuning as coverage
+from mod_editor.core.apf2k8_book_identity import disc_book_identity_report
+from . import play_design_service as play_design, coverage_service, scheme_service
 
 from .backend import ensure_tools_importable
 from .models import (
@@ -829,6 +832,10 @@ class ApfBuildService:
         edits = tuple(sorted(modifications, key=lambda item: item.asset_id))
         if len({item.asset_id for item in edits}) != len(edits):
             raise BuildError("The same APF asset was selected more than once")
+        try:
+            play_design.check_composition(edits)
+        except ValidationError as exc:
+            raise BuildError(str(exc)) from exc
         crest_designs = tuple(
             item for item in edits if item.kind == HELMET_CREST_DESIGN_KIND
         )
@@ -866,6 +873,9 @@ class ApfBuildService:
         uniform_equipment_color_group: list[Modification] = []
         play_assignment_route_group: list[Modification] = []
         package_map_group: list[Modification] = []
+        coverage_group: list[Modification] = []
+        play_design_group: list[Modification] = []
+        scheme_group: list[Modification] = []
         splb_membership_group: list[Modification] = []
         helmet_crest_design_group: list[Modification] = []
         audo_overlay_group: list[Modification] = []
@@ -911,6 +921,12 @@ class ApfBuildService:
                 play_assignment_route_group.append(modification)
             elif modification.kind == PACKAGE_MAP_KIND:
                 package_map_group.append(modification)
+            elif modification.kind == coverage.PROVIDER_KIND:
+                coverage_group.append(modification)
+            elif modification.kind == play_design.PROVIDER_KIND:
+                play_design_group.append(modification)
+            elif modification.kind == scheme_service.PROVIDER_KIND:
+                scheme_group.append(modification)
             elif modification.kind == SPLB_MEMBERSHIP_KIND:
                 splb_membership_group.append(modification)
             elif modification.kind == HELMET_CREST_DESIGN_KIND:
@@ -1279,10 +1295,11 @@ class ApfBuildService:
                 )
             compiled[outer_index] = (result.entry_bytes, row)
             edit_rows.append(row)
-        if play_assignment_route_group or package_map_group:
+        if play_assignment_route_group or package_map_group or coverage_group:
             outer_index, entry_bytes, row = self._compile_master_play_edits(
                 routes=tuple(play_assignment_route_group),
                 package_maps=tuple(package_map_group),
+                coverage_profiles=tuple(coverage_group),
             )
             if outer_index in compiled:
                 raise BuildError(
@@ -1291,6 +1308,41 @@ class ApfBuildService:
                 )
             compiled[outer_index] = (entry_bytes, row)
             edit_rows.append(row)
+        if scheme_group:
+            if len(scheme_group) != 1:
+                raise BuildError("Only one Scheme Presets profile may be staged")
+            profile = scheme_group[0]
+            try:
+                recipes = scheme_service.read_profile(profile)
+                changes = []
+                for item in splb_membership_group:
+                    change = decode_splb_membership_payload(item.replacement_path.read_bytes(), item.asset_id)
+                    if change != splb_change_from_mapping(item.metadata):
+                        raise ValidationError("Stock-playbook edit metadata changed")
+                    changes.append(change)
+                results = scheme_service.compile_recipes(self.source.index_0a, recipes, changes)
+            except (OSError, ValidationError) as exc:
+                raise BuildError(f"Could not compile Scheme Presets: {exc}") from exc
+            preset_outers = set()
+            for outer_index, entry_bytes, report in results:
+                if outer_index in compiled:
+                    raise BuildError(f"Scheme Presets collide with another edit at outer {outer_index}")
+                preset_outers.add(outer_index)
+                selected = tuple(m for m, c in zip(splb_membership_group, changes) if c.outer_index == outer_index)
+                all_mods = (*selected, profile)
+                row = {
+                    "asset_ids": tuple(m.asset_id for m in all_mods),
+                    "kind": scheme_service.PROVIDER_KIND, "outer_index": outer_index,
+                    "replacement_payload_sha256s": {m.asset_id: m.replacement_sha256 for m in all_mods},
+                    "entry_size": len(entry_bytes), "entry_sha256": _hash_bytes(entry_bytes),
+                    "writer_schema": scheme_service.SCHEMA,
+                    "writer_mode": "selectors_then_scheme_preset",
+                    "verification": report, "personnel_availability": report["personnel_availability"],
+                    "runtime_status": "UNWITNESSED",
+                }
+                compiled[outer_index] = (entry_bytes, row)
+                edit_rows.append(row)
+            splb_membership_group = [m for m, c in zip(splb_membership_group, changes) if c.outer_index not in preset_outers]
         if splb_membership_group:
             for outer_index, entry_bytes, row in self._compile_splb_membership(
                 tuple(splb_membership_group)
@@ -1300,6 +1352,27 @@ class ApfBuildService:
                         "Fine-tune Plays edits collide with another edit at outer "
                         f"{outer_index}"
                     )
+                compiled[outer_index] = (entry_bytes, row)
+                edit_rows.append(row)
+        for modification in play_design_group:
+            try:
+                result = play_design.compile_modification(self.source.index_0a, modification)
+            except (OSError, ValidationError) as exc:
+                raise BuildError(f"Could not compile APF design: {exc}") from exc
+            receipts = {item["outer"]: item for item in result.report["resources"]}
+            for outer_index, entry_bytes in sorted(result.entries.items()):
+                if outer_index in compiled:
+                    raise BuildError(f"Design Play/Formation collides with another edit at outer {outer_index}")
+                row = {
+                    "asset_ids": (modification.asset_id,), "kind": play_design.PROVIDER_KIND,
+                    "outer_index": outer_index,
+                    "replacement_payload_sha256s": {modification.asset_id: modification.replacement_sha256},
+                    "entry_size": len(entry_bytes), "entry_sha256": _hash_bytes(entry_bytes),
+                    "writer_schema": play_design.SCHEMA,
+                    "writer_mode": "bounded_master_and_cpu_design",
+                    "verification": receipts[outer_index], "design_verification": result.report["design"],
+                    "runtime_status": "UNWITNESSED", "cpu_books_only": True,
+                }
                 compiled[outer_index] = (entry_bytes, row)
                 edit_rows.append(row)
         for modification in edits:
@@ -1401,6 +1474,13 @@ class ApfBuildService:
             output_0a = staging / "0A"
             self._apply_compiled_spans(staging, spans, progress)
             output_sha = self._verify_composed(staging, spans, progress)
+            # Book cloning is a LAST-step copy finalizer in BookIdentityPanel.
+            # It must consume this finished output, never alter retail-index spans
+            # mid-build: sorted filename insertion changes all outer ordinals.
+            try:
+                book_identity = disc_book_identity_report(output_0a)
+            except (OSError, ValueError, RuntimeError, ValidationError) as exc:
+                raise BuildError(f"Book Identity reparse failed: {exc}") from exc
             source_after = sha256_file(
                 self.source.index_0a,
                 progress,
@@ -1450,6 +1530,7 @@ class ApfBuildService:
                     "published_atomically": True,
                 },
                 "edit_count": len(edits),
+                "book_identity": book_identity,
                 "compiled_entry_count": len(compiled),
                 "compiled_span_count": len(spans),
                 "compiled_raw_overlay_count": len(raw_overlays),
@@ -2196,8 +2277,12 @@ class ApfBuildService:
                 if slots.get(slot) != outer or outer in entries:
                     raise BuildError(f"The crest package for slot {slot} changed or is selected twice")
                 detail = self._crest_detail_path(modification)
-                package = apf_logo_patch.build_patch(self.source.index_0a, modification.replacement_path,
-                    entry_index=outer, png_path_l1=detail, clear_l1=detail is None)
+                try:
+                    package = apf_logo_patch.build_patch(self.source.index_0a, modification.replacement_path,
+                        entry_index=outer, png_path_l1=detail, clear_l1=detail is None)
+                except (OSError, apf_logo_patch.PatchError) as exc:
+                    raise BuildError(f"Could not compile crest slot {slot}, outer {outer} "
+                                     f"({modification.asset_id}): {exc}") from exc
                 entries[outer] = package.entry_bytes
                 components.append(package.manifest)
                 specs.append(apf_logocache_patch.CacheLayerSpec(slot, modification.replacement_path,
@@ -2373,10 +2458,11 @@ class ApfBuildService:
         *,
         routes: tuple[Modification, ...] = (),
         package_maps: tuple[Modification, ...] = (),
+        coverage_profiles: tuple[Modification, ...] = (),
     ) -> tuple[int, bytes, dict[str, object]]:
         """Compile who-lines-up maps and/or route clones into outer 180."""
 
-        if not routes and not package_maps:
+        if not routes and not package_maps and not coverage_profiles:
             raise BuildError("Select at least one APF MASTER PLAY edit")
         requests = []
         for modification in routes:
@@ -2414,6 +2500,29 @@ class ApfBuildService:
                     f"Who-lines-up metadata changed: {modification.asset_id}"
                 )
             maps.append(change)
+        if coverage_profiles:
+            if len(coverage_profiles) != 1:
+                raise BuildError("Only one Coverage Geometry profile may be staged")
+            try:
+                edits = coverage_service.read_profile(coverage_profiles[0])
+                entry_bytes, report = coverage.compile_outer_entry(
+                    self.source.index_0a, edits, package_maps=maps, routes=requests)
+            except (OSError, ValidationError) as exc:
+                raise BuildError(f"Could not compile Coverage Geometry: {exc}") from exc
+            all_mods = (*package_maps, *routes, *coverage_profiles)
+            row = {
+                "asset_ids": tuple(m.asset_id for m in all_mods),
+                "kind": "master_play_combined_batch", "outer_index": 180,
+                "replacement_payload_sha256s": {m.asset_id: m.replacement_sha256 for m in all_mods},
+                "entry_size": len(entry_bytes), "entry_sha256": _hash_bytes(entry_bytes),
+                "writer_schema": coverage.SCHEMA,
+                "writer_mode": "shared_zone_geometry_then_maps_routes",
+                "resource_source_sha256": report["source_sha256"],
+                "resource_replacement_sha256": report["replacement_sha256"],
+                "changed_byte_count": report["changed_byte_count"], "coverage": report,
+                "honesty": "Offline verified; gameplay UNWITNESSED",
+            }
+            return 180, entry_bytes, row
         if requests and not maps:
             try:
                 result = build_play_route_patch(self.source.index_0a, requests)
@@ -2542,6 +2651,7 @@ class ApfBuildService:
                 "writer_schema": SPLB_MEMBERSHIP_WRITER_SCHEMA,
                 "writer_mode": "stock_book_entry_prefix_rewrite",
                 "book_name": result.report["book_name"],
+                "personnel_availability": result.report["personnel_availability"],
                 "changed_byte_count": result.report["verification"][
                     "changed_byte_count"
                 ],

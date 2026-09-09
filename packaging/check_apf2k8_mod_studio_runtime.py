@@ -25,7 +25,7 @@ sys.dont_write_bytecode = True
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / "tools"
-EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.84"
+EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.85"
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 if str(TOOLS) not in sys.path:
@@ -70,6 +70,32 @@ EXPECTED_RETAIL_HASHES = frozenset(
 )
 
 PRODUCT_MODULES = (
+    'mod_editor.apf_studio.play_design_service',
+    'mod_editor.apf_studio.play_designer_qt',
+    'mod_editor.apf_studio.coverage_service',
+    'mod_editor.apf_studio.coverage_qt',
+    'mod_editor.apf_studio.scheme_service',
+    'mod_editor.core.apf2k8_coverage_tuning',
+    'mod_editor.core.apf2k8_formation_alignment_writer',
+    'mod_editor.core.apf2k8_play_codec',
+    'mod_editor.core.apf2k8_play_concepts',
+    'mod_editor.core.apf2k8_play_design_build',
+    'mod_editor.core.apf2k8_play_designer',
+    'mod_editor.core.nfl2k5_play_codec',
+    'mod_editor.apf_studio.ps3_texture_bundle',
+    'mod_editor.apf_studio.ps3_texture_bundle_qt',
+    'mod_editor.apf_studio.ps3_texture_codec',
+    'mod_editor.apf_studio.ps3_roster_probe',
+    'mod_editor.apf_studio.ps3_texture_probe',
+    'mod_editor.apf_studio.ps3_texture_probe_fast',
+    'mod_editor.apf_studio.book_identity_qt',
+    'mod_editor.core.apf2k8_book_clone',
+    'mod_editor.core.apf2k8_book_identity',
+    'mod_editor.core.apf2k8_scheme_presets',
+    'mod_editor.apf_studio.playbook_playcall_qt',
+    'mod_editor.core.apf2k8_audibles',
+    'mod_editor.core.apf2k8_playcall_patch',
+    "capstone",
     "mod_editor.apf_studio",
     "mod_editor.apf_studio.__main__",
     "mod_editor.apf_studio.asset_io",
@@ -129,6 +155,7 @@ PRODUCT_MODULES = (
 # game reads and no GUI work; a missing product dependency fails here rather
 # than on a modder's first build.
 TOOL_MODULES = (
+    "apf_book_unlock",
     "apf_field_art_patch",
     "apf_logocache_patch",
     "apf_audio",
@@ -455,6 +482,72 @@ def _check_install_contract() -> None:
             "uninstall left an unchanged installer-owned program path behind",
         )
 
+
+def _check_apf_wave_contract(modules: dict[str, object]) -> None:
+    """Pin the new providers, conflicts, recipes and exclusive emulator cave."""
+    from types import SimpleNamespace
+    from mod_editor.core.errors import ValidationError
+    coverage = modules["mod_editor.core.apf2k8_coverage_tuning"]
+    profiles = modules["mod_editor.apf_studio.coverage_service"]
+    schemes = modules["mod_editor.apf_studio.scheme_service"]
+    designs = modules["mod_editor.apf_studio.play_design_service"]
+    patch = modules["mod_editor.core.apf2k8_playcall_patch"]
+    edits = (coverage.ZoneEdit(3223, lateral_extent_yards=8),)
+    payload = coverage.encode_profile(edits)
+    if profiles.validate_payload(payload, coverage.PROFILE_ASSET_ID,
+                                 {"schema": coverage.PROFILE_SCHEMA}) != edits:
+        raise RuntimeError("Coverage Geometry numeric project contract changed")
+    recipe = modules["mod_editor.core.apf2k8_scheme_presets"].load_preset("wide-zone")
+    payload = json.dumps({"schema": schemes.SCHEMA, "presets": [recipe]}).encode()
+    if schemes.validate_payload(payload, schemes.SELECTOR, {"schema": schemes.SCHEMA}) != [recipe]:
+        raise RuntimeError("Scheme Presets logical payload contract changed")
+    for kind in ("formation_package_map", "play_assignment_route", "formation_alignment",
+                 "splb_book_membership", coverage.PROVIDER_KIND, schemes.PROVIDER_KIND):
+        try:
+            designs.check_composition((SimpleNamespace(kind=designs.PROVIDER_KIND), SimpleNamespace(kind=kind)))
+        except ValidationError as exc:
+            if kind not in str(exc) or "apf_play_design" not in str(exc):
+                raise RuntimeError("Play Design conflict must name both features") from exc
+        else:
+            raise RuntimeError(f"Play Design admitted a conflicting {kind} edit")
+    reservations = json.loads((ROOT / "data/apf2k8/patch_reservations.json").read_text())
+    ranges = reservations["ranges"]
+    spans = sorted((int(r["start"], 16), int(r["end_inclusive"], 16)) for r in ranges)
+    if any(a[1] >= b[0] for a, b in zip(spans, spans[1:])):
+        raise RuntimeError("APF executable cave reservations overlap")
+    own = [r for r in ranges if r["owner"] == "apf2k8_playcall_patch"]
+    if (len(own) != 1 or own[0]["start"] != "0x84D0E000"
+            or own[0]["end_inclusive"] != "0x84D0EFFF"
+            or patch.CAVE_START != 0x84D0E000
+            or "unwitnessed" not in patch.status()
+            or modules["capstone"].__version__ != "5.0.7"):
+        raise RuntimeError("APF pass-fetch export ownership/status/verifier changed")
+
+
+def _check_book_unlock_contract(modules: dict[str, object]) -> None:
+    identity = modules["mod_editor.core.apf2k8_book_identity"]
+    clone = modules["mod_editor.core.apf2k8_book_clone"]
+    presets = modules["mod_editor.core.apf2k8_scheme_presets"]
+    panel = modules["mod_editor.apf_studio.book_identity_qt"]
+    from mod_editor.core.errors import ValidationError
+
+    if not all(callable(target) for target in (
+        identity.disc_book_identity_report,
+        clone.verify_unlock, clone.build_new_folder,
+        presets.verify_preset, presets.build_presets_folder,
+        panel.BookIdentityPanel.review_selection, panel.BookIdentityPanel.build_to,
+    )):
+        raise RuntimeError("Book Identity action/verifier closure is incomplete")
+    try:
+        recipes = [presets.load_preset(slug) for slug in presets.PRESET_IDS]
+    except (OSError, ValueError, ValidationError) as exc:
+        raise RuntimeError(f"Book preset data closure failed: {exc}") from exc
+    if tuple(row["id"] for row in recipes) != presets.PRESET_IDS:
+        raise RuntimeError("Book preset IDs do not match the packaged data")
+    if tuple(row["book_type"] for row in recipes) != (
+        "O-ZoneBlock", "O-Shotgun", "O-ManBlock"
+    ):
+        raise RuntimeError("Book preset donor identities changed")
 
 def _check_namespace_isolation() -> None:
     """Prove APF does not pull the legacy mixed-game package initializers."""
@@ -1184,17 +1277,30 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         check_files=False,
     )
     require(
-        len(registry.capabilities) == 124
-        and len(registry.for_game(core_model.GameId.APF2K8)) == 37,
+        len(registry.capabilities) == 139
+        and len(registry.for_game(core_model.GameId.APF2K8)) == 52,
         "shared/APF capability registry counts changed",
     )
     cards = catalog.build_capability_cards()
-    require(len(cards) == 37 and len({item.capability_id for item in cards}) == 37,
-            "APF capability surface is not exactly 37 unique rows")
+    require(len(cards) == 52 and len({item.capability_id for item in cards}) == 52,
+            "APF capability surface is not exactly 52 unique rows")
     require(len(models.APF_CATEGORY_ORDER) == 14,
             "APF complete sidebar category count changed")
     editable = {item.capability_id for item in cards if item.status is models.ApfStatus.EDITABLE}
     expected_editable = {
+        'apf2k8.cpu_ai_draft.play_design.concept_recipes',
+        'apf2k8.cpu_ai_draft.play_design.cpu_calls',
+        'apf2k8.cpu_ai_draft.play_design.create_formation',
+        'apf2k8.cpu_ai_draft.play_design.create_play',
+        'apf2k8.cpu_ai_draft.play_design.defensive_assignments',
+        'apf2k8.cpu_ai_draft.play_design.edit_play',
+        'apf2k8.gameplay_tuning_sliders.coverage_geometry',
+        'apf2k8.logos_cards.ps3_texture_bundle',
+        'apf2k8.playbooks.clone',
+        'apf2k8.playbooks.cpu_audibles',
+        'apf2k8.playbooks.pass_fetch_te_bias',
+        'apf2k8.playbooks.scheme_presets',
+
         "apf2k8.audio.ausb_xma_export",
         "apf2k8.audio.xma_export",
         "apf2k8.colors.uniform_selector_appearance_custom_team",
@@ -2473,6 +2579,8 @@ def main(argv: list[str] | None = None) -> int:
         modules = {name: importlib.import_module(name) for name in PRODUCT_MODULES}
         for name in TOOL_MODULES:
             importlib.import_module(name)
+        _check_book_unlock_contract(modules)
+        _check_apf_wave_contract(modules)
         _check_namespace_isolation()
         _check_audo_authoring_doc()
         _check_ausb_feasibility_doc()

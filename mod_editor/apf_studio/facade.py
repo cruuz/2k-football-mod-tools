@@ -173,6 +173,25 @@ class ApfStudioFacade:
     def source_ready(self) -> bool:
         return self.source is not None and self.catalog is not None and self.session is not None
 
+    def coverage_context(self, progress: Progress = _noop):
+        with self._session_lock:
+            progress("Reading shared zone geometry", 0, 1)
+            return self.require_session().coverage_context()
+
+    def apply_coverage_geometry(self, edits, progress: Progress = _noop):
+        with self._session_lock:
+            progress("Verifying composed coverage geometry", 0, 1)
+            result = self.require_session().apply_coverage_geometry(edits)
+            self.last_build = None
+            return result
+
+    def apply_scheme_presets(self, preset_ids, progress: Progress = _noop):
+        with self._session_lock:
+            progress("Verifying scheme presets after staged CPU edits", 0, 1)
+            result = self.require_session().apply_scheme_presets(preset_ids)
+            self.last_build = None
+            return result
+
     def play_design_context(self, progress: Progress = _noop):
         from mod_editor.core.apf2k8_splb_writer import STOCK_BOOKS, read_book
         with self._session_lock:

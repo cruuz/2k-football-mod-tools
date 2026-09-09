@@ -140,6 +140,108 @@ def _actions(*values: ApfProductAction) -> frozenset[ApfProductAction]:
 # This is the product's single capability/action truth table.  Capabilities
 # with safe research backends but no desktop handler are intentionally absent.
 CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
+**{
+    "apf2k8.cpu_ai_draft.play_design." + feature: CapabilityActionBinding(
+        "apf2k8.cpu_ai_draft.play_design." + feature,
+        "playbook.play_designer",
+        _actions(ApfProductAction.REPLACE, ApfProductAction.REVERT),
+        replace_method="apply_play_design",
+        revert_method="revert",
+        product_note=(
+            "Design Plays / Formations stages one logical plan. "
+            "Bounded records and CPU SPLB calls are proved offline; "
+            "all gameplay is UNWITNESSED."
+        ),
+    )
+    for feature in (
+        "concept_recipes", "cpu_calls", "create_formation", "create_play",
+        "defensive_assignments", "edit_play",
+    )
+},
+"apf2k8.logos_cards.ps3_texture_bundle": CapabilityActionBinding(
+    "apf2k8.logos_cards.ps3_texture_bundle",
+    "logos_cards.ps3_texture_bundle_dialog",
+    _actions(ApfProductAction.REPLACE, ApfProductAction.REVERT),
+    replace_method="replace_helmet_crest_design",
+    additional_replace_methods=("replace_field_art",),
+    revert_method="revert",
+    product_note=(
+        "Import PS3 bundle stages distinct semantic layer pairs through the "
+        "existing crest and Field Art writers. Hash matches identify library "
+        "slots; explicit destination choices assign teams. Build allocation "
+        "checks remain required. Field Art mip tails remain stale. "
+        "In-game result: UNWITNESSED."
+    ),
+),
+    "apf2k8.playbooks.identity": CapabilityActionBinding(
+        "apf2k8.playbooks.identity",
+        "playbooks.book_identity",
+        _actions(ApfProductAction.PREVIEW),
+        product_note=(
+            "Playbooks > Book Identity > Choose built game folder reparses all "
+            "team labels, real resources, and sharing. Runtime UNWITNESSED."
+        ),
+    ),
+    "apf2k8.playbooks.clone": CapabilityActionBinding(
+        "apf2k8.playbooks.clone",
+        "playbooks.book_identity",
+        _actions(ApfProductAction.PREVIEW, ApfProductAction.BUILD_COPY),
+        one_shot_target="mod_editor.core.apf2k8_book_clone:build_new_folder",
+        output_kind="copied_extracted_game_directory",
+        product_note=(
+            "BookIdentityPanel.review_selection and build_to create a verified "
+            "independent offensive book in a new folder. Finish existing Studio "
+            "edits first. CPU consumption and TU compatibility are UNWITNESSED."
+        ),
+    ),
+    "apf2k8.playbooks.scheme_presets": CapabilityActionBinding(
+        "apf2k8.playbooks.scheme_presets",
+        "playbooks.book_identity",
+        _actions(ApfProductAction.PREVIEW, ApfProductAction.BUILD_COPY),
+        one_shot_target="mod_editor.core.apf2k8_scheme_presets:build_presets_folder",
+        output_kind="copied_extracted_game_directory",
+        product_note=(
+            "BookIdentityPanel reviews Wide Zone, Spread-to-Run, Pro Power, or "
+            "all three, then verifies membership/tag edits in a copied game. "
+            "Existing plays and formations only; CPU behavior is UNWITNESSED."
+        ),
+    ),
+"apf2k8.playbooks.cpu_audibles": CapabilityActionBinding(
+    "apf2k8.playbooks.cpu_audibles",
+    "playbooks.cpu_audibles",
+    _actions(
+        ApfProductAction.PREVIEW, ApfProductAction.REPLACE,
+        ApfProductAction.REVERT, ApfProductAction.BUILD_COPY,
+    ),
+    replace_method="stage_splb_membership",
+    revert_method="revert",
+    product_note=(
+        "CPU Audibles & Personnel previews and stages existing same-record "
+        "TagMove selectors. Revert individual selectors with the existing "
+        "project controls; Build uses the existing SPLB provider. Records "
+        "without both a run and a pass are reported. Runtime unwitnessed."
+    ),
+),
+"apf2k8.playbooks.pass_fetch_te_bias": CapabilityActionBinding(
+    "apf2k8.playbooks.pass_fetch_te_bias",
+    "playbooks.pass_fetch_te_bias",
+    _actions(ApfProductAction.PREVIEW, ApfProductAction.EXPORT,
+             ApfProductAction.BUILD_COPY),
+    one_shot_target="mod_editor.core.apf2k8_playcall_patch:write_patch",
+    output_kind="authored-xenia-patch-toml",
+    product_note=(
+        "Export TE bias for pass fetches writes a verified authored TOML. "
+        "The one-shot writer does not stage project replacements. Applies "
+        "at every down; main CPU weighted picker unchanged; unwitnessed. "
+        "Remove or disable the exported file to reverse its installation."
+    ),
+),
+"apf2k8.gameplay_tuning_sliders.coverage_geometry": CapabilityActionBinding(
+    "apf2k8.gameplay_tuning_sliders.coverage_geometry", "playbooks.coverage_geometry",
+    _actions(ApfProductAction.REPLACE, ApfProductAction.REVERT),
+    replace_method="apply_coverage_geometry", revert_method="revert",
+    product_note="Coverage Geometry stages one numeric profile with all shared users visible. Gameplay UNWITNESSED.",
+),
     "apf2k8.audio.ausb_xma_export": CapabilityActionBinding(
         "apf2k8.audio.ausb_xma_export",
         "audio.ausb_exact_slot_editor",

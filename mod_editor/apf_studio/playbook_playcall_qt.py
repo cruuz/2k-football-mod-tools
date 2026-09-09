@@ -132,12 +132,21 @@ class ApfPlaycallPanel(QWidget):
         self._generation += 1
         generation, outer = self._generation, int(self.book_picker.currentData())
         existing = self.facade.staged_splb_changes()
+        scheme_snapshot = self._scheme_snapshot()
 
         def operation(progress):
-            return prepare_book(Path(index), outer, existing)
+            result = prepare_book(Path(index), outer, existing)
+            if scheme_snapshot is not None:
+                from . import scheme_service
+                recipes = scheme_service.read_profile(scheme_snapshot)
+                if any(recipe["book_type"] == splb.STOCK_BOOKS[outer] for recipe in recipes):
+                    result["stageable"] = False
+                    result["message"] = "Build or revert this book's staged Scheme Presets before balancing audibles."
+            return result
 
         def done(result):
-            if generation != self._generation or self._source() != index:
+            if (generation != self._generation or self._source() != index
+                    or scheme_snapshot != self._scheme_snapshot()):
                 return
             self._preview = result
             self.stage_button.setEnabled(result["stageable"] and not self._busy)
@@ -166,6 +175,12 @@ class ApfPlaycallPanel(QWidget):
             existing = tuple(c for c in self.facade.staged_splb_changes() if c.outer_index == preview["outer"])
             if existing != preview["existing"]:
                 raise ValidationError("This book's staged edits changed; preview it again")
+            profile = self._scheme_snapshot()
+            if profile is not None:
+                from . import scheme_service
+                if any(r["book_type"] == splb.STOCK_BOOKS[preview["outer"]]
+                       for r in scheme_service.read_profile(profile)):
+                    raise ValidationError("Build or revert this book's Scheme Presets before balancing audibles")
             # Rebuild from the source immediately before staging; no stale plan.
             fresh = prepare_book(Path(index), preview["outer"], existing)
             if fresh["changes"] != preview["changes"]:
@@ -180,6 +195,11 @@ class ApfPlaycallPanel(QWidget):
                 self.notice.setText("Balanced audible tags staged. Save Project or use the studio Build action. "
                                     "Records lacking a run or pass remain listed; CPU behavior is unwitnessed.")
         self.run_task("Stage balanced CPU audibles", operation, done, True)
+
+    def _scheme_snapshot(self):
+        session = getattr(self.facade, "session", None)
+        return next((m for m in getattr(session, "modifications", ())
+                     if m.kind == "apf_scheme_presets"), None)
 
     def export_patch(self):
         source, _ = QFileDialog.getOpenFileName(self, "Choose flat BASE or reconstructed TU 1.1 image", "", "Flat image (*.pe);;All files (*)")

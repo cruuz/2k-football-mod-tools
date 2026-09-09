@@ -190,6 +190,11 @@ from .roster_workspace_qt import RosterReservePlanner
 from .save_playbooks_qt import SavePlaybookAssignmentsPanel
 from .playbook_route_qt import PlayAssignmentRoutePanel
 from .playbook_membership_qt import ApfPlaybookMembershipPanel
+from .play_designer_qt import PlayDesignerPanel
+from .book_identity_qt import BookIdentityPanel
+from .playbook_playcall_qt import ApfPlaycallPanel
+from .coverage_qt import CoverageGeometryPanel
+from .ps3_texture_bundle_qt import import_button as ps3_import_button
 from .playbook_package_map_qt import ApfPackageMapPanel
 from .save_roster_players_qt import SaveRosterPlayersPanel
 from .scene_textures import SceneTexture, shared_texture_ids
@@ -244,7 +249,7 @@ CATEGORY_BLURBS: dict[ApfCategory, str] = {
     ApfCategory.MENUS: "Search menu, layout, font, and localized text structures across the complete archive.",
     ApfCategory.AUDIO: "Browse soundtrack, commentary, stadium, presentation, and standalone XMA1 audio; play verified WAV previews, export original XMA, import ordinary audio through exact-slot conversion with your own XMA1 encoder, or batch-stage a retail-free XMA1 or PCM16 WAV folder or ZIP.",
     ApfCategory.GAMEPLAY: "Inspect mapped sliders and follow gameplay research; nothing is offered as an edit until it is proven safe.",
-    ApfCategory.PLAYBOOKS: "Inspect mapped PLAY and DRCT structures, copy or safely swap exact stock player-assignment routes in MASTER PLAY, or reassign the 69 existing offensive/defensive books across all 40 team slots in a raw roster save. Freehand route nodes and DRCT remain read-only.",
+    ApfCategory.PLAYBOOKS: "Inspect PLAY and DRCT, edit stock assignment routes and shared coverage geometry, design bounded plays and formations with CPU-book calls, balance CPU audibles, and apply scheme presets. Book Identity finalizes independent books after Build. New gameplay is UNWITNESSED; freehand node graphs, five-step timing and DRCT authoring remain unproved.",
     ApfCategory.FRANCHISE: "Browse season, schedule, save, and franchise structures while deeper franchise editing is researched.",
     ApfCategory.ALL_ASSETS: "Every record the live indexer sees appears here, including opaque and export-only resources.",
 }
@@ -4141,6 +4146,9 @@ class ApfTeamLogoPanel(QFrame):
         title_row.addWidget(title)
         title_row.addStretch(1)
         title_row.addWidget(self.status)
+        self.ps3_bundle_button = ps3_import_button(
+            self, self.facade, self.run_task, self._ps3_bundle_staged, kind="logo")
+        title_row.addWidget(self.ps3_bundle_button)
 
         specs = QHBoxLayout()
         specs.setSpacing(6)
@@ -5835,6 +5843,22 @@ class ApfTeamLogoPanel(QFrame):
             Path(source), auto_fit=False, preserve_external_master=False
         )
 
+    def _ps3_bundle_staged(self, plan, modifications):
+        last = modifications[-1]
+        self._clear_texture_master_draft()
+        self._staged_png = Path(last.replacement_path)
+        self._source_staged_png = self._staged_png
+        self._staged_profile = RETAIL_CREST_PROFILE
+        digest = last.metadata["detail_sha256"]
+        self._staged_detail_png = self._staged_png.parent / f"{digest}.png"
+        self._placement_source_rgba = None
+        self._placement_state = None
+        self.set_context()
+        self.modifiedChanged.emit()
+        QMessageBox.information(self, "PS3 crest pairs staged",
+            f"{len(plan.assignments)} crest pairs staged. Use the complete-project Build "
+            "to include every crest and its linked logo-cache layers. In-game result: UNWITNESSED.")
+
     def _stage_path(self, path: Path, *, keep_detail_layer: bool = False) -> bool:
         """Stage an image for the crest, resizing it when it is not exact.
 
@@ -6975,17 +6999,21 @@ class ApfFieldArtPanel(QFrame):
     ``divot_Grass*`` weather textures, and the SCNE/CurveAnim rows stay locked
     in the inventory browser below.
 
-    The panel never mutates the shared editing session, so it never marks
-    unrelated project state modified, and it makes no in-game/runtime claim:
+    PS3 pair imports participate in the shared project session.
+    This panel makes no in-game/runtime claim:
     what a changed field texture looks like in play is unproved without a Xenia
     capture.
     """
+
+    modifiedChanged = pyqtSignal()
 
     def __init__(self, facade: ApfStudioFacade, run_task: TaskRunner):
         super().__init__()
         self.facade = facade
         self.run_task = run_task
         self._staged: dict[tuple[int, int], Path] = {}
+        self._session_field_keys = set()
+        self._field_session = None
         self._preview_dir: Path | None = None
         self._preview_token = 0
         self._display_alpha_note: str | None = None
@@ -7009,6 +7037,9 @@ class ApfFieldArtPanel(QFrame):
         title_row.addWidget(title)
         title_row.addStretch(1)
         title_row.addWidget(self.status)
+        self.ps3_bundle_button = ps3_import_button(
+            self, self.facade, self.run_task, self._ps3_bundle_staged, kind="endzone")
+        title_row.addWidget(self.ps3_bundle_button)
 
         # The three chips restate the selected slot's contract at a glance:
         # exact size (the one fact a modder must honor before picking a file),
@@ -7215,6 +7246,20 @@ class ApfFieldArtPanel(QFrame):
 
     def set_context(self) -> None:
         ready = self.facade.source_ready
+        session = getattr(self.facade, "session", None)
+        if session is not self._field_session:
+            self._staged.clear()
+            self._session_field_keys.clear()
+            self._field_session = session
+        for key in self._session_field_keys:
+            self._staged.pop(key, None)
+        self._session_field_keys = set()
+        for modification in session.modifications if session else ():
+            if modification.kind == "field_art_texture":
+                meta = modification.metadata
+                key = (meta["entry_index"], meta["file_index"])
+                self._staged[key] = Path(modification.replacement_path)
+                self._session_field_keys.add(key)
         target = self.current_target()
         staged = self.staged_path(target)
         # Never silent-gray: the 221-slot combo stays searchable even before
@@ -7513,6 +7558,13 @@ class ApfFieldArtPanel(QFrame):
         if path:
             self._stage_path(Path(path))
 
+    def _ps3_bundle_staged(self, plan, modifications):
+        self.set_context()
+        self.modifiedChanged.emit()
+        QMessageBox.information(self, "PS3 endzone pairs staged",
+            f"{len(plan.assignments)} endzone pairs staged. Build must still pass the "
+            "fixed-allocation checks. Field Art preserves old mip tails. In-game result: UNWITNESSED.")
+
     def _stage_path(self, path: Path) -> None:
         """Stage an image for this slot, resizing it when it is not exact.
 
@@ -7584,8 +7636,10 @@ class ApfFieldArtPanel(QFrame):
                 reason + "\n\nStage a Field Art replacement first.",
             )
             return
+        self.facade.revert_field_art(self.current_target().key)
         self._staged.pop(self.current_target().key, None)
         self.set_context()
+        self.modifiedChanged.emit()
 
     def _build_copied_volume(self) -> None:
         reason = str(self.build_button.property("disableReason") or "").strip()
@@ -7737,6 +7791,7 @@ class FieldArtStudioPage(QWidget):
         # The bounded authorship surface: only the slots the offline writer
         # proved.  The inventory below stays browse/export-only.
         self.editor = ApfFieldArtPanel(facade, run_task)
+        self.editor.modifiedChanged.connect(self.modifiedChanged)
         layout.addWidget(self.editor)
 
         semantic_panel = QFrame()
@@ -19342,6 +19397,13 @@ class InspectorCategoryPage(QWidget):
             if category is ApfCategory.PLAYBOOKS
             else None
         )
+        self.play_designer = PlayDesignerPanel(facade, run_task) if category is ApfCategory.PLAYBOOKS else None
+        self.book_identity = BookIdentityPanel(run_task, facade=facade) if category is ApfCategory.PLAYBOOKS else None
+        self.playbook_playcall = ApfPlaycallPanel(facade, run_task) if category is ApfCategory.PLAYBOOKS else None
+        self.coverage_geometry = CoverageGeometryPanel(facade, run_task) if category is ApfCategory.PLAYBOOKS else None
+        for panel in (self.play_designer, self.book_identity, self.playbook_playcall, self.coverage_geometry):
+            if panel is not None:
+                panel.modifiedChanged.connect(self.modifiedChanged)
         self.workspace_tabs: QTabWidget | None = None
         self.inspector.modifiedChanged.connect(self.modifiedChanged)
         self.inspector.audioAnnotationChanged.connect(
@@ -19385,6 +19447,10 @@ class InspectorCategoryPage(QWidget):
                 tabs.addTab(self.playbook_package_maps, "Who lines up")  # type: ignore[arg-type]
                 tabs.addTab(self.playbook_routes, "Assignment Routes")  # type: ignore[arg-type]
                 tabs.addTab(self.save_playbooks, "Save Assignments")  # type: ignore[arg-type]
+                tabs.addTab(self.play_designer, "Design Plays / Formations")
+                tabs.addTab(self.coverage_geometry, "Coverage Geometry (experimental)")
+                tabs.addTab(self.book_identity, "Book Identity")
+                tabs.addTab(self.playbook_playcall, "CPU Play Calling")
                 tabs.addTab(self.assets, "Raw Playbook Assets")  # type: ignore[arg-type]
             else:
                 tabs.addTab(self.inspector, "Audio Browser")
@@ -19424,6 +19490,14 @@ class InspectorCategoryPage(QWidget):
         elif normalized in {"save-playbooks", "save-assignments"} \
                 and self.category is ApfCategory.PLAYBOOKS:
             target = 4
+        elif normalized in {"play-designer", "design-play", "design-formation"} and self.category is ApfCategory.PLAYBOOKS:
+            target = self.workspace_tabs.indexOf(self.play_designer)
+        elif normalized in {"coverage", "coverage-geometry"} and self.category is ApfCategory.PLAYBOOKS:
+            target = self.workspace_tabs.indexOf(self.coverage_geometry)
+        elif normalized in {"book-identity", "book-clones", "scheme-presets"} and self.category is ApfCategory.PLAYBOOKS:
+            target = self.workspace_tabs.indexOf(self.book_identity)
+        elif normalized in {"cpu-audibles", "cpu-playcall", "te-bias"} and self.category is ApfCategory.PLAYBOOKS:
+            target = self.workspace_tabs.indexOf(self.playbook_playcall)
         elif normalized == "soundtrack" and self.category is ApfCategory.AUDIO:
             target = 0
         elif normalized == "raw-assets" and self.workspace_tabs is not None:
@@ -19442,6 +19516,9 @@ class InspectorCategoryPage(QWidget):
             self.inspector._toggle_soundtrack_album()
 
     def set_context(self, service: ApfInspectorService | None) -> None:
+        for panel in (self.playbook_playcall, self.play_designer, self.coverage_geometry, self.book_identity):
+            if panel is not None:
+                panel.set_context()
         if self.facade.source_ready:
             count = (
                 len(
@@ -19542,6 +19619,11 @@ class InspectorCategoryPage(QWidget):
             self.playbook_membership.set_context()
         if self.playbook_package_maps is not None:
             self.playbook_package_maps.refresh()
+        if self.playbook_playcall is not None:
+            self.playbook_playcall.set_context()
+        for panel in (self.play_designer, self.coverage_geometry, self.book_identity):
+            if panel is not None:
+                panel.refresh()
 
 
 def _format_summary(values: dict[str, int] | object) -> str:
@@ -20942,6 +21024,11 @@ class ApfStudioMainWindow(QMainWindow):
     def _update_product_state(self) -> None:
         ready = self.facade.source_ready
         blocking = bool(self._blocking_workers)
+        playbooks_page = getattr(self, "_pages", {}).get(ApfCategory.PLAYBOOKS)
+        for name in ("playbook_playcall", "coverage_geometry", "book_identity"):
+            panel = getattr(playbooks_page, name, None)
+            if panel is not None:
+                panel.set_busy(bool(self._workers))
         edit_count = int(getattr(self.facade, "modified_count", 0))
         metadata_count = int(
             getattr(self.facade, "project_metadata_count", 0)

@@ -4,7 +4,7 @@ APF 2K8 Mod Studio works from your own legally dumped USA copy of *All-Pro
 Football 2K8* for Xbox 360. The app ships no game images, textures, audio,
 screenshots, extracted archives, or other retail game data.
 
-The source code and UI identify as **`0.1.0-alpha.84`**, the current retail-free
+The source code and UI identify as **`0.1.0-alpha.85`**, the current retail-free
 release candidate; its mode-`0444` archive is authenticated by the adjacent
 `.sha256` sidecar. Alpha.38 and earlier remain preserved unchanged. Verify
 whichever sealed archive you install with its authoritative adjacent `.sha256`
@@ -187,9 +187,9 @@ error and no source file is changed.
    desktop handler, and an Editable card must have real Replace and Revert
    methods (or a verified copied-volume writer). Unbound semantic findings use
    explicit Proof/Research boundaries instead of borrowing actions from a
-   similarly named raw asset. Across the 37 APF
-   capability records, the current source split is 19 Editable, 8 Preview,
-   3 Export-only, 4 Evidence, and 3 Research. The hidden `jersey_06_runtime` proof alias
+   similarly named raw asset. Across the 52 APF
+   capability records, the current source split is 31 Editable, 9 Preview,
+   3 Export-only, 4 Evidence, and 5 Research. The hidden `jersey_06_runtime` proof alias
    does not create a duplicate editor in the product.
 5. Select an editable item, export its PNG, edit a copy in GIMP or Photoshop,
    and use **Replace**. The app checks dimensions, color mode, and the special
@@ -740,9 +740,17 @@ runtime witness.
 
 The registry gives this writer its own
 `apf2k8.logos_cards.draft_logo` capability instead of letting it inherit the
-broader read-only logo catalog's status. The current registry contains 37 APF
-records and 70 records across all registered game/platform targets. Those numbers describe
+broader read-only logo catalog's status. The current registry contains 52 APF
+records and 139 records across all registered game/platform targets. Those numbers describe
 product capabilities, not the number of logos or editable team slots.
+
+## APF wave authoring
+
+Playbooks now includes Design Plays / Formations, Coverage Geometry, Book Identity
+and CPU Play Calling. See the [wave guide](apf_wave_2026_09_09.md) for project staging,
+composition boundaries and the final book-clone step. Team Logo and Field Art
+also offer [Import PS3 bundle…](ps3_bundle_import.md). All new gameplay remains
+UNWITNESSED.
 
 ## Edit every proved player field in a roster save
 
