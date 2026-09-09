@@ -45,6 +45,16 @@
   catcher's own Catching slider; forward passes are byte-identical to beta 63. Twenty-two bytes in the unused tail
   of the same boot-logo bitmap; both XBE gates and the pairwise matrix green. `HOTFIX63_CATCH_SLIDER_KICKS_REPORT.md`
   and `HOTFIX63_KICKOFF_MUFFS_VERIFY_REPORT.md` (what the kickoff receipts do and do not prove). Unplayed.
+- **A raw disc dump builds with every option ticked (Ju3tin, #2k5-general 2026-09-09).** "ValueError: overlapping
+  disc file or metadata: root directory": the archive reader's overlap sweep started at partition+0x10800 and so
+  assumed every directory sits past the volume descriptor, but a pressed-disc (redump) dump keeps its root directory
+  at sector 30 and the `vc_53450030` directory at 31, below the descriptor at 32; the first span was reported as an
+  overlap although nothing overlaps. Three lines in `nfl2k5_music_archive.py`; the all-options build from the raw
+  dump reproduced the dialog verbatim before and completes after (regression tests on a synthetic raw layout and,
+  retail-gated, on the dump). The "please insert disk" that followed is xemu, not the build: xemu 0.8.x boots only
+  the game partition and does not accept redump-layout images (its documentation; its redump pull request #2915 was
+  closed unmerged), and the studio keeps the source's layout, so the identity line for a raw dump now says so and
+  gives the cut (`xdvdfs pack`, or `dd` past the first 0x18300000 bytes). `HOTFIX63_RAWDUMP_OVERLAP_REPORT.md`.
 - **Music tab on a fresh rip: verified fixed in 63, regression tests added (Mud, #2k5-bugs 2026-09-09 on 62.1).**
   The stadium-music and jukebox paths share the readiness check that beta 63 stopped raising; new tests replay a
   mismatched-digest cache through the real window offscreen. `HOTFIX63_MUSIC_VERIFY_REPORT.md`. No product change.
