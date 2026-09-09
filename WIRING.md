@@ -1,3 +1,75 @@
+# beta-63.1 digit texture budget hotfix (2026-09-09)
+
+Bug: Coach Edwards, #2k5-bugs 2026-09-09 09:51 / 10:16 — "live_number_nameplate
+(asset_code=02, side=H, variant=0, family=arm): Digit artwork cannot fit its
+896-byte texture slot without dropping below the 16-colour quality budget"
+refused the whole disc after a Team Kit round trip.  The fix is complete
+outside the protected GUI; these are the two optional GUI touches that make
+the new "kept retail" outcome visible on the Uniforms page.  Nothing below is
+required for the disc to build; without it the outcome still reaches the user
+through the status bar (`BuildResult.message`) and the Build & Share
+completion dialog (`build_feedback.completion`).
+
+## `mod_editor/gui/studio_qt.py` — Uniforms page component list
+
+`_populate_components(self, uniform_set)` marks every asset in
+`facade.modified_asset_ids` as "● Modified".  After a project build the facade
+now also exposes `facade.kept_retail_asset_ids` (a `frozenset[str]` of catalog
+asset IDs) and `facade.last_build_kept_retail` (the receipt rows with an
+`asset_id` and a user-readable `message`).  Add, next to the existing
+`modified = set(...)` line:
+
+```python
+kept = set(getattr(self.facade, "kept_retail_asset_ids", ()))
+```
+
+and replace the state expression with:
+
+```python
+if asset.asset_id in kept:
+    state = "● Modified — kept retail at last build (could not fit its slot)"
+elif asset.asset_id in modified:
+    state = "● Modified"
+else:
+    state = "Original"
+```
+
+Give the kept rows a distinct colour (`item.setForeground(2, QColor("#ff9e7a"))`)
+and set the row tooltip to the matching `message` from
+`facade.last_build_kept_retail`.  Refresh the list from the build `success`
+handler (`_refresh_edit_state()` already runs there; it must rebuild
+components so the column updates).
+
+## `mod_editor/gui/studio_qt.py` — "Modded XISO ready" dialog
+
+In the build `success(result)` handler (the `QMessageBox.information(self,
+"Modded XISO ready", ...)` call), append the kept-retail rows when present so
+the dialog and the status bar agree:
+
+```python
+kept = tuple(getattr(result, "kept_retail", ()) or ())
+extra = ""
+if kept:
+    extra = ("\n\nKept retail for %d uniform slot%s whose art could not fit "
+             "its fixed texture slot:\n" % (len(kept), "" if len(kept) == 1 else "s")
+             + "\n".join("- " + str(row.get("message", row.get("selector"))) for row in kept))
+```
+
+and add `extra` to the message text.  `BuildResult.kept_retail` is an empty
+tuple for every build that wrote all of its slots, so the wording is unchanged
+for those.
+
+## Number-sheet import (no change required)
+
+`preview_digit_sheet` now returns a `kept_retail` receipt row and a
+"Digit N: kept retail: could not fit its ...-byte texture slot" note instead of
+raising, so `_review_digit_sheet_preview` shows the retail digit in that row
+and the note in the details.  The existing `operation` then stages all ten
+PNGs; the build keeps retail for the unfit slot and reports it.  If the page
+should not stage the unfit digit at all, skip `output` rows whose
+`preview.receipts[i].get("kept_retail")` is true before writing them into the
+private Team Kit folder.
+
 # r65 Player abilities rules v2 (2026-09-08)
 
 This section supersedes earlier abilities v1 wiring only. EXPERIMENTAL /
