@@ -818,21 +818,25 @@ def _identity_note(source: Path | str, *, pack0: bytes | None = None) -> str:
 
 
 def _with_identity(exc: ValueError, source: Path, is_image: bool) -> ValueError:
-    """Name the disc in a refusal.
+    """Name the disc in a refusal, when the disc is the reason.
 
     "pack-0 schedule template is foreign: ROST stored size is not retail" is
     true and useless: it is the same sentence for a repacked image, a disc that
     already carries somebody's roster mod, and a dump of another game.  Which
     one it is decides whether the user re-dumps, rebuilds, or starts over, so
-    every refusal on a disc image says which.
+    every refusal on a disc image says which -- unless the image's game files
+    are retail, in which case the disc is not the reason and naming it only
+    misleads (beta 63: "outer 5: ROST preamble ... Build & Share works" sent a
+    tester to repack a dump that was never the problem).
     """
 
     text = str(exc)
     if not is_image or "This image is:" in text:
         return exc
-    note = _identity_note(source)
-    if not note:
+    identity = disc_identity(source)
+    if identity is None or identity.can_build:
         return exc
+    note = f"This image is: {identity.line()}"
     joiner = " " if text.rstrip().endswith((".", "!", "?", ":")) else ". "
     return ValueError(f"{text.rstrip()}{joiner}{note}")
 

@@ -259,6 +259,15 @@ class DiscIdentityTests(unittest.TestCase):
         self.assertIn("vc_53450030/2", found.detail)
 
     # -- the refusals quote it -------------------------------------------
+    def test_a_build_refusal_on_a_buildable_disc_is_not_blamed_on_the_disc(self) -> None:
+        """"Build & Share works" is never appended to a Build failure (jrolling2003, 2026-09-09)."""
+
+        raised = ValueError("outer 5: ROST preamble")
+        for image in (self.xiso, self.raw, self.repack):
+            with self.subTest(image=image.name):
+                self.assertIs(mod_build._with_identity(raised, image, True), raised)
+        self.assertIn(identity.MODIFIED, str(mod_build._with_identity(raised, self.modded, True)))
+
     def test_a_build_refusal_names_the_disc(self) -> None:
         raised = ValueError("pack-0 schedule template is foreign: ROST stored size is not retail")
         message = str(mod_build._with_identity(raised, self.modded, True))
