@@ -1,0 +1,251 @@
+{
+  "schema": "apf_coverage_function_diff/v1",
+  "runtime_witnessed": false,
+  "method": "flat mapping; pdata lengths; mflr-r12 corroboration; ordered normalized signatures",
+  "limitations": [
+    "Normalized equality does not prove equal referenced data or callees.",
+    "Normalization is a shape heuristic, not CFG dataflow; residual differences may be relocation-only.",
+    "Leaf functions and padding outside pdata appear as anchored gaps, not claimed function bounds.",
+    "Text before the first pdata function and after the last is not aligned by the gap pass.",
+    "All cross-image alignments are static inferences; unmatched functions remain UNKNOWN."
+  ],
+  "base": {
+    "sha256": "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf",
+    "size": 54001664,
+    "pdata_functions": 18472,
+    "prologues": 18311,
+    "pdata_starts_with_prologue": 18274,
+    "prologues_without_pdata": [
+      "0x84bdac0c",
+      "0x84bdac2c",
+      "0x84bddea0",
+      "0x84bddec0",
+      "0x84bde1e0",
+      "0x84bde1fc",
+      "0x84bea764",
+      "0x84bea78c",
+      "0x84beba08",
+      "0x84bee2b4",
+      "0x84bee2dc",
+      "0x84beec6c",
+      "0x84beec8c",
+      "0x84beef74",
+      "0x84beef9c",
+      "0x84bef230",
+      "0x84bef250",
+      "0x84befac8",
+      "0x84befae8",
+      "0x84c4f844",
+      "0x84c4f864",
+      "0x84c4fd60",
+      "0x84c4fd80",
+      "0x84c53014",
+      "0x84c5303c",
+      "0x84c53418",
+      "0x84c53444",
+      "0x84c53548",
+      "0x84c53568",
+      "0x84c537cc",
+      "0x84c537ec",
+      "0x84c53a38",
+      "0x84c53a58",
+      "0x84c53bcc",
+      "0x84c53bec",
+      "0x84c53e2c",
+      "0x84c53e4c"
+    ],
+    "text_bytes_outside_pdata": 1017536
+  },
+  "tu": {
+    "sha256": "65f522ce1cdda42cf19c112e9ec07302e89c81e4148c9f22e6db5e03952f9457",
+    "size": 54001664,
+    "pdata_functions": 18480,
+    "prologues": 18319,
+    "pdata_starts_with_prologue": 18282,
+    "prologues_without_pdata": [
+      "0x84bdbbdc",
+      "0x84bdbbfc",
+      "0x84bdee70",
+      "0x84bdee90",
+      "0x84bdf1b0",
+      "0x84bdf1cc",
+      "0x84beb734",
+      "0x84beb75c",
+      "0x84bec9d8",
+      "0x84bef284",
+      "0x84bef2ac",
+      "0x84befc3c",
+      "0x84befc5c",
+      "0x84beff44",
+      "0x84beff6c",
+      "0x84bf0200",
+      "0x84bf0220",
+      "0x84bf0a98",
+      "0x84bf0ab8",
+      "0x84c50814",
+      "0x84c50834",
+      "0x84c50d30",
+      "0x84c50d50",
+      "0x84c53fe4",
+      "0x84c5400c",
+      "0x84c543e8",
+      "0x84c54414",
+      "0x84c54518",
+      "0x84c54538",
+      "0x84c5479c",
+      "0x84c547bc",
+      "0x84c54a08",
+      "0x84c54a28",
+      "0x84c54b9c",
+      "0x84c54bbc",
+      "0x84c54dfc",
+      "0x84c54e1c"
+    ],
+    "text_bytes_outside_pdata": 1017892
+  },
+  "counts": {
+    "identical": 4109,
+    "normalized_equal": 14023,
+    "normalized_different": 329
+  },
+  "gap_counts": {
+    "identical": 9245,
+    "normalized_equal": 2436,
+    "unmatched": 22,
+    "normalized_different": 94
+  },
+  "unmatched_base": [
+    {
+      "va": "0x8468b040",
+      "size": 76
+    },
+    {
+      "va": "0x8468b260",
+      "size": 76
+    },
+    {
+      "va": "0x846c4e18",
+      "size": 80
+    },
+    {
+      "va": "0x8470cf00",
+      "size": 220
+    },
+    {
+      "va": "0x8470fad0",
+      "size": 544
+    },
+    {
+      "va": "0x8474c088",
+      "size": 3292
+    },
+    {
+      "va": "0x847920e0",
+      "size": 344
+    },
+    {
+      "va": "0x847bd8c8",
+      "size": 84
+    },
+    {
+      "va": "0x847bd920",
+      "size": 84
+    },
+    {
+      "va": "0x8487a258",
+      "size": 1284
+    },
+    {
+      "va": "0x8487afe0",
+      "size": 628
+    }
+  ],
+  "unmatched_tu": [
+    {
+      "va": "0x846c4e68",
+      "size": 184
+    },
+    {
+      "va": "0x8470c9e0",
+      "size": 128
+    },
+    {
+      "va": "0x8470d028",
+      "size": 448
+    },
+    {
+      "va": "0x8470fcf0",
+      "size": 420
+    },
+    {
+      "va": "0x8474c268",
+      "size": 4296
+    },
+    {
+      "va": "0x847906d8",
+      "size": 288
+    },
+    {
+      "va": "0x84792848",
+      "size": 256
+    },
+    {
+      "va": "0x8479a710",
+      "size": 156
+    },
+    {
+      "va": "0x8479a7b0",
+      "size": 376
+    },
+    {
+      "va": "0x8479a928",
+      "size": 268
+    },
+    {
+      "va": "0x8479aa38",
+      "size": 76
+    },
+    {
+      "va": "0x847be3a0",
+      "size": 120
+    },
+    {
+      "va": "0x847be418",
+      "size": 144
+    },
+    {
+      "va": "0x847be4a8",
+      "size": 236
+    },
+    {
+      "va": "0x8487cb98",
+      "size": 1432
+    },
+    {
+      "va": "0x8487dfd8",
+      "size": 628
+    },
+    {
+      "va": "0x848d0bf0",
+      "size": 84
+    },
+    {
+      "va": "0x84a77fe0",
+      "size": 68
+    },
+    {
+      "va": "0x84a78028",
+      "size": 124
+    }
+  ],
+  "classification_counts": {
+    "other": 325,
+    "ratings": 4
+  },
+  "residual_kind_counts": {
+    "size_changed": 35,
+    "address_operand_candidate": 273,
+    "other_instruction_shape_difference": 21
+  },
+  "classification_note": "Pursuit-specific changed code not proved; other is unresolved, not an exclusion of coverage or pursuit."
+}

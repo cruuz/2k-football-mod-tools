@@ -1,0 +1,3167 @@
+{
+  "schema": "apf_coverage_assignments/v1",
+  "runtime_witnessed": false,
+  "plays": [
+    {
+      "play_index": 301,
+      "slots": [
+        {
+          "slot_index": 0,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 1,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 2,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 3,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 4,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3146,
+              "opcode": 27
+            },
+            {
+              "node_index": 3147,
+              "opcode": 13,
+              "landmark_x_feet": 45,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 5,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 5,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3148,
+              "opcode": 27
+            },
+            {
+              "node_index": 3149,
+              "opcode": 13,
+              "landmark_x_feet": 15,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 4,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 6,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3150,
+              "opcode": 27
+            },
+            {
+              "node_index": 3151,
+              "opcode": 13,
+              "landmark_x_feet": -15,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 4,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 7,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3118,
+              "opcode": 27
+            },
+            {
+              "node_index": 3119,
+              "opcode": 13,
+              "landmark_x_feet": 0,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 8,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 8,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3152,
+              "opcode": 27
+            },
+            {
+              "node_index": 3153,
+              "opcode": 13,
+              "landmark_x_feet": -45,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 6,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 9,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3122,
+              "opcode": 27
+            },
+            {
+              "node_index": 3123,
+              "opcode": 13,
+              "landmark_x_feet": 45,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 9,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 10,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3120,
+              "opcode": 27
+            },
+            {
+              "node_index": 3121,
+              "opcode": 13,
+              "landmark_x_feet": -45,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 10,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "play_index": 302,
+      "slots": [
+        {
+          "slot_index": 0,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 1,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 2,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 3,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 4,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3154,
+              "opcode": 27
+            },
+            {
+              "node_index": 3155,
+              "opcode": 13,
+              "landmark_x_feet": 15,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 4,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 5,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3156,
+              "opcode": 27
+            },
+            {
+              "node_index": 3157,
+              "opcode": 13,
+              "landmark_x_feet": -15,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 4,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 6,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3158,
+              "opcode": 27
+            },
+            {
+              "node_index": 3159,
+              "opcode": 13,
+              "landmark_x_feet": -45,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 6,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 7,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3160,
+              "opcode": 27
+            },
+            {
+              "node_index": 3161,
+              "opcode": 13,
+              "landmark_x_feet": 45,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 5,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 8,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3118,
+              "opcode": 27
+            },
+            {
+              "node_index": 3119,
+              "opcode": 13,
+              "landmark_x_feet": 0,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 8,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 9,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3122,
+              "opcode": 27
+            },
+            {
+              "node_index": 3123,
+              "opcode": 13,
+              "landmark_x_feet": 45,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 9,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 10,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3120,
+              "opcode": 27
+            },
+            {
+              "node_index": 3121,
+              "opcode": 13,
+              "landmark_x_feet": -45,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 10,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "play_index": 317,
+      "slots": [
+        {
+          "slot_index": 0,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 1,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 2,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 3,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 4,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3212,
+              "opcode": 27
+            },
+            {
+              "node_index": 3213,
+              "opcode": 13,
+              "landmark_x_feet": 30,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 13,
+              "depth_extent_yards": 5,
+              "mode": 5,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 5,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3214,
+              "opcode": 27
+            },
+            {
+              "node_index": 3215,
+              "opcode": 13,
+              "landmark_x_feet": -12,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 8,
+              "depth_extent_yards": 5,
+              "mode": 4,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 6,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3216,
+              "opcode": 27
+            },
+            {
+              "node_index": 3217,
+              "opcode": 13,
+              "landmark_x_feet": -42,
+              "drop_depth_feet": 18,
+              "lateral_extent_yards": 8,
+              "depth_extent_yards": 8,
+              "mode": 6,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 7,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3218,
+              "opcode": 27
+            },
+            {
+              "node_index": 3219,
+              "opcode": 13,
+              "landmark_x_feet": 36,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 9,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 8,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3220,
+              "opcode": 27
+            },
+            {
+              "node_index": 3221,
+              "opcode": 13,
+              "landmark_x_feet": -6,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 8,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 9,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3222,
+              "opcode": 27
+            },
+            {
+              "node_index": 3223,
+              "opcode": 13,
+              "landmark_x_feet": 36,
+              "drop_depth_feet": -3,
+              "lateral_extent_yards": 6,
+              "depth_extent_yards": 5,
+              "mode": 7,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 10,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3224,
+              "opcode": 27
+            },
+            {
+              "node_index": 3225,
+              "opcode": 13,
+              "landmark_x_feet": -36,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 10,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "play_index": 319,
+      "slots": [
+        {
+          "slot_index": 0,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 1,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 2,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 3,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 4,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3234,
+              "opcode": 27
+            },
+            {
+              "node_index": 3235,
+              "opcode": 13,
+              "landmark_x_feet": 36,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 10,
+              "depth_extent_yards": 5,
+              "mode": 4,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 5,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3236,
+              "opcode": 27
+            },
+            {
+              "node_index": 3237,
+              "opcode": 13,
+              "landmark_x_feet": 0,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 8,
+              "depth_extent_yards": 5,
+              "mode": 9,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 6,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3238,
+              "opcode": 27
+            },
+            {
+              "node_index": 3239,
+              "opcode": 13,
+              "landmark_x_feet": -36,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 10,
+              "depth_extent_yards": 5,
+              "mode": 6,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 7,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3240,
+              "opcode": 27
+            },
+            {
+              "node_index": 3241,
+              "opcode": 13,
+              "landmark_x_feet": 15,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 8,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 8,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3242,
+              "opcode": 27
+            },
+            {
+              "node_index": 3243,
+              "opcode": 13,
+              "landmark_x_feet": -15,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 8,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 9,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3122,
+              "opcode": 27
+            },
+            {
+              "node_index": 3123,
+              "opcode": 13,
+              "landmark_x_feet": 45,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 9,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 10,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3120,
+              "opcode": 27
+            },
+            {
+              "node_index": 3121,
+              "opcode": 13,
+              "landmark_x_feet": -45,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 10,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "play_index": 344,
+      "slots": [
+        {
+          "slot_index": 0,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 1,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 2,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3390,
+              "opcode": 27
+            },
+            {
+              "node_index": 3391,
+              "opcode": 13,
+              "landmark_x_feet": 0,
+              "drop_depth_feet": 12,
+              "lateral_extent_yards": 10,
+              "depth_extent_yards": 5,
+              "mode": 4,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 3,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 4,
+          "node_count": 3,
+          "chain": [
+            {
+              "node_index": 3392,
+              "opcode": 27
+            },
+            {
+              "node_index": 3393,
+              "opcode": 13,
+              "landmark_x_feet": 24,
+              "drop_depth_feet": 30,
+              "lateral_extent_yards": 10,
+              "depth_extent_yards": 5,
+              "mode": 6,
+              "operand_f": 1,
+              "operand_g": 2
+            },
+            {
+              "node_index": 3394,
+              "opcode": 14,
+              "decoded_man_operands": {
+                "flag": 0,
+                "depth_feet": 9,
+                "a": 0,
+                "b": 10,
+                "side": 7,
+                "c": 9,
+                "d": 1,
+                "e": 1
+              }
+            }
+          ]
+        },
+        {
+          "slot_index": 5,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3395,
+              "opcode": 27
+            },
+            {
+              "node_index": 3396,
+              "opcode": 11
+            }
+          ]
+        },
+        {
+          "slot_index": 6,
+          "node_count": 3,
+          "chain": [
+            {
+              "node_index": 3397,
+              "opcode": 27
+            },
+            {
+              "node_index": 3398,
+              "opcode": 13,
+              "landmark_x_feet": -24,
+              "drop_depth_feet": 30,
+              "lateral_extent_yards": 10,
+              "depth_extent_yards": 5,
+              "mode": 6,
+              "operand_f": 1,
+              "operand_g": 2
+            },
+            {
+              "node_index": 3399,
+              "opcode": 14,
+              "decoded_man_operands": {
+                "flag": 0,
+                "depth_feet": 9,
+                "a": 0,
+                "b": 6,
+                "side": 7,
+                "c": 10,
+                "d": 1,
+                "e": 1
+              }
+            }
+          ]
+        },
+        {
+          "slot_index": 7,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3400,
+              "opcode": 27
+            },
+            {
+              "node_index": 3401,
+              "opcode": 13,
+              "landmark_x_feet": 15,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 11,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 8,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3402,
+              "opcode": 27
+            },
+            {
+              "node_index": 3403,
+              "opcode": 13,
+              "landmark_x_feet": -15,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 11,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 9,
+          "node_count": 3,
+          "chain": [
+            {
+              "node_index": 3404,
+              "opcode": 27
+            },
+            {
+              "node_index": 3405,
+              "opcode": 14,
+              "decoded_man_operands": {
+                "flag": 0,
+                "depth_feet": 15,
+                "a": 2,
+                "b": 10,
+                "side": 13,
+                "c": 4,
+                "d": 2,
+                "e": 0
+              }
+            },
+            {
+              "node_index": 3406,
+              "opcode": 13,
+              "landmark_x_feet": 45,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 9,
+              "operand_f": 1,
+              "operand_g": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 10,
+          "node_count": 3,
+          "chain": [
+            {
+              "node_index": 3407,
+              "opcode": 27
+            },
+            {
+              "node_index": 3408,
+              "opcode": 14,
+              "decoded_man_operands": {
+                "flag": 0,
+                "depth_feet": 15,
+                "a": 2,
+                "b": 6,
+                "side": 14,
+                "c": 6,
+                "d": 2,
+                "e": 0
+              }
+            },
+            {
+              "node_index": 3409,
+              "opcode": 13,
+              "landmark_x_feet": -45,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 10,
+              "operand_f": 1,
+              "operand_g": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "play_index": 345,
+      "slots": [
+        {
+          "slot_index": 0,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 1,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 2,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 3,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 4,
+          "node_count": 3,
+          "chain": [
+            {
+              "node_index": 3410,
+              "opcode": 27
+            },
+            {
+              "node_index": 3411,
+              "opcode": 13,
+              "landmark_x_feet": 24,
+              "drop_depth_feet": 30,
+              "lateral_extent_yards": 10,
+              "depth_extent_yards": 3,
+              "mode": 5,
+              "operand_f": 1,
+              "operand_g": 2
+            },
+            {
+              "node_index": 3412,
+              "opcode": 14,
+              "decoded_man_operands": {
+                "flag": 0,
+                "depth_feet": 9,
+                "a": 0,
+                "b": 10,
+                "side": 7,
+                "c": 9,
+                "d": 1,
+                "e": 1
+              }
+            }
+          ]
+        },
+        {
+          "slot_index": 5,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3413,
+              "opcode": 27
+            },
+            {
+              "node_index": 3414,
+              "opcode": 13,
+              "landmark_x_feet": -9,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 10,
+              "mode": 4,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 6,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3415,
+              "opcode": 27
+            },
+            {
+              "node_index": 3416,
+              "opcode": 13,
+              "landmark_x_feet": -39,
+              "drop_depth_feet": 21,
+              "lateral_extent_yards": 10,
+              "depth_extent_yards": 5,
+              "mode": 4,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 7,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3220,
+              "opcode": 27
+            },
+            {
+              "node_index": 3221,
+              "opcode": 13,
+              "landmark_x_feet": -6,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 8,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 8,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3417,
+              "opcode": 27
+            },
+            {
+              "node_index": 3418,
+              "opcode": 13,
+              "landmark_x_feet": -39,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 10,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 9,
+          "node_count": 3,
+          "chain": [
+            {
+              "node_index": 3419,
+              "opcode": 27
+            },
+            {
+              "node_index": 3420,
+              "opcode": 14,
+              "decoded_man_operands": {
+                "flag": 0,
+                "depth_feet": 15,
+                "a": 2,
+                "b": 10,
+                "side": 13,
+                "c": 0,
+                "d": 2,
+                "e": 0
+              }
+            },
+            {
+              "node_index": 3421,
+              "opcode": 13,
+              "landmark_x_feet": 42,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 9,
+              "operand_f": 1,
+              "operand_g": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 10,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3422,
+              "opcode": 27
+            },
+            {
+              "node_index": 3423,
+              "opcode": 13,
+              "landmark_x_feet": -42,
+              "drop_depth_feet": 0,
+              "lateral_extent_yards": 8,
+              "depth_extent_yards": 5,
+              "mode": 6,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "play_index": 386,
+      "slots": [
+        {
+          "slot_index": 0,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 1,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 2,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 3,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 4,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 5,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3670,
+              "opcode": 27
+            },
+            {
+              "node_index": 3671,
+              "opcode": 13,
+              "landmark_x_feet": -24,
+              "drop_depth_feet": 15,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 2,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 6,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3672,
+              "opcode": 27
+            },
+            {
+              "node_index": 3673,
+              "opcode": 13,
+              "landmark_x_feet": 0,
+              "drop_depth_feet": 18,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 12,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 7,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3674,
+              "opcode": 27
+            },
+            {
+              "node_index": 3675,
+              "opcode": 13,
+              "landmark_x_feet": 24,
+              "drop_depth_feet": 15,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 12,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 8,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3676,
+              "opcode": 27
+            },
+            {
+              "node_index": 3677,
+              "opcode": 13,
+              "landmark_x_feet": -42,
+              "drop_depth_feet": 21,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 11,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 9,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3678,
+              "opcode": 27
+            },
+            {
+              "node_index": 3679,
+              "opcode": 13,
+              "landmark_x_feet": 42,
+              "drop_depth_feet": 12,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 13,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 10,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3680,
+              "opcode": 27
+            },
+            {
+              "node_index": 3681,
+              "opcode": 13,
+              "landmark_x_feet": -42,
+              "drop_depth_feet": 0,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 6,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "play_index": 458,
+      "slots": [
+        {
+          "slot_index": 0,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3194,
+              "opcode": 27
+            },
+            {
+              "node_index": 3195,
+              "opcode": 11
+            }
+          ]
+        },
+        {
+          "slot_index": 1,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 2,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 3,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 4,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3212,
+              "opcode": 27
+            },
+            {
+              "node_index": 3213,
+              "opcode": 13,
+              "landmark_x_feet": 30,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 13,
+              "depth_extent_yards": 5,
+              "mode": 5,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 5,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3214,
+              "opcode": 27
+            },
+            {
+              "node_index": 3215,
+              "opcode": 13,
+              "landmark_x_feet": -12,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 8,
+              "depth_extent_yards": 5,
+              "mode": 4,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 6,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3216,
+              "opcode": 27
+            },
+            {
+              "node_index": 3217,
+              "opcode": 13,
+              "landmark_x_feet": -42,
+              "drop_depth_feet": 18,
+              "lateral_extent_yards": 8,
+              "depth_extent_yards": 8,
+              "mode": 6,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 7,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3218,
+              "opcode": 27
+            },
+            {
+              "node_index": 3219,
+              "opcode": 13,
+              "landmark_x_feet": 36,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 9,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 8,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3220,
+              "opcode": 27
+            },
+            {
+              "node_index": 3221,
+              "opcode": 13,
+              "landmark_x_feet": -6,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 8,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 9,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3222,
+              "opcode": 27
+            },
+            {
+              "node_index": 3223,
+              "opcode": 13,
+              "landmark_x_feet": 36,
+              "drop_depth_feet": -3,
+              "lateral_extent_yards": 6,
+              "depth_extent_yards": 5,
+              "mode": 7,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 10,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3224,
+              "opcode": 27
+            },
+            {
+              "node_index": 3225,
+              "opcode": 13,
+              "landmark_x_feet": -36,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 10,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "play_index": 459,
+      "slots": [
+        {
+          "slot_index": 0,
+          "node_count": 3,
+          "chain": [
+            {
+              "node_index": 3948,
+              "opcode": 27
+            },
+            {
+              "node_index": 3949,
+              "opcode": 13,
+              "landmark_x_feet": 30,
+              "drop_depth_feet": 30,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 6,
+              "operand_f": 1,
+              "operand_g": 2
+            },
+            {
+              "node_index": 3950,
+              "opcode": 14,
+              "decoded_man_operands": {
+                "flag": 0,
+                "depth_feet": 9,
+                "a": 0,
+                "b": 10,
+                "side": 7,
+                "c": 9,
+                "d": 1,
+                "e": 1
+              }
+            }
+          ]
+        },
+        {
+          "slot_index": 1,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 2,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 3,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 4,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3951,
+              "opcode": 27
+            },
+            {
+              "node_index": 3952,
+              "opcode": 13,
+              "landmark_x_feet": 9,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 4,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 5,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3953,
+              "opcode": 27
+            },
+            {
+              "node_index": 3954,
+              "opcode": 13,
+              "landmark_x_feet": -9,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 4,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 6,
+          "node_count": 3,
+          "chain": [
+            {
+              "node_index": 3955,
+              "opcode": 27
+            },
+            {
+              "node_index": 3956,
+              "opcode": 13,
+              "landmark_x_feet": -30,
+              "drop_depth_feet": 30,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 6,
+              "operand_f": 1,
+              "operand_g": 2
+            },
+            {
+              "node_index": 3957,
+              "opcode": 14,
+              "decoded_man_operands": {
+                "flag": 0,
+                "depth_feet": 9,
+                "a": 0,
+                "b": 6,
+                "side": 7,
+                "c": 10,
+                "d": 1,
+                "e": 1
+              }
+            }
+          ]
+        },
+        {
+          "slot_index": 7,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3958,
+              "opcode": 27
+            },
+            {
+              "node_index": 3959,
+              "opcode": 13,
+              "landmark_x_feet": 24,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 11,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 8,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3960,
+              "opcode": 27
+            },
+            {
+              "node_index": 3961,
+              "opcode": 13,
+              "landmark_x_feet": -24,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 11,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 9,
+          "node_count": 3,
+          "chain": [
+            {
+              "node_index": 3962,
+              "opcode": 27
+            },
+            {
+              "node_index": 3963,
+              "opcode": 14,
+              "decoded_man_operands": {
+                "flag": 0,
+                "depth_feet": 15,
+                "a": 2,
+                "b": 10,
+                "side": 13,
+                "c": 0,
+                "d": 2,
+                "e": 0
+              }
+            },
+            {
+              "node_index": 3964,
+              "opcode": 13,
+              "landmark_x_feet": 45,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 9,
+              "operand_f": 1,
+              "operand_g": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 10,
+          "node_count": 3,
+          "chain": [
+            {
+              "node_index": 3965,
+              "opcode": 27
+            },
+            {
+              "node_index": 3966,
+              "opcode": 14,
+              "decoded_man_operands": {
+                "flag": 0,
+                "depth_feet": 15,
+                "a": 2,
+                "b": 6,
+                "side": 14,
+                "c": 6,
+                "d": 2,
+                "e": 0
+              }
+            },
+            {
+              "node_index": 3967,
+              "opcode": 13,
+              "landmark_x_feet": -45,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 10,
+              "operand_f": 1,
+              "operand_g": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "play_index": 460,
+      "slots": [
+        {
+          "slot_index": 0,
+          "node_count": 3,
+          "chain": [
+            {
+              "node_index": 3968,
+              "opcode": 27
+            },
+            {
+              "node_index": 3969,
+              "opcode": 13,
+              "landmark_x_feet": 24,
+              "drop_depth_feet": 30,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 5,
+              "operand_f": 1,
+              "operand_g": 2
+            },
+            {
+              "node_index": 3970,
+              "opcode": 14,
+              "decoded_man_operands": {
+                "flag": 0,
+                "depth_feet": 9,
+                "a": 0,
+                "b": 10,
+                "side": 7,
+                "c": 9,
+                "d": 1,
+                "e": 1
+              }
+            }
+          ]
+        },
+        {
+          "slot_index": 1,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 2,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 3,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 4,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3971,
+              "opcode": 27
+            },
+            {
+              "node_index": 3972,
+              "opcode": 13,
+              "landmark_x_feet": 9,
+              "drop_depth_feet": 21,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 5,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 5,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3953,
+              "opcode": 27
+            },
+            {
+              "node_index": 3954,
+              "opcode": 13,
+              "landmark_x_feet": -9,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 4,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 6,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3973,
+              "opcode": 27
+            },
+            {
+              "node_index": 3974,
+              "opcode": 13,
+              "landmark_x_feet": -30,
+              "drop_depth_feet": 21,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 4,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 7,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3220,
+              "opcode": 27
+            },
+            {
+              "node_index": 3221,
+              "opcode": 13,
+              "landmark_x_feet": -6,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 8,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 8,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3417,
+              "opcode": 27
+            },
+            {
+              "node_index": 3418,
+              "opcode": 13,
+              "landmark_x_feet": -39,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 10,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 9,
+          "node_count": 3,
+          "chain": [
+            {
+              "node_index": 3419,
+              "opcode": 27
+            },
+            {
+              "node_index": 3420,
+              "opcode": 14,
+              "decoded_man_operands": {
+                "flag": 0,
+                "depth_feet": 15,
+                "a": 2,
+                "b": 10,
+                "side": 13,
+                "c": 0,
+                "d": 2,
+                "e": 0
+              }
+            },
+            {
+              "node_index": 3421,
+              "opcode": 13,
+              "landmark_x_feet": 42,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 9,
+              "operand_f": 1,
+              "operand_g": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 10,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3680,
+              "opcode": 27
+            },
+            {
+              "node_index": 3681,
+              "opcode": 13,
+              "landmark_x_feet": -42,
+              "drop_depth_feet": 0,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 6,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "play_index": 478,
+      "slots": [
+        {
+          "slot_index": 0,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 4063,
+              "opcode": 27
+            },
+            {
+              "node_index": 4064,
+              "opcode": 13,
+              "landmark_x_feet": 0,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 4,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 1,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 2,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 3,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 4,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 4065,
+              "opcode": 27
+            },
+            {
+              "node_index": 4066,
+              "opcode": 13,
+              "landmark_x_feet": 24,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 4,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 5,
+          "node_count": 3,
+          "chain": [
+            {
+              "node_index": 4067,
+              "opcode": 27
+            },
+            {
+              "node_index": 4068,
+              "opcode": 13,
+              "landmark_x_feet": -24,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 5,
+              "operand_f": 1,
+              "operand_g": 2
+            },
+            {
+              "node_index": 4069,
+              "opcode": 14,
+              "decoded_man_operands": {
+                "flag": 0,
+                "depth_feet": 9,
+                "a": 0,
+                "b": 6,
+                "side": 13,
+                "c": 10,
+                "d": 1,
+                "e": 1
+              }
+            }
+          ]
+        },
+        {
+          "slot_index": 6,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3276,
+              "opcode": 27
+            },
+            {
+              "node_index": 3277,
+              "opcode": 14,
+              "decoded_man_operands": {
+                "flag": 0,
+                "depth_feet": 9,
+                "a": 0,
+                "b": 8,
+                "side": 0,
+                "c": 0,
+                "d": 0,
+                "e": 0
+              }
+            }
+          ]
+        },
+        {
+          "slot_index": 7,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3460,
+              "opcode": 27
+            },
+            {
+              "node_index": 3461,
+              "opcode": 13,
+              "landmark_x_feet": 30,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 11,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 8,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 4070,
+              "opcode": 27
+            },
+            {
+              "node_index": 4071,
+              "opcode": 14,
+              "decoded_man_operands": {
+                "flag": 0,
+                "depth_feet": 9,
+                "a": 0,
+                "b": 7,
+                "side": 0,
+                "c": 0,
+                "d": 0,
+                "e": 0
+              }
+            }
+          ]
+        },
+        {
+          "slot_index": 9,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 4072,
+              "opcode": 27
+            },
+            {
+              "node_index": 4073,
+              "opcode": 13,
+              "landmark_x_feet": 45,
+              "drop_depth_feet": 0,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 5,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 10,
+          "node_count": 3,
+          "chain": [
+            {
+              "node_index": 4074,
+              "opcode": 27
+            },
+            {
+              "node_index": 4075,
+              "opcode": 14,
+              "decoded_man_operands": {
+                "flag": 0,
+                "depth_feet": 15,
+                "a": 2,
+                "b": 6,
+                "side": 14,
+                "c": 5,
+                "d": 2,
+                "e": 0
+              }
+            },
+            {
+              "node_index": 4076,
+              "opcode": 13,
+              "landmark_x_feet": -45,
+              "drop_depth_feet": 45,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 10,
+              "operand_f": 1,
+              "operand_g": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "play_index": 491,
+      "slots": [
+        {
+          "slot_index": 0,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3128,
+              "opcode": 27
+            },
+            {
+              "node_index": 3129,
+              "opcode": 13,
+              "landmark_x_feet": 45,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 5,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 1,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 2,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2980,
+              "opcode": 1
+            },
+            {
+              "node_index": 2981,
+              "opcode": 1
+            }
+          ]
+        },
+        {
+          "slot_index": 3,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 4149,
+              "opcode": 27
+            },
+            {
+              "node_index": 4150,
+              "opcode": 13,
+              "landmark_x_feet": 24,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 4,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 4,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 4151,
+              "opcode": 27
+            },
+            {
+              "node_index": 4152,
+              "opcode": 13,
+              "landmark_x_feet": 0,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 4,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 5,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 4165,
+              "opcode": 27
+            },
+            {
+              "node_index": 4166,
+              "opcode": 11
+            }
+          ]
+        },
+        {
+          "slot_index": 6,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 4153,
+              "opcode": 27
+            },
+            {
+              "node_index": 4154,
+              "opcode": 13,
+              "landmark_x_feet": -24,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 4,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 7,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2988,
+              "opcode": 27
+            },
+            {
+              "node_index": 2989,
+              "opcode": 13,
+              "landmark_x_feet": 30,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 10,
+              "depth_extent_yards": 5,
+              "mode": 11,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 8,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 2990,
+              "opcode": 27
+            },
+            {
+              "node_index": 2991,
+              "opcode": 13,
+              "landmark_x_feet": -30,
+              "drop_depth_feet": 54,
+              "lateral_extent_yards": 10,
+              "depth_extent_yards": 5,
+              "mode": 11,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        },
+        {
+          "slot_index": 9,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 4167,
+              "opcode": 27
+            },
+            {
+              "node_index": 4168,
+              "opcode": 11
+            }
+          ]
+        },
+        {
+          "slot_index": 10,
+          "node_count": 2,
+          "chain": [
+            {
+              "node_index": 3124,
+              "opcode": 27
+            },
+            {
+              "node_index": 3125,
+              "opcode": 13,
+              "landmark_x_feet": -45,
+              "drop_depth_feet": 24,
+              "lateral_extent_yards": 5,
+              "depth_extent_yards": 5,
+              "mode": 6,
+              "operand_f": 0,
+              "operand_g": 0
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "formation_alignments": [
+    {
+      "formation_index": 0,
+      "slot_base": 610,
+      "slots": [
+        {
+          "slot_index": 0,
+          "x_cm_columns": [
+            5,
+            0,
+            0
+          ],
+          "z_cm_columns": [
+            -185,
+            -126,
+            -126
+          ]
+        },
+        {
+          "slot_index": 1,
+          "x_cm_columns": [
+            304,
+            304,
+            304
+          ],
+          "z_cm_columns": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "slot_index": 2,
+          "x_cm_columns": [
+            -304,
+            -304,
+            -304
+          ],
+          "z_cm_columns": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "slot_index": 3,
+          "x_cm_columns": [
+            0,
+            0,
+            0
+          ],
+          "z_cm_columns": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "slot_index": 4,
+          "x_cm_columns": [
+            152,
+            152,
+            152
+          ],
+          "z_cm_columns": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "slot_index": 5,
+          "x_cm_columns": [
+            -152,
+            -152,
+            -152
+          ],
+          "z_cm_columns": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "slot_index": 6,
+          "x_cm_columns": [
+            -457,
+            438,
+            -1132
+          ],
+          "z_cm_columns": [
+            0,
+            -213,
+            0
+          ]
+        },
+        {
+          "slot_index": 7,
+          "x_cm_columns": [
+            -1371,
+            822,
+            -1371
+          ],
+          "z_cm_columns": [
+            -219,
+            -213,
+            -219
+          ]
+        },
+        {
+          "slot_index": 8,
+          "x_cm_columns": [
+            1371,
+            1371,
+            -926
+          ],
+          "z_cm_columns": [
+            0,
+            0,
+            -207
+          ]
+        },
+        {
+          "slot_index": 9,
+          "x_cm_columns": [
+            0,
+            248,
+            -262
+          ],
+          "z_cm_columns": [
+            -502,
+            -505,
+            -493
+          ]
+        },
+        {
+          "slot_index": 10,
+          "x_cm_columns": [
+            0,
+            0,
+            0
+          ],
+          "z_cm_columns": [
+            -731,
+            -731,
+            -731
+          ]
+        }
+      ]
+    },
+    {
+      "formation_index": 141,
+      "slot_base": 26554,
+      "slots": [
+        {
+          "slot_index": 0,
+          "x_cm_columns": [
+            370,
+            452,
+            365
+          ],
+          "z_cm_columns": [
+            0,
+            -4,
+            0
+          ]
+        },
+        {
+          "slot_index": 1,
+          "x_cm_columns": [
+            -452,
+            -452,
+            -352
+          ],
+          "z_cm_columns": [
+            0,
+            0,
+            -4
+          ]
+        },
+        {
+          "slot_index": 2,
+          "x_cm_columns": [
+            113,
+            217,
+            104
+          ],
+          "z_cm_columns": [
+            0,
+            -8,
+            0
+          ]
+        },
+        {
+          "slot_index": 3,
+          "x_cm_columns": [
+            -217,
+            -222,
+            -104
+          ],
+          "z_cm_columns": [
+            0,
+            -4,
+            4
+          ]
+        },
+        {
+          "slot_index": 4,
+          "x_cm_columns": [
+            470,
+            613,
+            252
+          ],
+          "z_cm_columns": [
+            287,
+            -8,
+            304
+          ]
+        },
+        {
+          "slot_index": 5,
+          "x_cm_columns": [
+            -74,
+            -313,
+            -13
+          ],
+          "z_cm_columns": [
+            313,
+            309,
+            304
+          ]
+        },
+        {
+          "slot_index": 6,
+          "x_cm_columns": [
+            -435,
+            -618,
+            -248
+          ],
+          "z_cm_columns": [
+            304,
+            -8,
+            309
+          ]
+        },
+        {
+          "slot_index": 7,
+          "x_cm_columns": [
+            883,
+            883,
+            -4
+          ],
+          "z_cm_columns": [
+            1188,
+            662,
+            1310
+          ]
+        },
+        {
+          "slot_index": 8,
+          "x_cm_columns": [
+            -883,
+            8,
+            -891
+          ],
+          "z_cm_columns": [
+            1097,
+            1297,
+            678
+          ]
+        },
+        {
+          "slot_index": 9,
+          "x_cm_columns": [
+            1371,
+            1386,
+            1380
+          ],
+          "z_cm_columns": [
+            457,
+            822,
+            -8
+          ]
+        },
+        {
+          "slot_index": 10,
+          "x_cm_columns": [
+            -1371,
+            -1402,
+            -1375
+          ],
+          "z_cm_columns": [
+            457,
+            822,
+            -4
+          ]
+        }
+      ]
+    },
+    {
+      "formation_index": 147,
+      "slot_base": 27658,
+      "slots": [
+        {
+          "slot_index": 0,
+          "x_cm_columns": [
+            475,
+            538,
+            401
+          ],
+          "z_cm_columns": [
+            182,
+            15,
+            289
+          ]
+        },
+        {
+          "slot_index": 1,
+          "x_cm_columns": [
+            304,
+            298,
+            304
+          ],
+          "z_cm_columns": [
+            6,
+            6,
+            6
+          ]
+        },
+        {
+          "slot_index": 2,
+          "x_cm_columns": [
+            -304,
+            -292,
+            -304
+          ],
+          "z_cm_columns": [
+            0,
+            6,
+            -6
+          ]
+        },
+        {
+          "slot_index": 3,
+          "x_cm_columns": [
+            0,
+            -6,
+            6
+          ],
+          "z_cm_columns": [
+            0,
+            0,
+            6
+          ]
+        },
+        {
+          "slot_index": 4,
+          "x_cm_columns": [
+            151,
+            298,
+            85
+          ],
+          "z_cm_columns": [
+            320,
+            316,
+            323
+          ]
+        },
+        {
+          "slot_index": 5,
+          "x_cm_columns": [
+            -151,
+            -323,
+            -85
+          ],
+          "z_cm_columns": [
+            320,
+            316,
+            323
+          ]
+        },
+        {
+          "slot_index": 6,
+          "x_cm_columns": [
+            -475,
+            -548,
+            -375
+          ],
+          "z_cm_columns": [
+            182,
+            10,
+            264
+          ]
+        },
+        {
+          "slot_index": 7,
+          "x_cm_columns": [
+            883,
+            883,
+            -4
+          ],
+          "z_cm_columns": [
+            1188,
+            662,
+            1310
+          ]
+        },
+        {
+          "slot_index": 8,
+          "x_cm_columns": [
+            -883,
+            8,
+            -891
+          ],
+          "z_cm_columns": [
+            1097,
+            1297,
+            678
+          ]
+        },
+        {
+          "slot_index": 9,
+          "x_cm_columns": [
+            1371,
+            1386,
+            1380
+          ],
+          "z_cm_columns": [
+            457,
+            822,
+            -8
+          ]
+        },
+        {
+          "slot_index": 10,
+          "x_cm_columns": [
+            -1371,
+            -1402,
+            -1375
+          ],
+          "z_cm_columns": [
+            457,
+            822,
+            -4
+          ]
+        }
+      ]
+    }
+  ]
+}

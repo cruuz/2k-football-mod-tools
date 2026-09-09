@@ -16451,3 +16451,283 @@ disposable disc can preserve Noah's free-space floor. This session's
 XBE-only scratch projection: it retains parent retail reservations and
 records actual current XBE owner writes. Historical disc fields are not a
 new acceptance build. Do not ship or promote that scratch manifest.
+
+## ASTRA 2026-09-09: Coverage Geometry and TU research
+
+This appendix belongs to branch `astra/apf-coverage-re`. The existing material
+above is unchanged. See `ASTRA_REPORT.md` and `docs/research/apf_coverage/`.
+The delivered feature is an offline verified **MASTER PLAY geometry writer**;
+gameplay is UNWITNESSED. It is not a receiver-carry fix or an XEX patch. Both
+base and TU consumers are mapped. No code cave, patch TOML, emulator version
+switch, or launch-setting change is needed for this pack lane.
+
+The brief reserves `build.py`, `gui.py`, the capability registry and release
+lists/checkers for Claude. They have not been edited. No new panel is claimed
+to exist: `status()` explicitly reports registered=false and rendered=false.
+The following is the concrete integration contract, including the composition
+adapter that has already been implemented and tested.
+
+### Core calls and shareable project payload
+
+```python
+from mod_editor.core import apf2k8_coverage_tuning as coverage
+
+# Defaults must be read from the loaded MASTER; this is only an authored test.
+edits = (coverage.ZoneEdit(node_index=2983, drop_depth_feet=27),)
+payload = coverage.encode_profile(edits)
+assert coverage.decode_profile(payload) == edits
+
+# Build the complete batch in RAM; encode outer 180 only once.
+entry, receipt = coverage.compile_outer_entry(
+    source.index_0a,
+    edits,
+    package_maps=parsed_package_maps,
+    routes=parsed_route_requests,
+)
+```
+
+`compile_outer_entry` reads canonical MASTER, checks the masked retail pin,
+applies geometry, invokes the existing package-map/route compiler, reparses
+the final PLAY, verifies that the entire tuned node pool survived the later
+writers, recomputes affected assignments, then invokes the existing H7A/IFF
+encoder and fixed-allocation verifier. `compose_geometry(body, edits, ...)`
+provides the same composition without container encoding for previews.
+`receipt["replacement_sha256"]` names the final body. The optional
+`geometry_stage_sha256` names the intermediate coverage-only body.
+
+Use exactly one profile Modification:
+
+```python
+payload = coverage.encode_profile(edits)
+digest = hashlib.sha256(payload).hexdigest()
+modification = Modification(
+    asset_id=coverage.PROFILE_ASSET_ID,       # apf:coverage:geometry
+    kind=coverage.PROVIDER_KIND,             # coverage_geometry
+    replacement_path=self._store_payload(digest, payload, ".json"),
+    replacement_sha256=digest,
+    metadata={"schema": coverage.PROFILE_SCHEMA},
+)
+```
+
+The replacement contains schema, node selectors and authored numeric values;
+it contains no source node bytes. Payload is authoritative; metadata has no
+second copy of the editable values. Empty edits should remove the staged
+profile with one Undo record. Rebuilding starts from canonical retail, so
+removing the profile restores retail geometry. Preview the composed profile
+against all already-staged maps/routes before recording Undo or replacing the
+Modification. Duplicate node edits fail; a panel should merge knobs for the
+same node into one `ZoneEdit` before encoding.
+
+### Protected build.py insertion points
+
+In `mod_editor/apf_studio/build.py`, import the module near the existing MASTER
+writers:
+
+```python
+from mod_editor.core import apf2k8_coverage_tuning as coverage
+```
+
+In the compilation method around `play_assignment_route_group` and
+`package_map_group` (current lines 867–868), add:
+
+```python
+coverage_group: list[Modification] = []
+```
+
+In that method's kind dispatch, immediately beside the route/package branches:
+
+```python
+elif modification.kind == coverage.PROVIDER_KIND:
+    coverage_group.append(modification)
+```
+
+At the combined MASTER branch (current line 1282), use:
+
+```python
+if play_assignment_route_group or package_map_group or coverage_group:
+    outer_index, entry_bytes, row = self._compile_master_play_edits(
+        routes=tuple(play_assignment_route_group),
+        package_maps=tuple(package_map_group),
+        coverage_profiles=tuple(coverage_group),
+    )
+    # Preserve the existing collision check and compiled[180]/edit_rows writes.
+```
+
+Extend `_compile_master_play_edits`'s keyword parameters with
+`coverage_profiles: tuple[Modification, ...] = ()`, and include it in the
+initial empty-batch check. After the existing loops have decoded `requests`
+and `maps`, and **before** the `if requests and not maps` shortcut, insert:
+
+```python
+if coverage_profiles:
+    if len(coverage_profiles) != 1:
+        raise BuildError("Only one Coverage Geometry profile may be staged")
+    profile = coverage_profiles[0]
+    if (profile.asset_id != coverage.PROFILE_ASSET_ID
+            or dict(profile.metadata) != {"schema": coverage.PROFILE_SCHEMA}):
+        raise BuildError("Coverage Geometry profile identity changed")
+    try:
+        edits = coverage.decode_profile(profile.replacement_path.read_bytes())
+        entry_bytes, report = coverage.compile_outer_entry(
+            self.source.index_0a, edits, package_maps=maps, routes=requests,
+        )
+    except (OSError, ValidationError) as exc:
+        raise BuildError(f"Could not compile Coverage Geometry: {exc}") from exc
+    all_mods = tuple(package_maps) + tuple(routes) + tuple(coverage_profiles)
+    row = {
+        "asset_ids": tuple(m.asset_id for m in all_mods),
+        "kind": "master_play_combined_batch",
+        "outer_index": 180,
+        "replacement_payload_sha256s": {
+            m.asset_id: m.replacement_sha256 for m in all_mods
+        },
+        "entry_size": len(entry_bytes),
+        "entry_sha256": _hash_bytes(entry_bytes),
+        "writer_schema": coverage.SCHEMA,
+        "writer_mode": "shared_zone_geometry_then_maps_routes",
+        "resource_source_sha256": report["source_sha256"],
+        "resource_replacement_sha256": report["replacement_sha256"],
+        "changed_byte_count": report["changed_byte_count"],
+        "coverage": report,
+        "honesty": "Offline verified; gameplay UNWITNESSED",
+    }
+    return 180, entry_bytes, row
+```
+
+The ordinary build loop already verifies replacement SHA-256 before grouping.
+Preserve that gate and the subsequent receipt checks. Include the new kind in
+any existing “already compiled in a batch” skip sets, so the PNG fallback
+never tries to compile it again. Keep the existing paths when no coverage
+profile is staged. Do not call the coverage writer on a body after other
+MASTER edits: that deliberately fails its non-geometry retail pin.
+
+If tonight's separate membership/formation work adds another MASTER writer,
+extend this single sequence with that writer's own verification and retain
+the final node-pool equality check. Do not let two producers replace outer 180.
+
+### Session/project validation and GUI contract
+
+In `mod_editor/apf_studio/session.py`, `_compile_master_play` currently calls
+`compile_master_play_edits` after collecting maps/routes. When the proposed
+profile is present, replace that preview call with:
+
+```python
+preview, report = coverage.compose_geometry(
+    self._master_play_body(),
+    coverage.decode_profile(profile.replacement_path.read_bytes()),
+    package_maps=maps,
+    routes=routes,
+)
+```
+
+Use the same identity/metadata validation as the build block before this call.
+Add the proposed profile to session reload validation beside the package-map
+case, and store/remove it using the same `_store_payload`, `_record_undo` and
+`_modifications` pattern as `apply_package_map_batch`. Persist only after the
+full preview passes. `facade.py` can expose the corresponding session method
+using its existing task/modified-signal pattern.
+
+In `mod_editor/apf_studio/project.py`, add the kind alongside package maps in
+the allowed-kind grammar and the three JSON paths: replacement validation,
+metadata validation, and project-import payload decoding. The exact predicates
+to use are:
+
+```python
+if asset_id != coverage.PROFILE_ASSET_ID:
+    raise ProjectError("Coverage Geometry asset identity changed")
+if metadata != {"schema": coverage.PROFILE_SCHEMA}:
+    raise ProjectError("Coverage Geometry metadata changed")
+coverage.decode_profile(data)
+extension = ".json"  # only in the import branch that chooses an extension
+```
+
+Use the local argument names in each branch (`modification.asset_id` and
+`modification.metadata` in replacement validation, `asset_id`/`value` in the
+metadata helper). Do not store the retail MASTER or rebuilt outer in the
+project. In particular, extend the existing import/export validators rather
+than treating the payload as an unchecked generic file.
+
+`gui.py`'s `CategoryPage.__init__`, PLAYBOOKS branch (currently around
+19324–19388), is the eventual location for a Coverage Geometry tab. A panel
+is intentionally not supplied by this research-first brief. Its required
+data contract is concrete:
+
+- Source values come from `inspect_zones(canonical_body)`; rows use node ID
+  and the four names/ranges in `KNOB_RANGES`.
+- Show all `(play, slot, chain step)` uses. Recompute them through
+  `compose_geometry` after staged route clones. A selector for one play must
+  resolve to a shared node and disclose all its users.
+- Label the panel “Coverage Geometry (experimental)” and show
+  “Gameplay UNWITNESSED.” Defaults retain the source values; no repair preset.
+- Apply/Revert stage/remove the one numeric profile through the session,
+  preserving Undo. No automatic launch or external confirmation step is added.
+
+Until that controller, persistence and panel exist and their tests pass, keep
+the proposed registry row hidden. A registered backend is not a rendered tab.
+
+### Proposed capability and packaging additions
+
+Add the following object to `mod_editor/capabilities/registry.v1.json`, sorted
+consistently with neighboring IDs. This is a proposed record, not a claim that
+the registry was changed in this branch:
+
+```json
+{
+  "id": "apf2k8.gameplay_tuning_sliders.coverage_geometry",
+  "game": "apf2k8_xbox360",
+  "surface": "gameplay_tuning_sliders",
+  "title": "Coverage Geometry (experimental)",
+  "summary": "Edit shared zone-node landmarks and extents; gameplay UNWITNESSED.",
+  "classification": "offline-writer-proved",
+  "backend": {
+    "module": "mod_editor/core/apf2k8_coverage_tuning.py",
+    "command": null,
+    "operation": "write"
+  },
+  "gui": {
+    "expose": false,
+    "default_enabled": false,
+    "mode": "edit",
+    "reason": "Core writer and verifier exist; session/project/panel integration is pending."
+  },
+  "runtime": {
+    "status": "not-tested",
+    "scope": "Base and TU consumers mapped; no in-game geometry or matching witness.",
+    "evidence": []
+  },
+  "selectors": {
+    "fields": [{"name": "node_index", "required": true, "allowed": "368 pinned opcode-0x0D nodes; inspect_zones returns exact IDs"}],
+    "notes": "Shared across assignments. Four integer geometry knobs; mode/F/G preserved."
+  },
+  "source_container": {
+    "format": "APF 0A/0B, H7A, IFF PLAY",
+    "resource": "MASTER outer 180, mpb PLAY 0x33CDF8E3",
+    "retail_file": "All-Pro Football 2K8 (USA)/0A and 0B",
+    "hash_pins": ["2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891", "ca1f83e389e9c6705438f5e05230fdc820c77c76c08e2828888121a9ee4aad28"]
+  },
+  "input_constraints": ["Apply coverage before other MASTER writers; encode outer 180 once.", "Preserve first node word and payload mode/F/G bits.", "Whole non-geometry body must match the masked retail pin."],
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "tooling": "source-and-schemas-only",
+    "rule": "Share numeric profiles and tooling only; source/extracted/rebuilt retail binaries stay private."
+  },
+  "evidence": ["ASTRA_REPORT.md", "docs/research/apf_coverage/address_map.json", "docs/research/apf_coverage/writer_receipt.json"],
+  "validation_command": "python3 tests/mod_editor/test_apf2k8_coverage_tuning.py",
+  "portme": ["Integrate session/project/build and an opt-in panel.", "Witness geometry separately from receiver-carry decisions on base and TU."]
+}
+```
+
+The runtime release needs the new core module and its existing route,
+package-map and inventory dependencies; it needs no retail evidence payload,
+C++ helper, XenonUtils library, STFS delta extractor, or function-diff tool.
+Add `mod_editor/core/apf2k8_coverage_tuning.py` to the protected release
+allowlist only after integration, and add its import to the protected runtime
+check. The packaging check must continue to reject retail material. Research
+JSON is derived and committed for review; it is not required at product runtime.
+
+Validation already run here: new standalone writer/profile/composition and
+synthetic PE/STFS suites, a retail fixed-allocation rebuild, and the existing
+route/package-map suites. Claude's integration should add project round-trip,
+Undo/Revert, batch collision, final shared-use preview, and offscreen panel
+checks without changing the runtime evidence grade.
