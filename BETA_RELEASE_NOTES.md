@@ -50,7 +50,9 @@ commit-by-commit index at the end.
 
 ## Fixed
 
-- Fresh rips of the disc can open Stadium Studio again (the beta-62 "not the canonical game cache" error).
+- Fresh rips of the disc open again (the beta-62 "not the canonical game cache" error at open), and the same wall
+  behind the Music tab (the audio fingerprint and containment stores) is gone; a real fresh rip was opened, prepared
+  for audio and built into Basic and Advanced before release.
 - ESPN 25th Anniversary in the game: the duplicate-Cowboys importer failure (Wide Right) repaired in 12 bytes; the
   Packers number 14 and the loading loop were not reproduced, so the in-game option refuses until proved.
 - MyCareer mode 5: native list rendering with yellow selection, the created player at depth 1, Start MyPlayer in the

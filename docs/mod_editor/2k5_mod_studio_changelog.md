@@ -255,7 +255,13 @@ commit on the stack since beta 62, grouped by area, with a commit index at the e
   "The private NFL 2K5 source cache is not the canonical game cache". `_validate_source_cache` compared the cache
   folder name with the project's own rip digest while `SourceCache` names the folder after the opened disc's digest,
   so any legal dump whose bytes differ from the project rip was refused. It now accepts the opened disc's own digest or
-  the canonical one and the message says "does not belong to the opened game disc". Regression test added.
+  the canonical one and the message says "does not belong to the opened game disc". Regression test added. The same
+  wall stood behind the Music tab: the audio fingerprint and containment stores compared the cache folder name with
+  the project rip's digest too (their own comments claimed the folder was named for the canonical identity; it is
+  named after the opened disc), so a fresh rip that loaded the private audio inventories was refused with "not the
+  canonical cache key". Both stores accept the opened disc's folder now, with regression tests, and a real fresh rip
+  (the retail image with a container byte changed) was opened through the Studio, prepared for audio and built into
+  the Basic and Advanced presets on this stack before release.
 - **Build and Gameplay rows for every new owner**, a level combo for CPU fourth downs, parent and child linking for
   weekly prep, the three abilities lock checkboxes restored from an installed v2 source, a new Rosters Abilities page
   inside a scroll host with the Guardian caps group, and the "Add match coverage experiments" button.
