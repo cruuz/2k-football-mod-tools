@@ -40,25 +40,33 @@ TEAM_A, TEAM_B, PLAYER = SCRATCH + 0x20000, SCRATCH + 0x20100, SCRATCH + 0x20200
 def _load(payload: bytes) -> "Uc":
     uc = Uc(UC_ARCH_X86, UC_MODE_32)
     header_size = struct.unpack_from("<I", payload, 0x108)[0]
-    uc.mem_map(IMAGE_BASE, ((header_size + 0xFFF) // 0x1000) * 0x1000)
-    uc.mem_write(IMAGE_BASE, payload[:header_size])
+    ranges = [(IMAGE_BASE, IMAGE_BASE + ((header_size + 0xFFF) // 0x1000) * 0x1000)]
     for section in _sections(payload):
         if not section.raw_size:
             continue
         start = section.virtual_address & ~0xFFF
         end = (section.virtual_address + section.raw_size + 0xFFF) & ~0xFFF
-        for page in range(start, end, 0x1000):
-            try:
-                uc.mem_map(page, 0x1000)
-            except Exception:  # noqa: BLE001 - shared page with the previous section
-                pass
+        ranges.append((start, end))
+    # Map the same pages in merged runs; thousands of individual mem_map calls
+    # made every decision take seconds and concealed mapping errors.
+    merged: list[tuple[int, int]] = []
+    for start, end in sorted(ranges):
+        if merged and start <= merged[-1][1]:
+            merged[-1] = (merged[-1][0], max(merged[-1][1], end))
+        else:
+            merged.append((start, end))
+    for start, end in merged:
+        uc.mem_map(start, end - start)
+    uc.mem_write(IMAGE_BASE, payload[:header_size])
+    for section in _sections(payload):
         uc.mem_write(section.virtual_address, payload[section.raw_offset: section.raw_offset + section.raw_size])
     uc.mem_map(SCRATCH, 0x40000)
     return uc
 
 
 def _run(payload: bytes, rand: float, *, human_catching: float, cpu_catching: float, interception: float,
-         catcher_on_offense: bool, offense_is_human: bool) -> tuple[float, list[int]]:
+         catcher_on_offense: bool, offense_is_human: bool, defense_is_human: bool = False,
+         ball_kind: int = 4) -> tuple[float, list[int]]:
     uc = _load(payload)
     uc.mem_write(cs.RAND_FN, b"\xd9\x05" + struct.pack("<I", RAND_FLOAT) + b"\xc3")      # fld dword [RAND]; ret
     uc.mem_write(RAND_FLOAT, struct.pack("<f", rand))
@@ -66,8 +74,9 @@ def _run(payload: bytes, rand: float, *, human_catching: float, cpu_catching: fl
     uc.mem_write(0xAAB8C0 + 4 * 4, struct.pack("<f", cpu_catching))        # side 0 (CPU), index 4 = Catching
     uc.mem_write(0xAAB8C0 + 14 * 4, struct.pack("<f", human_catching))     # side 1 (Human)
     uc.mem_write(cs.INT_SLIDER_GLOBAL, struct.pack("<f", interception))
+    uc.mem_write(cs.BALL_KIND_GLOBAL, struct.pack("<I", ball_kind))
     uc.mem_write(TEAM_A + 0x30, struct.pack("<I", 0x00F30000 if offense_is_human else 0))
-    uc.mem_write(TEAM_B + 0x30, struct.pack("<I", 0))
+    uc.mem_write(TEAM_B + 0x30, struct.pack("<I", 0x00F30100 if defense_is_human else 0))
     uc.mem_write(cs.OFFENSE_TEAM_GLOBAL, struct.pack("<I", TEAM_A))
     uc.mem_write(PLAYER + 0x38, struct.pack("<I", TEAM_A if catcher_on_offense else TEAM_B))
     uc.reg_write(UC_X86_REG_EBX, PLAYER)
