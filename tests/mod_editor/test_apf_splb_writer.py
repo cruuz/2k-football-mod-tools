@@ -15,11 +15,14 @@ are mostly about proving that it never does.
 from __future__ import annotations
 
 import os
+from pathlib import Path
 import struct
+import sys
 import unittest
 
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from mod_editor.core import apf2k8_splb_writer as splb  # noqa: E402
 from mod_editor.core.errors import ValidationError  # noqa: E402
@@ -220,9 +223,11 @@ class LayoutPinTests(unittest.TestCase):
         self.assertEqual(splb.RESOURCE_SIZE, 32_288)
         self.assertEqual(len(splb.STOCK_BOOKS), 15)
         named = [name for name in splb.STOCK_BOOKS.values() if name]
-        self.assertEqual(len(named), 11)
+        self.assertEqual(len(named), 15)
         self.assertEqual(sum(1 for n in named if n.startswith("O-")), 7)
         self.assertEqual(sum(1 for n in named if n.startswith("X-")), 4)
+        self.assertEqual({i: splb.STOCK_BOOKS[i] for i in (293, 656, 1037, 1439)},
+                         {293: "USER-d", 656: "global-d", 1037: "USER-o", 1439: "global-o"})
 
     def test_the_filler_is_just_an_out_of_range_play_index(self) -> None:
         self.assertEqual(splb.FILLER & splb.PLAY_MASK, 1023)

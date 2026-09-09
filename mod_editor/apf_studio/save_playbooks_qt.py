@@ -52,8 +52,9 @@ class SavePlaybookAssignmentsPanel(QWidget):
         heading.setObjectName("panelTitle")
         explanation = QLabel(
             "Choose an APF roster save, select any of its 40 team slots, and assign "
-            "one of the 36 existing offensive and 33 existing defensive books. "
-            "This changes team assignments only—not formations, plays, or routes."
+            "one of the 36 offensive and 33 defensive labels. Several labels "
+            "share the same real book; the output receipt includes Book Identity "
+            "for every team. This action changes the selected labels."
         )
         explanation.setObjectName("mutedLabel")
         explanation.setWordWrap(True)

@@ -1,0 +1,165 @@
+{
+  "schema": "apf2k8_scheme_preset/v1",
+  "id": "wide-zone",
+  "name": "Wide Zone",
+  "book_type": "O-ZoneBlock",
+  "intent": "Concentrate existing stretch/zone runs and play-action rollouts, with quick outlets and screens.",
+  "limitations": "Wide Zone is a content label: APF blocking mechanics are unchanged. PA-RO plays supply the existing rollout/boot approximation. Non-zone fallback records and personnel remain intact; CPU frequencies are UNWITNESSED.",
+  "play_names": {
+    "3": "Strong Zone Cutback",
+    "5": "90 Z Quick Out",
+    "17": "Weak Zone Bounce",
+    "29": "90 Z Speed Under",
+    "42": "50 H Screen Weak",
+    "46": "Weak Zone Cutback",
+    "55": "Weak Stretch",
+    "59": "PA TE Rub Out",
+    "72": "PA-RO Z Rollaway",
+    "76": "Strong Outside Zone",
+    "86": "PA Z Out-n-Up",
+    "92": "PA-RO Strong Flow",
+    "93": "PA X/Z Out-n-Up",
+    "100": "50 H Screen Strong",
+    "102": "PA Inside Seam",
+    "156": "Strong Stretch",
+    "158": "PA-RO Stretch Cross",
+    "159": "PA-RO Stretch Post",
+    "160": "PA-RO Stretch Under",
+    "161": "PA-RO Stretch Corner",
+    "168": "PA Sprint 43 Post",
+    "205": "90 TE Out",
+    "213": "90 F Speed Out",
+    "216": "90 All Slants",
+    "225": "PA H Speed Out",
+    "227": "PA Stops-n-Posts",
+    "230": "PA TE Fly",
+    "240": "PA X/A In-n-Out",
+    "245": "90 X/Z Quick Outs",
+    "578": "90 X Slant"
+  },
+  "groups": [
+    {
+      "records": [
+        [
+          0,
+          0,
+          "I Pro"
+        ],
+        [
+          1,
+          9,
+          "I Jacks"
+        ],
+        [
+          2,
+          13,
+          "Strong I Twins"
+        ]
+      ],
+      "keep": [
+        156,
+        55,
+        72,
+        92,
+        160,
+        158,
+        59,
+        225,
+        578,
+        205,
+        213
+      ],
+      "tags": [
+        156,
+        158,
+        578,
+        59
+      ]
+    },
+    {
+      "records": [
+        [
+          3,
+          62,
+          "Ace"
+        ],
+        [
+          4,
+          63,
+          "Ace Flip"
+        ],
+        [
+          5,
+          68,
+          "Doubles"
+        ],
+        [
+          6,
+          69,
+          "Quads"
+        ],
+        [
+          7,
+          70,
+          "Quads Flip"
+        ],
+        [
+          8,
+          71,
+          "Triple"
+        ],
+        [
+          9,
+          72,
+          "Tight Triple"
+        ],
+        [
+          10,
+          75,
+          "Trips Tight"
+        ],
+        [
+          11,
+          78,
+          "Pair Slot"
+        ],
+        [
+          12,
+          79,
+          "Bunch"
+        ]
+      ],
+      "keep": [
+        156,
+        55,
+        76,
+        3,
+        17,
+        46,
+        158,
+        161,
+        159,
+        86,
+        93,
+        240,
+        230,
+        227,
+        102,
+        168,
+        578,
+        5,
+        29,
+        245,
+        216,
+        42,
+        100
+      ],
+      "tags": [
+        156,
+        158,
+        578,
+        86
+      ]
+    }
+  ]
+}

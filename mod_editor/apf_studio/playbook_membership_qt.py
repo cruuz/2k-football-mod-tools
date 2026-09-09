@@ -241,13 +241,11 @@ EMPTY_FORMATION_WARNING = (
     "base packages (every 20 and 10 formation in USER-o) left the game unable "
     "to boot at all under Xenia (spin, then exit). Do not use Empty as a way "
     "to get TEs on 3rd-and-long.\n\n"
-    "Play names are not personnel. The TE / RB / WR counts on the play-call "
-    "screen come from a personnel table inside default.xex, which this studio "
-    "does not write. The Who lines up tab edits a formation's eleven role "
-    "bytes; every retail formation carries the numbers 0 to 10 once each, so "
-    "that map reorders roles and cannot add a position to a set. Whether the "
-    "in-game look changes is unproved, and it is not a 3rd-and-long fix. "
-    "Emptying every formation in a book is refused."
+    "Play names are not personnel. The book record's personnel category and "
+    "the CPU's row fallback affect who fills the formation. The Who lines up "
+    "tab edits the formation's role map; whether the in-game "
+    "look changes is unproved, and it is not a 3rd-and-long fix. Emptying "
+    "every formation in a book is refused."
 )
 
 BOUNDARY = (
@@ -260,19 +258,22 @@ BOUNDARY = (
     "deliberately empty the formation. Empty formations are risky: the CPU then "
     "called plays that were not in the book. Mod Studio warns before doing that, "
     "will not empty a whole book, and keeps exact Flip twins together.\n\n"
+    "Formation geometry and personnel are separate: each book record has its "
+    "own personnel category, and the CPU also uses a row fallback. Changing a "
+    "formation alone does not establish which players fill it. The O-Shotgun "
+    "WR1/WR4 and WR2/WR3 depth flip remains UNKNOWN.\n\n"
     "Changes stay in your project until Build. Your original game remains "
     "untouched. Technical addresses are under Research pins."
 )
 
 THIRD_AND_LONG_STATUS = (
-    "Which formation the CPU calls on 3rd-and-long is decided in default.xex, "
-    "and Mod Studio does not patch the game program. But the lineup's "
-    "personnel ladder is data: on pass downs the game asks for the 0 RB / "
-    "1 TE / 4 WR row, and books without that Straight (01) package — like "
-    "O-Ace — fall back to a 0-TE package. That is the WR-for-TE sub you see. "
-    "'Change formation/package…' and 'Add a formation to this book…' give a "
-    "CPU book the 1 TE / 4 WR package. Whether the CPU then calls it on "
-    "3rd-and-long is unproved at runtime; after Build, check it in Xenia.\n\n"
+    "The CPU playcall path lives in default.xex. Its lineup resolver can ask "
+    "for the 0 RB / 1 TE / 4 WR row and fall back when the book lacks it. "
+    "'Change formation/package…' and 'Add a formation to this book…' edit "
+    "the stored record and package mask. In Urianus's August 29 test, editing "
+    "both still produced 0-TE formations on 3 of 27 observed plays. Those "
+    "edits have not established control of CPU 3rd-and-long personnel; a "
+    "remaining producer is UNKNOWN.\n\n"
     "The Who lines up tab edits a formation's 11 role bytes with the same "
     "caveat.\n\n"
     "Technical addresses are under Research pins."
@@ -700,8 +701,9 @@ class ApfPlaybookMembershipPanel(QFrame):
         self.book_picker.setObjectName("comboField")
         self.book_picker.setAccessibleName("Stock CPU playbook")
         self.book_picker.setToolTip(
-            "The fifteen stock playbook resources the game ships. Eleven carry "
-            "a name; four are unnamed and are shown by their archive entry."
+            "Fifteen disc resources: seven CPU offense books, four CPU defense "
+            "books, USER-o / USER-d defaults, and global-o / global-d supplements. "
+            "Team labels often select the same resource."
         )
         for outer, name in sorted(splb.STOCK_BOOKS.items()):
             label = name or f"(unnamed book, entry {outer})"

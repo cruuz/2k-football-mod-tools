@@ -1,0 +1,292 @@
+{
+  "schema": "apf2k8_scheme_preset/v1",
+  "id": "spread-to-run",
+  "name": "Spread-to-Run",
+  "book_type": "O-Shotgun",
+  "intent": "Pair existing Gun runs/draws/sweeps with quick slants, outs, screens and a few vertical constraints.",
+  "limitations": "RPO-like means a preselected run/quick-pass menu, not a post-snap read or a new RPO. Gun empty formations retain passes only. I Jokers and I Jacks fallback records stay intact; CPU frequencies are UNWITNESSED.",
+  "play_names": {
+    "5": "90 Z Quick Out",
+    "16": "Weak Draw",
+    "29": "90 Z Speed Under",
+    "31": "PA Z Slant",
+    "38": "90 TE Speed Out",
+    "42": "50 H Screen Weak",
+    "47": "Strong Draw",
+    "48": "Strong Sweep",
+    "59": "PA TE Rub Out",
+    "61": "Weak Dive",
+    "70": "Strong Dive",
+    "82": "Weak Sweep",
+    "85": "50 Clear Drags",
+    "99": "50 Y Seam",
+    "100": "50 H Screen Strong",
+    "101": "90 H Quick Dump",
+    "116": "90 TE Stop",
+    "121": "90 TE Curl",
+    "122": "50 Strong Flood",
+    "127": "H Shovel Strong",
+    "205": "90 TE Out",
+    "206": "50 Double Swing",
+    "213": "90 F Speed Out",
+    "216": "90 All Slants",
+    "226": "90 X Speed Under",
+    "236": "H Lead Shovel",
+    "245": "90 X/Z Quick Outs",
+    "247": "90 X/Z Slants",
+    "248": "50 TE Seam",
+    "254": "90 X Shallow Cross",
+    "255": "90 Z Shallow Cross",
+    "272": "90 A Hook",
+    "274": "50 Y Go",
+    "275": "90 A/B Cross",
+    "578": "90 X Slant",
+    "579": "90 Y Quick Out",
+    "581": "50 Z Go"
+  },
+  "groups": [
+    {
+      "records": [
+        [
+          0,
+          118,
+          "Gun: Split Pro"
+        ]
+      ],
+      "keep": [
+        61,
+        16,
+        48,
+        127,
+        31,
+        59,
+        578,
+        579,
+        245,
+        247,
+        216,
+        255,
+        254,
+        29,
+        226,
+        213,
+        42,
+        248,
+        581
+      ],
+      "tags": [
+        61,
+        578,
+        42,
+        581
+      ]
+    },
+    {
+      "records": [
+        [
+          1,
+          119,
+          "Gun: Split Twins"
+        ],
+        [
+          2,
+          120,
+          "Gun: Split Spread"
+        ],
+        [
+          3,
+          121,
+          "Gun: Kings Spread"
+        ]
+      ],
+      "keep": [
+        61,
+        16,
+        48,
+        127,
+        236,
+        578,
+        579,
+        255,
+        254,
+        29,
+        226,
+        38,
+        213,
+        42,
+        206,
+        248,
+        581
+      ],
+      "tags": [
+        61,
+        578,
+        42,
+        581
+      ]
+    },
+    {
+      "records": [
+        [
+          4,
+          122,
+          "Gun: Ace Right"
+        ],
+        [
+          5,
+          123,
+          "Gun: Ace Trips"
+        ],
+        [
+          6,
+          124,
+          "Gun: Doubles Right"
+        ],
+        [
+          7,
+          125,
+          "Gun: Trey Right"
+        ]
+      ],
+      "keep": [
+        70,
+        47,
+        48,
+        82,
+        578,
+        5,
+        245,
+        216,
+        205,
+        101,
+        100,
+        99,
+        581,
+        274
+      ],
+      "tags": [
+        70,
+        578,
+        100,
+        581
+      ]
+    },
+    {
+      "records": [
+        [
+          8,
+          126,
+          "Gun: Quads Left"
+        ],
+        [
+          9,
+          127,
+          "Gun: Triple Left"
+        ],
+        [
+          10,
+          128,
+          "Gun: Trips Left"
+        ],
+        [
+          11,
+          129,
+          "Gun: Pair Slot Left"
+        ],
+        [
+          12,
+          130,
+          "Gun: Bunch Left"
+        ]
+      ],
+      "keep": [
+        61,
+        16,
+        48,
+        82,
+        127,
+        578,
+        579,
+        245,
+        216,
+        226,
+        101,
+        42,
+        581,
+        274,
+        85,
+        122
+      ],
+      "tags": [
+        61,
+        578,
+        42,
+        581
+      ]
+    },
+    {
+      "records": [
+        [
+          13,
+          131,
+          "Gun: Ace Empty"
+        ],
+        [
+          14,
+          132,
+          "Gun: H Flex"
+        ],
+        [
+          15,
+          133,
+          "Gun: Straight"
+        ],
+        [
+          16,
+          134,
+          "Gun: Base Open"
+        ],
+        [
+          17,
+          135,
+          "Gun: Trips Open"
+        ],
+        [
+          18,
+          136,
+          "Gun: Trey Open"
+        ],
+        [
+          19,
+          137,
+          "Gun: Empty Open"
+        ],
+        [
+          20,
+          138,
+          "Gun: Empty Bunch"
+        ]
+      ],
+      "keep": [
+        578,
+        579,
+        245,
+        216,
+        581,
+        274,
+        85,
+        116,
+        121,
+        275,
+        272,
+        122
+      ],
+      "tags": [
+        578,
+        245,
+        579,
+        581
+      ]
+    }
+  ]
+}

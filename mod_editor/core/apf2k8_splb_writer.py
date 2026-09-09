@@ -636,23 +636,24 @@ STATIC_CONSUMER_WORDS: Mapping[int, int] = {
     0x84A896AC: 0x81470000,  # lwz mask word
 }
 
-#: outer entry -> book name, as shipped. Fifteen resources; four carry no name.
+#: Outer entry -> decoded header name. The four formerly unnamed resources
+#: were reidentified by header reparse AND uppercase filename CRC32 (2026-09-09).
 STOCK_BOOKS: Mapping[int, str] = {
     130: "O-ManBlock",
     134: "X-43Cover2",
     259: "O-TwoBack",
-    293: "",
+    293: "USER-d",
     369: "O-SinglebackAce",
     618: "X-34Base",
-    656: "",
+    656: "global-d",
     767: "O-Singleback3WR",
     891: "O-WestCoast",
     943: "O-ZoneBlock",
     957: "X-43Blitz",
-    1037: "",
+    1037: "USER-o",
     1405: "X-34ZoneBlitz",
     1411: "O-Shotgun",
-    1439: "",
+    1439: "global-o",
 }
 
 

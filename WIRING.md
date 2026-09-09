@@ -16731,3 +16731,257 @@ synthetic PE/STFS suites, a retail fixed-allocation rebuild, and the existing
 route/package-map suites. Claude's integration should add project round-trip,
 Undo/Revert, batch collision, final shared-use preview, and offscreen panel
 checks without changing the runtime evidence grade.
+
+<a id="astra-book-identity-2026-09-09"></a>
+
+## Astra — APF Book Identity, independent CPU books, scheme presets (2026-09-09)
+
+This section accompanies `ASTRA_REPORT.md`. The standalone implementation is
+complete and has an offline retail build; the protected integration below is
+intentionally not applied, as required by `ASTRA_CONTEXT.md`. Merge these changes
+together before advertising registered/rendered/packaged Studio support. The
+runtime status stays **UNWITNESSED**, including CPU clone consumption and TU 1.1
+compatibility. No code patch or executable change is required by this data path.
+
+### Playbooks page and action route
+
+In `mod_editor/apf_studio/gui.py`, beside the existing
+`from .playbook_membership_qt import ApfPlaybookMembershipPanel`, add:
+
+```python
+from .book_identity_qt import BookIdentityPanel
+```
+
+In `CategoryWorkspace.__init__`, immediately after `self.save_playbooks = (...)`,
+add:
+
+```python
+        self.book_identity = (
+            BookIdentityPanel(run_task)
+            if category is ApfCategory.PLAYBOOKS
+            else None
+        )
+```
+
+Inside the PLAYBOOKS tab branch, immediately after the Save Assignments tab and
+before Raw Playbook Assets, add:
+
+```python
+                tabs.addTab(self.book_identity, "Book Identity")  # type: ignore[arg-type]
+```
+
+In `CategoryWorkspace.open_workspace`, insert this branch after the existing
+`save-playbooks` / `save-assignments` branch:
+
+```python
+        elif normalized in {"book-identity", "book-clones", "scheme-presets"} \
+                and self.category is ApfCategory.PLAYBOOKS:
+            target = 5
+```
+
+The aliases select the same panel; its Action selector chooses a clone, one of
+the three presets, or all three presets. Raw Assets remains `count() - 1` (now
+6). Earlier tabs retain indices 0..4. No project `modifiedChanged` connection is
+needed: this is a copy builder operating on an explicitly selected built game,
+using the existing `run_task(label, worker, success_callback, True)` contract.
+
+The workflow is: build existing project edits → choose that built game folder →
+review preset(s) and build another folder → choose that result → review an
+independent book and build the final folder. The CLI can apply five requests at
+once using `data/apf2k8/book_clone_example.json`. The panel supports one clone
+per build and can repeat on the last result. Each review produces a complete
+team identity table; Build is disabled until review and invalidated by selection
+changes. Preset publication recompiles and checks equality with the reviewed
+reports. Clone publication verifies the compiled source directory and ROST,
+then checks each donor and all preserved bytes against the output.
+
+Do not silently attach this action to the middle of `ApfBuildService` or load a
+cloned archive into the retail-index authoring paths. Inserting sorted filename
+hashes changes outer ordinals even though existing resource offsets stay fixed.
+The finalizer is intentionally after all current Studio edits; the receipt
+records every old→new ordinal. Existing ROS files can override disc assignments.
+
+### Normal build receipt
+
+In `mod_editor/apf_studio/build.py`, add the imports alongside the core imports:
+
+```python
+from mod_editor.core.apf2k8_book_identity import disc_book_identity_report
+from mod_editor.core.errors import ValidationError
+```
+
+Reuse an existing `ValidationError` import if present. Inside
+`ApfBuildService.build`, directly after
+`output_sha = self._verify_composed(staging, spans, progress)`, add:
+
+```python
+            try:
+                book_identity = disc_book_identity_report(output_0a)
+            except (OSError, ValueError, RuntimeError, ValidationError) as exc:
+                raise BuildError(f"Book Identity reparse failed: {exc}") from exc
+```
+
+Add this root field to `manifest_document` beside `edit_count`:
+
+```python
+                "book_identity": book_identity,
+```
+
+This reads the final composed staging directory, so it reports final assignment
+and membership output. Keep all existing copy, source hash, span, and atomic
+publish verification. Do not derive this field from the retail source catalog.
+`mod_editor/apf_studio/save_playbooks.py` already adds the same 80-assignment
+identity structure after reparsing its verified raw output; it explicitly says
+`archive_inspected=false` when only a save is available. The new clone and
+preset builders already include their final disc identity tables.
+
+### Registry rows and capability action bindings
+
+Merge all three complete objects from
+`data/apf2k8/book_capabilities.fragment.json` into
+`mod_editor/capabilities/registry.v1.json`'s `capabilities` list, reject duplicate
+IDs, sort the list by `id`, and serialize canonical sorted pretty JSON. The IDs
+are `apf2k8.playbooks.identity`, `apf2k8.playbooks.clone`, and
+`apf2k8.playbooks.scheme_presets`. Identity is `read-only-mapped`; the two copy
+builders are `offline-writer-proved`. All three have `runtime.status=not-tested`.
+The fragment's `gui.expose=true` values apply only with this complete wiring.
+`scripts_config` already maps to `ApfCategory.PLAYBOOKS` in `catalog.py`.
+
+In `mod_editor/apf_studio/models.py`, add these entries to
+`CAPABILITY_ACTION_BINDINGS`, using the existing `_actions` helper:
+
+```python
+    "apf2k8.playbooks.identity": CapabilityActionBinding(
+        "apf2k8.playbooks.identity",
+        "playbooks.book_identity",
+        _actions(ApfProductAction.PREVIEW),
+        product_note=(
+            "Playbooks > Book Identity > Choose built game folder reparses all "
+            "team labels, real resources, and sharing. Runtime UNWITNESSED."
+        ),
+    ),
+    "apf2k8.playbooks.clone": CapabilityActionBinding(
+        "apf2k8.playbooks.clone",
+        "playbooks.book_identity",
+        _actions(ApfProductAction.PREVIEW, ApfProductAction.BUILD_COPY),
+        one_shot_target="mod_editor.core.apf2k8_book_clone:build_new_folder",
+        output_kind="complete_extracted_game_directory",
+        product_note=(
+            "BookIdentityPanel.review_selection and build_to create a verified "
+            "independent offensive book in a new folder. Finish existing Studio "
+            "edits first. CPU consumption and TU compatibility are UNWITNESSED."
+        ),
+    ),
+    "apf2k8.playbooks.scheme_presets": CapabilityActionBinding(
+        "apf2k8.playbooks.scheme_presets",
+        "playbooks.book_identity",
+        _actions(ApfProductAction.PREVIEW, ApfProductAction.BUILD_COPY),
+        one_shot_target="mod_editor.core.apf2k8_scheme_presets:build_presets_folder",
+        output_kind="complete_extracted_game_directory",
+        product_note=(
+            "BookIdentityPanel reviews Wide Zone, Spread-to-Run, Pro Power, or "
+            "all three, then verifies membership/tag edits in a copied game. "
+            "Existing plays and formations only; CPU behavior is UNWITNESSED."
+        ),
+    ),
+```
+
+The one-shot bindings are necessary for the card's usable-writer gate. A
+registry row alone does not create a working action or satisfy that gate. Keep
+this independent of the existing director membership card; its action binding
+continues to describe its own facade editor.
+
+### APF release allowlist and runtime/data closure
+
+The APF distribution reads `packaging/apf2k8-release-allowlist.txt`; the generic
+`packaging/release-allowlist.txt` belongs to the NFL product. Add these exact
+runtime paths to the APF allowlist, preserving its ordering convention:
+
+```text
+data/apf2k8/scheme_presets/pro-power.json
+data/apf2k8/scheme_presets/spread-to-run.json
+data/apf2k8/scheme_presets/wide-zone.json
+mod_editor/apf_studio/book_identity_qt.py
+mod_editor/core/apf2k8_book_clone.py
+mod_editor/core/apf2k8_book_identity.py
+mod_editor/core/apf2k8_scheme_presets.py
+tools/apf_book_unlock.py
+```
+
+Also ship `data/apf2k8/book_clone_example.json` if exposing the documented CLI
+example. Keep the already allowlisted SPLB writer, save-playbook tools and UI,
+`apf_inner`, `apf_outer`, `apf_roster`, `apf_save_playbook_assignments`,
+`apf_texture_patch`, and `playbook_inventory`; the new core imports need them.
+Presets resolve data relative to the installed repository root, not the working
+directory. Recipes are selectors/names only. The registry fragment is a merge
+input, not a runtime registry. The resolution probe and its Capstone dependency
+are development research only; they are not imported by the product or CLI.
+Do not stage ASTRA_CONTEXT* or any local game build/PE/ROS in a public release.
+
+In `packaging/check_apf2k8_mod_studio_runtime.py`, add these names to
+`PRODUCT_MODULES`:
+
+```python
+    "mod_editor.apf_studio.book_identity_qt",
+    "mod_editor.core.apf2k8_book_clone",
+    "mod_editor.core.apf2k8_book_identity",
+    "mod_editor.core.apf2k8_scheme_presets",
+```
+
+Add `"apf_book_unlock"` to `TOOL_MODULES`. Add the following function beside
+the existing static product checks, and invoke it as
+`_check_book_unlock_contract(modules)` in `main` immediately after the
+`TOOL_MODULES` import loop, before `_check_namespace_isolation()`:
+
+```python
+def _check_book_unlock_contract(modules: dict[str, object]) -> None:
+    identity = modules["mod_editor.core.apf2k8_book_identity"]
+    clone = modules["mod_editor.core.apf2k8_book_clone"]
+    presets = modules["mod_editor.core.apf2k8_scheme_presets"]
+    panel = modules["mod_editor.apf_studio.book_identity_qt"]
+    from mod_editor.core.errors import ValidationError
+
+    if not all(callable(target) for target in (
+        identity.disc_book_identity_report,
+        clone.verify_unlock, clone.build_new_folder,
+        presets.verify_preset, presets.build_presets_folder,
+        panel.BookIdentityPanel.review_selection, panel.BookIdentityPanel.build_to,
+    )):
+        raise RuntimeError("Book Identity action/verifier closure is incomplete")
+    try:
+        recipes = [presets.load_preset(slug) for slug in presets.PRESET_IDS]
+    except (OSError, ValueError, ValidationError) as exc:
+        raise RuntimeError(f"Book preset data closure failed: {exc}") from exc
+    if tuple(row["id"] for row in recipes) != presets.PRESET_IDS:
+        raise RuntimeError("Book preset IDs do not match the packaged data")
+    if tuple(row["book_type"] for row in recipes) != (
+        "O-ZoneBlock", "O-Shotgun", "O-ManBlock"
+    ):
+        raise RuntimeError("Book preset donor identities changed")
+```
+
+Keep the existing literal import-closure scan and every release safety gate.
+No Qt window or retail read is needed in this static data check. Offscreen
+panel tests construct the actual widget separately.
+
+After integration, run registry validation, standalone book tests, then both
+release/runtime checks against the staged APF distribution. The current work
+validated an in-memory/temp-file merge of the fragment and used the unchanged
+release text/JSON payload validators on owned files; this is **not** a claim
+that the still-unwired staged product passes its full release/runtime gate.
+
+```bash
+python3 mod_editor/capabilities/validate_registry.py
+python3 tests/mod_editor/test_apf_book_unlock.py
+QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_book_identity_qt.py
+QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_save_playbook_assignments_gui.py
+python3 tests/mod_editor/test_apf_book_unlock_retail.py
+python3 packaging/check_apf2k8_mod_studio_release.py <staged-apf-directory>
+```
+
+Run `<staged-apf-directory>/packaging/check_apf2k8_mod_studio_runtime.py` with
+the staged product's configured Python/runtime and offscreen Qt. The retail
+test's default precise `SkipTest` is expected; set `APF_BOOK_RETAIL_INDEX`,
+`APF_BOOK_FLAT_PE`, and `APF_BOOK_RAW_SAVE` to local owned inputs to exercise
+the five retail cases. Exact successful commands and receipts are in
+`ASTRA_REPORT.md`. Noah's base-XEX game witness is a separate acceptance step.

@@ -1,0 +1,35 @@
+{
+  "allowed_original_virtual_spans": [
+    [
+      0,
+      20480
+    ],
+    [
+      929345536,
+      929347584
+    ],
+    [
+      929357824,
+      929359872
+    ],
+    [
+      47699968,
+      48136192
+    ],
+    [
+      929347584,
+      929349632
+    ]
+  ],
+  "complete_receipt_sha256": "842203cd28dcd1daa17667e5f95e63326b381dfc965cbf1a49f3d0ff4d4e324f",
+  "evidence_projection": "Omitted duplicate identity tables and/or the full ordinal map; complete receipts remain with the local build.",
+  "executable": {
+    "byte_identical": true,
+    "bytes_compared": 38408192,
+    "present": true,
+    "sha256": "981a57143b0a665b2220f72366e1368c5374b91c77a22d93945439d51a2cd28f"
+  },
+  "runtime_status": "UNWITNESSED",
+  "schema": "apf2k8_combined_book_build_comparison/v1",
+  "untouched_retail_pack_bytes_compared": 3873048576
+}

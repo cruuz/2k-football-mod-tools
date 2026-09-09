@@ -20,11 +20,13 @@ import json
 import os
 from pathlib import Path
 import struct
+import sys
 import tempfile
 import unittest
 
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from mod_editor.core import apf2k8_splb_writer as splb  # noqa: E402
 from mod_editor.core.errors import ValidationError  # noqa: E402
@@ -943,11 +945,8 @@ class PanelReadabilityTests(unittest.TestCase):
             with self.subTest(copy=name):
                 self.assertNotIn("put TEs on", copy)
                 self.assertNotIn("TE-using plays", copy)
-                self.assertIn(
-                    "counts on the play-call screen come from a personnel table",
-                    " ".join(copy.split()),
-                )
-                self.assertIn("default.xex", copy)
+                self.assertIn("personnel category", copy)
+                self.assertIn("row fallback", copy)
                 self.assertIn("Play names are not personnel", copy)
         self.assertNotIn("put TEs on", self.panel.BOUNDARY)
         self.assertNotIn("TE-using plays", self.panel.BOUNDARY)
