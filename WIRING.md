@@ -723,6 +723,281 @@ new plays, node edits, or these concept recipes.
 
 # Earlier integration notes (preserved)
 
+
+# Integration handoff: PS3 APFe texture bundles
+
+The protected GUI/build/registry/packaging files are unchanged. The importer,
+paired session adapter, batch dialog and worker/button helper are implemented
+and tested here. These are the remaining integration edits for Claude.
+
+## Team Logo button
+
+In `mod_editor/apf_studio/gui.py`, import:
+
+```python
+from .ps3_texture_bundle_qt import import_button as ps3_import_button
+```
+
+In `ApfTeamLogoPanel.__init__`, after adding `self.status` to `title_row`, add:
+
+```python
+self.ps3_bundle_button = ps3_import_button(
+    self, self.facade, self.run_task, self._ps3_bundle_staged, kind="logo"
+)
+title_row.addWidget(self.ps3_bundle_button)
+```
+
+Add this method to `ApfTeamLogoPanel` beside `_commit_design`:
+
+```python
+def _ps3_bundle_staged(self, plan, modifications):
+    last = modifications[-1]
+    self._clear_texture_master_draft()
+    self._staged_png = Path(last.replacement_path)
+    self._source_staged_png = self._staged_png
+    self._staged_profile = RETAIL_CREST_PROFILE
+    digest = last.metadata["detail_sha256"]
+    self._staged_detail_png = self._staged_png.parent / f"{digest}.png"
+    self._placement_source_rgba = None
+    self._placement_state = None
+    self.set_context()
+    self.modifiedChanged.emit()
+    QMessageBox.information(
+        self, "PS3 crest pairs staged",
+        f"{len(plan.assignments)} crest pairs staged. "
+        "Use the complete-project Build to include every selected crest "
+        "and its linked logo-cache layers. In-game result: UNWITNESSED."
+    )
+```
+
+The helper switches imported edits to the existing retail side-decal metadata;
+it refuses an already-staged shared full-shell profile. It never mirrors l0
+into l1. Do not route this operation through the single-image `_stage_path`
+flow, which clears/reinterprets the detail layer. `set_context` already restores
+the legacy most-recent crest ID and selects its catalog slot. Existing batch
+crest edits keep their slot-qualified IDs.
+
+## Field Art button
+
+In `ApfFieldArtPanel`, add `modifiedChanged = pyqtSignal()` after the class
+docstring. In its `__init__`, after `title_row.addWidget(self.status)`, add:
+
+```python
+self.ps3_bundle_button = ps3_import_button(
+    self, self.facade, self.run_task, self._ps3_bundle_staged, kind="endzone"
+)
+title_row.addWidget(self.ps3_bundle_button)
+```
+
+Add beside `_stage_path`:
+
+```python
+def _ps3_bundle_staged(self, plan, modifications):
+    for modification in modifications:
+        meta = modification.metadata
+        self._staged[(meta["entry_index"], meta["file_index"])] = Path(
+            modification.replacement_path
+        )
+    self.set_context()
+    self.modifiedChanged.emit()
+    QMessageBox.information(
+        self, "PS3 endzone pairs staged",
+        f"{len(plan.assignments)} endzone pairs staged. Build must still "
+        "pass the fixed-allocation checks. The current Field Art writer "
+        "preserves old mip tails. In-game result: UNWITNESSED."
+    )
+```
+
+In `FieldArtStudioPage.__init__`, immediately after constructing `self.editor`:
+
+```python
+self.editor.modifiedChanged.connect(self.modifiedChanged)
+```
+
+The page signal is already connected to `_mark_document_changed` in the main
+window's `_build_pages`. Because imports now enter the shareable session,
+make the panel's `_revert` clear the corresponding session edit as well:
+
+```python
+self.facade.revert_field_art(self.current_target().key)
+self._staged.pop(self.current_target().key, None)
+self.set_context()
+self.modifiedChanged.emit()
+```
+
+Replace the existing final two `_revert` statements with that block. On project
+load/undo, repopulate `_staged` from the session's `field_art_texture` edits
+in the same way as `_ps3_bundle_staged`, rather than retaining stale panel-only
+paths. Existing complete-project compilation already groups field-art edits
+by outer entry and calls `build_field_art_patch_many`; retain that grouping
+so l0 and l1 are compiled in one shared-VRAM rebuild.
+
+## Batch dialog contract and build boundary
+
+`Ps3BundleMappingDialog` has an inclusion checkbox, canonical source team and
+kind, original variant/hash, and a destination combo for each valid pair.
+Only writer-owned destinations are selectable. Exact hash matches are
+preselected; duplicate destinations keep Stage disabled until a variant is
+explicitly deselected or reassigned. Rejected pairs are visible above the
+table. The dialogs filter to logo or endzone on the respective pages; passing
+`kind=None` to the helper exposes a combined batch surface if desired later.
+
+`import_button` supplies the exact label **Import PS3 bundle…**, ZIP/folder
+choices, background inventory, the review dialog, and background staging. It
+pins the session across review and takes the facade session lock for mutation.
+It updates the facade's existing dedicated-build staging mirrors and clears
+`last_build`. Failed batches undo successful earlier session operations. The
+caller emits the page's normal dirty/recovery signal only after success.
+
+No binary build changes are required. `build.py::_compile_helmet_crests` and
+`_crest_detail_path` already carry `detail_sha256` into both package and cache
+writers. The Field Art writer already supports grouped pairs, but **does not
+regenerate packed mip tails**. Do not change that status string to imply full
+mip authoring. Do not mark format-59 endzones writable. Allocation failure
+must remain fail-closed. The all-team staging receipt is not a compiled build.
+
+## Registry row
+
+Append this object to `mod_editor/capabilities/registry.v1.json`'s
+`capabilities` after the GUI wiring lands. Do not claim that an unrendered
+button is currently exposed. The row is compatible with `registry.schema.json`.
+
+```json
+{
+  "id": "apf2k8.logos_cards.ps3_texture_bundle",
+  "game": "apf2k8_xbox360",
+  "surface": "logos_cards",
+  "title": "Import PS3 APFe texture bundle",
+  "summary": "Map paired APFe logo/endzone pixels to existing Xbox 360 writers with source and destination receipts.",
+  "classification": "offline-writer-proved",
+  "backend": {
+    "module": "mod_editor/apf_studio/ps3_texture_bundle.py",
+    "operation": "write",
+    "command": "python3 -m mod_editor.apf_studio.ps3_texture_bundle <bundle> --index-0a <0A> --mapping <mapping.json> --receipt <plan.json>"
+  },
+  "gui": {
+    "expose": true,
+    "default_enabled": true,
+    "mode": "edit",
+    "reason": "PS3 bundle staging verified offline; build allocation checks required; in-game UNWITNESSED. Crest mips regenerate; Field Art retains its existing stale-mip limitation."
+  },
+  "input_constraints": [
+    "APFe ZIP/folder exports with distinct logo_l0/logo_l1 or endzone_l0/endzone_l1 pairs at native dimensions.",
+    "Use outer hash plus semantic layer name, or explicit live destination slots; never PS3 numeric entry offsets.",
+    "DDS takes precedence. GTF is decoded only when DDS is absent. Ambiguous variants and duplicate destination assignments are refused.",
+    "Only existing crest/Field Art writer contracts can be staged. Full-shell projects, unsupported endzone codecs and over-allocation builds are refused."
+  ],
+  "selectors": {
+    "fields": [
+      {"name": "pair_id", "required": true, "allowed": "validated imported pair IDs"},
+      {"name": "destination_slot", "required": true, "allowed": "compatible live writer-owned logo/endzone slot IDs"}
+    ],
+    "notes": "Source team names do not prove Xbox selector ownership; crest and endzone choices remain independent."
+  },
+  "source_container": {
+    "format": "APFe DDS/GTF exports; Xbox 360 IFF/H7A destinations",
+    "resource": "paired logo/endzone region masks",
+    "retail_file": "0A and declared sibling volumes",
+    "hash_pins": []
+  },
+  "validation_command": "QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_ps3_texture_bundle.py -v",
+  "evidence": ["docs/mod_editor/ps3_bundle_import.md"],
+  "runtime": {
+    "status": "not-tested",
+    "scope": "UNWITNESSED. Offline staging and crest rebuild/reparse are proved; rendered colors, linked-cache consumption and Xenia appearance require a witness.",
+    "evidence": []
+  },
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "tooling": "source-and-schemas-only",
+    "rule": "Ship code and documentation only; downloaded exports, roster saves, volumes and decoded game textures stay private."
+  },
+  "portme": [
+    "Integrate buttons, run the clean packaged runtime smoke and witness a complete-project build in game.",
+    "Regenerate Field Art mip tails before claiming full mip replacement; retain allocation/no-overlap H7A checks.",
+    "The roster probe is read-only: PS3 nickname-pointer/string compatibility is not proved."
+  ]
+}
+```
+
+Use `ps3_texture_bundle.STATUS` verbatim for the import operation status. There
+is no new universal-browser raw replacement route: destination ownership stays
+with Team Logo / Field Art via `workspace_routes.py`. No raw PS3 TXTR writer
+or unrelated texture capability should be registered.
+
+Also add the concrete action binding to
+`mod_editor/apf_studio/models.py::CAPABILITY_ACTION_BINDINGS` beside the other
+`logos_cards` bindings. Without it, `catalog.py::build_capability_cards` correctly
+keeps a new registry row at Coming Soon even after a button is rendered:
+
+```python
+"apf2k8.logos_cards.ps3_texture_bundle": CapabilityActionBinding(
+    "apf2k8.logos_cards.ps3_texture_bundle",
+    "logos_cards.ps3_texture_bundle_dialog",
+    _actions(ApfProductAction.REPLACE, ApfProductAction.REVERT),
+    replace_method="replace_helmet_crest_design",
+    additional_replace_methods=("replace_field_art",),
+    revert_method="revert",
+    product_note=(
+        "Import PS3 bundle stages distinct semantic layer pairs through the "
+        "existing crest and Field Art writers. Hash matches identify library "
+        "slots; explicit destination choices assign teams. Build allocation "
+        "checks remain required. Field Art mip tails remain stale. "
+        "In-game result: UNWITNESSED."
+    ),
+),
+```
+
+This names the existing mutation contracts used by the batch adapter, rather
+than inventing an unimplemented raw-texture replacement method.
+
+## Allowlist and runtime closure
+
+Add these exact paths to the APF product's actual allowlist,
+`packaging/apf2k8-release-allowlist.txt`. If the integration wave also maintains
+`packaging/release-allowlist.txt` as a combined release list, add the same paths
+there; the APF stage specifically consumes the former.
+
+```text
+mod_editor/apf_studio/ps3_texture_bundle.py
+mod_editor/apf_studio/ps3_texture_bundle_qt.py
+mod_editor/apf_studio/ps3_texture_codec.py
+mod_editor/apf_studio/ps3_roster_probe.py
+mod_editor/apf_studio/ps3_texture_probe.py
+mod_editor/apf_studio/ps3_texture_probe_fast.py
+docs/mod_editor/ps3_bundle_import.md
+```
+
+Add the six module names, without `.py` and with `/` changed to `.`, to
+`packaging/check_apf2k8_mod_studio_runtime.py::PRODUCT_MODULES`. The first three
+are the authoring closure. The last three are read-only CLI diagnostics;
+NumPy is optional and imported only inside the bulk accelerator, which falls
+back to the existing decoder when NumPy is absent. No new wheel is required.
+Pillow's `DdsImagePlugin` must remain present in the Windows pinned runtime.
+The existing backend closure supplies `apf_outer`, `apf_inner`, crest/cache,
+Field Art, uniform targets, DXN and DXT5A decoders, save parsers, and their
+already-allowlisted data tables. No source archive or new retail fixture ships.
+
+In a clean stage, smoke-test imports and a synthetic two-layer DDS ZIP through
+`read_bundle`, `build_plan`, `verify_plan`, and the offscreen mapping dialog.
+Exercise source switching during review and a failing second field-art stage
+to confirm no partial batch survives. Run the three new standalone tests and
+the existing crest/cache/Field Art/project tests. Then run the normal release
+and runtime gates with the updated closure. A new registry row needs the
+integration wave's normal capability-count expectations updated where pinned.
+Windows packaged execution and gameplay remain UNWITNESSED in this branch.
+
+The temporary clean-stage smoke in this branch passed for all six new imports,
+a synthetic DDS ZIP, a verified two-layer plan, and the offscreen dialog. The
+unchanged full runtime gate refused the added modules at
+`check_apf2k8_mod_studio_release.py:870` because the staged internal APF allowlist
+is still the protected integration baseline. The refusal names
+`ps3_roster_probe.py`; it is the first missing allowlist path, not a missing
+Python dependency. Receipt: `reports/ps3_import/runtime_closure.txt`.
+
+---
+
 # r65 Player abilities rules v2 (2026-09-08)
 
 This section supersedes earlier abilities v1 wiring only. EXPERIMENTAL /
