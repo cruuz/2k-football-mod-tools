@@ -25,8 +25,8 @@ from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
 from tests.mod_editor.test_nfl2k5_xbe_space import synthetic, PublicTests, RETAIL, repin
 from tests.nfl2k5_allocator_stack import LEGACY_REQUESTS, REQUESTS, compose
 
-LARGE = (("synthetic_scaleout", "code", 48 * 1024, 4096),  # sized to fit beside every landed beta-62 owner
-         ("synthetic_scaleout", "data", 4 * 1024, 4096),
+LARGE = (("synthetic_scaleout", "code", 20 * 1024, 4096),  # sized to fit beside every landed beta-63 owner (40 KiB before deep zone and MyCareer M3)
+         # no writable request: MyCareer M3's fixed state page takes the last RW page of the beta-63 union
          ("synthetic_scaleout", "read_only", 1024, 16))
 
 
@@ -38,7 +38,7 @@ class PlannerTests(unittest.TestCase):
         self.assertEqual([report['capacity'][k]['capacity_bytes'] for k in ('code', 'data', 'read_only')],
                          [106496, 86016, 20480])
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [4096, 0, 7072])  # r63: Franchise Auto Save holds 512 read-only bytes
+                         [0, 0, 2192])  # beta 63 stack: playbook pair 8192 RX / 512 RW / 4096 RO, CPU money downs 2048 RX, deep zone 2048 RX / 256 RW, MyCareer M3 (16 KiB code, fixed state page), weekly prep, Contracts Edit Player 704 RO; the 20 KiB synthetic RX fills the code pages exactly
         self.assertEqual(len(report['pages']), 52)
         for a in report['allocations']:
             self.assertEqual(a['va'] % a['align'], 0)
@@ -51,7 +51,7 @@ class PlannerTests(unittest.TestCase):
             self.assertIn(list(request), requests)
         report = space.plan(requests)
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [53264, 4096, 8104])  # r63: the 64-byte camera owner and the Franchise Auto Save owner (1,536 code + 128 data + 512 read-only) joined the documented table
+                         [22048, 0, 3224])  # beta 63 stack: playbook pair (8192 RX, 512 RW in the alignment gap, 4096 RO), CPU money downs (2048 RX), deep zone (2048 RX, 256 RW), MyCareer M3 (16 KiB code, fixed 4 KiB state page = the last RW page), weekly prep, Contracts Edit Player (704 RO), Broadcast camera v5 (+96 RX, +80 RO)
 
     def test_every_kind_exact_capacity_alignment_and_overflow(self):
         for kind, capacity in [('code', 98304), ('data', 81920), ('read_only', 16384)]:
@@ -88,7 +88,7 @@ class PlannerTests(unittest.TestCase):
             run = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
             self.assertEqual(run.returncode, 0, run.stderr)
             self.assertIn('No build performed', run.stdout)
-            self.assertIn('4096 available', run.stdout)
+            self.assertIn('0 available', run.stdout)
             run = subprocess.run(cmd + ['--json'], capture_output=True, text=True, timeout=30)
             self.assertEqual(run.returncode, 0, run.stderr)
             self.assertEqual(len(json.loads(run.stdout)['pages']), 52)
@@ -254,15 +254,18 @@ class SyntheticTests(unittest.TestCase):
         from unicorn import x86_const as x86
         layout = space.layout(self.grown)
         pages = [p for p in layout['pages'] if p['kind'] == 'code']
-        target = next(a['va'] for a in layout['allocations'] if a['owner'] == 'synthetic_scaleout' and a['kind'] == 'data')
+        # The beta-63 union fills every RW page (MyCareer M3 owns the last one), so the synthetic owner has no
+        # writable request of its own; the emulated write lands in the M3 state page instead (emulated memory only).
+        target = next(a['va'] for a in layout['allocations'] if a['owner'] == space.MYCAREER_M3_STATE_OWNER and a['kind'] == 'data')
         owner = next(a for a in layout['allocations'] if a['owner'] == 'synthetic_scaleout' and a['kind'] == 'code')
         # The complete union occupies page 3 before this page-aligned owner.
         # Negative offsets used to leave INT3 at the assumed entry point.
         owned_pages = [p for p in pages if owner['va'] <= p['va']
                        and p['va'] + 4096 <= owner['va'] + owner['size']]
-        entries = [(owned_pages[0], 0x33333333), (owned_pages[7], 0xAAAAAAAA)]
+        self.assertGreaterEqual(len(owned_pages), 2)
+        entries = [(owned_pages[0], 0x33333333), (owned_pages[-1], 0xAAAAAAAA)]
         self.assertGreaterEqual(owned_pages[0]['va'], space.SCALE_RUNS[0][1])
-        self.assertEqual(owned_pages[7]['va'] - owned_pages[0]['va'], 7 * 4096)
+        self.assertEqual(owned_pages[-1]['va'] - owned_pages[0]['va'], (len(owned_pages) - 1) * 4096)
         code = bytearray(b'\xcc' * owner['size'])
         for page, value in entries:
             at = page['va'] - owner['va']

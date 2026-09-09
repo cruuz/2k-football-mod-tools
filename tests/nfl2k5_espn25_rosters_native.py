@@ -16,19 +16,23 @@ XBE_SHA256 = '73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9'
 class CPU:
     STOP, STACK, MAIN, SITU = 0x27FF000, 0x27F0000, 0x2000000, 0x2100000
 
-    def __init__(self, xbe_path, resources, descriptors):
+    def __init__(self, xbe_path, resources, descriptors, *, payload=None, xbe_sha256=XBE_SHA256,
+                 instruction_budget=2_000_000):
         self.resources, self.descriptors = resources, descriptors
-        with xbe_path.open('rb') as stream:
-            payload = stream.read(16 * 1024 * 1024 + 1)
-        assert len(payload) <= 16 * 1024 * 1024 and e.sha(payload) == XBE_SHA256, 'foreign retail XBE'
+        assert 0 < instruction_budget <= 100_000_000
+        self.instruction_budget = instruction_budget
+        if payload is None:
+            with xbe_path.open('rb') as stream:
+                payload = stream.read(16 * 1024 * 1024 + 1)
+        assert len(payload) <= 16 * 1024 * 1024 and e.sha(payload) == xbe_sha256, 'foreign XBE evidence'
         self.uc = Uc(UC_ARCH_X86, UC_MODE_32)
-        self.uc.mem_map(0x10000, 0x1500000)
+        self.uc.mem_map(0x10000, 0x1600000)
         self.uc.mem_map(0x2000000, 0x800000)
         image_base = e.u32(payload, 0x104)
         table = e.u32(payload, 0x120) - image_base
         for i in range(e.u32(payload, 0x11C)):
             _, va, virtual_size, offset, size = struct.unpack_from('<5I', payload, table + i * 56)
-            assert 0x10000 <= va and va + virtual_size <= 0x1510000 and offset + size <= len(payload)
+            assert 0x10000 <= va and va + virtual_size <= 0x1610000 and offset + size <= len(payload)
             self.write(va, payload[offset:offset + size])
         self.stubs, self.events = {}, []
         self.uc.hook_add(UC_HOOK_CODE, self._hook)
@@ -81,7 +85,7 @@ class CPU:
         for index, value in enumerate(registers.get('args', ())):
             self.w(self.STACK + 4 + index * 4, value)
         self.uc.reg_write(regs.UC_X86_REG_ESP, self.STACK)
-        self.uc.emu_start(at, self.STOP, count=2_000_000)
+        self.uc.emu_start(at, self.STOP, count=self.instruction_budget)
         assert self.reg('eip') == self.STOP, f'instruction budget exhausted at {self.reg("eip"):x}'
         return self.reg('eax')
 

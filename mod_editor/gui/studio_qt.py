@@ -8667,6 +8667,9 @@ class StudioMainWindow(QMainWindow):
             roster_editor.roster_edits_stale.connect(self._build_panel.mark_roster_edits_stale)
             # Rosters > ESPN Anniversary saves a validated plan; Build carries it as the espn25_plan step
             roster_editor.espn25_plan_changed.connect(self._espn25_plan_saved)
+            # Rosters > Abilities lock settings (rules v2) become pending Build settings; Build restores them back without re-emitting
+            roster_editor.abilities_lock_settings_changed.connect(self._build_panel.set_abilities_lock_settings)
+            self._build_panel.abilities_locks_changed.connect(roster_editor.abilities_panel.set_lock_settings)
         tabs.addTab(self._build_panel, "Build")
         # Share: a .2k5patch (byte runs + the modder's own images/audio + recipe)
         # made from a patched copy, applied to somebody else's own disc copy.

@@ -1,4 +1,4 @@
-"""EXPERIMENTAL / UNWITNESSED paired Standard/Far framing, USA XBE.
+"""EXPERIMENTAL / UNWITNESSED Standard, Far and playable Broadcast, USA XBE.
 
 Far is row 1 of 4F03F8. Standard retains retail Far's settled eye positions
 with the raised Far pitch. Both rows retain native type, lag and callbacks,
@@ -7,7 +7,13 @@ and common game-camera initialization select the new Standard (Noah's choice, 20
 the fresh-profile default already is Standard, so that retail site stays untouched.
 Options remains a session choice. The automatic spectator branch uses that same choice.
 
-64 owned RX bytes, no RW allocation, no retail cave. Reserve REQUESTS with
+Broadcast adapts the retail sideline descriptor to a following gameplay camera.
+It is NOT a claim to reproduce the coach-mode television director: retail TV
+records include inherited eyes and close-up framing. The seventh menu choice
+uses engine row 7, skipping First Person (6), without setting Coach Mode.
+
+160 owned RX bytes and one immutable 80-byte descriptor, no RW or retail cave.
+Reserve REQUESTS with
 all other selected owners before apply. Rebuild historical descriptor-only
 installations from retail; mixed/foreign inputs refuse before mutation.
 See ASTRA_CAMERA_V2_REPORT.md for native evidence and visual-proof limits.
@@ -25,9 +31,10 @@ from .nfl2k5_draft_ai import _Asm
 from .nfl2k5_bump_strength import _sections, _section_for_offset, section_digest
 
 OWNER = "nfl2k5_camera"
-VERSION = 4
-CODE_SIZE = 64
-REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
+VERSION = 5
+CODE_SIZE = 160
+READ_ONLY_SIZE = 80
+REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "read_only", READ_ONLY_SIZE, 16))
 IMAGE_BASE = 0x10000
 DESCRIPTOR_SIZE = 0x50
 FIELD_TARGET = 0x10
@@ -38,6 +45,22 @@ STATES_PER_ROW = 0x1D
 PRESET_NAMES = ("Standard", "Far", "Side", "Iso", "Blimp", "Custom", "1st Person", "Broadcast")
 STANDARD_ROW = 0
 FAR_ROW = 1
+BROADCAST_ROW = 7
+MENU_ROWS = (0, 1, 2, 3, 4, 5, BROADCAST_ROW)
+# Every gameplay/preview state gets an independent eye, including kicks and
+# pass states. Presentation/replay states and all seven other rows stay native.
+BROADCAST_STATES = (1, *range(8, 20))
+BROADCAST_TEMPLATE_VA = 0xA881E0
+# v5.2 (Noah 2026-09-08 on disc bq: "still too far away, make it look like tv from a broadcast from the nfl last year"
+# and "it isn't centered, offense at the left, defense in the middle, empty on the right"): the retail TV director's
+# own wide line-of-scrimmage shot, made to follow the ball. Mount = the template's press-box eye, 52.5 m toward the
+# near sideline and 16.5 m up (pitch 17.4 degrees); lens word 80 = the director's wide lens (its live shots use 120),
+# about 1.85x closer on screen than v5.1 and 3.3x closer than v5; the look-at sits 2.5 m ahead of the ball (v5.1 led
+# it by 12 m, which pushed the offense to one edge) and 4 m toward the near sideline so the near wideout clears the
+# scorebug. Native projection: 16:9 shows about 17 yards behind the ball to 22 ahead, 4:3 about 13 to 17; the far
+# sideline sits in the top quarter, the near sideline is below the frame; receivers 25 yards deep are outside until
+# the camera follows the ball, as on television.
+BROADCAST_VALUES = ((400.0, 0.0, 250.0), 80.0, (5250.0, 1650.0, 200.0))
 OPTION_GLOBAL_VA = 0x00E5FFF0            # DAT_00e5fff0: the Options "Camera" value (= table row)
 OPTION_DEFAULT_SITE_VA = 0x000E3C68      # FUN_000e3b90: `xor edi,edi ; mov dword ptr [0xE5FFF0], edi` (fresh-profile default 0)
 RETAIL_OPTION_DEFAULT = bytes.fromhex("33ff893df0ffe500")   # xor edi,edi ; mov dword [0xE5FFF0], edi
@@ -78,6 +101,25 @@ FAR_RETAIL_DESCRIPTORS: dict[int, bytes] = {
     17: bytes.fromhex("020000000000000080034f0000000000000000000000a04200008cc2000000000000e041000000000000000000000000000000000000c843004083c400000000904b0a00000000000000000000000000"),
     18: bytes.fromhex("020000000000000080034f0000000000000000000000000000000000000000000000e0410000000000000000000000000000000000004843000048c400000000904b0a00000000000000000000000000"),
     19: bytes.fromhex("020000000000000080034f0000000000000000000000a04200008cc2000000000000e041000000000000000000000000000000000000c843004083c400000000904b0a00000000000000000000000000"),
+}
+
+# Pinned native sideline recipient and the original row-7 pointers.
+BROADCAST_RETAIL_DESCRIPTOR = bytes.fromhex(
+    "000000000000000080034f0000000000000000000000000000000000000000000000f0420000000000000000000000000010a4450040ce44000048430000803fc0400a00000000000000000000000000")
+BROADCAST_RETAIL_ENTRIES = {
+    1: bytes.fromhex("030000000085a800"),
+    8: bytes.fromhex("00000000b07fa800"),
+    9: bytes.fromhex("00000000a080a800"),
+    10: bytes.fromhex("000000005080a800"),
+    11: bytes.fromhex("000000000080a800"),
+    12: bytes.fromhex("00000000b084a800"),
+    13: bytes.fromhex("00000000f080a800"),
+    14: bytes.fromhex("000000005080a800"),
+    15: bytes.fromhex("000000008082a800"),
+    16: bytes.fromhex("000000003082a800"),
+    17: bytes.fromhex("000000004081a800"),
+    18: bytes.fromhex("000000009081a800"),
+    19: bytes.fromhex("01000000e081a800"),
 }
 
 Values = tuple[tuple[float, float, float], float, tuple[float, float, float]]
@@ -244,6 +286,10 @@ HOOKS = {
         "c7812404000000007a44c7812804000000401cc5c781080400000000fa43")),
     "standard_live_cap": (0xA4B1A, bytes.fromhex("d905348aa800dcc0")),
     "far_live_cap": (0xA4D1F, bytes.fromhex("d905548da800dcc0")),
+    "camera_menu_max": (0x2C66A0, bytes.fromhex("b805000000")),
+    "camera_menu_width": (0x2C66D5, bytes.fromhex("6a05")),
+    "camera_menu_next": (0x2C6B00, bytes.fromhex("8b0df0ffe500")),
+    "camera_menu_previous": (0x2C6B40, bytes.fromhex("8b0df0ffe500")),
 }
 # Narrow immutable prerequisites. Whole table pins include kick/preview states,
 # and reject redirected recipients. MyCareer's separate A5490 hook is outside
@@ -279,6 +325,16 @@ CONTEXT_HASHES = (
     # to their recognized retail values solely for these prerequisite hashes.
     (0xA4950, 0x440, "78d271fb1e53de7bbc5d5d325f055e2fd76d9b05f659a53fac1c6b7d73135d4b"),
     (0xA87F10, 0xEB0, "9951b67f9a439ce9eed42f3092e9bd85c76fc581ea20176da0c12968ceab6f09"),
+    # Menu callbacks, inclusive label width, shared row and native mount setup.
+    (0x2C6690, 80, "c5fbd82b5a65df7dd87f5337adf23f5d69d7b099598ddeab82f0a33c1df2954f"),
+    (0x2C6960, 544, "1c3438d34e119af57deca8b3fb76e4b5e9c7321eea95c9354e53ec08dd467178"),
+    (0x52B700, 52, "e172db11c35979f0e26c44a4a7fc10cfb438ef017faaf21d8cacc6ae42c19a3b"),
+    (0x4F25BC, 32, "4352c09f0e812a241cb513f955ace19f3c9cc818d87b67e585cf844163e13b5f"),
+    (0xE69970, 20, "6f31bbda773d426b77003aade9d234fd079f463be74c8135115020336cd9bd18"),
+    (0xA40C0, 11, "82bddf5fa41992cc53e15584bf6795c29f35c07a5fe6f6d8d07b3b4b445d0dc5"),
+    (0x2C6800, 352, "8c37b7c611afb941dbd7a472e9d5b338c691d9f0f89939ad4a29e2fe9de58551"),
+    (0xA5610, 16, "5654ce65877cab777e19bf6be4c79aca679ecd644f414bf81d8eef3ca6633c06"),
+    (0x5036C0, 52, "b5bad68ffc3a50bbd3480c1e8794193a150bc09c67a096b98af1e0f3d7c86873"),
 )
 
 
@@ -298,16 +354,54 @@ def code_for(va: int) -> bytes:
     a.b("c705f0ffe50000000000 c3")  # [OPTION_GLOBAL_VA] = STANDARD_ROW
     load = a.assemble()
     _require(len(load) <= 32, "camera import wrapper exceeds its slot")
-    return body.ljust(32, b"\xcc") + load.ljust(32, b"\xcc")
+    # Keep both v4 wrappers byte-for-byte, including MyCareer's detection
+    # marker at A54C3. Only the enum callbacks need new code.
+    a = _Asm(va + 64)
+    a.b("8b0df0ffe500 83f905")
+    a.j8("72", "advance")              # 0..4 -> 1..5
+    a.b("b907000000")
+    a.j8("74", "selected")             # 5 -> 7 (skip First Person)
+    a.b("33c9")                        # 7/invalid -> Standard
+    a.j8("eb", "selected")
+    a.label("advance"); a.b("41")
+    a.label("selected"); a.jmp_abs(0x2C6B0D)
+    forward = a.assemble()
+    a = _Asm(va + 112)
+    a.b("8b0df0ffe500 85c9")
+    a.j8("74", "wrap")
+    a.b("83f905")
+    a.j8("76", "retreat")              # 1..5 -> 0..4
+    a.b("b906000000")                  # 7/invalid -> Custom
+    a.label("retreat"); a.b("49")
+    a.j8("eb", "selected")
+    a.label("wrap"); a.b("b907000000")
+    a.label("selected"); a.jmp_abs(0x2C6B50)
+    backward = a.assemble()
+    _require(max(len(forward), len(backward)) <= 48, "camera enum wrapper exceeds its slot")
+    return (body.ljust(32, b"\xcc") + load.ljust(32, b"\xcc")
+            + forward.ljust(48, b"\xcc") + backward.ljust(48, b"\xcc"))
 
 
-def allocation(payload: bytes) -> dict | None:
+def allocation(payload: bytes, kind: str = "code") -> dict | None:
     rows = [a for a in space.layout(payload)["allocations"] if a["owner"] == OWNER]
     if not rows:
         return None
-    _require(len(rows) == 1 and (rows[0]["kind"], rows[0]["size"], rows[0]["align"])
-             == ("code", CODE_SIZE, 16), "foreign camera allocation")
-    return rows[0]
+    _require(sorted((a["kind"], a["size"], a["align"]) for a in rows)
+             == [("code", CODE_SIZE, 16), ("read_only", READ_ONLY_SIZE, 16)],
+             "foreign camera allocation")
+    return next(a for a in rows if a["kind"] == kind)
+
+
+def broadcast_descriptor() -> bytes:
+    """Native sideline mount/lag/setup, with following type 2, the director's wide lens 80, a 2.5 m lead.
+
+    The untouched retail type-0 record has lens 120 and a fixed world eye.
+    Reusing it verbatim would frame only a small part of a live play. No retail
+    shared descriptor is mutated, and no inherited previous eye is required.
+    """
+    record = bytearray(descriptor_bytes(BROADCAST_RETAIL_DESCRIPTOR, BROADCAST_VALUES))
+    struct.pack_into("<I", record, 0, 2)
+    return bytes(record)
 
 
 def _read(payload: bytes, va: int, size: int) -> bytes:
@@ -329,6 +423,12 @@ def _sites(payload: bytes, preset: str) -> list[tuple[str, int, bytes, bytes]]:
         # one update. These limits include that overshoot in the proof.
         "standard_live_cap": bytes.fromhex("d90558da4e00d9d0"),  # fld 500; fnop
         "far_live_cap": b"\xd9\x05" + struct.pack('<I', FAR_DESCRIPTORS[9] + 0x34) + b"\xd9\xd0",
+        "camera_menu_max": bytes.fromhex("b807000000"),
+        # Native width() consumes an inclusive last index. The intervening
+        # First Person label may contribute width, but is never a menu choice.
+        "camera_menu_width": bytes.fromhex("6a07"),
+        "camera_menu_next": b"\xe9" + struct.pack("<i", va + 64 - 0x2C6B05) + b"\x90",
+        "camera_menu_previous": b"\xe9" + struct.pack("<i", va + 112 - 0x2C6B45) + b"\x90",
     }
     for row, label in ((STANDARD_ROW, 'standard_pass_zoom'), (FAR_ROW, 'far_pass_zoom')):
         values = PASS_ZOOM_VALUES[row]
@@ -351,8 +451,16 @@ def _sites(payload: bytes, preset: str) -> list[tuple[str, int, bytes, bytes]]:
         before = FAR_RETAIL_DESCRIPTORS[state]
         sites.append((f"far_state_{state}", _offset(payload, addr), before,
                       descriptor_bytes(before, PRESETS[preset][state])))
+    ro = allocation(payload, "read_only")
+    for state, before in BROADCAST_RETAIL_ENTRIES.items():
+        addr = PRESET_TABLE_VA + (BROADCAST_ROW * STATES_PER_ROW + state) * 8
+        # Retain native transition flags. Only this row's descriptor pointer
+        # changes; other rows still use the original shared television records.
+        after = before[:4] + struct.pack("<I", ro["va"] if ro else 0)
+        sites.append((f"broadcast_state_{state}", _offset(payload, addr), before, after))
     if a:
         sites.append(("owned_camera_wrappers", a["raw"], b"\xcc" * CODE_SIZE, code_for(va)))
+        sites.append(("owned_broadcast_descriptor", ro["raw"], bytes(READ_ONLY_SIZE), broadcast_descriptor()))
     return sites
 
 
@@ -415,6 +523,13 @@ def read_far(payload: bytes) -> dict[int, dict[str, object]]:
     return out
 
 
+def read_broadcast(payload: bytes) -> dict[int, dict[str, object]]:
+    """Decode the selectable Broadcast row, whether retail or installed."""
+    return {state: {"va": va, **decode_descriptor(_read(payload, va, DESCRIPTOR_SIZE))}
+            for state, (_flags, va) in enumerate(read_preset_table(payload)[BROADCAST_ROW])
+            if state in BROADCAST_STATES}
+
+
 def read_preset_table(payload: bytes) -> list[list[tuple[int, int]]]:
     """The 8 x 29 (flags, descriptor VA) table at 0x4F03F8."""
 
@@ -441,10 +556,11 @@ def option_default_status(payload: bytes) -> str:
 def reservations(payload: bytes) -> list[dict]:
     rows = []
     for label, off, before, _after in _sites(payload, DEFAULT_PRESET):
-        a = allocation(payload)
-        if a and off == a["raw"]:
-            rows.append(dict(owner=OWNER, start=hex(a["va"]), end=hex(a["va"]+CODE_SIZE),
-                             size=CODE_SIZE, basis="named code allocation", parent_owner=space.OWNER))
+        allocations = [allocation(payload, kind) for kind in ("code", "read_only")]
+        a = next((a for a in allocations if a and off == a["raw"]), None)
+        if a:
+            rows.append(dict(owner=OWNER, start=hex(a["va"]), end=hex(a["va"]+a["size"]),
+                             size=a["size"], basis="named " + a["kind"] + " allocation", parent_owner=space.OWNER))
         else:
             section = _section_for_offset(_sections(payload), off)
             va = section.virtual_address + off - section.raw_offset
@@ -458,7 +574,10 @@ def apply(payload: bytes, preset: str = DEFAULT_PRESET) -> tuple[bytes, Mapping[
     _require(state in ("retail", "applied"), "foreign/mixed camera bytes; rebuild from retail")
     common = dict(owner=OWNER, version=VERSION, preset=preset, experimental=True,
                   runtime_witnessed=False, selected_row=STANDARD_ROW, option_default="standard",
-                  owned_code_bytes=CODE_SIZE, persistent_data_bytes=0)
+                  owned_code_bytes=CODE_SIZE, owned_read_only_bytes=READ_ONLY_SIZE,
+                  persistent_data_bytes=0, menu_rows=MENU_ROWS,
+                  broadcast="retail sideline descriptor adapted for following gameplay",
+                  coach_mode_changed=False, exact_coach_director_proved=False)
     if state == "applied":
         return payload, dict(common, status="already_applied", changed_bytes=0, edits=[])
     if space.status(payload) == "retail":
@@ -469,6 +588,7 @@ def apply(payload: bytes, preset: str = DEFAULT_PRESET) -> tuple[bytes, Mapping[
     sites = _sites(allocated, preset)
     a = allocation(allocated)
     installed, _ = space.install_code(allocated, OWNER, code_for(a["va"]))
+    installed, _ = space.install_read_only(installed, OWNER, broadcast_descriptor())
     buf = bytearray(installed)
     sections = _sections(installed)
     touched = set()

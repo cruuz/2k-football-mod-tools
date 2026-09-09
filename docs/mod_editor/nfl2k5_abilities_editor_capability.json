@@ -1,0 +1,71 @@
+{
+  "backend": {
+    "module": "mod_editor/core/nfl2k5_abilities_editor.py",
+    "operation": "write",
+    "command": "python3 -m mod_editor.core.nfl2k5_abilities_editor --roster source.iso --top-n 10 --output abilities.json"
+  },
+  "classification": "offline-writer-proved",
+  "evidence": [
+    "ASTRA_ABILITIES_V2_REPORT.md",
+    "mod_editor/gui/abilities_panel_qt.py",
+    "tests/mod_editor/test_nfl2k5_abilities_v2.py",
+    "tests/mod_editor/test_nfl2k5_abilities_v2_qt.py"
+  ],
+  "game": "nfl2k5_xbox",
+  "gui": {
+    "default_enabled": false,
+    "expose": true,
+    "mode": "edit",
+    "reason": "EXPERIMENTAL / UNWITNESSED. Runtime off in every preset; its three locks default on. Protected UI integration is in WIRING.md."
+  },
+  "id": "nfl2k5.rosters.abilities_v2",
+  "input_constraints": [
+    "Read-only disc/extraction roster or the currently loaded signed save through Rosters.",
+    "Existing 0x54 records only; masked footer writes preserve stars, depth locks and Guardian caps. No rating, roster size, identity or membership changes.",
+    "Tier slots 0/2/4/7; loading legacy flags never migrates them. Tier changes trim in UI order with undo.",
+    "Assignment replaces active NFL club players only, top N 1..100 per native position code; free agents, prospects and templates are excluded. Invalid signed ratings refuse.",
+    "Preview hashes refuse stale application. Every player identity and changed mask is validated before replay; mixed states refuse.",
+    "Export contains receipt plus roster_edits compatible with the existing Build writer; extract roster_edits before selecting it in Build."
+  ],
+  "portme": [
+    "Apply WIRING.md, regenerate the production manifest and complete Noah's witness list in ASTRA_ABILITIES_V2_REPORT.md."
+  ],
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+    "tooling": "source-and-schemas-only"
+  },
+  "runtime": {
+    "evidence": [
+      "ASTRA_ABILITIES_V2_REPORT.md"
+    ],
+    "scope": "Bounded native getters, both clamps, permissions, charge and shared Momentum reads. No loader, save lifecycle, gameplay or outcome witness.",
+    "status": "not-tested"
+  },
+  "selectors": {
+    "fields": [
+      {
+        "name": "top_n",
+        "required": false,
+        "allowed": "integer 1..100, default 10"
+      },
+      {
+        "name": "ability_tier",
+        "required": true,
+        "allowed": "integer 0..3: Unranked, Star, Superstar, X-Factor"
+      }
+    ],
+    "notes": "Rosters save-copy and JSON/CSV paths persist the footer. Build switches affect the next rebuilt disc."
+  },
+  "source_container": {
+    "format": "ROST or signed Xbox roster/franchise save",
+    "hash_pins": [],
+    "resource": "0x54 player footer, +0x52/+0x53; 2547 records in the retail evidence",
+    "retail_file": "user-owned roster or save"
+  },
+  "summary": "Edit per-player tiers and permissions, preview top-N assignment by position, and undo exact masked changes.",
+  "surface": "players_rosters",
+  "title": "Ability tiers and rating assignment (experimental)",
+  "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_abilities_v2_qt"
+}

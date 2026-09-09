@@ -228,7 +228,7 @@ def allocations(payload):
     return result
 
 
-def _inspect(payload):
+def _inspect(payload, *, check_deep_zone=True):
     _require(space.status(payload) != "foreign", "Foreign XBE geometry, owner seal or section digest")
     image = XbeImage(payload)
     owned = any(a["owner"] == OWNER for a in space.layout(payload)["allocations"])
@@ -256,6 +256,13 @@ def _inspect(payload):
                  if name in ("snap", "reset")]
     if any(image.read(va, len(old)) != old for _, va, old, _ in neighbors):
         _require(read_option.status(payload) == "applied", "Foreign Read option lifecycle neighbor")
+    # Deep-zone caps the native steering argument at a separate entry.
+    # Validate its complete owner before normalizing the shared planner pin.
+    from . import nfl2k5_deep_zone as deep_zone
+    va, old = deep_zone.HOOKS["planner"]
+    if check_deep_zone and image.read(va, len(old)) != old:
+        _require(deep_zone.status(payload) == "applied", "Foreign deep-zone planner neighbor")
+    neighbors.append(("deep_zone_planner", va, old, None))
     for va, size, digest in GUARDS:
         content = bytearray(image.read(va, size))
         for _name, address, before, _after in sites(code_va) + neighbors:

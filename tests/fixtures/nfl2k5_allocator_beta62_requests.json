@@ -104,7 +104,7 @@
  [
   "nfl2k5_abilities_runtime",
   "code",
-  1072,
+  1344,
   16
  ],
  [
@@ -200,7 +200,7 @@
  [
   "nfl2k5_my_career",
   "code",
-  8192,
+  16384,
   16
  ],
  [
@@ -236,7 +236,13 @@
  [
   "nfl2k5_camera",
   "code",
-  64,
+  160,
+  16
+ ],
+ [
+  "nfl2k5_camera",
+  "read_only",
+  80,
   16
  ],
  [
@@ -255,6 +261,66 @@
   "nfl2k5_franchise_autosave",
   "read_only",
   512,
+  16
+ ],
+ [
+  "nfl2k5_coverage_trail",
+  "code",
+  640,
+  16
+ ],
+ [
+  "nfl2k5_my_career_m3",
+  "data",
+  4096,
+  16
+ ],
+ [
+  "nfl2k5_deep_zone",
+  "code",
+  2048,
+  16
+ ],
+ [
+  "nfl2k5_deep_zone",
+  "data",
+  256,
+  16
+ ],
+ [
+  "nfl2k5_playbook_pair",
+  "code",
+  8192,
+  16
+ ],
+ [
+  "nfl2k5_playbook_pair",
+  "data",
+  512,
+  16
+ ],
+ [
+  "nfl2k5_playbook_pair",
+  "read_only",
+  4096,
+  16
+ ],
+ [
+  "nfl2k5_weekly_prep",
+  "code",
+  1536,
+  16
+ ],
+ [
+  "nfl2k5_cpu_money_downs",
+  "code",
+  2048,
+  16
+ ],
+ [
+  "nfl2k5_franchise_edit_player",
+  "read_only",
+  704,
   16
  ]
 ]

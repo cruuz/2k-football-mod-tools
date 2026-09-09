@@ -298,6 +298,8 @@ def catalog(book: Nfl2k5Playbook, body: bytes) -> list[dict]:
                                      play=play.index, play_name=play.name,
                                      formation=form.index, formation_name=form.name,
                                      scope=preset['scope'], note=preset['note']))
+    from .nfl2k5_match_coverage import rule_catalog
+    rows.extend(rule_catalog(book, body))
     return rows
 
 

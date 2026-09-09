@@ -70,8 +70,17 @@ class Nfl2k5AudioOriginPreparation:
         after preparation and before any user WAV is admitted.
         """
 
-        exact = self.exact_scanner.store.inventory_path(cache)
-        containment = self.containment_scanner.store.inventory_path(cache)
+        try:
+            exact = self.exact_scanner.store.inventory_path(cache)
+            containment = self.containment_scanner.store.inventory_path(cache)
+        except ValidationError:
+            # This probe runs on every Music-tab refresh and source load. A
+            # cache one of the stores refuses is simply "not ready"; raising
+            # here surfaced as the "unexpected error" dialog on beta 62 for
+            # every fresh rip (the stores compared the cache folder name with
+            # the project rip's digest). prepare() repeats the validation and
+            # reports a refusal as an actionable message instead.
+            return False
         return self._private_file_ready(exact, MAX_INVENTORY_BYTES) and \
             self._private_file_ready(containment, MAX_PRIVATE_DOCUMENT_BYTES)
 
@@ -113,7 +122,11 @@ class Nfl2k5AudioOriginPreparation:
                 progress=self._phase_progress(progress, 1, "Exact audio scan"),
                 cancelled=cancelled,
             )
-            if result.inventory_path != exact_path:
+            # AudioSourceScanResult carries the published inventory (its .path), not an
+            # inventory_path field like the containment result: the old attribute read
+            # raised AttributeError for every user whose exact inventory was not already
+            # prepared, which is every fresh cache (beta 62 Music tab / Music project build).
+            if result.inventory.path != exact_path:
                 raise ValidationError(
                     "Exact audio preparation published outside its private cache."
                 )

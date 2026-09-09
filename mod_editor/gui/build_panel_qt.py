@@ -93,6 +93,7 @@ class BuildPanel(QWidget):
 
     operation_state_changed = pyqtSignal(bool)
     music_library_preview_ready = pyqtSignal(object, object)
+    abilities_locks_changed = pyqtSignal(dict)  # rules v2 lock settings (runtime key names) for the Rosters page
     built = pyqtSignal(dict)   # the receipt of the copy just written (Share pre-fills from it)
 
     def __init__(self, facade: object | None = None, parent: QWidget | None = None) -> None:
@@ -367,7 +368,7 @@ class BuildPanel(QWidget):
         self.music_shuffle_check = self._option(g, "music_shuffle", "Shuffle songs in menus, Crib and games",
             "Experimental, not yet tested in game. Uses the Music tab playlist. "
             "Loading and shows keep their timed music.", badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
-        self.abilities_check = self._option(g, "abilities", "Player abilities (experimental)",
+        self.abilities_check = self._option(g, "abilities", "Player abilities rules v2 (experimental)",
             tt.abilities_patch.HELP_TEXT, badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
         self.abilities_week = QComboBox()
         self.abilities_week.addItem("No abilities-off week", None)
@@ -378,6 +379,19 @@ class BuildPanel(QWidget):
         self.abilities_week.setAccessibleName("Week with abilities off")
         self.abilities_week.setToolTip("Use an existing regular-season week. Player ability flags stay saved and return the following week.")
         g.addWidget(self.abilities_week)
+        self.abilities_lock_checks = {}
+        for key, caption in (("abilities_lock_right_stick", "Lock right-stick moves behind the ability"),
+                             ("abilities_lock_special_moves", "Lock special moves behind their abilities"),
+                             ("abilities_lock_speedster", "Lock Speedster speed")):
+            box = QCheckBox(caption)
+            box.setChecked(True)
+            box.setEnabled(False)
+            box.setToolTip("Rules v2 setting of the Player abilities option. Both move locks off restores the retail "
+                           "charge meter; either one on keeps the restricted charge policy. A rebuilt disc is required.")
+            box.toggled.connect(lambda _on: self._abilities_locks_changed())
+            g.addWidget(box)
+            self.abilities_lock_checks[key] = box
+        self._abilities_lock_sync = False
         self.abilities_check.toggled.connect(self._abilities_toggled)
         self.abilities_week.currentIndexChanged.connect(lambda _index: self._refresh())
         self.qb_spy_check = self._option(g, "qb_spy", "QB spy for zone, man and rush (experimental)",
@@ -385,6 +399,19 @@ class BuildPanel(QWidget):
         for key, caption, help_text in r62_ui.OPTIONS:
             setattr(self, key + "_check", self._option(g, key, caption, help_text,
                     badge="EXPERIMENTAL / UNWITNESSED", needs_image=True))
+        self.cpu_money_downs_level = QComboBox()
+        for caption, value in r62_ui.LEVELS["cpu_money_downs"]:
+            self.cpu_money_downs_level.addItem(caption, value)
+        self.cpu_money_downs_level.setAccessibleName("CPU fourth downs and first downs level")
+        self.cpu_money_downs_level.setToolTip("Retail keeps the original CPU choices. Modern adds measured fourth-down attempts and "
+                                              "first-down targets. Aggressive goes further. EXPERIMENTAL / UNWITNESSED.")
+        g.addWidget(self.cpu_money_downs_level)
+        self.cpu_money_downs_level.currentIndexChanged.connect(self._money_downs_changed)
+        self.cpu_money_downs_check.toggled.connect(self._money_downs_toggled)
+        for parent, children in r62_ui.CHILDREN.items():
+            getattr(self, parent + "_check").toggled.connect(lambda on, p=parent: self._parent_toggled(p, on))
+            for child in children:
+                getattr(self, child + "_check").toggled.connect(lambda on, p=parent: self._child_toggled(p, on))
         self.momentum_collision_level = QComboBox()
         for caption, value in (("Retail (0)", 0), ("Light (25)", 25), ("Medium (50)", 50), ("Heavy (100)", 100)):
             self.momentum_collision_level.addItem(caption, value)
@@ -564,8 +591,8 @@ class BuildPanel(QWidget):
                                                       "rewrites KR and PR every week. With this patch, moving a player on the depth chart or confirming a "
                                                       "returner locks that choice in the player's record and the weekly sort keeps it; unlock from the "
                                                       "Rosters tab. Works with the retail rows or the SPECIAL tab. Experimental.")
-        self.seven_on_seven_check = self._option(f, "seven_on_seven", "7-on-7 practice",
-                                                 "Practice Type 7-On-7 with 7-on-7 sets in the practice playbook.",
+        self.seven_on_seven_check = self._option(f, "seven_on_seven", "7-on-7 practice (experimental)",
+                                                 "Practice Type 7-On-7, retail line positions and a delayed end rush. UNWITNESSED.",
                                                  badge=NOT_TESTED, needs_image=True)
         ol.addWidget(franchise)
 
@@ -754,10 +781,11 @@ class BuildPanel(QWidget):
         self.music_preview_label = QLabel("Choose a recipe to preview output and temporary space.")
         self.music_preview_label.setWordWrap(True)
         pl.addWidget(self.music_preview_label)
-        self.camera_check = self._option(pl, "camera", "Start games with the new Standard camera (experimental)",
+        self.camera_check = self._option(pl, "camera", "Standard, Far and Broadcast cameras (experimental)",
                                          "The new Standard (closer, raised angle) starts each game and practice; Far keeps "
-                                         "the far view; passes use a smaller pullback. Options changes last for the session. "
-                                         "Not yet witnessed in play.", badge=NOT_TESTED, needs_image=True)
+                                         "the far view; passes use a smaller pullback. Choose Broadcast in the game's Camera "
+                                         "options for a following sideline view without changing Coach Mode. Choices last "
+                                         "for the session. EXPERIMENTAL / UNWITNESSED.", badge=NOT_TESTED, needs_image=True)
         self.widescreen_check = self._option(pl, "widescreen", 'Widescreen 16:9 (experimental)',
                                              tt.widescreen_patch.HELP_TEXT, badge=NOT_TESTED,
                                              details=tt.widescreen_patch.HELP_TEXT)
@@ -837,6 +865,13 @@ class BuildPanel(QWidget):
         self.packs_remove_button.clicked.connect(self._remove_playbook_pack)
         prow.addWidget(self.packs_remove_button)
         prow.addWidget(self.modern_defense_button)
+        self.match_coverage_button = QPushButton("Add match coverage experiments")
+        self.match_coverage_button.setToolTip(
+            "EXPERIMENTAL / UNWITNESSED. Retail: some calls exchange man and zone assignments. "
+            "Patch: the optional match coverage pack adds five experimental calls built from those rules. "
+            "Full Rip/Liz, quarters and Palms receiver keys are not implemented.")
+        self.match_coverage_button.clicked.connect(self._add_match_coverage_pack)
+        prow.addWidget(self.match_coverage_button)
         self.option_pack_button = QPushButton("SOFTDRINK option (experimental)")
         self.option_pack_button.setToolTip("Eight replacement calls in MIN I Jokers. Experimental and unwitnessed. Use the selected defensive test formation. Incompatible with the stock MIN Modern Gun Core seed.")
         self.option_pack_button.clicked.connect(self._add_option_pack)
@@ -1188,6 +1223,9 @@ class BuildPanel(QWidget):
         self.momentum_collision_level.blockSignals(True)
         self.momentum_collision_level.setCurrentIndex(0)
         self.momentum_collision_level.blockSignals(False)
+        self.cpu_money_downs_level.blockSignals(True)
+        self.cpu_money_downs_level.setCurrentIndex(0)
+        self.cpu_money_downs_level.blockSignals(False)
         self.my_career_setup_field.clear()
         self.screen_timing_combo.setCurrentText(values.get("screen_timing") or "D")
         boxes = self._boxes()
@@ -1197,7 +1235,7 @@ class BuildPanel(QWidget):
         for key, box in boxes.items():
             if key not in values:
                 continue
-            want = values[key] != "retail" if key == "music_policy" else bool(values[key])
+            want = values[key] != "retail" if key in ("music_policy", *r62_ui.LEVELS) else bool(values[key])
             if want and not box.isEnabled() and key not in ("realistic_flight", "arc_by_distance"):
                 skipped.append(key)
                 continue
@@ -1306,6 +1344,7 @@ class BuildPanel(QWidget):
             practice_squad_screen=self.practice_squad_screen_check.isChecked(),
             abilities=self.abilities_check.isChecked(),
             abilities_off_week=(self.abilities_week.currentData() if self.abilities_check.isChecked() else None),
+            **{key: box.isChecked() for key, box in self.abilities_lock_checks.items()},
             qb_spy=self.qb_spy_check.isChecked(),
             calendar_engine=self.season_cap_check.isChecked(),
             coverage_slider=self.coverage_slider_check.isChecked(),
@@ -1365,6 +1404,7 @@ class BuildPanel(QWidget):
             plan.depth_roles = plan.depth_roles or state.get("depth_roles") != "applied"
         for key in r62_ui.KEYS:
             setattr(plan, key, getattr(self, key + "_check").isChecked())
+        plan.cpu_money_downs = self._money_downs_level() if self.cpu_money_downs_check.isChecked() else "retail"
         plan.created_teams_extra = 2 if self.created_teams_extra_check.isChecked() else 0
         plan.momentum_collision_level = int(self.momentum_collision_level.currentData() or 50) if plan.momentum_collisions else 0
         plan.guardian_everyone_practice = self.guardian_everyone_practice_check.isChecked()
@@ -1380,7 +1420,7 @@ class BuildPanel(QWidget):
     def has_work(self) -> bool:
         p = self.plan()
         return bool(self._include_session_project() or p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression
-                    or any(getattr(p, key) for key in r62_ui.KEYS) or p.scorebug_runtime or p.momentum > 0 or p.defensive_try or p.zone_drop_cap or p.all_stadiums or p.coverage_slider or p.scramble_tuning or p.flatter_deep_ball or p.chop_block_toggle or p.team_names_2026 or p.music_shuffle or p.practice_squad_screen or p.abilities or p.qb_spy or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.hires_pack or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
+                    or any(getattr(p, key) for key in r62_ui.KEYS if key not in r62_ui.LEVELS) or p.cpu_money_downs != "retail" or p.scorebug_runtime or p.momentum > 0 or p.defensive_try or p.zone_drop_cap or p.all_stadiums or p.coverage_slider or p.scramble_tuning or p.flatter_deep_ball or p.chop_block_toggle or p.team_names_2026 or p.music_shuffle or p.practice_squad_screen or p.abilities or p.qb_spy or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.hires_pack or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
                     or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.espn25_plan
                     or p.commentary or p.playbook_packs)
 
@@ -1536,6 +1576,26 @@ class BuildPanel(QWidget):
         self.momentum_collision_level.setCurrentIndex(self.momentum_collision_level.findData(value))
         self.momentum_collision_level.blockSignals(False)
         self.momentum_collision_level.setEnabled(collision.isEnabled())
+        installed_abilities = (self._state or {}).get("abilities_settings") or None
+        # Only a disc that already carries rules v2 dictates the lock boxes; a retail disc reports the defaults with
+        # the same model version, and syncing those on every refresh both reverted the user's unticks and, through
+        # the setter's own refresh, recursed without end on every real disc open (caught before beta 63 shipped).
+        if isinstance(installed_abilities, dict) and installed_abilities.get("status") == "applied" \
+                and installed_abilities.get("model_version") == 2:
+            self._apply_abilities_lock_boxes({key: installed_abilities.get(key)
+                                              for key in ("lock_right_stick", "lock_special_moves", "lock_speedster")})
+        money = self.cpu_money_downs_check
+        installed_money = (self._state or {}).get("cpu_money_downs_settings") or None
+        self.cpu_money_downs_level.blockSignals(True)
+        if installed_money and installed_money.get("level"):
+            level = str(installed_money["level"])
+            if self.cpu_money_downs_level.findData(level) < 0:
+                self.cpu_money_downs_level.addItem(f"Installed ({level})", level)
+            self.cpu_money_downs_level.setCurrentIndex(self.cpu_money_downs_level.findData(level))
+        elif not money.isChecked():
+            self.cpu_money_downs_level.setCurrentIndex(max(0, self.cpu_money_downs_level.findData("retail")))
+        self.cpu_money_downs_level.blockSignals(False)
+        self.cpu_money_downs_level.setEnabled(money.isEnabled())
         for key, reason in r62_ui.UNAVAILABLE.items():
             getattr(self, key + "_check").setEnabled(False)
             getattr(self, key + "_check").setToolTip(reason)
@@ -1590,6 +1650,37 @@ class BuildPanel(QWidget):
             raise ValueError("Senior Bowl is preparation only; use a seed from 0 to 2147483647")
         import copy
         self._senior_bowl_options = copy.deepcopy(options)
+        self._refresh()
+
+    def _parent_toggled(self, parent, on):
+        if not on:
+            for child in r62_ui.CHILDREN[parent]:
+                getattr(self, child + "_check").setChecked(False)
+        self._refresh()
+
+    def _child_toggled(self, parent, on):
+        box = getattr(self, parent + "_check")
+        if on and not box.isChecked() and box.isEnabled():
+            box.setChecked(True)
+        self._refresh()
+
+    def _money_downs_level(self) -> str:
+        return str(self.cpu_money_downs_level.currentData() or "modern")
+
+    def _money_downs_changed(self):
+        level = str(self.cpu_money_downs_level.currentData() or "retail")
+        self.cpu_money_downs_check.setChecked(level != "retail" and self.cpu_money_downs_check.isEnabled())
+        self._refresh()
+
+    def _money_downs_toggled(self, on):
+        combo = self.cpu_money_downs_level
+        combo.blockSignals(True)
+        if on and str(combo.currentData()) == "retail":
+            combo.setCurrentIndex(max(0, combo.findData("modern")))
+        elif not on:
+            combo.setCurrentIndex(max(0, combo.findData("retail")))
+        combo.blockSignals(False)
+        combo.setEnabled(self.cpu_money_downs_check.isEnabled())
         self._refresh()
 
     def _collision_changed(self):
@@ -1790,10 +1881,39 @@ class BuildPanel(QWidget):
 
     def _abilities_toggled(self, on):
         self.abilities_week.setEnabled(bool(on))
+        for box in self.abilities_lock_checks.values():
+            box.setEnabled(bool(on))  # choices are kept while the parent is off
         if not on:
             self.abilities_week.blockSignals(True)
             self.abilities_week.setCurrentIndex(0)
             self.abilities_week.blockSignals(False)
+        self._refresh()
+
+    def abilities_lock_settings(self) -> dict:
+        """Runtime key names (lock_right_stick, ...) -> bool, as the Rosters page expects."""
+        return {key.removeprefix("abilities_"): box.isChecked() for key, box in self.abilities_lock_checks.items()}
+
+    def _apply_abilities_lock_boxes(self, settings: dict) -> None:
+        """Set the three lock boxes silently: no change signal, no refresh (the caller decides that)."""
+        self._abilities_lock_sync = True
+        try:
+            for key, box in self.abilities_lock_checks.items():
+                value = settings.get(key.removeprefix("abilities_"), settings.get(key))
+                if value is not None:
+                    box.blockSignals(True)
+                    box.setChecked(bool(value))
+                    box.blockSignals(False)
+        finally:
+            self._abilities_lock_sync = False
+
+    def set_abilities_lock_settings(self, settings: dict) -> None:
+        """From the Rosters page; emits no change signal back to Rosters, then refreshes once."""
+        self._apply_abilities_lock_boxes(settings)
+        self._refresh()
+
+    def _abilities_locks_changed(self):
+        if not self._abilities_lock_sync:
+            self.abilities_locks_changed.emit(self.abilities_lock_settings())
         self._refresh()
 
     def set_music_shuffle_selection(self, document):
@@ -1838,6 +1958,13 @@ class BuildPanel(QWidget):
         seed = str(mod_build.ROOT / "data/playbooks/softdrink_option.2k5book")
         if Path(seed).resolve() not in {Path(p).resolve() for p in self.playbook_packs}:
             self.set_playbook_packs([*self.playbook_packs, seed])
+
+    def _add_match_coverage_pack(self) -> None:
+        seed = str(mod_build.ROOT / "data/playbooks/softdrink_match_coverage.2k5book")
+        paths = list(self.playbook_packs)
+        if Path(seed).resolve() not in {Path(path).resolve() for path in paths}:
+            paths.append(seed)
+        self.set_playbook_packs(paths)
 
     def _add_modern_defense_pack(self) -> None:
         seed = str(mod_build.ROOT / "data/playbooks/softdrink_modern_defense.2k5book")

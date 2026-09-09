@@ -30,7 +30,9 @@ from mod_editor.core import nfl2k5_seven_on_seven as seven  # noqa: E402
 from mod_editor.core import nfl2k5_throw_tuning as tt  # noqa: E402
 
 IMAGE_BASE = strength.IMAGE_BASE
-TABLE_OFF = 0x200
+# Match retail: the old synthetic 0x200 table overlapped the arc certificate
+# bytes at 0x310, silently corrupting section 5 and defeating digest checks.
+TABLE_OFF = 0x370
 DATA_VA = 0x50B000
 DATA_RAW = 0x1000
 DATA_SIZE = 0x1000
@@ -110,6 +112,9 @@ def _build_synthetic_xbe(curves: dict[str, tuple[tuple[float, float], ...]] | No
     for _label, va, retail, _patched in seven.sites():      # the 7-on-7 practice sites (all in .text)
         off = TEXT_RAW + (va - TEXT_VA)
         buf[off: off + len(retail)] = retail
+    for va, retail in seven.RETAIL_RUSH_READS:
+        off = TEXT_RAW + (va - TEXT_VA)
+        buf[off:off + len(retail)] = retail
     from mod_editor.core import nfl2k5_season_cap as season_cap
     off = TEXT_RAW + season_cap.CONTEXT_VA - TEXT_VA
     buf[off:off + len(season_cap.RETAIL_CONTEXT)] = season_cap.RETAIL_CONTEXT

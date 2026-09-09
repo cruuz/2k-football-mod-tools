@@ -67,13 +67,14 @@ class IntegrationPlans(unittest.TestCase):
                     tt._selected_space_requests(**{key:True})
 
     def test_exact_owner_union_and_independent_career(self):
-        self.assertEqual(tt._selected_space_requests(my_career=True), tt.my_career_patch.REQUESTS)
+        # M3 (beta 63): the generic MyCareer selection reserves the mode's three rows (16 KiB code, state, M3 state page)
+        self.assertEqual(tt._selected_space_requests(my_career=True), tt.my_career_mode_patch.REQUESTS)
         self.assertEqual(tt._selected_space_requests(momentum_collisions=True), ())
         kwargs = dict(momentum_collisions=True, momentum_collision_level=50, read_option_runtime=True,
                       guardian_overlay=True, my_career=True, screen_hooks=True, reserves_16=True,
                       created_teams_extra=2)
         expected = tuple(row for module in (tt.momentum_patch, tt.read_option_patch,
-            tt.guardian_overlay_patch, tt.my_career_patch, tt.screen_hooks_patch,
+            tt.guardian_overlay_patch, tt.my_career_mode_patch, tt.screen_hooks_patch,
             tt.roster_arena_patch, tt.practice_squad_screen_patch) for row in module.REQUESTS)
         actual = tt._selected_space_requests(**kwargs)
         self.assertCountEqual(actual, expected)

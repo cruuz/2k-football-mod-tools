@@ -1,4 +1,5 @@
 """Complete allocator owner union shared by both XBE safety gates."""
+from mod_editor.core import nfl2k5_seven_on_seven as seven
 from mod_editor.core import nfl2k5_camera as camera
 from mod_editor.core import nfl2k5_xbe_space as space
 from mod_editor.core import nfl2k5_dynamic_kickoff_relocated as kickoff
@@ -26,20 +27,68 @@ from mod_editor.core import nfl2k5_crib_reclaim as crib_reclaim
 from mod_editor.core import nfl2k5_screen_hooks as screen_hooks
 from mod_editor.core import nfl2k5_roster_arena_growth as arena_growth
 from mod_editor.core import nfl2k5_franchise_autosave as autosave
+from mod_editor.core import nfl2k5_espn25_rosters as espn25
+from mod_editor.core import nfl2k5_coverage_trail as coverage_trail
+from mod_editor.core import nfl2k5_deep_zone as deep_zone
+from mod_editor.core import nfl2k5_playbook_pair as playbook_pair
+from mod_editor.core import nfl2k5_weekly_prep as weekly_prep
+from mod_editor.core import nfl2k5_cpu_money_downs as money_downs
+from mod_editor.core import nfl2k5_franchise_edit_player as edit_player
 
 
 LEGACY_REQUESTS = (kickoff.REQUESTS + runtime.REQUESTS + momentum.REQUESTS
                    + defensive_try.REQUESTS[:2] + zone_drop.REQUESTS)
+# Abilities v2 expands the existing immutable owner; use its live REQUESTS.
 # Read option v2 grows the existing owner; its live REQUESTS include RW/RO.
 # Both installation orders use this same union and require rebuild from base.
+# MyCareer M3 includes its separate final RW page; its relocated 16 KiB code
+# leaves every other owner at the previous union's address.
 REQUESTS = (camera.REQUESTS + LEGACY_REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS
             + playlist.REQUESTS + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS
-            + defensive_try.REQUESTS[2:] + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS + guardian.REQUESTS + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS + autosave.REQUESTS)
+            + defensive_try.REQUESTS[2:] + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS + guardian.REQUESTS + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS + autosave.REQUESTS + espn25.REQUESTS + coverage_trail.REQUESTS + deep_zone.REQUESTS + playbook_pair.REQUESTS + weekly_prep.REQUESTS + money_downs.REQUESTS + edit_player.REQUESTS + seven.REQUESTS)
 SONGS = [dict(title=f"Tone {i+1:03}", artist="Synthetic", frames=256) for i in range(200)]
 
 
-def compose(payload, *, reverse=False, scaleout=False, extra_requests=()):
+class StaticScorebar:
+    """Expose the static writer to the gate union and the pairwise matrix."""
     from mod_editor.core import nfl2k5_scorebug_ingame as scene
+    OWNER = 'nfl2k5_scorebug_ingame'
+
+    @staticmethod
+    def apply(payload):
+        # Resolve at call time so the manifest recorder observes this writer.
+        return StaticScorebar.scene.apply_xbe(payload)
+
+    @staticmethod
+    def status(payload):
+        return StaticScorebar.scene.xbe_status(payload)
+
+
+class HistoricReload:
+    OWNER = espn25.OWNER
+    status = staticmethod(espn25.xbe_status)
+
+    @staticmethod
+    def apply(payload):
+        # Resolve the public writer at call time so the ownership recorder
+        # observes it. The module's older adapter captured an unwrapped
+        # function before observation and left its byte unattributed.
+        return espn25.apply_xbe(payload)
+
+
+def owner_calls(*, read_option_diagnostic=False):
+    """Actual owner calls shared by the full-union gates and the 7-on-7 pair proofs."""
+    return ((HistoricReload, {}), (StaticScorebar, {}), (camera, {}), (defensive_try, {}), (kickoff, {}), (runtime, {}),
+              (momentum, dict(momentum=100, momentum_contact=True, momentum_collisions=True, momentum_collision_level=100)), (zone_drop, {}),
+              (music, dict(song_records=SONGS)), (roster_storage, {}), (coverage, {}), (scramble, {}), (playlist, {}),
+              (practice_screen, {}), (abilities, dict(abilities_off_week=7)), (qb_spy, {}), (calendar, {}),
+              (read_option, dict(diagnostic=read_option_diagnostic)), (franchise_2026, {}), (senior_bowl, {}), (animation_xbe, {}), (guardian, {}),
+              (my_career, {}), (crib_reclaim, {}), (autosave, {}), (coverage_trail, {}), (seven, {}), (deep_zone, {}), (playbook_pair, {}), (weekly_prep, {}), (money_downs, {}), (edit_player, {}),
+              (screen_hooks, {}),
+              (arena_growth, dict(created_teams_extra=2)))
+
+
+def compose(payload, *, reverse=False, scaleout=False, extra_requests=(), read_option_diagnostic=False):
     from mod_editor.core import nfl2k5_practice_squad as ps, nfl2k5_franchise_practice as fp
     from mod_editor.core import nfl2k5_practice_reserves as pr
     from mod_editor.core import nfl2k5_widescreen as wide
@@ -65,20 +114,10 @@ def compose(payload, *, reverse=False, scaleout=False, extra_requests=()):
     payload, _ = ps.apply(payload)
     payload, _ = fp.apply(payload)
     payload, _ = pr.apply(payload)
-    class StaticScorebar:
-        OWNER = 'nfl2k5_scorebug_ingame'
-        apply = staticmethod(scene.apply_xbe)
-        status = staticmethod(scene.xbe_status)
     payload, policy_receipt = policy.apply(payload, music_unlock=True, music_userlist=True)
     payload, _ = space.apply(payload, REQUESTS + tuple(extra_requests), scaleout=scaleout)
     # One apply/status transaction owns both try rules and the stat extension.
-    owners = ((StaticScorebar, {}), (camera, {}), (defensive_try, {}), (kickoff, {}), (runtime, {}),
-              (momentum, dict(momentum=100, momentum_contact=True, momentum_collisions=True, momentum_collision_level=100)), (zone_drop, {}),
-              (music, dict(song_records=SONGS)), (roster_storage, {}), (coverage, {}), (scramble, {}), (playlist, {}),
-              (practice_screen, {}), (abilities, dict(abilities_off_week=7)), (qb_spy, {}), (calendar, {}), (read_option, {}), (franchise_2026, {}), (senior_bowl, {}), (animation_xbe, {}), (guardian, {}),
-              (my_career, {}), (crib_reclaim, {}), (autosave, {}),
-              (screen_hooks, {}),
-              (arena_growth, dict(created_teams_extra=2)))
+    owners = owner_calls(read_option_diagnostic=read_option_diagnostic)
     order = tuple(reversed(owners)) if reverse else owners
     for module, kwargs in order:
         payload, _ = module.apply(payload, **kwargs)
@@ -149,6 +188,14 @@ def manifest_for_allocated_union(manifest, retail, allocated):
     from mod_editor.core import nfl2k5_dynamic_kickoff as legacy_kickoff
     image = XbeImage(retail)
     installed_image = XbeImage(allocated)
+    if espn25.xbe_status(allocated) == "applied":
+        va, size = espn25.XBE_SITE_VA, len(espn25.XBE_BEFORE)
+        if image.read(va, size) != espn25.XBE_BEFORE or installed_image.read(va, size) != espn25.XBE_AFTER:
+            raise AssertionError("historic reload loop pin differs")
+        if any(r.detail.split(":", 1)[0] != espn25.OWNER for r in manifest.overlaps(va, va + size)):
+            raise AssertionError("historic reload loop overlaps another owner")
+        spans.append(dict(start=hex(va), end=hex(va + size), size=size, owner=espn25.OWNER,
+                          basis="test-only pinned live edit: historic_team_release"))
     owner = None
     if kickoff.status(allocated) == "applied":
         code, data = kickoff._sites(allocated)
@@ -204,6 +251,42 @@ def manifest_for_allocated_union(manifest, retail, allocated):
             spans.append(dict(start=hex(installed.va), end=hex(installed.va + installed.size),
                               size=installed.size, owner="nfl2k5_position_pools",
                               basis=f"test-only pinned data edit: {installed.label}"))
+    if coverage_trail.status(allocated) == "applied":
+        allocation = current[(coverage_trail.OWNER, "code")]
+        for name, va, before, after in coverage_trail.sites(allocation["va"]):
+            if image.read(va, len(before)) != before or installed_image.read(va, len(after)) != after:
+                raise AssertionError(f"Coverage trail live edit pin differs: {name}")
+            if manifest.overlaps(va, va + len(before), exclude_owner=coverage_trail.OWNER):
+                raise AssertionError(f"Coverage trail overlaps a different owner: {name}")
+            spans.append(dict(start=hex(va), end=hex(va + len(before)), size=len(before),
+                              owner=coverage_trail.OWNER, basis=f"test-only pinned live edit: {name}"))
+    if deep_zone.status(allocated) == "applied":
+        allocation = current[(deep_zone.OWNER, "code")]
+        for name, va, before, after in deep_zone.sites(allocation["va"]):
+            if image.read(va, len(before)) != before or installed_image.read(va, len(after)) != after:
+                raise AssertionError(f"Deep-zone live edit pin differs: {name}")
+            if manifest.overlaps(va, va + len(before), exclude_owner=deep_zone.OWNER):
+                raise AssertionError(f"Deep-zone overlaps a different owner: {name}")
+            spans.append(dict(start=hex(va), end=hex(va + len(before)), size=len(before),
+                              owner=deep_zone.OWNER, basis=f"test-only pinned live edit: {name}"))
+    if money_downs.status(allocated) == "applied":
+        allocation = current[(money_downs.OWNER, "code")]
+        for name, va, before, after in money_downs.sites(allocation["va"]):
+            if image.read(va, len(before)) != before or installed_image.read(va, len(after)) != after:
+                raise AssertionError(f"CPU money downs live edit pin differs: {name}")
+            if manifest.overlaps(va, va + len(before), exclude_owner=money_downs.OWNER):
+                raise AssertionError(f"CPU money downs overlaps a different owner: {name}")
+            spans.append(dict(start=hex(va), end=hex(va + len(before)), size=len(before),
+                              owner=money_downs.OWNER, basis=f"test-only pinned live edit: {name}"))
+    if edit_player.status(allocated) == "applied":
+        owned = edit_player.allocation(allocated)
+        for name, va, before, after in edit_player.sites(owned["va"]):
+            if image.read(va, len(before)) != before or installed_image.read(va, len(after)) != after:
+                raise AssertionError(f"Contracts editor live edit pin differs: {name}")
+            if manifest.overlaps(va, va + len(before), exclude_owner=edit_player.OWNER):
+                raise AssertionError(f"Contracts editor overlaps a different owner: {name}")
+            spans.append(dict(start=hex(va), end=hex(va + len(before)), size=len(before),
+                              owner=edit_player.OWNER, basis=f"test-only pinned live edit: {name}"))
     document = {**manifest.document, "spans": spans, "allocator_layout": layout,
-                "model": "Test-only allocation projection plus pinned kickoff, Auto Save and pools data edits"}
+                "model": "Test-only allocation projection plus pinned kickoff, Auto Save, coverage trail, CPU money downs, Contracts editor and pools data edits"}
     return ReservationManifest(document, XbeImage(retail))

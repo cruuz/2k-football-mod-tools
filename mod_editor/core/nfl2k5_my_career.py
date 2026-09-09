@@ -26,7 +26,7 @@ from . import nfl2k5_xbe_space as space
 from .nfl2k5_cave_oracle import XbeImage
 
 OWNER = "nfl2k5_my_career"
-CODE_SIZE, DATA_SIZE = 8192, 4096
+CODE_SIZE, DATA_SIZE = 16384, 4096
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 SCHEMA = "nfl2k5_my_career/v2"
 MAGIC = b"MCQB0001"
@@ -37,17 +37,22 @@ POSITION_COUNT = 17
 PENDING, PROSPECT, ACTIVE, UNSIGNED, RESERVE, LOST = range(1, 7)
 HELP_TEXT = (
     "EXPERIMENTAL / UNWITNESSED. Retail: Franchise controls a team and Game Modes offers First Person Football. "
-    "Patch: the First Person Football row becomes MyCareer. Create MyPlayer in the game as an undrafted free agent "
+    "Patch: the First Person Football row becomes MyCareer. Enter the draft or create an undrafted free agent "
     "(the game's own Create Player screen, then a visible list of all 32 clubs), live in a visible Apartment with Play "
     "next game, Practice, MyPlayer, Save and Quit, and save the career inline. Play opens your next fixture after any "
     "required league processing; a game you quit stays playable. MyPlayer gets the retail indicator, receiver icons and "
     "play art. Off the field the CPU plays at normal speed and a footer says so; Supersim is not available. With Franchise "
-    "Auto Save installed and on, completed results save to the slot chosen by a manual Save or Load. The draft entry is "
-    "not ready yet. A legacy MyCareer.json setup from a draft-stage save still works. Experimental / Unwitnessed."
+    "Auto Save installed and on, completed results save to the slot chosen by a manual Save or Load. Draft entry "
+    "advances the prior season, creates MyPlayer in the rookie class and lets the draft AI choose a club. "
+    "Senior Bowl preparation selects MyPlayer; its game is unavailable. Upgrades spend played-game XP with position caps. "
+    "The Apartment shows the next fixture date. Rebuild older MyCareer executables from base. Experimental / Unwitnessed."
 )
 WITNESS_LIST = (
-    "From Game Modes choose MyCareer: a build without a setup only explains itself; a configured build opens Load / Save.",
-    "Create MyPlayer from a real draft save, load the built game and finish the normal draft.",
+    "From Game Modes choose MyCareer, enter the draft, wait for league preparation and create MyPlayer.",
+    "Save at Senior Bowl preparation; verify that the editor's default seed-1 selection includes MyPlayer.",
+    "Complete the draft and verify both a drafted destination and an undrafted club choice, then cold reload.",
+    "Earn XP by playing, cancel and confirm attribute purchases, reach a position cap, save and cold reload.",
+    "Check the Apartment date and opponent before a bye, in preseason, and after a season rollover.",
     "Check the draft log, signing destination, roster identity, depth row and CPU roster decisions at the chosen position.",
     "At kickoff, snap, handoff, catch, interception, fumble, punt, PAT and overtime, input stays on MyPlayer.",
     "On the bench, injury, substitution and the other unit's plays, input reaches no replacement and the CPU keeps playing.",
@@ -449,7 +454,7 @@ def code_for(code_va, data_va, setup=None):
         if kind == 2:
             target -= code_va + offset
         struct.pack_into("<I", blob, offset, target & 0xFFFFFFFF)
-    require(len(blob) <= CODE_SIZE, "MyCareer exceeds its 8192-byte code and immutable-data budget")
+    require(len(blob) <= CODE_SIZE, "MyCareer exceeds its 16384-byte code and immutable-data budget")
     labels["seed"] = symbols["seed"]
     labels["content_end"] = code_va + len(blob)
     return bytes(blob).ljust(CODE_SIZE, b"\xcc"), labels

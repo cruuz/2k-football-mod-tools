@@ -29,10 +29,14 @@ from mod_editor.core.nfl2k5_cave_oracle import RETAIL_SHA256, XbeImage
 
 XBE = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION", "/media/noah/Storage/for codex 1.0/extracted")) / "ESPN NFL 2K5 (USA)/default.xbe"
 # The ten integration owners requested in the brief, plus both screen partners.
-# QB spy includes the landed man/rush hooks; Read option uses v2 REQUESTS.
+# QB spy includes the landed man/rush hooks; Read option v5 retains its existing reservation.
 OWNERS = (
+    ("seven_on_seven_v2", stack.seven),
+    ("camera_v5", stack.camera),
+    ("abilities_v2", stack.abilities),
+    ("momentum", stack.momentum),
     ("screen_hooks", stack.screen_hooks),
-    ("read_option_v2", stack.read_option),
+    ("read_option_v5", stack.read_option),
     ("qb_spy_man_rush", stack.qb_spy),
     ("franchise_2026", stack.franchise_2026),
     ("senior_bowl", stack.senior_bowl),
@@ -45,6 +49,13 @@ OWNERS = (
     ("practice_squad_screen", screen),
     ("my_career_generic", stack.my_career),
     ("franchise_autosave", stack.autosave),
+    ("coverage_trail", stack.coverage_trail),
+    ("deep_zone", stack.deep_zone),
+    ("zone_drop", stack.zone_drop),
+    ("scorebug_runtime", stack.runtime),
+    ("static_scorebar_v3", stack.StaticScorebar),
+    ("cpu_money_downs", stack.money_downs),
+    ("franchise_edit_player", stack.edit_player),
 )
 
 
@@ -92,7 +103,10 @@ class PairwiseCompositionTests(unittest.TestCase):
                     self.assertEqual(owner.status(result), "applied", owner.OWNER)
                     replay, receipt = owner.apply(result)
                     self.assertEqual(replay, result, owner.OWNER)
-                    self.assertEqual(receipt["changed_bytes"], 0, owner.OWNER)
+                    if owner is stack.StaticScorebar:
+                        self.assertEqual(receipt["state_before"], "applied", owner.OWNER)
+                    else:
+                        self.assertEqual(receipt["changed_bytes"], 0, owner.OWNER)
                 self.assertEqual(space.apply(result, stack.REQUESTS, scaleout=True)[0], result)
                 digests.append(hashlib.sha256(result).digest())
         if len(digests) == 2:

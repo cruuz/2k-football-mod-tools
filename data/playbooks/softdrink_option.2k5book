@@ -4,9 +4,9 @@
   "team": "MIN",
   "name": "SOFTDRINK option",
   "author": "SOFTDRINK",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "license": "CC0-1.0",
-  "notes": "EXPERIMENTAL / UNWITNESSED. Enable Read option runtime with this pack for the one-second read window. Hold snap through the window to keep; release or do nothing after snapping to give. The stick waits until the window ends. On an RPO, hold snap and press the named receiver to throw. Watch the edge marked by the snap-button icon. Without the runtime, these are retail position-based experiments with no held mesh. Blocks, exchange animation and pass readiness need play tests. Five native speed-option recipes plus speed, zone-read and RPO presets. Replaces eight I Jokers calls, never appends. The 4-3 fixture is an authoring check only; Pair the read-option runtime for the one-second mesh and live edge cue. Without that runtime, these reads retain the experimental retail fallback."
+  "notes": "EXPERIMENTAL / UNWITNESSED. Enable Read option runtime with this pack to start a native handoff after the snap. Do nothing to give. Before the exchange, press Xbox Black to pull and pitch. Release A after snapping and press A again to pull and keep. On an RPO, press X or the named receiver button to pull and pass. The stick waits until the decision. Use your controller mapping for these Xbox buttons. The diagnostic READ line shows the resolved resource number. Blocks, cancellation and the ball exchange need live play tests. Five native speed-option recipes plus speed, zone-read and RPO presets. Replaces eight I Jokers calls, never appends. The 4-3 fixture is an authoring check only; Pair the read-option runtime for the cancelable native handoff. Without that runtime, these reads retain the experimental retail fallback."
  },
  "base": {
   "book_fingerprint": "206ea8c360989c83959416610520774ab7f72a0845e1a9803e356ecce356f932",

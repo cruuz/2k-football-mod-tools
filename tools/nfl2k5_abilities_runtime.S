@@ -9,6 +9,7 @@
 .global config, instructions_end, move_masks, consumers, code_end
 .extern retail_attribute, retail_decode, retail_account
 .extern retail_initialize_tail, retail_generate_tail, retail_ai_tail, retail_consume_tail
+.extern retail_attribute_tail
 
 /* ECX=record -> EAX=known flags. No entity/render/controller side effects. */
 effective:
@@ -29,10 +30,47 @@ effective:
 effective_read:
     movzx eax, word ptr [ecx+0x52]
     and eax, 0x1ee0
+    /* Tier0 is legacy v1. Explicit tiers with excess flags fail closed. */
+    push ebx
+    push edx
+    push ecx
+    movzx edx, byte ptr [ecx+0x53]
+    shr edx, 6
+    jz tier_done
+    mov dl, byte ptr [tier_limits+edx]
+    mov ebx, eax
+tier_count:
+    test ebx, ebx
+    jz tier_done
+    dec dl
+    js tier_overfull
+    lea ecx, [ebx-1]
+    and ebx, ecx
+    jmp tier_count
+tier_overfull:
+    xor eax, eax
+tier_done:
+    pop ecx
+    pop edx
+    pop ebx
     ret
 effective_zero:
     xor eax, eax
 effective_done:
+    ret
+
+/* Stored abilities and unlocked permissions are deliberately separate.
+ * Disabling a lock never grants a rating effect. */
+permissions:
+    call effective
+    or eax, [unlocked_mask]
+    ret
+
+/* ZF=both move locks disabled: keep the full retail charge policy. */
+unlocked_moves:
+    mov eax, [unlocked_mask]
+    and eax, 0x1ec0
+    cmp eax, 0x1ec0
     ret
 
 /* EBX=entity. CF=live attached carrier; ESI=state/0, EDX=steer/0.
@@ -127,10 +165,12 @@ clear_done:
 /* EBX=entity -> CF=may generate charge. Also remove stale active permission.
  * Meter policy explicitly live-carrier-only. No controller-owned timer. */
 maintain:
+    call unlocked_moves
+    je maintain_yes
     call carrier
     jnc maintain_clear
     mov ecx, [ebx+0x3c]
-    call effective
+    call permissions
     mov ebp, eax
     test eax, 0x40
     jnz maintain_any
@@ -171,7 +211,7 @@ filter:
     test edi, edi
     jz filter_done
     mov ecx, [ebx+0x3c]
-    call effective
+    call permissions
     and eax, edi
     cmp eax, edi
     je filter_done
@@ -192,7 +232,7 @@ speed:
     sub esp, 12
     fstp dword ptr [esp]
     mov dword ptr [esp+4], 0x3f7d70a4  /* .99 */
-    call effective
+    call permissions
     test eax, 0x20
     jz speed_bound
     movzx eax, byte ptr [ecx+0x36]
@@ -292,7 +332,7 @@ initialize_check:
     test edi, edi
     jz initialize_done
     mov ecx, [ebx+0x3c]
-    call effective
+    call permissions
     and eax, edi
     cmp eax, edi
     je initialize_done
@@ -342,6 +382,8 @@ consume:
     pushfd
     pushad
     mov ebx, ecx
+    call unlocked_moves
+    je consume_allowed
     call carrier
     jnc consume_denied
     mov eax, [esp+36]   /* original native caller return address */
@@ -367,10 +409,11 @@ consume_found:
     test edi, edi
     jz consume_denied
     mov ecx, [ebx+0x3c]
-    call effective
+    call permissions
     and eax, edi
     cmp eax, edi
     jne consume_denied
+consume_allowed:
     popad
     popfd
     push esi
@@ -382,6 +425,60 @@ consume_denied:
     popad
     popfd
     ret
+
+/* Common effective-attribute entry. Forward native ret4 argument, then add
+ * 0.02 * tier only for five mapped stored abilities during live phase14.
+ * Retail clamps, condition, injury and sliders execute first. No rating
+ * byte or cache is edited. Tier0 retains v1. Result remains in [0,1]. */
+attribute:
+    push edx
+    push ecx
+    push dword ptr [esp+12]
+    call attribute_body
+    pushfd
+    pushad
+    /* Keep the native call's volatile outputs too. Saved input record/index
+     * live below the flags/GPR snapshot until the wrapper returns. */
+    mov ecx, [esp+36]
+    mov edx, [esp+40]
+    cmp dword ptr [0xe602b8], 14
+    jne attribute_done
+    cmp edx, 18
+    ja attribute_done
+    mov esi, edx
+    call effective
+    test ax, word ptr [effect_masks+esi*2]
+    jz attribute_done
+    movzx eax, byte ptr [ecx+0x53]
+    shr eax, 6
+    jz attribute_done
+    sub esp, 8
+    mov [esp+4], eax
+    fstp dword ptr [esp]
+    mov eax, [esp]
+    test eax, eax
+    jle attribute_load
+    cmp eax, 0x3f800000
+    jae attribute_load
+    fild dword ptr [esp+4]
+    fmul dword ptr [effect_step]
+    fadd dword ptr [esp]
+    fstp dword ptr [esp]
+    cmp dword ptr [esp], 0x3f800000
+    jbe attribute_load
+    mov dword ptr [esp], 0x3f800000
+attribute_load:
+    fld dword ptr [esp]
+    add esp, 8
+attribute_done:
+    popad
+    popfd
+    lea esp, [esp+8]
+    ret 4
+attribute_body:
+    sub esp, 8
+    mov eax, [ecx+0x30]
+    jmp retail_attribute_tail
 instructions_end:
 .balign 4, 0xcc
 config:
@@ -401,4 +498,15 @@ families:
     .long 0x530148,0x1000, 0x51cb08,0x840, 0x5300f8,0x280
     .long 0x531064,0x400, 0x530f5c,0xc0, 0x530134,0x80
     .long 0x530120,0x280
+unlocked_mask:
+    .long 0
+effect_step:
+    .float 0.02
+effect_masks:
+    /* Native table order, NOT the on-disc rating byte order:
+     * Agility/Juke, Strength/Stiff-Arm, Jumping/Hurdle,
+     * Break Tackle/Truck, Pass Rush/Spin. */
+    .word 0,0x80,0x1000,0x800,0,0,0,0,0,0,0,0,0x400,0,0,0,0,0,0x200
+tier_limits:
+    .byte 7,2,4,7
 code_end:

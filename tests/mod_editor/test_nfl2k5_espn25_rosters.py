@@ -270,9 +270,9 @@ class SyntheticWriterTests(unittest.TestCase):
         data = {"resources": targets, "colleges": ["Example College"]}, {i: rows for i in range(35)}
         resources = {i: raw for i in range(35)}
         with patch.object(e, "dataset", return_value=data):
-            after, receipt = e.apply(resources)
+            after, receipt = e._compile_resources(resources)
             self.assertEqual(e.status(after), "applied")
-            replay, again = e.apply(after)
+            replay, again = e._compile_resources(after)
             self.assertEqual(replay, after)
             self.assertEqual(again["changed_bytes"], 0)
             self.assertTrue(all(not t["changes"] for t in again["resources"]))
@@ -283,20 +283,31 @@ class SyntheticWriterTests(unittest.TestCase):
                     with patch.object(e, "compile_resource", side_effect=AssertionError("must not compile")):
                         self.assertEqual(e.status(bad), "foreign")
                         with self.assertRaises(e.Espn25RostersError):
-                            e.apply(bad)
+                            e._compile_resources(bad)
             self.assertFalse(receipt["xbe_changed"])
 
 
 class RetailTests(unittest.TestCase):
+    def setUp(self):
+        # Exercise the candidate writer only on bounded disposable fixtures.
+        # Production refusal has independent tests in test_nfl2k5_espn25_in_game.
+        hold = patch.object(e, "BUILD_BLOCK_REASON", "")
+        hold.start()
+        self.addCleanup(hold.stop)
+
     @classmethod
     def setUpClass(cls):
         if not (RETAIL / "vc_53450030/0").is_file():
             raise unittest.SkipTest("user-owned retail extraction absent: " + str(RETAIL))
+        if not (RETAIL / "default.xbe").is_file():
+            raise unittest.SkipTest("user-owned default.xbe evidence absent: " + str(RETAIL))
+        if e.xbe_status(e.read_xbe(RETAIL)) != "retail":
+            raise unittest.SkipTest("private executable evidence is not the pinned retail reload routine")
         cls.manifest, cls.sheets = e.dataset()
         cls.resources = e.read_resources(RETAIL)
         if e.status(cls.resources) != "retail":
             raise unittest.SkipTest("private retail evidence is not the pinned USA resource set")
-        cls.output, cls.receipt = e.apply(cls.resources)
+        cls.output, cls.receipt = e._compile_resources(cls.resources)
         with rr._outer_image()(RETAIL) as archive:
             cls.context = {i: archive.read_entry(i) for i in (5, 22)}
             cls.descriptors = e.describe_context(cls.context[5], cls.context[22], archive.entries)["descriptors"]
@@ -330,7 +341,7 @@ class RetailTests(unittest.TestCase):
                 forward[off:off + len(new)], reverse[off:off + len(old)] = new, old
             self.assertEqual(forward, self.output[index])
             self.assertEqual(reverse, self.resources[index])
-        after, again = e.apply(self.output)
+        after, again = e._compile_resources(self.output)
         self.assertEqual(after, self.output)
         self.assertEqual(again["changed_bytes"], 0)
 
@@ -346,12 +357,21 @@ class RetailTests(unittest.TestCase):
             seam = fixture.entry_offsets[min(self.resources)] + 2048
             fixture = SyntheticXiso(folder, entries, pack_sizes=(seam, 2 * 1024 * 1024 - seam),
                                     pack_sectors=(80, 80 + seam // 2048 + 16))
+        # A bounded image with the real executable as well as real ROST slices.
+        # Append it beyond the tiny packs, then repoint the first root entry.
+        xbe = e.read_bounded(RETAIL / "default.xbe", 16 * 1024**2)
+        with fixture.path.open("r+b") as handle:
+            offset = (fixture.path.stat().st_size + 2047) // 2048 * 2048
+            handle.seek(offset)
+            handle.write(xbe)
+            handle.seek(33 * 2048 + 4)
+            handle.write(struct.pack("<II", offset // 2048, len(xbe)))
         return fixture
 
-    def test_moved_pack_image_writer_only_changes_the_35_owned_resources(self):
+    def test_moved_pack_image_writer_only_changes_owned_resources_and_native_fix(self):
         with tempfile.TemporaryDirectory() as directory:
             fixture = self.fixture(Path(directory).resolve())
-            before = fixture.path.read_bytes()  # synthetic image <3 MiB, never a disc
+            before = fixture.path.read_bytes()  # bounded synthetic image <16 MiB, never a disc
             receipt = e.apply_to_image(fixture.path)
             after = fixture.path.read_bytes()
             self.assertEqual(e.image_status(fixture.path), "applied")
@@ -359,6 +379,8 @@ class RetailTests(unittest.TestCase):
             for item in receipt["image_spans"]:
                 for span in item["segments"]:
                     allowed.update(range(span["image_offset"], span["image_offset"] + span["size"]))
+            for span in receipt["xbe_spans"]:
+                allowed.update(range(span["image_offset"], span["image_offset"] + len(bytes.fromhex(span["after"]))))
             self.assertEqual(len(before), len(after))
             self.assertTrue(all(i in allowed for i, (a, b) in enumerate(zip(before, after)) if a != b))
             self.assertEqual(before[35 * 2048:35 * 2048 + 16], after[35 * 2048:35 * 2048 + 16])
@@ -373,6 +395,42 @@ class RetailTests(unittest.TestCase):
             published = fixture.path.with_name("closed-handles.iso")
             os.replace(fixture.path, published)
             self.assertTrue(published.is_file())
+
+    def test_foreign_executable_refuses_before_any_resource_write(self):
+        from mod_editor.core import nfl2k5_rdata_sites as sites
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = self.fixture(Path(directory).resolve())
+            with fixture.path.open("r+b") as handle:
+                offset, payload = e._image_xbe(handle)
+                off = sites.offset_of(payload, e.XBE_SITE_VA)
+                handle.seek(offset + off)
+                handle.write(bytes([payload[off] ^ 0x40]))
+            before = fixture.path.read_bytes()
+            self.assertEqual(e.image_status(fixture.path), "foreign")
+            with self.assertRaisesRegex(e.Espn25RostersError, "unrecognized executable"):
+                e.apply_to_image(fixture.path)
+            self.assertEqual(fixture.path.read_bytes(), before)
+
+    def test_legacy_roster_only_image_upgrades_with_an_exact_executable_receipt(self):
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = self.fixture(Path(directory).resolve())
+            with rr._outer_image()(fixture.path, writable=True) as archive:
+                for index, raw in self.output.items():
+                    archive.write(archive.entries[index].virtual_offset, raw)
+            before = bytearray(fixture.path.read_bytes())
+            self.assertEqual(e.image_status(fixture.path), "needs load fix")
+            self.assertEqual(e.preflight_image(fixture.path)["load_fix"]["owner"], e.OWNER)
+            with patch.object(rr._outer_image(), "write", side_effect=AssertionError("must not rewrite installed resources")):
+                receipt = e.apply_to_image(fixture.path)
+            self.assertFalse(receipt["already_applied"])
+            self.assertTrue(receipt["xbe_changed"])
+            self.assertTrue(all(r["changed_bytes"] == 0 for r in receipt["resources"]))
+            for span in receipt["xbe_spans"]:
+                at, raw = span["image_offset"], bytes.fromhex(span["after"])
+                self.assertEqual(before[at:at + len(raw)], bytes.fromhex(span["before"]))
+                before[at:at + len(raw)] = raw
+            self.assertEqual(before, fixture.path.read_bytes())
+            self.assertEqual(e.image_status(fixture.path), "applied")
 
     def test_mixed_image_and_changed_context_refuse_without_one_write(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -411,7 +469,8 @@ class RetailTests(unittest.TestCase):
                 receipt = e.build_image(fixture.path, target)
             self.assertEqual(e.image_status(target), "applied")
             self.assertEqual(fixture.path.read_bytes(), before)
-            self.assertFalse(receipt["xbe_changed"])
+            self.assertTrue(receipt["xbe_changed"])
+            self.assertEqual(e.xbe_status(e.read_xbe(target)), "applied")
             with self.assertRaises(e.Espn25RostersError):
                 e.build_image(fixture.path, target)
 
@@ -453,6 +512,9 @@ class RetailTests(unittest.TestCase):
                             start = pack.image_offset + offset
                             reconstructed[start:start + length] = raw[cursor:cursor + length]
                             cursor += length
+                for span in receipt["xbe_spans"]:
+                    raw = bytes.fromhex(span["after"])
+                    reconstructed[span["image_offset"]:span["image_offset"] + len(raw)] = raw
                 self.assertEqual(after, reconstructed)
                 os.replace(fixture.path, fixture.path.with_name("closed.iso"))
                 self.assertEqual(open_paths(), [])

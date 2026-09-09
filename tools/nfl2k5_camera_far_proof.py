@@ -199,7 +199,7 @@ class Projection:
             vertical_fov_degrees=math.degrees(2*math.atan(240/abs(matrix[5]))),
             horizontal_fov_degrees=math.degrees(2*math.atan(360/abs(matrix[0]))),
             downward_pitch_degrees=math.degrees(math.atan2(self.eye[1]-self.target[1],
-                abs(self.eye[2]-self.target[2]))))
+                math.hypot(self.eye[0]-self.target[0], self.eye[2]-self.target[2]))))
         return decoded
 
     def point(self, x, y, z):

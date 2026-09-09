@@ -43,6 +43,45 @@ def sections(xbe: bytes):
 
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
 class CaveReferenceTests(unittest.TestCase):
+    def test_deep_zone_hooks_have_exclusive_live_ownership(self):
+        from mod_editor.core import nfl2k5_deep_zone as patch
+        self.assertEqual(patch.status(self.patched), "applied")
+        for va, before in patch.HOOKS.values():
+            self.assertTrue(self.manifest.overlaps(va, va+len(before)))
+            self.assertEqual(self.manifest.overlaps(va, va+len(before), exclude_owner=patch.OWNER), [])
+
+    def test_money_downs_hooks_are_owned_and_code_is_allocated(self):
+        from mod_editor.core import nfl2k5_cpu_money_downs as patch, nfl2k5_xbe_space as space
+        row = next(a for a in space.layout(self.patched)["allocations"] if a["owner"] == patch.OWNER)
+        for va, before in patch.HOOKS.values():
+            self.assertEqual(self.manifest.overlaps(va, va + len(before), exclude_owner=patch.OWNER), [])
+            self.assertTrue(self.manifest.overlaps(va, va + len(before)))
+            self.assertFalse([address for address in self.targets if va < address < va + len(before)])
+        self.assertGreaterEqual(row["va"], space.CODE_VA)
+        self.assertEqual(patch.status(self.patched), "applied")
+
+    def test_contracts_editor_uses_only_owned_read_only_tables(self):
+        from mod_editor.core import nfl2k5_franchise_edit_player as edit
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        row = edit.allocation(self.patched)
+        image = XbeImage(self.patched)
+        self.assertEqual((row["kind"], row["size"]), ("read_only", 704))
+        self.assertFalse(image.section(row["va"]).writable)
+        self.assertFalse(image.section(row["va"]).executable)
+        self.assertEqual(image.read(row["va"], 704), edit.read_only_bytes())
+        for _, va, before, _ in edit.sites(row["va"]):
+            self.assertEqual(self.manifest.overlaps(va, va + len(before), exclude_owner=edit.OWNER), [])
+            self.assertTrue(self.manifest.overlaps(va, va + len(before)))
+
+    def test_coverage_trail_hook_is_owned_and_code_is_allocated(self):
+        from mod_editor.core import nfl2k5_coverage_trail as trail, nfl2k5_xbe_space as space
+        row = next(a for a in space.layout(self.patched)["allocations"] if a["owner"] == trail.OWNER)
+        self.assertEqual(self.manifest.overlaps(trail.HOOK_VA, trail.HOOK_VA + 6,
+                                               exclude_owner=trail.OWNER), [])
+        self.assertTrue(self.manifest.overlaps(trail.HOOK_VA, trail.HOOK_VA + 6))
+        self.assertGreaterEqual(row["va"], space.CODE_VA)
+        self.assertEqual(trail.status(self.patched), "applied")
+
     @classmethod
     def setUpClass(cls) -> None:
         from mod_editor.core import nfl2k5_throw_tuning as tt
@@ -54,7 +93,7 @@ class CaveReferenceTests(unittest.TestCase):
         seed, _ = flight.apply(seed)
         cls.sec = sections(cls.retail)
         flags = {name: True for name in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "returner_fix", "progression",
-                                          "scheme_labels", "kick_rules", "widescreen", "overtime", "team_column", "seven_on_seven")}
+                                          "scheme_labels", "kick_rules", "widescreen", "overtime", "team_column")}
         cls.patched, _receipt = tt._apply_all(seed, None, **flags, arc_table=False, kick_power=False, penalties="nfl", uniform_choice="choice", kick_laces=True, franchise_practice=True, prospect_names="modern", player_star=True, dynamic_kickoff=True)
         from mod_editor.core import nfl2k5_position_pools as pools
         from mod_editor.core import nfl2k5_depth_chart_rows as rows
@@ -77,13 +116,37 @@ class CaveReferenceTests(unittest.TestCase):
             raise AssertionError("season-cap owner missing from the composed XBE")
         from tests.nfl2k5_allocator_stack import compose
         cls.before_allocator = cls.patched
-        # Camera now needs 64 owned code bytes; the full union installs it. No
+        # Camera's code and immutable Broadcast record are in the full union. No
         # allocation may be sealed by the earlier protected dispatcher pass.
-        cls.patched, cls.music_receipt = compose(cls.patched, reverse=getattr(cls, "reverse_owners", False), scaleout=getattr(cls, "scaleout", False))
+        cls.patched, cls.music_receipt = compose(cls.patched, read_option_diagnostic=True, reverse=getattr(cls, "reverse_owners", False), scaleout=getattr(cls, "scaleout", False))
+        from mod_editor.core import nfl2k5_seven_on_seven as seven
+        if seven.status(cls.patched) != "applied" or seven.apply(cls.patched)[0] != cls.patched:
+            raise AssertionError("7-on-7 v2 missing from the complete owner union")
         if getattr(cls, "reverse_owners", False):
             cls.patched, cls.pools_receipt = pools.apply(cls.patched, roster_has_olb=False)
         if pools.filter_list_status(cls.patched) != "applied":
             raise AssertionError("empty OLB selectors survived complete composition")
+        from mod_editor.core import nfl2k5_espn25_rosters as espn25
+        if espn25.xbe_status(cls.patched) != "applied" or espn25.apply_xbe(cls.patched)[0] != cls.patched:
+            raise AssertionError("Historic team reload repair missing from the complete owner union")
+        from mod_editor.core import nfl2k5_deep_zone as deep_zone
+        if deep_zone.status(cls.patched) != "applied" or deep_zone.apply(cls.patched)[0] != cls.patched:
+            raise AssertionError("Deep-zone owner failed gate composition/replay")
+        from mod_editor.core import nfl2k5_cpu_money_downs as money_downs
+        if money_downs.status(cls.patched) != "applied" or money_downs.apply(cls.patched)[0] != cls.patched:
+            raise AssertionError("CPU money downs missing from the complete owner union")
+        from mod_editor.core import nfl2k5_franchise_edit_player as edit_player
+        if edit_player.status(cls.patched) != "applied" or edit_player.apply(cls.patched)[0] != cls.patched:
+            raise AssertionError("Contracts Edit Player did not compose/replay")
+        from mod_editor.core import nfl2k5_coverage_trail as coverage_trail
+        if coverage_trail.status(cls.patched) != "applied" or coverage_trail.apply(cls.patched)[0] != cls.patched:
+            raise AssertionError("Coverage trail missing from the complete owner union")
+        from mod_editor.core import nfl2k5_playbook_pair as playbook_pair
+        if playbook_pair.status(cls.patched) != "applied" or playbook_pair.apply(cls.patched)[0] != cls.patched:
+            raise AssertionError("Playbook pair missing from the complete owner union")
+        from mod_editor.core import nfl2k5_weekly_prep as weekly_prep
+        if weekly_prep.status(cls.patched) != "applied" or weekly_prep.apply(cls.patched)[0] != cls.patched:
+            raise AssertionError("Weekly prep missing from the complete owner union")
         from mod_editor.core import nfl2k5_franchise_autosave as autosave
         if autosave.status(cls.patched) != "applied" or autosave.apply(cls.patched)[0] != cls.patched:
             raise AssertionError("Franchise Auto Save missing from the complete owner union")
@@ -103,6 +166,9 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_my_career_mode as my_career, nfl2k5_crib_reclaim as crib_reclaim
         if my_career.status(cls.patched) != "applied" or crib_reclaim.status(cls.patched) != "applied":
             raise AssertionError("MyCareer or Crib movie cut missing from the composed XBE")
+        m3_state = [a for a in my_career.space.layout(cls.patched)["allocations"] if a["owner"] == my_career.EXTRA_OWNER]
+        if len(m3_state) != 1 or (m3_state[0]["kind"], m3_state[0]["va"], m3_state[0]["size"]) != ("data", my_career.EXTRA_VA, 4096):
+            raise AssertionError("MyCareer M3 state missing from the complete owner union")
         from mod_editor.core import nfl2k5_calendar_engine as calendar
         if calendar.status(cls.patched) != "applied":
             raise AssertionError("calendar owner missing from the composed XBE")
@@ -113,8 +179,8 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_read_option_runtime as read_option
         if read_option.status(cls.patched) != "applied":
             raise AssertionError("read option owner missing from the composed XBE")
-        if read_option.read_settings(cls.patched)["model_version"] != 3:
-            raise AssertionError("revised read option controls missing from the composed XBE")
+        if read_option.read_settings(cls.patched)["model_version"] != 5:
+            raise AssertionError("read option engagement diagnostic missing from the composed XBE")
         from mod_editor.core import nfl2k5_franchise_2026 as franchise_2026
         if franchise_2026.status(cls.patched) != "applied":
             raise AssertionError("franchise rule proof kernel missing from composed XBE")
@@ -136,6 +202,8 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_abilities_runtime as abilities
         if abilities.status(cls.patched) != "applied":
             raise AssertionError("abilities owner missing from the composed XBE")
+        if abilities.read_settings(cls.patched)["model_version"] != 2:
+            raise AssertionError("abilities v2 effects missing from the composed XBE")
         from mod_editor.core import nfl2k5_qb_spy_runtime as qb_spy
         if qb_spy.status(cls.patched) != "applied":
             raise AssertionError("QB spy owner missing from the composed XBE")
@@ -647,10 +715,15 @@ class CaveReferenceTests(unittest.TestCase):
             for target in range(va+1, va+len(before)):
                 self.assertFalse(self.targets.get(target, []), hex(target))
         allocation = camera.allocation(self.patched)
-        self.assertEqual((allocation['kind'], allocation['size']), ('code', 64))
+        self.assertEqual((allocation['kind'], allocation['size']), ('code', camera.CODE_SIZE))
         self.assertFalse(image.section(allocation['va']).writable)
         self.assertEqual({va: refs for va, refs in self.targets.items()
-                          if allocation['va'] <= va < allocation['va']+64}, {})
+                          if allocation['va'] <= va < allocation['va']+camera.CODE_SIZE}, {})
+        descriptor = camera.allocation(self.patched, 'read_only')
+        self.assertFalse(image.section(descriptor['va']).writable)
+        self.assertFalse(image.section(descriptor['va']).executable)
+        self.assertEqual(camera._read(self.patched, descriptor['va'], descriptor['size']),
+                         camera.broadcast_descriptor())
         self.assertEqual(camera.status(self.patched), 'applied')
         # Existing descriptors and complete instruction edits allocate no
         # retail cave. Check the expanded v3 edit list against every owner.
@@ -679,6 +752,27 @@ class CaveReferenceTests(unittest.TestCase):
             self.assertEqual({at: refs for at, refs in self.targets.items() if va <= at < end}, {})
             self.assertTrue(all(r.detail.split(':', 1)[0] == 'nfl2k5_xbe_space'
                                 for r in self.manifest.overlaps(va, end, exclude_owner=autosave.OWNER)))
+
+    def test_playbook_pair_hooks_and_tables_have_exclusive_ownership(self):
+        from mod_editor.core import nfl2k5_playbook_pair as pair
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        image = XbeImage(self.patched)
+        owned = pair.allocations(self.patched)
+        md = Cs(CS_ARCH_X86, CS_MODE_32)
+        for name, va, original, _ in pair.HOOKS:
+            before = bytes.fromhex(original)
+            self.assertEqual(sum(i.size for i in md.disasm(before, va)), len(before), name)
+            self.assertEqual(sum(i.size for i in md.disasm(image.read(va,len(before)), va)), len(before), name)
+            for target in range(va+1, va+len(before)):
+                self.assertFalse(self.targets.get(target, []), (name, hex(target)))
+        for name, va, before, _ in pair.sites(owned['code']['va'],owned['read_only']['va']):
+            self.assertEqual(self.manifest.overlaps(va,va+len(before),exclude_owner=pair.OWNER), [], name)
+            self.assertTrue(self.manifest.overlaps(va,va+len(before)), name)
+        for allocation in owned.values():
+            va, end = allocation['va'], allocation['va']+allocation['size']
+            self.assertEqual({at: refs for at, refs in self.targets.items() if va <= at < end}, {})
+            self.assertTrue(all(r.detail.split(':',1)[0] == 'nfl2k5_xbe_space'
+                                for r in self.manifest.overlaps(va,end,exclude_owner=pair.OWNER)))
 
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
 class ScorebugReferenceReservations(unittest.TestCase):
@@ -761,7 +855,7 @@ class ReverseOwnerOrderTests(CaveReferenceTests):
         from mod_editor.core import nfl2k5_modern_naming as modern_naming
         from mod_editor.core import nfl2k5_position_pools as pools
         forward = pools.apply(self.before_allocator, roster_has_olb=False)[0]
-        self.assertEqual(modern_naming.apply(compose(forward, scaleout=getattr(self, "scaleout", False))[0])[0], self.patched)
+        self.assertEqual(modern_naming.apply(compose(forward, read_option_diagnostic=True, scaleout=getattr(self, "scaleout", False))[0])[0], self.patched)
 
 
 class ScaleoutOwnerTests(CaveReferenceTests):

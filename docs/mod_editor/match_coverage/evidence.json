@@ -1,0 +1,74 @@
+{
+  "schema": "nfl2k5_match_coverage_evidence/v1",
+  "evidence": "EXPERIMENTAL / UNWITNESSED",
+  "proof_scope": "Static native dataflow and exact byte identity; no native execution or gameplay witness",
+  "retail_xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+  "functions": {
+    "0x0019fa10": {
+      "end_exclusive": "0x0019fc55",
+      "native_sha256": "fad2cc9cd51d9d391cb94fe3a5ff6315084fd0c9d8bb948c3b847fe43187f536",
+      "corpus_path": "pseudo_c/shard_007680_008191.c",
+      "line": 6441,
+      "corpus_sha256": "3725bf93068286495fd5d4e8645a5f23af43d500728d262e5138fff79706b1b4"
+    },
+    "0x001a2e70": {
+      "end_exclusive": "0x001a2f7d",
+      "native_sha256": "2936ae2b339e12aee111289f2d531e777381aabafdcf2db23000d296ff5cb76d",
+      "corpus_path": "pseudo_c/shard_007680_008191.c",
+      "line": 8822,
+      "corpus_sha256": "63debbe24856a76bb892f0732afc24a082ba3913e7e252b8cf043b257adf3f72"
+    },
+    "0x001a5090": {
+      "end_exclusive": "0x001a578e",
+      "native_sha256": "f376d44116246f3ea5d62e7f1cb550f49129ef9dd200be3fa173a5cee1cb8231",
+      "corpus_path": "pseudo_c/shard_007680_008191.c",
+      "line": 10349,
+      "corpus_sha256": "a0bc015cf3b83b68e6d3a531683179ec585ca7cb0b565950ed1b105d32b4faf4"
+    },
+    "0x001a5bc0": {
+      "end_exclusive": "0x001a621c",
+      "native_sha256": "b5698e42d175e12ca737a85d5bae56e06fcdfe0cd0ad3940395c5d1897b36c68",
+      "corpus_path": "pseudo_c/shard_007680_008191.c",
+      "line": 10777,
+      "corpus_sha256": "80706fd9a13063fb31c2ad4c94c99abd9d9866b9f74a9304fee9c0442711290e"
+    },
+    "0x001a6220": {
+      "end_exclusive": "0x001a66e1",
+      "native_sha256": "e4083f8cf81c27f826670aafa1acc9d69b3f1b54f96fdb3df90543ac167b97e5",
+      "corpus_path": "pseudo_c/shard_007680_008191.c",
+      "line": 11065,
+      "corpus_sha256": "09e6811168c40627a7dd8b6e85c9ae90736cf82cdee4c624ddb4c3ec73700324"
+    },
+    "0x001a05b0": {
+      "end_exclusive": "0x001a05ec",
+      "native_sha256": "71cff8bd6528658ef6211eb23a8a7c0156106d571ad6a706a0410c4e6bf0f0fc",
+      "corpus_path": "pseudo_c/shard_007680_008191.c",
+      "line": 7219,
+      "corpus_sha256": "08777bbf11d84ff7a8c1acf4c884d9a764234d043728f484f170f11fdf3bda1a"
+    }
+  },
+  "boundary_table": {
+    "address": "0x0050a4c8",
+    "values": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "sha256": "5d85718ec594b982c252d0279e5966ffca33a5eaf2a455038d3ab331fde70cea"
+  },
+  "lookahead_seconds": 0.20000000298023224,
+  "depth_threshold_cm": 1371.5999755859375
+}

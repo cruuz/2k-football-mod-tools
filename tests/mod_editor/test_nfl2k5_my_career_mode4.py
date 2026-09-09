@@ -17,6 +17,7 @@ from mod_editor.core import nfl2k5_my_career_mode as mode
 from mod_editor.core.nfl2k5_cave_oracle import RETAIL_SHA256, XbeImage
 from tests.nfl2k5_my_career_fixture import XBE, HAVE_UC
 from tests.nfl2k5_my_career_mode4_fixture import Machine
+from tests.nfl2k5_my_career_navigation_fixture import install as navigation, resources
 from tests.mod_editor.test_nfl2k5_my_career_frontend import retail_roster
 
 
@@ -30,6 +31,7 @@ class Mode4Tests(unittest.TestCase):
         if hashlib.sha256(cls.retail).hexdigest() != RETAIL_SHA256:
             raise unittest.SkipTest('USA retail XBE pin differs')
         cls.roster = retail_roster()
+        cls.navigation = resources()
         from nfl2k5_scorebug_projection import read_fonts
         try:
             cls.fonts = read_fonts(XBE.parent / 'vc_53450030/0')
@@ -60,6 +62,7 @@ class Mode4Tests(unittest.TestCase):
             m.frame(0x10)
         self.assertEqual(m.top(), m.labels['team_menu'])
         m.fonts(self.fonts)
+        navigation(m, self.navigation)
 
     def test_club_native_draw_all_32_back_and_confirmed_club_signed(self):
         for payload in (self.payload, self.union):
@@ -69,17 +72,23 @@ class Mode4Tests(unittest.TestCase):
                 self.assertEqual(m.top(), m.labels['club_menu'])
                 draws = self.glyphs(m.draw())
                 names = [m.string(m.get(m.get(m.root + 0x1C) + i * 500 + 0x104)) for i in range(32)]
-                self.assertEqual([d['text'] for d in draws[1:33]], names)
-                self.assertEqual(draws[0]['text'], 'Choose team')
-                self.assertEqual(len(draws), 34)
-                self.assertEqual({d['font'] for d in draws[1:33]}, {'font1'})
-                self.assertEqual(len({d['position'][:2] for d in draws[1:33]}), 32)
+                self.assertEqual(draws, [])  # no second owned list
+                self.assertEqual({r['text'] for r in m.native_rows}, set(names[:7]))
+                self.assertEqual(m.get(0xC8E1D0), 7)  # retail scrolling window
                 m.frame(0x200)
                 self.assertEqual(m.top(), m.labels['team_menu'])
                 self.assertEqual(m.get(m.state + 2680), 2)
                 # Every choice uses A and the native stack, including the last.
                 for club in range(32):
                     m.select(0)
+                    m.draw()  # native MRKS establishes the visible row count
+                    m.put(m.manager + 8*m.depth() + 4, club)
+                    m.frame()
+                    m.native_rows.clear()
+                    self.assertEqual(m.draw(), [])
+                    opaque = [r for r in m.native_rows if r['color'] >> 24 == 255 and r['text']]
+                    self.assertEqual(len({r['text'] for r in opaque}), len(opaque))
+                    self.assertEqual([r['text'] for r in opaque if r['color'] == 0xFFFFFF00], [names[club]])
                     m.select(club)
                     self.assertEqual(m.top(), m.labels['team_menu'])
                     self.assertEqual(m.get(m.state + 2684), club)
@@ -95,19 +104,24 @@ class Mode4Tests(unittest.TestCase):
         with Machine(self.payload) as m:
             m.create(self.roster, club=0)
             m.fonts(self.fonts)
+            navigation(m, self.navigation)
             self.assertEqual(m.get(0xE576A4), 7)
             slot = m.call('mode_next_fixture')
             self.assertEqual(slot // 17, 1)
             self.assertEqual(m.get(0xE576B4), 0)
-            expected = ['Apartment', 'Play next game', 'Practice', 'MyPlayer', 'Save', 'Quit to main menu']
+            expected = ['Play next game', 'Practice', 'MyPlayer', 'Start MyPlayer', 'Save', 'Quit to main menu', 'Upgrades']
             draws = self.glyphs(m.draw())
-            self.assertEqual([d['text'] for d in draws[:6]], expected)
-            self.assertIn('49ers', draws[-1]['text'])
-            self.assertIn('Off field: CPU at normal speed', draws[-1]['text'])
-            # Negative control: original native animated-list handler with
-            # these descriptors submits no text. Row construction stays live.
+            self.assertEqual({r['text'] for r in m.native_rows if r['text']}, set(expected))
+            self.assertEqual(len(draws), 2)  # fixture footer and calendar card
+            self.assertIn('49ers', draws[0]['text'])
+            self.assertIn('Off field: CPU plays', draws[0]['text'])
+            self.assertIn('Week ', draws[1]['text'])
+            # Negative control: removing our callback removes only the
+            # footer. Native rows still submit through the loaded layout.
             m.put(m.labels['apartment'] + 8, 0xF3E90)
+            m.native_rows.clear()
             self.assertEqual(m.draw(), [])
+            self.assertEqual({r['text'] for r in m.native_rows if r['text']}, set(expected))
             m.put(m.labels['apartment'] + 8, m.labels['mode_handler'])
             m.child_services()
             for va in (0x771F0, 0x77200):
@@ -136,7 +150,9 @@ class Mode4Tests(unittest.TestCase):
             self.assertEqual(m.top(), m.labels['apartment'])
             self.assertEqual(m.uc.mem_read(0xE57C40, len(grid)), grid)
             self.assertEqual(m.call('mode_next_fixture'), slot)
-            self.assertEqual([d['text'] for d in self.glyphs(m.draw())[:6]], expected)
+            m.native_rows.clear()
+            self.assertEqual(len(self.glyphs(m.draw())), 2)
+            self.assertEqual({r['text'] for r in m.native_rows if r['text']}, set(expected))
             m.select(0)
             self.assertEqual(m.top(), 0x51B908)
             self.assertEqual(m.get(0xE576B4) * 17 + m.get(0xE576BC), slot)
@@ -202,7 +218,7 @@ class Mode4Tests(unittest.TestCase):
             m.put(body + 0x48, 1)
             m.call('mode_visuals', budget=1000000)
             draws = self.glyphs(m.draws)
-            self.assertEqual([d['text'] for d in draws], ["CPU plays until MyPlayer's unit is on the field"])
+            self.assertEqual(draws, [])  # no floating prompt over a live wait
             for signal in range(4):
                 m.put(0xA83A18, signal)
                 self.assertEqual(m.call('mode_result'), 2 if signal == 2 else 0)
@@ -260,7 +276,7 @@ class Mode4Tests(unittest.TestCase):
         for payload in (self.payload, self.union):
             code, data = mode.legacy.allocations(payload)
             emitted, labels = mode.code_for(code['va'], data['va'])
-            self.assertEqual((len(emitted), data['size']), (8192, 4096))
+            self.assertEqual((len(emitted), data['size']), (16384, 4096))
             self.assertLessEqual(labels['content_end'] - code['va'], mode.TAG_OFFSET)
             self.assertEqual(mode.apply(payload)[0], payload)
 

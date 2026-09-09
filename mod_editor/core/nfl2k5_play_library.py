@@ -1467,12 +1467,13 @@ RETAIL_DEFENSE_PERSONNEL_FINGERPRINTS = {
 OPTION_PRESETS = ('Speed option', 'Zone read (experimental)', 'RPO (experimental)')
 OPTION_INTENT_SCHEMA = 'nfl2k5_option_intent/v1'
 OPTION_NOTICE = ('EXPERIMENTAL / UNWITNESSED. Enable Read option runtime with this pack '
-                 'for the one-second read window. Hold snap through the window to keep; '
-                 'release or do nothing after snapping to give. The stick waits until the '
-                 'window ends. On an RPO, hold snap and press the named receiver to throw. '
-                 'Watch the edge marked by the snap-button icon. Without the runtime, '
-                 'these are retail position-based experiments with no held mesh. '
-                 'Blocks, exchange animation and pass readiness need play tests.')
+                 'to start a native handoff after the snap. Do nothing to give. Before '
+                 'the exchange, press Xbox Black to pull and pitch. Release A after '
+                 'snapping and press A again to pull and keep. On an RPO, press X or '
+                 'the named receiver button to pull and pass. The stick waits until '
+                 'the decision. Use your controller mapping for these Xbox buttons. '
+                 'The diagnostic READ line shows the resolved resource number. '
+                 'Blocks, cancellation and the ball exchange need live play tests.')
 STOCK_SPEED_OPTIONS = (('MIN', 24), ('NO', 57), ('NO', 66), ('PHI', 175), ('TEN', 144))
 
 

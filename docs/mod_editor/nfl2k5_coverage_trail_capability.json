@@ -1,0 +1,69 @@
+{
+  "backend": {
+    "module": "mod_editor/core/nfl2k5_coverage_trail.py",
+    "operation": "write",
+    "command": "python3 -m mod_editor.core.nfl2k5_coverage_trail --xbe source.xbe --apply --output new-coverage-trail.xbe"
+  },
+  "classification": "offline-writer-proved",
+  "evidence": [
+    "ASTRA_DEFENDER_CIRCLING_REPORT.md",
+    "tests/mod_editor/test_nfl2k5_coverage_trail.py",
+    "tests/mod_editor/test_nfl2k5_coverage_trail_unicorn.py",
+    "tests/nfl2k5_coverage_trail_frame.py",
+    "docs/mod_editor/nfl2k5_coverage_trail_frames.json",
+    "tools/nfl2k5_coverage_trail.S"
+  ],
+  "game": "nfl2k5_xbox",
+  "gui": {
+    "default_enabled": false,
+    "expose": true,
+    "mode": "edit",
+    "reason": "EXPERIMENTAL / UNWITNESSED. Opt-in and off in every preset: native pursuit orbit is reproduced, while the reported man-coverage cause and rendered recovery remain unproved. Protected integration is in WIRING.md."
+  },
+  "id": "nfl2k5.gameplay.coverage_trail",
+  "input_constraints": [
+    "Pinned USA XBE or verified composed input; reserve the complete owner union before installing bytes. Mixed or foreign owners refuse before mutation.",
+    "CPU defender during a live play, ordinary locomotion, no queued special command, known man or pursuit task with a live opposing target.",
+    "Opponent within three yards and requested turn at least 90 degrees; stationary arrival uses the native 0.35-yard radius.",
+    "No guarantee for strafe, animation transitions, contact or every man-coverage failure. Rebuild from base to opt out."
+  ],
+  "portme": [
+    "Wire the shared product controls and regenerate the production cave manifest as specified in WIRING.md.",
+    "Run crossing and comeback man coverage in Advanced and Experimental, owner on/off, then the cutback and lapse controls in ASTRA_DEFENDER_CIRCLING_REPORT.md."
+  ],
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "rule": "Ship source and recipes; never distribute generated game executable or disc bytes.",
+    "tooling": "source-and-schemas-only"
+  },
+  "runtime": {
+    "status": "not-tested",
+    "scope": "Bounded native planner, ordinary locomotion, root sampler and transform traces with supplied target paths and one synthetic straight clip. Pursuit orbit and stationary recovery are proved in that fixture; a native lapse command and RNG survive. Full task scheduling, real animation transitions, contact, the reported man-coverage cause and gameplay remain unwitnessed.",
+    "evidence": [
+      "ASTRA_DEFENDER_CIRCLING_REPORT.md"
+    ]
+  },
+  "selectors": {
+    "fields": [
+      {
+        "name": "coverage_trail",
+        "required": true,
+        "allowed": "false in Basic, Advanced and Experimental; explicit opt-in"
+      }
+    ],
+    "notes": "Retail: close full-throttle pursuit can circle. Patch: authorize a close turn and stop after stationary arrival. Keep the retail coverage pursuit is the inverse UI switch for the same Boolean."
+  },
+  "source_container": {
+    "format": "XBE in XDVDFS",
+    "hash_pins": [
+      "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+    ],
+    "resource": "One pinned six-byte turn-integrator hook at 0x2FC9F0; 640-byte RX reservation, immutable constants inside code, no owner RW state.",
+    "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+  },
+  "summary": "A nearby CPU defender in ordinary man coverage or pursuit can turn back and stop on reaching a stationary opponent.",
+  "surface": "gameplay_tuning_sliders",
+  "title": "Close pursuit recovery (experimental, unwitnessed)",
+  "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_coverage_trail"
+}

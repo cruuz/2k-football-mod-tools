@@ -1,10 +1,12 @@
-"""Abilities rules v1. EXPERIMENTAL / UNWITNESSED, every preset off.
+"""Abilities rules v2. EXPERIMENTAL / UNWITNESSED, every preset off.
 
 Use the shipped seven roster bits. Movement Speed is extended after BOTH
 native clamps; native move commands and charge consumption require their
 specific permission. The native special-move meter is confined to live ball
 carriers, including CPU carriers. No new timer, mutable allocation, roster
-assignment, save migration, simulated-game effect, or extra week is supplied.
+save migration, simulated-game effect, or extra week is supplied. The editor
+authors tiers separately. Five existing move flags gain capped live attribute
+bonuses for tiered players. Independent lock switches preserve v1 defaults.
 
 Reserve REQUESTS together with every other owner before installing any owner.
 The optional off-week is a ZERO-BASED regular-season row (0..17); None means
@@ -21,7 +23,7 @@ from .nfl2k5_bump_strength import _sections, section_digest
 from .nfl2k5_cave_oracle import XbeImage
 
 OWNER = "nfl2k5_abilities_runtime"
-MODEL_VERSION = 1
+MODEL_VERSION = 2
 CODE_SIZE = (len(assembly.CODE) + 15) & -16
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
 BUDGET = 1536
@@ -30,6 +32,18 @@ _UNSET = object()
 SPEEDSTER, RIGHT_STICK, JUKE = 0x20, 0x40, 0x80
 SPIN, TRUCK, HURDLE, STIFF_ARM = 0x200, 0x400, 0x800, 0x1000
 ABILITY_MASK = 0x1EE0
+LOCK_MASKS = {"lock_right_stick": RIGHT_STICK,
+              "lock_special_moves": JUKE | SPIN | TRUCK | HURDLE | STIFF_ARM,
+              "lock_speedster": SPEEDSTER}
+# Effective-attribute table indices differ from on-disc byte order.
+EFFECTS = {
+    "juke": (1, JUKE, "Agility"),
+    "stiff_arm": (2, STIFF_ARM, "Strength"),
+    "hurdle": (3, HURDLE, "Jumping"),
+    "truck": (12, TRUCK, "Break Tackle"),
+    "spin": (18, SPIN, "Pass Rush"),
+}
+EFFECT_STEP = .02
 MOVE_MASKS = {
     0x18: STIFF_ARM, 0x19: STIFF_ARM, 0x1A: HURDLE | RIGHT_STICK,
     0x1B: SPIN, 0x1C: SPIN, 0x1D: JUKE, 0x1E: JUKE, 0x20: JUKE,
@@ -46,6 +60,7 @@ CONSUMERS = {
     0x308512: 0, 0x30D2C2: 0x30D2A0, 0x30EDA7: 0, 0x31793D: 0,
 }
 HOOKS = {
+    "attribute": (0x17B010, bytes.fromhex("83ec088b4130")),
     "speed": (0x75CC8, bytes.fromhex("e843531000")),
     "decode": (0x15647D, bytes.fromhex("e85eadfcff")),
     "dispatch": (0x18EC6D, bytes.fromhex("e8ce460200")),
@@ -55,6 +70,7 @@ HOOKS = {
     "consume": (0x2D4740, bytes.fromhex("568b7110d94644")),
 }
 SYMBOLS = {
+    "retail_attribute_tail": 0x17B016,
     "retail_attribute": 0x17B010, "retail_decode": 0x1211E0,
     "retail_account": 0x1B3340, "retail_initialize_tail": 0x1CD555,
     "retail_generate_tail": 0x2D43F5, "retail_ai_tail": 0x2D46D9,
@@ -62,12 +78,17 @@ SYMBOLS = {
 }
 HELP_TEXT = (
     "EXPERIMENTAL / UNWITNESSED. Retail ignores stored ability flags. Patch: "
-    "Speedster permits movement Speed above 99; special moves require their "
-    "stored permission. Right-stick moves also require Right-Stick Moves. "
-    "The special-move charge meter is limited to live ball carriers with an "
-    "allowed move, for humans and CPU players. An optional existing franchise "
-    "week turns abilities off and restores them afterward. This does not assign "
-    "abilities or change simulated games."
+    "optional locks require Speedster for speed above 99, each special move's "
+    "ability, and Right-Stick Moves for stick moves. Tiered Juke, Stiff-Arm, "
+    "Hurdle, Truck and Spin add 2/4/6 effective points to Agility, Strength, "
+    "Jumping, Break Tackle and Pass Rush during live play, capped at 100. "
+    "When either move lock is on, the charge meter is limited to live ball "
+    "carriers and known move consumers. Turn both move locks off for retail "
+    "charge behavior. An optional existing franchise week turns stored "
+    "abilities off. Author tiers and abilities on the Rosters Abilities page. "
+    "Tiered players with excess stored abilities receive no stored permissions "
+    "or bonuses until corrected. Unranked legacy flags retain v1 permissions. "
+    "No simulated-game effects or guaranteed outcomes."
 )
 
 
@@ -86,8 +107,17 @@ def _week(value):
     return value
 
 
-def code_for(code_va, abilities_off_week=None):
+def _locks(**values):
+    for key, value in values.items():
+        _require(key in LOCK_MASKS and type(value) is bool, f"{key} must be Boolean")
+    return {key: values.get(key, True) for key in LOCK_MASKS}
+
+
+def code_for(code_va, abilities_off_week=None, *, lock_right_stick=True,
+             lock_special_moves=True, lock_speedster=True):
     _week(abilities_off_week)
+    locks = _locks(lock_right_stick=lock_right_stick,
+                   lock_special_moves=lock_special_moves, lock_speedster=lock_speedster)
     blob = bytearray(assembly.CODE)
     symbols = {"code": code_va, **SYMBOLS}
     for offset, kind, symbol, value in assembly.RELOCATIONS:
@@ -97,6 +127,8 @@ def code_for(code_va, abilities_off_week=None):
         struct.pack_into("<I", blob, offset, target & 0xFFFFFFFF)
     struct.pack_into("<i", blob, assembly.LABELS["config"],
                      -1 if abilities_off_week is None else abilities_off_week)
+    struct.pack_into("<I", blob, assembly.LABELS["unlocked_mask"],
+                     sum(LOCK_MASKS[key] for key, locked in locks.items() if not locked))
     blob.extend(b"\xcc" * (CODE_SIZE - len(blob)))
     return bytes(blob), {name: code_va + offset for name, offset in assembly.LABELS.items()}
 
@@ -129,21 +161,24 @@ def _inspect(payload):
         _require(hashlib.sha256(blob).hexdigest() == digest,
                  f"foreign abilities dependency at {va:#x}")
     present = any(a["owner"] == OWNER for a in layout["allocations"])
-    state, week = "retail", None
+    state = "retail"
+    settings = {"abilities_off_week": None, **_locks()}
     labels = {name: 0 for name in HOOKS}
     if present:
         a = allocation(payload)
         content = image.read(a["va"], a["size"])
         if content != b"\xcc" * a["size"]:
             value = struct.unpack_from("<i", content, assembly.LABELS["config"])[0]
-            week = _week(None if value == -1 else value)
-            expected, labels = code_for(a["va"], week)
+            settings["abilities_off_week"] = _week(None if value == -1 else value)
+            mask = struct.unpack_from("<I", content, assembly.LABELS["unlocked_mask"])[0]
+            settings.update({key: not bool(mask & bits) for key, bits in LOCK_MASKS.items()})
+            expected, labels = code_for(a["va"], **settings)
             _require(content == expected, "foreign abilities code/table/configuration")
             state = "applied"
     for name, va, before, after in sites(labels):
         _require(image.read(va, len(before)) == (after if state == "applied" else before),
                  f"mixed/foreign abilities hook: {name}")
-    return state, week
+    return state, settings
 
 
 def status(payload):
@@ -155,8 +190,8 @@ def status(payload):
 
 def read_settings(payload):
     try:
-        state, week = _inspect(payload)
-        return {"status": state, "abilities_off_week": week, "model_version": MODEL_VERSION,
+        state, settings = _inspect(payload)
+        return {"status": state, **settings, "model_version": MODEL_VERSION,
                 "experimental": True, "runtime_witnessed": False}
     except (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError):
         return {"status": "foreign", "experimental": True, "runtime_witnessed": False}
@@ -171,15 +206,22 @@ def reservations(payload):
     return out
 
 
-def apply(payload, *, abilities_off_week=_UNSET):
+def apply(payload, *, abilities_off_week=_UNSET, lock_right_stick=_UNSET,
+          lock_special_moves=_UNSET, lock_speedster=_UNSET):
     """Install both phases; omitted replay option retains the installed week.
 
     An explicit None removes the week only on a clean base. Configuration
     changes on an installed image refuse before any byte is changed.
     """
     state, previous = _inspect(payload)
-    wanted = previous if abilities_off_week is _UNSET else _week(abilities_off_week)
-    receipt = dict(owner=OWNER, abilities_off_week=wanted, model_version=MODEL_VERSION,
+    wanted = dict(previous)
+    if abilities_off_week is not _UNSET:
+        wanted["abilities_off_week"] = _week(abilities_off_week)
+    for key, value in dict(lock_right_stick=lock_right_stick,
+                           lock_special_moves=lock_special_moves, lock_speedster=lock_speedster).items():
+        if value is not _UNSET:
+            wanted[key] = _locks(**{key: value})[key]
+    receipt = dict(owner=OWNER, **wanted, model_version=MODEL_VERSION,
                    experimental=True, runtime_witnessed=False, changed_bytes=0, edits=[])
     if state == "applied":
         _require(wanted == previous, "different abilities settings; rebuild from supported base")
@@ -187,7 +229,7 @@ def apply(payload, *, abilities_off_week=_UNSET):
     allocated, allocation_receipt = (space.apply(payload, REQUESTS, scaleout=True)
                                      if space.status(payload) == "retail" else (payload, {}))
     a = allocation(allocated)
-    content, labels = code_for(a["va"], wanted)
+    content, labels = code_for(a["va"], **wanted)
     installed, install_receipt = space.install_code(allocated, OWNER, content)
     image = XbeImage(installed)
     buf = bytearray(installed)
@@ -212,6 +254,17 @@ def apply(payload, *, abilities_off_week=_UNSET):
 
 # SHA-256 pins of complete dependency spans, normalizing only HOOKS above.
 GUARDS = (
+    # Native getter bodies and dispatch entries prove the five effect names.
+    (0x1798b0, 112, "86d4bdc2207c23e0eae80be17922e692470bacdee6d88570032f71e0016010e4"),
+    (0xaa4048, 4, "b1e397fd0eb3030455b5290c0b529630d08cf09eb0c4808bcf52341c6bab51e2"),
+    (0x179a00, 112, "e103922e87b4456e7f59a1e66315ed0879fe3183a722667211b300352986310b"),
+    (0xaa4068, 4, "9e448c1acc101889ddc719e94011779581f93d44928a5c3a540a4a725db09be2"),
+    (0x179920, 112, "fefd39d7f0ec7e2fc098641e74cdf22b8cda5c557c95996026c97994c2da560f"),
+    (0xaa4088, 4, "d63d4e083057487f9fa94809da7d42cfc84f078941cf0317e2f05c59e541f71e"),
+    (0x179d80, 112, "dcf24c85f96b343ee09a96efe06f6ce74486ffaee6ad5f84348e6dba899114c8"),
+    (0xaa41a8, 4, "42055bc458ad159d5c3a3312ee567c9cf1a6f5d17d815e97087c814ac8e21426"),
+    (0x17a020, 112, "a0b04288f9e9eb25acd08a2f31b084fe10477c5355e7f1e8b138fe81ab5278c9"),
+    (0xaa4268, 4, "e0a30ebc76e3f3442a705fe2ac19f2d4b4cb072c1616db3423263925bc28cb34"),
     (0x75CC2, 19, "1647b13869fd1e514019903ddc78f26105f625281f8e14c58a3d34cddce6e93a"),
     (0x179840, 109, "1545508121481397d24e2d8713d08d4403521b8923b3bd1e846a196ea7b39f28"),
     (0x17B010, 407, "ba9015aa5f6b34151c14cd6ab0090d8f20d906c47c3be360cdf2da59b178acd2"),
@@ -252,3 +305,32 @@ GUARDS = (
     (0x30ED9F, 18, "0fd124664ca80eb8d095eb63b5060f1f49f0487ca43c7839d04d3cbf04fd44d6"),
     (0x317935, 18, "9a47fd8256bee3de7c5c06cdd4fa1b9f86e272177511773aecbd1c4b3f401c1f"),
 )
+
+
+def main():
+    import argparse
+    import json
+    from pathlib import Path
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("source", type=Path)
+    parser.add_argument("--output", type=Path, help="new XBE copy; omit to inspect")
+    parser.add_argument("--off-week", type=int, default=None, help="zero-based regular-season row 0..17")
+    for name in LOCK_MASKS:
+        parser.add_argument("--no-" + name.replace("_", "-"), action="store_true")
+    args = parser.parse_args()
+    _require(args.source.stat().st_size <= 16 * 1024**2, "expected a bounded XBE, not a disc or pack")
+    with args.source.open("rb") as source:
+        payload = source.read(16 * 1024**2 + 1)
+    if args.output is None:
+        print(json.dumps(read_settings(payload), indent=2))
+        return
+    locks = {name: not getattr(args, "no_" + name) for name in LOCK_MASKS}
+    result, receipt = apply(payload, abilities_off_week=args.off_week, **locks)
+    with args.output.resolve().open("xb") as output:
+        output.write(result)
+    print(json.dumps(receipt, indent=2))
+
+
+if __name__ == "__main__":
+    main()

@@ -127,6 +127,7 @@ class Machine:
         self.cursor=self.HEAP;self.textures={};self.code,self.data=r.sites(payload)
         self.state=self.data['va'];self.labels=r.code_for(self.code['va'],self.state)[1]
         self.context=self.alloc(128);self.put(0xb09578,self.context)
+        self.put(self.context+8,r.HUD_COLLECTION_NAME)
         self.put(0xb09590,0)
         self.scene=self.alloc(128);self.material=self.alloc(11*128)
         self.put(self.scene+0x1c,11);self.put(self.scene+0x20,self.material)

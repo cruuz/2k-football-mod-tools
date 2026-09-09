@@ -308,7 +308,7 @@ class SaveEvidenceTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             p = Path(temp) / "SAVEGAME.DAT"
             p.write_bytes(b"0")
-            with self.assertRaisesRegex(ValueError, "720044"):
+            with self.assertRaisesRegex(ValueError, "unsupported franchise save size"):
                 bowl.read_franchise(p)
             p.write_bytes(bytes(720044))
             p.with_name("EXTRA").write_bytes(bytes(20))

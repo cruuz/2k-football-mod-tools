@@ -187,7 +187,7 @@ class FreezeTests(unittest.TestCase):
                 results.append(dict(context_field=hex(field), state=state, entry=entry))
         self.save('special_contexts', results)
 
-    def test_special_cache_miss_queues_work_and_returns_while_loader_busy(self):
+    def test_private_lookup_does_not_queue_work_in_an_unrelated_cache(self):
         c = self.collection('neutral')
         m = c.m
         cache = special_lookup_context(c, 0x10, 0)
@@ -201,14 +201,14 @@ class FreezeTests(unittest.TestCase):
         m.put(BUSY, 1)
         entry = c.entry()
         self.assertEqual(entry['enabled'], 1)
-        self.assertEqual(m.get(records), 1)
-        self.assertEqual(m.get(records + 4), wanted_hash)
-        self.assertEqual(m.get(cache + 0x94), 1)
-        self.assertGreater(c.trace.counts[0x442f0], 0)
+        self.assertEqual(m.get(records), 0)
+        self.assertEqual(m.get(records + 4), 0)
+        self.assertEqual(m.get(cache + 0x94), 0)
+        self.assertEqual(c.trace.counts[0x442f0], 0)
         self.assertEqual(c.trace.counts[0x48ff0], 0)
         self.assertFalse(c.trace.counts[0x432d0] or c.trace.counts[0x33660])
         self.assertEqual(m.get(BUSY), 1)
-        self.save('cache_queue_while_busy', dict(entry=entry, queued=1, submitted_io=0))
+        self.save('cache_queue_while_busy', dict(entry=entry, queued=0, submitted_io=0))
 
     def test_loader_wait_native_completion_clears_busy_before_setup_callback(self):
         c = self.collection(load=False)

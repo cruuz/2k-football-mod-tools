@@ -79,7 +79,7 @@ class CompositionTests(unittest.TestCase):
                     self.assertEqual((receipt["status"], receipt["changed_bytes"], receipt["edits"]),
                                      ("already_applied", 0, []))
                     self.assertFalse(owner.read_settings(forward)["runtime_witnessed"])
-            self.assertEqual(read.read_settings(forward)["model_version"], 3)
+            self.assertEqual(read.read_settings(forward)["model_version"], 5)  # read option v5 (beta 63)
 
     def test_partner_only_and_reserved_uninstalled_partner_are_supported(self):
         for owner, partner in (PAIR, tuple(reversed(PAIR))):
@@ -175,32 +175,34 @@ class NativeInitializerTests(unittest.TestCase):
                 self.assertAlmostEqual(m.readf(m.task + 0x60), expected, places=6)
 
     def test_authored_rpo_runs_both_hooks_through_full_native_initializer(self):
-        from tests.mod_editor.test_nfl2k5_read_option_controls import ControlsMachine, shotgun_reads
-        _, compiled = shotgun_reads()
-        table = read.compile_intent_table([(compiled.replacement, compiled.report)])[0]
+        from tests.mod_editor.test_nfl2k5_read_option_frames import FrameMachine, final_reads
+        # Read option v5 (beta 63) keys the pair by the loaded book: the authored set is final_reads() (the RPO is
+        # resource 157, the machine default) and an RPO pass is decided on the receiver press during the mesh,
+        # the same sequence test_nfl2k5_read_option_frames proves for the read option alone. The beta-62 shotgun
+        # set never engages the v5 mesh, so it can no longer stand in for the authored plays here.
+        resource, table, _ = final_reads()
         for order in (PAIR, tuple(reversed(PAIR))):
             payload = install_pair(self.base, order, table)
             self.assertIs(read.apply(payload)[0], payload)
             with self.assertRaisesRegex(ValueError, "Different Read option intent"):
                 read.apply(payload, intent_table=read.compile_intent_table()[0])
-            for ready in (True, False):
-                gc.collect()
-                m = ControlsMachine(payload, compiled.replacement, controller=0, rpo=True, play_index=31)
-                m.frames(1, throw=True)
-                m.finish()
-                m.ready(ready)
-                m.pass_initializer()
-                for owner, label, code in ((read, "pass_init", read.allocations(payload)["code"]["va"]),
-                                           (screen, "qb", screen.allocation(payload)["va"])):
-                    self.assertIn(code + owner.assembly.LABELS[label], m.hits)
-                self.assertEqual(m.get(m.task), 0x19BAE0 if ready else 0x19BB60)
-                self.assertEqual(m.get(m.state_va + 32), 0)
-                if ready:
-                    self.assertEqual(m.get(m.task + 0x40), m.OTHER)
-                    m.uc.mem_write(0xBDFCD0 + 7 * 2, b"\x01")
-                    m.boundaries = {0x198C20: (4, "float")}
-                    m.run(m.get(m.task), ecx=m.QB)
-                    self.assertEqual(m.get(m.QB + 0x100 + 0x1C), 0x42)
+            gc.collect()
+            m = FrameMachine(payload, resource, controller=0, rpo=True)
+            m.frame(.05)
+            row = m.frame(.25, press=0x200, stick=1)
+            self.assertEqual(row["decision"], 2)
+            # v5 runs the full native pass initializer inside that frame; both owners' hooks execute on the way
+            # (the read option's pass_init and the screen hooks' qb label), the QB holds the pass action, the
+            # native task carries the other receiver and the read state is cleared: the same outcome
+            # test_nfl2k5_read_option_frames pins for the read option alone.
+            for owner, label, code in ((read, "pass_init", read.allocations(payload)["code"]["va"]),
+                                       (screen, "qb", screen.allocation(payload)["va"])):
+                self.assertIn(code + owner.assembly.LABELS[label], m.hits)
+            self.assertEqual(m.get(m.QB + 0x11C), 0x42)
+            self.assertEqual(m.get(m.task + 0x40), m.OTHER)
+            self.assertEqual(m.get(m.state_va + 36), 0)
+            for pc in (0x19C740, 0x19BAE0, 0x1907D0, 0x19B800, 0x199260):
+                self.assertIn(pc, m.hits)
 
 
 if __name__ == "__main__":

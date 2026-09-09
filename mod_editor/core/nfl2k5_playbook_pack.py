@@ -2042,6 +2042,7 @@ def _boolean(value: object, label: str) -> bool:
 
 
 def validate_defense_pack_play(play: PackPlay, book: Nfl2k5Playbook | None, body: bytes | None) -> None:
+    from .nfl2k5_match_coverage import MATCH_PRESETS, make_match_design
     flags = play.play_flags if play.play_flags is not None else play.donor.flags
     if flags is None or (flags >> 6) & 7 != 1:
         raise PlaybookPackError("Defense must retain a defensive header")
@@ -2054,7 +2055,7 @@ def validate_defense_pack_play(play: PackPlay, book: Nfl2k5Playbook | None, body
             codec.validate_defense_operands(chain)
     if all(c is not None for c in play.assignments) and lib.defense_component(play.assignments) != play.component:
         raise PlaybookPackError("Defense component disagrees with the active assignments")
-    if play.preset_recipe and (play.concept not in lib.MODERN_DEFENSE_PRESETS or play.spy_slots):
+    if play.preset_recipe and (play.concept not in lib.MODERN_DEFENSE_PRESETS + MATCH_PRESETS or play.spy_slots):
         raise PlaybookPackError("Built-in defense recipes must name a core preset without custom spy intent")
     if book is None or body is None:
         return
@@ -2074,7 +2075,8 @@ def validate_defense_pack_play(play: PackPlay, book: Nfl2k5Playbook | None, body
     if not any(l.play_index == play.front_index for l in book.formations[fi].play_links):
         raise PlaybookPackError("Defense preview front is absent from the formation menu")
     if play.preset_recipe:
-        expected = lib.make_defense_design(book, body, fi, play.concept)
+        maker = make_match_design if play.concept in MATCH_PRESETS else lib.make_defense_design
+        expected = maker(book, body, fi, play.concept)
         if _freeze_chains(expected.chains) != play.assignments:
             raise PlaybookPackError("Preset assignments changed; export as a custom defense before retargeting")
 
@@ -2091,6 +2093,7 @@ def modern_defense_pack(book: Nfl2k5Playbook, body: bytes, team: str | None = No
     formation geometry, package permutations, membership masks and menu words.
     Editor/PRACTICE append ten calls to their 4-3 menu, preserving drill records.
     """
+    from .nfl2k5_match_coverage import PACK_NAMES as match_names
     team = team or book.book_name
     if team not in DEFENSE_BOOKS:
         raise PlaybookPackError("Modern defense supports the 37 retail books only")
@@ -2103,6 +2106,7 @@ def modern_defense_pack(book: Nfl2k5Playbook, body: bytes, team: str | None = No
     ftype = lib.formation_record(body, fi).type_code
     candidates = [p.index for p in book.plays_for_formation(fi)
                   if p.family_id == 1 and (p.flags_or_id & 63) == ftype
+                  and p.name not in match_names
                   and lib.defense_component(lib.decoded_chains(body, p.index)) == 'coverage']
     candidates = list(dict.fromkeys(candidates))
     append = team in ('Editor', 'PRACTICE')
@@ -2145,7 +2149,14 @@ def modern_defense_pack(book: Nfl2k5Playbook, body: bytes, team: str | None = No
 
 
 def retarget_defense_pack(pack: PlaybookPack, team: str, book: Nfl2k5Playbook, body: bytes):
+    from .nfl2k5_match_coverage import MATCH_PRESETS, match_coverage_pack
     if all(p.play_type == 'defense' and p.preset_recipe for p in pack.plays) and not pack.formations:
+        if any(p.concept in MATCH_PRESETS for p in pack.plays):
+            if len(pack.plays) != len(MATCH_PRESETS) or {p.concept for p in pack.plays} != set(MATCH_PRESETS):
+                raise PlaybookPackError("A built-in match pack must contain all five experimental presets")
+            fresh = match_coverage_pack(book, body, team)
+            return fresh, tuple(Resolution(p.id, 'play', 'donor', p.donor.index, p.donor.name,
+                'defense', 'Target native personnel with experimental geometric exchanges') for p in fresh.plays)
         if len(pack.plays) != 10 or {p.concept for p in pack.plays} != set(lib.MODERN_DEFENSE_PRESETS):
             raise PlaybookPackError("A built-in defense pack must contain all ten core presets")
         fresh = modern_defense_pack(book, body, team)
@@ -2213,10 +2224,10 @@ def option_pack(book: Nfl2k5Playbook, body: bytes, team: str = 'MIN') -> Playboo
             PackDonor(d.donor_play_index, book.plays[d.donor_play_index].name, donor_flags,
                       lib.qb_signature(donor_chains[0][1])), d.play_flags, target, book.plays[target].name,
             preset, option_intent=d.intent))
-    return PlaybookPack(PackBook(team, 'SOFTDRINK option', 'SOFTDRINK', '1.0.1', 'CC0-1.0', (),
+    return PlaybookPack(PackBook(team, 'SOFTDRINK option', 'SOFTDRINK', '1.0.2', 'CC0-1.0', (),
         lib.OPTION_NOTICE + ' Five native speed-option recipes plus speed, zone-read and RPO presets. '
         f'Replaces eight {book.formations[fi].name} calls, never appends. The 4-3 fixture is an authoring check only; '
-        'Pair the read-option runtime for the one-second mesh and live edge cue. '
+        'Pair the read-option runtime for the cancelable native handoff. '
         'Without that runtime, these reads retain the experimental retail fallback.'),
         PackBase(book_fingerprint(body), len(book.formations), len(book.plays), book.node_count),
         (), tuple(plays), OPTION_SCHEMA)

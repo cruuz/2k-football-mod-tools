@@ -1,0 +1,957 @@
+{
+  "schema": "nfl2k5_match_pack_composition/v1",
+  "results": [
+    {
+      "book": "ARZ",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "bfef19854973fa7edfb1df46fe0f9a86ba9569470cc2911846620d208b6dbd22",
+      "replacement_sha256": "02419da02318f8eb0887feae3c5fcbdb60d2203b145774d8f895b0b7503d5206",
+      "nodes": 3305,
+      "spare_nodes": 195,
+      "plays": 270
+    },
+    {
+      "book": "ARZ",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "bfef19854973fa7edfb1df46fe0f9a86ba9569470cc2911846620d208b6dbd22",
+      "replacement_sha256": "cb31cf955f305d8be8c8db4dd667829c0491b06950fb29c548a2d0d63b454786",
+      "nodes": 3305,
+      "spare_nodes": 195,
+      "plays": 270
+    },
+    {
+      "book": "ATL",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
+      "replacement_sha256": "b577cbf6190cff9400f430fbb3409f537664abe3df1b4c4ad3b5771a26b76523",
+      "nodes": 3088,
+      "spare_nodes": 412,
+      "plays": 254
+    },
+    {
+      "book": "ATL",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
+      "replacement_sha256": "8b094b186ca048eff7c603e4217cca7332ae34e6bda86863cb7ac60ec0ba1baf",
+      "nodes": 3088,
+      "spare_nodes": 412,
+      "plays": 254
+    },
+    {
+      "book": "BAL",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "56ff0239095b6b62a52b184546413691a5a59c9388f093e5f438a60715ce633a",
+      "replacement_sha256": "5f1f752eeea8f8d75af4376cec8c74266b4c0f2d3a79b9a1e830e76aa85dcc00",
+      "nodes": 3146,
+      "spare_nodes": 354,
+      "plays": 263
+    },
+    {
+      "book": "BAL",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "56ff0239095b6b62a52b184546413691a5a59c9388f093e5f438a60715ce633a",
+      "replacement_sha256": "5a9ac0369b0926179949e8ad017311e2007244359dbadd9d22fb2f75d8bc21fb",
+      "nodes": 3146,
+      "spare_nodes": 354,
+      "plays": 263
+    },
+    {
+      "book": "BUF",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "d15e31e7a83c68d411d815105938942afeb9faf03d4b9cc53be3f8a0146c6f9d",
+      "replacement_sha256": "f1e8cbdf801c737bfc73fec8e2719d1fb3195dd0b6f2e13cdea36b82ff0576bc",
+      "nodes": 3360,
+      "spare_nodes": 140,
+      "plays": 270
+    },
+    {
+      "book": "BUF",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "d15e31e7a83c68d411d815105938942afeb9faf03d4b9cc53be3f8a0146c6f9d",
+      "replacement_sha256": "b372b531f0fc336bc2baba0c69896ceacd6f4b2e7eceff2c5a5a531de7379349",
+      "nodes": 3360,
+      "spare_nodes": 140,
+      "plays": 270
+    },
+    {
+      "book": "CAR",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "5fb8fc4a482fd622c4429a1db92bc87c2dc84a45c134ead72f7d7bbe51ae729a",
+      "replacement_sha256": "91d8969803bcefa6b470de70ee89b440789bf3c87afea9915966c27c2e55bfd1",
+      "nodes": 3309,
+      "spare_nodes": 191,
+      "plays": 269
+    },
+    {
+      "book": "CAR",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "5fb8fc4a482fd622c4429a1db92bc87c2dc84a45c134ead72f7d7bbe51ae729a",
+      "replacement_sha256": "c4664df921dc26a73e13753a1715d369cfdf913a8d2e5c29f897b5bf0359a9c7",
+      "nodes": 3309,
+      "spare_nodes": 191,
+      "plays": 269
+    },
+    {
+      "book": "CHI",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "deadb7395dccc2689bc325d6e93e0b585d2ddc52386ce697cafde755f224446b",
+      "replacement_sha256": "83644931db7a440b62cfb5133cdfcf236e6364e39dc271f88a73c3d5f1c08817",
+      "nodes": 3389,
+      "spare_nodes": 111,
+      "plays": 266
+    },
+    {
+      "book": "CHI",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "deadb7395dccc2689bc325d6e93e0b585d2ddc52386ce697cafde755f224446b",
+      "replacement_sha256": "a28156b01ea202e9dd74ed0952c76455db683b275feebbadf484b1f1f127e15c",
+      "nodes": 3389,
+      "spare_nodes": 111,
+      "plays": 266
+    },
+    {
+      "book": "CIN",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "858dd688901691d61d1838c85ce0dd6588130bde772f177e0d3dfdd55332d1c6",
+      "replacement_sha256": "1f72c3e892b74af38a5282b5e81b879873d20a88b5bedbc9710d33dbe20ded61",
+      "nodes": 3344,
+      "spare_nodes": 156,
+      "plays": 270
+    },
+    {
+      "book": "CIN",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "858dd688901691d61d1838c85ce0dd6588130bde772f177e0d3dfdd55332d1c6",
+      "replacement_sha256": "b2da1ef642a5356b7834c81ec88fa0f527f617e334ab5cabcc8427737672e730",
+      "nodes": 3344,
+      "spare_nodes": 156,
+      "plays": 270
+    },
+    {
+      "book": "CLE",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "61afe904be26b3f61b92c465eb75d877116100b376d543ba800c9abf6617c2b7",
+      "replacement_sha256": "8f08f4a2f330ef5d7bc70778d5cbc43f03576669b74d964c59e461e281ecc40a",
+      "nodes": 3335,
+      "spare_nodes": 165,
+      "plays": 269
+    },
+    {
+      "book": "CLE",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "61afe904be26b3f61b92c465eb75d877116100b376d543ba800c9abf6617c2b7",
+      "replacement_sha256": "57f8a0959b158bbf468eb1f99f7b183290022fd5fffbc0229916623a22a85918",
+      "nodes": 3335,
+      "spare_nodes": 165,
+      "plays": 269
+    },
+    {
+      "book": "DAL",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "7c2200f05c210ca69a90a0215a3475a798a782abf54a2cf15b1b43997f244fab",
+      "replacement_sha256": "25347fe36fa2674b74835ddef47cd59845d84c33f6e4e2983d16b9e7a399292e",
+      "nodes": 3324,
+      "spare_nodes": 176,
+      "plays": 269
+    },
+    {
+      "book": "DAL",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "7c2200f05c210ca69a90a0215a3475a798a782abf54a2cf15b1b43997f244fab",
+      "replacement_sha256": "60dbddab6ede57fde951b357e7df72bd0f6ea81bfd57e2ad48bbd5d406489693",
+      "nodes": 3324,
+      "spare_nodes": 176,
+      "plays": 269
+    },
+    {
+      "book": "DEN",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "ce4c6da4fe76ff2a132cf1a78817e80496bfbce80e09d1618a09bbfbcdfc3d71",
+      "replacement_sha256": "5e6ffb97ad40b373cb1457585570a8d8e332bb7553bd686eb7c5784f0f449ec9",
+      "nodes": 3299,
+      "spare_nodes": 201,
+      "plays": 263
+    },
+    {
+      "book": "DEN",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "ce4c6da4fe76ff2a132cf1a78817e80496bfbce80e09d1618a09bbfbcdfc3d71",
+      "replacement_sha256": "a4d421f18b43f5839027bed882fa1338cd051684c89efc87713e712e441f22e0",
+      "nodes": 3299,
+      "spare_nodes": 201,
+      "plays": 263
+    },
+    {
+      "book": "DET",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "4eb3f42cc5b58a8165329b266e6c28e7ae74f0277d5f2149c22c8f6dc1a3a0aa",
+      "replacement_sha256": "3c95772c0f1353f34f8d02b0e894a78156d39fd9644b5e5f7749a3a729d870e9",
+      "nodes": 3154,
+      "spare_nodes": 346,
+      "plays": 255
+    },
+    {
+      "book": "DET",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "4eb3f42cc5b58a8165329b266e6c28e7ae74f0277d5f2149c22c8f6dc1a3a0aa",
+      "replacement_sha256": "42d72dfae9fc1fbf4ce002e5d428dc40e3632b3416bd683c151b6e3884a9986c",
+      "nodes": 3154,
+      "spare_nodes": 346,
+      "plays": 255
+    },
+    {
+      "book": "Editor",
+      "order": [
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "2709a1d09169e7954a5fd711b98fc7f3ffb6413136f5c2cf59347d00a221c9b6",
+      "replacement_sha256": "3204a92b045f466b72c8564cecc5956b7e46f76c7f1006cdc2735cd29cd2d1ff",
+      "nodes": 1160,
+      "spare_nodes": 2340,
+      "plays": 66
+    },
+    {
+      "book": "Editor",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense"
+      ],
+      "source_sha256": "2709a1d09169e7954a5fd711b98fc7f3ffb6413136f5c2cf59347d00a221c9b6",
+      "replacement_sha256": "549a7223e2a1060e468c324fc2c2e178361b1aaa3e6ad5c49bd4e93f356106f4",
+      "nodes": 1160,
+      "spare_nodes": 2340,
+      "plays": 66
+    },
+    {
+      "book": "GB",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "45efe7167b4a4b6cf8a521fa3a5be9c013c33911004ce7a6f193660b043bbcc3",
+      "replacement_sha256": "eca302aeecc4d9ec450b3b3dc0730583b9ae17ac816b3cb016ff988a8769cb2a",
+      "nodes": 3228,
+      "spare_nodes": 272,
+      "plays": 264
+    },
+    {
+      "book": "GB",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "45efe7167b4a4b6cf8a521fa3a5be9c013c33911004ce7a6f193660b043bbcc3",
+      "replacement_sha256": "07ee6c6b9a4664ed267d7992f480271edf341c67a378b16bf7ac0f1e21296409",
+      "nodes": 3228,
+      "spare_nodes": 272,
+      "plays": 264
+    },
+    {
+      "book": "GEN",
+      "order": [
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "a79ef59b7534c27bf57994f0b48873f1465248046833f917cc581f78986a966c",
+      "replacement_sha256": "95dac96b7f7e9165afab1bbc870f4020794bf7383345662451eb31605a9a18a3",
+      "nodes": 2493,
+      "spare_nodes": 1007,
+      "plays": 218
+    },
+    {
+      "book": "GEN",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense"
+      ],
+      "source_sha256": "a79ef59b7534c27bf57994f0b48873f1465248046833f917cc581f78986a966c",
+      "replacement_sha256": "6454d09eb80e163768994aec9c2af47868e776c1574db3582967fae325849173",
+      "nodes": 2493,
+      "spare_nodes": 1007,
+      "plays": 218
+    },
+    {
+      "book": "HOU",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "7fc25a62457c130c6bd78a46186abbb43bb5cd19f7f331e766c53f1d1b42ba98",
+      "replacement_sha256": "8efcb034e1dbf4362d1dd56f995e52e5602f00cab197f1530dc2cdfae2eb9ad8",
+      "nodes": 3375,
+      "spare_nodes": 125,
+      "plays": 270
+    },
+    {
+      "book": "HOU",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "7fc25a62457c130c6bd78a46186abbb43bb5cd19f7f331e766c53f1d1b42ba98",
+      "replacement_sha256": "d340e270fe48c0913efb8aabaad42262fa4d73677a9befde16e7d5c2ea5fddc5",
+      "nodes": 3375,
+      "spare_nodes": 125,
+      "plays": 270
+    },
+    {
+      "book": "IND",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "6f54310741b89b4b39167d03a1f47eae34d0d16d757d061530299e2a6c383537",
+      "replacement_sha256": "068d1feb187724b9f5433df169470f987a76298e8a990ed3b269624595b26ecb",
+      "nodes": 3296,
+      "spare_nodes": 204,
+      "plays": 265
+    },
+    {
+      "book": "IND",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "6f54310741b89b4b39167d03a1f47eae34d0d16d757d061530299e2a6c383537",
+      "replacement_sha256": "946f3936c447bcd55e2cfddf71b0734d4f9e25b0641012177bd7a2ed7eb4d5ad",
+      "nodes": 3296,
+      "spare_nodes": 204,
+      "plays": 265
+    },
+    {
+      "book": "JAX",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "c7ed939ecacec0196d98f0b698c7a2461f2804739770d59cfe14a38e76b43e7a",
+      "replacement_sha256": "790ee86482dcec445d2cff95c0ee656bf976775525db32661fb04d101e822ea7",
+      "nodes": 3257,
+      "spare_nodes": 243,
+      "plays": 270
+    },
+    {
+      "book": "JAX",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "c7ed939ecacec0196d98f0b698c7a2461f2804739770d59cfe14a38e76b43e7a",
+      "replacement_sha256": "8c4ce79fb616d3305afbc520b265057219da4b3c738562124312c66f73e1626f",
+      "nodes": 3257,
+      "spare_nodes": 243,
+      "plays": 270
+    },
+    {
+      "book": "KC",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "56935ebb3cd8915f87d5647be7a8bcd324e2a04fe6134ff10c97c1c94f55b457",
+      "replacement_sha256": "28affe3bee2209f4cc24250c3af519cb2335cd1bf6302a5435b5eaaaa1cc4b09",
+      "nodes": 3368,
+      "spare_nodes": 132,
+      "plays": 261
+    },
+    {
+      "book": "KC",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "56935ebb3cd8915f87d5647be7a8bcd324e2a04fe6134ff10c97c1c94f55b457",
+      "replacement_sha256": "a2abee28d9e1d5e62be3888a44f06a0a1f2c395b152fe0d97eb407d04797c164",
+      "nodes": 3368,
+      "spare_nodes": 132,
+      "plays": 261
+    },
+    {
+      "book": "MIA",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "e3da606f907617aeea92a5fef1381bfcca485cac01d0fa664fda8afdad27b9f9",
+      "replacement_sha256": "eef80172009066f6a4b29f5de72512455ada19e56824f1334ade12635489f702",
+      "nodes": 3372,
+      "spare_nodes": 128,
+      "plays": 259
+    },
+    {
+      "book": "MIA",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "e3da606f907617aeea92a5fef1381bfcca485cac01d0fa664fda8afdad27b9f9",
+      "replacement_sha256": "4761eb2b0cb42ee5b20b0d384889965977ec988df428ae93059404164b953892",
+      "nodes": 3372,
+      "spare_nodes": 128,
+      "plays": 259
+    },
+    {
+      "book": "MIN",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "50673fd09d38f4a17057a4e79a87119ee861456dd4416b94191b1563aa60887e",
+      "replacement_sha256": "5b8c9cf078ac6ecf73a4d8029d9b957af0fdbe673607f63c5de9ae6d2f2b8059",
+      "nodes": 3122,
+      "spare_nodes": 378,
+      "plays": 266
+    },
+    {
+      "book": "MIN",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "50673fd09d38f4a17057a4e79a87119ee861456dd4416b94191b1563aa60887e",
+      "replacement_sha256": "2f5de5144c4785ba85ed635d12e44227a665543ad03eb7b4232c52f2537613ba",
+      "nodes": 3122,
+      "spare_nodes": 378,
+      "plays": 266
+    },
+    {
+      "book": "NE",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "c49392010deb41a8ec757affc62aa1bfb801f752a7c49a85b1f55e120bd87510",
+      "replacement_sha256": "b07e619345732302e704ddd184dc231a889257d4de91a6bef1a2ec7db12859aa",
+      "nodes": 3265,
+      "spare_nodes": 235,
+      "plays": 250
+    },
+    {
+      "book": "NE",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "c49392010deb41a8ec757affc62aa1bfb801f752a7c49a85b1f55e120bd87510",
+      "replacement_sha256": "ef9dc5e6a738c69604ae2c8370087b419c3774036b9559f162207c7ea5264476",
+      "nodes": 3265,
+      "spare_nodes": 235,
+      "plays": 250
+    },
+    {
+      "book": "NO",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "e246947ab221107032e1e7ee385c528960efc1a92271673d4761f28d275a4f94",
+      "replacement_sha256": "9c16e2321d3b9665b48895cced9c95442f281810d6a1f21a869c5062b2b0cfbb",
+      "nodes": 3380,
+      "spare_nodes": 120,
+      "plays": 264
+    },
+    {
+      "book": "NO",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "e246947ab221107032e1e7ee385c528960efc1a92271673d4761f28d275a4f94",
+      "replacement_sha256": "e638112fd8d1e432a97f94562f9a7cfa611eb52b695ab8a55b0d91c90779a97d",
+      "nodes": 3380,
+      "spare_nodes": 120,
+      "plays": 264
+    },
+    {
+      "book": "NYG",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "113a15c75d6a99ba0918f90174990323e84252a796a6941a56342165f9f1f9b6",
+      "replacement_sha256": "2141bda2e5d7f471318beb66c569e635eaa4a41fbb6a7ea896399d13d318a595",
+      "nodes": 3259,
+      "spare_nodes": 241,
+      "plays": 269
+    },
+    {
+      "book": "NYG",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "113a15c75d6a99ba0918f90174990323e84252a796a6941a56342165f9f1f9b6",
+      "replacement_sha256": "cf162b46bdae63c39a672d194dff0c6825325bfd64d1a88593ff670b2af7d46a",
+      "nodes": 3259,
+      "spare_nodes": 241,
+      "plays": 269
+    },
+    {
+      "book": "NYJ",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "0f523411813ae945dfc49e9ba5419fc659615072bd281e5191fcf8c9a73e6932",
+      "replacement_sha256": "8ee4a748f61458e2b5127416c21d57049857688ab1b5fe4295f25ec8688899a1",
+      "nodes": 3272,
+      "spare_nodes": 228,
+      "plays": 270
+    },
+    {
+      "book": "NYJ",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "0f523411813ae945dfc49e9ba5419fc659615072bd281e5191fcf8c9a73e6932",
+      "replacement_sha256": "3c605c92462128096a04177ea504c7c1baa4860518e5f41a370303fc4e1a296a",
+      "nodes": 3272,
+      "spare_nodes": 228,
+      "plays": 270
+    },
+    {
+      "book": "OAK",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "73955c2e2e7c63f9aea3ae744eaf250db3c34cc54e0bf884d3a977481ae23577",
+      "replacement_sha256": "69ce4dc77602245e22efccd2f9fd78edd9ccc7924d6e230eb4b8ba860e7fa52f",
+      "nodes": 3267,
+      "spare_nodes": 233,
+      "plays": 270
+    },
+    {
+      "book": "OAK",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "73955c2e2e7c63f9aea3ae744eaf250db3c34cc54e0bf884d3a977481ae23577",
+      "replacement_sha256": "61d302cf5c37561fd4fb20f095c54e30d34b34ec04d74d37d541cf9e8a50f97c",
+      "nodes": 3267,
+      "spare_nodes": 233,
+      "plays": 270
+    },
+    {
+      "book": "PHI",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "1b5bed4b207e8e39d6b1e2c8c23951576b5f7126d55ea5db2876b3b824427d1f",
+      "replacement_sha256": "9d25c5a98d2ceb74a48c4fc6afa6698f4cda67e0963a143b85a72effd6ae7de2",
+      "nodes": 3203,
+      "spare_nodes": 297,
+      "plays": 267
+    },
+    {
+      "book": "PHI",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "1b5bed4b207e8e39d6b1e2c8c23951576b5f7126d55ea5db2876b3b824427d1f",
+      "replacement_sha256": "d4360a49d92ec7c23e1d2c5423216e7f2a7a6eb02cb06abb090a1e758bec2ea3",
+      "nodes": 3203,
+      "spare_nodes": 297,
+      "plays": 267
+    },
+    {
+      "book": "PIT",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "9f27b57168c04210d44368748d0699cbfd9e727405cdc5d62426cac9013409dd",
+      "replacement_sha256": "501a943d1b6504c37219896adb24388c07892acd9d55df7cda9e201bed57fd86",
+      "nodes": 3356,
+      "spare_nodes": 144,
+      "plays": 263
+    },
+    {
+      "book": "PIT",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "9f27b57168c04210d44368748d0699cbfd9e727405cdc5d62426cac9013409dd",
+      "replacement_sha256": "712499a9aedded6d70ac5c3b396ee444c9b6f97fad29d48c94572fb29af37419",
+      "nodes": 3356,
+      "spare_nodes": 144,
+      "plays": 263
+    },
+    {
+      "book": "PRACTICE",
+      "order": [
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "56de927e6969f010dccf0e1a3d7f216bcb8010393e543769de12a794e9ccdfb9",
+      "replacement_sha256": "e8dbc58cc78245ee03819c35d4abcc3526790bd4c188a0a977602c3bd98fdf46",
+      "nodes": 657,
+      "spare_nodes": 2843,
+      "plays": 42
+    },
+    {
+      "book": "PRACTICE",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense"
+      ],
+      "source_sha256": "56de927e6969f010dccf0e1a3d7f216bcb8010393e543769de12a794e9ccdfb9",
+      "replacement_sha256": "8c894c386d36df789c6cd413e99cd3bd9ed0261f69d84990bc50325715c2d588",
+      "nodes": 657,
+      "spare_nodes": 2843,
+      "plays": 42
+    },
+    {
+      "book": "reference",
+      "order": [
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "a78b73d4cdf0d8bd2862c5ee4ef6d2c6bd9d42446211c4abdeb7c609b5cdc690",
+      "replacement_sha256": "78da025844c67b99b34c4ed8c0a8cb6312f101c0a9080954e0dcbb71e657211d",
+      "nodes": 2727,
+      "spare_nodes": 773,
+      "plays": 263
+    },
+    {
+      "book": "reference",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense"
+      ],
+      "source_sha256": "a78b73d4cdf0d8bd2862c5ee4ef6d2c6bd9d42446211c4abdeb7c609b5cdc690",
+      "replacement_sha256": "aded61ccc97ddf1df776b3e86909cd0e84506fe76ef7991d1c2a8d2db63ef514",
+      "nodes": 2727,
+      "spare_nodes": 773,
+      "plays": 263
+    },
+    {
+      "book": "SD",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "7e6ddb8d36ab3451e2aa80d110903d8a726ec5efdb68e3e2dc9462599144a0c0",
+      "replacement_sha256": "5e382a9334c19cdbab9a6c3e9a8d7084efb3faf58c84a319284a9f57f236c6ea",
+      "nodes": 3366,
+      "spare_nodes": 134,
+      "plays": 270
+    },
+    {
+      "book": "SD",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "7e6ddb8d36ab3451e2aa80d110903d8a726ec5efdb68e3e2dc9462599144a0c0",
+      "replacement_sha256": "785d4e70248306185f128ff8e9bf7dbed811dca93b85b0b788dec1cc4f93ecc6",
+      "nodes": 3366,
+      "spare_nodes": 134,
+      "plays": 270
+    },
+    {
+      "book": "SEA",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "4d5ff26d6102d943aa0bee61a7f452c8570f28c0bf9db879db60de0dbd791506",
+      "replacement_sha256": "115fd2718b6a94550d283254cbc252325ff55e0c261be935ea6f178431e337e8",
+      "nodes": 3282,
+      "spare_nodes": 218,
+      "plays": 269
+    },
+    {
+      "book": "SEA",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "4d5ff26d6102d943aa0bee61a7f452c8570f28c0bf9db879db60de0dbd791506",
+      "replacement_sha256": "1d5e92838bc5a8c2da87eea590d6c8d606c95b78addaadaf595bc6f0361549e7",
+      "nodes": 3282,
+      "spare_nodes": 218,
+      "plays": 269
+    },
+    {
+      "book": "SF",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "a1bb2195e1df901230e8d79885bdb448eb19b6ca90976c2a3fd673bcf74f6ec6",
+      "replacement_sha256": "15115605d11cf61ddba2ea05e10806427259187454bef1dd47eb083f49e29bca",
+      "nodes": 3053,
+      "spare_nodes": 447,
+      "plays": 249
+    },
+    {
+      "book": "SF",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "a1bb2195e1df901230e8d79885bdb448eb19b6ca90976c2a3fd673bcf74f6ec6",
+      "replacement_sha256": "08a7f3f4cd2e25fc261e2568c36887ad1263ea5f96d6451bd6d2f73a97a1ff90",
+      "nodes": 3053,
+      "spare_nodes": 447,
+      "plays": 249
+    },
+    {
+      "book": "STL",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "dc4745657752e75205dc4d163e7c95b6aa7db28e6fb565af5f77d6d8a07b984a",
+      "replacement_sha256": "e8494fa65a95e8f4043efbd67ef15af2d9656a1f4d82f6de45860db0f72cdfe6",
+      "nodes": 3355,
+      "spare_nodes": 145,
+      "plays": 269
+    },
+    {
+      "book": "STL",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "dc4745657752e75205dc4d163e7c95b6aa7db28e6fb565af5f77d6d8a07b984a",
+      "replacement_sha256": "4ce9cebe0e859d0350f60db40cbef274925624a335e9062eef242df0f4392afb",
+      "nodes": 3355,
+      "spare_nodes": 145,
+      "plays": 269
+    },
+    {
+      "book": "TB",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "baa2902b92cc67bbdc60bdc8d8ef9167ed51160a7b6904b7365b81b992757f2e",
+      "replacement_sha256": "061580eadeb09ff6932fd38f000d08116797dc1a8f77d7b3298190eac191f191",
+      "nodes": 3045,
+      "spare_nodes": 455,
+      "plays": 253
+    },
+    {
+      "book": "TB",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "baa2902b92cc67bbdc60bdc8d8ef9167ed51160a7b6904b7365b81b992757f2e",
+      "replacement_sha256": "cae9c54a16d5881b92e4a9cff5479a95f81fccbec08375138d182e659960d389",
+      "nodes": 3045,
+      "spare_nodes": 455,
+      "plays": 253
+    },
+    {
+      "book": "TEN",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "c5b13aa07d03d0da6b78a2b117e3e46792bacc213a0cb7016ca8e1478f062141",
+      "replacement_sha256": "314244ba8c7765f71dc86c310ec553d74a673e080208641a439159575c1504ac",
+      "nodes": 3266,
+      "spare_nodes": 234,
+      "plays": 264
+    },
+    {
+      "book": "TEN",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "c5b13aa07d03d0da6b78a2b117e3e46792bacc213a0cb7016ca8e1478f062141",
+      "replacement_sha256": "d28b11e0e158406e2500f6ed460a83dba08d1b9b59999526e6c84b143f8c653f",
+      "nodes": 3266,
+      "spare_nodes": 234,
+      "plays": 264
+    },
+    {
+      "book": "WAS",
+      "order": [
+        "Modern Gun Core",
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "7f4c96bb44c330cfeb733cdcd1d9f0b2342c876b6c342c83da88bab7dbc2e881",
+      "replacement_sha256": "fa7ad4bb09b16b17f2d47b640c2ab47626e2b1fcbf7b86c4b29fe7118631319a",
+      "nodes": 3295,
+      "spare_nodes": 205,
+      "plays": 260
+    },
+    {
+      "book": "WAS",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense",
+        "Modern Gun Core"
+      ],
+      "source_sha256": "7f4c96bb44c330cfeb733cdcd1d9f0b2342c876b6c342c83da88bab7dbc2e881",
+      "replacement_sha256": "50eb7f0c6f4c336b03a7be91c1c473e12b397fd73f0ace48e82672675d3ede06",
+      "nodes": 3295,
+      "spare_nodes": 205,
+      "plays": 260
+    },
+    {
+      "book": "WCO",
+      "order": [
+        "SOFTDRINK modern defense",
+        "SOFTDRINK match coverage experiments"
+      ],
+      "source_sha256": "e1153d37198fd7f6c71fc41541c4cada06efb284ba360d0a6e976ca64ac7c152",
+      "replacement_sha256": "243d017020bf2016a31e3a64831d61d0b085dcf46181e35287cd9fc0f144aa90",
+      "nodes": 2571,
+      "spare_nodes": 929,
+      "plays": 232
+    },
+    {
+      "book": "WCO",
+      "order": [
+        "SOFTDRINK match coverage experiments",
+        "SOFTDRINK modern defense"
+      ],
+      "source_sha256": "e1153d37198fd7f6c71fc41541c4cada06efb284ba360d0a6e976ca64ac7c152",
+      "replacement_sha256": "9e0da8335f982a92a90ccf32cbba55910a4da98d5adf2691be56aa60ab3cec51",
+      "nodes": 2571,
+      "spare_nodes": 929,
+      "plays": 232
+    }
+  ]
+}

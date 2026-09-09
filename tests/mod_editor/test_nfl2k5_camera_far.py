@@ -38,7 +38,7 @@ def repin(buf):
 
 
 def fixture():
-    """12 MB maximum: allocator header fixture with three invented mapped spans."""
+    """12 MB maximum: allocator header fixture with invented mapped spans."""
     buf = bytearray(space_fixture())
     for at, va in space.DEBUG_POINTERS:
         struct.pack_into('<I', buf, at, va)
@@ -48,9 +48,11 @@ def fixture():
         if index == 0:
             flags, va, raw, size = 0x16, 0x11000, 0x1000, 0x300000
         elif index == 1:
-            flags, va, raw, size = 3, 0x4E3AE0, 0x301000, 0x30000
+            flags, va, raw, size = 3, 0x4E3AE0, 0x301000, 0x60000
         elif index == 3:
-            flags, va, raw, size = 3, 0xA69980, 0x331000, 0x20000
+            flags, va, raw, size = 3, 0xA69980, 0x361000, 0x20000
+        elif index == 4:
+            flags, va, raw, size = 2, 0xE60320, 0x381000, 0x10000
         else:
             flags, va, raw, size = 3, 0xC00000 + index*0x1000, 0x400000+index*0x1000, 4
         struct.pack_into('<5I', buf, off, flags, va, size, raw, size)
@@ -60,6 +62,8 @@ def fixture():
     spans += [(va, c.RETAIL_DESCRIPTORS[s]) for s, va in c.STANDARD_DESCRIPTORS.items()]
     spans += [(va, c.FAR_RETAIL_DESCRIPTORS[s]) for s, va in c.FAR_DESCRIPTORS.items()]
     document = json.loads((ROOT / 'tests/fixtures/nfl2k5_camera_context.v2.json').read_text())
+    spans += [(int(row['va'], 0), bytes.fromhex(row['bytes'])) for row in document['spans']]
+    document = json.loads((ROOT / 'tests/fixtures/nfl2k5_camera_context.v5.json').read_text())
     spans += [(int(row['va'], 0), bytes.fromhex(row['bytes'])) for row in document['spans']]
     for va, raw in spans:
         off = c._offset(buf, va)
@@ -95,8 +99,8 @@ class CameraPatchTests(unittest.TestCase):
         self.assertFalse(receipt['runtime_witnessed'])
         self.assertEqual(c.option_default_status(again), 'standard')
         self.assertNotEqual(c.read_standard(again), c.read_standard(self.retail))
-        self.assertEqual(c.read_preset_table(again), c.read_preset_table(self.retail))
-        self.assertEqual(len(self.receipt['edits']), 27)
+        self.assertEqual(c.read_preset_table(again)[:7], c.read_preset_table(self.retail)[:7])
+        self.assertEqual(len(self.receipt['edits']), 45)
         for edit in self.receipt['edits']:
             off, size = int(edit['file_offset'], 0), edit['size']
             self.assertEqual(again[off:off+size], bytes.fromhex(edit['after']))
@@ -194,14 +198,12 @@ class SelectionProofTests(unittest.TestCase):
 
     def machine(self, payload=None):
         helper = wide_fixture.RetailExecutionTests()
-        uc = helper.load(self.patched if payload is None else payload)
+        payload = self.patched if payload is None else payload
+        uc = helper.load(payload)
         # The existing renderer fixture maps retail only; add the owned pages.
-        if payload is None:
-            for region in space.layout(self.patched)['regions']:
-                uc.mem_map(region['va'], region['size'])
-                uc.mem_write(region['va'],self.patched[region['raw']:region['raw']+region['size']])
-                if region['kind'].startswith('code'):
-                    uc.mem_protect(region['va'],region['size'],u.UC_PROT_READ|u.UC_PROT_EXEC)
+        if space.status(payload) == 'applied':
+            from tools.nfl2k5_camera_broadcast_proof import map_owned
+            map_owned(uc, payload)
         return helper, uc
 
     @staticmethod
@@ -266,7 +268,7 @@ class SelectionProofTests(unittest.TestCase):
                 # Only its peripheral reset/random-camera helpers are stubbed.
                 h.execute(uc,0x64991,at_call=True,stop=0x64996)
                 self.assertEqual((self.get(uc,c.OPTION_GLOBAL_VA),self.get(uc,0xB665F0)),(0,0))
-            for choice in range(6):
+            for choice in c.MENU_ROWS:
                 self.put(uc,0xB616C0,0)
                 h.execute(uc,0x2C6960,ecx=choice,edx=1)
                 h.execute(uc,0xA5490)
@@ -279,25 +281,25 @@ class SelectionProofTests(unittest.TestCase):
         h.execute(uc,0xA5490)
         self.assertEqual(self.get(uc,0xB665F0),1)
 
-    def test_native_active_row_indexes_all_58_recipients_in_each_aspect(self):
+    def test_native_active_row_indexes_all_87_recipients_in_each_aspect(self):
         from mod_editor.core import nfl2k5_widescreen as wide
         table=c.read_preset_table(self.patched)
         for aspect in ('4:3',*wide.ASPECTS):
             payload=self.patched if aspect=='4:3' else wide.apply(self.patched,aspect)[0]
             h,uc = self.machine(payload)
             self.put(uc,0xE5FFF4,1,0,0)
-            for row in (c.STANDARD_ROW,c.FAR_ROW):
+            for row in (c.STANDARD_ROW,c.FAR_ROW,c.BROADCAST_ROW):
                 for state in range(29):
                     self.put(uc,0xB665F0,row)
                     uc.reg_write(r.UC_X86_REG_EAX,self.get(uc,0xB665F0))
                     uc.reg_write(r.UC_X86_REG_ESI,state)
                     uc.reg_write(r.UC_X86_REG_EBX,0x3F800000)
-                    # All states reach their original descriptor. Presentation
+                    # All states reach their declared descriptor. Presentation
                     # scene callbacks require real scene objects, so this full
                     # table census stops at the copier's call boundary.
                     h.execute(uc,0xA572D,stop=0xA573C)
                     self.assertEqual(uc.reg_read(r.UC_X86_REG_EDX),table[row][state][1])
-                    if state in c.FAR_DESCRIPTORS:
+                    if state in (c.BROADCAST_STATES if row == c.BROADCAST_ROW else c.FAR_DESCRIPTORS):
                         h.execute(uc,0xA573C,at_call=True,stop=0xA5741)
                         copied=bytes(uc.mem_read(0xA82D30,80))
                         self.assertEqual(copied,c._read(payload,table[row][state][1],80))
@@ -397,14 +399,17 @@ class SelectionProofTests(unittest.TestCase):
         from mod_editor.core.nfl2k5_cave_manifest import Recorder
         from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
         from tests import nfl2k5_allocator_stack as stack
-        manifest=ReservationManifest.load(DEFAULT_MANIFEST,XbeImage(self.retail))
+        manifest=ReservationManifest.load(Path(os.environ.get('NFL2K5_CAVE_MANIFEST', DEFAULT_MANIFEST)),
+                                         XbeImage(self.retail))
         seed=space.apply(self.retail,stack.REQUESTS,scaleout=True)[0]
         seed=stack.music.apply(seed,song_records=stack.SONGS)[0]
         projected=stack.manifest_for_allocated_union(manifest,self.retail,seed)
         current=c.allocation(seed)
         for span in projected.document['spans']:
             if span['owner']==c.OWNER and int(span['start'],0)>=space.CODE_VA:
-                self.assertTrue(current['va']<=int(span['start'],0)<int(span['end'],0)<=current['va']+64)
+                allocations = (c.allocation(seed), c.allocation(seed, 'read_only'))
+                self.assertTrue(any(a['va']<=int(span['start'],0)<int(span['end'],0)<=a['va']+a['size']
+                                    for a in allocations))
         obsolete=[s for s in manifest.document['spans'] if s['owner']==c.OWNER and
                   s['basis']=='declared edit: owned_camera_wrappers' and
                   not any(a['owner']==c.OWNER and a['va']==int(s['start'],0)
@@ -424,8 +429,9 @@ class SelectionProofTests(unittest.TestCase):
                           int(s['start'],0)>=space.CODE_VA])
         named=[s for s in recorder.finish(result) if s['owner']==c.OWNER and
                int(s['start'],0)>=space.CODE_VA]
-        self.assertEqual(len(named),1)
-        self.assertEqual((int(named[0]['start'],0),named[0]['size']),(current['va'],64))
+        self.assertEqual(len(named),2)
+        self.assertEqual({(int(s['start'],0),s['size']) for s in named},
+                         {(a['va'],a['size']) for a in (current,c.allocation(seed,'read_only'))})
         self.assertEqual(c.status(result),'applied')
 
     def test_mycareer_uses_options_for_the_session_when_camera_patch_is_selected(self):
@@ -444,7 +450,7 @@ class SelectionProofTests(unittest.TestCase):
         machine.put(0xB665F0,7)
         machine.call(0xA55EB)
         self.assertEqual(machine.get(0xB665F0),0)
-        for choice in range(6):
+        for choice in c.MENU_ROWS:
             machine.put(0xB616C0,0)
             machine.call(0x2C6960,ecx=choice,edx=1)
             machine.call(0xA5490)

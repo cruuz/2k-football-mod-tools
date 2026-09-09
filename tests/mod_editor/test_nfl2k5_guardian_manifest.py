@@ -44,13 +44,31 @@ class ManifestTests(unittest.TestCase):
         engines={"mod_editor.core.nfl2k5_gameplay_lever", "mod_editor.core.nfl2k5_rdata_sites"}
         modules=[m for name,m in tuple(sys.modules.items()) if name.startswith("mod_editor.core.nfl2k5_")
                  and name not in engines and hasattr(m,"__file__")]
+        from mod_editor.core import nfl2k5_espn25_rosters as espn25
+        self.assertIs(espn25.XbePatch.apply, espn25.apply_xbe)
         fingerprints=cm.source_fingerprints()
         with ExitStack() as stack:
             for module in modules:
                 for name in ("apply","apply_xbe","xbe_apply","plan_patch","apply_arc_table","patch_xbe","apply_chop_block"):
                     function=getattr(module,name,None)
                     if inspect.isfunction(function) and function.__module__==module.__name__:
-                        stack.enter_context(patch.object(module,name,recorder.wrapper(module,name)))
+                        observed=recorder.wrapper(module,name)
+                        stack.enter_context(patch.object(module,name,observed))
+                        # A static adapter retains the original function even
+                        # when the module attribute is wrapped. Observe that
+                        # actual writer entry as well (the historic-team XBE
+                        # adapter is used by the complete allocator stack).
+                        for adapter in vars(module).values():
+                            if not isinstance(adapter,type) or adapter.__module__!=module.__name__:
+                                continue
+                            for method,descriptor in vars(adapter).items():
+                                if isinstance(descriptor,staticmethod) and descriptor.__func__ is function:
+                                    stack.enter_context(patch.object(adapter,method,staticmethod(observed)))
+            # The anniversary adapter captured apply_xbe at module import, before
+            # observation. Route its alias through the same real writer wrapper;
+            # otherwise its C2319 edit is absent from the observed manifest.
+            from mod_editor.core import nfl2k5_espn25_rosters as espn25
+            stack.enter_context(patch.object(espn25.XbePatch, "apply", staticmethod(espn25.apply_xbe)))
             gate.PatchWriteTests.setUpClass()
             final=gate.PatchWriteTests.patched
         spans=recorder.finish(final)  # rejects every unattributed changed byte
@@ -62,6 +80,9 @@ class ManifestTests(unittest.TestCase):
                  section_digests_verified=True,source_sha256=fingerprints,spans=spans,steps=recorder.steps,
                  allocator_layout=g.space.layout(final),image_steps=[],runtime_witnessed=False)
         manifest=ReservationManifest(doc,XbeImage(retail),source_root=ROOT)
+        rows=manifest.overlaps(espn25.XBE_SITE_VA,espn25.XBE_SITE_VA+len(espn25.XBE_BEFORE))
+        self.assertTrue(rows)
+        self.assertTrue(all(row.detail.startswith(espn25.OWNER+":") for row in rows))
         for va,before in g.HOOKS.values():
             rows=manifest.overlaps(va,va+len(before))
             self.assertTrue(rows)

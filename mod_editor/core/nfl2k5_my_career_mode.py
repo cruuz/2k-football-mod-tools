@@ -1,6 +1,6 @@
 """Generic in-game MyCareer owner. EXPERIMENTAL / UNWITNESSED.
 
-Reuses the existing MyCareer allocator budget. Legacy prepared-save installs
+Uses 16384 RX and two separately owned 4096-byte RW blocks. Legacy prepared-save installs
 and this format are mutually exclusive; rebuild from the original executable.
 """
 from __future__ import annotations
@@ -15,9 +15,11 @@ from . import nfl2k5_rdata_sites as rdata
 from .nfl2k5_cave_oracle import XbeImage
 
 OWNER = legacy.OWNER
-REQUESTS = legacy.REQUESTS
+EXTRA_OWNER = space.MYCAREER_M3_STATE_OWNER
+EXTRA_VA = space.MYCAREER_M3_STATE_VA
+REQUESTS = legacy.REQUESTS + ((EXTRA_OWNER, "data", 4096, 16),)
 CODE_SIZE, DATA_SIZE = legacy.CODE_SIZE, legacy.DATA_SIZE
-TAG = b"MC-INLINE-0001\0\0\0"
+TAG = b"MC-INLINE-M003\0\0\0"
 TAG_OFFSET = CODE_SIZE - len(TAG)
 COMMON = frozenset(("attach", "copy", "reset", "assign", "automatic", "team_reset", "manual", "transfer",
                     "slot_generation", "sim", "navigation", "cpu_management", "camera", "camera_focus"))
@@ -44,6 +46,9 @@ MODE_HOOKS = (
     ("human_eax", 0xA2ABA, "8b483085c9", 0xE8),
     ("human_ecx", 0xA2E7B, "8b413085c0", 0xE8),
     ("human_ecx", 0xA2EBA, "8b413085c0", 0xE8),
+    ("human_esi", 0xA30FE, "8b463085c0", 0xE8),
+    ("human_esi", 0x189D9B, "8b463085c0", 0xE8),
+    ("mode_row_text", 0x2C8790, "e81b83d6ff", 0xE8),
     ("human_eax", 0x1530B9, "8b483085c9", 0xE8),
     ("human_esi", 0x1531D5, "8b463085c0", 0xE8),
     ("human_defense", 0xA342C, "395e30537511", 0xE9),
@@ -55,6 +60,14 @@ MODE_HOOKS = (
     ("mode_loaded_replace", 0x16DDE0, "e9fb04f0ff", 0xE9),
 )
 GUARDS = (
+    (0x2bf9a0, 0xf5, "2f271dc4e9289b21f483b18b1f2f9b25af2d582bce1ea95f060aaa5a1c0ea4d9"),
+    (0x2484c9, 0xa8, "f367f540e739efc16676dd44bb80ccbb2d707da3e77f32b8ffee6aecafc31d85"),
+    (0x3254d0, 0x20, "77a2842feb19a62d33dbd0cc986949386b11989aec4bc855b9a9b555c62dd8ac"),
+    (0x325a30, 0x33, "d3b095e220724aaf931d2e173c2d16a5f40911c8ba68488668f2649dab31aa84"),
+    (0x325b50, 0x1ae, "e5c5699cecd4899a0761a654ddfccfc874a032ca718cdf1e4f0a4fdebdae1210"),
+    (0x325d00, 0x1b, "65a4ae4d9be2137bba947842bc09419cabb2663c7018b7a3436fb6bf83b440ac"),
+    (0x31e430, 0x66, "6029f602cbd3832ba4d93dceb64962f56551161e2f78dab73d8283cd6a1262c7"),
+    (0x14e540, 0x21, "fde4d8743dcc8e2f0c5b0a9ca78a9481ae4137a87a4048721788de512edf0585"),
     (0x1211E0, 0xD0, "cdf04ccd4ba54547e9f51089891248244ccbd893c2d15d6e694827f2f1c2137c"),
     (0xa88460, 0x50, "0ce3ab700261bc38b8597990ecfbc72eb8cc9dcfd007138dcebc2ddd0c04ec83"),
     (0x896e9, 0x8d, "33f20f68556e2ebb244f5e45ccb4cb5d7f62cd629a9547327a77dda4c15adf29"),
@@ -67,6 +80,12 @@ GUARDS = (
     (0x120a20, 0x775, "17308ced725f4ca7d221cc803adc4b254d6903bfe90cc3a98a0417c645f25f2c"),
     (0x49f00, 0x4d9, "908d559d09574449caa7b433d83fbd92ea17718ab1d728f5824406c309a4f790"),
     (0xf3e90, 0xed, "ec3b1d1e23628198be072193dcf9959fbbe68c218226c7e17eec07ecea427077"),
+    (0xf3cd0, 0x87, "c6a26b2780164a3e75395d59ef13abaa13f1fc42a43b290ac27712748f7a2ec0"),
+    (0xf37e0, 0x18f, "82f21e664aa9c26b883bfdb3fd4e56f2ae0db841f6f09b558f737947ec769f7a"),
+    (0x143ea0, 0xec, "4c96e5f3bba073c4217d5743a214bcaaa57509717a093de0594387146a36cf5a"),
+    (0x143450, 0xb7, "c3f4054fd3db4b8272cba5c054d7414576784c3f08999e47ae8e30f7e07c0cde"),
+    (0x2c8730, 0x6b, "f7b29a4dfa6927f593f3d9a2cfd4937bafe1ce4dcee37c097a2db932fe5ec559"),
+    (0x2c8810, 0x5c, "f0051c31c6c26ca1728dd52e413bbdb00ac1110d33486579a548933267a05dba"),
     (0x150260, 0x94, "b92b5c935f2c864568e123dc9e925663e413613bfa77882a9fc7e7cfec2586de"),
     (0x14ff80, 0xa0, "b9caaad84cde3c36bcce67af26a1a2e943756591e160f25abb916021a9f36a2e"),
     (0x4f03f8, 0xe8, "414cd90aad9ac27f35fac2eb5b0b45f03e622550d7599f9d07075e30b2ebf6e1"),
@@ -77,6 +96,7 @@ GUARDS = (
     (0xC74E0, 0x43, "bb1906f9f029ea81788d579b295586805684d2a185ca8402e8d31483e27f6cc2"),
     (0xC5D60, 0x49, "57f2d784b1dd7419bab67951363f82a169fa5cb2d9f06529fdf56ea864f03941"),
     (0x1891B0, 0x53, "ee2e72b5f39d739e4e46aa79a71aba77b446b5544599483c8b1e26674c98e1a3"),
+    (0x189D10, 0x1EA, "9a4538e1f60aa36b90bb790d388272d5cd5fd5b42c400d730a0b6adcb8556f94"),
     (0xA11F0, 0x299, "c19563b80a731172b11f2df41e94219a87629b124dd48917808c565770ad4d87"),
     (0xA2A60, 0xF9, "d0b86d2a91f1333bf0408ae8aadf09bf31d1c713d9a885c65e56c76c6ef3f99a"),
     (0xA2D40, 0x41E, "6ea576ebdb694d8215b61be72a60c06d865d8aacb1111cf39d550a4d727ba049"),
@@ -109,6 +129,7 @@ GUARDS = (
 
 def code_for(code_va, data_va):
     from . import nfl2k5_franchise_autosave_code as autosave_code
+    from . import nfl2k5_my_career_progression as progression
     out = bytearray(assembly.CODE)
     labels = {name: code_va + offset for name, offset in assembly.LABELS.items()}
 
@@ -122,7 +143,7 @@ def code_for(code_va, data_va):
     text_pool = bytearray()
 
     def string(name, value):
-        if name not in ("mode_text", "team_text"):
+        if name not in ("mode_text", "team_text") and not name.startswith("m3_"):
             labels[name] = data_va + 1408 + 2 * len(text_pool)
             text_pool.extend((value + "\0").encode("ascii"))
             return
@@ -136,20 +157,53 @@ def code_for(code_va, data_va):
         ("load_text", "Load career"), ("quit_text", "Quit to main menu"),
         ("team_text", "Choose team"), ("sign_text", "Sign"),
         ("play_text", "Play next game"), ("card_text", "MyPlayer"), ("save_text", "Save"),
+        ("start_text", "Start MyPlayer"),
         ("advance_notice", "No game pending. Advancing."),
-        ("watch_text", "Off field: CPU at normal speed"),
+        ("watch_text", "Off field: CPU plays"),
         ("fixture_text", "%s at %s. %s"),
-        ("wait_text", "CPU plays until MyPlayer's unit is on the field"),
-        ("draft_notice", "Draft is not ready."),
+        ("draft_notice", "Draft preparation failed. Quit and try again."),
         ("refusal_notice", "Roster is full."),
         ("load_notice", "Career load failed."),
     ):
         string(name, value)
+    for name, value in (
+        ("m3_progress_text", "Preparing the prior season"),
+        ("m3_progress_note", "The league is playing the year before your rookie season."),
+        ("m3_prep_text", "Senior Bowl preparation"),
+        ("m3_prep_note", "MyPlayer is selected. The game is not available yet."),
+        ("m3_begin_text", "Continue to the draft"),
+        ("m3_draft_text", "NFL Draft"),
+        ("m3_draft_note", "Teams choose by ratings and need. Selection is not guaranteed."),
+        ("m3_upgrade_text", "Upgrades"), ("m3_prev_text", "Previous attribute"),
+        ("m3_next_text", "Next attribute"), ("m3_buy_text", "Buy one point"),
+        ("m3_back_text", "Back"),
+        ("m3_upgrade_format", "%s: %u. Cap %u. Cost %u XP. Balance %u XP."),
+        ("m3_calendar_format", "Week %u. %u/%u/%u at %02u:%02u"),
+        ("m3_pick_format", "Round %u, pick %u"),
+        ("m3_confirm_text", "Buy one attribute point?"),
+        ("m3_unavailable_text", "This point cannot be bought."),
+        ("m3_unsigned_text", "Undrafted. Choose a club and sign."),
+        ("m3_sign_text", "Sign with this club?"),
+        ("m3_sign_cut_text", "Sign with this club and allow roster cuts?"),
+    ):
+        string(name, value)
+    names = []
+    for field, key, label in progression.FIELDS:
+        name = "m3_rating_" + key
+        string(name, label)
+        names.append(labels[name])
+    at = reserve("m3_rating_names", 4 * len(names))
+    struct.pack_into("<" + "I" * len(names), out, at, *names)
+    at = reserve("m3_fields", len(progression.FIELDS))
+    out[at:at + len(progression.FIELDS)] = bytes(f for f, _, _ in progression.FIELDS)
+    at = reserve("m3_caps", 17 * len(progression.FIELDS))
+    out[at:at + 17 * len(progression.FIELDS)] = bytes(v for row in progression.CAPS for v in row)
     legacy.require(2 * len(text_pool) <= 1152, "MyCareer text RW exceeds 1408..2559")
     at = reserve("text_template", len(text_pool))
     out[at:at + len(text_pool)] = text_pool
     labels["text_bytes"] = len(text_pool)
     menu = bytearray()
+    extra_menu = bytearray()
 
     def menu_reserve(name, size):
         at = len(menu)
@@ -157,36 +211,65 @@ def code_for(code_va, data_va):
         menu.extend(bytes(size))
         return at
 
+    def extra_reserve(name, size):
+        at = len(extra_menu)
+        labels[name] = EXTRA_VA + 256 + at
+        extra_menu.extend(bytes(size))
+        return at
+
     menu_reserve("club_menu", 56)
     for name in ("entry_menu", "apartment", "team_menu", "practice_menu"):
         menu_reserve(name, 44)
+    for name in ("m3_progress_menu", "m3_prep_menu", "m3_draft_menu", "m3_upgrade_menu"):
+        extra_reserve(name, 44)
 
-    def rows(name, content):
-        at = menu_reserve(name, 52 * (len(content) + 1))
+    def rows(name, content, extra=False):
+        at = (extra_reserve if extra else menu_reserve)(name, 52 * (len(content) + 1))
+        target = extra_menu if extra else menu
         for i, (label, action) in enumerate(content):
-            struct.pack_into("<13I", menu, at + 52 * i, 9,
+            struct.pack_into("<13I", target, at + 52 * i, 9,
                              labels[label] if isinstance(label, str) else label,
                              *([0] * 8), labels[action], 0, 0)
-        struct.pack_into("<I", menu, at + 52 * len(content), 3)
+        struct.pack_into("<I", target, at + 52 * len(content), 3)
         return at
 
-    rows("entry_rows", (("draft_text", "mode_draft"), ("udfa_text", "mode_create"),
+    rows("entry_rows", (("draft_text", "mode_draft"), ("udfa_text", "mode_undrafted"),
                         ("load_text", "mode_load"), ("quit_text", "mode_quit")))
     rows("hub_rows", (("play_text", "mode_play"), (0xE9C3BC, "mode_practice"),
-                      ("card_text", "mode_card"), ("save_text", "mode_save_menu"), ("quit_text", "mode_quit")))
+                      ("card_text", "mode_card"), ("start_text", "mode_start"),
+                      ("save_text", "mode_save_menu"), ("quit_text", "mode_quit"),
+                      ("m3_upgrade_text", "m3_upgrade_open")), extra=True)
     rows("team_rows", (("team_text", "mode_team_open"), ("sign_text", "mode_sign")))
+    rows("m3_progress_rows", (("quit_text", "mode_quit"),), extra=True)
+    rows("m3_draft_rows", (("save_text", "mode_save_menu"), ("quit_text", "mode_quit")), extra=True)
+    rows("m3_prep_rows", (("m3_begin_text", "m3_begin_draft"), ("card_text", "mode_card"),
+                         ("save_text", "mode_save_menu"), ("quit_text", "mode_quit")), extra=True)
+    rows("m3_upgrade_rows", (("m3_prev_text", "m3_upgrade_previous"), ("m3_next_text", "m3_upgrade_next"),
+                            ("m3_buy_text", "m3_upgrade_buy"), ("m3_back_text", "m3_back")), extra=True)
+    for name, title, table in (("m3_progress_menu", "m3_progress_text", "m3_progress_rows"),
+                                ("m3_prep_menu", "m3_prep_text", "m3_prep_rows"),
+                                ("m3_draft_menu", "m3_draft_text", "m3_draft_rows"),
+                                ("m3_upgrade_menu", "m3_upgrade_text", "m3_upgrade_rows")):
+        struct.pack_into("<11I", extra_menu, labels[name] - EXTRA_VA - 256,
+                         labels[title], 0, labels["mode_handler"], 0, labels[table], 0,
+                         0xE7F928, 0xAA281C, 0x02400044, 0x018D0052, 3)
+    legacy.require(len(extra_menu) <= 1900, "M3 menus exceed owned workspace")
+    at = reserve("m3_menu_template", len(extra_menu))
+    out[at:at + len(extra_menu)] = extra_menu
+    labels["m3_menu_bytes"] = len(extra_menu)
     for name, title, table, flags in (("entry_menu", "mode_text", "entry_rows", 3),
                                       ("apartment", "apartment_text", "hub_rows", 3),
                                       ("team_menu", "team_text", "team_rows", 0x13)):
         struct.pack_into("<11I", menu, labels[name] - data_va - 200, labels[title], 0, labels["mode_handler"],
-                         0, labels[table], 0, labels["watch_text"] if name == "apartment" else 0xE7F928,
-                         0, 0x02400044, 0x018D0052, flags)
+                         0, labels[table], 0, 0xE7F928,
+                         0xAA281C, 0x02400044, 0x018D0052, flags)
     struct.pack_into("<11I", menu, 0, labels["team_text"], 0, labels["mode_handler"],
-                     0, data_va + 432, 0, 0xE7F928, 0, 0x02400044, 0x018D0052, 0x13)
+                     0, data_va + 432, 0, 0xE7F928, 0xAA281C, 0x02400044, 0x018D0052, 0x13)
     # Own Practice descriptor: native settings, teams, input and Back lifecycle.
     hooks = menu_reserve("practice_hooks", 20)
-    enter = menu_reserve("practice_enter", 72)
-    struct.pack_into("<18I", menu, enter, 1, labels["mode_practice_init"], *([0] * 16))
+    # Native 6E578 reads the next command at +0x24. Keep its zero terminator.
+    enter = menu_reserve("practice_enter", 40)
+    struct.pack_into("<10I", menu, enter, 1, labels["mode_practice_init"], *([0] * 8))
     struct.pack_into("<5I", menu, hooks, 11, 0x5015F8, 1, labels["practice_enter"], 0)
     struct.pack_into("<11I", menu, labels["practice_menu"] - data_va - 200,
                      0xE7D8B0, labels["practice_hooks"], 0xF3FC0, 0,
@@ -227,7 +310,7 @@ def code_for(code_va, data_va):
     at = reserve("menu_template", len(encoded))
     out[at:at + len(encoded)] = encoded
     labels["menu_bytes"] = len(menu)
-    symbols = {"code": code_va, "state": data_va, "": 0,
+    symbols = {"code": code_va, "state": data_va, "m3": EXTRA_VA, "": 0,
                "autosave_completion_delta": autosave_code.LABELS["career_complete"] - autosave_code.LABELS["desk"],
                **labels}
     for off, kind, symbol, value in assembly.RELOCATIONS:
@@ -237,7 +320,7 @@ def code_for(code_va, data_va):
         struct.pack_into("<I", out, off, target & 0xFFFFFFFF)
     legacy.require(len(out) <= TAG_OFFSET,
                    f"generic MyCareer needs {len(out) + len(TAG)} bytes; "
-                   f"exceeds its 8192-byte budget by {max(0, len(out) - TAG_OFFSET)} bytes")
+                   f"exceeds its {CODE_SIZE}-byte budget by {max(0, len(out) - TAG_OFFSET)} bytes")
     labels["content_end"] = code_va + len(out)
     return bytes(out).ljust(TAG_OFFSET, b"\xcc") + TAG, labels
 
@@ -269,6 +352,8 @@ def recognized(payload):
 def check_context(payload, edits, *, installed=False):
     image = XbeImage(payload)
     legacy.check_context(image)
+    from . import nfl2k5_draft_ai as draft_ai
+    legacy.require(draft_ai.status(payload) in ("retail", "applied"), "foreign draft AI owner")
     camera_edits = []
     from . import nfl2k5_franchise_autosave as autosave
     # Practice and music already validate MyCareer. Avoid a dependency cycle
@@ -290,6 +375,18 @@ def check_context(payload, edits, *, installed=False):
             buf[section.header_offset + 36:section.header_offset + 56] = section_digest(buf, section)
         companion_payload = bytes(buf)
     autosave._recognize(companion_payload)
+    from . import nfl2k5_practice_squad as practice_squad
+    legacy.require(practice_squad.SYMBOLS["ps_limit"] == 0x3ee10c,
+                   "Practice Squad capacity entry moved; rebuild the MyCareer runtime")
+    # The existing squad owner guards the same native draft capacity, cut and
+    # signing boundaries. Validate its complete installation before removing
+    # just those exact branches from the native-context hash view.
+    squad_sites = [s for s in practice_squad.sites()
+                   if s.name in ("capacity_flags", "draft_sign_guard", "ps_cut", "ps_append")]
+    if any(image.read(s.va, s.size) != s.retail for s in squad_sites):
+        legacy.require(practice_squad.status(companion_payload) == "applied",
+                       "foreign draft squad companion")
+        camera_edits += [(s.name, s.va, s.retail, s.patched) for s in squad_sites]
     allocated = any(a["owner"] == autosave.OWNER for a in space.layout(payload)["allocations"])
     if allocated:
         owned = autosave.allocations(payload)
@@ -339,6 +436,10 @@ def _recognize(payload):
                        if va not in own_sites), "legacy MyCareer hooks in generic build")
     state = "retail"
     if found:
+        extra = [a for a in space.layout(payload)["allocations"] if a["owner"] == EXTRA_OWNER]
+        legacy.require(len(extra) == 1 and (extra[0]["kind"], extra[0]["va"], extra[0]["size"], extra[0]["align"]) ==
+                       ("data", EXTRA_VA, 4096, 16), "reserve MyCareer M3 state; rebuild from base")
+        legacy.require(image.read(EXTRA_VA, 4096) == bytes(4096), "foreign initial MyCareer M3 RW")
         legacy.require(image.read(data["va"], DATA_SIZE) == bytes(DATA_SIZE), "foreign initial MyCareer RW")
         blob = image.read(code["va"], CODE_SIZE)
         if blob != b"\xcc" * CODE_SIZE:
@@ -361,7 +462,8 @@ def apply(payload):
     legacy.require(state != "foreign", "foreign/mixed generic MyCareer; rebuild from original")
     common = {"owner": OWNER, "experimental": True, "runtime_witnessed": False,
               "in_game_mode": True, "inline_save_version": 1, "save_growth": 128,
-              "machine_code_bytes": len(assembly.CODE), "code_capacity": CODE_SIZE, "data_capacity": DATA_SIZE,
+              "machine_code_bytes": len(assembly.CODE), "code_capacity": CODE_SIZE, "data_capacity": DATA_SIZE + 4096,
+              "state_requests": REQUESTS[1:],
               "executable_seed_bytes": 0, "journal_files": 0}
     original = payload
     if space.status(payload) == "retail":

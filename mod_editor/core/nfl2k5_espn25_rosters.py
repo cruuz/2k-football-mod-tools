@@ -1,8 +1,9 @@
 """Historic moments: real rosters. EXPERIMENTAL / UNWITNESSED.
 
-Data only, on the 35 shared historic ROSTs used by the retail 25 moments.
+Names and numbers on the 35 shared historic ROSTs used by the retail 25 moments.
 Box-score starters and season numbers are sourced; shared-file gaps are listed.
-No executable, scenario, team pointer, rating or appearance edit is made here.
+The paired executable fix clears released historic-team pointers on re-entry.
+No scenario, saved team pointer, rating or appearance edit is made here.
 The image adapter edits only a caller-owned disposable build copy. ``build_image``
 provides copy-first publication. No whole image or archive pack is read into RAM.
 """
@@ -34,9 +35,14 @@ HELP_TEXT = (
     "Patch: use Pro Football Reference game starters and season jersey numbers "
     "with the nflverse roster base. Short lists still need named reserves from "
     "nearby seasons. Shared teams cannot match every game. Requires the retail position layout. "
-    "EXPERIMENTAL / UNWITNESSED. See the roster report before testing."
+    "Build blocked while the Wide Right loading freeze remains unresolved. "
+    "EXPERIMENTAL / UNWITNESSED. See the in-game report."
 )
 DEFAULT_ENABLED = False
+BUILD_BLOCK_REASON = (
+    "Historic moment rosters cannot be built: Wide Right has an unresolved loading freeze. "
+    "The native team reload repair still needs gameplay verification."
+)
 DATA_DIR = Path(__file__).resolve().parents[2] / "data/nfl2k5_espn25_moment_rosters"
 # Updated deliberately after deterministic offline regeneration; no runtime fetch.
 DATASET_SHA256 = "9f2c1d1d67ef630300a081410129c71a53f9de54f4b02a89ec0cbe7087656ba8"
@@ -46,6 +52,57 @@ SITU_OUTER = 22
 MAIN_OUTER = 5
 RECORDS, STRIDE, COUNT = 0x44, 0x6C, 25
 CSV_COLUMNS = ("pool", "index", "first", "last", "position", "jersey", "college") + rr.RATING_BYTE_ORDER
+# C2300 is the historic loader's team eviction routine, not a cave. BFF90
+# releases the player but preserves EAX=0. Retail left the pointer behind;
+# ps_import's reserve_count consequently rejects that supposedly empty team.
+# Replace exactly four complete instructions inside the existing release loop:
+# mov [esi+edx*4],eax; inc edx; cmp dl,[esi+11c]; jb C2311.
+# The byte counter is bounded by the team's byte count (legal maximum 65).
+XBE_SITE_VA = 0xC2319
+XBE_BEFORE = bytes.fromhex("0fb68e1c010000423bd17cec")
+XBE_AFTER = bytes.fromhex("890496423a961c01000072ec")
+XBE_GUARDS = (
+    (0xC2300, 0x110, "21d5e9825aff0adac9a476bbd117ada85b1fd261fd19aadab1120a2966c9b8e5"),
+    (0xBFF90, 9, "4d11d20c170d21fcc60b8741c49c608e695b0885523d348d33aaad174fff714b"),
+)
+
+
+def xbe_status(payload):
+    from . import nfl2k5_rdata_sites as sites
+    try:
+        state = sites.status(payload, [("historic_team_release", XBE_SITE_VA, XBE_BEFORE, XBE_AFTER)])
+        if state == "foreign":
+            return state
+        for va, size, digest in XBE_GUARDS:
+            start = sites.offset_of(payload, va)
+            raw = bytearray(payload[start:start + size])
+            if va <= XBE_SITE_VA < va + size:
+                at = XBE_SITE_VA - va
+                raw[at:at + len(XBE_BEFORE)] = XBE_BEFORE
+            if sha(raw) != digest:
+                return "foreign"
+        return state
+    except (ValueError, TypeError, struct.error, IndexError):
+        return "foreign"
+
+
+def apply_xbe(payload):
+    """Pinned in-place lifecycle repair; no cave, allocation or runtime state."""
+    from . import nfl2k5_rdata_sites as sites
+    require(xbe_status(payload) in ("retail", "applied"), "Historic team reload fix: unrecognized executable")
+    result, receipt = sites.apply(payload, [("historic_team_release", XBE_SITE_VA, XBE_BEFORE, XBE_AFTER)],
+                                  "Historic team reload fix")
+    require(xbe_status(result) == "applied", "historic team reload fix readback differs")
+    return result, {**receipt, "owner": OWNER, "evidence": EVIDENCE,
+                    "already_applied": result == payload, "growth_bytes": 0}
+
+
+class XbePatch:
+    """Adapter for the shared executable gates and ownership recorder."""
+    OWNER = OWNER
+    REQUESTS = REQUESTS
+    apply = staticmethod(apply_xbe)
+    status = staticmethod(xbe_status)
 
 
 class Espn25RostersError(ValueError):
@@ -286,7 +343,7 @@ def compile_resource(raw, rows, colleges):
     return result
 
 
-def apply(resources: Mapping[int, bytes]):
+def _compile_resources(resources: Mapping[int, bytes]):
     """Pure all-or-nothing compilation; replay is byte-identical with zero writes."""
     manifest, sheets = dataset()
     state = status(resources)
@@ -307,6 +364,19 @@ def apply(resources: Mapping[int, bytes]):
                     "already_applied": state == "applied", "xbe_changed": False, "growth_bytes": 0,
                     "changed_bytes": sum(r["changed_bytes"] for r in receipts), "resources": receipts,
                     "lineups": "Season inference; see per-moment basis and per-player exceptions in manifest.json"}
+
+
+def require_build_ready():
+    # The option writes every moment, so it cannot omit Wide Right safely.
+    # Keep read-only inspection and the bounded native repair available for
+    # research. There is intentionally no command-line force/override switch.
+    require(not BUILD_BLOCK_REASON, BUILD_BLOCK_REASON)
+
+
+def apply(resources: Mapping[int, bytes]):
+    """Build-facing resource preflight, including the unresolved gameplay hold."""
+    require_build_ready()
+    return _compile_resources(resources)
 
 
 apply_resources = apply
@@ -339,9 +409,53 @@ def read_resources(source):
     return resources
 
 
+def _image_xbe(stream):
+    from . import nfl2k5_throw_tuning as tuning
+    offset, size = tuning._xdvdfs_module().xbe_extent(stream.fileno(), os.fstat(stream.fileno()).st_size)
+    require(0 < size <= 16 * 1024**2, "Historic team reload fix: executable exceeds 16 MiB")
+    stream.seek(offset)
+    payload = stream.read(size)
+    require(len(payload) == size, "Historic team reload fix: short executable read")
+    return offset, payload
+
+
+def read_xbe(source):
+    source = Path(source)
+    if source.is_dir():
+        return read_bounded(source / "default.xbe", 16 * 1024**2)
+    with source.open("rb") as stream:
+        return _image_xbe(stream)[1]
+
+
+def preflight_image(source):
+    """Validate both members of the roster plus native reload repair before copy."""
+    require_build_ready()
+    _, receipt = apply(read_resources(source))
+    _, native = apply_xbe(read_xbe(source))
+    return {**receipt, "load_fix": native}
+
+
+def install_image_xbe(stream, offset, before, after):
+    """Fixed-span write on an already preflighted private image; no extent growth."""
+    require(_image_xbe(stream) == (offset, before), "executable changed after preflight")
+    spans = changed_spans(before, after)
+    for span in spans:
+        stream.seek(offset + span["offset"])
+        raw = bytes.fromhex(span["after"])
+        require(stream.write(raw) == len(raw), "short historic reload fix write")
+    stream.flush()
+    os.fsync(stream.fileno())
+    require(_image_xbe(stream) == (offset, after), "historic reload fix readback differs")
+    return [{**span, "image_offset": offset + span["offset"]} for span in spans]
+
+
 def image_status(source):
     try:
-        return status(read_resources(source))
+        resources = status(read_resources(source))
+        native = xbe_status(read_xbe(source))
+        if "foreign" in (resources, native):
+            return "foreign"
+        return "needs load fix" if resources == "applied" and native == "retail" else resources
     except (OSError, ValueError, IndexError, KeyError, struct.error):
         return "foreign"
 
@@ -353,16 +467,20 @@ def apply_to_image(path):
     discarding the private copy; this function is not a power-loss transaction.
     Handles are closed before any caller publishes/replaces the file.
     """
+    require_build_ready()
     path = Path(path).resolve(strict=True)
     require(path.is_file(), "image adapter requires a private disc-image file")
     size = path.stat().st_size
-    with rr._outer_image()(path, writable=True) as archive:
+    with path.open("r+b") as executable, rr._outer_image()(path, writable=True) as archive:
+        xbe_offset, xbe_before = _image_xbe(executable)
+        xbe_after, native = apply_xbe(xbe_before)
         original, entries = _read_archive(archive)
         output, receipt = apply(original)
         require(archive._read_table() == archive.entries, "archive table changed during roster preflight")
         current, rechecked = _read_archive(archive)
         require(path.stat().st_size == size and entries == rechecked and original == current,
                 "image changed during roster preflight")
+        require(_image_xbe(executable) == (xbe_offset, xbe_before), "executable changed during roster preflight")
         spans = []
         for index, after in output.items():
             e = entries[index]
@@ -374,6 +492,10 @@ def apply_to_image(path):
                 require(archive.write(e.virtual_offset, after) == len(after), "short historic roster write")
         verified, _ = _read_archive(archive)
         require(path.stat().st_size == size and verified == output, "historic roster readback differs")
+        xbe_spans = install_image_xbe(executable, xbe_offset, xbe_before, xbe_after) if xbe_after != xbe_before else []
+    receipt.update(load_fix=native, xbe_changed=bool(xbe_spans), xbe_spans=xbe_spans,
+                   already_applied=receipt["already_applied"] and not xbe_spans,
+                   changed_bytes=receipt["changed_bytes"] + sum(len(s["after"]) // 2 for s in xbe_spans))
     receipt.update(image_size_before=size, image_size_after=size, image_spans=spans)
     return receipt
 
@@ -384,6 +506,7 @@ def build_image(source, output, *, receipt_path=None):
     Ordinary failures publish neither file. This is not a two-file power-loss
     transaction: a crash between replacements can leave the receipt alone.
     """
+    require_build_ready()
     source, output = Path(source).resolve(strict=True), Path(output).resolve()
     require(source.is_file() and source != output and not output.exists(), "output must be a new file distinct from the source image")
     receipt_output = Path(receipt_path).resolve() if receipt_path is not None else None
@@ -394,7 +517,7 @@ def build_image(source, output, *, receipt_path=None):
         st = source.stat()
         return st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns
     source_identity = identity()
-    apply(read_resources(source))  # Compile every resource before a large copy.
+    preflight_image(source)  # Compile resources and validate native repair before a large copy.
     require(shutil.disk_usage(output.parent).free - source.stat().st_size > 100 * 1024**3,
             "copy would leave less than 100 GiB free; no image created")
     with ExitStack() as stack:
@@ -442,13 +565,15 @@ def main(argv=None):
     args = parser.parse_args(argv)
     if args.command == "status":
         state = image_status(args.source)
-        print(json.dumps({"owner": OWNER, "status": state, "evidence": EVIDENCE}))
+        print(json.dumps({"owner": OWNER, "status": state, "evidence": EVIDENCE,
+                          "build_block_reason": BUILD_BLOCK_REASON}))
         return 1 if state == "foreign" else 0
     if args.command == "validate-dataset":
         manifest, rows = dataset()
         print(json.dumps({"resources": len(rows), "players": sum(map(len, rows.values())),
                           "moments": len(manifest["moments"]), "sha256": DATASET_SHA256,
-                          "evidence": EVIDENCE, "default_enabled": DEFAULT_ENABLED}))
+                          "evidence": EVIDENCE, "default_enabled": DEFAULT_ENABLED,
+                          "build_block_reason": BUILD_BLOCK_REASON}))
         return 0
     receipt = build_image(args.source, args.output, receipt_path=args.receipt)
     print(f"{EVIDENCE}: wrote {args.output}; {receipt['changed_bytes']} roster bytes changed")

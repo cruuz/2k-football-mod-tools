@@ -179,6 +179,12 @@ def _inspect(payload):
     # only our two known call operands for comparison. No foreign-byte masking.
     for va, size, digest in CONTACT_GUARDS:
         content = bytearray(image.read(va, size))
+        if va == 0x17B010 and content[:6] != bytes.fromhex("83ec088b4130"):
+            # Abilities v2 wraps this shared getter, before our additive contact
+            # term. Normalize only an entirely validated owner, never an E9 alone.
+            from . import nfl2k5_abilities_runtime as abilities
+            _require(abilities.status(payload) == "applied", "foreign abilities attribute owner")
+            content[:6] = abilities.HOOKS["attribute"][1]
         for name, hook, before, after in _edits(settings, labels):
             if name.startswith("contact_") and va <= hook and hook + len(before) <= va + size:
                 expected = after if installed else before

@@ -73,6 +73,7 @@ class ProductCatalogTests(unittest.TestCase):
             'nfl2k5.uniforms.detroit_away_runtime',
             'nfl2k5.players.team_names_2026',
             'nfl2k5.equipment.guardian_overlay',
+            'nfl2k5.rosters.abilities_v2',
             'nfl2k5.rosters.arena_growth',
             'nfl2k5.players.disc_roster',
             'nfl2k5.portraits_faces.live_textures',
@@ -99,7 +100,13 @@ class ProductCatalogTests(unittest.TestCase):
             'nfl2k5.menus.modern_naming',
             'nfl2k5.mode.my_career',
             'nfl2k5.mode.my_career_inline',
+            'nfl2k5.gameplay.coverage_trail',
+            'nfl2k5.gameplay.cpu_money_downs',
+            'nfl2k5.gameplay.deep_zone_tiers',
+            'nfl2k5.gameplay.franchise_edit_player',
+            'nfl2k5.gameplay.playbook_pair',
             'nfl2k5.franchise.practice_squad_screen',
+            'nfl2k5.franchise.weekly_preparation',
             'nfl2k5.menus.layouts',
             'nfl2k5.mode_state_routing.state_graph',
             'nfl2k5.crib.movie_reclaim',
@@ -136,6 +143,7 @@ class ProductCatalogTests(unittest.TestCase):
             'nfl2k5.franchise_restoration_cross_title.port',
             'nfl2k5.gameplay.xbe_space',
             'nfl2k5.scripts.director_playbook',
+            'nfl2k5.scripts.match_coverage',
             'nfl2k5.scripts.play_rules',
             'nfl2k5.screens.timing',
             'nfl2k5.textures.all_p8',
@@ -143,7 +151,7 @@ class ProductCatalogTests(unittest.TestCase):
         first_ids = [binding.capability_id for binding in first.capabilities]
         second_ids = [binding.capability_id for binding in second.capabilities]
 
-        self.assertEqual(len(first_ids), 78)
+        self.assertEqual(len(first_ids), 86)
         self.assertEqual(len(first_ids), len(set(first_ids)))
         self.assertEqual(set(first_ids), expected)
         self.assertEqual(first_ids, second_ids)
@@ -178,7 +186,7 @@ class ProductCatalogTests(unittest.TestCase):
         catalog = build_nfl2k5_product_catalog(self.registry)
         expected = {
             ProductCategory.UNIFORMS_EQUIPMENT: (5, 4, 0, 0, 0, 1, 0),
-            ProductCategory.ROSTERS_PLAYERS: (11, 11, 0, 0, 0, 0, 0),
+            ProductCategory.ROSTERS_PLAYERS: (12, 12, 0, 0, 0, 0, 0),
             ProductCategory.TEAM_IDENTITY: (0, 0, 0, 0, 0, 0, 0),
             ProductCategory.FIELD_ART_CREATE_TEAM: (1, 1, 0, 0, 0, 0, 0),
             ProductCategory.STADIUMS: (10, 6, 1, 0, 0, 3, 0),
@@ -186,8 +194,8 @@ class ProductCatalogTests(unittest.TestCase):
             ProductCategory.MENUS_UI: (6, 3, 2, 0, 0, 1, 0),
             ProductCategory.CRIB: (2, 2, 0, 0, 0, 0, 0),
             ProductCategory.AUDIO: (8, 7, 0, 1, 0, 0, 0),
-            ProductCategory.SLIDERS_GAMEPLAY: (23, 15, 5, 0, 0, 0, 3),
-            ProductCategory.PLAYBOOKS_PLAYS: (4, 4, 0, 0, 0, 0, 0),
+            ProductCategory.SLIDERS_GAMEPLAY: (29, 21, 5, 0, 0, 0, 3),
+            ProductCategory.PLAYBOOKS_PLAYS: (5, 5, 0, 0, 0, 0, 0),
             ProductCategory.TEXTURES: (1, 1, 0, 0, 0, 0, 0),
         }
         for category, values in expected.items():
@@ -215,7 +223,7 @@ class ProductCatalogTests(unittest.TestCase):
                 catalog.counts.evidence,
                 catalog.counts.research,
             ),
-            (78, 58, 8, 1, 0, 8, 3),
+            (86, 66, 8, 1, 0, 8, 3),
         )
 
     def test_ambiguous_stadium_surface_and_team_identity_are_explicit(self) -> None:
@@ -268,7 +276,7 @@ class ProductCatalogTests(unittest.TestCase):
         )
         binding = catalog.binding("nfl2k5.audio.audo_wav")
 
-        self.assertEqual(len(seen), 78)
+        self.assertEqual(len(seen), 86)
         self.assertEqual(
             binding.findings_notes,
             ("850 AUDO records mapped", "Export stays local"),

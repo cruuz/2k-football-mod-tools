@@ -529,6 +529,22 @@
       "family": 0,
       "scope": "line",
       "note": "A copied pass set is data. The automatic slide offset is runtime-only."
+    },
+    {
+      "id": "match_vertical",
+      "label": "Match: vertical handoff",
+      "names": [],
+      "family": 1,
+      "scope": "active",
+      "note": "EXPERIMENTAL / UNWITNESSED. Native depth-triggered corner/safety handoff. Select both complete chains. Full modern matching keys are unproved."
+    },
+    {
+      "id": "match_inside",
+      "label": "Match: inside-break exchange",
+      "names": [],
+      "family": 1,
+      "scope": "active",
+      "note": "EXPERIMENTAL / UNWITNESSED. Native lateral crossing triggers a reciprocal man/zone exchange. Select both complete chains; this does not implement a Palms #2-out key."
     }
   ],
   "vocabulary": [
@@ -608,6 +624,20 @@
       "evidence": "PROVED predicate; HYPOTHESIS modern read",
       "meaning": "Kinds 0/1 test assignment/header, 4 position/velocity, 5 geometry, 6 another decision, 7 personnel. No new EDGE/apex recognition policy is authored.",
       "consumers": "0x001ACE40, 0x001AC7B0; ASTRA_READ_OPTION_BUILD_REPORT.md"
+    },
+    {
+      "term": "Match: vertical handoff",
+      "encoding": "0x1B -> 0x0E -> 0x0D paired with 0x1B -> 0x0D -> 0x0E; man boundary 7",
+      "evidence": "PROVED",
+      "meaning": "The man defender signals its zone partner on predicted depth beyond the defender and at least 15 yards downfield. Both complete chains must be copied.",
+      "consumers": "0x0019FA10, 0x001A2E70, 0x001A5090"
+    },
+    {
+      "term": "Match: inside-break exchange",
+      "encoding": "Reciprocal man/zone continuations; initial man boundary 13 or 14",
+      "evidence": "PROVED",
+      "meaning": "The man defender tests a lateral crossing past itself and the midpoint to a native reference player, signals its partner and takes a zone. These masks do not include a depth trigger.",
+      "consumers": "0x0019FA10, 0x001A2E70, 0x001A5090"
     }
   ],
   "unavailable": [
@@ -718,6 +748,24 @@
         "ASTRA_DEFENSE_PLAY_REPORT.md",
         "ASTRA_READ_OPTION_BUILD_REPORT.md",
         "mod_editor/core/nfl2k5_seven_on_seven_book.py"
+      ]
+    },
+    {
+      "id": "match_coverage",
+      "title": "Match coverage: native handoffs and experimental modern calls",
+      "text": [
+        "PROVED census: all 37 books, 9,251 plays, 3,332 defensive plays and 91,833 pool nodes decoded exactly. 59 defensive play records contain man/zone continuations across 105 formation menus. 53 have reciprocal partner slots. Both man-to-zone and zone-to-man matching vocabulary exists; this is one native exchange mechanism, not proof of two complete modern coverage systems.",
+        "Ravens 3-4, Zone Double Steal (play 14, formation 25): outside CB2 slot 9 signals FS slot 7; CB slot 10 signals SS slot 8. The corners start in man. A target predicted 0.2 seconds ahead beyond the defender and at least 15 yards downfield triggers the handoff. The corner then takes a 12-yard zone while the safety changes from its 15-yard zone to man. This supports the expert account; no gameplay was witnessed here.",
+        "Named Rules library bundles are Match: vertical handoff and Match: inside-break exchange. They resolve by decoded chains, including renamed plays. Copy each whole pair; the library preserves node flags and checks friendly references. The six nonreciprocal retail calls stay in the census with warnings and are not offered as safe named bundles.",
+        "Combo Strong Zone in CHI, CIN, JAX, KC, TEN and WAS has nonreciprocal stored partners: slot 9 signals slot 0 but the apparent zone partner is slot 4. The bytes are proved; whether the game repairs or exposes the mismatch in play remains a hypothesis. No retail repair is installed.",
+        "No defensive play in this retail corpus uses a 0x1A predicate. A lone man node with its last flag set, a cushion, a deep landmark or a play name containing Combo does not by itself prove an exchange. Ordinary zone receiver pickup remains native.",
+        "Install data/playbooks/softdrink_match_coverage.2k5book through Install Playbook Pack. Five EXPERIMENTAL / UNWITNESSED calls use the existing compiler and native personnel: Cover 3 Rip/Liz exchange, quarters exchange, Two Read exchange and Cover 1 Robber. They add 122 nodes. Team books replace five coverage records; Editor and PRACTICE append five without replacing drill records.",
+        "Rip/Liz variants use fixed-side inside-break exchanges, with no automatic strength or #2 vertical key. Quarters transfers outside vertical targets to safeties rather than independently reading #2. Two Read uses inside-break transfers, with no Palms #2-out key. The robber is five man assignments, one deep safety and an ordinary shallow middle zone. These are experimental native-rule combinations; full modern matching fidelity is not claimed."
+      ],
+      "links": [
+        "docs/mod_editor/match_coverage/README.md",
+        "docs/mod_editor/match_coverage/census.md",
+        "ASTRA_MATCH_COVERAGE_REPORT.md"
       ]
     },
     {

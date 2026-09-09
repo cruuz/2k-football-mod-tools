@@ -1,0 +1,477 @@
+{
+  "capability_validation": {
+    "changed_capability_files": [
+      "ASTRA_SCOREBUG_FREEZE_V2_REPORT.md",
+      "docs/scorebug_ingame/freeze_v2/trace.json",
+      "docs/scorebug_ingame/witness_r61b.md",
+      "tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_native.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+      "tools/nfl2k5_scorebug_reference.py"
+    ],
+    "full_registry_file_check": "blocked by pre-existing missing docs/research/apf_audio.md",
+    "schema_validation": {
+      "capability_count": 117,
+      "check_files": false,
+      "schema": "vc_mod_capability_registry/v1",
+      "valid": true
+    }
+  },
+  "community_cause_proved": false,
+  "constraints": {
+    "excluded_feature_modules_unchanged": true,
+    "no_audio": true,
+    "no_game_emulator": true,
+    "no_gui": true,
+    "no_network": true,
+    "no_real_disc_build": true,
+    "no_whole_disc_or_pack_ram_read": true,
+    "protected_files_unchanged": true
+  },
+  "manifest": {
+    "inherited_spans": 10808,
+    "production_regeneration_required": true,
+    "release_manifest_modified": false,
+    "release_manifest_sha256": "f4117990ba33f4f29c3796883a22438355d52a0bbe71804e1f3ed472728f0d06",
+    "scratch_source_changes": [
+      {
+        "after": "7ed679f6c0d2ef22f591272f15ad44b1f36acf5a21ae5f21342aaaabbf6fc01a",
+        "before": "f6619fb00bbb7ebc88ceeb3a696f59d3bc269f4fd54cd36f867bd9eb7c0a2faa",
+        "path": "mod_editor/core/mod_build.py"
+      },
+      {
+        "after": "3cfe17df38d5d6d42bf31972848644ed32b7a0462f979b0380ad5c69e384c036",
+        "before": "3b0ced59559ba6274403f0f1d934e5670a0fe513181c009bb1e8590616b3e173",
+        "path": "mod_editor/core/nfl2k5_espn25_rosters.py"
+      },
+      {
+        "after": "5f0e9c0a1da2210c5dbb0d688666249c5c7ab2f8a73b844a99d7ddbd08680f80",
+        "before": "06bc3e9f779a3a841fcb25d1622c34558ab4a181d8a43ec817c4ae9f4f4a7586",
+        "path": "mod_editor/core/nfl2k5_my_career_mode.py"
+      },
+      {
+        "after": "5168342c041c85cacdb728882387cc487fdc7f877d075e70784a91d1421b300d",
+        "before": "72a7c40e72bcdb08f268c3001642cf550a4eaf660772e2c0913726b7c9ed8da0",
+        "path": "mod_editor/core/nfl2k5_my_career_mode_code.py"
+      },
+      {
+        "after": "43901cde05a2e64f1367974e211d67814b87dd1e2bedea4e913a180e281399cf",
+        "before": "0594bdc962a654dd4d564e3982cf0bf37e3f0616a823bf36d8dbc65b3f847b98",
+        "path": "mod_editor/core/nfl2k5_read_option_runtime.py"
+      },
+      {
+        "after": "acadc69936e1615e61a8cbd98000469a94da5ef31f7c0df6e13ef60d240ad969",
+        "before": "96352997b23fca8a5631a77dfe172e491470b6cba56ed7195f420338657525e5",
+        "path": "mod_editor/core/nfl2k5_read_option_runtime_code.py"
+      },
+      {
+        "after": "df0cf28bcf094b390f01baaa80ac39c0371f9bead62c5c6b6c7cad1a04bbb1c7",
+        "before": "a0414c12c82763789a3e3221b25db236e3a2350d5bd4fdf6d74dc4bf71ba7fed",
+        "path": "mod_editor/core/nfl2k5_scorebug_runtime.py"
+      },
+      {
+        "after": "daf42ef851d873f39f68a1ce177dd2fa94dc14e2a7d6ad76938c91f31d98c395",
+        "before": "8e9b926ecee746c209eee1b302baefa143b77d871ffef432fc019faa2abbb65a",
+        "path": "mod_editor/core/nfl2k5_throw_tuning.py"
+      }
+    ]
+  },
+  "maximum_measured_rss_kib": 908812,
+  "pins": {
+    "base_commit": "be99b324f34d536c625efcba7e7ea5d4f104fd2b",
+    "base_runtime_source_sha256": "a0414c12c82763789a3e3221b25db236e3a2350d5bd4fdf6d74dc4bf71ba7fed",
+    "current_runtime_source_sha256": "df0cf28bcf094b390f01baaa80ac39c0371f9bead62c5c6b6c7cad1a04bbb1c7",
+    "generated_code_sha256": "9045ae8b612b29990001c1d74b993fe6a470687ff20b9cc0af6527a2fcfecf94",
+    "generated_code_used": 1404,
+    "lookup_guards": [
+      [
+        405774,
+        30,
+        "92cf59f757d1dd7ae9d4881e2111c386dc28224035aafa39a1daa7fa0ffd8483"
+      ],
+      [
+        15078584,
+        18,
+        "64bf5caa58cd2d97b65e1fd6ebe6ea773d2613e0b83a109a24db9e6f94d91660"
+      ],
+      [
+        15078604,
+        26,
+        "9b1d922215249ee1a24d32042b258442536b1312d420248e595b44414ce698da"
+      ],
+      [
+        274256,
+        44,
+        "9193d3ee49c7eabfc4646ffbae6c3e12a76e43a051e890a4f8971b2dba4fc81b"
+      ],
+      [
+        278352,
+        606,
+        "9bf8b19d176dc9169c8d7b13af5887ce474ed202990d91f77b5601baccd21b71"
+      ]
+    ],
+    "pack_read_mode": "bounded PackView slices",
+    "pack_size": 193710080,
+    "requests": [
+      [
+        "nfl2k5_scorebug_runtime",
+        "code",
+        1408,
+        16
+      ],
+      [
+        "nfl2k5_scorebug_runtime",
+        "data",
+        128,
+        16
+      ]
+    ],
+    "retail_xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+    "retail_xbe_size": 11948032
+  },
+  "prior_runs": [
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_freeze.py -v",
+      "id": "baseline_freeze",
+      "log": ".scratch/freeze-baseline.log",
+      "log_sha256": "7d7c4eafb11b420875d01b0d50ea6b950b92132b83cc1e745d0519410efa8011",
+      "maximum_rss_kib": null,
+      "seconds": 216.661,
+      "status": "OK",
+      "tests": 7
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_read_option_diagnostic_manifest.py -v",
+      "environment": {
+        "NFL2K5_CAVE_MANIFEST": ".scratch/cave-manifest.json (absolute resolved path)"
+      },
+      "id": "read_manifest_original",
+      "log": ".scratch/read_option_diagnostic_manifest.log",
+      "log_sha256": "b1580910946ddabeae2f8f53c8152af6657e5537fd049f094612b3f03437b180",
+      "maximum_rss_kib": 63152,
+      "note": "Existing test imports a fixed DEFAULT_MANIFEST and ignores the environment; it fails on known stale unrelated source hashes. Scratch adapter redirects that constant only.",
+      "seconds": 0.047,
+      "status": "FAILED (failures=1)",
+      "tests": 1
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_guardian_manifest.py -v",
+      "id": "guardian_observer_original",
+      "log": ".scratch/guardian_manifest.log",
+      "log_sha256": "a8fa5c3485201ecc8cd85d152823d48e2a04a32c9fcae0dfef1263de6d8f03e7",
+      "maximum_rss_kib": 239064,
+      "note": "Existing ESPN XbePatch caches apply_xbe before observation. Raw 0xb2319 (VA 0xc2319) is omitted by the recorder. The excluded production module was not edited.",
+      "seconds": 172.563,
+      "status": "FAILED (errors=1)",
+      "tests": 1
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_guardian_manifest.py -v",
+      "id": "guardian_observer_after_dynamic_static_adapter",
+      "log": ".scratch/guardian-manifest-final.log",
+      "log_sha256": "b4c5bec81706362754bf652b9df18e7f4ffda34759acd232e6669f0e201a86f0",
+      "maximum_rss_kib": 238984,
+      "note": "Still fails at the same ESPN span; the scorebar adapter was not the cause. Its dynamic forwarding is retained for correct recorder visibility.",
+      "seconds": 180.288,
+      "status": "FAILED (errors=1)",
+      "tests": 1
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py -v",
+      "id": "prior_ingame_code_pin",
+      "log": ".scratch/scorebug_ingame_fix.log",
+      "log_sha256": "5b7e6bf736a2558e78244aebe552fedc7462737aa5f4d68a2f3b30127c7a6637",
+      "maximum_rss_kib": 347212,
+      "note": "Old test pinned all generated dark-clock code to r64. Updated the intentional binding-byte pin and test name while retaining exact one-color-word isolation and composition/refusal assertions.",
+      "seconds": 85.832,
+      "status": "FAILED (failures=1)",
+      "tests": 9
+    }
+  ],
+  "runs": [
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py -v",
+      "environment": {
+        "NFL2K5_SCOREBUG_FREEZE_V2_TRACE": ".scratch/freeze-v2-trace.json"
+      },
+      "id": "native_v2",
+      "log": ".scratch/freeze-v2.log",
+      "log_sha256": "db93d803cdd2e157f92ac80453a22b2677f969bcc3f0df2ab52ef6cbd6f5f846",
+      "maximum_rss_kib": 340164,
+      "seconds": 330.266,
+      "status": "OK",
+      "tests": 7
+    },
+    {
+      "command": "python3 tests/mod_editor/test_xbe_patch_memory_writes.py -v",
+      "environment": {
+        "NFL2K5_CAVE_MANIFEST": ".scratch/cave-manifest.json (absolute resolved path)"
+      },
+      "id": "memory_gate",
+      "log": ".scratch/memory-gate.log",
+      "log_sha256": "067ce1a0a4177e5a9513df3186e647bd17e752c270c033cc26917f99fca847ba",
+      "maximum_rss_kib": null,
+      "note": "Run began after the binding fix, before adding the final constructor guard; emitted hook bytes are identical. Cave gate uses final production source. This earlier run was not RSS-instrumented.",
+      "seconds": 951.658,
+      "status": "OK",
+      "tests": 95
+    },
+    {
+      "command": "python3 tests/mod_editor/test_xbe_patch_cave_references.py -v",
+      "environment": {
+        "NFL2K5_CAVE_MANIFEST": ".scratch/cave-manifest.json (absolute resolved path)"
+      },
+      "id": "cave_gate",
+      "log": ".scratch/cave-gate.log",
+      "log_sha256": "31c265a6ea5e9293cbb9630b0338744ad51fa55142801209d947f6bf5ca24184",
+      "maximum_rss_kib": 527528,
+      "seconds": 1080.981,
+      "status": "OK",
+      "tests": 107
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py -v",
+      "id": "pairwise",
+      "log": ".scratch/pairwise.log",
+      "log_sha256": "4f51789f551048a95c0c919357af98feabafd1c72aebb19951d18eaee45243d1",
+      "maximum_rss_kib": 185644,
+      "seconds": 908.485,
+      "status": "OK",
+      "tests": 146
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_runtime.py -v",
+      "id": "runtime",
+      "log": ".scratch/scorebug_runtime.log",
+      "log_sha256": "13d1d4f4ac3c736aef9b0ae374ecbc8cba205892fd950b51a7f5fd781b412199",
+      "maximum_rss_kib": 270256,
+      "seconds": 127.842,
+      "status": "OK",
+      "tests": 12
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_freeze.py -v",
+      "id": "freeze",
+      "log": ".scratch/scorebug_freeze.log",
+      "log_sha256": "b584957d1f29c4889665d481b4cd3f7c67b81c37a868522f200231fd10e3a459",
+      "maximum_rss_kib": 317772,
+      "seconds": 214.672,
+      "status": "OK",
+      "tests": 7
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_native.py -v",
+      "id": "native_loader",
+      "log": ".scratch/scorebug_native.log",
+      "log_sha256": "3b80264f55ded47eb136c429580e9a43110e70f8b7be5da29cbb87ab7c8d0a1f",
+      "maximum_rss_kib": 202112,
+      "seconds": 103.26,
+      "status": "OK",
+      "tests": 4
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_fonts.py -v",
+      "id": "fonts",
+      "log": ".scratch/scorebug_fonts.log",
+      "log_sha256": "71cf3c288fa52a1b223f5c3660ca3be1b2591543ff7ca8cfe97c53f0a3cd4f6b",
+      "maximum_rss_kib": 288724,
+      "seconds": 45.193,
+      "status": "OK",
+      "tests": 9
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_projection.py -v",
+      "id": "projection",
+      "log": ".scratch/scorebug_projection.log",
+      "log_sha256": "b364997f49000f812379839bde7898d52442a45573d3d482dc440c456ce25048",
+      "maximum_rss_kib": 305656,
+      "seconds": 29.785,
+      "status": "OK",
+      "tests": 14
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebar_v3.py -v",
+      "id": "static_v3",
+      "log": ".scratch/scorebar_v3.log",
+      "log_sha256": "91546c01d5cb45d0097488f191571e71662084a8bc801fe80b6728787f040079",
+      "maximum_rss_kib": 515444,
+      "seconds": 67.825,
+      "status": "OK",
+      "tests": 9
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_resources.py -v",
+      "id": "resources",
+      "log": ".scratch/scorebug_resources.log",
+      "log_sha256": "7dcb35fc4b2cd5b2269406d0ab30bf1fff08c0d71fc1b59fd078b38fffc559da",
+      "maximum_rss_kib": 168104,
+      "seconds": 103.484,
+      "status": "OK",
+      "tests": 6
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_ingame.py -v",
+      "id": "ingame",
+      "log": ".scratch/scorebug_ingame.log",
+      "log_sha256": "1b7e57afdb3e712fb136727127e68eb45ce3b85dd52bb50bc07da5c29e5f8279",
+      "maximum_rss_kib": 150768,
+      "seconds": 9.697,
+      "status": "OK",
+      "tests": 11
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py -v",
+      "id": "ingame_fix",
+      "log": ".scratch/scorebug-ingame-fix-final.log",
+      "log_sha256": "49d7dc8fead09c086443a52ac7fbaf8bcc1b4cdaed86dd0df5198aa0fc387b1c",
+      "maximum_rss_kib": 366956,
+      "seconds": 92.162,
+      "status": "OK",
+      "tests": 9
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_versions.py -v",
+      "id": "versions",
+      "log": ".scratch/scorebug_versions.log",
+      "log_sha256": "0086d3a0541eceaa1494c1760da6c2e9d1d3ea82fa0ab946bd7a093fc1cd70fd",
+      "maximum_rss_kib": 148500,
+      "seconds": 5.886,
+      "status": "OK",
+      "tests": 4
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py -v",
+      "id": "adapter",
+      "log": ".scratch/scorebug_unified_adapter.log",
+      "log_sha256": "66885ffb8587565737ca136e9376555c9b57d919980aef7603a5d05678196ffa",
+      "maximum_rss_kib": 30464,
+      "seconds": 0.053,
+      "status": "OK",
+      "tests": 5
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_cave_oracle.py -v",
+      "environment": {
+        "NFL2K5_CAVE_MANIFEST": ".scratch/cave-manifest.json (absolute resolved path)"
+      },
+      "id": "oracle",
+      "log": ".scratch/cave_oracle.log",
+      "log_sha256": "980805da0d5e00428782c0b405aa07300f11b26ba9dbfc3bd13868c14283141b",
+      "maximum_rss_kib": 908812,
+      "seconds": 238.265,
+      "status": "OK",
+      "tests": 28
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_music_playlist_manifest.py -v",
+      "environment": {
+        "NFL2K5_CAVE_MANIFEST": ".scratch/cave-manifest.json (absolute resolved path)"
+      },
+      "id": "playlist_manifest",
+      "log": ".scratch/music_playlist_manifest.log",
+      "log_sha256": "a723955f2dc90cb54ace49496f8ab65c2a426a024fb730c7803b6913c4fd1575",
+      "maximum_rss_kib": 131556,
+      "seconds": 3.963,
+      "status": "OK",
+      "tests": 2
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_screen_hooks_manifest.py -v",
+      "environment": {
+        "NFL2K5_CAVE_MANIFEST": ".scratch/cave-manifest.json (absolute resolved path)"
+      },
+      "id": "screen_manifest",
+      "log": ".scratch/screen_hooks_manifest.log",
+      "log_sha256": "4c63fbd59d49e1dd5c94136e6394a16ae581c954f8997121c9187f82c6b22c9f",
+      "maximum_rss_kib": 129748,
+      "seconds": 3.962,
+      "status": "OK",
+      "tests": 3
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_manifest.py -v",
+      "environment": {
+        "NFL2K5_CAVE_MANIFEST": ".scratch/cave-manifest.json (absolute resolved path)"
+      },
+      "id": "career_manifest",
+      "log": ".scratch/my_career_manifest.log",
+      "log_sha256": "4e3e1b614d870ba52b8e8ef4b8fe7d42ada9f00e79d4f1dae5a876b73fc83bb0",
+      "maximum_rss_kib": 137144,
+      "seconds": 6.452,
+      "status": "OK",
+      "tests": 3
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_defensive_try_manifest.py -v",
+      "environment": {
+        "NFL2K5_CAVE_MANIFEST": ".scratch/cave-manifest.json (absolute resolved path)"
+      },
+      "id": "try_manifest",
+      "log": ".scratch/defensive_try_manifest.log",
+      "log_sha256": "aa64c8e87b8a7f86e66a65d6625bad8ad92a22cf59ad23567958cf304617e0fd",
+      "maximum_rss_kib": 155972,
+      "seconds": 4.492,
+      "status": "OK",
+      "tests": 3
+    },
+    {
+      "command": "python3 .scratch/run_read_option_manifest.py -v",
+      "environment": {
+        "NFL2K5_CAVE_MANIFEST": ".scratch/cave-manifest.json (absolute resolved path)"
+      },
+      "id": "read_manifest_scratch",
+      "log": ".scratch/read-option-manifest-scratch.log",
+      "log_sha256": "64a014eedebe9241989948267da3090c09b581208e0245301359256e361f6890",
+      "maximum_rss_kib": 173208,
+      "seconds": 13.671,
+      "status": "OK",
+      "tests": 1
+    },
+    {
+      "command": "python3 .scratch/run_guardian_manifest.py -v",
+      "environment": {
+        "NFL2K5_CAVE_MANIFEST": ".scratch/cave-manifest.json (absolute resolved path)"
+      },
+      "id": "guardian_manifest_observed",
+      "log": ".scratch/guardian-manifest-observed.log",
+      "log_sha256": "edb3027da7ee0dc170b39ee801edaee961affbce10ff559e805affa506096043",
+      "maximum_rss_kib": 237736,
+      "note": "Scratch adapter forwards the existing ESPN class writer to its module at call time. All original assertions and actual owner writes are retained.",
+      "seconds": 171.831,
+      "status": "OK",
+      "tests": 1
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py PairwiseCompositionTests.test_scorebug_runtime__static_scorebar_v3 -v",
+      "id": "final_static_adapter",
+      "log": ".scratch/pairwise-final-adapter.log",
+      "log_sha256": "a2d0a03cad56049d33070a1f7eebbe538ff0cb6a5bc743c942764407ff433ccf",
+      "maximum_rss_kib": 138580,
+      "note": "Focused pair replay after making the shared static adapter resolve the module writer at call time. The full matrix used its earlier equivalent direct alias.",
+      "seconds": 7.155,
+      "status": "OK",
+      "tests": 1
+    }
+  ],
+  "runtime_witnessed": false,
+  "schema": "scorebug-freeze-validation-v2",
+  "scratch_adapter_sources": {
+    ".scratch/run_guardian_manifest.py": "\"\"\"Observe the existing ESPN adapter without editing its protected module.\n\nIts staticmethod caches apply_xbe before the observer installs module wrappers.\nOnly forward that alias at call time; run the original test and assertions.\nNo writer output, changed-byte attribution or reservation check is replaced.\n\"\"\"\nfrom pathlib import Path\nimport runpy\nimport sys\n\nsys.path.insert(0, str(Path(__file__).resolve().parents[1]))\nfrom mod_editor.core import nfl2k5_espn25_rosters as espn\nespn.XbePatch.apply = staticmethod(lambda payload: espn.apply_xbe(payload))\nrunpy.run_path('tests/mod_editor/test_nfl2k5_guardian_manifest.py', run_name='__main__')\n",
+    ".scratch/run_read_option_manifest.py": "\"\"\"Supply the documented scratch manifest to an older test's fixed default.\n\nThe test and every assertion run unchanged. It imports DEFAULT_MANIFEST\ndirectly and does not implement NFL2K5_CAVE_MANIFEST itself.\n\"\"\"\nimport os\nfrom pathlib import Path\nimport runpy\nimport sys\n\nsys.path.insert(0, str(Path(__file__).resolve().parents[1]))\nfrom mod_editor.core import nfl2k5_cave_oracle as oracle\noracle.DEFAULT_MANIFEST = Path(os.environ['NFL2K5_CAVE_MANIFEST']).resolve()\nrunpy.run_path('tests/mod_editor/test_nfl2k5_read_option_diagnostic_manifest.py', run_name='__main__')\n"
+  },
+  "source_sha256": {
+    "mod_editor/core/nfl2k5_scorebug_runtime.py": "df0cf28bcf094b390f01baaa80ac39c0371f9bead62c5c6b6c7cad1a04bbb1c7",
+    "tests/fixtures/nfl2k5_scorebug_runtime_v4.py": "9d660b0b30a827ec03e04d4c4fce55063cb4068f54f96fed486ae307cecff90f",
+    "tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py": "a4bcd0fd522ca0f278ea33e5e3d32dc1b2e44d4116392ae3194734ffca36e133",
+    "tests/mod_editor/test_nfl2k5_scorebug_freeze.py": "d25bab7cd680fe88ae5703ef3fc8adc4fc8e862fd5be40becc49e3a159526f81",
+    "tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py": "1913e0e1fcf435a78b2b021fd7acbb068d0e184f692d30bdd52c9173b7b9c007",
+    "tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py": "55d00c9138964d5949d0c8b2f5ed097acabda93e8e71466fd13f0a2744528973",
+    "tests/mod_editor/test_nfl2k5_scorebug_runtime.py": "66d58aae0dffbdc15bafe3ac203d32f38bdb8bd9089e13bc355c273a39466fae",
+    "tests/nfl2k5_allocator_stack.py": "e0526af7ae58b747334de9e8e48533ebf2ba8b0dfead4d805b108b7c26178b97",
+    "tests/nfl2k5_scorebug_entry_fixture.py": "e5dfcb02b172c0074d0c1c9fcefd2092da98744b88e90a951121fbdf6b456d57",
+    "tools/nfl2k5_scorebug_projection.py": "57d681e0188927f3532edc000f7582fafd812d248f3726632275a90c7e9b1486"
+  },
+  "successful_test_executions": 487,
+  "trace_sha256": "cc7827f95ff1c9cfc12af9b72b334e6111ca222ca2d2d1567f9c36c48697293d"
+}

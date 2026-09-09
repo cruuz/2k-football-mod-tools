@@ -134,6 +134,55 @@ class ImageTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'rebuild'):
             patch.apply(output, intent_table=patch.compile_intent_table()[0])
 
+    def test_v5_animation_and_scheduler_dependencies_refuse_before_install(self):
+        from unittest.mock import patch as mock_patch
+        for va in (0x313520, 0x3133A0, 0x1CD550, 0x300B00, 0x2FF7C0,
+                   0x2E36F0, 0x214B90, 0x1B84E0, 0x50F4EC, 0x531A08, 0x215275):
+            bad = bytearray(self.retail)
+            bad[XbeImage(self.retail).offset(va)] ^= 1
+            bad = repin(bad)
+            before = hashlib.sha256(bad).digest()
+            with mock_patch.object(space, 'install_code', side_effect=AssertionError('write before refusal')):
+                with self.assertRaises(ValueError):
+                    patch.apply(bad)
+            self.assertEqual(hashlib.sha256(bad).digest(), before)
+
+    def test_animation_entry_composes_with_complete_abilities_owner_in_both_orders(self):
+        from mod_editor.core import nfl2k5_abilities_runtime as abilities
+        seed = space.apply(self.retail, patch.REQUESTS+abilities.REQUESTS, scaleout=True)[0]
+        for diagnostic in (False, True):
+            left = patch.apply(abilities.apply(seed)[0], diagnostic=diagnostic)[0]
+            right = abilities.apply(patch.apply(seed, diagnostic=diagnostic)[0])[0]
+            self.assertEqual(left, right)
+            self.assertEqual(patch.status(left), 'applied')
+            self.assertEqual(abilities.status(left), 'applied')
+            bad = bytearray(left)
+            bad[XbeImage(left).offset(abilities.HOOKS['initialize'][0])+1] ^= 1
+            with self.assertRaisesRegex(ValueError, 'abilities animation neighbor'):
+                patch.apply(repin(bad))
+
+    def test_screen_guard_validates_abilities_and_try_neighbors_in_both_orders(self):
+        from mod_editor.core import nfl2k5_abilities_runtime as abilities
+        from mod_editor.core import nfl2k5_defensive_try as tries
+        from mod_editor.core import nfl2k5_screen_hooks as screen
+        requests = patch.REQUESTS+abilities.REQUESTS+tries.REQUESTS+screen.REQUESTS
+        seed = space.apply(self.retail, requests, scaleout=True)[0]
+        for diagnostic in (False, True):
+            outputs = []
+            for order in ((abilities, tries, patch, screen), (screen, patch, tries, abilities)):
+                result = seed
+                for owner in order:
+                    result = owner.apply(result, **({'diagnostic': diagnostic} if owner is patch else {}))[0]
+                for owner in order:
+                    self.assertEqual(owner.status(result), 'applied')
+                    self.assertEqual(owner.apply(result)[0], result)
+                outputs.append(result)
+            self.assertEqual(*outputs)
+            bad = bytearray(outputs[0])
+            bad[XbeImage(outputs[0]).offset(tries.HOOKS['cpu_return'][0])+1] ^= 1
+            with self.assertRaisesRegex(ValueError, 'defensive try carry neighbor'):
+                patch.apply(repin(bad))
+
     def test_mixed_hooks_dependencies_code_tables_and_partial_union_refuse(self):
         image = XbeImage(self.patched)
         places = patch.allocations(self.patched)

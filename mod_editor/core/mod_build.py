@@ -100,7 +100,7 @@ class BuildPlan:
     returner_fix: bool = False
     progression: bool = False
     scheme_labels: bool = False   # depth-chart slot labels by scheme: 4-3 SAM/MIKE/WILL, 3-4 EDGE/MIKE/WILL/NT
-    camera: bool = False          # Far at startup/game entry, with room above the scorebar; experimental
+    camera: bool = False          # Standard default, Far and Broadcast session choices; experimental
     kick_rules: bool = False      # kickoff 35 / touchback 35 (2026) / PAT 15, FG ceiling ~70 yd for elite legs
     kick_power: bool = False      # FG ceiling ~70 yd for elite legs ONLY (retail kick spots) - the BASIC preset's kicking fix
     # dynamic-kickoff alignment (2024+ rule, PHASE 1 = data only): coverage on the receiving 40, return
@@ -132,6 +132,16 @@ class BuildPlan:
     franchise_autosave: bool = False
     crib_reclaim: bool = False
     screen_hooks: bool = False
+    coverage_trail: bool = False
+    weekly_prep: bool = False             # Weekly Preparation: safeties in DB drills; owner for the two suboptions; experimental, off in every preset
+    weekly_prep_cpu: bool = False         # CPU teams run weekly prep before their games (needs weekly_prep)
+    weekly_prep_remember: bool = False    # keep and reapply the human plan (needs weekly_prep)
+    deep_zone_facing: bool = False        # deep-zone corners keep facing the QB on a slower drop; experimental, off in every preset
+    deep_zone_bail: bool = False          # three-deep press start with a directional bail (ends at seven yards alone); experimental, off in every preset
+    deep_zone_bail_calls: tuple = ()      # staged press-bail authoring calls (asset selector + formation/front/coverage indices); staging is not wired yet, must stay empty
+    playbook_pair: bool = False           # separate offensive and defensive playbooks (pregame Options rows); refuses with read option / QB spy; experimental, off in every preset
+    cpu_money_downs: str = "retail"      # CPU fourth downs and first downs: retail / modern / aggressive; experimental, retail in every preset
+    franchise_edit_player: bool = False   # Edit Player on Franchise Player Contracts (needs Position row + allocator); experimental, off in every preset
     reserves_16: bool = False
     created_teams_extra: int = 0
     defensive_try: bool = False
@@ -142,6 +152,9 @@ class BuildPlan:
     practice_squad_screen: bool = False  # native Coach's Desk Practice Squad screen (experimental, unwitnessed)
     abilities: bool = False  # player abilities rules v1 (experimental, unwitnessed)
     abilities_off_week: int | None = None  # zero-based regular-season row 0..17 with abilities off, or None
+    abilities_lock_right_stick: bool = True    # rules v2: right-stick moves need the ability (settings of the abilities owner, not separate owners)
+    abilities_lock_special_moves: bool = True  # rules v2: each special move needs its stored permission
+    abilities_lock_speedster: bool = True      # rules v2: Speed above 99 needs Speedster
     qb_spy: bool = False  # zone, man and rush QB spy runtime (experimental, unwitnessed)
     calendar_engine: bool = False  # the complete 128-season calendar (implementation half of the 128-season option)
     coverage_slider: bool = False
@@ -176,7 +189,7 @@ class BuildPlan:
     # 7-on-7 practice: a fifth Practice Type (Practice -> Scrimmage -> Practice Type -> 7-On-7) that plays as
     # Full Scrimmage with the practice book loaded for both teams, plus the 7-on-7 sets/plays written into
     # PRACTICE-pb.iff (linemen parked at the sideline, a 4-second timer rusher); needs a disc image; unwitnessed
-    seven_on_seven: bool = False
+    seven_on_seven: bool = False  # v2: Practice Type 7-On-7 with retail line spots, offensive pass sets, three idle defensive linemen and one end on a four-second delay; experimental, off in every preset
     # real team history for the roster's past seasons on the Player Card: "retail" = the shipped nflverse CSV
     # (data/nfl2k5_retail_team_history.csv), a path = a user CSV, "" = off; disc images only; shows in franchises
     # CREATED from the copy; costs one pool dword per season row (the game folds the oldest seasons a bit earlier).
@@ -285,7 +298,7 @@ class BuildPlan:
                 or self.position_row or self.probowl_order or bool(self.penalties) or bool(self.uniform_choice)
                 or self.kick_laces or self.franchise_practice or bool(self.prospect_names) or self.player_star
                 or self.modern_naming or self.crib_reclaim or self.read_option_runtime or self.franchise_2026_rules or self.senior_bowl
-                or self.guardian_overlay or self.my_career or self.screen_hooks or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave
+                or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave
                 or self.momentum_collisions or self.scorebug_runtime or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic"))
 
@@ -308,9 +321,9 @@ PRESETS: dict[str, dict[str, Any]] = {
         "momentum": 0, "momentum_contact": False, "momentum_collisions": False, "momentum_collision_level": 0,
         "read_option_runtime": False, "franchise_2026_rules": False, "senior_bowl": False,
         "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "franchise_autosave": False,
-        "screen_hooks": False, "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
+        "screen_hooks": False, "coverage_trail": False, "franchise_edit_player": False, "cpu_money_downs": "retail", "weekly_prep": False, "weekly_prep_cpu": False, "weekly_prep_remember": False, "playbook_pair": False, "deep_zone_facing": False, "deep_zone_bail": False, "deep_zone_bail_calls": (), "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
         "music_shuffle": False, "music_shuffle_selection": None, "practice_squad_screen": False,
-        "abilities": False, "abilities_off_week": None, "qb_spy": False, "calendar_engine": False, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
+        "abilities": False, "abilities_off_week": None, "abilities_lock_right_stick": True, "abilities_lock_special_moves": True, "abilities_lock_speedster": True, "qb_spy": False, "calendar_engine": False, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
         "music_policy": "retail", "music_unlock": False, "music_userlist": False,
         "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": False,
         "catch_slider": True, "accel_ramp": False, "draft_ai": True, "returner_fix": True, "progression": False,
@@ -325,9 +338,9 @@ PRESETS: dict[str, dict[str, Any]] = {
         "momentum": 0, "momentum_contact": False, "momentum_collisions": False, "momentum_collision_level": 0,
         "read_option_runtime": False, "franchise_2026_rules": False, "senior_bowl": False,
         "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "franchise_autosave": True,
-        "screen_hooks": False, "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
+        "screen_hooks": False, "coverage_trail": True, "franchise_edit_player": True, "cpu_money_downs": "retail", "weekly_prep": False, "weekly_prep_cpu": False, "weekly_prep_remember": False, "playbook_pair": False, "deep_zone_facing": False, "deep_zone_bail": False, "deep_zone_bail_calls": (), "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
         "music_shuffle": False, "music_shuffle_selection": None, "practice_squad_screen": False,
-        "abilities": False, "abilities_off_week": None, "qb_spy": False, "calendar_engine": False, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
+        "abilities": False, "abilities_off_week": None, "abilities_lock_right_stick": True, "abilities_lock_special_moves": True, "abilities_lock_speedster": True, "qb_spy": False, "calendar_engine": False, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
         "music_policy": "retail", "music_unlock": False, "music_userlist": False,
         "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": True,
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
@@ -342,9 +355,9 @@ PRESETS: dict[str, dict[str, Any]] = {
         "momentum": 0, "momentum_contact": False, "momentum_collisions": False, "momentum_collision_level": 0,
         "read_option_runtime": False, "franchise_2026_rules": False, "senior_bowl": False,
         "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "franchise_autosave": True,
-        "screen_hooks": False, "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
+        "screen_hooks": False, "coverage_trail": True, "franchise_edit_player": True, "cpu_money_downs": "retail", "weekly_prep": False, "weekly_prep_cpu": False, "weekly_prep_remember": False, "playbook_pair": False, "deep_zone_facing": False, "deep_zone_bail": False, "deep_zone_bail_calls": (), "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
         "music_shuffle": False, "music_shuffle_selection": None, "practice_squad_screen": False,
-        "abilities": False, "abilities_off_week": None, "qb_spy": False, "calendar_engine": True, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
+        "abilities": False, "abilities_off_week": None, "abilities_lock_right_stick": True, "abilities_lock_special_moves": True, "abilities_lock_speedster": True, "qb_spy": False, "calendar_engine": True, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
         "music_policy": "retail", "music_unlock": False, "music_userlist": False,
         "guardian_cap": True,
         "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": True,
@@ -407,6 +420,12 @@ def availability() -> dict[str, bool]:
                                ("my_career", "nfl2k5_my_career"),
                                ("franchise_autosave", "nfl2k5_franchise_autosave"),
                                ("screen_hooks", "nfl2k5_screen_hooks"),
+                               ("coverage_trail", "nfl2k5_coverage_trail"),
+                               ("franchise_edit_player", "nfl2k5_franchise_edit_player"),
+                               ("cpu_money_downs", "nfl2k5_cpu_money_downs"),
+                               ("weekly_prep", "nfl2k5_weekly_prep"), ("weekly_prep_cpu", "nfl2k5_weekly_prep"), ("weekly_prep_remember", "nfl2k5_weekly_prep"),
+                               ("playbook_pair", "nfl2k5_playbook_pair"),
+                               ("deep_zone_facing", "nfl2k5_deep_zone"), ("deep_zone_bail", "nfl2k5_deep_zone"),
                                ("reserves_16", "nfl2k5_roster_arena_image"),
                                ("created_teams_extra", "nfl2k5_roster_arena_image"),
                                ("defensive_try", "nfl2k5_defensive_try"), ("zone_drop_cap", "nfl2k5_zone_drop"), ("all_stadiums", "nfl2k5_roster_storage"),
@@ -546,7 +565,7 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         "season_cap": report.get("season_cap", "unknown"),
         **{key: report.get(key, "unknown") for key in
            ("momentum", "momentum_contact", "momentum_collisions", "momentum_settings",
-            "read_option_runtime", "read_option_runtime_settings", "screen_hooks", "screen_hooks_settings",
+            "read_option_runtime", "read_option_runtime_settings", "screen_hooks", "screen_hooks_settings", "coverage_trail", "franchise_edit_player", "cpu_money_downs", "cpu_money_downs_settings", "weekly_prep", "weekly_prep_cpu", "weekly_prep_remember", "weekly_prep_settings", "playbook_pair", "deep_zone_facing", "deep_zone_bail", "deep_zone_settings",
             "guardian_overlay", "guardian_overlay_settings", "guardian_overlay_resources",
             "franchise_2026_rules", "franchise_2026_kernel", "franchise_2026_runtime_enforced",
             "senior_bowl", "senior_bowl_native_available", "my_career", "crib_reclaim", "franchise_autosave",
@@ -759,11 +778,9 @@ def _write_xbe_bytes(target: Path, payload: bytes) -> None:
         target.write_bytes(payload)
 
 
-#: The 7-on-7 practice mode is built and tested but not released yet (Noah's call, 2026-09-03: it is
-#: witnessed through the Practice Type screen and the play-call, not yet through a snap). While False the
-#: checkboxes are hidden, every preset leaves it off and Build reports it unavailable; the modules and their
-#: tests stay so the branch that finishes it merges cleanly.
-SEVEN_ON_SEVEN_RELEASED = False
+#: 7-on-7 v2 is available as an EXPERIMENTAL / UNWITNESSED disc-image opt-in.
+#: All presets leave it off; Noah must witness huddle break and repeated snaps.
+SEVEN_ON_SEVEN_RELEASED = True
 
 IMAGE_SUFFIXES = (".iso", ".xiso", ".img")
 
@@ -984,6 +1001,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("experimental switches must be boolean")
     tt._validate_lever_flags(plan.music_shuffle, plan.practice_squad_screen, plan.abilities, plan.qb_spy, plan.calendar_engine, plan.season_cap)
     tt.abilities_patch._week(plan.abilities_off_week)
+    tt.abilities_patch._locks(lock_right_stick=plan.abilities_lock_right_stick, lock_special_moves=plan.abilities_lock_special_moves,
+                              lock_speedster=plan.abilities_lock_speedster)
     if plan.abilities_off_week is not None and not plan.abilities:
         raise ValueError("abilities_off_week needs abilities")
     if plan.music_shuffle_selection is not None and not isinstance(plan.music_shuffle_selection, dict):
@@ -1044,8 +1063,21 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     legacy_disabled = momentum_on and plan.accel_ramp
     if momentum_on:
         plan = replace(plan, accel_ramp=False)
-    if (momentum_on or plan.read_option_runtime or plan.guardian_overlay or plan.my_career or plan.screen_hooks or plan.reserves_16 or plan.created_teams_extra or plan.defensive_try or plan.zone_drop_cap or plan.all_stadiums or plan.coverage_slider or plan.scramble_tuning
+    if (momentum_on or plan.read_option_runtime or plan.guardian_overlay or plan.my_career or plan.screen_hooks or plan.coverage_trail or plan.franchise_edit_player or plan.cpu_money_downs != "retail" or plan.weekly_prep or plan.weekly_prep_cpu or plan.weekly_prep_remember or plan.playbook_pair or plan.deep_zone_facing or plan.deep_zone_bail or plan.reserves_16 or plan.created_teams_extra or plan.defensive_try or plan.zone_drop_cap or plan.all_stadiums or plan.coverage_slider or plan.scramble_tuning
             or plan.music_shuffle or plan.practice_squad_screen or plan.abilities or plan.qb_spy or plan.calendar_engine or plan.franchise_autosave):
+        plan = replace(plan, xbe_space=True)
+    if plan.franchise_edit_player:
+        plan = replace(plan, position_row=True, xbe_space=True)
+    if plan.weekly_prep_cpu or plan.weekly_prep_remember:
+        plan = replace(plan, weekly_prep=True, xbe_space=True)
+    if plan.my_career and plan.my_career_setup is None:
+        plan = replace(plan, draft_ai=True)  # generic MyCareer (M3 draft) reuses the draft-AI implementation
+    if plan.playbook_pair and (plan.read_option_runtime or plan.qb_spy):
+        raise ValueError(tt.PLAYBOOK_PAIR_CONFLICT)
+    if type(plan.deep_zone_bail_calls) not in (tuple, list) or plan.deep_zone_bail_calls:
+        raise ValueError("Press corner bail authoring calls are not staged by this build; leave deep_zone_bail_calls empty "
+                         "(the runtime bail option serves an already authored press call)")
+    if plan.deep_zone_facing or plan.deep_zone_bail:
         plan = replace(plan, xbe_space=True)
     if plan.scorebug_runtime:
         plan = replace(plan, scorebug=True, xbe_space=True)
@@ -1254,7 +1286,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                music_shuffle=False, music_shuffle_selection=None, practice_squad_screen=False, abilities=False, abilities_off_week=None, qb_spy=False, calendar_engine=False,
                momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False,
                franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False,
-               my_career_setup=None, screen_hooks=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False).wants_xbe_patch() or plan.edge_rename:
+               my_career_setup=None, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False).wants_xbe_patch() or plan.edge_rename:
         progress("Copying and patching default.xbe", 0, 0)
         settings = tt.TuningSettings(plan.max_deep_yards, plan.arc, plan.realistic_flight, plan.arc_by_distance) if plan.throw else None
         kwargs: dict[str, Any] = {"overwrite": plan.overwrite, "progress": progress,
@@ -1613,7 +1645,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             extra_requests=tuple(row for row in all_requests if row[0] != tt.guardian_overlay_patch.OWNER))
         receipt["steps"].append({"step": "guardian_overlay", **rec})
     if ((plan.xbe_space or plan.kickoff_relocated) and not plan.scorebug_runtime
-            or momentum_on or plan.read_option_runtime or plan.guardian_overlay or plan.my_career or plan.screen_hooks
+            or momentum_on or plan.read_option_runtime or plan.guardian_overlay or plan.my_career or plan.screen_hooks or plan.coverage_trail or plan.franchise_edit_player or plan.cpu_money_downs != "retail" or plan.weekly_prep or plan.weekly_prep_cpu or plan.weekly_prep_remember or plan.playbook_pair or plan.deep_zone_facing or plan.deep_zone_bail
             or plan.reserves_16 or plan.created_teams_extra or plan.defensive_try or plan.zone_drop_cap or plan.all_stadiums or plan.coverage_slider or plan.scramble_tuning
             or plan.music_shuffle or plan.practice_squad_screen or plan.abilities or plan.qb_spy or plan.calendar_engine or plan.camera or plan.franchise_autosave):
         progress("Adding experimental extra patch space", 0, 0)
@@ -1631,7 +1663,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             scorebug_runtime=plan.scorebug_runtime, momentum=plan.momentum, momentum_contact=plan.momentum_contact,
             defensive_try=plan.defensive_try, zone_drop_cap=plan.zone_drop_cap, all_stadiums=plan.all_stadiums, coverage_slider=plan.coverage_slider, scramble_tuning=plan.scramble_tuning,
             music_shuffle=plan.music_shuffle, music_shuffle_selection=playlist_selection, practice_squad_screen=plan.practice_squad_screen,
-            abilities=plan.abilities, abilities_off_week=plan.abilities_off_week, qb_spy=plan.qb_spy, qb_spy_intent_table=spy_table,
+            abilities=plan.abilities, abilities_off_week=plan.abilities_off_week, abilities_lock_right_stick=plan.abilities_lock_right_stick,
+            abilities_lock_special_moves=plan.abilities_lock_special_moves, abilities_lock_speedster=plan.abilities_lock_speedster,
+            qb_spy=plan.qb_spy, qb_spy_intent_table=spy_table,
             calendar_engine=plan.calendar_engine, camera=plan.camera, season_cap=plan.season_cap, practice_squad=plan.practice_squad, franchise_practice=plan.franchise_practice,
             dynamic_kickoff_settings=plan.dynamic_kickoff_settings,
             **{**r62, "read_option_intent_table": read_table, "modern_naming": False, "crib_reclaim": False})

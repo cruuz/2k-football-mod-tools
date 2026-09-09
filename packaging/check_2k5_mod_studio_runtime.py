@@ -99,7 +99,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "64ac47e2f3d28c374d4b0b8d44e5eba16b69ce5d70bbbeb6288ddadeb2be10ed",
     "mod_editor/gui/studio_qt.py":
-        "c66c4c4a30c5468f998a592d5670f827bb90ce0d9e8d9dbd221993ffb92a1f5f",
+        "942fd8279fa5f4209af7827c09c55892eb0aa875387aacbad2272db33b2df6a2",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
@@ -1783,6 +1783,9 @@ def main() -> int:
         "mod_editor.core.nfl2k5_depth_locks",
         "mod_editor.core.nfl2k5_season_cap",
         "mod_editor.core.nfl2k5_xbe_space",
+        "mod_editor.core.nfl2k5_camera",
+        "mod_editor.core.nfl2k5_bump_strength",
+        "mod_editor.core.nfl2k5_draft_ai",
         "mod_editor.core.nfl2k5_dynamic_kickoff_relocated",
         "mod_editor.core.nfl2k5_playoff_picture",
         "mod_editor.core.nfl2k5_team_history",
@@ -1793,6 +1796,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_seven_on_seven",
         "mod_editor.core.nfl2k5_boot_logo",
         "mod_editor.core.nfl2k5_seven_on_seven_book",
+        "mod_editor.core.nfl2k5_depth_roles",
         "mod_editor.core.nfl2k5_player_star",
         "mod_editor.core.nfl2k5_player_tags",
         "mod_editor.core.nfl2k5_roster_records",
@@ -1867,6 +1871,23 @@ def main() -> int:
         "mod_editor.core.nfl2k5_roster_arena_growth",
         "mod_editor.core.nfl2k5_roster_arena_image",
         "mod_editor.core.nfl2k5_screen_hooks",
+        "mod_editor.core.nfl2k5_coverage_trail",
+        "mod_editor.core.nfl2k5_coverage_trail_code",
+        "mod_editor.core.nfl2k5_franchise_edit_player",
+        "mod_editor.core.nfl2k5_cpu_money_downs",
+        "mod_editor.core.nfl2k5_cpu_money_downs_code",
+        "mod_editor.core.nfl2k5_weekly_prep",
+        "mod_editor.core.nfl2k5_weekly_prep_code",
+        "mod_editor.core.nfl2k5_weekly_prep_save",
+        "mod_editor.core.nfl2k5_playbook_pair",
+        "mod_editor.core.nfl2k5_playbook_pair_code",
+        "mod_editor.core.nfl2k5_deep_zone",
+        "mod_editor.core.nfl2k5_deep_zone_code",
+        "mod_editor.core.nfl2k5_deep_zone_bail",
+        "mod_editor.core.nfl2k5_my_career_progression",
+        "mod_editor.core.nfl2k5_match_coverage",
+        "mod_editor.core.nfl2k5_abilities_editor",
+        "mod_editor.gui.abilities_panel_qt",
         "mod_editor.core.nfl2k5_screen_hooks_code",
         "mod_editor.core.nfl2k5_senior_bowl",
         "mod_editor.core.nfl2k5_senior_bowl_code",
@@ -1913,6 +1934,9 @@ def main() -> int:
     packs = modules["mod_editor.core.nfl2k5_playbook_pack"]
     require(packs.load_pack(ROOT / "data/playbooks/softdrink_modern_defense.2k5book").schema == packs.DEFENSE_SCHEMA,
             "bundled modern defense pack must retain its v2 intent schema")
+    match = packs.load_pack(ROOT / "data/playbooks/softdrink_match_coverage.2k5book")
+    require(match.schema == packs.DEFENSE_SCHEMA and len(match.plays) == 5 and packs.check_pack(match).ok,
+            "bundled match coverage pack contract changed")
     option = packs.load_pack(ROOT / "data/playbooks/softdrink_option.2k5book")
     require(option.schema == packs.OPTION_SCHEMA and len(option.plays) == 8
             and not option.formations and packs.check_pack(option).ok, "bundled option pack contract changed")
@@ -2021,6 +2045,7 @@ def main() -> int:
         require(all(callable(getattr(owner, method, None)) for method in ("apply", "code_for")), name + " API missing")
     require(callable(modules["mod_editor.core.nfl2k5_momentum"].read_settings), "Momentum settings missing")
     tool_modules = (
+        "nfl2k5_match_coverage",
         "nfl2k5_music_banks",
         "nfl2k5_scorebug_reference",
         "nfl2k5_scorebug_layout",
@@ -2065,11 +2090,11 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 116,
+    require(len(registry.capabilities) == 124,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
-    require(len(product_catalog.capabilities) == 78,
+    require(len(product_catalog.capabilities) == 86,
             "NFL 2K5 product capability count changed")
     _exercise_default_provider_controller(
         modules["mod_editor.core.controller"],
@@ -2472,7 +2497,7 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=116 sections=12 nfl2k5_capabilities=78 "
+        "registry=124 sections=12 nfl2k5_capabilities=86 "
         "reports=16 reviewed_metadata=24 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "

@@ -42,6 +42,13 @@ class Machine:
         self.uc = u.Uc(u.UC_ARCH_X86, u.UC_MODE_32)
         im = XbeImage(payload)
         self.uc.mem_map(0x10000, 0x1510000 - 0x10000)
+        # The existing draft-AI owner stores immutable constants and its
+        # free-agent routine in the owned header logo span. A section-only
+        # mapping silently zeroed the constants and omitted that code.
+        headers = struct.unpack_from('<I', payload, 0x108)[0]
+        if not 0x178 <= headers <= 4096:
+            raise ValueError('bounded XBE header geometry required')
+        self.uc.mem_write(0x10000, payload[:headers])
         for section in im.sections:
             if section.raw_size:
                 self.uc.mem_write(section.start, im.read(section.start, section.raw_size))

@@ -1,4 +1,4 @@
-# 2K5 Mod Studio v1.0 RC86 — Getting Started
+# 2K5 Mod Studio v1.0 RC87 — Getting Started
 
 2K5 Mod Studio lets you modify your own legally dumped USA Xbox copy of
 **ESPN NFL 2K5** without using a hex editor. Think of the source XISO as the
@@ -376,7 +376,7 @@ Build remains disabled until at least one replacement is staged.
   asset.
 
 These labels come from the same capability registry used by the build system.
-The current registry has 116 cross-title rows, including 78 Xbox NFL 2K5
+The current registry has 124 cross-title rows, including 86 Xbox NFL 2K5
 capabilities and the separate PS2 save-import bridge. No current 2K5 capability
 is labeled Coming Soon, and an asset never becomes writable merely because it
 has a preview.
@@ -1566,7 +1566,7 @@ folder, then press **Create MyPlayer**. It writes a signed `MyCareer.zip`, its J
 is refused with a message to create MyPlayer again). In the built game, MyCareer sits on the Game Modes
 row where First Person Football was and opens the native Load and Save screen; a build without a setup
 only explains itself. The CPU calls plays, snaps and kicks and manages the club; input stays on MyPlayer's
-body. Off in every preset and nothing has been booted. What does not ship yet: creating MyPlayer from
-inside the game, the apartment hub and the career save. That mode is designed, its native prerequisites
-are proved and its hub art is authored, and the Build caption "MyCareer: create MyPlayer in the game" is
-reserved for it; until it lands, the studio page above is the only way in.
+body. Off in every preset. Since beta 62 the in-game mode ships behind the Build caption "MyCareer: draft and
+upgrades": create MyPlayer on the game's own screen, sign as an undrafted free agent or (beta 63) enter the
+draft, live in the Apartment, earn XP and buy upgrades. Noah has played the beta-62 signing route; the draft,
+Senior Bowl preparation and upgrades are unwitnessed and the hub art is still blocked.

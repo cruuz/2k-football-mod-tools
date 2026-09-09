@@ -111,6 +111,54 @@ def final_table_receipt(receipt, final_hashes):
     return receipt
 
 
+def certify_read_identities(pairs, receipt):
+    """Prove each pointer-independent runtime fingerprint is unique in its book.
+
+    V5 follows team+0x20, then header+0x60 to the live descriptor. The table's
+    offset records the final resource index for display, not a guessed runtime
+    enumeration. Check every play, including plays without an authored intent,
+    so a duplicate name/script or FNV collision cannot silently select a row.
+    """
+    import struct
+    from . import nfl2k5_read_option_runtime as runtime
+
+    def fingerprint(data):
+        value = 0x811C9DC5
+        for octet in data:
+            value = ((value ^ octet) * 0x01000193) & 0xFFFFFFFF
+        return value
+
+    books = {report['asset_id']: resource for resource, report in pairs}
+    for row in receipt['records']:
+        resource = books[row['asset_id']]
+        body = resource[32:]
+        book = packs.parse_playbook_resource(resource, asset_id=row['asset_id'])
+        _, _, qb_hash, back_hash, name_hash, back, *_ = runtime.RECORD.unpack(bytes.fromhex(row['record']))
+        matches = []
+        for play in book.plays:
+            field = 0x33FC + play.index*96
+            start = field + struct.unpack_from('<i', body, field)[0] - 1
+            if not 0x10840 <= start <= 0x13390-128 or start % 2:
+                continue
+            end = next((end for end in range(start, start+126, 2)
+                        if body[end:end+2] == b'\0\0'), None)
+            if end is None or fingerprint(body[start:end]) != name_hash:
+                continue
+            _, assignments = library.play_chains(body, play.index)
+            if all(len(assignments[slot][1]) == 5 and
+                   fingerprint(b''.join(assignments[slot][1])) == expected
+                   for slot, expected in ((0, qb_hash), (back, back_hash))):
+                matches.append(play.index)
+        _require(matches == [row['play_index']],
+                 f"{row['asset_id']}: ambiguous loaded read fingerprint at plays {matches}")
+        row.update(runtime_identity='loaded team book, name and participant scripts',
+                   diagnostic_index=row['play_index'], identity_matches=matches,
+                   plays_checked=len(book.plays))
+    receipt.update(identity_model='loaded_team_book_fingerprints/v5',
+                   diagnostic_index='final_resource_index')
+    return receipt
+
+
 def _resolve_play(before, after, request):
     old = before.plays[request.donor_play_index]
     label = f"{request.asset_id}: play {old.index} '{old.name}'"

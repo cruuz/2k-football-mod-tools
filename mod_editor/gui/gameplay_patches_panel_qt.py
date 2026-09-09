@@ -65,12 +65,7 @@ PATCHES = (
      "testing. Team and reserve limits stay the same."),
     ("music_shuffle", "Shared music shuffle (experimental)", "Retail: Uses the original music selections. Patch: " + tt.music_playlist_patch.HELP_TEXT),
     ("practice_squad_screen", "Practice Squad screen (experimental)", tt.practice_squad_screen_patch.HELP_TEXT),
-    ("abilities", "Player abilities (experimental)",
-     "Retail ignores stored ability flags. Patch: Speedster permits movement Speed above 99. Each special "
-     "move requires its stored permission, and right-stick moves also require Right-Stick Moves. The "
-     "special-move charge meter works only for live ball carriers with an allowed move, including CPU "
-     "players. Abilities must be assigned in Rosters or the save first. An optional existing franchise "
-     "week turns them off temporarily. EXPERIMENTAL / UNWITNESSED. Simulated games are unchanged."),
+    ("abilities", "Player abilities rules v2 (experimental)", tt.abilities_patch.HELP_TEXT),
     ("qb_spy", "QB spy for zone, man and rush (experimental)", tt.qb_spy_patch.HELP_TEXT),
     ("defensive_try", "Defensive two-point returns (experimental)", tt.defensive_try_patch.UI_TEXT),
     ("zone_drop_cap", "Initial deep-zone corner drop (experimental)", r62_ui.ZONE_HELP),
@@ -125,11 +120,13 @@ PATCHES = (
      "length) and can tie; the postseason keeps playing, including through an unfinished second possession. "
      "The franchise sim engine gets the 10-minute clock and the one-period tie; its own sudden-death rule is "
      "left as is."),
-    ("camera", "Start games with the new Standard camera (experimental)",
-     "Retail: Standard and Far use the original camera framing and pass zoom. "
+    ("camera", "Standard, Far and Broadcast cameras (experimental)",
+     "Retail: Camera offers Standard, Far, Side, Iso, Blimp and Custom with the original framing and pass zoom. "
      "Patch: games and practice start with the new Standard, a closer view at the raised "
-     "angle above the scorebar; Far keeps the raised, far view. Both cameras pull back less "
-     "during passes. Options changes last for the current session. Experimental; not yet witnessed in play."),
+     "angle above the scorebar; Far keeps the raised, far view; both pull back less during passes. "
+     "Broadcast, a new row in the game's Camera options, adds a following sideline view without changing "
+     "Coach Mode. Choices last for the session. Broadcast adapts the native sideline mount; the exact "
+     "coach-mode TV shots are not reproduced. EXPERIMENTAL / UNWITNESSED."),
     ("position_row", "Position on the first page of Edit Player (roster and Franchise)",
      "Retail: Create Player lets you pick a position, but Edit Player never lists it, in roster mode or in "
      "Franchise, so a position change means a new player. Patch: the Position row (the game's own picker, "
@@ -175,13 +172,13 @@ PATCHES = (
      "generator announces players with a replacement surname by jersey number instead of a wrong name. Only "
      "franchises created from the copy see it. Unwitnessed in game."),
     ("franchise_practice", "Free Practice inside Franchise", r62_ui.PRACTICE_HELP),
-    ("seven_on_seven", "7-on-7 practice mode",
-     "Retail Practice offers Special Move, Full Scrimmage, Offense Only and Kickoff. Patch: Practice -> Scrimmage -> "
-     "Practice Type gains 7-On-7, which plays as Full Scrimmage with the practice playbook loaded for both teams and "
-     "the pass rush off; the practice book gains three 7-on-7 passing sets (Trips, Spread, Ace: QB, a centre to snap, "
-     "five skill players) with nine pass concepts and two coverage sets (4-3 and Nickel looks) with six coverages. The "
-     "engine always fields eleven, so the four linemen of each side stand idle at the sideline by design, and one "
-     "parked defender rushes after a 4-second count as the throw timer. Needs a disc image; unwitnessed in game."),
+    ("seven_on_seven", "7-on-7 practice (experimental)",
+     "Retail: Practice offers Special Move, Full Scrimmage, Offense Only and Kickoff. Patch: Practice > Scrimmage > "
+     "Practice Type gains 7-On-7. Both teams use the practice book, with Trips, Spread and Ace passing sets, nine pass "
+     "plays and six coverages. Eleven players still appear on each side. The offensive line uses normal pass blocks; "
+     "three defensive linemen wait at normal line positions. One defensive end is assigned a four-second delay before "
+     "rushing. Power Pocket stays your choice; turn it Off to test the delayed rush. Needs a disc image. "
+     "EXPERIMENTAL / UNWITNESSED: huddle break, repeated snaps and the actual delay still need Noah's play test."),
     ("player_star", "White star outline under the players you tag",
      "Retail: the game draws a coloured circle under the player a controller is driving and nothing under anyone else. "
      "Patch: every player you tag under Names, Numbers & Faces (★ Star) gets a closed white five-point outline at his feet "
@@ -304,7 +301,7 @@ LABELS: dict[str, tuple[str, str, str]] = {
     "dynamic_kickoff": ("Dynamic kickoff: ready stance and close blocks", "Nobody moves until the ball comes down; landing zone; the CPU kicks to it. "
                         "Held players keep an idle pose facing the kick; return blockers take close assignments.", NOT_TESTED),
     "overtime": ("Modern overtime rules", "Both teams get a possession; regular-season ties remain.", ""),
-    "camera": ("Start games with the new Standard", "The new Standard (closer, raised angle) starts each game; Far keeps the far view; Options still works for the session.", NOT_TESTED),
+    "camera": ("Standard, Far and Broadcast cameras", "The new Standard (closer, raised angle) starts each game; Far keeps the far view; Broadcast is a new Camera row with a following sideline view; choices last for the session.", NOT_TESTED),
     "position_row": ("Change position in Edit Player", "In-game: use Depth Chart → Auto afterward.", NOT_TESTED),
     "probowl_order": ("Pro Bowl Votes: offense, defense, kickers", "The tabs run offence, defence, then K and P.", NOT_TESTED),
     "penalties": ("Adjusted penalty rates (experimental)", "Estimated rates; includes the Chop Block toggle fix.", NOT_TESTED),
@@ -312,7 +309,7 @@ LABELS: dict[str, tuple[str, str, str]] = {
     "kick_laces": ("Laces face the posts on kicks", "On field goals and PATs the held ball is turned so the laces face the posts.", NOT_TESTED),
     "prospect_names": ("Modern draft-prospect names", "New franchises only; some new surnames are announced by number.", "New franchises only"),
     "franchise_practice": ("Practice below Schedule in Franchise", r62_ui.PRACTICE_HELP, NOT_TESTED),
-    "seven_on_seven": ("7-on-7 practice", "Practice Type 7-On-7 with 7-on-7 sets in the practice playbook.", NOT_TESTED),
+    "seven_on_seven": ("7-on-7 practice (experimental)", "Retail line positions with passing sets and a delayed end rush. UNWITNESSED.", NOT_TESTED),
     "player_star": ("Show a star under selected players", "Select players under Names, Numbers & Faces; every tagged player on the field gets a white star outline.", NOT_TESTED),
     "depth_roles": ("X / Z / SLWR receivers and nickel / dime corners", "Changes who lines up in every playbook, not how they play.", NOT_TESTED),
     "depth_chart_rows": ("SPECIAL: 13 rows and complete player names (experimental)",
@@ -326,7 +323,7 @@ LABELS: dict[str, tuple[str, str, str]] = {
 # BuildPlan fields that are profile names rather than booleans: the value a ticked box writes
 STRING_TOGGLES = {"music_policy": "jukebox_menus", "penalties": "nfl", "prospect_names": "modern", "uniform_choice": "choice"}
 # toggles whose other half lives in pack 0: a bare default.xbe cannot take them
-NEEDS_IMAGE = {"camera", "music_shuffle", "practice_squad_screen", "abilities", "qb_spy", "season_cap", "calendar_engine", "coverage_slider", "scramble_tuning", "team_names_2026", "all_stadiums", "momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "scorebug", "scorebug_runtime", "screen_timing", "guardian_cap", "xbe_space", "kickoff_relocated", "prospect_names", "depth_roles", "dynamic_kickoff", "depth_chart_rows"}
+NEEDS_IMAGE = {"camera", "seven_on_seven", "music_shuffle", "practice_squad_screen", "abilities", "qb_spy", "season_cap", "calendar_engine", "coverage_slider", "scramble_tuning", "team_names_2026", "all_stadiums", "momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "scorebug", "scorebug_runtime", "screen_timing", "guardian_cap", "xbe_space", "kickoff_relocated", "prospect_names", "depth_roles", "dynamic_kickoff", "depth_chart_rows"}
 
 PATCHES = (*PATCHES, *r62_ui.OPTIONS)
 NEEDS_IMAGE.update(r62_ui.KEYS)
@@ -467,6 +464,19 @@ class GameplayPatchesPanel(QWidget):
                 check.setAccessibleDescription(helper or label)
                 check.toggled.connect(lambda _c: self._refresh())
                 head.addWidget(check)
+            if key in r62_ui.CHILDREN:
+                check.toggled.connect(lambda on, p=key: self._parent_toggled(p, on))
+            for parent, children in r62_ui.CHILDREN.items():
+                if key in children:
+                    check.toggled.connect(lambda on, p=parent: self._child_toggled(p, on))
+            if key == "cpu_money_downs":
+                self.cpu_money_downs_level = QComboBox()
+                for text, value in r62_ui.LEVELS["cpu_money_downs"]:
+                    self.cpu_money_downs_level.addItem(text, value)
+                self.cpu_money_downs_level.setAccessibleName("CPU fourth downs and first downs level")
+                self.cpu_money_downs_level.currentIndexChanged.connect(self._money_downs_changed)
+                check.toggled.connect(self._money_downs_toggled)
+                head.addWidget(self.cpu_money_downs_level)
             if key == "momentum_collisions":
                 self.momentum_collision_level = QComboBox()
                 for text, value in (("Retail (0)", 0), ("Light (25)", 25), ("Medium (50)", 50), ("Heavy (100)", 100)):
@@ -639,6 +649,9 @@ class GameplayPatchesPanel(QWidget):
             elif key == "momentum_collisions":
                 plan.momentum_collisions = on
                 plan.momentum_collision_level = int(self.momentum_collision_level.currentData() or 50) if on else 0
+            elif key == "cpu_money_downs":
+                level = str(self.cpu_money_downs_level.currentData() or "modern")
+                plan.cpu_money_downs = ("modern" if level == "retail" else level) if on else "retail"
             elif key == "momentum":
                 plan.momentum = int(self.momentum_level.currentData() or 50) if on else 0
             elif key == "music_policy":
@@ -670,6 +683,35 @@ class GameplayPatchesPanel(QWidget):
         path, _ = QFileDialog.getOpenFileName(self, "Choose paired MyCareer setup", "", "MyCareer setup (*.json)")
         if path:
             self.my_career_setup_field.setText(path)
+
+    def _parent_toggled(self, parent, on):
+        if not on:
+            for child in r62_ui.CHILDREN[parent]:
+                if child in self.checks:
+                    self.checks[child].setChecked(False)
+        self._refresh()
+
+    def _child_toggled(self, parent, on):
+        box = self.checks.get(parent)
+        if box is not None and on and not box.isChecked() and box.isEnabled():
+            box.setChecked(True)
+        self._refresh()
+
+    def _money_downs_changed(self):
+        level = str(self.cpu_money_downs_level.currentData() or "retail")
+        check = self.checks["cpu_money_downs"]
+        check.setChecked(level != "retail" and check.isEnabled())
+        self._refresh()
+
+    def _money_downs_toggled(self, on):
+        combo = self.cpu_money_downs_level
+        combo.blockSignals(True)
+        if on and str(combo.currentData()) == "retail":
+            combo.setCurrentIndex(max(0, combo.findData("modern")))
+        elif not on:
+            combo.setCurrentIndex(max(0, combo.findData("retail")))
+        combo.blockSignals(False)
+        self._refresh()
 
     def _collision_changed(self):
         value = int(self.momentum_collision_level.currentData() or 0)
@@ -725,6 +767,20 @@ class GameplayPatchesPanel(QWidget):
             for key in ("momentum", "momentum_contact", "momentum_collisions"):
                 if key in self.checks:
                     self.checks[key].setEnabled(False)
+        if "cpu_money_downs" in self.checks:
+            money = self.checks["cpu_money_downs"]
+            installed_money = (self._state or {}).get("cpu_money_downs_settings") or None
+            combo = self.cpu_money_downs_level
+            combo.blockSignals(True)
+            if installed_money and installed_money.get("level"):
+                level = str(installed_money["level"])
+                if combo.findData(level) < 0:
+                    combo.addItem(f"Installed ({level})", level)
+                combo.setCurrentIndex(combo.findData(level))
+            elif not money.isChecked():
+                combo.setCurrentIndex(max(0, combo.findData("retail")))
+            combo.blockSignals(False)
+            combo.setEnabled(money.isEnabled())
         if "momentum_collisions" in self.checks:
             check = self.checks["momentum_collisions"]
             installed = settings.get("status") == "applied"

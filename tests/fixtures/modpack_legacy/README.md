@@ -23,3 +23,8 @@ both before/result SHA-256s and the unchanged archive SHA-256.
 The two Advanced packs were re-exported on 2026-09-08 with the same tag exporters (unchanged `modpack.py` and
 `modpack_ops.py` from `beta-60` and `beta-61`, loaded over the current package) because the synthetic retail fixture
 gained the Outside Linebackers filter-list sites with the one-pool positions change; the Basic packs are untouched.
+
+The two Advanced packs were re-exported again on 2026-09-08 (beta 63) with the same tag exporters because the base
+synthetic executable changed under them: the 7-on-7 v2 landing moved the synthetic section table from 0x200 to the
+retail 0x370 (the old offset overlapped the arc certificate bytes at 0x310 and corrupted section 5) and seeds the
+retail rush reads. The Basic packs are untouched.

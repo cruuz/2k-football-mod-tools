@@ -6,7 +6,7 @@ FEATURE_KEYS = (
     "momentum_collisions", "momentum_collision_level", "read_option_runtime",
     "franchise_2026_rules", "senior_bowl", "senior_bowl_settings", "senior_bowl_seed",
     "guardian_overlay", "guardian_everyone_practice", "guardian_players",
-    "my_career", "my_career_setup", "franchise_autosave", "crib_reclaim", "screen_hooks", "modern_naming",
+    "my_career", "my_career_setup", "franchise_autosave", "crib_reclaim", "screen_hooks", "coverage_trail", "franchise_edit_player", "cpu_money_downs", "weekly_prep", "weekly_prep_cpu", "weekly_prep_remember", "playbook_pair", "deep_zone_facing", "deep_zone_bail", "deep_zone_bail_calls", "modern_naming",
     "reserves_16", "created_teams_extra", "hires_families",
 )
 FEATURE_KEYS += (
@@ -14,7 +14,8 @@ FEATURE_KEYS += (
     "accel_ramp", "draft_ai", "returner_fix", "progression", "scheme_labels", "camera",
     "kick_rules", "kick_power", "kickoff_alignment", "xbe_space", "kickoff_relocated", "momentum",
     "momentum_contact", "defensive_try", "zone_drop_cap", "all_stadiums", "practice_squad_screen",
-    "abilities", "abilities_off_week", "qb_spy", "calendar_engine", "coverage_slider",
+    "abilities", "abilities_off_week", "abilities_lock_right_stick", "abilities_lock_special_moves", "abilities_lock_speedster",
+    "qb_spy", "calendar_engine", "coverage_slider",
     "scramble_tuning", "flatter_deep_ball", "chop_block_toggle", "dynamic_kickoff",
     "dynamic_kickoff_settings", "position_pools", "position_pools_keep_olb", "depth_chart_rows", "season_cap", "season_2026",
     "team_names_2026", "widescreen", "overtime", "team_column", "seven_on_seven", "team_history",

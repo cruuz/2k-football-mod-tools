@@ -2,30 +2,35 @@
   "backend": {
     "module": "mod_editor/core/nfl2k5_abilities_runtime.py",
     "operation": "write",
-    "command": "python3 -c \"import sys; from pathlib import Path; from mod_editor.core import nfl2k5_abilities_runtime as m; result, receipt = m.apply(Path(sys.argv[1]).read_bytes())\nwith Path(sys.argv[2]).open('xb') as output:\n    output.write(result)\nprint(receipt)\" <source.xbe> <new-copy.xbe>"
+    "command": "python3 -m mod_editor.core.nfl2k5_abilities_runtime source.xbe --output new-copy.xbe"
   },
   "classification": "offline-writer-proved",
   "evidence": [
     "ASTRA_ABILITIES_RUNTIME_REPORT.md",
     "tests/mod_editor/test_nfl2k5_abilities_runtime.py",
-    "tests/mod_editor/test_nfl2k5_abilities_unicorn.py"
+    "tests/mod_editor/test_nfl2k5_abilities_unicorn.py",
+    "ASTRA_ABILITIES_V2_REPORT.md",
+    "tests/mod_editor/test_nfl2k5_abilities_v2.py",
+    "tests/mod_editor/test_nfl2k5_abilities_v2_manifest.py"
   ],
   "game": "nfl2k5_xbox",
   "gui": {
     "default_enabled": false,
     "expose": true,
     "mode": "edit",
-    "reason": "EXPERIMENTAL / UNWITNESSED. Explicit opt-in; new switches off in all presets. Protected Build/Gameplay integration is in WIRING.md."
+    "reason": "EXPERIMENTAL / UNWITNESSED. Runtime off in every preset; its three locks default on. Protected UI integration is in WIRING.md."
   },
   "id": "nfl2k5.gameplay.abilities_runtime",
   "input_constraints": [
-    "Pinned USA XBE with supported composed owners; foreign/mixed bytes and settings refuse.",
-    "Reserve the complete allocator owner union first. Seven shipped roster flags; no automatic assignment or save migration.",
-    "abilities_off_week is None or integer zero-based regular-season row 0..17. All presets off.",
-    "The special-move meter is restricted to live ball carriers. Right-stick actions also require Right-Stick Moves; unclassified charge consumers are denied."
+    "Pinned USA XBE and the complete sealed owner union. Rebuild v1 or different configurations from the supported base.",
+    "Three independent Boolean locks default true when the runtime is enabled; abilities stays off in every preset.",
+    "Two footer bits encode Unranked/Star/Superstar/X-Factor. Slot limits 0/2/4/7; legacy Unranked flags retain v1 permissions. Excess flags on a tiered record fail closed.",
+    "Juke/Agility, Stiff-Arm/Strength, Hurdle/Jumping, Truck/Break Tackle and Spin/Pass Rush gain at most 0.02 per tier after native clamps, capped at 1 during live phase 14.",
+    "With either move lock on, charge is limited to live carriers and known move consumers. Both move locks off restores native charge. Disabled locks never grant rating bonuses.",
+    "Off-week None or integer 0..17, exact franchise regular-season tuple. No simulated-game effect or save migration."
   ],
   "portme": [
-    "Complete Noah's witness list in ASTRA_ABILITIES_RUNTIME_REPORT.md, including noncarrier meter impact and all controller layouts."
+    "Apply WIRING.md, regenerate the production manifest and complete Noah's witness list in ASTRA_ABILITIES_V2_REPORT.md."
   ],
   "public_distribution": {
     "game_data": "never-bundle-retail-data",
@@ -35,9 +40,9 @@
   },
   "runtime": {
     "evidence": [
-      "ASTRA_ABILITIES_RUNTIME_REPORT.md"
+      "ASTRA_ABILITIES_V2_REPORT.md"
     ],
-    "scope": "Bounded native clamps, command gates, initializer and native meter only. No game, loader, save-lifecycle or simulated-game witness.",
+    "scope": "Bounded native getters, both clamps, permissions, charge and shared Momentum reads. No loader, save lifecycle, gameplay or outcome witness.",
     "status": "not-tested"
   },
   "selectors": {
@@ -51,6 +56,21 @@
         "name": "abilities_off_week",
         "required": false,
         "allowed": "None or integer 0..17; meaningful only with abilities enabled"
+      },
+      {
+        "name": "abilities_lock_right_stick",
+        "required": false,
+        "allowed": "Boolean; defaults true and meaningful only with abilities enabled"
+      },
+      {
+        "name": "abilities_lock_special_moves",
+        "required": false,
+        "allowed": "Boolean; defaults true and meaningful only with abilities enabled"
+      },
+      {
+        "name": "abilities_lock_speedster",
+        "required": false,
+        "allowed": "Boolean; defaults true and meaningful only with abilities enabled"
       }
     ],
     "notes": "Week displayed 1..18 maps to zero-based 0..17. Existing week only; simulation unaffected."
@@ -60,11 +80,11 @@
     "hash_pins": [
       "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
     ],
-    "resource": "seven pinned hook spans and a named 1072-byte immutable RX allocation; zero new writable state",
+    "resource": "Eight pinned hook spans and a named 1344-byte immutable RX allocation; zero new writable state",
     "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
   },
-  "summary": "Stored player permissions control movement Speed, special moves and native charge; one optional existing regular-season week disables them.",
+  "summary": "Optional move and Speedster locks plus five capped live attribute effects for tiered players; legacy permissions remain supported.",
   "surface": "gameplay_tuning_sliders",
-  "title": "Player abilities (experimental, unwitnessed)",
-  "validation_command": "python3 tests/mod_editor/test_nfl2k5_abilities_runtime.py"
+  "title": "Player abilities rules v2 (experimental)",
+  "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_abilities_v2"
 }

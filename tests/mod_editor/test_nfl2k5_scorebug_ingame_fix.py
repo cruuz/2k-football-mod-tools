@@ -181,15 +181,17 @@ class NativeFixTests(unittest.TestCase):
         finally:
             m.close()
 
-    def test_runtime_setup_freeze_paths_unchanged_and_static_composes_in_both_orders(self):
+    def test_play_clock_color_isolated_and_static_composes_in_both_orders(self):
         code, labels = runtime.code_for(0x14ba2c0,0x14bb000)
         with mock.patch.object(runtime,'PLAY_CLOCK_NORMAL',runtime.DARK):
-            old, old_labels = runtime.code_for(0x14ba2c0,0x14bb000)
-        self.assertEqual(labels,old_labels)
-        at = old.index(bytes.fromhex('c705485aa900181111ff'))+6
-        self.assertEqual(code[:at],old[:at]); self.assertEqual(code[at+4:],old[at+4:])
+            dark, dark_labels = runtime.code_for(0x14ba2c0,0x14bb000)
+        self.assertEqual(labels,dark_labels)
+        at = dark.index(bytes.fromhex('c705485aa900181111ff'))+6
+        self.assertEqual(code[:at],dark[:at]); self.assertEqual(code[at+4:],dark[at+4:])
         self.assertEqual(code[at:at+4],b'\xff'*4)
-        self.assertEqual(scene.digest(old),'d3331c84b984f6e4b198135891e964a6a038105fc8f995a5895a76d89149ffc4')
+        # R65 scopes binding to GAMEDATA; the color variant still changes only
+        # this word. Native before/after entry controls live in freeze_v2.
+        self.assertEqual(scene.digest(dark),'e6aebda915ab509f9d4873393b28c12a88bf186cb5ed16d3c6950d5bd8113a28')
         first = runtime.apply(scene.apply_xbe(self.build.payload)[0])[0]
         second = scene.apply_xbe(runtime.apply(self.build.payload)[0])[0]
         self.assertEqual(first,second)

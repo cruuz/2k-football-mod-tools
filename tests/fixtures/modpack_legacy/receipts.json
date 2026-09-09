@@ -15,9 +15,9 @@
     "format": 2,
     "base_size": 12021779,
     "result_size": 24045568,
-    "base_sha256": "ce26bf1716fe446a74f574d4535c40dbcc8632f81df8adb0731757fed9789885",
-    "result_sha256": "a31e610fb09dac057ca493fa70cffa12bd3f6ec548b674b683b9edc57eebeda6",
-    "pack_sha256": "d6c1c171e21affd29a462e4aa6cc47a4b95e32a344c5d31ebd5fdb8876ce1b43",
+    "base_sha256": "06e106420015c5144fc2aa0f4b3a31d2b4553dd2cc95143c2e2150aa1b067269",
+    "result_sha256": "afe6adbbbe12c3fa67b770cab482b5784274dfe6f08ddd10a679cf617cf3601b",
+    "pack_sha256": "a1cb7bf2d58d7d4b3c3170099c365e86b9e45588a2179e7f93d8b96e714eabe7",
     "regenerated": "2026-09-08: same tag exporter, re-exported after the position-pools fixture gained the OLB filter-list sites"
   },
   {
@@ -36,9 +36,9 @@
     "format": 2,
     "base_size": 12021779,
     "result_size": 24045568,
-    "base_sha256": "ce26bf1716fe446a74f574d4535c40dbcc8632f81df8adb0731757fed9789885",
-    "result_sha256": "0df1966fc7aaadeb76607a3b6cf61338d42a6c571fdb7f29083ed3f8468bea34",
-    "pack_sha256": "86ce884ae1d31758eed73c335013e47640ba6684e0d4d4bf797831862ef72c75",
+    "base_sha256": "06e106420015c5144fc2aa0f4b3a31d2b4553dd2cc95143c2e2150aa1b067269",
+    "result_sha256": "4ac1f2fa424b39b60d6355d4729a433b80ef0c09794ab0738d67f7c5049043f5",
+    "pack_sha256": "1a7122df679b65b9a3e59a8a0e2dab926534c8696e34c90b4cedde56826d619b",
     "regenerated": "2026-09-08: same tag exporter, re-exported after the position-pools fixture gained the OLB filter-list sites"
   }
 ]

@@ -195,12 +195,19 @@ def _recognize(payload):
     # installation before normalizing any of those exact companion edits.
     from . import nfl2k5_my_career_mode as career
     companion_edits = []
+    # Weekly prep wraps a separate pre-simulation call inside our pinned
+    # completion context. Recognize its entire installation before projecting
+    # that exact companion hook back to retail for this prerequisite hash.
+    from . import nfl2k5_weekly_prep as weekly_prep
+    if image.read(0xC7B47, 5) != bytes.fromhex("e8d4d6ffff"):
+        require(weekly_prep.status(payload) == "applied", "foreign weekly prep simulation companion")
+        companion_edits.extend(weekly_prep.sites(weekly_prep.allocation(payload)["va"]))
     if any(image.read(va, len(bytes.fromhex(pin))) != bytes.fromhex(pin)
            for _, va, pin, _ in (*career.SAVE_HOOKS, career.MODE_HOOKS[0])):
         require(career._recognize(payload) == "applied",
                 "foreign MyCareer completion/save companion")
         code, data = career.legacy.allocations(payload)
-        companion_edits = career.sites(code["va"], data["va"])
+        companion_edits.extend(career.sites(code["va"], data["va"]))
     for va, size, digest in GUARDS:
         raw = bytearray(image.read(va, size))
         if va == 0x6E4E0 and raw[:5] != bytes.fromhex("5155578bf9"):

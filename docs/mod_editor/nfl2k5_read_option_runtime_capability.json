@@ -13,24 +13,29 @@
     "ASTRA_READ_OPTION_CONTROLS_REPORT.md",
     "tests/mod_editor/test_nfl2k5_read_option_controls.py",
     "ASTRA_READ_OPTION_V3_REPORT.md",
-    "tests/mod_editor/test_nfl2k5_read_option_frames.py"
+    "tests/mod_editor/test_nfl2k5_read_option_frames.py",
+    "ASTRA_READ_OPTION_V4_REPORT.md",
+    "tests/mod_editor/test_nfl2k5_read_option_diagnostic.py",
+    "tests/mod_editor/test_nfl2k5_read_option_diagnostic_manifest.py",
+    "ASTRA_READ_OPTION_V5_REPORT.md"
   ],
   "game": "nfl2k5_xbox",
   "gui": {
     "default_enabled": false,
     "expose": true,
     "mode": "edit",
-    "reason": "EXPERIMENTAL / UNWITNESSED. All presets off. One-second mesh, native per-frame control priority, handoff ownership event, EDGE cue and RPO request have bounded instruction proofs. Protected integration is in WIRING.md."
+    "reason": "EXPERIMENTAL / UNWITNESSED. All presets off. Noah witnessed the bo v4 snap hook and READ miss 48. V5 follows the loaded team book and adds cancelable native give, keep, pitch and RPO pass. Protected integration is in WIRING.md."
   },
   "id": "nfl2k5.gameplay.read_option_runtime",
   "input_constraints": [
     "Pinned USA XBE or verified composed input; reserve the complete owner union before installing bytes.",
-    "At most two authored read plays, bound to exact PLAY/compiler receipt pairs. Empty table is dormant.",
+    "At most two authored read plays, bound to exact PLAY/compiler receipt pairs. An empty table makes no gameplay decisions; diagnostic mode still reports misses.",
     "RPO receiver must be slot 7 or 8; receiver slot 6 shares the snap button. Native speed options are excluded.",
-    "Installed v1/v2 owners require rebuilding from the supported base. An explicit automatic-EDGE table uses snap assignments instead of an authored defender."
+    "Installed v1 through v4 owners require a clean rebuild. Fingerprints must identify a unique play in the final paired resource.",
+    "Use diagnostic=True or --diagnostic for the READ resource-number line. Diagnostic CPU reads give. Normal CPU reads the snap edge. Both variants retain 2048 RX, 256 RW and 88 RO bytes."
   ],
   "portme": [
-    "Run Noah's I Jokers 155/157, Gun Zone Read 134, hold/release/default give, RPO receiver, live EDGE and lifecycle witness list in ASTRA_READ_OPTION_V3_REPORT.md."
+    "Follow ASTRA_READ_OPTION_V5_REPORT.md: photograph READ 155/157 snap, pend and the decision; use 134/31 for a separately paired Gun build. The exact cause of the old live 48 remains unproved."
   ],
   "public_distribution": {
     "game_data": "never-bundle-retail-data",
@@ -40,10 +45,12 @@
   },
   "runtime": {
     "status": "not-tested",
-    "scope": "Bounded native per-frame dispatcher replays prove paired final-book lookup, one second of game time, stick priority suppression, give/take initialization, native ownership transfer on the supplied animation event, keep control, and the RPO native throw-request store. Native projection and atlas submission prove the EDGE marker path. Collision-free actor poses, animation timing, asset allocation, post-transfer notifications, GPU submission and aim calculation are fixture inputs or boundaries. Boot, rendered mesh/throw/fake animation and defense remain unwitnessed.",
+    "scope": "Noah witnessed the v4 snap hook and HUD on bo. V5 is unwitnessed. Bounded native replays execute the gameplay PLAY loader, menu accessor, assignment prefix, frame dispatcher, delayed snap reception, handoff initialization and ownership event, both animation destructors, carry/pitch/pass initialization and FONT4 glyph renderer. Controller samples, receive-snap entry and ball arrival, post-snap poses, collision-free approach positions, exchange events, task storage and font residency are supplied. Neutral clip initialization, CPU downfield running AI, aiming and GPU/asset leaves are named boundaries. They do not prove natural animation timing, pass release/catch, lateral catch, contact behavior or live engagement.",
     "evidence": [
       "ASTRA_READ_OPTION_CONTROLS_REPORT.md",
-      "ASTRA_READ_OPTION_V3_REPORT.md"
+      "ASTRA_READ_OPTION_V3_REPORT.md",
+      "ASTRA_READ_OPTION_V4_REPORT.md",
+      "ASTRA_READ_OPTION_V5_REPORT.md"
     ]
   },
   "selectors": {
@@ -54,18 +61,18 @@
         "allowed": "false in Basic, Advanced and Experimental; explicit opt-in"
       }
     ],
-    "notes": "Two paired authored reads. Hold snap for the whole one-second window to keep; release or no input gives. On RPO, hold snap and press the intended receiver during the window. Left stick waits until the read ends. Supports native I and the supported Gun recipes."
+    "notes": "EXPERIMENTAL / UNWITNESSED. Retail: original option controls. Patch: paired reads begin a native handoff after the snap. Do nothing to give. Before the ball leaves the QB, press Black to pull and pitch, or release A after snapping and press A again to pull and keep. On an RPO, press X or the named receiver button to pull and pass. These are Xbox button names; use your controller mapping. The stick waits until the decision. The CPU reads the unblocked edge. Noah witnessed the v4 snap hook and READ line, but these new controls and the animated exchange are unwitnessed. All presets are off. The READ diagnostic lasts until native reset."
   },
   "source_container": {
     "format": "XBE in XDVDFS",
     "hash_pins": [
       "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
     ],
-    "resource": "Six pinned live hooks; rebuild the existing owner from base with 2048 RX, 256 RW and 88 RO bytes.",
+    "resource": "Seven pinned live hooks; clean rebuild with the existing 2048 RX, 256 RW and 88 RO reservation.",
     "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
   },
-  "summary": "Paired custom reads latch give, keep or pass with modern hold-to-keep controls and a CPU edge read.",
+  "summary": "Experimental paired reads follow the loaded team book, start native GIVE/TAKE on snap reception and accept explicit keep, pitch and RPO pass cancellation.",
   "surface": "gameplay_tuning_sliders",
   "title": "Read option mesh controls (experimental, unwitnessed)",
-  "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_read_option_controls"
+  "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_read_option_diagnostic"
 }

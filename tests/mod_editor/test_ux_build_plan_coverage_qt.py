@@ -42,6 +42,10 @@ NOT_A_CONTROL = {
     "hires_families": "six family checkboxes under the Hi-res option",
     # sub-settings bound through another control on the page or elsewhere in the shell
     "abilities_off_week": "the Week with abilities off combo next to the Player abilities option",
+    "deep_zone_bail_calls": "press-bail authoring staging is not wired in this build; the field must stay empty (mod_build refuses otherwise)",
+    "abilities_lock_right_stick": "the rules v2 lock checkbox under the Player abilities option (abilities_lock_checks)",
+    "abilities_lock_special_moves": "the rules v2 lock checkbox under the Player abilities option (abilities_lock_checks)",
+    "abilities_lock_speedster": "the rules v2 lock checkbox under the Player abilities option (abilities_lock_checks)",
     "music_shuffle_selection": "the Music page's playlist document, delivered by the shell",
     "calendar_engine": "carried by the combined 128-season franchise option (season_cap)",
     "hires_folder": "the Hi-res folder field of the hi-res pack option",
@@ -118,13 +122,18 @@ class BuildPlanCoverageTests(unittest.TestCase):
             panel.uniform_choice_mode.setCurrentIndex(1)
             self.assertEqual(panel.plan().uniform_choice, "rule")
 
-    def test_seven_on_seven_is_reachable_but_disabled_in_this_release(self) -> None:
+    def test_seven_on_seven_is_reachable_defaults_off_and_stays_unwitnessed(self) -> None:
+        """v2 (beta 63): the row is available for a supported image, off by default, badged unwitnessed."""
         panel = self.panel
-        self.assertFalse(mod_build.SEVEN_ON_SEVEN_RELEASED)
+        self.assertTrue(mod_build.SEVEN_ON_SEVEN_RELEASED)
         self.assertFalse(panel.seven_on_seven_check.isHidden())
+        self.assertFalse(panel.seven_on_seven_check.isChecked())
+        self.assertFalse(panel.plan().seven_on_seven)
+        for name in ("softdrink_basic", "softdrink_advanced", "softdrink_experimental"):
+            self.assertFalse(mod_build.PRESETS[name]["seven_on_seven"], name)
+        # the coverage panel holds a bare synthetic XBE: a disc-only option reports "Full disc required" there
+        self.assertEqual(panel._badges["seven_on_seven"].text(), "Full disc required")
         self.assertFalse(panel.seven_on_seven_check.isEnabled())
-        self.assertIn("Not available in this release", panel.seven_on_seven_check.toolTip())
-        self.assertEqual(panel._badges["seven_on_seven"].text(), "Not available in this release")
 
     def test_a_ticked_option_with_a_missing_required_file_names_the_file(self) -> None:
         panel = self.panel
@@ -148,7 +157,7 @@ class BuildPlanCoverageTests(unittest.TestCase):
         panel.camera_check.setEnabled(True)
         panel.camera_check.setChecked(True)
         self.assertTrue(panel.build_button.isEnabled(), panel.blocker())
-        self.assertIn("Start games with the new Standard camera (experimental)", panel.selected_labels())
+        self.assertIn("Standard, Far and Broadcast cameras (experimental)", panel.selected_labels())
 
     def test_every_check_box_keeps_a_short_caption(self) -> None:
         for box in self.panel.findChildren(QCheckBox):
