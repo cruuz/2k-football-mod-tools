@@ -282,7 +282,7 @@ banks=16`).
 the cut, relocated raw dump too, xiso lines stay silent, the XGD1 cut is the documented 387 MiB):
 `Ran 29 tests in 0.455s  OK`.
 
-Related suites, each standalone with `PYTHONPATH=<repo> QT_QPA_PLATFORM=offscreen python3 <file>`:
+Related suites, each standalone with `PYTHONPATH=<repo> QT_QPA_PLATFORM=offscreen python3 <file>` (28 files, all rc=0; both XBE gates included although no game-code writer changed):
 
 ```
 test_nfl2k5_music_archive_raw_layout rc=0 1s | Ran 8 tests in 0.062s OK 
@@ -297,10 +297,24 @@ test_nfl2k5_hires_pack rc=0 2s | Ran 15 tests in 1.723s OK
 test_nfl2k5_hires_pack_retail rc=0 17s | Ran 4 tests in 16.180s OK 
 test_nfl2k5_hires_families rc=0 1s | Ran 7 tests in 1.175s OK 
 test_nfl2k5_hires_families_retail rc=0 455s | Ran 5 tests in 454.682s OK 
-test_nfl2k5_guardian_resources rc=0 58s | Ran 9 tests in 57.804s OK
+test_nfl2k5_guardian_resources rc=0 58s | Ran 9 tests in 57.804s OK 
+test_nfl2k5_guardian_manifest rc=0 223s | Ran 1 test in 222.633s OK 
+test_nfl2k5_animation_import_retail rc=0 13s | Ran 3 tests in 12.982s OK (skipped=2) 
+test_nfl2k5_scorebug_resources rc=0 100s | Ran 6 tests in 99.322s OK 
+test_provider_integrity rc=0 7s | Ran 7 tests in 7.546s OK 
+test_nfl2k5_disc_identity rc=0 1s | Ran 29 tests in 0.434s OK 
+test_xiso_layout_tolerance rc=0 1s | Ran 9 tests in 0.668s OK 
+test_source_accepts_any_dump rc=0 0s | Ran 15 tests in 0.007s OK (skipped=2) 
+test_apf_iso_extraction_is_layout_tolerant rc=0 0s | Ran 10 tests in 0.077s OK 
+test_pack_extent_resolver rc=0 1s | Ran 6 tests in 0.974s OK 
+test_modpack rc=0 8s | Ran 36 tests in 7.906s OK 
+test_mod_build_beta62_integration3 rc=0 123s | Ran 11 tests in 121.939s OK 
+test_mod_build_beta62_integration rc=0 176s | Ran 8 tests in 175.708s OK 
+test_mod_build rc=0 1s | Ran 11 tests in 1.346s OK 
+test_xbe_patch_memory_writes rc=0 1075s | Ran 111 tests in 1075.022s OK 
+test_xbe_patch_cave_references rc=0 1245s | Ran 123 tests in 1244.437s OK 
+DONE
 ```
-
-Runner still going at commit time (guardian_manifest, animation_import_retail, scorebug_resources, provider_integrity, disc_identity, xiso_layout_tolerance, source_accepts_any_dump, apf_iso_extraction, pack_extent_resolver, modpack, mod_build x3, the two XBE gates); the final table lands in the follow-up commit. Run directly meanwhile: test_nfl2k5_disc_identity.py `Ran 29 tests OK`, test_nfl2k5_music_archive_raw_layout.py `Ran 8 tests OK`.
 
 ## 5. Output verification (structural, no xemu) and the xemu verdict
 
