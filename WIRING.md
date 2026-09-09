@@ -39,6 +39,123 @@ if identity.partition_base:
 (`_xemu_note` is the public-enough helper the identity line already uses; it returns "" for an xiso.)
 Not done here: the message the bug needs is already on the source line, and `mod_build.py` is protected.
 
+# beta-64 college checker — research/core handoff (2026-09-09)
+
+This section accompanies `ASTRA_REPORT.md` and
+`mod_editor/core/nfl2k5_college_check.py`. It is a future page integration, not a
+beta-63.1 feature. No existing validator, GUI panel, Build option or release
+allowlist was changed for this work. The protected files below are for the
+integration owner to edit when shipping beta 64.
+
+## Rosters: Check my rosters
+
+In `mod_editor/gui/roster_editor_panel_qt.py`, place **Check my rosters** next to
+the current Checks/repair controls. Use a dialog with one row per `Scan.findings`
+entry: source file, player, pool, record index, byte offset, raw word in hex,
+reason, current college display inference, and proposed college. Show missing
+(`null_reference`) separately from invalid references. The game can display a
+blank college for null; the row is an optional normalization, not a claim that
+the file cannot load. Valid None/blank table entries produce no findings.
+
+Keep the action available with no document loaded. The important failure path is
+`load_save`: a malformed college table can prevent `container.document()` from
+returning. Retain the successfully signature-verified `SaveContainer` for a
+read-only check, and call `check.scan(container.savegame, source=str(path))`
+without that document prerequisite. A separate Choose save action can use the
+existing `SaveContainer.load` directly. Do not change `require_signature`, bypass
+EXTRA failures, or reinterpret arbitrary `.ROS` files as NFL 2K5 saves. For a disc
+whose document parser fails, read pack-0 outer-5 via the existing archive/entry
+reader and scan its resource bytes; do not require `rr.load_image()` to succeed.
+
+For an open document, snapshot **current composed bytes**, including unsaved
+roster and franchise edits, with `document.to_body()` after the existing
+franchise synchronization succeeds. Store the returned `Scan.sha256`, source
+identity, and selection generation. Discard asynchronous results if either
+changes. `dataclasses.asdict(scan)` is suitable for a detailed inspection
+receipt; it contains no source payload bytes.
+
+Offer a college combo populated by `Scan.colleges` and **Repair listed college
+references**. Preselect the core's deterministic policy: first None entry
+(case-insensitive), else first blank entry, else entry zero. Retail selects
+ordinal 187, "None", not its stored metadata ID 320. An explicit alternative
+uses `college_index=<ordinal>`. Do not implement nearest-address/text guessing:
+the intended college cannot be inferred from proximity. Show `table_issues`
+even if no player uses that entry. Disable Repair for table issues or a missing,
+overlapping, unbounded or unsupported layout and retain the full diagnostic.
+
+## Apply, undo and save
+
+The candidate call is:
+
+```python
+after, receipt = check.repair(
+    before, source=source_label, expected_sha256=scan.sha256,
+    college_index=selected_college_ordinal,
+)
+```
+
+Recheck the session generation/hash immediately before publishing. Run the
+existing ownership/depth checks on the candidate; do not mark `Scan` as proof
+of overall save health. The core already checks the strict ROST codec for a
+nonempty repair and checks inline MyCareer identity when present. Its receipt
+names every repaired player and original/new word, and says `saved=False`.
+
+For a loaded franchise, use `_restore_composed(after, existing_edits)` and one
+`UndoEntry`, mirroring `_franchise_edit`'s before/after snapshots while retaining
+the same franchise journal. A college repair is not a fabricated schedule
+`FranchiseEdit`. For other loaded rosters use `document.adopt_body(after)`,
+retaining original bytes and player object identities. Refresh the college
+combo, grid, checks, selection, dirty state and receipt. Undo/redo must restore
+the exact prior/candidate words, including a prior null or off-table value.
+Do not re-run repair with a different default during redo.
+
+**Dirty/export trap:** `_restore_composed` and `rr.edits_document()` derive text
+changes from `document.diff()`. An unresolved pointer and a pointer to a valid
+blank college both display `""`; a real repair can therefore have no text diff.
+Keep the receipt's `(pool,index)` keys in an explicit repair journal and include
+them in dirty state. For disc Build & Share export, merge an explicit
+`names: {"college": selected_name}` entry for every repaired record, with its
+source name/identity, even when `selected_name == ""`. Never export
+`fields.college_pointer`: `apply_body` intentionally refuses traveling raw
+pointers. If several table entries have the same selected name, the existing
+text-only edits schema cannot preserve the selected ordinal; use the
+first matching entry for disc repair or report that exact export is unavailable.
+Verify by replaying `rr.apply_body` on the original disc body and comparing the
+expected four-byte repairs. No new Build preset/option is needed.
+
+If load failed, the checker can still build a candidate, but must not replace
+the current unrelated editor session. Offer the existing signed-copy output
+flow after candidate validation; then open the resulting copy. If a malformed
+college table remains, report it and keep Repair disabled. A grown v1/v18
+document that originally failed the strict codec belongs in this flow; there
+is no previously loaded document in which to install undo history.
+
+Use `SaveContainer.write` / `write_copy_to` for saved copies, retaining every
+other member. `SAVEGAME.DAT` changes only the reported player words; EXTRA must
+be recomputed by the existing signer. Show both receipts without promising
+that the whole container is byte-identical. Never overwrite the source. Inline
+MyCareer refuses a different MyPlayer college because its footer retains the
+original identity; the checker may restore that recorded college, but must not
+rewrite the footer or a legacy external career checkpoint.
+
+## Integration acceptance and packaging
+
+Add offscreen integration coverage for: failed-load check; null and invalid
+rows; both player pools; stale snapshot; missing/broken table; repair to blank
+with dirty/export persistence; duplicate college names; undo/redo with a
+schedule and rating already edited; signed copy/read-back; and MyCareer footer
+identity refusal. The new `test_nfl2k5_college_check_qt.py` exercises the current
+63.1 page boundaries and manual candidate adoption, not a checker button.
+
+Before shipping, add the explicit path
+`mod_editor/core/nfl2k5_college_check.py` to protected
+`packaging/release-allowlist.txt` and the release's normal packaging/import
+checks. No capability registration, XBE cave, game patch or manifest
+regeneration is needed for this standalone module. Keep the earlier wiring
+ledger below intact.
+
+---
+
 # beta-63.1 digit texture budget hotfix (2026-09-09)
 
 Bug: Coach Edwards, #2k5-bugs 2026-09-09 09:51 / 10:16 — "live_number_nameplate
