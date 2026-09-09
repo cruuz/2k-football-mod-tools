@@ -53,6 +53,7 @@ from mod_editor.core.apf2k8_splb_writer import (
     read_book as read_splb_book,
 )
 from mod_editor.core.errors import ValidationError
+from . import play_design_service as play_design
 
 from .asset_io import ApfAssetIO, AssetIoError, AudioPreviewCancelled
 from .audio_annotations import (
@@ -2342,6 +2343,15 @@ class ApfSession:
             result.append(change)
         return tuple(sorted(result, key=lambda item: item.formation_index))
 
+    def staged_play_design(self) -> dict | None:
+        return play_design.staged_plan(self)
+
+    def apply_play_design(self, plan: dict) -> dict:
+        try:
+            return play_design.stage_plan(self, plan)
+        except ValidationError as exc:
+            raise SessionError(str(exc)) from exc
+
     def staged_package_maps(self) -> tuple[PackageMapChange, ...]:
         return self._active_package_maps()
 
@@ -3406,6 +3416,15 @@ class ApfSession:
                             f"{modification.asset_id}"
                         )
                     suffix = ".json"
+                elif modification.kind == play_design.PROVIDER_KIND:
+                    try:
+                        data = modification.replacement_path.read_bytes()
+                        play_design.validate_payload(data, modification.asset_id, dict(modification.metadata))
+                        play_design.compile_modification(self.source.index_0a, modification)
+                    except (OSError, ValidationError) as exc:
+                        raise SessionError(f"Project APF design is invalid: {exc}") from exc
+                    digest = hashlib.sha256(data).hexdigest()
+                    suffix = ".json"
                 elif modification.kind == PLAY_ASSIGNMENT_ROUTE_KIND:
                     try:
                         data = modification.replacement_path.read_bytes()
@@ -3756,6 +3775,10 @@ class ApfSession:
             try:
                 validate_crest_set(validated)
             except HelmetCrestDesignError as exc:
+                raise SessionError(str(exc)) from exc
+            try:
+                play_design.check_composition(validated)
+            except ValidationError as exc:
                 raise SessionError(str(exc)) from exc
             master_play_modifications = {
                 item.asset_id: item

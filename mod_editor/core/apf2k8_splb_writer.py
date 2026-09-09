@@ -1309,6 +1309,8 @@ def apply_record_changes(
     record: SplbRecord,
     memberships: Iterable[MembershipChange] = (),
     moves: Iterable[TagMove] = (),
+    *,
+    master_play_count: int = 586,
 ) -> tuple[SplbEntry, ...]:
     """Return one record's entries after the requested edits, or raise.
 
@@ -1316,7 +1318,7 @@ def apply_record_changes(
     the same request can be named as the heir of a slot the request removes.
     """
 
-    play_count = 586
+    play_count = _bounded_int(master_play_count, "MASTER play count", minimum=1, maximum=640)
     before = record.entries
     entries = list(before)
 
@@ -1422,7 +1424,8 @@ def apply_record_changes(
 
 
 def compile_book(
-    book: SplbBook, changes: Iterable[MembershipChange | TagMove]
+    book: SplbBook, changes: Iterable[MembershipChange | TagMove],
+    *, master_play_count: int = 586,
 ) -> CompiledBook:
     """Rewrite only the entry prefixes the changes touch."""
 
@@ -1447,7 +1450,7 @@ def compile_book(
         moves = tuple(
             move for move in request.moves if move.record_index == record_index
         )
-        entries = apply_record_changes(book, record, memberships, moves)
+        entries = apply_record_changes(book, record, memberships, moves, master_play_count=master_play_count)
         final_entries[record_index] = entries
         if not retail_tag_shape(entries):
             off_distribution.append(record_index)
@@ -1643,6 +1646,7 @@ def verify_book(
     before: bytes,
     after: bytes,
     changes: Iterable[MembershipChange | TagMove | TrailerReplace],
+    *, master_play_count: int = 586,
 ) -> Mapping[str, Any]:
     """Re-derive every changed byte without trusting the compiler.
 
@@ -1703,7 +1707,8 @@ def verify_book(
             move for move in request.moves if move.record_index == record_index
         )
         expected = apply_record_changes(
-            parsed_before, parsed_before.records[record_index], memberships, moves
+            parsed_before, parsed_before.records[record_index], memberships, moves,
+            master_play_count=master_play_count,
         )
         actual = parsed_after.records[record_index].entries
         _check_tag_rule(

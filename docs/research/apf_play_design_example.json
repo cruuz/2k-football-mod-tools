@@ -1,0 +1,680 @@
+{
+  "cpu_calls": [
+    {
+      "donor_record": null,
+      "formation": 0,
+      "outer": 259,
+      "play": 586,
+      "record": 0
+    },
+    {
+      "donor_record": null,
+      "formation": 0,
+      "outer": 259,
+      "play": 587,
+      "record": 0
+    },
+    {
+      "donor_record": null,
+      "formation": 0,
+      "outer": 259,
+      "play": 588,
+      "record": 0
+    },
+    {
+      "donor_record": null,
+      "formation": 0,
+      "outer": 259,
+      "play": 589,
+      "record": 0
+    },
+    {
+      "donor_record": null,
+      "formation": 0,
+      "outer": 259,
+      "play": 590,
+      "record": 0
+    },
+    {
+      "donor_record": null,
+      "formation": 147,
+      "outer": 618,
+      "play": 591,
+      "record": 0
+    },
+    {
+      "donor_record": 0,
+      "formation": 163,
+      "outer": 259,
+      "play": 586,
+      "record": 25
+    }
+  ],
+  "formations": [
+    {
+      "donor": 0,
+      "mode": "append",
+      "name": "Astra I Pro",
+      "positions": [
+        [
+          6,
+          0,
+          -600,
+          0
+        ],
+        [
+          6,
+          1,
+          -600,
+          0
+        ],
+        [
+          6,
+          2,
+          -600,
+          0
+        ]
+      ],
+      "target": 163
+    }
+  ],
+  "plays": [
+    {
+      "copies": [
+        [
+          9,
+          20
+        ]
+      ],
+      "donor": 10,
+      "mode": "append",
+      "name": "Smash APF",
+      "nodes": [
+        [
+          0,
+          2,
+          "y_ft",
+          -21
+        ],
+        [
+          6,
+          1,
+          "segment_type",
+          0
+        ],
+        [
+          6,
+          1,
+          "distance_ft",
+          30
+        ],
+        [
+          6,
+          2,
+          "segment_type",
+          6
+        ],
+        [
+          6,
+          2,
+          "distance_ft",
+          45
+        ],
+        [
+          7,
+          1,
+          "segment_type",
+          0
+        ],
+        [
+          7,
+          1,
+          "distance_ft",
+          15
+        ],
+        [
+          7,
+          2,
+          "segment_type",
+          8
+        ],
+        [
+          7,
+          2,
+          "distance_ft",
+          6
+        ],
+        [
+          8,
+          1,
+          "segment_type",
+          0
+        ],
+        [
+          8,
+          1,
+          "distance_ft",
+          36
+        ],
+        [
+          8,
+          2,
+          "segment_type",
+          4
+        ],
+        [
+          8,
+          2,
+          "distance_ft",
+          45
+        ],
+        [
+          9,
+          1,
+          "segment_type",
+          0
+        ],
+        [
+          9,
+          1,
+          "distance_ft",
+          3
+        ],
+        [
+          9,
+          2,
+          "segment_type",
+          5
+        ],
+        [
+          9,
+          2,
+          "distance_ft",
+          15
+        ]
+      ],
+      "target": 586
+    },
+    {
+      "copies": [
+        [
+          9,
+          20
+        ]
+      ],
+      "donor": 10,
+      "mode": "append",
+      "name": "Levels Drive APF",
+      "nodes": [
+        [
+          0,
+          2,
+          "y_ft",
+          -21
+        ],
+        [
+          6,
+          1,
+          "segment_type",
+          0
+        ],
+        [
+          6,
+          1,
+          "distance_ft",
+          30
+        ],
+        [
+          6,
+          2,
+          "segment_type",
+          4
+        ],
+        [
+          6,
+          2,
+          "distance_ft",
+          60
+        ],
+        [
+          7,
+          1,
+          "segment_type",
+          0
+        ],
+        [
+          7,
+          1,
+          "distance_ft",
+          9
+        ],
+        [
+          7,
+          2,
+          "segment_type",
+          4
+        ],
+        [
+          7,
+          2,
+          "distance_ft",
+          60
+        ],
+        [
+          8,
+          1,
+          "segment_type",
+          0
+        ],
+        [
+          8,
+          1,
+          "distance_ft",
+          18
+        ],
+        [
+          8,
+          2,
+          "segment_type",
+          4
+        ],
+        [
+          8,
+          2,
+          "distance_ft",
+          60
+        ],
+        [
+          9,
+          1,
+          "segment_type",
+          0
+        ],
+        [
+          9,
+          1,
+          "distance_ft",
+          9
+        ],
+        [
+          9,
+          2,
+          "segment_type",
+          5
+        ],
+        [
+          9,
+          2,
+          "distance_ft",
+          30
+        ]
+      ],
+      "target": 587
+    },
+    {
+      "copies": [
+        [
+          9,
+          20
+        ]
+      ],
+      "donor": 10,
+      "mode": "append",
+      "name": "Dagger APF",
+      "nodes": [
+        [
+          0,
+          2,
+          "y_ft",
+          -21
+        ],
+        [
+          6,
+          1,
+          "segment_type",
+          0
+        ],
+        [
+          6,
+          1,
+          "distance_ft",
+          18
+        ],
+        [
+          6,
+          2,
+          "segment_type",
+          0
+        ],
+        [
+          6,
+          2,
+          "distance_ft",
+          60
+        ],
+        [
+          7,
+          1,
+          "segment_type",
+          0
+        ],
+        [
+          7,
+          1,
+          "distance_ft",
+          45
+        ],
+        [
+          7,
+          2,
+          "segment_type",
+          4
+        ],
+        [
+          7,
+          2,
+          "distance_ft",
+          60
+        ],
+        [
+          8,
+          1,
+          "segment_type",
+          0
+        ],
+        [
+          8,
+          1,
+          "distance_ft",
+          9
+        ],
+        [
+          8,
+          2,
+          "segment_type",
+          4
+        ],
+        [
+          8,
+          2,
+          "distance_ft",
+          60
+        ],
+        [
+          9,
+          1,
+          "segment_type",
+          0
+        ],
+        [
+          9,
+          1,
+          "distance_ft",
+          3
+        ],
+        [
+          9,
+          2,
+          "segment_type",
+          5
+        ],
+        [
+          9,
+          2,
+          "distance_ft",
+          15
+        ]
+      ],
+      "target": 588
+    },
+    {
+      "copies": [
+        [
+          9,
+          20
+        ]
+      ],
+      "donor": 10,
+      "mode": "append",
+      "name": "Curl-Flat APF",
+      "nodes": [
+        [
+          0,
+          2,
+          "y_ft",
+          -21
+        ],
+        [
+          6,
+          1,
+          "segment_type",
+          0
+        ],
+        [
+          6,
+          1,
+          "distance_ft",
+          3
+        ],
+        [
+          6,
+          2,
+          "segment_type",
+          5
+        ],
+        [
+          6,
+          2,
+          "distance_ft",
+          18
+        ],
+        [
+          7,
+          1,
+          "segment_type",
+          0
+        ],
+        [
+          7,
+          1,
+          "distance_ft",
+          36
+        ],
+        [
+          7,
+          2,
+          "segment_type",
+          8
+        ],
+        [
+          7,
+          2,
+          "distance_ft",
+          6
+        ],
+        [
+          8,
+          1,
+          "segment_type",
+          0
+        ],
+        [
+          8,
+          1,
+          "distance_ft",
+          36
+        ],
+        [
+          8,
+          2,
+          "segment_type",
+          8
+        ],
+        [
+          8,
+          2,
+          "distance_ft",
+          6
+        ],
+        [
+          9,
+          1,
+          "segment_type",
+          0
+        ],
+        [
+          9,
+          1,
+          "distance_ft",
+          3
+        ],
+        [
+          9,
+          2,
+          "segment_type",
+          5
+        ],
+        [
+          9,
+          2,
+          "distance_ft",
+          18
+        ]
+      ],
+      "target": 589
+    },
+    {
+      "copies": [
+        [
+          9,
+          20
+        ]
+      ],
+      "donor": 10,
+      "mode": "append",
+      "name": "Mesh APF",
+      "nodes": [
+        [
+          0,
+          2,
+          "y_ft",
+          -21
+        ],
+        [
+          6,
+          1,
+          "segment_type",
+          0
+        ],
+        [
+          6,
+          1,
+          "distance_ft",
+          12
+        ],
+        [
+          6,
+          2,
+          "segment_type",
+          4
+        ],
+        [
+          6,
+          2,
+          "distance_ft",
+          60
+        ],
+        [
+          7,
+          1,
+          "segment_type",
+          0
+        ],
+        [
+          7,
+          1,
+          "distance_ft",
+          30
+        ],
+        [
+          7,
+          2,
+          "segment_type",
+          6
+        ],
+        [
+          7,
+          2,
+          "distance_ft",
+          45
+        ],
+        [
+          8,
+          1,
+          "segment_type",
+          0
+        ],
+        [
+          8,
+          1,
+          "distance_ft",
+          15
+        ],
+        [
+          8,
+          2,
+          "segment_type",
+          4
+        ],
+        [
+          8,
+          2,
+          "distance_ft",
+          60
+        ],
+        [
+          9,
+          1,
+          "segment_type",
+          0
+        ],
+        [
+          9,
+          1,
+          "distance_ft",
+          3
+        ],
+        [
+          9,
+          2,
+          "segment_type",
+          5
+        ],
+        [
+          9,
+          2,
+          "distance_ft",
+          30
+        ]
+      ],
+      "target": 590
+    },
+    {
+      "copies": [],
+      "donor": 439,
+      "mode": "append",
+      "name": "Astra Defense",
+      "nodes": [
+        [
+          4,
+          1,
+          "y_ft",
+          27
+        ]
+      ],
+      "target": 591
+    }
+  ],
+  "schema": "apf2k8_play_design/v1",
+  "source_sha256": "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891"
+}

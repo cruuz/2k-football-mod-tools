@@ -357,6 +357,372 @@ XBE gates are also run. Full evidence and Noah's xemu witness are in
 they are foreign to the fixed writer; exact new installations replay with
 zero changed bytes.
 
+# APF Create a Play / Design Formation integration
+
+2026-09-09, for Claude. All new gameplay results are **UNWITNESSED**.
+The core, project/session/facade adapter, logical example, tests and standalone
+Qt panel are implemented. `gui.py`, `build.py`, both release allowlists, both
+packaging checkers and capability registries were left untouched as requested.
+Until the changes below land together, the panel is not rendered in the main app
+and the existing Build engine does not accept the new provider. Do not advertise
+this branch alone as an integrated installer.
+
+## 1. Playbooks page
+
+File: `mod_editor/apf_studio/gui.py`.
+Add beside the existing playbook panel imports (near line 191):
+
+```python
+from .play_designer_qt import PlayDesignerPanel
+```
+
+In `InspectorCategoryPage.__init__`, beside `self.playbook_routes` (near line 19327):
+
+```python
+self.play_designer = (
+    PlayDesignerPanel(facade, run_task)
+    if category is ApfCategory.PLAYBOOKS
+    else None
+)
+```
+
+Beside the other `modifiedChanged` connections:
+
+```python
+if self.play_designer is not None:
+    self.play_designer.modifiedChanged.connect(self.modifiedChanged)
+```
+
+In the `ApfCategory.PLAYBOOKS` tabs branch, after Save Assignments and before
+Raw Playbook Assets (preserving the existing tab indices 0..4):
+
+```python
+tabs.addTab(self.play_designer, "Design Plays / Formations")
+```
+
+The panel already owns the exact **Design Play…**, **Design Formation…** and
+**Add CPU call…** buttons, dialogs, recipes, draft summary, validation/staging
+button and UNWITNESSED/CPU-only status. Do not put another authoring dialog in
+`gui.py`. Its worker callback contract matches `run_task(title, fn, done, mutating)`.
+
+In `InspectorCategoryPage.open_workspace`, before the `soundtrack` branch, add:
+
+```python
+elif normalized in {"play-designer", "design-play", "design-formation"} \
+        and self.category is ApfCategory.PLAYBOOKS:
+    target = 5
+```
+
+Replace the Playbooks entry in `CATEGORY_BLURBS` near line 247:
+
+```python
+ApfCategory.PLAYBOOKS: (
+    "Inspect PLAY and DRCT, edit stock assignment routes, or design bounded "
+    "plays and formations with CPU-book calls. New designs are experimental "
+    "and UNWITNESSED in-game. Save Assignments retains its existing book "
+    "reassignment tools. Freehand node graphs, five-step timing and DRCT "
+    "authoring remain unproved."
+),
+```
+
+In the workspace's source/model setup method, next to the two
+`self.playbook_routes.set_model(...)` sites (near lines 19471 and 19505), add:
+
+```python
+if self.play_designer is not None:
+    self.play_designer.set_context()
+```
+
+At the first site, the facade must already reflect the cleared source. At the
+second, it must reflect the newly loaded source. `set_context()` loads the pinned
+MASTER and named CPU books through the worker, or disables the controls without
+a source. In `InspectorCategoryPage.refresh()` (near line 19534), add:
+
+```python
+if self.play_designer is not None:
+    self.play_designer.refresh()
+```
+
+Refresh preserves an unstaged draft. After successful staging it reloads from
+the session; explicit **Reload staged design** discards the local draft. The
+stage button is disabled for an empty plan. The normal session undo/revert and
+project save/import flow already support `apf_play_design` in this branch.
+
+## 2. Build the atomic design once
+
+File: `mod_editor/apf_studio/build.py`. Add alongside project/service imports:
+
+```python
+from . import play_design_service as play_design
+```
+
+The import exposes `PROVIDER_KIND`, `SCHEMA`, `check_composition` and
+`compile_modification`. In `ApfBuildService.build`, which initializes `compiled`, `edit_rows`
+and `play_assignment_route_group` (near line 860), add:
+
+```python
+play_design_group: list[Modification] = []
+try:
+    play_design.check_composition(edits)
+except ValidationError as exc:
+    raise BuildError(str(exc)) from exc
+```
+
+This must execute before any game output is written. The service rejects more
+than one design and any composition with `play_assignment_route`,
+`formation_package_map`, `formation_alignment`, or `splb_book_membership`.
+It prevents a later legacy edit from silently replacing the designer's MASTER
+or CPU output. Other unrelated features can still build normally.
+
+In the existing per-modification dispatch, before its generic `else`:
+
+```python
+elif modification.kind == play_design.PROVIDER_KIND:
+    play_design_group.append(modification)
+```
+
+After the MASTER and SPLB group compilation blocks (after the block ending
+near line 1304), before the subsequent replacement-hash verification/output:
+
+```python
+for modification in play_design_group:
+    try:
+        result = play_design.compile_modification(
+            self.source.index_0a, modification
+        )
+    except (OSError, ValidationError) as exc:
+        raise BuildError(f"Could not compile APF design: {exc}") from exc
+    receipts = {item["outer"]: item for item in result.report["resources"]}
+    for outer_index, entry_bytes in sorted(result.entries.items()):
+        if outer_index in compiled:
+            raise BuildError(
+                f"Two edits resolve to the same APF outer entry {outer_index}"
+            )
+        row = {
+            "asset_ids": (modification.asset_id,),
+            "kind": play_design.PROVIDER_KIND,
+            "outer_index": outer_index,
+            "replacement_payload_sha256s": {
+                modification.asset_id: modification.replacement_sha256
+            },
+            "entry_size": len(entry_bytes),
+            "entry_sha256": _hash_bytes(entry_bytes),
+            "writer_schema": play_design.SCHEMA,
+            "writer_mode": "bounded_master_and_cpu_design",
+            "verification": receipts[outer_index],
+            "design_verification": result.report["design"],
+            "runtime_status": "UNWITNESSED",
+            "cpu_books_only": True,
+        }
+        compiled[outer_index] = (entry_bytes, row)
+        edit_rows.append(row)
+```
+
+Keep the existing pre/post replacement-hash checks, source identity checks and
+BUILT-copy transactional output intact. `result.entries` contains full padded
+outer allocations and can include MASTER 180 plus several CPU SPLB resources;
+do not assume one provider modification means one outer entry. Idempotent no-op
+plans may yield no entries. The compiler verifies every resource before returning
+any entry; it never writes the source packs. No growth/relocation branch is needed.
+
+Add an integration test in the integrator-owned Build tests exercising the
+example's three entries through the actual build dispatcher and confirming a
+post-design legacy MASTER/SPLB collision fails before any output is installed.
+Do not infer this end-to-end Build result from the tests in this branch: those
+prove the writer adapter, not the protected dispatcher.
+
+## 3. Capability registry
+
+The exact eight proposed rows are in
+`docs/research/apf_play_design_capabilities.json`. Six are
+`offline-writer-proved` with runtime `not-tested`; dedicated spy and five-step
+cadence are hidden `unsafe/deferred`. They use the existing `cpu_ai_draft`
+surface, so no schema enum change is necessary. IDs:
+
+```text
+apf2k8.cpu_ai_draft.play_design.concept_recipes
+apf2k8.cpu_ai_draft.play_design.cpu_calls
+apf2k8.cpu_ai_draft.play_design.create_formation
+apf2k8.cpu_ai_draft.play_design.create_play
+apf2k8.cpu_ai_draft.play_design.defensive_assignments
+apf2k8.cpu_ai_draft.play_design.edit_play
+apf2k8.cpu_ai_draft.play_design.five_step_drop
+apf2k8.cpu_ai_draft.play_design.spy
+```
+
+Apply to `mod_editor/capabilities/registry.v1.json` after page/build wiring, with
+canonical serialization. This code is supplied for the integrator; it was not
+executed against the protected registry here:
+
+```python
+import json
+from pathlib import Path
+
+path = Path("mod_editor/capabilities/registry.v1.json")
+data = json.loads(path.read_text(encoding="utf-8"))
+proposal = json.loads(Path(
+    "docs/research/apf_play_design_capabilities.json"
+).read_text(encoding="utf-8"))["capabilities"]
+new_ids = {row["id"] for row in proposal}
+data["capabilities"] = sorted(
+    [row for row in data["capabilities"] if row["id"] not in new_ids] + proposal,
+    key=lambda row: row["id"],
+)
+path.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+```
+
+Run `python3 mod_editor/capabilities/validate_registry.py`. The proposed merge
+was validated in memory using the existing strict validator. “Registered” must
+not become “runtime proved”: all six write rows retain the UNWITNESSED scope.
+The backend command compiles in memory and writes a derived receipt only;
+actual game output belongs to the existing protected Build pipeline.
+
+Register the matching product action bindings in
+`mod_editor/apf_studio/models.py` together with the canonical rows (the parity
+test refuses bindings whose registry rows have not landed). Add these six entries
+inside `CAPABILITY_ACTION_BINDINGS`, using dictionary unpacking:
+
+```python
+**{
+    "apf2k8.cpu_ai_draft.play_design." + feature: CapabilityActionBinding(
+        "apf2k8.cpu_ai_draft.play_design." + feature,
+        "playbook.play_designer",
+        _actions(ApfProductAction.REPLACE, ApfProductAction.REVERT),
+        replace_method="apply_play_design",
+        revert_method="revert",
+        product_note=(
+            "Design Plays / Formations stages one logical plan. "
+            "Bounded records and CPU SPLB calls are proved offline; "
+            "all gameplay is UNWITNESSED."
+        ),
+    )
+    for feature in (
+        "concept_recipes", "cpu_calls", "create_formation", "create_play",
+        "defensive_assignments", "edit_play",
+    )
+},
+```
+
+In `mod_editor/apf_studio/catalog.py::_capability_category`, before the general
+`cpu_ai_draft` branch:
+
+```python
+if capability_id.startswith("apf2k8.cpu_ai_draft.play_design."):
+    return ApfCategory.PLAYBOOKS
+```
+
+Leave spy and step cadence without action bindings. Run
+`PYTHONPATH=. python3 tests/mod_editor/test_apf_capability_action_parity.py`
+after merging registry and binding changes together.
+
+## 4. Release allowlist and runtime closure
+
+The APF release checker actually defaults to
+`packaging/apf2k8-release-allowlist.txt`; the brief also protects the separate
+`packaging/release-allowlist.txt`. Neither was changed. Add these exact source
+paths to the APF allowlist, once each:
+
+```text
+mod_editor/apf_studio/play_design_service.py
+mod_editor/apf_studio/play_designer_qt.py
+mod_editor/core/apf2k8_formation_alignment_writer.py
+mod_editor/core/apf2k8_play_codec.py
+mod_editor/core/apf2k8_play_concepts.py
+mod_editor/core/apf2k8_play_design_build.py
+mod_editor/core/apf2k8_play_designer.py
+mod_editor/core/nfl2k5_play_codec.py
+```
+
+The last file is a stdlib-only operand codec dependency, not the NFL GUI or its
+runtime patches. Formation alignment is the cherry-picked dependency. Existing
+APF route/package/SPLB writers, `tools/playbook_inventory.py`, `apf_inner`,
+`apf_outer`, `apf_texture_patch` and their current dependencies are already in
+the APF closure. Keep the existing reviewed optimal helper and portable fallback.
+Do not add private inputs, `.astra-work`, `.astra-local-git`, bundles or reports
+to a public product release.
+
+If the canonical registry rows retain all supplied evidence paths, also add the
+following derived research and test source files to the APF allowlist; the strict
+registry checks evidence existence in a staged release:
+
+```text
+docs/research/apf_play_format.md
+docs/research/apf_play_format_derived.json
+docs/research/apf_play_design_build_derived.json
+tests/mod_editor/test_apf_play_designer.py
+tests/mod_editor/test_apf_play_designer_project.py
+tests/mod_editor/test_apf_play_designer_qt.py
+```
+
+Alternatively, replace the six rows' evidence lists with released public evidence
+documents and keep research tests in the development tree. Do not drop evidence
+validation. The example and proposal are optional development artifacts; no app
+import depends on them. To ship the reproduction CLI as well, include
+`tools/apf_play_format_proof.py` and its derived document path.
+
+In `packaging/check_apf2k8_mod_studio_runtime.py`, extend `PRODUCT_MODULES`
+(near line 72) with the eight module names corresponding to the eight source
+paths above. The existing literal-import scanner should remain enabled.
+Add a synthetic smoke check (or invoke the standalone tests in development)
+that exercises native 1C, bounded append/private chains, project round-trip and
+offscreen panel creation. Keep `QT_QPA_PLATFORM=offscreen`.
+
+In `packaging/check_apf2k8_mod_studio_release.py`, extend
+`REQUIRED_PRODUCT_CONTRACT_MARKERS` with:
+
+```python
+"mod_editor/apf_studio/play_designer_qt.py": (
+    "class PlayDesignerPanel(QWidget):",
+    "Design Play…",
+    "Design Formation…",
+    "Add CPU call…",
+),
+"mod_editor/core/apf2k8_play_designer.py": (
+    'SCHEMA = "apf2k8_play_design/v1"',
+    'PROVIDER_KIND = "apf_play_design"',
+    "UNWITNESSED in-game; CPU books only",
+),
+"mod_editor/apf_studio/play_design_service.py": (
+    "def check_composition(",
+    "def compile_modification(",
+),
+```
+
+Do not relax binary/hash/private-component scanning. Any additional evidence
+paths must pass those checks; this branch claims no completed release audit,
+installer build or runtime promotion. Run the existing release and runtime
+checkers against the clean staged product after all integration changes land.
+
+## 5. Concrete integration rehearsal
+
+`docs/research/apf_play_design_example.json` is an actual logical plan: five
+concepts at 586..590, defensive play 591, formation 163, CPU additions in 259
+(records 0 and 25) and 618 (record 0). Its expected derived output is
+`docs/research/apf_play_design_build_derived.json`. Rehearse without writing game
+files:
+
+```sh
+python3 -m mod_editor.core.apf2k8_play_design_build --index "$APF_RETAIL_INDEX" --plan docs/research/apf_play_design_example.json --receipt "$APF_RECEIPT_OUT"
+python3 tests/mod_editor/test_apf_play_designer.py
+python3 tests/mod_editor/test_apf_play_designer_project.py
+QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_play_designer_qt.py
+```
+
+`APF_RECEIPT_OUT` must be outside the source retail directory. The example is
+not a project archive; stage it using `facade.apply_play_design(plan)` after
+source load, then save through the normal project API. The main page can create
+equivalent plans via the buttons. A new play needs an explicit CPU call; adding
+a concept in the panel does not silently choose a book for the user.
+
+After integration, Noah's separate in-game witness should confirm new CPU calls,
+correct personnel/alignment, both route sides and timing, on BASE and TU 1.1.
+The earlier witnessed alignment writer does not witness newly appended records,
+new plays, node edits, or these concept recipes.
+
+---
+
+# Earlier integration notes (preserved)
+
 # r65 Player abilities rules v2 (2026-09-08)
 
 This section supersedes earlier abilities v1 wiring only. EXPERIMENTAL /

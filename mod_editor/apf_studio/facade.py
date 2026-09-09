@@ -173,6 +173,23 @@ class ApfStudioFacade:
     def source_ready(self) -> bool:
         return self.source is not None and self.catalog is not None and self.session is not None
 
+    def play_design_context(self, progress: Progress = _noop):
+        from mod_editor.core.apf2k8_splb_writer import STOCK_BOOKS, read_book
+        with self._session_lock:
+            session = self.require_session()
+            progress("Reading APF play design sources", 0, 1)
+            body = session._master_play_body()
+            books = {i: read_book(session.source.index_0a, i) for i, name in STOCK_BOOKS.items() if name}
+            return body, session.staged_play_design(), books
+
+    def apply_play_design(self, plan: dict, progress: Progress = _noop) -> dict:
+        with self._session_lock:
+            progress("Verifying APF design and CPU book allocations", 0, 1)
+            result = self.require_session().apply_play_design(plan)
+            self.last_build = None
+            progress("APF design verified and staged", 1, 1)
+            return result
+
     @property
     def source_display_name(self) -> str:
         return self.source.display_name if self.source else "No game loaded"
