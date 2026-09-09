@@ -1726,7 +1726,7 @@ def compile_book(
     validate_personnel_edit(book, parsed_after)
     verification = verify_book(book.body, bytes(replacement), (
         *request.memberships, *request.moves, *request.trailers,
-    ))
+    ), master_play_count=master_play_count)
     claims: dict[str, Any] = {
         "entry_prefix_only": not bool(request.trailers),
         "trailers_untouched": not bool(request.trailers),

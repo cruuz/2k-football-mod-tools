@@ -328,12 +328,12 @@ class PresetTests(unittest.TestCase):
                        "formations": [{"index": 0, "name": "I Test"}]}
         self.recipe = {"schema": presets.RECIPE_SCHEMA, "id": "test", "name": "Synthetic preset",
                        "book_type": "O-ZoneBlock", "intent": "Test dependent audible swaps", "limitations": "UNWITNESSED",
-                       "play_names": {str(x): f"Play {x}" for x in [1, 2, 4, 5]},
-                       "groups": [{"records": [[0, 0, "I Test"]], "keep": [1, 2, 4, 5], "tags": [2, 4, 5, 1]}]}
+                       "play_names": {str(x): f"Play {x}" for x in [1, 2, 3, 4, 5]},
+                       "groups": [{"records": [[0, 0, "I Test"]], "keep": [1, 2, 3, 4, 5], "tags": [2, 4, 5, 1]}]}
 
     def test_dependent_tag_swaps_membership_and_idempotence(self):
         after, report = presets.apply_preset(self.book, self.recipe, self.master)
-        self.assertEqual(report["verification"]["changed_records"][0]["removed_play_indices"], [0, 3])
+        self.assertEqual(report["verification"]["changed_records"][0]["removed_play_indices"], [0])
         self.assertEqual(after[0x118:], self.body[0x118:])
         again, repeated = presets.apply_preset(splb.parse_book(after, 943), self.recipe, self.master)
         self.assertEqual(again, after)
