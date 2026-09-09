@@ -162,7 +162,7 @@ MyCareer, ESPN or coverage-trail modules were edited.
 
 ## Validation and reproduction
 
-In commands below, `$RETAIL` expands to `/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)`; that literal read-only path was passed to the commands.
+In commands below, `$RETAIL` expands to `<private retail extraction>`; that literal read-only path was passed to the commands.
 
 | Exact command | Result |
 | --- | --- |
@@ -190,7 +190,7 @@ In commands below, `$RETAIL` expands to `/media/noah/Storage/for codex 1.0/extra
 | `python3 tools/nfl2k5_playbook_pack.py check data/playbooks/softdrink_match_coverage.2k5book --image "$RETAIL" --all-books --retarget --json .scratch/match-all-books.json` | All seven checks green for all 37 books, including a real dry compile and reparse. |
 | `QT_QPA_PLATFORM=offscreen python3 tools/nfl2k5_match_coverage.py census --image "$RETAIL" --output docs/mod_editor/match_coverage --render` | Exit 0; 59 records, 105 PNGs, all 37 books; zero unclassified chains; six disclosed partner anomalies. |
 | `python3 -m mod_editor.core.nfl2k5_match_coverage pack --image "$RETAIL" --team BAL --output .scratch/softdrink_match_coverage.2k5book --render` | Exit 0; generated pack equals delivered seed byte for byte; five authored PNGs and exact compiler receipt. |
-| `python3 tools/nfl2k5_match_coverage.py evidence --xbe "$RETAIL/default.xbe" --corpus /home/noah/2k-football-mod-tools/research/functions/nfl2k5 --output docs/mod_editor/match_coverage/evidence.json` | Exit 0; pinned retail identity, six complete consumer byte ranges/Ghidra blocks, boundary table and constants. |
+| `python3 tools/nfl2k5_match_coverage.py evidence --xbe "$RETAIL/default.xbe" --corpus <private Ghidra corpus> --output docs/mod_editor/match_coverage/evidence.json` | Exit 0; pinned retail identity, six complete consumer byte ranges/Ghidra blocks, boundary table and constants. |
 | `python3 -m compileall -q mod_editor/core/nfl2k5_match_coverage.py tools/nfl2k5_match_coverage.py tests/mod_editor/test_nfl2k5_match_coverage.py tests/mod_editor/test_nfl2k5_match_coverage_qt.py` | Passed. |
 | Sorted registry merge with `validate_data(..., check_files=False)` plus `_local_path` / `_command_module` checks for every new evidence path and command | Schema and new file/command paths pass; 118 total / 80 NFL 2K5 entries. Main registry merge documented for integration. |
 | `git diff --check`; all report/guide/gallery links and explicit deliverable paths checked | Passed. |

@@ -291,7 +291,7 @@ Additional exact development commands:
 ```text
 python3 tools/mycareer_mode/build_runtime.py --check
 python3 tools/mycareer_mode/measure_m3.py --output tools/mycareer_mode/m3_budget.json
-python3 tools/mycareer_mode/refresh_m3_manifest.py '/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe' --output .scratch/m3-manifest-delivery.json
+python3 tools/mycareer_mode/refresh_m3_manifest.py '<private retail extraction>/default.xbe' --output .scratch/m3-manifest-delivery.json
 python3 tools/mycareer_mode/probe_m3_bootstrap.py --finish-creation --output .scratch/m3-delivery-bootstrap.json
 git diff --check
 ```

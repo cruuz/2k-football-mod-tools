@@ -114,7 +114,8 @@ commit on the stack since beta 62, grouped by area, with a commit index at the e
   Steal 4, Weak Combo Strong Zone 4, Strong and Weak Bracket 1 3 each, Combo Weak Zone 3, Open Cover 5 1, Inside Zone
   Odd 1); 53 have reciprocal partners and six nonreciprocal ones are left exactly as found. Both man-to-zone and
   zone-to-man vocabulary exist as opposite sides of one native exchange. 105 retail formation diagrams and five
-  authored-call diagrams are rendered under `docs/mod_editor/match_coverage` with the census (JSON, CSV, table), the
+  authored-call diagrams are rendered under `docs/mod_editor/match_coverage` in the repository (the release payload
+  carries the census and metadata, not the images) with the census (JSON, CSV, table), the
   native evidence pins, a compiler receipt and a guide; the Rules library gains structural match bundles and the Info
   panel reads the new `match_coverage` section. The optional pack `data/playbooks/softdrink_match_coverage.2k5book`
   adds five experimental calls built from those rules (122 nodes, 976 bytes, no formations; OAK, the reference book and
@@ -259,9 +260,12 @@ commit on the stack since beta 62, grouped by area, with a commit index at the e
   wall stood behind the Music tab: the audio fingerprint and containment stores compared the cache folder name with
   the project rip's digest too (their own comments claimed the folder was named for the canonical identity; it is
   named after the opened disc), so a fresh rip that loaded the private audio inventories was refused with "not the
-  canonical cache key". Both stores accept the opened disc's folder now, with regression tests, and a real fresh rip
-  (the retail image with a container byte changed) was opened through the Studio, prepared for audio and built into
-  the Basic and Advanced presets on this stack before release.
+  canonical cache key". Both stores accept the opened disc's folder now, with regression tests. Behind that wall stood
+  a third: the audio preparation read `result.inventory_path` on the exact scan result, which has no such field (the
+  containment result does), so the first audio preparation of any fresh cache crashed with AttributeError; the test's
+  fake scanners had the wrong shape and hid it. Fixed, with the fakes corrected and a shape test. A real fresh rip
+  (the retail image with a container byte changed) was then opened through the Studio, prepared for audio and built
+  into the Basic and Advanced presets on this stack before release.
 - **Build and Gameplay rows for every new owner**, a level combo for CPU fourth downs, parent and child linking for
   weekly prep, the three abilities lock checkboxes restored from an installed v2 source, a new Rosters Abilities page
   inside a scroll host with the Guardian caps group, and the "Add match coverage experiments" button.
@@ -271,8 +275,8 @@ commit on the stack since beta 62, grouped by area, with a commit index at the e
   reflect the whole beta 63 union (38,432 RX, 4,096 RW and 3,224 RO bytes free in the documented budget); the
   scale-out stress owner shrinks to 36 KiB so the synthetic union still fills the code pages exactly.
 - **Counts.** Capability registry 124 rows, 86 for Xbox NFL 2K5; provider closure 257 pinned modules; release
-  allowlist 905 files including the 118 match-coverage files (directory entries are forbidden by the packaging
-  test); registry rows refreshed for the read option, abilities runtime, scorebug runtime and franchise 2026 objects.
+  allowlist 797 files (the 110 match-coverage diagrams stay in the repository under docs; the release policy forbids media suffixes
+  in the payload, and directory entries are forbidden by the packaging test); registry rows refreshed for the read option, abilities runtime, scorebug runtime and franchise 2026 objects.
 
 ### Not in this release
 
