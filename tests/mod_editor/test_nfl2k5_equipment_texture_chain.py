@@ -40,8 +40,10 @@ def artwork(width, height):
 
 
 class Fixture:
-    def __init__(self, root, *, family=8, margin=2048):
+    def __init__(self, root, *, family=8, margin=2048, names=None):
         self.width, self.height, self.count = 32, (16 if family == 6 else 32), 3
+        if names is not None and len(names) != self.count:
+            raise ValueError("synthetic equipment fixture names must match its three references")
         self.levels = 2 if family == 6 else 3
         system = 512
         chains = []
@@ -65,6 +67,8 @@ class Fixture:
         rows = []
         for reference, palette_offset in enumerate(palette_offsets):
             name = ("glove" if family == 6 else "shoes") + f"{reference + 1:02d}"
+            if names is not None:
+                name = names[reference]
             base = 0x18 + reference * 0x24
             name_at, descriptor = 128 + reference * 32, 256 + reference * 32
             decoded[base:base + 4] = b"TXTR"
@@ -101,7 +105,7 @@ class Fixture:
 
     def context(self):
         stack = ExitStack()
-        segment = SimpleNamespace(pack_ordinal=0, pack_offset=128)
+        segment = SimpleNamespace(pack_ordinal=0, pack_offset=128, size=len(self.span))
         archive = SimpleNamespace(entries=[SimpleNamespace(size=len(self.span), segments=[segment])],
                                   packs=[SimpleNamespace(name="pack", path=self.pack, size=len(self.span))])
         stack.enter_context(patch.object(writer, "load_targets", return_value=(

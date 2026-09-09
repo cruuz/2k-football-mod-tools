@@ -214,6 +214,22 @@ if even a usable two-colour result cannot fit, Build refuses it with a clear
 message. The five global `shoes_taped`/`wristband_qb`/`elbowpad_*` targets in All
 Textures are different standalone assets and keep their full P8 writer.
 
+**Which package the game actually reads.** The executable binds team-coloured
+variants (`shoes09`, `shoes10`, gloves 5-8, elbow pads 5-7, long sleeve 3,
+wristband 9, socks) from each team's own uniform package, so importing one of
+those changes that package only. The generic variants (Edit Player shoe Styles
+1, 2, 4 and 5 = `shoes01`, `shoes04`, `shoes02`, `shoes03`; gloves 1-4; elbow
+pads 1-4; long sleeves 1-2; wristbands 1-2, with their mud versions) are looked
+up without a team: the game takes the copy inside the most recently loaded
+uniform package, which in a game is the away team's package for every player
+on both sides, and on the Edit Player screen is the viewed team's Current
+Uniform package alone. That is why a shoe imported into one package showed on
+the Edit Player preview and nowhere else. Importing a generic variant now stages
+the same artwork into every package the game can read it from (all 317 away
+packages and the 85 home Current Uniform packages, plus the selected set) as one
+undoable edit; the import message and receipt list them, Revert on any of them
+reverts them all, and Build compiles each distinct retail span once.
+
 Each physical set also owns four **separate presentation textures** that are
 not part of Team Kit's 39 live/card components:
 
