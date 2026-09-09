@@ -1577,8 +1577,13 @@ class BuildPanel(QWidget):
         self.momentum_collision_level.blockSignals(False)
         self.momentum_collision_level.setEnabled(collision.isEnabled())
         installed_abilities = (self._state or {}).get("abilities_settings") or None
-        if isinstance(installed_abilities, dict) and installed_abilities.get("model_version") == 2:
-            self.set_abilities_lock_settings({key: installed_abilities.get(key) for key in ("lock_right_stick", "lock_special_moves", "lock_speedster")})
+        # Only a disc that already carries rules v2 dictates the lock boxes; a retail disc reports the defaults with
+        # the same model version, and syncing those on every refresh both reverted the user's unticks and, through
+        # the setter's own refresh, recursed without end on every real disc open (caught before beta 63 shipped).
+        if isinstance(installed_abilities, dict) and installed_abilities.get("status") == "applied" \
+                and installed_abilities.get("model_version") == 2:
+            self._apply_abilities_lock_boxes({key: installed_abilities.get(key)
+                                              for key in ("lock_right_stick", "lock_special_moves", "lock_speedster")})
         money = self.cpu_money_downs_check
         installed_money = (self._state or {}).get("cpu_money_downs_settings") or None
         self.cpu_money_downs_level.blockSignals(True)
@@ -1888,8 +1893,8 @@ class BuildPanel(QWidget):
         """Runtime key names (lock_right_stick, ...) -> bool, as the Rosters page expects."""
         return {key.removeprefix("abilities_"): box.isChecked() for key, box in self.abilities_lock_checks.items()}
 
-    def set_abilities_lock_settings(self, settings: dict) -> None:
-        """From the Rosters page or a source inspection; emits no change signal back to Rosters."""
+    def _apply_abilities_lock_boxes(self, settings: dict) -> None:
+        """Set the three lock boxes silently: no change signal, no refresh (the caller decides that)."""
         self._abilities_lock_sync = True
         try:
             for key, box in self.abilities_lock_checks.items():
@@ -1900,6 +1905,10 @@ class BuildPanel(QWidget):
                     box.blockSignals(False)
         finally:
             self._abilities_lock_sync = False
+
+    def set_abilities_lock_settings(self, settings: dict) -> None:
+        """From the Rosters page; emits no change signal back to Rosters, then refreshes once."""
+        self._apply_abilities_lock_boxes(settings)
         self._refresh()
 
     def _abilities_locks_changed(self):

@@ -137,7 +137,13 @@ commit on the stack since beta 62, grouped by area, with a commit index at the e
   transaction on the shared Rosters undo stack; lock settings flow from Rosters to Build and back. CLI:
   `python3 -m mod_editor.core.nfl2k5_abilities_editor --roster <disc> --top-n 10 --output <json>`. Six suggested
   independent abilities are refused in the report because no storage or complete native outcome proof exists in the
-  budget. 599 tests. `ASTRA_ABILITIES_V2_REPORT.md`.
+  budget. 599 tests. `ASTRA_ABILITIES_V2_REPORT.md`. Caught before release, on this branch only: every real disc
+  reports rules v2's model version even at retail, and the Build page's refresh synced the three lock boxes
+  through the public setter, which refreshes again: RecursionError on every real disc open, surfaced as the
+  "unexpected error" dialog. Found by replaying the field reports through the real window offscreen (the
+  synthetic-executable tests never saw it because their inspection reports "foreign"). Now the boxes follow the
+  disc only when the rules are actually installed, silently; a retail disc leaves them to the user (before, the
+  retail defaults also reverted every untick on the next refresh). Regression test with a retail-shaped inspection.
 - **Deep-zone corner tiers (Build: "Deep-zone QB facing (experimental)" and "Press corner bail (experimental)",
   `deep_zone_facing` and `deep_zone_bail`, off in every preset; one owner, 2,048 RX + 256 RW).** The two rows the
   beta-62 audit deferred. Facing keeps CPU deep-zone corners oriented toward the quarterback on a slower directional
@@ -282,7 +288,11 @@ commit on the stack since beta 62, grouped by area, with a commit index at the e
   `Nfl2k5AudioOriginPreparation.is_ready` -> `store.inventory_path` -> "not the canonical cache key", on every music
   change and on every source load. That probe now answers False for any cache a store refuses instead of raising
   (`prepare()` repeats the validation and reports a refusal as a message), so a readiness check can never again put
-  the "unexpected error" dialog on screen. Regression test mirrors the reported stack.
+  the "unexpected error" dialog on screen. Regression test mirrors the reported stack. Two more testers reported 62.1
+  at disc open ("The first operation finished, but its next step could not start: ... not the canonical cache
+  key"): the post-open continuation `refresh_loaded_source` resets the audio panel, which asks that same probe.
+  The sequence (open, Start SOFTDRINK Basic, Music tab, re-open) was replayed through the real `StudioMainWindow`
+  offscreen on a fresh rip with every `QMessageBox` and the crash hook captured: no dialog, no error.
 - **Build and Gameplay rows for every new owner**, a level combo for CPU fourth downs, parent and child linking for
   weekly prep, the three abilities lock checkboxes restored from an installed v2 source, a new Rosters Abilities page
   inside a scroll host with the Guardian caps group, and the "Add match coverage experiments" button.

@@ -26,6 +26,42 @@ class BuildPanelTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.app = QApplication.instance() or QApplication([])
 
+    def test_a_real_disc_inspection_does_not_recurse_and_keeps_the_users_lock_choice(self) -> None:
+        """Every real disc reports abilities rules v2 (model_version 2) even at retail, and the beta-63 refresh
+        re-entered itself through set_abilities_lock_settings: RecursionError on every open. A retail disc must
+        leave the lock boxes to the user; a disc with the rules installed dictates them."""
+
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "default.xbe"
+            source.write_bytes(_build_synthetic_xbe())
+            panel = BuildPanel()
+            try:
+                state = mod_build.inspect(source)
+                retail = dict(state, abilities_settings={
+                    "status": "retail", "abilities_off_week": None, "lock_right_stick": True,
+                    "lock_special_moves": True, "lock_speedster": True, "model_version": 2,
+                    "experimental": True, "runtime_witnessed": False})
+                panel.apply_state(retail)   # recursed before the fix
+                box = panel.abilities_lock_checks["abilities_lock_speedster"]
+                box.setChecked(False)
+                panel._refresh()
+                self.assertFalse(box.isChecked(), "a retail disc must not overwrite the user's lock choice")
+                self.assertFalse(panel.abilities_lock_settings()["lock_speedster"])
+                applied = dict(retail, abilities_settings=dict(retail["abilities_settings"], status="applied",
+                                                               lock_speedster=False, lock_right_stick=False))
+                panel.apply_state(applied)
+                self.assertFalse(panel.abilities_lock_checks["abilities_lock_right_stick"].isChecked())
+                self.assertTrue(panel.abilities_lock_checks["abilities_lock_special_moves"].isChecked())
+                # the Rosters page setter still reaches the boxes on a disc without the rules installed
+                panel.apply_state(retail)
+                panel.set_abilities_lock_settings({"lock_special_moves": False})
+                self.assertFalse(panel.abilities_lock_checks["abilities_lock_special_moves"].isChecked())
+                # and a retail inspection leaves every other box exactly as it was
+                self.assertFalse(panel.abilities_lock_checks["abilities_lock_right_stick"].isChecked())
+            finally:
+                panel.deleteLater()
+                self.app.processEvents()
+
     def test_state_gates_toggles_and_plan_reflects_them(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             source = Path(tmp) / "default.xbe"
