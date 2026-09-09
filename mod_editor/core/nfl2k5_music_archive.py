@@ -161,8 +161,12 @@ class Disc(audio.DiscBanks):
             root_sector, root_size = struct.unpack('<II', self.read(8,self.partition+0x10014))
             root_at = self.partition + root_sector*2048
             spans.append((root_at,root_at+root_size,'root directory'))
+            # The volume descriptor is the only reserved sector. A pressed disc can keep its
+            # directories below it (a redump of this game has the root at sector 30), so sweep
+            # from the partition start and let the descriptor claim its own sector.
+            spans.append((self.partition + 0x10000, self.partition + 0x10800, 'volume descriptor'))
             spans.sort()
-            end = self.partition + 0x10800
+            end = self.partition
             for lo, hi, name in spans:
                 require(lo >= end, f"overlapping disc file or metadata: {name}")
                 end = hi

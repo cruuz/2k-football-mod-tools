@@ -609,7 +609,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_modern_positions.py": "9b6777034a1c373edc1dbb4e2a902a70bfa0012b63042bb7a2a9ba4054be8e21",
         "mod_editor/core/nfl2k5_momentum.py": "2746d12c7950c96cd0400bb59c33a413294b5ac3d4563874727cc32378981cce",
         "mod_editor/core/nfl2k5_momentum_code.py": "a56830bdfaf46ac987b0699f926745c177be183754baa422bbe192fc9e305b08",
-        "mod_editor/core/nfl2k5_music_archive.py": "47479bf3c41fb1765b72bdba0384368ba68efc418e8648bfc74263192286baa8",
+        "mod_editor/core/nfl2k5_music_archive.py": "a86456b894128d773c61c972c3eb535614f476941c5781737f6ebaef8d11da8a",
         "mod_editor/core/nfl2k5_music_banks.py": "50f8693728d2fbdd5c5e946d7d5ac636e98f03e82b8022e149892a480b41db2b",
         "mod_editor/core/nfl2k5_music_build.py": "1bd8b072530467c8570047d39624be718ccc6012feb8fb52cc3102b8e7ab34b3",
         "mod_editor/core/nfl2k5_music_catalog.py": "e54417c33f0ff7c7dfa19dbad57f61f578b3e819d17ff7e2b3693b8ecee61e48",
