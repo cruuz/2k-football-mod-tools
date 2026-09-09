@@ -58,7 +58,10 @@ class PublicTests(unittest.TestCase):
         registry._local_path(validation, "coverage_trail.validation")
 
     def test_template_reproduces(self):
-        if not shutil.which("as") or sys.platform == "darwin":
+        # Apple's assembler lacks GNU --32 and MinGW's emits COFF; the shipped byte template is the
+        # runtime input, so those hosts skip the reproduction instead of failing on it.
+        from _gnu_elf32_as import gnu_elf32_as
+        if not shutil.which("as") or not gnu_elf32_as():
             self.skipTest("GNU as with ELF32 output is required for template reproduction")
         subprocess.run([sys.executable, str(ROOT / "tools/nfl2k5_coverage_trail_assemble.py"), "--check"],
                        cwd=ROOT, check=True, capture_output=True, text=True)
