@@ -151,11 +151,14 @@ def preview_digit_sheet(
     """Run the build's pinned writer for every split PNG before staging edits.
 
     Only tiny temporary PNGs are written. No archive pack or disc is copied or
-    modified. Returning no result on any failure lets the GUI refuse the whole
-    sheet before its ordinary Team Kit transaction starts.
+    modified. A digit that cannot fit its slot at the quality floor is shown
+    as the RETAIL texture with a ``kept_retail`` receipt and a note, which is
+    exactly what the build does with it; any other failure returns no result
+    so the GUI refuses the whole sheet before its Team Kit transaction starts.
     """
     import nfl_live_numbers_nameplate_png_import as writer
-    from nfl_live_numbers_nameplate_targets import DEFAULT_REPORT
+    from nfl_live_numbers_nameplate_targets import DEFAULT_REPORT, select_target
+    from nfl_tset_png_import import QualityBudgetError
 
     targets, images = _targets(assets), tuple(outputs)
     if len(images) != 10 or any(
@@ -165,6 +168,7 @@ def preview_digit_sheet(
     ):
         raise ValidationError("Preview images do not match the selected ten digit slots.")
     rows, receipts, notes = [], [], []
+    archive = None
     with tempfile.TemporaryDirectory(prefix="2k5-digit-preview-") as temporary:
         root = Path(temporary).resolve(strict=True)
         for target, output in zip(targets, images):
@@ -176,6 +180,35 @@ def preview_digit_sheet(
                 span, _, receipt = writer.build_import(
                     index, DEFAULT_REPORT, target.family, target.asset_code,
                     target.side_code, target.variant, output.digit, path,
+                )
+            except QualityBudgetError as exc:
+                # The build keeps the RETAIL digit for a slot whose art cannot
+                # fit at the quality floor (beta-63.1), so the preview shows
+                # that same outcome: the retail texture in this row, and a
+                # note that names the slot and its allocation.
+                _, _, slot = select_target(
+                    target.family, target.asset_code, target.side_code,
+                    target.variant, output.digit, DEFAULT_REPORT,
+                )
+                if archive is None:
+                    archive = writer.parse_archive(index)
+                span = writer.read_entry_range(
+                    archive, archive.entries[slot.outer_index],
+                    slot.chunk_offset, slot.span_size,
+                )
+                writer.validate_template(span, slot)
+                receipt = {
+                    "kept_retail": True,
+                    "target": {"selector": slot.selector, "stored_size": slot.stored_size},
+                    "reason": str(exc),
+                    "replacement": {"span_sha256": hashlib.sha256(span).hexdigest()},
+                    "quantization": {},
+                }
+                notes.append(
+                    f"Digit {output.digit}: kept retail: could not fit its "
+                    f"{slot.stored_size}-byte texture slot at the 16-colour quality "
+                    "budget; the build keeps the retail digit for this slot. "
+                    "Use flat fill and outline colours and remove noise to replace it."
                 )
             except ValueError as exc:
                 raise ValidationError(f"Digit {output.digit}: {exc} {output.mapping_note}") from exc

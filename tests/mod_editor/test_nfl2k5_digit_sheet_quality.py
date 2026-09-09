@@ -350,11 +350,23 @@ class RetailDigitQualityTests(unittest.TestCase):
                 span, _, _ = writer.build_import(self.index, targets.DEFAULT_REPORT, "jersey", "26", "H", 0, output.digit, path)
                 self.assertEqual(sha(span), receipt["replacement"]["span_sha256"])
             # Deliberately double-filtered artwork still cannot fit Seattle 0
-            # above the quality floor. Refuse before a GUI Team Kit transaction.
+            # above the quality floor. Since beta-63.1 the build keeps the
+            # RETAIL digit for that one slot instead of refusing the disc, and
+            # the preview shows that same outcome: the retail texture in row 0
+            # and a note naming the slot and its allocation.
             source = author_sheet(root / "sheet.png", "double_resampled62")
             outputs = split_digit_sheet(source, selected)
-            with self.assertRaisesRegex(ValidationError, "Digit 0:.*1488-byte.*16-colour"):
-                preview_digit_sheet(self.index, selected, outputs)
+            preview = preview_digit_sheet(self.index, selected, outputs)
+            kept = preview.receipts[0]
+            self.assertTrue(kept.get("kept_retail"))
+            self.assertEqual(kept["target"]["selector"], "26H0:jersey_digit:0")
+            self.assertEqual(kept["target"]["stored_size"], 1488)
+            self.assertRegex(preview.details, "Digit 0: kept retail.*1488-byte.*16-colour")
+            _, _, zero = targets.select_target("jersey", "26", "H", 0, 0)
+            span = writer.read_entry_range(self.archive, self.archive.entries[zero.outer_index], zero.chunk_offset, zero.span_size)
+            self.assertEqual(kept["replacement"]["span_sha256"], sha(span))
+            with Image.open(BytesIO(preview.png)) as image:
+                self.assertEqual(image.size, (730, 850))
 
 
 if __name__ == "__main__":

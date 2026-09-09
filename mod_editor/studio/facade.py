@@ -1019,6 +1019,37 @@ class Nfl2k5StudioFacade:
         with self._lock:
             return self._last_build.output_xiso if self._last_build else None
 
+    @property
+    def last_build_kept_retail(self) -> tuple[dict[str, object], ...]:
+        """Digit slots the latest project build kept at retail, with asset IDs.
+
+        Each row is the builder's ``kept_retail`` receipt row plus the uniform
+        catalog ``asset_id`` it belongs to, so the Uniforms page can mark that
+        component "kept retail: could not fit ..." instead of a plain
+        "Modified" that the disc never received.  Empty when the last build
+        wrote every staged slot, or when there is no build yet.
+        """
+
+        with self._lock:
+            result = self._last_build
+        rows = tuple(getattr(result, "kept_retail", ()) or ())
+        annotated = []
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            selector = f"{row.get('asset_code')}{row.get('side')}{row.get('variant')}".lower()
+            annotated.append({
+                **row,
+                "asset_id": (
+                    f"nfl2k5.uniform.{selector}.digit.{row.get('family')}.{row.get('digit')}"
+                ),
+            })
+        return tuple(annotated)
+
+    @property
+    def kept_retail_asset_ids(self) -> frozenset[str]:
+        return frozenset(str(row["asset_id"]) for row in self.last_build_kept_retail)
+
     def preflight_visual_edits(
         self, progress: ProgressSink = _quiet_progress
     ) -> tuple[object, ...]:
