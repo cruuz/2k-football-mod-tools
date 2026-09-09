@@ -18,9 +18,9 @@ commit-by-commit index at the end.
   on the diagnostic disc was a lookup keyed by the wrong number); native give, keep, pitch and RPO controls; cancel until
   the native exchange event (existing option, off in every preset).
 - Close pursuit recovery: the reproduced circling-defender orbit (the close-pursuit branch never braked on arrival)
-  fixed by one hook into a 520-byte routine (opt-in).
+  fixed by one hook into a 520-byte routine (on in Advanced and Experimental after Noah's play test).
 - Franchise Edit Player: Edit Player after Assign Jersey Number on Player Contracts for the team you coach, opening the
-  game's own roster editor with the Position row (opt-in).
+  game's own roster editor with the Position row (on in Advanced and Experimental after Noah's play test).
 - CPU fourth downs and first downs: Retail / Modern / Aggressive; measured fourth-down attempts by field band and a
   preference for primary routes that reach the marker on CPU third and fourth downs (Retail in every preset).
 - Weekly Preparation: safeties join the DB drills (a proved missing position filter), CPU teams prepare before their
@@ -37,7 +37,7 @@ commit-by-commit index at the end.
   page with a reviewed league-wide assignment, and the locks Noah asked for: right-stick moves and special moves behind
   their abilities, Speedster for speed above 99 (option off in every preset).
 - Broadcast camera row in the game's Camera options (a following adaptation of the retail sideline mount; the exact
-  coach-mode TV shots are not reproduced).
+  coach-mode TV shots are not reproduced). v5.1 after Noah's play test: about 1.8 times closer with a 13-yard lead.
 - Deep-zone corner tiers: QB facing on a slower drop, and a press start with a directional bail (two opt-ins).
 - 7-on-7 practice v2 released as an opt-in: retail line positions instead of sideline parking, passing sets, a delayed
   end rush.
@@ -59,12 +59,15 @@ commit-by-commit index at the end.
   needs a game check).
 - The allocator ownership proof carries every manifest owner; capacity pins reflect the whole union.
 
-## Witnessed by Noah (2026-09-08, xemu, discs bn and bo)
+## Witnessed by Noah (2026-09-08, xemu, discs bn, bo and bp)
 
-- Read option v4 diagnostic: "READ miss 48" after the snap, no handoff, the QB no longer ran off on his own.
-- Anniversary rosters: Packers QB number 14 in the Ice Bowl, two Cowboys teams in Wide Right, doubled MyCareer rows;
-  scorebug and kickoff good.
-- Nothing in this beta's new owners has been played yet.
+- Read option v4 diagnostic (bo): "READ miss 48" after the snap, no handoff, the QB no longer ran off on his own.
+- Anniversary rosters (bn): Packers QB number 14 in the Ice Bowl, two Cowboys teams in Wide Right, doubled MyCareer
+  rows; scorebug and kickoff good.
+- Disc bp (this stack): read option v5 gives to the back if you wait (late, unnatural, "the core is working"; Black
+  pitches on an option play); no DB circling on several pass plays; Edit Player and position changes in Franchise
+  "work perfect" and back out cleanly; Broadcast camera playable but far (fixed as v5.1 after the test, unplayed);
+  abilities stay out of every preset until the stars are assigned.
 
 ## Not in this release
 

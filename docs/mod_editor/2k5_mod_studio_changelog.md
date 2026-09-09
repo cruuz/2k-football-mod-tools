@@ -27,6 +27,18 @@ commit on the stack since beta 62, grouped by area, with a commit index at the e
 - **The DB circling bug.** Noah asked for it in this beta by name. The close pursuit recovery below is the reproduced
   orbit fixed on native code; his exact man-coverage circle is not confirmed to be the same defect.
 
+### Noah's witnesses (2026-09-08 evening, xemu, disc bp: the beta 63 stack with every gameplay opt-in)
+
+- **Read option v5:** "the zone read experiment sorta works, its not natural and its weird but if i wait long enough
+  the qb gives it to the RB although it feels late. but the core is working." On an option play the quarterback rolled
+  right with the back behind him and Black pitched. Verdict: good enough for this release as experimental; the give
+  timing is the next thing to iron out.
+- **The circling defender:** "DB circling appears to be gone, tested a few pass plays and no one circled."
+- **Franchise Edit Player:** "changing positions and edit player in franchise work perfect. backs out perfect."
+- **Broadcast camera:** "playable now but very very far away, should be far closer" (fixed below as v5.1, unplayed).
+- **CPU fourth downs:** not tested; stays experimental. **Abilities rules v2:** "fine for now but don't make that part
+  of any patch until we have given the top players stars", so it stays off in every preset.
+
 ### Gameplay
 
 - **Read option v5: the paired play is found by the loaded book, not by a menu number (same "Read option mesh
@@ -50,14 +62,15 @@ commit on the stack since beta 62, grouped by area, with a commit index at the e
   state that produced the live 48 is not recoverable from a screenshot and is documented as unproved. Witness list in
   `ASTRA_READ_OPTION_V5_REPORT.md`.
 - **Close pursuit recovery, the circling defender (Build: "Close pursuit recovery (experimental)",
-  `coverage_trail`, off in every preset).** In the bounded native pursuit replay a defender at full throttle with a
+  `coverage_trail`; on in Advanced and Experimental after Noah's play test, off in Basic).** In the bounded native pursuit replay a defender at full throttle with a
   capped turn radius is carried past a close opponent again and again because the close-pursuit branch never brakes on
   arrival: he orbits. The owner is one six-byte hook at `0x2FC9F0` (pinned `8b510cd94210`, returning to `0x2FC9F6`)
   into a 520-byte routine in a 640-byte RX reservation, zero RW, zero RO. It removes the reproduced orbit and improves
   stationary arrival in the supplied man fixtures; the crossing fixture shows an early separation cost that the report
   documents rather than hides. A 5,760-frame numerical receipt, native and integrity suites, and a frame fixture on the
-  kickoff skeleton harness. Noah's full man-coverage circle is not confirmed to be this defect, which is why the option
-  is off in every preset. `ASTRA_DEFENDER_CIRCLING_REPORT.md`.
+  kickoff skeleton harness. Noah played disc bp on 2026-09-08 and saw no circling on several pass plays ("DB circling
+  appears to be gone"), so the option is on in Advanced and Experimental; the man-coverage cause is still not proved to
+  be the same defect. `ASTRA_DEFENDER_CIRCLING_REPORT.md`.
 - **CPU fourth downs and first downs (Build: "CPU fourth downs and first downs (experimental)", `cpu_money_downs`,
   Retail / Modern / Aggressive; retail in every preset).** Retail already reads distance to the marker: the category
   decision `0x20B180` asks the field-goal routine `0x20AF80` and the punt routine `0x209CA0` first, and the punt routine
@@ -151,15 +164,16 @@ commit on the stack since beta 62, grouped by area, with a commit index at the e
 
 ### Franchise
 
-- **Edit Player on Player Contracts (Build: "Franchise Edit Player (experimental)", `franchise_edit_player`, off in
-  every preset; implies the Position row).** X_Ray's ask. Player Contracts is descriptor `0x540650` on the native
+- **Edit Player on Player Contracts (Build: "Franchise Edit Player (experimental)", `franchise_edit_player`; on in
+  Advanced and Experimental after Noah's play test, off in Basic; implies the Position row).** X_Ray's ask. Player Contracts is descriptor `0x540650` on the native
   generic table screen; its popup table at `0x521340` has ten 60-byte records with fifteen dwords each (label, action
   id, eligibility and phase predicates). The owner appends Edit Player after Assign Jersey Number for the team you
   coach, keeping all ten existing conditional records and their order, and opens the game's own roster editor on the
   live selected player with the beta-58 Position row after Last Name; Contracts, Front Office and Coach's Desk stay
   beneath it and there is no new exit hook or runtime state, so changes take effect immediately, including on Back.
-  704 RO bytes, no code. Native Contracts and Desk return proofs, 411 tests. The main-menu return Noah flagged is on
-  the witness list. `ASTRA_FRANCHISE_EDIT_PLAYER_REPORT.md`.
+  704 RO bytes, no code. Native Contracts and Desk return proofs, 411 tests. Noah played it on disc bp on 2026-09-08:
+  position changes and Edit Player "work perfect" and backing out to the Desk stays in Franchise (the main-menu return
+  he flagged did not happen). `ASTRA_FRANCHISE_EDIT_PLAYER_REPORT.md`.
 - **Weekly Preparation (Build: "Fix safety drills (experimental)", "CPU teams prepare too" and "Remember my weekly
   prep"; `weekly_prep`, `weekly_prep_cpu`, `weekly_prep_remember`; off in every preset; unchecking the first clears
   the other two, checking either of them checks the first).** The expert's TE and safety complaint, root-caused: retail
@@ -187,7 +201,12 @@ commit on the stack since beta 62, grouped by area, with a commit index at the e
   verbatim does not initialize a playable view, so the exact coach-mode television sequence is not reproduced and the
   report says so. Standard still starts every game and practice, Far keeps its v4 framing, the choice lasts the session,
   Coach Mode and player control are unchanged in the bounded fixtures, and both MyCareer implementations compose with
-  it. Requests grow to 160 RX + 80 RO. 311 tests, both gates, 15 pairs. `ASTRA_CAMERA_V5_REPORT.md`.
+  it. Requests grow to 160 RX + 80 RO. 311 tests, both gates, 15 pairs. Noah played it on disc bp: "playable now but very
+  very far away, should be far closer", so v5.1 moves the mount in from 57 to 39 yards off the ball at 13.7 yards up,
+  narrows the lens from 24 to 30 (about 1.8 times closer on screen) and leads the focus by 13 yards downfield so the
+  routes develop toward the open side of the frame; both flats, the backfield and receivers 25 yards deep stay inside
+  4:3 in all 156 native projection cases, and a 40-yard post is off the open edge until the camera follows, as on
+  television. `ASTRA_CAMERA_V5_REPORT.md`, refreshed projection evidence in `docs/mod_editor`.
 - **MyCareer mode 5 (existing "MyCareer: create MyPlayer in the game" option, `my_career`, off in every preset).**
   The four owned lists (MyCareer entry, Choose team and Sign, the scrolling 32-club picker, Apartment) use the retail
   navigation renderer with the selected row in yellow; signing puts the created record at depth 1 of its position and

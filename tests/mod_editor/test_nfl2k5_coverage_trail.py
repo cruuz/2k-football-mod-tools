@@ -27,7 +27,8 @@ class PublicTests(unittest.TestCase):
         self.assertLessEqual(len(trail.BUILD_CAPTION), 60)
         for word in ("Retail", "Patch", "EXPERIMENTAL", "UNWITNESSED"):
             self.assertIn(word, trail.HELP_TEXT)
-        self.assertFalse(any(trail.mapping()["presets"].values()))
+        # Noah played disc bp on 2026-09-08 and saw no circling: on in Advanced and Experimental, off in Basic
+        self.assertEqual(trail.mapping()["presets"], {"basic": False, "advanced": True, "experimental": True})
         self.assertEqual(trail.mapping()["runtime_state_bytes"], 0)
 
     def test_bad_inputs_refuse_before_allocator_write(self):

@@ -37,8 +37,8 @@ HELP_TEXT = (
     "opponent is within three yards and their requested direction is behind "
     "them. A defender who reaches a stopped opponent can stop instead of circling. "
     "Player control, mistakes and special animations retain their rules. "
-    "Fast pivots and the reported man-coverage problem still need a played test. "
-    "Off in every preset."
+    "Noah played it on 2026-09-08 and saw no circling on several pass plays; the reported man-coverage "
+    "problem still needs a longer test. On in Advanced and Experimental, off in Basic."
 )
 GUARDS = (
     (0x2FC9F0, 193, "f5b5565ebbe5f916e7566b6e5c8ee93184cf87983ef48f6e37c368127a95b08f"),
@@ -70,7 +70,7 @@ def mapping():
     return {"hook": hex(HOOK_VA), "radius_yards": 3, "minimum_turn_degrees": 90,
             "stationary_arrival_yards": .35,
             "cpu_only": True, "ordinary_locomotion_only": True,
-            "presets": {name: False for name in ("basic", "advanced", "experimental")},
+            "presets": {"basic": False, "advanced": True, "experimental": True},
             "cause_status": "native pursuit mechanism proved; reported man bug unconfirmed",
             "runtime_state_bytes": 0}
 

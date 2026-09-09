@@ -4138,7 +4138,7 @@
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "EXPERIMENTAL / UNWITNESSED. Opt-in and off in every preset: native pursuit orbit is reproduced, while the reported man-coverage cause and rendered recovery remain unproved. Protected integration is in WIRING.md."
+        "reason": "EXPERIMENTAL. Noah's 2026-09-08 play test saw no circling on several pass plays; on in Advanced and Experimental, off in Basic. The reported man-coverage cause and rendered recovery remain unproved. Protected integration is in WIRING.md."
       },
       "id": "nfl2k5.gameplay.coverage_trail",
       "input_constraints": [
@@ -4481,7 +4481,7 @@
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "EXPERIMENTAL / UNWITNESSED. Opt-in; off in Basic, Advanced and Experimental presets. Protected product wiring is specified in WIRING.md."
+        "reason": "EXPERIMENTAL. Noah's 2026-09-08 play test: Edit Player, position changes and backing out to the Desk all worked. On in Advanced and Experimental, off in Basic. Protected product wiring is specified in WIRING.md."
       },
       "id": "nfl2k5.gameplay.franchise_edit_player",
       "input_constraints": [

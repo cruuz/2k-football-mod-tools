@@ -51,7 +51,11 @@ MENU_ROWS = (0, 1, 2, 3, 4, 5, BROADCAST_ROW)
 # pass states. Presentation/replay states and all seven other rows stay native.
 BROADCAST_STATES = (1, *range(8, 20))
 BROADCAST_TEMPLATE_VA = 0xA881E0
-BROADCAST_VALUES = ((0.0, 0.0, 0.0), 24.0, (5250.0, 1650.0, 200.0))
+# v5.1 (Noah 2026-09-08: "playable now but very very far away, should be far closer"): the mount moves in from 57 to
+# 39 yards off the ball and 13.7 to 13.7 yards up, the lens narrows from 24 to 30 (about 1.8x closer on screen) and the
+# target leads the focus by 13 yards downfield so the routes develop toward the open side of the frame. Both flats,
+# the backfield and receivers 25 yards deep stay inside 4:3; a 40-yard post is outside until the camera follows.
+BROADCAST_VALUES = ((0.0, 0.0, 1200.0), 30.0, (3600.0, 1250.0, 200.0))
 OPTION_GLOBAL_VA = 0x00E5FFF0            # DAT_00e5fff0: the Options "Camera" value (= table row)
 OPTION_DEFAULT_SITE_VA = 0x000E3C68      # FUN_000e3b90: `xor edi,edi ; mov dword ptr [0xE5FFF0], edi` (fresh-profile default 0)
 RETAIL_OPTION_DEFAULT = bytes.fromhex("33ff893df0ffe500")   # xor edi,edi ; mov dword [0xE5FFF0], edi
@@ -384,7 +388,7 @@ def allocation(payload: bytes, kind: str = "code") -> dict | None:
 
 
 def broadcast_descriptor() -> bytes:
-    """Native sideline mount/lag/setup, with following type 2 and lens 24.
+    """Native sideline mount/lag/setup, with following type 2, lens 30 and a 13-yard lead.
 
     The untouched retail type-0 record has lens 120 and a fixed world eye.
     Reusing it verbatim would frame only a small part of a live play. No retail
