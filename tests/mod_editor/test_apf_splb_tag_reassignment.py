@@ -25,6 +25,10 @@ import tempfile
 import unittest
 
 
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
@@ -293,17 +297,14 @@ class RemovalCarriesTheSlotTests(unittest.TestCase):
         self.assertEqual(_tags(after), {70: 1, 200: 0})
         self.assertTrue(splb.retail_tag_shape(after.entries))
 
-    def test_emptying_a_formation_sheds_every_tagged_slot(self) -> None:
-        changes = [
-            splb.MembershipChange(OUTER, FULL, play, False)
-            for play in (40, 41, 42, 10, 11, 12, 13)
-        ]
+    def test_emptying_a_trailing_formation_sheds_every_tagged_slot(self) -> None:
+        changes = [splb.MembershipChange(OUTER, ONE, 70, False)]
         compiled = splb.compile_book(self.book, changes)
         splb.verify_book(self.body, compiled.replacement, changes)
-        after = splb.parse_book(compiled.replacement, OUTER).records[FULL]
+        after = splb.parse_book(compiled.replacement, OUTER).records[ONE]
         self.assertEqual(after.entries, ())
         self.assertTrue(splb.follows_tag_rule(after.entries))
-        self.assertEqual(after.trailer, self.book.records[FULL].trailer)
+        self.assertEqual(after.trailer, self.book.records[ONE].trailer)
 
 
 class InvariantTests(unittest.TestCase):
@@ -851,16 +852,12 @@ class PanelTests(unittest.TestCase):
         self.assertEqual(self.panel.staged_changes(), ())
         self.assertEqual(self._item_for(11).checkState(), Qt.Checked)
 
-    def test_emptying_a_formation_stages_a_verified_clear(self) -> None:
+    def test_emptying_an_interior_formation_is_refused_at_compile(self) -> None:
         self.panel.stage_empty_formation(FULL)
         changes = self.panel.staged_changes()
         self.assertTrue(changes)
-        self.assertTrue(all(isinstance(c, splb.MembershipChange) for c in changes))
-        self.assertTrue(all(not c.member for c in changes))
-        compiled = splb.compile_book(self.panel._book, changes)
-        splb.verify_book(self.body, compiled.replacement, changes)
-        after = splb.parse_book(compiled.replacement, OUTER).records[FULL]
-        self.assertEqual(after.entries, ())
+        with self.assertRaisesRegex(ValidationError, "hide later records"):
+            splb.compile_book(self.panel._book, changes)
 
     def test_the_panel_counts_what_would_still_be_populated(self) -> None:
         self.assertEqual(self.panel.populated_records_after_staging(), 4)
@@ -1120,17 +1117,15 @@ class EmptyBookRefusalTests(unittest.TestCase):
         self.assertIn("every populated formation", message)
         self.assertIn("out-of-book", message)
 
-    def test_leaving_one_formation_populated_still_compiles(self) -> None:
-        changes: list[splb.MembershipChange] = []
+    def test_leaving_one_record_does_not_bypass_the_flip_guard(self) -> None:
+        changes = []
         for record_index in (FULL, FOUR, THREE):
             changes.extend(self._clear(record_index))
-        compiled = splb.compile_book(self.book, changes)
-        splb.verify_book(self.body, compiled.replacement, changes)
-        self.assertEqual(compiled.report["records_emptied"], [FULL, FOUR, THREE])
-        self.assertEqual(compiled.report["populated_records_remaining"], 1)
+        with self.assertRaisesRegex(ValidationError, "emptying both"):
+            splb.compile_book(self.book, changes)
 
     def test_the_report_never_claims_an_emptied_record_is_runtime_safe(self) -> None:
-        compiled = splb.compile_book(self.book, self._clear(FULL))
+        compiled = splb.compile_book(self.book, self._clear(ONE))
         claims = compiled.report["claims"]
         self.assertIs(claims["empty_record_returns_no_plays"], True)
         self.assertIs(claims["empty_record_runtime_safe"], False)

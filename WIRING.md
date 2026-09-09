@@ -17260,3 +17260,246 @@ test's default precise `SkipTest` is expected; set `APF_BOOK_RETAIL_INDEX`,
 `APF_BOOK_FLAT_PE`, and `APF_BOOK_RAW_SAVE` to local owned inputs to exercise
 the five retail cases. Exact successful commands and receipts are in
 `ASTRA_REPORT.md`. Noah's base-XEX game witness is a separate acceptance step.
+
+
+## Astra APF CPU audibles / personnel / pass-fetch patch — 2026-09-09
+
+Owned implementation and evidence are complete in `ASTRA_REPORT.md`. These
+snippets are the remaining integration into files reserved to Claude. The
+main application does not yet render this panel. Both capabilities remain
+**unwitnessed** in game; BASE and TU 1.1 patch exports are proved offline.
+
+### Main Playbooks page: exact insertion points
+
+In `mod_editor/apf_studio/gui.py`, next to the import of
+`ApfPlaybookMembershipPanel` (currently line 192), add:
+
+```python
+from .playbook_playcall_qt import ApfPlaycallPanel
+```
+
+In `InspectorCategoryPage.__init__`, immediately after constructing
+`self.playbook_membership` (currently around line 19335), add:
+
+```python
+self.playbook_playcall = (
+    ApfPlaycallPanel(facade, run_task)
+    if category is ApfCategory.PLAYBOOKS
+    else None
+)
+```
+
+Alongside the other workspace `modifiedChanged` connections, add:
+
+```python
+if self.playbook_playcall is not None:
+    self.playbook_playcall.modifiedChanged.connect(self.modifiedChanged)
+```
+
+In the PLAYBOOKS tab branch, insert **after Save Assignments and before Raw
+Playbook Assets**. Existing semantic tab indices 0 through 4 stay valid;
+this panel is index 5 and raw assets remain the final tab:
+
+```python
+tabs.addTab(self.playbook_playcall, "CPU Audibles & Personnel")
+```
+
+In `InspectorCategoryPage.open_workspace`, after the Save Assignments branch
+and before the soundtrack branch, insert:
+
+```python
+elif normalized in {"cpu-audibles", "cpu-playcall", "te-bias"} \
+        and self.category is ApfCategory.PLAYBOOKS:
+    target = 5
+```
+
+In `InspectorCategoryPage.set_context`, before any early return for missing
+service or already-loaded source, invalidate the preview:
+
+```python
+if self.playbook_playcall is not None:
+    self.playbook_playcall.set_context()
+```
+
+In `InspectorCategoryPage.refresh`, beside the existing membership panel
+refresh (currently line 19529), add:
+
+```python
+if self.playbook_playcall is not None:
+    self.playbook_playcall.set_context()
+```
+
+In `ApfStudioMainWindow._update_product_state`, after `blocking` is assigned,
+add the following:
+
+```python
+playbooks_page = getattr(self, "_pages", {}).get(ApfCategory.PLAYBOOKS)
+playcall_panel = getattr(playbooks_page, "playbook_playcall", None)
+if playcall_panel is not None:
+    playcall_panel.set_busy(bool(self._workers))
+```
+
+`run_task`'s fourth argument is **blocking**, not “mutates project”. The panel
+uses blocking=True for staging, False for preview/export. The busy callback
+above disables controls while either kind of task runs. Preview source,
+generation and selected-book project snapshots are independently rechecked
+before staging. Repeated callbacks after a source change cannot install a
+stale preview.
+
+The actual buttons are:
+
+* **Preview CPU audibles and personnel**: parse source, classify MASTER flags,
+  compile the proposal and show before/after counts plus 28-category supply.
+* **Stage balanced CPU audibles**: existing facade
+  `stage_splb_membership(changes, progress, replace_outer=outer)`; no new
+  project format or build provider. Other books' staged edits survive.
+* **Export TE bias for pass fetches…**: select a private flat BASE/TU image and
+  a separate authored TOML output. No source project is needed for this export.
+
+Preserve the displayed “every down / main CPU weighted picker uses another
+path / unwitnessed” text. Do not label this action “Fix CPU third-and-long”.
+Records with no run or no pass are explicitly impossible. If the selected
+book already has staged changes, the panel previews those changes and refuses
+auto-balancing until they are built or reverted; it does not discard them.
+Existing Fine-tune Plays / project change controls provide selector Revert.
+
+### Capability registry and concrete product bindings
+
+Merge the **two complete schema-valid objects** in
+`docs/mod_editor/apf_playcall_capabilities.json` into the sorted `capabilities`
+array in protected `mod_editor/capabilities/registry.v1.json`. Both have
+classification `offline-writer-proved`, backend operation `write`, GUI mode
+`edit`, and runtime status `not-tested`. The human status is **unwitnessed**:
+`unwitnessed` is not a permitted runtime enum in the registry schema.
+
+* `apf2k8.playbooks.cpu_audibles` — audible writer, personnel receipt and
+  empty-formation compile guards are one book-editing capability.
+* `apf2k8.playbooks.pass_fetch_te_bias` — assembled BASE/TU pass-fetch patch.
+
+The merge was validated **in memory** with file checking enabled; the
+protected registry was not changed. Both use existing surface `scripts_config`,
+which `catalog._capability_category` already maps to PLAYBOOKS. No new
+surface enum is needed.
+
+In `mod_editor/apf_studio/models.py::CAPABILITY_ACTION_BINDINGS`, add these
+entries using the existing imported enums and `_actions` helper. The panel
+above supplies the dedicated semantic route; these entries enable honest
+capability-card status rather than the generic “handler not wired” message:
+
+```python
+"apf2k8.playbooks.cpu_audibles": CapabilityActionBinding(
+    "apf2k8.playbooks.cpu_audibles",
+    "playbooks.cpu_audibles",
+    _actions(
+        ApfProductAction.PREVIEW, ApfProductAction.REPLACE,
+        ApfProductAction.REVERT, ApfProductAction.BUILD_COPY,
+    ),
+    replace_method="stage_splb_membership",
+    revert_method="revert",
+    product_note=(
+        "CPU Audibles & Personnel previews and stages existing same-record "
+        "TagMove selectors. Revert individual selectors with the existing "
+        "project controls; Build uses the existing SPLB provider. Records "
+        "without both a run and a pass are reported. Runtime unwitnessed."
+    ),
+),
+"apf2k8.playbooks.pass_fetch_te_bias": CapabilityActionBinding(
+    "apf2k8.playbooks.pass_fetch_te_bias",
+    "playbooks.pass_fetch_te_bias",
+    _actions(ApfProductAction.PREVIEW, ApfProductAction.EXPORT,
+             ApfProductAction.BUILD_COPY),
+    one_shot_target="mod_editor.core.apf2k8_playcall_patch:write_patch",
+    output_kind="authored-xenia-patch-toml",
+    product_note=(
+        "Export TE bias for pass fetches writes a verified authored TOML. "
+        "The one-shot writer does not stage project replacements. Applies "
+        "at every down; main CPU weighted picker unchanged; unwitnessed. "
+        "Remove or disable the exported file to reverse its installation."
+    ),
+),
+```
+
+Do not add a universal raw-asset binding for either action: no individual
+archive row represents this book-wide planner or executable experiment.
+The enum's BUILD_COPY here denotes the existing verified one-shot writer
+contract; the actual panel action remains named **Export**. No protected
+`build.py` change is needed: audible plans already encode existing TagMove
+payloads and the existing provider calls the now-guarded SPLB compile path.
+Do not merge these project selectors into a new opaque binary replacement.
+
+### Release allowlists, dependencies and runtime closure
+
+Add these exact source lines to the APF manifest,
+`packaging/apf2k8-release-allowlist.txt`, next to the existing playbook modules:
+
+```text
+mod_editor/apf_studio/playbook_playcall_qt.py
+mod_editor/core/apf2k8_audibles.py
+mod_editor/core/apf2k8_playcall_patch.py
+```
+
+Retain the already-listed `mod_editor/core/apf2k8_splb_writer.py`. If the
+combined studio distribution's protected `packaging/release-allowlist.txt`
+ships these APF workspaces too, add the same three lines there. The JSON
+capability fragment is a merge input; after merging, the already-allowlisted
+canonical registry is the runtime dependency. Do not package this session's
+private images, rebuilt entries, retail inputs, `/tmp` receipts, or historical
+witness binaries. Research scripts and reports are not runtime dependencies.
+
+In protected `packaging/check_apf2k8_mod_studio_runtime.py::PRODUCT_MODULES`,
+add the exact import names:
+
+```python
+"mod_editor.apf_studio.playbook_playcall_qt",
+"mod_editor.core.apf2k8_audibles",
+"mod_editor.core.apf2k8_playcall_patch",
+"mod_editor.core.apf2k8_splb_writer",
+"capstone",
+```
+
+The current checked environment uses **capstone==5.0.7**. Install that wheel
+and its bundled native library in each target runtime, and add the dependency
+to both Python dependency-install steps of `.github/workflows/ci.yml`
+(currently around lines 89 and 407):
+
+```bash
+python -m pip install PyQt5 Pillow capstone==5.0.7
+```
+
+The selected-instruction verifier must be available in the packaged product;
+its import is deliberately lazy so missing Capstone produces a clear export
+error rather than preventing book editing. Add the same Capstone requirement
+to the installer/runtime environment construction that currently supplies
+PyQt5/Pillow, including the Windows native wheel. No LZX, cryptography,
+libxxhash or Xenia-source dependency belongs in the product runtime: those
+are optional offline TU-reconstruction research dependencies only.
+
+### Cave ownership and integration acceptance
+
+Allocate **0x84D0E000..0x84D0EFFF** exclusively to this patch. The emitted
+cave is 716 bytes, but the full 4 KiB is checked/reserved. The franchise
+example claims a broader 0x84D09100..0x84D10000 range; split that reservation
+before composing releases even though its current writes leave this page
+empty. These are .text alignment-padding addresses. Keep BASE and TU files
+separate, selected by Xenia module hash `5447E5428AA2D52A` and
+`CEA825F7C2012F5A` respectively. Do not auto-launch or claim a game witness.
+
+After integration, run the existing registry and APF release/runtime gates
+and the standalone tests below. Run all Qt checks offscreen:
+
+```bash
+python3 mod_editor/capabilities/validate_registry.py
+QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_cpu_audibles.py
+python3 tests/mod_editor/test_apf_playcall_patch.py
+python3 tests/mod_editor/test_apf_splb_writer.py
+python3 tests/mod_editor/test_apf_splb_tag_reassignment.py
+```
+
+The offscreen main-window check should navigate
+`page.open_workspace("cpu-audibles")`, verify index 5 and all three named
+buttons, load a source, preview a book, stage once, Save Project/reopen,
+and inspect the existing Build report's `personnel_availability.before/after`.
+Verify selected-book pre-existing changes disable balancing, other-book
+changes survive, and source/project changes invalidate previews. These
+main-window/packaged checks require the protected wiring and were not claimed
+as passing in Astra's standalone-panel evidence.
