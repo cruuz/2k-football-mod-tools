@@ -3365,6 +3365,9 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
             ).append(row)
         handled_equipment_groups: set[tuple[int, int]] = set()
         equipment_pack_hashes: dict[str, str] = {}
+        # A global shoe/glove/pad variant is staged in every uniform package the
+        # game can sample it from; identical retail spans compile once per build.
+        equipment_compile_cache = uniform_equipment_adapter.EquipmentCompileCache()
         ausb_pack_hashes: dict[str, str] = {}
         unif_color_pack_hashes: dict[str, str] = {}
         for edit_index, edit in enumerate(project.value["edits"]):
@@ -3718,6 +3721,7 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                             index_pin.path,
                             staged_equipment,
                             pack_hashes=equipment_pack_hashes,
+                            compile_cache=equipment_compile_cache,
                         )
                     )
                 except uniform_equipment_adapter.UniformEquipmentWriterError as exc:
