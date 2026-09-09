@@ -160,6 +160,45 @@ when a play goes to the near sideline, as a television camera does. The alternat
 retail director's own type-1 record (fixed world eye, lens = distance x K / framing word, i.e. auto-zoom), is a
 different look and is not proposed for a hotfix.
 
+# beta-63.1 catch-slider kick return fix (2026-09-09)
+
+The fix is implemented in `mod_editor/core/nfl2k5_catch_slider.py`. The
+existing Build/throw-tuning dispatch already applies it, including the
+boot-logo relocation. No dispatcher, preset, panel, release allowlist, or
+allocator request change is needed. `packaging/repin.py --apply` updated the
+writer's integrity pin in `mod_editor/core/providers.py`.
+
+Claude must regenerate protected `data/nfl2k5_cave_reservations.json` after
+integration. The 48-byte main cave remains `0x10A10..0x10A40`; its team load
+now jumps to a 22-byte selector at `0x10CAC..0x10CC2`, the unused tail of the
+same boot-logo bitmap. `_sites()` declares `kick_gate` with its full retail
+pin. Regeneration must record that span for `nfl2k5_catch_slider`, the changed
+main-cave bytes, the writer/provider source digests, and the rebuilt image
+digests. The source writer digest for this delivery is
+`0ea12e1f558463538a154f50c38036389a8c0432c7ba55ac2862cd706b85498f`.
+Do not hand-edit just the JSON source hash: the observed spans and image
+receipts also change. No named grown-page allocation is added.
+
+Use the normal full disposable-disc manifest command, with
+`HF63_MANIFEST_WORK` naming an existing writable disposable directory outside
+the repository with room for the disc copy:
+
+```sh
+PYTHONPATH=. python3 tools/nfl2k5_cave_oracle.py manifest \
+  '/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe' \
+  --xiso '/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso' \
+  --work-dir "$HF63_MANIFEST_WORK" \
+  --json data/nfl2k5_cave_reservations.json
+```
+
+The checked-in manifest was deliberately left untouched in this worktree,
+as required by `HOTFIX_CONTEXT.md`. The new header-specific reference test
+checks existing ownership and native references independently; both normal
+XBE gates are also run. Full evidence and Noah's xemu witness are in
+`ASTRA_REPORT.md`. Rebuild old beta-63 catch-slider installations from retail:
+they are foreign to the fixed writer; exact new installations replay with
+zero changed bytes.
+
 # r65 Player abilities rules v2 (2026-09-08)
 
 This section supersedes earlier abilities v1 wiring only. EXPERIMENTAL /

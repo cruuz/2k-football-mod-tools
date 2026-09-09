@@ -19,8 +19,19 @@ redirects that one call into a 48-byte code cave placed inside the XBE header's
 boot-logo bitmap (``0x00010A10``; the kernel reads it once at boot, the game never
 does; the thunk tables in .text looked dead statically but ARE called at runtime):
 
-    offense catcher:  rand -> min(rand, rand / (2 * Catching slider of the catcher's side))
-    defense catcher:  rand -> rand / (2 * Interception slider)
+    offense or kicked-ball catcher: rand -> min(rand, rand / (2 * own-side Catching))
+    other defense catcher:         rand -> rand / (2 * Interception slider)
+
+The main cave keeps its 48-byte slot. Its team load detours through the 22-byte
+unused tail of the SAME boot-logo bitmap (0x10CAC..0x10CC2), after the EDGE legend
+and before the bitmap ends. This is the header-cave growth path: pin the tail,
+declare it in _sites, and let the existing boot-logo writer relocate the bitmap;
+no section growth, runtime storage, or neighboring owner's bytes are needed.
+The selector uses ball kind [0xE602C0] == 3 (non-forward loose ball, including
+kicks and backward passes); forward passes are kind 4. Retail's kick launch
+FUN_000b73b0 stores 3 at 0xB7410, while FUN_000b6700 stores 4 at 0xB6705.
+For kind 3 it loads the catcher's team instead of the possession team, so the
+unchanged comparison and Catching branch select that catcher's controller.
 
 "Side" is decided the way the game's own attribute accessor does it: the team is
 human when its controller record ``[team+0x30]`` is non-zero (``0xE60280`` is the
@@ -37,7 +48,7 @@ so the slider can show 200.
 
 Everything is pattern-checked: every patched byte must hold its exact retail
 value (or the exact already-patched value, which reports as applied), the
-``.text`` section digest is recomputed, and the change set is about 70 bytes.
+``.text`` section digest is recomputed, and the change set is about 100 bytes.
 """
 
 from __future__ import annotations
@@ -49,11 +60,14 @@ from .nfl2k5_bump_strength import _sections, _section_for_offset, section_digest
 
 CAVE_VA = 0x00010A10   # inside the XBE boot-logo bitmap (0x10A10..0x10CC2): kernel-only at boot, never read by the game
 CAVE_SIZE = 48         # the slot ends at 0x10A40 (the scorebug X/Y floats live there)
+KICK_GATE_VA = 0x00010CAC  # unused boot-logo tail: EDGE legend ends here; bitmap ends at 0x10CC2
+KICK_GATE_SIZE = 22
 HOOK_VA = 0x001C8317
 RAND_FN = 0x00048B90
 FACTOR_FN = 0x0017B8F0          # ReadFactor(idx=ecx, side=edx != 0); side 1 = Human table, 0 = CPU
 OFFENSE_TEAM_GLOBAL = 0x00E60280   # team with possession (swapped with 0xE60284 on turnovers/kicks)
 INT_SLIDER_GLOBAL = 0x00E6020C     # the menu's "Interception" slider, 0.0..1.0
+BALL_KIND_GLOBAL = 0x00E602C0     # 3 = kicks/backward passes; 4 = forward pass
 CONST_ONE = 0x004E419C
 CONST_TWO = 0x004E6084
 CEIL_SITES = (0x0014AC20, 0x0014B490)   # Human / CPU Catching "maximum" callbacks
@@ -70,6 +84,7 @@ RETAIL_CAVE = bytes.fromhex(
     "0733ad030753ad03a903ea000373a7033200b3fd030503fdd343f9ea0003e3f93347"
     "332200ff030573fd7373a773ea00"
 )
+RETAIL_KICK_GATE = bytes.fromhex("034373a3d3f3e373130b03235347030749130749030d")
 
 
 class CatchSliderError(ValueError):
@@ -86,15 +101,15 @@ def _rel32(src: int, dst: int) -> bytes:
 
 
 def cave_bytes() -> bytes:
-    """rand -> min(rand, rand / (2 * Catching)) for an offense catcher, rand / (2 * Interception)
-    for a defender.  Side is decided exactly like the game's own attribute accessor
+    """rand -> min(rand, rand / (2 * Catching)) for offense/kicked-ball catchers,
+    rand / (2 * Interception) for other defenders. Side follows the attribute accessor
     (``FUN_0017b010``): a team is "human" when ``[team+0x30]`` (its controller record) is
     non-zero; ``[0xE60280]`` is the team with possession.  ``ReadFactor`` treats any non-zero
     edx as the human side, so the controller pointer itself is passed as the side."""
 
     code = b""
     code += b"\xe8" + _rel32(CAVE_VA + len(code), RAND_FN)       # call rand              st0 = rand
-    code += b"\xa1" + struct.pack("<I", OFFENSE_TEAM_GLOBAL)     # mov eax,[offense team]
+    code += b"\xe9" + _rel32(CAVE_VA + len(code), KICK_GATE_VA) # select comparison team; resumes at +10
     code += b"\x3b\x43\x38"                                     # cmp eax,[ebx+0x38]     catcher's team?
     code += b"\x75\x16"                                         # jne defender (+22)
     code += b"\x8b\x50\x30"                                     # mov edx,[eax+0x30]     controller record (0 = CPU)
@@ -112,6 +127,21 @@ def cave_bytes() -> bytes:
     code += b"\xde\xf9"                                         # fdivp st1,st0          rand/(2*slider)
     code += b"\xc3"                                             # ret
     assert len(code) == CAVE_SIZE, len(code)
+    return code
+
+
+def kick_gate_bytes() -> bytes:
+    """Select the catcher's own team for kind 3; preserve all other ball kinds.
+
+    Only eax and flags change, just as for the replaced team load and following
+    comparison. The main cave overwrites these flags immediately on return.
+    """
+    code = b"\xa1" + struct.pack("<I", OFFENSE_TEAM_GLOBAL)     # mov eax,[offense team]
+    code += b"\x83\x3d" + struct.pack("<I", BALL_KIND_GLOBAL) + b"\x03"
+    code += b"\x75\x03"                                       # jne resume (not kind 3)
+    code += b"\x8b\x43\x38"                                   # mov eax,[ebx+0x38] catcher's team
+    code += b"\xe9" + _rel32(KICK_GATE_VA + len(code), CAVE_VA + 10)
+    assert len(code) == KICK_GATE_SIZE, len(code)
     return code
 
 
@@ -155,6 +185,7 @@ def _sites(payload: bytes) -> list[tuple[str, int, bytes, bytes]]:
     cave = cave_bytes()
     return [
         ("cave", _offset(payload, CAVE_VA), RETAIL_CAVE[: len(cave)], cave),
+        ("kick_gate", _offset(payload, KICK_GATE_VA), RETAIL_KICK_GATE, kick_gate_bytes()),
         ("hook", _offset(payload, HOOK_VA), RETAIL_HOOK, PATCHED_HOOK),
         ("ceiling_human", _offset(payload, CEIL_SITES[0]), RETAIL_CEIL, PATCHED_CEIL),
         ("ceiling_cpu", _offset(payload, CEIL_SITES[1]), RETAIL_CEIL, PATCHED_CEIL),
@@ -180,9 +211,11 @@ def status(payload: bytes) -> str:
 
 
 def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
-    """Return the patched XBE bytes plus a receipt; refuses anything but retail sites."""
+    """Patch retail sites, replay an exact installation, and refuse foreign/mixed bytes."""
 
     state = status(payload)
+    if state == "applied":
+        return payload, {"already_applied": True, "edits": [], "changed_bytes": 0, "sections_repinned": []}
     _require(state == "retail", f"catch-slider sites are {state}, not retail")
     buf = bytearray(payload)
     edits = []
