@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 import sys
 import unittest
+import tempfile
 
 ROOT = Path(__file__).resolve().parents[2]
 TOOLS = ROOT / "tools"
@@ -28,7 +29,9 @@ class RealDxt5aGeneralPreviewTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         from mod_editor.apf_studio.facade import ApfStudioFacade
 
-        cls.fac = ApfStudioFacade()
+        cache = tempfile.TemporaryDirectory(prefix="apf-preview-test-")
+        cls.addClassCleanup(cache.cleanup)
+        cls.fac = ApfStudioFacade(cache_root=Path(cache.name))
         cls.cat = cls.fac.load_source(_APF_ROOT)
 
     def test_non_font_dxt5a_previews(self) -> None:

@@ -18,6 +18,8 @@ sys.path.insert(0, str(WORKSPACE / "tools"))
 
 import apf_inner  # noqa: E402
 import apf_jersey_family_patch as family_patch  # noqa: E402
+import apf_jersey_family_verify as verifier  # noqa: E402
+import apf_xenos_mip_layout as xenos_mips  # noqa: E402
 import apf_outer  # noqa: E402
 import apf_texture_patch as archive_patch  # noqa: E402
 
@@ -86,10 +88,17 @@ def run(report_path: Path, full_copy: bool) -> None:
             ]
             assert len(result.entry_bytes) == row["outer_allocation"]["size"]
             assert [level["changed_bc3_blocks"]["count"] for level in manifest["levels"]] == EXPECTED_BLOCK_COUNTS
-            assert all(
-                level["decode_back_metrics"]["different_components"] == 0
-                for level in manifest["levels"]
-            )
+            # The shader mask preserves retail alpha=0; PNG display alpha=255
+            # is intentionally not stored. Verify every actual RGB/alpha texel.
+            reparsed = verifier.decode_entry_bytes(result.entry_bytes, row)
+            for level, location in zip(manifest["levels"], reparsed["locations"]):
+                linear = xenos_mips.extract_linear_bc3(reparsed["texture"], location)
+                decoded = verifier.decode_linear_bc3(linear, location)
+                count = location.width * location.height
+                assert decoded == bytes((255, 0, 255, 0)) * count
+                assert level["decode_back_metrics"] == verifier.rgba_metrics(
+                    bytes((255, 0, 255, 255)) * count, decoded)
+
             assert manifest["texture"]["inactive_padding_bit_exact"] is True
             assert manifest["iff"]["footer_bit_exact"] is True
             assert manifest["iff"]["unrelated_dram_part_preserved"] is True
@@ -102,7 +111,7 @@ def run(report_path: Path, full_copy: bool) -> None:
                 "retail_entry_sha256": row["outer_allocation"]["sha256"],
                 "patched_entry_sha256": hashlib.sha256(result.entry_bytes).hexdigest(),
                 "allocation_slack_after": manifest["iff"]["allocation_slack_after"],
-                "all_nine_levels_zero_error_decode_back": True,
+                "all_nine_levels_exact_rgb_and_preserved_zero_alpha": True,
                 "inactive_padding_bit_exact": True,
                 "footer_bit_exact": True,
                 "unrelated_dram_part_preserved": True,
@@ -243,10 +252,14 @@ def run(report_path: Path, full_copy: bool) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--report", required=True, type=Path)
+    parser.add_argument("--report", type=Path, help="optional persistent receipt; otherwise use a temporary report")
     parser.add_argument("--full-copy", action="store_true")
     args = parser.parse_args()
-    run(args.report, args.full_copy)
+    if args.report is None:
+        with tempfile.TemporaryDirectory(prefix="apf-jersey_family-test-") as temporary:
+            run(Path(temporary) / "report.json", args.full_copy)
+    else:
+        run(args.report, args.full_copy)
     return 0
 
 

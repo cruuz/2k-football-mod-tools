@@ -676,6 +676,9 @@ class RosterIdentityBuildAndRegistryTests(unittest.TestCase):
             with patch(
                 "mod_editor.apf_studio.build.EXPECTED_TREE", tree
             ), patch(
+                "mod_editor.apf_studio.build.disc_book_identity_report",
+                return_value={"synthetic_roster_fixture": True},
+            ), patch(
                 "mod_editor.apf_studio.build.sha256_file", side_effect=fake_hash
             ), patch(
                 "mod_editor.apf_studio.build.apf_outer.parse_archive",

@@ -56,7 +56,7 @@ def check_composition(modifications) -> None:
         for item in items:
             if item.kind in conflicts:
                 raise ValidationError(
-                    "Design Play/Formation (apf_play_design) conflicts with "
+                    "Design Play/Formation (apf_play_design) owns MASTER and its CPU additions; conflicts with "
                     + conflicts[item.kind]
                     + ". Build them separately or revert one before staging; "
                     "a common MASTER/CPU compiler is required.")

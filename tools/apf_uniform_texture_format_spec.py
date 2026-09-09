@@ -33,7 +33,7 @@ SOURCE_PINS_V1 = {
     "jersey_layout": (
         "reports/assets/apf_jersey_family_layout.json",
         366327,
-        "b60783b9c47b57e9b9f545e95f5c17d3c850e263e0d7d453aa6c3be4a0f809e4",
+        "f07e054e50a85a3d8b02523ac2b1b9c062c5b963bbda0d4e726db80057d8b0e3",
         "apf_jersey_family_layout/v1",
     ),
     "pants_layout": (

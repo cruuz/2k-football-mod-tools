@@ -652,6 +652,7 @@ class StaticConsumerPinTests(unittest.TestCase):
 
     def test_static_consumer_words_match_the_decompressed_pe(self) -> None:
         candidates = (
+            Path(os.environ.get("APF_FLAT_PE", "/tmp/apf.pe")),
             Path("/tmp/apf.pe"),
             WORKSPACE / ".codex-tmp/apf-sixth/apf-decoded.pe",
         )

@@ -254,10 +254,14 @@ def _source_normal(archive: apf_outer.Archive, row: dict[str, object]) -> bytes:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--report", required=True, type=Path)
+    parser.add_argument("--report", type=Path, help="optional persistent receipt; otherwise use a temporary report")
     parser.add_argument("--full-copy", action="store_true")
     args = parser.parse_args()
-    run(args.report, args.full_copy)
+    if args.report is None:
+        with tempfile.TemporaryDirectory(prefix="apf-helmet_family-test-") as temporary:
+            run(Path(temporary) / "report.json", args.full_copy)
+    else:
+        run(args.report, args.full_copy)
     return 0
 
 

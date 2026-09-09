@@ -45,7 +45,7 @@ report = json.loads(report_path.read_text(encoding="utf-8"))
 assert report["schema"] == "apf_jersey_family_patch_roundtrip/v1"
 assert report["catalog"] == {
     "schema": "apf_jersey_family_layout/v1",
-    "sha256": "b60783b9c47b57e9b9f545e95f5c17d3c850e263e0d7d453aa6c3be4a0f809e4",
+    "sha256": "f07e054e50a85a3d8b02523ac2b1b9c062c5b963bbda0d4e726db80057d8b0e3",
     "target_count": 24,
     "all_targets_have_independent_retail_hash_pins": True,
 }

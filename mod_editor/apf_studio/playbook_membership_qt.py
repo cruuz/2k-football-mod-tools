@@ -274,7 +274,7 @@ THIRD_AND_LONG_STATUS = (
     "both still produced 0-TE formations on 3 of 27 observed plays. Those "
     "edits have not established control of CPU 3rd-and-long personnel; a "
     "remaining producer is UNKNOWN. CPU situational personnel control remains "
-    "unproved at runtime.\n\n"
+    "unproved at runtime; check it in Xenia before relying on the lineup.\n\n"
     "The Who lines up tab edits a formation's 11 role bytes with the same "
     "caveat.\n\n"
     "Technical addresses are under Research pins."

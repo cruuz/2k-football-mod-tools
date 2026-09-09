@@ -154,7 +154,8 @@ class PanelTests(unittest.TestCase):
         from mod_editor.apf_studio.models import ApfCategory
 
         class _Facade:
-            pass
+            source_ready = False
+            session = None
 
         page = InspectorCategoryPage(
             _Facade(),  # type: ignore[arg-type]
@@ -179,6 +180,10 @@ class PanelTests(unittest.TestCase):
                     "Who lines up",
                     "Assignment Routes",
                     "Save Assignments",
+                    "Design Plays / Formations",
+                    "Coverage Geometry (experimental)",
+                    "Book Identity",
+                    "CPU Play Calling",
                     "Raw Playbook Assets",
                 ],
             )
