@@ -27,9 +27,15 @@ class _Store:
 
 
 class _Scanner:
-    def __init__(self, name: str, *, reused: bool = False) -> None:
+    """Shaped like the real scanners: the exact scanner's result carries the published inventory object
+    (``result.inventory.path``, like ``AudioSourceScanResult``) while the containment scanner's result carries
+    ``inventory_path`` (like ``AudioSourceContainmentResult``). Beta 62 read ``inventory_path`` on both and raised
+    AttributeError for every cache whose exact inventory was not already prepared."""
+
+    def __init__(self, name: str, *, reused: bool = False, exact: bool = False) -> None:
         self.store = _Store(name)
         self.reused = reused
+        self.exact = exact
         self.calls: list[tuple[Path, SourceCache, object]] = []
 
     def ensure(
@@ -47,10 +53,25 @@ class _Scanner:
         output = self.store.inventory_path(cache)
         output.write_bytes(b"private-digest-metadata\n")
         output.chmod(0o600)
+        if self.exact:
+            return SimpleNamespace(inventory=SimpleNamespace(path=output), reused_inventory=self.reused)
         return SimpleNamespace(
             inventory_path=output,
             reused_inventory=self.reused,
         )
+
+
+class RealScanResultShapeTests(unittest.TestCase):
+    def test_the_real_scan_results_carry_the_fields_the_preparation_reads(self) -> None:
+        from dataclasses import fields
+        from mod_editor.core.nfl2k5_audio_source_scan import AudioSourceScanResult
+        from mod_editor.core.nfl2k5_audio_source_containment import AudioSourceContainmentResult
+        from mod_editor.core.nfl2k5_audio_source_fingerprints import AudioSourceFingerprintInventory
+        exact_fields = {f.name for f in fields(AudioSourceScanResult)}
+        self.assertIn("inventory", exact_fields)
+        self.assertNotIn("inventory_path", exact_fields)
+        self.assertIn("path", {f.name for f in fields(AudioSourceFingerprintInventory)})
+        self.assertIn("inventory_path", {f.name for f in fields(AudioSourceContainmentResult)})
 
 
 class AudioOriginPreparationTests(unittest.TestCase):
@@ -79,7 +100,7 @@ class AudioOriginPreparationTests(unittest.TestCase):
             outer_entry_count=0,
             kind_counts={},
         )
-        self.exact = _Scanner("exact.json")
+        self.exact = _Scanner("exact.json", exact=True)
         self.containment = _Scanner("containment.json")
         self.coordinator = Nfl2k5AudioOriginPreparation(
             exact_scanner=self.exact,  # type: ignore[arg-type]
