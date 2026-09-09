@@ -404,9 +404,10 @@ class FranchiseSave:
     def write(self, target: Path | str, *, overwrite: bool = False) -> dict[str, Any]:
         _require(self.container is not None, "this save was not opened from a container; nothing to re-sign")
         assert self.container is not None
-        from .nfl2k5_practice_squad import validate_save
+        from .nfl2k5_practice_squad import validate_save_edit
         payload = self.to_bytes()
-        validate_save(payload)
+        # the roster codec is consulted only when roster state changed since the load (beta-63.1)
+        validate_save_edit(self.original, payload)
         rr.RosterDocument(payload, base=ARENA_PREAMBLE).check_depth_locks()
         return self.container.write(target, payload, overwrite=overwrite)
 
