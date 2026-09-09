@@ -80,6 +80,17 @@ class ImportError(ValueError):
     """Raised when a PNG, shared-index layout, or fixed span fails closed."""
 
 
+class QualityBudgetError(TxtrError):
+    """Valid art that cannot fit its fixed VC-LZ span at the quality floor.
+
+    Every honest palette tier down to the caller's minimum was encoded and
+    overflowed the retail allocation.  This is not a corrupt payload or a codec
+    fault, so a caller that owns a retail fallback (the disc build, the digit
+    preview) may keep the retail resource for that one slot and report it
+    instead of refusing everything it was asked to build.
+    """
+
+
 @dataclass(frozen=True)
 class MipLevel:
     level: int
@@ -609,13 +620,13 @@ def quantize_levels_to_vc_lz_bound(
     # here means even the minimally useful two-colour representation cannot fit.
     if last_overflow is not None:
         if minimum_palette_limit > 2:
-            raise TxtrError(
+            raise QualityBudgetError(
                 f"Digit artwork cannot fit its {max_encoded_size}-byte texture slot "
                 f"without dropping below the {minimum_palette_limit}-colour quality budget. "
                 "Use flat fill and outline colours, remove noise or extra edge detail, "
                 "and preview again. No lower-quality texture was accepted."
             ) from last_overflow
-        raise TxtrError(
+        raise QualityBudgetError(
             f"VC-LZ target cannot fit a usable two-color version inside its "
             f"{max_encoded_size}-byte bound; simplify the image by removing "
             "texture, noise, or extra transparency detail"

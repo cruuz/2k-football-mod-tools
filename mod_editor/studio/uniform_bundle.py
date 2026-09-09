@@ -131,6 +131,9 @@ class TeamKitBundleImportResult:
             ("Skipped unchanged in the bundle", tuple(
                 row for row in self.components if row.decision == "skipped_unchanged"
             )),
+            ("Skipped, re-encoded but visually unchanged (treated as unchanged)", tuple(
+                row for row in self.components if row.decision == "skipped_reencoded"
+            )),
             ("Overwritten", tuple(row for row in self.components if row.overwritten)),
         )
         return "\n\n".join(
@@ -169,6 +172,53 @@ def _is_sha256(value: object) -> bool:
 
 def _canonical_json(value: object) -> bytes:
     return (json.dumps(value, indent=2, sort_keys=True) + "\n").encode("utf-8")
+
+
+#: Largest per-channel step an editor's re-encode may leave on a digit before
+#: the pixels count as an edit.  A colour-managed save (ICC round trip, 16-bit
+#: intermediate, alpha dither) drifts by one or two steps; a deliberate
+#: recolour moves whole regions by tens.  Digit slots are the fixed VC-LZ
+#: allocations tight enough that re-encode noise alone stops fitting
+#: (Coach Edwards, beta 63: the retail ``02H0`` digit 1 re-encodes into its
+#: own 896-byte slot with six bytes to spare), so a layer within this step of
+#: its export baseline imports as the baseline and is not staged.
+DIGIT_REENCODE_TOLERANCE = 3
+_DIGIT_FAMILIES = frozenset({"jersey", "helmet", "arm"})
+
+
+def _is_live_digit(asset: UniformAsset) -> bool:
+    return (
+        asset.kind == "live_number_nameplate"
+        and asset.family in _DIGIT_FAMILIES
+        and type(asset.digit) is int
+    )
+
+
+def digit_reencode_equivalent(
+    supplied: bytes, baseline: bytes, *, tolerance: int = DIGIT_REENCODE_TOLERANCE,
+) -> bool:
+    """True when ``supplied`` is ``baseline`` plus re-encode noise, texel by texel.
+
+    Every channel of every texel must lie within ``tolerance`` of the baseline
+    texel at the same position.  RGB under a fully transparent texel on either
+    side is invisible (the digit writer zeroes it before quantising) and is not
+    compared; its alpha still must.  Identical buffers trivially qualify.
+    """
+
+    if len(supplied) != len(baseline) or len(baseline) % 4:
+        return False
+    if supplied == baseline:
+        return True
+    for offset in range(0, len(baseline), 4):
+        base_alpha = baseline[offset + 3]
+        if abs(supplied[offset + 3] - base_alpha) > tolerance:
+            return False
+        if base_alpha == 0 or supplied[offset + 3] == 0:
+            continue
+        for channel in range(3):
+            if abs(supplied[offset + channel] - baseline[offset + channel]) > tolerance:
+                return False
+    return True
 
 
 def _safe_relative(value: object, *, suffix: str | None = None) -> str:
@@ -739,6 +789,34 @@ class TeamKitBundleService:
                 except OSError:
                     pass
 
+    def _digit_is_reencoded_baseline(
+        self, asset: UniformAsset, supplied_rgba: bytes, current_rgba: bytes,
+        baseline_rgba_sha256: str, content_origin: str,
+    ) -> bool:
+        """Whether a supplied digit is its export baseline plus re-encode noise.
+
+        The manifest carries only the baseline's digest, so the baseline
+        texels come from the destination when it still holds them, or from
+        the private source original when the export said it was
+        source-derived.  When neither matches (the baseline was an earlier
+        edit that has since changed) the exact rule stands and the layer is
+        imported.
+        """
+
+        baseline: bytes | None = None
+        if _sha256(current_rgba) == baseline_rgba_sha256:
+            baseline = current_rgba
+        elif content_origin == "source_derived":
+            original = self.session.asset_io.ensure_original(asset)
+            _original_payload, original_rgba = self.session.asset_io.validate_replacement(
+                asset, original
+            )
+            if _sha256(original_rgba) == baseline_rgba_sha256:
+                baseline = original_rgba
+        if baseline is None:
+            return False
+        return digit_reencode_equivalent(supplied_rgba, baseline)
+
     def export_team(
         self,
         *,
@@ -908,6 +986,12 @@ class TeamKitBundleService:
                 )
                 supplied_digest = _sha256(supplied_rgba)
                 signature.update(supplied_digest.encode("ascii"))
+                current_rgba: bytes | None = None
+                if supplied_digest != baseline_rgba:
+                    current = self.session.current_path(asset)
+                    _current_payload, current_rgba = self.session.asset_io.validate_replacement(
+                        asset, current
+                    )
                 if supplied_digest == baseline_rgba:
                     # An untouched export never restores or even reads a
                     # destination edit. PNG encoding/metadata is irrelevant.
@@ -915,11 +999,18 @@ class TeamKitBundleService:
                         asset.asset_id, asset.set_selector, asset.label,
                         asset.group, "skipped_unchanged",
                     ))
+                elif _is_live_digit(asset) and self._digit_is_reencoded_baseline(
+                    asset, supplied_rgba, current_rgba or b"", baseline_rgba, str(origin),
+                ):
+                    # A digit whose texels only drifted by re-encode noise is
+                    # the export, not an edit.  Staging it produced a "Modified"
+                    # 64x64 digit that could not fit its retail slot at build.
+                    components.append(TeamKitComponentImport(
+                        asset.asset_id, asset.set_selector, asset.label,
+                        asset.group, "skipped_reencoded",
+                    ))
                 else:
-                    current = self.session.current_path(asset)
-                    _current_payload, current_rgba = self.session.asset_io.validate_replacement(
-                        asset, current
-                    )
+                    assert current_rgba is not None
                     earlier_edit = self.session.is_modified(asset)
                     components.append(TeamKitComponentImport(
                         asset.asset_id, asset.set_selector, asset.label,
@@ -995,6 +1086,7 @@ class TeamKitBundleService:
 
 
 __all__ = [
+    "DIGIT_REENCODE_TOLERANCE",
     "TEAM_KIT_BUNDLE_SCHEMA",
     "TEAM_KIT_GUIDE",
     "TEAM_KIT_MANIFEST",
@@ -1003,5 +1095,6 @@ __all__ = [
     "TeamKitBundleImportResult",
     "TeamKitComponentImport",
     "TeamKitBundleService",
+    "digit_reencode_equivalent",
     "select_team_uniform_sets",
 ]
