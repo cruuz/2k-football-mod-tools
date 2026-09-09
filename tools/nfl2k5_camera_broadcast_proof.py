@@ -52,8 +52,10 @@ def prove(retail):
                     descriptor = table[camera.BROADCAST_ROW][state][1]
                     decoded = p.setup(descriptor, direction=direction, zoom=zoom)
                     samples = {name: p.point(x, y, z * direction) for name, x, y, z in (
-                        ('focus', 0, 0, 0), ('backfield', 0, 0, -700),
+                        ('focus', 0, 0, 0), ('backfield', 0, 0, -700), ('shotgun_qb', 0, 175, -600),
                         ('left_flat', -1600, 175, 500), ('right_flat', 1600, 175, 500),
+                        ('near_wideout', 2200, 175, 0), ('far_wideout', -2200, 175, 0),
+                        ('middle_15', 0, 175, 1500),
                         ('left_deep', -1600, 175, 2500), ('right_deep', 1600, 175, 2500),
                         ('deep_middle', 0, 175, 4000))}
                     rows.append(dict(aspect=aspect, direction=direction, state=state,
@@ -105,7 +107,7 @@ def render(retail, path):
         for z in range(-1000, 5001, 500):
             points = [p.point(x, 0, z) for x in range(-2400, 2401, 100)]
             ax.plot(*zip(*points), color='#91b698', linewidth=.7)
-        for x, z in ((0, 0), (-1600, 500), (1600, 500), (-1600, 2500), (1600, 2500), (0, 4000)):
+        for x, z in ((0, 0), (0, -600), (-1600, 500), (1600, 500), (2200, 0), (-2200, 0), (0, 1500), (-1600, 2500), (1600, 2500), (0, 4000)):
             feet, head = p.point(x, 0, z), p.point(x, 175, z)
             ax.plot(*zip(feet, head), color='#f3a343', linewidth=3)
             ax.scatter(*head, color='#f3a343', s=12)

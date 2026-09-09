@@ -51,11 +51,16 @@ MENU_ROWS = (0, 1, 2, 3, 4, 5, BROADCAST_ROW)
 # pass states. Presentation/replay states and all seven other rows stay native.
 BROADCAST_STATES = (1, *range(8, 20))
 BROADCAST_TEMPLATE_VA = 0xA881E0
-# v5.1 (Noah 2026-09-08: "playable now but very very far away, should be far closer"): the mount moves in from 57 to
-# 39 yards off the ball and 13.7 to 13.7 yards up, the lens narrows from 24 to 30 (about 1.8x closer on screen) and the
-# target leads the focus by 13 yards downfield so the routes develop toward the open side of the frame. Both flats,
-# the backfield and receivers 25 yards deep stay inside 4:3; a 40-yard post is outside until the camera follows.
-BROADCAST_VALUES = ((0.0, 0.0, 1200.0), 30.0, (3600.0, 1250.0, 200.0))
+# v5.2 (Noah 2026-09-08 on disc bq: "still too far away, make it look like tv from a broadcast from the nfl last year"
+# and "it isn't centered, offense at the left, defense in the middle, empty on the right"): the retail TV director's
+# own wide line-of-scrimmage shot, made to follow the ball. Mount = the template's press-box eye, 52.5 m toward the
+# near sideline and 16.5 m up (pitch 17.4 degrees); lens word 80 = the director's wide lens (its live shots use 120),
+# about 1.85x closer on screen than v5.1 and 3.3x closer than v5; the look-at sits 2.5 m ahead of the ball (v5.1 led
+# it by 12 m, which pushed the offense to one edge) and 4 m toward the near sideline so the near wideout clears the
+# scorebug. Native projection: 16:9 shows about 17 yards behind the ball to 22 ahead, 4:3 about 13 to 17; the far
+# sideline sits in the top quarter, the near sideline is below the frame; receivers 25 yards deep are outside until
+# the camera follows the ball, as on television.
+BROADCAST_VALUES = ((400.0, 0.0, 250.0), 80.0, (5250.0, 1650.0, 200.0))
 OPTION_GLOBAL_VA = 0x00E5FFF0            # DAT_00e5fff0: the Options "Camera" value (= table row)
 OPTION_DEFAULT_SITE_VA = 0x000E3C68      # FUN_000e3b90: `xor edi,edi ; mov dword ptr [0xE5FFF0], edi` (fresh-profile default 0)
 RETAIL_OPTION_DEFAULT = bytes.fromhex("33ff893df0ffe500")   # xor edi,edi ; mov dword [0xE5FFF0], edi
@@ -388,7 +393,7 @@ def allocation(payload: bytes, kind: str = "code") -> dict | None:
 
 
 def broadcast_descriptor() -> bytes:
-    """Native sideline mount/lag/setup, with following type 2, lens 30 and a 13-yard lead.
+    """Native sideline mount/lag/setup, with following type 2, the director's wide lens 80, a 2.5 m lead.
 
     The untouched retail type-0 record has lens 120 and a fixed world eye.
     Reusing it verbatim would frame only a small part of a live play. No retail

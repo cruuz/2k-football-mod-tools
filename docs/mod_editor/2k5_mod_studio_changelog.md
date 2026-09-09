@@ -207,7 +207,19 @@ commit on the stack since beta 62, grouped by area, with a commit index at the e
   narrows the lens from 24 to 30 (about 1.8 times closer on screen) and leads the focus by 13 yards downfield so the
   routes develop toward the open side of the frame; both flats, the backfield and receivers 25 yards deep stay inside
   4:3 in all 156 native projection cases, and a 40-yard post is off the open edge until the camera follows, as on
-  television. `ASTRA_CAMERA_V5_REPORT.md`, refreshed projection evidence in `docs/mod_editor`.
+  television. Noah then played v5.1 on disc bq: "still too far away, make it look like tv from a broadcast from the
+  nfl last year" and "it isn't centered, it has the offense at the left and the defense at middle, empty on right"
+  (the 13-yard lead). v5.2 is the retail TV director's own wide line-of-scrimmage shot made to follow the ball: the
+  template's press-box mount (52.5 m toward the near sideline, 16.5 m up, pitch 17.4 degrees), its wide lens word 80
+  (the director's live shots use 120), about 1.85 times closer on screen than v5.1 and 3.3 times closer than v5, the
+  look-at 2.5 m ahead of the ball instead of 12 and shifted 4 m toward the near sideline so the near wideout clears
+  the scorebug. Through the native solver, 16:9 shows about 17 yards behind the ball to 22 ahead (4:3 about 13 to
+  17), the ball within 64 px of centre, the far sideline in the top quarter and the near sideline below the frame;
+  the focus, backfield, shotgun QB, both flats, both wideouts and a 15-yard receiver stay inside every aspect and
+  above the scorebug in all 156 cases; receivers 25 and 40 yards deep are past the downfield edge until the camera
+  follows the ball, as on television. Descriptor now differs from the retail template only in type, look-at and
+  lens; the eye is the template's own. `ASTRA_CAMERA_V5_REPORT.md`, refreshed projection evidence (now eleven
+  sample players) in `docs/mod_editor`. v5.2 is unplayed.
 - **MyCareer mode 5 (existing "MyCareer: create MyPlayer in the game" option, `my_career`, off in every preset).**
   The four owned lists (MyCareer entry, Choose team and Sign, the scrolling 32-club picker, Apartment) use the retail
   navigation renderer with the selected row in yellow; signing puts the created record at depth 1 of its position and

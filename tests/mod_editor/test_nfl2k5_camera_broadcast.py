@@ -35,10 +35,11 @@ class IntegrityTests(unittest.TestCase):
                     self.assertEqual(before[row][state], after[row][state])
         self.assertEqual(c._read(self.patched, c.BROADCAST_TEMPLATE_VA, 80), c.BROADCAST_RETAIL_DESCRIPTOR)
         descriptor = c.broadcast_descriptor()
-        # v5.1: type (+0), the 13-yard target lead (+24), lens (+32) and the closer mount's x and y (+48, +52) differ
-        # from the retail template; the eye's depth (+56), flag, lag pointer, callbacks and padding stay exact.
+        # v5.2: type (+0), the look-at's near-side shift (+16) and 2.5 m lead (+24) and the lens (+32) differ from the
+        # retail template; the eye is the template's own press-box mount (+48..+56), and flag, lag pointer,
+        # callbacks and padding stay exact.
         self.assertEqual([i for i in range(0, 80, 4)
-                          if descriptor[i:i+4] != c.BROADCAST_RETAIL_DESCRIPTOR[i:i+4]], [0, 24, 32, 48, 52])
+                          if descriptor[i:i+4] != c.BROADCAST_RETAIL_DESCRIPTOR[i:i+4]], [0, 16, 24, 32])
         self.assertEqual(c.decode_descriptor(descriptor)['type'], 2)
         self.assertEqual(c.decode_descriptor(descriptor)['flag'], 0)
         self.assertEqual(self.receipt['version'], 5)
@@ -254,8 +255,9 @@ class NativeTests(unittest.TestCase):
             self.assertEqual(metrics['lens_word'], int(lens))
             self.assertAlmostEqual(metrics['downward_pitch_degrees'],
                                    math.degrees(math.atan2(eye[1], math.hypot(eye[0], eye[2]))), places=5)
-            # the eye follows the led target: relative to the focus its depth is the lead plus the mount's own offset
-            self.assertEqual(metrics['eye_focus_relative_cm'], (eye[0], eye[1], (eye[2] + target[2]) * row['direction']))
+            # the eye follows the shifted, led target: relative to the focus it is the look-at plus the mount's offset
+            self.assertEqual(metrics['eye_focus_relative_cm'],
+                             (eye[0] + target[0], eye[1] + target[1], (eye[2] + target[2]) * row['direction']))
             key = row['direction'], row['state'], row['pass_zoom']
             y = [point[1] for point in row['points_640x480'].values()]
             if row['aspect'] == '4:3':
@@ -264,11 +266,15 @@ class NativeTests(unittest.TestCase):
                 for a, b in zip(y, references[key]):
                     self.assertAlmostEqual(a, b, places=3)
             for name, (x, y) in row['points_640x480'].items():
-                # v5.1 frames about 1.8x closer with a 13-yard lead: everything through 25 yards deep stays inside;
-                # the 40-yard post is off the open edge until the camera follows the ball, as on television.
+                # v5.2 is the TV director's wide shot following the ball: the focus, the backfield, both flats and
+                # the 15-yard receiver stay inside every aspect and above the scorebug; receivers 25 and 40 yards
+                # deep are past the downfield edge until the camera follows the ball, as on television.
                 self.assertTrue(0 < y < 381, (row['aspect'], name, x, y))
-                if name != 'deep_middle':
+                if name not in ('left_deep', 'right_deep', 'deep_middle'):
                     self.assertTrue(0 < x < 640, (row['aspect'], name, x, y))
+                else:  # past the downfield edge, whichever way the offense is moving
+                    self.assertTrue(x < 0 if row['direction'] == 1 else x > 640, (row['aspect'], name, x, y))
+            self.assertTrue(abs(row['points_640x480']['focus'][0] - 320) < 64, row['points_640x480']['focus'])
 
 
 if __name__ == '__main__':

@@ -37,7 +37,9 @@ commit-by-commit index at the end.
   page with a reviewed league-wide assignment, and the locks Noah asked for: right-stick moves and special moves behind
   their abilities, Speedster for speed above 99 (option off in every preset).
 - Broadcast camera row in the game's Camera options (a following adaptation of the retail sideline mount; the exact
-  coach-mode TV shots are not reproduced). v5.1 after Noah's play test: about 1.8 times closer with a 13-yard lead.
+  coach-mode TV shots are not reproduced). v5.2 after Noah's two play tests: the retail TV director's own wide
+  line-of-scrimmage shot following the ball (press-box mount, lens 80), centred on the ball, about 3.3 times closer
+  on screen than the first version.
 - Deep-zone corner tiers: QB facing on a slower drop, and a press start with a directional bail (two opt-ins).
 - 7-on-7 practice v2 released as an opt-in: retail line positions instead of sideline parking, passing sets, a delayed
   end rush.
