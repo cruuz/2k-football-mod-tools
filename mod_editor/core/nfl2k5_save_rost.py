@@ -246,7 +246,7 @@ class SaveRost:
         if agents.offset is not None:
             for i in range(agents.count):
                 target = self.rel(agents.offset + i * 4, size=0x54, label='free agent')
-                _require(target in offsets, 'free agent is not a player record')
+                _require(target in offsets, f'free agent {i} is not a player record')
 
         self.pool_used = self.u32(root + 0x40)
         self.pool_capacity = 50000 if table.count >= 35 else 20000
