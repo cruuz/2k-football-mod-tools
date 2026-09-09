@@ -534,7 +534,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_audio_catalog.py": "be1dbafb7077a4aab9c8ce5ff9ba9f0c5da9dd54c86464b4d97304aaf44a4efc",
         "mod_editor/core/nfl2k5_audio_containment_fingerprints.py": "da564ae30a18e9bfc7a3006b2422bceef0d0078d3cb9a919671ade23eda5f146",
         "mod_editor/core/nfl2k5_audio_origin_authorization.py": "664e43a7d2bb7dfcccf328b622b5fe7be3f5510d03919c56fa85149d7d3ffb8d",
-        "mod_editor/core/nfl2k5_audio_origin_preparation.py": "5c515a259d6bff2f945fff0866e064a5e9c9544f13f727ef51ded2ea04af938f",
+        "mod_editor/core/nfl2k5_audio_origin_preparation.py": "547179812c8d19485a83fd9c4c100a45c98ee56d62ab435fa0387fded9901d32",
         "mod_editor/core/nfl2k5_audio_source_containment.py": "7d6770b74555c8febfc437306686a05fb8b5fb5cd87d2c1ae5c1ed98efeed063",
         "mod_editor/core/nfl2k5_audio_source_fingerprints.py": "b0531c08751258833a2d134b79409e46db3b6da1862e1520a03c303144cff1ca",
         "mod_editor/core/nfl2k5_audio_source_scan.py": "b8bb4eef4d6a94a072b5e1e5c87fc0a113e8269118ba4e5857cb89c9560950e8",
