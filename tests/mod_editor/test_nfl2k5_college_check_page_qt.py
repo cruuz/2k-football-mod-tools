@@ -495,6 +495,13 @@ class CollegeCheckPageTests(unittest.TestCase):
             self.assertFalse(panel.is_dirty())
             self.assertEqual(rr.SaveContainer.load(source).savegame, bad)
 
+    # ------------------------------------------------------------------ packaging
+    def test_the_release_ships_the_core_module(self) -> None:
+        allowlist = (ROOT / "packaging" / "release-allowlist.txt").read_text(encoding="utf-8").splitlines()
+        self.assertIn("mod_editor/core/nfl2k5_college_check.py", [line.strip() for line in allowlist])
+        closure = (ROOT / "packaging" / "check_2k5_mod_studio_runtime.py").read_text(encoding="utf-8")
+        self.assertIn('"mod_editor.core.nfl2k5_college_check"', closure)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1791,6 +1791,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_team_history",
         "mod_editor.core.nfl2k5_career_stats",
         "mod_editor.core.nfl2k5_save_rost",
+        "mod_editor.core.nfl2k5_college_check",
         "mod_editor.core.nfl2k5_franchise_save",
         "mod_editor.core.nfl2k5_prospect_names",
         "mod_editor.core.nfl2k5_seven_on_seven",
@@ -2044,6 +2045,10 @@ def main() -> int:
         require(bool(owner.REQUESTS) and owner.status(b"") == "foreign", name + " ownership/foreign gate missing")
         require(all(callable(getattr(owner, method, None)) for method in ("apply", "code_for")), name + " API missing")
     require(callable(modules["mod_editor.core.nfl2k5_momentum"].read_settings), "Momentum settings missing")
+    college = modules["mod_editor.core.nfl2k5_college_check"]
+    require(callable(college.scan) and callable(college.repair)
+            and issubclass(college.CollegeCheckError, ValueError),
+            "Check my rosters core (college scan/repair) missing")
     tool_modules = (
         "nfl2k5_match_coverage",
         "nfl2k5_music_banks",
