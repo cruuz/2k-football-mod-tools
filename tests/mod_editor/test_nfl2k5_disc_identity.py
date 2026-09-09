@@ -478,5 +478,43 @@ class PanelTests(unittest.TestCase):
             self.app.processEvents()
 
 
+class RawDumpXemuNoteTests(unittest.TestCase):
+    """A raw dump's line says that xemu will not boot a copy that keeps the video partition.
+
+    Ju3tin (#2k5-general, 2026-09-09) built from a raw dump, the build kept the dump's layout, and
+    xemu answered "please insert disk"; xemu 0.8.x reads only xiso images (its redump pull request
+    #2915 was closed unmerged), which nothing in the studio said before the build.
+    """
+
+    def setUp(self) -> None:
+        self.tmp = Path(tempfile.mkdtemp(prefix="disc-identity-xemu-"))
+        self.addCleanup(lambda: __import__("shutil").rmtree(self.tmp, ignore_errors=True))
+        self.pins = fixture_pins()
+        self.pins.start()
+        self.addCleanup(self.pins.stop)
+
+    def test_a_raw_dump_line_names_the_cut(self) -> None:
+        line = identity.identify(build_image(self.tmp / "raw.iso", base=RAW_BASE)).line()
+        self.assertIn("Build and Apply both work", line)
+        self.assertIn('xemu answers "please insert disc"', line)
+        self.assertIn(f"cut the first 0x{RAW_BASE:X} bytes off the copy", line)
+        self.assertIn(f"dd bs=2048 skip={RAW_BASE // 2048}", line)   # this base is not a whole MiB
+
+    def test_a_relaid_raw_dump_line_names_the_cut_too(self) -> None:
+        found = identity.identify(build_image(self.tmp / "raw-repack.iso", base=RAW_BASE, shift=0x100))
+        self.assertEqual(found.kind, "repack")
+        self.assertIn("Read as a raw dump", found.line())
+        self.assertIn('xemu answers "please insert disc"', found.line())
+
+    def test_an_xiso_line_stays_silent_about_the_cut(self) -> None:
+        for path in (build_image(self.tmp / "xiso.iso"), build_image(self.tmp / "xiso-repack.iso", shift=0x100)):
+            self.assertNotIn("please insert disc", identity.identify(path).line())
+
+    def test_the_xgd1_cut_is_the_documented_387_mib(self) -> None:
+        self.assertIn("dd bs=1M skip=387", identity._xemu_note(0x18300000))
+        self.assertEqual(identity._xemu_note(0), "")
+        self.assertEqual(identity._xemu_note(None), "")
+
+
 if __name__ == "__main__":
     unittest.main()

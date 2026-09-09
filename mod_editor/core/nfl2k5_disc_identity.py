@@ -200,6 +200,21 @@ def _container(base: int | None) -> str:
     return "an xiso" if base == 0 else f"a raw dump (game partition at 0x{base:X})"
 
 
+def _xemu_note(base: int | None) -> str:
+    """A raw dump keeps its video partition, and so does every copy built from it.
+
+    xemu (0.8.x; its redump pull request #2915 was closed unmerged) reads the whole file as the
+    disc, finds no XDVDFS descriptor at sector 32 and answers "please insert disc".  Say so
+    before the build, with the two cuts xemu's own documentation gives.
+    """
+    if not base:
+        return ""
+    cut = f"dd bs=1M skip={base >> 20}" if base % (1 << 20) == 0 else f"dd bs=2048 skip={base // 2048}"
+    return (" xemu boots only the game partition, so a copy built from this dump keeps the video "
+            "partition in front and xemu answers \"please insert disc\": build from an xiso, or cut "
+            f"the first 0x{base:X} bytes off the copy (xdvdfs pack, or {cut}).")
+
+
 def identify_descriptor(descriptor: int, size: int, *, pack0: bytes | None = None,
                         deep: bool = False) -> DiscIdentity:
     """Identify the already-open image; never seeks past what it reports.
@@ -329,7 +344,7 @@ def identify_descriptor(descriptor: int, size: int, *, pack0: bytes | None = Non
                   f"0x{found[relocated[0]]['retail_offset']:X}). Build & Share works (it finds every "
                   "file through the disc directory), but a .2k5patch addresses bytes by their "
                   "position and this image moved them, so Apply cannot use it. Build the mod "
-                  "yourself on the Build tab instead of applying a patch file." + aside)
+                  "yourself on the Build tab instead of applying a patch file." + aside + _xemu_note(base))
         return DiscIdentity(kind=KIND_REPACK, headline=REPACK, detail=detail, image_size=size,
                             partition_base=base, layout=layout, files=found,
                             checked_pack0_fully=checked_fully)
@@ -342,7 +357,7 @@ def identify_descriptor(descriptor: int, size: int, *, pack0: bytes | None = Non
                             is_retail_image=is_retail_image, checked_pack0_fully=checked_fully)
     detail = (f"The video partition is still in front, so the game partition starts at 0x{base:X}, "
               "and every file sits where a retail disc puts it. Build and Apply both work, and the "
-              "file size differing from a patch author's base is expected." + aside)
+              "file size differing from a patch author's base is expected." + aside + _xemu_note(base))
     return DiscIdentity(kind=KIND_RETAIL_RAW, headline=RETAIL_RAW, detail=detail, image_size=size,
                         partition_base=base, layout=layout, files=found,
                         checked_pack0_fully=checked_fully)
