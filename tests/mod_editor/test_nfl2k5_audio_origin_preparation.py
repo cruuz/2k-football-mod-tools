@@ -160,6 +160,28 @@ class AudioOriginPreparationTests(unittest.TestCase):
         os.link(exact, hardlink)
         self.assertFalse(self.coordinator.is_ready(self.cache))
 
+    def test_a_refused_cache_reads_as_not_ready_instead_of_raising(self) -> None:
+        """Beta 62.1 field report: Music tab -> audio_editing_ready -> is_ready ->
+        store.inventory_path raised "source-cache directory is not the canonical
+        cache key" for a fresh rip, and the app showed the unexpected-error
+        dialog on every music change. The probe must answer False; prepare()
+        is where a refusal gets reported."""
+
+        from mod_editor.core.nfl2k5_audio_source_fingerprints import AudioSourceFingerprintError
+
+        self._publish(self.exact)
+        self._publish(self.containment)
+        self.assertTrue(self.coordinator.is_ready(self.cache))
+
+        class _RefusingStore:
+            def inventory_path(self, cache: SourceCache) -> Path:
+                raise AudioSourceFingerprintError(
+                    "NFL 2K5 source-cache directory is not the canonical cache key"
+                )
+
+        self.exact.store = _RefusingStore()
+        self.assertFalse(self.coordinator.is_ready(self.cache))
+
     def test_cancel_before_first_missing_scan_publishes_nothing(self) -> None:
         with self.assertRaisesRegex(ValidationError, "cancelled"):
             self.coordinator.prepare(

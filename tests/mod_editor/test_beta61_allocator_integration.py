@@ -82,8 +82,8 @@ class CompleteOwnerTests(unittest.TestCase):
         layout = space.layout(self.full)
         regions = layout["regions"]
         self.assertEqual([r["size"] for r in regions if r["kind"] == "code"], [4096, 4096, 24 * 4096])
-        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 49943)  # complete union, including model-2 Momentum, boot logo, the 64-byte camera owner (r63) and the 1,536-byte Franchise Auto Save owner (r63)
-        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "data"), 78890)  # complete beta-62 union RW state, including the 128-byte Franchise Auto Save slot record (r63)
+        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 72967)  # complete beta-63 union: beta-62 owners plus MyCareer draft (M3, 16 KiB promoted code), coverage trail, read option v5, deep-zone tiers, CPU 4th downs, weekly prep, abilities v2, 7-on-7 v2
+        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "data"), 83754)  # complete beta-63 union RW state, including the fixed M3 MyCareer state page at 0x1505000 (last RW page)
         image = XbeImage(self.full)
         for a in layout["allocations"]:
             section = image.section(a["va"], a["size"])

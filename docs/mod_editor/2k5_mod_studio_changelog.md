@@ -265,7 +265,12 @@ commit on the stack since beta 62, grouped by area, with a commit index at the e
   containment result does), so the first audio preparation of any fresh cache crashed with AttributeError; the test's
   fake scanners had the wrong shape and hid it. Fixed, with the fakes corrected and a shape test. A real fresh rip
   (the retail image with a container byte changed) was then opened through the Studio, prepared for audio and built
-  into the Basic and Advanced presets on this stack before release.
+  into the Basic and Advanced presets on this stack before release. A beta 62.1 tester's `errors.log` (five entries)
+  then confirmed the Music-tab path exactly: `_music_changed` -> `audio_editing_ready` ->
+  `Nfl2k5AudioOriginPreparation.is_ready` -> `store.inventory_path` -> "not the canonical cache key", on every music
+  change and on every source load. That probe now answers False for any cache a store refuses instead of raising
+  (`prepare()` repeats the validation and reports a refusal as a message), so a readiness check can never again put
+  the "unexpected error" dialog on screen. Regression test mirrors the reported stack.
 - **Build and Gameplay rows for every new owner**, a level combo for CPU fourth downs, parent and child linking for
   weekly prep, the three abilities lock checkboxes restored from an installed v2 source, a new Rosters Abilities page
   inside a scroll host with the Guardian caps group, and the "Add match coverage experiments" button.
