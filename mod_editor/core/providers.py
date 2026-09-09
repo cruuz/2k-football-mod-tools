@@ -665,7 +665,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_roster_records.py": "81811a3f5dd5149834b89b7f59651286daf4e4c72122b8a4f2194f58471ad0ad",
         "mod_editor/core/nfl2k5_roster_storage.py": "b2bed5fb92dedd9d1c4312a7e9344ca1558225d9ed12977e4fe69f4ca9d85bb6",
         "mod_editor/core/nfl2k5_safe_text_banks.py": "c7ea4288611615204f53c40f5da06728bd9e5511eec5ae06711145e509461d48",
-        "mod_editor/core/nfl2k5_save_rost.py": "ba8d438ec5be7dd880b585b39e4e7c7e5b4a32ed001b230858cfa5633de20a29",
+        "mod_editor/core/nfl2k5_save_rost.py": "9daab2e9c919e98758f029ab9857b7f3823fc5a68a1bc5a7c5a7b9efe3cea414",
         "mod_editor/core/nfl2k5_save_writer.py": "5a883cd1e449e8c796dc9453e6e9245390715d081979c024ac1182ef2c483bc4",
         "mod_editor/core/nfl2k5_scorebar_v3.py": "406ed027b583e9d49dee9a671eab085af171c2d2b50ab5bc115e487ff45d5d91",
         "mod_editor/core/nfl2k5_scorebug_exact.py": "3cd8455f641247979ed1b0bc2fc12342dfbecb81d3d2e9ff34400cc25a8c6b03",
