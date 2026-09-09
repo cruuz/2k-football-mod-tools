@@ -259,6 +259,32 @@ class Nfl2k5AudioSourceFingerprintTests(unittest.TestCase):
                 alternate_cache, self.fixture.assets, self.fixture.slots
             )
 
+    def test_a_fresh_rip_with_its_own_cache_folder_is_accepted(self) -> None:
+        """SourceCache names every cache folder after the opened disc's own digest, so a legal rip that is not
+        byte-identical to the project's dump lives in a folder that is not SOURCE_SHA256. Beta 62 refused that
+        folder ("not the canonical cache key") in the Music tab path; the fresh rip must build and load its own
+        fingerprints in its own folder."""
+
+        digest = "c" * 64
+        fresh_root = self.fixture.root.parent / digest
+        fresh_root.mkdir()
+        (fresh_root / "pack0").write_bytes(b"synthetic non-retail archive metadata")
+        (fresh_root / "inventory.json").write_text('{"synthetic":true}\n', encoding="utf-8")
+        (fresh_root / "originals").mkdir()
+        fresh_cache = replace(
+            self.fixture.cache,
+            root=fresh_root.resolve(),
+            pack0=fresh_root / "pack0",
+            inventory=fresh_root / "inventory.json",
+            originals=fresh_root / "originals",
+            source=replace(self.fixture.cache.source, selected_path="/private/user/fresh-rip.iso",
+                           inspected_path="/private/user/fresh-rip.iso", sha256=digest),
+        )
+        built = self.fixture.store.ensure(fresh_cache, self.fixture.assets, self.fixture.slots, self.fixture.hash_slot)
+        self.assertTrue(str(built.path).startswith(str(fresh_root.resolve())))
+        loaded = self.fixture.store.load_existing(fresh_cache, self.fixture.assets, self.fixture.slots)
+        self.assertEqual(loaded, built)
+
     def test_exact_pcm_lookup_and_rejection_cover_both_audio_families(self) -> None:
         inventory = self.fixture.ensure()
         matches = inventory.matches_pcm(

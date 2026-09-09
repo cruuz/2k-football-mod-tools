@@ -348,10 +348,12 @@ class Nfl2k5AudioSourceContainmentStore:
             "Containment cache belongs to a different or unsupported source",
         )
         root = _regular_directory(cache.root, "NFL 2K5 source cache")
+        # The cache folder is named after the opened disc's own digest (see the
+        # fingerprint store): a fresh rip is a different folder, not a foreign one.
         _require(
             platform_compat.is_canonical_absolute_path(cache.root, root)
-            and root.name == self.expected_source_sha256,
-            "NFL 2K5 source-cache path is not canonical and source-bound",
+            and root.name in (cache.source.sha256, self.expected_source_sha256),
+            "NFL 2K5 source-cache path is not canonical or does not belong to the opened game disc",
         )
         return root
 

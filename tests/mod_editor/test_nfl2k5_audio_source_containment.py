@@ -81,6 +81,29 @@ class Nfl2k5AudioSourceContainmentTests(unittest.TestCase):
             **kwargs,
         )
 
+    def test_a_fresh_rip_cache_folder_is_accepted_with_the_product_expectation(self) -> None:
+        """The product constructs this store with the project rip's canonical digest, while SourceCache names the
+        cache folder after the digest of the disc the user opened. Beta 62 compared the two and refused every
+        fresh rip in the Music tab path ("not canonical and source-bound"); the folder must be accepted and the
+        inventory it builds must load back."""
+
+        from mod_editor.core.nfl2k5_source_cache import SOURCE_SHA256
+        self.assertNotEqual(self.fixture.source_sha256, SOURCE_SHA256)
+        store = Nfl2k5AudioSourceContainmentStore(
+            expected_source_sha256=SOURCE_SHA256, expected_cue_count=3, expected_owner_count=3,
+        )
+        # the product's scan pins bind the inventory to the canonical identity, whatever disc was opened
+        scanner = Nfl2k5AudioSourceContainmentScanner(
+            pins=replace(self.fixture.pins, source_sha256=SOURCE_SHA256), capacity_report=self.fixture.capacity_report,
+            store=store, xdvdfs_parser=self.fixture.parser, decode_batch_bytes=144,
+        )
+        result = scanner.ensure(self.fixture.source.resolve(), self.fixture.cache)
+        self.assertFalse(result.reused_inventory)
+        self.assertEqual(result.source_cue_count, 3)
+        policy = result.inventory.policy
+        owners = result.inventory.source_owner_ids
+        self.assertIsNotNone(store.load_existing(self.fixture.cache, policy, owners))
+
     def test_complete_direct_source_build_is_private_canonical_and_complete(self) -> None:
         source_before = hashlib.sha256(self.fixture.source.read_bytes()).hexdigest()
         cached_pack1_before = self.fixture.cache_pack1.read_bytes()

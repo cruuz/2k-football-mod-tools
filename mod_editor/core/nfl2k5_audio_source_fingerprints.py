@@ -691,14 +691,15 @@ class Nfl2k5AudioSourceFingerprintStore:
             platform_compat.is_canonical_absolute_path(cache.root, root),
             "NFL 2K5 source-cache path must be absolute and canonical",
         )
-        # The cache directory is named for the canonical game identity, which is
-        # the key Nfl2k5SourceCache publishes under -- deliberately NOT the
-        # user's own container hash, since many legitimately different dumps of
-        # one disc share one cache. Comparing to cache.source.sha256 would fail
-        # for every dump packaged differently from the project's copy.
+        # Nfl2k5SourceCache names the cache directory after the digest of the
+        # disc the user actually opened (``cache_root / source.sha256``), so a
+        # legal dump packaged differently from the project's own rip gets its
+        # own folder. Beta 62 compared that name with the project rip's digest
+        # and refused every fresh rip; accept the opened disc's own folder or
+        # the canonical one (beta 62.1 / beta 63).
         _require(
-            root.name == self.expected_source_sha256,
-            "NFL 2K5 source-cache directory is not the canonical cache key",
+            root.name in (cache.source.sha256, self.expected_source_sha256),
+            "NFL 2K5 source-cache directory does not belong to the opened game disc",
         )
         return root
 
