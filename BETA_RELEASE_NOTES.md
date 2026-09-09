@@ -39,7 +39,10 @@ commit-by-commit index at the end.
 - Broadcast camera row in the game's Camera options (a following adaptation of the retail sideline mount; the exact
   coach-mode TV shots are not reproduced). v5.2 after Noah's two play tests: the retail TV director's own wide
   line-of-scrimmage shot following the ball (press-box mount, lens 80), centred on the ball, about 3.3 times closer
-  on screen than the first version.
+  on screen than the first version. Beta 63.1 (v5.3): the mount moves from the press box to the front of the loge
+  (45 m out, 14 m up, lens 68, the same pitch and framing at the ball) so it no longer rides into the second-level
+  seats and crowd when the ball is past the near hash, nor into the loge corner trim in the end zones; plays wider
+  than 9 m past the centre line toward the camera can still put a following mount into some stadiums' seats.
 - Deep-zone corner tiers: QB facing on a slower drop, and a press start with a directional bail (two opt-ins).
 - 7-on-7 practice v2 released as an opt-in: retail line positions instead of sideline parking, passing sets, a delayed
   end rush.

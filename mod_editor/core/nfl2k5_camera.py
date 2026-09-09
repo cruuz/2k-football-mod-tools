@@ -53,14 +53,25 @@ BROADCAST_STATES = (1, *range(8, 20))
 BROADCAST_TEMPLATE_VA = 0xA881E0
 # v5.2 (Noah 2026-09-08 on disc bq: "still too far away, make it look like tv from a broadcast from the nfl last year"
 # and "it isn't centered, offense at the left, defense in the middle, empty on the right"): the retail TV director's
-# own wide line-of-scrimmage shot, made to follow the ball. Mount = the template's press-box eye, 52.5 m toward the
-# near sideline and 16.5 m up (pitch 17.4 degrees); lens word 80 = the director's wide lens (its live shots use 120),
-# about 1.85x closer on screen than v5.1 and 3.3x closer than v5; the look-at sits 2.5 m ahead of the ball (v5.1 led
-# it by 12 m, which pushed the offense to one edge) and 4 m toward the near sideline so the near wideout clears the
-# scorebug. Native projection: 16:9 shows about 17 yards behind the ball to 22 ahead, 4:3 about 13 to 17; the far
-# sideline sits in the top quarter, the near sideline is below the frame; receivers 25 yards deep are outside until
-# the camera follows the ball, as on television.
-BROADCAST_VALUES = ((400.0, 0.0, 250.0), 80.0, (5250.0, 1650.0, 200.0))
+# own wide line-of-scrimmage shot, made to follow the ball. Lens word 80 = the director's wide lens (its live shots
+# use 120), about 1.85x closer on screen than v5.1 and 3.3x closer than v5; the look-at sits 2.5 m ahead of the ball
+# (v5.1 led it by 12 m, which pushed the offense to one edge) and 4 m toward the near sideline so the near wideout
+# clears the scorebug. Native projection: 16:9 shows about 17 yards behind the ball to 22 ahead, 4:3 about 13 to 17;
+# the far sideline sits in the top quarter, the near sideline is below the frame; receivers 25 yards deep are outside
+# until the camera follows the ball, as on television.
+# v5.3 (beta 63.1; maumau78 2026-09-09 on beta 63: "on right side will clip over crowd and stadium structure"): v5.2
+# used the template's press-box eye, 52.5 m toward the near sideline and 16.5 m up. A type-2 mount follows the ball
+# across the field too, and 16.5 m is exactly the front-row height of the stadiums' second level (loge/club), whose
+# front sits about 58 m from the field's centre line (Superdome 58.2, Arizona 59.7; measured on the retail stadium
+# scenes), so with the ball past the near hash the eye was already among the second-level seats and crowd, and in
+# the end zones inside the loge corner trim (14.3..18.9 m up). The mount now sits 45 m out and 14 m up, the front of
+# the loge rather than the press box: the same pitch (17.3 degrees, v5.2 17.4), the lens widened from 80 to 68 so
+# the framing at the ball is the same (every sample point within 10 px of v5.2 through the native solver), 15%
+# closer in perspective. The eye now stays in front of the second level and below the corner trim for every ball
+# from the far sideline to 9 m past the centre line toward the camera (the near hash is 2.8 m, the near numbers begin
+# at 11 m), the whole field long, both end zones included; a constant-offset follow still moves it into the stands
+# for plays wider than that (the native eye clamp box a setup callback could set is the complete fix; WIRING.md).
+BROADCAST_VALUES = ((400.0, 0.0, 250.0), 68.0, (4500.0, 1400.0, 200.0))
 OPTION_GLOBAL_VA = 0x00E5FFF0            # DAT_00e5fff0: the Options "Camera" value (= table row)
 OPTION_DEFAULT_SITE_VA = 0x000E3C68      # FUN_000e3b90: `xor edi,edi ; mov dword ptr [0xE5FFF0], edi` (fresh-profile default 0)
 RETAIL_OPTION_DEFAULT = bytes.fromhex("33ff893df0ffe500")   # xor edi,edi ; mov dword [0xE5FFF0], edi
@@ -393,7 +404,7 @@ def allocation(payload: bytes, kind: str = "code") -> dict | None:
 
 
 def broadcast_descriptor() -> bytes:
-    """Native sideline mount/lag/setup, with following type 2, the director's wide lens 80, a 2.5 m lead.
+    """Native sideline lag/setup, with following type 2, a 2.5 m lead and the v5.3 loge-front mount and lens.
 
     The untouched retail type-0 record has lens 120 and a fixed world eye.
     Reusing it verbatim would frame only a small part of a live play. No retail
