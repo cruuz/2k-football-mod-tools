@@ -221,6 +221,15 @@ class SchedulePanelTests(_PanelCase):
         self.assertEqual(page.edit_labels(), ["Week 1 game 2: hour 4 → 1",
                                               "Salary cap $80.5M (80,500) → $90.0M (90,000)",
                                               "ATL: CPU → user-controlled"])
+        # the copy is written too: roster state is exactly what the game wrote, so the codec is not asked
+        receipt = self.panel.write_copy_to(self.root / "copy")
+        self.assertTrue(receipt["signed"])
+        written = next((self.root / "copy").rglob("SAVEGAME.DAT")).read_bytes()
+        source = franchise_with_broken_history()
+        self.assertEqual(written[fs.ARENA_WRAPPER:fs.ARENA_END], source[fs.ARENA_WRAPPER:fs.ARENA_END])
+        self.assertEqual(fs.FranchiseSave(written).game(0, 1).hour, 1)
+        self.assertEqual(fs.FranchiseSave(written).salary_cap, 90_000)
+        self.assertIn(1, fs.FranchiseSave(written).user_teams())
 
 
 if __name__ == "__main__":

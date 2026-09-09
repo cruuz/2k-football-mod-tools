@@ -1483,8 +1483,9 @@ class RosterEditorPanel(QWidget):
         candidate = fs.FranchiseSave(before)
         try:
             edit.apply(candidate)
-            from mod_editor.core.nfl2k5_practice_squad import validate_save
-            validate_save(candidate.to_bytes())
+            # the roster codec is consulted only when the edit touched roster state (beta-63.1)
+            from mod_editor.core.nfl2k5_practice_squad import validate_save_edit
+            validate_save_edit(before, candidate.to_bytes())
             self._restore_composed(candidate.to_bytes(), old_edits + [edit])
         except ValueError as exc:
             self.franchise_panel._last_error = str(exc)
