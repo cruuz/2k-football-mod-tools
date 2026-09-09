@@ -313,6 +313,30 @@ def validate_save(payload: bytes, *, strict_owners: bool = True, strict_storage:
                            strict_owners=strict_owners, allow_legacy_tail=not strict_storage)
 
 
+def validate_save_edit(before: bytes, after: bytes, **options) -> dict[int, tuple[int, ...]] | None:
+    """validate_save(after) unless the edit touched neither the roster arena nor the injured-reserve table.
+
+    A franchise schedule / year / cap / user-control edit writes the season block or the front office
+    only; ownership cannot change, so the roster codec is not consulted and a save the game wrote and
+    plays is not refused over a record the codec cannot read (#2k5-bugs 2026-09-08, beta-63.1).  Any
+    edit that changes a byte of the ROST resource or of the IR table is validated exactly as before.
+    Returns None when the validation was skipped.
+    """
+    from . import nfl2k5_franchise_save as fs
+    if len(before) == len(after):
+        try:
+            save = fs.FranchiseSave(after)
+        except fs.FranchiseSaveError:
+            save = None
+        if save is not None:
+            ir = save.front_office_block + fs.F_INJURED_RESERVE
+            ir_end = ir + fs.NFL_TEAMS * fs.IR_SLOTS * fs.IR_ENTRY
+            if (before[fs.ARENA_WRAPPER:save.arena_end] == after[fs.ARENA_WRAPPER:save.arena_end]
+                    and before[ir:ir_end] == after[ir:ir_end]):
+                return None
+    return validate_save(after, **options)
+
+
 def recompute_salary(payload: bytes, team_index: int) -> bytes:
     from .nfl2k5_save_rost import decode
     from .nfl2k5_franchise_save import FranchiseSave, is_franchise_save
