@@ -7718,11 +7718,23 @@ class StudioMainWindow(QMainWindow):
             self._set_status(
                 _result_message(result, f"Build complete — {name} is ready for xemu.")
             )
+            kept = tuple(getattr(result, "kept_retail", ()) or ())
+            extra = ""
+            if kept:
+                extra = (
+                    "\n\nKept retail for %d uniform slot%s whose art could not fit "
+                    "its fixed texture slot:\n"
+                    % (len(kept), "" if len(kept) == 1 else "s")
+                    + "\n".join(
+                        "- " + str(row.get("message", row.get("selector")))
+                        for row in kept
+                    )
+                )
             QMessageBox.information(
                 self,
                 "Modded XISO ready",
                 f"Your verified build is ready:\n\n{destination}\n\n"
-                "Your source XISO was not changed.",
+                "Your source XISO was not changed." + extra,
             )
             self._refresh_edit_state()
 
