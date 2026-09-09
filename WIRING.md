@@ -70,6 +70,53 @@ should not stage the unfit digit at all, skip `output` rows whose
 `preview.receipts[i].get("kept_retail")` is true before writing them into the
 private Team Kit folder.
 
+# hf63.1 Franchise Schedule refusal on a real playoff save (2026-09-09)
+
+Branch `astra/hf63-franchise-schedule` from tag `beta-63`.
+
+Two GUI panels under `mod_editor/gui/` are protected by `HOTFIX_CONTEXT.md`.  Half of this bug lives in
+them (the unconditional roster-codec gate on every franchise edit), so the smallest possible change was
+made there, as the context allows, and it is described here in full so it can be reviewed as a wiring
+request.  Everything else is in core.
+
+## What changed in the protected panels (already applied, commit "Franchise page: ...")
+
+Both panels called `nfl2k5_practice_squad.validate_save(candidate.to_bytes())` after applying **every**
+franchise edit, including a schedule cell / year / cap / user-control edit that writes only the season
+block or the front office.  Each call site now passes the pre-edit bytes to the new core helper
+`validate_save_edit(before, after)`, which runs the same `validate_save(after)` unless the edit left the
+ROST resource (`0x2E0..arena_end`) and the injured-reserve table byte-identical.
+
+| file | site | before | after |
+|---|---|---|---|
+| `mod_editor/gui/roster_editor_panel_qt.py` | `RosterEditorPanel._franchise_edit` (the studio path; `before = self.document.to_body()` was already in scope) | `validate_save(candidate.to_bytes())` | `validate_save_edit(before, candidate.to_bytes())` |
+| `mod_editor/gui/franchise_panel_qt.py` | `FranchisePanel._rebuild` (journal replay) | `validate_save(save.to_bytes())` | `validate_save_edit(self._base, save.to_bytes())` |
+| `mod_editor/gui/franchise_panel_qt.py` | `FranchisePanel.push` (standalone page) | `validate_save(candidate.to_bytes())` | `before = self._save.to_bytes()` captured; `validate_save_edit(before, candidate.to_bytes())` |
+| `mod_editor/gui/franchise_panel_qt.py` | `FranchisePanel.redo` | same as `push` | same as `push` |
+
+No widget, label, layout, preset or copy text changed.  Arena edits (IR place/activate, promote/demote,
+coach fields, roster-page membership moves) are validated exactly as before, and their refusal text now
+names the player record the codec could not read (core change).
+
+## Core changes (not protected)
+
+- `mod_editor/core/nfl2k5_save_rost.py` — `SaveRost._parse`: an in-arena college pointer that is off the
+  college table is recorded in `SaveRost.unresolved_colleges` (`summary()['unresolved_colleges']`), not
+  refused; per-player refusals are prefixed `<pool> player <index> at 0x<offset>: ...`; `decode()` no longer
+  tries the outer wrapper's `ROST` magic as an inner header (that produced "unsupported ROST version 593952").
+- `mod_editor/core/nfl2k5_practice_squad.py` — new `validate_save_edit(before, after, **options)`.
+- `mod_editor/core/nfl2k5_franchise_save.py` — `FranchiseSave.write()` validates through
+  `validate_save_edit(self.original, payload)`: the codec runs on the way out only when roster state changed
+  since the load.
+- `mod_editor/core/providers.py` — self-integrity pins for the three modules above re-synced with
+  `python3 packaging/repin.py --apply`.  **Claude: a manifest regeneration is needed** for the pinned
+  writers per the hotfix rules.
+
+## Nothing to wire elsewhere
+
+`update_check.py`, `packaging/release-allowlist.txt`, `mod_build.py`, presets and cave reservations are
+untouched; no new files ship (the regression test is `tests/mod_editor/test_nfl2k5_franchise_schedule_college.py`).
+
 # r65 Player abilities rules v2 (2026-09-08)
 
 This section supersedes earlier abilities v1 wiring only. EXPERIMENTAL /

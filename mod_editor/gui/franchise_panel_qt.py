@@ -632,8 +632,9 @@ class FranchisePanel(QWidget):
         try:
             for edit in self._edits[:self._cursor]:
                 edit.apply(save)
-            from mod_editor.core.nfl2k5_practice_squad import validate_save
-            validate_save(save.to_bytes())
+            # the roster codec is consulted only when the journal touched roster state (beta-63.1)
+            from mod_editor.core.nfl2k5_practice_squad import validate_save_edit
+            validate_save_edit(self._base, save.to_bytes())
         except ValueError as exc:
             self._last_error = f"Franchise journal replay refused: {exc}"
             self._set_status(self._last_error)
@@ -651,12 +652,13 @@ class FranchisePanel(QWidget):
             return self.shared_roster_panel._franchise_edit(edit)
         if not self.sync_from_roster():
             return False
-        candidate = fs.FranchiseSave(self._save.to_bytes(), container=self._container)
+        before = self._save.to_bytes()
+        candidate = fs.FranchiseSave(before, container=self._container)
         candidate.original = self._save.original
         try:
             edit.apply(candidate)
-            from mod_editor.core.nfl2k5_practice_squad import validate_save
-            validate_save(candidate.to_bytes())
+            from mod_editor.core.nfl2k5_practice_squad import validate_save_edit
+            validate_save_edit(before, candidate.to_bytes())
         except ValueError as exc:
             self._last_error = str(exc)
             self._refresh_all()
@@ -694,12 +696,13 @@ class FranchisePanel(QWidget):
         if not self.sync_from_roster():
             return ""
         edit = self._edits[self._cursor]
-        candidate = fs.FranchiseSave(self._save.to_bytes(), container=self._container)
+        before = self._save.to_bytes()
+        candidate = fs.FranchiseSave(before, container=self._container)
         candidate.original = self._save.original
         try:
             edit.apply(candidate)
-            from mod_editor.core.nfl2k5_practice_squad import validate_save
-            validate_save(candidate.to_bytes())
+            from mod_editor.core.nfl2k5_practice_squad import validate_save_edit
+            validate_save_edit(before, candidate.to_bytes())
         except ValueError as exc:
             self._refresh_all()
             self._set_status(f"Could not redo {edit.label}: {exc}")
