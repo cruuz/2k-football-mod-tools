@@ -55,6 +55,21 @@
   the game partition and does not accept redump-layout images (its documentation; its redump pull request #2915 was
   closed unmerged), and the studio keeps the source's layout, so the identity line for a raw dump now says so and
   gives the cut (`xdvdfs pack`, or `dd` past the first 0x18300000 bytes). `HOTFIX63_RAWDUMP_OVERLAP_REPORT.md`.
+- **Rosters: Check my rosters, a college reference checker and repair (BigTimeEmpire, #2k5-bugs 2026-09-09).**
+  "Certain roster and save files can't be edited if a player doesn't have a college or there are errors with their
+  college." On 63.1 a blank or None college is accepted everywhere and an in-arena off-table pointer no longer refuses
+  a franchise save; what still refuses a roster-save signed copy is a college pointer that leaves the roster arena,
+  and a broken college table refuses a load. The Checks tab gains **Check my rosters…**: it scans the loaded document
+  (or a chosen save or disc, read-only, even one whose roster did not parse) and lists every player whose college
+  reference is null or invalid with the file, pool, record, byte offset, raw word, reason, what the game would show
+  and the proposed college; table issues are listed even when unused. **Repair listed college references** points
+  those records at a valid college (None by default, or a chosen one) changing only the four bytes of each affected
+  player's college pointer, then runs the page's existing ownership and depth checks, installs the result with one
+  undo entry, keeps an explicit repair journal in dirty state, carries the repair into Build & Share (as the college
+  name, never a raw pointer) and into a saved signed copy, and refuses to guess when the college table itself is
+  broken. Core `nfl2k5_college_check.py` (scan + atomic repair for the disc ROST, roster saves and franchise saves;
+  retail scan: 0 findings). `HOTFIX63_COLLEGE_CHECK_REPORT.md`, `HOTFIX63_COLLEGE_CHECK_GUI_REPORT.md`. Unplayed;
+  the tester's file was not supplied.
 - **Music tab on a fresh rip: verified fixed in 63, regression tests added (Mud, #2k5-bugs 2026-09-09 on 62.1).**
   The stadium-music and jukebox paths share the readiness check that beta 63 stopped raising; new tests replay a
   mismatched-digest cache through the real window offscreen. `HOTFIX63_MUSIC_VERIFY_REPORT.md`. No product change.
