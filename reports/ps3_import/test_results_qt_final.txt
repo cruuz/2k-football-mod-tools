@@ -1,0 +1,11 @@
+COMMAND: QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_ps3_texture_bundle_qt.py -v
+test_collision_requires_explicit_variant_selection (__main__.DialogTests.test_collision_requires_explicit_variant_selection) ... ok
+test_hash_default_produces_two_distinct_layers (__main__.DialogTests.test_hash_default_produces_two_distinct_layers) ... ok
+test_missing_destination_does_not_accept (__main__.DialogTests.test_missing_destination_does_not_accept) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.114s
+
+OK
+
+EXIT: 0

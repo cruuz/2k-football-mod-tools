@@ -1,0 +1,1047 @@
+{
+  "schema": "apf2k8_ps3_roster_probe/v1",
+  "ps3": {
+    "source_bytes": 2715908,
+    "payload_bytes": 2715908,
+    "payload_sha256": "0b3b24f2c14f3770a6728dce1560e6534e8803d966a264ff1eaace632c44a934",
+    "container": "raw",
+    "container_member": null,
+    "prefix_u32": 2457600,
+    "root_table": [
+      {
+        "index": 0,
+        "count": 2254,
+        "pointer_field": 8,
+        "resolved_offset": 336,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 1,
+        "count": 0,
+        "pointer_field": 16,
+        "resolved_offset": 748664,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 2,
+        "count": 1,
+        "pointer_field": 24,
+        "resolved_offset": 748664,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 3,
+        "count": 31,
+        "pointer_field": 32,
+        "resolved_offset": 752668,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 4,
+        "count": 40,
+        "pointer_field": 40,
+        "resolved_offset": 753784,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 5,
+        "count": 295,
+        "pointer_field": 48,
+        "resolved_offset": 769144,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 6,
+        "count": 199,
+        "pointer_field": 56,
+        "resolved_offset": 771504,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 7,
+        "count": 199,
+        "pointer_field": 64,
+        "resolved_offset": 776280,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 8,
+        "count": 199,
+        "pointer_field": 72,
+        "resolved_offset": 781056,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 9,
+        "count": 42,
+        "pointer_field": 80,
+        "resolved_offset": 785832,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 10,
+        "count": 5957,
+        "pointer_field": 88,
+        "resolved_offset": 793392,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 11,
+        "count": 69,
+        "pointer_field": 96,
+        "resolved_offset": 1913308,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 12,
+        "count": 650,
+        "pointer_field": 104,
+        "resolved_offset": 1914136,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 13,
+        "count": 1050,
+        "pointer_field": 112,
+        "resolved_offset": 1919336,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 14,
+        "count": 3200,
+        "pointer_field": 120,
+        "resolved_offset": 1927736,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 15,
+        "count": 266,
+        "pointer_field": 128,
+        "resolved_offset": null,
+        "pointer_in_payload": false
+      },
+      {
+        "index": 16,
+        "count": 266,
+        "pointer_field": 136,
+        "resolved_offset": null,
+        "pointer_in_payload": false
+      },
+      {
+        "index": 17,
+        "count": 3724,
+        "pointer_field": 144,
+        "resolved_offset": null,
+        "pointer_in_payload": false
+      },
+      {
+        "index": 18,
+        "count": 266,
+        "pointer_field": 152,
+        "resolved_offset": null,
+        "pointer_in_payload": false
+      },
+      {
+        "index": 19,
+        "count": 40,
+        "pointer_field": 160,
+        "resolved_offset": 1997760,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 20,
+        "count": 93,
+        "pointer_field": 168,
+        "resolved_offset": 2003840,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 21,
+        "count": 204,
+        "pointer_field": 176,
+        "resolved_offset": 2017976,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 22,
+        "count": 212,
+        "pointer_field": 184,
+        "resolved_offset": 2024504,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 23,
+        "count": 0,
+        "pointer_field": 192,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 24,
+        "count": 0,
+        "pointer_field": 200,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 25,
+        "count": 0,
+        "pointer_field": 208,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 26,
+        "count": 0,
+        "pointer_field": 216,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 27,
+        "count": 0,
+        "pointer_field": 224,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 28,
+        "count": 0,
+        "pointer_field": 232,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 29,
+        "count": 0,
+        "pointer_field": 240,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 30,
+        "count": 0,
+        "pointer_field": 248,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 31,
+        "count": 0,
+        "pointer_field": 256,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 32,
+        "count": 0,
+        "pointer_field": 264,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 33,
+        "count": 0,
+        "pointer_field": 272,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 34,
+        "count": 0,
+        "pointer_field": 280,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 35,
+        "count": 0,
+        "pointer_field": 288,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 36,
+        "count": 0,
+        "pointer_field": 296,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 37,
+        "count": 0,
+        "pointer_field": 304,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 38,
+        "count": 0,
+        "pointer_field": 312,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 39,
+        "count": 0,
+        "pointer_field": 320,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      }
+    ],
+    "player_stride": 332,
+    "team_stride": 384,
+    "appearance_graph": {
+      "4": [
+        753784,
+        40,
+        384
+      ],
+      "16": [
+        1953868,
+        266,
+        48
+      ],
+      "17": [
+        1966636,
+        3724,
+        8
+      ],
+      "19": [
+        1997760,
+        40,
+        152
+      ]
+    },
+    "appearance_graph_valid": true,
+    "player_graph_valid": true,
+    "player_start": 336,
+    "team_start": 753784,
+    "membership_count": 1680,
+    "players_valid": false,
+    "players_error": "player 0 nickname is not UTF-16BE aligned",
+    "name_pointer_audit": {
+      "last_name": {
+        "record_pointer_offset": 0,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "fdace4cbfb4f2a34cc3f7b98f95f88658e5f7ad73ee526034a3469e15822c551"
+      },
+      "first_name": {
+        "record_pointer_offset": 4,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "8864023c2eeb18ab8ed173e4a4c64dc1b3e12d424f206de8e80a480223c7b412"
+      },
+      "nickname": {
+        "record_pointer_offset": 280,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 1344,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "6b92bde0a09d69ba18a0e6c60b8be15ea799028ff7f399a429834176eb02cdf3",
+        "first_odd_target": {
+          "player_index": 0,
+          "pointer_field": 616,
+          "target_offset": 2128539
+        }
+      },
+      "career_history": {
+        "record_pointer_offset": 284,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "2b2ecbbd9b7914c54ef5deacddd298d1dc4276047ba87e6858432992a123465f"
+      },
+      "league_mvp_years": {
+        "record_pointer_offset": 288,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "63a05fd685b6f48db1ae8b053084897cfc2e9a97097cee15f86b5066f92d07fc"
+      },
+      "all_pro_mvp_years": {
+        "record_pointer_offset": 292,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "e9beab9c6532e0c8b57ab7089ee851c44e67a854eaecd391a46868e530fe8c28"
+      },
+      "championship_mvp_years": {
+        "record_pointer_offset": 296,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "3c6b67771bbe7731dadc8198458108f686ee4f5eb24a827429eaa449777c072d"
+      },
+      "unknown_accolade_text_1": {
+        "record_pointer_offset": 300,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "1d5a91b110bc5e661676e37449d2f6beaaccd4fd3c75590338e82b4c7510fb83"
+      },
+      "unknown_accolade_text_2": {
+        "record_pointer_offset": 304,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "f069de1b3b6a95627636df96ea8c41b77bbf6e30bc11b166fa9e2f9b41b992d0"
+      },
+      "unknown_accolade_text_3": {
+        "record_pointer_offset": 308,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "7c67ec68d152f5033553595981d8bf027609c456050b39ccf4c26515aca7d0bb"
+      },
+      "unknown_accolade_text_4": {
+        "record_pointer_offset": 312,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "42e074bda1ee8e4ddcbbdeefa5dd9c57f9c080e3967a5aefa4288fc2779b347e"
+      },
+      "championship_years": {
+        "record_pointer_offset": 316,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "3d9e958f08434b4716580247fd93c670b3f2f3005488431f5272155fe6f3a80b"
+      },
+      "championship_game_appearance_years": {
+        "record_pointer_offset": 320,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "7c3692e227faff90ec563ca8eb15a91b67bcf1570691ef48f99864038d424bdd"
+      },
+      "unknown_biography_text_1": {
+        "record_pointer_offset": 324,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "eea16aa8da8ef8377f288a860f9199c1e924f6b24acc0229bfcd6d7ee8d60a87"
+      },
+      "unknown_biography_text_2": {
+        "record_pointer_offset": 328,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "62073b8b860eb710494aa0a78f6911387de3cc48d218673f66a2bc6fcc81ae5d"
+      }
+    },
+    "label_table": {
+      "valid": true,
+      "offset": 1913308,
+      "count": 69,
+      "stride": 12,
+      "names_sha256": "6202fb8aab0805bd30b61317e1276c58456a05e415859dd8ca54ecf2c4e16cef",
+      "rows_sha256": "cf45b62549b292f6fd2754e4a1f1e4d9363eb5b41912830e6f72b951d1e93f4d"
+    },
+    "user_region": {
+      "offset": 2543664,
+      "present": true,
+      "remaining_bytes": 172244,
+      "sha256": "5dbca8e7f4e474e01ff290ab2b83a762a642a9c8ca1271b58449d41c159c5656",
+      "user_marker_offsets": [
+        2554516,
+        2586804,
+        2619092,
+        2651380,
+        2683668
+      ]
+    }
+  },
+  "xbox360": {
+    "source_bytes": 2715908,
+    "payload_bytes": 2715908,
+    "payload_sha256": "85fdf0d82360294463ff6d7396d7bfc84ed175f0a40573cf3249ad12cc4263f1",
+    "container": "raw",
+    "container_member": null,
+    "prefix_u32": 2457600,
+    "root_table": [
+      {
+        "index": 0,
+        "count": 2254,
+        "pointer_field": 8,
+        "resolved_offset": 336,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 1,
+        "count": 0,
+        "pointer_field": 16,
+        "resolved_offset": 748664,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 2,
+        "count": 1,
+        "pointer_field": 24,
+        "resolved_offset": 748664,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 3,
+        "count": 31,
+        "pointer_field": 32,
+        "resolved_offset": 752668,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 4,
+        "count": 40,
+        "pointer_field": 40,
+        "resolved_offset": 753784,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 5,
+        "count": 295,
+        "pointer_field": 48,
+        "resolved_offset": 769144,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 6,
+        "count": 199,
+        "pointer_field": 56,
+        "resolved_offset": 771504,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 7,
+        "count": 199,
+        "pointer_field": 64,
+        "resolved_offset": 776280,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 8,
+        "count": 199,
+        "pointer_field": 72,
+        "resolved_offset": 781056,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 9,
+        "count": 42,
+        "pointer_field": 80,
+        "resolved_offset": 785832,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 10,
+        "count": 5957,
+        "pointer_field": 88,
+        "resolved_offset": 793392,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 11,
+        "count": 69,
+        "pointer_field": 96,
+        "resolved_offset": 1913308,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 12,
+        "count": 650,
+        "pointer_field": 104,
+        "resolved_offset": 1914136,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 13,
+        "count": 1050,
+        "pointer_field": 112,
+        "resolved_offset": 1919336,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 14,
+        "count": 3200,
+        "pointer_field": 120,
+        "resolved_offset": 1927736,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 15,
+        "count": 266,
+        "pointer_field": 128,
+        "resolved_offset": null,
+        "pointer_in_payload": false
+      },
+      {
+        "index": 16,
+        "count": 266,
+        "pointer_field": 136,
+        "resolved_offset": null,
+        "pointer_in_payload": false
+      },
+      {
+        "index": 17,
+        "count": 3724,
+        "pointer_field": 144,
+        "resolved_offset": null,
+        "pointer_in_payload": false
+      },
+      {
+        "index": 18,
+        "count": 266,
+        "pointer_field": 152,
+        "resolved_offset": null,
+        "pointer_in_payload": false
+      },
+      {
+        "index": 19,
+        "count": 40,
+        "pointer_field": 160,
+        "resolved_offset": 1997760,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 20,
+        "count": 93,
+        "pointer_field": 168,
+        "resolved_offset": 2003840,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 21,
+        "count": 204,
+        "pointer_field": 176,
+        "resolved_offset": 2017976,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 22,
+        "count": 212,
+        "pointer_field": 184,
+        "resolved_offset": 2024504,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 23,
+        "count": 0,
+        "pointer_field": 192,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 24,
+        "count": 0,
+        "pointer_field": 200,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 25,
+        "count": 0,
+        "pointer_field": 208,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 26,
+        "count": 0,
+        "pointer_field": 216,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 27,
+        "count": 0,
+        "pointer_field": 224,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 28,
+        "count": 0,
+        "pointer_field": 232,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 29,
+        "count": 0,
+        "pointer_field": 240,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 30,
+        "count": 0,
+        "pointer_field": 248,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 31,
+        "count": 0,
+        "pointer_field": 256,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 32,
+        "count": 0,
+        "pointer_field": 264,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 33,
+        "count": 0,
+        "pointer_field": 272,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 34,
+        "count": 0,
+        "pointer_field": 280,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 35,
+        "count": 0,
+        "pointer_field": 288,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 36,
+        "count": 0,
+        "pointer_field": 296,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 37,
+        "count": 0,
+        "pointer_field": 304,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 38,
+        "count": 0,
+        "pointer_field": 312,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      },
+      {
+        "index": 39,
+        "count": 0,
+        "pointer_field": 320,
+        "resolved_offset": 2049944,
+        "pointer_in_payload": true
+      }
+    ],
+    "player_stride": 332,
+    "team_stride": 384,
+    "appearance_graph": {
+      "4": [
+        753784,
+        40,
+        384
+      ],
+      "16": [
+        1953868,
+        266,
+        48
+      ],
+      "17": [
+        1966636,
+        3724,
+        8
+      ],
+      "19": [
+        1997760,
+        40,
+        152
+      ]
+    },
+    "appearance_graph_valid": true,
+    "player_graph_valid": true,
+    "player_start": 336,
+    "team_start": 753784,
+    "membership_count": 1386,
+    "players_valid": true,
+    "name_allocation_count": 4598,
+    "name_allocation_offsets_sha256": "e51788081409d73cded82a93cfd7ef7a5fca6fc46054ea3398c7c40dd0591c86",
+    "name_pointer_audit": {
+      "last_name": {
+        "record_pointer_offset": 0,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "f3f40d01418e304330434180d3d4c35eb1f220ab1ba1778144e475e88d79e1a8"
+      },
+      "first_name": {
+        "record_pointer_offset": 4,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "bcab6b47a55cc7282ecd4d6b639fde0730e8b798ad4f631d7c13b62ca3b1de29"
+      },
+      "nickname": {
+        "record_pointer_offset": 280,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "eda3f96d43115646327f8ce4d6599b6a5147c5073ea3dbb19c76af1a79cb7238"
+      },
+      "career_history": {
+        "record_pointer_offset": 284,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "667450a7d8f97ff9201a0c48d7656b6fe6e3242e68efd3e2535cc8ed513ce354"
+      },
+      "league_mvp_years": {
+        "record_pointer_offset": 288,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "005cd546929fb37d0b306767684c03ff77c7016577443c07d8d7323f2453162b"
+      },
+      "all_pro_mvp_years": {
+        "record_pointer_offset": 292,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "b6589cac973398ecb6c23b175252c9dbc2c640c4f0c712927f5bdcdbb19802bd"
+      },
+      "championship_mvp_years": {
+        "record_pointer_offset": 296,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "ad65403dd697fde2ee719e5a397a79c9654b7b90167b020a06767285675a9164"
+      },
+      "unknown_accolade_text_1": {
+        "record_pointer_offset": 300,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "eb5f033c93e8e7ef19885e93448447d1f9afb948260f0cf83e2718dc42faad41"
+      },
+      "unknown_accolade_text_2": {
+        "record_pointer_offset": 304,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "be49da66aa0913c90742580fa0da540efbdbbf6a0a92d4b5a9cb19e9be27751a"
+      },
+      "unknown_accolade_text_3": {
+        "record_pointer_offset": 308,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "e6d8cf56a000aa2d0218ecfb9962b99c5ec3ed315531de70f7edd7d693598d50"
+      },
+      "unknown_accolade_text_4": {
+        "record_pointer_offset": 312,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "42e074bda1ee8e4ddcbbdeefa5dd9c57f9c080e3967a5aefa4288fc2779b347e"
+      },
+      "championship_years": {
+        "record_pointer_offset": 316,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "cb2ebcd1d74fa3878e0295455b784b325ef6b0bb8accc8b8fcbaa47ff8b10a4e"
+      },
+      "championship_game_appearance_years": {
+        "record_pointer_offset": 320,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "3ebfc70406b5db354a84bcfc1441a1bbb6acba1d97a514a4c88d614a7e1c99f3"
+      },
+      "unknown_biography_text_1": {
+        "record_pointer_offset": 324,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "498dc6b4f7711afbce71d3714d07716cd1e6577ae2a221ec6cc11f4c57fe5ee1"
+      },
+      "unknown_biography_text_2": {
+        "record_pointer_offset": 328,
+        "zero_stored_pointer_count": 0,
+        "odd_target_count": 0,
+        "out_of_bounds_count": 0,
+        "target_offsets_sha256": "6b4280c3a502733f97cc92b308a36e38de71a20a25889df05b5c1b0b95f84d6b"
+      }
+    },
+    "label_table": {
+      "valid": true,
+      "offset": 1913308,
+      "count": 69,
+      "stride": 12,
+      "names_sha256": "6202fb8aab0805bd30b61317e1276c58456a05e415859dd8ca54ecf2c4e16cef",
+      "rows_sha256": "cf45b62549b292f6fd2754e4a1f1e4d9363eb5b41912830e6f72b951d1e93f4d"
+    },
+    "user_region": {
+      "offset": 2543664,
+      "present": true,
+      "remaining_bytes": 172244,
+      "sha256": "b7a2e6c668af1b440bdfa4ce276f981d3bbaedda5d747e702dfb912a74422546",
+      "user_marker_offsets": [
+        2554516,
+        2586804,
+        2619092,
+        2651380,
+        2683668
+      ]
+    }
+  },
+  "same_size": true,
+  "byte_identical": false,
+  "root_counts_equal": true,
+  "root_pointer_differences": [
+    15,
+    16,
+    17,
+    18
+  ],
+  "different_bytes": 430995,
+  "difference_windows_64k": [
+    {
+      "offset": 0,
+      "different_bytes": 23231
+    },
+    {
+      "offset": 65536,
+      "different_bytes": 23136
+    },
+    {
+      "offset": 131072,
+      "different_bytes": 23368
+    },
+    {
+      "offset": 196608,
+      "different_bytes": 23374
+    },
+    {
+      "offset": 262144,
+      "different_bytes": 21966
+    },
+    {
+      "offset": 327680,
+      "different_bytes": 15258
+    },
+    {
+      "offset": 393216,
+      "different_bytes": 12245
+    },
+    {
+      "offset": 458752,
+      "different_bytes": 21895
+    },
+    {
+      "offset": 524288,
+      "different_bytes": 37117
+    },
+    {
+      "offset": 589824,
+      "different_bytes": 22558
+    },
+    {
+      "offset": 655360,
+      "different_bytes": 20362
+    },
+    {
+      "offset": 720896,
+      "different_bytes": 10634
+    },
+    {
+      "offset": 786432,
+      "different_bytes": 630
+    },
+    {
+      "offset": 917504,
+      "different_bytes": 19
+    },
+    {
+      "offset": 1048576,
+      "different_bytes": 70
+    },
+    {
+      "offset": 1310720,
+      "different_bytes": 1945
+    },
+    {
+      "offset": 1376256,
+      "different_bytes": 3991
+    },
+    {
+      "offset": 1441792,
+      "different_bytes": 3791
+    },
+    {
+      "offset": 1507328,
+      "different_bytes": 2077
+    },
+    {
+      "offset": 1900544,
+      "different_bytes": 8231
+    },
+    {
+      "offset": 1966080,
+      "different_bytes": 4409
+    },
+    {
+      "offset": 2031616,
+      "different_bytes": 9127
+    },
+    {
+      "offset": 2097152,
+      "different_bytes": 32182
+    },
+    {
+      "offset": 2162688,
+      "different_bytes": 6026
+    },
+    {
+      "offset": 2228224,
+      "different_bytes": 4
+    },
+    {
+      "offset": 2293760,
+      "different_bytes": 29
+    },
+    {
+      "offset": 2424832,
+      "different_bytes": 13096
+    },
+    {
+      "offset": 2490368,
+      "different_bytes": 26375
+    },
+    {
+      "offset": 2555904,
+      "different_bytes": 26395
+    },
+    {
+      "offset": 2621440,
+      "different_bytes": 26284
+    },
+    {
+      "offset": 2686976,
+      "different_bytes": 11170
+    }
+  ],
+  "existing_parsers_accept_both": false,
+  "converter_writer_authorized_by_evidence": false,
+  "decision": "No converter writer: raw payload is not byte-identical and/or existing bounded parser rejects it.",
+  "runtime": "UNWITNESSED: no Xenia or console load was performed"
+}

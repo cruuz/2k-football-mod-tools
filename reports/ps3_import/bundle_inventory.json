@@ -1,0 +1,4953 @@
+{
+  "schema": "apf2k8_ps3_texture_bundle/v1",
+  "source": "/home/noah/Downloads/NFL Logos Textures.zip",
+  "teams": [
+    "Atlanta Falcons",
+    "Buffalo Bills",
+    "Chicago Bears",
+    "Cincinnati Bengals",
+    "Cleveland Browns",
+    "Dallas Cowboys",
+    "Denver Broncos",
+    "Detroit Lions",
+    "Green Bay Packers",
+    "Houston Oilers",
+    "Indianapolis Colts",
+    "Kansas City Chiefs",
+    "Los Angeles Raiders",
+    "Los Angeles Rams",
+    "Miami Dolphins",
+    "Minnesota Vikings",
+    "New England Patriots",
+    "New Orleans Saints",
+    "New York Giants",
+    "New York Jets",
+    "Philadelphia Eagles",
+    "Phoenix Cardinals",
+    "Pittsburgh Steelers",
+    "San Diego Chargers",
+    "San Francisco 49ers",
+    "Seattle Seahawks",
+    "Tampa Bay Buccaneers",
+    "Washington Redskins"
+  ],
+  "pairs": [
+    {
+      "pair_id": "Atlanta Falcons/endzone/End Zone/9e8f94b9",
+      "team": "Atlanta Falcons",
+      "original_folder": "Atlanta Falcons",
+      "kind": "endzone",
+      "variant": "End Zone",
+      "entry_hash": "0x9e8f94b9",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/Atlanta Falcons/End Zone/selected_subfile_948_0_1785962846143/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "a37fd4afa8dd3190be9e9f5ca3d12eb059717c892186c36ab4746dc9f783637c",
+          "source_manifest_row": {
+            "id": "subfile:948:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 948,
+            "entryHash": "0x9e8f94b9",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 527190016,
+            "offsetHex": "0x1f6c4800",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/Atlanta Falcons/End Zone/selected_subfile_948_1_1785962860244/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "90a0b8ce514eaefb97b9251c430a925f282340782df7c97faa2dcc7588fab446",
+          "source_manifest_row": {
+            "id": "subfile:948:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 948,
+            "entryHash": "0x9e8f94b9",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 527190192,
+            "offsetHex": "0x1f6c48b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Atlanta Falcons/logo/default/7ba6e2b0",
+      "team": "Atlanta Falcons",
+      "original_folder": "Atlanta Falcons",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0x7ba6e2b0",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/Atlanta Falcons/selected_subfile_753_1_1784821180320/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "bdef837aedf2a2d546ba4dfb2d472899cea740ad92d164dea3f80e3d04ddf1a4",
+          "source_manifest_row": {
+            "id": "subfile:753:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 753,
+            "entryHash": "0x7ba6e2b0",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 164493312,
+            "offsetHex": "0x9cdf800",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/Atlanta Falcons/selected_subfile_753_0_1784821182614/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "01c6157be3d316238ad87b9ed57ac2005ab1c35095e37d5b23efbc0cf77c888b",
+          "source_manifest_row": {
+            "id": "subfile:753:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 753,
+            "entryHash": "0x7ba6e2b0",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 164493488,
+            "offsetHex": "0x9cdf8b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Buffalo Bills/endzone/End Zone/72cee7be",
+      "team": "Buffalo Bills",
+      "original_folder": "Buffalo Bills",
+      "kind": "endzone",
+      "variant": "End Zone",
+      "entry_hash": "0x72cee7be",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/Buffalo Bills/End Zone/selected_subfile_692_0_1785712524827/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "0b1bc3a398b7d00d640421d62b23bdb04e8593c06ebd9d3035ffef75cbb7714d",
+          "source_manifest_row": {
+            "id": "subfile:692:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 692,
+            "entryHash": "0x72cee7be",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 531834880,
+            "offsetHex": "0x1fb32800",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/Buffalo Bills/End Zone/selected_subfile_692_1_1785712527205/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "53445381fd848974c62ae8d1764475974f4c3a35d032fcc7963e6e54e2a0036d",
+          "source_manifest_row": {
+            "id": "subfile:692:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 692,
+            "entryHash": "0x72cee7be",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 531835056,
+            "offsetHex": "0x1fb328b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Buffalo Bills/logo/default/97e791b7",
+      "team": "Buffalo Bills",
+      "original_folder": "Buffalo Bills",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0x97e791b7",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/Buffalo Bills/selected_subfile_904_1_1784745105871/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "fcb6de541ffd3a8b53b55b4927c5de76a998760c57ebcba232f104507dde979a",
+          "source_manifest_row": {
+            "id": "subfile:904:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 904,
+            "entryHash": "0x97e791b7",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 167841792,
+            "offsetHex": "0xa011000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/Buffalo Bills/selected_subfile_904_0_1784745110934/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "e1dad26c5c8e2d09178d977a815a95661ed4d71c68e8e779c59979f7c777725b",
+          "source_manifest_row": {
+            "id": "subfile:904:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 904,
+            "entryHash": "0x97e791b7",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 167841968,
+            "offsetHex": "0xa0110b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Chicago Bears/endzone/End Zone/0cd8a0cb",
+      "team": "Chicago Bears",
+      "original_folder": "Chicago Bears",
+      "kind": "endzone",
+      "variant": "End Zone",
+      "entry_hash": "0x0cd8a0cb",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/Chicago Bears/End Zone/selected_subfile_77_0_1786020734962/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "0195296ac560a3b919771036b2c276ab47d06d206e16b2dec37350ecb17b6d6a",
+          "source_manifest_row": {
+            "id": "subfile:77:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 77,
+            "entryHash": "0x0cd8a0cb",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 536199168,
+            "offsetHex": "0x1ff5c000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/Chicago Bears/End Zone/selected_subfile_77_1_1786020736906/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+          "source_manifest_row": {
+            "id": "subfile:77:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 77,
+            "entryHash": "0x0cd8a0cb",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 536199344,
+            "offsetHex": "0x1ff5c0b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Chicago Bears/logo/default/e9f1d6c2",
+      "team": "Chicago Bears",
+      "original_folder": "Chicago Bears",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0xe9f1d6c2",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/Chicago Bears/selected_subfile_1407_1_1785436646927/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "e4c856ecf749b2d82481808890d7b84f09a20b45ba6571f2279512658165b43f",
+          "source_manifest_row": {
+            "id": "subfile:1407:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1407,
+            "entryHash": "0xe9f1d6c2",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 171177984,
+            "offsetHex": "0xa33f800",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/Chicago Bears/selected_subfile_1407_0_1785436645508/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "5a11b07dd51136d23d9fa8170bfa178be54b393d301f737690c10b221105248f",
+          "source_manifest_row": {
+            "id": "subfile:1407:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1407,
+            "entryHash": "0xe9f1d6c2",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 171178160,
+            "offsetHex": "0xa33f8b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Cincinnati Bengals/logo/default/46c6cb00",
+      "team": "Cincinnati Bengals",
+      "original_folder": "Cincinati Bengals",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0x46c6cb00",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/Cincinati Bengals/selected_subfile_419_1_1785169477990/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "974c73bb3bad1c825bf604e6d24c48adfda929cff82405fc8163080c890e1c82",
+          "source_manifest_row": {
+            "id": "subfile:419:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 419,
+            "entryHash": "0x46c6cb00",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 164343808,
+            "offsetHex": "0x9cbb000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/Cincinati Bengals/selected_subfile_419_0_1785169479673/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "e9d8379392188984f4baf10a908c5a8506fc9406e71d895f07e1577397285743",
+          "source_manifest_row": {
+            "id": "subfile:419:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 419,
+            "entryHash": "0x46c6cb00",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 164343984,
+            "offsetHex": "0x9cbb0b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Cleveland Browns/endzone/End Zone/bef87cdb",
+      "team": "Cleveland Browns",
+      "original_folder": "Cleveland Browns",
+      "kind": "endzone",
+      "variant": "End Zone",
+      "entry_hash": "0xbef87cdb",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/Cleveland Browns/End Zone/selected_subfile_1137_0_1788442082293/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "a427e0c71aba0dab967f0b6ac999c1d076ce84b1fd598af9c01af840e6b276d0",
+          "source_manifest_row": {
+            "id": "subfile:1137:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1137,
+            "entryHash": "0xbef87cdb",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 536094720,
+            "offsetHex": "0x1ff42800",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/Cleveland Browns/End Zone/selected_subfile_1137_1_1788442084221/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+          "source_manifest_row": {
+            "id": "subfile:1137:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1137,
+            "entryHash": "0xbef87cdb",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 536094896,
+            "offsetHex": "0x1ff428b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Cleveland Browns/logo/default/5bd10ad2",
+      "team": "Cleveland Browns",
+      "original_folder": "Cleveland Browns",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0x5bd10ad2",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/Cleveland Browns/selected_subfile_549_1_1788443503849/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "4669a31baa53b8a53f6a3302fe1210f0ab24b7cf52694a48dde4717279943f19",
+          "source_manifest_row": {
+            "id": "subfile:549:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 549,
+            "entryHash": "0x5bd10ad2",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 171112448,
+            "offsetHex": "0xa32f800",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/Cleveland Browns/selected_subfile_549_0_1788443507103/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "01c6157be3d316238ad87b9ed57ac2005ab1c35095e37d5b23efbc0cf77c888b",
+          "source_manifest_row": {
+            "id": "subfile:549:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 549,
+            "entryHash": "0x5bd10ad2",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 171112624,
+            "offsetHex": "0xa32f8b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Dallas Cowboys/endzone/EndZone/Orginal/c352677b",
+      "team": "Dallas Cowboys",
+      "original_folder": "Dallas Cowboys",
+      "kind": "endzone",
+      "variant": "EndZone/Orginal",
+      "entry_hash": "0xc352677b",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/Dallas Cowboys/EndZone/Orginal/selected_subfile_1158_0_1785619836917/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "f9d6f0c393886d2002863ae5e6aef164c4ca7eb3eec7073caba45f89c83f8e5b",
+          "source_manifest_row": {
+            "id": "subfile:1158:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1158,
+            "entryHash": "0xc352677b",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 532865024,
+            "offsetHex": "0x1fc2e000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/Dallas Cowboys/EndZone/Orginal/selected_subfile_1158_1_1785619838788/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+          "source_manifest_row": {
+            "id": "subfile:1158:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1158,
+            "entryHash": "0xc352677b",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 532865200,
+            "offsetHex": "0x1fc2e0b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Dallas Cowboys/endzone/EndZone/c352677b",
+      "team": "Dallas Cowboys",
+      "original_folder": "Dallas Cowboys",
+      "kind": "endzone",
+      "variant": "EndZone",
+      "entry_hash": "0xc352677b",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/Dallas Cowboys/EndZone/selected_subfile_1158_0_1785362448260/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "56803eed5eac3bf422d18f6dbf7486896039a21bd5dcb44ea38cfe2cdcaf3120",
+          "source_manifest_row": {
+            "id": "subfile:1158:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1158,
+            "entryHash": "0xc352677b",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 532865024,
+            "offsetHex": "0x1fc2e000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/Dallas Cowboys/EndZone/selected_subfile_1158_1_1785362449243/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+          "source_manifest_row": {
+            "id": "subfile:1158:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1158,
+            "entryHash": "0xc352677b",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 532865200,
+            "offsetHex": "0x1fc2e0b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Dallas Cowboys/logo/default/267b1172",
+      "team": "Dallas Cowboys",
+      "original_folder": "Dallas Cowboys",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0x267b1172",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/Dallas Cowboys/selected_subfile_228_1_1785243965364/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "f8bab3f7e778f1c070101d778c7b3445a7c2ea4e4bb1ce1f1610d331599eae5c",
+          "source_manifest_row": {
+            "id": "subfile:228:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 228,
+            "entryHash": "0x267b1172",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 168644608,
+            "offsetHex": "0xa0d5000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/Dallas Cowboys/selected_subfile_228_0_1785243967235/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "aa9f1adac1fe89128781c5b9bac4057a43adde332175426d2773361d4d8c27fe",
+          "source_manifest_row": {
+            "id": "subfile:228:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 228,
+            "entryHash": "0x267b1172",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 168644784,
+            "offsetHex": "0xa0d50b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Denver Broncos/endzone/End Zone/e08b22a6",
+      "team": "Denver Broncos",
+      "original_folder": "Denver Broncos",
+      "kind": "endzone",
+      "variant": "End Zone",
+      "entry_hash": "0xe08b22a6",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/Denver Broncos/End Zone/selected_subfile_1345_0_1785941336648/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "596dd9690339f5d0a4fca4ef806f9267f03cf52c9f62748a5c799fdb0a34165b",
+          "source_manifest_row": {
+            "id": "subfile:1345:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1345,
+            "entryHash": "0xe08b22a6",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 524965888,
+            "offsetHex": "0x1f4a5800",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/Denver Broncos/End Zone/selected_subfile_1345_1_1785941338226/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+          "source_manifest_row": {
+            "id": "subfile:1345:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1345,
+            "entryHash": "0xe08b22a6",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 524966064,
+            "offsetHex": "0x1f4a58b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Detroit Lions/endzone/End Zone/75b65e14",
+      "team": "Detroit Lions",
+      "original_folder": "Detriot Lions",
+      "kind": "endzone",
+      "variant": "End Zone",
+      "entry_hash": "0x75b65e14",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/Detriot Lions/End Zone/selected_subfile_713_0_1786026929625/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "3e78ad4b489bffcf68dad77a1ff421315506bb36b8c222e52776895d8dc65ecb",
+          "source_manifest_row": {
+            "id": "subfile:713:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 713,
+            "entryHash": "0x75b65e14",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 529854464,
+            "offsetHex": "0x1f94f000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/Detriot Lions/End Zone/selected_subfile_713_1_1786026931558/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "bdb47c800daab1ba9b1b5f54dc6cf8e8a451e0e1ec0b674861924f72e6454d7a",
+          "source_manifest_row": {
+            "id": "subfile:713:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 713,
+            "entryHash": "0x75b65e14",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 529854640,
+            "offsetHex": "0x1f94f0b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Detroit Lions/logo/default/909f281d",
+      "team": "Detroit Lions",
+      "original_folder": "Detriot Lions",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0x909f281d",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/Detriot Lions/selected_subfile_865_1_1786033557964/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "fd97db7b6dff42fb84034dfe917bc9e32907dbc20f29a2456aa35a4d250a5c98",
+          "source_manifest_row": {
+            "id": "subfile:865:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 865,
+            "entryHash": "0x909f281d",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 166346752,
+            "offsetHex": "0x9ea4000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/Detriot Lions/selected_subfile_865_0_1786033559582/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "e469839abe16ab28ae07149d4c39c47b5138a1af110afdb76becfc778a985877",
+          "source_manifest_row": {
+            "id": "subfile:865:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 865,
+            "entryHash": "0x909f281d",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 166346928,
+            "offsetHex": "0x9ea40b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Detroit Lions/logo/default/fd32901e",
+      "team": "Detroit Lions",
+      "original_folder": "Detriot Lions",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0xfd32901e",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/Detriot Lions/selected_subfile_1528_1_1784742381318/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "5efabe06f2b4223314326eced0c1f8b1830398dc12aacb13bc9eefc6246d8598",
+          "source_manifest_row": {
+            "id": "subfile:1528:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1528,
+            "entryHash": "0xfd32901e",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 163254272,
+            "offsetHex": "0x9bb1000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/Detriot Lions/selected_subfile_1528_0_1784826100000/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "01c6157be3d316238ad87b9ed57ac2005ab1c35095e37d5b23efbc0cf77c888b",
+          "source_manifest_row": {
+            "id": "subfile:1528:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1528,
+            "entryHash": "0xfd32901e",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 163254448,
+            "offsetHex": "0x9bb10b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Green Bay Packers/endzone/Endzone/c9284dca",
+      "team": "Green Bay Packers",
+      "original_folder": "Green Bay Packers",
+      "kind": "endzone",
+      "variant": "Endzone",
+      "entry_hash": "0xc9284dca",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/Green Bay Packers/Endzone/selected_subfile_1192_0_1785936977539/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "096b47a24132f85d6b2ae0a78761f7561568cb2b93ef3bc54905de60938fa577",
+          "source_manifest_row": {
+            "id": "subfile:1192:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1192,
+            "entryHash": "0xc9284dca",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 536526848,
+            "offsetHex": "0x1ffac000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/Green Bay Packers/Endzone/selected_subfile_1192_1_1785936979099/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+          "source_manifest_row": {
+            "id": "subfile:1192:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1192,
+            "entryHash": "0xc9284dca",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 536527024,
+            "offsetHex": "0x1ffac0b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Green Bay Packers/logo/default/2c013bc3",
+      "team": "Green Bay Packers",
+      "original_folder": "Green Bay Packers",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0x2c013bc3",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/Green Bay Packers/selected_subfile_268_1_1784752702002/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "f0ddc8e3366e13b130345e7ac98a2627a8bdd462ce283c13604eea7274e8871e",
+          "source_manifest_row": {
+            "id": "subfile:268:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 268,
+            "entryHash": "0x2c013bc3",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 171390976,
+            "offsetHex": "0xa373800",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/Green Bay Packers/selected_subfile_268_0_1784752700210/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "f883e94e852aa16cf23e974e89347ca655936f3f4978fa587421bdc0142c72bb",
+          "source_manifest_row": {
+            "id": "subfile:268:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 268,
+            "entryHash": "0x2c013bc3",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 171391152,
+            "offsetHex": "0xa3738b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Houston Oilers/endzone/End Zone/8398556b",
+      "team": "Houston Oilers",
+      "original_folder": "Houston Oilers",
+      "kind": "endzone",
+      "variant": "End Zone",
+      "entry_hash": "0x8398556b",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/Houston Oilers/End Zone/selected_subfile_799_0_1785872761439/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "2342ecfb54887b5e0ae1b748ce055367580cb04ca9f54b8146cb180b663a4b90",
+          "source_manifest_row": {
+            "id": "subfile:799:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 799,
+            "entryHash": "0x8398556b",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 536002560,
+            "offsetHex": "0x1ff2c000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/Houston Oilers/End Zone/selected_subfile_799_1_1785872763780/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+          "source_manifest_row": {
+            "id": "subfile:799:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 799,
+            "entryHash": "0x8398556b",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 536002736,
+            "offsetHex": "0x1ff2c0b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Houston Oilers/logo/default/66b12362",
+      "team": "Houston Oilers",
+      "original_folder": "Houston Oilers",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0x66b12362",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/Houston Oilers/selected_subfile_619_1_1784673042201/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "d9da3df77707f8cbb1f91e21248bdcfc3160a4fb4478e2bfbbcf911748e93009",
+          "source_manifest_row": {
+            "id": "subfile:619:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 619,
+            "entryHash": "0x66b12362",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 171061248,
+            "offsetHex": "0xa323000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/Houston Oilers/selected_subfile_619_0_1784673043825/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "01c6157be3d316238ad87b9ed57ac2005ab1c35095e37d5b23efbc0cf77c888b",
+          "source_manifest_row": {
+            "id": "subfile:619:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 619,
+            "entryHash": "0x66b12362",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 171061424,
+            "offsetHex": "0xa3230b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Indianapolis Colts/endzone/End zone/2a98e560",
+      "team": "Indianapolis Colts",
+      "original_folder": "Indianapolis Colts",
+      "kind": "endzone",
+      "variant": "End zone",
+      "entry_hash": "0x2a98e560",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/Indianapolis Colts/End zone/selected_subfile_257_0_1785962083803/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "eb9de03eb24cf52ada55a54361e6cead0e79d54b9fae79478b8c99192d0e7b99",
+          "source_manifest_row": {
+            "id": "subfile:257:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 257,
+            "entryHash": "0x2a98e560",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 524007424,
+            "offsetHex": "0x1f3bb800",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/Indianapolis Colts/End zone/selected_subfile_257_1_1785962085422/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+          "source_manifest_row": {
+            "id": "subfile:257:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 257,
+            "entryHash": "0x2a98e560",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 524007600,
+            "offsetHex": "0x1f3bb8b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Indianapolis Colts/logo/default/53a174b2",
+      "team": "Indianapolis Colts",
+      "original_folder": "Indianapolis Colts",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0x53a174b2",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/Indianapolis Colts/selected_subfile_494_1_1785517667347/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "b177e66b5e6104aea14f30e6a7185c729967727a6bee983b9200d7abfd6dfbf9",
+          "source_manifest_row": {
+            "id": "subfile:494:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 494,
+            "entryHash": "0x53a174b2",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 162105344,
+            "offsetHex": "0x9a98800",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/Indianapolis Colts/selected_subfile_494_0_1785517665838/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "82bbb791495a0313c903dace670ee4bfb20c7707e9ea3b501e07160ecb8fe725",
+          "source_manifest_row": {
+            "id": "subfile:494:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 494,
+            "entryHash": "0x53a174b2",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 162105520,
+            "offsetHex": "0x9a988b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Kansas City Chiefs/endzone/Endzone/a49704a3",
+      "team": "Kansas City Chiefs",
+      "original_folder": "Kansas City Chiefs",
+      "kind": "endzone",
+      "variant": "Endzone",
+      "entry_hash": "0xa49704a3",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/Kansas City Chiefs/Endzone/selected_subfile_983_0_1785933271483/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "89aae37db0bda7cbbe664f99f4d5278191ebba97aa795901cca2e3511f1048b7",
+          "source_manifest_row": {
+            "id": "subfile:983:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 983,
+            "entryHash": "0xa49704a3",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 521084928,
+            "offsetHex": "0x1f0f2000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/Kansas City Chiefs/Endzone/selected_subfile_983_1_1785933273146/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "109617b8e4a8156f6521d1a7cc7020a732fc7a11f65cca5ddf335a8fe3ae9cd7",
+          "source_manifest_row": {
+            "id": "subfile:983:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 983,
+            "entryHash": "0xa49704a3",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 521085104,
+            "offsetHex": "0x1f0f20b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Kansas City Chiefs/logo/default/41be72aa",
+      "team": "Kansas City Chiefs",
+      "original_folder": "Kansas City Chiefs",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0x41be72aa",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/Kansas City Chiefs/selected_subfile_392_1_1785259189110/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "0f2cf9b3ad0d5a7a8034cf419256737fe55e681848d890f3f4a9f6c9e0a0930d",
+          "source_manifest_row": {
+            "id": "subfile:392:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 392,
+            "entryHash": "0x41be72aa",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 160223232,
+            "offsetHex": "0x98cd000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/Kansas City Chiefs/selected_subfile_392_0_1785259190716/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "f77e76c8a53b93e71b983da245e9b47a5e8428e489ee6451e2bac7c5267a5ade",
+          "source_manifest_row": {
+            "id": "subfile:392:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 392,
+            "entryHash": "0x41be72aa",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 160223408,
+            "offsetHex": "0x98cd0b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Los Angeles Raiders/endzone/End Zone/961407d4",
+      "team": "Los Angeles Raiders",
+      "original_folder": "Los Angeles Raiders",
+      "kind": "endzone",
+      "variant": "End Zone",
+      "entry_hash": "0x961407d4",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/Los Angeles Raiders/End Zone/selected_subfile_891_0_1787934745633/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "070a5a70b7c779a142ed7ce6da2c57298bab20a0f29e54bb92f7b0bb8d5bb039",
+          "source_manifest_row": {
+            "id": "subfile:891:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 891,
+            "entryHash": "0x961407d4",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 523491328,
+            "offsetHex": "0x1f33d800",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/Los Angeles Raiders/End Zone/selected_subfile_891_1_1787934747373/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+          "source_manifest_row": {
+            "id": "subfile:891:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 891,
+            "entryHash": "0x961407d4",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 523491504,
+            "offsetHex": "0x1f33d8b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Los Angeles Raiders/logo/default/7f6207cf",
+      "team": "Los Angeles Raiders",
+      "original_folder": "Los Angeles Raiders",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0x7f6207cf",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/Los Angeles Raiders/selected_subfile_771_1_1785444415746/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "3a69df7e7f409ebacf6c882634c1b4b427d1d1c1a09228f877935dc48373c5e4",
+          "source_manifest_row": {
+            "id": "subfile:771:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 771,
+            "entryHash": "0x7f6207cf",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 162926592,
+            "offsetHex": "0x9b61000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/Los Angeles Raiders/selected_subfile_771_0_1785444417111/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "80c6804cbd01a51a6466f5084caea15ff959e736d26611894e95193f4dcc5c17",
+          "source_manifest_row": {
+            "id": "subfile:771:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 771,
+            "entryHash": "0x7f6207cf",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 162926768,
+            "offsetHex": "0x9b610b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Los Angeles Rams/endzone/End Zone/f3222cba",
+      "team": "Los Angeles Rams",
+      "original_folder": "Los Angeles Rams",
+      "kind": "endzone",
+      "variant": "End Zone",
+      "entry_hash": "0xf3222cba",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/Los Angeles Rams/End Zone/selected_subfile_1467_0_1787940534924/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "750dcd1d3464991855a41ef70bf50081a747b428d6c0cb52e76ed19aa74537f2",
+          "source_manifest_row": {
+            "id": "subfile:1467:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1467,
+            "entryHash": "0xf3222cba",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 533979136,
+            "offsetHex": "0x1fd3e000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/Los Angeles Rams/End Zone/selected_subfile_1467_1_1787940536868/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+          "source_manifest_row": {
+            "id": "subfile:1467:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1467,
+            "entryHash": "0xf3222cba",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 533979312,
+            "offsetHex": "0x1fd3e0b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Los Angeles Rams/logo/default/160b5ab3",
+      "team": "Los Angeles Rams",
+      "original_folder": "Los Angeles Rams",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0x160b5ab3",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/Los Angeles Rams/selected_subfile_132_1_1785336341835/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "246a5d3d4e7c478ad154a558f5216bac219f906a51b19adf1a1e572fb1184bcf",
+          "source_manifest_row": {
+            "id": "subfile:132:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 132,
+            "entryHash": "0x160b5ab3",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 169541632,
+            "offsetHex": "0xa1b0000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/Los Angeles Rams/selected_subfile_132_0_1785336340355/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "cf8a8b7faf4da94ac7fd17fb5ce98e3cbb382af5f3633b2d02474f5ebcf5e635",
+          "source_manifest_row": {
+            "id": "subfile:132:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 132,
+            "entryHash": "0x160b5ab3",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 169541808,
+            "offsetHex": "0xa1b00b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Miami Dolphins/endzone/End Zone/356e9d6e",
+      "team": "Miami Dolphins",
+      "original_folder": "Miami Dolphins",
+      "kind": "endzone",
+      "variant": "End Zone",
+      "entry_hash": "0x356e9d6e",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/Miami Dolphins/End Zone/selected_subfile_328_0_1785710822985/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "f4bb68be0e1540bbc6f708aa1f9bed94d3fc91ec928f0e552ca9f65d836b010a",
+          "source_manifest_row": {
+            "id": "subfile:328:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 328,
+            "entryHash": "0x356e9d6e",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 531732480,
+            "offsetHex": "0x1fb19800",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/Miami Dolphins/End Zone/selected_subfile_328_1_1785710825307/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "41dd40ad32c3837e2defb8021dc292d5c34f44fdafad99a101576567e50da4b7",
+          "source_manifest_row": {
+            "id": "subfile:328:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 328,
+            "entryHash": "0x356e9d6e",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 531732656,
+            "offsetHex": "0x1fb198b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Miami Dolphins/logo/default/d047eb67",
+      "team": "Miami Dolphins",
+      "original_folder": "Miami Dolphins",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0xd047eb67",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/Miami Dolphins/selected_subfile_1230_1_1784826731332/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "722f5c50f6a47fecb0f6193b8e1e1e03a986f03eff9483d9904f095aeb4bd471",
+          "source_manifest_row": {
+            "id": "subfile:1230:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1230,
+            "entryHash": "0xd047eb67",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 167753728,
+            "offsetHex": "0x9ffb800",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/Miami Dolphins/selected_subfile_1230_0_1784826748812/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "1fa2d1d7645d4d8bd95e11afb699e6cf3ac9250c2b02d8411b0b6911272c6660",
+          "source_manifest_row": {
+            "id": "subfile:1230:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1230,
+            "entryHash": "0xd047eb67",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 167753904,
+            "offsetHex": "0x9ffb8b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Minnesota Vikings/endzone/End Zone/7b1a60b0",
+      "team": "Minnesota Vikings",
+      "original_folder": "Minnesota Vikings",
+      "kind": "endzone",
+      "variant": "End Zone",
+      "entry_hash": "0x7b1a60b0",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/Minnesota Vikings/End Zone/selected_subfile_750_0_1785784569048/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "9838b83fe70a31ebc9e901d7e96ca5ee678f843f8bd5c728d7fbcbd2edb56728",
+          "source_manifest_row": {
+            "id": "subfile:750:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 750,
+            "entryHash": "0x7b1a60b0",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 530636800,
+            "offsetHex": "0x1fa0e000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/Minnesota Vikings/End Zone/selected_subfile_750_1_1785784570335/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+          "source_manifest_row": {
+            "id": "subfile:750:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 750,
+            "entryHash": "0x7b1a60b0",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 530636976,
+            "offsetHex": "0x1fa0e0b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Minnesota Vikings/logo/default/9e3316b9",
+      "team": "Minnesota Vikings",
+      "original_folder": "Minnesota Vikings",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0x9e3316b9",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/Minnesota Vikings/selected_subfile_945_1_1785164117286/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "f42080fe5a853508cefdde198f3ce3b0e323729082c45c12fc679c09e150a02f",
+          "source_manifest_row": {
+            "id": "subfile:945:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 945,
+            "entryHash": "0x9e3316b9",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 166998016,
+            "offsetHex": "0x9f43000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/Minnesota Vikings/selected_subfile_945_0_1785164118921/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "01c6157be3d316238ad87b9ed57ac2005ab1c35095e37d5b23efbc0cf77c888b",
+          "source_manifest_row": {
+            "id": "subfile:945:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 945,
+            "entryHash": "0x9e3316b9",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 166998192,
+            "offsetHex": "0x9f430b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "New England Patriots/endzone/End Zone/fd8e121e",
+      "team": "New England Patriots",
+      "original_folder": "New England Patriots",
+      "kind": "endzone",
+      "variant": "End Zone",
+      "entry_hash": "0xfd8e121e",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/New England Patriots/End Zone/selected_subfile_1531_0_1787939182772/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "355927320977d61246ef4f478508823bf894e91da74c2edeedb605d1a554958f",
+          "source_manifest_row": {
+            "id": "subfile:1531:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1531,
+            "entryHash": "0xfd8e121e",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 532109312,
+            "offsetHex": "0x1fb75800",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/New England Patriots/End Zone/selected_subfile_1531_1_1787939184154/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "10efcd85d1a5d86b8c3cfdb0ac19b5fa454ba2394cccacccc8792d9a3805db8d",
+          "source_manifest_row": {
+            "id": "subfile:1531:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1531,
+            "entryHash": "0xfd8e121e",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 532109488,
+            "offsetHex": "0x1fb758b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "New England Patriots/logo/default/18a76417",
+      "team": "New England Patriots",
+      "original_folder": "New England Patriots",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0x18a76417",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/New England Patriots/selected_subfile_153_1_1785608580513/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "7ce068f2e56c9731edc873557332b45e3ab1a777d4c2348882bb8a1ae3da2314",
+          "source_manifest_row": {
+            "id": "subfile:153:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 153,
+            "entryHash": "0x18a76417",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 168030208,
+            "offsetHex": "0xa03f000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/New England Patriots/selected_subfile_153_0_1785608582139/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "8de823f372b3c4e039d70ce66a751a2028d76ea3ab5f05e5918226e8295801f9",
+          "source_manifest_row": {
+            "id": "subfile:153:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 153,
+            "entryHash": "0x18a76417",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 168030384,
+            "offsetHex": "0xa03f0b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "New Orleans Saints/endzone/End Zone/5b7f79b8",
+      "team": "New Orleans Saints",
+      "original_folder": "New Orleans Saints",
+      "kind": "endzone",
+      "variant": "End Zone",
+      "entry_hash": "0x5b7f79b8",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/New Orleans Saints/End Zone/selected_subfile_546_0_1788375510854/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "91d1893f969a97142ecac451e0e0ec9d11a898d4e53d7d11e2cb7116c473e1bb",
+          "source_manifest_row": {
+            "id": "subfile:546:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 546,
+            "entryHash": "0x5b7f79b8",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 526532608,
+            "offsetHex": "0x1f624000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/New Orleans Saints/End Zone/selected_subfile_546_1_1788375512559/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+          "source_manifest_row": {
+            "id": "subfile:546:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 546,
+            "entryHash": "0x5b7f79b8",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 526532784,
+            "offsetHex": "0x1f6240b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "New Orleans Saints/logo/default/be560fb1",
+      "team": "New Orleans Saints",
+      "original_folder": "New Orleans Saints",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0xbe560fb1",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/New Orleans Saints/selected_subfile_1133_1_1785516244031/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "daeb09e773f80a3c4fdd9ccc737f6ba55fa1e786a7cda56989ebd860598cc958",
+          "source_manifest_row": {
+            "id": "subfile:1133:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1133,
+            "entryHash": "0xbe560fb1",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 164022272,
+            "offsetHex": "0x9c6c800",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/New Orleans Saints/selected_subfile_1133_0_1785516241777/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "d02e459f50f4643f9a46811bb317b66cbb12d0e949ac5c2066c03c925e74a60e",
+          "source_manifest_row": {
+            "id": "subfile:1133:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1133,
+            "entryHash": "0xbe560fb1",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 164022448,
+            "offsetHex": "0x9c6c8b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "New York Giants/endzone/End Zone/53e4ead5",
+      "team": "New York Giants",
+      "original_folder": "New York Giants",
+      "kind": "endzone",
+      "variant": "End Zone",
+      "entry_hash": "0x53e4ead5",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/New York Giants/End Zone/selected_subfile_498_0_1787933191726/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "1a7b5bc4a96923798edc71d48f9c60127bfd5b2b5e58e5069fb87ae255b14d7e",
+          "source_manifest_row": {
+            "id": "subfile:498:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 498,
+            "entryHash": "0x53e4ead5",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 522956800,
+            "offsetHex": "0x1f2bb000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/New York Giants/End Zone/selected_subfile_498_1_1787933193401/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+          "source_manifest_row": {
+            "id": "subfile:498:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 498,
+            "entryHash": "0x53e4ead5",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 522956976,
+            "offsetHex": "0x1f2bb0b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "New York Giants/logo/default/2add7b07",
+      "team": "New York Giants",
+      "original_folder": "New York Giants",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0x2add7b07",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/New York Giants/selected_subfile_261_1_1784823373622/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "ce71a203db3d7226bd34d21c4b32355f4cef22c1fb733aad20210ec6bb7b933f",
+          "source_manifest_row": {
+            "id": "subfile:261:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 261,
+            "entryHash": "0x2add7b07",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 161509376,
+            "offsetHex": "0x9a07000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/New York Giants/selected_subfile_261_0_1784823376873/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "01c6157be3d316238ad87b9ed57ac2005ab1c35095e37d5b23efbc0cf77c888b",
+          "source_manifest_row": {
+            "id": "subfile:261:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 261,
+            "entryHash": "0x2add7b07",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 161509552,
+            "offsetHex": "0x9a070b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "New York Jets/endzone/End Zone/a6644c15",
+      "team": "New York Jets",
+      "original_folder": "New York Jets",
+      "kind": "endzone",
+      "variant": "End Zone",
+      "entry_hash": "0xa6644c15",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/New York Jets/End Zone/selected_subfile_997_0_1785935776487/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "566fa035f9a2797d8f846e2d52fc647a585e8e3b865c4dcd9bbb225a8410dc49",
+          "source_manifest_row": {
+            "id": "subfile:997:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 997,
+            "entryHash": "0xa6644c15",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 522475520,
+            "offsetHex": "0x1f245800",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/New York Jets/End Zone/selected_subfile_997_1_1785935784504/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+          "source_manifest_row": {
+            "id": "subfile:997:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 997,
+            "entryHash": "0xa6644c15",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 522475696,
+            "offsetHex": "0x1f2458b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "New York Jets/logo/default/df5dddc7",
+      "team": "New York Jets",
+      "original_folder": "New York Jets",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0xdf5dddc7",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/New York Jets/selected_subfile_1337_1_1785350083849/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "ec28b49f18da4b3b4a06e733bcc4799c0a44c44cd1c0a5933339f6f92f4735e6",
+          "source_manifest_row": {
+            "id": "subfile:1337:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1337,
+            "entryHash": "0xdf5dddc7",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 161261568,
+            "offsetHex": "0x99ca800",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/New York Jets/selected_subfile_1337_0_1785350085721/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "01c6157be3d316238ad87b9ed57ac2005ab1c35095e37d5b23efbc0cf77c888b",
+          "source_manifest_row": {
+            "id": "subfile:1337:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1337,
+            "entryHash": "0xdf5dddc7",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 161261744,
+            "offsetHex": "0x99ca8b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Philadelphia Eagles/endzone/End Zone/55d3471c",
+      "team": "Philadelphia Eagles",
+      "original_folder": "Philadelia Eagles",
+      "kind": "endzone",
+      "variant": "End Zone",
+      "entry_hash": "0x55d3471c",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/Philadelia Eagles/End Zone/selected_subfile_508_0_1788380005931/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "705f3acab552e2515ab17d80fb2c34d7d686112c3dd211308d94523bec5fdeec",
+          "source_manifest_row": {
+            "id": "subfile:508:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 508,
+            "entryHash": "0x55d3471c",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 528617472,
+            "offsetHex": "0x1f821000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/Philadelia Eagles/End Zone/selected_subfile_508_1_1788380008001/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "b6d69dc06cf6440b0feaf0683ee402e11187c23b0c5e778fda0e97277be76d6f",
+          "source_manifest_row": {
+            "id": "subfile:508:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 508,
+            "entryHash": "0x55d3471c",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 528617648,
+            "offsetHex": "0x1f8210b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Philadelphia Eagles/logo/default/b0fa3115",
+      "team": "Philadelphia Eagles",
+      "original_folder": "Philadelia Eagles",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0xb0fa3115",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/Philadelia Eagles/selected_subfile_1057_1_1785179156507/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "7c60d1ec41f568f4b43e86ed919d71f170aab5d92112a463f8182a4ce41db77d",
+          "source_manifest_row": {
+            "id": "subfile:1057:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1057,
+            "entryHash": "0xb0fa3115",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 165484544,
+            "offsetHex": "0x9dd1800",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/Philadelia Eagles/selected_subfile_1057_0_1785179158038/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "f244b45c7243a69a671f8f23f2252e59ee013ec9c3f1a8ffa6f75c09dd438b48",
+          "source_manifest_row": {
+            "id": "subfile:1057:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1057,
+            "entryHash": "0xb0fa3115",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 165484720,
+            "offsetHex": "0x9dd18b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Phoenix Cardinals/endzone/End Zone/150b8466",
+      "team": "Phoenix Cardinals",
+      "original_folder": "Phoenix Cardinals",
+      "kind": "endzone",
+      "variant": "End Zone",
+      "entry_hash": "0x150b8466",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/Phoenix Cardinals/End Zone/selected_subfile_128_0_1786022824959/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "568a327afadd81a3f8ffacb692e885d9a307e0fdd9bc9ca1f61db50d44c537d9",
+          "source_manifest_row": {
+            "id": "subfile:128:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 128,
+            "entryHash": "0x150b8466",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 522272768,
+            "offsetHex": "0x1f214000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/Phoenix Cardinals/End Zone/selected_subfile_128_1_1786022826731/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "de90f8d9e3ef03c2af56b61cae9ce38709b0791237b3165fc9efa13245070cee",
+          "source_manifest_row": {
+            "id": "subfile:128:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 128,
+            "entryHash": "0x150b8466",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 522272944,
+            "offsetHex": "0x1f2140b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Phoenix Cardinals/logo/default/f022f26f",
+      "team": "Phoenix Cardinals",
+      "original_folder": "Phoenix Cardinals",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0xf022f26f",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/Phoenix Cardinals/selected_subfile_1451_1_1785525471671/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "d039a50a7790a255f2e2c41a505203daf8baf85beb7116b792b61e2652fa7aa8",
+          "source_manifest_row": {
+            "id": "subfile:1451:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1451,
+            "entryHash": "0xf022f26f",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 161081344,
+            "offsetHex": "0x999e800",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/Phoenix Cardinals/selected_subfile_1451_0_1785525469651/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "2d82f58e5ef674795846a54a949cdbf797538659e0d13c9a919ee62c44de1b74",
+          "source_manifest_row": {
+            "id": "subfile:1451:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1451,
+            "entryHash": "0xf022f26f",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 161081520,
+            "offsetHex": "0x999e8b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Pittsburgh Steelers/endzone/EndZone/1f635fbd",
+      "team": "Pittsburgh Steelers",
+      "original_folder": "Pittsburgh Steelers",
+      "kind": "endzone",
+      "variant": "EndZone",
+      "entry_hash": "0x1f635fbd",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/Pittsburgh Steelers/EndZone/selected_subfile_189_0_1787927658591/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "ad89000fe6798604d52f8f9dfb6b0fb3caa2bc5dfd9ea44a3d152ce6fc7e0c4e",
+          "source_manifest_row": {
+            "id": "subfile:189:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 189,
+            "entryHash": "0x1f635fbd",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 527726592,
+            "offsetHex": "0x1f747800",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/Pittsburgh Steelers/EndZone/selected_subfile_189_1_1787927661898/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "e1564120569106577fd9ba3940d65365fcf165208b868fa3c0cfd4fa47eb7359",
+          "source_manifest_row": {
+            "id": "subfile:189:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 189,
+            "entryHash": "0x1f635fbd",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 527726768,
+            "offsetHex": "0x1f7478b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Pittsburgh Steelers/logo/default/fa4a29b4",
+      "team": "Pittsburgh Steelers",
+      "original_folder": "Pittsburgh Steelers",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0xfa4a29b4",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/Pittsburgh Steelers/selected_subfile_1508_1_1787924280406/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "c8cc527a8023298ed1a51b73f7c1d527440ecee8db23b5a1153d4a043e13945f",
+          "source_manifest_row": {
+            "id": "subfile:1508:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1508,
+            "entryHash": "0xfa4a29b4",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 164872192,
+            "offsetHex": "0x9d3c000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/Pittsburgh Steelers/selected_subfile_1508_0_1787924278827/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "9dadc300be97c0afb0cd0b226372d1b52c79845e5d4c83a037473d8578701c1b",
+          "source_manifest_row": {
+            "id": "subfile:1508:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1508,
+            "entryHash": "0xfa4a29b4",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 164872368,
+            "offsetHex": "0x9d3c0b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "San Diego Chargers/endzone/End Zone/4faece0e",
+      "team": "San Diego Chargers",
+      "original_folder": "San Deigo Chargers",
+      "kind": "endzone",
+      "variant": "End Zone",
+      "entry_hash": "0x4faece0e",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/San Deigo Chargers/End Zone/selected_subfile_470_0_1788378508731/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "71634983422ca8b877768c2fff83ae7179cd952b3feb55fbf3c101857614eedc",
+          "source_manifest_row": {
+            "id": "subfile:470:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 470,
+            "entryHash": "0x4faece0e",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 531943424,
+            "offsetHex": "0x1fb4d000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/San Deigo Chargers/End Zone/selected_subfile_470_1_1788378510788/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+          "source_manifest_row": {
+            "id": "subfile:470:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 470,
+            "entryHash": "0x4faece0e",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 531943600,
+            "offsetHex": "0x1fb4d0b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "San Diego Chargers/logo/default/aa87b807",
+      "team": "San Diego Chargers",
+      "original_folder": "San Deigo Chargers",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0xaa87b807",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/San Deigo Chargers/selected_subfile_1016_1_1785532226572/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "9e4169d2588feb12386f1e516d3149b7be1fda00d9ce2e1c16eda21154374ec0",
+          "source_manifest_row": {
+            "id": "subfile:1016:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1016,
+            "entryHash": "0xaa87b807",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 167925760,
+            "offsetHex": "0xa025800",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/San Deigo Chargers/selected_subfile_1016_0_1785532228046/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "1700ad5c0e8c5ed941d5eda0290eeb9c361874f60a7c71d82801a09586ec4013",
+          "source_manifest_row": {
+            "id": "subfile:1016:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1016,
+            "entryHash": "0xaa87b807",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 167925936,
+            "offsetHex": "0xa0258b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "San Francisco 49ers/endzone/End Zone/9a4b71c6",
+      "team": "San Francisco 49ers",
+      "original_folder": "San Franciso 49ers",
+      "kind": "endzone",
+      "variant": "End Zone",
+      "entry_hash": "0x9a4b71c6",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/San Franciso 49ers/End Zone/selected_subfile_917_0_1787947995013/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "0bc391ee5076fd40fb85888d6e787439bfd7139f263e9d5bda379728c34e0165",
+          "source_manifest_row": {
+            "id": "subfile:917:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 917,
+            "entryHash": "0x9a4b71c6",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 525330432,
+            "offsetHex": "0x1f4fe800",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/San Franciso 49ers/End Zone/selected_subfile_917_1_1787947996588/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "12a7b7a56a097763211b20360f85574af4239343591d713d5369474709679ca0",
+          "source_manifest_row": {
+            "id": "subfile:917:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 917,
+            "entryHash": "0x9a4b71c6",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 525330608,
+            "offsetHex": "0x1f4fe8b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Seattle Seahawks/endzone/End Zone/fe324ecb",
+      "team": "Seattle Seahawks",
+      "original_folder": "Seattle Seahawks",
+      "kind": "endzone",
+      "variant": "End Zone",
+      "entry_hash": "0xfe324ecb",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/Seattle Seahawks/End Zone/selected_subfile_1533_0_1787943158749/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "ace1acc2f91f44d1457940df2ab94fca6397a9d1996e4831e4d158ad98528529",
+          "source_manifest_row": {
+            "id": "subfile:1533:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1533,
+            "entryHash": "0xfe324ecb",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 532987904,
+            "offsetHex": "0x1fc4c000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/Seattle Seahawks/End Zone/selected_subfile_1533_1_1787943160189/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "a414bc23ac483f7a76aa36085cbb61c3d619af9b7f4bdf929185770fa04dfa78",
+          "source_manifest_row": {
+            "id": "subfile:1533:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1533,
+            "entryHash": "0xfe324ecb",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 532988080,
+            "offsetHex": "0x1fc4c0b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Seattle Seahawks/logo/default/1b1b38c2",
+      "team": "Seattle Seahawks",
+      "original_folder": "Seattle Seahawks",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0x1b1b38c2",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/Seattle Seahawks/selected_subfile_167_1_1785364840924/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "266aa85204bd9e2102a3099d72710c5d2d4c26ea7487ec03f892b986567fde01",
+          "source_manifest_row": {
+            "id": "subfile:167:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 167,
+            "entryHash": "0x1b1b38c2",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 168763392,
+            "offsetHex": "0xa0f2000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/Seattle Seahawks/selected_subfile_167_0_1785364842658/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "01c6157be3d316238ad87b9ed57ac2005ab1c35095e37d5b23efbc0cf77c888b",
+          "source_manifest_row": {
+            "id": "subfile:167:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 167,
+            "entryHash": "0x1b1b38c2",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 168763568,
+            "offsetHex": "0xa0f20b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Tampa Bay Buccaneers/endzone/End Zone/080eb4de",
+      "team": "Tampa Bay Buccaneers",
+      "original_folder": "Tampa Bay Buccaneers",
+      "kind": "endzone",
+      "variant": "End Zone",
+      "entry_hash": "0x080eb4de",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/Tampa Bay Buccaneers/End Zone/selected_subfile_48_0_1785708043982/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "ab6c23985b97cdceaa3e779ea5c6b181982f8fb7e2e91640b9c7448aabb12f5c",
+          "source_manifest_row": {
+            "id": "subfile:48:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 48,
+            "entryHash": "0x080eb4de",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 531562496,
+            "offsetHex": "0x1faf0000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/Tampa Bay Buccaneers/End Zone/selected_subfile_48_1_1785708045851/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+          "source_manifest_row": {
+            "id": "subfile:48:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 48,
+            "entryHash": "0x080eb4de",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 531562672,
+            "offsetHex": "0x1faf00b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Tampa Bay Buccaneers/logo/default/ed27c2d7",
+      "team": "Tampa Bay Buccaneers",
+      "original_folder": "Tampa Bay Buccaneers",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0xed27c2d7",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/Tampa Bay Buccaneers/selected_subfile_1431_1_1785017564898/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "9dfe0d3aaee0b5cbbccde08b12cc1368fe1bfe5d2748b363a505f842b4823f5a",
+          "source_manifest_row": {
+            "id": "subfile:1431:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1431,
+            "entryHash": "0xed27c2d7",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 167639040,
+            "offsetHex": "0x9fdf800",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/Tampa Bay Buccaneers/selected_subfile_1431_0_1785017566637/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "01c6157be3d316238ad87b9ed57ac2005ab1c35095e37d5b23efbc0cf77c888b",
+          "source_manifest_row": {
+            "id": "subfile:1431:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1431,
+            "entryHash": "0xed27c2d7",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 167639216,
+            "offsetHex": "0x9fdf8b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Washington Redskins/endzone/Endzone/0bb2e80b",
+      "team": "Washington Redskins",
+      "original_folder": "Washington Redskins",
+      "kind": "endzone",
+      "variant": "Endzone",
+      "entry_hash": "0x0bb2e80b",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/Washington Redskins/Endzone/selected_subfile_69_0_1785874330269/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "835213a1f6a24ddd037ce9ba5a6173261196f5fa070f5bffe3b353ad3d55437b",
+          "source_manifest_row": {
+            "id": "subfile:69:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 69,
+            "entryHash": "0x0bb2e80b",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 533512192,
+            "offsetHex": "0x1fccc000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/Washington Redskins/Endzone/selected_subfile_69_1_1785874332278/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "3865671dbd4ad2542cfdb6c86946971dd61c76c7b72721859acfd9aed7b8a62c",
+          "source_manifest_row": {
+            "id": "subfile:69:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 69,
+            "entryHash": "0x0bb2e80b",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 533512368,
+            "offsetHex": "0x1fccc0b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "pair_id": "Washington Redskins/logo/default/ee9b9e02",
+      "team": "Washington Redskins",
+      "original_folder": "Washington Redskins",
+      "kind": "logo",
+      "variant": "default",
+      "entry_hash": "0xee9b9e02",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/Washington Redskins/selected_subfile_1440_1_1785101006171/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "c8acbed2cc5f37a8430dbe13c4ef46b7ce7db3a8b7533cb8d76b47c8361e13d3",
+          "source_manifest_row": {
+            "id": "subfile:1440:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1440,
+            "entryHash": "0xee9b9e02",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 169179136,
+            "offsetHex": "0xa157800",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/Washington Redskins/selected_subfile_1440_0_1785101008385/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "35ebc7bc2e15a88ae9ceaedc38df4f2cc0e662308f417266659c10b2bdd97325",
+          "source_manifest_row": {
+            "id": "subfile:1440:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 1440,
+            "entryHash": "0xee9b9e02",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 169179312,
+            "offsetHex": "0xa1578b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    }
+  ],
+  "ignored_files": [
+    "NFL Logos/Chicago Bears/Bears.pdn",
+    "NFL Logos/Cincinati Bengals/Bengals Stripe/selected_subfile_1307_0_1784923414436/000_helmet_color.dds",
+    "NFL Logos/Cincinati Bengals/Bengals Stripe/selected_subfile_1307_0_1784923414436/000_helmet_color.gtf",
+    "NFL Logos/Cincinati Bengals/Bengals Stripe/selected_subfile_1307_0_1785176856883/000_helmet_color.dds",
+    "NFL Logos/Cincinati Bengals/Bengals Stripe/selected_subfile_1307_0_1785176856883/000_helmet_color.gtf",
+    "NFL Logos/Detriot Lions/001_logo_l0.png",
+    "NFL Logos/Detriot Lions/Lions.pdn",
+    "NFL Logos/Houston Oilers/selected_subfile_619_0_1784673043825/000_logo_l1.png",
+    "NFL Logos/Houston Oilers/selected_subfile_619_1_1784673042201/001_logo_l0.png",
+    "NFL Logos/Indianapolis Colts/Colts.pdn",
+    "NFL Logos/Los Angeles Raiders/Raiders.pdn",
+    "NFL Logos/Los Angeles Rams/Rams.pdn",
+    "NFL Logos/Miami Dolphins/Dolphins.pdn",
+    "NFL Logos/New England Patriots/Patriots.pdn",
+    "NFL Logos/New Orleans Saints/Saints.pdn",
+    "NFL Logos/New York Jets/Jets.pdn",
+    "NFL Logos/Phoenix Cardinals/Cardinals.pdn",
+    "NFL Logos/Pittsburgh Steelers/Steelers.pdn",
+    "NFL Logos/Pittsburgh Steelers/shadowdrop.dds",
+    "NFL Logos/San Franciso 49ers/2026-08-28 16_14_46-Window.png",
+    "NFL Logos/Seattle Seahawks/Seahawks.pdn",
+    "NFL Logos/Stripe Update 1 (White Outside)/selected_subfile_96_0_1784918978995/000_helmet_color.dds",
+    "NFL Logos/Stripe Update 1 (White Outside)/selected_subfile_96_0_1784918978995/000_helmet_color.gtf",
+    "NFL Logos/Stripe Update 2 (3 with Gap)/selected_subfile_96_0_1784754625138/000_helmet_color.dds",
+    "NFL Logos/Stripe Update 2 (3 with Gap)/selected_subfile_96_0_1784754625138/000_helmet_color.gtf",
+    "NFL Logos/Washington Redskins/Endzone/SkinsEnd.pdn"
+  ],
+  "rejected_pairs": [
+    {
+      "team": "Cincinnati Bengals",
+      "original_folder": "Cincinati Bengals",
+      "kind": "endzone",
+      "variant": "End Zone",
+      "reason": "Identical/mirrored layers violate the six-region rule",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/Cincinati Bengals/End Zone/selected_subfile_979_0_1788441742381/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+          "source_manifest_row": {
+            "id": "subfile:979:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 979,
+            "entryHash": "0xa3efbd09",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 526999552,
+            "offsetHex": "0x1f696000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/Cincinati Bengals/End Zone/selected_subfile_979_1_1788441744083/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+          "source_manifest_row": {
+            "id": "subfile:979:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 979,
+            "entryHash": "0xa3efbd09",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 526999728,
+            "offsetHex": "0x1f6960b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "team": "Denver Broncos",
+      "original_folder": "Denver Broncos",
+      "kind": "logo",
+      "variant": "SteamersLogo_32_0",
+      "reason": "Incomplete pair; need l0 AND l1",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/Denver Broncos/SteamersLogo_32_0/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "6d5d4d83e1d71724e80a220d94823c8fbd54a1626fb96351515af5d8a9cd33ee",
+          "source_manifest_row": {
+            "id": "subfile:32:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 32,
+            "entryHash": "0x05a254af",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 162729984,
+            "offsetHex": "0x9b31000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "team": "Denver Broncos",
+      "original_folder": "Denver Broncos",
+      "kind": "logo",
+      "variant": "SteamersLogo_32_1",
+      "reason": "Incomplete pair; need l0 AND l1",
+      "layers": [
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/Denver Broncos/SteamersLogo_32_1/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "5d434fe2997c498f036b9489d23bb77acb8d4a5c6d664ea66b6f2d6a4125d36d",
+          "source_manifest_row": {
+            "id": "subfile:32:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 32,
+            "entryHash": "0x05a254af",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 162730160,
+            "offsetHex": "0x9b310b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "team": "San Francisco 49ers",
+      "original_folder": "San Franciso 49ers",
+      "kind": "logo",
+      "variant": "Z-925_l0",
+      "reason": "Incomplete pair; need l0 AND l1",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/San Franciso 49ers/Z-925_l0/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "2c72d520cc7e2a71225ba964f7db9b821f6de6ed609940839096ab7e250aee99",
+          "source_manifest_row": {
+            "id": "subfile:925:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 925,
+            "entryHash": "0x9b41fbc2",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 162451456,
+            "offsetHex": "0x9aed000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "team": "San Francisco 49ers",
+      "original_folder": "San Franciso 49ers",
+      "kind": "logo",
+      "variant": "Z_925_l1",
+      "reason": "Incomplete pair; need l0 AND l1",
+      "layers": [
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/San Franciso 49ers/Z_925_l1/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "378faa3d736d04002b04f14def420b71f95bf560f703297f5b1fd7cfc4c35490",
+          "source_manifest_row": {
+            "id": "subfile:925:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 925,
+            "entryHash": "0x9b41fbc2",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 162451632,
+            "offsetHex": "0x9aed0b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    }
+  ]
+}

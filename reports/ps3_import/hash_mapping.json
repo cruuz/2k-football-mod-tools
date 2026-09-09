@@ -1,0 +1,1280 @@
+{
+  "schema": "apf2k8_ps3_hash_mapping/v1",
+  "input_sha256": "57d7d4a9916cafbc654846ab21514e0e95cccfea73003867c07dc33a36a411d3",
+  "teams": 28,
+  "valid_pairs": 55,
+  "valid_pairs_per_kind": {
+    "endzone": 28,
+    "logo": 27
+  },
+  "rejected_groups": [
+    {
+      "team": "Cincinnati Bengals",
+      "original_folder": "Cincinati Bengals",
+      "kind": "endzone",
+      "variant": "End Zone",
+      "reason": "Identical/mirrored layers violate the six-region rule",
+      "layers": [
+        {
+          "layer": "endzone_l0",
+          "source_path": "NFL Logos/Cincinati Bengals/End Zone/selected_subfile_979_0_1788441742381/000_endzone_l0.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+          "source_manifest_row": {
+            "id": "subfile:979:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 979,
+            "entryHash": "0xa3efbd09",
+            "entryName": "endzone_l0",
+            "name": "endzone_l0",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "endzone_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 526999552,
+            "offsetHex": "0x1f696000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l0"
+            ],
+            "description": ""
+          }
+        },
+        {
+          "layer": "endzone_l1",
+          "source_path": "NFL Logos/Cincinati Bengals/End Zone/selected_subfile_979_1_1788441744083/001_endzone_l1.dds",
+          "width": 2048,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+          "source_manifest_row": {
+            "id": "subfile:979:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 979,
+            "entryHash": "0xa3efbd09",
+            "entryName": "endzone_l0",
+            "name": "endzone_l1",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "endzone_l1",
+            "byteLength": 699216,
+            "storedBytes": 699216,
+            "size": "682.8 KB",
+            "offset": 526999728,
+            "offsetHex": "0x1f6960b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "endzone_l0",
+              "endzone_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "team": "Denver Broncos",
+      "original_folder": "Denver Broncos",
+      "kind": "logo",
+      "variant": "SteamersLogo_32_0",
+      "reason": "Incomplete pair; need l0 AND l1",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/Denver Broncos/SteamersLogo_32_0/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "6d5d4d83e1d71724e80a220d94823c8fbd54a1626fb96351515af5d8a9cd33ee",
+          "source_manifest_row": {
+            "id": "subfile:32:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 32,
+            "entryHash": "0x05a254af",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 162729984,
+            "offsetHex": "0x9b31000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "team": "Denver Broncos",
+      "original_folder": "Denver Broncos",
+      "kind": "logo",
+      "variant": "SteamersLogo_32_1",
+      "reason": "Incomplete pair; need l0 AND l1",
+      "layers": [
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/Denver Broncos/SteamersLogo_32_1/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "5d434fe2997c498f036b9489d23bb77acb8d4a5c6d664ea66b6f2d6a4125d36d",
+          "source_manifest_row": {
+            "id": "subfile:32:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 32,
+            "entryHash": "0x05a254af",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 162730160,
+            "offsetHex": "0x9b310b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "team": "San Francisco 49ers",
+      "original_folder": "San Franciso 49ers",
+      "kind": "logo",
+      "variant": "Z-925_l0",
+      "reason": "Incomplete pair; need l0 AND l1",
+      "layers": [
+        {
+          "layer": "logo_l0",
+          "source_path": "NFL Logos/San Franciso 49ers/Z-925_l0/001_logo_l0.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "2c72d520cc7e2a71225ba964f7db9b821f6de6ed609940839096ab7e250aee99",
+          "source_manifest_row": {
+            "id": "subfile:925:1",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 925,
+            "entryHash": "0x9b41fbc2",
+            "entryName": "logo_l1",
+            "name": "logo_l0",
+            "itemIndex": 1,
+            "subfileIndex": 1,
+            "subfileName": "logo_l0",
+            "byteLength": 699312,
+            "storedBytes": 699312,
+            "size": "682.9 KB",
+            "offset": 162451456,
+            "offsetHex": "0x9aed000",
+            "relOffset": 0,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.8 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l0"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "team": "San Francisco 49ers",
+      "original_folder": "San Franciso 49ers",
+      "kind": "logo",
+      "variant": "Z_925_l1",
+      "reason": "Incomplete pair; need l0 AND l1",
+      "layers": [
+        {
+          "layer": "logo_l1",
+          "source_path": "NFL Logos/San Franciso 49ers/Z_925_l1/000_logo_l1.dds",
+          "width": 512,
+          "height": 512,
+          "mode": "RGBA",
+          "decoded_pixels_sha256": "378faa3d736d04002b04f14def420b71f95bf560f703297f5b1fd7cfc4c35490",
+          "source_manifest_row": {
+            "id": "subfile:925:0",
+            "kind": "subfile",
+            "type": "TXTR",
+            "entryIndex": 925,
+            "entryHash": "0x9b41fbc2",
+            "entryName": "logo_l1",
+            "name": "logo_l1",
+            "itemIndex": 0,
+            "subfileIndex": 0,
+            "subfileName": "logo_l1",
+            "byteLength": 699226,
+            "storedBytes": 699226,
+            "size": "682.8 KB",
+            "offset": 162451632,
+            "offsetHex": "0x9aed0b0",
+            "relOffset": 176,
+            "volume": "0A",
+            "details": "2 blocks",
+            "blocks": "176 B / 682.7 KB",
+            "tags": [
+              "TXTR"
+            ],
+            "names": [
+              "logo_l1",
+              "logo_l1"
+            ],
+            "description": ""
+          }
+        }
+      ]
+    }
+  ],
+  "destinations_per_kind": {
+    "endzone": 117,
+    "logo": 118
+  },
+  "writable_destinations_per_kind": {
+    "endzone": 78,
+    "logo": 118
+  },
+  "pairs": [
+    {
+      "pair_id": "Atlanta Falcons/endzone/End Zone/9e8f94b9",
+      "team": "Atlanta Falcons",
+      "kind": "endzone",
+      "source_entry_hash": "0x9e8f94b9",
+      "matches": [
+        {
+          "slot_id": "endzone:951",
+          "label": "Unidentified endzone 951",
+          "writable": true,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Atlanta Falcons/logo/default/7ba6e2b0",
+      "team": "Atlanta Falcons",
+      "kind": "logo",
+      "source_entry_hash": "0x7ba6e2b0",
+      "matches": [
+        {
+          "slot_id": "logo:756",
+          "label": "Logo slot 29",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Buffalo Bills/endzone/End Zone/72cee7be",
+      "team": "Buffalo Bills",
+      "kind": "endzone",
+      "source_entry_hash": "0x72cee7be",
+      "matches": [
+        {
+          "slot_id": "endzone:695",
+          "label": "Unidentified endzone 695",
+          "writable": true,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Buffalo Bills/logo/default/97e791b7",
+      "team": "Buffalo Bills",
+      "kind": "logo",
+      "source_entry_hash": "0x97e791b7",
+      "matches": [
+        {
+          "slot_id": "logo:907",
+          "label": "Logo slot 62",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Chicago Bears/endzone/End Zone/0cd8a0cb",
+      "team": "Chicago Bears",
+      "kind": "endzone",
+      "source_entry_hash": "0x0cd8a0cb",
+      "matches": [
+        {
+          "slot_id": "endzone:78",
+          "label": "C's",
+          "writable": false,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "unsupported or alternate; not selected"
+    },
+    {
+      "pair_id": "Chicago Bears/logo/default/e9f1d6c2",
+      "team": "Chicago Bears",
+      "kind": "logo",
+      "source_entry_hash": "0xe9f1d6c2",
+      "matches": [
+        {
+          "slot_id": "logo:1409",
+          "label": "Logo slot 94",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Cincinnati Bengals/logo/default/46c6cb00",
+      "team": "Cincinnati Bengals",
+      "kind": "logo",
+      "source_entry_hash": "0x46c6cb00",
+      "matches": [
+        {
+          "slot_id": "logo:421",
+          "label": "Logo slot 28",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Cleveland Browns/endzone/End Zone/bef87cdb",
+      "team": "Cleveland Browns",
+      "kind": "endzone",
+      "source_entry_hash": "0xbef87cdb",
+      "matches": [
+        {
+          "slot_id": "endzone:1140",
+          "label": "Unidentified endzone 1140",
+          "writable": false,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "unsupported or alternate; not selected"
+    },
+    {
+      "pair_id": "Cleveland Browns/logo/default/5bd10ad2",
+      "team": "Cleveland Browns",
+      "kind": "logo",
+      "source_entry_hash": "0x5bd10ad2",
+      "matches": [
+        {
+          "slot_id": "logo:551",
+          "label": "Logo slot 93",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Dallas Cowboys/endzone/EndZone/c352677b",
+      "team": "Dallas Cowboys",
+      "kind": "endzone",
+      "source_entry_hash": "0xc352677b",
+      "matches": [
+        {
+          "slot_id": "endzone:1161",
+          "label": "Unidentified endzone 1161",
+          "writable": true,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Dallas Cowboys/logo/default/267b1172",
+      "team": "Dallas Cowboys",
+      "kind": "logo",
+      "source_entry_hash": "0x267b1172",
+      "matches": [
+        {
+          "slot_id": "logo:229",
+          "label": "Logo slot 70",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Denver Broncos/endzone/End Zone/e08b22a6",
+      "team": "Denver Broncos",
+      "kind": "endzone",
+      "source_entry_hash": "0xe08b22a6",
+      "matches": [
+        {
+          "slot_id": "endzone:1347",
+          "label": "Unidentified endzone 1347",
+          "writable": true,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Detroit Lions/endzone/End Zone/75b65e14",
+      "team": "Detroit Lions",
+      "kind": "endzone",
+      "source_entry_hash": "0x75b65e14",
+      "matches": [
+        {
+          "slot_id": "endzone:716",
+          "label": "Unidentified endzone 716",
+          "writable": true,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Detroit Lions/logo/default/909f281d",
+      "team": "Detroit Lions",
+      "kind": "logo",
+      "source_entry_hash": "0x909f281d",
+      "matches": [
+        {
+          "slot_id": "logo:868",
+          "label": "Logo slot 48",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Detroit Lions/logo/default/fd32901e",
+      "team": "Detroit Lions",
+      "kind": "logo",
+      "source_entry_hash": "0xfd32901e",
+      "matches": [
+        {
+          "slot_id": "logo:1530",
+          "label": "Logo slot 19",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Green Bay Packers/endzone/Endzone/c9284dca",
+      "team": "Green Bay Packers",
+      "kind": "endzone",
+      "source_entry_hash": "0xc9284dca",
+      "matches": [
+        {
+          "slot_id": "endzone:1195",
+          "label": "Unidentified endzone 1195",
+          "writable": false,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "unsupported or alternate; not selected"
+    },
+    {
+      "pair_id": "Green Bay Packers/logo/default/2c013bc3",
+      "team": "Green Bay Packers",
+      "kind": "logo",
+      "source_entry_hash": "0x2c013bc3",
+      "matches": [
+        {
+          "slot_id": "logo:269",
+          "label": "Logo slot 98",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Houston Oilers/endzone/End Zone/8398556b",
+      "team": "Houston Oilers",
+      "kind": "endzone",
+      "source_entry_hash": "0x8398556b",
+      "matches": [
+        {
+          "slot_id": "endzone:802",
+          "label": "A's",
+          "writable": false,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "unsupported or alternate; not selected"
+    },
+    {
+      "pair_id": "Houston Oilers/logo/default/66b12362",
+      "team": "Houston Oilers",
+      "kind": "logo",
+      "source_entry_hash": "0x66b12362",
+      "matches": [
+        {
+          "slot_id": "logo:621",
+          "label": "Logo slot 92",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Indianapolis Colts/endzone/End zone/2a98e560",
+      "team": "Indianapolis Colts",
+      "kind": "endzone",
+      "source_entry_hash": "0x2a98e560",
+      "matches": [
+        {
+          "slot_id": "endzone:258",
+          "label": "U's",
+          "writable": false,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "unsupported or alternate; not selected"
+    },
+    {
+      "pair_id": "Indianapolis Colts/logo/default/53a174b2",
+      "team": "Indianapolis Colts",
+      "kind": "logo",
+      "source_entry_hash": "0x53a174b2",
+      "matches": [
+        {
+          "slot_id": "logo:496",
+          "label": "Logo slot 112",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Kansas City Chiefs/endzone/Endzone/a49704a3",
+      "team": "Kansas City Chiefs",
+      "kind": "endzone",
+      "source_entry_hash": "0xa49704a3",
+      "matches": [
+        {
+          "slot_id": "endzone:986",
+          "label": "Unidentified endzone 986",
+          "writable": true,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Kansas City Chiefs/logo/default/41be72aa",
+      "team": "Kansas City Chiefs",
+      "kind": "logo",
+      "source_entry_hash": "0x41be72aa",
+      "matches": [
+        {
+          "slot_id": "logo:394",
+          "label": "Logo slot 02",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Los Angeles Raiders/endzone/End Zone/961407d4",
+      "team": "Los Angeles Raiders",
+      "kind": "endzone",
+      "source_entry_hash": "0x961407d4",
+      "matches": [
+        {
+          "slot_id": "endzone:894",
+          "label": "Unidentified endzone 894",
+          "writable": false,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "unsupported or alternate; not selected"
+    },
+    {
+      "pair_id": "Los Angeles Raiders/logo/default/7f6207cf",
+      "team": "Los Angeles Raiders",
+      "kind": "logo",
+      "source_entry_hash": "0x7f6207cf",
+      "matches": [
+        {
+          "slot_id": "logo:774",
+          "label": "Logo slot 16",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Los Angeles Rams/endzone/End Zone/f3222cba",
+      "team": "Los Angeles Rams",
+      "kind": "endzone",
+      "source_entry_hash": "0xf3222cba",
+      "matches": [
+        {
+          "slot_id": "endzone:1469",
+          "label": "Unidentified endzone 1469",
+          "writable": true,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Los Angeles Rams/logo/default/160b5ab3",
+      "team": "Los Angeles Rams",
+      "kind": "logo",
+      "source_entry_hash": "0x160b5ab3",
+      "matches": [
+        {
+          "slot_id": "logo:133",
+          "label": "Logo slot 78",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Miami Dolphins/endzone/End Zone/356e9d6e",
+      "team": "Miami Dolphins",
+      "kind": "endzone",
+      "source_entry_hash": "0x356e9d6e",
+      "matches": [
+        {
+          "slot_id": "endzone:329",
+          "label": "Porpoises",
+          "writable": true,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Miami Dolphins/logo/default/d047eb67",
+      "team": "Miami Dolphins",
+      "kind": "logo",
+      "source_entry_hash": "0xd047eb67",
+      "matches": [
+        {
+          "slot_id": "logo:1233",
+          "label": "Logo slot 61",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Minnesota Vikings/endzone/End Zone/7b1a60b0",
+      "team": "Minnesota Vikings",
+      "kind": "endzone",
+      "source_entry_hash": "0x7b1a60b0",
+      "matches": [
+        {
+          "slot_id": "endzone:753",
+          "label": "Gorillas",
+          "writable": true,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Minnesota Vikings/logo/default/9e3316b9",
+      "team": "Minnesota Vikings",
+      "kind": "logo",
+      "source_entry_hash": "0x9e3316b9",
+      "matches": [
+        {
+          "slot_id": "logo:948",
+          "label": "Logo slot 54",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "New England Patriots/endzone/End Zone/fd8e121e",
+      "team": "New England Patriots",
+      "kind": "endzone",
+      "source_entry_hash": "0xfd8e121e",
+      "matches": [
+        {
+          "slot_id": "endzone:1533",
+          "label": "Redcoats",
+          "writable": true,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "New England Patriots/logo/default/18a76417",
+      "team": "New England Patriots",
+      "kind": "logo",
+      "source_entry_hash": "0x18a76417",
+      "matches": [
+        {
+          "slot_id": "logo:154",
+          "label": "Logo slot 64",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "New Orleans Saints/endzone/End Zone/5b7f79b8",
+      "team": "New Orleans Saints",
+      "kind": "endzone",
+      "source_entry_hash": "0x5b7f79b8",
+      "matches": [
+        {
+          "slot_id": "endzone:548",
+          "label": "Crusaders",
+          "writable": true,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "New Orleans Saints/logo/default/be560fb1",
+      "team": "New Orleans Saints",
+      "kind": "logo",
+      "source_entry_hash": "0xbe560fb1",
+      "matches": [
+        {
+          "slot_id": "logo:1136",
+          "label": "Logo slot 25",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "New York Giants/endzone/End Zone/53e4ead5",
+      "team": "New York Giants",
+      "kind": "endzone",
+      "source_entry_hash": "0x53e4ead5",
+      "matches": [
+        {
+          "slot_id": "endzone:500",
+          "label": "N's",
+          "writable": false,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "unsupported or alternate; not selected"
+    },
+    {
+      "pair_id": "New York Giants/logo/default/2add7b07",
+      "team": "New York Giants",
+      "kind": "logo",
+      "source_entry_hash": "0x2add7b07",
+      "matches": [
+        {
+          "slot_id": "logo:262",
+          "label": "Logo slot 105",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "New York Jets/endzone/End Zone/a6644c15",
+      "team": "New York Jets",
+      "kind": "endzone",
+      "source_entry_hash": "0xa6644c15",
+      "matches": [
+        {
+          "slot_id": "endzone:1000",
+          "label": "J's",
+          "writable": false,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "unsupported or alternate; not selected"
+    },
+    {
+      "pair_id": "New York Jets/logo/default/df5dddc7",
+      "team": "New York Jets",
+      "kind": "logo",
+      "source_entry_hash": "0xdf5dddc7",
+      "matches": [
+        {
+          "slot_id": "logo:1339",
+          "label": "Logo slot 101",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Philadelphia Eagles/endzone/End Zone/55d3471c",
+      "team": "Philadelphia Eagles",
+      "kind": "endzone",
+      "source_entry_hash": "0x55d3471c",
+      "matches": [
+        {
+          "slot_id": "endzone:510",
+          "label": "Unidentified endzone 510",
+          "writable": true,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Philadelphia Eagles/logo/default/b0fa3115",
+      "team": "Philadelphia Eagles",
+      "kind": "logo",
+      "source_entry_hash": "0xb0fa3115",
+      "matches": [
+        {
+          "slot_id": "logo:1060",
+          "label": "Logo slot 39",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Phoenix Cardinals/endzone/End Zone/150b8466",
+      "team": "Phoenix Cardinals",
+      "kind": "endzone",
+      "source_entry_hash": "0x150b8466",
+      "matches": [
+        {
+          "slot_id": "endzone:129",
+          "label": "Unidentified endzone 129",
+          "writable": true,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Phoenix Cardinals/logo/default/f022f26f",
+      "team": "Phoenix Cardinals",
+      "kind": "logo",
+      "source_entry_hash": "0xf022f26f",
+      "matches": [
+        {
+          "slot_id": "logo:1453",
+          "label": "Logo slot 10",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Pittsburgh Steelers/endzone/EndZone/1f635fbd",
+      "team": "Pittsburgh Steelers",
+      "kind": "endzone",
+      "source_entry_hash": "0x1f635fbd",
+      "matches": [
+        {
+          "slot_id": "endzone:190",
+          "label": "Unidentified endzone 190",
+          "writable": true,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Pittsburgh Steelers/logo/default/fa4a29b4",
+      "team": "Pittsburgh Steelers",
+      "kind": "logo",
+      "source_entry_hash": "0xfa4a29b4",
+      "matches": [
+        {
+          "slot_id": "logo:1510",
+          "label": "Logo slot 33",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "San Diego Chargers/endzone/End Zone/4faece0e",
+      "team": "San Diego Chargers",
+      "kind": "endzone",
+      "source_entry_hash": "0x4faece0e",
+      "matches": [
+        {
+          "slot_id": "endzone:472",
+          "label": "Unidentified endzone 472",
+          "writable": true,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "San Diego Chargers/logo/default/aa87b807",
+      "team": "San Diego Chargers",
+      "kind": "logo",
+      "source_entry_hash": "0xaa87b807",
+      "matches": [
+        {
+          "slot_id": "logo:1019",
+          "label": "Logo slot 63",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "San Francisco 49ers/endzone/End Zone/9a4b71c6",
+      "team": "San Francisco 49ers",
+      "kind": "endzone",
+      "source_entry_hash": "0x9a4b71c6",
+      "matches": [
+        {
+          "slot_id": "endzone:920",
+          "label": "Unidentified endzone 920",
+          "writable": true,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Seattle Seahawks/endzone/End Zone/fe324ecb",
+      "team": "Seattle Seahawks",
+      "kind": "endzone",
+      "source_entry_hash": "0xfe324ecb",
+      "matches": [
+        {
+          "slot_id": "endzone:1535",
+          "label": "Unidentified endzone 1535",
+          "writable": true,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Seattle Seahawks/logo/default/1b1b38c2",
+      "team": "Seattle Seahawks",
+      "kind": "logo",
+      "source_entry_hash": "0x1b1b38c2",
+      "matches": [
+        {
+          "slot_id": "logo:168",
+          "label": "Logo slot 71",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Tampa Bay Buccaneers/endzone/End Zone/080eb4de",
+      "team": "Tampa Bay Buccaneers",
+      "kind": "endzone",
+      "source_entry_hash": "0x080eb4de",
+      "matches": [
+        {
+          "slot_id": "endzone:48",
+          "label": "Unidentified endzone 48",
+          "writable": true,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Tampa Bay Buccaneers/logo/default/ed27c2d7",
+      "team": "Tampa Bay Buccaneers",
+      "kind": "logo",
+      "source_entry_hash": "0xed27c2d7",
+      "matches": [
+        {
+          "slot_id": "logo:1433",
+          "label": "Logo slot 60",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Washington Redskins/endzone/Endzone/0bb2e80b",
+      "team": "Washington Redskins",
+      "kind": "endzone",
+      "source_entry_hash": "0x0bb2e80b",
+      "matches": [
+        {
+          "slot_id": "endzone:70",
+          "label": "Unidentified endzone 70",
+          "writable": true,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Washington Redskins/logo/default/ee9b9e02",
+      "team": "Washington Redskins",
+      "kind": "logo",
+      "source_entry_hash": "0xee9b9e02",
+      "matches": [
+        {
+          "slot_id": "logo:1442",
+          "label": "Indians",
+          "writable": true,
+          "inner_indices": [
+            1,
+            0
+          ]
+        }
+      ],
+      "receipt_plan": "selected"
+    },
+    {
+      "pair_id": "Dallas Cowboys/endzone/EndZone/Orginal/c352677b",
+      "team": "Dallas Cowboys",
+      "kind": "endzone",
+      "source_entry_hash": "0xc352677b",
+      "matches": [
+        {
+          "slot_id": "endzone:1161",
+          "label": "Unidentified endzone 1161",
+          "writable": true,
+          "inner_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "receipt_plan": "unsupported or alternate; not selected"
+    }
+  ],
+  "plan_selection_rule": "Hash-matched writable pairs; prefer Dallas EndZone over its Orginal archive alternative. This is a reviewable staging plan, not a build."
+}

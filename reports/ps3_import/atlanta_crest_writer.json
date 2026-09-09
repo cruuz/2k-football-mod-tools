@@ -1,0 +1,307 @@
+{
+  "status": "rebuilt_and_reparsed",
+  "source_pair": {
+    "pair_id": "Atlanta Falcons/logo/default/7ba6e2b0",
+    "team": "Atlanta Falcons",
+    "original_folder": "Atlanta Falcons",
+    "kind": "logo",
+    "variant": "default",
+    "entry_hash": "0x7ba6e2b0",
+    "layers": [
+      {
+        "layer": "logo_l0",
+        "source_path": "NFL Logos/Atlanta Falcons/selected_subfile_753_1_1784821180320/001_logo_l0.dds",
+        "width": 512,
+        "height": 512,
+        "mode": "RGBA",
+        "decoded_pixels_sha256": "bdef837aedf2a2d546ba4dfb2d472899cea740ad92d164dea3f80e3d04ddf1a4",
+        "source_manifest_row": {
+          "id": "subfile:753:1",
+          "kind": "subfile",
+          "type": "TXTR",
+          "entryIndex": 753,
+          "entryHash": "0x7ba6e2b0",
+          "entryName": "logo_l1",
+          "name": "logo_l0",
+          "itemIndex": 1,
+          "subfileIndex": 1,
+          "subfileName": "logo_l0",
+          "byteLength": 699312,
+          "storedBytes": 699312,
+          "size": "682.9 KB",
+          "offset": 164493312,
+          "offsetHex": "0x9cdf800",
+          "relOffset": 0,
+          "volume": "0A",
+          "details": "2 blocks",
+          "blocks": "176 B / 682.8 KB",
+          "tags": [
+            "TXTR"
+          ],
+          "names": [
+            "logo_l1",
+            "logo_l0"
+          ],
+          "description": ""
+        }
+      },
+      {
+        "layer": "logo_l1",
+        "source_path": "NFL Logos/Atlanta Falcons/selected_subfile_753_0_1784821182614/000_logo_l1.dds",
+        "width": 512,
+        "height": 512,
+        "mode": "RGBA",
+        "decoded_pixels_sha256": "01c6157be3d316238ad87b9ed57ac2005ab1c35095e37d5b23efbc0cf77c888b",
+        "source_manifest_row": {
+          "id": "subfile:753:0",
+          "kind": "subfile",
+          "type": "TXTR",
+          "entryIndex": 753,
+          "entryHash": "0x7ba6e2b0",
+          "entryName": "logo_l1",
+          "name": "logo_l1",
+          "itemIndex": 0,
+          "subfileIndex": 0,
+          "subfileName": "logo_l1",
+          "byteLength": 699226,
+          "storedBytes": 699226,
+          "size": "682.8 KB",
+          "offset": 164493488,
+          "offsetHex": "0x9cdf8b0",
+          "relOffset": 176,
+          "volume": "0A",
+          "details": "2 blocks",
+          "blocks": "176 B / 682.7 KB",
+          "tags": [
+            "TXTR"
+          ],
+          "names": [
+            "logo_l1",
+            "logo_l1"
+          ],
+          "description": ""
+        }
+      }
+    ]
+  },
+  "destination": "logo:756",
+  "output_allocation": 67584,
+  "output_sha256": "0e1466847119864a1a192767c81bf9aa0b48491257bc1aef1f3eedd99fb6813d",
+  "reparsed_layers": [
+    "logo_l1",
+    "logo_l0"
+  ],
+  "writer_receipt": {
+    "schema": "apf_logo_patch/v1",
+    "mode": "patched",
+    "source": {
+      "archive_index": "/media/noah/Storage/for codex 1.0/extracted/All-Pro Football 2K8 (USA)/0A",
+      "physical_volume": "0A",
+      "outer_entry_index": 756,
+      "outer_name": "uniform_logo_29.iff",
+      "layers": [
+        {
+          "inner_file_index": 1,
+          "inner_name": "logo_l0"
+        },
+        {
+          "inner_file_index": 0,
+          "inner_name": "logo_l1"
+        }
+      ],
+      "entry_sha256": "ff81b2769fe1606d54cbd314cd7c5bbccf7a7050f7fb6bb05d80c522d7134f9a",
+      "base_sha256": {
+        "logo_l0": "f6ac637b4d74127c1ea2e830b983e6b70596863cd1e4576f3dceb266b692685c",
+        "logo_l1": "c7617706a381ecbb640aa5fcf2cf0c7ba397da8bbe405c23c69a76cb503dd627"
+      },
+      "png_rgba_sha256": {
+        "logo_l0": "bdef837aedf2a2d546ba4dfb2d472899cea740ad92d164dea3f80e3d04ddf1a4",
+        "logo_l1": "01c6157be3d316238ad87b9ed57ac2005ab1c35095e37d5b23efbc0cf77c888b"
+      }
+    },
+    "target": {
+      "outer_name": "uniform_logo_29.iff",
+      "layers": [
+        "logo_l0",
+        "logo_l1"
+      ],
+      "shared_vram_block": true,
+      "txtr": {
+        "vc_file_id": "0xe8fe75e2",
+        "vc_width": 512,
+        "vc_height": 512,
+        "vc_base_data_length": 524288,
+        "vc_mip_data_length": 180224,
+        "fetch_offset": 148,
+        "fetch_dwords": [
+          "0x84000002",
+          "0x0000004f",
+          "0x003fe1ff",
+          "0x00a80c14",
+          "0x00000243",
+          "0x00080a00"
+        ],
+        "fetch_type": 2,
+        "pitch_pixels": 512,
+        "tiled": true,
+        "format": 15,
+        "format_name": "4_4_4_4",
+        "endianness": 1,
+        "endianness_name": "8in16",
+        "request_size": 0,
+        "stacked": false,
+        "base_address_pages": 0,
+        "width": 512,
+        "height": 512,
+        "stack_depth_minus_one": 0,
+        "swizzle": 1546,
+        "swizzle_components": [
+          2,
+          1,
+          0,
+          3
+        ],
+        "mip_min_level": 0,
+        "mip_max_level": 9,
+        "dimension": 1,
+        "dimension_name": "2D_or_stacked",
+        "packed_mips": true,
+        "mip_address_pages": 128,
+        "warnings": []
+      }
+    },
+    "layers": {
+      "logo_l0": {
+        "file_index": 1,
+        "vram_offset_in_block1": 0,
+        "base_sha256_before": "f6ac637b4d74127c1ea2e830b983e6b70596863cd1e4576f3dceb266b692685c",
+        "mip_tail_sha256": "91dfa3884835ffe0fbac07d71c4bb2c5a723509cc53225e22db09e3861dc6fff",
+        "mip_tail_preserved": false,
+        "mip_tail_regenerated": true,
+        "mip_tail_sha256_after": "72a86e115bf7a796357fe5aa623464d119dc1a7d3a32c020968d319073446fca",
+        "changed": true,
+        "base_data": {
+          "length": 524288,
+          "sha256_before": "f6ac637b4d74127c1ea2e830b983e6b70596863cd1e4576f3dceb266b692685c",
+          "sha256_after": "7997b2a72aa2cbf9638d3a15d5cdc3a2d9ce6cf105c85e26060ebec587c5588a",
+          "decoded_rgba_sha256_after": "e481ca6b0b9f2e540c4c67843e41435ac0f7f87a30749e1f2e22dd241740240a",
+          "decode_back_metrics": {
+            "compared_components": 1048576,
+            "different_components": 29058,
+            "maximum_absolute_error": 8,
+            "mean_absolute_error": 0.11714935302734375,
+            "rmse": 0.8039642342730393,
+            "psnr_db": 50.026069031803566
+          }
+        }
+      },
+      "logo_l1": {
+        "file_index": 0,
+        "vram_offset_in_block1": 704512,
+        "base_sha256_before": "c7617706a381ecbb640aa5fcf2cf0c7ba397da8bbe405c23c69a76cb503dd627",
+        "mip_tail_sha256": "e4f1a3613ee94f936308cb60bec0cf4d48227940c5145ae1dd045fe38b43c11f",
+        "mip_tail_preserved": false,
+        "mip_tail_regenerated": true,
+        "mip_tail_sha256_after": "620a3b04116812c8cddcf157f6e6957d8d9e0c368d33b65ec081da4dfb91e10a",
+        "changed": true,
+        "base_data": {
+          "length": 524288,
+          "sha256_before": "c7617706a381ecbb640aa5fcf2cf0c7ba397da8bbe405c23c69a76cb503dd627",
+          "sha256_after": "d0d23af07b6120ef236f494c64bc5d369b003aa2fdc427d730343be3d4b07221",
+          "decoded_rgba_sha256_after": "01c6157be3d316238ad87b9ed57ac2005ab1c35095e37d5b23efbc0cf77c888b",
+          "decode_back_metrics": {
+            "compared_components": 1048576,
+            "different_components": 0,
+            "maximum_absolute_error": 0,
+            "mean_absolute_error": 0.0,
+            "rmse": 0.0,
+            "psnr_db": null
+          }
+        }
+      }
+    },
+    "iff": {
+      "allocation_size": 67584,
+      "file_length_before": 65742,
+      "file_length_after": 58560,
+      "allocation_slack_after": 8764,
+      "h7a_shift": 8,
+      "footer_sha256_before": "4d55c5fb35afb5a0aa535cad2bbc4551a26c95639f22a6793303ca48b25e95ce",
+      "footer_sha256_after": "4d55c5fb35afb5a0aa535cad2bbc4551a26c95639f22a6793303ca48b25e95ce",
+      "footer_bit_exact": true,
+      "blocks": [
+        {
+          "index": 0,
+          "start_before": 144,
+          "start_after": 144,
+          "stored_length_before": 119,
+          "stored_length_after": 119,
+          "stored_sha256_before": "97bfdc3e17fa32af6775cbbeb96b368825b0f25af30912e3c016b0c83d962400",
+          "stored_sha256_after": "97bfdc3e17fa32af6775cbbeb96b368825b0f25af30912e3c016b0c83d962400",
+          "decoded_sha256_before": "4e8876bbf24091fe8962245c7d18f36746d27b850a74d3abcce0c1b380cd17bb",
+          "decoded_sha256_after": "4e8876bbf24091fe8962245c7d18f36746d27b850a74d3abcce0c1b380cd17bb"
+        },
+        {
+          "index": 1,
+          "start_before": 263,
+          "start_after": 263,
+          "stored_length_before": 65479,
+          "stored_length_after": 58297,
+          "stored_sha256_before": "426165ce1f349ed06e7b3b070ebaa1525e204e6ba420fc4887343fcf6be18df9",
+          "stored_sha256_after": "d111cde3c598b54819936df2f48d5c6649a34b529470b4ce9788f6de94007f87",
+          "decoded_sha256_before": "d2ad991ebd31b909aaa5ee24a03d043c48a960bd31c9f40ceaab3b573c7b1719",
+          "decoded_sha256_after": "970de2f775df0cfea3598e5f30b6f65118dd0afece046f97a7b7560dc4523937"
+        }
+      ]
+    },
+    "binary_patch_manifest": {
+      "physical_volume": "0A",
+      "physical_offset": 183799808,
+      "replacement_length": 67584,
+      "original_sha256": "ff81b2769fe1606d54cbd314cd7c5bbccf7a7050f7fb6bb05d80c522d7134f9a",
+      "replacement_sha256": "0e1466847119864a1a192767c81bf9aa0b48491257bc1aef1f3eedd99fb6813d",
+      "changed_byte_count": 63450,
+      "first_changed_offset": 9,
+      "last_changed_offset": 65998,
+      "contains_replacement_bytes": false
+    },
+    "validation": {
+      "xenos_transport_bit_exact": true,
+      "h7a_decode_encode_decode_exact": true,
+      "rebuilt_iff_reparsed": true,
+      "footer_bit_exact": true,
+      "mip_tails_preserved": false,
+      "edited_mip_tails_regenerated": true,
+      "dram_headers_preserved": true,
+      "changed_inner_parts": [
+        {
+          "file_index": 1,
+          "part_index": 1,
+          "block_index": 1
+        },
+        {
+          "file_index": 0,
+          "part_index": 1,
+          "block_index": 1
+        }
+      ],
+      "preserved_inner_parts": [],
+      "unrelated_inner_parts_preserved": true,
+      "fixed_outer_allocation": true,
+      "source_opened_read_only": true
+    },
+    "backend": {
+      "png": "Pillow 10.2.0",
+      "encoder": "exact 4_4_4_4 nibble pack (uncompressed, lossless for retail; PNG->4bit quantized)",
+      "encoder_caveat": "The 4_4_4_4 encoder is lossless for retail data (nibbles are exact multiples of 17); an arbitrary PNG is quantized to 4 bits per channel, so inspect the reported decode-back error before broad release.",
+      "h7a": "project-native greedy H7A encoder"
+    },
+    "portme": [
+      "validate this changed copied volume in Xenia and on user-owned hardware before describing any in-game/runtime effect as proved",
+      "resolve which runtime surface (frontend team-select grid, in-game scorebug, helmet crest) samples this package texture vs the uniform_logocache aggregate; the cache is separately writable via tools/apf_logocache_patch.py and the package-vs-cache-vs-both Xenia differential closes which source each surface reads",
+      "The 4_4_4_4 encoder is lossless for retail data (nibbles are exact multiples of 17); an arbitrary PNG is quantized to 4 bits per channel, so inspect the reported decode-back error before broad release."
+    ]
+  },
+  "runtime": "UNWITNESSED",
+  "retail_entry_unchanged": true
+}
