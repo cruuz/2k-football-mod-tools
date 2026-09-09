@@ -1,3 +1,44 @@
+# beta-63.1 raw-dump overlap hotfix (2026-09-09, branch local/hf63-rawdump-overlap)
+
+Bug: Ju3tin, #2k5-general 2026-09-09 15:00 — "ValueError: overlapping disc file or metadata: root
+directory" building from a RAW DUMP with the extra features ticked, then "please insert disk" in xemu
+from the preset build (15:36).  Both are fixed outside every protected file (commits d067a795 and the
+identity-note commit that follows it; see ASTRA_REPORT.md).  Two protected-file follow-ups remain for
+Claude; nothing below is needed for the fix to work.
+
+## `data/nfl2k5_cave_reservations.json` — regenerate (manifest 31)
+
+The build path never checks `source_sha256` (only `tools/nfl2k5_cave_oracle.py:98` passes
+`source_root=ROOT`), so builds are unaffected, but the tool refuses with "stale reservation source:
+...; regenerate manifest" until the manifest is regenerated.  The two entries that changed:
+
+```
+"mod_editor/core/nfl2k5_music_archive.py":  47479bf3c41fb1765b72bdba0384368ba68efc418e8648bfc74263192286baa8
+                                         -> a86456b894128d773c61c972c3eb535614f476941c5781737f6ebaef8d11da8a
+"mod_editor/core/nfl2k5_disc_identity.py":  bb9701f911996e4fd208f2eabbdce0c00b1519cc036055518830c19f06e223a4
+                                         -> 000ec3164d1da4a9e0fb4a4bd48deb55e4241cff90d7ee4762dd1caa446eff3e
+```
+
+`mod_editor/core/providers.py` was repinned with `packaging/repin.py --apply` in each commit.
+`reports/hires_pack_build.v1.json` (a historical receipt) still lists the old archive hash; no test reads it.
+
+## Optional: the Build & Share completion dialog for a raw-dump source (`mod_editor/core/mod_build.py`, protected)
+
+The identity line now carries the xemu sentence, and the Build page shows it in the source header before
+the user presses Build (`build_panel_qt.py:1031` reads `state["disc_identity_line"]`), so the refusal
+and the warning both reach the user without touching the GUI.  If Claude wants the same sentence on the
+completion dialog after a raw-dump build, the smallest change is in `build()` (`mod_build.py`, after
+`receipt["outcome"] = measure(source, directory / target.name)`):
+
+```python
+identity = tt.disc_identity.identify(source)          # or the cached inspect() identity
+if identity.partition_base:
+    receipt["outcome"]["message"] += tt.disc_identity._xemu_note(identity.partition_base)
+```
+
+(`_xemu_note` is the public-enough helper the identity line already uses; it returns "" for an xiso.)
+Not done here: the message the bug needs is already on the source line, and `mod_build.py` is protected.
+
 # beta-63.1 digit texture budget hotfix (2026-09-09)
 
 Bug: Coach Edwards, #2k5-bugs 2026-09-09 09:51 / 10:16 — "live_number_nameplate
