@@ -117,6 +117,49 @@ names the player record the codec could not read (core change).
 `update_check.py`, `packaging/release-allowlist.txt`, `mod_build.py`, presets and cave reservations are
 untouched; no new files ship (the regression test is `tests/mod_editor/test_nfl2k5_franchise_schedule_college.py`).
 
+# beta 63.1 Broadcast camera: the mount clears the near stands (2026-09-09)
+
+Hotfix for maumau78's report on beta 63 ("on right side will clip over crowd and stadium structure"). The fix
+is numbers only, inside `mod_editor/core/nfl2k5_camera.py` (`BROADCAST_VALUES`), with the proof tool, the
+projection harness test, the regenerated proof JSON/PNG and the provider pin. No protected file changed. What
+Claude must do, and what is deliberately left as a described change, follows.
+
+## Required now: manifest regeneration
+
+`mod_editor/core/nfl2k5_camera.py` is a pinned writer source and its bytes changed (three descriptor words:
+the lens and the mount's x and y). `packaging/repin.py --apply` was run (`mod_editor/core/providers.py`).
+`data/nfl2k5_cave_reservations.json` (manifest 29) still carries the beta-63 source fingerprint of the camera
+module, so two cases of `tests/mod_editor/test_nfl2k5_cave_oracle.py` error with "stale reservation source:
+mod_editor/core/nfl2k5_camera.py; regenerate manifest" (27 of 29 pass) until Claude regenerates the manifest the
+usual way. The declared camera spans, sizes and allocation requests are unchanged (the descriptor is the same 80
+owned RO bytes at the same address; 160 RX wrappers unchanged); both XBE gates were run against manifest 29 as
+it is (ASTRA_REPORT.md has the outputs).
+
+## Not in this hotfix: the complete fix is one owned setup callback (a later beta)
+
+A constant-offset type-2 mount follows the ball across the field, so no set of numbers keeps the eye out of
+every stadium's stands for balls near the near sideline: the follow itself is the root cause (native solver
+`FUN_0005f760`, eye = clamped look-at + smoothed offset). The solver already clamps the eye each frame to a
+per-camera box at camera+0x3C0 (min x, y, z) / +0x3D0 (max x, y, z); `FUN_00060090` resets that box to
++/-100000 (y >= 10) on every descriptor copy and then runs the descriptor's setup callback (+0x40), which is
+exactly where the retail sideline template's `A40C0` caps the look-at height (`mov dword [ecx+0x3B4], 100.0`).
+Nothing in retail writes the eye box, so the mechanism is free for a later beta:
+
+1. Grow the camera owner's code request by 16 bytes (`CODE_SIZE` 160 -> 176) and assemble a fifth wrapper at
+   `va + 160`: `mov dword [ecx+0x3B4], 100.0` (keep the retail cap), `mov dword [ecx+0x3D0], 5600.0`
+   (eye max x: the mount never crosses the second level's front, 5821 cm in the Superdome, 5972 in Arizona,
+   with a 2 m margin), optionally `mov dword [ecx+0x3C8], -5500.0` and `[ecx+0x3D8], 5500.0` (eye min/max z:
+   never past the end line into the corner sections), `ret`.
+2. Point the owned descriptor's +0x40 at that wrapper instead of `A40C0` (`broadcast_descriptor()` currently
+   keeps the template's callback); the differing-dword pin in `test_nfl2k5_camera_broadcast.py` becomes
+   `[0, 16, 24, 32, 48, 52, 64]`.
+3. Budget fixture and both gates for the grown request; manifest regeneration; the pairwise matrix.
+
+With the eye clamped, the look-at still follows the ball, so the shot pans instead of dollying into the seats
+when a play goes to the near sideline, as a television camera does. The alternative structural change, the
+retail director's own type-1 record (fixed world eye, lens = distance x K / framing word, i.e. auto-zoom), is a
+different look and is not proposed for a hotfix.
+
 # r65 Player abilities rules v2 (2026-09-08)
 
 This section supersedes earlier abilities v1 wiring only. EXPERIMENTAL /
