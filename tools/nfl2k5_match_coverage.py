@@ -25,7 +25,7 @@ from nfl2k5_playbook_position_recode import OuterImage, BOOK_ENTRIES
 
 
 def write_json(path, value):
-    path.write_text(json.dumps(value, indent=2, ensure_ascii=True) + '\n', encoding='utf-8')
+    path.write_text(json.dumps(value, indent=2, ensure_ascii=True) + '\n', encoding='utf-8', newline='\n')
 
 
 def image_name(team, play, formation):
@@ -154,7 +154,7 @@ def export_census(image, output, *, render=False):
                         f['image'] = render_play(book, raw[32:], play['play'], f['index'],
                             output / image_name(row['book'], play['play'], f['index']), team=row['book'])
     write_json(output / 'census.json', result)
-    (output / 'census.md').write_text(census_markdown(result), encoding='utf-8')
+    (output / 'census.md').write_text(census_markdown(result), encoding='utf-8', newline='\n')
     with (output / 'census.csv').open('w', encoding='utf-8', newline='') as stream:
         writer = csv.writer(stream)
         writer.writerow(('book', 'formation_index', 'formation', 'play_index', 'play', 'man_slot',
