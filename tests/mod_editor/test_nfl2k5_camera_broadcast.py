@@ -35,11 +35,11 @@ class IntegrityTests(unittest.TestCase):
                     self.assertEqual(before[row][state], after[row][state])
         self.assertEqual(c._read(self.patched, c.BROADCAST_TEMPLATE_VA, 80), c.BROADCAST_RETAIL_DESCRIPTOR)
         descriptor = c.broadcast_descriptor()
-        # v5.2: type (+0), the look-at's near-side shift (+16) and 2.5 m lead (+24) and the lens (+32) differ from the
-        # retail template; the eye is the template's own press-box mount (+48..+56), and flag, lag pointer,
-        # callbacks and padding stay exact.
+        # v5.3: type (+0), the look-at's near-side shift (+16) and 2.5 m lead (+24), the lens (+32) and the mount's
+        # x and y (+48, +52: the loge front, 45 m out and 14 m up, instead of the template's press box) differ from
+        # the retail template; the mount's z (+56), flag, lag pointer, callbacks and padding stay exact.
         self.assertEqual([i for i in range(0, 80, 4)
-                          if descriptor[i:i+4] != c.BROADCAST_RETAIL_DESCRIPTOR[i:i+4]], [0, 16, 24, 32])
+                          if descriptor[i:i+4] != c.BROADCAST_RETAIL_DESCRIPTOR[i:i+4]], [0, 16, 24, 32, 48, 52])
         self.assertEqual(c.decode_descriptor(descriptor)['type'], 2)
         self.assertEqual(c.decode_descriptor(descriptor)['flag'], 0)
         self.assertEqual(self.receipt['version'], 5)
@@ -244,9 +244,45 @@ class NativeTests(unittest.TestCase):
                     self.assertEqual(m.get(m.reg('ESP') + 8), m.get(body + 0x18) + 0x30)
                     self.assertEqual(m.get(0xB665F0), choice)
 
+    @classmethod
+    def evidence(cls):
+        # One native projection run (156 cases) shared by the framing and the stands proofs.
+        if not hasattr(cls, '_evidence'):
+            from tools.nfl2k5_camera_broadcast_proof import prove
+            cls._evidence = prove(cls.retail)
+        return cls._evidence
+
+    def test_mount_stays_clear_of_the_near_stands_for_every_sampled_ball_position(self):
+        # beta 63.1 (maumau78, 2026-09-09: "on right side will clip over crowd and stadium structure"). v5.2 put the
+        # eye 5650 cm toward the camera side of the ball and 1650 cm up, the second level's own front-row height, so
+        # the native follow carried the mount into the loge/club seats as soon as the ball passed the near hash, and
+        # into the loge corner trim in the end zones. The stands model and the sampled ball grid live in the proof
+        # tool; the eye here is the settled native one from the solver, per direction, state, zoom and aspect.
+        from tools.nfl2k5_camera_broadcast_proof import (BALL_GRID_X, CLEAN_BALL_X, STANDS, V52_EYE_FOCUS_RELATIVE,
+                                                         stands_violations)
+        evidence = self.evidence()
+        self.assertEqual(len(evidence['rows']), 156)
+        self.assertEqual(max(BALL_GRID_X), CLEAN_BALL_X)
+        self.assertGreaterEqual(CLEAN_BALL_X, 900.0)   # past the near hash (282) and up to the near numbers (1097)
+        for row in evidence['rows']:
+            self.assertEqual(row['stands']['violations'], [], (row['aspect'], row['direction'], row['state'], row['pass_zoom']))
+            eye = row['metrics']['eye_focus_relative_cm']
+            # the mount stays in front of the second level for the whole clean band and below its corner trim
+            self.assertLess(eye[0] + CLEAN_BALL_X, STANDS['second_level']['front_x'])
+            self.assertLess(eye[1], STANDS['corner']['y_from'])
+        self.assertEqual(evidence['stands']['rows_with_violations'], 0)
+        # The reported failure, reproduced on the same grid with v5.2's settled eye (red before this fix): the second
+        # level from the near hash on, the corner trim for balls in the end zone, in both play directions.
+        for direction in (1, -1):
+            old = stands_violations(V52_EYE_FOCUS_RELATIVE[:2] + (V52_EYE_FOCUS_RELATIVE[2] * direction,), direction)
+            kinds = {v['kind'] for v in old}
+            self.assertEqual(kinds, {'second level', 'corner trim'})
+            self.assertTrue(any(v['kind'] == 'second level' and v['ball'][0] <= 300 for v in old))
+            self.assertTrue(any(v['kind'] == 'corner trim' and abs(v['ball'][1]) >= 4572 for v in old))
+            self.assertEqual(evidence['stands']['v52_violations'][str(direction)], len(old))
+
     def test_native_projection_all_gameplay_states_aspects_and_pass_options(self):
-        from tools.nfl2k5_camera_broadcast_proof import prove
-        evidence = prove(self.retail)
+        evidence = self.evidence()
         self.assertEqual(len(evidence['rows']), 156)
         references = {}
         for row in evidence['rows']:

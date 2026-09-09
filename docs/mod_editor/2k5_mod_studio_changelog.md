@@ -1,5 +1,27 @@
 # 2K5 Mod Studio — Product Changelog
 
+## Beta 63.1 hotfix (2026-09-09)
+
+- **Broadcast camera v5.3: the mount clears the near stands (existing `camera` option; no new switch, no preset
+  change).** maumau78 on beta 63: "Broadcast CAM on the last release is fire!" then "only issue is that on right side
+  will clip over crowd and stadium structure". Root cause: v5.2 used the retail TV template's press-box eye, 52.5 m
+  toward the near sideline and 16.5 m up, and a type-2 mount follows the ball across the field as well as along it.
+  Measured on the retail stadium scenes (all 53 models through the Stadium Studio's own glTF derivation), 16.5 m is
+  the front-row height of the second level, whose front sits about 58 m from the field's centre line (Superdome
+  58.2 m, Arizona 59.7 m): with the ball past the near hash the eye was already among the second-level seats and
+  crowd, and in the end zones inside the loge corner trim. The mount moves to the front of the loge, 45 m out and
+  14 m up, with the lens widened from 80 to 68: the same pitch (17.3 degrees, was 17.4) and the same framing at the
+  ball (every sample point within 10 px of v5.2 through the native solver), 15% closer in perspective. Through the
+  solver the eye now stays in front of the second level and below the corner trim for every ball from the far
+  sideline to 9 m past the centre line toward the camera (the near hash is 2.8 m, the near numbers begin at 11 m),
+  the whole field long including both end zones: 300 sampled ball positions per case, 156 cases, 0 violations (v5.2:
+  95 per direction on the same grid). Over the 53 stadium models the frames with structure over the field between the
+  numbers fall from 15% to 5% (between the hashes 8% to 2%); plays wider than that still carry a constant-offset
+  mount into some stadiums' seats, and the complete fix (the native eye clamp box set by one owned setup callback)
+  is described in `WIRING.md` for a later beta. Descriptor differs from the template in type, look-at, lens and the
+  mount's x and y; the 80 owned RO bytes, 160 RX wrappers, hooks and requests are unchanged. `ASTRA_REPORT.md`
+  (beta 63.1), proof JSON/PNG regenerated. Unplayed.
+
 ## v1.0 RC87, the last 2K5 beta before APF 2K8: read option v5, Franchise Edit Player, CPU fourth downs, weekly preparation, separate playbooks, match coverage, abilities rules v2 with move locks, close pursuit recovery, Broadcast camera, deep-zone tiers, 7-on-7 v2, MyCareer draft and the fresh-rip fix (2026-09-08)
 
 Beta 63 was built by GPT-6 Astra under Claude's review in one wave of fourteen bounded sessions plus the four
