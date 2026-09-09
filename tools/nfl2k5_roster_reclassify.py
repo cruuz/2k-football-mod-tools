@@ -39,7 +39,10 @@ Retail check: the sha256 over the record areas (root, team records, both player 
 pairs) of all 76 ROST resources must equal the retail value before anything is written; the EDGE
 rename only touches name strings, which are outside that area, so a disc with it reads retail.
 ``inspect`` prints every move per team; ``apply`` writes only the position byte and the rank/side
-word of moved or re-ranked players inside the disc COPY and verifies the read-back.
+word of moved or re-ranked players inside the disc COPY and verifies the read-back.  The reader also
+accepts the version-18 main roster the 16-reserves / extra-teams arena growth leaves behind (same
+records, arena padded to 0x92000), because Build's final Outside Linebackers scan runs after that
+growth; such a roster is never retail for ``status`` / ``apply``, only readable.
 
 Usage::
 
@@ -82,6 +85,14 @@ TEAM_SCHEME_WORD = 0x150            # 0 = 4-3, 1 = 3-4, 2 = dual (FUN_000c40f0's
 SCHEME_BY_WORD = {0: "4-3", 1: "3-4", 2: "4-3"}
 MAIN_ROST_ENTRY = 5
 HISTORIC_ROST_ENTRIES = range(113, 188)
+# ROST preamble versions this reader accepts.  17 is the retail disc resource.  18 is the main roster
+# after the 16-reserves / extra-created-teams arena growth (``mod_editor/core/nfl2k5_roster_arena.py``:
+# ``DISC_VERSION``), which keeps every record where it was and pads the arena after the root to
+# exactly ``GROWN_ARENA_SIZE`` (``ARENA_SIZE`` there).  The build runs the Outside Linebackers scan
+# after that growth, so the scan has to read the grown shape; nothing else about it changes.
+ROST_VERSION_RETAIL = 17
+ROST_VERSION_GROWN = 18
+GROWN_ARENA_SIZE = 0x92000
 PURE_THREE_FOUR_BOOKS = ("BAL", "HOU", "NE", "PIT", "SD")
 DUAL_BOOKS = ("DAL", "MIN", "NYJ", "OAK", "GEN", "WCO", "reference")
 
@@ -163,9 +174,13 @@ def parse_resource(entry_index: int, virtual_offset: int, raw: bytes) -> Resourc
     _require(magic == b"ROST" and comp == 0 and video_bytes == 0 and sys_bytes == stored and r0 == 0 and r1 == 0
              and len(raw) == RESOURCE_HEADER_SIZE + stored, f"outer {entry_index}: not an uncompressed ROST resource")
     body = raw[RESOURCE_HEADER_SIZE:]
-    _require(body[0x0C:0x10] == b"ROST" and nr.u32(body, 0x10) == 17, f"outer {entry_index}: ROST preamble")
+    _require(body[0x0C:0x10] == b"ROST" and nr.u32(body, 0x10) in (ROST_VERSION_RETAIL, ROST_VERSION_GROWN),
+             f"outer {entry_index}: ROST preamble")
     root = nr.relative_pointer(body, 0x14, "root")
     _require(root == 0x40, f"outer {entry_index}: root at 0x{root:x}")
+    # a grown main roster is only the arena writer's exact shape; any other version-18 file is foreign
+    _require(nr.u32(body, 0x10) != ROST_VERSION_GROWN or len(body) - root == GROWN_ARENA_SIZE,
+             f"outer {entry_index}: ROST preamble")
     label = nr.utf16z(body, 0x20, "label") or ""
     tables = nr.parse_tables(body, root, entry_index)
     players: dict[int, Player] = {}
