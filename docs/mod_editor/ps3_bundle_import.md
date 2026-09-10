@@ -3,8 +3,8 @@
 The importer reads APFe exports and prepares the Xbox 360 studio's existing
 Team Logo and Field Art edits. It transfers decoded pixels, never PS3 archive
 offsets, GTF containers, or PS3 compression. The core API and receipt CLI are
-available. The page buttons require the integration described in `WIRING.md`;
-they have deliberately not been added to the protected GUI in this branch.
+available. This beta-64 writer extension needs the Field Art label/preview
+handoff in `WIRING.md` before the protected GUI is integrated.
 
 ## Export and arrange the files
 
@@ -50,7 +50,7 @@ desired edits in the DDS files.
 | Imported family | Required size | Destination and behavior |
 | --- | --- | --- |
 | `logo_l0` + `logo_l1` | 512 × 512, RGBA | A catalog crest slot, with the existing linked logo-cache build. Both layers and their mip levels are rebuilt. |
-| `endzone_l0` + `endzone_l1` | 2048 × 512, RGBA | A pair owned by the existing Field Art writer. Unsupported format-59 slots remain unavailable. The current writer preserves old mip tails. |
+| `endzone_l0` + `endzone_l1` | 2048 × 512, RGBA | A retail-pinned Field Art pair: DXT1 (18) or grayscale DXT5A (59). Changed endzones regenerate all eight declared mip levels; exact no-ops retain the original entry. |
 
 The layer **name** determines its role. `000_logo_l1` is the detail layer even
 though its numeric index is zero. Crests contain six region masks across the
@@ -122,11 +122,75 @@ side-decal mask pairs.
 
 Staging is not allocation-fit proof. Use the normal complete-project Build so
 the crest package and linked logo cache are both written and independently
-verified. The existing no-overlap H7A encoders are reused. Some edits can fail
-their fixed allocation; that failure must remain a refusal. Field Art's stale
-mip limitation remains visible in every plan and the dialog. No new writer
-for helmets, uniforms, numbers, banners, or unsupported endzones is introduced.
-The imported art's in-game appearance is **UNWITNESSED**.
+verified. Endzones first try the requested pixels with regenerated mips and
+safe greedy H7A, then the reviewed optimal H7A helper if the entry overflows.
+The optimal helper is available only on supported Linux x86_64 installations;
+Windows/macOS continue with safe greedy and the same quality steps.
+
+If the entry still does not fit, the endzone writer snaps each RGB channel to
+0 or 255 (threshold 128), **preserving alpha**, and tries compression again.
+It then tries 2× and 4× nearest downsampling followed by nearest upscaling to
+the unchanged 2048×512 descriptor. Those steps reduce effective top-level
+detail to 1024×256 or 512×128. All eight mip levels are regenerated from the
+effective image with nearest sampling, which retains region values. Mip
+allocation, inactive padding, descriptors, sibling parts and the IFF footer
+are preserved. Any remaining overflow refuses output and names the byte overage.
+
+The build's `writer_receipt.quality` lists every attempt, the selected palette
+and resolution reduction, and allocation sizes. `targets` reports requested
+versus effective/decoded pixel errors and all mip hashes/errors. The reparse
+gate independently checks these against the actual rebuilt resource. Every
+emitted H7A match is checked for `length <= distance`; decoder round-trip
+alone is insufficient for console safety. Other Field Art families retain
+their existing base-only limitation. The imported art's in-game appearance
+is **UNWITNESSED**.
+
+## Beta 64 endzone coverage and format proof
+
+The supplied collection still has **55 valid pairs**. There are now **117
+writer-supported complete endzone destinations**, up from 78. The 39 newly
+supported format-59 TXTRs are all `endzone_l1`; they include the destinations
+for Chicago, Cleveland, Green Bay, Houston, Indianapolis, Los Angeles Raiders,
+New York Giants and New York Jets. The prepared plan grows from **46 to 54
+pairs (108 textures)**: 27 crests and 27 endzones. Dallas's `EndZone/Orginal`
+remains an alternative to `EndZone` in the same slot, so selecting both would
+be a destination conflict. Preparation does not assert that all 54 pairs fit
+their independent build allocations; existing crest allocation limits remain.
+
+Format 59 is Xenos **DXT5A**, the scalar/alpha half of BC3: two 8-bit endpoints
+and sixteen 3-bit indices in an 8-byte block. These endzone descriptors use
+8-in-16 byte order and fetch swizzle `[0,0,0,5]`, displaying the scalar as
+`(R,R,R,255)`. They require **grayscale RGB with opaque alpha**; colored or
+transparent replacements fail instead of silently converting to luma. This
+is different from the digital font's `[5,5,5,0]` white-plus-alpha swizzle.
+
+The 2048×512 base occupies `0x80000` bytes; levels 1–7 occupy `0x30000` bytes
+and end at 16×4. Levels 5–7 share the packed tile beginning at `0xAE000`.
+The 8-byte-block Xenos addressing is shared with BC1; payload codec and
+swizzle remain distinct. All 39 retail entry/base pins and mip transports
+are tested. Retail entry 78/l1 decodes and re-encodes unchanged byte-exactly,
+with zero decoded channel error. Fixtures contain synthetic bytes only.
+
+Washington now fits at full resolution after RGB endpoint simplification,
+with **17,235 bytes spare**. Chicago fits after the same palette step plus
+4× top-level reduction, with **2,635 bytes spare**. Chicago l0 mean absolute
+RGBA error is 2.8624 (maximum 255); Washington l0 is 0.8846 (maximum 255),
+and l1 is 0.2927 (maximum 119). These are measured losses, not lossless imports.
+
+Receipts: [retail format-59 roundtrip](../../reports/ps3_import/format59_retail_roundtrip.json),
+[54-pair plan](../../reports/ps3_import/available_staging_plan.json),
+[Washington allocation diagnosis](../../reports/ps3_import/washington_allocation_diagnosis.json),
+[Chicago rebuilt endzone](../../reports/ps3_import/chicago_endzone_writer.json),
+[Washington rebuilt endzone](../../reports/ps3_import/washington_endzone_writer.json).
+
+Washington's old 13,524-byte overflow is reproduced: the same 1,441,792-byte
+VRAM block becomes a 150,740-byte active IFF in a 137,216-byte allocation
+after safe optimal compression. Both source and imported alpha are uniformly
+255, and the old writer preserved the mip bytes exactly. It is a compression
+cost from the changed BC1 patterns and their spatial repetition, not a larger
+mip chain or alpha noise. Its l0 distinct stored BC1 blocks increase from 650
+to 4,733; l1 decreases from 6,337 to 2,146. See the build receipt for the
+successful regenerated-mip encoding and any required quality reduction.
 
 ## Roster and full-package research
 

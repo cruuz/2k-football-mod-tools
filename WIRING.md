@@ -1,3 +1,268 @@
+# Beta 64 PS3 endzone writer — required Field Art GUI handoff
+
+`ASTRA_CONTEXT.md` prohibits editing `mod_editor/apf_studio/gui.py`. Apply the
+following patch before integrating this branch into a runnable Studio build.
+The unmodified `_extra_field_art_targets()` uses `codec_label[contract.codec]`
+and raises `KeyError: 'dxt5a'` at import once the 39 new contracts are present.
+The preview also needs the new scalar-aware decoder. Other hunks replace stale
+base-only and unsupported-format messages in the Field Art page. No build,
+registry or packaging change is needed: the existing Field Art capability,
+grouped builder, receipt plumbing and shipped codec modules are reused.
+
+Exact patch: `reports/ps3_import/field_art_gui_wiring.patch`. Its GUI hunks modify
+`gui.py`: `_extra_field_art_targets`, the core endzone descriptions,
+`ApfFieldArtPanel` slot/lock notes, `set_context`, `_decode_source_operation`,
+`_ps3_bundle_staged`, copied-volume prompts/results, and `FieldArtStudioPage`
+inventory guidance. The contexts below are the insertion points.
+
+```diff
+--- a/mod_editor/apf_studio/gui.py
++++ b/mod_editor/apf_studio/gui.py
+@@ -6900,16 +6900,16 @@
+         "pair proved writable first. A red/green/blue region mask over black, "
+         "like jersey_color and shoulder_color: hard edges and flat colours, "
+         "because intermediate values are invalid region IDs, not blends. The "
+-        "sibling endzone_l1 layer, the descriptor pad, and the packed mip tail "
+-        "all stay byte-identical.",
++        "sibling endzone_l1 layer and descriptor pad stay byte-identical. "
++        "This layer regenerates all eight mip levels.",
+     ),
+     _FieldArtTarget(
+         6, 1, "endzone_l1", 2048, 512, "DXT1", False,
+         "Endzone second layer for the same single team as endzone_l0 above, "
+         "and not a shared layer either. Also a red/green/blue region mask over black; "
+         "author it with flat colours and no anti-aliasing. The sibling "
+-        "endzone_l0 layer, the descriptor pad, and the packed mip tail all "
+-        "stay byte-identical.",
++        "endzone_l0 layer and descriptor pad stay byte-identical. "
++        "This layer regenerates all eight mip levels.",
+     ),
+     _FieldArtTarget(
+         659, 18, "pc_field_goal", 256, 256, "DXT1", False,
+@@ -6935,7 +6935,7 @@
+
+
+ def _extra_field_art_targets() -> tuple[_FieldArtTarget, ...]:
+-    """Descriptor-derived weave, dirtmap, and format-18 endzone slots."""
++    """Descriptor-derived weave, dirtmap, and format-18/format-59 endzone slots."""
+
+     from .backend import ensure_tools_importable
+
+@@ -6943,7 +6943,7 @@
+     import apf_field_art_patch as field_art_writer
+
+     core = {(6, 0), (6, 1), (659, 18), (659, 23), (659, 252), (53, 0)}
+-    codec_label = {"dxt1": "DXT1", "bc3": "BC3", "rgba8888": "8_8_8_8"}
++    codec_label = {"dxt1": "DXT1", "dxt5a": "DXT5A", "bc3": "BC3", "rgba8888": "8_8_8_8"}
+     notes = {
+         "UNIFORM_WEAVE": (
+             "Uniform weave/detail map. Layout comes from the retail descriptor, "
+@@ -6954,8 +6954,8 @@
+             "Runtime visibility is unproved."
+         ),
+         "ENDZONE_TEXTURE": (
+-            "Per-team endzone region mask, same DXT1 structure as package 6. "
+-            "Format-59 DXT5A packages are not offered. Not a shared layer."
++            "Per-team endzone mask with regenerated mips. DXT5A detail slots require "
++            "grayscale RGB and opaque alpha. Not a shared layer."
+         ),
+     }
+     extras: list[_FieldArtTarget] = []
+@@ -7099,8 +7099,8 @@
+         self.slot.setMinimumContentsLength(24)
+         self.slot.setToolTip(
+             "Writable field-art slots: the original six proved bases, "
+-            "package-659 weave/dirtmaps, and format-18 endzones. "
+-            "field_radiance (DXT5A), format-59 endzones, and the "
++            "package-659 weave/dirtmaps, and format-18/format-59 endzones. "
++            "field_radiance (DXT5A) and the "
+             "divot_Grass* weather textures (5_6_5) are deferred, and the "
+             "SCNE/CurveAnim rows have no serializer, so none of them are "
+             "offered here."
+@@ -7117,10 +7117,10 @@
+             "Stock NFL endzone packages (≈118 l0/l1 pairs) appear under All "
+             "Textures / the Field Art inventory browser below — browse and "
+             "export every one. This editor writes the original six proved "
+-            "bases, package-659 weave/dirtmaps, and format-18 per-team "
+-            "endzones. Format-59 DXT5A endzones and field_radiance / "
++            "bases, package-659 weave/dirtmaps, and format-18/format-59 per-team "
++            "endzones (117 complete writable pairs). field_radiance / "
+             "weather-divot codecs remain export-only; see "
+-            "docs/product/APF_FIELD_ART_STOCK_NFL_WALL.md."
++            "docs/mod_editor/ps3_bundle_import.md."
+         )
+         self.lock_note.setObjectName("metadataText")
+         self.lock_note.setWordWrap(True)
+@@ -7333,19 +7333,23 @@
+                 "reports the exact decode-back error."
+             )
+         )
++        mip_note = (
++            "Endzones regenerate all eight mip levels. Builds may simplify RGB weights "
++            "or reduce resolution to fit; the receipt records every reduction."
++            if target.name in {"endzone_l0", "endzone_l1"}
++            else "Only the base level changes; existing mip tails are preserved."
++        )
+         self.description.setText(
+             f"{lead}. Drop or choose any image — an off-size file is resized to "
+             f"the exact {target.width}×{target.height} slot for you before "
+-            f"anything is staged. {codec_sentence} Only this base level changes "
+-            "— the packed mip tail keeps its original bytes — and how the edit "
+-            "looks in play is not proved without a Xenia capture."
++            f"anything is staged. {codec_sentence} {mip_note} "
++            "In-game appearance remains UNWITNESSED."
+         )
+         self.description.setToolTip(
+             f"Full contract: the offline-proved writer owns outer "
+             f"{target.entry_index} / inner {target.file_index} ({target.name}), "
+             f"a {target.width}×{target.height} Xenos {target.codec} texture. "
+-            f"{target.note} Only the base mip level is regenerated; the packed "
+-            "mip tail is byte-preserved, so it stays stale relative to your edit."
++            f"{target.note} {mip_note}"
+         )
+
+         self._preview_token += 1
+@@ -7456,7 +7460,7 @@
+                     "and mip tail."
+                 )
+             base = pixel_bytes[head_len : head_len + contract.base_len]
+-            width, height, rgba = apf_inner.decode_txtr_base_rgba(metadata, base)
++            width, height, rgba = writer.decode_field_art_base(metadata, base)
+             self._display_alpha_note = None
+             if for_display:
+                 rgba, applied = apf_inner.force_opaque_alpha_for_display(rgba)
+@@ -7563,7 +7567,8 @@
+         self.modifiedChanged.emit()
+         QMessageBox.information(self, "PS3 endzone pairs staged",
+             f"{len(plan.assignments)} endzone pairs staged. Build must still pass the "
+-            "fixed-allocation checks. Field Art preserves old mip tails. In-game result: UNWITNESSED.")
++            "fixed-allocation checks. Endzone mips regenerate; any palette or resolution "
++            "reduction is recorded in the build receipt. In-game result: UNWITNESSED.")
+
+     def _stage_path(self, path: Path) -> None:
+         """Stage an image for this slot, resizing it when it is not exact.
+@@ -7682,8 +7687,9 @@
+             "This copies your entire ~1.1 GB 0A volume to the chosen path and "
+             f"replaces only the {target.name} base texture (outer "
+             f"{target.entry_index} / inner {target.file_index}) through the "
+-            "offline-proved writer. The descriptor pad, the packed mip tail, "
+-            "every sibling inner part, and every other byte of the volume are "
++            "offline-proved writer. Endzones regenerate mips and may simplify RGB "
++            "or reduce resolution to fit, with all reductions receipted. "
++            "The descriptor pad, every sibling inner part, and other volume bytes are "
+             "verified unchanged, and your source game is never modified.\n\n"
+             "One build writes exactly one field-art texture: the writer is pinned "
+             "to the retail bytes of each slot, so re-running it against an "
+@@ -7744,9 +7750,9 @@
+             "Copied 0A built",
+             "The offline-proved field-art writer copied your 0A and wrote only "
+             f"this texture, verified against the whole volume.\n\nManifest:\n{path}"
+-            f"{detail}\n\nOnly the base mip level was regenerated; the packed mip "
+-            "tail is byte-preserved. How this looks in play is not proved without "
+-            "a Xenia capture.",
++            f"{detail}\n\nEndzones regenerate mips; other field textures preserve their tails. "
++            "See the receipt for any palette or resolution reduction. "
++            "In-game appearance remains UNWITNESSED.",
+         )
+
+
+@@ -7755,7 +7761,7 @@
+
+     Authorship on this page is the offline-proved writable set the field-art
+     writer owns — the original six bases, package-659 weave/dirtmaps, and
+-    format-18 endzones.  :class:`ApfFieldArtPanel` routes every write through
++    format-18/format-59 endzones.  :class:`ApfFieldArtPanel` routes every write through
+     ``tools/apf_field_art_patch.py``.  Format-59 DXT5A endzones and the
+     deferred codecs stay discovery: each semantic row below is still the
+     original catalog identity consumed by :class:`AssetBrowser`, so preview
+@@ -7767,11 +7773,11 @@
+
+     ACTION_LOCK_REASON = (
+         "This full Field Art inventory is browse and export-only. Writable "
+-        "bases, weave/dirtmaps, and format-18 endzones are edited in the "
++        "bases, weave/dirtmaps, and format-18/format-59 endzones are edited in the "
+         "Field Art editor above; here, archive-package co-location still "
+         "does not prove the runtime field material or its team/stadium "
+-        "selector, and the deferred codecs (field_radiance, format-59 "
+-        "endzones, the divot_Grass* weather textures) and the "
++        "selector, and the deferred codecs (field_radiance and "
++        "the divot_Grass* weather textures) and the "
+         "SCNE/CurveAnim rows have no bounded writer at all."
+     )
+
+@@ -7913,8 +7919,8 @@
+         )
+         self.package_note.setText(
+             "This inventory stays browse/export-only. Writable bases, "
+-            "weave/dirtmaps, and format-18 endzones are edited above; "
+-            "format-59 DXT5A endzones stay export-only."
++            "weave/dirtmaps, and format-18/format-59 endzones are edited above. "
++            "The inventory below stays browse/export-only."
+         )
+         self.browser.set_included_asset_ids(None)
+         load_tip = (
+@@ -8142,8 +8148,7 @@
+                 "Next: File → Load game, then open Field Art. Stock NFL "
+                 "endzones appear in the semantic list (~118 packages). "
+                 "Format-18 layers, package-659 weave/dirtmaps, and the "
+-                "original six bases are writable; format-59 DXT5A layers "
+-                "stay browse/export-only."
++                "original six bases are writable, including format-59 DXT5A endzone layers."
+             )
+             self.browser.set_context()
+             return
+```
+
+The same patch also updates two obsolete Field Art assertions in
+`tests/mod_editor/test_beta45_honesty_freeze.py`. That file includes release-tag
+tests, which `ASTRA_CONTEXT.md` also protects; its release identities are
+unchanged. The extra contract count is 254, and 39 format-59 endzones are now
+pinned scalar writers. Apply these test-only hunks with the GUI handoff:
+
+```diff
+--- a/tests/mod_editor/test_beta45_honesty_freeze.py
++++ b/tests/mod_editor/test_beta45_honesty_freeze.py
+@@ -101,13 +101,13 @@
+         self.assertEqual(code, 0)
+         printed = buffer.getvalue()
+         self.assertIn("core=6", printed)
+-        self.assertIn("extras=215", printed)
++        self.assertIn("extras=254", printed)
+         extra_keys = field_gate._writable_extra_keys()
+-        self.assertEqual(len(extra_keys), 215)
++        self.assertEqual(len(extra_keys), 254)
+         for key in extra_keys:
+             contract = field_gate.patch._CONTRACTS[key]
+-            self.assertIn(contract.format, {6, 18, 20})
+-            self.assertIn(contract.codec, {"rgba8888", "dxt1", "bc3"})
++            self.assertIn(contract.format, {6, 18, 20, 59})
++            self.assertIn(contract.codec, {"rgba8888", "dxt1", "dxt5a", "bc3"})
+
+     def test_weave_skin_weights_are_bc3_256_not_lossless_64(self) -> None:
+         import apf_field_art_patch as writer
+@@ -122,7 +122,7 @@
+             self.assertEqual((contract.width, contract.height), (256, 256))
+             self.assertNotEqual((contract.codec, contract.width), ("rgba8888", 64))
+
+-    def test_format_59_endzones_stay_out_of_the_writer(self) -> None:
++    def test_format_59_endzones_have_pinned_scalar_writers(self) -> None:
+         import json
+
+         import apf_field_art_patch as writer
+@@ -139,7 +139,8 @@
+         ]
+         self.assertEqual(len(refused), 39)
+         for key in refused:
+-            self.assertNotIn(key, writer._CONTRACTS)
++            self.assertEqual(writer._CONTRACTS[key].codec, "dxt5a")
++            self.assertEqual(writer._CONTRACTS[key].swizzle, (0, 0, 0, 5))
+
+     def test_third_and_long_writer_refuses_and_names_executable(self) -> None:
+         from mod_editor.core.errors import ValidationError
+```
+
+---
+
 # beta-63.1 raw-dump overlap hotfix (2026-09-09, branch local/hf63-rawdump-overlap)
 
 Bug: Ju3tin, #2k5-general 2026-09-09 15:00 — "ValueError: overlapping disc file or metadata: root

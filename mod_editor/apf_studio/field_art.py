@@ -181,7 +181,7 @@ ENDZONE_LABELS = (
 #: endzone art" gets a three-colour mask instead, so the panel says so first.
 ENDZONE_MASK_CONTRACT = (
     "Endzone layers are region masks, not artwork: pure red / green / blue "
-    "region selectors over black, 2048×512 DXT1, with alpha uniformly opaque. "
+    "region selectors over black, 2048×512 DXT1, with alpha uniformly opaque. Some detail layers use grayscale DXT5A with opaque alpha. "
     "The colours in game are shader-driven. Author them like the uniform "
     "masks — flat colours, hard edges, no anti-aliasing — because an "
     "intermediate value is an invalid region ID, not a blend."

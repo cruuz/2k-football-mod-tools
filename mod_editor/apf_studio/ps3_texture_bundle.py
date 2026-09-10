@@ -381,7 +381,8 @@ def build_plan(bundle: TextureBundle, slots: Iterable[DestinationSlot],
         method = "entry_hash_and_layer_name" if pair.entry_hash == slot.entry_hash else "chosen_destination_and_layer_name"
         row = {"source_pair": pair.receipt(), "destination_slot": slot.slot_id,
                "destination_label": slot.label, "destination_entry_hash": f"0x{slot.entry_hash:08x}",
-               "mapping_method": method, "mips": "regenerated" if pair.kind == "logo" else "existing writer preserves tail; stale mip limitation",
+               "mapping_method": method, "mips": "regenerated",
+               "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
                "writer": "apf_logo_patch.build_patch_rgba + linked logocache" if pair.kind == "logo" else "apf_field_art_patch.build_field_art_patch_many"}
         for index, layer in enumerate(pair.layers):
             if layer.layer != f"{pair.kind}_l{index}" or layer.image.size != LAYER_SIZE[pair.kind]:

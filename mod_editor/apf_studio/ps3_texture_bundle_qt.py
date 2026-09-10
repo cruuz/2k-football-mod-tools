@@ -31,8 +31,8 @@ class Ps3BundleMappingDialog(QDialog):
         summary = QLabel(
             "Choose which pairs to stage and where they belong. Both layers stay together. "
             "Team colors are controlled by the game palette.\n"
-            "Logo builds regenerate mip levels. Field Art currently preserves old mip levels; "
-            "every build must still fit its fixed allocation. In-game result: UNWITNESSED."
+            "Logo and endzone builds regenerate mip levels; endzones may simplify colors or reduce resolution to fit. "
+            "Every build must still fit its fixed allocation. In-game result: UNWITNESSED."
         )
         summary.setWordWrap(True)
         layout.addWidget(summary)
