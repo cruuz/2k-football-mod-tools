@@ -883,13 +883,16 @@ def retail_olb_identity(payload: bytes) -> bool:
 
 def apply(payload: bytes, *, linebacker_penalty_fix: bool = True,
           depth_chart_third_starter: bool = True,
-          roster_has_olb: bool | None = False) -> tuple[bytes, Mapping[str, object]]:
+          roster_has_olb: bool | None = None) -> tuple[bytes, Mapping[str, object]]:
     """Apply/replay pools and an explicitly certified roster-filter policy.
 
-    ``False`` (default): the one-pool profile retires enum 10; remove OLB from
-    all sixteen pointer lists. ``True``: legacy compatibility, retain/restore those
-    entries for custom players. ``None``: retain on a new installation; keep
-    the existing policy on replay. Unknown roster evidence never removes rows.
+    ``False``: the one-pool profile retires enum 10; remove OLB from all sixteen
+    pointer lists (the EDGE-only product profile; the Studio build passes it after
+    the certified roster scan). ``True``: legacy compatibility, retain/restore
+    those entries for custom players. ``None`` (default): retain on a new
+    installation; keep the existing policy on replay. Unknown roster evidence
+    never removes rows, so synthetic or partial images compose without the
+    native filter readers.
 
     This is a build-time policy, not a detector for subsequently loaded saves.
     Legacy enum-10 saves need reclassification or the explicit retained profile.

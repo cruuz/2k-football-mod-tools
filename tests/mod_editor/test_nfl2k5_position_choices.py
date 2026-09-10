@@ -47,7 +47,9 @@ class NativeChoicesTests(unittest.TestCase):
         if hashlib.sha256(cls.retail).hexdigest() != RETAIL_SHA256:
             raise unittest.SkipTest('USA retail XBE evidence pin differs')
         cls.base = modern.apply(edge.apply(cls.retail)[0])[0]
-        cls.patched, cls.receipt = pools.apply(cls.base)
+        # The EDGE-only product profile is an explicit, certified choice (the Studio
+        # passes it after the roster scan); a bare apply retains the rows.
+        cls.patched, cls.receipt = pools.apply(cls.base, roster_has_olb=False)
 
     def boot(self, payload):
         runner = fixture.EmulationTests()
@@ -162,7 +164,7 @@ class NativeChoicesTests(unittest.TestCase):
 
     def test_native_creation_and_inline_mycareer_compose_both_orders(self):
         a = mode.apply(self.patched)[0]
-        b = pools.apply(mode.apply(self.base)[0])[0]
+        b = pools.apply(mode.apply(self.base)[0], roster_has_olb=False)[0]
         self.assertEqual(a, b)
         self.assertEqual(mode.status(a), 'applied')
         self.assertEqual(pools.status(a), 'applied')
@@ -184,7 +186,7 @@ class NativeChoicesTests(unittest.TestCase):
     def test_contracts_position_editor_accepts_only_complete_pools_companion(self):
         from mod_editor.core import nfl2k5_franchise_edit_player as edit
         a = edit.apply(self.patched)[0]
-        b = pools.apply(edit.apply(self.base)[0])[0]
+        b = pools.apply(edit.apply(self.base)[0], roster_has_olb=False)[0]
         self.assertEqual(a, b)
         self.assertEqual(edit.status(a), 'applied')
         corrupt = bytearray(a)
