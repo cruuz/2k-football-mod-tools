@@ -13,6 +13,7 @@ import json
 from pathlib import Path
 import struct
 import sys
+import zlib
 
 from . import nfl2k5_accelerated_clock_code as assembly
 from . import nfl2k5_rdata_sites as rdata
@@ -30,8 +31,8 @@ HELP_TEXT = (
     "After a huddled play call, jump the play clock to your chosen minimum and "
     "run off the same time from a running game clock. Applies to both offenses. "
     "No acceleration in the final two minutes of a half or overtime, during "
-    "no-huddle, or on the first snap of a quarter and kickoffs. Build-time option; "
-    "native execution proved with synthetic clocks, in-game play UNWITNESSED."
+    "no-huddle, or on the first snap of a quarter and kickoffs. Off by default. "
+    "Changing this option requires a new build. In-game play UNWITNESSED."
 )
 HOOKS = {
     "complete": (0xB86E0, bytes.fromhex("e8eb95feff")),
@@ -106,7 +107,10 @@ def allocations(payload):
 def _inspect(payload):
     space._require(isinstance(payload, bytes) and len(payload) <= space.SCALE_FILE_SIZE,
                    "Expected bounded default.xbe bytes")
-    layout = space.layout(payload)  # verifies allocator seals and section digests
+    try:
+        layout = space.layout(payload)  # verifies allocator seals and section digests
+    except zlib.error as exc:
+        raise ValueError("Foreign accelerated-clock allocator directory") from exc
     image = XbeImage(payload)
     settings, code_va = None, 0
     if any(a["owner"] == OWNER for a in layout["allocations"]):

@@ -17,9 +17,10 @@ sys.path.insert(0, str(ROOT))
 from mod_editor.core import nfl2k5_accelerated_clock as patch
 from mod_editor.core import nfl2k5_cave_manifest as builder
 from mod_editor.core import nfl2k5_xbe_space as space
+from mod_editor.core import nfl2k5_music_metadata as music
 from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, OracleError, ReservationManifest, XbeImage
 from tests.mod_editor.test_nfl2k5_owner_pairwise_composition import retail_xbe
-from tests.nfl2k5_allocator_stack import REQUESTS
+from tests.nfl2k5_allocator_stack import REQUESTS, SONGS, manifest_for_allocated_union
 
 OBSERVED_SOURCES = (
     "mod_editor/core/nfl2k5_accelerated_clock.py",
@@ -49,6 +50,12 @@ def bounded_projection(retail, document=None):
     recorder = builder.Recorder(retail)
     allocated, receipt = space.apply(retail, REQUESTS, scaleout=True)
     recorder.observe(space, "apply", retail, allocated, receipt)
+    # The inherited production manifest includes the separate music allocation.
+    # Observe the same synthetic metadata used by both gates, so inherited music
+    # spans have an actual allocation in this projection's sealed layout.
+    with_music, receipt = music.apply(allocated, song_records=SONGS)
+    recorder.observe(music, "apply", allocated, with_music, receipt)
+    allocated = with_music
     final, receipt = patch.apply(allocated, enabled=True, minimum_seconds=20)
     recorder.observe(patch, "apply", allocated, final, receipt)
     observed = recorder.finish(final)
@@ -69,7 +76,7 @@ def bounded_projection(retail, document=None):
             inherited.append(row)
     unique = {(r["start"], r["end"], r["owner"], r["basis"]): r for r in inherited+observed}
     result = copy.deepcopy(parent)
-    result.update(model="BOUNDED XBE PROJECTION: unchanged parent reservations plus observed CPU accelerated clock and allocator union; no new disc build",
+    result.update(model="BOUNDED XBE PROJECTION: unchanged parent reservations plus observed accelerated clock, synthetic music metadata and allocator union; no new disc build",
                   stack_image_size=XbeImage(final).image_size,
                   stack_xbe_sha256=hashlib.sha256(final).hexdigest(),
                   allocator_layout=layout,
@@ -100,7 +107,12 @@ class ManifestTests(unittest.TestCase):
         self.assertFalse(self.document["bounded_projection"]["real_disc_build"])
         self.assertEqual(self.document["allocator_layout"], space.layout(self.final))
         self.assertEqual(self.document["stack_xbe_sha256"], hashlib.sha256(self.final).hexdigest())
-        self.assertEqual([s["owner"] for s in self.document["bounded_projection"]["observed_steps"]], [space.OWNER, patch.OWNER])
+        self.assertEqual([s["owner"] for s in self.document["bounded_projection"]["observed_steps"]], [space.OWNER, music.OWNER, patch.OWNER])
+
+    def test_projection_supports_the_complete_gate_relocation(self):
+        original = ReservationManifest(self.document, XbeImage(self.retail))
+        projected = manifest_for_allocated_union(original, self.retail, self.final)
+        self.assertEqual(projected.document['allocator_layout'], space.layout(self.final))
 
     def test_unobserved_source_drift_cannot_be_recertified(self):
         parent = parent_document()

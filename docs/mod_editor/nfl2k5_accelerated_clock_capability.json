@@ -72,5 +72,5 @@
   "summary": "After a huddled human or CPU play call, shorten the play clock and apply equal runoff to a running game clock, with late-half and no-huddle exceptions.",
   "surface": "gameplay_tuning_sliders",
   "title": "Accelerated clock (Madden style)",
-  "validation_command": "python3 tests/mod_editor/test_nfl2k5_accelerated_clock.py"
+  "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_accelerated_clock"
 }

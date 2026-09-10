@@ -333,6 +333,15 @@ class AcceleratedClockWriterTests(unittest.TestCase):
                     clock.apply(damaged)
                 self.assertEqual(hashlib.sha256(damaged).digest(), digest)
 
+    def test_malformed_allocator_compression_reports_foreign_and_refuses(self):
+        directory_va = XbeImage(self.patched).va_for_offset(space.SCALE_DIRECTORY + 76)
+        damaged = repin_edit(self.patched, directory_va, b'\0\0')
+        self.assertEqual(clock.status(damaged), 'foreign')
+        with self.assertRaises(ValueError):
+            clock.apply(damaged)
+        with self.assertRaises(ValueError):
+            clock.verify(damaged)
+
     def test_resealed_foreign_code_options_latch_and_padding_refused(self):
         places = clock.allocations(self.patched)
         requests = space._validate(self.patched)[2]
