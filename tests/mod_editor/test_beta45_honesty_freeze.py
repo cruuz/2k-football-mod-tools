@@ -101,13 +101,13 @@ class Beta45HonestyFreezeTests(unittest.TestCase):
         self.assertEqual(code, 0)
         printed = buffer.getvalue()
         self.assertIn("core=6", printed)
-        self.assertIn("extras=215", printed)
+        self.assertIn("extras=254", printed)
         extra_keys = field_gate._writable_extra_keys()
-        self.assertEqual(len(extra_keys), 215)
+        self.assertEqual(len(extra_keys), 254)
         for key in extra_keys:
             contract = field_gate.patch._CONTRACTS[key]
-            self.assertIn(contract.format, {6, 18, 20})
-            self.assertIn(contract.codec, {"rgba8888", "dxt1", "bc3"})
+            self.assertIn(contract.format, {6, 18, 20, 59})
+            self.assertIn(contract.codec, {"rgba8888", "dxt1", "dxt5a", "bc3"})
 
     def test_weave_skin_weights_are_bc3_256_not_lossless_64(self) -> None:
         import apf_field_art_patch as writer
@@ -122,7 +122,7 @@ class Beta45HonestyFreezeTests(unittest.TestCase):
             self.assertEqual((contract.width, contract.height), (256, 256))
             self.assertNotEqual((contract.codec, contract.width), ("rgba8888", 64))
 
-    def test_format_59_endzones_stay_out_of_the_writer(self) -> None:
+    def test_format_59_endzones_have_pinned_scalar_writers(self) -> None:
         import json
 
         import apf_field_art_patch as writer
@@ -139,7 +139,8 @@ class Beta45HonestyFreezeTests(unittest.TestCase):
         ]
         self.assertEqual(len(refused), 39)
         for key in refused:
-            self.assertNotIn(key, writer._CONTRACTS)
+            self.assertEqual(writer._CONTRACTS[key].codec, "dxt5a")
+            self.assertEqual(writer._CONTRACTS[key].swizzle, (0, 0, 0, 5))
 
     def test_third_and_long_writer_refuses_and_names_executable(self) -> None:
         from mod_editor.core.errors import ValidationError
