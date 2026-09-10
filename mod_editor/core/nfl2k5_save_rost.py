@@ -194,13 +194,10 @@ class SaveRost:
                 off = colleges.offset + i * colleges.stride
                 college_records.add(off)
                 self.string(off)
-        # A college pointer that stays inside the arena but lands off the college table is recorded,
-        # not refused: the game never checks it (the player card dereferences it for the COLLEGE
-        # line; team export maps an unknown target to college 0, FUN_00242190), the roster editor's
-        # parser already reads such a player as "no college", and to_bytes() copies the bytes
-        # verbatim.  A real franchise save carried one and every schedule edit was refused for it
-        # (#2k5-bugs 2026-09-08, beta-63.1).  Pointers that leave the arena are still refused.
-        self.unresolved_colleges: dict[tuple[str, int], int] = {}
+        # College references are optional, repairable metadata. Decode the
+        # signed word without following it, including null/outside-arena words.
+        # All tables, player names and unrelated pointers remain bounds checked.
+        self.unresolved_colleges: dict[tuple[str, int], int | None] = {}
         for pool in ('primary', 'secondary'):
             table = self.tables[pool]
             if table.offset is None:
@@ -208,11 +205,12 @@ class SaveRost:
             for index in range(table.count):
                 off = table.offset + index * table.stride
                 try:
-                    college = self.rel(off, size=8, label='college pointer')
+                    raw_college = struct.unpack_from('<i', self.original, off)[0]
+                    college = off + raw_college - 1 if raw_college else None
                     first, last = self.string(off + 0x10), self.string(off + 0x14)
                 except SaveRostError as exc:
                     raise SaveRostError(f'{pool} player {index} at 0x{off:X}: {exc}') from exc
-                if college is not None and college not in college_records:
+                if college not in college_records:
                     self.unresolved_colleges[pool, index] = college
                 self.players.append(Player(pool, index, off, first, last, records.PlayerRecord.decode(
                     self.original[off:off + records.PLAYER_SIZE], reference_year=self.reference_year)))
@@ -319,12 +317,18 @@ class SaveRost:
         _require(len(out) == len(self.original), 'save length changed')
         return bytes(out)
 
+    @property
+    def college_warning(self) -> str:
+        from .nfl2k5_college_check import warning
+        return warning(len(self.unresolved_colleges))
+
     def summary(self) -> dict[str, object]:
         return {'version': self.layout.version, 'root': self.layout.root,
                 'preamble': self.layout.preamble, 'wrapper': self.layout.wrapper,
                 'end': self.layout.end, 'arena_size': self.layout.arena_size,
                 'players': len(self.players), 'teams': len(self.teams),
                 'unresolved_colleges': len(self.unresolved_colleges),
+                'college_warning': self.college_warning,
                 'history_used': self.pool_used, 'history_capacity': self.pool_capacity}
 
 

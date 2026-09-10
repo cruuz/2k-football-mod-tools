@@ -397,8 +397,19 @@ def _inspect(payload):
                  if name == "screen_dispatch"]
     if any(image.read(va, len(retail)) != retail for va, retail in neighbors):
         _require(my_career.status(payload) == "applied", "Foreign MyCareer screen-push hook")
+    collection_instructions = ()
+    if space.has_music(payload):
+        # policy.status above validated the complete sealed collection owner.
+        # Normalize only its exact instructions for the full-function pins.
+        from . import nfl2k5_music_metadata as metadata
+        _, _, fields, table = metadata._contents(payload)
+        collection_instructions = tuple(metadata.collections.instructions(table, len(fields)))
     for va, size, digest in GUARDS:
         content = bytearray(image.read(va, size))
+        for site, before, after in collection_instructions:
+            first, end = max(va, site), min(va + size, site + len(before))
+            if first < end:
+                content[first-va:end-va] = before[first-site:end-site]
         for hook, retail in tuple(HOOKS.values()) + tuple(neighbors):
             if va <= hook and hook + len(retail) <= va + size:
                 content[hook - va:hook - va + len(retail)] = retail

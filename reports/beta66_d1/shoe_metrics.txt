@@ -1,0 +1,24 @@
+{"export": "facade.export_asset", "source": "tset:3850:8:0:shoes01", "target": "tset:3850:9:0:shoes02", "source_colours": 211, "export_exact": true}
+staged 402 consumer packages
+{"comparison": "decoded result enlarged with nearest-neighbour to the exported PNG size", "maximum_channel_error": 254, "mean_delta_e76": 9.429852865193592, "maximum_delta_e76": 99.65492608793448}
+{
+  "palette_quality": {
+    "maximum_channel_error": 136,
+    "mean_delta_e76": 9.297138532850996,
+    "maximum_delta_e76": 51.930967208664704,
+    "merge_reason": "to fit the fixed 58,016-byte compressed TSET budget",
+    "merged_colour_count": 1329
+  },
+  "projection_quality": {
+    "differing_pixel_count": 2630,
+    "maximum_channel_error": 136,
+    "total_pixel_count": 4096,
+    "total_squared_rgba_error": 18318766
+  },
+  "encoded_dimensions": [
+    64,
+    64
+  ],
+  "palette_entries": 2,
+  "wrapper_scratch_preserved": true
+}

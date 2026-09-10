@@ -31,7 +31,8 @@ class PortableMetadataTests(unittest.TestCase):
             ids=music.identities(n)
             self.assertEqual(ids[:59],retail[:n])
             self.assertEqual(len(set(ids)),n)
-            self.assertTrue(all(c<18 and s<256 for c,s in ids))
+            self.assertTrue(all(c<20 and s<256 for c,s in ids))
+            self.assertTrue(all(c>=18 for c,s in ids[59:]))
             data,fields=music.build(records(n))
             self.assertLessEqual(len(data),storage.CAPACITY-storage.PREFIX)
             self.assertEqual(sum(n for n,_ in fields),n)
@@ -63,7 +64,33 @@ class RetailMetadataTests(unittest.TestCase):
             off=music._offset(self.retail,music.COLLECTIONS+c*32,24)
             self.assertEqual(self.retail[off:off+24],self.patched[off:off+24])
         text=image.section(0x11000)
-        self.assertEqual(self.retail[text.raw:text.raw+text.raw_size],self.patched[text.raw:text.raw+text.raw_size])
+        before = bytearray(self.retail[text.raw:text.raw+text.raw_size])
+        after = bytearray(self.patched[text.raw:text.raw+text.raw_size])
+        for va, old, new in music.collections.instructions(int(self.receipt['table_va'],16), 19):
+            at = va - text.start
+            self.assertEqual(before[at:at+len(old)], old)
+            self.assertEqual(after[at:at+len(new)], new)
+            after[at:at+len(new)] = old
+        self.assertEqual(before, after)
+        rows = music.collection_table(self.patched)
+        self.assertEqual([row['count'] for row in rows[:18]], [row[0] for row in music.RETAIL])
+        self.assertEqual(rows[18]['name'], 'My songs')
+        self.assertEqual(rows[18]['count'], 141)
+
+    def test_collection_name_and_purchase_policy_compose_in_both_orders(self):
+        from mod_editor.core import nfl2k5_music_policy as policy
+        named, _ = music.apply(self.retail, records(), 'Mud library')
+        unlocked, _ = policy.apply(named, music_unlock=True)
+        self.assertEqual(music.status(unlocked), 'applied')
+        self.assertEqual(music.collection_table(unlocked)[18]['name'], 'Mud library')
+        stock_unlocked, _ = policy.apply(self.retail, music_unlock=True)
+        reversed_order, _ = music.apply(stock_unlocked, records(), 'Mud library')
+        self.assertEqual(reversed_order, unlocked)
+        rows = music.collection_table(unlocked)
+        image = XbeImage(unlocked)
+        table = music._contents(unlocked)[3]
+        for index in range(14):
+            self.assertEqual(struct.unpack('<I', image.read(table+index*32+20, 4))[0], 0)
 
     def test_mixed_foreign_corruption_and_different_recipe_refuse(self):
         for offset in (storage.RAW,storage.RAW+12,storage.RAW+storage.PREFIX+100,
@@ -142,6 +169,11 @@ class RetailMetadataTests(unittest.TestCase):
         put(active+12,active,active)
         put(0xC3AC90,0)
         ids=music.identities(200)
+        self.assertEqual(call(0x27F410), 19)
+        self.assertEqual(call(0x27F430, ecx=18), 141)
+        title = call(0x27F460, ecx=18)
+        self.assertEqual(bytes(uc.mem_read(title,18)), 'My songs\0'.encode('utf-16le'))
+        self.assertEqual(call(0x27F5D0, ecx=18), 0xE92D1C)  # existing artwork identifier
         saved=[]
         for index,(collection,song) in enumerate(ids):
             identity=call(0x27F550,collection,song)

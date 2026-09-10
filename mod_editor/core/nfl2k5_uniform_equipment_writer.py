@@ -6,7 +6,7 @@ similar variant in a chunk shares one swizzled mip/index chain and owns only an
 independent 256-entry BGRA palette.  Replacing that shared chain for one name
 would silently reshape every sibling.
 
-Palette projection remains the default. An explicit glove/shoe choice appends
+Legacy project PNGs retain palette projection. New glove/shoe imports append
 an aligned, coverage-filtered index chain and repoints only its descriptor.
 Sibling descriptors, palettes and every shared mip remain exact. The decoded
 video allocation grows, but the recompressed TSET stays inside its original
@@ -532,6 +532,9 @@ def _read_png(
             from mod_editor.core.nfl2k5_digit_texture import make_digit_mips
 
             levels = make_digit_mips(rgba, width, height, target.mip_levels)
+            # Preserve even invisible RGB from an exported straight-alpha PNG.
+            # Lower mips still filter coverage without invisible colour bleed.
+            levels[0] = replace(levels[0], rgba=rgba)
             scale = import_settings(payload, target.asset_id, rgba)[1]
             shift = scale.bit_length() - 1
             _require(shift < len(levels), "Equipment image size removes every mip level")
@@ -606,7 +609,14 @@ def _rebuild_grown_video(template_span: bytes, candidate: bytes):
                     raise
     padding = chunk.stored_size - len(encoded)
     minimum = minimum_vc_lz_overlap_scratch(encoded, chunk.stored_size, len(candidate))
-    scratch = max(chunk.overlap_scratch_bytes, (max(padding, minimum) + 15) & ~15)
+    scratch = chunk.overlap_scratch_bytes
+    if padding > scratch or minimum > scratch:
+        from nfl_vc_lz_fill import fill_stream
+        encoded, _expanded = fill_stream(encoded, candidate, chunk.stored_size, slack=min(scratch, 16))
+        padding = chunk.stored_size - len(encoded)
+        minimum = minimum_vc_lz_overlap_scratch(encoded, chunk.stored_size, len(candidate))
+    _require(padding <= scratch and minimum <= scratch,
+             "Equipment cannot fit with the retail loader scratch allowance")
     video = len(candidate) - chunk.system_bytes
     rebuilt = HEADER.pack(
         b"TSET", chunk.stored_size, chunk.system_bytes, video,
@@ -651,27 +661,13 @@ def _overflow(exc: TxtrError) -> bool:
 
 
 def _rebuild_fixed_span(template_span: bytes, candidate: bytes, *, independent: bool):
-    """Recompress into the retail slot; fall back to the lossless optimal parse.
+    """Share lossless geometry search and keep the retail scratch word.
 
-    A palette-only edit keeps the retail transport (greedy tokens, source
-    distance geometry) whenever that fits, so every previously fitting edit
-    still produces byte-identical spans and receipts. Some retail slots have
-    no slack and their later sibling palettes are matched against the edited
-    one (Tennessee ``17H0`` chunk 8: 55,776 stored, 55,772 consumed, 13-bit
-    distances, shared by 91 packages), so replacing even one palette grows the
-    greedy stream past the slot. Those edits take the same bounded lossless
-    route the independent-chain import already uses: retail-observed distance
-    geometries and the minimum-bit-cost token parse, decoded and compared
-    against the complete input before anything is accepted.
+    Both palette-only and independent imports use greedy/optimal compression,
+    then fill the stream when necessary to retain wrapper +0x14. The keyword
+    remains part of the compile interface; decoded growth is read from bytes.
     """
 
-    if independent:
-        return _rebuild_grown_video(template_span, candidate)
-    try:
-        return rebuild_compressed_chunk_fixed_span(template_span, candidate)
-    except TxtrError as exc:
-        if not _overflow(exc):
-            raise
     return _rebuild_grown_video(template_span, candidate)
 
 
@@ -711,27 +707,26 @@ def apply_equipment_span(current: bytes, replacement: bytes,
 def _project_palette(
     indices: list[bytes], levels: list[Any], maximum: int
 ) -> tuple[bytes, int]:
-    totals = [[0, 0, 0, 0, 0] for _ in range(256)]
-    for index_bytes, level in zip(indices, levels):
+    from .equipment_palette import representatives, distance
+
+    buckets = [Counter() for _ in range(256)]
+    base_indices = set(indices[0])
+    for level_number, (index_bytes, level) in enumerate(zip(indices, levels)):
         _require(len(index_bytes) * 4 == len(level.rgba),
                  "Uniform-equipment authored mip/index size differs")
         for palette_index, offset in zip(index_bytes, range(0, len(level.rgba), 4)):
-            row = totals[palette_index]
-            for channel in range(4):
-                row[channel] += level.rgba[offset + channel]
-            row[4] += 1
+            # Base colours determine every index used by the base. Lower mips
+            # may fill unused entries but cannot average away the exported P8.
+            if level_number == 0 or palette_index not in base_indices:
+                buckets[palette_index][tuple(level.rgba[offset:offset + 4])] += 1
     desired = {
-        index: tuple(
-            (row[channel] + row[4] // 2) // row[4]
-            for channel in range(4)
-        )
-        for index, row in enumerate(totals)
-        if row[4]
+        index: min(bucket, key=lambda c: (-bucket[c], c))
+        for index, bucket in enumerate(buckets) if bucket
     }
     histogram: Counter[tuple[int, int, int, int]] = Counter()
     for index, color in desired.items():
-        histogram[color] += totals[index][4]
-    representatives = palette_tools.median_cut_palette(histogram, maximum)
+        histogram[color] += sum(buckets[index].values())
+    colours = representatives(histogram, maximum)
     mapped: list[tuple[int, int, int, int]] = []
     for index in range(256):
         color = desired.get(index)
@@ -739,16 +734,13 @@ def _project_palette(
             mapped.append((0, 0, 0, 0))
             continue
         mapped.append(min(
-            representatives,
+            colours,
             key=lambda candidate: (
-                sum(
-                    (color[channel] - candidate[channel]) ** 2
-                    for channel in range(4)
-                ),
+                distance(color, candidate),
                 candidate,
             ),
         ))
-    return palette_tools.palette_bytes(mapped), len(representatives)
+    return palette_tools.palette_bytes(mapped), len(colours)
 
 
 def _quality(requested: bytes, actual: bytes) -> dict[str, int]:
@@ -843,16 +835,16 @@ def _compile_group(
     selected_entries: dict[int, int] = {}
     selected_quality: dict[int, Any] = {}
     tried: set[str] = set()
-    for maximum in (PALETTE_LIMITS[:5] if independent else PALETTE_LIMITS):
+    for maximum in PALETTE_LIMITS:
         candidate = bytearray(decoded + bytes(video_end - chunk.video_bytes))
         entries: dict[int, int] = {}
         qualities: dict[int, Any] = {}
         try:
             for reference, (target, _payload, _rgba, levels) in sorted(authored.items()):
                 if reference in independent:
-                    from mod_editor.core.nfl2k5_digit_texture import quantize_digit_levels
+                    from mod_editor.core.equipment_palette import quantize
 
-                    colors, index_levels, quality = quantize_digit_levels(levels, maximum)
+                    colors, index_levels, quality = quantize(levels, maximum)
                     palette, actual_entries = palette_tools.palette_bytes(colors), len(colors)
                     qualities[reference] = quality
                     texture = updated_textures[reference]
@@ -966,6 +958,15 @@ def _compile_group(
             rebuilt_decoded, replace(chunk, video_bytes=video_end), texture,
         )
         after = after_levels[0]
+        from .equipment_palette import quality as palette_quality
+        measured = palette_quality(levels[0].rgba if reference in independent else authored_rgba, after)
+        overflow = any(attempt["result"] == "vc_lz_overflow" for attempt in attempts)
+        measured["merge_reason"] = (
+            f"to fit the fixed {chunk.stored_size:,}-byte compressed TSET budget"
+            if overflow else "to fit the shared retail index artwork; choose its own texture for a new design"
+            if reference not in independent else "to fit the 256-colour P8 palette"
+        )
+        selected_quality[reference] = measured
         _require(before != after or reference in independent,
                  f"Replacement equals retail for {target.asset_id}")
         preview = encode_rgba_png(texture.width, texture.height, after)
@@ -988,7 +989,7 @@ def _compile_group(
             "size_reduction": target.width // texture.width,
             "mip_filter": ("premultiplied_rgba_area_from_base"
                            if reference in independent else "retail_index_projection"),
-            "palette_quality": selected_quality.get(reference),
+            "palette_quality": selected_quality[reference],
             "levels": [
                 {"level": level.level, "width": level.width, "height": level.height,
                  "pixel_offset": texture.pixel_offset + sum(

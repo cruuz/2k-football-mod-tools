@@ -3317,7 +3317,7 @@ class Nfl2k5StudioFacade:
 
     def replace_equipment_texture(
         self, asset: object, supplied_png: Path, progress: ProgressSink, *,
-        independent: bool = False, scale: int = 1,
+        independent: bool | None = None, scale: int = 1,
     ) -> object:
         """Compile the selected equipment choice before changing the project."""
         from mod_editor.core.nfl2k5_equipment_import import stage_equipment_import
@@ -3624,6 +3624,7 @@ class Nfl2k5StudioFacade:
 
     def launch_xemu(self, progress: ProgressSink) -> object:
         from mod_editor.core.image_use import assert_image_available
+        from mod_editor.studio import xemu_settings
 
         command = self.xemu_command
         with self._lock:
@@ -3641,6 +3642,9 @@ class Nfl2k5StudioFacade:
         argv = _xemu_launch_argv(command, result.output_xiso)
         if sys.platform == "win32":
             _validate_xemu_executable(Path(shutil.which(command[0]) or command[0]))
+        permission_note = xemu_settings.grant_build_folder(command, result.output_xiso.parent)
+        if permission_note:
+            progress(permission_note, 0, 1)
         try:
             self._process_launcher(
                 argv,
@@ -3657,9 +3661,16 @@ class Nfl2k5StudioFacade:
                     "select xemu.exe in Set up xemu. A 64-bit xemu needs 64-bit Windows; "
                     "use a build for your PC's CPU type. The game disc was not changed.") from exc
             raise ValidationError(f"xemu could not be started: {exc}") from exc
-        progress("xemu launched", 1, 1)
+        settings_note = ""
+        try:
+            xemu_settings.remember_disc(xemu_settings.config_path(command), result.output_xiso)
+        except (OSError, ValueError, TypeError) as exc:
+            settings_note = f" Could not remember the disc in xemu settings: {exc}."
+        message = (f"xemu launched. {xemu_settings.disc_help(result.output_xiso)}."
+                   + (f" {permission_note}" if permission_note else "") + settings_note)
+        progress(message, 1, 1)
         return StudioOperationResult(
-            f"xemu launched with {result.output_xiso.name}.", result.output_xiso
+            message, result.output_xiso
         )
 
     def _require_session(self) -> StudioSession:

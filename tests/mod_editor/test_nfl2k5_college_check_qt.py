@@ -31,7 +31,7 @@ class PageBoundaryTests(unittest.TestCase):
         self.panel.deleteLater()
         self.app.processEvents()
 
-    def test_roster_save_write_refuses_outside_then_core_repair_unlocks_copy(self):
+    def test_roster_save_loads_preserves_then_repairs_college_references(self):
         for kind in ('null', 'past_table', 'outside'):
             with self.subTest(kind=kind), tempfile.TemporaryDirectory() as td:
                 bad, field = corrupt(synthetic_save_v0(synthetic_body()), kind)
@@ -39,17 +39,14 @@ class PageBoundaryTests(unittest.TestCase):
                 self.assertTrue(self.panel.load_save(source))
                 self.assertEqual(self.panel.document.players[0].college, '')
                 self.panel.document.players[0].record.set('speed', 77)
-                if kind == 'outside':
-                    with self.assertRaisesRegex(codec.SaveRostError, 'college pointer'):
-                        self.panel.write_copy_to(Path(td) / 'blocked')
-                else:
-                    self.assertTrue(self.panel.write_copy_to(Path(td) / 'allowed')['signed'])
+                self.assertTrue(self.panel.document.college_warning)
+                self.assertTrue(self.panel.write_copy_to(Path(td) / 'allowed')['signed'])
                 fixed, receipt = check.repair(self.panel.document.to_body())
                 self.panel.document.adopt_body(fixed)
                 self.assertTrue(self.panel.write_copy_to(Path(td) / 'fixed')['signed'])
                 self.assertEqual(rr.SaveContainer.load(source).savegame, bad)
 
-    def test_franchise_schedule_copy_allowed_but_roster_edit_requires_repair(self):
+    def test_franchise_schedule_and_roster_load_then_college_repair(self):
         with tempfile.TemporaryDirectory() as td:
             bad, field = corrupt(synthetic_franchise(), 'outside')
             self.assertTrue(self.panel.load_save(write_container(Path(td) / 'source', bad)))
@@ -57,8 +54,7 @@ class PageBoundaryTests(unittest.TestCase):
             self.assertTrue(page.edit_game(0, 1, hour=8, minute=30))
             self.assertTrue(self.panel.write_copy_to(Path(td) / 'schedule')['signed'])
             self.panel.document.players[0].record.set('speed', 77)
-            with self.assertRaisesRegex(ValueError, 'college pointer'):
-                self.panel.write_copy_to(Path(td) / 'blocked')
+            self.assertTrue(self.panel.write_copy_to(Path(td) / 'unrepaired')['signed'])
             fixed, receipt = check.repair(self.panel.document.to_body())
             self.panel.document.adopt_body(fixed)
             self.assertTrue(self.panel.write_copy_to(Path(td) / 'fixed')['signed'])

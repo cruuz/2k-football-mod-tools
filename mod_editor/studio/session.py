@@ -1375,6 +1375,11 @@ class StudioSession:
         if destination.is_symlink():
             raise ValidationError(f"Refusing to replace a symbolic link: {destination}")
         payload = source.read_bytes()
+        if getattr(asset, "kind", None) == "uniform_equipment_texture":
+            # Export is portable artwork. The project-only choice names its
+            # current slot and must not reject importing this PNG into another.
+            from mod_editor.core.nfl2k5_equipment_import_intent import with_import_mode
+            payload = with_import_mode(payload, asset.asset_id, b"", independent=False)
         if replace:
             _replace_atomic(destination, payload)
         else:
@@ -3150,7 +3155,7 @@ class StudioSession:
         for asset_id in sorted(self._edits):
             asset = self._visual_asset(asset_id)
             staged.append((asset, self._edits[asset_id].replacement_path))
-        return preflight.edits_for_assets(staged)
+        return preflight.edits_for_assets(staged, pack0=self.cache.pack0)
 
     def preflight_visual_edits(
         self,

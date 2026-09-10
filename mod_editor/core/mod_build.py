@@ -874,9 +874,30 @@ def _prepare_music_project(source, project, directory, progress, *, library_resu
         service.invalidate()
 
 
+PLAYBOOK_OPTION_LABELS = {
+    "playbook_pair": "Separate offensive and defensive playbooks (experimental)",
+    "read_option_runtime": "Read option mesh controls (experimental)",
+    "qb_spy": "QB spy for zone, man and rush (experimental)",
+}
+
+
+def validate_plan(plan: BuildPlan) -> list[str]:
+    """Cheap selection checks, before reading files or preparing project edits."""
+    if not plan.playbook_pair:
+        return []
+    return [
+        f'"{PLAYBOOK_OPTION_LABELS["playbook_pair"]}" cannot be combined with '
+        f'"{PLAYBOOK_OPTION_LABELS[key]}". Turn one option off.'
+        for key in ("read_option_runtime", "qb_spy") if getattr(plan, key)
+    ]
+
+
 def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, Any]:
     """Apply the plan to a copy; archive rebuilds publish only a complete result."""
     try:
+        blockers = validate_plan(plan)
+        if blockers:
+            raise ValueError("\n".join(blockers))
         r62 = _validated_r62_plan_options(plan)
         source, target = Path(plan.source).resolve(), Path(plan.target).absolute()
         if source == target.resolve():
@@ -992,6 +1013,9 @@ def _validated_r62_plan_options(plan):
 
 def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits=None, r62_options=None) -> dict[str, Any]:
     progress = progress or (lambda *_a: None)
+    blockers = validate_plan(plan)
+    if blockers:
+        raise ValueError("\n".join(blockers))
     if plan.screen_timing is not None and (
             not isinstance(plan.screen_timing, str) or plan.screen_timing not in ("A", "B", "C", "D")):
         raise ValueError("screen_timing must be None or A, B, C, D")
@@ -1788,4 +1812,4 @@ def save_receipt(receipt: dict[str, Any], path: Path | str) -> None:
     Path(path).write_text(json.dumps(receipt, indent=1, default=str), encoding="utf-8", newline="\n")
 
 
-__all__ = ["BuildPlan", "CommentarySwap", "PRESETS", "PRESET_TITLES", "apply_preset", "availability", "build", "inspect", "save_receipt"]
+__all__ = ["validate_plan", "PLAYBOOK_OPTION_LABELS", "BuildPlan", "CommentarySwap", "PRESETS", "PRESET_TITLES", "apply_preset", "availability", "build", "inspect", "save_receipt"]

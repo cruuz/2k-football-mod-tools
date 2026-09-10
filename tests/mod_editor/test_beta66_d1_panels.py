@@ -1,0 +1,139 @@
+"""Execute the exact protected-panel handoff in memory, offscreen."""
+import json
+import os
+from pathlib import Path
+import sys
+import types
+import unittest
+from unittest.mock import patch
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
+from PyQt5.QtWidgets import QApplication, QMessageBox
+from mod_editor.core import mod_build
+
+
+def wired_module(name):
+    filename = name.replace('.', '/') + '.py'
+    source = (ROOT / filename).read_text()
+    edits = json.loads((ROOT / 'reports/beta66_d1/panel_edits.json').read_text())[filename]
+    # Work before and after integration, with no on-disk GUI mutation.
+    for edit in edits:
+        if edit['old'] in source:
+            if source.count(edit['old']) != 1:
+                raise AssertionError('ambiguous wiring insertion')
+            source = source.replace(edit['old'], edit['new'])
+        elif edit['new'] not in source:
+            raise AssertionError('wiring context drifted')
+    module = types.ModuleType(name)
+    module.__file__ = str(ROOT / filename)
+    module.__package__ = name.rpartition('.')[0]
+    with patch.dict(sys.modules, {name: module}):
+        exec(compile(source, module.__file__, 'exec'), module.__dict__)
+    return module
+
+
+class PlanTests(unittest.TestCase):
+    def test_both_conflicts_and_three_presets(self):
+        for key in ('read_option_runtime', 'qb_spy'):
+            plan = mod_build.BuildPlan('missing.iso', 'out.iso', playbook_pair=True, **{key: True})
+            messages = mod_build.validate_plan(plan)
+            self.assertEqual(len(messages), 1)
+            for label in (mod_build.PLAYBOOK_OPTION_LABELS[key], mod_build.PLAYBOOK_OPTION_LABELS['playbook_pair']):
+                self.assertIn(label, messages[0])
+            with patch.object(mod_build, '_validated_r62_plan_options', side_effect=AssertionError('late')):
+                with self.assertRaisesRegex(ValueError, 'cannot be combined'):
+                    mod_build.build(plan)
+        for name in mod_build.PRESETS:
+            self.assertEqual(mod_build.validate_plan(mod_build.apply_preset(mod_build.BuildPlan('in.iso', 'out.iso'), name)), [])
+
+
+class PanelTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.app = QApplication.instance() or QApplication([])
+        cls.build_module = wired_module('mod_editor.gui.build_panel_qt')
+        cls.game_module = wired_module('mod_editor.gui.gameplay_patches_panel_qt')
+
+    def test_every_toggle_both_tabs_linked_and_restored_conflicts(self):
+        from mod_editor.gui.gameplay_project_ui import GameplayBuildLink
+        build = self.build_module.BuildPanel()
+        game = self.game_module.GameplayPatchesPanel()
+        self.addCleanup(build.deleteLater)
+        self.addCleanup(game.deleteLater)
+        state = {key: 'retail' for key in mod_build.PLAYBOOK_OPTION_LABELS}
+        state.update(container='xiso', path='synthetic.iso')
+        # A source snapshot sufficient for all selected playbook gates.
+        for p in (build, game):
+            p._state = state
+            p.source_field.setText('synthetic.iso')
+            p.target_field.setText('out.iso')
+            p._refresh()
+        link = GameplayBuildLink(build, game, lambda: None)
+        for origin in (build._boxes(), game.checks):
+            for key in ('read_option_runtime', 'qb_spy', 'playbook_pair'):
+                origin[key].click()
+                opposing = ('read_option_runtime', 'qb_spy') if key == 'playbook_pair' else ('playbook_pair',)
+                for view in (build._boxes(), game.checks):
+                    for other in opposing:
+                        self.assertFalse(view[other].isEnabled())
+                        self.assertIn(mod_build.PLAYBOOK_OPTION_LABELS[key], view[other].toolTip())
+                    self.assertTrue(view[key].isEnabled())
+                self.assertEqual(mod_build.validate_plan(build.plan()), [])
+                origin[key].click()
+                for view in (build._boxes(), game.checks):
+                    self.assertTrue(all(view[k].isEnabled() for k in mod_build.PLAYBOOK_OPTION_LABELS))
+        # Restored/programmatic invalid selections must block both build buttons
+        # but remain possible to untick.
+        build.playbook_pair_check.setChecked(True)
+        build.qb_spy_check.setChecked(True)
+        self.assertFalse(build.build_button.isEnabled())
+        self.assertFalse(game.write_button.isEnabled())
+        self.assertIn('QB spy', build.blocker())
+        build.playbook_pair_check.click()
+        self.assertEqual(mod_build.validate_plan(build.plan()), [])
+        build.qb_spy_check.click()
+        state['read_option_runtime'] = 'applied'
+        for p in (build, game):
+            p._refresh()
+        self.assertFalse(build.playbook_pair_check.isEnabled())
+        self.assertFalse(game.checks['playbook_pair'].isEnabled())
+        state['read_option_runtime'] = 'foreign'
+        for p in (build, game):
+            p._refresh()
+        self.assertFalse(build.read_option_runtime_check.isEnabled())
+
+    def test_equipment_default_and_explicit_recolour(self):
+        from types import SimpleNamespace
+        cls = wired_module('mod_editor.gui.equipment_texture_import_dialog').EquipmentTextureImportDialog
+        for identifier, own in (('tset:0:9:0:shoes02', True), ('tset:0:4:0:socks01', False)):
+            dialog = cls(SimpleNamespace(asset_id=identifier, label='Synthetic', width=32, height=32))
+            self.assertEqual(dialog.independent, own)
+            self.assertEqual(dialog.game_size.isEnabled(), own)
+            if own:
+                dialog.own_texture.click()
+                self.assertFalse(dialog.independent)
+                self.assertFalse(dialog.game_size.isEnabled())
+            dialog.deleteLater()
+
+    def test_roster_open_warning_and_repair_offer(self):
+        from tests.mod_editor.test_nfl2k5_college_check import corrupt
+        from tests.mod_editor.test_nfl2k5_roster_records import synthetic_body
+        from mod_editor.core import nfl2k5_roster_records as rr
+        module = wired_module('mod_editor.gui.roster_editor_panel_qt')
+        panel = module.RosterEditorPanel()
+        self.addCleanup(panel.deleteLater)
+        bad, _ = corrupt(synthetic_body(), 'outside')
+        bad, _ = corrupt(bad, 'null', player=1)
+        document = rr.RosterDocument(bad, base=rr.find_block_base(bad))
+        with patch.object(module.QMessageBox, 'question', return_value=QMessageBox.No) as ask:
+            panel.load_document(document)
+            self.app.processEvents()
+            self.assertTrue(ask.called)
+            self.assertIn('2 players have a missing/invalid college', panel.status_label.text())
+            self.assertIsNotNone(panel.college_check_session())
+
+
+if __name__ == '__main__':
+    unittest.main()

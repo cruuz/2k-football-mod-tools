@@ -116,8 +116,8 @@ class ContractTests(unittest.TestCase):
                 self.assertEqual(contract.decoded_bytes,
                                  system_bytes + module.VIDEO_BYTES)
 
-    def test_the_modelled_families_are_exactly_the_four_bounded_importers(self) -> None:
-        self.assertEqual(set(preflight.CONTRACTS), set(self.MODULES))
+    def test_modelled_families_include_per_target_digit_contracts(self) -> None:
+        self.assertEqual(set(preflight.CONTRACTS), set(self.MODULES) | {'jersey_digit', 'helmet_digit', 'arm_digit'})
 
     def test_the_sleeve_is_not_the_torso_shape(self) -> None:
         # The regression this file exists to prevent. Sleeves are a quarter-size

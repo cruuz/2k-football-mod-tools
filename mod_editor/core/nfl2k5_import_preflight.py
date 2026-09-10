@@ -23,11 +23,12 @@ that then refuses.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from functools import lru_cache
 from pathlib import Path
 import sys
 from typing import Callable, Iterable, Sequence
+from .errors import ValidationError
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -69,6 +70,13 @@ class SlotContract:
     system_bytes: int
     palette_count: int
     interpalette_gap_bytes: int = 0
+    pre_palette_gap_bytes: int = 0
+    digit: bool = False
+    mip_storage: str = "xbox_morton_swizzled"
+    stream_tag: int = 1
+    offset_bits: int = 12
+    system_payload: bytes | None = None
+    palette_gap_payload: bytes | None = None
 
     @property
     def mip_dimensions(self) -> tuple[tuple[int, int], ...]:
@@ -88,6 +96,7 @@ class SlotContract:
             + self.index_chain_bytes
             + 1024 * self.palette_count
             + self.interpalette_gap_bytes
+            + self.pre_palette_gap_bytes
         )
 
 
@@ -134,14 +143,39 @@ def _contract_from_importer(kind: str, module, system_bytes: int,
 #: The families whose decoded layout is proved and stable enough to predict.
 #: Anything absent is reported as UNMODELLED rather than approximated -- a
 #: confident wrong number would be worse than no number.
-CONTRACTS: dict[str, SlotContract] = {
+def digit_contract(target) -> SlotContract:
+    """Use the writer's per-target shape (arm/helmet sizes vary by package)."""
+    contract = SlotContract(
+        target.family, target.width, target.height, target.mip_levels,
+        target.system_bytes, 1, pre_palette_gap_bytes=target.pre_palette_gap_bytes,
+        digit=True, mip_storage=target.mip_storage,
+        stream_tag=target.stream_tag, offset_bits=target.offset_bits,
+    )
+    if (contract.decoded_bytes != target.decoded_size
+            or contract.index_chain_bytes != target.index_chain_bytes
+            or target.palette_offset != contract.index_chain_bytes + contract.pre_palette_gap_bytes
+            or contract.mip_storage not in ("linear", "xbox_morton_swizzled")):
+        raise ValueError("Digit slot contract disagrees with its writer target")
+    return contract
+
+
+CONTRACTS: dict[str, SlotContract | Callable] = {
     # Jersey/torso shares the legacy TSET module's chain; pants and sleeve each
     # pin their own, and they are NOT the same shape as each other.
     "torso": _contract_from_importer("torso", palette_tools, 256, 2),
     "sleeve": _contract_from_importer("sleeve", _sleeve_import, 256, 2),
     "pants": _contract_from_importer("pants", _pants_import, 256, 2),
     "live_helmet": _contract_from_importer("live_helmet", _helmet_import, 128, 1),
+    "jersey_digit": digit_contract,
+    "helmet_digit": digit_contract,
+    "arm_digit": digit_contract,
 }
+
+
+@lru_cache(maxsize=4096)
+def _digit_target(family, asset_code, side, variant, digit):
+    import nfl_live_numbers_nameplate_targets as targets
+    return targets.select_target(family, asset_code, side, variant, digit)[-1]
 
 
 #: Each modelled family's target module, which owns the fixed allocation for a
@@ -162,6 +196,7 @@ def slot_allocation_bytes(
     side: str,
     variant: int,
     family: str | None = None,
+    digit: int | None = None,
 ) -> int | None:
     """The fixed compressed span one package writes into, or None.
 
@@ -174,6 +209,11 @@ def slot_allocation_bytes(
     staged set can hold dozens of edits against the same few packages.
     """
 
+    if kind in ("live_number_nameplate", "jersey_digit", "helmet_digit", "arm_digit"):
+        try:
+            return int(_digit_target(family or kind.removesuffix("_digit"), asset_code, side, int(variant), digit).stored_size)
+        except (OSError, ValueError, KeyError):
+            return None
     entry = _TARGET_MODULES.get(kind)
     if entry is None:
         return None
@@ -199,7 +239,9 @@ def slot_allocation_bytes(
 
 def edits_for_assets(
     staged: Iterable[tuple[object, Path]],
-) -> tuple[tuple[str, str, str, Path, int | None], ...]:
+    *, pack0: Path | None = None,
+) -> tuple[tuple[str, str, str, Path, int | None] |
+           tuple[str, str, str, Path, int | None, SlotContract | None], ...]:
     """Turn ``(catalog asset, staged PNG)`` pairs into prediction inputs.
 
     The asset is duck-typed on purpose: a uniform-set component and an
@@ -207,7 +249,8 @@ def edits_for_assets(
     this the same way, and only the four modelled families resolve to a bound.
     """
 
-    rows: list[tuple[str, str, str, Path, int | None]] = []
+    rows = []
+    archive = None
     for asset, png_path in staged:
         kind = str(getattr(asset, "kind", "") or "")
         label = str(getattr(asset, "label", "") or getattr(asset, "asset_id", ""))
@@ -215,6 +258,29 @@ def edits_for_assets(
         side = str(getattr(asset, "side_code", "") or "")
         variant = getattr(asset, "variant", 0) or 0
         family = getattr(asset, "family", None)
+        if kind == "live_number_nameplate" and family in ("jersey", "helmet", "arm"):
+            kind = family + "_digit"
+            try:
+                target = _digit_target(family, asset_code, side, int(variant), getattr(asset, "digit", None))
+                contract = digit_contract(target)
+                allocation = target.stored_size
+                if pack0 is not None:
+                    import nfl_live_numbers_nameplate_png_import as writer
+                    if archive is None:
+                        archive = writer.parse_archive(pack0)
+                    entry = archive.entries[target.outer_index]
+                    span = writer.read_entry_range(archive, entry, target.chunk_offset, target.span_size)
+                    _chunk, decoded, _texture = writer.validate_template(span, target)
+                    gap_start = target.system_bytes + target.index_chain_bytes
+                    contract = replace(contract, system_payload=decoded[:target.system_bytes],
+                                       palette_gap_payload=decoded[gap_start:gap_start+target.pre_palette_gap_bytes])
+            except (OSError, ValueError, KeyError, IndexError, TxtrError, ValidationError):
+                contract, allocation = None, None
+            # The optional sixth value carries the exact target contract.
+            # Existing five-value inputs remain supported for uniform families.
+            rows.append((str(getattr(asset, "asset_id", "")), label, kind,
+                         Path(png_path), allocation, contract))
+            continue
         allocation = (
             slot_allocation_bytes(kind, asset_code, side, int(variant), family)
             if asset_code and side
@@ -281,6 +347,9 @@ def _load_rgba(png_path: Path, width: int, height: int) -> bytes:
 def _mip_chain(rgba: bytes, contract: SlotContract) -> list:
     """Box-filter the chain the importers build, at their exact dimensions."""
 
+    if contract.digit:
+        from .nfl2k5_digit_texture import make_digit_mips
+        return make_digit_mips(rgba, contract.width, contract.height, contract.mip_levels)
     levels = [palette_tools.MipLevel(0, contract.width, contract.height, rgba)]
     current, width, height = rgba, contract.width, contract.height
     for level in range(1, contract.mip_levels):
@@ -310,16 +379,16 @@ def predict_slot(
     contract: SlotContract,
     allocation_bytes: int,
     *,
-    stream_tag: int = 1,
-    offset_bits: int = 12,
+    stream_tag: int | None = None,
+    offset_bits: int | None = None,
     asset_id: str = "",
     label: str = "",
 ) -> SlotPrediction:
     """Run the real ladder against one staged PNG and report the outcome.
 
-    The decoded payload is assembled with a zero system block. Only its *size*
-    reaches the encoder's ratio, and every real system block is small and
-    constant per family, so the predicted tier matches what the importer picks.
+    Digit contracts supplied by the session include the original system/gap
+    bytes. Legacy contracts without a source template use zero placeholders;
+    their verdict remains an estimate of the compressed slot's capacity.
     """
 
     name = label or asset_id or contract.kind
@@ -334,19 +403,22 @@ def predict_slot(
         set(zip(rgba[0::4], rgba[1::4], rgba[2::4], rgba[3::4]))
     )
     levels = _mip_chain(rgba, contract)
-    system = bytes(contract.system_bytes)
+    system = contract.system_payload if contract.system_payload is not None else bytes(contract.system_bytes)
 
     gap = bytes(contract.interpalette_gap_bytes)
 
     def candidate(palette, index_levels) -> bytes:
         chain = b"".join(
-            swizzle_2d(indices, level.width, level.height, 1)
+            (swizzle_2d(indices, level.width, level.height, 1)
+             if contract.mip_storage == "xbox_morton_swizzled" else indices)
             for indices, level in zip(index_levels, levels)
         )
         one = palette_tools.palette_bytes(palette)
         # ``gap.join`` puts the padding *between* the clean and mud palettes and
         # nowhere else, so a single-palette family is unaffected.
-        payload = system + chain + gap.join(one for _ in range(contract.palette_count))
+        payload = (system + chain + (contract.palette_gap_payload if contract.palette_gap_payload is not None
+                                    else bytes(contract.pre_palette_gap_bytes))
+                   + gap.join(one for _ in range(contract.palette_count)))
         if len(payload) != contract.decoded_bytes:
             raise AssertionError(
                 f"{contract.kind} candidate payload is {len(payload)} bytes, "
@@ -355,14 +427,19 @@ def predict_slot(
         return payload
 
     try:
+        quality_options = {}
+        if contract.digit:
+            from .nfl2k5_digit_texture import quantize_digit_levels
+            quality_options = {"quantizer": quantize_digit_levels, "minimum_palette_limit": 16}
         fit = palette_tools.quantize_levels_to_vc_lz_bound(
             levels,
             candidate,
-            stream_tag=stream_tag,
-            offset_bits=offset_bits,
+            stream_tag=contract.stream_tag if stream_tag is None else stream_tag,
+            offset_bits=contract.offset_bits if offset_bits is None else offset_bits,
             max_encoded_size=allocation_bytes,
+            **quality_options,
         )
-    except TxtrError as exc:
+    except (TxtrError, ValueError, ValidationError) as exc:
         return SlotPrediction(
             asset_id, name, contract.kind, REFUSED,
             source_colours=source_colours,
@@ -381,7 +458,7 @@ def predict_slot(
         asset_id=asset_id,
         label=name,
         kind=contract.kind,
-        outcome=REDUCED if refused else FULL,
+        outcome=REDUCED if refused or fit.quantization.get("maximum_channel_error", 0) else FULL,
         palette_entries=len(fit.palette),
         source_colours=source_colours,
         encoded_bytes=len(fit.compressed),
@@ -396,14 +473,16 @@ def predict_slot(
 
 
 def predict_edits(
-    edits: Iterable[tuple[str, str, str, Path, int | None]],
+    edits: Iterable[tuple[str, str, str, Path, int | None] |
+                    tuple[str, str, str, Path, int | None, SlotContract | None]],
     *,
     progress: Callable[[str, int, int], None] | None = None,
     contracts: dict[str, SlotContract] | None = None,
 ) -> tuple[SlotPrediction, ...]:
     """Predict a whole staged set.
 
-    Each edit is ``(asset_id, label, kind, png_path, allocation_bytes)``. A kind
+    Each edit is ``(asset_id, label, kind, png_path, allocation_bytes)`` with an
+    optional sixth value carrying the exact per-target digit contract. A kind
     with no modelled contract, or an allocation that could not be resolved, is
     reported as unmodelled and costs nothing.
 
@@ -415,17 +494,18 @@ def predict_edits(
     table = CONTRACTS if contracts is None else contracts
     rows: list[SlotPrediction] = []
     staged: Sequence = list(edits)
-    for index, (asset_id, label, kind, png_path, allocation) in enumerate(staged):
+    for index, entry in enumerate(staged):
+        asset_id, label, kind, png_path, allocation, *specific = entry
         if progress is not None:
             progress(f"Checking {label or asset_id}", index, len(staged))
-        contract = table.get(kind)
-        if contract is None:
+        contract = specific[0] if specific else table.get(kind)
+        if kind not in table and contract is None:
             rows.append(SlotPrediction(
                 asset_id, label or asset_id, kind, UNMODELLED,
                 detail="this family has no fixed-span prediction yet.",
             ))
             continue
-        if allocation is None:
+        if allocation is None or not isinstance(contract, SlotContract):
             rows.append(SlotPrediction(
                 asset_id, label or asset_id, kind, UNMODELLED,
                 detail=(

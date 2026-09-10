@@ -36,7 +36,7 @@ def corrupt(payload, kind, player=0):
 
 
 class ExistingBoundaryTests(unittest.TestCase):
-    def test_631_accepts_null_and_off_table_but_refuses_outside_arena(self):
+    def test_loads_missing_off_table_and_outside_references_without_dereferencing(self):
         for payload in (synthetic_body(), synthetic_save_v0(synthetic_body()), synthetic_franchise()):
             for kind in ('null', 'outside', 'before', 'misaligned', 'past_table', 'string', 'interior_string'):
                 bad, field = corrupt(payload, kind)
@@ -45,15 +45,11 @@ class ExistingBoundaryTests(unittest.TestCase):
                     doc = rr.RosterDocument(bad, base=rr.find_block_base(bad))
                     self.assertEqual(doc.players[0].college, '')
                     self.assertEqual(doc.to_body(), bad)
-                    if kind in ('outside', 'before'):
-                        with self.assertRaisesRegex(codec.SaveRostError,
-                                'primary player 0.*college pointer: range outside ROST arena data'):
-                            codec.decode(bad)
-                        with self.assertRaises(codec.SaveRostError):
-                            ps.validate_save(bad)
-                    else:
-                        self.assertEqual(codec.decode(bad).to_bytes(), bad)
-                        ps.validate_save(bad)
+                    decoded = codec.decode(bad)
+                    self.assertEqual(decoded.to_bytes(), bad)
+                    self.assertIn('use Check my rosters to repair', decoded.college_warning)
+                    self.assertIn('use Check my rosters to repair', doc.college_warning)
+                    ps.validate_save(bad)
 
     def test_table_corruption_refusals_are_distinct_from_missing_player_colleges(self):
         for kind, message in (('suffix', 'UTF-16 pointer: range outside ROST arena data'),
@@ -100,11 +96,10 @@ class ExistingBoundaryTests(unittest.TestCase):
         self.assertTrue(any('pointer and cannot travel' in line for line in receipt['log']))
         self.assertEqual(rr.RosterDocument(after).players[0].record.values['speed'], 77)
 
-    def test_low_level_record_mutation_can_create_a_bad_pointer_but_typed_codec_refuses(self):
+    def test_bad_reference_loads_but_typed_pointer_mutation_stays_forbidden(self):
         doc = rr.RosterDocument(synthetic_body())
         doc.players[0].record.set('college_pointer', 0x7FFFFFFF)
-        with self.assertRaisesRegex(codec.SaveRostError, 'college pointer'):
-            codec.decode(doc.to_body())
+        self.assertTrue(codec.decode(doc.to_body()).college_warning)
         typed = codec.decode(synthetic_body())
         with self.assertRaisesRegex(codec.SaveRostError, 'pointer edits require a typed relocation writer'):
             typed.edit_player('primary', 0, {'college_pointer': 0x7FFFFFFF})
@@ -250,8 +245,8 @@ class RepairTests(unittest.TestCase):
             # The reserved tail is in the file, but must never be a college target.
             rel(data, field, old.root + arena.BLOCK_OFFSET)
             self.assertEqual(self.check.scan(data).findings[0].reason, 'outside_arena')
-            with self.assertRaises(codec.SaveRostError):
-                rr.RosterDocument(data, base=old.preamble)
+            loaded = rr.RosterDocument(data, base=old.preamble)
+            self.assertTrue(loaded.college_warning)
             fixed, receipt = self.check.repair(data)
             self.assertEqual(fixed, original)
             self.assertEqual(fixed[new_end:], payload[old.end:])
@@ -314,8 +309,8 @@ class RepairTests(unittest.TestCase):
                 (source / name).write_bytes(payload)
             container = rr.SaveContainer.load(source)
             doc = container.document()
-            with self.assertRaises(codec.SaveRostError):
-                rr.save_document(doc, Path(td) / 'blocked')
+            rr.save_document(doc, Path(td) / 'unrepaired-copy')
+            self.assertTrue(doc.college_warning)
             fixed, receipt = self.check.repair(container.savegame, source=str(source))
             ps.validate_save(fixed)
             container.write(Path(td) / 'copy', fixed)
@@ -339,9 +334,7 @@ class RetailTests(unittest.TestCase):
             for kind in ('null', 'outside', 'misaligned', 'interior_string'):
                 with self.subTest(path=str(path), kind=kind):
                     bad, field = corrupt(original, kind)
-                    if kind == 'outside':
-                        with self.assertRaises(codec.SaveRostError):
-                            ps.validate_save(bad)
+                    ps.validate_save(bad)
                     fixed, receipt = check.repair(bad, source=str(path))
                     ps.validate_save(fixed)
                     self.assertEqual(fixed[:field] + fixed[field + 4:], bad[:field] + bad[field + 4:])

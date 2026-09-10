@@ -43,6 +43,28 @@ APF_PANTS_CAPABILITY_ID = "apf2k8.uniforms.pants_color_00_23"
 APF_HELMET_CAPABILITY_ID = "apf2k8.uniforms.helmet_color_00_23"
 APF_SHOULDER_CAPABILITY_ID = "apf2k8.uniforms.shoulder_color_00_23"
 APF_DIGITAL_FONT_CAPABILITY_ID = "apf2k8.scorebug_presentation.digital_font"
+
+
+def clean_provider_workspace(test_case):
+    """Only reviewed source/data pins, independent of local retail symlinks."""
+    temporary = tempfile.TemporaryDirectory(prefix="provider-test-sources-")
+    test_case.addClassCleanup(temporary.cleanup)
+    root = Path(temporary.name).resolve()
+    workspace = Path(__file__).resolve().parents[2]
+    files = set()
+    for provider in (Nfl2k5UnifiedVisualProvider, Nfl2k5ScorebugProvider,
+                     Apf2k8JerseyColorProvider, Apf2k8PantsColorProvider,
+                     Apf2k8HelmetColorProvider, Apf2k8ShoulderColorProvider):
+        files.update(provider.module_pins)
+        files.update(getattr(provider, "data_pins", {}))
+        schema = getattr(provider, "recipe_schema_file", None)
+        if schema:
+            files.add(schema)
+    for relative in files:
+        destination = root / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes((workspace / relative).read_bytes())
+    return root
 APF_SOURCE_SHA = "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e"
 SCOREBUG_CAPABILITY_ID = "nfl2k5.scorebug_presentation.inventory"
 NFL_AUDIO_CAPABILITY_ID = "nfl2k5.audio.menu_back_wav"
@@ -520,6 +542,7 @@ class ScorebugRecordingRunner:
 class ProviderTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        cls.workspace = clean_provider_workspace(cls)
         cls.registry = CapabilityRegistryLoader().load(
             allow_sample_fallback=False, check_files=False
         )
@@ -611,6 +634,7 @@ class ProviderTests(unittest.TestCase):
     def test_real_provider_constructs_fixed_argv_and_three_stages(self) -> None:
         runner = RecordingRunner()
         provider = Nfl2k5UnifiedVisualProvider(
+            workspace=self.workspace,
             runner=runner,
             source_hasher=lambda path, progress: (PINNED_SOURCE_SHA, path.stat().st_size),
         )
@@ -639,6 +663,7 @@ class ProviderTests(unittest.TestCase):
 
     def test_real_preflight_refuses_existing_output_and_noncanonical_project(self) -> None:
         provider = Nfl2k5UnifiedVisualProvider(
+            workspace=self.workspace,
             runner=RecordingRunner(),
             source_hasher=lambda path, progress: (PINNED_SOURCE_SHA, path.stat().st_size),
         )
@@ -661,6 +686,7 @@ class ProviderTests(unittest.TestCase):
         variant_sha = "a" * 64
         checked: list[Path] = []
         provider = Nfl2k5UnifiedVisualProvider(
+            workspace=self.workspace,
             runner=RecordingRunner(),
             source_hasher=lambda path, progress: (variant_sha, path.stat().st_size),
             contained_source_validator=lambda path: checked.append(path) is None,
@@ -682,6 +708,7 @@ class ProviderTests(unittest.TestCase):
     def test_scorebug_provider_constructs_fixed_argv_and_three_stages(self) -> None:
         runner = ScorebugRecordingRunner()
         provider = Nfl2k5ScorebugProvider(
+            workspace=self.workspace,
             runner=runner,
             source_hasher=lambda path, progress: (
                 PINNED_SOURCE_SHA,
@@ -720,7 +747,7 @@ class ProviderTests(unittest.TestCase):
                     "tools/nfl2k5_scorebug_mod_project.py"
                 )
             )
-            self.assertEqual(cwd, Path(__file__).resolve().parents[2])
+            self.assertEqual(cwd, self.workspace)
             self.assertNotIn(
                 self.registry.get(SCOREBUG_CAPABILITY_ID).raw["backend"]["command"],
                 argv,
@@ -730,6 +757,7 @@ class ProviderTests(unittest.TestCase):
         variant_sha = "b" * 64
         checked: list[Path] = []
         provider = Nfl2k5ScorebugProvider(
+            workspace=self.workspace,
             runner=ScorebugRecordingRunner(),
             source_hasher=lambda path, progress: (variant_sha, path.stat().st_size),
             contained_source_validator=lambda path: checked.append(path) is None,
@@ -750,6 +778,7 @@ class ProviderTests(unittest.TestCase):
 
     def test_scorebug_preflight_rejects_project_png_source_and_output_forgery(self) -> None:
         provider = Nfl2k5ScorebugProvider(
+            workspace=self.workspace,
             runner=ScorebugRecordingRunner(),
             source_hasher=lambda path, progress: (
                 PINNED_SOURCE_SHA,
@@ -823,6 +852,7 @@ class ProviderTests(unittest.TestCase):
 
     def test_scorebug_provider_pins_registry_contract_backend_hash_and_source_hash(self) -> None:
         provider = Nfl2k5ScorebugProvider(
+            workspace=self.workspace,
             runner=ScorebugRecordingRunner(),
             source_hasher=lambda path, progress: (
                 PINNED_SOURCE_SHA,
@@ -860,6 +890,7 @@ class ProviderTests(unittest.TestCase):
                     provider._validate_capability(job, capability)
 
             wrong_hash_provider = Nfl2k5ScorebugProvider(
+            workspace=self.workspace,
                 runner=ScorebugRecordingRunner(),
                 source_hasher=lambda path, progress: (
                     "0" * 64,
@@ -872,6 +903,7 @@ class ProviderTests(unittest.TestCase):
     def test_scorebug_provider_rejects_unproved_reports_and_missing_markers(self) -> None:
         def orchestrator(runner: ScorebugRecordingRunner) -> ProviderOrchestrator:
             provider = Nfl2k5ScorebugProvider(
+            workspace=self.workspace,
                 runner=runner,
                 source_hasher=lambda path, progress: (
                     PINNED_SOURCE_SHA,
@@ -903,6 +935,7 @@ class ProviderTests(unittest.TestCase):
     def test_apf_provider_constructs_fixed_argv_for_recipe_build_and_verifier(self) -> None:
         runner = ApfRecordingRunner()
         provider = Apf2k8JerseyColorProvider(
+            workspace=self.workspace,
             runner=runner,
             source_hasher=lambda path, progress: (APF_SOURCE_SHA, path.stat().st_size),
         )
@@ -953,6 +986,7 @@ class ProviderTests(unittest.TestCase):
 
     def test_apf_preflight_refuses_noncanonical_selector_png_and_outputs(self) -> None:
         provider = Apf2k8JerseyColorProvider(
+            workspace=self.workspace,
             runner=ApfRecordingRunner(),
             source_hasher=lambda path, progress: (APF_SOURCE_SHA, path.stat().st_size),
         )
@@ -1004,6 +1038,7 @@ class ProviderTests(unittest.TestCase):
 
     def test_apf_provider_requires_exact_registry_module_classification_and_hash_pin(self) -> None:
         provider = Apf2k8JerseyColorProvider(
+            workspace=self.workspace,
             runner=ApfRecordingRunner(),
             source_hasher=lambda path, progress: (APF_SOURCE_SHA, path.stat().st_size),
         )
@@ -1029,6 +1064,7 @@ class ProviderTests(unittest.TestCase):
     def test_apf_pants_provider_uses_fixed_recipe_build_and_verify_argv(self) -> None:
         runner = ApfPantsRecordingRunner()
         provider = Apf2k8PantsColorProvider(
+            workspace=self.workspace,
             runner=runner,
             source_hasher=lambda path, progress: (APF_SOURCE_SHA, path.stat().st_size),
         )
@@ -1079,6 +1115,7 @@ class ProviderTests(unittest.TestCase):
         from PIL import Image
 
         provider = Apf2k8PantsColorProvider(
+            workspace=self.workspace,
             runner=ApfPantsRecordingRunner(),
             source_hasher=lambda path, progress: (APF_SOURCE_SHA, path.stat().st_size),
         )
@@ -1099,6 +1136,7 @@ class ProviderTests(unittest.TestCase):
 
     def test_apf_pants_provider_pins_writer_verifier_schema_and_registry(self) -> None:
         provider = Apf2k8PantsColorProvider(
+            workspace=self.workspace,
             runner=ApfPantsRecordingRunner(),
             source_hasher=lambda path, progress: (APF_SOURCE_SHA, path.stat().st_size),
         )
@@ -1122,6 +1160,7 @@ class ProviderTests(unittest.TestCase):
     def test_apf_helmet_provider_uses_fixed_strict_recipe_build_and_verify_argv(self) -> None:
         runner = ApfHelmetRecordingRunner()
         provider = Apf2k8HelmetColorProvider(
+            workspace=self.workspace,
             runner=runner,
             source_hasher=lambda path, progress: (APF_SOURCE_SHA, path.stat().st_size),
         )
@@ -1183,6 +1222,7 @@ class ProviderTests(unittest.TestCase):
         from PIL import Image
 
         provider = Apf2k8HelmetColorProvider(
+            workspace=self.workspace,
             runner=ApfHelmetRecordingRunner(),
             source_hasher=lambda path, progress: (APF_SOURCE_SHA, path.stat().st_size),
         )
@@ -1220,7 +1260,7 @@ class ProviderTests(unittest.TestCase):
                 provider.validate(job, capability, lambda event: None)
 
     def test_apf_helmet_provider_pins_writer_verifier_and_schema(self) -> None:
-        provider = Apf2k8HelmetColorProvider()
+        provider = Apf2k8HelmetColorProvider(workspace=self.workspace)
         for relative, expected in (
             (provider.backend_module, provider.backend_module_sha256),
             (provider.verifier_module, provider.verifier_module_sha256),
@@ -1237,6 +1277,7 @@ class ProviderTests(unittest.TestCase):
     def test_apf_shoulder_provider_uses_fixed_recipe_build_and_verify_argv(self) -> None:
         runner = ApfShoulderRecordingRunner()
         provider = Apf2k8ShoulderColorProvider(
+            workspace=self.workspace,
             runner=runner,
             source_hasher=lambda path, progress: (APF_SOURCE_SHA, path.stat().st_size),
         )
@@ -1287,6 +1328,7 @@ class ProviderTests(unittest.TestCase):
         from PIL import Image
 
         provider = Apf2k8ShoulderColorProvider(
+            workspace=self.workspace,
             runner=ApfShoulderRecordingRunner(),
             source_hasher=lambda path, progress: (APF_SOURCE_SHA, path.stat().st_size),
         )
@@ -1309,6 +1351,7 @@ class ProviderTests(unittest.TestCase):
 
     def test_provider_tracks_corrected_registry_kind_allowlist_and_rejects_unknown(self) -> None:
         provider = Nfl2k5UnifiedVisualProvider(
+            workspace=self.workspace,
             runner=RecordingRunner(),
             source_hasher=lambda path, progress: (PINNED_SOURCE_SHA, path.stat().st_size),
         )
@@ -1332,6 +1375,7 @@ class ProviderTests(unittest.TestCase):
     def test_unified_ausb_preflight_requires_and_forwards_private_audio_inputs(self) -> None:
         runner = RecordingRunner()
         provider = Nfl2k5UnifiedVisualProvider(
+            workspace=self.workspace,
             runner=runner,
             source_hasher=lambda path, progress: (
                 PINNED_SOURCE_SHA, path.stat().st_size
@@ -1391,7 +1435,7 @@ class ProviderTests(unittest.TestCase):
 
     def test_unified_visual_build_does_not_receive_private_audio_paths(self) -> None:
         runner = RecordingRunner()
-        provider = Nfl2k5UnifiedVisualProvider(runner=runner)
+        provider = Nfl2k5UnifiedVisualProvider(workspace=self.workspace, runner=runner)
         capability = self.registry.get(CAPABILITY_ID)
         with tempfile.TemporaryDirectory() as temporary:
             job = request(Path(temporary))
@@ -1402,7 +1446,7 @@ class ProviderTests(unittest.TestCase):
         self.assertNotIn("--audio-containment-inventory", argv)
 
     def test_unified_provider_pins_and_composes_exact_stadium_texture_kind(self) -> None:
-        provider = Nfl2k5UnifiedVisualProvider()
+        provider = Nfl2k5UnifiedVisualProvider(workspace=self.workspace)
         capability = self.registry.get(CAPABILITY_ID)
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -1436,6 +1480,7 @@ class ProviderTests(unittest.TestCase):
 
     def test_crib_capability_authorizes_canonical_team_photo_project(self) -> None:
         provider = Nfl2k5UnifiedVisualProvider(
+            workspace=self.workspace,
             runner=RecordingRunner(),
             source_hasher=lambda path, progress: (
                 PINNED_SOURCE_SHA, path.stat().st_size

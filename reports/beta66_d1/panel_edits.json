@@ -1,0 +1,72 @@
+{
+  "mod_editor/gui/build_panel_qt.py": [
+    {
+      "old": "        blocker = self.blocker()",
+      "new": "        from mod_editor.studio.plan_controls import refresh_playbook_controls\n        self._playbook_blockers = refresh_playbook_controls(\n            self._boxes(), self._helpers, self._state, self._available)\n        blocker = self.blocker()"
+    },
+    {
+      "old": "        source = self.source_field.text().strip()\n        if not source:",
+      "new": "        conflicts = getattr(self, \"_playbook_blockers\", ())\n        if conflicts:\n            return \" \".join(conflicts)\n        source = self.source_field.text().strip()\n        if not source:"
+    },
+    {
+      "old": "\"from project on their own pages. \" + XEMU_LINE)",
+      "new": "\"from project on their own pages. \" + XEMU_LINE + \" \"\n                       \"Your disc: ~/2K5 Mod Studio Builds/NFL 2K5 Modded.xiso.iso. \"\n                       \"To play again later: open xemu, then Machine > Load Disc. \"\n                       \"Launch shows the exact file and folder if you saved elsewhere.\")"
+    }
+  ],
+  "mod_editor/gui/gameplay_patches_panel_qt.py": [
+    {
+      "old": "        self.badges: dict[str, QLabel] = {}",
+      "new": "        self.badges: dict[str, QLabel] = {}\n        self._helpers: dict[str, QLabel] = {}"
+    },
+    {
+      "old": "            if helper:\n                helper_label = QLabel(helper)\n                helper_label.setObjectName(\"throwMuted\")\n                helper_label.setWordWrap(True)\n                helper_label.setIndent(30)\n                rl.addWidget(helper_label)",
+      "new": "            helper_label = QLabel(helper)\n            helper_label.setObjectName(\"throwMuted\")\n            helper_label.setWordWrap(True)\n            helper_label.setIndent(30)\n            helper_label.setVisible(bool(helper))\n            rl.addWidget(helper_label)\n            self._helpers[key] = helper_label"
+    },
+    {
+      "old": "        any_on = any(c.isChecked() for c in self.checks.values())",
+      "new": "        from mod_editor.studio.plan_controls import refresh_playbook_controls\n        self._playbook_blockers = refresh_playbook_controls(\n            self.checks, self._helpers, self._state)\n        any_on = any(c.isChecked() for c in self.checks.values())"
+    },
+    {
+      "old": "                                     and self._task is None and not self._reading)",
+      "new": "                                     and self._task is None and not self._reading\n                                     and not self._playbook_blockers)\n        self.write_button.setToolTip(\" \".join(self._playbook_blockers))"
+    },
+    {
+      "old": "    def _write(self) -> None:\n        plan = self.plan()",
+      "new": "    def _write(self) -> None:\n        self._refresh()\n        if self._playbook_blockers:\n            return\n        plan = self.plan()"
+    }
+  ],
+  "mod_editor/gui/equipment_texture_import_dialog.py": [
+    {
+      "old": "        default = QLabel(\"Default: change colours only. \" + PALETTE_HELP)",
+      "new": "        default = QLabel(\n            \"Gloves and shoes default to their own artwork, including when you copy an exported style. \"\n            \"Untick below only for a recolour of the existing shared design. \" + PALETTE_HELP)"
+    },
+    {
+      "old": "        self.own_texture.setChecked(False)",
+      "new": "        self.own_texture.setChecked(supports_own_texture(asset.asset_id))"
+    },
+    {
+      "old": "        self.game_size.setEnabled(False)",
+      "new": "        self.game_size.setEnabled(self.independent)"
+    }
+  ],
+  "mod_editor/gui/roster_editor_panel_qt.py": [
+    {
+      "old": "    def load_from_facade(self) -> bool:",
+      "new": "    def _offer_college_repair(self, document) -> None:\n        if self.document is not document or not document.college_warning:\n            return\n        answer = QMessageBox.question(\n            self, \"Missing or invalid colleges\", document.college_warning + \".\\n\\nOpen Check my rosters now?\",\n            QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)\n        if answer == QMessageBox.Yes:\n            self.open_college_check()\n\n    def load_from_facade(self) -> bool:"
+    },
+    {
+      "old": "        self._edits_snapshot = None\n        if self._repair_plans:",
+      "new": "        self._edits_snapshot = None\n        if document.college_warning:\n            from PyQt5.QtCore import QTimer\n            QTimer.singleShot(0, lambda doc=document: self._offer_college_repair(doc))\n        if self._repair_plans:"
+    },
+    {
+      "old": "    def _set_status(self, text: str) -> None:\n        self.status_label.setText(text)",
+      "new": "    def _set_status(self, text: str) -> None:\n        warning = self.document.college_warning if self.document is not None else \"\"\n        self.status_label.setText(text + (\"\\n\" + warning if warning else \"\"))"
+    }
+  ],
+  "mod_editor/gui/franchise_panel_qt.py": [
+    {
+      "old": "    def _set_status(self, text: str) -> None:\n        self.status_label.setText(text)",
+      "new": "    def _set_status(self, text: str) -> None:\n        warning = self._document.college_warning if self._document is not None else \"\"\n        self.status_label.setText(text + (\"\\n\" + warning if warning else \"\"))"
+    }
+  ]
+}
