@@ -39,7 +39,7 @@ from mod_editor.core.apf2k8_splb_writer import (
 from mod_editor.core.errors import ValidationError
 from mod_editor.core import apf2k8_coverage_tuning as coverage
 from mod_editor.core.apf2k8_book_identity import disc_book_identity_report
-from . import play_design_service as play_design, coverage_service, scheme_service
+from . import play_design_service as play_design, coverage_service, scheme_service, field_material_service
 
 from .backend import ensure_tools_importable
 from .models import (
@@ -882,6 +882,7 @@ class ApfBuildService:
         ausb_overlay_group: list[Modification] = []
         number_groups: dict[int, list[Modification]] = {}
         field_art_group: list[Modification] = []
+        field_material_group: list[Modification] = []
         replacement_hashes: dict[str, str] = {}
         overflowed: list[apf_texture_patch.AllocationOverflowError] = []
         for index, modification in enumerate(edits, start=1):
@@ -921,6 +922,8 @@ class ApfBuildService:
                 play_assignment_route_group.append(modification)
             elif modification.kind == PACKAGE_MAP_KIND:
                 package_map_group.append(modification)
+            elif modification.kind == field_material_service.PROVIDER_KIND:
+                field_material_group.append(modification)
             elif modification.kind == coverage.PROVIDER_KIND:
                 coverage_group.append(modification)
             elif modification.kind == play_design.PROVIDER_KIND:
@@ -1375,6 +1378,34 @@ class ApfBuildService:
                 }
                 compiled[outer_index] = (entry_bytes, row)
                 edit_rows.append(row)
+        seen_field_materials = set()
+        for modification in field_material_group:
+            try:
+                profile = field_material_service.read_profile(modification)
+                outer = profile["outer_index"]
+                if outer in seen_field_materials:
+                    raise BuildError(f"Duplicate field opacity recipe for outer {outer}")
+                seen_field_materials.add(outer)
+                previous = compiled.get(outer)
+                entry_bytes, report = field_material_service.compile_modification(
+                    self.source.index_0a, modification, previous[0] if previous else None)
+            except (OSError, ValidationError) as exc:
+                raise BuildError(f"Could not compile field opacity: {exc}") from exc
+            prior_row = previous[1] if previous else {}
+            prior_ids = prior_row.get("asset_ids", (prior_row["asset_id"],) if "asset_id" in prior_row else ())
+            row = {
+                "asset_ids": (*prior_ids, modification.asset_id), "kind": field_material_service.PROVIDER_KIND,
+                "outer_index": outer, "entry_size": len(entry_bytes), "entry_sha256": _hash_bytes(entry_bytes),
+                "replacement_payload_sha256s": {**prior_row.get("replacement_payload_sha256s", {}),
+                                                 modification.asset_id: modification.replacement_sha256},
+                "writer_schema": field_material_service.SCHEMA, "writer_mode": "field_material_alpha",
+                "verification": report, "composed_texture_receipt": prior_row or None,
+                "runtime_status": "UNWITNESSED",
+            }
+            if previous:
+                edit_rows.remove(prior_row)
+            compiled[outer] = (entry_bytes, row)
+            edit_rows.append(row)
         for modification in edits:
             try:
                 replacement_after = sha256_file(

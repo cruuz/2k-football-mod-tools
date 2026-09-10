@@ -1324,7 +1324,7 @@ class TrailerReplaceTests(unittest.TestCase):
         self.assertEqual(after_a >> 24, 133)
         self.assertEqual((after_a >> 17) & 0x7F, 7)
         self.assertEqual(after_a & 0x0001FFFF, before_a & 0x0001FFFF)
-        self.assertEqual(after_b, before_b | (1 << 7))
+        self.assertEqual(after_b, 1 << 7)
         mask_at = splb.BOOK_CATEGORY_MASK_OFFSET
         (before_mask,) = struct.unpack_from(">I", self.body, mask_at)
         (after_mask,) = struct.unpack_from(">I", after, mask_at)
@@ -1364,7 +1364,7 @@ class TrailerReplaceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValidationError, "trailer does not match"):
             splb.verify_book(self.body, bytes(forged), [change])
 
-    def test_a_forged_word_b_bit_clear_is_refused(self) -> None:
+    def test_a_forged_stale_personnel_bit_is_refused(self) -> None:
         change = splb.TrailerReplace(OUTER, FULL, 133, 7)
         compiled = splb.compile_book(self.book, [change])
         forged = bytearray(compiled.replacement)
@@ -1372,7 +1372,7 @@ class TrailerReplaceTests(unittest.TestCase):
             splb.RECORD_BASE + FULL * splb.RECORD_STRIDE + splb.TRAILER_OFFSET + 4
         )
         (after_b,) = struct.unpack_from(">I", forged, trailer_at)
-        struct.pack_into(">I", forged, trailer_at, after_b & ~(1 << 3))
+        struct.pack_into(">I", forged, trailer_at, after_b | (1 << 3))
         with self.assertRaisesRegex(ValidationError, "trailer does not match"):
             splb.verify_book(self.body, bytes(forged), [change])
 

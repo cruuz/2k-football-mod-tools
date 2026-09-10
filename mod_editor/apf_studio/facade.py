@@ -173,6 +173,18 @@ class ApfStudioFacade:
     def source_ready(self) -> bool:
         return self.source is not None and self.catalog is not None and self.session is not None
 
+    def field_material_context(self, outer, progress: Progress = _noop):
+        with self._session_lock:
+            progress("Reading field material opacity", 0, 1)
+            return self.require_session().field_material_context(outer)
+
+    def apply_field_material(self, outer, alphas, progress: Progress = _noop):
+        with self._session_lock:
+            progress("Verifying field opacity and compressed allocation", 0, 1)
+            result = self.require_session().apply_field_material(outer, alphas)
+            self.last_build = None
+            return result
+
     def coverage_context(self, progress: Progress = _noop):
         with self._session_lock:
             progress("Reading shared zone geometry", 0, 1)

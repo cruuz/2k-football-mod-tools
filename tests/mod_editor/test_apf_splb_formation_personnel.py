@@ -60,8 +60,8 @@ def assert_quads_receipt(test: unittest.TestCase, book, changes, record_index=0)
     after_a, after_b = struct.unpack_from(">2I", compiled.replacement, offset)
     test.assertEqual((after_a >> 17) & 0x7F, 8)
     test.assertEqual(after_a & 0x1FFFF, before_a & 0x1FFFF)
-    test.assertEqual(after_b, before_b | (1 << 8))
-    test.assertTrue(after_b & 1, "The old Jacks membership must remain")
+    test.assertEqual(after_b, 1 << 8)
+    test.assertFalse(after_b & 1, "The old Jacks membership must be removed")
     before_mask = struct.unpack_from(">I", book.body, 0x7E04)[0]
     after_mask = struct.unpack_from(">I", compiled.replacement, 0x7E04)[0]
     test.assertEqual(after_mask, before_mask | (1 << 8))
@@ -174,6 +174,7 @@ class DialogPersonnelTests(unittest.TestCase):
                 (3, "Pro Set", (10, 11, 8, 9, 9)), (5, "Kings", (10, 8, 9, 9, 9)),
                 (6, "Queens", (10, 11, 9, 9, 9)), (7, "Straight", (8, 9, 9, 9, 9)),
                 (8, "Flush", (10, 9, 9, 9, 9)),
+                (18, "Unused package", (10, 8, 8, 9, 9)),
             )
         )
 
@@ -236,25 +237,25 @@ class DialogPersonnelTests(unittest.TestCase):
         stage.assert_called_once_with(0, 69, 8)
         assert_quads_receipt(self, self.book, self.stored)
 
-    def test_manual_unpaired_override_survives_accept_and_reopen(self):
+    def test_formation_move_normalizes_unpaired_override_before_staging(self):
         def choose(formation, package, _hint, warning, _dialog):
             formation.setCurrentIndex(formation.findData(69))
             package.setCurrentIndex(package.findData(0))
             self.assertTrue(warning.isVisible())
             self.assertEqual(warning.text(),
-                "Retail never lines Quads up with Jacks personnel; the CPU will field 2 RB, 3 TE, 0 WR")
+                "This formation move will use Flush personnel (1 RB, 0 TE, 4 WR); previous package memberships are cleared.")
 
         with self.accept_dialog(choose):
             self.panel._change_trailer()
-        self.assertEqual(self.stored, (splb.TrailerReplace(OUTER, 0, 69, 0),))
+        self.assertEqual(self.stored, (splb.TrailerReplace(OUTER, 0, 69, 8),))
 
         def reopen(formation, package, _hint, warning, _dialog):
-            self.assertEqual((formation.currentData(), package.currentData()), (69, 0))
-            self.assertTrue(warning.isVisible())
+            self.assertEqual((formation.currentData(), package.currentData()), (69, 8))
+            self.assertFalse(warning.isVisible())
 
         with self.accept_dialog(reopen):
             self.panel._change_trailer()
-        self.assertEqual(self.stored, (splb.TrailerReplace(OUTER, 0, 69, 0),))
+        self.assertEqual(self.stored, (splb.TrailerReplace(OUTER, 0, 69, 8),))
 
     def test_alternatives_show_counts_accept_override_and_break_ties(self):
         def choose(formation, package, hint, warning, _dialog):
@@ -273,14 +274,14 @@ class DialogPersonnelTests(unittest.TestCase):
         with self.accept_dialog(choose):
             self.assertEqual(self.panel._trailer_dialog("Test", (9, 0), False), (120, 3, ()))
 
-    def test_unknown_formation_keeps_hand_picked_package_and_clears_warning(self):
+    def test_formation_absent_from_cpu_census_uses_master_category(self):
         def choose(formation, package, hint, warning, _dialog):
             formation.setCurrentIndex(formation.findData(69))
             package.setCurrentIndex(package.findData(0))
             self.assertTrue(warning.isVisible())
             formation.setCurrentIndex(formation.findData(162))
-            self.assertEqual(package.currentData(), 0)
-            self.assertIn("No retail pairing is known for Unused formation", hint.text())
+            self.assertEqual(package.currentData(), 18)
+            self.assertIn("No CPU retail pairing is known for Unused formation", hint.text())
             self.assertFalse(warning.isVisible())
             formation.setCurrentIndex(formation.findData(69))
             self.assertEqual(package.currentData(), 8)
@@ -297,7 +298,7 @@ class DialogPersonnelTests(unittest.TestCase):
 
         with self.accept_dialog(choose):
             self.panel._add_record()
-        self.assertIn(splb.TrailerReplace(OUTER, 2, 133, 8), self.stored)
+        self.assertIn(splb.TrailerReplace(OUTER, 2, 133, 7), self.stored)
         self.assertIn(splb.MembershipChange(OUTER, 2, 0, True), self.stored)
 
     def test_cancel_does_not_stage_the_automatic_change(self):
@@ -325,7 +326,7 @@ class DialogPersonnelTests(unittest.TestCase):
         self.assertEqual(self.panel._categories, ())
         with self.accept_dialog(lambda _f, p, h, w, _d: (
             self.assertEqual(p.currentData(), 7),
-            self.assertIn("No retail pairing", h.text()), self.assertFalse(w.isVisible())
+            self.assertIn("No CPU retail pairing", h.text()), self.assertFalse(w.isVisible())
         )):
             self.assertEqual(self.panel._trailer_dialog("Add", (133, 7), True), (133, 7, ()))
 
