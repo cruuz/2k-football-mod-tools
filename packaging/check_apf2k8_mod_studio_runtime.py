@@ -1310,6 +1310,7 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         "apf2k8.audio.xma_export",
         "apf2k8.colors.uniform_selector_appearance_custom_team",
         "apf2k8.field_art.base_texture",
+        "apf2k8.field_art.material_opacity",
         "apf2k8.logos_cards.draft_logo",
         "apf2k8.logos_cards.team_logo",
         "apf2k8.logos_cards.team_logo_cache",
