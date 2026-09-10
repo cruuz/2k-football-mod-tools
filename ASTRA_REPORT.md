@@ -15,7 +15,7 @@ specified in the fresh `WIRING.md`. The candidate registry row, changelog bullet
 paragraph are written. Preset classification is **ADVANCED, opt-in**, with Off in every preset. The brief
 allows Advanced On/20 after the seven proofs, but I have retained Off pending Noah's game witness.
 
-No emulator, display, network, audio, push or disc build was used. Retail was opened read-only. No retail
+No xemu, GUI display, network, audio, push or disc build was used. Retail was opened read-only. No retail
 XBE, PLAY resource or executable output is committed. Private input is the pinned USA `default.xbe`, SHA-256
 `73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9`.
 
@@ -193,11 +193,15 @@ NFL2K5_CAVE_MANIFEST=.scratch/b65-accelerated-clock-manifest.json python3 tests/
 Ran 115 tests in 1273.216s — OK
 
 NFL2K5_CAVE_MANIFEST=.scratch/b65-accelerated-clock-manifest.json python3 tests/mod_editor/test_xbe_patch_cave_references.py -v -f
-RUNNING — final result to be recorded before handoff
+Ran 127 tests in 1303.938s — OK
 
 python3 packaging/repin.py --apply
 applied 0 pin update(s)
 ```
+
+All required suites are green. Both XBE gates include the On/20 clock owner in forward, reverse and
+scale-out compositions. The final bounded manifest's clock source fingerprints match the committed
+sources. `git diff --check` is clean. `ASTRA_LAST_MESSAGE.md` contains the final handoff message.
 
 The first full-stack gate run refused the independently owned kick-rules call at `A24E7`. The fix
 validates that entire owner and normalizes exactly its call for the no-huddle hash. It introduces no
