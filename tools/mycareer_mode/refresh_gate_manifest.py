@@ -71,10 +71,11 @@ def refresh(xbe, output, base_revision=BASE_REVISION):
         parent_disc_fields_are_historical=True, disc_built=False,
         release_manifest=False, changed_sources=sorted(changed),
         added_retail_reservations=len(added), observed_probe=recorder.steps,
-        fixed_rx=8192, fixed_rw=4096,
+        fixed_rx=mode.CODE_SIZE,
+        fixed_rw=sum(size for _, kind, size, _ in mode.REQUESTS if kind == 'data'),
         reason='A full disc copy would violate the 100 GB free-space floor.')
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(document, indent=2) + '\n', encoding='utf-8')
+    output.write_bytes((json.dumps(document, indent=2) + '\n').encode('utf-8'))
     return document['mycareer_incremental_proof']
 
 

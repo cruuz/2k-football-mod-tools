@@ -14,6 +14,8 @@ extern u8 state[4096];
 extern u8 m3[4096];
 #define M(n) W(m3,n)
 extern const u8 m3_menu_template[],m3_menu_bytes[];
+extern u8 hub_rows[];
+extern const u16 m3_supersim_off_text[],m3_supersim_skip_text[];
 extern u32 primary(void);
 extern void resolve_team(void), settle(void);
 extern void rebind(void);
@@ -32,6 +34,7 @@ static NI void init_menus(void) {
         else p+=i;
         while(i--) *dst++=*q++;
     }
+    W(hub_rows,7*52+4)=(u32)(S(2696)?m3_supersim_off_text:m3_supersim_skip_text);
 }
 static NI void move_bytes(u8 *out,const u8 *in,u32 n) { while(n--) *out++=*in++; }
 static NI void zero(u8 *out,u32 n) { while(n--) *out++=0; }
@@ -69,7 +72,7 @@ void FC inline_encode(u8 *b) {
 }
 void inline_decode(void) {
     u8 *b=STAGED; u32 i;
-    zero(state,200); zero(m3,256); zero(m3+3600,496); init_menus();
+    zero(state,200); S(2696)=0; zero(m3,256); zero(m3+3600,496); init_menus();
     S(4)=0x31303030; S(8)=1280;
     move_bytes(state+40,b+16,16);
     for(i=0;i<14;i++) if(save_words[i]) S(4*save_words[i])=W(b,32+4*i);
@@ -151,6 +154,33 @@ u32 FC mode_human(u8 *t) {
  : "memory", "cc", "st", "st(1)", "st(2)", "st(3)", "st(4)", "st(5)", "st(6)", "st(7)"); ax_; })
 #define CALL1(a,x) ({ u32 cx_=(u32)(x),ax_; __asm__ volatile("call %c2" : "=a"(ax_), "+c"(cx_) : "i"(a) : "edx", "memory", "cc", "st", "st(1)", "st(2)", "st(3)", "st(4)", "st(5)", "st(6)", "st(7)"); ax_; })
 #define CALL0(a) ({ u32 ax_; __asm__ volatile("call %c1" : "=a"(ax_) : "i"(a) : "ecx", "edx", "memory", "cc", "st", "st(1)", "st(2)", "st(3)", "st(4)", "st(5)", "st(6)", "st(7)"); ax_; })
+
+/* Stage 1 only: repeat the native presentation-skip REQUEST at normal speed.
+ * +2696 is a session choice: 0 skip presentation (default), 1 off. New/cold
+ * careers reset it; the signed footer format is unchanged. No simulation
+ * delta, football clock, camera phase or native completion flag is written.
+ * A2120 retains its replay/readiness/period guards and cleanup. */
+static NI u32 mode_skip_ready(void) {
+    if(S(2696) || G(0xA83A18)!=3 || G(0xA83A14) ||
+       !G(0xE60268) || !S(2564) || !inline_active()) return 0;
+    if(mode_unit_present() || S(24)!=3) return 0;
+    if(CALL2(0x70a10,S(32),0)&0x200) { S(2696)=1; return 0; }
+    return 1;
+}
+void mode_skip_tick(void) {
+    u32 phase=G(0xB616C0);
+    /* This replaces 64D27's native no-op 89F40, before the normal update.
+     * Never dismiss challenge decisions, tosses or arbitrary modal menus. */
+    if((phase==20 || phase==23 || phase==24 || phase==25 || phase==27) &&
+       mode_skip_ready()) CALL0(0xa2120);
+}
+u32 FC mode_skip_buttons(u32 port,u32 bank) {
+    u32 buttons=CALL2(0x70a10,port,bank);
+    /* Only the two automatic-replay screen consumers. Do not synthesize
+     * controller input for gameplay, play calling, pause or modal dialogs. */
+    if(port==S(32) && !bank && G(0xB616C0)==20 && mode_skip_ready()) buttons|=0x100;
+    return buttons;
+}
 
 #define N0(a) ((u32 (*)(void))(a))
 #define N1(a) ((u32 (FC *)(u32))(a))
@@ -359,13 +389,22 @@ static NI u32 on_stack(u32 manager,const u8 *descriptor) {
     return 0;
 }
 static NI u32 hub(u32 manager) { return owner(manager) && inline_active() && on_stack(manager,apartment); }
+void FC mode_supersim_toggle(u32 manager) {
+    if(hub(manager)) {
+        S(2696)=!S(2696);
+        W(hub_rows,7*52+4)=(u32)(S(2696)?m3_supersim_off_text:m3_supersim_skip_text);
+        /* Native row construction caches each label pointer. Refresh that
+         * cache while retaining the selected row; native scrolling resumes. */
+        CALL1(0x14ff80,manager);
+    }
+}
 extern void start_player(void);
 void FC mode_start(u32 manager) {
     if(hub(manager)) start_player();
 }
 static NI void capture(u8 *p) {
     u32 i;
-    zero(state,200); S(4)=0x31303030; S(8)=1280;
+    zero(state,200); S(2696)=0; S(4)=0x31303030; S(8)=1280;
     S(24)=3; S(28)=((u32)p-W(ROOT,4))/84; S(56)=S(2684);
     /* Native RNG supplies a new per-career token. It is data, never identity
      * selected by name, a pre-generated player, or an executable recipe. */

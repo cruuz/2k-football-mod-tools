@@ -33,6 +33,9 @@ SAVE_HOOKS = (
     ("inline_load_end", 0x16E815, "e8661f1600", 0xE8),
 )
 MODE_HOOKS = (
+    ("mode_skip_tick", 0x64D27, "e814520200", 0xE8),
+    ("mode_skip_buttons", 0x13856, "e8b5d10500", 0xE8),
+    ("mode_skip_buttons", 0x112DD9, "e832dcf5ff", 0xE8),
     ("mode_camera_pick", 0x8970B, "a150fce50085c0", 0xE9),
     ("mode_art_input", 0x1212A5, "e876f7ffff", 0xE8),
     ("mode_result", 0xC5D60, "e80beef9ff", 0xE8),
@@ -60,6 +63,12 @@ MODE_HOOKS = (
     ("mode_loaded_replace", 0x16DDE0, "e9fb04f0ff", 0xE9),
 )
 GUARDS = (
+    (0xa2120, 0x34d, "fa7705cc735d0ddf6186eaded03e9281f3b5751ae4f03d2cab622f3963edbf14"),
+    (0xa2470, 0x40, "f8774cb4ec62f16e68669b95a7147094d4f47f1cbf5167d7b9040af6f0616b8c"),
+    (0x89780, 0x43, "7a685071a3336ccfc0797f3813532a3503bfa0f072b5eeea862c99ec797ad4fc"),
+    (0xb8db0, 0xc0, "93f7feb691e2eb96a2ee074f672d32357fa374198a94b1ac38202223a8b3e7b9"),
+    (0x13610, 0x580, "063a5aa1794b2e4f1e49d1adb72bb7015462269bb93254a4845bbd93da93e003"),
+    (0x1124e0, 0xa17, "d8052dbccdb3494a6fc178075280a50fadfbd359ff19da8570738c73432fd28c"),
     (0x2bf9a0, 0xf5, "2f271dc4e9289b21f483b18b1f2f9b25af2d582bce1ea95f060aaa5a1c0ea4d9"),
     (0x2484c9, 0xa8, "f367f540e739efc16676dd44bb80ccbb2d707da3e77f32b8ffee6aecafc31d85"),
     (0x3254d0, 0x20, "77a2842feb19a62d33dbd0cc986949386b11989aec4bc855b9a9b555c62dd8ac"),
@@ -185,6 +194,8 @@ def code_for(code_va, data_va):
         ("m3_unsigned_text", "Undrafted. Choose a club and sign."),
         ("m3_sign_text", "Sign with this club?"),
         ("m3_sign_cut_text", "Sign with this club and allow roster cuts?"),
+        ("m3_supersim_off_text", "Supersim: Off"),
+        ("m3_supersim_skip_text", "Supersim: Skip presentation"),
     ):
         string(name, value)
     names = []
@@ -238,7 +249,8 @@ def code_for(code_va, data_va):
     rows("hub_rows", (("play_text", "mode_play"), (0xE9C3BC, "mode_practice"),
                       ("card_text", "mode_card"), ("start_text", "mode_start"),
                       ("save_text", "mode_save_menu"), ("quit_text", "mode_quit"),
-                      ("m3_upgrade_text", "m3_upgrade_open")), extra=True)
+                      ("m3_upgrade_text", "m3_upgrade_open"),
+                      ("m3_supersim_skip_text", "mode_supersim_toggle")), extra=True)
     rows("team_rows", (("team_text", "mode_team_open"), ("sign_text", "mode_sign")))
     rows("m3_progress_rows", (("quit_text", "mode_quit"),), extra=True)
     rows("m3_draft_rows", (("save_text", "mode_save_menu"), ("quit_text", "mode_quit")), extra=True)

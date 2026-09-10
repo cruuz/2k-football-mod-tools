@@ -1,10 +1,12 @@
-"""EXPERIMENTAL / UNWITNESSED native-simulator stop-policy prototype.
+"""EXPERIMENTAL / UNWITNESSED Supersim research and availability contract.
 
 This is a host reference component, not an installed XBE patch. The retail
 simulator can import part of a live game and step to a boundary. Its finalizer
 ends that game; its scenario restore is not a complete live-state inverse.
 Consequently this module deliberately provides no apply() or live-state writer.
-See ASTRA_MYCAREER_SUPERSIM_DRAFT_REPORT.md for the bounded instruction proofs.
+The live MyCareer owner now requests native presentation skips at 1x. It does
+not install this abstract simulator, an accelerated scheduler or live resume.
+See ASTRA_REPORT.md and test_nfl2k5_supersim_live.py for the live-engine limits.
 """
 from __future__ import annotations
 
@@ -15,8 +17,15 @@ import struct
 from typing import Callable
 
 OWNER = "nfl2k5_supersim"
-REQUESTS = ()  # No installed code, hook, allocator state or budget claim.
-RUNTIME_READY = False
+REQUESTS = ()  # Stage 1 uses the existing MyCareer RX/RW owner, no Supersim allocation.
+RUNTIME_READY = False  # Accelerated "sim to next appearance" is NOT ready.
+LIVE_STAGE = 1
+LIVE_UPDATES_PER_FRAME = 1
+LIVE_STATUS = (
+    "MyCareer can request native off-field presentation skips at normal speed. "
+    "Fast forward and automatic return with a full play clock are not proved. "
+    "In-game behavior is unwitnessed."
+)
 INIT = 0x10B280
 STEP = 0x10B250
 FINALIZE = 0x1053B0
