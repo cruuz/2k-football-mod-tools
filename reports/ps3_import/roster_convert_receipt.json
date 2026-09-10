@@ -1,0 +1,129 @@
+{
+  "canonical_empty_offset": 2053968,
+  "claims": {
+    "container_written": false,
+    "every_player_team_label_and_user_bank_kept": true,
+    "runtime_in_game_proved": false,
+    "strict_readers_reparsed_output": true
+  },
+  "counts": {
+    "bank_runtime_words_rewritten": 16,
+    "below_pool_references": 3,
+    "empty_references_canonicalised": 3655,
+    "garbage_allocations": 5,
+    "garbage_references": 9,
+    "interior_allocations": 675,
+    "interior_allocations_garbage_outer": 76,
+    "interior_references": 1010,
+    "odd_allocations": 208,
+    "odd_references": 1647,
+    "odd_run_bytes": 2600,
+    "odd_runs": 5,
+    "odd_runs_relocated": 0,
+    "odd_runs_shifted": 5,
+    "palette_colours_rotated": 2660,
+    "playbook_labels": 69,
+    "players": 2254,
+    "references_repointed": 4991,
+    "root_runtime_fields_rewritten": 4,
+    "runtime_block_words_rewritten": 8,
+    "skipped_tables": [],
+    "string_allocations": 7666,
+    "string_references": 42825,
+    "team_memberships": 1680,
+    "teams": 40
+  },
+  "interior_references_by_table": {
+    "t0+0x0": 82,
+    "t0+0x11C": 95,
+    "t0+0x120": 9,
+    "t0+0x124": 6,
+    "t0+0x128": 6,
+    "t0+0x12C": 28,
+    "t0+0x130": 10,
+    "t0+0x134": 8,
+    "t0+0x138": 1,
+    "t0+0x13C": 62,
+    "t0+0x140": 62,
+    "t0+0x144": 41,
+    "t0+0x148": 32,
+    "t0+0x4": 66,
+    "t12+0x0": 168,
+    "t13+0x0": 307,
+    "t21+0x0": 1,
+    "t21+0x8": 2,
+    "t9+0x10": 8,
+    "t9+0x8": 8,
+    "t9+0xC": 8
+  },
+  "odd_runs": [
+    {
+      "bytes": 16,
+      "destination_offset": 2128560,
+      "method": "shift",
+      "source_offset": 2128561,
+      "strings": 1
+    },
+    {
+      "bytes": 118,
+      "destination_offset": 2128668,
+      "method": "shift",
+      "source_offset": 2128669,
+      "strings": 10
+    },
+    {
+      "bytes": 838,
+      "destination_offset": 2145124,
+      "method": "shift",
+      "source_offset": 2145125,
+      "strings": 64
+    },
+    {
+      "bytes": 1118,
+      "destination_offset": 2146564,
+      "method": "shift",
+      "source_offset": 2146565,
+      "strings": 110
+    },
+    {
+      "bytes": 510,
+      "destination_offset": 2148940,
+      "method": "shift",
+      "source_offset": 2148941,
+      "strings": 22
+    }
+  ],
+  "output": {
+    "changed_byte_count": 24527,
+    "path": "/tmp/claude-1000/-home-noah/a0e23b53-6c52-4d9b-9878-b195950f3ca1/scratchpad/final.ROS",
+    "platform": "xbox360",
+    "sha256": "df2658dea378bbd216e8ac452fd9d6cc9af1ebc6518177182b527f3653e4d034",
+    "size": 2715908
+  },
+  "repointed_by_kind": {
+    "below_pool": 3,
+    "empty": 3655,
+    "garbage": 9,
+    "interior": 1010,
+    "odd": 314
+  },
+  "runtime": "UNWITNESSED: nobody has loaded a converted roster in Xenia or on a console",
+  "schema": "apf2k8_ps3_roster_convert_receipt/v1",
+  "source": {
+    "member": "1993 NFL Season (Update Logos)/BLUS30049-ROS/USERDATA",
+    "path": "/home/noah/Downloads/1993 NFL Season (Update Logos).zip",
+    "platform": "ps3",
+    "sha256": "0b3b24f2c14f3770a6728dce1560e6534e8803d966a264ff1eaace632c44a934",
+    "size": 2715908
+  },
+  "verification": {
+    "custom_team_appearance_reader": "refused for a content reason: team slot 36 is not a user-team record",
+    "playbook_labels": 69,
+    "player_text_allocations": 3869,
+    "players_parsed": 2254,
+    "string_allocations": 6076,
+    "string_references": 42825,
+    "team_memberships": 1680,
+    "team_strings_decoded": 160
+  }
+}
