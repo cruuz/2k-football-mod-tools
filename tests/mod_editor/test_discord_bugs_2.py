@@ -66,6 +66,12 @@ class DigitLayoutTests(unittest.TestCase):
 
 class ApfCompositionTests(unittest.TestCase):
     def setUp(self):
+        # The synthetic archive has no ROST; production never skips its final
+        # Book Identity reparse, so stub it the way the overlay build tests do.
+        identity = patch("mod_editor.apf_studio.build.disc_book_identity_report",
+                         return_value={"synthetic_fixture": True})
+        identity.start()
+        self.addCleanup(identity.stop)
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name).resolve()

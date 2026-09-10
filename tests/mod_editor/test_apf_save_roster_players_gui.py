@@ -101,6 +101,7 @@ class PanelTests(unittest.TestCase):
                 [
                     "Roster + Base Ratings",
                     "Save Players",
+                    "Import PS3 Roster",
                     "53-player Planner",
                     "&Raw Roster Assets",
                 ],
@@ -108,8 +109,10 @@ class PanelTests(unittest.TestCase):
             self.assertIsInstance(page.save_roster_players, SaveRosterPlayersPanel)
             page.open_workspace("save-players")
             self.assertEqual(page.workspace_tabs.currentIndex(), 1)  # type: ignore[union-attr]
-            page.open_workspace("roster-planner")
+            page.open_workspace("ps3-roster-import")
             self.assertEqual(page.workspace_tabs.currentIndex(), 2)  # type: ignore[union-attr]
+            page.open_workspace("roster-planner")
+            self.assertEqual(page.workspace_tabs.currentIndex(), 3)  # type: ignore[union-attr]
         finally:
             page.deleteLater()
             self.application.processEvents()

@@ -470,7 +470,11 @@ def build_new_folder(plan: CompiledUnlock, destination: Path,
         receipt = {**plan.report, "verification": verification}
         receipt_path = destination / "book-unlock-receipt.json"
         temporary = destination / "book-unlock-receipt.json.partial"
-        temporary.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        temporary.write_text(
+            json.dumps(receipt, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+            newline="\n",
+        )
         os.replace(temporary, receipt_path)
         return receipt
     except BaseException:

@@ -253,7 +253,8 @@ def build_presets_folder(index_path: Path, preset_ids: tuple[str, ...], destinat
                    "executable": compare_executable(index_path.parent, destination),
                    "book_identity": disc_book_identity_report(output_index), "runtime_status": "UNWITNESSED"}
         (destination / "scheme-preset-receipt.json").write_text(
-            json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+            json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8",
+            newline="\n")
         return receipt
     except BaseException:
         shutil.rmtree(destination)

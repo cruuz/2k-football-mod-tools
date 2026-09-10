@@ -19488,8 +19488,11 @@ class InspectorCategoryPage(QWidget):
         elif normalized in {"save-players", "save-roster-players"} \
                 and self.category is ApfCategory.ROSTERS:
             target = 1
+        elif normalized in {"ps3-roster-import", "import-ps3-roster", "ps3-import"} \
+                and self.category is ApfCategory.ROSTERS:
+            target = self.workspace_tabs.indexOf(self.ps3_roster_import)
         elif normalized == "roster-planner" and self.category is ApfCategory.ROSTERS:
-            target = 2
+            target = self.workspace_tabs.indexOf(self.roster_planner)
         elif normalized in {"fine-tune", "fine-tune-plays", "membership"} \
                 and self.category is ApfCategory.PLAYBOOKS:
             target = 1
