@@ -2566,9 +2566,10 @@ class ApfAudioGuiTests(unittest.TestCase):
 
             workspace = page.findChild(QTabWidget, "workspaceTabs")
             self.assertIsNotNone(workspace)
-            self.assertEqual(workspace.count(), 2)
+            self.assertEqual(workspace.count(), 3)
             self.assertEqual(workspace.tabText(0), "Audio Browser")
-            self.assertEqual(workspace.tabText(1), "Raw Audio Assets")
+            self.assertEqual(workspace.tabText(1), "Batch Export / Import")
+            self.assertEqual(workspace.tabText(2), "Raw Audio Assets")
         finally:
             page.deleteLater()
             self.application.processEvents()

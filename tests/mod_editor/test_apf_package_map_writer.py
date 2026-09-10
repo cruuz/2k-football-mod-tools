@@ -547,8 +547,10 @@ class PackageMapPanelActionTests(unittest.TestCase):
         for column in range(3):
             item = panel.table.item(0, column)
             self.assertIsNotNone(item)
-            self.assertEqual(item.foreground().color().name(), "#dce8f5")
-            self.assertEqual(item.background().color().name(), "#0c1421")
+            from mod_editor.apf_studio.apf_theme import install_theme
+            from mod_editor.apf_studio.ui_audit import contrast_failures
+            install_theme()
+            self.assertEqual(contrast_failures(panel), [])
 
     def test_stage_with_an_empty_draft_stages_nothing(self) -> None:
         facade = _FakePackageMapFacade("synthetic-0A")

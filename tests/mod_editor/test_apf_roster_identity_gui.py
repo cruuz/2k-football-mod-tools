@@ -669,8 +669,10 @@ class ApfRosterIdentityGuiTests(unittest.TestCase):
             self.assertIn("Keep it private", dialog.private_warning.text())
             self.assertIn("source/revert-only", dialog.private_warning.text())
             self.assertIn("stay untouched", dialog.state_note.text())
-            self.assertIn("#eef4ff", dialog.styleSheet())
-            self.assertIn("#25354b", dialog.styleSheet())
+            from mod_editor.apf_studio.apf_theme import install_theme
+            from mod_editor.apf_studio.ui_audit import contrast_failures
+            install_theme(self.application)
+            self.assertEqual(contrast_failures(dialog), [])
             self.assertEqual(
                 dialog.cancel_button.accessibleName(),
                 "Cancel APF ratings-sheet import",

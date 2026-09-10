@@ -6,6 +6,8 @@ from pathlib import Path
 import sys
 from typing import Callable
 
+from .apf_theme import color as theme_color
+
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import (
     QComboBox,
@@ -114,7 +116,7 @@ class _ColorBankEditor(QWidget):
             if type(index) is int and 0 <= index < len(self._palette):
                 color = self._palette[index] & 0xFFFFFF
                 swatch.setStyleSheet(
-                    f"background: #{color:06X}; border: 1px solid #8795aa;"
+                    f"background: #{color:06X}; border: 1px solid {theme_color('border')};"
                 )
 
 

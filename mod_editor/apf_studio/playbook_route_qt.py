@@ -353,8 +353,6 @@ class PlayAssignmentRoutePanel(QWidget):
             for column, value in enumerate(values):
                 item = QTableWidgetItem(value)
                 item.setData(Qt.UserRole, modification.asset_id)
-                item.setForeground(QColor("#dce8f5"))
-                item.setBackground(QColor("#0c1421"))
                 self.table.setItem(row_index, column, item)
         self.status.setText(
             f"{len(rows)} route target{'s' if len(rows) != 1 else ''} staged. "

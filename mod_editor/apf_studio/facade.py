@@ -588,6 +588,42 @@ class ApfStudioFacade:
         source = self.require_session().source
         return number_targets.package_budget(Path(source.index_0a), entry_index)
 
+    def team_art_packages(self, progress: Progress = _noop):
+        from .team_art import inventory
+        session = self.require_session()
+        cached = getattr(self, "_team_art_inventory", None)
+        if cached is None or cached[0] is not session:
+            progress("Indexing Team Art packages", 0, 1)
+            values = inventory(session.source, session.catalog)
+            self._team_art_inventory = (session, values)
+        return self._team_art_inventory[1]
+
+    def replace_team_art(self, package, paths, progress: Progress = _noop, *, expected_session=None):
+        from .team_art import stage_package
+        with self._session_lock:
+            session = self.require_session()
+            if expected_session is not None and session is not expected_session:
+                raise ValueError("Game source changed. Select your Team Art package again.")
+            progress("Checking Team Art layers", 0, 1)
+            result = stage_package(session, package, paths)
+            self.last_build = None
+            progress("Team Art staged", 1, 1)
+            return result
+
+    def revert_team_art(self, package, progress: Progress = _noop, *, expected_session=None):
+        from .team_art import package_modifications
+        with self._session_lock:
+            session = self.require_session()
+            if expected_session is not None and session is not expected_session:
+                raise ValueError("Game source changed. Select your Team Art package again.")
+            edits = package_modifications(package, session.modifications)
+            with session.atomic_edit():
+                for modification in edits:
+                    session.revert(modification.asset_id)
+            self.last_build = None
+            progress("Team Art reverted", 1, 1)
+            return bool(edits)
+
     def preview_digital_font(self, progress: Progress = _noop) -> Path:
         progress("Preparing digital_font preview", 0, 0)
         return self.require_session().asset_io.preview_digital_font()

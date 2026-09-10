@@ -1,3 +1,130 @@
+# Beta 66 job C: APF UI integration wiring
+
+This section is the current job C handoff. The older material below the historical separator predates this branch and is not a new request from this job. No protected file was edited.
+
+## Registry row and matching action binding
+
+In `mod_editor/capabilities/registry.v1.json`, insert this object in `capabilities` immediately after `apf2k8.logos_cards.textlogo_wordmarks`. Regenerate `registry.v1.sha256` through the repository registry workflow. Existing family rows stay authoritative for their writer contracts.
+
+```json
+{
+  "backend": {
+    "command": "APF Studio > Logos & Team Art > Team Art > Replace",
+    "module": "mod_editor/apf_studio/team_art.py",
+    "operation": "write"
+  },
+  "classification": "offline-writer-proved",
+  "evidence": [
+    "docs/mod_editor/apf2k8_team_art_browser.md",
+    "tests/mod_editor/test_apf_team_art.py",
+    "tests/mod_editor/test_apf_team_art_qt.py",
+    "tests/mod_editor/test_apf_theme_layout_qt.py"
+  ],
+  "game": "apf2k8_xbox360",
+  "gui": {
+    "default_enabled": true,
+    "expose": true,
+    "mode": "edit",
+    "reason": "A rendered Team Art workspace under Logos & Team Art, also linked from Field Art and Uniforms. Progressive worker thumbnails, exact layer inspector, paired PNG replacement and per-package Revert use the normal project transaction."
+  },
+  "id": "apf2k8.logos_cards.team_art_browser",
+  "input_constraints": [
+    "Use the selected read-only retail APF source. Resolve package names against archive filename CRCs and inner layers by semantic names.",
+    "All 118 crests, 118 endzones, 206 wordmarks and 24 packages each of jerseys, shoulders, pants and digits are reachable. Only the proved 24 retail crest and wordmark selector assignments acquire team labels; tentative endzone labels retain question marks.",
+    "Crests require separate 512x512 logo_l0 and logo_l1 PNGs for six region masks; the existing crest builder also updates the corresponding uniform_logocache index. Never mirror one layer into both.",
+    "Every selected endzone layer is required. Single-layer packages require one PNG; paired packages require both. Wordmarks, jerseys, shoulders and pants use their exact existing color-layer contract. Digit subsets share a combined allocation preflight.",
+    "The existing family writers and build verifiers retain mip regeneration, compression, fixed-allocation and decode-back checks. All package layers stage or revert as one Undo action. Authored PNGs and numeric recipes enter projects; retail payloads do not.",
+    "Thumbnails and staged image decoding run in workers. Source-scoped, decoder-versioned PNG caches include both crest image hashes and stay private."
+  ],
+  "portme": [
+    "Witness changed non-retail crest art and its linked Team Select cache, paired endzones, wordmarks and uniform art in game.",
+    "Retail endzone selector ownership remains unproved; the retail-use filter excludes unproved assignments."
+  ],
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "rule": "Distribute tooling, structural pins, and user-authored PNGs only; each user rebuilds a copied game from their own retail source.",
+    "tooling": "source-and-schemas-only"
+  },
+  "runtime": {
+    "evidence": [
+      "docs/mod_editor/apf2k8_team_art_browser.md"
+    ],
+    "scope": "Offline package counts, source identity resolution, six-mask pairing, existing writer dispatch, private thumbnail cache behavior, project transaction rollback and Qt interactions are tested. Changed art consumption remains in-game UNWITNESSED.",
+    "status": "not-tested"
+  },
+  "selectors": {
+    "fields": [
+      {
+        "allowed": "logo|endzone|textlogo|jersey|shoulder|pants|number",
+        "name": "family",
+        "required": true
+      },
+      {
+        "allowed": "a source-resolved outer entry with named supported texture layers",
+        "name": "outer_entry",
+        "required": true
+      }
+    ],
+    "notes": "The browser resolves the family catalog index, outer entry, inner indices and linked crest cache catalog identity together. Built-in team selector assignments seed retail labels; the other library slots remain entry-labeled."
+  },
+  "source_container": {
+    "format": "Source-resolved APF H7A/IFF texture packages and linked uniform_logocache",
+    "hash_pins": [
+      "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e",
+      "39a1e0c944a846e24d7a11c52d6a0fbba4091959f01856d3a087efde01ba490c"
+    ],
+    "resource": "All 118 crest and 118 endzone packages, 206 wordmarks and all jersey/shoulder/pants/digit packages in retail 0A; existing family writers own source pins and fixed allocations.",
+    "retail_file": "All-Pro Football 2K8 (USA)/0A"
+  },
+  "summary": "Browse every crest, endzone, wordmark, jersey, shoulder, pants and digit package by decoded thumbnails; resolve named layers and stage or revert paired artwork as one project action.",
+  "surface": "logos_cards",
+  "title": "APF visual Team Art package browser",
+  "validation_command": "PYTHONPATH=. python3 tests/mod_editor/test_apf_team_art.py"
+}
+```
+
+In `mod_editor/apf_studio/models.py`, insert the following entry into `CAPABILITY_ACTION_BINDINGS` immediately after `apf2k8.logos_cards.textlogo_wordmarks`, in the same integration change as the registry row. This owned file is deliberately deferred with the protected row so standalone registry/action parity remains green before integration. Both facade methods already exist and are rendered by `TeamArtBrowser`.
+
+```python
+    "apf2k8.logos_cards.team_art_browser": CapabilityActionBinding(
+        "apf2k8.logos_cards.team_art_browser",
+        "logos_cards.team_art_browser",
+        _actions(
+            ApfProductAction.PREVIEW,
+            ApfProductAction.REPLACE,
+            ApfProductAction.REVERT,
+        ),
+        replace_method="replace_team_art",
+        revert_method="revert_team_art",
+        product_note=(
+            "Browse every source-resolved Team Art package. Paired crest/endzone "
+            "PNGs retain their semantic layers and stage as one Undo action. "
+            "Existing build writers regenerate mips, enforce allocations and "
+            "verify decode-back; changed art remains in-game UNWITNESSED."
+        ),
+    ),
+```
+
+## Runtime import closure
+
+In the module-name tuple in `packaging/check_apf2k8_mod_studio_runtime.py`, immediately after `"mod_editor.apf_studio.gui",`, add:
+
+```python
+    "mod_editor.apf_studio.apf_theme",
+    "mod_editor.apf_studio.page_layout",
+    "mod_editor.apf_studio.team_art",
+    "mod_editor.apf_studio.team_art_qt",
+```
+
+`packaging/apf2k8-release-allowlist.txt` already includes these four runtime modules and the two new label JSON files. The protected general `packaging/release-allowlist.txt` and `packaging/check_*.py` remain unchanged. The new screenshot/audit tools are development-only and need no release entry. No additional GUI route patch is required.
+
+Run the registry validator, `tests/mod_editor/test_apf_capability_action_parity.py`, `tests/mod_editor/test_apf_studio_installer.py`, and the APF runtime/release gates after integration. Bump the shared product version to alpha.86 through the release owner's normal workflow; this job adds the requested alpha.86 changelog section without changing shared release identity files.
+
+---
+
+# Historical handoffs retained from the starting branch
+
 # Beta 64 PS3 endzone writer — required Field Art GUI handoff
 
 `ASTRA_CONTEXT.md` prohibits editing `mod_editor/apf_studio/gui.py`. Apply the

@@ -34,7 +34,6 @@ class ProductFindingsParityTests(unittest.TestCase):
         assert isinstance(gameplay, dict)
         sliders = inspect_gameplay_sliders("apf2k8")
         draft = inspect_draft_priority("apf2k8")
-        presentation = inspect_apf_scorebug_presentation()
 
         self.assertEqual(
             gameplay["sliders"],
@@ -62,6 +61,13 @@ class ProductFindingsParityTests(unittest.TestCase):
             lineage["runtime_patch_performed"], draft["runtime_patch_performed"]
         )
 
+    def test_packaged_presentation_matches_optional_pinned_research(self) -> None:
+        from mod_editor.core import presentation_inspection as core
+        missing = [path.name for path in (core.AUDIT, core.FONT_LAYOUT, core.FONT_ROUNDTRIP) if not path.is_file()]
+        if missing:
+            self.skipTest("Optional pinned research reports absent: " + ", ".join(missing))
+        presentation = inspect_apf_scorebug_presentation()
+        document = load_product_findings()
         product_presentation = document["presentation"]
         assert isinstance(product_presentation, dict)
         field = product_presentation["field_scorebug"]
