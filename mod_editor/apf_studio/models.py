@@ -173,6 +173,19 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
         "In-game result: UNWITNESSED."
     ),
 ),
+    "apf2k8.players_rosters.ps3_roster_import": CapabilityActionBinding(
+        "apf2k8.players_rosters.ps3_roster_import",
+        "players_rosters.ps3_roster_import",
+        _actions(ApfProductAction.PREVIEW, ApfProductAction.BUILD_COPY),
+        one_shot_target="mod_editor.apf_studio.ps3_roster_convert:write_conversion",
+        output_kind="copied_xbox_roster_payload_with_receipt",
+        product_note=(
+            "Rosters > Import PS3 Roster converts a PS3 APF 2K8 roster USERDATA "
+            "into the raw Xbox 360 Roster.ROS layout as a new file with a counted "
+            "receipt; the source is never modified and strict readers re-parse the "
+            "output. Loading it in Xenia is UNWITNESSED."
+        ),
+    ),
     "apf2k8.playbooks.identity": CapabilityActionBinding(
         "apf2k8.playbooks.identity",
         "playbooks.book_identity",

@@ -86,6 +86,8 @@ PRODUCT_MODULES = (
     'mod_editor.apf_studio.ps3_texture_bundle_qt',
     'mod_editor.apf_studio.ps3_texture_codec',
     'mod_editor.apf_studio.ps3_roster_probe',
+    'mod_editor.apf_studio.ps3_roster_convert',
+    'mod_editor.apf_studio.ps3_roster_import_qt',
     'mod_editor.apf_studio.ps3_texture_probe',
     'mod_editor.apf_studio.ps3_texture_probe_fast',
     'mod_editor.apf_studio.book_identity_qt',

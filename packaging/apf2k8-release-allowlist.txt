@@ -228,6 +228,8 @@ mod_editor/apf_studio/play_design_service.py
 mod_editor/apf_studio/play_designer_qt.py
 mod_editor/apf_studio/playbook_playcall_qt.py
 mod_editor/apf_studio/ps3_roster_probe.py
+mod_editor/apf_studio/ps3_roster_convert.py
+mod_editor/apf_studio/ps3_roster_import_qt.py
 mod_editor/apf_studio/ps3_texture_bundle.py
 mod_editor/apf_studio/ps3_texture_bundle_qt.py
 mod_editor/apf_studio/ps3_texture_codec.py

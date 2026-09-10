@@ -196,6 +196,7 @@ from .playbook_playcall_qt import ApfPlaycallPanel
 from .coverage_qt import CoverageGeometryPanel
 from .ps3_texture_bundle_qt import import_button as ps3_import_button
 from .playbook_package_map_qt import ApfPackageMapPanel
+from .ps3_roster_import_qt import Ps3RosterImportPanel
 from .save_roster_players_qt import SaveRosterPlayersPanel
 from .scene_textures import SceneTexture, shared_texture_ids
 from .stadium import ApfStadiumPreview, ApfStadiumScene
@@ -19379,6 +19380,11 @@ class InspectorCategoryPage(QWidget):
             if category is ApfCategory.ROSTERS
             else None
         )
+        self.ps3_roster_import = (
+            Ps3RosterImportPanel(run_task)
+            if category is ApfCategory.ROSTERS
+            else None
+        )
         self.save_playbooks = (
             SavePlaybookAssignmentsPanel(run_task)
             if category is ApfCategory.PLAYBOOKS
@@ -19444,6 +19450,7 @@ class InspectorCategoryPage(QWidget):
                 # mnemonic marker and visually eating the tab label.
                 tabs.addTab(self.inspector, "Roster + Base Ratings")
                 tabs.addTab(self.save_roster_players, "Save Players")  # type: ignore[arg-type]
+                tabs.addTab(self.ps3_roster_import, "Import PS3 Roster")  # type: ignore[arg-type]
                 tabs.addTab(self.roster_planner, "53-player Planner")  # type: ignore[arg-type]
                 tabs.addTab(self.assets, "&Raw Roster Assets")  # type: ignore[arg-type]
             elif category is ApfCategory.PLAYBOOKS:

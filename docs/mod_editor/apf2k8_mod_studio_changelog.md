@@ -2,6 +2,17 @@
 
 ## 0.1.0-alpha.85 — the 2K8 beta (beta-64): playbooks, play design, coverage, book identity, CPU play calling, PS3 imports — 2026-09-09
 
+- **Rosters: Import PS3 Roster (beta 64).** Converts a PS3 APF 2K8 roster `USERDATA` (raw, or the one
+  `BLUS30049-ROS/USERDATA` member of a PS3 mod package zip) into the raw Xbox 360 `Roster.ROS` layout as a new
+  file with a receipt. Both platforms use the same self-relative pointers (`target = field + stored - 1`, proved
+  over all 42,825 string references in 13 root tables); the platform delta is the four runtime words in the
+  root, the palette byte order (`RRGGBBFF` on PS3, `FFRRGGBB` on Xbox: 2,660 colours), an 8-word runtime block
+  and three words in each user-book bank header. The 1,344 odd nickname pointers in the community's 1993 file
+  were editor damage, not a PS3 rule: the converter shifts the damaged runs, repoints stale references to the
+  game's interned empty string and refuses Xbox-layout input (idempotent). On the 1993 NFL Season file: 2,254
+  players, 40 teams, 1,680 memberships and all 69 labels kept; the output re-parses through every strict reader
+  the studio has. Xenia reads the file from
+  `content/54540807/00000001/<save>/Roster.ROS`. `ASTRA_B64_PS3_ROSTER_REPORT.md`. Unplayed.
 - **PS3 endzone import completeness (beta 64).** The eight endzone pairs that mapped to unsupported format-59
   (DXT5A detail) slots (Chicago, Cleveland, Green Bay, Houston, Indianapolis, Los Angeles Raiders, New York Giants,
   New York Jets) now stage: the Field Art writer encodes DXT5A endzones with regenerated mips, fixed allocations and
