@@ -100,7 +100,9 @@ class RetailTableFixtureTests(unittest.TestCase):
                 table.pop(9)
                 again = splb.retail_formation_packages(str(index))
                 self.assertIn(9, again, "Callers must not poison cached defaults")
-                self.assertEqual(reader.call_args_list, [call(index, 130), call(index, 134)])
+                # The scanner resolves the source path (macOS maps /var to /private/var).
+                resolved = index.resolve()
+                self.assertEqual(reader.call_args_list, [call(resolved, 130), call(resolved, 134)])
                 splb.retail_formation_packages(Path(directory) / "another" / "0A")
                 self.assertEqual(reader.call_count, 4, "Cache must be per source index")
 
