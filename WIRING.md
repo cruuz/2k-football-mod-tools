@@ -263,6 +263,138 @@ pinned scalar writers. Apply these test-only hunks with the GUI handoff:
 
 ---
 
+# beta-64 Import PS3 roster (2026-09-09, branch astra/b64-ps3-roster)
+
+Everything below the protected line already exists and is tested on this branch:
+`mod_editor/apf_studio/ps3_roster_convert.py` (core converter + CLI + receipt),
+`mod_editor/apf_studio/ps3_roster_import_qt.py` (`Ps3RosterImportPanel`, the
+"Import PS3 roster..." action), `tests/mod_editor/test_apf_ps3_roster_convert.py`
+(11 tests: synthetic PS3-style fixture, file/zip contract, retail-gated 1993 member) and
+`tests/mod_editor/test_apf_ps3_roster_import_qt.py` (2 offscreen tests). The feature is
+offline-proved and in-game UNWITNESSED; keep that word in every user-facing string.
+
+## 1. `mod_editor/apf_studio/gui.py` (protected): render the panel on the Rosters page
+
+Import, next to the other panel imports (line 199 carries `save_roster_players_qt`):
+
+```python
+from .ps3_roster_import_qt import Ps3RosterImportPanel
+```
+
+Construct it beside `self.save_roster_players` (line 19372, the ROSTERS category block):
+
+```python
+        self.ps3_roster_import = (
+            Ps3RosterImportPanel(run_task)
+            if category is ApfCategory.ROSTERS
+            else None
+        )
+```
+
+Add the tab after "Save Players" (line 19441, inside `elif category is ApfCategory.ROSTERS:`):
+
+```python
+                tabs.addTab(self.ps3_roster_import, "Import PS3 Roster")  # type: ignore[arg-type]
+```
+
+The panel takes only `run_task` (same `TaskRunner` contract as `SaveRosterPlayersPanel`),
+emits no `modifiedChanged` signal (it never edits a loaded source; it writes a new file plus a
+receipt), and exposes `load_path(Path)` / `convert_to(Path)` for `open_workspace` QA.
+
+## 2. `packaging/apf2k8-release-allowlist.txt` (protected): two module paths
+
+Add beside `mod_editor/apf_studio/ps3_roster_probe.py` (line 230):
+
+```
+mod_editor/apf_studio/ps3_roster_convert.py
+mod_editor/apf_studio/ps3_roster_import_qt.py
+```
+
+The allowlist carries shippable modules only; the two tests and
+`reports/ps3_import/roster_convert_receipt.json` are repository evidence, not payload.
+
+## 3. `packaging/check_apf2k8_mod_studio_runtime.py` (protected): import closure
+
+Add to the module list beside `'mod_editor.apf_studio.ps3_roster_probe'` (line 88):
+
+```python
+    'mod_editor.apf_studio.ps3_roster_convert',
+    'mod_editor.apf_studio.ps3_roster_import_qt',
+```
+
+Both import cleanly under `QT_QPA_PLATFORM=offscreen` with no retail path present.
+
+## 4. `mod_editor/capabilities/registry.v1.json` (protected): one row, after the GUI lands
+
+```json
+{
+  "id": "apf2k8.players_rosters.ps3_roster_import",
+  "game": "apf2k8_xbox360",
+  "surface": "players_rosters",
+  "title": "Import PS3 roster",
+  "summary": "Convert a PS3 APF 2K8 roster USERDATA into the raw Xbox 360 Roster.ROS layout with a counted receipt; strict readers re-parse the output.",
+  "classification": "offline-writer-proved",
+  "backend": {
+    "module": "mod_editor/apf_studio/ps3_roster_convert.py",
+    "operation": "write",
+    "command": "python3 -m mod_editor.apf_studio.ps3_roster_convert <USERDATA-or-zip> <Roster.ROS> [--member <zip member>] [--receipt <json>]"
+  },
+  "gui": {
+    "expose": true,
+    "default_enabled": true,
+    "mode": "edit",
+    "reason": "Pointer rule, palette byte order and runtime words proved from all 42,825 string references and both Xbox fixtures; output re-parsed by save_roster_players, apf_save_playbook_assignments and the team graph; loading in Xenia UNWITNESSED."
+  },
+  "input_constraints": [
+    "Exactly one 2,715,908-byte PS3 roster USERDATA (raw or the one BLUS30049-ROS/USERDATA member of its ZIP); STFS containers and Xbox-layout rosters are refused, so the action is idempotent.",
+    "Platform is decided by the palette alpha position (2,660 colours vote); mixed or ambiguous files are refused rather than guessed.",
+    "Editor-damaged text is repaired structurally only: misaligned runs shift or relocate, stale/garbage/below-pool references become the shared empty string; intended text is never invented.",
+    "Output is a raw payload plus receipt next to it; no container is written and the source is never modified."
+  ],
+  "selectors": {
+    "fields": [
+      {"name": "source", "required": true, "allowed": "PS3 USERDATA or its ZIP"},
+      {"name": "output", "required": true, "allowed": "new .ROS path; existing files are refused"}
+    ],
+    "notes": "The receipt lists players, teams, memberships, labels, odd runs, repointed references and rewritten runtime words."
+  },
+  "source_container": {
+    "format": "raw APF 2K8 roster object graph (PS3 USERDATA / Xbox 360 Roster.ROS)",
+    "resource": "players, teams, playbook labels, palettes, user playbook banks",
+    "retail_file": "user-supplied PS3 save (never bundled)",
+    "hash_pins": []
+  },
+  "validation_command": "QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_ps3_roster_convert.py -v",
+  "evidence": ["ASTRA_REPORT.md", "reports/ps3_import/roster_convert_receipt.json"],
+  "runtime": {
+    "status": "not-tested",
+    "scope": "UNWITNESSED. Nobody has loaded a converted roster in Xenia; names, positions, teams and palette colours need an in-game witness.",
+    "evidence": []
+  },
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "tooling": "source-and-schemas-only",
+    "rule": "Ship code, tests and the counted receipt only; the 1993 roster archive and the Xbox fixtures stay private inputs."
+  },
+  "portme": [
+    "Witness the converted 1993 roster in Xenia (load, names, positions, teams, colours), then move runtime.status.",
+    "If the game rejects it, the next suspects are the four root runtime words, the eight-word block at 0x230224 and the bank header words (all written the way the Xbox fixtures carry them).",
+    "Optional: restore the created-player name pools (t12/t13, 475 stale entries blanked) from a stock Xbox roster."
+  ]
+}
+```
+
+If `models.py::CAPABILITY_ACTION_BINDINGS` must name a product action for the card to leave
+Coming Soon, the panel has no facade mutation: bind it as a dialog-style action
+(`"players_rosters.ps3_roster_import_panel"`) with no replace/revert methods, the way a
+read-then-write-new-file tool is bound, and reuse `ps3_roster_convert.RUNTIME_STATUS` verbatim.
+
+## 5. Nothing else
+
+`build.py`, the release checker and `update_check.py` need no change: the feature writes user
+files, never disc payload.
+
 # beta-63.1 raw-dump overlap hotfix (2026-09-09, branch local/hf63-rawdump-overlap)
 
 Bug: Ju3tin, #2k5-general 2026-09-09 15:00 — "ValueError: overlapping disc file or metadata: root
