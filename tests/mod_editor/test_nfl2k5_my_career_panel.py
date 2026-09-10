@@ -90,7 +90,7 @@ class PanelTests(unittest.TestCase):
             self.finish()
         self.assertEqual(prepare.call_args.args, ("source.zip", "new-folder"))
         self.assertEqual(prepare.call_args.kwargs, dict(first="My", last="Player", position=3, template=1,
-                                                        port=2, camera=1, starter_lock=False))
+                                                        port=2, camera=1, starter_lock=False, scheme="retail"))
         self.assertIn("(WR)", self.page.result.text())
         self.assertIn("Game Modes", self.page.result.text())
 
