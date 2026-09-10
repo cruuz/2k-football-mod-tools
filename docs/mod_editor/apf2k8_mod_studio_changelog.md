@@ -2,6 +2,14 @@
 
 ## 0.1.0-alpha.85 — the 2K8 beta (beta-64): playbooks, play design, coverage, book identity, CPU play calling, PS3 imports — 2026-09-09
 
+- **PS3 endzone import completeness (beta 64).** The eight endzone pairs that mapped to unsupported format-59
+  (DXT5A detail) slots (Chicago, Cleveland, Green Bay, Houston, Indianapolis, Los Angeles Raiders, New York Giants,
+  New York Jets) now stage: the Field Art writer encodes DXT5A endzones with regenerated mips, fixed allocations and
+  the reparse gate (writer contracts 221 -> 260, 117 writable endzone pairs). Washington's endzone, which rebuilt
+  13,524 bytes over its allocation, now fits through receipted quality steps (RGB endpoint simplification at the
+  original 2048x512; Chicago additionally needs a top-level reduction), and a refusal names the overage only after
+  every step. The community NFL bundle now prepares 54 of its 55 valid pairs (108 textures; 27 crests, 27 endzones).
+  `ASTRA_B64_PS3_ENDZONES_REPORT.md`. Unplayed.
 Product identity: **0.1.0-alpha.85**. All new gameplay is **UNWITNESSED**.
 
 - Design Plays / Formations: native APF codec, bounded play/formation authoring,

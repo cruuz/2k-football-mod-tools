@@ -2274,7 +2274,7 @@ class Apf2k8PantsColorProvider(Apf2k8JerseyColorProvider):
         backend_module: backend_module_sha256,
         verifier_module: verifier_module_sha256,
         "tools/apf_texture_patch.py": "301cbea24825ddc914498d99befa4db633cb4cd4a47119dec698942f3cd40f18",
-        "tools/apf_xenos_bc1_mip_layout.py": "56f53603e73e563ff66305430956373468160fb0af9380fe0257c5a5edde9234",
+        "tools/apf_xenos_bc1_mip_layout.py": "02b4198299b7a97e3474460c6bb07763c1aac10518b6fe7c2bd16d473927f07c",
         "tools/nfl_dxt1.py": "bce75aca68acbfaa5112927e228672d4d77c58fc27cd3ce047751d8875dcb9a2",
     }
     recipe_schema_file = "mod_editor/apf_pants_recipe.schema.json"
