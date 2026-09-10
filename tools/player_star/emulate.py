@@ -30,7 +30,7 @@ PUSH_BUFFER = HEAP + 0x10000
 
 
 class Machine:
-    def __init__(self, payload: bytes, *, coach=False, coach_visible=True, offscreen=False):
+    def __init__(self, payload: bytes, *, coach=False, coach_visible=True, offscreen=False, replay_camera=False):
         self.uc = Uc(UC_ARCH_X86, UC_MODE_32)
         self.uc.mem_map(0x10000, 0x1000000)
         for s in _sections(payload):
@@ -42,10 +42,12 @@ class Machine:
         self.coach = coach
         self.coach_visible = coach_visible
         self.offscreen = offscreen
+        self.replay_camera = replay_camera
         self.models = []
         self.strips = []
         self.trace = []
         self._pending = None
+        self._star_entity = None
         self.set32(0xE5FC50, 1)
         self.set32(0xE5FF80, 4)
         self.set32(0xE602B8, 0xC)
@@ -81,7 +83,13 @@ class Machine:
     def _hook(self, uc, address, size, _):
         if address in (ps.GATE_VA, 0xF9030, 0xF9320, 0xF8880, *ps.SYMBOLS.values()):
             self.trace.append(address)
-        if address == 0x627C0:
+        if address == ps.SYMBOLS['star_draw']:
+            self._star_entity = uc.reg_read(UC_X86_REG_ESI)
+        if address == 0x83940:
+            self.ret(int(self.replay_camera))  # replay predicate; real caller branch executes
+        elif address == ps.DRAW_CALL_VA + 5:
+            self.ret()  # bounded end of the enclosing frame's indicator call site
+        elif address == 0x627C0:
             self.ret(int(self.coach))
         elif address == 0x7D930:
             self.ret(int(self.coach_visible))
@@ -106,6 +114,8 @@ class Machine:
             material = self.u32(sp + 8)
             self._pending = {'primitive': self.u32(sp + 4), 'transform': self.u32(sp + 12),
                              'vertex_mode': uc.reg_read(UC_X86_REG_ECX),
+                             'world_mode': uc.reg_read(UC_X86_REG_EDX),
+                             'entity': self._star_entity, 'material_address': material,
                              'material': bytes(uc.mem_read(material, 128)), 'vertices': []}
             self.set32(CONTEXT + 0x318, 4)
             self.set32(0xA6B274, CONTEXT)
@@ -175,6 +185,5 @@ class Machine:
     def frame(self, *, build=True):
         if build:
             self.run(0xF9030, args=(0x3C888889,))  # 1/60 s
-        displacement = struct.unpack('<i', self.uc.mem_read(ps.DRAW_CALL_VA+1, 4))[0]
-        self.run(ps.DRAW_CALL_VA+5+displacement)
+        self.run(0x64F18)  # real replay-camera branch and patched/retail frame call
         return self.strips

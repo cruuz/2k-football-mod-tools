@@ -39,7 +39,7 @@ frame_loop:
     mov eax, 0x3f900000            /* dark border: scale 1.125, radius 121.5 */
     mov edx, 0xff101010            /* opaque near-black; no blend-mode assumption */
     call star_draw
-    mov eax, 0x3f800000            /* white band: scale 1, radius 108 */
+    mov eax, 0x3f800000            /* white fill: scale 1, radius 108 */
     or edx, -1
     call star_draw
 frame_next:
@@ -99,7 +99,7 @@ star_position:
     mov edx, 1                    /* retail world-space calling convention */
     call 0x0002d2a0
     mov ebx, offset star_points
-    mov edi, 22                   /* outer/inner pair at 11 points (closed) */
+    mov edi, 22                   /* perimeter/centre pair at 11 points (closed) */
     jmp star_vertex
 
 .section .star_vertex,"ax"
@@ -142,10 +142,15 @@ vertex_same_point:
 .section .star_points,"a"
 .global star_points, star_inset
 star_inset:
-    .float 0.58
+    /* Collapse the old band's inner boundary to the centre. The existing
+     * strip API emits ten consistently wound filled triangles separated by
+     * ten zero-area triangles (repeated centre). Adjacent filled triangles
+     * share exact endpoints: no overlapping fill or coplanar border pass.
+     * This changes only the existing immutable inset, no new runtime data. */
+    .float 0.0
 star_points:
     /* Ten perimeter points, alternating outer radius 108 and notch radius 51.
-     * x/z pairs; draw tests verify the emitted perimeter and hollow rim area. */
+     * x/z pairs; draw tests verify the emitted perimeter and full star area. */
     .float 0.0, -108.0
     .float 29.977047866916137, -41.25986671312232
     .float 102.71410375987658, -33.37383539249433
