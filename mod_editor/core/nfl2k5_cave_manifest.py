@@ -88,6 +88,15 @@ class Recorder:
         from . import nfl2k5_xbe_space as space
         grown_regions = space.layout(after)["regions"] if space.status(after) == "applied" else []
         runs = list(changed_runs(before, after, allow_append=allow_append))
+        delegated = []
+        if owner == 'nfl2k5_music_metadata':
+            # Metadata installs the collection-list dependency. Attribute
+            # those exact verified live bytes to their own writer even when
+            # observing only the parent transaction (or a nested wrapper).
+            from . import nfl2k5_jukebox_list as jukebox
+            if jukebox.status(after) == 'applied':
+                delegated = [(int(r['start'], 0), int(r['end'], 0), r['owner'])
+                             for r in jukebox.reservations(after)]
         self.mapping_end = max(self.mapping_end, post_image.base + post_image.image_size)
         if len(after) > len(self.covered):
             self.covered.extend(bytes(len(after) - len(self.covered)))
@@ -105,6 +114,9 @@ class Recorder:
                     from . import nfl2k5_xbe_space as space
                     page_owner = space.OWNER if any(r["va"] <= va < r["va"] + r["size"]
                         for r in grown_regions if not r.get("music")) else owner
+                    for lo, hi, child in delegated:
+                        if lo <= va and va + stop-at <= hi:
+                            page_owner = child
                     self.reserve(va, stop - at, page_owner, "observed byte diff")
                 at = stop
         self.steps.append({"owner": owner, "function": function,

@@ -46,6 +46,8 @@ Consumer audit, using the retail instructions and metadata pointers:
 `0x32A24F..0x32A255`. It pins the normalized complete 435-byte function
 (SHA-256 `36a66f2a35336c845fc2713630d397947c8d96b9365bdf68860d5583dff22a80`),
 rejects foreign/mixed states, seals the XBE digests and reparses after writing.
+The native down-button arm at `0x32B450` already uses four disc rows / thirteen
+HDD rows; its scrolling transition is also tested through the last added song.
 No table allocation, executable scratch, collection-number test or I/O wait
 is added. `nfl2k5_music_metadata.apply/status` now includes this repair.
 Previously expanded executables missing the repair require a clean rebuild.
@@ -85,15 +87,32 @@ A passing isolated fixture is not a proof that a device call returns on hardware
 | Other playlist hooks `0x325E22`, `0x27F040`, `0x28016D`, `0xD90F0`, `0xD9350`, `0x2801A0`, `0x280450`, `0x27FF15`, `0x2806B2`, `0x27FEC0`, `0x27F6B0`, `0x27F6F0`, `0x27FF90`, `0x2804C0` | Existing playlist/context suites exercise enqueue, dispatch, frame, preview, suspend, pause/resume, halftime and native screen push/pop boundaries. | Asynchronous packet completion and native 3D/audio callbacks remain the same unproved frontier; no SEGA-loop attribution. |
 | Screen timing and hooks `0x23ECD2`, `0x19C7E9` | Bounded screen blocking/QB timer execution; malformed grammar exits through tested bounds. Screen timing A/B/C/D edits PLAY nodes, not a boot polling routine. | Actual actor scheduling beyond the native timer continuations and `0x11A7C0` phase dispatch is not reconstructed from CER's state. |
 | Widescreen v3 `0x2ACA1`, `0x66A52`, `0x9E1BC` | Native projection, pixel camera/scissor and sky lens paths tested. No owned wait loop or mutable executable data introduced. | Native draw/device completion after `0x28110` and the real scene/camera lifecycle. |
-| Scorebar v3 / runtime | All six scorebar states, transition/marker state, emitted draw and composition tests. | Rendering callbacks and GPU submission are fixture boundaries. A screen reaching its draw call is not a completed play-call frame. See pinned `nfl2k5_scorebug_ingame.xbe_sites` and runtime `HOOKS` for the complete site list. |
+| Scorebar v3 / runtime `0xFCE56`, `0xFCFA2`, native visibility `0xFCA87` | All six scorebar states, transition/marker state, emitted draw and composition tests. | Rendering callbacks and GPU submission are fixture boundaries. A screen reaching its draw call is not a completed play-call frame. Other live sites are `0xFCFFC`, `0xFD07B`, `0xFD0EB`, `0xFD15E`, `0xFC9F6`, `0xFCEC7`, `0x9FEAB`, `0xFC6D5`, `0xFC010`, `0xFC030`, `0xFBE30`, `0xFC285`, `0xFC305`, `0xFC0A6` and the quarter table at `0xFC0F4..0xFC100`. |
 | Calendar engine `0x1C1880`, `0x1C19F0`, `0x1C1940`, `0x8B0E7`, `0xD22AC`, `0xD2356`, `0x2BF5CA`, `0x2BF60E`, `0x2BF61C`, `0x2BF646`, `0x2BF661`, `0x2BF67C`, `0x2BF697`, `0x347714`, `0x3663E4` | The exhaustive 128-season native Gregorian/weekday/calendar suite terminates. Helpers operate on supplied date fields, with no I/O wait. | Caller-supplied date/context validity before a full title boot; downstream schedule/event consumers beyond these date helpers. |
-| Practice squad screen, Coach's Desk pointer `0x524FA0`; native event dependency `0x6E4E0` | Native screen fixture covers descriptor, list, move/cancel transactions and composition. | It requires a valid franchise screen/context; native `0x14E440`, `0x174C70` and dialog/roster lifecycle have no complete boot witness. |
+| Practice squad screen, Coach's Desk pointer `0x5221A0`; native event dependency `0x6E4E0` | Native screen fixture covers descriptor, list, move/cancel transactions and composition. | It requires a valid franchise screen/context; native `0x14E440`, `0x174C70` and dialog/roster lifecycle have no complete boot witness. |
 | Abilities `0x17B010`, `0x75CC8`, `0x15647D`, `0x18EC6D`, `0x1CD550`, `0x2D43F0`, `0x2D46D0`, `0x2D4740` | Bounded attribute/decode/dispatch/init/generate/AI/consume suite passes. Hooks apply bounded record/flag tests, not a boot wait. | Init tail `0x1CD555`, generation tail `0x2D43F5`, and real actor/account state at `0x1B3340`; no evidence tying these to SEGA. |
 | Guardian `0x8F02E`, `0x8FB45`, `0xC16CD` | Native resource registration, material binder, refresh, clone and absent-resource guards terminate. | Runtime resource lookup `0x449E0` and actual texture/device lifetime; invalid render objects before retail caller initialization are not a valid fixture. |
 | Seven-on-seven loader `0x62D0C`, mode switch `0xE33FF` | Native loader/switch and practice selection tests pass with bounded source/resource fixtures. Owned RW begins zero. | Actual load queue completion beyond the native loader boundary and live kickoff scheduling. |
 | Position pools `0x242B07`, existing row lookup body `0x2BA840` | Pinned bounded row lookup/filter writer. This is a finite lookup, not a load-completion loop. | Actual roster/player pointers on the failing transition; no failing value captured. |
 | MyCareer camera entry `0xA5490`, native screen push `0x6E390`; M3 hooks in `nfl2k5_my_career_mode.MODE_HOOKS/SAVE_HOOKS` | Existing MyCareer native suite and Broadcast composition pass. | Screen and actor objects supplied by fixtures, save I/O and full `0x11A7C0` phase scheduling are not boot/transition proofs. |
 | Camera row 7: selectors `0x16D1D4`, `0x16E7B1`, `0x16E864`, `0xA55EB`; spectator choice `0xA54C3` | Native options/selection, all edited gameplay-state projections, both aspects, pass options, player binding and sampled stands clearance pass. | Game-entry continuation `0xA5490` and state transition dispatch beyond the camera selection are unproved for CER's recorded play. |
+
+Additional M3 transition sites audited against the existing MODE_HOOKS:
+`0x64D27` skip tick; `0x13856`/`0x112DD9` skip buttons; `0x8970B` camera pick;
+`0x1212A5` art input; `0xC5D60`/`0xC5D69`/`0xC74E3`/`0xC74EC` result;
+`0x11A8F5` visual dispatch; `0xC5D9E` stats commit; `0x6E390` screen dispatch;
+`0x2C0E83` practice return; `0x16DDE0` loaded replacement. Save/load seams are
+`0x16AA26`, `0x16ABB5`, `0x16E50D`, `0x16E5CE`, `0x16E6D3`, `0x16E7E5`,
+`0x16E815`. The mode-audit suite checks pinned save ownership; the routes suite adds finite
+route evidence;
+actual save I/O and complete boot/transition state remain HYPOTHESIS.
+
+The supplied video frames were inspected directly: `_03.png` shows the goal
+post and stands with NE 7 / SEA 7, second quarter 2:32, Kickoff; `_05.png`
+shows KICK RETURN entering over the players; `_07.png` shows all three return
+choices, NE 35 and play clock :40. Thus this recording reaches a rendered
+play-call screen. The frames alone do not establish a CPU spin, prove that
+input responds, or show that Broadcast was selected.
 
 Preset audit: the shipped Experimental preset enables calendar, widescreen,
 static scorebar and screen timing D; merged position pools and camera are also

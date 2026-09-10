@@ -148,6 +148,27 @@ class CollectionTests(unittest.TestCase):
                 self.assertEqual(machine.uc.reg_read(UC_X86_REG_EIP),
                                  0x32a255 if row == expected else 0x32a165)
 
+    def test_native_down_button_scrolls_to_last_added_song(self):
+        machine = Machine(self.library(193))
+        machine.put(0xcb69f4, 17)
+        machine.run(0x329f20, eax=0)
+        count = machine.get(metadata.COLLECTIONS+17*32+24)
+        # Actual disc down-button arm. Its retail disc/HDD capacity choice
+        # already uses four/thirteen; only the list builder was inconsistent.
+        for press in range(1, count+3):
+            machine.put(0x200f000, 0x2010000)
+            for reg, value in ((UC_X86_REG_ESP, 0x200f000),
+                               (UC_X86_REG_ESI, 1), (UC_X86_REG_EBX, 0)):
+                machine.uc.reg_write(reg, value)
+            machine.uc.emu_start(0x32b450, 0x32b504, count=20000)
+            self.assertEqual(machine.uc.reg_read(UC_X86_REG_EIP), 0x32b504)
+            row, first = machine.get(0xcb6d38), machine.get(0xcb6d40)
+            self.assertLess(row, 4)
+            self.assertEqual(row+first, min(press, count-1))
+        machine.texts.clear()
+        machine.run(0x32a0f0)
+        self.assertEqual(machine.texts[-3], 'Song 192')
+
     def test_pins_idempotence_and_foreign_rejection(self):
         self.assertEqual(fix.status(self.retail), 'retail')
         patched, _ = fix.apply(self.retail)
@@ -160,6 +181,18 @@ class CollectionTests(unittest.TestCase):
             self.assertEqual(fix.status(bytes(bad)), 'foreign')
             with self.assertRaises(ValueError):
                 fix.apply(bytes(bad))
+
+    def test_parent_metadata_receipt_keeps_distinct_list_ownership(self):
+        from mod_editor.core.nfl2k5_cave_manifest import Recorder
+        payload, receipt = metadata.apply(self.retail,
+            [dict(title='Song', artist='Artist', frames=22080)]*61)
+        recorder = Recorder(self.retail)
+        recorder.observe(metadata, 'apply', self.retail, payload, receipt)
+        for va, before, _ in fix.SITES:
+            spans = [r for r in recorder.spans
+                     if int(r['start'],0) < va+len(before) and int(r['end'],0) > va]
+            self.assertTrue(spans)
+            self.assertEqual({r['owner'] for r in spans}, {fix.OWNER})
 
 
 if __name__ == '__main__':

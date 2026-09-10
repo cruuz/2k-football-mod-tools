@@ -18105,3 +18105,89 @@ protected wiring. Run standalone collection, paired-intent, helmet, music
 metadata, pair/read/spy and Guardian suites as listed in `ASTRA_REPORT.md`.
 No BASIC playoff-starter fix or general skeleton-import control is handed off:
 their exact instruction-level blockers remain in the report.
+
+### Build & Share / project persistence for the same Helmet finish choice
+
+The Gameplay row must also be represented by the central Build panel; otherwise
+`GameplayBuildLink.shared` will omit it and a project reopen will lose it.
+In protected `mod_editor/gui/build_panel_qt.py`, beside the jersey selector:
+
+```python
+self.helmet_finish_check = self._option(
+    g, "helmet_finish", "Matte helmet finish (advanced)",
+    "Both LODs. Native reflection weight is zero; appearance is unwitnessed.")
+self.helmet_finish_combo = QComboBox()
+self.helmet_finish_combo.setAccessibleName("Helmet finish")
+self.helmet_finish_combo.addItem("Glossy (retail)", "glossy")
+self.helmet_finish_combo.addItem("Matte", "matte")
+self.helmet_finish_combo.currentIndexChanged.connect(
+    lambda i: self.helmet_finish_check.setChecked(i == 1))
+self.helmet_finish_check.toggled.connect(
+    lambda on: self.helmet_finish_combo.setCurrentIndex(1 if on else 0))
+g.addWidget(self.helmet_finish_combo)
+```
+
+Add `"helmet_finish": self.helmet_finish_check` to `_boxes()`,
+`helmet_finish="matte" if self.helmet_finish_check.isChecked() else "glossy"`
+to the BuildPlan construction in `plan()`, and
+`gate(self.helmet_finish_check, "helmet_finish")` in `apply_state()`.
+In `_apply_preset`, override the generic truth conversion for this key with
+`values.get("helmet_finish", "glossy") == "matte"`, then set the combo to 1/0
+from that boolean. Add `or p.helmet_finish == "matte"` to the `_refresh()`
+“has changes” predicate. The checkbox/combo wiring makes existing shared-key
+synchronization work, but blocked project restoration also needs this key.
+
+In `mod_editor/core/nfl2k5_build_settings.py`, add `"helmet_finish"` beside
+`"uniform_choice"` in the persisted field-name tuple; in `build_settings()`
+after defaults are merged, add:
+
+```python
+tt._require(choices["helmet_finish"] in ("glossy", "matte"),
+            "Helmet finish must be glossy or matte")
+```
+
+In protected `mod_editor/gui/gameplay_project_ui.py`, `restore()`, the
+`box.setChecked` conditional must handle
+`value == "matte" if key == "helmet_finish"` before its generic `bool(value)`.
+Add `("helmet_finish_combo", choices["helmet_finish"])` to the restore combo
+loop. Add `"helmet_finish_combo"` to both combo-name tuples in
+`GameplayBuildLink.__init__` and `_levels` so quiet restore updates both views.
+
+For an actual Uniforms tab rather than a registry-only entry, in
+`StudioMainWindow`'s Uniforms & Equipment tab construction, after Bump Maps:
+
+```python
+helmet_page = QWidget()
+helmet_layout = QVBoxLayout(helmet_page)
+helmet_layout.addWidget(QLabel("Helmet finish applies to both teams and both LODs."))
+self._uniform_helmet_finish = QComboBox()
+self._uniform_helmet_finish.setAccessibleName("Helmet finish")
+self._uniform_helmet_finish.addItem("Glossy (retail)", "glossy")
+self._uniform_helmet_finish.addItem("Matte", "matte")
+helmet_layout.addWidget(self._uniform_helmet_finish)
+helmet_layout.addWidget(QLabel("ADVANCED / UNWITNESSED. Build & Share writes this choice into a new copy."))
+helmet_layout.addStretch(1)
+uniform_tabs.addTab(helmet_page, "Helmet finish")
+self._connect_helmet_finish()
+```
+
+Add the following method and call it also at the end of
+`_connect_gameplay_build()` once the Build panel exists:
+
+```python
+def _connect_helmet_finish(self):
+    build = getattr(self, "_build_panel", None)
+    combo = getattr(self, "_uniform_helmet_finish", None)
+    if build is None or combo is None or getattr(self, "_helmet_finish_linked", False):
+        return
+    self._helmet_finish_linked = True
+    combo.currentIndexChanged.connect(build.helmet_finish_combo.setCurrentIndex)
+    build.helmet_finish_combo.currentIndexChanged.connect(combo.setCurrentIndex)
+    combo.setCurrentIndex(build.helmet_finish_combo.currentIndex())
+```
+
+After the existing project restore and preset restore blocks (which suppress
+signals), explicitly refresh the Uniforms combo from
+`self._build_panel.helmet_finish_combo.currentIndex()` when both widgets exist.
+The combo's enabled state must follow Build's helmet availability/source gate.
+This creates one stored value, mirrored in Gameplay, Build and Uniforms.
