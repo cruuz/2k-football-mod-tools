@@ -200,6 +200,24 @@ class PatchTests(unittest.TestCase):
         self.assertEqual(result['external_references'], [])
         self.assertTrue(all(not row['overlaps'] for row in result['spans']))
 
+    def test_filled_star_composes_with_every_pairwise_owner_in_both_orders(self):
+        from tests.mod_editor.test_nfl2k5_owner_pairwise_composition import OWNERS, prerequisites
+        from tests import nfl2k5_allocator_stack as stack
+        from mod_editor.core import nfl2k5_xbe_space as space
+
+        seed, _ = space.apply(prerequisites(self.retail), stack.REQUESTS, scaleout=True)
+        for name, owner in OWNERS:
+            with self.subTest(owner=name):
+                before_star, _ = owner.apply(seed)
+                left, _ = ps.apply(before_star)
+                before_owner, _ = ps.apply(seed)
+                right, _ = owner.apply(before_owner)
+                self.assertEqual(left, right)
+                self.assertEqual(ps.status(left), 'applied')
+                self.assertEqual(owner.status(left), 'applied')
+                self.assertEqual(ps.apply(left)[0], left)
+                self.assertEqual(owner.apply(left)[0], left)
+
 
 @unittest.skipUnless(RETAIL.is_file() and HAVE_UNICORN, 'private XBE or Unicorn absent')
 class DrawTests(unittest.TestCase):

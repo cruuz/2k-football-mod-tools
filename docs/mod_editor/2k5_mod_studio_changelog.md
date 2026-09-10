@@ -26,6 +26,12 @@
   switch guards were executed natively) from what is still unwitnessed: routes, mesh movement, catches and
   blocking under the stick. No speculative first-person control flag is enabled; Noah's QB play remains the only
   witness.
+- **Selected players get a filled white star at their feet.** The existing Rosters star tags now draw a solid
+  five-point star with a near-black edge, replacing the hollow outline at the same size and position. Builds
+  upgrade recognized beta-58–64 star patches automatically when the star option is enabled. The same 22-player
+  bound, HUD/coach/replay visibility rules and ordinary controller circles remain. No new style switch or preset
+  change. Native CPU submissions, complete fill, material fields and legacy upgrades are proved offline;
+  in-game appearance still needs Noah's witness. `ASTRA_REPORT.md`; preview `nfl2k5_player_star_filled.png`.
 
 ## v1.0 RC88, the 2K8 beta: no 2K5 changes beyond the version and the release tag (2026-09-09)
 

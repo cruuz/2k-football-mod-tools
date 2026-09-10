@@ -635,7 +635,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_playbook_pair.py": "3a3052bfb84046d5c533cc585f3025e5e822f54fd3ca692d578b3257d41ff217",
         "mod_editor/core/nfl2k5_playbook_pair_code.py": "0ee62ed5b9735e8b46f121bca6f48699bc4b8e3541f3790418db47909765d8a7",
         "mod_editor/core/nfl2k5_playbook_route_writer.py": "87ac9ab729e15c665774223c406a248931b77a05ca2fa258b04e1f0cd06674c5",
-        "mod_editor/core/nfl2k5_player_star.py": "306162e399a030532758b638784b4d105c2df496ba341afa279091029730f8a7",
+        "mod_editor/core/nfl2k5_player_star.py": "66784f4905a50d6acab67a62b952b3d3d8f8b90ec4d470e650276d29e4d97a7d",
         "mod_editor/core/nfl2k5_player_tags.py": "ab981d447202a4840398034aa6c2e11320aa55d0ea901cf0698eed10f7d12d91",
         "mod_editor/core/nfl2k5_playoff_picture.py": "cc851bca3cd4ac77fdcea03be41db1536c51e3699503cfb227f60f1619b2c441",
         "mod_editor/core/nfl2k5_playoffs14.py": "d8c490d6d37d118355db80de95c924db52f03ba897b4fbd85432d1840a14051d",

@@ -2,8 +2,15 @@
 
 Input: pinned USA retail XBE SHA-256
 `73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9`.
-Full machine-readable result:
-[`nfl2k5_star_fix_cave_audit.json`](../../reports/gameplay_tuning/nfl2k5_star_fix_cave_audit.json).
+Latest machine-readable result (filled-star revision, 2026-09-10):
+[`nfl2k5_star_filled_cave_audit.json`](../../reports/gameplay_tuning/nfl2k5_star_filled_cave_audit.json).
+
+Beta 65 changes the existing immutable inset at `0x31E650` from 0.58 to 0.0.
+The same 22-vertex strip now tiles the full star with ten nondegenerate
+triangles; ten repeated-centre triangles have zero area. No new storage or
+span is used. The larger near-black pass stays at height 5; opaque white at
+5.5 covers its interior, leaving the original edge. All shared radial edges
+have identical submitted coordinates. GPU rasterization remains unwitnessed.
 
 These are whole unreferenced retail routines or portions bounded by their
 original ends, **not blank padding caves**. The preceding routine terminates
@@ -28,10 +35,10 @@ interior-only cave-reference test. No external explicit reference was found.
 Neighboring instruction boundaries were manually inspected on retail.
 
 The current manifest SHA-256 is
-`146fc65bcffbeaffaeadb2b94fdfc02128126bcf8aec53573215592ab3e15545`.
+`a93dc456795fef1edc181c0520d8a27e74a78b94e53533ca7676fa1803ebdbd8`.
 It has no ownership overlap with any selected span. The audit loads ownership
-without `source_root`, explicitly records the drift of the two changed star
-modules, and never presents those fingerprints as current. The draw regression
+without `source_root`, explicitly records the drift of `nfl2k5_player_star.py`,
+and never presents that fingerprint as current. The draw regression
 also builds the actual existing patch stack in memory and compares both
 application orders, including kickoff/practice/roster-pool patches.
 
@@ -44,7 +51,10 @@ accesses and decode failures. Every selected span is `unknown`, none
 `reserved` or `reachable`. **This is not an oracle certificate of freedom.**
 The negative explicit-reference scan and local boundary inspection are the
 evidence used for this choice; unresolved indirect/computed paths remain a
-static-analysis limitation.
+static-analysis limitation. The query excludes only this writer's existing
+`nfl2k5_player_star` ownership; every other reservation and every retail
+reachability witness remains active. The separate explicit scan also checks
+that no other owner overlaps the full spans.
 
 The oracle's sole external bytewise candidate is source `0x2C9195` targeting
 `0x2C9173`. At an established instruction boundary, retail `0x2C9194` is
@@ -57,7 +67,7 @@ span or are unresolved global observations. The raw result is retained.
 ## Reproduction
 
 ```sh
-python3 tools/player_star/audit.py --oracle --output /tmp/star-cave-audit.json
+python3 tools/player_star/audit.py --oracle --output .scratch/star-cave-audit.json
 python3 tools/player_star/build_runtime.py --check
 python3 tests/mod_editor/test_nfl2k5_player_star_draw.py
 python3 tests/mod_editor/test_xbe_patch_memory_writes.py
@@ -69,5 +79,13 @@ while executing the new path. Its scratch material/coordinates and saved
 registers are on the stack; only immutable geometry is stored in `.text`.
 The existing mandatory memory and cave-reference gates both pass. Claude
 must regenerate the manifest after integration as described in
-[`WIRING_STAR.md`](../../WIRING_STAR.md); no reservation metadata was edited
+[`WIRING.md`](../../WIRING.md); no release reservation metadata was edited
 to hide an overlap or stale-source result.
+
+For source-drift checks before integration,
+`tools/player_star/refresh_gate_manifest.py --output .scratch/star-filled-manifest.json`
+validates the parent's beta-64 source pin, every other pinned source, and the
+actual filled writer's unchanged reservation footprint. It produces a marked
+test-only manifest with all parent reservations retained. Run the oracle
+regressions with `NFL2K5_CAVE_MANIFEST=.scratch/star-filled-manifest.json`.
+This is not a substitute for Claude's release manifest regeneration.
