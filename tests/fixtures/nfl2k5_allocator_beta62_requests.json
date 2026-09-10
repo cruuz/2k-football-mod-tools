@@ -322,5 +322,23 @@
   "read_only",
   704,
   16
+ ],
+ [
+  "nfl2k5_accelerated_clock",
+  "code",
+  1024,
+  16
+ ],
+ [
+  "nfl2k5_accelerated_clock",
+  "data",
+  4,
+  4
+ ],
+ [
+  "nfl2k5_accelerated_clock",
+  "read_only",
+  8,
+  4
  ]
 ]

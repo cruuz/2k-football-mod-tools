@@ -38,7 +38,7 @@ class PlannerTests(unittest.TestCase):
         self.assertEqual([report['capacity'][k]['capacity_bytes'] for k in ('code', 'data', 'read_only')],
                          [106496, 86016, 20480])
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [0, 0, 2192])  # beta 63 stack: playbook pair 8192 RX / 512 RW / 4096 RO, CPU money downs 2048 RX, deep zone 2048 RX / 256 RW, MyCareer M3 (16 KiB code, fixed state page), weekly prep, Contracts Edit Player 704 RO; the 20 KiB synthetic RX fills the code pages exactly
+                         [0, 0, 2176])  # beta 65 stack (+ the accelerated clock's 8 RO bytes, 16-aligned): beta 63 stack: playbook pair 8192 RX / 512 RW / 4096 RO, CPU money downs 2048 RX, deep zone 2048 RX / 256 RW, MyCareer M3 (16 KiB code, fixed state page), weekly prep, Contracts Edit Player 704 RO; the 20 KiB synthetic RX fills the code pages exactly
         self.assertEqual(len(report['pages']), 52)
         for a in report['allocations']:
             self.assertEqual(a['va'] % a['align'], 0)
@@ -51,7 +51,7 @@ class PlannerTests(unittest.TestCase):
             self.assertIn(list(request), requests)
         report = space.plan(requests)
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [22048, 0, 3224])  # beta 63 stack: playbook pair (8192 RX, 512 RW in the alignment gap, 4096 RO), CPU money downs (2048 RX), deep zone (2048 RX, 256 RW), MyCareer M3 (16 KiB code, fixed 4 KiB state page = the last RW page), weekly prep, Contracts Edit Player (704 RO), Broadcast camera v5 (+96 RX, +80 RO)
+                         [21024, 0, 3208])  # beta 65 stack (beta 63 owners + the accelerated clock 1,024 RX / 4 RW / 8 RO): beta 63 stack: playbook pair (8192 RX, 512 RW in the alignment gap, 4096 RO), CPU money downs (2048 RX), deep zone (2048 RX, 256 RW), MyCareer M3 (16 KiB code, fixed 4 KiB state page = the last RW page), weekly prep, Contracts Edit Player (704 RO), Broadcast camera v5 (+96 RX, +80 RO)
 
     def test_every_kind_exact_capacity_alignment_and_overflow(self):
         for kind, capacity in [('code', 98304), ('data', 81920), ('read_only', 16384)]:
