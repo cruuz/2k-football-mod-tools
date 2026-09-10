@@ -46,7 +46,9 @@ were used as an output artifact.
 
 The normal frame is **0x74790..0x7489E**. `0x64CD0` is the running game's mixed
 update callback, reached through descriptor `0x4E7EC0`, event table
-`0x4E7DFC`, callback `0x650A0`. `0x13610` and `0x1124E0` are replay/highlight
+`0x4E7E88`, event-6 command `0x4E7DF8` (callback pointer at +4), callback
+`0x650A0`. This real descriptor path is also executed up to `0x64CD0` with
+no substituted leaves. `0x13610` and `0x1124E0` are replay/highlight
 screen callbacks which also call that update, not interchangeable frame loops.
 
 | Phase | Evidence and status | Consequence |
@@ -150,6 +152,11 @@ multiplier. The native outer input RNG prefix consumes different match PRNG
 states with 8, 4, 2 or 1 input polls. A future scheduler must specify that
 cadence; identical outcomes are not promised. **Shipped speed: 1x.**
 
+Even at 1x, ending a presentation earlier may reduce the number of input/RNG
+frames before the next play. The per-frame RNG draw is proved; resulting
+drive/score differences are unmeasured. Off/Skip is a pacing/control comparison,
+not a promise of identical football outcomes.
+
 ## Ownership and writer
 
 Three pattern-checked call sites: 64D27 (retail no-op 89F40), 13856 and 112DD9
@@ -170,6 +177,8 @@ receipt `supersim_capacity.json` is capacity-only, never-installed/executed;
 the old historical budgets remain intact. `measure_mode4.py` now understands
 the already-expanded current owner instead of insisting the old candidate
 must overflow. The incremental manifest tool now reports current RX/RW sizes.
+`measure_m3.py` retains its historical 8192-byte before-layout when comparing
+peer addresses; that before-layout is not this job's starting allocation.
 
 `packaging/repin.py --apply` updated the two existing provider pins. Protected
 registry/GUI/release files and release cave manifest are untouched. See the

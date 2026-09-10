@@ -22,6 +22,8 @@ SPANS = {
     "main_frame": (0x74790, 0x10f), "input_rng": (0x74730, 0x55),
     "manager_update": (0x6e6a0, 0x38), "manager_render": (0x6e6e0, 0x58),
     "outer_update": (0x64cd0, 0x1a4), "inner_update": (0x11a7c0, 0x128),
+    "game_descriptor": (0x4e7ec0, 44), "game_events": (0x4e7e88, 56),
+    "game_update_command": (0x4e7df8, 72), "late_modal": (0x11ef60, 0x1c8),
     "render": (0x64f80, 0x60), "player_render": (0x11a8f0, 0x2d),
     "replay_screen": (0x13610, 0x580), "highlight_screen": (0x1124e0, 0xa17),
     "skip_request": (0xa2120, 0x34d), "skip_table": (0xa2470, 0x40),

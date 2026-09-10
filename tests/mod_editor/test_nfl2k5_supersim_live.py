@@ -67,6 +67,14 @@ class NativeResearchTests(unittest.TestCase):
                         self.assertEqual(m.get(0xB72C18), int(not ready))
                         self.assertEqual(m.get(0xB665FC), int(not ready))
                     self.assertEqual(m.get(0xB616C0), phase)
+                    # The installed hook may request again on the next frame
+                    # before the camera transition settles. Repeating the
+                    # request must preserve these native transition/clock flags.
+                    watched = (0xB607F0, 0xB61700, 0xB6171C, 0xE602CC, 0xB72C18, 0xB665FC)
+                    settled = tuple(m.get(p) for p in watched)
+                    m.call(0xA2120)
+                    self.assertEqual(tuple(m.get(p) for p in watched), settled)
+                    self.assertEqual(m.f32(a + 0x210), before)
 
     def test_native_skip_lock_and_unrelated_camera_phases_do_nothing(self):
         for phase in (5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22):
@@ -104,6 +112,14 @@ class NativeResearchTests(unittest.TestCase):
             m.leaf(va, lambda: m.ret(), reason="camera capture/restore boundary")
         m.call(0x6E6E0, ecx=manager)
         self.assertEqual(seen, [6, 9, 7, 8])
+        # Also follow the real running-game descriptor, event table and
+        # callback, stopping at the mixed outer update's entry.
+        m = Machine(self.payload)
+        m.put(m.ARENA, 0x4E7EC0)
+        m.call(0x6E6A0, ecx=m.ARENA, args=(0x3C888889,), stop=0x64CD0)
+        self.assertEqual(m.reg("ECX"), m.ARENA)
+        self.assertEqual(m.get(m.ARENA + 0x104), 0x3C888889)
+        self.assertEqual(m.leaves, [])
 
     def test_outer_pause_keeps_raw_delta_for_presentation(self):
         # Isolate only 64CD0's orchestration. Child phase bodies are ABI
@@ -206,6 +222,7 @@ class NativeResearchTests(unittest.TestCase):
             self.assertEqual(frame[source], target)
         modal = set(calls(0x14E070, 0x328).values())
         self.assertTrue({0x74680, 0x74730, 0x14D3F0, 0x6E6E0, 0x27CA0, 0x709B0} <= modal)
+        self.assertEqual(calls(0x11EF60, 0x1C8)[0x11F110], 0x14E470)
         self.assertEqual(im.read(0x89F40, 1), b"\xc3")
 
 
@@ -234,7 +251,9 @@ class RuntimeTests(unittest.TestCase):
             clock = bytes(m.uc.mem_read(m.get(0xE6028C), 32))
             calls = []
             m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: calls.append(1), begin=0xA2120, end=0xA2120)
-            m.call("mode_skip_tick", budget=2000000)
+            # Execute the installed CALL in the real outer-update caller.
+            m.call(0x64D27, stop=0x64D2C, budget=2000000)
+            self.assertEqual(m.reg("ESP"), m.STACK)
             self.assertEqual(calls, [1])
             self.assertEqual((m.get(0xB616C0), m.get(0xE602B8)), (11, 11))
             self.assertEqual(bytes(m.uc.mem_read(m.get(0xE6028C), 32)), clock)

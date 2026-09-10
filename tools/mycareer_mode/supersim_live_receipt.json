@@ -793,6 +793,21 @@
       "size": 808,
       "va": "0x14e070"
     },
+    "game_descriptor": {
+      "sha256": "1cd29661331d4a34a45249ba2188082e9e942078ae519c3048eae1fe0d90a03c",
+      "size": 44,
+      "va": "0x4e7ec0"
+    },
+    "game_events": {
+      "sha256": "8f2e54a4d67505cd06063f34d25fa3e2f29591dae597ab4d3fb8fffab6d0408b",
+      "size": 56,
+      "va": "0x4e7e88"
+    },
+    "game_update_command": {
+      "sha256": "f0d62eeefc6e5b894eb6684090bcdd567683fb429bc90fd1c3d558e04f558407",
+      "size": 72,
+      "va": "0x4e7df8"
+    },
     "highlight_screen": {
       "sha256": "d8052dbccdb3494a6fc178075280a50fadfbd359ff19da8570738c73432fd28c",
       "size": 2583,
@@ -807,6 +822,11 @@
       "sha256": "cf12413b51056f9531bc87129da6eabd081cbbe91c01eb180d13e71a0ed715d4",
       "size": 85,
       "va": "0x74730"
+    },
+    "late_modal": {
+      "sha256": "ddbf6016ccf409344a430d94601af72cadd261916add8c7e607dae71929ece0c",
+      "size": 456,
+      "va": "0x11ef60"
     },
     "main_frame": {
       "sha256": "fed5c5a895c4a03be8ad78685c1b27c6bbda867673d0e3674cff7a76d75326bc",

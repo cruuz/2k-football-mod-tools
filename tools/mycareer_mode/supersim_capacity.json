@@ -41,7 +41,7 @@
       "remaining_bytes": 1051
     }
   ],
-  "reservation_rw": 4096,
+  "reservation_rw": 8192,
   "reservation_rx": 16384,
   "runtime_witnessed": false,
   "schema": "nfl2k5.mycareer.mode4-capacity.v1"
