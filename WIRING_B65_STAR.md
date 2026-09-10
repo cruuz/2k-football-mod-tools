@@ -1,3 +1,83 @@
+# WIRING: Beta 65 job D (filled star)
+
+# Beta 65 job D: filled player star (2026-09-10)
+
+Filled replaces Outline under the existing `BuildPlan.player_star` boolean.
+No style option, new BuildPlan field, tag format, roster editor or writer change.
+Keep Basic off, Advanced and Experimental on (existing ADVANCED classification).
+`nfl2k5_throw_tuning._apply_all` already upgrades `legacy` for this owner; both
+outline revisions and repeated filled builds were checked through that dispatcher.
+
+## Protected Build-panel copy
+
+In `mod_editor/gui/build_panel_qt.py`, replace the `self.player_star_check =
+self._option(...)` block in the existing Rosters section (around line 676) with:
+
+```python
+self.player_star_check = self._option(
+    r, "player_star", "Show a filled star under selected players",
+    "A filled white star with a dark edge under every tagged player on the field; in-game appearance unwitnessed.",
+    badge=NOT_TESTED,
+    details="Select players with the Rosters star column. Each active tagged player gets a filled star at his feet, "
+            "following the existing HUD and camera visibility rules. Tags reach new franchises made from this copy; "
+            "existing saves need their own tagged roster. Recorded replay packets do not store these added stars.",
+)
+```
+
+This also removes the obsolete gate-only help about changing the name/number
+indicator. The retail predicate was restored by the earlier independent draw fix.
+The protected GUI file was not edited here.
+
+## Capability registration
+
+The beta-64 registry has no star-renderer row. Merge the complete JSON object in
+`docs/mod_editor/nfl2k5_player_star_capability.json` into the sorted `capabilities`
+array of `mod_editor/capabilities/registry.v1.json`. Keep `offline-writer-proved`
+/ `not-tested`; the PNG is an intended-shape preview. This registers the existing
+option, not a new style UI. The merged schema and this row's local paths validate;
+the full registry file check already fails on absent `docs/research/apf_audio.md`.
+
+For that row's copy-only command, append `"player_star"` to `OWNERS` in
+`mod_editor/core/nfl2k5_patch_cli.py`:
+
+```python
+OWNERS = ("abilities_runtime", "practice_squad_screen", "xbe_space", "dynamic_kickoff_relocated", "zone_drop", "roster_storage", "player_star")
+```
+
+This small CLI wiring is supplied here together with the protected registry
+change; the new command is not claimed available before integration. The
+existing Studio build uses the filled writer now without this CLI addition.
+No new product source module or release-allowlist entry is required.
+
+## Manifest and pins: required after integration
+
+Regenerate protected `data/nfl2k5_cave_reservations.json` from the final beta-65
+source tree. The writer source fingerprint changed; all five full reservations
+and the frame hook are unchanged. Do not allocate another span or enlarge one.
+Keep every complete span, including padding, and existing owner name
+`nfl2k5_player_star`. There is no new mutable runtime data.
+
+`python3 packaging/repin.py --apply` updated only the star source pin in
+`mod_editor/core/providers.py` here. Re-run it after the CLI/registry/GUI wiring.
+Then run the registry and release gates and both XBE gates. Until the release
+manifest is regenerated, this branch's oracle source guard correctly refuses
+its stale star fingerprint. A narrow observed test-only manifest is available:
+
+```sh
+python3 tools/player_star/refresh_gate_manifest.py --output .scratch/star-filled-manifest.json
+NFL2K5_CAVE_MANIFEST=.scratch/star-filled-manifest.json python3 tests/mod_editor/test_nfl2k5_cave_oracle.py
+```
+
+The helper verifies the beta-64 baseline and actual writer reservation coverage,
+retains every parent reservation, and marks parent disc evidence historical.
+It does not edit the release manifest, write an XBE/disc, or certify unknown
+indirect references as free. Discard it after the final manifest regen.
+
+The separate MyCareer runtime job must assign record +0x53 bit 0 at creation/
+signing. This job only changes drawing for records that already have that bit.
+
+---
+
 # Beta 64 PS3 endzone writer — required Field Art GUI handoff
 
 `ASTRA_CONTEXT.md` prohibits editing `mod_editor/apf_studio/gui.py`. Apply the
