@@ -6,7 +6,7 @@ FEATURE_KEYS = (
     "momentum_collisions", "momentum_collision_level", "read_option_runtime",
     "franchise_2026_rules", "senior_bowl", "senior_bowl_settings", "senior_bowl_seed",
     "guardian_overlay", "guardian_everyone_practice", "guardian_players",
-    "my_career", "my_career_setup", "franchise_autosave", "crib_reclaim", "screen_hooks", "coverage_trail", "franchise_edit_player", "cpu_money_downs", "weekly_prep", "weekly_prep_cpu", "weekly_prep_remember", "playbook_pair", "deep_zone_facing", "deep_zone_bail", "deep_zone_bail_calls", "modern_naming",
+    "my_career", "my_career_setup", "franchise_autosave", "crib_reclaim", "screen_hooks", "coverage_trail", "franchise_edit_player", "cpu_money_downs", "accelerated_clock", "accelerated_clock_minimum_seconds", "weekly_prep", "weekly_prep_cpu", "weekly_prep_remember", "playbook_pair", "deep_zone_facing", "deep_zone_bail", "deep_zone_bail_calls", "modern_naming",
     "reserves_16", "created_teams_extra", "hires_families",
 )
 FEATURE_KEYS += (

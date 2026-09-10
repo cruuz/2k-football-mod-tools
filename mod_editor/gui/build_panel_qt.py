@@ -408,6 +408,16 @@ class BuildPanel(QWidget):
         g.addWidget(self.cpu_money_downs_level)
         self.cpu_money_downs_level.currentIndexChanged.connect(self._money_downs_changed)
         self.cpu_money_downs_check.toggled.connect(self._money_downs_toggled)
+        self.accelerated_clock_minimum = QComboBox()
+        for seconds in tt.accelerated_clock_patch.MINIMUM_SECONDS:
+            self.accelerated_clock_minimum.addItem(f"{seconds} s", seconds)
+        self.accelerated_clock_minimum.setCurrentIndex(self.accelerated_clock_minimum.findData(20))
+        self.accelerated_clock_minimum.setAccessibleName("Minimum Play Clock Time")
+        self.accelerated_clock_minimum.setToolTip("Minimum Play Clock Time: after the huddle break the play clock drops to this "
+                                                  "value and a running game clock loses the same time. Off in every preset; unwitnessed.")
+        g.addWidget(QLabel("Minimum Play Clock Time"))
+        g.addWidget(self.accelerated_clock_minimum)
+        self.accelerated_clock_minimum.currentIndexChanged.connect(lambda _index: self._refresh())
         for parent, children in r62_ui.CHILDREN.items():
             getattr(self, parent + "_check").toggled.connect(lambda on, p=parent: self._parent_toggled(p, on))
             for child in children:
@@ -1229,6 +1239,10 @@ class BuildPanel(QWidget):
         self.cpu_money_downs_level.blockSignals(True)
         self.cpu_money_downs_level.setCurrentIndex(0)
         self.cpu_money_downs_level.blockSignals(False)
+        self.accelerated_clock_minimum.blockSignals(True)
+        self.accelerated_clock_minimum.setCurrentIndex(
+            self.accelerated_clock_minimum.findData(values.get("accelerated_clock_minimum_seconds", 20)))
+        self.accelerated_clock_minimum.blockSignals(False)
         self.my_career_setup_field.clear()
         self.screen_timing_combo.setCurrentText(values.get("screen_timing") or "D")
         boxes = self._boxes()
@@ -1414,6 +1428,7 @@ class BuildPanel(QWidget):
         for key in r62_ui.KEYS:
             setattr(plan, key, getattr(self, key + "_check").isChecked())
         plan.cpu_money_downs = self._money_downs_level() if self.cpu_money_downs_check.isChecked() else "retail"
+        plan.accelerated_clock_minimum_seconds = int(self.accelerated_clock_minimum.currentData() or 20)
         plan.created_teams_extra = 2 if self.created_teams_extra_check.isChecked() else 0
         plan.momentum_collision_level = int(self.momentum_collision_level.currentData() or 50) if plan.momentum_collisions else 0
         plan.guardian_everyone_practice = self.guardian_everyone_practice_check.isChecked()
@@ -1605,6 +1620,20 @@ class BuildPanel(QWidget):
             self.cpu_money_downs_level.setCurrentIndex(max(0, self.cpu_money_downs_level.findData("retail")))
         self.cpu_money_downs_level.blockSignals(False)
         self.cpu_money_downs_level.setEnabled(money.isEnabled())
+        clock = self.accelerated_clock_check
+        installed_clock = (self._state or {}).get("accelerated_clock_settings") or None
+        combo = self.accelerated_clock_minimum
+        if installed_clock and installed_clock.get("status") == "applied":
+            clock.blockSignals(True)
+            clock.setChecked(bool(installed_clock["enabled"]))
+            clock.blockSignals(False)
+            combo.blockSignals(True)
+            combo.setCurrentIndex(combo.findData(installed_clock["minimum_seconds"]))
+            combo.blockSignals(False)
+            clock.setEnabled(False)
+            combo.setEnabled(False)
+        else:
+            combo.setEnabled(clock.isEnabled() and clock.isChecked())
         for key, reason in r62_ui.UNAVAILABLE.items():
             getattr(self, key + "_check").setEnabled(False)
             getattr(self, key + "_check").setToolTip(reason)

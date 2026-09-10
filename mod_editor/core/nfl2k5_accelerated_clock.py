@@ -28,11 +28,13 @@ REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 4),
             (OWNER, "read_only", OPTIONS_SIZE, 4))
 BUILD_CAPTION = "Accelerated clock (Madden style)"
 HELP_TEXT = (
-    "After a huddled play call, jump the play clock to your chosen minimum and "
-    "run off the same time from a running game clock. Applies to both offenses. "
-    "No acceleration in the final two minutes of a half or overtime, during "
-    "no-huddle, or on the first snap of a quarter and kickoffs. Off by default. "
-    "Changing this option requires a new build. In-game play UNWITNESSED."
+    "EXPERIMENTAL / UNWITNESSED. Retail: the play clock resets to 40 seconds after "
+    "every huddle and both offenses may use all of it. Patch: after a huddled play "
+    "call the play clock jumps to your chosen minimum and a running game clock loses "
+    "the same time, for both offenses, Madden style. No acceleration in the final "
+    "two minutes of a half or overtime, during no-huddle, or on the first snap of a "
+    "quarter and kickoffs; delay of game stays the game's own call. Off is the "
+    "default in every preset. Changing this option requires a new build."
 )
 HOOKS = {
     "complete": (0xB86E0, bytes.fromhex("e8eb95feff")),

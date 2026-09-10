@@ -5011,6 +5011,82 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_accelerated_clock apply source.xbe --output new-clock.xbe --enabled on --minimum-seconds 20",
+        "module": "mod_editor/core/nfl2k5_accelerated_clock.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_B65_CLOCK_REPORT.md",
+        "docs/research/nfl2k5_accelerated_clock_research.md",
+        "tests/mod_editor/test_nfl2k5_accelerated_clock.py",
+        "tests/mod_editor/test_nfl2k5_accelerated_clock_manifest.py",
+        "tests/nfl2k5_accelerated_clock_native.py",
+        "tools/nfl2k5_accelerated_clock.S"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Advanced gameplay option, opt-in and Off in every preset. Build-time controls specified in WIRING.md; in-game play UNWITNESSED."
+      },
+      "id": "nfl2k5.gameplay.accelerated_clock",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input; reserve complete RX/RW/RO owner union before installation. Foreign or mixed bytes refuse.",
+        "Boolean accelerated_clock and accelerated_clock_minimum_seconds from 25, 20, 15, 10, 5. Defaults Off/20; rebuild from base to change an installed choice.",
+        "Native offense completion, finite countdown timers, positive period and scrimmage/PAT phase. Kickoffs, quarter-opening snaps, no-huddle and final two minutes of each half/OT bypass acceleration."
+      ],
+      "portme": [
+        "Integrate BuildPlan, dispatcher, Gameplay/Build controls, packaging and registry from WIRING.md; regenerate the protected production cave manifest.",
+        "Run Noah's scorebug, clock-stoppage, two-minute, no-huddle, CPU and full-game witness list in ASTRA_REPORT.md."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_REPORT.md",
+          "docs/research/nfl2k5_accelerated_clock_research.md",
+          "tests/mod_editor/test_nfl2k5_accelerated_clock.py",
+          "tests/mod_editor/test_nfl2k5_accelerated_clock_manifest.py"
+        ],
+        "scope": "Bounded native timer, human accepted-selection continuation, CPU selected-play completion, no-huddle, snap rearm and warning/period/delay dispatch proved with synthetic objects and explicit scene stubs. Rendered gameplay, complete UI interaction, console loading and full-game pacing are UNWITNESSED.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false | true; Off in Basic, Advanced and Experimental",
+            "name": "accelerated_clock",
+            "required": true
+          },
+          {
+            "allowed": "25 | 20 | 15 | 10 | 5; default 20",
+            "name": "accelerated_clock_minimum_seconds",
+            "required": true
+          }
+        ],
+        "notes": "Build-time settings. Off skips the writer in the Studio. An explicit installed Off word is also supported for native equivalence proof."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Four pinned live hooks: B86E0 (5), B6EB0 (6), B6DC0 (5), A24B0 (7). Owned 1024 RX bytes, 4 RW latch bytes, 8 RO option bytes.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "After a huddled human or CPU play call, shorten the play clock and apply equal runoff to a running game clock, with late-half and no-huddle exceptions.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Accelerated clock (Madden style)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_accelerated_clock"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_penalties <source.xbe> <new-copy.xbe>",
         "module": "mod_editor/core/nfl2k5_penalties.py",
         "operation": "write"

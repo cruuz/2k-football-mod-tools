@@ -454,7 +454,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertIn('"mod_editor.studio.uniform_bundle"', runtime_probe)
         self.assertIn("_exercise_team_kit", runtime_probe)
         self.assertIn("_exercise_workspace_recovery", runtime_probe)
-        self.assertIn("registry=141 sections=12 nfl2k5_capabilities=87", runtime_probe)
+        self.assertIn("registry=142 sections=12 nfl2k5_capabilities=88", runtime_probe)
         self.assertIn("stadium_textures_editable=23838", runtime_probe)
         self.assertIn("audio=850 audio_editable=850 audio_export_only=0", runtime_probe)
         self.assertIn("audio_streaming_ranges=53571", runtime_probe)

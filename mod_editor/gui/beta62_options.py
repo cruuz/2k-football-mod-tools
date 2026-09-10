@@ -33,6 +33,7 @@ OPTIONS = (
     ("coverage_trail", "Close pursuit recovery (experimental)", tt.coverage_trail_patch.HELP_TEXT),
     ("franchise_edit_player", "Franchise Edit Player (experimental)", tt.franchise_edit_player_patch.HELP_TEXT),
     ("cpu_money_downs", tt.cpu_money_downs_patch.BUILD_CAPTION, tt.cpu_money_downs_patch.HELP_TEXT),
+    ("accelerated_clock", tt.accelerated_clock_patch.BUILD_CAPTION, tt.accelerated_clock_patch.HELP_TEXT),
     ("playbook_pair", "Separate offensive and defensive playbooks (experimental)", tt.playbook_pair_patch.HELP_TEXT),
     ("deep_zone_facing", "Deep-zone QB facing (experimental)",
      "Retail: corners can turn to run. Patch: try a slower QB-facing deep drop until a pass, run, or the selected "

@@ -783,6 +783,9 @@ mod_editor/core/nfl2k5_cpu_money_downs_code.py
 docs/mod_editor/nfl2k5_cpu_money_downs_capability.json
 docs/mod_editor/nfl2k5_cpu_money_downs_replays.json
 ASTRA_CPU_MONEY_DOWNS_REPORT.md
+mod_editor/core/nfl2k5_accelerated_clock.py
+mod_editor/core/nfl2k5_accelerated_clock_code.py
+docs/mod_editor/nfl2k5_accelerated_clock_capability.json
 mod_editor/core/nfl2k5_weekly_prep.py
 mod_editor/core/nfl2k5_weekly_prep_code.py
 mod_editor/core/nfl2k5_weekly_prep_save.py
