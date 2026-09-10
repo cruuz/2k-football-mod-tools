@@ -70,7 +70,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertIn("complete 19-page sidebar", getting_started)
         self.assertIn("twelve-section desktop launch signature", packaging_readme)
         self.assertTrue(status.startswith(
-            "# 2K5 Mod Studio — v1.0 RC87 Release Status"
+            "# 2K5 Mod Studio — v1.0 RC88 Release Status"
         ))
 
     def _fixture(self) -> tuple[tempfile.TemporaryDirectory[str], Path, Path]:
