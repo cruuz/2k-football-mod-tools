@@ -1,5 +1,10 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.86 — beta 66: the UI overhaul, the Team Art browser, Discord fixes — 2026-09-11
+
+Beta 66 answers every APF report in Discord since beta 64 (Aszemple, Ulf the White, davidhbui, Urianus Magnus
+Ursulinus). The bullets below are added as each change lands; in-game behaviour remains UNWITNESSED until played.
+
 ## 0.1.0-alpha.85 — the 2K8 beta (beta-64): playbooks, play design, coverage, book identity, CPU play calling, PS3 imports — 2026-09-09
 
 - **Fixed: Fine-tune Plays > Change formation follows the formation's retail personnel package.**

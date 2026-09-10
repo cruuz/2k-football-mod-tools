@@ -1,5 +1,11 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC90, beta 66: full Supersim, a faster studio, the Discord fixes (2026-09-11)
+
+Beta 66 answers every ESPN NFL 2K5 report in Discord since beta 63.1 (Smuzz, Mud, maumau78, Coach Edwards, iwb3,
+jrolling2003, BigTimeEmpire, CER, andrethealchemist). The bullets below are added as each change lands; in-game
+behaviour remains UNWITNESSED until played.
+
 ## v1.0 RC89, beta 65: accelerated clock, MyCareer supersim and positions, the Windows folder-publish fix (2026-09-10)
 
 - **Fixed: "[WinError 5] Access is denied" while importing a number sheet on Windows (Coach Edwards, 2026-09-10).**
