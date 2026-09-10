@@ -194,18 +194,28 @@ class SaveRost:
                 off = colleges.offset + i * colleges.stride
                 college_records.add(off)
                 self.string(off)
+        # A college pointer that stays inside the arena but lands off the college table is recorded,
+        # not refused: the game never checks it (the player card dereferences it for the COLLEGE
+        # line; team export maps an unknown target to college 0, FUN_00242190), the roster editor's
+        # parser already reads such a player as "no college", and to_bytes() copies the bytes
+        # verbatim.  A real franchise save carried one and every schedule edit was refused for it
+        # (#2k5-bugs 2026-09-08, beta-63.1).  Pointers that leave the arena are still refused.
+        self.unresolved_colleges: dict[tuple[str, int], int] = {}
         for pool in ('primary', 'secondary'):
             table = self.tables[pool]
             if table.offset is None:
                 continue
             for index in range(table.count):
                 off = table.offset + index * table.stride
-                college = self.rel(off, size=8, label='player college')
-                _require(college is None or college in college_records, 'player college is not a college record')
-                self.players.append(Player(pool, index, off, self.string(off + 0x10),
-                                           self.string(off + 0x14), records.PlayerRecord.decode(
-                                               self.original[off:off + records.PLAYER_SIZE],
-                                               reference_year=self.reference_year)))
+                try:
+                    college = self.rel(off, size=8, label='college pointer')
+                    first, last = self.string(off + 0x10), self.string(off + 0x14)
+                except SaveRostError as exc:
+                    raise SaveRostError(f'{pool} player {index} at 0x{off:X}: {exc}') from exc
+                if college is not None and college not in college_records:
+                    self.unresolved_colleges[pool, index] = college
+                self.players.append(Player(pool, index, off, first, last, records.PlayerRecord.decode(
+                    self.original[off:off + records.PLAYER_SIZE], reference_year=self.reference_year)))
         self.by_key = {p.key: p for p in self.players}
         offsets = {p.offset for p in self.players}
         table = self.tables['teams']
@@ -236,7 +246,7 @@ class SaveRost:
         if agents.offset is not None:
             for i in range(agents.count):
                 target = self.rel(agents.offset + i * 4, size=0x54, label='free agent')
-                _require(target in offsets, 'free agent is not a player record')
+                _require(target in offsets, f'free agent {i} is not a player record')
 
         self.pool_used = self.u32(root + 0x40)
         self.pool_capacity = 50000 if table.count >= 35 else 20000
@@ -246,31 +256,40 @@ class SaveRost:
         cache: dict[int, tuple[int, ...]] = {}
         total_words = 0
         for player in self.players:
-            start = self.rel(player.offset + 0x2C, size=4, label='history stream')
-            self.history_offsets[player.key] = start
-            if start is None:
-                self.history_words[player.key] = ()
-                continue
-            _require(self.pool is not None and self.pool <= start < self.pool + self.pool_used * 4
-                     and (start - self.pool) % 4 == 0, 'history stream outside used pool')
-            if start not in cache:
-                words = []
-                at = start
-                while at < self.pool + self.pool_used * 4:
-                    word = self.u32(at)
-                    words.append(word)
-                    at += 4
-                    total_words += 1
-                    _require(total_words <= self.pool_capacity, 'overlapping or excessive history streams')
-                    if word & 0x80000000:
-                        break
-                _require(bool(words[-1] & 0x80000000), 'unterminated history stream')
-                cache[start] = tuple(words)
-            self.history_words[player.key] = cache[start]
+            try:
+                total_words += self._read_history(player, cache, total_words)
+            except SaveRostError as exc:
+                raise SaveRostError(f'{player.pool} player {player.index} at 0x{player.offset:X}: {exc}') from exc
         if self.pool is not None and self.pool_used:
             for start, end, label in occupied:
                 _require(end <= self.pool or start >= self.pool + self.pool_used * 4,
                          f'history pool overlaps {label}')
+
+    def _read_history(self, player: Player, cache: dict[int, tuple[int, ...]], total_words: int) -> int:
+        """Read one player's history stream; returns how many new pool words it read."""
+        start = self.rel(player.offset + 0x2C, size=4, label='history stream')
+        self.history_offsets[player.key] = start
+        if start is None:
+            self.history_words[player.key] = ()
+            return 0
+        _require(self.pool is not None and self.pool <= start < self.pool + self.pool_used * 4
+                 and (start - self.pool) % 4 == 0, 'history stream outside used pool')
+        read = 0
+        if start not in cache:
+            words = []
+            at = start
+            while at < self.pool + self.pool_used * 4:
+                word = self.u32(at)
+                words.append(word)
+                at += 4
+                read += 1
+                _require(total_words + read <= self.pool_capacity, 'overlapping or excessive history streams')
+                if word & 0x80000000:
+                    break
+            _require(bool(words[-1] & 0x80000000), 'unterminated history stream')
+            cache[start] = tuple(words)
+        self.history_words[player.key] = cache[start]
+        return read
 
     def edit_player(self, pool: str, index: int, changes: Mapping[str, int]) -> None:
         """Validate the whole edit before changing a single record field."""
@@ -305,6 +324,7 @@ class SaveRost:
                 'preamble': self.layout.preamble, 'wrapper': self.layout.wrapper,
                 'end': self.layout.end, 'arena_size': self.layout.arena_size,
                 'players': len(self.players), 'teams': len(self.teams),
+                'unresolved_colleges': len(self.unresolved_colleges),
                 'history_used': self.pool_used, 'history_capacity': self.pool_capacity}
 
 
@@ -326,7 +346,12 @@ def decode(payload: bytes | bytearray, *, preamble: int | None = None,
         starts = []
         point = data.find(b'ROST', 0, min(len(data), 0x10000))
         while point >= 0:
-            if point >= 12:
+            # A 0x20-byte outer wrapper's own magic keeps the resource length where a preamble
+            # keeps the version; the preamble it wraps follows at +0x20 and this scan finds that
+            # one by itself.  Trying the wrapper as a header only reported its length (0x91020 =
+            # 593952 on every franchise save) as an "unsupported ROST version" in front of the
+            # real refusal (#2k5-bugs 2026-09-08).
+            if point >= 12 and data[point + 0x2C:point + 0x30] != b'ROST':
                 starts.append(point - 12)
             point = data.find(b'ROST', point + 1, min(len(data), 0x10000))
     for base in starts:

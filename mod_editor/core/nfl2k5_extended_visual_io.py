@@ -9,6 +9,7 @@ package-local uniform-equipment P8 palettes.
 
 from __future__ import annotations
 
+from collections import OrderedDict
 from collections.abc import Callable
 import hashlib
 import json
@@ -47,6 +48,8 @@ from nfl_txtr import (TextureInfo, decode_chunk, decode_dxt1, encode_rgba_png,  
 
 ORIGINAL_SCHEMA = "2k5_mod_studio_extended_visual_original_png/v1"
 MAX_PNG_BYTES = 32 * 1024 * 1024
+# Distinct retail equipment spans decoded per session (each holds one PNG + RGBA).
+_EQUIPMENT_ORIGINAL_CACHE_LIMIT = 96
 OriginalDecoder = Callable[[ExtendedVisualAsset], tuple[bytes, bytes]]
 
 
@@ -110,6 +113,7 @@ class Nfl2k5ExtendedVisualIO:
         self.report_paths = report_paths
         self._decoder = original_decoder
         self._archive: Any | None = None
+        self._equipment_originals: OrderedDict[tuple[Any, ...], tuple[bytes, bytes]] = OrderedDict()
 
     def original_path(self, asset: ExtendedVisualAsset) -> Path:
         return self.cache.originals / f"{_asset_key(asset.asset_id)}.png"
@@ -412,8 +416,26 @@ class Nfl2k5ExtendedVisualIO:
                 row for row in chunks
                 if row.index == descriptor.chunk_index and row.kind == "TSET"
             )
-            decoded, info = decode_chunk(package, chunk)
         except (IndexError, OSError, ValueError, StopIteration) as exc:
+            raise ValidationError(
+                f"Could not locate {asset.label} in the loaded game: {exc}"
+            ) from exc
+        # A generic shoe/glove/pad variant is staged in every package the game
+        # samples it from, and the retail TSET span of one package is
+        # byte-identical in dozens of others: decode each distinct span once.
+        cache_key = (
+            _sha256(package[chunk.offset:chunk.end_offset]), descriptor.pixel_offset,
+            descriptor.palette_offset, descriptor.packed_format, descriptor.packed_size,
+            descriptor.descriptor_flags, descriptor.base_pixel_sha256,
+            descriptor.palette_bgra_sha256, asset.width, asset.height, asset.texture,
+        )
+        cached = self._equipment_originals.get(cache_key)
+        if cached is not None:
+            self._equipment_originals.move_to_end(cache_key)
+            return cached
+        try:
+            decoded, info = decode_chunk(package, chunk)
+        except ValueError as exc:
             raise ValidationError(
                 f"Could not locate {asset.label} in the loaded game: {exc}"
             ) from exc
@@ -461,7 +483,11 @@ class Nfl2k5ExtendedVisualIO:
             rgba = texture_to_rgba(decoded, chunk, texture)
         except ValueError as exc:
             raise ValidationError(f"Could not decode {asset.label}: {exc}") from exc
-        return _canonical_png(asset.width, asset.height, rgba), rgba
+        result = _canonical_png(asset.width, asset.height, rgba), rgba
+        self._equipment_originals[cache_key] = result
+        while len(self._equipment_originals) > _EQUIPMENT_ORIGINAL_CACHE_LIMIT:
+            self._equipment_originals.popitem(last=False)
+        return result
 
     def _decode_scorebug(
         self, asset: ExtendedVisualAsset

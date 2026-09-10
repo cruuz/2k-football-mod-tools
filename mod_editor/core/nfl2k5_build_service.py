@@ -101,6 +101,30 @@ class BuildResult:
     edit_count: int
     changed_byte_count: int
     independently_verified: bool = True
+    #: Digit slots the builder kept at retail because the authored art could
+    #: not be encoded inside the fixed allocation at the quality floor.  Each
+    #: row names the slot (``selector``) and carries a user-readable
+    #: ``message``; the build itself succeeded.
+    kept_retail: tuple[dict[str, object], ...] = ()
+
+    @property
+    def message(self) -> str:
+        """The status line the studio shows, or ``""`` for the plain default.
+
+        Empty when nothing was kept at retail so the GUI's own "Build complete"
+        wording stands; otherwise the same wording plus the warning rows, so a
+        slot that silently kept its retail digit is never mistaken for a
+        finished edit.
+        """
+
+        if not self.kept_retail:
+            return ""
+        count = len(self.kept_retail)
+        rows = "; ".join(str(row.get("message", row.get("selector", ""))) for row in self.kept_retail)
+        return (
+            f"Build complete — {self.output_xiso.name} is ready for xemu. "
+            f"Kept retail for {count} uniform slot{'s' if count != 1 else ''}: {rows}"
+        )
 
 
 @dataclass(frozen=True)
@@ -825,6 +849,19 @@ def _require_build_space(parent: Path, source: Path | None = None) -> None:
     )
 
 
+def _valid_kept_retail_rows(rows: object) -> bool:
+    """A receipt's ``kept_retail`` ledger: a list of rows naming a slot."""
+
+    if not isinstance(rows, list):
+        return False
+    return all(
+        isinstance(row, dict)
+        and isinstance(row.get("selector"), str) and bool(row["selector"])
+        and isinstance(row.get("message"), str) and bool(row["message"])
+        for row in rows
+    )
+
+
 def _last_message(result: CommandResult) -> str:
     lines = [
         line.strip() for line in (result.stderr + "\n" + result.stdout).splitlines()
@@ -1351,6 +1388,7 @@ class Nfl2k5BuildService:
                 output_sha256=result.output_sha256,
                 edit_count=result.edit_count,
                 changed_byte_count=result.changed_byte_count,
+                kept_retail=result.kept_retail,
             )
             _emit(progress, BuildStage.COMPLETE, 4, 4, "Modded XISO ready")
             return final
@@ -1526,6 +1564,7 @@ class Nfl2k5BuildService:
             or len(output_row["xiso_sha256"]) != 64
             or type(project_row.get("edit_count")) is not int
             or type(patch_row.get("changed_byte_count")) is not int
+            or not _valid_kept_retail_rows(value.get("kept_retail", []))
         ):
             raise Nfl2k5BuildError(
                 "The verified build receipt did not match the staged XISO. "
@@ -1537,4 +1576,5 @@ class Nfl2k5BuildService:
             output_sha256=output_row["xiso_sha256"],
             edit_count=project_row["edit_count"],
             changed_byte_count=patch_row["changed_byte_count"],
+            kept_retail=tuple(dict(row) for row in value.get("kept_retail", [])),
         ), staged_identity

@@ -56,6 +56,7 @@ mod_editor/core/nfl2k5_practice_squad.py
 mod_editor/core/nfl2k5_practice_squad_runtime.py
 mod_editor/core/nfl2k5_practice_reserves.py
 mod_editor/core/nfl2k5_save_rost.py
+mod_editor/core/nfl2k5_college_check.py
 mod_editor/core/nfl2k5_special_roles.py
 mod_editor/core/texture_master.py
 mod_editor/core/menu_modes.py

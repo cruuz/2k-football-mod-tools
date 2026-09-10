@@ -57,6 +57,7 @@ from __future__ import annotations
 
 import json
 import shutil
+import struct
 import copy
 import csv
 from dataclasses import dataclass
@@ -98,6 +99,7 @@ from PyQt5.QtWidgets import (
 
 from mod_editor.core import nfl2k5_roster_records as rr
 from mod_editor.core import nfl2k5_abilities_editor as abilities_editor
+from mod_editor.core import nfl2k5_college_check as college_check
 from mod_editor.gui.abilities_panel_qt import AbilitiesPanel
 from mod_editor.gui.espn25_panel_qt import Espn25Panel
 from mod_editor.gui.franchise_panel_qt import FranchisePanel
@@ -864,6 +866,215 @@ class _Espn25CatalogTask(QRunnable):
             self.signals.loaded.emit(self.generation, catalog, identity)
 
 
+# --------------------------------------------------------------------------------------------- college check
+class CollegeCheckDialog(QDialog):
+    """Check my rosters: every player college reference that is missing or invalid, and the repair.
+
+    The rows come from ``nfl2k5_college_check.scan`` over the composed bytes of the loaded roster, or of a
+    chosen save / disc read-only.  Missing (null) references are listed apart from invalid ones: the game
+    shows a blank college for null, so that row is a normalisation, not a broken file.  Repair rewrites
+    only the four-byte college word of each listed player, to the college picked here, and installs the
+    result through the page's own undo, dirty state and save paths (``RosterEditorPanel.repair_college_references``).
+    """
+
+    COLUMNS = ("Source", "Player", "Pool", "#", "Offset", "Raw word", "Reason", "Displays as", "Proposed college")
+
+    def __init__(self, panel: "RosterEditorPanel", session: Mapping[str, Any] | None = None,
+                 parent: QWidget | None = None) -> None:
+        super().__init__(parent)
+        self.panel = panel
+        self.session: dict[str, Any] | None = None
+        self.receipt: dict[str, Any] | None = None
+        self.setWindowTitle("Check my rosters")
+        self.resize(1100, 680)
+        layout = QVBoxLayout(self)
+        self.summary = QLabel("")
+        self.summary.setWordWrap(True)
+        self.summary.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        layout.addWidget(self.summary)
+        choose = QHBoxLayout()
+        self.choose_save_button = QPushButton("Choose save…")
+        self.choose_save_button.setToolTip("Signature-verify an Xbox save and list its college references. "
+                                           "Read-only: the roster loaded on the page is not replaced.")
+        self.choose_save_button.clicked.connect(self._choose_save)
+        self.choose_disc_button = QPushButton("Choose disc…")
+        self.choose_disc_button.setToolTip("Read the main roster resource of a disc image and list its college "
+                                           "references. Read-only: the roster loaded on the page is not replaced.")
+        self.choose_disc_button.clicked.connect(self._choose_disc)
+        choose.addWidget(self.choose_save_button)
+        choose.addWidget(self.choose_disc_button)
+        choose.addStretch(1)
+        layout.addLayout(choose)
+        tables = QSplitter(Qt.Vertical)
+        self.invalid_label = QLabel("Invalid references")
+        self.invalid_table = self._table("Invalid college references")
+        self.missing_label = QLabel("Missing references")
+        self.missing_table = self._table("Missing college references")
+        for label, table in ((self.invalid_label, self.invalid_table), (self.missing_label, self.missing_table)):
+            box = QWidget()
+            column = QVBoxLayout(box)
+            column.setContentsMargins(0, 0, 0, 0)
+            column.addWidget(label)
+            column.addWidget(table)
+            tables.addWidget(box)
+        layout.addWidget(tables, 3)
+        self.issues_label = QLabel("College table issues")
+        layout.addWidget(self.issues_label)
+        self.issues = QPlainTextEdit()
+        self.issues.setReadOnly(True)
+        self.issues.setMaximumHeight(96)
+        self.issues.setAccessibleName("College table issues")
+        layout.addWidget(self.issues)
+        repair_row = QHBoxLayout()
+        repair_row.addWidget(QLabel("Repair to college"))
+        self.college_combo = QComboBox()
+        self.college_combo.setAccessibleName("Repair college")
+        self.college_combo.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLengthWithIcon)
+        self.college_combo.setMinimumContentsLength(20)
+        self.college_combo.currentIndexChanged.connect(self._college_changed)
+        repair_row.addWidget(self.college_combo, 1)
+        self.repair_button = QPushButton("Repair listed college references")
+        self.repair_button.setToolTip("Rewrite the four-byte college word of every listed player to the chosen "
+                                      "college table entry, with an undo. Nothing is written to a file here.")
+        self.repair_button.clicked.connect(self.repair)
+        repair_row.addWidget(self.repair_button)
+        layout.addLayout(repair_row)
+        self.guidance = QLabel("")
+        self.guidance.setWordWrap(True)
+        self.guidance.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        layout.addWidget(self.guidance)
+        self.receipt_text = QPlainTextEdit()
+        self.receipt_text.setReadOnly(True)
+        self.receipt_text.setAccessibleName("College repair receipt")
+        layout.addWidget(self.receipt_text, 2)
+        buttons = QDialogButtonBox(QDialogButtonBox.Close)
+        buttons.rejected.connect(self.reject)
+        layout.addWidget(buttons)
+        self.show_session(session)
+
+    def _table(self, accessible_name: str) -> QTableWidget:
+        table = QTableWidget(0, len(self.COLUMNS))
+        table.setHorizontalHeaderLabels(list(self.COLUMNS))
+        table.setAccessibleName(accessible_name)
+        table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        table.verticalHeader().setVisible(False)
+        table.horizontalHeader().setStretchLastSection(True)
+        return table
+
+    # ------------------------------------------------------------------ content
+    def rows(self, table: QTableWidget) -> list[list[str]]:
+        return [[(table.item(row, column).text() if table.item(row, column) is not None else "")
+                 for column in range(table.columnCount())] for row in range(table.rowCount())]
+
+    def proposed_college(self) -> str:
+        index = self.college_combo.currentData()
+        scan = self.session.get("scan") if self.session else None
+        if scan is None or index is None:
+            return ""
+        return scan.colleges[int(index)].name
+
+    def _fill(self, table: QTableWidget, findings: Sequence[college_check.Finding]) -> None:
+        table.setRowCount(len(findings))
+        proposed = self.proposed_college()
+        for row, finding in enumerate(findings):
+            values = (finding.source, finding.player, finding.pool, str(finding.index), f"0x{finding.offset:X}",
+                      f"0x{finding.raw:08X}", finding.reason, finding.game_display, proposed or "(blank)")
+            for column, value in enumerate(values):
+                item = QTableWidgetItem(value)
+                if column == 7:
+                    item.setToolTip(value)
+                table.setItem(row, column, item)
+        table.resizeColumnsToContents()
+
+    def _college_changed(self, _index: int) -> None:
+        proposed = self.proposed_college() or "(blank)"
+        for table in (self.invalid_table, self.missing_table):
+            for row in range(table.rowCount()):
+                item = table.item(row, 8)
+                if item is not None:
+                    item.setText(proposed)
+
+    def show_session(self, session: Mapping[str, Any] | None) -> None:
+        """Render one check: the rows, the table issues, the college choice and whether Repair is offered."""
+
+        self.session = dict(session) if session is not None else None
+        self.college_combo.blockSignals(True)
+        self.college_combo.clear()
+        scan = self.session.get("scan") if self.session else None
+        if scan is not None:
+            for college in scan.colleges:
+                self.college_combo.addItem(f"{college.index}: {college.name or '(blank)'}", college.index)
+            # the core's policy: the first None entry (case-insensitive), else the first blank, else entry 0
+            policy = next((c.index for c in scan.colleges if c.name.strip().casefold() == "none"),
+                          next((c.index for c in scan.colleges if not c.name.strip()), 0))
+            self.college_combo.setCurrentIndex(policy)
+        self.college_combo.blockSignals(False)
+        invalid = [f for f in scan.findings if f.reason != "null_reference"] if scan is not None else []
+        missing = [f for f in scan.findings if f.reason == "null_reference"] if scan is not None else []
+        self._fill(self.invalid_table, invalid)
+        self._fill(self.missing_table, missing)
+        self.invalid_label.setText(f"Invalid references ({len(invalid)}): the word does not select a readable "
+                                   "college record. The player card's college line is not defined for these.")
+        self.missing_label.setText(f"Missing references ({len(missing)}): a null word. The game shows a blank "
+                                   "college; repairing these is optional.")
+        issues = list(scan.table_issues) if scan is not None else []
+        self.issues_label.setText(f"College table issues ({len(issues)})")
+        self.issues.setPlainText("\n".join(
+            f"entry {c.index} at 0x{c.offset:X}: raw 0x{c.raw:08X}, stored id {c.stored_id}: {c.issue}" for c in issues)
+            or ("No college table issues." if scan is not None else ""))
+        if self.session is None:
+            self.summary.setText("No roster is loaded on this page. Choose a save or a disc to check it read-only; "
+                                 "load one on the page to repair it.")
+            self.guidance.setText("")
+            self.repair_button.setEnabled(False)
+            return
+        source = self.session.get("source") or "loaded roster"
+        guidance = str(self.session.get("guidance", ""))
+        if self.session.get("error"):
+            self.summary.setText(f"{source}: could not be checked. {self.session['error']}")
+        elif scan is None:                      # nothing loaded and nothing chosen yet
+            self.summary.setText(guidance)
+            guidance = ""
+        else:
+            self.summary.setText(
+                f"{source} · {scan.player_count:,} players in both pools · {len(scan.colleges)} college table "
+                f"entries · sha256 {scan.sha256[:16]}… · {len(invalid)} invalid, {len(missing)} missing, "
+                f"{len(issues)} table issue{'s' if len(issues) != 1 else ''}")
+        self.guidance.setText(guidance)
+        self.repair_button.setEnabled(bool(self.session.get("repairable")))
+
+    # ------------------------------------------------------------------ actions
+    def repair(self) -> dict[str, Any] | None:
+        if self.session is None or not self.repair_button.isEnabled():
+            return None
+        index = self.college_combo.currentData()
+        try:
+            receipt = self.panel.repair_college_references(self.session, int(index) if index is not None else None)
+        except (ValueError, OSError) as exc:
+            self.receipt_text.setPlainText(f"Refused: {exc}\n\nNothing was changed.")
+            self.repair_button.setEnabled(False)
+            self.guidance.setText("Nothing was changed. Press Check my rosters… again for a fresh check.")
+            return None
+        self.receipt = receipt
+        fresh = self.panel.college_check_session()
+        self.show_session(fresh)
+        self.receipt_text.setPlainText(self.panel.college_repair_text(receipt))
+        return receipt
+
+    def _choose_save(self) -> None:
+        chosen, _f = QFileDialog.getOpenFileName(self, "Check an Xbox NFL 2K5 save (read-only)", "", SAVE_FILTER)
+        if chosen:
+            self.receipt_text.setPlainText("")
+            self.show_session(self.panel.college_check_path(chosen))
+
+    def _choose_disc(self) -> None:
+        chosen, _f = QFileDialog.getOpenFileName(self, "Check a disc roster (read-only)", "", DISC_FILTER)
+        if chosen:
+            self.receipt_text.setPlainText("")
+            self.show_session(self.panel.college_check_path(chosen))
+
+
 class RosterEditorPanel(QWidget):
     """The ★ Rosters workspace."""
 
@@ -902,6 +1113,12 @@ class RosterEditorPanel(QWidget):
         self._espn25_pending_restore: dict[str, Any] | None = None
         self.espn25_plan_path = ""
         self._repair_plans: list[dict[str, Any]] = []
+        # Check my rosters (beta 63.1): the journal of repaired college words keyed (pool, index).  A repair
+        # to a blank college has no text diff, so dirty state and the Build & Share export read it explicitly.
+        self._college_repairs: dict[tuple[str, int], dict[str, Any]] = {}
+        self._college_generation = 0                  # bumped by load_document; a check belongs to one load
+        self._college_check_container: tuple[Path, rr.SaveContainer] | None = None   # verified, did not load
+        self.college_repair_receipts: list[dict[str, Any]] = []
         self._templates: tuple[rr.CreatePlayerTemplate, ...] = rr.create_player_templates()
         self._templates_source = "retail table"
         self.age_shift_receipts: list[dict[str, Any]] = []
@@ -1467,7 +1684,7 @@ class RosterEditorPanel(QWidget):
         page._edits = list(edits)
         page._cursor = len(edits)
         page.sync_from_roster()
-        self._dirty = {(e['pool'], e['index']) for e in self.document.diff()}
+        self._dirty = {(e['pool'], e['index']) for e in self.document.diff()} | set(self._college_repairs)
         self._refresh_team_labels()
         self.refresh_grid()
         page._checks_stale = True
@@ -1483,8 +1700,9 @@ class RosterEditorPanel(QWidget):
         candidate = fs.FranchiseSave(before)
         try:
             edit.apply(candidate)
-            from mod_editor.core.nfl2k5_practice_squad import validate_save
-            validate_save(candidate.to_bytes())
+            # the roster codec is consulted only when the edit touched roster state (beta-63.1)
+            from mod_editor.core.nfl2k5_practice_squad import validate_save_edit
+            validate_save_edit(before, candidate.to_bytes())
             self._restore_composed(candidate.to_bytes(), old_edits + [edit])
         except ValueError as exc:
             self.franchise_panel._last_error = str(exc)
@@ -1623,9 +1841,16 @@ class RosterEditorPanel(QWidget):
             "count byte, a duplicate list entry), lists them here, and applies them only when you press "
             "this -- with a receipt and an undo.")
         self.repair_button.clicked.connect(self.run_repairs)
+        self.college_check_button = QPushButton("Check my rosters…")
+        self.college_check_button.setToolTip(
+            "List every player whose college word is missing or does not select a college record (what makes "
+            "a save copy refuse or a college line undefined), then repair them to one college with an undo. "
+            "Also checks a chosen save or disc read-only, without loading it.")
+        self.college_check_button.clicked.connect(self.open_college_check)
         row.addWidget(self.validate_button)
         row.addWidget(self.diff_button)
         row.addWidget(self.repair_button)
+        row.addWidget(self.college_check_button)
         row.addStretch(1)
         box.addLayout(row)
         self.report = QPlainTextEdit()
@@ -1756,6 +1981,10 @@ class RosterEditorPanel(QWidget):
         self._dirty.clear()
         self.undo_stack.clear()
         self._clipboard = None
+        self._college_repairs = {}
+        self._college_generation += 1
+        self._college_check_container = None
+        self.college_repair_receipts = []
         self._scheme_detection = detection if detection is not None else self.detect_scheme(document)
         self.apply_scheme(str(self._scheme_detection["scheme"]) if self._scheme_choice == "auto"
                           else self._scheme_choice, refresh=False)
@@ -1959,9 +2188,16 @@ class RosterEditorPanel(QWidget):
     def load_save(self, path: Path | str) -> bool:
         try:
             container = rr.SaveContainer.load(path)
-            document = container.document()
         except Exception as exc:  # noqa: BLE001
             self._set_status(f"Could not read the save: {type(exc).__name__}: {exc}")
+            return False
+        try:
+            document = container.document()
+        except Exception as exc:  # noqa: BLE001
+            # the signature verified: keep the container so Check my rosters… can still scan it read-only
+            self._college_check_container = (Path(path), container)
+            self._set_status(f"Could not read the save: {type(exc).__name__}: {exc} "
+                             "(Check my rosters… on the Checks tab can still list its college references, read-only)")
             return False
         # a save carries no executable, so the scheme can only come from the records
         self.load_document(document, label=f"{Path(path).name} (signature verified)",
@@ -2333,7 +2569,7 @@ class RosterEditorPanel(QWidget):
             baseline.values[key] != player.record.values[key]
             for key in player.record.values if key not in rr.POINTER_FIELDS)
         key = (player.pool, player.index)
-        if changed or self._name_changed(player) or self._membership_changed(player):
+        if changed or self._name_changed(player) or self._membership_changed(player) or key in self._college_repairs:
             self._dirty.add(key)
         else:
             self._dirty.discard(key)
@@ -3018,6 +3254,244 @@ class RosterEditorPanel(QWidget):
         self._set_status(receipt["summary"])
         return receipt
 
+    # ------------------------------------------------------------------ college check (beta 63.1)
+    def _college_composed(self) -> bytes:
+        """The composed bytes a check and its repair both work on: franchise edits replayed, then the roster."""
+
+        assert self.document is not None
+        if self.franchise_panel.active and not self.franchise_panel.sync_from_roster():
+            raise rr.RosterRecordError(self.franchise_panel._last_error or "the franchise edits could not be applied")
+        return self.document.to_body()
+
+    def _college_scan(self, kind: str, path: Path | None, payload: bytes, *, guidance: str = "") -> dict[str, Any]:
+        """One check session: the scan of ``payload`` plus whether Repair is offered and why not."""
+
+        source = path.name if path is not None else (self.source_label.text() or "loaded roster")
+        session: dict[str, Any] = {"kind": kind, "source": source, "path": path, "scan": None, "sha256": "",
+                                   "error": "", "repairable": False, "guidance": guidance}
+        try:
+            scan = college_check.scan(payload, source=source)
+        except college_check.CollegeCheckError as exc:
+            session["error"] = str(exc)
+            session["guidance"] = (f"Repair is not offered: the roster layout could not be established ({exc}). "
+                                   "Nothing was changed." + (f" {guidance}" if guidance else ""))
+            return session
+        session.update(scan=scan, sha256=scan.sha256)
+        count = len(scan.findings)
+        if kind != "document":
+            session["guidance"] = (guidance or "Read-only check: nothing loaded here changes. To repair, open this "
+                                   "file with Open Xbox save… / Open disc roster… and press Check my rosters… again.")
+        elif scan.table_issues:
+            issues = len(scan.table_issues)
+            session["guidance"] = (f"Repair is not offered: {issues} college table entr{'y' if issues == 1 else 'ies'} "
+                                   "cannot be read, and a player-only repair would be a guess. The rows above still "
+                                   "name every affected player.")
+        elif not count:
+            session["guidance"] = "Every player college word selects a readable college record. Nothing to repair."
+        else:
+            session["repairable"] = True
+            session["guidance"] = (f"Repair rewrites only the four-byte college word of {count} listed "
+                                   f"player{'s' if count != 1 else ''} to the college chosen above (the game's own "
+                                   "None entry when the table has one), with an undo. Save a copy afterwards; the "
+                                   "source file stays unchanged.")
+        return session
+
+    def college_check_session(self) -> dict[str, Any]:
+        """Scan the loaded roster's composed bytes -- or, with nothing loaded, the verified save that did not parse."""
+
+        if self.document is None:
+            if self._college_check_container is None:
+                return {"kind": "none", "source": "", "path": None, "scan": None, "sha256": "", "error": "",
+                        "repairable": False,
+                        "guidance": "No roster is loaded. Choose a save or a disc to check it read-only; load one "
+                                    "on this page to repair it."}
+            path, container = self._college_check_container
+            return self._college_scan("save", path, container.savegame, guidance=(
+                f"{path.name} did not load on this page, so this check is read-only and Repair is not offered. "
+                "Load this file after repair to check it again."))
+        try:
+            payload = self._college_composed()
+        except ValueError as exc:
+            return {"kind": "document", "source": self._source_path.name if self._source_path else "loaded roster",
+                    "path": self._source_path, "scan": None, "sha256": "", "error": str(exc), "repairable": False,
+                    "guidance": f"Repair is not offered: {exc}"}
+        session = self._college_scan("document", self._source_path, payload)
+        session.update(generation=self._college_generation, document_id=id(self.document),
+                       source_kind=self._source_kind)
+        return session
+
+    def college_check_path(self, path: Path | str) -> dict[str, Any]:
+        """Read-only check of a save (signature verified first) or of a disc's main roster resource."""
+
+        path = Path(path)
+        if path.is_dir() or path.suffix.lower() == ".zip" or path.name.upper() in (rr.SAVEGAME_NAME, rr.EXTRA_NAME):
+            try:
+                container = rr.SaveContainer.load(path)
+            except Exception as exc:  # noqa: BLE001 - one message, the refusal is the point
+                return {"kind": "save", "source": path.name, "path": path, "scan": None, "sha256": "",
+                        "error": f"{type(exc).__name__}: {exc}", "repairable": False,
+                        "guidance": "Nothing was read past the container check; the signature policy is unchanged."}
+            return self._college_scan("save", path, container.savegame)
+        try:
+            with rr._outer_image()(path) as archive:
+                entry = rr._entry(archive)
+                resource = archive.read(entry.virtual_offset, entry.size)
+        except Exception as exc:  # noqa: BLE001
+            return {"kind": "disc", "source": path.name, "path": path, "scan": None, "sha256": "",
+                    "error": f"{type(exc).__name__}: {exc}", "repairable": False,
+                    "guidance": "The main roster resource (pack 0, outer entry 5) could not be read."}
+        return self._college_scan("disc", path, resource)
+
+    def open_college_check(self) -> "CollegeCheckDialog":
+        dialog = CollegeCheckDialog(self, self.college_check_session(), self)
+        dialog.exec_()
+        return dialog
+
+    def repair_college_references(self, session: Mapping[str, Any], college_index: int | None = None) -> dict[str, Any]:
+        """Repair every listed college word of the loaded roster to one college, with an undo.
+
+        The candidate comes from ``nfl2k5_college_check.repair`` over the composed bytes the check hashed; the
+        page's own ownership check runs on it, then it is installed the way the page installs any composed
+        candidate (``_restore_composed`` for a franchise, ``adopt_body`` otherwise).  Undo and redo restore the
+        exact prior and candidate words.  Nothing is written to a file.
+        """
+
+        document = self.document
+        if document is None or session.get("kind") != "document" or session.get("scan") is None:
+            raise rr.RosterRecordError("Repair needs the roster loaded on this page; this check was read-only")
+        if session.get("generation") != self._college_generation or session.get("document_id") != id(document):
+            raise rr.RosterRecordError("the roster was reloaded since this check; press Check my rosters… again")
+        if session["scan"].table_issues:
+            raise rr.RosterRecordError("the college table has unreadable names; a player-only repair is refused")
+        before = self._college_composed()
+        try:
+            after, receipt = college_check.repair(before, source=str(session["source"]),
+                                                  expected_sha256=str(session["sha256"]), college_index=college_index)
+        except college_check.CollegeCheckError as exc:
+            if "stale" in str(exc):
+                raise rr.RosterRecordError("the roster changed since this check; press Check my rosters… again") from exc
+            if "MyPlayer" in str(exc):
+                raise rr.RosterRecordError(f"{exc}. An inline MyCareer footer keeps MyPlayer's recorded college; "
+                                           "choose that college to repair him, the footer is never rewritten") from exc
+            raise
+        receipt["installed"] = False
+        receipt["source_kind"] = self._source_kind
+        if not receipt["changed"]:
+            return receipt
+        # the existing ownership check, at the boundary the page's own writers use
+        from mod_editor.core import nfl2k5_practice_squad as ps
+        franchise = self.franchise_panel.active
+        if franchise:
+            ps.validate_save_edit(before, after)
+        elif self._source_kind == "save":
+            ps.validate_save(after)
+        old_edits = self.franchise_panel._edits[:self.franchise_panel._cursor] if franchise else []
+        entries = {(str(r["pool"]), int(r["index"])): {"college": receipt["college"],
+                                                       "college_index": receipt["college_index"],
+                                                       "player": r["player"], "offset": r["offset"],
+                                                       "raw": r["raw"], "new_raw": r["new_raw"]}
+                   for r in receipt["repairs"]}
+        journal_before = dict(self._college_repairs)
+        journal_after = {**journal_before, **entries}
+        dirty_before = set(self._dirty)
+        dirty_after = dirty_before | set(entries)
+        label = f"college repair ({receipt['changed']})"
+
+        def install(payload: bytes, journal: dict[tuple[str, int], dict[str, Any]], dirty: set[tuple[str, int]]) -> None:
+            self._college_repairs = dict(journal)
+            if franchise:
+                self._restore_composed(payload, old_edits)   # dirty state comes from the diff plus the journal
+            else:
+                document.adopt_body(payload)
+                self.abilities_panel.set_document(document)   # as _restore_composed does after adopt_body
+                self._dirty = set(dirty)
+                self._refresh_team_labels()
+                self.refresh_grid()
+            self._replan_repairs()
+            self._show_player(self.selected_player())
+            self._refresh_actions()
+
+        install(after, journal_after, dirty_after)
+        try:
+            document.check_depth_locks()
+        except rr.RosterRecordError:
+            install(before, journal_before, dirty_before)
+            raise
+        self.undo_stack.push(UndoEntry(label, lambda: install(before, journal_before, dirty_before),
+                                       lambda: install(after, journal_after, dirty_after)))
+        receipt["installed"] = True
+        receipt["label"] = label
+        if self._source_kind == "disc":
+            receipt["export"] = self._college_export_replay(receipt)
+        self.college_repair_receipts.append(receipt)
+        self.report.setPlainText(self.college_repair_text(receipt))
+        self.tabs.setCurrentIndex(self.tabs.count() - 1)
+        self._set_status(f"Repaired {receipt['changed']} college reference{'s' if receipt['changed'] != 1 else ''} "
+                         f"to {receipt['college'] or '(blank)'!r}. Not saved yet: "
+                         + ("Save Xbox save copy… writes a re-signed copy." if self._source_kind == "save"
+                            else "Save disc copy… or Export roster edits (.json)… carries it."))
+        return receipt
+
+    def _college_export_replay(self, receipt: Mapping[str, Any]) -> dict[str, Any]:
+        """Prove the Build & Share export carries the repair: replay it on the original disc body.
+
+        The edits schema carries college TEXT, so with duplicate college names the replay lands on the first
+        entry of that name; the receipt says which entry and that the name is the same.
+        """
+
+        assert self.document is not None
+        selected = str(receipt["college"])
+        names = list(self.document.colleges)
+        first = names.index(selected) if selected in names else None
+        note = ""
+        if first is None:
+            return {"verified": False, "matched": 0, "entry": None, "selected_entry": receipt["college_index"],
+                    "college": selected, "note": "the college is not in the loaded table", "log": []}
+        if first != receipt["college_index"]:
+            note = (f"entries {first} and {receipt['college_index']} are both named {selected!r}; the text-only "
+                    f"export selects entry {first}, the first of that name")
+        edits = self.edits_document()
+        replayed, replay_receipt = rr.apply_body(self.document.original, edits)
+        target = self.document.college_offsets[first]
+        matched = sum(1 for row in receipt["repairs"]
+                      if replayed[row["offset"]:row["offset"] + 4] == struct.pack("<i", target - row["offset"] + 1))
+        return {"verified": matched == len(receipt["repairs"]), "matched": matched, "entry": first,
+                "selected_entry": receipt["college_index"], "college": selected, "note": note,
+                "edits": len(edits.get("edits", [])), "log": list(replay_receipt["log"])}
+
+    @staticmethod
+    def college_repair_text(receipt: Mapping[str, Any]) -> str:
+        changed = int(receipt.get("changed", 0))
+        college = str(receipt.get("college", ""))
+        head = (f"Check my rosters: repaired {changed} college reference{'s' if changed != 1 else ''} → college "
+                f"table entry {receipt.get('college_index')} {college or '(blank)'!r}"
+                if changed and receipt.get("installed") else
+                f"Check my rosters: nothing to repair ({changed} listed, nothing installed)")
+        lines = [head]
+        for row in receipt.get("repairs", []):
+            lines.append(f"  - {row['player']} ({row['pool']} #{row['index']}, offset 0x{row['offset']:X}): "
+                         f"0x{row['raw']:08X} → 0x{row['new_raw']:08X} ({row['reason']})")
+        if not (changed and receipt.get("installed")):
+            return "\n".join(lines)
+        lines.append("Only those four-byte words changed.")
+        lines.append(f"  before sha256 {receipt['before_sha256']}")
+        lines.append(f"  after  sha256 {receipt['after_sha256']}")
+        lines.append(f"Undo: {receipt.get('label', 'college repair')} on this page.")
+        if receipt.get("source_kind") == "save":
+            lines.append("Saved: no. Save Xbox save copy… writes a re-signed copy (EXTRA recomputed by the signer); "
+                         "the source save stays unchanged. Export roster edits (.json)… carries the repair as "
+                         "names.college for ★ Build & Share, never the raw pointer.")
+        else:
+            lines.append("Saved: no. Save disc copy… writes it; Export roster edits (.json)… carries the repair as "
+                         "names.college for ★ Build & Share, never the raw pointer.")
+        export = receipt.get("export")
+        if export:
+            lines.append(f"Export replay on the original disc body: {export['matched']}/{changed} repaired words "
+                         f"match (college table entry {export['entry']} {export['college'] or '(blank)'!r})"
+                         + (f" — {export['note']}" if export.get("note") else "")
+                         + ("" if export["verified"] else " — MISMATCH: do not rely on the export for this repair"))
+        return "\n".join(lines)
+
     # ------------------------------------------------------------------ reports
     def run_validation(self) -> list[dict[str, Any]]:
         if self.document is None:
@@ -3185,7 +3659,26 @@ class RosterEditorPanel(QWidget):
     def edits_document(self) -> dict[str, Any]:
         if self.document is None:
             return {}
-        return rr.edits_document(self.document, name=self._source_path.name if self._source_path else "")
+        document = rr.edits_document(self.document, name=self._source_path.name if self._source_path else "")
+        if self._college_repairs:
+            # a repaired college word has no text diff when the college is blank (a null and a blank both
+            # display ""), so every journaled record carries an explicit names.college -- the college text the
+            # record holds now, never the raw pointer, which apply_body refuses to carry between copies
+            by_key = {(str(e["pool"]), int(e["index"])): e for e in document["edits"]}
+            players = {(p.pool, p.index): p for p in self.document.players}
+            for key in self._college_repairs:
+                player = players.get(key)
+                if player is None:
+                    continue
+                item = by_key.get(key)
+                if item is None:
+                    item = {"pool": key[0], "index": key[1], "last": player.last, "first": player.first,
+                            "fields": {}}
+                    document["edits"].append(item)
+                    by_key[key] = item
+                item.setdefault("names", {}).setdefault("college", player.college)
+            document["edits"].sort(key=lambda e: (e["pool"] != "primary", int(e["index"])))
+        return document
 
     def save_edits_to(self, path: Path | str, *, document: dict[str, Any] | None = None) -> dict[str, Any]:
         document = self.edits_document() if document is None else document
@@ -3425,5 +3918,5 @@ class RosterEditorPanel(QWidget):
         self.status_label.setText(text)
 
 
-__all__ = ["AgeShiftDialog", "AttributeCard", "GlobalEditDialog", "IdPickerDialog", "RosterEditorPanel", "SwapPlayerDialog",
+__all__ = ["AgeShiftDialog", "AttributeCard", "CollegeCheckDialog", "GlobalEditDialog", "IdPickerDialog", "RosterEditorPanel", "SwapPlayerDialog",
            "UndoEntry", "UndoStack", "ValueBar"]

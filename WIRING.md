@@ -1,3 +1,362 @@
+# beta-63.1 raw-dump overlap hotfix (2026-09-09, branch local/hf63-rawdump-overlap)
+
+Bug: Ju3tin, #2k5-general 2026-09-09 15:00 — "ValueError: overlapping disc file or metadata: root
+directory" building from a RAW DUMP with the extra features ticked, then "please insert disk" in xemu
+from the preset build (15:36).  Both are fixed outside every protected file (commits d067a795 and the
+identity-note commit that follows it; see ASTRA_REPORT.md).  Two protected-file follow-ups remain for
+Claude; nothing below is needed for the fix to work.
+
+## `data/nfl2k5_cave_reservations.json` — regenerate (manifest 31)
+
+The build path never checks `source_sha256` (only `tools/nfl2k5_cave_oracle.py:98` passes
+`source_root=ROOT`), so builds are unaffected, but the tool refuses with "stale reservation source:
+...; regenerate manifest" until the manifest is regenerated.  The two entries that changed:
+
+```
+"mod_editor/core/nfl2k5_music_archive.py":  47479bf3c41fb1765b72bdba0384368ba68efc418e8648bfc74263192286baa8
+                                         -> a86456b894128d773c61c972c3eb535614f476941c5781737f6ebaef8d11da8a
+"mod_editor/core/nfl2k5_disc_identity.py":  bb9701f911996e4fd208f2eabbdce0c00b1519cc036055518830c19f06e223a4
+                                         -> 000ec3164d1da4a9e0fb4a4bd48deb55e4241cff90d7ee4762dd1caa446eff3e
+```
+
+`mod_editor/core/providers.py` was repinned with `packaging/repin.py --apply` in each commit.
+`reports/hires_pack_build.v1.json` (a historical receipt) still lists the old archive hash; no test reads it.
+
+## Optional: the Build & Share completion dialog for a raw-dump source (`mod_editor/core/mod_build.py`, protected)
+
+The identity line now carries the xemu sentence, and the Build page shows it in the source header before
+the user presses Build (`build_panel_qt.py:1031` reads `state["disc_identity_line"]`), so the refusal
+and the warning both reach the user without touching the GUI.  If Claude wants the same sentence on the
+completion dialog after a raw-dump build, the smallest change is in `build()` (`mod_build.py`, after
+`receipt["outcome"] = measure(source, directory / target.name)`):
+
+```python
+identity = tt.disc_identity.identify(source)          # or the cached inspect() identity
+if identity.partition_base:
+    receipt["outcome"]["message"] += tt.disc_identity._xemu_note(identity.partition_base)
+```
+
+(`_xemu_note` is the public-enough helper the identity line already uses; it returns "" for an xiso.)
+Not done here: the message the bug needs is already on the source line, and `mod_build.py` is protected.
+
+# beta-64 college checker — research/core handoff (2026-09-09)
+
+This section accompanies `ASTRA_REPORT.md` and
+`mod_editor/core/nfl2k5_college_check.py`. It is a future page integration, not a
+beta-63.1 feature. No existing validator, GUI panel, Build option or release
+allowlist was changed for this work. The protected files below are for the
+integration owner to edit when shipping beta 64.
+
+## Rosters: Check my rosters
+
+In `mod_editor/gui/roster_editor_panel_qt.py`, place **Check my rosters** next to
+the current Checks/repair controls. Use a dialog with one row per `Scan.findings`
+entry: source file, player, pool, record index, byte offset, raw word in hex,
+reason, current college display inference, and proposed college. Show missing
+(`null_reference`) separately from invalid references. The game can display a
+blank college for null; the row is an optional normalization, not a claim that
+the file cannot load. Valid None/blank table entries produce no findings.
+
+Keep the action available with no document loaded. The important failure path is
+`load_save`: a malformed college table can prevent `container.document()` from
+returning. Retain the successfully signature-verified `SaveContainer` for a
+read-only check, and call `check.scan(container.savegame, source=str(path))`
+without that document prerequisite. A separate Choose save action can use the
+existing `SaveContainer.load` directly. Do not change `require_signature`, bypass
+EXTRA failures, or reinterpret arbitrary `.ROS` files as NFL 2K5 saves. For a disc
+whose document parser fails, read pack-0 outer-5 via the existing archive/entry
+reader and scan its resource bytes; do not require `rr.load_image()` to succeed.
+
+For an open document, snapshot **current composed bytes**, including unsaved
+roster and franchise edits, with `document.to_body()` after the existing
+franchise synchronization succeeds. Store the returned `Scan.sha256`, source
+identity, and selection generation. Discard asynchronous results if either
+changes. `dataclasses.asdict(scan)` is suitable for a detailed inspection
+receipt; it contains no source payload bytes.
+
+Offer a college combo populated by `Scan.colleges` and **Repair listed college
+references**. Preselect the core's deterministic policy: first None entry
+(case-insensitive), else first blank entry, else entry zero. Retail selects
+ordinal 187, "None", not its stored metadata ID 320. An explicit alternative
+uses `college_index=<ordinal>`. Do not implement nearest-address/text guessing:
+the intended college cannot be inferred from proximity. Show `table_issues`
+even if no player uses that entry. Disable Repair for table issues or a missing,
+overlapping, unbounded or unsupported layout and retain the full diagnostic.
+
+## Apply, undo and save
+
+The candidate call is:
+
+```python
+after, receipt = check.repair(
+    before, source=source_label, expected_sha256=scan.sha256,
+    college_index=selected_college_ordinal,
+)
+```
+
+Recheck the session generation/hash immediately before publishing. Run the
+existing ownership/depth checks on the candidate; do not mark `Scan` as proof
+of overall save health. The core already checks the strict ROST codec for a
+nonempty repair and checks inline MyCareer identity when present. Its receipt
+names every repaired player and original/new word, and says `saved=False`.
+
+For a loaded franchise, use `_restore_composed(after, existing_edits)` and one
+`UndoEntry`, mirroring `_franchise_edit`'s before/after snapshots while retaining
+the same franchise journal. A college repair is not a fabricated schedule
+`FranchiseEdit`. For other loaded rosters use `document.adopt_body(after)`,
+retaining original bytes and player object identities. Refresh the college
+combo, grid, checks, selection, dirty state and receipt. Undo/redo must restore
+the exact prior/candidate words, including a prior null or off-table value.
+Do not re-run repair with a different default during redo.
+
+**Dirty/export trap:** `_restore_composed` and `rr.edits_document()` derive text
+changes from `document.diff()`. An unresolved pointer and a pointer to a valid
+blank college both display `""`; a real repair can therefore have no text diff.
+Keep the receipt's `(pool,index)` keys in an explicit repair journal and include
+them in dirty state. For disc Build & Share export, merge an explicit
+`names: {"college": selected_name}` entry for every repaired record, with its
+source name/identity, even when `selected_name == ""`. Never export
+`fields.college_pointer`: `apply_body` intentionally refuses traveling raw
+pointers. If several table entries have the same selected name, the existing
+text-only edits schema cannot preserve the selected ordinal; use the
+first matching entry for disc repair or report that exact export is unavailable.
+Verify by replaying `rr.apply_body` on the original disc body and comparing the
+expected four-byte repairs. No new Build preset/option is needed.
+
+If load failed, the checker can still build a candidate, but must not replace
+the current unrelated editor session. Offer the existing signed-copy output
+flow after candidate validation; then open the resulting copy. If a malformed
+college table remains, report it and keep Repair disabled. A grown v1/v18
+document that originally failed the strict codec belongs in this flow; there
+is no previously loaded document in which to install undo history.
+
+Use `SaveContainer.write` / `write_copy_to` for saved copies, retaining every
+other member. `SAVEGAME.DAT` changes only the reported player words; EXTRA must
+be recomputed by the existing signer. Show both receipts without promising
+that the whole container is byte-identical. Never overwrite the source. Inline
+MyCareer refuses a different MyPlayer college because its footer retains the
+original identity; the checker may restore that recorded college, but must not
+rewrite the footer or a legacy external career checkpoint.
+
+## Integration acceptance and packaging
+
+Add offscreen integration coverage for: failed-load check; null and invalid
+rows; both player pools; stale snapshot; missing/broken table; repair to blank
+with dirty/export persistence; duplicate college names; undo/redo with a
+schedule and rating already edited; signed copy/read-back; and MyCareer footer
+identity refusal. The new `test_nfl2k5_college_check_qt.py` exercises the current
+63.1 page boundaries and manual candidate adoption, not a checker button.
+
+Before shipping, add the explicit path
+`mod_editor/core/nfl2k5_college_check.py` to protected
+`packaging/release-allowlist.txt` and the release's normal packaging/import
+checks. No capability registration, XBE cave, game patch or manifest
+regeneration is needed for this standalone module. Keep the earlier wiring
+ledger below intact.
+
+---
+
+# beta-63.1 digit texture budget hotfix (2026-09-09)
+
+Bug: Coach Edwards, #2k5-bugs 2026-09-09 09:51 / 10:16 — "live_number_nameplate
+(asset_code=02, side=H, variant=0, family=arm): Digit artwork cannot fit its
+896-byte texture slot without dropping below the 16-colour quality budget"
+refused the whole disc after a Team Kit round trip.  The fix is complete
+outside the protected GUI; these are the two optional GUI touches that make
+the new "kept retail" outcome visible on the Uniforms page.  Nothing below is
+required for the disc to build; without it the outcome still reaches the user
+through the status bar (`BuildResult.message`) and the Build & Share
+completion dialog (`build_feedback.completion`).
+
+## `mod_editor/gui/studio_qt.py` — Uniforms page component list
+
+`_populate_components(self, uniform_set)` marks every asset in
+`facade.modified_asset_ids` as "● Modified".  After a project build the facade
+now also exposes `facade.kept_retail_asset_ids` (a `frozenset[str]` of catalog
+asset IDs) and `facade.last_build_kept_retail` (the receipt rows with an
+`asset_id` and a user-readable `message`).  Add, next to the existing
+`modified = set(...)` line:
+
+```python
+kept = set(getattr(self.facade, "kept_retail_asset_ids", ()))
+```
+
+and replace the state expression with:
+
+```python
+if asset.asset_id in kept:
+    state = "● Modified — kept retail at last build (could not fit its slot)"
+elif asset.asset_id in modified:
+    state = "● Modified"
+else:
+    state = "Original"
+```
+
+Give the kept rows a distinct colour (`item.setForeground(2, QColor("#ff9e7a"))`)
+and set the row tooltip to the matching `message` from
+`facade.last_build_kept_retail`.  Refresh the list from the build `success`
+handler (`_refresh_edit_state()` already runs there; it must rebuild
+components so the column updates).
+
+## `mod_editor/gui/studio_qt.py` — "Modded XISO ready" dialog
+
+In the build `success(result)` handler (the `QMessageBox.information(self,
+"Modded XISO ready", ...)` call), append the kept-retail rows when present so
+the dialog and the status bar agree:
+
+```python
+kept = tuple(getattr(result, "kept_retail", ()) or ())
+extra = ""
+if kept:
+    extra = ("\n\nKept retail for %d uniform slot%s whose art could not fit "
+             "its fixed texture slot:\n" % (len(kept), "" if len(kept) == 1 else "s")
+             + "\n".join("- " + str(row.get("message", row.get("selector"))) for row in kept))
+```
+
+and add `extra` to the message text.  `BuildResult.kept_retail` is an empty
+tuple for every build that wrote all of its slots, so the wording is unchanged
+for those.
+
+## Number-sheet import (no change required)
+
+`preview_digit_sheet` now returns a `kept_retail` receipt row and a
+"Digit N: kept retail: could not fit its ...-byte texture slot" note instead of
+raising, so `_review_digit_sheet_preview` shows the retail digit in that row
+and the note in the details.  The existing `operation` then stages all ten
+PNGs; the build keeps retail for the unfit slot and reports it.  If the page
+should not stage the unfit digit at all, skip `output` rows whose
+`preview.receipts[i].get("kept_retail")` is true before writing them into the
+private Team Kit folder.
+
+# hf63.1 Franchise Schedule refusal on a real playoff save (2026-09-09)
+
+Branch `astra/hf63-franchise-schedule` from tag `beta-63`.
+
+Two GUI panels under `mod_editor/gui/` are protected by `HOTFIX_CONTEXT.md`.  Half of this bug lives in
+them (the unconditional roster-codec gate on every franchise edit), so the smallest possible change was
+made there, as the context allows, and it is described here in full so it can be reviewed as a wiring
+request.  Everything else is in core.
+
+## What changed in the protected panels (already applied, commit "Franchise page: ...")
+
+Both panels called `nfl2k5_practice_squad.validate_save(candidate.to_bytes())` after applying **every**
+franchise edit, including a schedule cell / year / cap / user-control edit that writes only the season
+block or the front office.  Each call site now passes the pre-edit bytes to the new core helper
+`validate_save_edit(before, after)`, which runs the same `validate_save(after)` unless the edit left the
+ROST resource (`0x2E0..arena_end`) and the injured-reserve table byte-identical.
+
+| file | site | before | after |
+|---|---|---|---|
+| `mod_editor/gui/roster_editor_panel_qt.py` | `RosterEditorPanel._franchise_edit` (the studio path; `before = self.document.to_body()` was already in scope) | `validate_save(candidate.to_bytes())` | `validate_save_edit(before, candidate.to_bytes())` |
+| `mod_editor/gui/franchise_panel_qt.py` | `FranchisePanel._rebuild` (journal replay) | `validate_save(save.to_bytes())` | `validate_save_edit(self._base, save.to_bytes())` |
+| `mod_editor/gui/franchise_panel_qt.py` | `FranchisePanel.push` (standalone page) | `validate_save(candidate.to_bytes())` | `before = self._save.to_bytes()` captured; `validate_save_edit(before, candidate.to_bytes())` |
+| `mod_editor/gui/franchise_panel_qt.py` | `FranchisePanel.redo` | same as `push` | same as `push` |
+
+No widget, label, layout, preset or copy text changed.  Arena edits (IR place/activate, promote/demote,
+coach fields, roster-page membership moves) are validated exactly as before, and their refusal text now
+names the player record the codec could not read (core change).
+
+## Core changes (not protected)
+
+- `mod_editor/core/nfl2k5_save_rost.py` — `SaveRost._parse`: an in-arena college pointer that is off the
+  college table is recorded in `SaveRost.unresolved_colleges` (`summary()['unresolved_colleges']`), not
+  refused; per-player refusals are prefixed `<pool> player <index> at 0x<offset>: ...`; `decode()` no longer
+  tries the outer wrapper's `ROST` magic as an inner header (that produced "unsupported ROST version 593952").
+- `mod_editor/core/nfl2k5_practice_squad.py` — new `validate_save_edit(before, after, **options)`.
+- `mod_editor/core/nfl2k5_franchise_save.py` — `FranchiseSave.write()` validates through
+  `validate_save_edit(self.original, payload)`: the codec runs on the way out only when roster state changed
+  since the load.
+- `mod_editor/core/providers.py` — self-integrity pins for the three modules above re-synced with
+  `python3 packaging/repin.py --apply`.  **Claude: a manifest regeneration is needed** for the pinned
+  writers per the hotfix rules.
+
+## Nothing to wire elsewhere
+
+`update_check.py`, `packaging/release-allowlist.txt`, `mod_build.py`, presets and cave reservations are
+untouched; no new files ship (the regression test is `tests/mod_editor/test_nfl2k5_franchise_schedule_college.py`).
+
+# beta 63.1 Broadcast camera: the mount clears the near stands (2026-09-09)
+
+Hotfix for maumau78's report on beta 63 ("on right side will clip over crowd and stadium structure"). The fix
+is numbers only, inside `mod_editor/core/nfl2k5_camera.py` (`BROADCAST_VALUES`), with the proof tool, the
+projection harness test, the regenerated proof JSON/PNG and the provider pin. No protected file changed. What
+Claude must do, and what is deliberately left as a described change, follows.
+
+## Required now: manifest regeneration
+
+`mod_editor/core/nfl2k5_camera.py` is a pinned writer source and its bytes changed (three descriptor words:
+the lens and the mount's x and y). `packaging/repin.py --apply` was run (`mod_editor/core/providers.py`).
+`data/nfl2k5_cave_reservations.json` (manifest 29) still carries the beta-63 source fingerprint of the camera
+module, so two cases of `tests/mod_editor/test_nfl2k5_cave_oracle.py` error with "stale reservation source:
+mod_editor/core/nfl2k5_camera.py; regenerate manifest" (27 of 29 pass) until Claude regenerates the manifest the
+usual way. The declared camera spans, sizes and allocation requests are unchanged (the descriptor is the same 80
+owned RO bytes at the same address; 160 RX wrappers unchanged); both XBE gates were run against manifest 29 as
+it is (ASTRA_REPORT.md has the outputs).
+
+## Not in this hotfix: the complete fix is one owned setup callback (a later beta)
+
+A constant-offset type-2 mount follows the ball across the field, so no set of numbers keeps the eye out of
+every stadium's stands for balls near the near sideline: the follow itself is the root cause (native solver
+`FUN_0005f760`, eye = clamped look-at + smoothed offset). The solver already clamps the eye each frame to a
+per-camera box at camera+0x3C0 (min x, y, z) / +0x3D0 (max x, y, z); `FUN_00060090` resets that box to
++/-100000 (y >= 10) on every descriptor copy and then runs the descriptor's setup callback (+0x40), which is
+exactly where the retail sideline template's `A40C0` caps the look-at height (`mov dword [ecx+0x3B4], 100.0`).
+Nothing in retail writes the eye box, so the mechanism is free for a later beta:
+
+1. Grow the camera owner's code request by 16 bytes (`CODE_SIZE` 160 -> 176) and assemble a fifth wrapper at
+   `va + 160`: `mov dword [ecx+0x3B4], 100.0` (keep the retail cap), `mov dword [ecx+0x3D0], 5600.0`
+   (eye max x: the mount never crosses the second level's front, 5821 cm in the Superdome, 5972 in Arizona,
+   with a 2 m margin), optionally `mov dword [ecx+0x3C8], -5500.0` and `[ecx+0x3D8], 5500.0` (eye min/max z:
+   never past the end line into the corner sections), `ret`.
+2. Point the owned descriptor's +0x40 at that wrapper instead of `A40C0` (`broadcast_descriptor()` currently
+   keeps the template's callback); the differing-dword pin in `test_nfl2k5_camera_broadcast.py` becomes
+   `[0, 16, 24, 32, 48, 52, 64]`.
+3. Budget fixture and both gates for the grown request; manifest regeneration; the pairwise matrix.
+
+With the eye clamped, the look-at still follows the ball, so the shot pans instead of dollying into the seats
+when a play goes to the near sideline, as a television camera does. The alternative structural change, the
+retail director's own type-1 record (fixed world eye, lens = distance x K / framing word, i.e. auto-zoom), is a
+different look and is not proposed for a hotfix.
+
+# beta-63.1 catch-slider kick return fix (2026-09-09)
+
+The fix is implemented in `mod_editor/core/nfl2k5_catch_slider.py`. The
+existing Build/throw-tuning dispatch already applies it, including the
+boot-logo relocation. No dispatcher, preset, panel, release allowlist, or
+allocator request change is needed. `packaging/repin.py --apply` updated the
+writer's integrity pin in `mod_editor/core/providers.py`.
+
+Claude must regenerate protected `data/nfl2k5_cave_reservations.json` after
+integration. The 48-byte main cave remains `0x10A10..0x10A40`; its team load
+now jumps to a 22-byte selector at `0x10CAC..0x10CC2`, the unused tail of the
+same boot-logo bitmap. `_sites()` declares `kick_gate` with its full retail
+pin. Regeneration must record that span for `nfl2k5_catch_slider`, the changed
+main-cave bytes, the writer/provider source digests, and the rebuilt image
+digests. The source writer digest for this delivery is
+`0ea12e1f558463538a154f50c38036389a8c0432c7ba55ac2862cd706b85498f`.
+Do not hand-edit just the JSON source hash: the observed spans and image
+receipts also change. No named grown-page allocation is added.
+
+Use the normal full disposable-disc manifest command, with
+`HF63_MANIFEST_WORK` naming an existing writable disposable directory outside
+the repository with room for the disc copy:
+
+```sh
+PYTHONPATH=. python3 tools/nfl2k5_cave_oracle.py manifest \
+  '/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe' \
+  --xiso '/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso' \
+  --work-dir "$HF63_MANIFEST_WORK" \
+  --json data/nfl2k5_cave_reservations.json
+```
+
+The checked-in manifest was deliberately left untouched in this worktree,
+as required by `HOTFIX_CONTEXT.md`. The new header-specific reference test
+checks existing ownership and native references independently; both normal
+XBE gates are also run. Full evidence and Noah's xemu witness are in
+`ASTRA_REPORT.md`. Rebuild old beta-63 catch-slider installations from retail:
+they are foreign to the fixed writer; exact new installations replay with
+zero changed bytes.
+
 # r65 Player abilities rules v2 (2026-09-08)
 
 This section supersedes earlier abilities v1 wiring only. EXPERIMENTAL /

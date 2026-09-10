@@ -259,6 +259,15 @@ class DiscIdentityTests(unittest.TestCase):
         self.assertIn("vc_53450030/2", found.detail)
 
     # -- the refusals quote it -------------------------------------------
+    def test_a_build_refusal_on_a_buildable_disc_is_not_blamed_on_the_disc(self) -> None:
+        """"Build & Share works" is never appended to a Build failure (jrolling2003, 2026-09-09)."""
+
+        raised = ValueError("outer 5: ROST preamble")
+        for image in (self.xiso, self.raw, self.repack):
+            with self.subTest(image=image.name):
+                self.assertIs(mod_build._with_identity(raised, image, True), raised)
+        self.assertIn(identity.MODIFIED, str(mod_build._with_identity(raised, self.modded, True)))
+
     def test_a_build_refusal_names_the_disc(self) -> None:
         raised = ValueError("pack-0 schedule template is foreign: ROST stored size is not retail")
         message = str(mod_build._with_identity(raised, self.modded, True))
@@ -467,6 +476,44 @@ class PanelTests(unittest.TestCase):
         finally:
             panel.deleteLater()
             self.app.processEvents()
+
+
+class RawDumpXemuNoteTests(unittest.TestCase):
+    """A raw dump's line says that xemu will not boot a copy that keeps the video partition.
+
+    Ju3tin (#2k5-general, 2026-09-09) built from a raw dump, the build kept the dump's layout, and
+    xemu answered "please insert disk"; xemu 0.8.x reads only xiso images (its redump pull request
+    #2915 was closed unmerged), which nothing in the studio said before the build.
+    """
+
+    def setUp(self) -> None:
+        self.tmp = Path(tempfile.mkdtemp(prefix="disc-identity-xemu-"))
+        self.addCleanup(lambda: __import__("shutil").rmtree(self.tmp, ignore_errors=True))
+        self.pins = fixture_pins()
+        self.pins.start()
+        self.addCleanup(self.pins.stop)
+
+    def test_a_raw_dump_line_names_the_cut(self) -> None:
+        line = identity.identify(build_image(self.tmp / "raw.iso", base=RAW_BASE)).line()
+        self.assertIn("Build and Apply both work", line)
+        self.assertIn('xemu answers "please insert disc"', line)
+        self.assertIn(f"cut the first 0x{RAW_BASE:X} bytes off the copy", line)
+        self.assertIn(f"dd bs=2048 skip={RAW_BASE // 2048}", line)   # this base is not a whole MiB
+
+    def test_a_relaid_raw_dump_line_names_the_cut_too(self) -> None:
+        found = identity.identify(build_image(self.tmp / "raw-repack.iso", base=RAW_BASE, shift=0x100))
+        self.assertEqual(found.kind, "repack")
+        self.assertIn("Read as a raw dump", found.line())
+        self.assertIn('xemu answers "please insert disc"', found.line())
+
+    def test_an_xiso_line_stays_silent_about_the_cut(self) -> None:
+        for path in (build_image(self.tmp / "xiso.iso"), build_image(self.tmp / "xiso-repack.iso", shift=0x100)):
+            self.assertNotIn("please insert disc", identity.identify(path).line())
+
+    def test_the_xgd1_cut_is_the_documented_387_mib(self) -> None:
+        self.assertIn("dd bs=1M skip=387", identity._xemu_note(0x18300000))
+        self.assertEqual(identity._xemu_note(0), "")
+        self.assertEqual(identity._xemu_note(None), "")
 
 
 if __name__ == "__main__":

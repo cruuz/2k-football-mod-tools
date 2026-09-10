@@ -13,7 +13,7 @@ import argparse
 from collections import Counter
 import contextlib
 import copy
-from dataclasses import asdict, dataclass, replace
+from dataclasses import asdict, dataclass, field, replace
 import hashlib
 import importlib.util
 import json
@@ -197,6 +197,7 @@ import nfl_live_helmet_txtr_png_import as helmet_import
 import nfl_live_helmet_txtr_targets as helmet_targets
 import nfl_live_numbers_nameplate_png_import as live_art_import
 import nfl_live_numbers_nameplate_targets as live_art_targets
+from nfl_tset_png_import import QualityBudgetError
 import nfl_team_select_card_png_import as card_import
 import nfl_team_select_card_targets as card_targets
 import nfl_live_face_texture_png_import as face_import
@@ -669,6 +670,11 @@ class PreparedProject:
     temp_files: list[ownership.OwnedPath]
     input_pins: dict[Path, InputPin]
     report_pins: dict[str, InputPin]
+    #: Digit slots whose authored art could not be encoded inside the retail
+    #: allocation at the quality floor.  Each keeps the RETAIL resource (no span
+    #: is written) and is carried into the build manifest so the receipt names
+    #: the slot; ``verify`` reconstructs the same rows from the same inputs.
+    kept_retail: list[dict[str, Any]] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -2484,7 +2490,7 @@ def build_crib_scene_texture_import(
 #: Coordinate fields a user actually chose in the UI, in the order they read.
 #: A uniform edit carries no selector -- it is an asset code, a side and a
 #: variant -- so "pants:" alone is useless when a project holds several.
-_EDIT_COORDINATES = ("asset_code", "team", "side", "variant", "family", "slot")
+_EDIT_COORDINATES = ("asset_code", "team", "side", "variant", "family", "digit", "slot")
 
 
 def describe_edit(edit: dict[str, Any]) -> str:
@@ -2527,6 +2533,57 @@ def _naming_the_failing_edit(edit: dict[str, Any]):
         raise ProjectError(f"{label}: {message}") from exc
     except Exception as exc:
         raise ProjectError(f"{describe_edit(edit)}: {exc}") from exc
+
+
+#: Digit families whose fixed slots are small enough that authored art can be
+#: impossible to encode at the 16-colour quality floor (see
+#: ``nfl_live_numbers_nameplate_png_import.build_import``).  The nameplate atlas
+#: and every other kind keep the hard refusal.
+_KEPT_RETAIL_DIGIT_FAMILIES = frozenset({"jersey", "helmet", "arm"})
+
+
+def kept_retail_record(edit: dict[str, Any], failure: BaseException,
+                       input_pin: InputPin, report_path: Path) \
+        -> dict[str, Any] | None:
+    """The receipt row for one digit slot whose art cannot fit, or ``None``.
+
+    Only a :class:`QualityBudgetError` from a live digit qualifies: every
+    honest palette tier was encoded and overflowed the retail allocation.  A
+    corrupt PNG, a changed report or any other importer fault still stops the
+    build.  The row is built from the project edit and the pinned report only,
+    so the independent ``verify`` pass reconstructs it byte for byte.
+    """
+
+    cause = failure.__cause__
+    if not isinstance(cause, QualityBudgetError):
+        return None
+    if (edit.get("kind") != "live_number_nameplate"
+            or edit.get("family") not in _KEPT_RETAIL_DIGIT_FAMILIES
+            or type(edit.get("digit")) is not int):
+        return None
+    _, _, target = live_art_targets.select_target(
+        edit["family"], edit["asset_code"], edit["side"], edit["variant"],
+        edit["digit"], report_path)
+    label = (f"{edit['family']} digit {edit['digit']} "
+             f"({edit['asset_code']}{edit['side']}{edit['variant']})")
+    return {
+        "kind": "live_number_nameplate",
+        "selector": target.selector,
+        "asset_code": str(edit["asset_code"]),
+        "side": str(edit["side"]),
+        "variant": int(edit["variant"]),
+        "family": str(edit["family"]),
+        "digit": int(edit["digit"]),
+        "stored_size": int(target.stored_size),
+        "outcome": "kept_retail",
+        "input_sha256": input_pin.sha256,
+        "reason": str(cause),
+        "message": (
+            f"{label}: kept retail: could not fit its {target.stored_size}-byte "
+            "texture slot at the 16-colour quality budget; the retail digit was "
+            "kept and the rest of the project was built."
+        ),
+    }
 
 
 def build_one_import(order: int, edit: dict[str, Any], project: ProjectFile,
@@ -3242,6 +3299,7 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
             ausb_slots_by_edit, deduplicated_ausb_edits = \
                 resolve_ausb_project_edits(project, input_pins, audio_origin)
         prepared: list[PreparedEdit] = []
+        kept_retail: list[dict[str, Any]] = []
         selectors: set[tuple[str, str]] = set()
         play_route_groups: dict[str, list[dict[str, Any]]] = {}
         for row in project.value["edits"]:
@@ -3307,6 +3365,9 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
             ).append(row)
         handled_equipment_groups: set[tuple[int, int]] = set()
         equipment_pack_hashes: dict[str, str] = {}
+        # A global shoe/glove/pad variant is staged in every uniform package the
+        # game can sample it from; identical retail spans compile once per build.
+        equipment_compile_cache = uniform_equipment_adapter.EquipmentCompileCache()
         ausb_pack_hashes: dict[str, str] = {}
         unif_color_pack_hashes: dict[str, str] = {}
         for edit_index, edit in enumerate(project.value["edits"]):
@@ -3660,6 +3721,7 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                             index_pin.path,
                             staged_equipment,
                             pack_hashes=equipment_pack_hashes,
+                            compile_cache=equipment_compile_cache,
                         )
                     )
                 except uniform_equipment_adapter.UniformEquipmentWriterError as exc:
@@ -3690,11 +3752,36 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                 # of their edits it was. A build carrying dozens of them once
                 # reported only "VC-LZ stream needs more than the 34416-byte
                 # bound", which names no team, no slot, and no image.
-                with _naming_the_failing_edit(edit):
-                    built = [build_one_import(
-                        len(prepared), edit, project, input_pins, report_paths,
-                        index_pin.path, inventory_pin.path, temp_root, temp_files,
-                        source_fd, historical_import)]
+                staged_before = len(temp_files)
+                try:
+                    with _naming_the_failing_edit(edit):
+                        built = [build_one_import(
+                            len(prepared), edit, project, input_pins, report_paths,
+                            index_pin.path, inventory_pin.path, temp_root, temp_files,
+                            source_fd, historical_import)]
+                except ProjectError as exc:
+                    # A digit whose art cannot fit its slot at the quality
+                    # floor must never refuse the whole disc (beta-63.1,
+                    # Coach Edwards: "Digit artwork cannot fit its 896-byte
+                    # texture slot"). Keep retail for that ONE slot -- no span
+                    # is written -- and carry the reason into the receipt.
+                    kept = None
+                    if (kind == "live_number_nameplate"
+                            and isinstance(exc.__cause__, QualityBudgetError)):
+                        kept = kept_retail_record(
+                            edit, exc,
+                            resolve_asset(project, edit["png"], input_pins),
+                            report_paths[kind])
+                    if kept is None:
+                        raise
+                    # Release the attempt's private input copy so the next
+                    # span reuses this order number; spans stay contiguous.
+                    leftovers = ownership.cleanup_owned(temp_files[staged_before:], [])
+                    require(not leftovers,
+                            f"kept-retail input copy could not be released: {leftovers}")
+                    del temp_files[staged_before:]
+                    kept_retail.append(kept)
+                    continue
             for replacement, previews, report, selector, target in built:
                 order = len(prepared)
                 key = (kind, selector)
@@ -3758,7 +3845,8 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
         if historical_import_reports is not None:
             require(set(historical_import_reports) == set(range(len(prepared))),
                     "historical import receipt orders differ from reconstructed spans")
-        return PreparedProject(prepared, temp_root, temp_files, input_pins, report_pins)
+        return PreparedProject(prepared, temp_root, temp_files, input_pins,
+                               report_pins, kept_retail)
     except Exception:
         ownership.cleanup_owned(temp_files, [temp_root])
         raise
@@ -4435,7 +4523,11 @@ def bind_prepared_to_source(prepared: PreparedProject, source_fd: int,
     validate_p8_physical_groups(prepared.edits, source_fd)
     validate_crib_standalone_physical_groups(prepared.edits, source_fd)
     require_non_overlapping_ranges(ranges)
-    require(any(edit.relative_runs for edit in prepared.edits),
+    # A project whose only edits kept their retail digit writes no span; the
+    # build still completes (as an unchanged copy the Build page patches on
+    # top of) and the receipt says which slots were kept and why.
+    require(any(edit.relative_runs for edit in prepared.edits)
+            or bool(prepared.kept_retail),
             "project produces no changed retail bytes")
 
 
@@ -5107,6 +5199,7 @@ def build(project_path: Path, source_path: Path, output_path: Path,
                 },
             },
             "edits": [stable_edit_record(edit) for edit in prepared.edits],
+            "kept_retail": list(prepared.kept_retail),
             "output": {
                 "xiso_path": str(output), "xiso_size": source_size,
                 "xiso_sha256": union["output_sha256"],
@@ -5167,9 +5260,13 @@ def read_build_manifest(path: Path) \
         value = json.loads(payload)
     except json.JSONDecodeError as exc:
         raise ProjectError("build manifest is invalid JSON") from exc
+    # ``kept_retail`` (beta-63.1) is optional so manifests written before it
+    # existed still verify; a build always writes it, possibly empty.
     require(isinstance(value, dict) and payload == canonical_json(value) and
-            set(value) == {"schema", "project", "source", "canonical_inputs",
-                           "edits", "output", "xdvdfs", "patch", "claims"} and
+            set(value) - {"kept_retail"} == {
+                "schema", "project", "source", "canonical_inputs",
+                "edits", "output", "xdvdfs", "patch", "claims"} and
+            isinstance(value.get("kept_retail", []), list) and
             value.get("schema") == BUILD_SCHEMA,
             "build manifest schema/canonical encoding mismatch")
     return resolved, payload, value, identity
@@ -5444,6 +5541,7 @@ def verify(project_path: Path, source_path: Path, output_path: Path,
                 manifest.get("source", {}).get("modified") is False and
                 manifest.get("canonical_inputs") == expected_inputs and
                 manifest.get("edits") == expected_edits and
+                manifest.get("kept_retail", []) == list(prepared.kept_retail) and
                 manifest.get("output", {}).get("xiso_sha256") == union["output_sha256"] and
                 manifest.get("patch") == union and
                 manifest.get("xdvdfs") == expected_xdvdfs and
@@ -5630,6 +5728,7 @@ def main() -> int:
     elif args.command == "build":
         print(f"NFL2K5_VISUAL_MOD_BUILD_PASS edits={result['project']['edit_count']} "
               f"changed={result['patch']['changed_byte_count']} "
+              f"kept_retail={len(result.get('kept_retail', []))} "
               f"sha256={result['output']['xiso_sha256']} runtime=false")
     else:
         mode = "virtual" if result["virtual_output_reconstructed"] else "materialized"

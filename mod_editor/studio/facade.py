@@ -1019,6 +1019,37 @@ class Nfl2k5StudioFacade:
         with self._lock:
             return self._last_build.output_xiso if self._last_build else None
 
+    @property
+    def last_build_kept_retail(self) -> tuple[dict[str, object], ...]:
+        """Digit slots the latest project build kept at retail, with asset IDs.
+
+        Each row is the builder's ``kept_retail`` receipt row plus the uniform
+        catalog ``asset_id`` it belongs to, so the Uniforms page can mark that
+        component "kept retail: could not fit ..." instead of a plain
+        "Modified" that the disc never received.  Empty when the last build
+        wrote every staged slot, or when there is no build yet.
+        """
+
+        with self._lock:
+            result = self._last_build
+        rows = tuple(getattr(result, "kept_retail", ()) or ())
+        annotated = []
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            selector = f"{row.get('asset_code')}{row.get('side')}{row.get('variant')}".lower()
+            annotated.append({
+                **row,
+                "asset_id": (
+                    f"nfl2k5.uniform.{selector}.digit.{row.get('family')}.{row.get('digit')}"
+                ),
+            })
+        return tuple(annotated)
+
+    @property
+    def kept_retail_asset_ids(self) -> frozenset[str]:
+        return frozenset(str(row["asset_id"]) for row in self.last_build_kept_retail)
+
     def preflight_visual_edits(
         self, progress: ProgressSink = _quiet_progress
     ) -> tuple[object, ...]:
@@ -3302,11 +3333,23 @@ class Nfl2k5StudioFacade:
     def revert_asset(self, asset: UniformAsset, progress: ProgressSink) -> object:
         progress(f"Reverting {asset.label}", 0, 1)
         with self._lock:
-            changed = self._require_session().revert(asset)
+            if getattr(asset, "kind", None) == "uniform_equipment_texture":
+                # A generic shoe/glove/pad variant was staged into every
+                # package the game samples it from; revert them together.
+                from mod_editor.core.nfl2k5_equipment_import import revert_equipment_import
+
+                reverted = revert_equipment_import(self._require_session(), asset)
+                changed = bool(reverted)
+                extra = len(reverted) - 1 if changed else 0
+            else:
+                changed = self._require_session().revert(asset)
+                extra = 0
         progress(f"{asset.label} reverted", 1, 1)
         return StudioOperationResult(
-            f"Reverted {asset.label}." if changed
-            else f"{asset.label} was already original."
+            (f"Reverted {asset.label}"
+             + (f" and the same texture in {extra} other uniform package{'s' if extra != 1 else ''}"
+                if extra else "") + ".")
+            if changed else f"{asset.label} was already original."
         )
 
     def undo(self, progress: ProgressSink) -> object:

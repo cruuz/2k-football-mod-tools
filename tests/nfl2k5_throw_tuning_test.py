@@ -100,6 +100,7 @@ def _build_synthetic_xbe(curves: dict[str, tuple[tuple[float, float], ...]] | No
         struct.pack_into("<I", buf, ROOKIE_RAW + (struct_va + draft.ROOKIE_KEY_SCALE_OFF - ROOKIE_VA), retail_bits)
     # retail bytes at the catch-slider sites: logo region (header), hook and ceilings (.text)
     buf[catch.CAVE_VA - IMAGE_BASE: catch.CAVE_VA - IMAGE_BASE + len(catch.RETAIL_CAVE)] = catch.RETAIL_CAVE
+    buf[catch.KICK_GATE_VA - IMAGE_BASE: catch.KICK_GATE_VA - IMAGE_BASE + catch.KICK_GATE_SIZE] = catch.RETAIL_KICK_GATE
     buf[0xA48: 0xA48 + len(accel._RETAIL_LOGO_FROM_A48)] = accel._RETAIL_LOGO_FROM_A48
     buf[0xAF0: 0xAF0 + len(draft.RETAIL_LOGO_AF0)] = draft.RETAIL_LOGO_AF0
     buf[TEXT_RAW + (draft.BODY_VA - TEXT_VA): TEXT_RAW + (draft.BODY_VA - TEXT_VA) + len(draft.RETAIL_BODY)] = draft.RETAIL_BODY
@@ -330,14 +331,15 @@ class CatchSliderTests(unittest.TestCase):
         self.assertEqual(catch.status(payload), "retail")
         patched, receipt = catch.apply(payload)
         self.assertEqual(catch.status(patched), "applied")
-        self.assertTrue(50 <= receipt["changed_bytes"] <= 80, receipt["changed_bytes"])   # patch bytes + digest bytes that differ
+        self.assertTrue(70 <= receipt["changed_bytes"] <= 110, receipt["changed_bytes"])  # both caves + sites + digest
         self.assertEqual(len(patched), len(payload))
         # the cave sits in the header logo region, the hook/ceilings in .text, digest of .text repinned
         self.assertEqual(patched[catch.CAVE_VA - IMAGE_BASE: catch.CAVE_VA - IMAGE_BASE + len(catch.cave_bytes())], catch.cave_bytes())
         sections = strength._sections(patched)
         self.assertEqual(strength.section_digest(patched, sections[0]), sections[0].stored_digest)
-        with self.assertRaises(catch.CatchSliderError):
-            catch.apply(patched)  # already applied
+        replay, replay_receipt = catch.apply(patched)
+        self.assertEqual(replay, patched)
+        self.assertEqual(replay_receipt["changed_bytes"], 0)
 
     def test_foreign_bytes_are_refused(self) -> None:
         payload = bytearray(_build_synthetic_xbe())

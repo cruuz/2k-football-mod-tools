@@ -1,5 +1,98 @@
 # 2K5 Mod Studio — Product Changelog
 
+## Beta 63.1 hotfix (2026-09-09)
+
+- **Build no longer refuses the whole disc over one jersey digit (Coach Edwards, #2k5-bugs 2026-09-09).** A Team
+  Kit round trip through a colour-managed editor re-saved every digit with tiny per-channel differences, so all 30
+  Ravens Away digits imported as "Modified", and the arm digit 1 (whose retail encoding leaves six bytes of slack in
+  its 896-byte slot) could not be re-encoded within the 16-colour budget: "Digit artwork cannot fit its 896-byte
+  texture slot" ended the build. Two fixes: a live digit within 3 per channel of its export baseline imports as the
+  retail digit (torso, sleeves, pants and nameplate keep the exact rule; real edits still import), and a digit that
+  cannot fit its slot keeps the RETAIL digit for that slot, records a "kept retail" row in the build receipt, the
+  status bar and the "Modded XISO ready" dialog, and the build succeeds. A corrupt payload still fails closed.
+  `HOTFIX63_DIGITS_REPORT.md`. Unplayed in game (the disc builds; the retail digit is what the game shows).
+- **Build no longer fails with "outer 5: ROST preamble" after the Outside Linebackers scan (jrolling2003, #2k5-bugs
+  2026-09-09).** The disc layout was never the problem: the 16-reserves / extra-created-teams arena growth rewrites
+  the main roster as version 18, and the merged-positions scan that runs last accepted only version 17, so any image
+  with position pools plus reserves/extra teams failed after the full build. The scan now reads version 18 when the
+  arena is exactly the writer's grown shape. The refusal also carried "This image is: repacked disc ... Build & Share
+  works", which sent the tester to repack a dump that was fine; a build refusal now names the disc only when the
+  disc is the reason (a modified or unknown image). `HOTFIX63_REPACKED_SOURCE_REPORT.md`.
+- **Franchise Schedule "Apply to this game" works on a real playoff save (BigTimeEmpire, #2k5-bugs 2026-09-08).**
+  "Refused: no supported ROST: unsupported ROST version 593952; player college is not a college record": every
+  franchise edit, including a kickoff-time change that only writes the season block, ran the strict roster codec
+  over the whole save, and one player's college pointer that lands inside the arena but off the college table (the
+  game itself never checks it; the player card and the roster page tolerate it) refused the ROST. The "version" was
+  the outer wrapper's declared length (0x91020 = 593,952), tried as a header by the scanner. Now: an in-arena
+  off-table college pointer is recorded instead of refused, refusals name the player record and offset, the wrapper
+  magic is no longer tried as a header, and schedule / year / cap / control edits skip the roster codec (the ROST
+  bytes and the injured-reserve table are unchanged by them); arena edits are validated exactly as before.
+  `HOTFIX63_FRANCHISE_SCHEDULE_REPORT.md`. Unplayed on the tester's save (not available; four real saves round-trip).
+- **Imported shoes (and gloves, elbow pads, sleeves, wristbands) reach the players in a game, not only Edit Player
+  (maumau78, #2k5-bugs 2026-09-09).** The player texture binding table at 0x4EEAF8 marks shoe styles 1/2/4/5,
+  gloves 1-4, elbow pads 1-4, long sleeves 1-2 and wristbands 1-2 as global rows: the game resolves them by name
+  through the newest loaded uniform package, which is the away team's package in a game and the viewed team's own
+  package on the Edit Player screen. The studio staged the texture into one package, which only the preview ever
+  read. An equipment import now stages every package the game samples (the selected one plus all 317 away and 85
+  home Current Uniform packages) as one undoable batch with a receipt naming every copy; shared spans compile once.
+  Styles 3/6 were already correct. `HOTFIX63_SHOES_REPORT.md`. Unplayed.
+- **Kick and punt returners are no longer scaled by the Interception slider (root cause candidate for "every
+  kickoff and punt return is muffed", shanethepain, #2k5-general 2026-09-08).** The catch-slider cave (on in every
+  preset since beta 62) classified a catcher whose team differs from the offense as a defender and returned
+  rand / (2 x Interception) with no kick discriminator; a returner has that identity before possession changes, so
+  Interception 0 failed every kick and punt catch (25 failed half). The cave now reads the ball kind at 0xE602C0
+  (3 = kick or backward pass, 4 = forward pass, proved by instruction) and routes kicked balls through the
+  catcher's own Catching slider; forward passes are byte-identical to beta 63. Twenty-two bytes in the unused tail
+  of the same boot-logo bitmap; both XBE gates and the pairwise matrix green. `HOTFIX63_CATCH_SLIDER_KICKS_REPORT.md`
+  and `HOTFIX63_KICKOFF_MUFFS_VERIFY_REPORT.md` (what the kickoff receipts do and do not prove). Unplayed.
+- **A raw disc dump builds with every option ticked (Ju3tin, #2k5-general 2026-09-09).** "ValueError: overlapping
+  disc file or metadata: root directory": the archive reader's overlap sweep started at partition+0x10800 and so
+  assumed every directory sits past the volume descriptor, but a pressed-disc (redump) dump keeps its root directory
+  at sector 30 and the `vc_53450030` directory at 31, below the descriptor at 32; the first span was reported as an
+  overlap although nothing overlaps. Three lines in `nfl2k5_music_archive.py`; the all-options build from the raw
+  dump reproduced the dialog verbatim before and completes after (regression tests on a synthetic raw layout and,
+  retail-gated, on the dump). The "please insert disk" that followed is xemu, not the build: xemu 0.8.x boots only
+  the game partition and does not accept redump-layout images (its documentation; its redump pull request #2915 was
+  closed unmerged), and the studio keeps the source's layout, so the identity line for a raw dump now says so and
+  gives the cut (`xdvdfs pack`, or `dd` past the first 0x18300000 bytes). `HOTFIX63_RAWDUMP_OVERLAP_REPORT.md`.
+- **Rosters: Check my rosters, a college reference checker and repair (BigTimeEmpire, #2k5-bugs 2026-09-09).**
+  "Certain roster and save files can't be edited if a player doesn't have a college or there are errors with their
+  college." On 63.1 a blank or None college is accepted everywhere and an in-arena off-table pointer no longer refuses
+  a franchise save; what still refuses a roster-save signed copy is a college pointer that leaves the roster arena,
+  and a broken college table refuses a load. The Checks tab gains **Check my rosters…**: it scans the loaded document
+  (or a chosen save or disc, read-only, even one whose roster did not parse) and lists every player whose college
+  reference is null or invalid with the file, pool, record, byte offset, raw word, reason, what the game would show
+  and the proposed college; table issues are listed even when unused. **Repair listed college references** points
+  those records at a valid college (None by default, or a chosen one) changing only the four bytes of each affected
+  player's college pointer, then runs the page's existing ownership and depth checks, installs the result with one
+  undo entry, keeps an explicit repair journal in dirty state, carries the repair into Build & Share (as the college
+  name, never a raw pointer) and into a saved signed copy, and refuses to guess when the college table itself is
+  broken. Core `nfl2k5_college_check.py` (scan + atomic repair for the disc ROST, roster saves and franchise saves;
+  retail scan: 0 findings). `HOTFIX63_COLLEGE_CHECK_REPORT.md`, `HOTFIX63_COLLEGE_CHECK_GUI_REPORT.md`. Unplayed;
+  the tester's file was not supplied.
+- **Music tab on a fresh rip: verified fixed in 63, regression tests added (Mud, #2k5-bugs 2026-09-09 on 62.1).**
+  The stadium-music and jukebox paths share the readiness check that beta 63 stopped raising; new tests replay a
+  mismatched-digest cache through the real window offscreen. `HOTFIX63_MUSIC_VERIFY_REPORT.md`. No product change.
+- **Broadcast camera v5.3: the mount clears the near stands (existing `camera` option; no new switch, no preset
+  change).** maumau78 on beta 63: "Broadcast CAM on the last release is fire!" then "only issue is that on right side
+  will clip over crowd and stadium structure". Root cause: v5.2 used the retail TV template's press-box eye, 52.5 m
+  toward the near sideline and 16.5 m up, and a type-2 mount follows the ball across the field as well as along it.
+  Measured on the retail stadium scenes (all 53 models through the Stadium Studio's own glTF derivation), 16.5 m is
+  the front-row height of the second level, whose front sits about 58 m from the field's centre line (Superdome
+  58.2 m, Arizona 59.7 m): with the ball past the near hash the eye was already among the second-level seats and
+  crowd, and in the end zones inside the loge corner trim. The mount moves to the front of the loge, 45 m out and
+  14 m up, with the lens widened from 80 to 68: the same pitch (17.3 degrees, was 17.4) and the same framing at the
+  ball (every sample point within 10 px of v5.2 through the native solver), 15% closer in perspective. Through the
+  solver the eye now stays in front of the second level and below the corner trim for every ball from the far
+  sideline to 9 m past the centre line toward the camera (the near hash is 2.8 m, the near numbers begin at 11 m),
+  the whole field long including both end zones: 300 sampled ball positions per case, 156 cases, 0 violations (v5.2:
+  95 per direction on the same grid). Over the 53 stadium models the frames with structure over the field between the
+  numbers fall from 15% to 5% (between the hashes 8% to 2%); plays wider than that still carry a constant-offset
+  mount into some stadiums' seats, and the complete fix (the native eye clamp box set by one owned setup callback)
+  is described in `WIRING.md` for a later beta. Descriptor differs from the template in type, look-at, lens and the
+  mount's x and y; the 80 owned RO bytes, 160 RX wrappers, hooks and requests are unchanged.
+  `HOTFIX63_CAMERA_V53_REPORT.md`, proof JSON/PNG regenerated. Unplayed.
+
 ## v1.0 RC87, the last 2K5 beta before APF 2K8: read option v5, Franchise Edit Player, CPU fourth downs, weekly preparation, separate playbooks, match coverage, abilities rules v2 with move locks, close pursuit recovery, Broadcast camera, deep-zone tiers, 7-on-7 v2, MyCareer draft and the fresh-rip fix (2026-09-08)
 
 Beta 63 was built by GPT-6 Astra under Claude's review in one wave of fourteen bounded sessions plus the four

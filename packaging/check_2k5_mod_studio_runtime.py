@@ -99,13 +99,13 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "64ac47e2f3d28c374d4b0b8d44e5eba16b69ce5d70bbbeb6288ddadeb2be10ed",
     "mod_editor/gui/studio_qt.py":
-        "942fd8279fa5f4209af7827c09c55892eb0aa875387aacbad2272db33b2df6a2",
+        "8f8adbd803b192f4b79bf736c27940172c08c609e30918d9ce81df92b83f07f1",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
         "68b6887e0778391916a6465a722b062d1c09afe3a376c318026e9db8bd7ed23a",
     "mod_editor/studio/facade.py":
-        "fa81aff426da2a3556f7e5435598cfc1cf005e7ef65b1eb99609e63d9d29a04c",
+        "2eaa5929374c89c034823a11a1e79ed787ec8ca4e7c05891711e736e98cee804",
     "mod_editor/studio/project_archive.py":
         "3556062a7cf178ef416706543e71270783d04439494420810fb7a10ca7f01479",
     "mod_editor/studio/session.py":
@@ -1791,6 +1791,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_team_history",
         "mod_editor.core.nfl2k5_career_stats",
         "mod_editor.core.nfl2k5_save_rost",
+        "mod_editor.core.nfl2k5_college_check",
         "mod_editor.core.nfl2k5_franchise_save",
         "mod_editor.core.nfl2k5_prospect_names",
         "mod_editor.core.nfl2k5_seven_on_seven",
@@ -2044,6 +2045,10 @@ def main() -> int:
         require(bool(owner.REQUESTS) and owner.status(b"") == "foreign", name + " ownership/foreign gate missing")
         require(all(callable(getattr(owner, method, None)) for method in ("apply", "code_for")), name + " API missing")
     require(callable(modules["mod_editor.core.nfl2k5_momentum"].read_settings), "Momentum settings missing")
+    college = modules["mod_editor.core.nfl2k5_college_check"]
+    require(callable(college.scan) and callable(college.repair)
+            and issubclass(college.CollegeCheckError, ValueError),
+            "Check my rosters core (college scan/repair) missing")
     tool_modules = (
         "nfl2k5_match_coverage",
         "nfl2k5_music_banks",
