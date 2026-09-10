@@ -1,4 +1,4 @@
-"""EXPERIMENTAL / UNWITNESSED Standard, Far and playable Broadcast, USA XBE.
+"""ADVANCED camera choice; native-proved / gameplay UNWITNESSED, USA XBE.
 
 Far is row 1 of 4F03F8. Standard retains retail Far's settled eye positions
 with the raised Far pitch. Both rows retain native type, lag and callbacks,
@@ -12,7 +12,7 @@ It is NOT a claim to reproduce the coach-mode television director: retail TV
 records include inherited eyes and close-up framing. The seventh menu choice
 uses engine row 7, skipping First Person (6), without setting Coach Mode.
 
-160 owned RX bytes and one immutable 80-byte descriptor, no RW or retail cave.
+512 owned RX bytes and four immutable 80-byte descriptors, no RW or retail cave.
 Reserve REQUESTS with
 all other selected owners before apply. Rebuild historical descriptor-only
 installations from retail; mixed/foreign inputs refuse before mutation.
@@ -31,9 +31,10 @@ from .nfl2k5_draft_ai import _Asm
 from .nfl2k5_bump_strength import _sections, _section_for_offset, section_digest
 
 OWNER = "nfl2k5_camera"
-VERSION = 5
-CODE_SIZE = 160
-READ_ONLY_SIZE = 80
+VERSION = 6
+CODE_SIZE = 512
+READ_ONLY_SIZE = 320
+LEGACY54_CODE_SIZE = 208
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "read_only", READ_ONLY_SIZE, 16))
 IMAGE_BASE = 0x10000
 DESCRIPTOR_SIZE = 0x50
@@ -49,7 +50,16 @@ BROADCAST_ROW = 7
 MENU_ROWS = (0, 1, 2, 3, 4, 5, BROADCAST_ROW)
 # Every gameplay/preview state gets an independent eye, including kicks and
 # pass states. Presentation/replay states and all seven other rows stay native.
-BROADCAST_STATES = (1, *range(8, 20))
+BROADCAST_STATES = (1, *range(7, 20))
+BROADCAST_LENSES = (68.0, 78.2, 57.8, 48.0)
+
+def broadcast_slot(state):
+    return 1 if 16 <= state <= 19 else 2 if state in (13, 15) else 0 if state == 9 else 3
+
+# Safe side of the nearest loge; corner pull-in starts before the goal line.
+EYE_MAX_X = 5000.0
+EYE_MAX_Z = 5000.0
+CORNER_START_Z = 2800.0
 BROADCAST_TEMPLATE_VA = 0xA881E0
 # v5.2 (Noah 2026-09-08 on disc bq: "still too far away, make it look like tv from a broadcast from the nfl last year"
 # and "it isn't centered, offense at the left, defense in the middle, empty on the right"): the retail TV director's
@@ -68,9 +78,10 @@ BROADCAST_TEMPLATE_VA = 0xA881E0
 # the loge rather than the press box: the same pitch (17.3 degrees, v5.2 17.4), the lens widened from 80 to 68 so
 # the framing at the ball is the same (every sample point within 10 px of v5.2 through the native solver), 15%
 # closer in perspective. The eye now stays in front of the second level and below the corner trim for every ball
-# from the far sideline to 9 m past the centre line toward the camera (the near hash is 2.8 m, the near numbers begin
-# at 11 m), the whole field long, both end zones included; a constant-offset follow still moves it into the stands
-# for plays wider than that (the native eye clamp box a setup callback could set is the complete fix; WIRING.md).
+# from the far sideline to 9 m past the centre line toward the camera. v5.4 added
+# a setup box, but that box precedes smoothing. v6 constrains the actual final
+# eye at the reset/smoothing merge and anchors the filter to it, with an earlier
+# corner pull-in. The four lens families share that boundary. See ASTRA_REPORT.md.
 BROADCAST_VALUES = ((400.0, 0.0, 250.0), 68.0, (4500.0, 1400.0, 200.0))
 OPTION_GLOBAL_VA = 0x00E5FFF0            # DAT_00e5fff0: the Options "Camera" value (= table row)
 OPTION_DEFAULT_SITE_VA = 0x000E3C68      # FUN_000e3b90: `xor edi,edi ; mov dword ptr [0xE5FFF0], edi` (fresh-profile default 0)
@@ -119,6 +130,7 @@ BROADCAST_RETAIL_DESCRIPTOR = bytes.fromhex(
     "000000000000000080034f0000000000000000000000000000000000000000000000f0420000000000000000000000000010a4450040ce44000048430000803fc0400a00000000000000000000000000")
 BROADCAST_RETAIL_ENTRIES = {
     1: bytes.fromhex("030000000085a800"),
+    7: bytes.fromhex("1b0000006084a800"),
     8: bytes.fromhex("00000000b07fa800"),
     9: bytes.fromhex("00000000a080a800"),
     10: bytes.fromhex("000000005080a800"),
@@ -286,6 +298,7 @@ STANDARD_SPECIAL_BYTES = {
 # Complete instructions, not just their changed operands. ESI=1 is pinned
 # at E3B92; EDI remains zero for the adjacent pivot/zoom defaults.
 HOOKS = {
+    "final_eye_clamp": (0x5FC74, bytes.fromhex("d983002ca800")),
     "settings_load_select": (0x16D1D4, bytes.fromhex("e8475cf7ff")),
     "franchise_load_select": (0x16E7B1, bytes.fromhex("e86a46f7ff")),
     "settings_reload_select": (0x16E864, bytes.fromhex("e8b745f7ff")),
@@ -349,7 +362,7 @@ CONTEXT_HASHES = (
 )
 
 
-def code_for(va: int) -> bytes:
+def code_for(va: int, revision: int = VERSION) -> bytes:
     a = _Asm(va)
     # Tail of the common game initializer. Use the native setter so leaving
     # First Person also restores its temporary audio/pivot settings.
@@ -389,21 +402,63 @@ def code_for(va: int) -> bytes:
     a.label("selected"); a.jmp_abs(0x2C6B50)
     backward = a.assemble()
     _require(max(len(forward), len(backward)) <= 48, "camera enum wrapper exceeds its slot")
-    return (body.ljust(32, b"\xcc") + load.ljust(32, b"\xcc")
-            + forward.ljust(48, b"\xcc") + backward.ljust(48, b"\xcc"))
+    prefix = (body.ljust(32, b"\xcc") + load.ljust(32, b"\xcc")
+              + forward.ljust(48, b"\xcc") + backward.ljust(48, b"\xcc"))
+    setup = bytearray()
+    bounds = ((0x3B4, 100.), (0x3D0, 5600.), (0x3C8, -5500.), (0x3D8, 5500.))
+    if revision == 6:
+        bounds = ((0x3B4, 100.), (0x3C0, 2500.), (0x3D0, EYE_MAX_X),
+                  (0x3C4, 1400.), (0x3D4, 1500.), (0x3C8, -EYE_MAX_Z), (0x3D8, EYE_MAX_Z))
+    for field, value in bounds:
+        setup += b"\xc7\x81" + struct.pack("<If", field, value)
+    setup += b"\xc3"
+    if revision == 54:
+        return prefix + bytes(setup).ljust(48, b"\xcc")
+    # Both reset and smoothed paths meet at 5FC74, BEFORE eye-to-target
+    # vector/lens/projection construction. EBX is the camera index * 0x460.
+    a = _Asm(va + 240)
+    a.b("9c 50")
+    a.b("81bb702da800" + struct.pack("<I", va + 160).hex())
+    a.j32("0f85", "done")
+    # SSE1 only (Xbox Pentium III). Preserve both scratch XMM registers.
+    a.b("83ec20 0f110424 0f114c2410")
+    a.b("0f2883f02ba800")
+    constants = va + 464
+    a.b("0f5f05" + struct.pack("<I", constants).hex())
+    a.b("0f5d05" + struct.pack("<I", constants + 16).hex())
+    a.b("0f2983f02ba800")
+    # x <= EYE_MAX_X - max(0, abs(z) - CORNER_START_Z). This continuous corner boundary
+    # pulls inward rather than crossing the corner fascia while following.
+    a.b("8b83f82ba800 25ffffff7f 50 f30f100424 83c404")
+    a.b("f30f5c05" + struct.pack("<I", constants + 32).hex())
+    a.b("0f57c9 f30f5fc1")
+    a.b("f30f100d" + struct.pack("<I", constants + 16).hex())
+    a.b("f30f5cc8 f30f5d8bf02ba800 f30f118bf02ba800")
+    # Anchor the filter position at the constrained eye; discard velocity
+    # only in axes which hit a limit. Untouched axes keep native smoothing.
+    a.b("0f2883f02ba800 0f288b702ca800 0fc2c800")
+    a.b("0f548b802ca800 0f298b802ca800 0f2983702ca800")
+    a.b("0f100424 0f104c2410 83c420")
+    a.label("done"); a.b("58 9d d983002ca800 c3")
+    clamp = a.assemble()
+    _require(len(clamp) <= 224, "final camera clamp exceeds owned slot")
+    constants_blob = struct.pack("<12f", 2500., 1400., -EYE_MAX_Z, -100000.,
+                                EYE_MAX_X, 1500., EYE_MAX_Z, 100000., CORNER_START_Z, 0., 0., 0.)
+    return prefix + bytes(setup).ljust(80, b"\xcc") + clamp.ljust(224, b"\xcc") + constants_blob
 
 
-def allocation(payload: bytes, kind: str = "code") -> dict | None:
+def allocation(payload: bytes, kind: str = "code", revision: int = VERSION) -> dict | None:
     rows = [a for a in space.layout(payload)["allocations"] if a["owner"] == OWNER]
     if not rows:
         return None
     _require(sorted((a["kind"], a["size"], a["align"]) for a in rows)
-             == [("code", CODE_SIZE, 16), ("read_only", READ_ONLY_SIZE, 16)],
+             == [("code", LEGACY54_CODE_SIZE if revision == 54 else CODE_SIZE, 16),
+                 ("read_only", 80 if revision == 54 else READ_ONLY_SIZE, 16)],
              "foreign camera allocation")
     return next(a for a in rows if a["kind"] == kind)
 
 
-def broadcast_descriptor() -> bytes:
+def broadcast_descriptor(code_va: int = 0, slot: int = 0) -> bytes:
     """Native sideline lag/setup, with following type 2, a 2.5 m lead and the v5.3 loge-front mount and lens.
 
     The untouched retail type-0 record has lens 120 and a fixed world eye.
@@ -412,7 +467,13 @@ def broadcast_descriptor() -> bytes:
     """
     record = bytearray(descriptor_bytes(BROADCAST_RETAIL_DESCRIPTOR, BROADCAST_VALUES))
     struct.pack_into("<I", record, 0, 2)
+    struct.pack_into("<f", record, FIELD_FOV, BROADCAST_LENSES[slot])
+    struct.pack_into("<I", record, 0x40, code_va + 160)
     return bytes(record)
+
+
+def broadcast_records(code_va: int, revision: int = VERSION) -> bytes:
+    return b"".join(broadcast_descriptor(code_va, slot) for slot in range(1 if revision == 54 else 4))
 
 
 def _read(payload: bytes, va: int, size: int) -> bytes:
@@ -422,11 +483,12 @@ def _read(payload: bytes, va: int, size: int) -> bytes:
     return value
 
 
-def _sites(payload: bytes, preset: str) -> list[tuple[str, int, bytes, bytes]]:
+def _sites(payload: bytes, preset: str, revision: int = VERSION) -> list[tuple[str, int, bytes, bytes]]:
     _require(preset in PRESETS, f"unknown camera preset {preset!r}")
-    a = allocation(payload)
+    a = allocation(payload, revision=revision)
     va = a["va"] if a else 0  # used only to recognize retail with no allocation
     replacements = {
+        "final_eye_clamp": b"\xe8" + struct.pack("<i", va + 240 - 0x5FC79) + b"\x90",
         "game_entry_select": b"\xe9" + struct.pack("<i", va - 0xA55F0),
         "spectator_session_choice": b"\x90\x90",
         # Keep native 1.02 growth, direction, reset and lag decisions. The
@@ -450,7 +512,7 @@ def _sites(payload: bytes, preset: str) -> list[tuple[str, int, bytes, bytes]]:
     for name in ("settings_load_select", "franchise_load_select", "settings_reload_select"):
         replacements[name] = b"\xe8" + struct.pack("<i", va + 32 - HOOKS[name][0] - 5)
     sites = [(label, _offset(payload, addr), before, replacements[label])
-             for label, (addr, before) in HOOKS.items()]
+             for label, (addr, before) in HOOKS.items() if revision != 54 or label != "final_eye_clamp"]
     for descriptors, originals, values in (
             (STANDARD_DESCRIPTORS, RETAIL_DESCRIPTORS, STANDARD_VALUES),
             (STANDARD_SPECIAL_DESCRIPTORS, STANDARD_SPECIAL_BYTES, STANDARD_SPECIAL_VALUES)):
@@ -462,23 +524,25 @@ def _sites(payload: bytes, preset: str) -> list[tuple[str, int, bytes, bytes]]:
         before = FAR_RETAIL_DESCRIPTORS[state]
         sites.append((f"far_state_{state}", _offset(payload, addr), before,
                       descriptor_bytes(before, PRESETS[preset][state])))
-    ro = allocation(payload, "read_only")
+    ro = allocation(payload, "read_only", revision)
     for state, before in BROADCAST_RETAIL_ENTRIES.items():
+        if revision == 54 and state == 7:
+            continue
         addr = PRESET_TABLE_VA + (BROADCAST_ROW * STATES_PER_ROW + state) * 8
         # Retain native transition flags. Only this row's descriptor pointer
         # changes; other rows still use the original shared television records.
-        after = before[:4] + struct.pack("<I", ro["va"] if ro else 0)
+        after = before[:4] + struct.pack("<I", ro["va"] + (0 if revision == 54 else broadcast_slot(state) * 80) if ro else 0)
         sites.append((f"broadcast_state_{state}", _offset(payload, addr), before, after))
     if a:
-        sites.append(("owned_camera_wrappers", a["raw"], b"\xcc" * CODE_SIZE, code_for(va)))
-        sites.append(("owned_broadcast_descriptor", ro["raw"], bytes(READ_ONLY_SIZE), broadcast_descriptor()))
+        sites.append(("owned_camera_wrappers", a["raw"], b"\xcc" * (LEGACY54_CODE_SIZE if revision == 54 else CODE_SIZE), code_for(va, revision)))
+        sites.append(("owned_broadcast_descriptor", ro["raw"], bytes(80 if revision == 54 else READ_ONLY_SIZE), broadcast_records(va, revision)))
     return sites
 
 
-def status(payload: bytes, preset: str = DEFAULT_PRESET) -> str:
+def _status(payload: bytes, preset: str, revision: int) -> str:
     """Retail, exactly applied, or foreign (including partial/old installs)."""
     try:
-        sites = _sites(payload, preset)  # allocator validates section digests
+        sites = _sites(payload, preset, revision)  # allocator validates section digests
         for va, pin in CONTEXT_PINS:
             _require(_read(payload, va, len(pin)) == pin, f"foreign context at {va:#x}")
         for va, size, digest in CONTEXT_HASHES:
@@ -496,11 +560,19 @@ def status(payload: bytes, preset: str = DEFAULT_PRESET) -> str:
                   for _label, off, old, new in sites if old != new}
         if states == {"retail"}:
             return "retail"
-        if states == {"applied"} and allocation(payload) is not None:
+        if states == {"applied"} and allocation(payload, revision=revision) is not None:
             return "applied"
     except (ValueError, TypeError, KeyError, IndexError, struct.error, UnicodeError, OverflowError, zlib.error):
         pass
     return "foreign"
+
+
+def status(payload: bytes, preset: str = DEFAULT_PRESET) -> str:
+    """Exact retail/v6/v5.4 recognition; historical installs require a rebuild."""
+    result = _status(payload, preset, VERSION)
+    if result == "foreign" and _status(payload, preset, 54) == "applied":
+        return "v5.4"
+    return result
 
 
 def detect_preset(payload: bytes) -> str | None:
@@ -599,7 +671,7 @@ def apply(payload: bytes, preset: str = DEFAULT_PRESET) -> tuple[bytes, Mapping[
     sites = _sites(allocated, preset)
     a = allocation(allocated)
     installed, _ = space.install_code(allocated, OWNER, code_for(a["va"]))
-    installed, _ = space.install_read_only(installed, OWNER, broadcast_descriptor())
+    installed, _ = space.install_read_only(installed, OWNER, broadcast_records(a["va"]))
     buf = bytearray(installed)
     sections = _sections(installed)
     touched = set()

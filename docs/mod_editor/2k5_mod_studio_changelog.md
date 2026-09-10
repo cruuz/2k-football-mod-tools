@@ -1,5 +1,25 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC90, beta 66
+
+- **Broadcast camera v6 follows runs more closely and opens up for passes (maumau78).**
+  The final smoothed eye now stays within an owned boundary that pulls inward at the stadium corners.
+  The 53-model offline survey falls from 18.6% dirty samples in v5.3 and 3.4% in v5.4 to zero in v6,
+  including Chicago, Lambeau and tested kickoff/PAT transitions. Run states zoom in 15%; passes in the
+  air and after the catch widen 15%; the midfield pre-snap frame retains v5.3. Broadcast remains the
+  existing ADVANCED camera choice. Gameplay appearance still needs Noah's witness.
+- **A wide Broadcast shot replaces the low kickoff-transition camera reported by CER.**
+  Row 7's state 7 now uses the owned wide descriptor instead of the retail goal-post/sideline setup.
+  Native state selection, descriptor lookup and final-eye clamping are proved offline. CER's intermittent
+  play-call freeze is a separate, unreproduced report; this change does not claim to resolve that stall.
+  Exactly recognized v5.4 installations require rebuilding from the retail base.
+- **MyPlayer's live stat line appears in the top right during gameplay (Mud).**
+  It shows the player's name, position and the position's key game counters, including half sacks and
+  punting average. Apartment > Settings > MyPlayer stat line offers On/Off and defaults On for enabled
+  MyCareer; the choice survives save/load. The line reads MyPlayer's live match stats, updates after native
+  play events and stays out of menus and replay states. The native font, glyph submissions, player identity
+  and one draw invocation per presented frame are proved; in-game readability remains unwitnessed.
+
 ## v1.0 RC89, beta 65: accelerated clock, MyCareer supersim and positions, the Windows folder-publish fix (2026-09-10)
 
 - **Fixed: "[WinError 5] Access is denied" while importing a number sheet on Windows (Coach Edwards, 2026-09-10).**

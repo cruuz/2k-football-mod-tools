@@ -1,0 +1,4637 @@
+{
+  "schema": "nfl2k5_camera_final_eye_survey/v6",
+  "runtime_witnessed": false,
+  "native_capture_sha256": "88fe45da4e9afd404aea7145584a28454e35cf459ec6fbc59e053a011fcb2b75",
+  "method": "Native final smoothed eye and target; 96x72; det<0; >2% wall-rectangle ground occlusion",
+  "limitations": "53 static model variants; opaque triangles, no GPU/alpha/near plane or game witness",
+  "totals": {
+    "v5.3": {
+      "whole_grid": {
+        "frames": 23426,
+        "dirty_frames": 4348,
+        "dirty_percent": 18.560573721506017
+      },
+      "between_numbers": {
+        "frames": 12402,
+        "dirty_frames": 671,
+        "dirty_percent": 5.410417674568618
+      },
+      "between_hashes": {
+        "frames": 6890,
+        "dirty_frames": 160,
+        "dirty_percent": 2.3222060957910013
+      }
+    },
+    "v5.4": {
+      "whole_grid": {
+        "frames": 23426,
+        "dirty_frames": 788,
+        "dirty_percent": 3.3637838299325535
+      },
+      "between_numbers": {
+        "frames": 12402,
+        "dirty_frames": 361,
+        "dirty_percent": 2.910820835349137
+      },
+      "between_hashes": {
+        "frames": 6890,
+        "dirty_frames": 151,
+        "dirty_percent": 2.1915820029027575
+      }
+    },
+    "v6": {
+      "whole_grid": {
+        "frames": 93704,
+        "dirty_frames": 0,
+        "dirty_percent": 0.0
+      },
+      "between_numbers": {
+        "frames": 49608,
+        "dirty_frames": 0,
+        "dirty_percent": 0.0
+      },
+      "between_hashes": {
+        "frames": 27560,
+        "dirty_frames": 0,
+        "dirty_percent": 0.0
+      }
+    },
+    "v6_transitions": {
+      "whole_grid": {
+        "frames": 165360,
+        "dirty_frames": 0,
+        "dirty_percent": 0.0
+      },
+      "between_numbers": {
+        "frames": 46852,
+        "dirty_frames": 0,
+        "dirty_percent": 0.0
+      },
+      "between_hashes": {
+        "frames": 22048,
+        "dirty_frames": 0,
+        "dirty_percent": 0.0
+      }
+    }
+  },
+  "models": [
+    {
+      "scene": "3136_0006_stadium",
+      "source_sha256": {
+        "3136_0006_stadium.gltf": "2c57b1759320e39c5c78b5996c7f08ae66ac44cf490926a79b46667cbd677471",
+        "3136_0006_stadium.bin": "d52ea22dc9a965bf5c834cb17850cc274064df671c19d42d669791d237ef0e54"
+      },
+      "triangles": 9525,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 76,
+            "dirty_percent": 17.194570135746606
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.5905511811023622,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.1440922190201729,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3137_0004_stadium",
+      "source_sha256": {
+        "3137_0004_stadium.gltf": "8632c13d0a1ac1ac29a77d23bd9d41c0b8c0ae9f84cfecd46296ffb7625a4daf",
+        "3137_0004_stadium.bin": "15d98d7480932d13c6dd09a0ec33d3f2bdc80cec2ce94c6466b6618dac2dd349"
+      },
+      "triangles": 9494,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 56,
+            "dirty_percent": 12.669683257918551
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.5458201666187877,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.2292920607623961,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.2844141069397042,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3138_0005_stadium",
+      "source_sha256": {
+        "3138_0005_stadium.gltf": "f1b2e99c9abef0c6a0ae07e755291d856810d64dfad52657392c8fabdae2f167",
+        "3138_0005_stadium.bin": "07bb11b12bfe0439512b2a96ef533e09acd4cc0581c36465ec42e50cdaedd55f"
+      },
+      "triangles": 9993,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 122,
+            "dirty_percent": 27.601809954751133
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 18,
+            "dirty_percent": 7.6923076923076925
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3139_0005_stadium",
+      "source_sha256": {
+        "3139_0005_stadium.gltf": "33f32c255b6985e25fcc9449655283da7a854eb1860087bb9b97dc6de4f9e582",
+        "3139_0005_stadium.bin": "9883d8e9c5cceecc9430f0819f0a3633c62eeb8e32834792b8aae09b93efc6dc"
+      },
+      "triangles": 8167,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 79,
+            "dirty_percent": 17.873303167420815
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 21,
+            "dirty_percent": 8.974358974358974
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 9,
+            "dirty_percent": 6.923076923076923
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 45,
+            "dirty_percent": 10.180995475113122
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 21,
+            "dirty_percent": 8.974358974358974
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 9,
+            "dirty_percent": 6.923076923076923
+          },
+          "max_occluded_percent": 8.083832335329342,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3140_0006_stadium",
+      "source_sha256": {
+        "3140_0006_stadium.gltf": "6aca570c3e685eb69d204b95ed2e9684d63fc0145fcc1317aa515105cf4c136d",
+        "3140_0006_stadium.bin": "86eec865ec36318cb8ee2e3e34a00ad9aeb264f2d488c0c0784595f8977efa07"
+      },
+      "triangles": 9062,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 60,
+            "dirty_percent": 13.574660633484163
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 4,
+            "dirty_percent": 1.7094017094017093
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.6487025948103793,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3141_0006_stadium",
+      "source_sha256": {
+        "3141_0006_stadium.gltf": "ea7a6c0d80fe27eccc3915236b5d19a50e50795efba43a3b33292aa1d3f0b111",
+        "3141_0006_stadium.bin": "38d83635e301317130288a3ccbb1a1675553b555b37ba96cd7492840bce91ca3"
+      },
+      "triangles": 9563,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 168,
+            "dirty_percent": 38.009049773755656
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 64,
+            "dirty_percent": 27.35042735042735
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 12,
+            "dirty_percent": 9.23076923076923
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 96,
+            "dirty_percent": 21.71945701357466
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 40,
+            "dirty_percent": 17.094017094017094
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 12,
+            "dirty_percent": 9.23076923076923
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3142_0005_stadium",
+      "source_sha256": {
+        "3142_0005_stadium.gltf": "c6d92da55a2b657a8301d78166b7cff33f0e611c172dc55bb6e4e420d8dd71ec",
+        "3142_0005_stadium.bin": "e4153ae626a8c2791937255d1cae11eb963a4d22eca3bb4a9adef82f0488dc8a"
+      },
+      "triangles": 9270,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 138,
+            "dirty_percent": 31.221719457013574
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 38,
+            "dirty_percent": 16.23931623931624
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 14,
+            "dirty_percent": 10.76923076923077
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 62,
+            "dirty_percent": 14.027149321266968
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 30,
+            "dirty_percent": 12.820512820512821
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 14,
+            "dirty_percent": 10.76923076923077
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 1.639344262295082,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3143_0004_stadium",
+      "source_sha256": {
+        "3143_0004_stadium.gltf": "f688528ff293aa0b68de4749fd5ebf16e3357085ff6a2811792137dfdbd3047a",
+        "3143_0004_stadium.bin": "440d5e18f8dc17b2b90367235f42210f3ebde86268c487977a0b034266911d06"
+      },
+      "triangles": 9587,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 156,
+            "dirty_percent": 35.294117647058826
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 52,
+            "dirty_percent": 22.22222222222222
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3144_0006_stadium",
+      "source_sha256": {
+        "3144_0006_stadium.gltf": "400b3da787c309d405bab6681529e0714082a0178c5457c53f73a768c949e8cf",
+        "3144_0006_stadium.bin": "7359e3640bd3b5811f9a31eb2b4a75588e6890ff404f5009a31d04fbeb16ce97"
+      },
+      "triangles": 9545,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 11,
+            "dirty_percent": 2.48868778280543
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3145_0005_stadium",
+      "source_sha256": {
+        "3145_0005_stadium.gltf": "55a54d6d998d389e3177edf446b126066a0f259d78a4ef23b0925d92ccc94047",
+        "3145_0005_stadium.bin": "fdc891a660d086b763d675a3db6e323a71dd8053045087b54b044c77172a8e9f"
+      },
+      "triangles": 10139,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 88,
+            "dirty_percent": 19.90950226244344
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 2,
+            "dirty_percent": 0.8547008547008547
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3146_0006_stadium",
+      "source_sha256": {
+        "3146_0006_stadium.gltf": "d5275f94858111b250e968ff8fb55397b63a99170d45e636d036fcb746fce3db",
+        "3146_0006_stadium.bin": "7028846e87b6db33360fcc168d306501e06a8c48ac1cd61e1d15735ec6fee9f8"
+      },
+      "triangles": 9819,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 166,
+            "dirty_percent": 37.55656108597285
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 62,
+            "dirty_percent": 26.495726495726494
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 10,
+            "dirty_percent": 7.6923076923076925
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 60,
+            "dirty_percent": 13.574660633484163
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 25,
+            "dirty_percent": 10.683760683760683
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 9,
+            "dirty_percent": 6.923076923076923
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 1.0878900658459776,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 1.2816861293078894,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3147_0004_stadium",
+      "source_sha256": {
+        "3147_0004_stadium.gltf": "c54f6aac714014aaff024b96c12cb046656c9a575d73b2c04832bc9a954d2400",
+        "3147_0004_stadium.bin": "132b5db84ed0ce9f042daea41e293ccc5678f881c902ad189571f4266e4151f8"
+      },
+      "triangles": 9567,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 109,
+            "dirty_percent": 24.660633484162897
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 23,
+            "dirty_percent": 9.82905982905983
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 11,
+            "dirty_percent": 8.461538461538462
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 47,
+            "dirty_percent": 10.633484162895927
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 23,
+            "dirty_percent": 9.82905982905983
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 11,
+            "dirty_percent": 8.461538461538462
+          },
+          "max_occluded_percent": 11.726546906187625,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.5981703026038001,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3148_0006_stadium",
+      "source_sha256": {
+        "3148_0006_stadium.gltf": "cd48cebc3a52830572c0805083e6e2c925b2ce714ac229bc01cbef0c3db16a5f",
+        "3148_0006_stadium.bin": "49864a17ae2ac0f613c7dd01dd2c4b7ae3512575e7b3d12ba86eb88b1fe2b0ce"
+      },
+      "triangles": 8272,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 84,
+            "dirty_percent": 19.004524886877828
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 22,
+            "dirty_percent": 9.401709401709402
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 10,
+            "dirty_percent": 7.6923076923076925
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 46,
+            "dirty_percent": 10.407239819004525
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 22,
+            "dirty_percent": 9.401709401709402
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 10,
+            "dirty_percent": 7.6923076923076925
+          },
+          "max_occluded_percent": 12.4750499001996,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3149_0006_stadium",
+      "source_sha256": {
+        "3149_0006_stadium.gltf": "f2289c28684c8acbe677b30533b4d92149cdac7c9fc99494048b271773ea1e0f",
+        "3149_0006_stadium.bin": "c58c7faaa3bd05eec9d5a736fc763263214af2b800c89d954fcbf7f1a86cdebb"
+      },
+      "triangles": 9328,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 84,
+            "dirty_percent": 19.004524886877828
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 12,
+            "dirty_percent": 5.128205128205129
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 4,
+            "dirty_percent": 3.076923076923077
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 14,
+            "dirty_percent": 3.167420814479638
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 6,
+            "dirty_percent": 2.5641025641025643
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 2,
+            "dirty_percent": 1.5384615384615385
+          },
+          "max_occluded_percent": 4.091816367265469,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3150_0006_stadium",
+      "source_sha256": {
+        "3150_0006_stadium.gltf": "6204b146d96d0939cb2978eed2a37eff50f934c7befe1ba2870a363b6330fb22",
+        "3150_0006_stadium.bin": "1fc2d063309e4b8cbc5881963ae6e9dcd1f37e7d8849504d2f5e8839272c0864"
+      },
+      "triangles": 8681,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 26,
+            "dirty_percent": 5.882352941176471
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3151_0004_stadium",
+      "source_sha256": {
+        "3151_0004_stadium.gltf": "04545e34ccaa2ad732652ad9501dad7bb6451e0d46920bacf85772b02c7a2be9",
+        "3151_0004_stadium.bin": "180fc0fe44f8dff18a85589428ce1cbd1e16ac0b6256c60b343d138a9a3df499"
+      },
+      "triangles": 8883,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 80,
+            "dirty_percent": 18.099547511312217
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3152_0006_stadium",
+      "source_sha256": {
+        "3152_0006_stadium.gltf": "5ba5f5e06b6d6d659ce873ff64802eaaa0b14e382b1cfd17444900c9288c266a",
+        "3152_0006_stadium.bin": "fe969148dcd3f7445db6053db8149e9ee9e9b870caac329c87124b7baa4ba405"
+      },
+      "triangles": 9009,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 90,
+            "dirty_percent": 20.361990950226243
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 2,
+            "dirty_percent": 0.8547008547008547
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3153_0004_stadium",
+      "source_sha256": {
+        "3153_0004_stadium.gltf": "6e2bd0380928353f76590fc32c6fe5e54a8507b8c9086ca1a87bfcb5e9caeb15",
+        "3153_0004_stadium.bin": "c00db9584aa37d06eb739bb8727e782ad92fda8e8d83925285095944aecd9045"
+      },
+      "triangles": 10230,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 66,
+            "dirty_percent": 14.93212669683258
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 18,
+            "dirty_percent": 7.6923076923076925
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 6,
+            "dirty_percent": 4.615384615384615
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 42,
+            "dirty_percent": 9.502262443438914
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 18,
+            "dirty_percent": 7.6923076923076925
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 6,
+            "dirty_percent": 4.615384615384615
+          },
+          "max_occluded_percent": 6.487025948103793,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3154_0005_stadium",
+      "source_sha256": {
+        "3154_0005_stadium.gltf": "c18cec7d3baba358e5046a9c0f66f7e564a17192a33a2077219d0b63a40af43b",
+        "3154_0005_stadium.bin": "f2a289b3b0fbecbd1ea10ea2fa2819da8c290daee9fc5e596d871e37678f3fe2"
+      },
+      "triangles": 8843,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 90,
+            "dirty_percent": 20.361990950226243
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 14,
+            "dirty_percent": 5.982905982905983
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 2,
+            "dirty_percent": 1.5384615384615385
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 14,
+            "dirty_percent": 3.167420814479638
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 6,
+            "dirty_percent": 2.5641025641025643
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 2,
+            "dirty_percent": 1.5384615384615385
+          },
+          "max_occluded_percent": 4.191616766467066,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3155_0005_stadium",
+      "source_sha256": {
+        "3155_0005_stadium.gltf": "c3fe694799c41aa9b0fd9bb6aec849c439d80945f3b3b81509d32224e762b7b5",
+        "3155_0005_stadium.bin": "9ae568b656daaeb181affe3507e7e6a667a3496690a63deeec629a6c9e669795"
+      },
+      "triangles": 8823,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 90,
+            "dirty_percent": 20.361990950226243
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 14,
+            "dirty_percent": 5.982905982905983
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 2,
+            "dirty_percent": 1.5384615384615385
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 14,
+            "dirty_percent": 3.167420814479638
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 6,
+            "dirty_percent": 2.5641025641025643
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 2,
+            "dirty_percent": 1.5384615384615385
+          },
+          "max_occluded_percent": 4.191616766467066,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3156_0006_stadium",
+      "source_sha256": {
+        "3156_0006_stadium.gltf": "af1842414abb98b6496bdaeb5838a2f5988a6e778079db368ed9c90b811bdd8b",
+        "3156_0006_stadium.bin": "ca8fcc545ed5efcfa73037e8a3cb53442cbc081259af9f00db7b3f6ce2f49ab0"
+      },
+      "triangles": 9893,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 35,
+            "dirty_percent": 7.918552036199095
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 5,
+            "dirty_percent": 2.1367521367521367
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.3992015968063872,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.06335128286347799,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.014832393948383269,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3157_0006_stadium",
+      "source_sha256": {
+        "3157_0006_stadium.gltf": "395b2356648b6ba0a65077890325b1dbb15a17e183652355e85430d289310d2e",
+        "3157_0006_stadium.bin": "b6934a7950571799725827246f4e8419e495a51b10d6b00ff4d7b00a9dddb75e"
+      },
+      "triangles": 8291,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 120,
+            "dirty_percent": 27.149321266968325
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 16,
+            "dirty_percent": 6.837606837606837
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 1.6467065868263473,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3158_0006_stadium",
+      "source_sha256": {
+        "3158_0006_stadium.gltf": "8e0f00a0401c6865f07e8c661a990e474c8d212a856100bf665172978ae4ff54",
+        "3158_0006_stadium.bin": "712d24b2e3d4464056f02365e566fd221af88d4cbea9a30d53ccffa45d806396"
+      },
+      "triangles": 9157,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 98,
+            "dirty_percent": 22.171945701357465
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 6,
+            "dirty_percent": 2.5641025641025643
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3159_0004_stadium",
+      "source_sha256": {
+        "3159_0004_stadium.gltf": "b7be6d424f8f39abb0f742c7c842ebcc42264963baaa4bac138b514bc11ef432",
+        "3159_0004_stadium.bin": "b35a96070f3731cc006647d093db267d43f441d04c747a756f782f7ffc9ce417"
+      },
+      "triangles": 10814,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 28,
+            "dirty_percent": 6.334841628959276
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3160_0006_stadium",
+      "source_sha256": {
+        "3160_0006_stadium.gltf": "5b29e6ddced6373520a77a572f3d3db2682031d94fe9fd4cfd9a52b378012315",
+        "3160_0006_stadium.bin": "cae333f35e4def3b75a413de268455973b31c00f19eed80e4f864d05354a8c22"
+      },
+      "triangles": 9403,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 30,
+            "dirty_percent": 6.787330316742081
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 13,
+            "dirty_percent": 5.555555555555555
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 7,
+            "dirty_percent": 5.384615384615385
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 25,
+            "dirty_percent": 5.656108597285068
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 13,
+            "dirty_percent": 5.555555555555555
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 7,
+            "dirty_percent": 5.384615384615385
+          },
+          "max_occluded_percent": 20.708582834331338,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3161_0006_stadium",
+      "source_sha256": {
+        "3161_0006_stadium.gltf": "9dd367962fad9a974e1341746b1254f2efaf6d765fa68f41d0b31c10a37b10e8",
+        "3161_0006_stadium.bin": "ef1a7a3780e9397defe0a437085e0d064365a008ffa728e171905fc2ed2281e1"
+      },
+      "triangles": 9260,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 19,
+            "dirty_percent": 4.298642533936651
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.4596380350474002,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3162_0005_stadium",
+      "source_sha256": {
+        "3162_0005_stadium.gltf": "a0bebd56e9ace92317a1d6896c76091551fb66ef47376da57554852212d26326",
+        "3162_0005_stadium.bin": "cb6eb76263f2749ab8fbbb8a68b60e2e05272dba7dff9019826ff3c1c81025d9"
+      },
+      "triangles": 8585,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3163_0006_stadium",
+      "source_sha256": {
+        "3163_0006_stadium.gltf": "1fe0a4ab585c86d375b0519cd88c2fe31c362140feab80dc2f292b5580711fb1",
+        "3163_0006_stadium.bin": "a4f549b91a8174b2cf22e636fd2b49fc7f8995547b6eeed1239dfaf771beb8e2"
+      },
+      "triangles": 10035,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.1073729420186113,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.03863987635239567,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3164_0006_stadium",
+      "source_sha256": {
+        "3164_0006_stadium.gltf": "8387c14eaa6ba14a4099f7d842b6fcd1e80d61afaa1d53cfdbdae9378d31a4a0",
+        "3164_0006_stadium.bin": "b4d97215927140d778cdb81e3116bf47a867740461aa7be0e8ddf6ecad1d7931"
+      },
+      "triangles": 10106,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 104,
+            "dirty_percent": 23.529411764705884
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3165_0006_stadium",
+      "source_sha256": {
+        "3165_0006_stadium.gltf": "8ba90f06ccf92205163807e4b9822d19bc7af28cb28725b094edd716a2ea6f01",
+        "3165_0006_stadium.bin": "aee34c37a6c11b9f8da245926e0904c3cf4ebb9f84c103fa64ce0baf4d4a496c"
+      },
+      "triangles": 9371,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 124,
+            "dirty_percent": 28.054298642533936
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 20,
+            "dirty_percent": 8.547008547008547
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.42771599657827203,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3166_0006_stadium",
+      "source_sha256": {
+        "3166_0006_stadium.gltf": "dee8a46d636c5ef1c20714e7862b3236569c261311992f11d32e43693403f02d",
+        "3166_0006_stadium.bin": "aa243cf17e100ff27366cd06e68bd8557ddcd35898cdab590af4d2092d206524"
+      },
+      "triangles": 9770,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 128,
+            "dirty_percent": 28.959276018099548
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 24,
+            "dirty_percent": 10.256410256410257
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3167_0005_stadium",
+      "source_sha256": {
+        "3167_0005_stadium.gltf": "9933a54d83d1fc8932681ec36b61daedd8a89f38486161e9d3efc78ef87f32b5",
+        "3167_0005_stadium.bin": "03398cabe4e428fdbe8a84973f2a438052c9c27821fb3e0a58fc9ae9561a13a5"
+      },
+      "triangles": 8248,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 70,
+            "dirty_percent": 15.83710407239819
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 2,
+            "dirty_percent": 0.8547008547008547
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.1902587519025875,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3168_0006_stadium",
+      "source_sha256": {
+        "3168_0006_stadium.gltf": "b51250fcbed7dd9360d4425d6cf05fb7775e8f180233611507af2cb9ed49ec6a",
+        "3168_0006_stadium.bin": "073cfa9aa891a22d2aea0d28619e5954a9ee34cccfc0304f40fd305f002bed8a"
+      },
+      "triangles": 11277,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 84,
+            "dirty_percent": 19.004524886877828
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3169_0004_stadium",
+      "source_sha256": {
+        "3169_0004_stadium.gltf": "9b3df03ec9a57f01554c4afc4e63bb582c11e08d944abe01868907cc62d931ed",
+        "3169_0004_stadium.bin": "6ea07404dd010ebdcb43110d14b117791502f562519fdbaa2c9cb4affc921f2d"
+      },
+      "triangles": 8889,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 80,
+            "dirty_percent": 18.099547511312217
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3170_0005_stadium",
+      "source_sha256": {
+        "3170_0005_stadium.gltf": "030262477009956570fdffef91a663d9068e50e0f262cbeb17468c11546ae411",
+        "3170_0005_stadium.bin": "55ab35a14c6e4b0afddca371903f6d1dd97c1f2519c9dbfb7a1488872b040b19"
+      },
+      "triangles": 9854,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 130,
+            "dirty_percent": 29.41176470588235
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 26,
+            "dirty_percent": 11.11111111111111
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 2,
+            "dirty_percent": 1.5384615384615385
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 12,
+            "dirty_percent": 2.7149321266968327
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 4,
+            "dirty_percent": 1.7094017094017093
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3171_0005_stadium",
+      "source_sha256": {
+        "3171_0005_stadium.gltf": "ca1e540e5bd3fafb97b16039811023a5d45a25b6dbaab686a02c0f8ec7afd148",
+        "3171_0005_stadium.bin": "03398cabe4e428fdbe8a84973f2a438052c9c27821fb3e0a58fc9ae9561a13a5"
+      },
+      "triangles": 8248,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 70,
+            "dirty_percent": 15.83710407239819
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 2,
+            "dirty_percent": 0.8547008547008547
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.1902587519025875,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3172_0006_stadium",
+      "source_sha256": {
+        "3172_0006_stadium.gltf": "ae9c098ca9ee2e411460b63746dfb3530a314da336e3b6a890fc89dd79ba3eab",
+        "3172_0006_stadium.bin": "4fa383ce29ab13c431f8387553a6aad6122307fc1c5508162861de2c18f45a74"
+      },
+      "triangles": 8320,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 84,
+            "dirty_percent": 19.004524886877828
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 22,
+            "dirty_percent": 9.401709401709402
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 10,
+            "dirty_percent": 7.6923076923076925
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 46,
+            "dirty_percent": 10.407239819004525
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 22,
+            "dirty_percent": 9.401709401709402
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 10,
+            "dirty_percent": 7.6923076923076925
+          },
+          "max_occluded_percent": 12.4750499001996,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3173_0006_stadium",
+      "source_sha256": {
+        "3173_0006_stadium.gltf": "5e977c85b750fc70c6d9bc1e1374c3a2632d0e7948dbfc58c2fda5b82c8c5ab4",
+        "3173_0006_stadium.bin": "764dcf6f2c9023406556d5dcfb396bb227dba2a4eaef2a022e970953794bfabc"
+      },
+      "triangles": 9525,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 76,
+            "dirty_percent": 17.194570135746606
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.5905511811023622,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.1440922190201729,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3174_0005_stadium",
+      "source_sha256": {
+        "3174_0005_stadium.gltf": "989ee8cbce3defc3149bbee209eec91ee19da2c99a9fd4ccca6269e11f3ac92d",
+        "3174_0005_stadium.bin": "3f0e77ea7666265a94a99fa45d24aec8f62f06acb1c497760017443e2589a7c0"
+      },
+      "triangles": 8987,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 88,
+            "dirty_percent": 19.90950226244344
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 2,
+            "dirty_percent": 0.8547008547008547
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3175_0006_stadium",
+      "source_sha256": {
+        "3175_0006_stadium.gltf": "a20c19c82d63fb4e75840e5b42af2e64e6b02186c106068aab61af879a16093a",
+        "3175_0006_stadium.bin": "8c6e5bcb69382cf6f7edd74136766db6d2d410ca02542cd55bb69586bf230f26"
+      },
+      "triangles": 8671,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 26,
+            "dirty_percent": 5.882352941176471
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3176_0006_stadium",
+      "source_sha256": {
+        "3176_0006_stadium.gltf": "0abef2e9f5fae2dca4c2f7e00eb1e7cb95b0173e692cd48d2e9ec490879ddc6d",
+        "3176_0006_stadium.bin": "2528022fd2238b1d7f20ff4bb1699b0311768efa10fb1c0814b1bf8eae4c18a9"
+      },
+      "triangles": 8252,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 88,
+            "dirty_percent": 19.90950226244344
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 2,
+            "dirty_percent": 0.8547008547008547
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3177_0006_stadium",
+      "source_sha256": {
+        "3177_0006_stadium.gltf": "b6070ee4f03a419f334a75a7e78708853f8872e7bf932f6b6d9892f80238b9e7",
+        "3177_0006_stadium.bin": "eb356fd35f4efa78487ab3eec4c54fd237ac8da2228a9d4a7a40f2af7cf9a377"
+      },
+      "triangles": 9265,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 148,
+            "dirty_percent": 33.484162895927604
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 44,
+            "dirty_percent": 18.803418803418804
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 16,
+            "dirty_percent": 12.307692307692308
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 48,
+            "dirty_percent": 10.85972850678733
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 24,
+            "dirty_percent": 10.256410256410257
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 12,
+            "dirty_percent": 9.23076923076923
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3178_0004_stadium",
+      "source_sha256": {
+        "3178_0004_stadium.gltf": "4327356dab1415ca1d0587f2b12977981a57b4abe62ac2a88f4cd3a47a07112b",
+        "3178_0004_stadium.bin": "1ea55662deda970ef57537bfc755cd9faf65a8e09b2353a61a2ed0dd600d1017"
+      },
+      "triangles": 9181,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 120,
+            "dirty_percent": 27.149321266968325
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 16,
+            "dirty_percent": 6.837606837606837
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 1.8463073852295409,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3179_0004_stadium",
+      "source_sha256": {
+        "3179_0004_stadium.gltf": "93a192791a07e0f76be605eb7e131ff0b217af45a852130c3a26b2d0b00dd87d",
+        "3179_0004_stadium.bin": "719d6d715c83f7ec72847e5c446b157a6aab8001d3734755257d07b8268598b4"
+      },
+      "triangles": 9590,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 109,
+            "dirty_percent": 24.660633484162897
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 23,
+            "dirty_percent": 9.82905982905983
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 11,
+            "dirty_percent": 8.461538461538462
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 47,
+            "dirty_percent": 10.633484162895927
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 23,
+            "dirty_percent": 9.82905982905983
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 11,
+            "dirty_percent": 8.461538461538462
+          },
+          "max_occluded_percent": 11.726546906187625,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.5981703026038001,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3180_0004_stadium",
+      "source_sha256": {
+        "3180_0004_stadium.gltf": "ee5e3b97c90758f39c7f96e2c9a104492ffd80fa0654d35add03eda02ae47f5b",
+        "3180_0004_stadium.bin": "d30af04e5c2ed8b1e96f8ae5f625b9e8364f964ac5f1765702f1685bb18d12a8"
+      },
+      "triangles": 9580,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 109,
+            "dirty_percent": 24.660633484162897
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 23,
+            "dirty_percent": 9.82905982905983
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 11,
+            "dirty_percent": 8.461538461538462
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 47,
+            "dirty_percent": 10.633484162895927
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 23,
+            "dirty_percent": 9.82905982905983
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 11,
+            "dirty_percent": 8.461538461538462
+          },
+          "max_occluded_percent": 11.726546906187625,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.5981703026038001,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3181_0004_stadium",
+      "source_sha256": {
+        "3181_0004_stadium.gltf": "fcc9c3a2fa008fdc00de4af604541c79f480f03691e6e6af816d7bfb1b33df9b",
+        "3181_0004_stadium.bin": "d701cd20e602bb875e75ba079bd7308e1752b587fa11aaf7c5885b0174fc84e0"
+      },
+      "triangles": 8883,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 80,
+            "dirty_percent": 18.099547511312217
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3182_0004_stadium",
+      "source_sha256": {
+        "3182_0004_stadium.gltf": "32bbf57f7646a19d01270c202581b44064153d4d619ef7bbb09b4e5c5e08f56c",
+        "3182_0004_stadium.bin": "201cb21071a0258948170615ec6626da7c27abc66917778d6ce0afe520d6d93f"
+      },
+      "triangles": 9081,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 66,
+            "dirty_percent": 14.93212669683258
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 18,
+            "dirty_percent": 7.6923076923076925
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 6,
+            "dirty_percent": 4.615384615384615
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 38,
+            "dirty_percent": 8.597285067873303
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 16,
+            "dirty_percent": 6.837606837606837
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 6,
+            "dirty_percent": 4.615384615384615
+          },
+          "max_occluded_percent": 6.387225548902196,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3183_0004_stadium",
+      "source_sha256": {
+        "3183_0004_stadium.gltf": "07a1e7643f55369fc05bfc2025291169996b6b668f39f3e93290661db3208c2c",
+        "3183_0004_stadium.bin": "eaad3f71b528fa141c72a0d479a725306092b5b4d4d66e5a1156c77fb1a16960"
+      },
+      "triangles": 10544,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 28,
+            "dirty_percent": 6.334841628959276
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3184_0004_stadium",
+      "source_sha256": {
+        "3184_0004_stadium.gltf": "21af35a1634f4ab6708db1844b600378ddab2361c3c3b33d523799fd37bebfa0",
+        "3184_0004_stadium.bin": "692f8f96998278fab37bba59cf920591eb9ffbf6ac6d5bcf5705ec772a268a64"
+      },
+      "triangles": 9320,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 56,
+            "dirty_percent": 12.669683257918551
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.5458201666187877,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.2292920607623961,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.2844141069397042,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3185_0004_stadium",
+      "source_sha256": {
+        "3185_0004_stadium.gltf": "82f7533008fe68cb94e8e8497794c66852eb9002a6a5ffc8ea964ea556883627",
+        "3185_0004_stadium.bin": "692f8f96998278fab37bba59cf920591eb9ffbf6ac6d5bcf5705ec772a268a64"
+      },
+      "triangles": 9320,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 56,
+            "dirty_percent": 12.669683257918551
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.5458201666187877,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.2292920607623961,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.2844141069397042,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3186_0004_stadium",
+      "source_sha256": {
+        "3186_0004_stadium.gltf": "63969166f838181b2a4af077d135a127234a6e403533a49c3eb452cf4f8a8245",
+        "3186_0004_stadium.bin": "1398f13b277bb83ba5a7493eaba51287bfd5d02d590b8c824d8e8c784f7c2fd7"
+      },
+      "triangles": 9578,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 109,
+            "dirty_percent": 24.660633484162897
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 23,
+            "dirty_percent": 9.82905982905983
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 11,
+            "dirty_percent": 8.461538461538462
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 47,
+            "dirty_percent": 10.633484162895927
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 23,
+            "dirty_percent": 9.82905982905983
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 11,
+            "dirty_percent": 8.461538461538462
+          },
+          "max_occluded_percent": 11.726546906187625,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.5981703026038001,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3187_0004_stadium",
+      "source_sha256": {
+        "3187_0004_stadium.gltf": "32e938787c98c2218026c2d8c564d6145c978afdaa45ca6151d6c5781c09ab9f",
+        "3187_0004_stadium.bin": "41dc48759a9f87d3ab1b7fb7d6f48cca40dee3a2525d015246a1d04331c4df9c"
+      },
+      "triangles": 8883,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 80,
+            "dirty_percent": 18.099547511312217
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    },
+    {
+      "scene": "3188_0004_stadium",
+      "source_sha256": {
+        "3188_0004_stadium.gltf": "6fc09c045a2b784c7e8c88f69460f4ad100d405827a675b69457600873fb6611",
+        "3188_0004_stadium.bin": "1e45e07dc8fd3a0f9c92d71bfd9163a848052a6f9f343c1bd84ff96fece5840a"
+      },
+      "triangles": 9647,
+      "revisions": {
+        "v5.3": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 66,
+            "dirty_percent": 14.93212669683258
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 18,
+            "dirty_percent": 7.6923076923076925
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 6,
+            "dirty_percent": 4.615384615384615
+          },
+          "max_occluded_percent": 100.0,
+          "empty_field_frames": 0
+        },
+        "v5.4": {
+          "whole_grid": {
+            "frames": 442,
+            "dirty_frames": 38,
+            "dirty_percent": 8.597285067873303
+          },
+          "between_numbers": {
+            "frames": 234,
+            "dirty_frames": 16,
+            "dirty_percent": 6.837606837606837
+          },
+          "between_hashes": {
+            "frames": 130,
+            "dirty_frames": 6,
+            "dirty_percent": 4.615384615384615
+          },
+          "max_occluded_percent": 6.387225548902196,
+          "empty_field_frames": 0
+        },
+        "v6": {
+          "whole_grid": {
+            "frames": 1768,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 936,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 520,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        },
+        "v6_transitions": {
+          "whole_grid": {
+            "frames": 3120,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_numbers": {
+            "frames": 884,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "between_hashes": {
+            "frames": 416,
+            "dirty_frames": 0,
+            "dirty_percent": 0.0
+          },
+          "max_occluded_percent": 0.0,
+          "empty_field_frames": 0
+        }
+      }
+    }
+  ]
+}

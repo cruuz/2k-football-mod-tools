@@ -381,3 +381,21 @@ start_sides:
  .byte 0x40,0x04,0x28
 
 .section .note.GNU-stack,"",@progbits
+
+ .text
+.global mode_hud_frame
+mode_hud_frame:
+ /* Displaced target 89F50 is a pinned RET. Preserve the complete machine
+  * state across text formatting, x87 stat returns and native glyph work. */
+ pushfd
+ pushad
+ mov ebp,esp
+ sub esp,528
+ and esp,-16
+ fxsave [esp]
+ call mode_hud
+ fxrstor [esp]
+ mov esp,ebp
+ popad
+ popfd
+ ret

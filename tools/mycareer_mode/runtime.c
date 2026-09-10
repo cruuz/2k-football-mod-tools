@@ -17,6 +17,7 @@ extern const u8 m3_menu_template[],m3_menu_bytes[];
 extern u8 settings_rows[];
 extern const u16 m3_supersim_off_text[],m3_supersim_skip_text[];
 extern const u16 m3_star_off_text[],m3_star_on_text[],m3_settings_note[];
+extern const u16 m3_stat_on_text[],m3_stat_off_text[];
 extern const u16 m3_fpf_off_text[],m3_fpf_on_text[];
 extern const u8 m3_settings_menu[];
 extern u32 primary(void);
@@ -31,20 +32,25 @@ static NI void settings_labels(void) {
     W(settings_rows,4)=(u32)(G(0xE5FFE4)?m3_fpf_on_text:m3_fpf_off_text);
     W(settings_rows,52+4)=(u32)(S(2696)?m3_supersim_off_text:m3_supersim_skip_text);
     W(settings_rows,104+4)=(u32)(S(2700)?m3_star_off_text:m3_star_on_text);
+    W(settings_rows,156+4)=(u32)(S(2712)?m3_stat_off_text:m3_stat_on_text);
 }
 static NI void player_star(u8 *p) { p[0x53]=(p[0x53]&0xfe)|!S(2700); }
 extern const u8 menu_template[];
 extern const u8 text_template[], text_bytes[];
-static NI void init_menus(void) {
-    const u8 *p=menu_template,*q; u8 *dst=state+200; u32 i;
-    for(i=0;i<(u32)text_bytes;i++) ((u16 *)(state+1408))[i]=text_template[i];
-    for(i=0;i<(u32)m3_menu_bytes;i++) m3[256+i]=m3_menu_template[i];
+static NI void unpack_menu(const u8 *p,u8 *dst) {
+    const u8 *q; u32 i;
     while((i=*p++)) {
         q=p;
         if(i&128) { i=(i&127)+3; q=dst-*(const u16 *)p; p+=2; }
         else p+=i;
         while(i--) *dst++=*q++;
     }
+}
+static NI void init_menus(void) {
+    u32 i;
+    for(i=0;i<(u32)text_bytes;i++) ((u16 *)(state+1408))[i]=text_template[i];
+    unpack_menu(menu_template,state+200);
+    unpack_menu(m3_menu_template,m3+256);
     settings_labels();
 }
 static NI void move_bytes(u8 *out,const u8 *in,u32 n) { while(n--) *out++=*in++; }
@@ -63,7 +69,7 @@ u32 FC inline_valid(const u8 *b,u32 arena) {
        W(b,68)>0x7f92b1 || B(b,72)>2 || B(b,73) ||
        (B(b,74)>=32 && B(b,74)!=255) || B(b,75) || W(b,76)>0x7f92b1 ||
        (!B(b,72) && (B(b,74)!=255 || W(b,76))) ||
-       B(b,80)>1 || B(b,81)>1 || B(b,82)>7 || B(b,83)) return 0;
+       B(b,80)>1 || B(b,81)>1 || (B(b,82)&~23U) || B(b,83)) return 0;
     for(i=16;i<32;i++) token|=b[i];
     for(i=44;i<56;i+=4) if(W(b,i)<0x70 || W(b,i)>=arena) return 0;
     for(i=88;i<128;i++) if(b[i]) return 0;
@@ -80,13 +86,13 @@ void FC inline_encode(u8 *b) {
     W(b,60)&=0x0ffff000;
     B(b,80)=S(180); B(b,81)=S(184);
     S(2704)=G(0xE5FFE4)!=0;
-    B(b,82)=S(2704)|(S(2696)<<1)|(S(2700)<<2);
+    B(b,82)=S(2704)|(S(2696)<<1)|(S(2700)<<2)|(S(2712)<<4);
     W(b,12)=fnv(b+16,112);
 }
 void inline_decode(void) {
     u8 *b=STAGED; u32 i;
     zero(state,200);
-    S(2696)=(b[82]>>1)&1; S(2700)=(b[82]>>2)&1; S(2704)=b[82]&1;
+    S(2696)=(b[82]>>1)&1; S(2700)=(b[82]>>2)&1; S(2704)=b[82]&1; S(2712)=(b[82]>>4)&1;
     zero(m3,256); zero(m3+3600,496); init_menus();
     S(4)=0x31303030; S(8)=1280;
     move_bytes(state+40,b+16,16);
@@ -415,6 +421,7 @@ void FC mode_settings_toggle(u32 manager) {
         if(row==0) CALL0(0x147e60); /* Retail Franchise Settings toggle. */
         if(row==1) S(2696)=!S(2696);
         if(row==2 && (p=(u8 *)primary())) { S(2700)=!S(2700); player_star(p); }
+        if(row==3) S(2712)=!S(2712);
         settings_labels();
         /* Native row construction caches each label pointer. Refresh that
          * cache while retaining the selected row; native scrolling resumes. */
@@ -427,7 +434,7 @@ void FC mode_start(u32 manager) {
 }
 static NI void capture(u8 *p) {
     u32 i;
-    zero(state,200); S(2696)=S(2700)=S(2704)=G(0xE5FFE4)=0;
+    zero(state,200); S(2696)=S(2700)=S(2704)=S(2712)=G(0xE5FFE4)=0;
     player_star(p); S(4)=0x31303030; S(8)=1280;
     S(24)=3; S(28)=((u32)p-W(ROOT,4))/84; S(56)=S(2684);
     /* Native RNG supplies a new per-career token. It is data, never identity
@@ -760,4 +767,85 @@ void FC m3_draw_upgrade(u32 manager) {
     args[3]=v<args[2]?m3_cost(v):0; args[4]=S(64);
     ((void (FC *)(u8 *,u32,const u16 *,u32 *))0x49f00)(m3+2700,400,m3_upgrade_format,args);
     text((const u16 *)(m3+2700),0,320,380,0);
+}
+
+/* One invocation at 74790's presentation tail (74879); no inner-tick hook.
+ * player+2C is SEASON history. Live bank 0 uses [match+30], via C96B0 and
+ * CB240's retail per-player getter. Do not display stale season counters.
+ * Settings: state+2712 / save byte82 bit4 = Off; zero = On. Bit3/+2708
+ * remain available to the supersim job. Buffer and native text context are
+ * stack-local; no mutable text is stored in RX. */
+static NI u16 *hud_ascii(u16 *out,const char *s) {
+    while(*s) *out++=(u8)*s++;
+    return out;
+}
+static NI u16 *hud_number(u16 *out,int value) {
+    char digits[12]; u32 n=0,v;
+    if(value<0) { *out++='-'; v=0U-(u32)value; } else v=value;
+    do { digits[n++]='0'+v%10; v/=10; } while(v);
+    while(n) *out++=digits[--n];
+    return out;
+}
+static NI int hud_stat(u8 *p,u32 selector) {
+    return (int)((float (FC *)(u8 *,u32,u32))0xCB240)(p,selector,0);
+}
+void mode_hud(void) {
+    u8 *p,*id; u32 phase=G(0xB616C0),pos,i; u16 line[128],*out=line,*name;
+    const char *format;
+    if(S(2712) || phase<8 || phase>19 || G(0xA83A18)!=3 || G(0xA83A14) ||
+       CALL0(0x83940) || !G(0xE60268) || !inline_active() || S(24)!=3 || !(id=(u8 *)primary())) return;
+    p=(u8 *)S(2564);
+    /* The binder supplies a roster copy, NOT the entity or primary pool.
+     * Bound both retail match pools and recheck immutable identity before
+     * touching live stat pointers. Substitutions need not put MyPlayer on field. */
+    i=(u32)p>=0xB321A0?(u32)p-0xB321A0:(u32)p-0xB30C4C;
+    if(i>=65*84 || i%84 || W(p,4)!=W(id,4) || W(p,16)!=W(id,16) ||
+       W(p,20)!=W(id,20) || ((W(p,24)^W(id,24))&0x0ffff000) || p[53]!=id[53] ||
+       !W(p,48) || !G(W(p,48)) || G(0xB72A60)!=0xC96B0 || !G(0xA90ED8)) return;
+    pos=p[53];
+    /* Full names are bounded by their native 31-character pool contract. A
+     * compact initial + last name keeps a QB's five counters in the corner. */
+    name=(u16 *)W(id,16); if(*name) { *out++=*name; *out++='.'; *out++=' '; }
+    name=(u16 *)W(id,20); for(i=0;i<12 && name[i];i++) *out++=name[i];
+    *out++=' '; name=(u16 *)G(0x4F26D0+4*pos);
+    for(i=0;i<4 && name[i];i++) *out++=name[i];
+    *out++=':'; *out++=' ';
+    /* Control bytes 1..6 introduce one native selector number. Signed yard
+     * fields retain negative values. Sacks use selector47's half-sack units. */
+    if(pos==0) format="CMP/ATT \1/\2  \3 YDS  \4 TD  \5 INT";
+    else if(pos==7 || pos==8) format="\1 CAR  \2 YDS  \3 TD";
+    else if(pos==3 || pos==9) format="\1 REC  \2 YDS  \3 TD";
+    else if(pos==1) format="FG \1/\2  XP \3/\4";
+    else if(pos==2) format="\1 PUNTS  \2 AVG";
+    else if(pos>=12 && pos<=14) format=""; /* No invented OL counting stat. */
+    else format="\1 TKL  \2 SACK  \3 INT";
+    while(*format) {
+        u32 code=(u8)*format++,selector=0; int value;
+        if(code>6) { *out++=code; continue; }
+        if(pos==0) selector=((const u8[]){4,35,76,64,22})[code-1];
+        else if(pos==7 || pos==8) selector=((const u8[]){3,80,63})[code-1];
+        else if(pos==3 || pos==9) selector=((const u8[]){46,79,62})[code-1];
+        else if(pos==1) {
+            if(code<3) {
+                value=0; for(i=0;i<4;i++) value+=hud_stat(p,(code==1?173:169)+i);
+                out=hud_number(out,value); continue;
+            }
+            selector=code==3?88:89;
+        } else if(pos==2) selector=code==1?43:78;
+        else selector=((const u8[]){50,47,23})[code-1];
+        value=hud_stat(p,selector);
+        if(pos==2 && code==2) {
+            int count=hud_stat(p,43); value=count?value*10/count:0;
+            out=hud_number(out,value/10); *out++='.'; *out++='0'+value%10;
+        } else if(pos!=0 && pos!=7 && pos!=8 && pos!=3 && pos!=9 && pos!=1 && pos!=2 && code==2) {
+            out=hud_number(out,value/2); if(value&1) out=hud_ascii(out,".5");
+        } else out=hud_number(out,value);
+    }
+    *out=0;
+    /* 6BC30 builds the same retail text context used by native HUD text:
+     * A90ED8 font4 (12-pixel glyphs), alignment words 3/2, white, z=20.
+     * Native width measurement right-aligns the bounded line at x=620. */
+    i=((u32 (FC *)(u32,const u16 *))0x49410)(G(0xA90ED8),line);
+    ((void (FC *)(const u16 *,u32,float,float,float,float,u32,u32,u32,u32))0x6bc30)
+        (line,0,620-(float)i/2,38,20,240,0,0,G(0xA90ED8),0xffffffff);
 }
