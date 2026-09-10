@@ -480,7 +480,96 @@ def _free_gap(data: bytes, structure: RosterStructure, reserved: list[tuple[int,
     raise PS3RosterConvertError("no free even-aligned pool space for relocated strings")
 
 
-def convert(data: bytes) -> tuple[bytes, dict[str, Any]]:
+def team_appearance(data: bytes, structure: RosterStructure | None = None) -> list[dict]:
+    """Resolve both 14-selector banks, including the 11 known asset selectors.
+
+    USERDATA and raw ROS use the same one-based self-relative graph. Runtime
+    root words for tables 16/17 are not file pointers; _table_spans bounds them
+    from the adjacent config table, as the Xbox appearance reader does.
+    """
+    structure = structure or inspect_structure(data)
+    teams = structure.tables[TEAM_TABLE]
+    configs = structure.tables[CONFIG_TABLE]
+    selectors = structure.tables[SELECTOR_TABLE]
+    palettes = structure.tables[PALETTE_TABLE]
+
+    def resolve(field: int, table: TableSpan) -> int:
+        _require(_stored(data, field) != 0, f"null appearance pointer at {field:#x}")
+        target = _target(data, field)
+        _require(table.start <= target < table.end and (target - table.start) % table.stride == 0,
+                 f"appearance pointer at {field:#x} is outside/aligned incorrectly for table {table.index}")
+        return target
+
+    result = []
+    families = {2: "glove", 3: "helmet", 4: "jersey", 5: "logo", 6: "textlogo",
+                7: "font", 8: "number", 9: "pants", 10: "shoe", 11: "shoulder", 12: "sock"}
+    for team in range(teams.count):
+        config = resolve(teams.start + team * teams.stride + 0xBC, configs)
+        banks = []
+        for bank in range(2):
+            slots = []
+            for slot in range(14):
+                offset = resolve(config + (bank * 14 + slot) * 4, selectors)
+                slots.append({"slot": slot, "family": families.get(slot, "unresolved"),
+                              "offset": offset, "asset_index": data[offset],
+                              "record_hex": data[offset:offset + 8].hex()})
+            palette = resolve(config + 0x70 + bank * 4, palettes)
+            banks.append({"bank": bank, "selectors": slots, "palette_offset": palette,
+                          "palette_sha256": _sha256(data[palette:palette + palettes.stride])})
+        result.append({"team_index": team, "config_offset": config, "banks": banks})
+    return result
+
+
+def _retain_appearance(edits: _Edits, source: bytes, baseline: bytes) -> None:
+    """Copy appearance values through each roster's graph, preserving pointers.
+
+    Conflicting shared destinations are refused before export. No team strings,
+    roster memberships, book assignments or opaque config words are copied.
+    """
+    wanted = team_appearance(baseline)
+    target = team_appearance(source)
+    source_tables, _ = _table_spans(source)
+    base_tables, _ = _table_spans(baseline)
+    writes: dict[int, int] = {}
+
+    def copy(dst: int, src: int, count: int) -> None:
+        for i in range(count):
+            value = baseline[src + i]
+            _require(dst + i not in writes or writes[dst + i] == value,
+                     "shared team appearance destination requires conflicting values")
+            writes[dst + i] = value
+
+    for old, new in zip(wanted, target):
+        for ob, nb in zip(old["banks"], new["banks"]):
+            for oslot, nslot in zip(ob["selectors"], nb["selectors"]):
+                copy(nslot["offset"], oslot["offset"], 8)
+            copy(nb["palette_offset"], ob["palette_offset"], 0x30)
+            oi = (ob["palette_offset"] - base_tables[PALETTE_TABLE].start) // 0x30
+            ni = (nb["palette_offset"] - source_tables[PALETTE_TABLE].start) // 0x30
+            copy(source_tables[PALETTE_FLAG_TABLE].start + ni * 2,
+                 base_tables[PALETTE_FLAG_TABLE].start + oi * 2, 2)
+    for offset, value in sorted(writes.items()):
+        edits.write(offset, bytes((value,)), "appearance retained from Xbox roster")
+
+
+def _appearance_receipt(before: bytes, after: bytes) -> list[dict]:
+    result = []
+    for old, new in zip(team_appearance(before), team_appearance(after)):
+        changes = []
+        for ob, nb in zip(old["banks"], new["banks"]):
+            for a, b in zip(ob["selectors"], nb["selectors"]):
+                changes.append({"bank": ob["bank"], "slot": a["slot"], "family": a["family"],
+                                "before": a["asset_index"], "after": b["asset_index"],
+                                "record_changed": a["record_hex"] != b["record_hex"]})
+        result.append({"team_index": old["team_index"], "selectors": changes,
+                       "selector_changes": sum(x["record_changed"] for x in changes),
+                       "palette_before_sha256": [b["palette_sha256"] for b in old["banks"]],
+                       "palette_after_sha256": [b["palette_sha256"] for b in new["banks"]]})
+    return result
+
+
+def convert(data: bytes, *, apply_team_appearance: bool = True,
+            xbox_appearance: bytes | None = None) -> tuple[bytes, dict[str, Any]]:
     """Convert one PS3 roster payload; returns the Xbox-layout payload and its receipt."""
 
     _require(len(data) == ROSTER_SIZE, f"roster payload is {len(data)} bytes, expected {ROSTER_SIZE}")
@@ -489,6 +578,14 @@ def convert(data: bytes) -> tuple[bytes, dict[str, Any]]:
     platform = detect_platform(data, structure)
     _require(platform != PLATFORM_XBOX360, "this roster already uses the Xbox 360 layout (palette alpha first); nothing to convert")
     _require(platform == PLATFORM_PS3, "cannot tell the roster platform from its palette colours; refusing to guess")
+    _require(type(apply_team_appearance) is bool, "apply_team_appearance must be boolean")
+    _require(apply_team_appearance or xbox_appearance is not None,
+             "Choose an Xbox roster whose appearance should be retained, or apply the PS3 appearance")
+    source_appearance = team_appearance(data, structure)
+    if xbox_appearance is not None:
+        _require(detect_platform(xbox_appearance) == PLATFORM_XBOX360,
+                 "Appearance baseline must be a raw Xbox 360 roster")
+        team_appearance(xbox_appearance)
     undecodable = [t for t, a in structure.allocations.items() if a.text is None and t not in structure.interior]
     _require(not undecodable, f"{len(undecodable)} referenced strings have no UTF-16BE terminator; refusing")
     garbage_outers = sum(1 for t, other in structure.interior.items() if t < other)
@@ -596,7 +693,17 @@ def convert(data: bytes) -> tuple[bytes, dict[str, Any]]:
             edits.write(magic + relative, struct.pack(">I", value), "user book bank runtime word")
     edits.write(TRAILING_BANK_WORD, struct.pack(">I", XBOX_BANK_WORDS[0]), "trailing bank header runtime word")
 
+    if not apply_team_appearance:
+        _retain_appearance(edits, data, xbox_appearance)
     output = bytes(edits.output)
+    expected_appearance = source_appearance if apply_team_appearance else team_appearance(xbox_appearance)
+    actual_appearance = team_appearance(output)
+    for expected, actual in zip(expected_appearance, actual_appearance):
+        for eb, ab in zip(expected["banks"], actual["banks"]):
+            _require([x["record_hex"] for x in eb["selectors"]] == [x["record_hex"] for x in ab["selectors"]],
+                     "team appearance selectors changed during conversion")
+            if not apply_team_appearance:
+                _require(eb["palette_sha256"] == ab["palette_sha256"], "retained palette differs after reparse")
     changed = [i for i in range(len(data)) if data[i] != output[i]]
     allowed = [False] * len(data)
     for (start, end) in edits.spans:
@@ -612,6 +719,8 @@ def convert(data: bytes) -> tuple[bytes, dict[str, Any]]:
         "counts": {
             "players": structure.tables[PLAYER_TABLE].count,
             "teams": structure.tables[TEAM_TABLE].count,
+            "appearance_teams": len(actual_appearance),
+            "appearance_applied_from_ps3": apply_team_appearance,
             "team_memberships": verification["team_memberships"],
             "playbook_labels": verification["playbook_labels"],
             "string_references": len(structure.references),
@@ -636,6 +745,13 @@ def convert(data: bytes) -> tuple[bytes, dict[str, Any]]:
             "bank_runtime_words_rewritten": len(magics) * len(BANK_WORD_OFFSETS) + 1,
             "skipped_tables": list(structure.skipped_tables),
             **receipt_counts,
+        },
+        "team_appearance": {
+            "applied_from_ps3": apply_team_appearance,
+            "baseline_sha256": _sha256(xbox_appearance) if xbox_appearance is not None else None,
+            "teams": _appearance_receipt(xbox_appearance if xbox_appearance is not None else data, output),
+            "same_selector_layout": True, "selectors_reparsed": True,
+            "texture_payloads_imported": False,
         },
         "repointed_by_kind": repointed,
         "canonical_empty_offset": empty,
@@ -761,7 +877,8 @@ def receipt_path_for(output: Path) -> Path:
     return output.with_name(f"{output.name}.ps3-import.json")
 
 
-def write_conversion(source: Path, output: Path, *, member: str | None = None, receipt_path: Path | None = None) -> ConversionReceipt:
+def write_conversion(source: Path, output: Path, *, member: str | None = None, receipt_path: Path | None = None,
+                     apply_team_appearance: bool = True, xbox_appearance: Path | None = None) -> ConversionReceipt:
     """Convert ``source`` (raw or ZIP member) into a new ``output`` plus a JSON receipt."""
 
     source = Path(source)
@@ -771,7 +888,8 @@ def write_conversion(source: Path, output: Path, *, member: str | None = None, r
     if member is None and zipfile.is_zipfile(source):
         member = find_roster_member(source)
     data = read_source(source, member)
-    payload, receipt = convert(data)
+    payload, receipt = convert(data, apply_team_appearance=apply_team_appearance,
+                               xbox_appearance=read_source(xbox_appearance) if xbox_appearance is not None else None)
     receipt["source"]["path"] = str(source)
     receipt["source"]["member"] = member
     receipt["output"]["path"] = str(output)

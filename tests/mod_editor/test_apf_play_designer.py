@@ -281,6 +281,20 @@ class DesignerTests(unittest.TestCase):
         with self.assertRaisesRegex(ValidationError, "populated CPU row"):
             compile_cpu_calls(synthetic_cpu(), 259, self.source, after, [call])
 
+    def test_cloned_cpu_formation_clears_donor_secondary_personnel(self):
+        self.plan["formations"] = [{"mode": "append", "target": 2, "donor": 0, "name": "Callable", "positions": []}]
+        after = compile_design(self.source, self.plan).replacement
+        source = bytearray(synthetic_cpu())
+        at = splb.RECORD_BASE + splb.TRAILER_OFFSET + 4
+        struct.pack_into(">I", source, at, 1 | (1 << 8))
+        source = bytes(source)
+        call = {"outer": 259, "record": 1, "play": 0, "formation": 2, "donor_record": 0}
+        body, receipt = compile_cpu_calls(source, 259, self.source, after, [call])
+        rows = splb.parse_book(body, 259).records
+        self.assertEqual(int.from_bytes(rows[0].trailer[4:], "big"), 257)
+        self.assertEqual(int.from_bytes(rows[1].trailer[4:], "big"), 1)
+        self.assertEqual(receipt["personnel"][0]["word_b_after"], 1)
+
     def test_synthetic_transport_for_both_master_and_cpu_resource_sizes(self):
         self.plan["plays"] = [play_request("append", 4, 0, "Transport", [[1, 1, "distance_ft", 45]])]
         after = compile_design(self.source, self.plan).replacement

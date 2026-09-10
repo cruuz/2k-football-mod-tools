@@ -820,7 +820,8 @@ class TrailerReplace:
     Word A carries the formation index (bits 31..24) and the personnel
     category (bits 23..17); the director resolves a requested personnel row
     through the book's category mask at +0x7E04 and the record's membership
-    bitmask (word B), so a retarget also ORs the category bit into both.
+    bitmask (word B). A formation move replaces word B with the destination
+    category bit and advertises that bit in the book mask.
     The three unproved 3-bit situation fields and the low byte are preserved
     byte-exact.
     """
@@ -1354,6 +1355,38 @@ def _retail_formation_packages(
     }
 
 
+# Derived from the pinned MASTER and all fifteen retail SPLBs. A formation is
+# NOT a function to one primary category: 72, 78 and 120 have two retail choices.
+# Unused formations fall back to MASTER. Counts/hashes can be rederived by
+# tools/apf_b66_gameplay_witness.py; no retail record bytes are embedded here.
+FORMATION_PERSONNEL_CATEGORIES = ((3,), (3,), (6,), (6,), (3,), (1,), (1,), (1,), (1,), (0,), (26,), (26,), (3,), (3,), (6,), (6,), (3,), (1,),
+ (1,), (1,), (1,), (0,), (3,), (3,), (6,), (6,), (3,), (1,), (1,), (1,), (1,), (0,), (3,), (3,), (3,), (6,),
+ (6,), (1,), (1,), (1,), (1,), (0,), (26,), (3,), (3,), (3,), (3,), (1,), (1,), (1,), (1,), (0,), (3,), (3,),
+ (6,), (6,), (3,), (1,), (1,), (1,), (1,), (0,), (2,), (2,), (2,), (2,), (2,), (2,), (5,), (8,), (8,), (5,),
+ (2, 5), (5,), (8,), (5,), (6,), (8,), (2, 5), (8,), (5,), (5,), (3,), (3,), (3,), (0,), (2,), (2,), (5,),
+ (8,), (5,), (5,), (8,), (8,), (5,), (8,), (2,), (2,), (5,), (8,), (5,), (5,), (8,), (8,), (5,), (8,), (2,),
+ (2,), (2,), (3,), (5,), (5,), (9,), (9,), (9,), (7,), (3,), (3,), (3,), (3,), (3, 6), (5,), (2,), (2,), (5,),
+ (8,), (8,), (5,), (8,), (2,), (8,), (2,), (2,), (7,), (3,), (8,), (8,), (8,), (9,), (1,), (1,), (11,), (12,),
+ (13,), (11,), (11,), (10,), (23,), (12,), (13,), (27,), (7,), (1,), (19,), (20,), (15,), (17,), (19,), (14,),
+ (21,), (22,), (16,), (18,))
+
+
+def destination_category(formation_index: int, requested: int) -> int:
+    """Keep a retail destination pairing, otherwise choose its natural package."""
+    _bounded_int(formation_index, "MASTER formation", minimum=0,
+                 maximum=MASTER_FORMATION_INDEX_MAX)
+    choices = FORMATION_PERSONNEL_CATEGORIES[formation_index]
+    return requested if requested in choices else choices[0]
+
+
+def _replacement_category(record: SplbRecord, change: TrailerReplace) -> int:
+    # An explicit package-only edit retains the existing advanced workflow.
+    # Formation moves and newly populated rows never inherit source personnel.
+    if record.populated and record.formation_index == change.formation_index:
+        return change.category_index
+    return destination_category(change.formation_index, change.category_index)
+
+
 def natural_package(
     formation_index: int,
     table: Mapping[int, tuple[tuple[int, int], ...]],
@@ -1683,24 +1716,26 @@ def compile_book(
             RECORD_BASE + trailer.record_index * RECORD_STRIDE + TRAILER_OFFSET
         )
         before_a, before_b = struct.unpack_from(">2I", book.body, trailer_at)
+        category = _replacement_category(record, trailer)
         before_formation = before_a >> 24
         before_category = (before_a >> 17) & 0x7F
         if (
             before_formation == trailer.formation_index
-            and before_category == trailer.category_index
-            and before_b & (1 << trailer.category_index)
+            and before_category == category
+            and before_b & (1 << category)
         ):
             raise ValidationError(
                 f"Record {trailer.record_index} already lines up as MASTER "
                 f"formation {trailer.formation_index} under personnel package "
-                f"{trailer.category_index}; nothing to replace"
+                f"{category}; nothing to replace"
             )
         after_a = (before_a & 0x0001FFFF) | (
             trailer.formation_index << 24
-        ) | (trailer.category_index << 17)
-        after_b = before_b | (1 << trailer.category_index)
+        ) | (category << 17)
+        after_b = (1 << category) if (before_formation != trailer.formation_index
+                    or before_category != category or not record.populated) else before_b | (1 << category)
         struct.pack_into(">2I", replacement, trailer_at, after_a, after_b)
-        category_bits_added |= 1 << trailer.category_index
+        category_bits_added |= 1 << category
         applied.append(
             {
                 "kind": "trailer_replace",
@@ -1709,7 +1744,9 @@ def compile_book(
                 "formation_before": before_formation,
                 "formation_after": trailer.formation_index,
                 "category_before": before_category,
-                "category_after": trailer.category_index,
+                "category_after": category,
+                "category_requested": trailer.category_index,
+                "personnel_normalized": category != trailer.category_index or after_b != before_b,
                 "word_b_before": before_b,
                 "word_b_after": after_b,
             }
@@ -1960,12 +1997,16 @@ def verify_book(
         trailer_at = (
             RECORD_BASE + trailer.record_index * RECORD_STRIDE + TRAILER_OFFSET
         )
+        category = _replacement_category(parsed_before.records[trailer.record_index], trailer)
         before_a, before_b = struct.unpack_from(">2I", before, trailer_at)
         after_a, after_b = struct.unpack_from(">2I", after, trailer_at)
         expected_a = (before_a & 0x0001FFFF) | (
             trailer.formation_index << 24
-        ) | (trailer.category_index << 17)
-        expected_b = before_b | (1 << trailer.category_index)
+        ) | (category << 17)
+        expected_b = ((1 << category) if (before_a >> 24 != trailer.formation_index
+                      or (before_a >> 17) & 0x7F != category
+                      or not parsed_before.records[trailer.record_index].populated)
+                      else before_b | (1 << category))
         if after_a != expected_a or after_b != expected_b:
             raise ValidationError(
                 f"Stock-playbook verification: record {trailer.record_index} "
@@ -1973,7 +2014,7 @@ def verify_book(
             )
     expected_mask = struct.unpack_from(">I", before, BOOK_CATEGORY_MASK_OFFSET)[0]
     for trailer in request.trailers:
-        expected_mask |= 1 << trailer.category_index
+        expected_mask |= 1 << _replacement_category(parsed_before.records[trailer.record_index], trailer)
     after_mask = struct.unpack_from(">I", after, BOOK_CATEGORY_MASK_OFFSET)[0]
     if after_mask != expected_mask:
         raise ValidationError(

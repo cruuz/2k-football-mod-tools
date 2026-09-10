@@ -20,6 +20,31 @@ WORDMARK_WIDTH = 512
 WORDMARK_HEIGHT = 128
 # Must match the Import-fit combo in gui.py (Contain / Cover / Stretch).
 WORDMARK_FIT_MODES = ("contain", "cover", "stretch")
+WORDMARK_REGION_COUNT = 3
+WORDMARK_REGION_ORDERS = (
+    ("R / G / B (original)", (0, 1, 2)), ("R / B / G", (0, 2, 1)),
+    ("G / R / B", (1, 0, 2)), ("G / B / R", (1, 2, 0)),
+    ("B / R / G", (2, 0, 1)), ("B / G / R", (2, 1, 0)),
+)
+WORDMARK_REGION_NOTE = (
+    "Wordmarks have one RGB mask with three region channels. Six independent "
+    "regions need another mask binding and shader support, which this format "
+    "does not expose. Reorder the existing channels below; team palette-slot "
+    "selection is not yet proved. Use the paired crest layers for six-region art."
+)
+
+
+def reorder_region_channels(rgba: bytes, order: tuple[int, int, int]) -> bytes:
+    """Permute existing mask channels; never invent six palette bindings."""
+    if (not isinstance(order, tuple) or len(order) != 3
+            or any(type(i) is not int for i in order) or set(order) != {0, 1, 2}):
+        raise ValidationError("Wordmarks can reorder only their three RGB region channels")
+    if len(rgba) % 4:
+        raise ValidationError("Wordmark RGBA length must be a multiple of four")
+    output = bytearray(rgba)
+    for destination, source in enumerate(order):
+        output[destination::4] = rgba[source::4]
+    return bytes(output)
 
 
 @dataclass(frozen=True)
@@ -32,6 +57,7 @@ class PreparedWordmark:
     fit_description: str
     transparent_source_pixels: int
     background_rgba: tuple[int, int, int, int] = (0, 0, 0, 255)
+    region_order: tuple[int, int, int] = (0, 1, 2)
 
 
 def _flatten_black(rgba: bytes) -> tuple[bytes, int]:
@@ -57,6 +83,7 @@ def prepare_wordmark_png(
     destination: Path,
     *,
     fit_mode: str = "contain",
+    region_order: tuple[int, int, int] = (0, 1, 2),
 ) -> PreparedWordmark:
     """Fit ordinary art, flatten transparency, and publish one exact PNG."""
 
@@ -68,6 +95,7 @@ def prepare_wordmark_png(
         Path(source), WORDMARK_WIDTH, WORDMARK_HEIGHT, mode=fit_mode
     )
     rgba, transparent = _flatten_black(result.rgba)
+    rgba = reorder_region_channels(rgba, region_order)
     payload = encode_rgba_png(WORDMARK_WIDTH, WORDMARK_HEIGHT, rgba)
     output = Path(destination).expanduser()
     if output.is_symlink() or os.path.lexists(output):
@@ -107,6 +135,7 @@ def prepare_wordmark_png(
         fit_action=result.action,
         fit_description=result.describe(),
         transparent_source_pixels=transparent,
+        region_order=region_order,
     )
 
 

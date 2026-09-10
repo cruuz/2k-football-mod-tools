@@ -1258,6 +1258,9 @@ class ApfPlaybookMembershipPanel(QFrame):
 
         if self._book is None:
             raise ValidationError("No playbook is loaded")
+        record = self._book.records[record_index]
+        if not record.populated or record.formation_index != formation_index:
+            category_index = splb.destination_category(formation_index, category_index)
         if self._staged_trailers.get(record_index) == (
             formation_index,
             category_index,
@@ -1292,7 +1295,8 @@ class ApfPlaybookMembershipPanel(QFrame):
             raise ValidationError(
                 f"Pick 1..{splb.ENTRY_CAPACITY} plays for the new formation"
             )
-        self._staged_trailers[record_index] = (formation_index, category_index)
+        self._staged_trailers[record_index] = (
+            formation_index, splb.destination_category(formation_index, category_index))
         staged = dict(self._staged.get(record_index) or {})
         for play in play_indices:
             staged[int(play)] = True

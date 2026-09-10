@@ -60,7 +60,7 @@ from mod_editor.core.apf2k8_splb_writer import (
 )
 from mod_editor.core.errors import ValidationError
 from . import play_design_service as play_design
-from . import coverage_service, scheme_service
+from . import coverage_service, scheme_service, field_material_service
 from mod_editor.core import apf2k8_coverage_tuning as coverage
 
 from .player_ratings import PlayerRatingsError, load_player_rating_schema
@@ -812,6 +812,7 @@ def _payload_name(asset_id: str, kind: str) -> str:
             SPLB_MEMBERSHIP_KIND,
             play_design.PROVIDER_KIND,
             coverage.PROVIDER_KIND,
+            field_material_service.PROVIDER_KIND,
             scheme_service.PROVIDER_KIND,
         }
         else ".xma1-packets"
@@ -975,8 +976,8 @@ def _validate_payload_source(
         decode_custom_team_appearance_payload(data, modification.asset_id)
     elif modification.kind == "uniform_equipment_colors":
         decode_uniform_equipment_color_payload(data, modification.asset_id)
-    elif modification.kind in {coverage.PROVIDER_KIND, scheme_service.PROVIDER_KIND}:
-        service = coverage_service if modification.kind == coverage.PROVIDER_KIND else scheme_service
+    elif modification.kind in {coverage.PROVIDER_KIND, scheme_service.PROVIDER_KIND, field_material_service.PROVIDER_KIND}:
+        service = {coverage.PROVIDER_KIND: coverage_service, scheme_service.PROVIDER_KIND: scheme_service, field_material_service.PROVIDER_KIND: field_material_service}[modification.kind]
         try:
             service.validate_payload(data, modification.asset_id, dict(modification.metadata))
         except ValidationError as exc:
@@ -1719,8 +1720,8 @@ def _validated_metadata(
                 f"Uniform equipment-color project target changed: {asset_id}"
             )
         return value
-    if kind in {coverage.PROVIDER_KIND, scheme_service.PROVIDER_KIND}:
-        service = coverage_service if kind == coverage.PROVIDER_KIND else scheme_service
+    if kind in {coverage.PROVIDER_KIND, scheme_service.PROVIDER_KIND, field_material_service.PROVIDER_KIND}:
+        service = {coverage.PROVIDER_KIND: coverage_service, scheme_service.PROVIDER_KIND: scheme_service, field_material_service.PROVIDER_KIND: field_material_service}[kind]
         try:
             return service.validate_metadata(asset_id, value)
         except ValidationError as exc:
@@ -2313,8 +2314,8 @@ def load_project(
             elif kind == "uniform_equipment_colors":
                 decode_uniform_equipment_color_payload(data, asset_id)
                 extension = ".json"
-            elif kind in {coverage.PROVIDER_KIND, scheme_service.PROVIDER_KIND}:
-                service = coverage_service if kind == coverage.PROVIDER_KIND else scheme_service
+            elif kind in {coverage.PROVIDER_KIND, scheme_service.PROVIDER_KIND, field_material_service.PROVIDER_KIND}:
+                service = {coverage.PROVIDER_KIND: coverage_service, scheme_service.PROVIDER_KIND: scheme_service, field_material_service.PROVIDER_KIND: field_material_service}[kind]
                 try:
                     service.validate_payload(data, asset_id, metadata)
                 except ValidationError as exc:

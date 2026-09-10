@@ -60,8 +60,8 @@ def assert_quads_receipt(test: unittest.TestCase, book, changes, record_index=0)
     after_a, after_b = struct.unpack_from(">2I", compiled.replacement, offset)
     test.assertEqual((after_a >> 17) & 0x7F, 8)
     test.assertEqual(after_a & 0x1FFFF, before_a & 0x1FFFF)
-    test.assertEqual(after_b, before_b | (1 << 8))
-    test.assertTrue(after_b & 1, "The old Jacks membership must remain")
+    test.assertEqual(after_b, 1 << 8)
+    test.assertFalse(after_b & 1, "The old Jacks membership must be removed")
     before_mask = struct.unpack_from(">I", book.body, 0x7E04)[0]
     after_mask = struct.unpack_from(">I", compiled.replacement, 0x7E04)[0]
     test.assertEqual(after_mask, before_mask | (1 << 8))
@@ -236,7 +236,7 @@ class DialogPersonnelTests(unittest.TestCase):
         stage.assert_called_once_with(0, 69, 8)
         assert_quads_receipt(self, self.book, self.stored)
 
-    def test_manual_unpaired_override_survives_accept_and_reopen(self):
+    def test_formation_move_normalizes_unpaired_override_before_staging(self):
         def choose(formation, package, _hint, warning, _dialog):
             formation.setCurrentIndex(formation.findData(69))
             package.setCurrentIndex(package.findData(0))
@@ -246,15 +246,15 @@ class DialogPersonnelTests(unittest.TestCase):
 
         with self.accept_dialog(choose):
             self.panel._change_trailer()
-        self.assertEqual(self.stored, (splb.TrailerReplace(OUTER, 0, 69, 0),))
+        self.assertEqual(self.stored, (splb.TrailerReplace(OUTER, 0, 69, 8),))
 
         def reopen(formation, package, _hint, warning, _dialog):
-            self.assertEqual((formation.currentData(), package.currentData()), (69, 0))
-            self.assertTrue(warning.isVisible())
+            self.assertEqual((formation.currentData(), package.currentData()), (69, 8))
+            self.assertFalse(warning.isVisible())
 
         with self.accept_dialog(reopen):
             self.panel._change_trailer()
-        self.assertEqual(self.stored, (splb.TrailerReplace(OUTER, 0, 69, 0),))
+        self.assertEqual(self.stored, (splb.TrailerReplace(OUTER, 0, 69, 8),))
 
     def test_alternatives_show_counts_accept_override_and_break_ties(self):
         def choose(formation, package, hint, warning, _dialog):
@@ -297,7 +297,7 @@ class DialogPersonnelTests(unittest.TestCase):
 
         with self.accept_dialog(choose):
             self.panel._add_record()
-        self.assertIn(splb.TrailerReplace(OUTER, 2, 133, 8), self.stored)
+        self.assertIn(splb.TrailerReplace(OUTER, 2, 133, 7), self.stored)
         self.assertIn(splb.MembershipChange(OUTER, 2, 0, True), self.stored)
 
     def test_cancel_does_not_stage_the_automatic_change(self):
