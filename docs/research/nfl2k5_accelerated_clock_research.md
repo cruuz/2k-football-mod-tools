@@ -224,3 +224,73 @@ Studio/build/registry edits are integrator-owned and belong in `WIRING.md`.
 | Rendered jump, actual cadence, full 15-minute play counts | UNWITNESSED; Noah must play |
 
 This checkpoint authorizes no claim that an accelerated clock has shipped.
+
+## Research closure before writing the hook (same session)
+
+Executed six standalone retail-native lifecycle tests in
+`tests/mod_editor/test_nfl2k5_accelerated_clock.py`: reset 25/stopped and
+40/running; timer tick/stop/resume; incomplete ground event; both-ready
+transition; accepted human and CPU completion; actual repeat-play path.
+These use `tests/nfl2k5_accelerated_clock_native.py`; presentation and scene
+leaves are explicitly stubbed. Clock, selection and completion code are not
+substituted. This is bounded instruction execution, not a full game witness.
+
+Additional stop-cause proof: the ball-ground handler `0xB7F60` takes the
+ball-state-4 branch at `0xB7FCF`, invokes the incomplete event `0xB6920`, and
+calls `0xA0390` with ECX=1 at `0xB7FEC`. `0xA03D7` forwards that stop request
+to `0xB7230`; `0xB7268 -> 0xB7275 -> 0xAF4F0` stops the real game timer.
+Execution through `0xB727A` proved flags become stopped and time stays 600.
+The native descriptor `+0x9C` is marked by the incomplete event. Separately,
+context `+0x164` is set on possession changes (`0xB92C2`, `0xB9FAE`): it must
+not be mislabeled as a universal incomplete flag. The patch will consume
+the native timer flags, not guess from that descriptor field.
+
+The retail playbook census across resources 307..343 found bit `0x400000`
+only on **Take Knee** (`0x08408400`, 36 copies) and **Spike Ball**
+(`0x08402400`, 36 copies). Native PLAY header family bits `0x1C0` identify
+special teams: Punt `0x0802848A` has family 2; Field Goal `0x0804850C` has
+family 4. Thus game runoff can be excluded for nonzero family or the
+knee/spike bit without misclassifying Hail Mary (`0x08006600`). The selected
+PLAY pointer is `[offense+0xC]+0xC`; its header is at `+4`.
+
+The cave manifest reports **no existing owner overlap** at all four proposed
+sites. The legacy external-reference inventory reports no interior target.
+The complete allocator union can reserve RX 1,024 bytes, RW 4 bytes and RO
+8 bytes for `nfl2k5_accelerated_clock`; no retail cave or `.text` data is used.
+These sizes remain provisional until emitted code and full composition pass.
+All addresses must come from the sealed allocation directory, not a fixed
+union's incidental placement.
+
+## Implemented writer and composition closure
+
+The final implementation occupies 487 instruction bytes in the 1,024-byte RX
+reservation. The four-byte RW word is a per-snap latch. Two adjacent RO words
+encode boolean enabled and minimum seconds (5, 10, 15, 20, 25). The default is
+Off/20. The scorebug reads the same native timer; no HUD mirror is introduced.
+
+The completion wrapper first executes the displaced `0xA1CD0 -> 0xB7200`
+native restart, then reads the actual timer stop/pause flags. It preserves
+registers, flags, XMM0..3 and MXCSR. The x87 stack is untouched. The snap-stop
+wrapper resumes at `0xB6EB6`; period-reset resumes at `0xB6DC5`; no-huddle
+resumes at `0xA24B7`. Only a stop called from the successful native snap,
+returning to `0xB7015`, rearms the latch. Other stops cannot rearm it.
+
+Full-stack verification found an existing, independently owned call inside
+the no-huddle function: kick rules patches `0xA24E7` from `0x9F990` to its
+`0x1AFCDE` audible stub in the `0x1AFCC0..0x1AFDEC` reservation. That stub
+preserves ECX/EDX and returns through the native installer after its PAT spot
+fix. The accelerated-clock verifier accepts this variant only after
+`nfl2k5_kick_rules.status()` verifies the complete kick-rules owner. Only
+that five-byte call is then normalized for the complete function hash.
+Both install orders, a corrupt neighboring cave, a forged call without the
+neighboring owner, and actual native no-huddle through both wrappers are tested.
+
+The general behavior rule is evaluated at offensive completion: if half time
+is already <=120 seconds, nothing accelerates. A call begun above 120 may land
+below 120; the unchanged native warning dispatcher is then reached (the test
+executes 139 ->119 and reaches `0x1588B0`). This is an instruction-level proof,
+not a rendered warning witness. Q1/Q3 runoff clamps at zero and reaches the
+native period-end entry `0xA2970`; period is never changed by this writer.
+
+The final proof inventory, command results, strict limits on inferred gameplay,
+all hook/dependency VAs and Noah's witness list are in `ASTRA_REPORT.md`.

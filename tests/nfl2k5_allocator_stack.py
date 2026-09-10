@@ -34,6 +34,7 @@ from mod_editor.core import nfl2k5_playbook_pair as playbook_pair
 from mod_editor.core import nfl2k5_weekly_prep as weekly_prep
 from mod_editor.core import nfl2k5_cpu_money_downs as money_downs
 from mod_editor.core import nfl2k5_franchise_edit_player as edit_player
+from mod_editor.core import nfl2k5_accelerated_clock as accelerated_clock
 
 
 LEGACY_REQUESTS = (kickoff.REQUESTS + runtime.REQUESTS + momentum.REQUESTS
@@ -46,7 +47,18 @@ LEGACY_REQUESTS = (kickoff.REQUESTS + runtime.REQUESTS + momentum.REQUESTS
 REQUESTS = (camera.REQUESTS + LEGACY_REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS
             + playlist.REQUESTS + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS
             + defensive_try.REQUESTS[2:] + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS + guardian.REQUESTS + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS + autosave.REQUESTS + espn25.REQUESTS + coverage_trail.REQUESTS + deep_zone.REQUESTS + playbook_pair.REQUESTS + weekly_prep.REQUESTS + money_downs.REQUESTS + edit_player.REQUESTS + seven.REQUESTS)
+REQUESTS += accelerated_clock.REQUESTS
 SONGS = [dict(title=f"Tone {i+1:03}", artist="Synthetic", frames=256) for i in range(200)]
+
+
+class AcceleratedClockOn:
+    """Exercise On/20 in composition; the public writer still defaults Off."""
+    OWNER = accelerated_clock.OWNER
+    status = staticmethod(accelerated_clock.status)
+
+    @staticmethod
+    def apply(payload):
+        return accelerated_clock.apply(payload, enabled=True, minimum_seconds=20)
 
 
 class StaticScorebar:
@@ -84,7 +96,7 @@ def owner_calls(*, read_option_diagnostic=False):
               (practice_screen, {}), (abilities, dict(abilities_off_week=7)), (qb_spy, {}), (calendar, {}),
               (read_option, dict(diagnostic=read_option_diagnostic)), (franchise_2026, {}), (senior_bowl, {}), (animation_xbe, {}), (guardian, {}),
               (my_career, {}), (crib_reclaim, {}), (autosave, {}), (coverage_trail, {}), (seven, {}), (deep_zone, {}), (playbook_pair, {}), (weekly_prep, {}), (money_downs, {}), (edit_player, {}),
-              (screen_hooks, {}),
+              (screen_hooks, {}), (AcceleratedClockOn, {}),
               (arena_growth, dict(created_teams_extra=2)))
 
 
@@ -287,6 +299,15 @@ def manifest_for_allocated_union(manifest, retail, allocated):
                 raise AssertionError(f"Contracts editor overlaps a different owner: {name}")
             spans.append(dict(start=hex(va), end=hex(va + len(before)), size=len(before),
                               owner=edit_player.OWNER, basis=f"test-only pinned live edit: {name}"))
+    if accelerated_clock.status(allocated) == "applied":
+        allocation = current[(accelerated_clock.OWNER, "code")]
+        for name, va, before, after in accelerated_clock.sites(allocation["va"]):
+            if image.read(va, len(before)) != before or installed_image.read(va, len(after)) != after:
+                raise AssertionError(f"Accelerated clock live edit pin differs: {name}")
+            if manifest.overlaps(va, va + len(before), exclude_owner=accelerated_clock.OWNER):
+                raise AssertionError(f"Accelerated clock overlaps a different owner: {name}")
+            spans.append(dict(start=hex(va), end=hex(va + len(before)), size=len(before),
+                              owner=accelerated_clock.OWNER, basis=f"test-only pinned live edit: {name}"))
     document = {**manifest.document, "spans": spans, "allocator_layout": layout,
                 "model": "Test-only allocation projection plus pinned kickoff, Auto Save, coverage trail, CPU money downs, Contracts editor and pools data edits"}
     return ReservationManifest(document, XbeImage(retail))

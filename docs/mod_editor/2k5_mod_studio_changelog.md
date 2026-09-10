@@ -41,6 +41,13 @@
   consumers and the scrolling option are proved in bounded execution. Fast forward, headless CPU drives and a
   guaranteed pre-snap return with a full play clock are not proved or shipped. The existing 16 KiB code and 8 KiB
   writable reservations still fit, with 1,051 code bytes spare; no other owner moves. Built by Astra; unwitnessed.
+- **Accelerated clock (Madden style), opt-in.** After a huddled play call, the human or CPU offense's play
+  clock jumps to a chosen 25, 20, 15, 10 or 5 seconds. The game clock loses the same time only when its native
+  running state permits it. Final-two-minute and no-huddle snaps keep their normal clocks; kickoffs and the
+  first snap of a quarter are excluded, and a snap latch prevents repeated runoff after a re-spot. The writer,
+  option read-back and bounded native proofs are complete. Build-time controls require the integration in
+  `WIRING.md`; no in-game settings row is included. Off in every preset, 20-second minimum when enabled.
+  Scorebug rendering, full-game play counts and actual console play remain UNWITNESSED; see `ASTRA_REPORT.md`.
 
 ## v1.0 RC88, the 2K8 beta: no 2K5 changes beyond the version and the release tag (2026-09-09)
 
