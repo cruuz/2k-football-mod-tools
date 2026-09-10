@@ -1,0 +1,590 @@
+{
+  "budget_receipt_reproduced": true,
+  "build_runtime_check": true,
+  "experimental": true,
+  "live_stage": 1,
+  "manifest_proof": {
+    "added_retail_reservations": 112,
+    "changed_sources": [
+      "mod_editor/core/nfl2k5_my_career_mode.py",
+      "mod_editor/core/nfl2k5_my_career_mode_code.py"
+    ],
+    "disc_built": false,
+    "fixed_rw": 8192,
+    "fixed_rx": 16384,
+    "observed_probe": [
+      {
+        "after_sha256": "73085764a5cf3fe5576eeb2cbaed452bed134744caa015f843420a7088164599",
+        "before_sha256": "cbfe3e8f010e47e213059bcb0f7b14eea3d912cdfd411c9f5b7a07a955da4b6d",
+        "changed_bytes": 15735,
+        "file_runs": [
+          [
+            "0x394",
+            "0x3a8"
+          ],
+          [
+            "0x634",
+            "0x648"
+          ],
+          [
+            "0x90c",
+            "0x920"
+          ],
+          [
+            "0x97c",
+            "0x990"
+          ],
+          [
+            "0xdb4",
+            "0xdd4"
+          ],
+          [
+            "0x3857",
+            "0x385b"
+          ],
+          [
+            "0x54d28",
+            "0x54d2c"
+          ],
+          [
+            "0x5e390",
+            "0x5e39a"
+          ],
+          [
+            "0x7970b",
+            "0x79712"
+          ],
+          [
+            "0x91412",
+            "0x91417"
+          ],
+          [
+            "0x92aba",
+            "0x92abf"
+          ],
+          [
+            "0x92e7b",
+            "0x92e80"
+          ],
+          [
+            "0x92eba",
+            "0x92ebf"
+          ],
+          [
+            "0x930fe",
+            "0x93103"
+          ],
+          [
+            "0x9342c",
+            "0x93432"
+          ],
+          [
+            "0x95490",
+            "0x95495"
+          ],
+          [
+            "0x95948",
+            "0x9594c"
+          ],
+          [
+            "0xb3c60",
+            "0xb3c66"
+          ],
+          [
+            "0xb4d50",
+            "0xb4d55"
+          ],
+          [
+            "0xb5d61",
+            "0xb5d65"
+          ],
+          [
+            "0xb5d6a",
+            "0xb5d6e"
+          ],
+          [
+            "0xb5d9f",
+            "0xb5da3"
+          ],
+          [
+            "0xb6d10",
+            "0xb6d16"
+          ],
+          [
+            "0xb74e4",
+            "0xb74e8"
+          ],
+          [
+            "0xb74ed",
+            "0xb74f1"
+          ],
+          [
+            "0xb7a20",
+            "0xb7a26"
+          ],
+          [
+            "0x102dda",
+            "0x102dde"
+          ],
+          [
+            "0x10a8f6",
+            "0x10a8fa"
+          ],
+          [
+            "0x1112a6",
+            "0x1112aa"
+          ],
+          [
+            "0x1430b9",
+            "0x1430be"
+          ],
+          [
+            "0x1431d5",
+            "0x1431da"
+          ],
+          [
+            "0x146246",
+            "0x14624c"
+          ],
+          [
+            "0x146640",
+            "0x146648"
+          ],
+          [
+            "0x146870",
+            "0x146877"
+          ],
+          [
+            "0x15aa27",
+            "0x15aa2b"
+          ],
+          [
+            "0x15abb5",
+            "0x15abbc"
+          ],
+          [
+            "0x15dde1",
+            "0x15dde5"
+          ],
+          [
+            "0x15e50e",
+            "0x15e512"
+          ],
+          [
+            "0x15e5cf",
+            "0x15e5d3"
+          ],
+          [
+            "0x15e6d4",
+            "0x15e6d8"
+          ],
+          [
+            "0x15e7e6",
+            "0x15e7ea"
+          ],
+          [
+            "0x15e816",
+            "0x15e81a"
+          ],
+          [
+            "0x1791de",
+            "0x1791e3"
+          ],
+          [
+            "0x179d9b",
+            "0x179da0"
+          ],
+          [
+            "0x1970e0",
+            "0x1970e8"
+          ],
+          [
+            "0x1977a0",
+            "0x1977a6"
+          ],
+          [
+            "0x197970",
+            "0x197976"
+          ],
+          [
+            "0x1985e0",
+            "0x1985e7"
+          ],
+          [
+            "0x2ae924",
+            "0x2ae928"
+          ],
+          [
+            "0x2b0e84",
+            "0x2b0e88"
+          ],
+          [
+            "0x2b8791",
+            "0x2b8795"
+          ],
+          [
+            "0x333460",
+            "0x333466"
+          ],
+          [
+            "0x336d50",
+            "0x336d54"
+          ],
+          [
+            "0x336d81",
+            "0x336d85"
+          ],
+          [
+            "0x4e6eb4",
+            "0x4e6eb8"
+          ],
+          [
+            "0x4f69b4",
+            "0x4f69b5"
+          ],
+          [
+            "0x4f69b8",
+            "0x4f69bf"
+          ],
+          [
+            "0x4f69dc",
+            "0x4f69e0"
+          ],
+          [
+            "0xb981e0",
+            "0xb98a45"
+          ],
+          [
+            "0xb98a46",
+            "0xb98ddb"
+          ],
+          [
+            "0xb98ddc",
+            "0xb9a987"
+          ],
+          [
+            "0xb9a988",
+            "0xb9a9c2"
+          ],
+          [
+            "0xb9a9c3",
+            "0xb9aaf0"
+          ],
+          [
+            "0xb9aaf1",
+            "0xb9b408"
+          ],
+          [
+            "0xb9b409",
+            "0xb9bdb3"
+          ],
+          [
+            "0xb9c1cf",
+            "0xb9c1e0"
+          ],
+          [
+            "0xbb600c",
+            "0xbb602c"
+          ]
+        ],
+        "function": "mode.apply incremental probe",
+        "owner": "nfl2k5_my_career"
+      }
+    ],
+    "parent_disc_fields_are_historical": true,
+    "parent_manifest_sha256": "a93dc456795fef1edc181c0520d8a27e74a78b94e53533ca7676fa1803ebdbd8",
+    "parent_source_revision": "c9d0194181722997579b9ba1d8f15e3ac1324965",
+    "reason": "A full disc copy would violate the 100 GB free-space floor.",
+    "release_manifest": false
+  },
+  "manifest_sha256": "b44d9bce929b772cb76ba0e85bce390ad0ee707c9038caac9014baecbe956703",
+  "missing_retail": {
+    "command": "NFL2K5_RETAIL_EXTRACTION=.scratch/no-retail-input python3 tests/mod_editor/test_nfl2k5_supersim_live.py",
+    "exit_code": 0,
+    "skipped_classes": 2,
+    "tests": 0
+  },
+  "pair_cases": 299,
+  "pair_install_orders": 598,
+  "registry_wiring_dry_run": true,
+  "repin_pending_changes": 0,
+  "runtime_witnessed": false,
+  "schema": "nfl2k5.supersim-live-validation.v1",
+  "source_sha256": {
+    "mod_editor/core/nfl2k5_my_career.py": "bc31fc9b632989485a1a059eaad03ae035dbf47ab1457f3f123ac71394e3cade",
+    "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+    "mod_editor/core/nfl2k5_my_career_mode.py": "c434372dbc4437f965e2736203adbbd61e26cfdca8260e5683b5203b8e3a366e",
+    "mod_editor/core/nfl2k5_my_career_mode_code.py": "ba2ea6094e51eae5c73084c127a848385e2754c686ad6c195833fec0e59cc1a1",
+    "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+    "mod_editor/core/nfl2k5_my_career_save.py": "3e28ce0062f424f4e0dd73fb8f32cf87bdf7189a953fa690a899f3d73308f7b1",
+    "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+    "mod_editor/core/nfl2k5_supersim.py": "cc33f7b420dff4c9e94acdf1d699177644f4d0337f42312c143d72eaa1b2b661",
+    "mod_editor/core/nfl2k5_xbe_space.py": "52e1c6f87891ddfcbe829b559c0ca8ce846831d3de27b8e77f67544ff2807fba",
+    "tools/mycareer_mode/measure_mode4.py": "45d2940079afa58205868ccfce2e57f33d063e6e214269cebf4f30899e370da9",
+    "tools/mycareer_mode/refresh_gate_manifest.py": "70dd3693673c9cd78d0d5d4a7e755d39a03c433c43caf1bbbe2137da1115ee2f",
+    "tools/mycareer_mode/runtime.S": "2df110f11bf7d4e0d057f534bffa6c5c1cd27f8392a95e15f55f77eca556a905",
+    "tools/mycareer_mode/runtime.c": "34278e24fa8c82773964eaa4c15d30a82e3522a6ee0fc8011b7e70ab474b95f9",
+    "tools/nfl2k5_supersim_live_probe.py": "866d292c94932922af319a930d8c3301a05a8c1a5cfd892b17f36add583a1af1"
+  },
+  "space_proof": {
+    "boundary": "structural mapping and complete raw encoding inventory; candidates are not proved runtime references or freedom; loader/gameplay unwitnessed",
+    "command": "python3 tools/nfl2k5_cave_oracle.py space-proof '<retail default.xbe>' --manifest .scratch/supersim-final-manifest.json --json .scratch/supersim-space-proof.json",
+    "exit_code": 0,
+    "grown_region_raw_encoding_candidates": 857,
+    "legacy_encoded_references": 0,
+    "manifest_overlaps": 0,
+    "retail_mapping_overlaps": 0,
+    "sha256": "0ef4cc8acf7bc0e9ca6013c9999e7519c87a841a88888a72820e303ba0144f30"
+  },
+  "tests": [
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_supersim_live.py",
+      "exit_code": 0,
+      "log": ".scratch/final-live/test_nfl2k5_supersim_live.log",
+      "log_sha256": "eebb9dfee02a7f60e62e862c8a1ea886df134932869b8fda9e49efd33c52c89a",
+      "max_rss_kib": 456136,
+      "result": "passed",
+      "seconds": 105.43,
+      "skipped": 0,
+      "test_source_sha256": "04912e4fae4c0457d24c0f0221ed7b5c7e3ed4c41b232697f5cf5a7a964de54d",
+      "tests": 17,
+      "wall_seconds": 105.772
+    },
+    {
+      "command": "python3 tests/mod_editor/test_xbe_patch_memory_writes.py",
+      "exit_code": 0,
+      "log": ".scratch/final-memory/test_xbe_patch_memory_writes.log",
+      "log_sha256": "ab8be5417e6aed4457c877fc86cd4da25a460f2e5af8cb76de52cf96cfa5453f",
+      "max_rss_kib": 329000,
+      "result": "passed",
+      "seconds": 1278.339,
+      "skipped": 0,
+      "test_source_sha256": "9530127b7afb6577c0bcb8a9881cb3628a4c44872b8d1fcff880d1cec33d5192",
+      "tests": 111,
+      "wall_seconds": 1278.523
+    },
+    {
+      "command": "python3 tests/mod_editor/test_xbe_patch_cave_references.py",
+      "exit_code": 0,
+      "log": ".scratch/final-references/test_xbe_patch_cave_references.log",
+      "log_sha256": "81772b8e00361d0d7a0e2528049aa5db6ad8c5dbc6b2f84f97e50596a665436e",
+      "max_rss_kib": 553788,
+      "result": "passed",
+      "seconds": 1460.838,
+      "skipped": 0,
+      "test_source_sha256": "c78bf70254251329c55c191ef5c4cebb14ac5c613045e9a42149bb23d6f8663b",
+      "tests": 123,
+      "wall_seconds": 1461.334
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_cave_oracle.py",
+      "exit_code": 0,
+      "log": ".scratch/final-composition/test_nfl2k5_cave_oracle.log",
+      "log_sha256": "a95abe77b7e6d8c9268e069b5e1184c09d30369a1209e582eccc3e0741d2a509",
+      "max_rss_kib": 908280,
+      "result": "passed",
+      "seconds": 284.471,
+      "skipped": 0,
+      "test_source_sha256": "3dcd4d3ca172d6b0968afe4094d99e0fd0f41d6d540379863ad96663135bd378",
+      "tests": 29,
+      "wall_seconds": 291.727
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py",
+      "exit_code": 0,
+      "log": ".scratch/final-composition/test_nfl2k5_owner_pairwise_composition.log",
+      "log_sha256": "f4ad246bb6e0c5cde383bf4d30842b911c88202bc6ebc8da7b52e87a9ce9dd2f",
+      "max_rss_kib": 192076,
+      "result": "passed",
+      "seconds": 1898.83,
+      "skipped": 0,
+      "test_source_sha256": "c5a4bed5a8a657ce35c29089d762d5a19fe299716e064f13fbc4df38d124881a",
+      "tests": 310,
+      "wall_seconds": 1899.149
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_mode5.py",
+      "exit_code": 0,
+      "log": ".scratch/final-mycareer/test_nfl2k5_my_career_mode5.log",
+      "log_sha256": "f2cf91d8beeae12584bd4b63f321b4aedf4af821c8f28fe1afa140baddc7daf1",
+      "max_rss_kib": 432040,
+      "result": "passed",
+      "seconds": 281.198,
+      "skipped": 0,
+      "test_source_sha256": "ae4ce27a8e7589ec7bdca1c34ac9384b14696e0dfa1d9e7ba13f25fe88d563c3",
+      "tests": 4,
+      "wall_seconds": 281.49
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_control.py",
+      "exit_code": 0,
+      "log": ".scratch/final-mycareer/test_nfl2k5_my_career_control.log",
+      "log_sha256": "e064275da72e1609f6b7850e8020e49daad929ee40de297888c9db497b92aacf",
+      "max_rss_kib": 221152,
+      "result": "passed",
+      "seconds": 14.49,
+      "skipped": 0,
+      "test_source_sha256": "c9dddb8bebbe17e05830c9574ea8f7ef40d61c63d0ec1f0e53e9895ba281a591",
+      "tests": 2,
+      "wall_seconds": 14.704
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_choice.py",
+      "exit_code": 0,
+      "log": ".scratch/final-mycareer/test_nfl2k5_my_career_cpu_choice.log",
+      "log_sha256": "7b368bc8686dd23269faeba91863bd0dcc104660430b65dd66fdd5a6e0640e70",
+      "max_rss_kib": 146604,
+      "result": "passed",
+      "seconds": 22.42,
+      "skipped": 0,
+      "test_source_sha256": "e649e7c6a037cf255b45414cb02b36dbc7eb3f2c5545ea4c444e1b79dea74758",
+      "tests": 1,
+      "wall_seconds": 22.618
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_frame.py",
+      "exit_code": 0,
+      "log": ".scratch/final-mycareer/test_nfl2k5_my_career_cpu_frame.log",
+      "log_sha256": "1c8906100873e7edf1539fd68948109c9d07068ca87a45149768a97bf722c913",
+      "max_rss_kib": 135580,
+      "result": "passed",
+      "seconds": 57.542,
+      "skipped": 0,
+      "test_source_sha256": "b348da60863c950ab3263cf3ac06e5915b4f15f02b64f34f5029b3a198f31042",
+      "tests": 1,
+      "wall_seconds": 57.76
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_period.py",
+      "exit_code": 0,
+      "log": ".scratch/final-mycareer/test_nfl2k5_my_career_cpu_period.log",
+      "log_sha256": "42b820d6da77c62d357fcfe0c142ff6d13431757a20f77f37ecce7d834da1985",
+      "max_rss_kib": 169548,
+      "result": "passed",
+      "seconds": 42.677,
+      "skipped": 0,
+      "test_source_sha256": "482e1788cdbf00be75838b42ab824a04327cbf776599c246e0a7ccc191ce3a78",
+      "tests": 2,
+      "wall_seconds": 42.962
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_timeout.py",
+      "exit_code": 0,
+      "log": ".scratch/final-mycareer/test_nfl2k5_my_career_cpu_timeout.log",
+      "log_sha256": "dd287316300a6967ec36d84173504052d7f6633fb346e49dd9fdece660887030",
+      "max_rss_kib": 135468,
+      "result": "passed",
+      "seconds": 19.3,
+      "skipped": 0,
+      "test_source_sha256": "e5bdf5f8d5ff538489351f9497eb3be90ae91c9261fdc8ece98f6d918ae99717",
+      "tests": 1,
+      "wall_seconds": 19.54
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_injury.py",
+      "exit_code": 0,
+      "log": ".scratch/final-mycareer/test_nfl2k5_my_career_cpu_injury.log",
+      "log_sha256": "45fa7a1d70f4baea74345e0464415ffce9ca5b0a4563505f1ea1c0a14842f4b4",
+      "max_rss_kib": 133664,
+      "result": "passed",
+      "seconds": 26.527,
+      "skipped": 0,
+      "test_source_sha256": "822512080e1ba3eb0ad21aeeffcd40ee4687d2ae92ea66973d93faeab47f5a45",
+      "tests": 1,
+      "wall_seconds": 26.972
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_turnover.py",
+      "exit_code": 0,
+      "log": ".scratch/final-mycareer/test_nfl2k5_my_career_cpu_turnover.log",
+      "log_sha256": "62172f75df7d03822479b09859636f3b7704570201298dd36d790df9f147ad6c",
+      "max_rss_kib": 172052,
+      "result": "passed",
+      "seconds": 70.815,
+      "skipped": 0,
+      "test_source_sha256": "a8416834d8ab8793e02069be880ad1e8e59e8af2bd4df39634c0870b3fcd0eeb",
+      "tests": 3,
+      "wall_seconds": 71.155
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_m3_budget.py",
+      "exit_code": 0,
+      "log": ".scratch/final-mycareer/test_nfl2k5_my_career_m3_budget.log",
+      "log_sha256": "7623709ff0b673201b11748bdf45f79df56ea2152f8ae63e08635140eb3970c0",
+      "max_rss_kib": 125924,
+      "result": "passed",
+      "seconds": 5.364,
+      "skipped": 0,
+      "test_source_sha256": "c2533e7b57b2444613e0ac62cd39a254cf9d99dc7323f7a193b3e7bfb7893c54",
+      "tests": 5,
+      "wall_seconds": 5.842
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_m3_menus.py",
+      "exit_code": 0,
+      "log": ".scratch/final-mycareer/test_nfl2k5_my_career_m3_menus.log",
+      "log_sha256": "21d0ba27ff4827fb80abdd88e482957b9698ca64c21d6259225cf72e40299982",
+      "max_rss_kib": 159756,
+      "result": "passed",
+      "seconds": 41.369,
+      "skipped": 0,
+      "test_source_sha256": "aff5dc14ae2e6a09381db1f0bd2d400d08c158c364a505430b471c7c341eff41",
+      "tests": 4,
+      "wall_seconds": 41.812
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_mode4.py",
+      "exit_code": 0,
+      "log": ".scratch/final-mycareer/test_nfl2k5_my_career_mode4.log",
+      "log_sha256": "550de55a9aa09802df2e34c027eeb984dca8d59ae4e24f1c5a5938050f92657b",
+      "max_rss_kib": 255128,
+      "result": "passed",
+      "seconds": 463.436,
+      "skipped": 0,
+      "test_source_sha256": "d155ee2acdb36ed682d0e3c8ff906fb714f0619020998e2651309d6b59b88ef2",
+      "tests": 8,
+      "wall_seconds": 463.716
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_inline.py",
+      "exit_code": 0,
+      "log": ".scratch/final-mycareer/test_nfl2k5_my_career_inline.log",
+      "log_sha256": "71b712f03fa03444fb45df82d8597dcf28ec25d2e40289470720252f025c3148",
+      "max_rss_kib": 295404,
+      "result": "passed",
+      "seconds": 12.633,
+      "skipped": 0,
+      "test_source_sha256": "f3f10d401c35c8df78c75cea7d828e6cff4c397ebd7bfb0d89447adf5e630a58",
+      "tests": 8,
+      "wall_seconds": 12.844
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_frontend.py",
+      "exit_code": 0,
+      "log": ".scratch/final-mycareer/test_nfl2k5_my_career_frontend.log",
+      "log_sha256": "153896cecc254d02902223747f773f705a82173eb6cac683dfd23a4c32f258fd",
+      "max_rss_kib": 229308,
+      "result": "passed",
+      "seconds": 57.183,
+      "skipped": 0,
+      "test_source_sha256": "7f36254a7958f2f78af59fda46f3ffefde0e8fe2ada2db9952a73adfd8663d8f",
+      "tests": 7,
+      "wall_seconds": 57.404
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_supersim.py",
+      "exit_code": 0,
+      "log": ".scratch/final-mycareer/test_nfl2k5_supersim.log",
+      "log_sha256": "02709c7ceebeaba1632fe5af370d6e2f05a713a077ef367e8cd7ac829214a5b9",
+      "max_rss_kib": 264940,
+      "result": "passed",
+      "seconds": 8.772,
+      "skipped": 0,
+      "test_source_sha256": "44d306b8982eb48271ebcbe6cdc66cfdc1d91cee08f2f8f80aa853530ddbbf8c",
+      "tests": 12,
+      "wall_seconds": 8.988
+    }
+  ],
+  "total_tests": 649,
+  "updates_per_presented_frame": 1
+}

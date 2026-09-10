@@ -17947,6 +17947,7 @@ for evidence in (
     "tests/mod_editor/test_nfl2k5_supersim_live.py",
     "tools/mycareer_mode/supersim_live_receipt.json",
     "tools/mycareer_mode/supersim_budget.json",
+    "tools/mycareer_mode/supersim_validation.json",
 ):
     if evidence not in row["evidence"]:
         row["evidence"].append(evidence)
@@ -18040,6 +18041,7 @@ tools/nfl2k5_supersim_live_probe.py
 tools/mycareer_mode/supersim_live_receipt.json
 tools/mycareer_mode/supersim_budget.json
 tools/mycareer_mode/supersim_capacity.json
+tools/mycareer_mode/supersim_validation.json
 ```
 
 Run both XBE gates, cave oracle and pairwise matrix again on the integrated

@@ -58,6 +58,8 @@ def frame_probe(payload):
         m = ProbeMachine(payload)
         phase_writes = Counter()
         def observe(_uc, _access, _address, _size, _value, _data):
+            # Tags follow the latest phase entry. Dispatcher stack stores
+            # between phases retain that tag; this is not a purity analysis.
             phase_writes[m.phase] += 1
         handle = m.uc.hook_add(uni.UC_HOOK_MEM_WRITE, observe)
         start = time.perf_counter()

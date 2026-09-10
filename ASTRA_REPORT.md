@@ -66,7 +66,9 @@ screen callbacks which also call that update, not interchangeable frame loops.
 
 The committed `tools/nfl2k5_supersim_live_probe.py` emits span hashes and per-phase
 counts in `tools/mycareer_mode/supersim_live_receipt.json`. The write counts include
-stack and unchanged writes, not only changed football state. A phase with no
+stack and unchanged writes, not only changed football state. Tags follow the
+latest entered phase, so dispatcher stack stores between phases retain that
+tag; these are not exact function-body write totals. A phase with no
 substituted leaf on this branch is not proved free of hardware/time calls on
 every other play branch. The fixture retains controlled RNG and attribute/input
 leaves and synthetic looping clips/skeletons. It does not prove a drive.
@@ -171,8 +173,10 @@ The native selected row survives, and normal drawing re-establishes the
 scrolling viewport. Old rows keep indices 0..6.
 
 Final `supersim_budget.json`: 10954 machine-code bytes, 15316 content bytes,
-17-byte seal, **1051 RX bytes spare**, 16384 RX / 8192 RW reserved. No request,
-other owner address, allocator region or file-size change. The candidate
+17-byte seal, **1051 RX bytes spare**, 16384 RX / 8192 RW reserved. Relative to
+the starting M3 owner, no request, other owner address, allocator region or
+allocated file-size change. M3 menu data uses 1424 of its 1900-byte workspace.
+The candidate
 receipt `supersim_capacity.json` is capacity-only, never-installed/executed;
 the old historical budgets remain intact. `measure_mode4.py` now understands
 the already-expanded current owner instead of insisting the old candidate
@@ -240,9 +244,8 @@ the abstract simulator's EC390/EC570 driver cannot itself establish live resume.
 
 ## Validation
 
-Final verification results and per-phase evidence are recorded below after
-the final build's gates complete. Early pre-refresh runs are superseded and
-are not counted as final-source gate results.
+Final verification results and per-phase evidence are recorded below. Early
+pre-refresh runs are superseded and are not counted as final-source gate results.
 
 ## Per-phase bounded inner evidence
 
@@ -295,3 +298,83 @@ All four watched-state hashes: `e4298527c86644aa369529a5e9add28b6b7833aeaa3666ba
 This equality covers the selected player fields, not every live global or a
 completed game outcome. The inner fixture substitutes random draws; the
 separate outer-prefix test runs the native match PRNG.
+
+## Final verification results
+
+**649 tests passed in 19 standalone suites, zero skips** with the private
+retail evidence available. The composition suite includes **299 pairs in
+598 installation orders**, plus 11 guard/refusal tests. No emulator was run.
+Machine-readable commands, timings, source hashes and log hashes are in
+`tools/mycareer_mode/supersim_validation.json`.
+
+All commands below ran with `QT_QPA_PLATFORM=offscreen`,
+`PYTHONHASHSEED=0`, and
+`NFL2K5_CAVE_MANIFEST=$PWD/.scratch/supersim-final-manifest.json`. The
+manifest is the conservative incremental development proof described in
+`WIRING.md`, **not a regenerated release manifest**. Every unchanged
+parent pin is checked; Claude must regenerate the protected release
+manifest after integration.
+
+| Exact standalone command | Tests | Seconds | Output |
+| --- | ---: | ---: | --- |
+| `python3 tests/mod_editor/test_nfl2k5_supersim_live.py` | 17 | 105.43 | OK |
+| `python3 tests/mod_editor/test_xbe_patch_memory_writes.py` | 111 | 1278.339 | OK |
+| `python3 tests/mod_editor/test_xbe_patch_cave_references.py` | 123 | 1460.838 | OK |
+| `python3 tests/mod_editor/test_nfl2k5_cave_oracle.py` | 29 | 284.471 | OK |
+| `python3 tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py` | 310 | 1898.83 | OK |
+| `python3 tests/mod_editor/test_nfl2k5_my_career_mode5.py` | 4 | 281.198 | OK |
+| `python3 tests/mod_editor/test_nfl2k5_my_career_control.py` | 2 | 14.49 | OK |
+| `python3 tests/mod_editor/test_nfl2k5_my_career_cpu_choice.py` | 1 | 22.42 | OK |
+| `python3 tests/mod_editor/test_nfl2k5_my_career_cpu_frame.py` | 1 | 57.542 | OK |
+| `python3 tests/mod_editor/test_nfl2k5_my_career_cpu_period.py` | 2 | 42.677 | OK |
+| `python3 tests/mod_editor/test_nfl2k5_my_career_cpu_timeout.py` | 1 | 19.3 | OK |
+| `python3 tests/mod_editor/test_nfl2k5_my_career_cpu_injury.py` | 1 | 26.527 | OK |
+| `python3 tests/mod_editor/test_nfl2k5_my_career_cpu_turnover.py` | 3 | 70.815 | OK |
+| `python3 tests/mod_editor/test_nfl2k5_my_career_m3_budget.py` | 5 | 5.364 | OK |
+| `python3 tests/mod_editor/test_nfl2k5_my_career_m3_menus.py` | 4 | 41.369 | OK |
+| `python3 tests/mod_editor/test_nfl2k5_my_career_mode4.py` | 8 | 463.436 | OK |
+| `python3 tests/mod_editor/test_nfl2k5_my_career_inline.py` | 8 | 12.633 | OK |
+| `python3 tests/mod_editor/test_nfl2k5_my_career_frontend.py` | 7 | 57.183 | OK |
+| `python3 tests/mod_editor/test_nfl2k5_supersim.py` | 12 | 8.772 | OK |
+
+Peak observed per-process RSS: **908,280 KiB**, below 2 GiB.
+
+Other checks:
+
+```text
+python3 tools/mycareer_mode/build_runtime.py --check
+MyCareer mode runtime verified
+
+python3 tools/mycareer_mode/measure_m3.py --output .scratch/final-budget-check.json
+Receipt equals committed supersim_budget.json; 1,051 RX bytes spare.
+
+python3 tools/mycareer_mode/measure_mode4.py --output tools/mycareer_mode/supersim_capacity.json
+Exit 0; incomplete uninstalled candidate fits the current reservation.
+
+python3 tools/nfl2k5_supersim_live_probe.py --output tools/mycareer_mode/supersim_live_receipt.json
+Recorded bounded 1/2/4/8 grouping evidence; shipped speed remains 1x.
+
+python3 packaging/repin.py --apply
+Updated the existing mode.py and mode_code.py pins.
+python3 packaging/repin.py
+would apply 0 pin update(s)
+
+NFL2K5_RETAIL_EXTRACTION=.scratch/no-retail-input python3 tests/mod_editor/test_nfl2k5_supersim_live.py
+Ran 0 tests; OK (skipped=2), both classes identify absent private USA XBE.
+
+git diff --check
+Exit 0.
+```
+
+The read-only cave-oracle `space-proof` CLI also exited 0: no retail mapping
+or manifest overlap and zero raw encodings into legacy grown pages. It retained
+857 raw encoding candidates in the newer regions; those are an inventory, not
+857 proved reachable references or a claim of unrestricted cave freedom. The
+allocator reservations remain unchanged. The registry amendment from WIRING
+was executed twice against a scratch copy: exactly one capability changed,
+idempotently, retaining opt-in defaults and `runtime.status = not-tested`.
+
+Early gate runs were interrupted after the option-label cache fix and replaced
+by the final-source runs above. No production source changed during the final
+suites. No protected file, retail image, external worktree or release output was
+written. Branch commits are local only; no push.
