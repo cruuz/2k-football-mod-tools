@@ -1,5 +1,17 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC89, beta 65: accelerated clock, MyCareer supersim and positions, the Windows folder-publish fix (2026-09-10)
+
+- **Fixed: "[WinError 5] Access is denied" while importing a number sheet on Windows (Coach Edwards, 2026-09-10).**
+  The digit-sheet import exports a private Team Kit into its own temporary folder and publishes it with one
+  `os.rename`. Windows refuses to rename a folder while another process holds a file inside it open, which is exactly
+  what real-time antivirus and the search indexer do right after 39 fresh PNGs are written, so on a work laptop the
+  import died at the publish step ("Your original game disc was not changed" was true). The publish now retries the
+  no-clobber rename over about six seconds of backoff on the two transient Windows refusals and, when the caller
+  allows a non-atomic publish, falls back to reserving the destination with an exclusive `mkdir` and copying the
+  staged tree into it. An existing destination is still refused at once, nothing is ever overwritten, and the
+  Windows branch is exercised on every CI platform by `tests/mod_editor/test_windows_folder_publish_retry.py`.
+
 ## v1.0 RC88, the 2K8 beta: no 2K5 changes beyond the version and the release tag (2026-09-09)
 
 - Beta 64 is the first All-Pro Football 2K8 beta (APF 2K8 Mod Studio 0.1.0-alpha.85, see
