@@ -201,6 +201,12 @@ def _resolved(source: ApfSource, outer_index: int, inner_index: int) -> object:
 
 class RawSpanOverlayBuildTests(unittest.TestCase):
     def setUp(self) -> None:
+        # The miniature audio archive has no ROST; production never skips its
+        # final identity reparse. See the integrated Build failure-path test.
+        identity = patch("mod_editor.apf_studio.build.disc_book_identity_report",
+                         return_value={"synthetic_audio_fixture": True})
+        identity.start()
+        self.addCleanup(identity.stop)
         # Composition fixtures use a synthetic archive, so the real complete
         # retail-domain scan is covered by dedicated audio safety tests.
         self.audio_gate = patch.object(

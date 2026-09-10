@@ -9,15 +9,16 @@ PNG alone.  It proves, at two levels:
 * Volume level -- a whole-volume byte diff: every differing byte lies inside the
   one target outer entry; the rest of the ~1.1 GB volume is byte-identical, and
   the retail source is never modified (hashed before and after).
-* Entry level -- re-parsing the output entry: the descriptor pad, the packed mip
-  tail, every sibling/other inner part, and the IFF name footer are byte-exact;
-  the target texture's base level is the only decoded part that changed; and the
+* Entry level -- re-parsing the output entry: the descriptor pad, inactive mip padding,
+  every sibling/other inner part, and the IFF name footer are byte-exact;
+  endzone mips are decoded and checked against the recorded effective input; and the
   changed 4x4 blocks (1x1 texels for 8_8_8_8) are a subset of exactly those
   blocks where the supplied PNG differs from the retail image -- so the output
   reflects the PNG edit and nothing else.
 
 The base-mip decode uses the public ``apf_inner`` decoder; the pinned per-slot
 facts come from ``apf_field_art_patch._CONTRACTS`` (data, not transport).
+Changed endzones require the writer receipt to validate their quality step.
 """
 
 from __future__ import annotations
@@ -43,6 +44,9 @@ from PIL import Image, UnidentifiedImageError  # noqa: E402
 import apf_inner  # noqa: E402
 import apf_outer  # noqa: E402
 from apf_field_art_patch import FieldArtContract, _CONTRACTS  # noqa: E402
+import apf_xenos_bc1_mip_layout as endzone_mips  # noqa: E402
+import apf_xenos_dxt5a as dxt5a  # noqa: E402
+import apf_pants_color_transport as bc1  # noqa: E402
 
 
 SCHEMA = "apf_field_art_verify/v1"
@@ -54,6 +58,66 @@ _STREAM_CHUNK = 8 * 1024 * 1024
 
 class VerifyError(ValueError):
     """Raised when a copied field-art patch violates an invariant."""
+
+
+def decode_base(metadata: dict[str, object], base: bytes) -> tuple[int, int, bytes]:
+    if metadata["format"] != 59:
+        return apf_inner.decode_txtr_base_rgba(metadata, base)
+    require(tuple(metadata["swizzle_components"]) == (0, 0, 0, 5), "unexpected DXT5A swizzle")
+    width, height = int(metadata["width"]), int(metadata["height"])
+    linear = dxt5a.extract_linear_general(base, width, height, int(metadata["pitch_pixels"]),
+                                         endian_mode=int(metadata["endianness"]))
+    values = dxt5a.decode_linear_alpha_general(linear, width, height)
+    return width, height, Image.frombytes("L", (width, height), values).convert("RGBA").tobytes()
+
+
+def verify_endzone_mips(contract: FieldArtContract, metadata: dict[str, object],
+                        source: bytes, output: bytes, requested: bytes,
+                        factor: int, receipts: list[dict[str, object]], *, simplify: bool = False) -> None:
+    """Independently check reparsed mip bytes, padding, pixels and receipt hashes.
+
+    Uses decoders and address transport only; never calls a writer/encoder.
+    Lossy block error is measured against the declared effective input.
+    """
+    require(type(factor) is int and factor in (1, 2, 4), "invalid endzone quality reduction")
+    require(len(source) == len(output) == contract.base_len + contract.mip_len,
+            "endzone allocation changed")
+    locations = endzone_mips.derive_layout(metadata)
+    require(len(receipts) == len(locations), "endzone mip receipt count changed")
+    image = Image.frombytes("RGBA", (contract.width, contract.height), requested)
+    require(type(simplify) is bool, "invalid endzone palette reduction")
+    if simplify:
+        channels = image.split()
+        table = [0 if value < 128 else 255 for value in range(256)]
+        image = Image.merge("RGBA", tuple(c.point(table) for c in channels[:3]) + (channels[3],))
+    if factor != 1:
+        image = image.resize((contract.width // factor, contract.height // factor), Image.Resampling.NEAREST)
+        image = image.resize((contract.width, contract.height), Image.Resampling.NEAREST)
+    source_padding, output_padding = source, output
+    for loc, receipt in zip(locations, receipts):
+        before = endzone_mips.extract_linear_bc1(source, loc)
+        after = endzone_mips.extract_linear_bc1(output, loc)
+        if contract.codec == "dxt5a":
+            scalar = dxt5a.decode_linear_alpha_general(after, loc.width, loc.height)
+            decoded = Image.frombytes("L", (loc.width, loc.height), scalar).convert("RGBA").tobytes()
+        else:
+            decoded = bc1.decode_linear_bc1(after, loc)
+        wanted = image.resize((loc.width, loc.height), Image.Resampling.NEAREST).tobytes()
+        require(all(receipt.get(key) == value for key, value in loc.manifest().items()),
+                "endzone mip address receipt changed")
+        require(receipt.get("linear_sha256") == sha256(after), "endzone mip storage hash changed")
+        require(receipt.get("wanted_rgba_sha256") == sha256(wanted), "endzone mip input hash changed")
+        require(receipt.get("decoded_rgba_sha256") == sha256(decoded), "endzone mip decoded hash changed")
+        errors = [abs(a - b) for a, b in zip(wanted, decoded)]
+        metrics = receipt.get("decode_back_metrics", {})
+        require(metrics.get("maximum_absolute_error") == max(errors, default=0)
+                and metrics.get("different_components") == sum(e != 0 for e in errors)
+                and metrics.get("mean_absolute_error") == sum(errors) / len(errors),
+                "endzone mip codec error receipt changed")
+        blank = bytes(len(before))
+        source_padding = endzone_mips.insert_linear_bc1(source_padding, loc, blank)
+        output_padding = endzone_mips.insert_linear_bc1(output_padding, loc, blank)
+    require(source_padding == output_padding, "inactive endzone mip padding changed")
 
 
 def require(value: bool, message: str) -> None:
@@ -327,7 +391,9 @@ def verify(
     # check below); for single-part textures it lives inside the preserved head.
     _require_descriptor(contract, output_state["metadata"])
     require(source_state["head"] == output_state["head"], "descriptor pad changed")
-    require(source_state["mip"] == output_state["mip"], "packed mip tail changed")
+    is_endzone = contract.kind == "ENDZONE_TEXTURE"
+    if not is_endzone:
+        require(source_state["mip"] == output_state["mip"], "packed mip tail changed")
     require(source_state["footer"] == output_state["footer"], "IFF name footer changed")
     if contract.part_layout == "dram_vram":
         require(
@@ -356,10 +422,31 @@ def verify(
             "patched output base is unchanged",
         )
 
-    # Independent minimal-footprint proof from the PNG alone.
+    # A reduced-resolution edit declares its quality step in the writer receipt.
+    if is_endzone and not no_op:
+        require(manifest_path is not None, "endzone mip verification requires its writer receipt")
+        proof = json.loads(regular(manifest_path, "patch manifest").read_text("utf-8"))
+        factor = proof.get("quality", {}).get("top_mip_downsample_factor")
+        simplify = proof.get("quality", {}).get("rgb_endpoint_simplification", False)
+        target_proof = next((r for r in proof.get("targets", []) if r.get("file_index") == file_index), {})
+        verify_endzone_mips(contract, output_state["metadata"],
+                            source_state["base"] + source_state["mip"],
+                            output_state["base"] + output_state["mip"], png_rgba,
+                            factor, target_proof.get("mip_levels", []), simplify=simplify)
+        if simplify:
+            image = Image.frombytes("RGBA", (contract.width, contract.height), png_rgba)
+            channels = image.split()
+            table = [0 if value < 128 else 255 for value in range(256)]
+            png_rgba = Image.merge("RGBA", tuple(c.point(table) for c in channels[:3]) + (channels[3],)).tobytes()
+        if factor != 1:
+            image = Image.frombytes("RGBA", (contract.width, contract.height), png_rgba)
+            image = image.resize((contract.width // factor, contract.height // factor), Image.Resampling.NEAREST)
+            png_rgba = image.resize((contract.width, contract.height), Image.Resampling.NEAREST).tobytes()
+
+    # Independent minimal-footprint proof from the effective PNG alone.
     dims = contract.block_dims
-    _, _, source_rgba = apf_inner.decode_txtr_base_rgba(source_state["metadata"], source_state["base"])
-    _, _, output_rgba = apf_inner.decode_txtr_base_rgba(output_state["metadata"], output_state["base"])
+    _, _, source_rgba = decode_base(source_state["metadata"], source_state["base"])
+    _, _, output_rgba = decode_base(output_state["metadata"], output_state["base"])
     png_changed = _changed_block_set(
         source_rgba, png_rgba, contract.width, contract.height, dims[0], dims[1]
     )
@@ -461,7 +548,8 @@ def verify(
             "fixed_outer_allocation_preserved": True,
             "descriptor_preserved": True,
             "descriptor_pad_preserved": True,
-            "packed_mip_tail_preserved": True,
+            "packed_mip_tail_preserved": source_state["mip"] == output_state["mip"],
+            "endzone_mips_verified": is_endzone and not no_op,
             "name_footer_preserved": True,
             "only_target_base_part_changed": True,
             "output_edit_within_png_footprint": True,

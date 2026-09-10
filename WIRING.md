@@ -1,3 +1,400 @@
+# Beta 64 PS3 endzone writer — required Field Art GUI handoff
+
+`ASTRA_CONTEXT.md` prohibits editing `mod_editor/apf_studio/gui.py`. Apply the
+following patch before integrating this branch into a runnable Studio build.
+The unmodified `_extra_field_art_targets()` uses `codec_label[contract.codec]`
+and raises `KeyError: 'dxt5a'` at import once the 39 new contracts are present.
+The preview also needs the new scalar-aware decoder. Other hunks replace stale
+base-only and unsupported-format messages in the Field Art page. No build,
+registry or packaging change is needed: the existing Field Art capability,
+grouped builder, receipt plumbing and shipped codec modules are reused.
+
+Exact patch: `reports/ps3_import/field_art_gui_wiring.patch`. Its GUI hunks modify
+`gui.py`: `_extra_field_art_targets`, the core endzone descriptions,
+`ApfFieldArtPanel` slot/lock notes, `set_context`, `_decode_source_operation`,
+`_ps3_bundle_staged`, copied-volume prompts/results, and `FieldArtStudioPage`
+inventory guidance. The contexts below are the insertion points.
+
+```diff
+--- a/mod_editor/apf_studio/gui.py
++++ b/mod_editor/apf_studio/gui.py
+@@ -6900,16 +6900,16 @@
+         "pair proved writable first. A red/green/blue region mask over black, "
+         "like jersey_color and shoulder_color: hard edges and flat colours, "
+         "because intermediate values are invalid region IDs, not blends. The "
+-        "sibling endzone_l1 layer, the descriptor pad, and the packed mip tail "
+-        "all stay byte-identical.",
++        "sibling endzone_l1 layer and descriptor pad stay byte-identical. "
++        "This layer regenerates all eight mip levels.",
+     ),
+     _FieldArtTarget(
+         6, 1, "endzone_l1", 2048, 512, "DXT1", False,
+         "Endzone second layer for the same single team as endzone_l0 above, "
+         "and not a shared layer either. Also a red/green/blue region mask over black; "
+         "author it with flat colours and no anti-aliasing. The sibling "
+-        "endzone_l0 layer, the descriptor pad, and the packed mip tail all "
+-        "stay byte-identical.",
++        "endzone_l0 layer and descriptor pad stay byte-identical. "
++        "This layer regenerates all eight mip levels.",
+     ),
+     _FieldArtTarget(
+         659, 18, "pc_field_goal", 256, 256, "DXT1", False,
+@@ -6935,7 +6935,7 @@
+
+
+ def _extra_field_art_targets() -> tuple[_FieldArtTarget, ...]:
+-    """Descriptor-derived weave, dirtmap, and format-18 endzone slots."""
++    """Descriptor-derived weave, dirtmap, and format-18/format-59 endzone slots."""
+
+     from .backend import ensure_tools_importable
+
+@@ -6943,7 +6943,7 @@
+     import apf_field_art_patch as field_art_writer
+
+     core = {(6, 0), (6, 1), (659, 18), (659, 23), (659, 252), (53, 0)}
+-    codec_label = {"dxt1": "DXT1", "bc3": "BC3", "rgba8888": "8_8_8_8"}
++    codec_label = {"dxt1": "DXT1", "dxt5a": "DXT5A", "bc3": "BC3", "rgba8888": "8_8_8_8"}
+     notes = {
+         "UNIFORM_WEAVE": (
+             "Uniform weave/detail map. Layout comes from the retail descriptor, "
+@@ -6954,8 +6954,8 @@
+             "Runtime visibility is unproved."
+         ),
+         "ENDZONE_TEXTURE": (
+-            "Per-team endzone region mask, same DXT1 structure as package 6. "
+-            "Format-59 DXT5A packages are not offered. Not a shared layer."
++            "Per-team endzone mask with regenerated mips. DXT5A detail slots require "
++            "grayscale RGB and opaque alpha. Not a shared layer."
+         ),
+     }
+     extras: list[_FieldArtTarget] = []
+@@ -7099,8 +7099,8 @@
+         self.slot.setMinimumContentsLength(24)
+         self.slot.setToolTip(
+             "Writable field-art slots: the original six proved bases, "
+-            "package-659 weave/dirtmaps, and format-18 endzones. "
+-            "field_radiance (DXT5A), format-59 endzones, and the "
++            "package-659 weave/dirtmaps, and format-18/format-59 endzones. "
++            "field_radiance (DXT5A) and the "
+             "divot_Grass* weather textures (5_6_5) are deferred, and the "
+             "SCNE/CurveAnim rows have no serializer, so none of them are "
+             "offered here."
+@@ -7117,10 +7117,10 @@
+             "Stock NFL endzone packages (≈118 l0/l1 pairs) appear under All "
+             "Textures / the Field Art inventory browser below — browse and "
+             "export every one. This editor writes the original six proved "
+-            "bases, package-659 weave/dirtmaps, and format-18 per-team "
+-            "endzones. Format-59 DXT5A endzones and field_radiance / "
++            "bases, package-659 weave/dirtmaps, and format-18/format-59 per-team "
++            "endzones (117 complete writable pairs). field_radiance / "
+             "weather-divot codecs remain export-only; see "
+-            "docs/product/APF_FIELD_ART_STOCK_NFL_WALL.md."
++            "docs/mod_editor/ps3_bundle_import.md."
+         )
+         self.lock_note.setObjectName("metadataText")
+         self.lock_note.setWordWrap(True)
+@@ -7333,19 +7333,23 @@
+                 "reports the exact decode-back error."
+             )
+         )
++        mip_note = (
++            "Endzones regenerate all eight mip levels. Builds may simplify RGB weights "
++            "or reduce resolution to fit; the receipt records every reduction."
++            if target.name in {"endzone_l0", "endzone_l1"}
++            else "Only the base level changes; existing mip tails are preserved."
++        )
+         self.description.setText(
+             f"{lead}. Drop or choose any image — an off-size file is resized to "
+             f"the exact {target.width}×{target.height} slot for you before "
+-            f"anything is staged. {codec_sentence} Only this base level changes "
+-            "— the packed mip tail keeps its original bytes — and how the edit "
+-            "looks in play is not proved without a Xenia capture."
++            f"anything is staged. {codec_sentence} {mip_note} "
++            "In-game appearance remains UNWITNESSED."
+         )
+         self.description.setToolTip(
+             f"Full contract: the offline-proved writer owns outer "
+             f"{target.entry_index} / inner {target.file_index} ({target.name}), "
+             f"a {target.width}×{target.height} Xenos {target.codec} texture. "
+-            f"{target.note} Only the base mip level is regenerated; the packed "
+-            "mip tail is byte-preserved, so it stays stale relative to your edit."
++            f"{target.note} {mip_note}"
+         )
+
+         self._preview_token += 1
+@@ -7456,7 +7460,7 @@
+                     "and mip tail."
+                 )
+             base = pixel_bytes[head_len : head_len + contract.base_len]
+-            width, height, rgba = apf_inner.decode_txtr_base_rgba(metadata, base)
++            width, height, rgba = writer.decode_field_art_base(metadata, base)
+             self._display_alpha_note = None
+             if for_display:
+                 rgba, applied = apf_inner.force_opaque_alpha_for_display(rgba)
+@@ -7563,7 +7567,8 @@
+         self.modifiedChanged.emit()
+         QMessageBox.information(self, "PS3 endzone pairs staged",
+             f"{len(plan.assignments)} endzone pairs staged. Build must still pass the "
+-            "fixed-allocation checks. Field Art preserves old mip tails. In-game result: UNWITNESSED.")
++            "fixed-allocation checks. Endzone mips regenerate; any palette or resolution "
++            "reduction is recorded in the build receipt. In-game result: UNWITNESSED.")
+
+     def _stage_path(self, path: Path) -> None:
+         """Stage an image for this slot, resizing it when it is not exact.
+@@ -7682,8 +7687,9 @@
+             "This copies your entire ~1.1 GB 0A volume to the chosen path and "
+             f"replaces only the {target.name} base texture (outer "
+             f"{target.entry_index} / inner {target.file_index}) through the "
+-            "offline-proved writer. The descriptor pad, the packed mip tail, "
+-            "every sibling inner part, and every other byte of the volume are "
++            "offline-proved writer. Endzones regenerate mips and may simplify RGB "
++            "or reduce resolution to fit, with all reductions receipted. "
++            "The descriptor pad, every sibling inner part, and other volume bytes are "
+             "verified unchanged, and your source game is never modified.\n\n"
+             "One build writes exactly one field-art texture: the writer is pinned "
+             "to the retail bytes of each slot, so re-running it against an "
+@@ -7744,9 +7750,9 @@
+             "Copied 0A built",
+             "The offline-proved field-art writer copied your 0A and wrote only "
+             f"this texture, verified against the whole volume.\n\nManifest:\n{path}"
+-            f"{detail}\n\nOnly the base mip level was regenerated; the packed mip "
+-            "tail is byte-preserved. How this looks in play is not proved without "
+-            "a Xenia capture.",
++            f"{detail}\n\nEndzones regenerate mips; other field textures preserve their tails. "
++            "See the receipt for any palette or resolution reduction. "
++            "In-game appearance remains UNWITNESSED.",
+         )
+
+
+@@ -7755,7 +7761,7 @@
+
+     Authorship on this page is the offline-proved writable set the field-art
+     writer owns — the original six bases, package-659 weave/dirtmaps, and
+-    format-18 endzones.  :class:`ApfFieldArtPanel` routes every write through
++    format-18/format-59 endzones.  :class:`ApfFieldArtPanel` routes every write through
+     ``tools/apf_field_art_patch.py``.  Format-59 DXT5A endzones and the
+     deferred codecs stay discovery: each semantic row below is still the
+     original catalog identity consumed by :class:`AssetBrowser`, so preview
+@@ -7767,11 +7773,11 @@
+
+     ACTION_LOCK_REASON = (
+         "This full Field Art inventory is browse and export-only. Writable "
+-        "bases, weave/dirtmaps, and format-18 endzones are edited in the "
++        "bases, weave/dirtmaps, and format-18/format-59 endzones are edited in the "
+         "Field Art editor above; here, archive-package co-location still "
+         "does not prove the runtime field material or its team/stadium "
+-        "selector, and the deferred codecs (field_radiance, format-59 "
+-        "endzones, the divot_Grass* weather textures) and the "
++        "selector, and the deferred codecs (field_radiance and "
++        "the divot_Grass* weather textures) and the "
+         "SCNE/CurveAnim rows have no bounded writer at all."
+     )
+
+@@ -7913,8 +7919,8 @@
+         )
+         self.package_note.setText(
+             "This inventory stays browse/export-only. Writable bases, "
+-            "weave/dirtmaps, and format-18 endzones are edited above; "
+-            "format-59 DXT5A endzones stay export-only."
++            "weave/dirtmaps, and format-18/format-59 endzones are edited above. "
++            "The inventory below stays browse/export-only."
+         )
+         self.browser.set_included_asset_ids(None)
+         load_tip = (
+@@ -8142,8 +8148,7 @@
+                 "Next: File → Load game, then open Field Art. Stock NFL "
+                 "endzones appear in the semantic list (~118 packages). "
+                 "Format-18 layers, package-659 weave/dirtmaps, and the "
+-                "original six bases are writable; format-59 DXT5A layers "
+-                "stay browse/export-only."
++                "original six bases are writable, including format-59 DXT5A endzone layers."
+             )
+             self.browser.set_context()
+             return
+```
+
+The same patch also updates two obsolete Field Art assertions in
+`tests/mod_editor/test_beta45_honesty_freeze.py`. That file includes release-tag
+tests, which `ASTRA_CONTEXT.md` also protects; its release identities are
+unchanged. The extra contract count is 254, and 39 format-59 endzones are now
+pinned scalar writers. Apply these test-only hunks with the GUI handoff:
+
+```diff
+--- a/tests/mod_editor/test_beta45_honesty_freeze.py
++++ b/tests/mod_editor/test_beta45_honesty_freeze.py
+@@ -101,13 +101,13 @@
+         self.assertEqual(code, 0)
+         printed = buffer.getvalue()
+         self.assertIn("core=6", printed)
+-        self.assertIn("extras=215", printed)
++        self.assertIn("extras=254", printed)
+         extra_keys = field_gate._writable_extra_keys()
+-        self.assertEqual(len(extra_keys), 215)
++        self.assertEqual(len(extra_keys), 254)
+         for key in extra_keys:
+             contract = field_gate.patch._CONTRACTS[key]
+-            self.assertIn(contract.format, {6, 18, 20})
+-            self.assertIn(contract.codec, {"rgba8888", "dxt1", "bc3"})
++            self.assertIn(contract.format, {6, 18, 20, 59})
++            self.assertIn(contract.codec, {"rgba8888", "dxt1", "dxt5a", "bc3"})
+
+     def test_weave_skin_weights_are_bc3_256_not_lossless_64(self) -> None:
+         import apf_field_art_patch as writer
+@@ -122,7 +122,7 @@
+             self.assertEqual((contract.width, contract.height), (256, 256))
+             self.assertNotEqual((contract.codec, contract.width), ("rgba8888", 64))
+
+-    def test_format_59_endzones_stay_out_of_the_writer(self) -> None:
++    def test_format_59_endzones_have_pinned_scalar_writers(self) -> None:
+         import json
+
+         import apf_field_art_patch as writer
+@@ -139,7 +139,8 @@
+         ]
+         self.assertEqual(len(refused), 39)
+         for key in refused:
+-            self.assertNotIn(key, writer._CONTRACTS)
++            self.assertEqual(writer._CONTRACTS[key].codec, "dxt5a")
++            self.assertEqual(writer._CONTRACTS[key].swizzle, (0, 0, 0, 5))
+
+     def test_third_and_long_writer_refuses_and_names_executable(self) -> None:
+         from mod_editor.core.errors import ValidationError
+```
+
+---
+
+# beta-64 Import PS3 roster (2026-09-09, branch astra/b64-ps3-roster)
+
+Everything below the protected line already exists and is tested on this branch:
+`mod_editor/apf_studio/ps3_roster_convert.py` (core converter + CLI + receipt),
+`mod_editor/apf_studio/ps3_roster_import_qt.py` (`Ps3RosterImportPanel`, the
+"Import PS3 roster..." action), `tests/mod_editor/test_apf_ps3_roster_convert.py`
+(11 tests: synthetic PS3-style fixture, file/zip contract, retail-gated 1993 member) and
+`tests/mod_editor/test_apf_ps3_roster_import_qt.py` (2 offscreen tests). The feature is
+offline-proved and in-game UNWITNESSED; keep that word in every user-facing string.
+
+## 1. `mod_editor/apf_studio/gui.py` (protected): render the panel on the Rosters page
+
+Import, next to the other panel imports (line 199 carries `save_roster_players_qt`):
+
+```python
+from .ps3_roster_import_qt import Ps3RosterImportPanel
+```
+
+Construct it beside `self.save_roster_players` (line 19372, the ROSTERS category block):
+
+```python
+        self.ps3_roster_import = (
+            Ps3RosterImportPanel(run_task)
+            if category is ApfCategory.ROSTERS
+            else None
+        )
+```
+
+Add the tab after "Save Players" (line 19441, inside `elif category is ApfCategory.ROSTERS:`):
+
+```python
+                tabs.addTab(self.ps3_roster_import, "Import PS3 Roster")  # type: ignore[arg-type]
+```
+
+The panel takes only `run_task` (same `TaskRunner` contract as `SaveRosterPlayersPanel`),
+emits no `modifiedChanged` signal (it never edits a loaded source; it writes a new file plus a
+receipt), and exposes `load_path(Path)` / `convert_to(Path)` for `open_workspace` QA.
+
+## 2. `packaging/apf2k8-release-allowlist.txt` (protected): two module paths
+
+Add beside `mod_editor/apf_studio/ps3_roster_probe.py` (line 230):
+
+```
+mod_editor/apf_studio/ps3_roster_convert.py
+mod_editor/apf_studio/ps3_roster_import_qt.py
+```
+
+The allowlist carries shippable modules only; the two tests and
+`reports/ps3_import/roster_convert_receipt.json` are repository evidence, not payload.
+
+## 3. `packaging/check_apf2k8_mod_studio_runtime.py` (protected): import closure
+
+Add to the module list beside `'mod_editor.apf_studio.ps3_roster_probe'` (line 88):
+
+```python
+    'mod_editor.apf_studio.ps3_roster_convert',
+    'mod_editor.apf_studio.ps3_roster_import_qt',
+```
+
+Both import cleanly under `QT_QPA_PLATFORM=offscreen` with no retail path present.
+
+## 4. `mod_editor/capabilities/registry.v1.json` (protected): one row, after the GUI lands
+
+```json
+{
+  "id": "apf2k8.players_rosters.ps3_roster_import",
+  "game": "apf2k8_xbox360",
+  "surface": "players_rosters",
+  "title": "Import PS3 roster",
+  "summary": "Convert a PS3 APF 2K8 roster USERDATA into the raw Xbox 360 Roster.ROS layout with a counted receipt; strict readers re-parse the output.",
+  "classification": "offline-writer-proved",
+  "backend": {
+    "module": "mod_editor/apf_studio/ps3_roster_convert.py",
+    "operation": "write",
+    "command": "python3 -m mod_editor.apf_studio.ps3_roster_convert <USERDATA-or-zip> <Roster.ROS> [--member <zip member>] [--receipt <json>]"
+  },
+  "gui": {
+    "expose": true,
+    "default_enabled": true,
+    "mode": "edit",
+    "reason": "Pointer rule, palette byte order and runtime words proved from all 42,825 string references and both Xbox fixtures; output re-parsed by save_roster_players, apf_save_playbook_assignments and the team graph; loading in Xenia UNWITNESSED."
+  },
+  "input_constraints": [
+    "Exactly one 2,715,908-byte PS3 roster USERDATA (raw or the one BLUS30049-ROS/USERDATA member of its ZIP); STFS containers and Xbox-layout rosters are refused, so the action is idempotent.",
+    "Platform is decided by the palette alpha position (2,660 colours vote); mixed or ambiguous files are refused rather than guessed.",
+    "Editor-damaged text is repaired structurally only: misaligned runs shift or relocate, stale/garbage/below-pool references become the shared empty string; intended text is never invented.",
+    "Output is a raw payload plus receipt next to it; no container is written and the source is never modified."
+  ],
+  "selectors": {
+    "fields": [
+      {"name": "source", "required": true, "allowed": "PS3 USERDATA or its ZIP"},
+      {"name": "output", "required": true, "allowed": "new .ROS path; existing files are refused"}
+    ],
+    "notes": "The receipt lists players, teams, memberships, labels, odd runs, repointed references and rewritten runtime words."
+  },
+  "source_container": {
+    "format": "raw APF 2K8 roster object graph (PS3 USERDATA / Xbox 360 Roster.ROS)",
+    "resource": "players, teams, playbook labels, palettes, user playbook banks",
+    "retail_file": "user-supplied PS3 save (never bundled)",
+    "hash_pins": []
+  },
+  "validation_command": "QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_ps3_roster_convert.py -v",
+  "evidence": ["ASTRA_REPORT.md", "reports/ps3_import/roster_convert_receipt.json"],
+  "runtime": {
+    "status": "not-tested",
+    "scope": "UNWITNESSED. Nobody has loaded a converted roster in Xenia; names, positions, teams and palette colours need an in-game witness.",
+    "evidence": []
+  },
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "tooling": "source-and-schemas-only",
+    "rule": "Ship code, tests and the counted receipt only; the 1993 roster archive and the Xbox fixtures stay private inputs."
+  },
+  "portme": [
+    "Witness the converted 1993 roster in Xenia (load, names, positions, teams, colours), then move runtime.status.",
+    "If the game rejects it, the next suspects are the four root runtime words, the eight-word block at 0x230224 and the bank header words (all written the way the Xbox fixtures carry them).",
+    "Optional: restore the created-player name pools (t12/t13, 475 stale entries blanked) from a stock Xbox roster."
+  ]
+}
+```
+
+If `models.py::CAPABILITY_ACTION_BINDINGS` must name a product action for the card to leave
+Coming Soon, the panel has no facade mutation: bind it as a dialog-style action
+(`"players_rosters.ps3_roster_import_panel"`) with no replace/revert methods, the way a
+read-then-write-new-file tool is bound, and reuse `ps3_roster_convert.RUNTIME_STATUS` verbatim.
+
+## 5. Nothing else
+
+`build.py`, the release checker and `update_check.py` need no change: the feature writes user
+files, never disc payload.
+
 # beta-63.1 raw-dump overlap hotfix (2026-09-09, branch local/hf63-rawdump-overlap)
 
 Bug: Ju3tin, #2k5-general 2026-09-09 15:00 — "ValueError: overlapping disc file or metadata: root
@@ -356,6 +753,647 @@ XBE gates are also run. Full evidence and Noah's xemu witness are in
 `ASTRA_REPORT.md`. Rebuild old beta-63 catch-slider installations from retail:
 they are foreign to the fixed writer; exact new installations replay with
 zero changed bytes.
+
+# APF Create a Play / Design Formation integration
+
+2026-09-09, for Claude. All new gameplay results are **UNWITNESSED**.
+The core, project/session/facade adapter, logical example, tests and standalone
+Qt panel are implemented. `gui.py`, `build.py`, both release allowlists, both
+packaging checkers and capability registries were left untouched as requested.
+Until the changes below land together, the panel is not rendered in the main app
+and the existing Build engine does not accept the new provider. Do not advertise
+this branch alone as an integrated installer.
+
+## 1. Playbooks page
+
+File: `mod_editor/apf_studio/gui.py`.
+Add beside the existing playbook panel imports (near line 191):
+
+```python
+from .play_designer_qt import PlayDesignerPanel
+```
+
+In `InspectorCategoryPage.__init__`, beside `self.playbook_routes` (near line 19327):
+
+```python
+self.play_designer = (
+    PlayDesignerPanel(facade, run_task)
+    if category is ApfCategory.PLAYBOOKS
+    else None
+)
+```
+
+Beside the other `modifiedChanged` connections:
+
+```python
+if self.play_designer is not None:
+    self.play_designer.modifiedChanged.connect(self.modifiedChanged)
+```
+
+In the `ApfCategory.PLAYBOOKS` tabs branch, after Save Assignments and before
+Raw Playbook Assets (preserving the existing tab indices 0..4):
+
+```python
+tabs.addTab(self.play_designer, "Design Plays / Formations")
+```
+
+The panel already owns the exact **Design Play…**, **Design Formation…** and
+**Add CPU call…** buttons, dialogs, recipes, draft summary, validation/staging
+button and UNWITNESSED/CPU-only status. Do not put another authoring dialog in
+`gui.py`. Its worker callback contract matches `run_task(title, fn, done, mutating)`.
+
+In `InspectorCategoryPage.open_workspace`, before the `soundtrack` branch, add:
+
+```python
+elif normalized in {"play-designer", "design-play", "design-formation"} \
+        and self.category is ApfCategory.PLAYBOOKS:
+    target = 5
+```
+
+Replace the Playbooks entry in `CATEGORY_BLURBS` near line 247:
+
+```python
+ApfCategory.PLAYBOOKS: (
+    "Inspect PLAY and DRCT, edit stock assignment routes, or design bounded "
+    "plays and formations with CPU-book calls. New designs are experimental "
+    "and UNWITNESSED in-game. Save Assignments retains its existing book "
+    "reassignment tools. Freehand node graphs, five-step timing and DRCT "
+    "authoring remain unproved."
+),
+```
+
+In the workspace's source/model setup method, next to the two
+`self.playbook_routes.set_model(...)` sites (near lines 19471 and 19505), add:
+
+```python
+if self.play_designer is not None:
+    self.play_designer.set_context()
+```
+
+At the first site, the facade must already reflect the cleared source. At the
+second, it must reflect the newly loaded source. `set_context()` loads the pinned
+MASTER and named CPU books through the worker, or disables the controls without
+a source. In `InspectorCategoryPage.refresh()` (near line 19534), add:
+
+```python
+if self.play_designer is not None:
+    self.play_designer.refresh()
+```
+
+Refresh preserves an unstaged draft. After successful staging it reloads from
+the session; explicit **Reload staged design** discards the local draft. The
+stage button is disabled for an empty plan. The normal session undo/revert and
+project save/import flow already support `apf_play_design` in this branch.
+
+## 2. Build the atomic design once
+
+File: `mod_editor/apf_studio/build.py`. Add alongside project/service imports:
+
+```python
+from . import play_design_service as play_design
+```
+
+The import exposes `PROVIDER_KIND`, `SCHEMA`, `check_composition` and
+`compile_modification`. In `ApfBuildService.build`, which initializes `compiled`, `edit_rows`
+and `play_assignment_route_group` (near line 860), add:
+
+```python
+play_design_group: list[Modification] = []
+try:
+    play_design.check_composition(edits)
+except ValidationError as exc:
+    raise BuildError(str(exc)) from exc
+```
+
+This must execute before any game output is written. The service rejects more
+than one design and any composition with `play_assignment_route`,
+`formation_package_map`, `formation_alignment`, or `splb_book_membership`.
+It prevents a later legacy edit from silently replacing the designer's MASTER
+or CPU output. Other unrelated features can still build normally.
+
+In the existing per-modification dispatch, before its generic `else`:
+
+```python
+elif modification.kind == play_design.PROVIDER_KIND:
+    play_design_group.append(modification)
+```
+
+After the MASTER and SPLB group compilation blocks (after the block ending
+near line 1304), before the subsequent replacement-hash verification/output:
+
+```python
+for modification in play_design_group:
+    try:
+        result = play_design.compile_modification(
+            self.source.index_0a, modification
+        )
+    except (OSError, ValidationError) as exc:
+        raise BuildError(f"Could not compile APF design: {exc}") from exc
+    receipts = {item["outer"]: item for item in result.report["resources"]}
+    for outer_index, entry_bytes in sorted(result.entries.items()):
+        if outer_index in compiled:
+            raise BuildError(
+                f"Two edits resolve to the same APF outer entry {outer_index}"
+            )
+        row = {
+            "asset_ids": (modification.asset_id,),
+            "kind": play_design.PROVIDER_KIND,
+            "outer_index": outer_index,
+            "replacement_payload_sha256s": {
+                modification.asset_id: modification.replacement_sha256
+            },
+            "entry_size": len(entry_bytes),
+            "entry_sha256": _hash_bytes(entry_bytes),
+            "writer_schema": play_design.SCHEMA,
+            "writer_mode": "bounded_master_and_cpu_design",
+            "verification": receipts[outer_index],
+            "design_verification": result.report["design"],
+            "runtime_status": "UNWITNESSED",
+            "cpu_books_only": True,
+        }
+        compiled[outer_index] = (entry_bytes, row)
+        edit_rows.append(row)
+```
+
+Keep the existing pre/post replacement-hash checks, source identity checks and
+BUILT-copy transactional output intact. `result.entries` contains full padded
+outer allocations and can include MASTER 180 plus several CPU SPLB resources;
+do not assume one provider modification means one outer entry. Idempotent no-op
+plans may yield no entries. The compiler verifies every resource before returning
+any entry; it never writes the source packs. No growth/relocation branch is needed.
+
+Add an integration test in the integrator-owned Build tests exercising the
+example's three entries through the actual build dispatcher and confirming a
+post-design legacy MASTER/SPLB collision fails before any output is installed.
+Do not infer this end-to-end Build result from the tests in this branch: those
+prove the writer adapter, not the protected dispatcher.
+
+## 3. Capability registry
+
+The exact eight proposed rows are in
+`docs/research/apf_play_design_capabilities.json`. Six are
+`offline-writer-proved` with runtime `not-tested`; dedicated spy and five-step
+cadence are hidden `unsafe/deferred`. They use the existing `cpu_ai_draft`
+surface, so no schema enum change is necessary. IDs:
+
+```text
+apf2k8.cpu_ai_draft.play_design.concept_recipes
+apf2k8.cpu_ai_draft.play_design.cpu_calls
+apf2k8.cpu_ai_draft.play_design.create_formation
+apf2k8.cpu_ai_draft.play_design.create_play
+apf2k8.cpu_ai_draft.play_design.defensive_assignments
+apf2k8.cpu_ai_draft.play_design.edit_play
+apf2k8.cpu_ai_draft.play_design.five_step_drop
+apf2k8.cpu_ai_draft.play_design.spy
+```
+
+Apply to `mod_editor/capabilities/registry.v1.json` after page/build wiring, with
+canonical serialization. This code is supplied for the integrator; it was not
+executed against the protected registry here:
+
+```python
+import json
+from pathlib import Path
+
+path = Path("mod_editor/capabilities/registry.v1.json")
+data = json.loads(path.read_text(encoding="utf-8"))
+proposal = json.loads(Path(
+    "docs/research/apf_play_design_capabilities.json"
+).read_text(encoding="utf-8"))["capabilities"]
+new_ids = {row["id"] for row in proposal}
+data["capabilities"] = sorted(
+    [row for row in data["capabilities"] if row["id"] not in new_ids] + proposal,
+    key=lambda row: row["id"],
+)
+path.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+```
+
+Run `python3 mod_editor/capabilities/validate_registry.py`. The proposed merge
+was validated in memory using the existing strict validator. “Registered” must
+not become “runtime proved”: all six write rows retain the UNWITNESSED scope.
+The backend command compiles in memory and writes a derived receipt only;
+actual game output belongs to the existing protected Build pipeline.
+
+Register the matching product action bindings in
+`mod_editor/apf_studio/models.py` together with the canonical rows (the parity
+test refuses bindings whose registry rows have not landed). Add these six entries
+inside `CAPABILITY_ACTION_BINDINGS`, using dictionary unpacking:
+
+```python
+**{
+    "apf2k8.cpu_ai_draft.play_design." + feature: CapabilityActionBinding(
+        "apf2k8.cpu_ai_draft.play_design." + feature,
+        "playbook.play_designer",
+        _actions(ApfProductAction.REPLACE, ApfProductAction.REVERT),
+        replace_method="apply_play_design",
+        revert_method="revert",
+        product_note=(
+            "Design Plays / Formations stages one logical plan. "
+            "Bounded records and CPU SPLB calls are proved offline; "
+            "all gameplay is UNWITNESSED."
+        ),
+    )
+    for feature in (
+        "concept_recipes", "cpu_calls", "create_formation", "create_play",
+        "defensive_assignments", "edit_play",
+    )
+},
+```
+
+In `mod_editor/apf_studio/catalog.py::_capability_category`, before the general
+`cpu_ai_draft` branch:
+
+```python
+if capability_id.startswith("apf2k8.cpu_ai_draft.play_design."):
+    return ApfCategory.PLAYBOOKS
+```
+
+Leave spy and step cadence without action bindings. Run
+`PYTHONPATH=. python3 tests/mod_editor/test_apf_capability_action_parity.py`
+after merging registry and binding changes together.
+
+## 4. Release allowlist and runtime closure
+
+The APF release checker actually defaults to
+`packaging/apf2k8-release-allowlist.txt`; the brief also protects the separate
+`packaging/release-allowlist.txt`. Neither was changed. Add these exact source
+paths to the APF allowlist, once each:
+
+```text
+mod_editor/apf_studio/play_design_service.py
+mod_editor/apf_studio/play_designer_qt.py
+mod_editor/core/apf2k8_formation_alignment_writer.py
+mod_editor/core/apf2k8_play_codec.py
+mod_editor/core/apf2k8_play_concepts.py
+mod_editor/core/apf2k8_play_design_build.py
+mod_editor/core/apf2k8_play_designer.py
+mod_editor/core/nfl2k5_play_codec.py
+```
+
+The last file is a stdlib-only operand codec dependency, not the NFL GUI or its
+runtime patches. Formation alignment is the cherry-picked dependency. Existing
+APF route/package/SPLB writers, `tools/playbook_inventory.py`, `apf_inner`,
+`apf_outer`, `apf_texture_patch` and their current dependencies are already in
+the APF closure. Keep the existing reviewed optimal helper and portable fallback.
+Do not add private inputs, `.astra-work`, `.astra-local-git`, bundles or reports
+to a public product release.
+
+If the canonical registry rows retain all supplied evidence paths, also add the
+following derived research and test source files to the APF allowlist; the strict
+registry checks evidence existence in a staged release:
+
+```text
+docs/research/apf_play_format.md
+docs/research/apf_play_format_derived.json
+docs/research/apf_play_design_build_derived.json
+tests/mod_editor/test_apf_play_designer.py
+tests/mod_editor/test_apf_play_designer_project.py
+tests/mod_editor/test_apf_play_designer_qt.py
+```
+
+Alternatively, replace the six rows' evidence lists with released public evidence
+documents and keep research tests in the development tree. Do not drop evidence
+validation. The example and proposal are optional development artifacts; no app
+import depends on them. To ship the reproduction CLI as well, include
+`tools/apf_play_format_proof.py` and its derived document path.
+
+In `packaging/check_apf2k8_mod_studio_runtime.py`, extend `PRODUCT_MODULES`
+(near line 72) with the eight module names corresponding to the eight source
+paths above. The existing literal-import scanner should remain enabled.
+Add a synthetic smoke check (or invoke the standalone tests in development)
+that exercises native 1C, bounded append/private chains, project round-trip and
+offscreen panel creation. Keep `QT_QPA_PLATFORM=offscreen`.
+
+In `packaging/check_apf2k8_mod_studio_release.py`, extend
+`REQUIRED_PRODUCT_CONTRACT_MARKERS` with:
+
+```python
+"mod_editor/apf_studio/play_designer_qt.py": (
+    "class PlayDesignerPanel(QWidget):",
+    "Design Play…",
+    "Design Formation…",
+    "Add CPU call…",
+),
+"mod_editor/core/apf2k8_play_designer.py": (
+    'SCHEMA = "apf2k8_play_design/v1"',
+    'PROVIDER_KIND = "apf_play_design"',
+    "UNWITNESSED in-game; CPU books only",
+),
+"mod_editor/apf_studio/play_design_service.py": (
+    "def check_composition(",
+    "def compile_modification(",
+),
+```
+
+Do not relax binary/hash/private-component scanning. Any additional evidence
+paths must pass those checks; this branch claims no completed release audit,
+installer build or runtime promotion. Run the existing release and runtime
+checkers against the clean staged product after all integration changes land.
+
+## 5. Concrete integration rehearsal
+
+`docs/research/apf_play_design_example.json` is an actual logical plan: five
+concepts at 586..590, defensive play 591, formation 163, CPU additions in 259
+(records 0 and 25) and 618 (record 0). Its expected derived output is
+`docs/research/apf_play_design_build_derived.json`. Rehearse without writing game
+files:
+
+```sh
+python3 -m mod_editor.core.apf2k8_play_design_build --index "$APF_RETAIL_INDEX" --plan docs/research/apf_play_design_example.json --receipt "$APF_RECEIPT_OUT"
+python3 tests/mod_editor/test_apf_play_designer.py
+python3 tests/mod_editor/test_apf_play_designer_project.py
+QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_play_designer_qt.py
+```
+
+`APF_RECEIPT_OUT` must be outside the source retail directory. The example is
+not a project archive; stage it using `facade.apply_play_design(plan)` after
+source load, then save through the normal project API. The main page can create
+equivalent plans via the buttons. A new play needs an explicit CPU call; adding
+a concept in the panel does not silently choose a book for the user.
+
+After integration, Noah's separate in-game witness should confirm new CPU calls,
+correct personnel/alignment, both route sides and timing, on BASE and TU 1.1.
+The earlier witnessed alignment writer does not witness newly appended records,
+new plays, node edits, or these concept recipes.
+
+---
+
+# Earlier integration notes (preserved)
+
+
+# Integration handoff: PS3 APFe texture bundles
+
+The protected GUI/build/registry/packaging files are unchanged. The importer,
+paired session adapter, batch dialog and worker/button helper are implemented
+and tested here. These are the remaining integration edits for Claude.
+
+## Team Logo button
+
+In `mod_editor/apf_studio/gui.py`, import:
+
+```python
+from .ps3_texture_bundle_qt import import_button as ps3_import_button
+```
+
+In `ApfTeamLogoPanel.__init__`, after adding `self.status` to `title_row`, add:
+
+```python
+self.ps3_bundle_button = ps3_import_button(
+    self, self.facade, self.run_task, self._ps3_bundle_staged, kind="logo"
+)
+title_row.addWidget(self.ps3_bundle_button)
+```
+
+Add this method to `ApfTeamLogoPanel` beside `_commit_design`:
+
+```python
+def _ps3_bundle_staged(self, plan, modifications):
+    last = modifications[-1]
+    self._clear_texture_master_draft()
+    self._staged_png = Path(last.replacement_path)
+    self._source_staged_png = self._staged_png
+    self._staged_profile = RETAIL_CREST_PROFILE
+    digest = last.metadata["detail_sha256"]
+    self._staged_detail_png = self._staged_png.parent / f"{digest}.png"
+    self._placement_source_rgba = None
+    self._placement_state = None
+    self.set_context()
+    self.modifiedChanged.emit()
+    QMessageBox.information(
+        self, "PS3 crest pairs staged",
+        f"{len(plan.assignments)} crest pairs staged. "
+        "Use the complete-project Build to include every selected crest "
+        "and its linked logo-cache layers. In-game result: UNWITNESSED."
+    )
+```
+
+The helper switches imported edits to the existing retail side-decal metadata;
+it refuses an already-staged shared full-shell profile. It never mirrors l0
+into l1. Do not route this operation through the single-image `_stage_path`
+flow, which clears/reinterprets the detail layer. `set_context` already restores
+the legacy most-recent crest ID and selects its catalog slot. Existing batch
+crest edits keep their slot-qualified IDs.
+
+## Field Art button
+
+In `ApfFieldArtPanel`, add `modifiedChanged = pyqtSignal()` after the class
+docstring. In its `__init__`, after `title_row.addWidget(self.status)`, add:
+
+```python
+self.ps3_bundle_button = ps3_import_button(
+    self, self.facade, self.run_task, self._ps3_bundle_staged, kind="endzone"
+)
+title_row.addWidget(self.ps3_bundle_button)
+```
+
+Add beside `_stage_path`:
+
+```python
+def _ps3_bundle_staged(self, plan, modifications):
+    for modification in modifications:
+        meta = modification.metadata
+        self._staged[(meta["entry_index"], meta["file_index"])] = Path(
+            modification.replacement_path
+        )
+    self.set_context()
+    self.modifiedChanged.emit()
+    QMessageBox.information(
+        self, "PS3 endzone pairs staged",
+        f"{len(plan.assignments)} endzone pairs staged. Build must still "
+        "pass the fixed-allocation checks. The current Field Art writer "
+        "preserves old mip tails. In-game result: UNWITNESSED."
+    )
+```
+
+In `FieldArtStudioPage.__init__`, immediately after constructing `self.editor`:
+
+```python
+self.editor.modifiedChanged.connect(self.modifiedChanged)
+```
+
+The page signal is already connected to `_mark_document_changed` in the main
+window's `_build_pages`. Because imports now enter the shareable session,
+make the panel's `_revert` clear the corresponding session edit as well:
+
+```python
+self.facade.revert_field_art(self.current_target().key)
+self._staged.pop(self.current_target().key, None)
+self.set_context()
+self.modifiedChanged.emit()
+```
+
+Replace the existing final two `_revert` statements with that block. On project
+load/undo, repopulate `_staged` from the session's `field_art_texture` edits
+in the same way as `_ps3_bundle_staged`, rather than retaining stale panel-only
+paths. Existing complete-project compilation already groups field-art edits
+by outer entry and calls `build_field_art_patch_many`; retain that grouping
+so l0 and l1 are compiled in one shared-VRAM rebuild.
+
+## Batch dialog contract and build boundary
+
+`Ps3BundleMappingDialog` has an inclusion checkbox, canonical source team and
+kind, original variant/hash, and a destination combo for each valid pair.
+Only writer-owned destinations are selectable. Exact hash matches are
+preselected; duplicate destinations keep Stage disabled until a variant is
+explicitly deselected or reassigned. Rejected pairs are visible above the
+table. The dialogs filter to logo or endzone on the respective pages; passing
+`kind=None` to the helper exposes a combined batch surface if desired later.
+
+`import_button` supplies the exact label **Import PS3 bundle…**, ZIP/folder
+choices, background inventory, the review dialog, and background staging. It
+pins the session across review and takes the facade session lock for mutation.
+It updates the facade's existing dedicated-build staging mirrors and clears
+`last_build`. Failed batches undo successful earlier session operations. The
+caller emits the page's normal dirty/recovery signal only after success.
+
+No binary build changes are required. `build.py::_compile_helmet_crests` and
+`_crest_detail_path` already carry `detail_sha256` into both package and cache
+writers. The Field Art writer already supports grouped pairs, but **does not
+regenerate packed mip tails**. Do not change that status string to imply full
+mip authoring. Do not mark format-59 endzones writable. Allocation failure
+must remain fail-closed. The all-team staging receipt is not a compiled build.
+
+## Registry row
+
+Append this object to `mod_editor/capabilities/registry.v1.json`'s
+`capabilities` after the GUI wiring lands. Do not claim that an unrendered
+button is currently exposed. The row is compatible with `registry.schema.json`.
+
+```json
+{
+  "id": "apf2k8.logos_cards.ps3_texture_bundle",
+  "game": "apf2k8_xbox360",
+  "surface": "logos_cards",
+  "title": "Import PS3 APFe texture bundle",
+  "summary": "Map paired APFe logo/endzone pixels to existing Xbox 360 writers with source and destination receipts.",
+  "classification": "offline-writer-proved",
+  "backend": {
+    "module": "mod_editor/apf_studio/ps3_texture_bundle.py",
+    "operation": "write",
+    "command": "python3 -m mod_editor.apf_studio.ps3_texture_bundle <bundle> --index-0a <0A> --mapping <mapping.json> --receipt <plan.json>"
+  },
+  "gui": {
+    "expose": true,
+    "default_enabled": true,
+    "mode": "edit",
+    "reason": "PS3 bundle staging verified offline; build allocation checks required; in-game UNWITNESSED. Crest mips regenerate; Field Art retains its existing stale-mip limitation."
+  },
+  "input_constraints": [
+    "APFe ZIP/folder exports with distinct logo_l0/logo_l1 or endzone_l0/endzone_l1 pairs at native dimensions.",
+    "Use outer hash plus semantic layer name, or explicit live destination slots; never PS3 numeric entry offsets.",
+    "DDS takes precedence. GTF is decoded only when DDS is absent. Ambiguous variants and duplicate destination assignments are refused.",
+    "Only existing crest/Field Art writer contracts can be staged. Full-shell projects, unsupported endzone codecs and over-allocation builds are refused."
+  ],
+  "selectors": {
+    "fields": [
+      {"name": "pair_id", "required": true, "allowed": "validated imported pair IDs"},
+      {"name": "destination_slot", "required": true, "allowed": "compatible live writer-owned logo/endzone slot IDs"}
+    ],
+    "notes": "Source team names do not prove Xbox selector ownership; crest and endzone choices remain independent."
+  },
+  "source_container": {
+    "format": "APFe DDS/GTF exports; Xbox 360 IFF/H7A destinations",
+    "resource": "paired logo/endzone region masks",
+    "retail_file": "0A and declared sibling volumes",
+    "hash_pins": []
+  },
+  "validation_command": "QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_ps3_texture_bundle.py -v",
+  "evidence": ["docs/mod_editor/ps3_bundle_import.md"],
+  "runtime": {
+    "status": "not-tested",
+    "scope": "UNWITNESSED. Offline staging and crest rebuild/reparse are proved; rendered colors, linked-cache consumption and Xenia appearance require a witness.",
+    "evidence": []
+  },
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "tooling": "source-and-schemas-only",
+    "rule": "Ship code and documentation only; downloaded exports, roster saves, volumes and decoded game textures stay private."
+  },
+  "portme": [
+    "Integrate buttons, run the clean packaged runtime smoke and witness a complete-project build in game.",
+    "Regenerate Field Art mip tails before claiming full mip replacement; retain allocation/no-overlap H7A checks.",
+    "The roster probe is read-only: PS3 nickname-pointer/string compatibility is not proved."
+  ]
+}
+```
+
+Use `ps3_texture_bundle.STATUS` verbatim for the import operation status. There
+is no new universal-browser raw replacement route: destination ownership stays
+with Team Logo / Field Art via `workspace_routes.py`. No raw PS3 TXTR writer
+or unrelated texture capability should be registered.
+
+Also add the concrete action binding to
+`mod_editor/apf_studio/models.py::CAPABILITY_ACTION_BINDINGS` beside the other
+`logos_cards` bindings. Without it, `catalog.py::build_capability_cards` correctly
+keeps a new registry row at Coming Soon even after a button is rendered:
+
+```python
+"apf2k8.logos_cards.ps3_texture_bundle": CapabilityActionBinding(
+    "apf2k8.logos_cards.ps3_texture_bundle",
+    "logos_cards.ps3_texture_bundle_dialog",
+    _actions(ApfProductAction.REPLACE, ApfProductAction.REVERT),
+    replace_method="replace_helmet_crest_design",
+    additional_replace_methods=("replace_field_art",),
+    revert_method="revert",
+    product_note=(
+        "Import PS3 bundle stages distinct semantic layer pairs through the "
+        "existing crest and Field Art writers. Hash matches identify library "
+        "slots; explicit destination choices assign teams. Build allocation "
+        "checks remain required. Field Art mip tails remain stale. "
+        "In-game result: UNWITNESSED."
+    ),
+),
+```
+
+This names the existing mutation contracts used by the batch adapter, rather
+than inventing an unimplemented raw-texture replacement method.
+
+## Allowlist and runtime closure
+
+Add these exact paths to the APF product's actual allowlist,
+`packaging/apf2k8-release-allowlist.txt`. If the integration wave also maintains
+`packaging/release-allowlist.txt` as a combined release list, add the same paths
+there; the APF stage specifically consumes the former.
+
+```text
+mod_editor/apf_studio/ps3_texture_bundle.py
+mod_editor/apf_studio/ps3_texture_bundle_qt.py
+mod_editor/apf_studio/ps3_texture_codec.py
+mod_editor/apf_studio/ps3_roster_probe.py
+mod_editor/apf_studio/ps3_texture_probe.py
+mod_editor/apf_studio/ps3_texture_probe_fast.py
+docs/mod_editor/ps3_bundle_import.md
+```
+
+Add the six module names, without `.py` and with `/` changed to `.`, to
+`packaging/check_apf2k8_mod_studio_runtime.py::PRODUCT_MODULES`. The first three
+are the authoring closure. The last three are read-only CLI diagnostics;
+NumPy is optional and imported only inside the bulk accelerator, which falls
+back to the existing decoder when NumPy is absent. No new wheel is required.
+Pillow's `DdsImagePlugin` must remain present in the Windows pinned runtime.
+The existing backend closure supplies `apf_outer`, `apf_inner`, crest/cache,
+Field Art, uniform targets, DXN and DXT5A decoders, save parsers, and their
+already-allowlisted data tables. No source archive or new retail fixture ships.
+
+In a clean stage, smoke-test imports and a synthetic two-layer DDS ZIP through
+`read_bundle`, `build_plan`, `verify_plan`, and the offscreen mapping dialog.
+Exercise source switching during review and a failing second field-art stage
+to confirm no partial batch survives. Run the three new standalone tests and
+the existing crest/cache/Field Art/project tests. Then run the normal release
+and runtime gates with the updated closure. A new registry row needs the
+integration wave's normal capability-count expectations updated where pinned.
+Windows packaged execution and gameplay remain UNWITNESSED in this branch.
+
+The temporary clean-stage smoke in this branch passed for all six new imports,
+a synthetic DDS ZIP, a verified two-layer plan, and the offscreen dialog. The
+unchanged full runtime gate refused the added modules at
+`check_apf2k8_mod_studio_release.py:870` because the staged internal APF allowlist
+is still the protected integration baseline. The refusal names
+`ps3_roster_probe.py`; it is the first missing allowlist path, not a missing
+Python dependency. Receipt: `reports/ps3_import/runtime_closure.txt`.
+
+---
 
 # r65 Player abilities rules v2 (2026-09-08)
 
@@ -16085,3 +17123,780 @@ disposable disc can preserve Noah's free-space floor. This session's
 XBE-only scratch projection: it retains parent retail reservations and
 records actual current XBE owner writes. Historical disc fields are not a
 new acceptance build. Do not ship or promote that scratch manifest.
+
+## ASTRA 2026-09-09: Coverage Geometry and TU research
+
+This appendix belongs to branch `astra/apf-coverage-re`. The existing material
+above is unchanged. See `ASTRA_REPORT.md` and `docs/research/apf_coverage/`.
+The delivered feature is an offline verified **MASTER PLAY geometry writer**;
+gameplay is UNWITNESSED. It is not a receiver-carry fix or an XEX patch. Both
+base and TU consumers are mapped. No code cave, patch TOML, emulator version
+switch, or launch-setting change is needed for this pack lane.
+
+The brief reserves `build.py`, `gui.py`, the capability registry and release
+lists/checkers for Claude. They have not been edited. No new panel is claimed
+to exist: `status()` explicitly reports registered=false and rendered=false.
+The following is the concrete integration contract, including the composition
+adapter that has already been implemented and tested.
+
+### Core calls and shareable project payload
+
+```python
+from mod_editor.core import apf2k8_coverage_tuning as coverage
+
+# Defaults must be read from the loaded MASTER; this is only an authored test.
+edits = (coverage.ZoneEdit(node_index=2983, drop_depth_feet=27),)
+payload = coverage.encode_profile(edits)
+assert coverage.decode_profile(payload) == edits
+
+# Build the complete batch in RAM; encode outer 180 only once.
+entry, receipt = coverage.compile_outer_entry(
+    source.index_0a,
+    edits,
+    package_maps=parsed_package_maps,
+    routes=parsed_route_requests,
+)
+```
+
+`compile_outer_entry` reads canonical MASTER, checks the masked retail pin,
+applies geometry, invokes the existing package-map/route compiler, reparses
+the final PLAY, verifies that the entire tuned node pool survived the later
+writers, recomputes affected assignments, then invokes the existing H7A/IFF
+encoder and fixed-allocation verifier. `compose_geometry(body, edits, ...)`
+provides the same composition without container encoding for previews.
+`receipt["replacement_sha256"]` names the final body. The optional
+`geometry_stage_sha256` names the intermediate coverage-only body.
+
+Use exactly one profile Modification:
+
+```python
+payload = coverage.encode_profile(edits)
+digest = hashlib.sha256(payload).hexdigest()
+modification = Modification(
+    asset_id=coverage.PROFILE_ASSET_ID,       # apf:coverage:geometry
+    kind=coverage.PROVIDER_KIND,             # coverage_geometry
+    replacement_path=self._store_payload(digest, payload, ".json"),
+    replacement_sha256=digest,
+    metadata={"schema": coverage.PROFILE_SCHEMA},
+)
+```
+
+The replacement contains schema, node selectors and authored numeric values;
+it contains no source node bytes. Payload is authoritative; metadata has no
+second copy of the editable values. Empty edits should remove the staged
+profile with one Undo record. Rebuilding starts from canonical retail, so
+removing the profile restores retail geometry. Preview the composed profile
+against all already-staged maps/routes before recording Undo or replacing the
+Modification. Duplicate node edits fail; a panel should merge knobs for the
+same node into one `ZoneEdit` before encoding.
+
+### Protected build.py insertion points
+
+In `mod_editor/apf_studio/build.py`, import the module near the existing MASTER
+writers:
+
+```python
+from mod_editor.core import apf2k8_coverage_tuning as coverage
+```
+
+In the compilation method around `play_assignment_route_group` and
+`package_map_group` (current lines 867–868), add:
+
+```python
+coverage_group: list[Modification] = []
+```
+
+In that method's kind dispatch, immediately beside the route/package branches:
+
+```python
+elif modification.kind == coverage.PROVIDER_KIND:
+    coverage_group.append(modification)
+```
+
+At the combined MASTER branch (current line 1282), use:
+
+```python
+if play_assignment_route_group or package_map_group or coverage_group:
+    outer_index, entry_bytes, row = self._compile_master_play_edits(
+        routes=tuple(play_assignment_route_group),
+        package_maps=tuple(package_map_group),
+        coverage_profiles=tuple(coverage_group),
+    )
+    # Preserve the existing collision check and compiled[180]/edit_rows writes.
+```
+
+Extend `_compile_master_play_edits`'s keyword parameters with
+`coverage_profiles: tuple[Modification, ...] = ()`, and include it in the
+initial empty-batch check. After the existing loops have decoded `requests`
+and `maps`, and **before** the `if requests and not maps` shortcut, insert:
+
+```python
+if coverage_profiles:
+    if len(coverage_profiles) != 1:
+        raise BuildError("Only one Coverage Geometry profile may be staged")
+    profile = coverage_profiles[0]
+    if (profile.asset_id != coverage.PROFILE_ASSET_ID
+            or dict(profile.metadata) != {"schema": coverage.PROFILE_SCHEMA}):
+        raise BuildError("Coverage Geometry profile identity changed")
+    try:
+        edits = coverage.decode_profile(profile.replacement_path.read_bytes())
+        entry_bytes, report = coverage.compile_outer_entry(
+            self.source.index_0a, edits, package_maps=maps, routes=requests,
+        )
+    except (OSError, ValidationError) as exc:
+        raise BuildError(f"Could not compile Coverage Geometry: {exc}") from exc
+    all_mods = tuple(package_maps) + tuple(routes) + tuple(coverage_profiles)
+    row = {
+        "asset_ids": tuple(m.asset_id for m in all_mods),
+        "kind": "master_play_combined_batch",
+        "outer_index": 180,
+        "replacement_payload_sha256s": {
+            m.asset_id: m.replacement_sha256 for m in all_mods
+        },
+        "entry_size": len(entry_bytes),
+        "entry_sha256": _hash_bytes(entry_bytes),
+        "writer_schema": coverage.SCHEMA,
+        "writer_mode": "shared_zone_geometry_then_maps_routes",
+        "resource_source_sha256": report["source_sha256"],
+        "resource_replacement_sha256": report["replacement_sha256"],
+        "changed_byte_count": report["changed_byte_count"],
+        "coverage": report,
+        "honesty": "Offline verified; gameplay UNWITNESSED",
+    }
+    return 180, entry_bytes, row
+```
+
+The ordinary build loop already verifies replacement SHA-256 before grouping.
+Preserve that gate and the subsequent receipt checks. Include the new kind in
+any existing “already compiled in a batch” skip sets, so the PNG fallback
+never tries to compile it again. Keep the existing paths when no coverage
+profile is staged. Do not call the coverage writer on a body after other
+MASTER edits: that deliberately fails its non-geometry retail pin.
+
+If tonight's separate membership/formation work adds another MASTER writer,
+extend this single sequence with that writer's own verification and retain
+the final node-pool equality check. Do not let two producers replace outer 180.
+
+### Session/project validation and GUI contract
+
+In `mod_editor/apf_studio/session.py`, `_compile_master_play` currently calls
+`compile_master_play_edits` after collecting maps/routes. When the proposed
+profile is present, replace that preview call with:
+
+```python
+preview, report = coverage.compose_geometry(
+    self._master_play_body(),
+    coverage.decode_profile(profile.replacement_path.read_bytes()),
+    package_maps=maps,
+    routes=routes,
+)
+```
+
+Use the same identity/metadata validation as the build block before this call.
+Add the proposed profile to session reload validation beside the package-map
+case, and store/remove it using the same `_store_payload`, `_record_undo` and
+`_modifications` pattern as `apply_package_map_batch`. Persist only after the
+full preview passes. `facade.py` can expose the corresponding session method
+using its existing task/modified-signal pattern.
+
+In `mod_editor/apf_studio/project.py`, add the kind alongside package maps in
+the allowed-kind grammar and the three JSON paths: replacement validation,
+metadata validation, and project-import payload decoding. The exact predicates
+to use are:
+
+```python
+if asset_id != coverage.PROFILE_ASSET_ID:
+    raise ProjectError("Coverage Geometry asset identity changed")
+if metadata != {"schema": coverage.PROFILE_SCHEMA}:
+    raise ProjectError("Coverage Geometry metadata changed")
+coverage.decode_profile(data)
+extension = ".json"  # only in the import branch that chooses an extension
+```
+
+Use the local argument names in each branch (`modification.asset_id` and
+`modification.metadata` in replacement validation, `asset_id`/`value` in the
+metadata helper). Do not store the retail MASTER or rebuilt outer in the
+project. In particular, extend the existing import/export validators rather
+than treating the payload as an unchecked generic file.
+
+`gui.py`'s `CategoryPage.__init__`, PLAYBOOKS branch (currently around
+19324–19388), is the eventual location for a Coverage Geometry tab. A panel
+is intentionally not supplied by this research-first brief. Its required
+data contract is concrete:
+
+- Source values come from `inspect_zones(canonical_body)`; rows use node ID
+  and the four names/ranges in `KNOB_RANGES`.
+- Show all `(play, slot, chain step)` uses. Recompute them through
+  `compose_geometry` after staged route clones. A selector for one play must
+  resolve to a shared node and disclose all its users.
+- Label the panel “Coverage Geometry (experimental)” and show
+  “Gameplay UNWITNESSED.” Defaults retain the source values; no repair preset.
+- Apply/Revert stage/remove the one numeric profile through the session,
+  preserving Undo. No automatic launch or external confirmation step is added.
+
+Until that controller, persistence and panel exist and their tests pass, keep
+the proposed registry row hidden. A registered backend is not a rendered tab.
+
+### Proposed capability and packaging additions
+
+Add the following object to `mod_editor/capabilities/registry.v1.json`, sorted
+consistently with neighboring IDs. This is a proposed record, not a claim that
+the registry was changed in this branch:
+
+```json
+{
+  "id": "apf2k8.gameplay_tuning_sliders.coverage_geometry",
+  "game": "apf2k8_xbox360",
+  "surface": "gameplay_tuning_sliders",
+  "title": "Coverage Geometry (experimental)",
+  "summary": "Edit shared zone-node landmarks and extents; gameplay UNWITNESSED.",
+  "classification": "offline-writer-proved",
+  "backend": {
+    "module": "mod_editor/core/apf2k8_coverage_tuning.py",
+    "command": null,
+    "operation": "write"
+  },
+  "gui": {
+    "expose": false,
+    "default_enabled": false,
+    "mode": "edit",
+    "reason": "Core writer and verifier exist; session/project/panel integration is pending."
+  },
+  "runtime": {
+    "status": "not-tested",
+    "scope": "Base and TU consumers mapped; no in-game geometry or matching witness.",
+    "evidence": []
+  },
+  "selectors": {
+    "fields": [{"name": "node_index", "required": true, "allowed": "368 pinned opcode-0x0D nodes; inspect_zones returns exact IDs"}],
+    "notes": "Shared across assignments. Four integer geometry knobs; mode/F/G preserved."
+  },
+  "source_container": {
+    "format": "APF 0A/0B, H7A, IFF PLAY",
+    "resource": "MASTER outer 180, mpb PLAY 0x33CDF8E3",
+    "retail_file": "All-Pro Football 2K8 (USA)/0A and 0B",
+    "hash_pins": ["2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891", "ca1f83e389e9c6705438f5e05230fdc820c77c76c08e2828888121a9ee4aad28"]
+  },
+  "input_constraints": ["Apply coverage before other MASTER writers; encode outer 180 once.", "Preserve first node word and payload mode/F/G bits.", "Whole non-geometry body must match the masked retail pin."],
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "tooling": "source-and-schemas-only",
+    "rule": "Share numeric profiles and tooling only; source/extracted/rebuilt retail binaries stay private."
+  },
+  "evidence": ["ASTRA_REPORT.md", "docs/research/apf_coverage/address_map.json", "docs/research/apf_coverage/writer_receipt.json"],
+  "validation_command": "python3 tests/mod_editor/test_apf2k8_coverage_tuning.py",
+  "portme": ["Integrate session/project/build and an opt-in panel.", "Witness geometry separately from receiver-carry decisions on base and TU."]
+}
+```
+
+The runtime release needs the new core module and its existing route,
+package-map and inventory dependencies; it needs no retail evidence payload,
+C++ helper, XenonUtils library, STFS delta extractor, or function-diff tool.
+Add `mod_editor/core/apf2k8_coverage_tuning.py` to the protected release
+allowlist only after integration, and add its import to the protected runtime
+check. The packaging check must continue to reject retail material. Research
+JSON is derived and committed for review; it is not required at product runtime.
+
+Validation already run here: new standalone writer/profile/composition and
+synthetic PE/STFS suites, a retail fixed-allocation rebuild, and the existing
+route/package-map suites. Claude's integration should add project round-trip,
+Undo/Revert, batch collision, final shared-use preview, and offscreen panel
+checks without changing the runtime evidence grade.
+
+<a id="astra-book-identity-2026-09-09"></a>
+
+## Astra — APF Book Identity, independent CPU books, scheme presets (2026-09-09)
+
+This section accompanies `ASTRA_REPORT.md`. The standalone implementation is
+complete and has an offline retail build; the protected integration below is
+intentionally not applied, as required by `ASTRA_CONTEXT.md`. Merge these changes
+together before advertising registered/rendered/packaged Studio support. The
+runtime status stays **UNWITNESSED**, including CPU clone consumption and TU 1.1
+compatibility. No code patch or executable change is required by this data path.
+
+### Playbooks page and action route
+
+In `mod_editor/apf_studio/gui.py`, beside the existing
+`from .playbook_membership_qt import ApfPlaybookMembershipPanel`, add:
+
+```python
+from .book_identity_qt import BookIdentityPanel
+```
+
+In `CategoryWorkspace.__init__`, immediately after `self.save_playbooks = (...)`,
+add:
+
+```python
+        self.book_identity = (
+            BookIdentityPanel(run_task)
+            if category is ApfCategory.PLAYBOOKS
+            else None
+        )
+```
+
+Inside the PLAYBOOKS tab branch, immediately after the Save Assignments tab and
+before Raw Playbook Assets, add:
+
+```python
+                tabs.addTab(self.book_identity, "Book Identity")  # type: ignore[arg-type]
+```
+
+In `CategoryWorkspace.open_workspace`, insert this branch after the existing
+`save-playbooks` / `save-assignments` branch:
+
+```python
+        elif normalized in {"book-identity", "book-clones", "scheme-presets"} \
+                and self.category is ApfCategory.PLAYBOOKS:
+            target = 5
+```
+
+The aliases select the same panel; its Action selector chooses a clone, one of
+the three presets, or all three presets. Raw Assets remains `count() - 1` (now
+6). Earlier tabs retain indices 0..4. No project `modifiedChanged` connection is
+needed: this is a copy builder operating on an explicitly selected built game,
+using the existing `run_task(label, worker, success_callback, True)` contract.
+
+The workflow is: build existing project edits → choose that built game folder →
+review preset(s) and build another folder → choose that result → review an
+independent book and build the final folder. The CLI can apply five requests at
+once using `data/apf2k8/book_clone_example.json`. The panel supports one clone
+per build and can repeat on the last result. Each review produces a complete
+team identity table; Build is disabled until review and invalidated by selection
+changes. Preset publication recompiles and checks equality with the reviewed
+reports. Clone publication verifies the compiled source directory and ROST,
+then checks each donor and all preserved bytes against the output.
+
+Do not silently attach this action to the middle of `ApfBuildService` or load a
+cloned archive into the retail-index authoring paths. Inserting sorted filename
+hashes changes outer ordinals even though existing resource offsets stay fixed.
+The finalizer is intentionally after all current Studio edits; the receipt
+records every old→new ordinal. Existing ROS files can override disc assignments.
+
+### Normal build receipt
+
+In `mod_editor/apf_studio/build.py`, add the imports alongside the core imports:
+
+```python
+from mod_editor.core.apf2k8_book_identity import disc_book_identity_report
+from mod_editor.core.errors import ValidationError
+```
+
+Reuse an existing `ValidationError` import if present. Inside
+`ApfBuildService.build`, directly after
+`output_sha = self._verify_composed(staging, spans, progress)`, add:
+
+```python
+            try:
+                book_identity = disc_book_identity_report(output_0a)
+            except (OSError, ValueError, RuntimeError, ValidationError) as exc:
+                raise BuildError(f"Book Identity reparse failed: {exc}") from exc
+```
+
+Add this root field to `manifest_document` beside `edit_count`:
+
+```python
+                "book_identity": book_identity,
+```
+
+This reads the final composed staging directory, so it reports final assignment
+and membership output. Keep all existing copy, source hash, span, and atomic
+publish verification. Do not derive this field from the retail source catalog.
+`mod_editor/apf_studio/save_playbooks.py` already adds the same 80-assignment
+identity structure after reparsing its verified raw output; it explicitly says
+`archive_inspected=false` when only a save is available. The new clone and
+preset builders already include their final disc identity tables.
+
+### Registry rows and capability action bindings
+
+Merge all three complete objects from
+`data/apf2k8/book_capabilities.fragment.json` into
+`mod_editor/capabilities/registry.v1.json`'s `capabilities` list, reject duplicate
+IDs, sort the list by `id`, and serialize canonical sorted pretty JSON. The IDs
+are `apf2k8.playbooks.identity`, `apf2k8.playbooks.clone`, and
+`apf2k8.playbooks.scheme_presets`. Identity is `read-only-mapped`; the two copy
+builders are `offline-writer-proved`. All three have `runtime.status=not-tested`.
+The fragment's `gui.expose=true` values apply only with this complete wiring.
+`scripts_config` already maps to `ApfCategory.PLAYBOOKS` in `catalog.py`.
+
+In `mod_editor/apf_studio/models.py`, add these entries to
+`CAPABILITY_ACTION_BINDINGS`, using the existing `_actions` helper:
+
+```python
+    "apf2k8.playbooks.identity": CapabilityActionBinding(
+        "apf2k8.playbooks.identity",
+        "playbooks.book_identity",
+        _actions(ApfProductAction.PREVIEW),
+        product_note=(
+            "Playbooks > Book Identity > Choose built game folder reparses all "
+            "team labels, real resources, and sharing. Runtime UNWITNESSED."
+        ),
+    ),
+    "apf2k8.playbooks.clone": CapabilityActionBinding(
+        "apf2k8.playbooks.clone",
+        "playbooks.book_identity",
+        _actions(ApfProductAction.PREVIEW, ApfProductAction.BUILD_COPY),
+        one_shot_target="mod_editor.core.apf2k8_book_clone:build_new_folder",
+        output_kind="complete_extracted_game_directory",
+        product_note=(
+            "BookIdentityPanel.review_selection and build_to create a verified "
+            "independent offensive book in a new folder. Finish existing Studio "
+            "edits first. CPU consumption and TU compatibility are UNWITNESSED."
+        ),
+    ),
+    "apf2k8.playbooks.scheme_presets": CapabilityActionBinding(
+        "apf2k8.playbooks.scheme_presets",
+        "playbooks.book_identity",
+        _actions(ApfProductAction.PREVIEW, ApfProductAction.BUILD_COPY),
+        one_shot_target="mod_editor.core.apf2k8_scheme_presets:build_presets_folder",
+        output_kind="complete_extracted_game_directory",
+        product_note=(
+            "BookIdentityPanel reviews Wide Zone, Spread-to-Run, Pro Power, or "
+            "all three, then verifies membership/tag edits in a copied game. "
+            "Existing plays and formations only; CPU behavior is UNWITNESSED."
+        ),
+    ),
+```
+
+The one-shot bindings are necessary for the card's usable-writer gate. A
+registry row alone does not create a working action or satisfy that gate. Keep
+this independent of the existing director membership card; its action binding
+continues to describe its own facade editor.
+
+### APF release allowlist and runtime/data closure
+
+The APF distribution reads `packaging/apf2k8-release-allowlist.txt`; the generic
+`packaging/release-allowlist.txt` belongs to the NFL product. Add these exact
+runtime paths to the APF allowlist, preserving its ordering convention:
+
+```text
+data/apf2k8/scheme_presets/pro-power.json
+data/apf2k8/scheme_presets/spread-to-run.json
+data/apf2k8/scheme_presets/wide-zone.json
+mod_editor/apf_studio/book_identity_qt.py
+mod_editor/core/apf2k8_book_clone.py
+mod_editor/core/apf2k8_book_identity.py
+mod_editor/core/apf2k8_scheme_presets.py
+tools/apf_book_unlock.py
+```
+
+Also ship `data/apf2k8/book_clone_example.json` if exposing the documented CLI
+example. Keep the already allowlisted SPLB writer, save-playbook tools and UI,
+`apf_inner`, `apf_outer`, `apf_roster`, `apf_save_playbook_assignments`,
+`apf_texture_patch`, and `playbook_inventory`; the new core imports need them.
+Presets resolve data relative to the installed repository root, not the working
+directory. Recipes are selectors/names only. The registry fragment is a merge
+input, not a runtime registry. The resolution probe and its Capstone dependency
+are development research only; they are not imported by the product or CLI.
+Do not stage ASTRA_CONTEXT* or any local game build/PE/ROS in a public release.
+
+In `packaging/check_apf2k8_mod_studio_runtime.py`, add these names to
+`PRODUCT_MODULES`:
+
+```python
+    "mod_editor.apf_studio.book_identity_qt",
+    "mod_editor.core.apf2k8_book_clone",
+    "mod_editor.core.apf2k8_book_identity",
+    "mod_editor.core.apf2k8_scheme_presets",
+```
+
+Add `"apf_book_unlock"` to `TOOL_MODULES`. Add the following function beside
+the existing static product checks, and invoke it as
+`_check_book_unlock_contract(modules)` in `main` immediately after the
+`TOOL_MODULES` import loop, before `_check_namespace_isolation()`:
+
+```python
+def _check_book_unlock_contract(modules: dict[str, object]) -> None:
+    identity = modules["mod_editor.core.apf2k8_book_identity"]
+    clone = modules["mod_editor.core.apf2k8_book_clone"]
+    presets = modules["mod_editor.core.apf2k8_scheme_presets"]
+    panel = modules["mod_editor.apf_studio.book_identity_qt"]
+    from mod_editor.core.errors import ValidationError
+
+    if not all(callable(target) for target in (
+        identity.disc_book_identity_report,
+        clone.verify_unlock, clone.build_new_folder,
+        presets.verify_preset, presets.build_presets_folder,
+        panel.BookIdentityPanel.review_selection, panel.BookIdentityPanel.build_to,
+    )):
+        raise RuntimeError("Book Identity action/verifier closure is incomplete")
+    try:
+        recipes = [presets.load_preset(slug) for slug in presets.PRESET_IDS]
+    except (OSError, ValueError, ValidationError) as exc:
+        raise RuntimeError(f"Book preset data closure failed: {exc}") from exc
+    if tuple(row["id"] for row in recipes) != presets.PRESET_IDS:
+        raise RuntimeError("Book preset IDs do not match the packaged data")
+    if tuple(row["book_type"] for row in recipes) != (
+        "O-ZoneBlock", "O-Shotgun", "O-ManBlock"
+    ):
+        raise RuntimeError("Book preset donor identities changed")
+```
+
+Keep the existing literal import-closure scan and every release safety gate.
+No Qt window or retail read is needed in this static data check. Offscreen
+panel tests construct the actual widget separately.
+
+After integration, run registry validation, standalone book tests, then both
+release/runtime checks against the staged APF distribution. The current work
+validated an in-memory/temp-file merge of the fragment and used the unchanged
+release text/JSON payload validators on owned files; this is **not** a claim
+that the still-unwired staged product passes its full release/runtime gate.
+
+```bash
+python3 mod_editor/capabilities/validate_registry.py
+python3 tests/mod_editor/test_apf_book_unlock.py
+QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_book_identity_qt.py
+QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_save_playbook_assignments_gui.py
+python3 tests/mod_editor/test_apf_book_unlock_retail.py
+python3 packaging/check_apf2k8_mod_studio_release.py <staged-apf-directory>
+```
+
+Run `<staged-apf-directory>/packaging/check_apf2k8_mod_studio_runtime.py` with
+the staged product's configured Python/runtime and offscreen Qt. The retail
+test's default precise `SkipTest` is expected; set `APF_BOOK_RETAIL_INDEX`,
+`APF_BOOK_FLAT_PE`, and `APF_BOOK_RAW_SAVE` to local owned inputs to exercise
+the five retail cases. Exact successful commands and receipts are in
+`ASTRA_REPORT.md`. Noah's base-XEX game witness is a separate acceptance step.
+
+
+## Astra APF CPU audibles / personnel / pass-fetch patch — 2026-09-09
+
+Owned implementation and evidence are complete in `ASTRA_REPORT.md`. These
+snippets are the remaining integration into files reserved to Claude. The
+main application does not yet render this panel. Both capabilities remain
+**unwitnessed** in game; BASE and TU 1.1 patch exports are proved offline.
+
+### Main Playbooks page: exact insertion points
+
+In `mod_editor/apf_studio/gui.py`, next to the import of
+`ApfPlaybookMembershipPanel` (currently line 192), add:
+
+```python
+from .playbook_playcall_qt import ApfPlaycallPanel
+```
+
+In `InspectorCategoryPage.__init__`, immediately after constructing
+`self.playbook_membership` (currently around line 19335), add:
+
+```python
+self.playbook_playcall = (
+    ApfPlaycallPanel(facade, run_task)
+    if category is ApfCategory.PLAYBOOKS
+    else None
+)
+```
+
+Alongside the other workspace `modifiedChanged` connections, add:
+
+```python
+if self.playbook_playcall is not None:
+    self.playbook_playcall.modifiedChanged.connect(self.modifiedChanged)
+```
+
+In the PLAYBOOKS tab branch, insert **after Save Assignments and before Raw
+Playbook Assets**. Existing semantic tab indices 0 through 4 stay valid;
+this panel is index 5 and raw assets remain the final tab:
+
+```python
+tabs.addTab(self.playbook_playcall, "CPU Audibles & Personnel")
+```
+
+In `InspectorCategoryPage.open_workspace`, after the Save Assignments branch
+and before the soundtrack branch, insert:
+
+```python
+elif normalized in {"cpu-audibles", "cpu-playcall", "te-bias"} \
+        and self.category is ApfCategory.PLAYBOOKS:
+    target = 5
+```
+
+In `InspectorCategoryPage.set_context`, before any early return for missing
+service or already-loaded source, invalidate the preview:
+
+```python
+if self.playbook_playcall is not None:
+    self.playbook_playcall.set_context()
+```
+
+In `InspectorCategoryPage.refresh`, beside the existing membership panel
+refresh (currently line 19529), add:
+
+```python
+if self.playbook_playcall is not None:
+    self.playbook_playcall.set_context()
+```
+
+In `ApfStudioMainWindow._update_product_state`, after `blocking` is assigned,
+add the following:
+
+```python
+playbooks_page = getattr(self, "_pages", {}).get(ApfCategory.PLAYBOOKS)
+playcall_panel = getattr(playbooks_page, "playbook_playcall", None)
+if playcall_panel is not None:
+    playcall_panel.set_busy(bool(self._workers))
+```
+
+`run_task`'s fourth argument is **blocking**, not “mutates project”. The panel
+uses blocking=True for staging, False for preview/export. The busy callback
+above disables controls while either kind of task runs. Preview source,
+generation and selected-book project snapshots are independently rechecked
+before staging. Repeated callbacks after a source change cannot install a
+stale preview.
+
+The actual buttons are:
+
+* **Preview CPU audibles and personnel**: parse source, classify MASTER flags,
+  compile the proposal and show before/after counts plus 28-category supply.
+* **Stage balanced CPU audibles**: existing facade
+  `stage_splb_membership(changes, progress, replace_outer=outer)`; no new
+  project format or build provider. Other books' staged edits survive.
+* **Export TE bias for pass fetches…**: select a private flat BASE/TU image and
+  a separate authored TOML output. No source project is needed for this export.
+
+Preserve the displayed “every down / main CPU weighted picker uses another
+path / unwitnessed” text. Do not label this action “Fix CPU third-and-long”.
+Records with no run or no pass are explicitly impossible. If the selected
+book already has staged changes, the panel previews those changes and refuses
+auto-balancing until they are built or reverted; it does not discard them.
+Existing Fine-tune Plays / project change controls provide selector Revert.
+
+### Capability registry and concrete product bindings
+
+Merge the **two complete schema-valid objects** in
+`docs/mod_editor/apf_playcall_capabilities.json` into the sorted `capabilities`
+array in protected `mod_editor/capabilities/registry.v1.json`. Both have
+classification `offline-writer-proved`, backend operation `write`, GUI mode
+`edit`, and runtime status `not-tested`. The human status is **unwitnessed**:
+`unwitnessed` is not a permitted runtime enum in the registry schema.
+
+* `apf2k8.playbooks.cpu_audibles` — audible writer, personnel receipt and
+  empty-formation compile guards are one book-editing capability.
+* `apf2k8.playbooks.pass_fetch_te_bias` — assembled BASE/TU pass-fetch patch.
+
+The merge was validated **in memory** with file checking enabled; the
+protected registry was not changed. Both use existing surface `scripts_config`,
+which `catalog._capability_category` already maps to PLAYBOOKS. No new
+surface enum is needed.
+
+In `mod_editor/apf_studio/models.py::CAPABILITY_ACTION_BINDINGS`, add these
+entries using the existing imported enums and `_actions` helper. The panel
+above supplies the dedicated semantic route; these entries enable honest
+capability-card status rather than the generic “handler not wired” message:
+
+```python
+"apf2k8.playbooks.cpu_audibles": CapabilityActionBinding(
+    "apf2k8.playbooks.cpu_audibles",
+    "playbooks.cpu_audibles",
+    _actions(
+        ApfProductAction.PREVIEW, ApfProductAction.REPLACE,
+        ApfProductAction.REVERT, ApfProductAction.BUILD_COPY,
+    ),
+    replace_method="stage_splb_membership",
+    revert_method="revert",
+    product_note=(
+        "CPU Audibles & Personnel previews and stages existing same-record "
+        "TagMove selectors. Revert individual selectors with the existing "
+        "project controls; Build uses the existing SPLB provider. Records "
+        "without both a run and a pass are reported. Runtime unwitnessed."
+    ),
+),
+"apf2k8.playbooks.pass_fetch_te_bias": CapabilityActionBinding(
+    "apf2k8.playbooks.pass_fetch_te_bias",
+    "playbooks.pass_fetch_te_bias",
+    _actions(ApfProductAction.PREVIEW, ApfProductAction.EXPORT,
+             ApfProductAction.BUILD_COPY),
+    one_shot_target="mod_editor.core.apf2k8_playcall_patch:write_patch",
+    output_kind="authored-xenia-patch-toml",
+    product_note=(
+        "Export TE bias for pass fetches writes a verified authored TOML. "
+        "The one-shot writer does not stage project replacements. Applies "
+        "at every down; main CPU weighted picker unchanged; unwitnessed. "
+        "Remove or disable the exported file to reverse its installation."
+    ),
+),
+```
+
+Do not add a universal raw-asset binding for either action: no individual
+archive row represents this book-wide planner or executable experiment.
+The enum's BUILD_COPY here denotes the existing verified one-shot writer
+contract; the actual panel action remains named **Export**. No protected
+`build.py` change is needed: audible plans already encode existing TagMove
+payloads and the existing provider calls the now-guarded SPLB compile path.
+Do not merge these project selectors into a new opaque binary replacement.
+
+### Release allowlists, dependencies and runtime closure
+
+Add these exact source lines to the APF manifest,
+`packaging/apf2k8-release-allowlist.txt`, next to the existing playbook modules:
+
+```text
+mod_editor/apf_studio/playbook_playcall_qt.py
+mod_editor/core/apf2k8_audibles.py
+mod_editor/core/apf2k8_playcall_patch.py
+```
+
+Retain the already-listed `mod_editor/core/apf2k8_splb_writer.py`. If the
+combined studio distribution's protected `packaging/release-allowlist.txt`
+ships these APF workspaces too, add the same three lines there. The JSON
+capability fragment is a merge input; after merging, the already-allowlisted
+canonical registry is the runtime dependency. Do not package this session's
+private images, rebuilt entries, retail inputs, `/tmp` receipts, or historical
+witness binaries. Research scripts and reports are not runtime dependencies.
+
+In protected `packaging/check_apf2k8_mod_studio_runtime.py::PRODUCT_MODULES`,
+add the exact import names:
+
+```python
+"mod_editor.apf_studio.playbook_playcall_qt",
+"mod_editor.core.apf2k8_audibles",
+"mod_editor.core.apf2k8_playcall_patch",
+"mod_editor.core.apf2k8_splb_writer",
+"capstone",
+```
+
+The current checked environment uses **capstone==5.0.7**. Install that wheel
+and its bundled native library in each target runtime, and add the dependency
+to both Python dependency-install steps of `.github/workflows/ci.yml`
+(currently around lines 89 and 407):
+
+```bash
+python -m pip install PyQt5 Pillow capstone==5.0.7
+```
+
+The selected-instruction verifier must be available in the packaged product;
+its import is deliberately lazy so missing Capstone produces a clear export
+error rather than preventing book editing. Add the same Capstone requirement
+to the installer/runtime environment construction that currently supplies
+PyQt5/Pillow, including the Windows native wheel. No LZX, cryptography,
+libxxhash or Xenia-source dependency belongs in the product runtime: those
+are optional offline TU-reconstruction research dependencies only.
+
+### Cave ownership and integration acceptance
+
+Allocate **0x84D0E000..0x84D0EFFF** exclusively to this patch. The emitted
+cave is 716 bytes, but the full 4 KiB is checked/reserved. The franchise
+example claims a broader 0x84D09100..0x84D10000 range; split that reservation
+before composing releases even though its current writes leave this page
+empty. These are .text alignment-padding addresses. Keep BASE and TU files
+separate, selected by Xenia module hash `5447E5428AA2D52A` and
+`CEA825F7C2012F5A` respectively. Do not auto-launch or claim a game witness.
+
+After integration, run the existing registry and APF release/runtime gates
+and the standalone tests below. Run all Qt checks offscreen:
+
+```bash
+python3 mod_editor/capabilities/validate_registry.py
+QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_cpu_audibles.py
+python3 tests/mod_editor/test_apf_playcall_patch.py
+python3 tests/mod_editor/test_apf_splb_writer.py
+python3 tests/mod_editor/test_apf_splb_tag_reassignment.py
+```
+
+The offscreen main-window check should navigate
+`page.open_workspace("cpu-audibles")`, verify index 5 and all three named
+buttons, load a source, preview a book, stage once, Save Project/reopen,
+and inspect the existing Build report's `personnel_availability.before/after`.
+Verify selected-book pre-existing changes disable balancing, other-book
+changes survive, and source/project changes invalidate previews. These
+main-window/packaged checks require the protected wiring and were not claimed
+as passing in Astra's standalone-panel evidence.

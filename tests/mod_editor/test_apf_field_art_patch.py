@@ -153,21 +153,21 @@ class FieldArtContractPinTests(unittest.TestCase):
         # These need a new DXT5A / 5_6_5 codec and a non-permutation swizzle path.
         for key in ((53, 3), (659, 11), (659, 168), (659, 173)):
             self.assertNotIn(key, fa._CONTRACTS)
-        # Format-59 DXT5A endzone layers stay out of the writer table.
-        self.assertNotIn((78, 1), fa._CONTRACTS)
+        # Format-59 DXT5A endzone layers now have pinned scalar/mip writers.
+        self.assertEqual(fa._CONTRACTS[(78, 1)].codec, "dxt5a")
         extra = json.loads(
             (WORKSPACE / "mod_editor/data/apf2k8_field_extra_targets.v1.json").read_text(
                 encoding="utf-8"
             )
         )
-        refused = [
+        scalar_slots = [
             (int(row["entry_index"]), int(row["file_index"]))
             for row in extra["endzones"]
             if int(row["format"]) == 59
         ]
-        self.assertEqual(len(refused), 39)
-        for key in refused:
-            self.assertNotIn(key, fa._CONTRACTS)
+        self.assertEqual(len(scalar_slots), 39)
+        for key in scalar_slots:
+            self.assertEqual(fa._CONTRACTS[key].codec, "dxt5a")
         weights_head = fa._CONTRACTS[(659, 104)]
         weights_arm = fa._CONTRACTS[(659, 227)]
         self.assertEqual(weights_head.name, "weave_skin_weights_head")
@@ -269,13 +269,17 @@ class FieldArtEditTests(unittest.TestCase):
         for index in range(len(blocks)):
             if index != block_index:
                 self.assertEqual(rebuilt_blocks[index], blocks[index])
-        # Descriptor pad + base neighbourhood + mip tail preserved; base changed.
+        # Descriptor/siblings stay fixed; endzones regenerate their mip tail.
         self.assertEqual(rebuilt_block[:low], original_block[:low])
-        self.assertEqual(rebuilt_block[high:part_end], original_block[high:part_end])
+        if contract.kind == "ENDZONE_TEXTURE":
+            self.assertNotEqual(rebuilt_block[high:part_end], original_block[high:part_end])
+            self.assertTrue(manifest["validation"]["endzone_mips_independently_verified"])
+        else:
+            self.assertEqual(rebuilt_block[high:part_end], original_block[high:part_end])
         self.assertEqual(rebuilt_block[part_end:], original_block[part_end:])
         self.assertNotEqual(rebuilt_block[low:high], original_block[low:high])
 
-        self.assertTrue(manifest["mip_tail"]["bit_exact"])
+        self.assertEqual(manifest["mip_tail"]["bit_exact"], contract.kind != "ENDZONE_TEXTURE")
         self.assertTrue(manifest["iff"]["footer_bit_exact"])
         self.assertGreaterEqual(manifest["iff"]["allocation_slack_after"], 0)
         self.assertEqual(
@@ -288,7 +292,7 @@ class FieldArtEditTests(unittest.TestCase):
         )
         self.assertFalse(manifest["binary_patch_manifest"]["contains_replacement_bytes"])
 
-    def test_endzone_l0_edit_changes_only_its_base(self) -> None:
+    def test_endzone_l0_edit_regenerates_its_mips(self) -> None:
         """``endzone_l0`` accepts an edit now.  It did not, and why is worth keeping.
 
         The encoder once emitted H7A matches that overlap their own output, which
@@ -315,32 +319,20 @@ class FieldArtEditTests(unittest.TestCase):
         """
         self._controlled_edit(6, 0, (255, 0, 255, 255), 32)
 
-    def test_an_endzone_edit_too_detailed_to_fit_is_still_refused(self) -> None:
-        """The allocation guard still has to fail closed.
-
-        Now that l0 absorbs an ordinary edit, the refusal path needs an edit that
-        genuinely cannot fit or it stops being covered.  Noise is the honest case:
-        incompressible pixels do not go into a fixed allocation at any parse
-        quality, so this pins the real ceiling rather than an encoder shortfall.
-        """
+    def test_all_quality_steps_exhausted_names_remaining_overage(self) -> None:
+        """A valid-size incompressible codec result must never escape the allocation gate."""
         source = _extract(6, 0)
         contract = source["contract"]
         rng = random.Random(20260729)
-        rgba = bytearray(source["rgba"])
-        for y in range(160, 352):
-            row = y * contract.width
-            for x in range(640, 1408):
-                offset = (row + x) * 4
-                rgba[offset:offset + 3] = bytes(
-                    (rng.randrange(256), rng.randrange(256), rng.randrange(256))
-                )
+        noise = rng.randbytes(contract.base_len + contract.mip_len)
         with tempfile.TemporaryDirectory() as directory:
-            png = Path(directory) / "noise.png"
-            _save_png(png, contract.width, contract.height, bytes(rgba))
-            with self.assertRaisesRegex(
-                fa.PatchError, "exceeds its fixed outer allocation"
-            ):
-                fa.build_field_art_patch(INDEX_PATH, png, 6, 0)
+            png = Path(directory) / "edit.png"
+            _save_png(png, contract.width, contract.height,
+                      _paint_rect(source["rgba"], contract.width, 32, (255, 0, 255, 255)))
+            with patch.object(fa, "_encode_endzone_texture", return_value=(noise, [])) as codec:
+                with self.assertRaisesRegex(fa.PatchError, r"exceeds its fixed outer allocation by [1-9][0-9]* bytes; refusing output after safe H7A"):
+                    fa.build_field_art_patch(INDEX_PATH, png, 6, 0)
+                self.assertEqual(codec.call_count, 4)
 
     def test_both_endzone_layers_land_in_one_pass(self) -> None:
         """The retail entry pin no longer blocks the second layer.
@@ -378,7 +370,7 @@ class FieldArtEditTests(unittest.TestCase):
         self.assertTrue(manifest["iff"]["footer_bit_exact"])
         self.assertFalse(manifest["binary_patch_manifest"]["contains_replacement_bytes"])
 
-    def test_endzone_l1_edit_changes_only_its_base(self) -> None:
+    def test_endzone_l1_edit_regenerates_its_mips(self) -> None:
         # l1 has room where l0 does not, so the endzone DXT1 edit path stays
         # covered on a real 2048x512 endzone slot.
         self._controlled_edit(6, 1, (255, 0, 255, 255), 32)
@@ -488,7 +480,8 @@ class FieldArtCopiedVolumeTests(unittest.TestCase):
         self.assertFalse(report["source"]["modified"])
         self.assertEqual(report["source"]["sha256_before"], report["source"]["sha256_after"])
         self.assertTrue(report["validation"]["only_target_base_part_changed"])
-        self.assertTrue(report["validation"]["packed_mip_tail_preserved"])
+        self.assertFalse(report["validation"]["packed_mip_tail_preserved"])
+        self.assertTrue(report["validation"]["endzone_mips_verified"])
         self.assertTrue(report["base_footprint"]["output_changed_is_subset_of_png_changed"])
         self.assertFalse(report["contains_game_or_replacement_bytes"])
 

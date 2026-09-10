@@ -1,8 +1,25 @@
 """Staged APF formation package-map edits (who lines up).
 
 This is the product writer for MASTER formation ``+0x11``. Each formation's
-11-byte map is a permutation of roles 0..10. Role 8 is TE and role 9 is WR.
-The other nine roles are shown as numbers; their roster names are not proved.
+11-byte map is a permutation of roles 0..10 -- every retail formation carries
+each of the eleven numbers exactly once, offence, defence and special teams
+alike (163/163 on the disc). A number here is therefore an ordering entry,
+not a headcount: no formation can hold two of anything, so this map cannot
+give a set a third receiver.
+
+Role 8 resolves to the roster's TE and role 9 to its WR through the engine's
+byte table. The other nine roles are shown as numbers; their roster names are
+not proved.
+
+The map's eleven positions are NOT the eleven route slots of a play record.
+In a play, slot 1 is the quarterback and slots 2..6 are the offensive line.
+In this map the five numbers that move together as a block through all 141
+offensive formations -- (1, 4, 3, 5, 2) -- never start at position 2, and the
+block's position changes from formation to formation. Do not read a map
+position as a spot on the field.
+
+The TE / RB / WR counts the play-call screen shows come from a personnel
+table that lives in ``default.xex``; this writer does not touch it.
 
 A project stores formation index + the 11 role bytes. Build writes those
 bytes into the copied MASTER PLAY. Whether the game's on-field look changes
@@ -49,11 +66,14 @@ PROVED_ROLE_NAMES = {
 }
 
 HONESTY = (
-    "This writes a formation's 11 role bytes. Whether the on-field look "
-    "changes in the game is unproved. It does not change which formation the "
-    "CPU picks on 3rd-and-long. Role 8 is TE and role 9 is WR. The other "
-    "roles stay numbered until they are proved. After Build, check the "
-    "formation in Xenia."
+    "This rewrites a formation's 11 role bytes. Every retail formation "
+    "carries the numbers 0 to 10 once each, so an edit reorders them and "
+    "cannot add a position to a set. Role 8 is the roster's TE and role 9 is "
+    "its WR; the other nine stay numbered. The TE / RB / WR counts on the "
+    "play-call screen come from a table inside default.xex that this studio "
+    "does not write, and this does not change which formation the CPU picks "
+    "on 3rd-and-long. Whether the on-field look changes in the game is "
+    "unproved. After Build, check the formation in Xenia."
 )
 
 
@@ -376,18 +396,25 @@ def swap_te_and_wr(package_map: Sequence[int]) -> tuple[int, ...]:
 
 
 def slot_summary(package_map: Sequence[int]) -> str:
+    """Where the two proved roles sit in the stored order.
+
+    "Map position" rather than "slot": these positions are not the play's
+    route slots, so a football reading of a position number is wrong here."""
+
     te_at = wr_at = None
-    for slot, role in enumerate(package_map):
+    for position, role in enumerate(package_map):
         if int(role) == APF_PACKAGE_MAP_ROLE_TE:
-            te_at = slot
+            te_at = position
         elif int(role) == APF_PACKAGE_MAP_ROLE_WR3:
-            wr_at = slot
+            wr_at = position
     bits = []
     if te_at is not None:
-        bits.append(f"TE is stored in map slot {te_at + 1}")
+        bits.append(f"role 8 (TE) is at map position {te_at + 1}")
     if wr_at is not None:
-        bits.append(f"WR is stored in map slot {wr_at + 1}")
-    return "; ".join(bits) if bits else "No proved TE/WR roles in this map."
+        bits.append(f"role 9 (WR) is at map position {wr_at + 1}")
+    if not bits:
+        return "No proved TE/WR roles in this map."
+    return "; ".join(bits) + " — map positions, not the play's route slots"
 
 
 def compile_package_maps(

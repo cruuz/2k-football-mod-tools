@@ -1,0 +1,11 @@
+Temporary stage from existing APF allowlist plus the seven exact WIRING paths. Protected worktree files unchanged. No private reports/game data staged.
+
+existing_runtime
+APF2K8_MOD_STUDIO_RUNTIME_REFUSED: Installation refused: APF2K8_MOD_STUDIO_RELEASE_REFUSED: file is absent from the APF release allowlist: mod_editor/apf_studio/ps3_roster_probe.py
+
+EXIT: 1
+
+new_importer_smoke
+PS3_IMPORT_CLEAN_CLOSURE_PASS
+
+EXIT: 0

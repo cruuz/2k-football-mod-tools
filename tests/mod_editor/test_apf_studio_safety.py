@@ -773,6 +773,9 @@ class BuildBoundaryTests(unittest.TestCase):
             tree = self._tiny_game(game)
             output = root / "output"
             with patch("mod_editor.apf_studio.build.EXPECTED_TREE", tree), patch(
+                "mod_editor.apf_studio.build.disc_book_identity_report",
+                return_value={"synthetic_clean_fixture": True},
+            ), patch(
                 "mod_editor.apf_studio.build.sha256_file",
                 return_value=EXPECTED_0A_SHA256,
             ), patch(

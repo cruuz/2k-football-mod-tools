@@ -203,6 +203,12 @@ def _manifest_keys(value: object) -> set[str]:
 
 class AusbOverlayBuildTests(unittest.TestCase):
     def setUp(self) -> None:
+        # These audio fixtures intentionally contain no ROST. The integration
+        # suite verifies that the real final-output identity gate is mandatory.
+        identity = patch("mod_editor.apf_studio.build.disc_book_identity_report",
+                         return_value={"synthetic_audio_fixture": True})
+        identity.start()
+        self.addCleanup(identity.stop)
         # Composition fixtures use a synthetic archive, so the real complete
         # cross-domain retail scan is covered by dedicated audio safety tests.
         self.audio_gate = patch.object(

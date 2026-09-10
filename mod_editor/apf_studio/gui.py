@@ -190,7 +190,13 @@ from .roster_workspace_qt import RosterReservePlanner
 from .save_playbooks_qt import SavePlaybookAssignmentsPanel
 from .playbook_route_qt import PlayAssignmentRoutePanel
 from .playbook_membership_qt import ApfPlaybookMembershipPanel
+from .play_designer_qt import PlayDesignerPanel
+from .book_identity_qt import BookIdentityPanel
+from .playbook_playcall_qt import ApfPlaycallPanel
+from .coverage_qt import CoverageGeometryPanel
+from .ps3_texture_bundle_qt import import_button as ps3_import_button
 from .playbook_package_map_qt import ApfPackageMapPanel
+from .ps3_roster_import_qt import Ps3RosterImportPanel
 from .save_roster_players_qt import SaveRosterPlayersPanel
 from .scene_textures import SceneTexture, shared_texture_ids
 from .stadium import ApfStadiumPreview, ApfStadiumScene
@@ -244,7 +250,7 @@ CATEGORY_BLURBS: dict[ApfCategory, str] = {
     ApfCategory.MENUS: "Search menu, layout, font, and localized text structures across the complete archive.",
     ApfCategory.AUDIO: "Browse soundtrack, commentary, stadium, presentation, and standalone XMA1 audio; play verified WAV previews, export original XMA, import ordinary audio through exact-slot conversion with your own XMA1 encoder, or batch-stage a retail-free XMA1 or PCM16 WAV folder or ZIP.",
     ApfCategory.GAMEPLAY: "Inspect mapped sliders and follow gameplay research; nothing is offered as an edit until it is proven safe.",
-    ApfCategory.PLAYBOOKS: "Inspect mapped PLAY and DRCT structures, copy or safely swap exact stock player-assignment routes in MASTER PLAY, or reassign the 69 existing offensive/defensive books across all 40 team slots in a raw roster save. Freehand route nodes and DRCT remain read-only.",
+    ApfCategory.PLAYBOOKS: "Inspect PLAY and DRCT, edit stock assignment routes and shared coverage geometry, design bounded plays and formations with CPU-book calls, balance CPU audibles, and apply scheme presets. Book Identity finalizes independent books after Build. New gameplay is UNWITNESSED; freehand node graphs, five-step timing and DRCT authoring remain unproved.",
     ApfCategory.FRANCHISE: "Browse season, schedule, save, and franchise structures while deeper franchise editing is researched.",
     ApfCategory.ALL_ASSETS: "Every record the live indexer sees appears here, including opaque and export-only resources.",
 }
@@ -4141,6 +4147,9 @@ class ApfTeamLogoPanel(QFrame):
         title_row.addWidget(title)
         title_row.addStretch(1)
         title_row.addWidget(self.status)
+        self.ps3_bundle_button = ps3_import_button(
+            self, self.facade, self.run_task, self._ps3_bundle_staged, kind="logo")
+        title_row.addWidget(self.ps3_bundle_button)
 
         specs = QHBoxLayout()
         specs.setSpacing(6)
@@ -5835,6 +5844,22 @@ class ApfTeamLogoPanel(QFrame):
             Path(source), auto_fit=False, preserve_external_master=False
         )
 
+    def _ps3_bundle_staged(self, plan, modifications):
+        last = modifications[-1]
+        self._clear_texture_master_draft()
+        self._staged_png = Path(last.replacement_path)
+        self._source_staged_png = self._staged_png
+        self._staged_profile = RETAIL_CREST_PROFILE
+        digest = last.metadata["detail_sha256"]
+        self._staged_detail_png = self._staged_png.parent / f"{digest}.png"
+        self._placement_source_rgba = None
+        self._placement_state = None
+        self.set_context()
+        self.modifiedChanged.emit()
+        QMessageBox.information(self, "PS3 crest pairs staged",
+            f"{len(plan.assignments)} crest pairs staged. Use the complete-project Build "
+            "to include every crest and its linked logo-cache layers. In-game result: UNWITNESSED.")
+
     def _stage_path(self, path: Path, *, keep_detail_layer: bool = False) -> bool:
         """Stage an image for the crest, resizing it when it is not exact.
 
@@ -6876,16 +6901,16 @@ FIELD_ART_COVERED_TARGETS: tuple[_FieldArtTarget, ...] = (
         "pair proved writable first. A red/green/blue region mask over black, "
         "like jersey_color and shoulder_color: hard edges and flat colours, "
         "because intermediate values are invalid region IDs, not blends. The "
-        "sibling endzone_l1 layer, the descriptor pad, and the packed mip tail "
-        "all stay byte-identical.",
+        "sibling endzone_l1 layer and descriptor pad stay byte-identical. "
+        "This layer regenerates all eight mip levels.",
     ),
     _FieldArtTarget(
         6, 1, "endzone_l1", 2048, 512, "DXT1", False,
         "Endzone second layer for the same single team as endzone_l0 above, "
         "and not a shared layer either. Also a red/green/blue region mask over black; "
         "author it with flat colours and no anti-aliasing. The sibling "
-        "endzone_l0 layer, the descriptor pad, and the packed mip tail all "
-        "stay byte-identical.",
+        "endzone_l0 layer and descriptor pad stay byte-identical. "
+        "This layer regenerates all eight mip levels.",
     ),
     _FieldArtTarget(
         659, 18, "pc_field_goal", 256, 256, "DXT1", False,
@@ -6911,7 +6936,7 @@ FIELD_ART_COVERED_TARGETS: tuple[_FieldArtTarget, ...] = (
 
 
 def _extra_field_art_targets() -> tuple[_FieldArtTarget, ...]:
-    """Descriptor-derived weave, dirtmap, and format-18 endzone slots."""
+    """Descriptor-derived weave, dirtmap, and format-18/format-59 endzone slots."""
 
     from .backend import ensure_tools_importable
 
@@ -6919,7 +6944,7 @@ def _extra_field_art_targets() -> tuple[_FieldArtTarget, ...]:
     import apf_field_art_patch as field_art_writer
 
     core = {(6, 0), (6, 1), (659, 18), (659, 23), (659, 252), (53, 0)}
-    codec_label = {"dxt1": "DXT1", "bc3": "BC3", "rgba8888": "8_8_8_8"}
+    codec_label = {"dxt1": "DXT1", "dxt5a": "DXT5A", "bc3": "BC3", "rgba8888": "8_8_8_8"}
     notes = {
         "UNIFORM_WEAVE": (
             "Uniform weave/detail map. Layout comes from the retail descriptor, "
@@ -6930,8 +6955,8 @@ def _extra_field_art_targets() -> tuple[_FieldArtTarget, ...]:
             "Runtime visibility is unproved."
         ),
         "ENDZONE_TEXTURE": (
-            "Per-team endzone region mask, same DXT1 structure as package 6. "
-            "Format-59 DXT5A packages are not offered. Not a shared layer."
+            "Per-team endzone mask with regenerated mips. DXT5A detail slots require "
+            "grayscale RGB and opaque alpha. Not a shared layer."
         ),
     }
     extras: list[_FieldArtTarget] = []
@@ -6975,17 +7000,21 @@ class ApfFieldArtPanel(QFrame):
     ``divot_Grass*`` weather textures, and the SCNE/CurveAnim rows stay locked
     in the inventory browser below.
 
-    The panel never mutates the shared editing session, so it never marks
-    unrelated project state modified, and it makes no in-game/runtime claim:
+    PS3 pair imports participate in the shared project session.
+    This panel makes no in-game/runtime claim:
     what a changed field texture looks like in play is unproved without a Xenia
     capture.
     """
+
+    modifiedChanged = pyqtSignal()
 
     def __init__(self, facade: ApfStudioFacade, run_task: TaskRunner):
         super().__init__()
         self.facade = facade
         self.run_task = run_task
         self._staged: dict[tuple[int, int], Path] = {}
+        self._session_field_keys = set()
+        self._field_session = None
         self._preview_dir: Path | None = None
         self._preview_token = 0
         self._display_alpha_note: str | None = None
@@ -7009,6 +7038,9 @@ class ApfFieldArtPanel(QFrame):
         title_row.addWidget(title)
         title_row.addStretch(1)
         title_row.addWidget(self.status)
+        self.ps3_bundle_button = ps3_import_button(
+            self, self.facade, self.run_task, self._ps3_bundle_staged, kind="endzone")
+        title_row.addWidget(self.ps3_bundle_button)
 
         # The three chips restate the selected slot's contract at a glance:
         # exact size (the one fact a modder must honor before picking a file),
@@ -7068,8 +7100,8 @@ class ApfFieldArtPanel(QFrame):
         self.slot.setMinimumContentsLength(24)
         self.slot.setToolTip(
             "Writable field-art slots: the original six proved bases, "
-            "package-659 weave/dirtmaps, and format-18 endzones. "
-            "field_radiance (DXT5A), format-59 endzones, and the "
+            "package-659 weave/dirtmaps, and format-18/format-59 endzones. "
+            "field_radiance (DXT5A) and the "
             "divot_Grass* weather textures (5_6_5) are deferred, and the "
             "SCNE/CurveAnim rows have no serializer, so none of them are "
             "offered here."
@@ -7086,10 +7118,10 @@ class ApfFieldArtPanel(QFrame):
             "Stock NFL endzone packages (≈118 l0/l1 pairs) appear under All "
             "Textures / the Field Art inventory browser below — browse and "
             "export every one. This editor writes the original six proved "
-            "bases, package-659 weave/dirtmaps, and format-18 per-team "
-            "endzones. Format-59 DXT5A endzones and field_radiance / "
+            "bases, package-659 weave/dirtmaps, and format-18/format-59 per-team "
+            "endzones (117 complete writable pairs). field_radiance / "
             "weather-divot codecs remain export-only; see "
-            "docs/product/APF_FIELD_ART_STOCK_NFL_WALL.md."
+            "docs/mod_editor/ps3_bundle_import.md."
         )
         self.lock_note.setObjectName("metadataText")
         self.lock_note.setWordWrap(True)
@@ -7215,6 +7247,20 @@ class ApfFieldArtPanel(QFrame):
 
     def set_context(self) -> None:
         ready = self.facade.source_ready
+        session = getattr(self.facade, "session", None)
+        if session is not self._field_session:
+            self._staged.clear()
+            self._session_field_keys.clear()
+            self._field_session = session
+        for key in self._session_field_keys:
+            self._staged.pop(key, None)
+        self._session_field_keys = set()
+        for modification in session.modifications if session else ():
+            if modification.kind == "field_art_texture":
+                meta = modification.metadata
+                key = (meta["entry_index"], meta["file_index"])
+                self._staged[key] = Path(modification.replacement_path)
+                self._session_field_keys.add(key)
         target = self.current_target()
         staged = self.staged_path(target)
         # Never silent-gray: the 221-slot combo stays searchable even before
@@ -7288,19 +7334,23 @@ class ApfFieldArtPanel(QFrame):
                 "reports the exact decode-back error."
             )
         )
+        mip_note = (
+            "Endzones regenerate all eight mip levels. Builds may simplify RGB weights "
+            "or reduce resolution to fit; the receipt records every reduction."
+            if target.name in {"endzone_l0", "endzone_l1"}
+            else "Only the base level changes; existing mip tails are preserved."
+        )
         self.description.setText(
             f"{lead}. Drop or choose any image — an off-size file is resized to "
             f"the exact {target.width}×{target.height} slot for you before "
-            f"anything is staged. {codec_sentence} Only this base level changes "
-            "— the packed mip tail keeps its original bytes — and how the edit "
-            "looks in play is not proved without a Xenia capture."
+            f"anything is staged. {codec_sentence} {mip_note} "
+            "In-game appearance remains UNWITNESSED."
         )
         self.description.setToolTip(
             f"Full contract: the offline-proved writer owns outer "
             f"{target.entry_index} / inner {target.file_index} ({target.name}), "
             f"a {target.width}×{target.height} Xenos {target.codec} texture. "
-            f"{target.note} Only the base mip level is regenerated; the packed "
-            "mip tail is byte-preserved, so it stays stale relative to your edit."
+            f"{target.note} {mip_note}"
         )
 
         self._preview_token += 1
@@ -7411,7 +7461,7 @@ class ApfFieldArtPanel(QFrame):
                     "and mip tail."
                 )
             base = pixel_bytes[head_len : head_len + contract.base_len]
-            width, height, rgba = apf_inner.decode_txtr_base_rgba(metadata, base)
+            width, height, rgba = writer.decode_field_art_base(metadata, base)
             self._display_alpha_note = None
             if for_display:
                 rgba, applied = apf_inner.force_opaque_alpha_for_display(rgba)
@@ -7513,6 +7563,14 @@ class ApfFieldArtPanel(QFrame):
         if path:
             self._stage_path(Path(path))
 
+    def _ps3_bundle_staged(self, plan, modifications):
+        self.set_context()
+        self.modifiedChanged.emit()
+        QMessageBox.information(self, "PS3 endzone pairs staged",
+            f"{len(plan.assignments)} endzone pairs staged. Build must still pass the "
+            "fixed-allocation checks. Endzone mips regenerate; any palette or resolution "
+            "reduction is recorded in the build receipt. In-game result: UNWITNESSED.")
+
     def _stage_path(self, path: Path) -> None:
         """Stage an image for this slot, resizing it when it is not exact.
 
@@ -7584,8 +7642,10 @@ class ApfFieldArtPanel(QFrame):
                 reason + "\n\nStage a Field Art replacement first.",
             )
             return
+        self.facade.revert_field_art(self.current_target().key)
         self._staged.pop(self.current_target().key, None)
         self.set_context()
+        self.modifiedChanged.emit()
 
     def _build_copied_volume(self) -> None:
         reason = str(self.build_button.property("disableReason") or "").strip()
@@ -7628,8 +7688,9 @@ class ApfFieldArtPanel(QFrame):
             "This copies your entire ~1.1 GB 0A volume to the chosen path and "
             f"replaces only the {target.name} base texture (outer "
             f"{target.entry_index} / inner {target.file_index}) through the "
-            "offline-proved writer. The descriptor pad, the packed mip tail, "
-            "every sibling inner part, and every other byte of the volume are "
+            "offline-proved writer. Endzones regenerate mips and may simplify RGB "
+            "or reduce resolution to fit, with all reductions receipted. "
+            "The descriptor pad, every sibling inner part, and other volume bytes are "
             "verified unchanged, and your source game is never modified.\n\n"
             "One build writes exactly one field-art texture: the writer is pinned "
             "to the retail bytes of each slot, so re-running it against an "
@@ -7690,9 +7751,9 @@ class ApfFieldArtPanel(QFrame):
             "Copied 0A built",
             "The offline-proved field-art writer copied your 0A and wrote only "
             f"this texture, verified against the whole volume.\n\nManifest:\n{path}"
-            f"{detail}\n\nOnly the base mip level was regenerated; the packed mip "
-            "tail is byte-preserved. How this looks in play is not proved without "
-            "a Xenia capture.",
+            f"{detail}\n\nEndzones regenerate mips; other field textures preserve their tails. "
+            "See the receipt for any palette or resolution reduction. "
+            "In-game appearance remains UNWITNESSED.",
         )
 
 
@@ -7701,7 +7762,7 @@ class FieldArtStudioPage(QWidget):
 
     Authorship on this page is the offline-proved writable set the field-art
     writer owns — the original six bases, package-659 weave/dirtmaps, and
-    format-18 endzones.  :class:`ApfFieldArtPanel` routes every write through
+    format-18/format-59 endzones.  :class:`ApfFieldArtPanel` routes every write through
     ``tools/apf_field_art_patch.py``.  Format-59 DXT5A endzones and the
     deferred codecs stay discovery: each semantic row below is still the
     original catalog identity consumed by :class:`AssetBrowser`, so preview
@@ -7713,11 +7774,11 @@ class FieldArtStudioPage(QWidget):
 
     ACTION_LOCK_REASON = (
         "This full Field Art inventory is browse and export-only. Writable "
-        "bases, weave/dirtmaps, and format-18 endzones are edited in the "
+        "bases, weave/dirtmaps, and format-18/format-59 endzones are edited in the "
         "Field Art editor above; here, archive-package co-location still "
         "does not prove the runtime field material or its team/stadium "
-        "selector, and the deferred codecs (field_radiance, format-59 "
-        "endzones, the divot_Grass* weather textures) and the "
+        "selector, and the deferred codecs (field_radiance and "
+        "the divot_Grass* weather textures) and the "
         "SCNE/CurveAnim rows have no bounded writer at all."
     )
 
@@ -7737,6 +7798,7 @@ class FieldArtStudioPage(QWidget):
         # The bounded authorship surface: only the slots the offline writer
         # proved.  The inventory below stays browse/export-only.
         self.editor = ApfFieldArtPanel(facade, run_task)
+        self.editor.modifiedChanged.connect(self.modifiedChanged)
         layout.addWidget(self.editor)
 
         semantic_panel = QFrame()
@@ -7858,8 +7920,8 @@ class FieldArtStudioPage(QWidget):
         )
         self.package_note.setText(
             "This inventory stays browse/export-only. Writable bases, "
-            "weave/dirtmaps, and format-18 endzones are edited above; "
-            "format-59 DXT5A endzones stay export-only."
+            "weave/dirtmaps, and format-18/format-59 endzones are edited above. "
+            "The inventory below stays browse/export-only."
         )
         self.browser.set_included_asset_ids(None)
         load_tip = (
@@ -8087,8 +8149,7 @@ class FieldArtStudioPage(QWidget):
                 "Next: File → Load game, then open Field Art. Stock NFL "
                 "endzones appear in the semantic list (~118 packages). "
                 "Format-18 layers, package-659 weave/dirtmaps, and the "
-                "original six bases are writable; format-59 DXT5A layers "
-                "stay browse/export-only."
+                "original six bases are writable, including format-59 DXT5A endzone layers."
             )
             self.browser.set_context()
             return
@@ -19319,6 +19380,11 @@ class InspectorCategoryPage(QWidget):
             if category is ApfCategory.ROSTERS
             else None
         )
+        self.ps3_roster_import = (
+            Ps3RosterImportPanel(run_task)
+            if category is ApfCategory.ROSTERS
+            else None
+        )
         self.save_playbooks = (
             SavePlaybookAssignmentsPanel(run_task)
             if category is ApfCategory.PLAYBOOKS
@@ -19342,6 +19408,13 @@ class InspectorCategoryPage(QWidget):
             if category is ApfCategory.PLAYBOOKS
             else None
         )
+        self.play_designer = PlayDesignerPanel(facade, run_task) if category is ApfCategory.PLAYBOOKS else None
+        self.book_identity = BookIdentityPanel(run_task, facade=facade) if category is ApfCategory.PLAYBOOKS else None
+        self.playbook_playcall = ApfPlaycallPanel(facade, run_task) if category is ApfCategory.PLAYBOOKS else None
+        self.coverage_geometry = CoverageGeometryPanel(facade, run_task) if category is ApfCategory.PLAYBOOKS else None
+        for panel in (self.play_designer, self.book_identity, self.playbook_playcall, self.coverage_geometry):
+            if panel is not None:
+                panel.modifiedChanged.connect(self.modifiedChanged)
         self.workspace_tabs: QTabWidget | None = None
         self.inspector.modifiedChanged.connect(self.modifiedChanged)
         self.inspector.audioAnnotationChanged.connect(
@@ -19377,6 +19450,7 @@ class InspectorCategoryPage(QWidget):
                 # mnemonic marker and visually eating the tab label.
                 tabs.addTab(self.inspector, "Roster + Base Ratings")
                 tabs.addTab(self.save_roster_players, "Save Players")  # type: ignore[arg-type]
+                tabs.addTab(self.ps3_roster_import, "Import PS3 Roster")  # type: ignore[arg-type]
                 tabs.addTab(self.roster_planner, "53-player Planner")  # type: ignore[arg-type]
                 tabs.addTab(self.assets, "&Raw Roster Assets")  # type: ignore[arg-type]
             elif category is ApfCategory.PLAYBOOKS:
@@ -19385,6 +19459,10 @@ class InspectorCategoryPage(QWidget):
                 tabs.addTab(self.playbook_package_maps, "Who lines up")  # type: ignore[arg-type]
                 tabs.addTab(self.playbook_routes, "Assignment Routes")  # type: ignore[arg-type]
                 tabs.addTab(self.save_playbooks, "Save Assignments")  # type: ignore[arg-type]
+                tabs.addTab(self.play_designer, "Design Plays / Formations")
+                tabs.addTab(self.coverage_geometry, "Coverage Geometry (experimental)")
+                tabs.addTab(self.book_identity, "Book Identity")
+                tabs.addTab(self.playbook_playcall, "CPU Play Calling")
                 tabs.addTab(self.assets, "Raw Playbook Assets")  # type: ignore[arg-type]
             else:
                 tabs.addTab(self.inspector, "Audio Browser")
@@ -19410,8 +19488,11 @@ class InspectorCategoryPage(QWidget):
         elif normalized in {"save-players", "save-roster-players"} \
                 and self.category is ApfCategory.ROSTERS:
             target = 1
+        elif normalized in {"ps3-roster-import", "import-ps3-roster", "ps3-import"} \
+                and self.category is ApfCategory.ROSTERS:
+            target = self.workspace_tabs.indexOf(self.ps3_roster_import)
         elif normalized == "roster-planner" and self.category is ApfCategory.ROSTERS:
-            target = 2
+            target = self.workspace_tabs.indexOf(self.roster_planner)
         elif normalized in {"fine-tune", "fine-tune-plays", "membership"} \
                 and self.category is ApfCategory.PLAYBOOKS:
             target = 1
@@ -19424,6 +19505,14 @@ class InspectorCategoryPage(QWidget):
         elif normalized in {"save-playbooks", "save-assignments"} \
                 and self.category is ApfCategory.PLAYBOOKS:
             target = 4
+        elif normalized in {"play-designer", "design-play", "design-formation"} and self.category is ApfCategory.PLAYBOOKS:
+            target = self.workspace_tabs.indexOf(self.play_designer)
+        elif normalized in {"coverage", "coverage-geometry"} and self.category is ApfCategory.PLAYBOOKS:
+            target = self.workspace_tabs.indexOf(self.coverage_geometry)
+        elif normalized in {"book-identity", "book-clones", "scheme-presets"} and self.category is ApfCategory.PLAYBOOKS:
+            target = self.workspace_tabs.indexOf(self.book_identity)
+        elif normalized in {"cpu-audibles", "cpu-playcall", "te-bias"} and self.category is ApfCategory.PLAYBOOKS:
+            target = self.workspace_tabs.indexOf(self.playbook_playcall)
         elif normalized == "soundtrack" and self.category is ApfCategory.AUDIO:
             target = 0
         elif normalized == "raw-assets" and self.workspace_tabs is not None:
@@ -19442,6 +19531,9 @@ class InspectorCategoryPage(QWidget):
             self.inspector._toggle_soundtrack_album()
 
     def set_context(self, service: ApfInspectorService | None) -> None:
+        for panel in (self.playbook_playcall, self.play_designer, self.coverage_geometry, self.book_identity):
+            if panel is not None:
+                panel.set_context()
         if self.facade.source_ready:
             count = (
                 len(
@@ -19542,6 +19634,11 @@ class InspectorCategoryPage(QWidget):
             self.playbook_membership.set_context()
         if self.playbook_package_maps is not None:
             self.playbook_package_maps.refresh()
+        if self.playbook_playcall is not None:
+            self.playbook_playcall.set_context()
+        for panel in (self.play_designer, self.coverage_geometry, self.book_identity):
+            if panel is not None:
+                panel.refresh()
 
 
 def _format_summary(values: dict[str, int] | object) -> str:
@@ -19929,8 +20026,20 @@ class ApfStudioMainWindow(QMainWindow):
         brand_title = QLabel("APF MOD STUDIO")
         brand_title.setObjectName("brandTitle")
         release_label = __version__.replace("0.1.0-alpha.", "Alpha ")
-        version = QLabel(f"{release_label} • retail-free")
+        # Both identities, because they come from two different modules and a
+        # mixed install shows a pair that never shipped together. A screenshot
+        # of this line is enough to tell a real release from a spliced tree.
+        version = QLabel(
+            f"{release_label} • {update_check.BUILD_RELEASE_TAG} • retail-free"
+        )
         version.setObjectName("mutedLabel")
+        version.setWordWrap(True)
+        version.setToolTip(
+            f"APF 2K8 Mod Studio {__version__}, built from release "
+            f"{update_check.BUILD_RELEASE_TAG}. Both come from this install; "
+            "if they are not a pair the release notes list together, the "
+            "install has files from more than one build."
+        )
         titles.addWidget(brand_title)
         titles.addWidget(version)
         brand.addWidget(mark)
@@ -20930,6 +21039,11 @@ class ApfStudioMainWindow(QMainWindow):
     def _update_product_state(self) -> None:
         ready = self.facade.source_ready
         blocking = bool(self._blocking_workers)
+        playbooks_page = getattr(self, "_pages", {}).get(ApfCategory.PLAYBOOKS)
+        for name in ("playbook_playcall", "coverage_geometry", "book_identity"):
+            panel = getattr(playbooks_page, name, None)
+            if panel is not None:
+                panel.set_busy(bool(self._workers))
         edit_count = int(getattr(self.facade, "modified_count", 0))
         metadata_count = int(
             getattr(self.facade, "project_metadata_count", 0)
@@ -21567,8 +21681,37 @@ class ApfStudioMainWindow(QMainWindow):
             True,
         )
 
+    def _unstaged_who_lines_up(self) -> tuple[int, ...]:
+        """Who-lines-up maps a user can see edited that Build would skip."""
+
+        page = self._pages.get(ApfCategory.PLAYBOOKS)
+        panel = getattr(page, "playbook_package_maps", None)
+        reader = getattr(panel, "unstaged_maps", None)
+        if reader is None:
+            return ()
+        try:
+            return tuple(int(index) for index in reader())
+        except Exception:
+            return ()
+
     def _build_game(self) -> None:
         if not self.facade.source_ready:
+            return
+        pending = self._unstaged_who_lines_up()
+        if pending:
+            # Building here would write a plain copy and then report "Applied
+            # 0 edits" while the Who lines up list still showed the formation
+            # marked edited. Say what is missing instead.
+            QMessageBox.information(
+                self,
+                "Stage the who-lines-up maps first",
+                f"{len(pending)} formation map"
+                f"{'s are' if len(pending) != 1 else ' is'} edited on the Who "
+                "lines up tab but not staged, so this build would leave "
+                f"{'them' if len(pending) != 1 else 'it'} out.\n\n"
+                "Open Playbooks & Plays → Who lines up, click Stage this map, "
+                "then Build again.",
+            )
             return
         chosen = QFileDialog.getExistingDirectory(
             self,
@@ -21619,16 +21762,60 @@ class ApfStudioMainWindow(QMainWindow):
             True,
         )
 
+    @staticmethod
+    def _build_edit_detail(receipt: object) -> str:
+        """Name what the build actually wrote, from the build's own manifest.
+
+        "Applied 0 edits" on its own reads like a failure and says nothing
+        about why, so a zero build explains itself and a non-zero build
+        reports the regions the writers changed rather than a bare count."""
+
+        changed = len(getattr(receipt, "modified_assets", ()))
+        if not changed:
+            return (
+                "Applied 0 edits: nothing was staged, so this folder is a "
+                "plain copy of your game. Stage an edit first, then Build."
+            )
+        lines = [f"Applied {changed} edit{'s' if changed != 1 else ''}."]
+        try:
+            manifest = Path(getattr(receipt, "manifest", ""))
+            document = json.loads(manifest.read_text(encoding="utf-8"))
+            rows = document.get("edits") or []
+        except (AttributeError, OSError, ValueError, TypeError):
+            rows = []
+        maps = 0
+        regions = 0
+        bytes_changed = 0
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            maps += len(row.get("package_maps") or ())
+            regions += len(row.get("changed_ranges") or ())
+            try:
+                bytes_changed += int(row.get("changed_byte_count") or 0)
+            except (TypeError, ValueError):
+                continue
+        if maps:
+            lines.append(
+                f"{maps} who-lines-up formation map"
+                f"{'s' if maps != 1 else ''} written."
+            )
+        if regions:
+            lines.append(
+                f"{regions} byte region{'s' if regions != 1 else ''} changed "
+                f"({bytes_changed:,} byte{'s' if bytes_changed != 1 else ''})."
+            )
+        return " ".join(lines)
+
     def _build_complete(self, receipt: object) -> None:
         output = Path(receipt.output_game)  # type: ignore[attr-defined]
-        changed = len(receipt.modified_assets)  # type: ignore[attr-defined]
         self._last_detail = f"Build complete: {output.name}"
         self._update_product_state()
         QMessageBox.information(
             self,
             "Modded game folder built",
             f"Wrote:\n{output}\n\n"
-            f"Applied {changed} edit{'s' if changed != 1 else ''}. The complete output was verified and your source stayed untouched.\n\n"
+            f"{self._build_edit_detail(receipt)} The complete output was verified and your source stayed untouched.\n\n"
             "Point Xenia at this folder. Rebuild into the same folder to keep that path.\n\n"
             "This folder contains your retail game data. Do not redistribute it; share the .apf2k8mod project instead.",
         )

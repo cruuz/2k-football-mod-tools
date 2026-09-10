@@ -40,7 +40,64 @@ def crop_metrics(image: tuple[int, int, str, int, bytes]
     return values, sum(model_pixel(value) for value in values)
 
 
+def checker_self_tests() -> int:
+    """Exercise this CLI checker without requiring private renderer captures.
+
+    Explicit STATIC.png ANIMATED.png calls retain the full framebuffer gate.
+    The repository-wide no-argument Python sweep tests checker behavior only.
+    """
+    import contextlib
+    import io
+    import unittest
+    from unittest.mock import patch
+
+    def frame(color: bytes, digest: str = "static", size=(1000, 800)):
+        width, height = size
+        return width, height, digest, width * height * 4, color * (width * height)
+
+    class CheckerTests(unittest.TestCase):
+        def invoke(self, static, animated):
+            with patch(__name__ + ".inspect", side_effect=(static, animated)):
+                with contextlib.redirect_stdout(io.StringIO()):
+                    return main(["static.png", "animated.png"])
+
+        def test_visible_different_opaque_geometry_passes(self):
+            self.assertEqual(self.invoke(frame(bytes((160, 60, 70, 255))),
+                frame(bytes((180, 60, 70, 255)), "animated")), 0)
+
+        def test_missing_geometry_fails(self):
+            with self.assertRaisesRegex(ValueError, "coverage"):
+                self.invoke(frame(bytes((0, 0, 0, 255))),
+                    frame(bytes((1, 1, 1, 255)), "animated"))
+
+        def test_same_pixels_with_different_file_hash_fails(self):
+            color = bytes((160, 60, 70, 255))
+            with self.assertRaisesRegex(ValueError, "difference"):
+                self.invoke(frame(color), frame(color, "animated"))
+
+        def test_identical_capture_fails(self):
+            with self.assertRaisesRegex(ValueError, "byte-identical"):
+                self.invoke(frame(bytes((160, 60, 70, 255))),
+                    frame(bytes((160, 60, 70, 255))))
+
+        def test_transparent_capture_fails(self):
+            with self.assertRaisesRegex(ValueError, "not opaque"):
+                self.invoke(frame(bytes((160, 60, 70, 254))),
+                    frame(bytes((180, 60, 70, 255)), "animated"))
+
+        def test_dimension_mismatch_fails(self):
+            with self.assertRaisesRegex(ValueError, "dimensions differ"):
+                self.invoke(frame(bytes((160, 60, 70, 255))),
+                    frame(bytes((180, 60, 70, 255)), "animated", (1000, 801)))
+
+    result = unittest.TextTestRunner(verbosity=2).run(
+        unittest.defaultTestLoader.loadTestsFromTestCase(CheckerTests))
+    return 0 if result.wasSuccessful() else 1
+
+
 def main(argv: list[str]) -> int:
+    if not argv:
+        return checker_self_tests()
     if len(argv) != 2:
         print("usage: apf_player_shadow_screenshot_test.py STATIC.png ANIMATED.png",
               file=sys.stderr)

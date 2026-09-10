@@ -289,6 +289,13 @@ def write_new_save(
         raise SavePlaybookError(str(exc)) from exc
     if verification.get("verified") is not True:
         raise SavePlaybookError("the independent byte verification did not pass")
+    from mod_editor.core.apf2k8_book_identity import (
+        book_identity_report,
+        parse_roster_identity,
+    )
+    patch_manifest["book_identity"] = book_identity_report(
+        parse_roster_identity(output_data, raw_save=True)
+    )
     manifest_bytes = (
         json.dumps(patch_manifest, indent=2, sort_keys=True) + "\n"
     ).encode("utf-8")

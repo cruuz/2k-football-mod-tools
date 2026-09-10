@@ -1,0 +1,24 @@
+TEMPORARY_GUI_HANDOFF_IMPORT_OK; protected file unchanged
+test_deferred_families_stay_locked_in_the_inventory (__main__.ApfFieldArtGuiTests.test_deferred_families_stay_locked_in_the_inventory) ... ok
+test_editor_build_dispatches_the_proved_writer_for_the_selected_slot (__main__.ApfFieldArtGuiTests.test_editor_build_dispatches_the_proved_writer_for_the_selected_slot) ... ok
+test_editor_build_fails_closed_when_the_writer_refuses (__main__.ApfFieldArtGuiTests.test_editor_build_fails_closed_when_the_writer_refuses) ... ok
+test_editor_filter_keeps_the_expanded_slot_combo_usable (__main__.ApfFieldArtGuiTests.test_editor_filter_keeps_the_expanded_slot_combo_usable) ... ok
+test_editor_is_read_only_safe_until_a_game_is_loaded (__main__.ApfFieldArtGuiTests.test_editor_is_read_only_safe_until_a_game_is_loaded) ... ok
+test_editor_offers_exactly_the_offline_proved_slots (__main__.ApfFieldArtGuiTests.test_editor_offers_exactly_the_offline_proved_slots) ... ok
+test_editor_offers_to_resize_a_png_that_is_not_the_base_size (__main__.ApfFieldArtGuiTests.test_editor_offers_to_resize_a_png_that_is_not_the_base_size)
+A wrong size is an offer now, not a dead end. ... ok
+test_editor_replace_is_unlocked_but_build_waits_for_a_staged_png (__main__.ApfFieldArtGuiTests.test_editor_replace_is_unlocked_but_build_waits_for_a_staged_png) ... ok
+test_editor_stages_an_exact_size_png_and_revert_clears_it (__main__.ApfFieldArtGuiTests.test_editor_stages_an_exact_size_png_and_revert_clears_it) ... ok
+test_editor_stock_copy_does_not_claim_all_118_teams_writable (__main__.ApfFieldArtGuiTests.test_editor_stock_copy_does_not_claim_all_118_teams_writable) ... ok
+test_family_filter_uses_reviewed_asset_ids_not_name_guessing (__main__.ApfFieldArtGuiTests.test_family_filter_uses_reviewed_asset_ids_not_name_guessing) ... ok
+test_replace_and_revert_are_visible_but_explicitly_locked (__main__.ApfFieldArtGuiTests.test_replace_and_revert_are_visible_but_explicitly_locked) ... ok
+test_semantic_contract_drift_fails_closed_but_raw_rows_stay_visible (__main__.ApfFieldArtGuiTests.test_semantic_contract_drift_fails_closed_but_raw_rows_stay_visible) ... ok
+test_semantic_map_and_exact_catalog_browser_ship_together (__main__.ApfFieldArtGuiTests.test_semantic_map_and_exact_catalog_browser_ship_together) ... ok
+test_stock_nfl_endzones_button_filters_inventory (__main__.ApfFieldArtGuiTests.test_stock_nfl_endzones_button_filters_inventory) ... ok
+test_stock_nfl_endzones_button_teaches_when_unloaded (__main__.ApfFieldArtGuiTests.test_stock_nfl_endzones_button_teaches_when_unloaded) ... ok
+test_unloaded_state_preserves_the_action_lock (__main__.ApfFieldArtGuiTests.test_unloaded_state_preserves_the_action_lock) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.314s
+
+OK

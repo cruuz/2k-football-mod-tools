@@ -1,0 +1,57 @@
+{
+  "schema": "apf2k8_ps3_delivery_validation/v1",
+  "implementation_commit": "3de8ee01271c9401b76d35e7af59f58a5e6832d2",
+  "ast_parsed_python_files": 9,
+  "new_capability_row_schema_valid": true,
+  "previous_wiring_preserved": true,
+  "protected_files_unchanged": true,
+  "unit_tests": {
+    "selected_suites": 12,
+    "selected_tests": 152,
+    "passed": 150,
+    "intentional_opt_in_skips": 2,
+    "remaining_failures": 0
+  },
+  "full_census": {
+    "entries": 1541,
+    "textures": 3626,
+    "entry_errors": [],
+    "counts": {
+      "same_pixels": 1186,
+      "different_pixels": 2303,
+      "uncompared": 137
+    }
+  },
+  "clean_new_module_smoke": "PS3_IMPORT_CLEAN_CLOSURE_PASS",
+  "full_packaged_gate": "REFUSED: protected internal APF allowlist awaits WIRING integration",
+  "free_bytes_at_validation": 114405511168,
+  "runtime": "UNWITNESSED",
+  "pushed": false,
+  "code_sha256": {
+    "mod_editor/apf_studio/ps3_roster_probe.py": "9f8e19b8f940cef97c9dd5f066145bfbaeacc2a4b1b0bacff0db2c3fd904947d",
+    "mod_editor/apf_studio/ps3_texture_bundle.py": "7d4259af2117fe86cd8e4a39313dbce78c42b6986be1000ec4f173f0e7ccfe0a",
+    "mod_editor/apf_studio/ps3_texture_bundle_qt.py": "2218f4174481d436e9adff5cfa785926137136fa07ce01a604d1ff8b3c744a16",
+    "mod_editor/apf_studio/ps3_texture_codec.py": "ea554fca0f71afd5778ece821524f6a49419404454affe91ab7b8784952c373b",
+    "mod_editor/apf_studio/ps3_texture_probe.py": "60121ce214b7525531b6aa0db943b0e81875a18a21df24be676aa6d0995d58ca",
+    "mod_editor/apf_studio/ps3_texture_probe_fast.py": "7eb7c9e3efbeff03a54871148b77694c95f51b0c2d2ea7a7302981ce98dccc70",
+    "tests/mod_editor/test_apf_ps3_probes.py": "2f7f041029273f1d1a8e08a50eeb7c3e741305864c5303dfbd0f5525d6006cb9",
+    "tests/mod_editor/test_apf_ps3_texture_bundle.py": "c5db0979c4458dbd0ca6acb3b3d69952c577dba747004c611155ee9221fa3b9c",
+    "tests/mod_editor/test_apf_ps3_texture_bundle_qt.py": "733979b47441797712397381d37aa6cb70641ec03ae9dba0cd8dd6b1bbe52c67"
+  },
+  "receipt_sha256": {
+    "atlanta_crest_writer.json": "ab7e648c7b9a8b778bb2895591d671e8af9541ee8a293f44a5e5a7a424ea12ba",
+    "available_staging_plan.json": "8e2747d7c76db389049ef298ccc93f58e8c48b5994c0d53f3f5731d8f7400a77",
+    "bundle_inventory.json": "96e6d24ba0de47fadc2972ee085f0446aeea1fec46eb562fd2fd457381275685",
+    "hash_mapping.json": "8604a51500357f650f1e7f05c669067e6ccf25da036c4eccfcd20918ed3dbb1a",
+    "manifest_hash_proof.json": "fcd5947e42086f29b7b557273121c04a38ddeaac0991bc4bfe2d19907a59e982",
+    "roster2_comparison.json": "1e664aafd661b5b087899276aca91a07ed3dfdf4c1f9bed6d7a57719dcdfd860",
+    "roster_comparison.json": "c1fa45741311acbe21d6ae58be80a060c11d45116aa9d0c6fb0f0ae86df7049d",
+    "runtime_closure.txt": "b9fc6249bd0257eed030f6b237f7cde39a2f29d64d9128f1244970d3c47c50af",
+    "test_results.txt": "a537baabb4f3173e15d311d3b6ca451214ec848b3256d59641b2b4029bbc4d45",
+    "test_results_importer_final.txt": "9c80596c9be89459dfd102584c0b38c31c484015116a8ec8d07ef5cd7b7197bd",
+    "test_results_probes_final.txt": "e6d064270e002c80b15b5c3fba841665ab48c63cc47ef787f4c78d72a81c6c01",
+    "test_results_qt_final.txt": "e98bb6303102aabccbcbae63f197ed80b78692d85c1203cbe83ae1f7a46db80c",
+    "test_results_retail_regression.txt": "dcdfd217901da8819b2c566f01c70003c515794edac90c1928309ac95383fe3a",
+    "texture_comparison.json": "252c72fe4110191a511f6c1bc660088823bf4f91c2764f6326e3d7dfc6cecd62"
+  }
+}

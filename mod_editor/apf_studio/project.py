@@ -59,6 +59,9 @@ from mod_editor.core.apf2k8_splb_writer import (
     decode_membership_payload as decode_splb_membership_payload,
 )
 from mod_editor.core.errors import ValidationError
+from . import play_design_service as play_design
+from . import coverage_service, scheme_service
+from mod_editor.core import apf2k8_coverage_tuning as coverage
 
 from .player_ratings import PlayerRatingsError, load_player_rating_schema
 from .player_positions import PlayerPositionsError, load_player_position_schema
@@ -807,6 +810,9 @@ def _payload_name(asset_id: str, kind: str) -> str:
             PLAY_ASSIGNMENT_ROUTE_KIND,
             PACKAGE_MAP_KIND,
             SPLB_MEMBERSHIP_KIND,
+            play_design.PROVIDER_KIND,
+            coverage.PROVIDER_KIND,
+            scheme_service.PROVIDER_KIND,
         }
         else ".xma1-packets"
         if kind in {AUDO_EXACT_SLOT_KIND, AUSB_EXACT_SLOT_KIND}
@@ -969,6 +975,17 @@ def _validate_payload_source(
         decode_custom_team_appearance_payload(data, modification.asset_id)
     elif modification.kind == "uniform_equipment_colors":
         decode_uniform_equipment_color_payload(data, modification.asset_id)
+    elif modification.kind in {coverage.PROVIDER_KIND, scheme_service.PROVIDER_KIND}:
+        service = coverage_service if modification.kind == coverage.PROVIDER_KIND else scheme_service
+        try:
+            service.validate_payload(data, modification.asset_id, dict(modification.metadata))
+        except ValidationError as exc:
+            raise ProjectError(str(exc)) from exc
+    elif modification.kind == play_design.PROVIDER_KIND:
+        try:
+            play_design.validate_payload(data, modification.asset_id, dict(modification.metadata))
+        except ValidationError as exc:
+            raise ProjectError(str(exc)) from exc
     elif modification.kind == PLAY_ASSIGNMENT_ROUTE_KIND:
         try:
             decode_route_clone_payload(data, modification.asset_id)
@@ -1702,6 +1719,17 @@ def _validated_metadata(
                 f"Uniform equipment-color project target changed: {asset_id}"
             )
         return value
+    if kind in {coverage.PROVIDER_KIND, scheme_service.PROVIDER_KIND}:
+        service = coverage_service if kind == coverage.PROVIDER_KIND else scheme_service
+        try:
+            return service.validate_metadata(asset_id, value)
+        except ValidationError as exc:
+            raise ProjectError(str(exc)) from exc
+    if kind == play_design.PROVIDER_KIND:
+        try:
+            return play_design.validate_metadata(asset_id, value)
+        except ValidationError as exc:
+            raise ProjectError(str(exc)) from exc
     if kind == PLAY_ASSIGNMENT_ROUTE_KIND:
         try:
             request = route_clone_request_from_mapping(value)
@@ -2284,6 +2312,19 @@ def load_project(
                 extension = ".json"
             elif kind == "uniform_equipment_colors":
                 decode_uniform_equipment_color_payload(data, asset_id)
+                extension = ".json"
+            elif kind in {coverage.PROVIDER_KIND, scheme_service.PROVIDER_KIND}:
+                service = coverage_service if kind == coverage.PROVIDER_KIND else scheme_service
+                try:
+                    service.validate_payload(data, asset_id, metadata)
+                except ValidationError as exc:
+                    raise ProjectError(str(exc)) from exc
+                extension = ".json"
+            elif kind == play_design.PROVIDER_KIND:
+                try:
+                    play_design.validate_payload(data, asset_id, metadata)
+                except ValidationError as exc:
+                    raise ProjectError(str(exc)) from exc
                 extension = ".json"
             elif kind == PLAY_ASSIGNMENT_ROUTE_KIND:
                 try:

@@ -1,0 +1,11 @@
+test_curve_rows_remain_visible_without_being_called_field_textures (__main__.ApfFieldArtInventoryTests.test_curve_rows_remain_visible_without_being_called_field_textures) ... ok
+test_endzone_pairing_and_package_ownership_are_explicit_but_bounded (__main__.ApfFieldArtInventoryTests.test_endzone_pairing_and_package_ownership_are_explicit_but_bounded) ... ok
+test_exact_semantic_and_package_totals (__main__.ApfFieldArtInventoryTests.test_exact_semantic_and_package_totals) ... ok
+test_fails_closed_on_missing_unknown_or_reclassified_row (__main__.ApfFieldArtInventoryTests.test_fails_closed_on_missing_unknown_or_reclassified_row) ... ok
+test_fails_closed_when_package_relationships_drift (__main__.ApfFieldArtInventoryTests.test_fails_closed_when_package_relationships_drift) ... ok
+test_records_groups_and_summary_are_immutable (__main__.ApfFieldArtInventoryTests.test_records_groups_and_summary_are_immutable) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.014s
+
+OK

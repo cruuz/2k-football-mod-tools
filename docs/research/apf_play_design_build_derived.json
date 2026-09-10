@@ -1,0 +1,332 @@
+{
+  "design": {
+    "already_applied": false,
+    "changed_byte_count": 863,
+    "contains_retail_bytes": false,
+    "counts_after": [
+      164,
+      592,
+      5010
+    ],
+    "counts_before": [
+      163,
+      586,
+      4948
+    ],
+    "independent_reparse": true,
+    "opaque_relation_policy": "preserved; new formation copies donor row; meaning unresolved",
+    "operations": [
+      {
+        "donor": 0,
+        "kind": "formations",
+        "mode": "append",
+        "target": 163
+      },
+      {
+        "donor": 10,
+        "kind": "plays",
+        "mode": "append",
+        "target": 586
+      },
+      {
+        "donor": 10,
+        "kind": "plays",
+        "mode": "append",
+        "target": 587
+      },
+      {
+        "donor": 10,
+        "kind": "plays",
+        "mode": "append",
+        "target": 588
+      },
+      {
+        "donor": 10,
+        "kind": "plays",
+        "mode": "append",
+        "target": 589
+      },
+      {
+        "donor": 10,
+        "kind": "plays",
+        "mode": "append",
+        "target": 590
+      },
+      {
+        "donor": 439,
+        "kind": "plays",
+        "mode": "append",
+        "target": 591
+      },
+      {
+        "kind": "assignment",
+        "node_count": 3,
+        "play": 586,
+        "slot": 6,
+        "strategy": "private chain"
+      },
+      {
+        "kind": "assignment",
+        "node_count": 3,
+        "play": 586,
+        "slot": 7,
+        "strategy": "private chain"
+      },
+      {
+        "kind": "assignment",
+        "node_count": 3,
+        "play": 586,
+        "slot": 8,
+        "strategy": "private chain"
+      },
+      {
+        "kind": "assignment",
+        "node_count": 3,
+        "play": 586,
+        "slot": 9,
+        "strategy": "private chain"
+      },
+      {
+        "kind": "assignment",
+        "node_count": 3,
+        "play": 587,
+        "slot": 6,
+        "strategy": "private chain"
+      },
+      {
+        "kind": "assignment",
+        "node_count": 3,
+        "play": 587,
+        "slot": 7,
+        "strategy": "private chain"
+      },
+      {
+        "kind": "assignment",
+        "node_count": 3,
+        "play": 587,
+        "slot": 8,
+        "strategy": "private chain"
+      },
+      {
+        "kind": "assignment",
+        "node_count": 3,
+        "play": 587,
+        "slot": 9,
+        "strategy": "private chain"
+      },
+      {
+        "kind": "assignment",
+        "node_count": 3,
+        "play": 588,
+        "slot": 6,
+        "strategy": "private chain"
+      },
+      {
+        "kind": "assignment",
+        "node_count": 3,
+        "play": 588,
+        "slot": 7,
+        "strategy": "private chain"
+      },
+      {
+        "kind": "assignment",
+        "node_count": 3,
+        "play": 588,
+        "slot": 8,
+        "strategy": "private chain"
+      },
+      {
+        "kind": "assignment",
+        "node_count": 3,
+        "play": 588,
+        "slot": 9,
+        "strategy": "private chain"
+      },
+      {
+        "kind": "assignment",
+        "node_count": 3,
+        "play": 589,
+        "slot": 6,
+        "strategy": "private chain"
+      },
+      {
+        "kind": "assignment",
+        "node_count": 3,
+        "play": 589,
+        "slot": 7,
+        "strategy": "private chain"
+      },
+      {
+        "kind": "assignment",
+        "node_count": 3,
+        "play": 589,
+        "slot": 8,
+        "strategy": "private chain"
+      },
+      {
+        "kind": "assignment",
+        "node_count": 3,
+        "play": 589,
+        "slot": 9,
+        "strategy": "private chain"
+      },
+      {
+        "kind": "assignment",
+        "node_count": 3,
+        "play": 590,
+        "slot": 6,
+        "strategy": "private chain"
+      },
+      {
+        "kind": "assignment",
+        "node_count": 3,
+        "play": 590,
+        "slot": 7,
+        "strategy": "private chain"
+      },
+      {
+        "kind": "assignment",
+        "node_count": 3,
+        "play": 590,
+        "slot": 8,
+        "strategy": "private chain"
+      },
+      {
+        "kind": "assignment",
+        "node_count": 3,
+        "play": 590,
+        "slot": 9,
+        "strategy": "private chain"
+      },
+      {
+        "kind": "assignment",
+        "node_count": 2,
+        "play": 591,
+        "slot": 4,
+        "strategy": "private chain"
+      }
+    ],
+    "replacement_sha256": "e13f57801d90579450996354485bad919ea0122634d20b7597f8530e046287a4",
+    "runtime_status": "Offline verified; experimental / UNWITNESSED in-game; CPU books only",
+    "schema": "apf2k8_play_design/v1",
+    "source_sha256": "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891"
+  },
+  "portable_resources": [
+    {
+      "active_bytes": 57026,
+      "allocation_bytes": 57344,
+      "entry_sha256": "a429736eaff359191205b93a828b8df2a4ea49f362f88d9c27b8e57c95f65896",
+      "free_bytes": 318,
+      "h7a_round_trip_exact": true,
+      "original_active_bytes": 56356,
+      "outer": 180,
+      "overlapping_matches": 0,
+      "payload_bytes": 56832,
+      "reparsed": true,
+      "strategy": "greedy"
+    },
+    {
+      "active_bytes": 1653,
+      "allocation_bytes": 2048,
+      "already_applied": false,
+      "cpu_only": true,
+      "entry_sha256": "d378116d26cbe11e4a43881caa21a276f29ac4989c9d1f98a52469ea1a27add5",
+      "free_bytes": 395,
+      "h7a_round_trip_exact": true,
+      "original_active_bytes": 1633,
+      "outer": 259,
+      "overlapping_matches": 0,
+      "payload_bytes": 1459,
+      "records": [
+        0,
+        25
+      ],
+      "reparsed": true,
+      "replacement_sha256": "5e9e46b3b88a15b39e205251b234170131ea5c85cbf0f0fe7447b84a76599f87",
+      "source_sha256": "2fd2b7587127120f90cb5fb536abe6c2691303fda08ca544b1aeaa271e1b9016",
+      "strategy": "greedy",
+      "user_save_written": false
+    },
+    {
+      "active_bytes": 1031,
+      "allocation_bytes": 2048,
+      "already_applied": false,
+      "cpu_only": true,
+      "entry_sha256": "faef55322acfde39a964a6144ca4bbd145085e286eb37812fdc034c90dd5cb63",
+      "free_bytes": 1017,
+      "h7a_round_trip_exact": true,
+      "original_active_bytes": 1026,
+      "outer": 618,
+      "overlapping_matches": 0,
+      "payload_bytes": 837,
+      "records": [
+        0
+      ],
+      "reparsed": true,
+      "replacement_sha256": "9ab75c25bbae27bfdf0416ecfcfb583b2a39950f689159f5fa2082a47ac2bcc1",
+      "source_sha256": "67ef383cc1fcde7a44639fa761fbb4efbd82aa3d4560035d27abd704d30ae218",
+      "strategy": "greedy",
+      "user_save_written": false
+    }
+  ],
+  "resources": [
+    {
+      "active_bytes": 55290,
+      "allocation_bytes": 57344,
+      "entry_sha256": "19d52595212f0f90861ddbcdbe04f405ad73b0d2818aacfafb81a32f96acb88d",
+      "free_bytes": 2054,
+      "h7a_round_trip_exact": true,
+      "original_active_bytes": 56356,
+      "outer": 180,
+      "overlapping_matches": 0,
+      "payload_bytes": 55096,
+      "reparsed": true,
+      "strategy": "optimal"
+    },
+    {
+      "active_bytes": 1652,
+      "allocation_bytes": 2048,
+      "already_applied": false,
+      "cpu_only": true,
+      "entry_sha256": "89cb7a5b94cdaa0937e32b9f0e894a60008aad3493c8db787ca27b70dda7e8b1",
+      "free_bytes": 396,
+      "h7a_round_trip_exact": true,
+      "original_active_bytes": 1633,
+      "outer": 259,
+      "overlapping_matches": 0,
+      "payload_bytes": 1458,
+      "records": [
+        0,
+        25
+      ],
+      "reparsed": true,
+      "replacement_sha256": "5e9e46b3b88a15b39e205251b234170131ea5c85cbf0f0fe7447b84a76599f87",
+      "source_sha256": "2fd2b7587127120f90cb5fb536abe6c2691303fda08ca544b1aeaa271e1b9016",
+      "strategy": "optimal",
+      "user_save_written": false
+    },
+    {
+      "active_bytes": 1030,
+      "allocation_bytes": 2048,
+      "already_applied": false,
+      "cpu_only": true,
+      "entry_sha256": "9cec2f833d342fafe30d9971942bfc67c74f98170ae2f847f4405197d667f2a8",
+      "free_bytes": 1018,
+      "h7a_round_trip_exact": true,
+      "original_active_bytes": 1026,
+      "outer": 618,
+      "overlapping_matches": 0,
+      "payload_bytes": 836,
+      "records": [
+        0
+      ],
+      "reparsed": true,
+      "replacement_sha256": "9ab75c25bbae27bfdf0416ecfcfb583b2a39950f689159f5fa2082a47ac2bcc1",
+      "source_sha256": "67ef383cc1fcde7a44639fa761fbb4efbd82aa3d4560035d27abd704d30ae218",
+      "strategy": "optimal",
+      "user_save_written": false
+    }
+  ],
+  "runtime_status": "UNWITNESSED",
+  "user_saves_written": false
+}

@@ -112,9 +112,24 @@ INSTALL_EXECUTABLES = frozenset(
 # Product-release identity and the Alpha34 cue-annotation boundary. These
 # are source/docs markers only: no game bytes, replacement payload hashes, or
 # private paths are embedded in the release checker.
-REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
+REQUIRED_PRODUCT_CONTRACT_MARKERS = {
+"mod_editor/apf_studio/play_designer_qt.py": (
+    "class PlayDesignerPanel(QWidget):",
+    "Design Play…",
+    "Design Formation…",
+    "Add CPU call…",
+),
+"mod_editor/core/apf2k8_play_designer.py": (
+    'SCHEMA = "apf2k8_play_design/v1"',
+    'PROVIDER_KIND = "apf_play_design"',
+    "UNWITNESSED in-game; CPU books only",
+),
+"mod_editor/apf_studio/play_design_service.py": (
+    "def check_composition(",
+    "def compile_modification(",
+),
     "mod_editor/apf_studio/__init__.py": (
-        '__version__ = "0.1.0-alpha.84"',
+        '__version__ = "0.1.0-alpha.85"',
     ),
     "mod_editor/apf_studio/audio_annotations.py": (
         'AUDIO_ANNOTATIONS_SCHEMA = "apf2k8_audio_annotations/v1"',
@@ -264,7 +279,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "confirmation_token",
     ),
     "APF2K8-README.md": (
-        "0.1.0-alpha.84",
+        "0.1.0-alpha.85",
         "Normal logo — convert to APF regions (recommended)",
         "APF region mask (advanced)",
         "Your cue label & notes",
@@ -289,7 +304,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "normalized original import plus the last transform",
     ),
     "docs/mod_editor/apf2k8_mod_studio_getting_started.md": (
-        "0.1.0-alpha.84",
+        "0.1.0-alpha.85",
         "Your cue label & notes",
         "Labeled only",
         "audio-annotations.json",
@@ -309,7 +324,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "normalized original import and last transform",
     ),
     "docs/mod_editor/apf2k8_mod_studio_changelog.md": (
-        "0.1.0-alpha.84",
+        "0.1.0-alpha.85",
         "project_metadata_only_stable_logical_cue_id",
         "audio-annotations.json",
         "selected_exact_slot_xma1_or_conformed_audio",
@@ -327,7 +342,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "original import plus its last transform",
     ),
     "docs/mod_editor/APF2K8_STATUS.md": (
-        "0.1.0-alpha.84",
+        "0.1.0-alpha.85",
         "0.1.0-alpha.51 candidate boundary",
         "project_metadata_only_stable_logical_cue_id",
         "47,775 playable cues",

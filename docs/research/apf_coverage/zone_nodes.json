@@ -1,0 +1,8772 @@
+{
+  "schema": "apf_zone_nodes/v1",
+  "master_sha256": "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891",
+  "masked_master_sha256": "ca1f83e389e9c6705438f5e05230fdc820c77c76c08e2828888121a9ee4aad28",
+  "zone_count": 368,
+  "nodes": [
+    {
+      "node_index": 2983,
+      "body_offset": 120828,
+      "landmark_x_feet": 33,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 3,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 278,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 439,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 473,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 2985,
+      "body_offset": 120844,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 36,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 7,
+      "mode": 8,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 278,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 286,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 293,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 2987,
+      "body_offset": 120860,
+      "landmark_x_feet": -33,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 3,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 278,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 439,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 473,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 2989,
+      "body_offset": 120876,
+      "landmark_x_feet": 30,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 5,
+      "mode": 11,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 278,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 283,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 286,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 290,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 293,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 294,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 295,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 296,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 304,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 305,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 306,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 307,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 308,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 309,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 349,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 353,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 365,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 418,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 419,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 420,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 425,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 439,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 440,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 441,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 442,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 443,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 444,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 473,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 487,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 489,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 490,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 491,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 2991,
+      "body_offset": 120892,
+      "landmark_x_feet": -30,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 5,
+      "mode": 11,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 278,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 283,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 286,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 290,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 293,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 294,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 295,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 296,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 304,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 305,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 306,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 307,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 308,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 309,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 349,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 353,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 365,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 418,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 419,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 420,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 425,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 439,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 440,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 441,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 442,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 443,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 444,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 473,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 487,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 489,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 490,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 491,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 2993,
+      "body_offset": 120908,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 3,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 3,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 278,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 418,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 439,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 442,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 470,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 473,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 2995,
+      "body_offset": 120924,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 3,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 3,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 278,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 439,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 442,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3057,
+      "body_offset": 121420,
+      "landmark_x_feet": 24,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 286,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 298,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 440,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 451,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3059,
+      "body_offset": 121436,
+      "landmark_x_feet": -24,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 286,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 297,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 348,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 349,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 440,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 447,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 463,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3061,
+      "body_offset": 121452,
+      "landmark_x_feet": 51,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 286,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3063,
+      "body_offset": 121468,
+      "landmark_x_feet": -51,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 286,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3077,
+      "body_offset": 121580,
+      "landmark_x_feet": 30,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 13,
+      "depth_extent_yards": 3,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 290,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 305,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3079,
+      "body_offset": 121596,
+      "landmark_x_feet": -30,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 13,
+      "depth_extent_yards": 3,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 290,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 305,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3083,
+      "body_offset": 121628,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 0,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 3,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 290,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 295,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 304,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 305,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 306,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 307,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3085,
+      "body_offset": 121644,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 0,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 3,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 290,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 295,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 304,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 305,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 306,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 307,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3087,
+      "body_offset": 121660,
+      "landmark_x_feet": 30,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 5,
+      "mode": 1,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 293,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 443,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3089,
+      "body_offset": 121676,
+      "landmark_x_feet": -30,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 5,
+      "mode": 2,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 293,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 443,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3095,
+      "body_offset": 121724,
+      "landmark_x_feet": 15,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 1,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 294,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 308,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3099,
+      "body_offset": 121756,
+      "landmark_x_feet": -15,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 2,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 294,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 309,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3101,
+      "body_offset": 121772,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 294,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 308,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 309,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 420,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3103,
+      "body_offset": 121788,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 294,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 308,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 309,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3107,
+      "body_offset": 121820,
+      "landmark_x_feet": 30,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 15,
+      "depth_extent_yards": 3,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 295,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 306,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3109,
+      "body_offset": 121836,
+      "landmark_x_feet": -30,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 15,
+      "depth_extent_yards": 3,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 295,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 304,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 306,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 307,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3115,
+      "body_offset": 121884,
+      "landmark_x_feet": 30,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 297,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 447,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3117,
+      "body_offset": 121900,
+      "landmark_x_feet": -3,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 297,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 298,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 447,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 451,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3119,
+      "body_offset": 121916,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 8,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 297,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 298,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 299,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 300,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 301,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 302,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 303,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 310,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 311,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 312,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 313,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 314,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 315,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 316,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 318,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 326,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 328,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 350,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 351,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 352,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 445,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 446,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 447,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 448,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 449,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 450,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 451,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 452,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 453,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 456,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 462,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 468,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 472,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 475,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 479,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 483,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 484,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 493,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 560,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 561,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 562,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 563,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3121,
+      "body_offset": 121932,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 10,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 297,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 298,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 299,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 300,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 301,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 302,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 303,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 310,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 311,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 312,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 313,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 314,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 315,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 316,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 318,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 319,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 343,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 350,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 351,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 352,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 445,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 446,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 447,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 448,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 449,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 450,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 451,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 452,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 453,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 456,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 469,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 472,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 479,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 483,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 484,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 486,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 493,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 560,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 561,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 562,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 563,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3123,
+      "body_offset": 121948,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 9,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 297,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 298,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 299,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 300,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 301,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 302,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 303,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 310,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 311,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 312,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 313,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 314,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 315,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 316,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 318,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 319,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 343,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 350,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 351,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 352,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 445,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 446,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 447,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 448,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 449,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 450,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 451,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 452,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 453,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 469,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 472,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 479,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 483,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 484,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 486,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 493,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 560,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 561,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 562,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 563,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3125,
+      "body_offset": 121964,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 297,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 348,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 349,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 361,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 375,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 440,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 447,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 463,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 489,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 491,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 560,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 561,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 562,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 563,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3127,
+      "body_offset": 121980,
+      "landmark_x_feet": -30,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 298,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 451,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3129,
+      "body_offset": 121996,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 298,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 348,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 349,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 375,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 440,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 451,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 463,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 489,
+          "slot_index": 0,
+          "chain_step": 1
+        },
+        {
+          "play_index": 491,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3131,
+      "body_offset": 122012,
+      "landmark_x_feet": 36,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 299,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 446,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3133,
+      "body_offset": 122028,
+      "landmark_x_feet": 3,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 299,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 446,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3135,
+      "body_offset": 122044,
+      "landmark_x_feet": -36,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 13,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 299,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 446,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3139,
+      "body_offset": 122076,
+      "landmark_x_feet": 42,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 300,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 316,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 343,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 445,
+          "slot_index": 0,
+          "chain_step": 1
+        },
+        {
+          "play_index": 448,
+          "slot_index": 0,
+          "chain_step": 1
+        },
+        {
+          "play_index": 484,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3141,
+      "body_offset": 122092,
+      "landmark_x_feet": 15,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 300,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 483,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 484,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3143,
+      "body_offset": 122108,
+      "landmark_x_feet": -42,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 300,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 343,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 445,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 448,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 483,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3145,
+      "body_offset": 122124,
+      "landmark_x_feet": -15,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 300,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 445,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3147,
+      "body_offset": 122140,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 301,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 452,
+          "slot_index": 0,
+          "chain_step": 1
+        },
+        {
+          "play_index": 560,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 562,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3149,
+      "body_offset": 122156,
+      "landmark_x_feet": 15,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 301,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 452,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3151,
+      "body_offset": 122172,
+      "landmark_x_feet": -15,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 301,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 452,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3153,
+      "body_offset": 122188,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 301,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 452,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3155,
+      "body_offset": 122204,
+      "landmark_x_feet": 15,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 302,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 453,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3157,
+      "body_offset": 122220,
+      "landmark_x_feet": -15,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 302,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3159,
+      "body_offset": 122236,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 302,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 453,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3161,
+      "body_offset": 122252,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 302,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 453,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3163,
+      "body_offset": 122268,
+      "landmark_x_feet": 36,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 303,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 310,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 313,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 314,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3165,
+      "body_offset": 122284,
+      "landmark_x_feet": -6,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 303,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 313,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3169,
+      "body_offset": 122316,
+      "landmark_x_feet": -42,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 6,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 303,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 310,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 313,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 314,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3171,
+      "body_offset": 122332,
+      "landmark_x_feet": 30,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 15,
+      "depth_extent_yards": 3,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 304,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 307,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3179,
+      "body_offset": 122396,
+      "landmark_x_feet": -15,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 2,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 308,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3181,
+      "body_offset": 122412,
+      "landmark_x_feet": 15,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 1,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 309,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3185,
+      "body_offset": 122444,
+      "landmark_x_feet": -6,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 310,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 314,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3187,
+      "body_offset": 122460,
+      "landmark_x_feet": 36,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 13,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 311,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3189,
+      "body_offset": 122476,
+      "landmark_x_feet": -3,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 311,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3191,
+      "body_offset": 122492,
+      "landmark_x_feet": -36,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 311,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3197,
+      "body_offset": 122540,
+      "landmark_x_feet": 6,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 312,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 315,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3199,
+      "body_offset": 122556,
+      "landmark_x_feet": -36,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 312,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 315,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 351,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 352,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 449,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3201,
+      "body_offset": 122572,
+      "landmark_x_feet": 42,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 6,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 312,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 315,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 449,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3207,
+      "body_offset": 122620,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 316,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3211,
+      "body_offset": 122652,
+      "landmark_x_feet": -42,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 316,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3213,
+      "body_offset": 122668,
+      "landmark_x_feet": 30,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 13,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 317,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 458,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3215,
+      "body_offset": 122684,
+      "landmark_x_feet": -12,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 317,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 458,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3217,
+      "body_offset": 122700,
+      "landmark_x_feet": -42,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 8,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 317,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 458,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3219,
+      "body_offset": 122716,
+      "landmark_x_feet": 36,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 9,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 317,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 428,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 458,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3221,
+      "body_offset": 122732,
+      "landmark_x_feet": -6,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 8,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 317,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 345,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 458,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 460,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3223,
+      "body_offset": 122748,
+      "landmark_x_feet": 36,
+      "drop_depth_feet": -3,
+      "lateral_extent_yards": 6,
+      "depth_extent_yards": 5,
+      "mode": 7,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 317,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 458,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3225,
+      "body_offset": 122764,
+      "landmark_x_feet": -36,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 10,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 317,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 428,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 458,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3227,
+      "body_offset": 122780,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 318,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 493,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3229,
+      "body_offset": 122796,
+      "landmark_x_feet": -12,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 318,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 493,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3231,
+      "body_offset": 122812,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 318,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 493,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3233,
+      "body_offset": 122828,
+      "landmark_x_feet": 21,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 318,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 493,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3235,
+      "body_offset": 122844,
+      "landmark_x_feet": 36,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 319,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 469,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3237,
+      "body_offset": 122860,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 9,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 319,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3239,
+      "body_offset": 122876,
+      "landmark_x_feet": -36,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 319,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 469,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3241,
+      "body_offset": 122892,
+      "landmark_x_feet": 15,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 8,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 319,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 469,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3243,
+      "body_offset": 122908,
+      "landmark_x_feet": -15,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 8,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 319,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 469,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3251,
+      "body_offset": 122972,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 11,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 320,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 321,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 322,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 324,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 325,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 329,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 330,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 331,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 356,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 368,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 369,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 370,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 371,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 372,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 375,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 376,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 404,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 421,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 461,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 464,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 470,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 474,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 482,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 485,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 542,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 550,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 551,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 552,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 553,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 554,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 555,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 556,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 557,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 558,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 559,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3271,
+      "body_offset": 123132,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 11,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 323,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 327,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3385,
+      "body_offset": 124044,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 8,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 343,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3387,
+      "body_offset": 124060,
+      "landmark_x_feet": 15,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 343,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3389,
+      "body_offset": 124076,
+      "landmark_x_feet": -15,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 343,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3391,
+      "body_offset": 124092,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 12,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 344,
+          "slot_index": 2,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3393,
+      "body_offset": 124108,
+      "landmark_x_feet": 24,
+      "drop_depth_feet": 30,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 1,
+      "operand_g": 2,
+      "uses": [
+        {
+          "play_index": 344,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3398,
+      "body_offset": 124148,
+      "landmark_x_feet": -24,
+      "drop_depth_feet": 30,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 1,
+      "operand_g": 2,
+      "uses": [
+        {
+          "play_index": 344,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3401,
+      "body_offset": 124172,
+      "landmark_x_feet": 15,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 11,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 344,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3403,
+      "body_offset": 124188,
+      "landmark_x_feet": -15,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 11,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 344,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3406,
+      "body_offset": 124212,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 9,
+      "operand_f": 1,
+      "operand_g": 1,
+      "uses": [
+        {
+          "play_index": 344,
+          "slot_index": 9,
+          "chain_step": 2
+        }
+      ]
+    },
+    {
+      "node_index": 3409,
+      "body_offset": 124236,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 10,
+      "operand_f": 1,
+      "operand_g": 1,
+      "uses": [
+        {
+          "play_index": 344,
+          "slot_index": 10,
+          "chain_step": 2
+        }
+      ]
+    },
+    {
+      "node_index": 3411,
+      "body_offset": 124252,
+      "landmark_x_feet": 24,
+      "drop_depth_feet": 30,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 3,
+      "mode": 5,
+      "operand_f": 1,
+      "operand_g": 2,
+      "uses": [
+        {
+          "play_index": 345,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3414,
+      "body_offset": 124276,
+      "landmark_x_feet": -9,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 10,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 345,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3416,
+      "body_offset": 124292,
+      "landmark_x_feet": -39,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 345,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3418,
+      "body_offset": 124308,
+      "landmark_x_feet": -39,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 10,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 345,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 460,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3421,
+      "body_offset": 124332,
+      "landmark_x_feet": 42,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 9,
+      "operand_f": 1,
+      "operand_g": 1,
+      "uses": [
+        {
+          "play_index": 345,
+          "slot_index": 9,
+          "chain_step": 2
+        },
+        {
+          "play_index": 460,
+          "slot_index": 9,
+          "chain_step": 2
+        }
+      ]
+    },
+    {
+      "node_index": 3423,
+      "body_offset": 124348,
+      "landmark_x_feet": -42,
+      "drop_depth_feet": 0,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 345,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3425,
+      "body_offset": 124364,
+      "landmark_x_feet": 33,
+      "drop_depth_feet": 36,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 346,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3427,
+      "body_offset": 124380,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 36,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 346,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3429,
+      "body_offset": 124396,
+      "landmark_x_feet": -33,
+      "drop_depth_feet": 36,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 346,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3431,
+      "body_offset": 124412,
+      "landmark_x_feet": 18,
+      "drop_depth_feet": 66,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 8,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 346,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 471,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3433,
+      "body_offset": 124428,
+      "landmark_x_feet": -21,
+      "drop_depth_feet": 66,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 8,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 346,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 471,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3435,
+      "body_offset": 124444,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 66,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 9,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 346,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 471,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3437,
+      "body_offset": 124460,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 66,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 10,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 346,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 471,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3439,
+      "body_offset": 124476,
+      "landmark_x_feet": -6,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 347,
+          "slot_index": 2,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3441,
+      "body_offset": 124492,
+      "landmark_x_feet": 36,
+      "drop_depth_feet": 15,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 347,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3443,
+      "body_offset": 124508,
+      "landmark_x_feet": 15,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 347,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3445,
+      "body_offset": 124524,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 15,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 347,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3447,
+      "body_offset": 124540,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 8,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 347,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 467,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3449,
+      "body_offset": 124556,
+      "landmark_x_feet": -21,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 347,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3451,
+      "body_offset": 124572,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 9,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 347,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3453,
+      "body_offset": 124588,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 10,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 347,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3455,
+      "body_offset": 124604,
+      "landmark_x_feet": 24,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 348,
+          "slot_index": 0,
+          "chain_step": 1
+        },
+        {
+          "play_index": 349,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3459,
+      "body_offset": 124636,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 10,
+      "mode": 8,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 348,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 440,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3461,
+      "body_offset": 124652,
+      "landmark_x_feet": 30,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 11,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 348,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 478,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3463,
+      "body_offset": 124668,
+      "landmark_x_feet": -30,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 11,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 348,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3465,
+      "body_offset": 124684,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 10,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 349,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3467,
+      "body_offset": 124700,
+      "landmark_x_feet": 36,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 350,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3469,
+      "body_offset": 124716,
+      "landmark_x_feet": 15,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 350,
+          "slot_index": 2,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3471,
+      "body_offset": 124732,
+      "landmark_x_feet": -9,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 350,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3477,
+      "body_offset": 124780,
+      "landmark_x_feet": -42,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 350,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3479,
+      "body_offset": 124796,
+      "landmark_x_feet": 36,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 351,
+          "slot_index": 0,
+          "chain_step": 1
+        },
+        {
+          "play_index": 352,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3485,
+      "body_offset": 124844,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 351,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3487,
+      "body_offset": 124860,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 352,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3495,
+      "body_offset": 124924,
+      "landmark_x_feet": 30,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 7,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 357,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3497,
+      "body_offset": 124940,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 357,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3499,
+      "body_offset": 124956,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 8,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 357,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 358,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 359,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 360,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 364,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 374,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3501,
+      "body_offset": 124972,
+      "landmark_x_feet": -30,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 357,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3503,
+      "body_offset": 124988,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 9,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 357,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 358,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 359,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 360,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 363,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 364,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3505,
+      "body_offset": 125004,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 10,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 357,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 358,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 359,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 360,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 363,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 364,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 374,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3507,
+      "body_offset": 125020,
+      "landmark_x_feet": 21,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 12,
+      "depth_extent_yards": 5,
+      "mode": 7,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 358,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3509,
+      "body_offset": 125036,
+      "landmark_x_feet": -21,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 12,
+      "depth_extent_yards": 5,
+      "mode": 7,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 358,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3511,
+      "body_offset": 125052,
+      "landmark_x_feet": 18,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 12,
+      "depth_extent_yards": 5,
+      "mode": 7,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 359,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3515,
+      "body_offset": 125084,
+      "landmark_x_feet": -18,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 12,
+      "depth_extent_yards": 5,
+      "mode": 7,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 359,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3519,
+      "body_offset": 125116,
+      "landmark_x_feet": 24,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 5,
+      "mode": 7,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 360,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3521,
+      "body_offset": 125132,
+      "landmark_x_feet": -24,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 360,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3525,
+      "body_offset": 125164,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 361,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 561,
+          "slot_index": 0,
+          "chain_step": 1
+        },
+        {
+          "play_index": 563,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3527,
+      "body_offset": 125180,
+      "landmark_x_feet": 15,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 361,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 560,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3529,
+      "body_offset": 125196,
+      "landmark_x_feet": -12,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 12,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 361,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3531,
+      "body_offset": 125212,
+      "landmark_x_feet": 18,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 11,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 361,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3533,
+      "body_offset": 125228,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 11,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 361,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3537,
+      "body_offset": 125260,
+      "landmark_x_feet": 18,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 8,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 363,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 486,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3539,
+      "body_offset": 125276,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 10,
+      "mode": 7,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 363,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3541,
+      "body_offset": 125292,
+      "landmark_x_feet": -18,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 8,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 363,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3543,
+      "body_offset": 125308,
+      "landmark_x_feet": 12,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 12,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 365,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3545,
+      "body_offset": 125324,
+      "landmark_x_feet": -18,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 365,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3547,
+      "body_offset": 125340,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 365,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 372,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 376,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 419,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3549,
+      "body_offset": 125356,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 365,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 372,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 376,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 419,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3559,
+      "body_offset": 125436,
+      "landmark_x_feet": 12,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 12,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 368,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3561,
+      "body_offset": 125452,
+      "landmark_x_feet": -18,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 368,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3563,
+      "body_offset": 125468,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 368,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3565,
+      "body_offset": 125484,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 368,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3567,
+      "body_offset": 125500,
+      "landmark_x_feet": 24,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 5,
+      "mode": 12,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 369,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3569,
+      "body_offset": 125516,
+      "landmark_x_feet": -24,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 369,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3571,
+      "body_offset": 125532,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 3,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 3,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 369,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3573,
+      "body_offset": 125548,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 3,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 3,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 369,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3575,
+      "body_offset": 125564,
+      "landmark_x_feet": 12,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 12,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 370,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 372,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3577,
+      "body_offset": 125580,
+      "landmark_x_feet": -18,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 370,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3579,
+      "body_offset": 125596,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 370,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3581,
+      "body_offset": 125612,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 370,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3583,
+      "body_offset": 125628,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 371,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3585,
+      "body_offset": 125644,
+      "landmark_x_feet": 12,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 9,
+      "depth_extent_yards": 5,
+      "mode": 12,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 371,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3587,
+      "body_offset": 125660,
+      "landmark_x_feet": -18,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 9,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 371,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3589,
+      "body_offset": 125676,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 10,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 371,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3593,
+      "body_offset": 125708,
+      "landmark_x_feet": -18,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 372,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3599,
+      "body_offset": 125756,
+      "landmark_x_feet": 30,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 373,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3601,
+      "body_offset": 125772,
+      "landmark_x_feet": 9,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 373,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3603,
+      "body_offset": 125788,
+      "landmark_x_feet": -9,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 373,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3605,
+      "body_offset": 125804,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 11,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 373,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3607,
+      "body_offset": 125820,
+      "landmark_x_feet": -30,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 373,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3609,
+      "body_offset": 125836,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 15,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 373,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3611,
+      "body_offset": 125852,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 15,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 373,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3617,
+      "body_offset": 125900,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 9,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 374,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3619,
+      "body_offset": 125916,
+      "landmark_x_feet": -21,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 375,
+          "slot_index": 1,
+          "chain_step": 1
+        },
+        {
+          "play_index": 376,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3621,
+      "body_offset": 125932,
+      "landmark_x_feet": 21,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 12,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 375,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3623,
+      "body_offset": 125948,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 12,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 375,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3629,
+      "body_offset": 125996,
+      "landmark_x_feet": 21,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 376,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3631,
+      "body_offset": 126012,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 376,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3659,
+      "body_offset": 126236,
+      "landmark_x_feet": -27,
+      "drop_depth_feet": 15,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 385,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3661,
+      "body_offset": 126252,
+      "landmark_x_feet": -12,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 12,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 385,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3663,
+      "body_offset": 126268,
+      "landmark_x_feet": 6,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 12,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 385,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3665,
+      "body_offset": 126284,
+      "landmark_x_feet": -36,
+      "drop_depth_feet": 27,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 11,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 385,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3667,
+      "body_offset": 126300,
+      "landmark_x_feet": 39,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 13,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 385,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3669,
+      "body_offset": 126316,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 12,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 385,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3671,
+      "body_offset": 126332,
+      "landmark_x_feet": -24,
+      "drop_depth_feet": 15,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 2,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 386,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3673,
+      "body_offset": 126348,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 12,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 386,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3675,
+      "body_offset": 126364,
+      "landmark_x_feet": 24,
+      "drop_depth_feet": 15,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 12,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 386,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3677,
+      "body_offset": 126380,
+      "landmark_x_feet": -42,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 11,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 386,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3679,
+      "body_offset": 126396,
+      "landmark_x_feet": 42,
+      "drop_depth_feet": 12,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 13,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 386,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3681,
+      "body_offset": 126412,
+      "landmark_x_feet": -42,
+      "drop_depth_feet": 0,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 386,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 460,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3685,
+      "body_offset": 126444,
+      "landmark_x_feet": -6,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 12,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 389,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3687,
+      "body_offset": 126460,
+      "landmark_x_feet": 12,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 12,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 389,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3689,
+      "body_offset": 126476,
+      "landmark_x_feet": 27,
+      "drop_depth_feet": 15,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 389,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3691,
+      "body_offset": 126492,
+      "landmark_x_feet": 36,
+      "drop_depth_feet": 27,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 11,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 389,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3693,
+      "body_offset": 126508,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 12,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 389,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3695,
+      "body_offset": 126524,
+      "landmark_x_feet": -39,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 14,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 389,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3707,
+      "body_offset": 126620,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 12,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 11,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 391,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3721,
+      "body_offset": 126732,
+      "landmark_x_feet": 36,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 4,
+      "mode": 11,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 399,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3723,
+      "body_offset": 126748,
+      "landmark_x_feet": -36,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 4,
+      "mode": 11,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 400,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3735,
+      "body_offset": 126844,
+      "landmark_x_feet": -30,
+      "drop_depth_feet": 12,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 407,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3737,
+      "body_offset": 126860,
+      "landmark_x_feet": 12,
+      "drop_depth_feet": 12,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 407,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3739,
+      "body_offset": 126876,
+      "landmark_x_feet": 30,
+      "drop_depth_feet": 12,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 407,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3741,
+      "body_offset": 126892,
+      "landmark_x_feet": -12,
+      "drop_depth_feet": 12,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 407,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 411,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3743,
+      "body_offset": 126908,
+      "landmark_x_feet": 42,
+      "drop_depth_feet": 0,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 13,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 407,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3745,
+      "body_offset": 126924,
+      "landmark_x_feet": -42,
+      "drop_depth_feet": 0,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 14,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 407,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3747,
+      "body_offset": 126940,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 12,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 408,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 409,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3749,
+      "body_offset": 126956,
+      "landmark_x_feet": 42,
+      "drop_depth_feet": 12,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 13,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 408,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 409,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3751,
+      "body_offset": 126972,
+      "landmark_x_feet": -42,
+      "drop_depth_feet": 12,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 13,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 408,
+          "slot_index": 10,
+          "chain_step": 1
+        },
+        {
+          "play_index": 409,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3759,
+      "body_offset": 127036,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 12,
+      "depth_extent_yards": 4,
+      "mode": 11,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 410,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3761,
+      "body_offset": 127052,
+      "landmark_x_feet": -36,
+      "drop_depth_feet": 12,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 411,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3763,
+      "body_offset": 127068,
+      "landmark_x_feet": 12,
+      "drop_depth_feet": 12,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 411,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3765,
+      "body_offset": 127084,
+      "landmark_x_feet": 36,
+      "drop_depth_feet": 12,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 411,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3771,
+      "body_offset": 127132,
+      "landmark_x_feet": 30,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 418,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3773,
+      "body_offset": 127148,
+      "landmark_x_feet": -30,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 418,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3775,
+      "body_offset": 127164,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 3,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 3,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 418,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3777,
+      "body_offset": 127180,
+      "landmark_x_feet": 12,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 12,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 419,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3779,
+      "body_offset": 127196,
+      "landmark_x_feet": -18,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 419,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3781,
+      "body_offset": 127212,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 420,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3783,
+      "body_offset": 127228,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 420,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3785,
+      "body_offset": 127244,
+      "landmark_x_feet": 36,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 421,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3787,
+      "body_offset": 127260,
+      "landmark_x_feet": -36,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 421,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3789,
+      "body_offset": 127276,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 421,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3791,
+      "body_offset": 127292,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 421,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3793,
+      "body_offset": 127308,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 421,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3805,
+      "body_offset": 127404,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 6,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 428,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3807,
+      "body_offset": 127420,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 6,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 428,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3809,
+      "body_offset": 127436,
+      "landmark_x_feet": 15,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 6,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 428,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3811,
+      "body_offset": 127452,
+      "landmark_x_feet": -15,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 6,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 428,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3863,
+      "body_offset": 127868,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 10,
+      "mode": 8,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 439,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 443,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3867,
+      "body_offset": 127900,
+      "landmark_x_feet": 33,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 3,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 442,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3869,
+      "body_offset": 127916,
+      "landmark_x_feet": -33,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 3,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 442,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3875,
+      "body_offset": 127964,
+      "landmark_x_feet": 15,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 445,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 448,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3881,
+      "body_offset": 128012,
+      "landmark_x_feet": -15,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 448,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3885,
+      "body_offset": 128044,
+      "landmark_x_feet": 6,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 449,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3887,
+      "body_offset": 128060,
+      "landmark_x_feet": 48,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 450,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3889,
+      "body_offset": 128076,
+      "landmark_x_feet": 24,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 450,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3891,
+      "body_offset": 128092,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 450,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3893,
+      "body_offset": 128108,
+      "landmark_x_feet": -24,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 450,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3895,
+      "body_offset": 128124,
+      "landmark_x_feet": -48,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 450,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3897,
+      "body_offset": 128140,
+      "landmark_x_feet": -15,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 453,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3923,
+      "body_offset": 128348,
+      "landmark_x_feet": 42,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 456,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3925,
+      "body_offset": 128364,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 456,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3927,
+      "body_offset": 128380,
+      "landmark_x_feet": -42,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 456,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3929,
+      "body_offset": 128396,
+      "landmark_x_feet": 21,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 456,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3931,
+      "body_offset": 128412,
+      "landmark_x_feet": -21,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 456,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3933,
+      "body_offset": 128428,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 9,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 456,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3935,
+      "body_offset": 128444,
+      "landmark_x_feet": 24,
+      "drop_depth_feet": 15,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 0,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 457,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3939,
+      "body_offset": 128476,
+      "landmark_x_feet": -9,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 0,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 457,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3941,
+      "body_offset": 128492,
+      "landmark_x_feet": -30,
+      "drop_depth_feet": 9,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 0,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 457,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3943,
+      "body_offset": 128508,
+      "landmark_x_feet": 42,
+      "drop_depth_feet": 30,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 0,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 457,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3945,
+      "body_offset": 128524,
+      "landmark_x_feet": -36,
+      "drop_depth_feet": 45,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 11,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 457,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3949,
+      "body_offset": 128556,
+      "landmark_x_feet": 30,
+      "drop_depth_feet": 30,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 1,
+      "operand_g": 2,
+      "uses": [
+        {
+          "play_index": 459,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3952,
+      "body_offset": 128580,
+      "landmark_x_feet": 9,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 459,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3954,
+      "body_offset": 128596,
+      "landmark_x_feet": -9,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 459,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 460,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3956,
+      "body_offset": 128612,
+      "landmark_x_feet": -30,
+      "drop_depth_feet": 30,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 1,
+      "operand_g": 2,
+      "uses": [
+        {
+          "play_index": 459,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3959,
+      "body_offset": 128636,
+      "landmark_x_feet": 24,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 11,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 459,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3961,
+      "body_offset": 128652,
+      "landmark_x_feet": -24,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 11,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 459,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3964,
+      "body_offset": 128676,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 9,
+      "operand_f": 1,
+      "operand_g": 1,
+      "uses": [
+        {
+          "play_index": 459,
+          "slot_index": 9,
+          "chain_step": 2
+        }
+      ]
+    },
+    {
+      "node_index": 3967,
+      "body_offset": 128700,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 10,
+      "operand_f": 1,
+      "operand_g": 1,
+      "uses": [
+        {
+          "play_index": 459,
+          "slot_index": 10,
+          "chain_step": 2
+        }
+      ]
+    },
+    {
+      "node_index": 3969,
+      "body_offset": 128716,
+      "landmark_x_feet": 24,
+      "drop_depth_feet": 30,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 1,
+      "operand_g": 2,
+      "uses": [
+        {
+          "play_index": 460,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3972,
+      "body_offset": 128740,
+      "landmark_x_feet": 9,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 460,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3974,
+      "body_offset": 128756,
+      "landmark_x_feet": -30,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 460,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3982,
+      "body_offset": 128820,
+      "landmark_x_feet": 24,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 463,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3984,
+      "body_offset": 128836,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 463,
+          "slot_index": 3,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3990,
+      "body_offset": 128884,
+      "landmark_x_feet": 36,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 11,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 463,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 3992,
+      "body_offset": 128900,
+      "landmark_x_feet": -36,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 11,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 463,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4004,
+      "body_offset": 128996,
+      "landmark_x_feet": 42,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 6,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 467,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4006,
+      "body_offset": 129012,
+      "landmark_x_feet": -12,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 467,
+          "slot_index": 2,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4008,
+      "body_offset": 129028,
+      "landmark_x_feet": 15,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 6,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 467,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4012,
+      "body_offset": 129060,
+      "landmark_x_feet": -42,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 6,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 467,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4014,
+      "body_offset": 129076,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 9,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 467,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4016,
+      "body_offset": 129092,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 10,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 467,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4024,
+      "body_offset": 129156,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 9,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 469,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4026,
+      "body_offset": 129172,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 13,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 470,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4028,
+      "body_offset": 129188,
+      "landmark_x_feet": 24,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 470,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4030,
+      "body_offset": 129204,
+      "landmark_x_feet": -24,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 470,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4032,
+      "body_offset": 129220,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 470,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4034,
+      "body_offset": 129236,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 470,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4036,
+      "body_offset": 129252,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 27,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 471,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4038,
+      "body_offset": 129268,
+      "landmark_x_feet": 18,
+      "drop_depth_feet": 27,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 471,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4040,
+      "body_offset": 129284,
+      "landmark_x_feet": -18,
+      "drop_depth_feet": 27,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 471,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4042,
+      "body_offset": 129300,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 27,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 471,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4044,
+      "body_offset": 129316,
+      "landmark_x_feet": 36,
+      "drop_depth_feet": 15,
+      "lateral_extent_yards": 6,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 472,
+          "slot_index": 1,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4046,
+      "body_offset": 129332,
+      "landmark_x_feet": 15,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 472,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4048,
+      "body_offset": 129348,
+      "landmark_x_feet": -15,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 472,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4050,
+      "body_offset": 129364,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 472,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4052,
+      "body_offset": 129380,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 6,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 473,
+          "slot_index": 3,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4054,
+      "body_offset": 129396,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 3,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 3,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 473,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4062,
+      "body_offset": 129460,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 11,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 477,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 488,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4064,
+      "body_offset": 129476,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 478,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4066,
+      "body_offset": 129492,
+      "landmark_x_feet": 24,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 478,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4068,
+      "body_offset": 129508,
+      "landmark_x_feet": -24,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 1,
+      "operand_g": 2,
+      "uses": [
+        {
+          "play_index": 478,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4073,
+      "body_offset": 129548,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 0,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 478,
+          "slot_index": 9,
+          "chain_step": 1
+        },
+        {
+          "play_index": 490,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4076,
+      "body_offset": 129572,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 45,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 10,
+      "operand_f": 1,
+      "operand_g": 1,
+      "uses": [
+        {
+          "play_index": 478,
+          "slot_index": 10,
+          "chain_step": 2
+        }
+      ]
+    },
+    {
+      "node_index": 4078,
+      "body_offset": 129588,
+      "landmark_x_feet": 15,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 6,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 479,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4080,
+      "body_offset": 129604,
+      "landmark_x_feet": 42,
+      "drop_depth_feet": 15,
+      "lateral_extent_yards": 6,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 479,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4082,
+      "body_offset": 129620,
+      "landmark_x_feet": -6,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 479,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4084,
+      "body_offset": 129636,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 15,
+      "lateral_extent_yards": 6,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 479,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4086,
+      "body_offset": 129652,
+      "landmark_x_feet": -21,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 479,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4096,
+      "body_offset": 129732,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 11,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 480,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4098,
+      "body_offset": 129748,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 8,
+      "mode": 13,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 480,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4110,
+      "body_offset": 129844,
+      "landmark_x_feet": 36,
+      "drop_depth_feet": 15,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 483,
+          "slot_index": 1,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4112,
+      "body_offset": 129860,
+      "landmark_x_feet": -15,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 483,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 484,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4114,
+      "body_offset": 129876,
+      "landmark_x_feet": -36,
+      "drop_depth_feet": 15,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 484,
+          "slot_index": 2,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4118,
+      "body_offset": 129908,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 486,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4122,
+      "body_offset": 129940,
+      "landmark_x_feet": 18,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 486,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4124,
+      "body_offset": 129956,
+      "landmark_x_feet": -18,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 486,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4126,
+      "body_offset": 129972,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 7,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 486,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4128,
+      "body_offset": 129988,
+      "landmark_x_feet": -21,
+      "drop_depth_feet": 54,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 8,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 486,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4130,
+      "body_offset": 130004,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 487,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4132,
+      "body_offset": 130020,
+      "landmark_x_feet": 24,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 487,
+          "slot_index": 1,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4134,
+      "body_offset": 130036,
+      "landmark_x_feet": -24,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 487,
+          "slot_index": 2,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4136,
+      "body_offset": 130052,
+      "landmark_x_feet": 6,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 12,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 487,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4138,
+      "body_offset": 130068,
+      "landmark_x_feet": -6,
+      "drop_depth_feet": 21,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 12,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 487,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4140,
+      "body_offset": 130084,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 487,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4150,
+      "body_offset": 130164,
+      "landmark_x_feet": 24,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 489,
+          "slot_index": 1,
+          "chain_step": 1
+        },
+        {
+          "play_index": 491,
+          "slot_index": 3,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4152,
+      "body_offset": 130180,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 489,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 491,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4154,
+      "body_offset": 130196,
+      "landmark_x_feet": -24,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 489,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 491,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4156,
+      "body_offset": 130212,
+      "landmark_x_feet": 30,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 490,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4158,
+      "body_offset": 130228,
+      "landmark_x_feet": -12,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 490,
+          "slot_index": 2,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4160,
+      "body_offset": 130244,
+      "landmark_x_feet": 12,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 490,
+          "slot_index": 3,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4162,
+      "body_offset": 130260,
+      "landmark_x_feet": -30,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 490,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4164,
+      "body_offset": 130276,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 0,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 490,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4170,
+      "body_offset": 130324,
+      "landmark_x_feet": 18,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 8,
+      "mode": 13,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 492,
+          "slot_index": 1,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4172,
+      "body_offset": 130340,
+      "landmark_x_feet": -18,
+      "drop_depth_feet": 18,
+      "lateral_extent_yards": 8,
+      "depth_extent_yards": 8,
+      "mode": 14,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 492,
+          "slot_index": 2,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4528,
+      "body_offset": 133188,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 15,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 5,
+      "mode": 15,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 515,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 535,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 536,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4610,
+      "body_offset": 133844,
+      "landmark_x_feet": 30,
+      "drop_depth_feet": 15,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 4,
+      "mode": 9,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 519,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4612,
+      "body_offset": 133860,
+      "landmark_x_feet": -30,
+      "drop_depth_feet": 15,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 4,
+      "mode": 10,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 519,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4614,
+      "body_offset": 133876,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 15,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 4,
+      "mode": 12,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 519,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4619,
+      "body_offset": 133916,
+      "landmark_x_feet": 30,
+      "drop_depth_feet": 0,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 3,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 519,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4621,
+      "body_offset": 133932,
+      "landmark_x_feet": -30,
+      "drop_depth_feet": 0,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 3,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 519,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4623,
+      "body_offset": 133948,
+      "landmark_x_feet": 30,
+      "drop_depth_feet": 15,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 0,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 520,
+          "slot_index": 1,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4626,
+      "body_offset": 133972,
+      "landmark_x_feet": -30,
+      "drop_depth_feet": 15,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 0,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 520,
+          "slot_index": 2,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4632,
+      "body_offset": 134020,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 15,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 15,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 520,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4638,
+      "body_offset": 134068,
+      "landmark_x_feet": -12,
+      "drop_depth_feet": 60,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 521,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4640,
+      "body_offset": 134084,
+      "landmark_x_feet": 12,
+      "drop_depth_feet": 60,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 521,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4642,
+      "body_offset": 134100,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 90,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 9,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 521,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4644,
+      "body_offset": 134116,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 60,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 521,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4646,
+      "body_offset": 134132,
+      "landmark_x_feet": 18,
+      "drop_depth_feet": 90,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 8,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 521,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4648,
+      "body_offset": 134148,
+      "landmark_x_feet": -18,
+      "drop_depth_feet": 90,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 8,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 521,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4650,
+      "body_offset": 134164,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 60,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 521,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4652,
+      "body_offset": 134180,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 90,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 10,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 521,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4658,
+      "body_offset": 134228,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 90,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 9,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 522,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 531,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4662,
+      "body_offset": 134260,
+      "landmark_x_feet": -24,
+      "drop_depth_feet": 90,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 8,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 522,
+          "slot_index": 7,
+          "chain_step": 1
+        },
+        {
+          "play_index": 531,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4664,
+      "body_offset": 134276,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 90,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 10,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 522,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 524,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 531,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4670,
+      "body_offset": 134324,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 60,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 7,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 523,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4674,
+      "body_offset": 134356,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 90,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 9,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 523,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 532,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4676,
+      "body_offset": 134372,
+      "landmark_x_feet": -42,
+      "drop_depth_feet": 90,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 10,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 523,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 532,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4678,
+      "body_offset": 134388,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 45,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 524,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4680,
+      "body_offset": 134404,
+      "landmark_x_feet": 24,
+      "drop_depth_feet": 45,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 524,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4682,
+      "body_offset": 134420,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 90,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 9,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 524,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4684,
+      "body_offset": 134436,
+      "landmark_x_feet": -24,
+      "drop_depth_feet": 45,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 524,
+          "slot_index": 6,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4686,
+      "body_offset": 134452,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 90,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 8,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 524,
+          "slot_index": 7,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4688,
+      "body_offset": 134468,
+      "landmark_x_feet": 45,
+      "drop_depth_feet": 45,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 524,
+          "slot_index": 9,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4690,
+      "body_offset": 134484,
+      "landmark_x_feet": -45,
+      "drop_depth_feet": 45,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 524,
+          "slot_index": 10,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4704,
+      "body_offset": 134596,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 15,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 7,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 532,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4828,
+      "body_offset": 135588,
+      "landmark_x_feet": 24,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 550,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 551,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 552,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 553,
+          "slot_index": 5,
+          "chain_step": 1
+        },
+        {
+          "play_index": 555,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4830,
+      "body_offset": 135604,
+      "landmark_x_feet": -24,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 6,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 550,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 551,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 552,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 553,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 554,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 555,
+          "slot_index": 6,
+          "chain_step": 1
+        },
+        {
+          "play_index": 556,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4832,
+      "body_offset": 135620,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 550,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 551,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4836,
+      "body_offset": 135652,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 552,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 553,
+          "slot_index": 1,
+          "chain_step": 1
+        },
+        {
+          "play_index": 554,
+          "slot_index": 8,
+          "chain_step": 1
+        },
+        {
+          "play_index": 556,
+          "slot_index": 3,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4838,
+      "body_offset": 135668,
+      "landmark_x_feet": 24,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 554,
+          "slot_index": 0,
+          "chain_step": 1
+        },
+        {
+          "play_index": 556,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4840,
+      "body_offset": 135684,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 555,
+          "slot_index": 3,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4856,
+      "body_offset": 135812,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 6,
+      "depth_extent_yards": 5,
+      "mode": 7,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 559,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4858,
+      "body_offset": 135828,
+      "landmark_x_feet": -15,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 560,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 561,
+          "slot_index": 1,
+          "chain_step": 1
+        },
+        {
+          "play_index": 562,
+          "slot_index": 4,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4860,
+      "body_offset": 135844,
+      "landmark_x_feet": 15,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 561,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4864,
+      "body_offset": 135876,
+      "landmark_x_feet": 15,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 562,
+          "slot_index": 3,
+          "chain_step": 1
+        },
+        {
+          "play_index": 563,
+          "slot_index": 3,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4866,
+      "body_offset": 135892,
+      "landmark_x_feet": -15,
+      "drop_depth_feet": 24,
+      "lateral_extent_yards": 5,
+      "depth_extent_yards": 5,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 563,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4933,
+      "body_offset": 136428,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 15,
+      "lateral_extent_yards": 2,
+      "depth_extent_yards": 2,
+      "mode": 5,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 585,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4937,
+      "body_offset": 136460,
+      "landmark_x_feet": 0,
+      "drop_depth_feet": 75,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 10,
+      "mode": 9,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 585,
+          "slot_index": 5,
+          "chain_step": 1
+        }
+      ]
+    },
+    {
+      "node_index": 4943,
+      "body_offset": 136508,
+      "landmark_x_feet": -36,
+      "drop_depth_feet": 75,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 10,
+      "mode": 10,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 585,
+          "slot_index": 8,
+          "chain_step": 1
+        }
+      ]
+    }
+  ]
+}

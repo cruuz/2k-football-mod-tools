@@ -53,6 +53,11 @@ class ApfPackageMapPanel(QWidget):
         self.run_task = run_task
         self._source_rows: tuple[tuple[int, str, tuple[int, ...]], ...] = ()
         self._draft: dict[int, tuple[int, ...]] = {}
+        # What the session actually holds. Kept apart from the draft so the
+        # panel can say which maps Build will write and which are still only
+        # on screen -- the two used to share one sentence, and a user read
+        # "ready to stage or already staged" as "staged" and built 0 edits.
+        self._staged: dict[int, tuple[int, ...]] = {}
         self._draft_error: str | None = None
         self._draft_error_message: str | None = None
         self._loading = False
@@ -63,22 +68,33 @@ class ApfPackageMapPanel(QWidget):
         title = QLabel("Who lines up")
         title.setObjectName("panelTitle")
         explanation = QLabel(
-            "Every formation stores 11 on-field slots, and every play stores "
-            "one route per slot — all 11, even when the play uses no TE. A "
-            "role is the engine's word for the roster position that fills a "
-            "slot, and this map records which role sits in which slot. Only "
-            "two roles are proved: role 8 = TE and role 9 = WR. The rest stay "
-            "numbered until their names are proved.\n\n"
-            "Routes belong to the play's slots, not to a position, and are "
-            "shared by every formation that stores that play. That is why the "
-            "stock Weak Dive out of Gun: Pair Slot Left (same oversight in "
-            "2K5) sends the TE on the FB's fake-handoff route: the formation "
-            "plugs him into a slot whose stored route is the FB's. Assignment "
-            "Routes edits that play's slot routes for every formation at "
-            "once, so a stock quirk like that cannot be fixed for one "
-            "formation here.\n\n"
-            "This does not change which formation the CPU picks on "
-            "3rd-and-long. Whether the game's on-field look changes at "
+            "Each formation carries eleven bytes. In the retail game every "
+            "one of the 163 formations carries the numbers 0 to 10 exactly "
+            "once, in a different order — offence, defence and special teams "
+            "alike. So a number is an ordering entry, not a headcount: a "
+            "formation cannot hold two of anything, and nothing here can give "
+            "a set a third receiver.\n\n"
+            "Two numbers are traced through the game's own code: role 8 "
+            "resolves to the roster's Tight End and role 9 to its Wide "
+            "Receiver. The other nine stay numbered because their roster "
+            "names are not proved.\n\n"
+            "These map positions are not the route slots on the Assignment "
+            "Routes tab. There, slot 1 is the quarterback and slots 2 to 6 "
+            "are the offensive line on every play. Here, the five numbers "
+            "that travel together as a block through all 141 offensive "
+            "formations — 1, 4, 3, 5, 2 — never start at position 2, and the "
+            "block shifts from formation to formation. Read a map position as "
+            "a place in this stored list, not as a spot on the field.\n\n"
+            "Routes belong to the play's slots and are shared by every "
+            "formation that stores that play. That is why the stock Weak Dive "
+            "out of Gun: Pair Slot Left (same oversight in 2K5) sends the TE "
+            "on the FB's fake-handoff route. Assignment Routes edits that "
+            "play's slot routes for every formation at once, so a stock quirk "
+            "like that cannot be fixed for one formation.\n\n"
+            "The TE / RB / WR counts on the play-call screen come from a "
+            "personnel table inside default.xex, which this studio does not "
+            "write. This also does not change which formation the CPU picks "
+            "on 3rd-and-long. Whether the game's on-field look changes at "
             "runtime is unproved. Build, then check it in Xenia."
         )
         explanation.setObjectName("findingText")
@@ -100,12 +116,14 @@ class ApfPackageMapPanel(QWidget):
         columns.addLayout(left, 2)
 
         right = QVBoxLayout()
-        self.map_header = QLabel("On-field slots")
+        self.map_header = QLabel("Stored role order")
         self.map_header.setWordWrap(True)
         right.addWidget(self.map_header)
         self.table = QTableWidget(0, 3)
         self.table.setObjectName("assetTable")
-        self.table.setHorizontalHeaderLabels(("Slot", "Role", "Proved name"))
+        self.table.setHorizontalHeaderLabels(
+            ("Map position", "Role number", "Proved name")
+        )
         self.table.setSelectionBehavior(QTableWidget.SelectRows)
         self.table.setSelectionMode(QTableWidget.SingleSelection)
         self.table.setEditTriggers(QTableWidget.NoEditTriggers)
@@ -115,9 +133,9 @@ class ApfPackageMapPanel(QWidget):
         right.addWidget(self.table, 1)
 
         actions = QHBoxLayout()
-        self.put_te = QPushButton("Put TE in selected slot")
-        self.put_wr = QPushButton("Put WR in selected slot")
-        self.swap_te_wr = QPushButton("Swap TE and WR")
+        self.put_te = QPushButton("Move role 8 (TE) here")
+        self.put_wr = QPushButton("Move role 9 (WR) here")
+        self.swap_te_wr = QPushButton("Swap roles 8 and 9")
         self.copy_from = QComboBox()
         self.copy_button = QPushButton("Copy map from…")
         for button in (self.put_te, self.put_wr, self.swap_te_wr, self.copy_button):
@@ -169,6 +187,7 @@ class ApfPackageMapPanel(QWidget):
         if not bool(getattr(self.facade, "source_ready", False)):
             self._source_rows = ()
             self._draft = {}
+            self._staged = {}
             self._draft_error = None
             self._draft_error_message = None
             self._set_commit_enabled(False)
@@ -188,11 +207,14 @@ class ApfPackageMapPanel(QWidget):
         except Exception as exc:
             self._source_rows = ()
             self._draft = {}
+            self._staged = {}
             self._draft_error = None
             self._draft_error_message = None
             self._set_commit_enabled(False)
             self.status.setText(f"Could not read formations: {exc}")
             return
+        # A source (re)load is authoritative: the formation table itself just
+        # changed, so an older draft keyed by formation index cannot survive.
         self._restore_draft()
         self._reload_formation_list()
         self._refresh_map()
@@ -203,10 +225,14 @@ class ApfPackageMapPanel(QWidget):
         self.revert_button.setEnabled(enabled)
         self.revert_all_button.setEnabled(enabled)
 
-    def _restore_draft(self) -> bool:
+    def _restore_draft(self, *, keep_unstaged: bool = False) -> bool:
         """Sync the draft with the staged set. Never wipes the draft silently:
         on any read failure the draft stays as shown and every commit path is
-        disabled until the next successful sync."""
+        disabled until the next successful sync.
+
+        ``keep_unstaged`` is for the plain refresh paths (tab switch, another
+        panel's edit). Those used to overwrite the draft with the staged set
+        and drop an edit the user could still see marked in the list."""
 
         reader = getattr(self.facade, "staged_package_maps", None)
         staged: dict[int, tuple[int, ...]] = {}
@@ -226,9 +252,29 @@ class ApfPackageMapPanel(QWidget):
                 return False
         self._draft_error = None
         self._draft_error_message = None
-        self._draft = staged
+        self._staged = dict(staged)
+        if keep_unstaged:
+            merged = dict(staged)
+            merged.update(self._draft)
+            self._draft = merged
+        else:
+            self._draft = dict(staged)
         self._set_commit_enabled(True)
         return True
+
+    def unstaged_maps(self) -> tuple[int, ...]:
+        """Formations whose on-screen map differs from what the session holds.
+
+        Both directions count: an edit made but never staged, and a staged map
+        the user reverted on screen without the revert reaching the session."""
+
+        return tuple(
+            sorted(
+                index
+                for index in set(self._draft) | set(self._staged)
+                if self._draft.get(index) != self._staged.get(index)
+            )
+        )
 
     def _reload_formation_list(self) -> None:
         previous = self._selected_index()
@@ -270,7 +316,7 @@ class ApfPackageMapPanel(QWidget):
         formation_index = self._selected_index()
         self.table.setRowCount(0)
         if formation_index is None:
-            self.map_header.setText("On-field slots")
+            self.map_header.setText("Stored role order")
             return
         name = next(
             title for index, title, _map in self._source_rows if index == formation_index
@@ -295,20 +341,27 @@ class ApfPackageMapPanel(QWidget):
         self._reload_formation_list()
         self._refresh_map()
         self._update_status()
+        # Stage every change as it is made. The draft used to sit in this
+        # panel until the user found "Stage this map", so a build ran with
+        # nothing selected and reported "Applied 0 edits" while the list
+        # still showed the formation marked edited.
+        self._commit_draft(
+            self._staged_message(), "Those maps were already staged; nothing changed."
+        )
 
     def _put_role(self, role: int) -> None:
         formation_index = self._selected_index()
         if formation_index is None:
             QMessageBox.information(
-                self, "Pick a formation", "Select a formation, then a slot."
+                self, "Pick a formation", "Select a formation, then a map position."
             )
             return
         row = self.table.currentRow()
         if row < 0:
             QMessageBox.information(
                 self,
-                "Pick a slot",
-                "Select the on-field slot that should get that role.",
+                "Pick a map position",
+                "Select the map position that should hold that role number.",
             )
             return
         try:
@@ -364,26 +417,12 @@ class ApfPackageMapPanel(QWidget):
             return
         if not self._draft:
             self.status.setText(
-                "Nothing to stage yet. Select a formation and move TE or WR."
+                "Nothing to stage yet. Select a formation, then move role 8 "
+                "(TE) or role 9 (WR) to another map position."
             )
             return
-        changes = [
-            PackageMapChange(index, package_map)
-            for index, package_map in sorted(self._draft.items())
-        ]
-        apply = getattr(self.facade, "apply_package_maps", None)
-        if apply is None:
-            return
-        message = (
-            f"{len(changes)} formation map{'s' if len(changes) != 1 else ''} staged."
-        )
-        self.run_task(
-            "Staging who-lines-up maps",
-            lambda progress: apply(changes, progress=progress),
-            lambda result: self._after_stage(
-                result, message, "Those maps were already staged; nothing changed."
-            ),
-            True,
+        self._commit_draft(
+            self._staged_message(), "Those maps were already staged; nothing changed."
         )
 
     def _revert_one(self) -> None:
@@ -425,9 +464,26 @@ class ApfPackageMapPanel(QWidget):
         self._draft = {}
         self._commit_draft()
 
-    def _commit_draft(self) -> None:
+    def _staged_message(self) -> str:
+        count = len(self._draft)
+        if not count:
+            return "Nothing is staged now; the built game will match your source."
+        return (
+            f"{count} formation map{'s' if count != 1 else ''} staged. Build writes "
+            f"{'them' if count != 1 else 'it'} into the copied game folder."
+        )
+
+    def _commit_draft(
+        self,
+        message: str = "Who-lines-up maps updated.",
+        unchanged_message: str = "Who-lines-up maps already match; nothing changed.",
+    ) -> None:
         apply = getattr(self.facade, "apply_package_maps", None)
-        if apply is None or not bool(getattr(self.facade, "source_ready", False)):
+        if (
+            apply is None
+            or self._draft_error is not None
+            or not bool(getattr(self.facade, "source_ready", False))
+        ):
             self._reload_formation_list()
             self._refresh_map()
             self._update_status()
@@ -436,16 +492,21 @@ class ApfPackageMapPanel(QWidget):
             PackageMapChange(index, package_map)
             for index, package_map in sorted(self._draft.items())
         ]
-        self.run_task(
+        started = self.run_task(
             "Updating who-lines-up maps",
             lambda progress: apply(changes, progress=progress),
-            lambda result: self._after_stage(
-                result,
-                "Who-lines-up maps updated.",
-                "Who-lines-up maps already match; nothing changed.",
-            ),
+            lambda result: self._after_stage(result, message, unchanged_message),
             True,
         )
+        if started is False:
+            # The window refuses a second blocking task and used to drop the
+            # click on the floor. The draft is kept; say so instead.
+            self.status.setText(
+                "Another operation is still running, so these maps are NOT "
+                "staged yet. Wait for it to finish, then click Stage this map."
+            )
+            self._reload_formation_list()
+            self._refresh_map()
 
     def _after_stage(self, result: object, message: str, unchanged_message: str) -> None:
         restored = self._restore_draft()
@@ -463,20 +524,29 @@ class ApfPackageMapPanel(QWidget):
         if not self._source_rows:
             self.status.setText("Load a game to read the formation maps.")
             return
-        count = len(self._draft)
-        if count:
+        pending = len(self.unstaged_maps())
+        staged = len(self._staged)
+        if pending:
             self.status.setText(
-                f"{count} formation map{'s' if count != 1 else ''} ready to stage "
-                "or already staged. Build writes them into the copied game folder."
+                f"{pending} formation map{'s' if pending != 1 else ''} changed on "
+                "screen but NOT staged, so Build would skip "
+                f"{'them' if pending != 1 else 'it'}. Click Stage this map."
+            )
+        elif staged:
+            self.status.setText(
+                f"{staged} formation map{'s' if staged != 1 else ''} staged. Build "
+                "writes "
+                f"{'them' if staged != 1 else 'it'} into the copied game folder."
             )
         else:
             self.status.setText(
-                f"{len(self._source_rows)} formations. Select one and move TE or WR."
+                f"{len(self._source_rows)} formations. Select one and move a role "
+                "between map positions. Nothing is staged yet."
             )
 
     def refresh(self) -> None:
         if bool(getattr(self.facade, "source_ready", False)) and self._source_rows:
-            self._restore_draft()
+            self._restore_draft(keep_unstaged=True)
             self._reload_formation_list()
             self._refresh_map()
             self._update_status()

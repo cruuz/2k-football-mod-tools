@@ -1,0 +1,204 @@
+[
+  {
+    "id": "apf2k8.playbooks.identity",
+    "title": "Book Identity",
+    "summary": "Reparse each team label and resolved resource; report shared real books and unresolved types.",
+    "game": "apf2k8_xbox360",
+    "surface": "scripts_config",
+    "classification": "read-only-mapped",
+    "backend": {
+      "command": "python3 tools/apf_book_unlock.py identity --source <0A>",
+      "module": "tools/apf_book_unlock.py",
+      "operation": "inspect"
+    },
+    "gui": {
+      "expose": true,
+      "default_enabled": true,
+      "mode": "view",
+      "reason": "BookIdentityPanel is implemented; merge this row only together with the protected-file wiring in WIRING.md. Offline proof only; runtime UNWITNESSED."
+    },
+    "source_container": {
+      "format": "APF AA00B3BF four-volume archive, IFF/H7A, SPLB and ROST",
+      "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
+      "retail_file": "user-owned extracted APF Xbox 360 game folder",
+      "hash_pins": [
+        "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf"
+      ]
+    },
+    "selectors": {
+      "fields": [
+        {
+          "name": "source",
+          "allowed": "user-owned APF game index",
+          "required": true
+        }
+      ],
+      "notes": "Reparse each team label and resolved resource; report shared real books and unresolved types."
+    },
+    "input_constraints": [
+      "Use a separate new destination; source game files remain read-only.",
+      "Reject malformed ownership, hash collisions, shared clone labels, occupied directory slack, IFF overflow, and H7A length greater than distance.",
+      "Only existing plays/formations are used; no CPU situational frequency, WR depth flip, true RPO, or TU compatibility is established."
+    ],
+    "evidence": [
+      "ASTRA_REPORT.md",
+      "tests/mod_editor/test_apf_book_unlock.py",
+      "tests/mod_editor/test_apf_book_unlock_retail.py",
+      "tests/mod_editor/test_apf_book_identity_qt.py"
+    ],
+    "validation_command": "python3 -m tests.mod_editor.test_apf_book_unlock",
+    "runtime": {
+      "status": "not-tested",
+      "scope": "UNWITNESSED: base-XEX static resolver and offline data proofs only; TU compatibility UNKNOWN.",
+      "evidence": []
+    },
+    "public_distribution": {
+      "tooling": "source-and-schemas-only",
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Distribute JSON selectors and tooling; each user builds from their own game. Never bundle copied game outputs."
+    },
+    "portme": [
+      "Apply the Book Identity section of WIRING.md, including the APF allowlist and runtime import/data closure.",
+      "Witness base-XEX loading and per-team cloned-book consumption; reconstruct TU resolver before claiming TU compatibility."
+    ]
+  },
+  {
+    "id": "apf2k8.playbooks.clone",
+    "title": "Independent offensive CPU books",
+    "summary": "Append a name-only SPLB clone, insert its sorted filename hash, reuse an existing label name as type, and bind one team. Finish other Studio edits first.",
+    "game": "apf2k8_xbox360",
+    "surface": "scripts_config",
+    "classification": "offline-writer-proved",
+    "backend": {
+      "command": "python3 tools/apf_book_unlock.py clone --source <0A> --requests <clones.json> --output <new-game>",
+      "module": "tools/apf_book_unlock.py",
+      "operation": "write"
+    },
+    "gui": {
+      "expose": true,
+      "default_enabled": true,
+      "mode": "edit",
+      "reason": "BookIdentityPanel is implemented; merge this row only together with the protected-file wiring in WIRING.md. Offline proof only; runtime UNWITNESSED."
+    },
+    "source_container": {
+      "format": "APF AA00B3BF four-volume archive, IFF/H7A, SPLB and ROST",
+      "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
+      "retail_file": "user-owned extracted APF Xbox 360 game folder",
+      "hash_pins": [
+        "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf"
+      ]
+    },
+    "selectors": {
+      "fields": [
+        {
+          "name": "label_id",
+          "allowed": "unused offensive label 0..68",
+          "required": true
+        },
+        {
+          "name": "team_index",
+          "allowed": "team slot 0..39",
+          "required": true
+        },
+        {
+          "name": "donor_type",
+          "allowed": "one of the seven stock O- types",
+          "required": true
+        }
+      ],
+      "notes": "Append a name-only SPLB clone, insert its sorted filename hash, reuse an existing label name as type, and bind one team. Finish other Studio edits first."
+    },
+    "input_constraints": [
+      "Use a separate new destination; source game files remain read-only.",
+      "Reject malformed ownership, hash collisions, shared clone labels, occupied directory slack, IFF overflow, and H7A length greater than distance.",
+      "Only existing plays/formations are used; no CPU situational frequency, WR depth flip, true RPO, or TU compatibility is established."
+    ],
+    "evidence": [
+      "ASTRA_REPORT.md",
+      "tests/mod_editor/test_apf_book_unlock.py",
+      "tests/mod_editor/test_apf_book_unlock_retail.py",
+      "tests/mod_editor/test_apf_book_identity_qt.py"
+    ],
+    "validation_command": "python3 -m tests.mod_editor.test_apf_book_unlock",
+    "runtime": {
+      "status": "not-tested",
+      "scope": "UNWITNESSED: base-XEX static resolver and offline data proofs only; TU compatibility UNKNOWN.",
+      "evidence": []
+    },
+    "public_distribution": {
+      "tooling": "source-and-schemas-only",
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Distribute JSON selectors and tooling; each user builds from their own game. Never bundle copied game outputs."
+    },
+    "portme": [
+      "Apply the Book Identity section of WIRING.md, including the APF allowlist and runtime import/data closure.",
+      "Witness base-XEX loading and per-team cloned-book consumption; reconstruct TU resolver before claiming TU compatibility."
+    ]
+  },
+  {
+    "id": "apf2k8.playbooks.scheme_presets",
+    "title": "Wide Zone, Spread-to-Run, Pro Power",
+    "summary": "Select existing plays and retarget tagged slots through the SPLB writer; preserve formations, personnel fields, fallback records, and all other bytes.",
+    "game": "apf2k8_xbox360",
+    "surface": "scripts_config",
+    "classification": "offline-writer-proved",
+    "backend": {
+      "command": "python3 tools/apf_book_unlock.py preset --source <0A> --preset <wide-zone|spread-to-run|pro-power> --output <new-game>",
+      "module": "tools/apf_book_unlock.py",
+      "operation": "write"
+    },
+    "gui": {
+      "expose": true,
+      "default_enabled": true,
+      "mode": "edit",
+      "reason": "BookIdentityPanel is implemented; merge this row only together with the protected-file wiring in WIRING.md. Offline proof only; runtime UNWITNESSED."
+    },
+    "source_container": {
+      "format": "APF AA00B3BF four-volume archive, IFF/H7A, SPLB and ROST",
+      "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
+      "retail_file": "user-owned extracted APF Xbox 360 game folder",
+      "hash_pins": [
+        "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf"
+      ]
+    },
+    "selectors": {
+      "fields": [
+        {
+          "name": "preset",
+          "allowed": "wide-zone, spread-to-run, pro-power",
+          "required": true
+        }
+      ],
+      "notes": "Select existing plays and retarget tagged slots through the SPLB writer; preserve formations, personnel fields, fallback records, and all other bytes."
+    },
+    "input_constraints": [
+      "Use a separate new destination; source game files remain read-only.",
+      "Reject malformed ownership, hash collisions, shared clone labels, occupied directory slack, IFF overflow, and H7A length greater than distance.",
+      "Only existing plays/formations are used; no CPU situational frequency, WR depth flip, true RPO, or TU compatibility is established."
+    ],
+    "evidence": [
+      "ASTRA_REPORT.md",
+      "tests/mod_editor/test_apf_book_unlock.py",
+      "tests/mod_editor/test_apf_book_unlock_retail.py",
+      "tests/mod_editor/test_apf_book_identity_qt.py"
+    ],
+    "validation_command": "python3 -m tests.mod_editor.test_apf_book_unlock",
+    "runtime": {
+      "status": "not-tested",
+      "scope": "UNWITNESSED: base-XEX static resolver and offline data proofs only; TU compatibility UNKNOWN.",
+      "evidence": []
+    },
+    "public_distribution": {
+      "tooling": "source-and-schemas-only",
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Distribute JSON selectors and tooling; each user builds from their own game. Never bundle copied game outputs."
+    },
+    "portme": [
+      "Apply the Book Identity section of WIRING.md, including the APF allowlist and runtime import/data closure.",
+      "Witness base-XEX loading and per-team cloned-book consumption; reconstruct TU resolver before claiming TU compatibility."
+    ]
+  }
+]

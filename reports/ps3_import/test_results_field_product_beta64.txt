@@ -1,0 +1,1 @@
+APF_FIELD_ART_PRODUCT_VALIDATION_PASS mode=fast core=6 extras=254 evidence=hash-pinned full_volume=explicit

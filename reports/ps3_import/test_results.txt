@@ -1,0 +1,265 @@
+COMMAND: QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_ps3_texture_bundle.py -v
+test_aliases_keep_historical_names (__main__.BundleTests.test_aliases_keep_historical_names) ... ok
+test_bad_dds_does_not_fall_back_to_gtf (__main__.BundleTests.test_bad_dds_does_not_fall_back_to_gtf) ... ok
+test_duplicate_variants_need_choice (__main__.BundleTests.test_duplicate_variants_need_choice) ... ok
+test_folder_layout_order_and_receipt (__main__.BundleTests.test_folder_layout_order_and_receipt) ... ok
+test_gtf_fallback_only_when_dds_missing (__main__.BundleTests.test_gtf_fallback_only_when_dds_missing) ... FAIL
+test_hash_mapping_uses_semantic_names (__main__.BundleTests.test_hash_mapping_uses_semantic_names) ... ok
+test_identical_and_incomplete_pairs_rejected (__main__.BundleTests.test_identical_and_incomplete_pairs_rejected) ... ok
+test_manifest_layer_mismatch_and_wrong_size (__main__.BundleTests.test_manifest_layer_mismatch_and_wrong_size) ... ok
+test_mapping_table_names_and_collisions (__main__.BundleTests.test_mapping_table_names_and_collisions) ... ok
+test_missing_hash_requires_chosen_destination (__main__.BundleTests.test_missing_hash_requires_chosen_destination) ... ok
+test_rejected_pair_does_not_hide_valid_team (__main__.BundleTests.test_rejected_pair_does_not_hide_valid_team) ... ok
+test_reviewed_pixel_mutation_refused (__main__.BundleTests.test_reviewed_pixel_mutation_refused) ... ok
+test_stage_failure_rolls_back_previous_operations (__main__.BundleTests.test_stage_failure_rolls_back_previous_operations) ... ok
+test_team_folder_as_input (__main__.BundleTests.test_team_folder_as_input) ... ok
+test_traversal_and_case_collision_zip (__main__.BundleTests.test_traversal_and_case_collision_zip) ... ok
+test_unwritable_and_wrong_kind_refused (__main__.BundleTests.test_unwritable_and_wrong_kind_refused) ... ok
+test_wrong_layer_dimensions_refused (__main__.BundleTests.test_wrong_layer_dimensions_refused) ... ok
+test_zip_matches_folder (__main__.BundleTests.test_zip_matches_folder) ... ok
+test_apfe_argb4444_dds (__main__.CodecTests.test_apfe_argb4444_dds) ... ok
+test_dxt1_and_dxt5_from_pillow (__main__.CodecTests.test_dxt1_and_dxt5_from_pillow) ... ok
+test_gtf_declared_offset_not_fixed_128 (__main__.CodecTests.test_gtf_declared_offset_not_fixed_128) ... ok
+test_gtf_morton_rectangular_layout (__main__.CodecTests.test_gtf_morton_rectangular_layout) ... ok
+test_raw_dds_preserves_rgba (__main__.CodecTests.test_raw_dds_preserves_rgba) ... ok
+test_truncation_and_oversize_are_rejected (__main__.CodecTests.test_truncation_and_oversize_are_rejected) ... ok
+test_synthetic_bundle_stages_and_rebuilt_retail_resource_reparses (__main__.RetailWriterTests.test_synthetic_bundle_stages_and_rebuilt_retail_resource_reparses) ... ok
+
+======================================================================
+FAIL: test_gtf_fallback_only_when_dds_missing (__main__.BundleTests.test_gtf_fallback_only_when_dds_missing)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-apf-ps3-texture-import/tests/mod_editor/test_apf_ps3_texture_bundle.py", line 191, in test_gtf_fallback_only_when_dds_missing
+    self.assertEqual(bundle.pairs[0].layers[0].image.getpixel((0, 0)), (255, 0, 0, 255))
+AssertionError: Tuples differ: (0, 0, 0, 255) != (255, 0, 0, 255)
+
+First differing element 0:
+0
+255
+
+- (0, 0, 0, 255)
++ (255, 0, 0, 255)
+
+----------------------------------------------------------------------
+Ran 25 tests in 23.721s
+
+FAILED (failures=1)
+
+EXIT: 1; elapsed 23.87s
+
+COMMAND: QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_ps3_probes.py -v
+test_identical_synthetic_payload_has_zero_differences (__main__.RosterProbeTests.test_identical_synthetic_payload_has_zero_differences) ... ok
+test_odd_nickname_pointer_is_reported_without_normalization (__main__.RosterProbeTests.test_odd_nickname_pointer_is_reported_without_normalization) ... ok
+test_truncated_inputs_and_missing_zip_member (__main__.RosterProbeTests.test_truncated_inputs_and_missing_zip_member) ... ok
+test_accelerated_decoder_matches_existing_decoder (__main__.TextureStreamTests.test_accelerated_decoder_matches_existing_decoder) ... ok
+test_candidate_kinds (__main__.TextureStreamTests.test_candidate_kinds) ... ok
+test_compressed_outer_and_overlapping_directory_refused (__main__.TextureStreamTests.test_compressed_outer_and_overlapping_directory_refused) ... ok
+test_nested_compressed_volumes_cross_pack_entry (__main__.TextureStreamTests.test_nested_compressed_volumes_cross_pack_entry) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.953s
+
+OK
+
+EXIT: 0; elapsed 1.13s
+
+COMMAND: QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_ps3_texture_bundle_qt.py -v
+test_collision_requires_explicit_variant_selection (__main__.DialogTests.test_collision_requires_explicit_variant_selection) ... ok
+test_hash_default_produces_two_distinct_layers (__main__.DialogTests.test_hash_default_produces_two_distinct_layers) ... ok
+test_missing_destination_does_not_accept (__main__.DialogTests.test_missing_destination_does_not_accept) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.114s
+
+OK
+
+EXIT: 0; elapsed 0.28s
+
+COMMAND: QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_helmet_crest_design_product.py -v
+test_composed_cache_pair_uses_raw_structure_verifier_not_vc_iff (__main__.BuildCompilerTests.test_composed_cache_pair_uses_raw_structure_verifier_not_vc_iff) ... ok
+test_digital_font_collision_names_outer_and_composite_fix (__main__.BuildCompilerTests.test_digital_font_collision_names_outer_and_composite_fix) ... ok
+test_full_profile_compiles_package_cache_pair_and_outer_1310 (__main__.BuildCompilerTests.test_full_profile_compiles_package_cache_pair_and_outer_1310) ... ok
+test_full_shell_verifier_refusal_aborts_the_compile (__main__.BuildCompilerTests.test_full_shell_verifier_refusal_aborts_the_compile) ... ok
+test_retail_profile_does_not_touch_outer_1310 (__main__.BuildCompilerTests.test_retail_profile_does_not_touch_outer_1310) ... ok
+test_runtime_closure_prunes_superseded_guard_band_tools (__main__.BuildCompilerTests.test_runtime_closure_prunes_superseded_guard_band_tools) ... ok
+test_fit_is_not_accepted_for_the_retail_profile (__main__.MetadataTests.test_fit_is_not_accepted_for_the_retail_profile) ... ok
+test_only_two_fixed_profiles_and_global_full_shell_scope (__main__.MetadataTests.test_only_two_fixed_profiles_and_global_full_shell_scope) ... ok
+test_detail_layer_stages_saves_and_roundtrips_project (__main__.SessionAndProjectTests.test_detail_layer_stages_saves_and_roundtrips_project) ... ok
+test_fit_stages_48_2_to_100_percent_and_roundtrips_project (__main__.SessionAndProjectTests.test_fit_stages_48_2_to_100_percent_and_roundtrips_project) ... ok
+test_full_shell_profile_refuses_a_staged_detail_layer (__main__.SessionAndProjectTests.test_full_shell_profile_refuses_a_staged_detail_layer) ... ok
+test_headless_full_shell_api_rejects_literal_rgb_bypass (__main__.SessionAndProjectTests.test_headless_full_shell_api_rejects_literal_rgb_bypass) ... ok
+test_transparent_and_symlink_inputs_fail_before_staging (__main__.SessionAndProjectTests.test_transparent_and_symlink_inputs_fail_before_staging) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 1.179s
+
+OK
+
+EXIT: 0; elapsed 1.54s
+
+COMMAND: QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_team_crest_selection.py -v
+test_every_built_in_team_is_offered (__main__.CrestTableTests.test_every_built_in_team_is_offered) ... ok
+test_lookups_refuse_rather_than_guess (__main__.CrestTableTests.test_lookups_refuse_rather_than_guess) ... ok
+test_no_two_teams_share_a_crest_package (__main__.CrestTableTests.test_no_two_teams_share_a_crest_package)
+A shared package would silently repaint somebody else's helmet. ... ok
+test_the_default_is_still_the_target_the_writers_always_used (__main__.CrestTableTests.test_the_default_is_still_the_target_the_writers_always_used)
+Existing callers that pass nothing must not silently move. ... ok
+test_the_new_york_team_is_the_knights (__main__.CrestTableTests.test_the_new_york_team_is_the_knights) ... ok
+test_the_philadelphia_team_is_the_americans (__main__.CrestTableTests.test_the_philadelphia_team_is_the_americans)
+The row this whole exercise turned on. ... ok
+test_it_opens_on_the_historical_default (__main__.PanelSelectionTests.test_it_opens_on_the_historical_default) ... ok
+test_the_chosen_team_reaches_both_writers (__main__.PanelSelectionTests.test_the_chosen_team_reaches_both_writers)
+The whole point: pick Americans, and outer 1133 is what gets written. ... ok
+test_the_picker_lists_every_team (__main__.PanelSelectionTests.test_the_picker_lists_every_team) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.109s
+
+OK
+
+EXIT: 0; elapsed 0.85s
+
+COMMAND: QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_all_crest_slots.py -v
+test_a_facade_with_no_source_leaves_the_teams_alone (__main__.PickerWidensOnLoadTests.test_a_facade_with_no_source_leaves_the_teams_alone) ... skipped 'extracted APF 0A not present'
+test_it_widens_from_the_teams_to_every_slot (__main__.PickerWidensOnLoadTests.test_it_widens_from_the_teams_to_every_slot) ... skipped 'extracted APF 0A not present'
+test_library_slots_are_labelled_by_index (__main__.PickerWidensOnLoadTests.test_library_slots_are_labelled_by_index) ... skipped 'extracted APF 0A not present'
+test_repopulating_is_idempotent (__main__.PickerWidensOnLoadTests.test_repopulating_is_idempotent)
+set_context runs on every refresh; it must not multiply the list. ... skipped 'extracted APF 0A not present'
+test_the_payload_stays_writer_compatible (__main__.PickerWidensOnLoadTests.test_the_payload_stays_writer_compatible)
+The build path uses only these two attributes. ... skipped 'extracted APF 0A not present'
+test_entry_indices_are_scattered_not_sequential (__main__.ResolvedSlotTests.test_entry_indices_are_scattered_not_sequential)
+Guards against anyone 'simplifying' this into index arithmetic. ... skipped 'extracted APF 0A not present'
+test_every_built_in_team_still_appears (__main__.ResolvedSlotTests.test_every_built_in_team_still_appears) ... skipped 'extracted APF 0A not present'
+test_every_slot_resolves (__main__.ResolvedSlotTests.test_every_slot_resolves) ... skipped 'extracted APF 0A not present'
+test_resolution_agrees_with_the_team_table_entry_indices (__main__.ResolvedSlotTests.test_resolution_agrees_with_the_team_table_entry_indices)
+A CRC mismatch would silently point a writer at the wrong package. ... skipped 'extracted APF 0A not present'
+test_slot_zero_is_a_library_slot_at_the_measured_entry (__main__.ResolvedSlotTests.test_slot_zero_is_a_library_slot_at_the_measured_entry) ... skipped 'extracted APF 0A not present'
+test_the_split_is_twenty_four_teams_and_the_rest_library (__main__.ResolvedSlotTests.test_the_split_is_twenty_four_teams_and_the_rest_library) ... skipped 'extracted APF 0A not present'
+test_a_library_slot_is_never_given_a_team_name (__main__.SlotContractTests.test_a_library_slot_is_never_given_a_team_name)
+Writable is proved; which picker position it backs is not. ... ok
+test_a_team_slot_is_labelled_by_team (__main__.SlotContractTests.test_a_team_slot_is_labelled_by_team) ... ok
+test_the_catalog_count_matches_the_logo_cache (__main__.SlotContractTests.test_the_catalog_count_matches_the_logo_cache)
+The two must agree or one of them is describing a different game. ... ok
+test_the_team_table_is_unchanged (__main__.SlotContractTests.test_the_team_table_is_unchanged)
+Existing callers must keep hitting exactly the targets they did. ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.070s
+
+OK (skipped=11)
+
+EXIT: 0; elapsed 0.12s
+
+COMMAND: QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_logo_patch.py -v
+test_both_layers_change_only_their_two_base_subspans (__main__.LogoWriterDualLayerTests.test_both_layers_change_only_their_two_base_subspans) ... skipped 'extracted APF 0A not present'
+test_dual_call_with_retail_l1_touches_only_l0 (__main__.LogoWriterDualLayerTests.test_dual_call_with_retail_l1_touches_only_l0) ... skipped 'extracted APF 0A not present'
+test_dual_no_op_returns_source_entry (__main__.LogoWriterDualLayerTests.test_dual_no_op_returns_source_entry) ... skipped 'extracted APF 0A not present'
+test_dual_wrong_l1_dimensions_are_refused (__main__.LogoWriterDualLayerTests.test_dual_wrong_l1_dimensions_are_refused) ... skipped 'extracted APF 0A not present'
+test_drifted_base_hash_is_refused (__main__.LogoWriterFailClosedTests.test_drifted_base_hash_is_refused) ... skipped 'extracted APF 0A not present'
+test_drifted_entry_hash_is_refused (__main__.LogoWriterFailClosedTests.test_drifted_entry_hash_is_refused) ... skipped 'extracted APF 0A not present'
+test_existing_output_is_refused_and_untouched (__main__.LogoWriterFailClosedTests.test_existing_output_is_refused_and_untouched) ... skipped 'extracted APF 0A not present'
+test_source_as_output_is_refused (__main__.LogoWriterFailClosedTests.test_source_as_output_is_refused) ... skipped 'extracted APF 0A not present'
+test_source_volume_is_never_modified_by_a_copy (__main__.LogoWriterFailClosedTests.test_source_volume_is_never_modified_by_a_copy) ... skipped 'extracted APF 0A not present'
+test_wrong_dimensions_are_refused (__main__.LogoWriterFailClosedTests.test_wrong_dimensions_are_refused) ... skipped 'extracted APF 0A not present'
+test_spawn_workers_match_sequential_and_preserve_input_order (__main__.LogoWriterParallelBatchTests.test_spawn_workers_match_sequential_and_preserve_input_order) ... skipped 'extracted APF 0A not present'
+test_worker_count_is_strictly_bounded (__main__.LogoWriterParallelBatchTests.test_worker_count_is_strictly_bounded) ... skipped 'extracted APF 0A not present'
+test_worker_refusal_propagates_without_any_output_write (__main__.LogoWriterParallelBatchTests.test_worker_refusal_propagates_without_any_output_write) ... skipped 'extracted APF 0A not present'
+test_pinned_constants (__main__.LogoWriterPinTests.test_pinned_constants) ... skipped 'extracted APF 0A not present'
+test_retail_hashes_and_descriptor_hold (__main__.LogoWriterPinTests.test_retail_hashes_and_descriptor_hold) ... skipped 'extracted APF 0A not present'
+test_transport_is_bit_exact (__main__.LogoWriterPinTests.test_transport_is_bit_exact) ... skipped 'extracted APF 0A not present'
+test_controlled_edit_changes_only_logo_l0_base (__main__.LogoWriterRoundTripTests.test_controlled_edit_changes_only_logo_l0_base) ... skipped 'extracted APF 0A not present'
+test_decode_png_encode_is_bit_exact_no_op (__main__.LogoWriterRoundTripTests.test_decode_png_encode_is_bit_exact_no_op) ... skipped 'extracted APF 0A not present'
+
+----------------------------------------------------------------------
+Ran 18 tests in 0.000s
+
+OK (skipped=18)
+
+EXIT: 0; elapsed 0.15s
+
+COMMAND: QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_field_art.py -v
+test_curve_rows_remain_visible_without_being_called_field_textures (__main__.ApfFieldArtInventoryTests.test_curve_rows_remain_visible_without_being_called_field_textures) ... ok
+test_endzone_pairing_and_package_ownership_are_explicit_but_bounded (__main__.ApfFieldArtInventoryTests.test_endzone_pairing_and_package_ownership_are_explicit_but_bounded) ... ok
+test_exact_semantic_and_package_totals (__main__.ApfFieldArtInventoryTests.test_exact_semantic_and_package_totals) ... ok
+test_fails_closed_on_missing_unknown_or_reclassified_row (__main__.ApfFieldArtInventoryTests.test_fails_closed_on_missing_unknown_or_reclassified_row) ... ok
+test_fails_closed_when_package_relationships_drift (__main__.ApfFieldArtInventoryTests.test_fails_closed_when_package_relationships_drift) ... ok
+test_records_groups_and_summary_are_immutable (__main__.ApfFieldArtInventoryTests.test_records_groups_and_summary_are_immutable) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.014s
+
+OK
+
+EXIT: 0; elapsed 0.18s
+
+COMMAND: QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_field_art_patch.py -v
+test_contract_table_pins_every_shipped_slot (__main__.FieldArtContractPinTests.test_contract_table_pins_every_shipped_slot) ... ok
+test_field_radiance_and_weather_divots_are_not_writable (__main__.FieldArtContractPinTests.test_field_radiance_and_weather_divots_are_not_writable) ... ok
+test_endzone_edit_is_verified_by_the_independent_verifier (__main__.FieldArtCopiedVolumeTests.test_endzone_edit_is_verified_by_the_independent_verifier) ... ok
+test_noop_copied_volume_is_byte_identical (__main__.FieldArtCopiedVolumeTests.test_noop_copied_volume_is_byte_identical) ... ok
+test_source_volume_is_never_modified_by_a_copy (__main__.FieldArtCopiedVolumeTests.test_source_volume_is_never_modified_by_a_copy) ... ok
+test_an_endzone_edit_too_detailed_to_fit_is_still_refused (__main__.FieldArtEditTests.test_an_endzone_edit_too_detailed_to_fit_is_still_refused)
+The allocation guard still has to fail closed. ... ok
+test_both_endzone_layers_land_in_one_pass (__main__.FieldArtEditTests.test_both_endzone_layers_land_in_one_pass)
+The retail entry pin no longer blocks the second layer. ... ok
+test_divots_edit_changes_only_its_base (__main__.FieldArtEditTests.test_divots_edit_changes_only_its_base) ... ok
+test_endzone_l0_edit_changes_only_its_base (__main__.FieldArtEditTests.test_endzone_l0_edit_changes_only_its_base)
+``endzone_l0`` accepts an edit now.  It did not, and why is worth keeping. ... ok
+test_endzone_l1_edit_changes_only_its_base (__main__.FieldArtEditTests.test_endzone_l1_edit_changes_only_its_base) ... ok
+test_drifted_base_hash_is_refused (__main__.FieldArtFailClosedTests.test_drifted_base_hash_is_refused) ... ok
+test_drifted_entry_hash_is_refused (__main__.FieldArtFailClosedTests.test_drifted_entry_hash_is_refused) ... ok
+test_existing_output_is_refused_and_untouched (__main__.FieldArtFailClosedTests.test_existing_output_is_refused_and_untouched) ... ok
+test_source_as_output_is_refused (__main__.FieldArtFailClosedTests.test_source_as_output_is_refused) ... ok
+test_unsupported_slot_is_refused (__main__.FieldArtFailClosedTests.test_unsupported_slot_is_refused) ... ok
+test_wrong_dimensions_are_refused (__main__.FieldArtFailClosedTests.test_wrong_dimensions_are_refused) ... ok
+test_divots_pins_and_transport (__main__.FieldArtPinAndTransportTests.test_divots_pins_and_transport) ... ok
+test_endzone_l0_pins_and_transport (__main__.FieldArtPinAndTransportTests.test_endzone_l0_pins_and_transport) ... ok
+test_endzone_l1_pins_and_transport (__main__.FieldArtPinAndTransportTests.test_endzone_l1_pins_and_transport) ... ok
+test_field_pass_text_pins_and_transport (__main__.FieldArtPinAndTransportTests.test_field_pass_text_pins_and_transport) ... ok
+test_divots_noop_is_bit_exact (__main__.FieldArtRoundTripTests.test_divots_noop_is_bit_exact) ... ok
+test_endzone_l0_noop_is_bit_exact (__main__.FieldArtRoundTripTests.test_endzone_l0_noop_is_bit_exact) ... ok
+test_endzone_l1_noop_is_bit_exact (__main__.FieldArtRoundTripTests.test_endzone_l1_noop_is_bit_exact) ... ok
+test_field_pass_text_noop_is_bit_exact (__main__.FieldArtRoundTripTests.test_field_pass_text_noop_is_bit_exact) ... ok
+test_field_pass_text_bc3_edit_and_verify (__main__.FieldArtSlowPracticeTests.test_field_pass_text_bc3_edit_and_verify) ... skipped 'practice-overlay recompress is slow; set APF_FIELD_ART_SLOW=1'
+test_pc_field_goal_dxt1_edit_and_verify (__main__.FieldArtSlowPracticeTests.test_pc_field_goal_dxt1_edit_and_verify) ... skipped 'practice-overlay recompress is slow; set APF_FIELD_ART_SLOW=1'
+
+----------------------------------------------------------------------
+Ran 26 tests in 370.374s
+
+OK (skipped=2)
+APF_FIELD_ART_PATCH_PASS mode=patched entry=6 files=1 sha256=1468ff806c58b3da6e87feed4749c8f826ba0a84c5a6aa82ead763d6dfd0f46d
+APF_FIELD_ART_PATCH_PASS mode=no_op entry=6 files=0 sha256=d8fb70d2bdb180306f49aa2b268d287b35eb33289c69959a74fd6c7dcac9af26
+
+EXIT: 0; elapsed 370.57s
+
+COMMAND: QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/apf_h7a_no_overlap_test.py -v
+test_a_flat_region_still_compresses (__main__.NoOverlappingMatchTests.test_a_flat_region_still_compresses)
+Guard against 'fixing' overlap by refusing to match at all. ... ok
+test_every_encoder_still_round_trips (__main__.NoOverlappingMatchTests.test_every_encoder_still_round_trips)
+The clamp must cost ratio, never correctness. ... ok
+test_no_encoder_emits_an_overlapping_match (__main__.NoOverlappingMatchTests.test_no_encoder_emits_an_overlapping_match) ... ok
+test_the_rule_matches_what_retail_shipped (__main__.RetailDisciplineTests.test_the_rule_matches_what_retail_shipped)
+The pinned retail crest block, if the disc is available. ... skipped 'retail 0A not extracted here'
+
+----------------------------------------------------------------------
+Ran 4 tests in 17.555s
+
+OK (skipped=1)
+
+EXIT: 0; elapsed 17.68s
+
+COMMAND: QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_save_roster_players.py -v
+test_signed_stfs_extracts_and_writes_verified_raw_handoff (__main__.FileAndContainerTests.test_signed_stfs_extracts_and_writes_verified_raw_handoff) ... ok
+test_source_change_and_existing_destination_are_refused (__main__.FileAndContainerTests.test_source_change_and_existing_destination_are_refused) ... ok
+test_complete_typed_inventory_and_text_ownership (__main__.InventoryAndPatchTests.test_complete_typed_inventory_and_text_ownership) ... ok
+test_fixed_allocation_player_text_edit_and_overflow (__main__.InventoryAndPatchTests.test_fixed_allocation_player_text_edit_and_overflow) ... ok
+test_membership_swap_preserves_counts_uniqueness_and_multiset (__main__.InventoryAndPatchTests.test_membership_swap_preserves_counts_uniqueness_and_multiset) ... ok
+test_packed_edits_preserve_shared_bits_and_both_position_mirrors (__main__.InventoryAndPatchTests.test_packed_edits_preserve_shared_bits_and_both_position_mirrors) ... ok
+test_unknown_noop_overlap_and_unowned_tamper_fail_closed (__main__.InventoryAndPatchTests.test_unknown_noop_overlap_and_unowned_tamper_fail_closed) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 4.205s
+
+OK
+
+EXIT: 0; elapsed 4.35s

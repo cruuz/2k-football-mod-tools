@@ -1,0 +1,552 @@
+{
+  "capabilities": [
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.apf2k8_play_design_build --index <read-only-0A> --plan <user-design.json> --receipt <outside-source/receipt.json>",
+        "module": "mod_editor/core/apf2k8_play_design_build.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/research/apf_play_format.md",
+        "docs/research/apf_play_format_derived.json",
+        "docs/research/apf_play_design_build_derived.json",
+        "tests/mod_editor/test_apf_play_designer.py",
+        "tests/mod_editor/test_apf_play_designer_project.py",
+        "tests/mod_editor/test_apf_play_designer_qt.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Integrate WIRING.md page/build/closure changes together. Expose as explicit experimental authoring with the UNWITNESSED status; this proposal is not yet registered or rendered."
+      },
+      "id": "apf2k8.cpu_ai_draft.play_design.concept_recipes",
+      "input_constraints": [
+        "Every authored result is UNWITNESSED in-game; no complete native gameplay validator is claimed.",
+        "Full retail SHA pins, independent reparse, idempotent baseline application, H7A exact/no-overlap and fixed-allocation fit are mandatory.",
+        "The trailing relation is unidentified; no invented membership bits. New formations clone the donor row.",
+        "Physical QB depth is not step count; no dedicated spy and no user-save writes."
+      ],
+      "portme": [
+        "Witness CPU selection and authored geometry in game before any runtime promotion.",
+        "Prove the native validator and unidentified relation before enlarging the supported authoring space."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Projects contain canonical logical JSON only. Compile the owner's retail bytes locally in memory and write only to the existing BUILT-copy pipeline.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "UNWITNESSED in-game on BASE and TU 1.1; writer, receipts and offscreen controls proved only.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "apf2k8_play_design/v1 logical JSON with exact baseline SHA, stock donors, explicit indices, names, numeric fields and CPU calls",
+            "name": "plan",
+            "required": true
+          }
+        ],
+        "notes": "Provider apf_play_design; selector play-design:apf:playbook:180:0; a single atomic staged plan. Whole-resource designs reject staged legacy MASTER/SPLB edits."
+      },
+      "source_container": {
+        "format": "APF outer / IFF / H7A / MASTER PLAY and CPU SPLB",
+        "hash_pins": [
+          "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891"
+        ],
+        "resource": "Outer 180 mpb PLAY; named CPU SPLB resources only",
+        "retail_file": "User-provided extracted APF 2K8 (USA) 0A, 0B, 1A, 1B"
+      },
+      "summary": "Compile Smash, Levels / Drive, Dagger, Curl-Flat and Mesh with explicit route landmarks and a -21-foot QB movement; five-step timing is unproved.",
+      "surface": "cpu_ai_draft",
+      "title": "APF concept recipes",
+      "validation_command": "python3 -m mod_editor.core.apf2k8_play_design_build --index <read-only-0A> --plan <user-design.json> --receipt <outside-source/receipt.json>"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.apf2k8_play_design_build --index <read-only-0A> --plan <user-design.json> --receipt <outside-source/receipt.json>",
+        "module": "mod_editor/core/apf2k8_play_design_build.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/research/apf_play_format.md",
+        "docs/research/apf_play_format_derived.json",
+        "docs/research/apf_play_design_build_derived.json",
+        "tests/mod_editor/test_apf_play_designer.py",
+        "tests/mod_editor/test_apf_play_designer_project.py",
+        "tests/mod_editor/test_apf_play_designer_qt.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Integrate WIRING.md page/build/closure changes together. Expose as explicit experimental authoring with the UNWITNESSED status; this proposal is not yet registered or rendered."
+      },
+      "id": "apf2k8.cpu_ai_draft.play_design.cpu_calls",
+      "input_constraints": [
+        "Every authored result is UNWITNESSED in-game; no complete native gameplay validator is claimed.",
+        "Full retail SHA pins, independent reparse, idempotent baseline application, H7A exact/no-overlap and fixed-allocation fit are mandatory.",
+        "The trailing relation is unidentified; no invented membership bits. New formations clone the donor row.",
+        "Physical QB depth is not step count; no dedicated spy and no user-save writes."
+      ],
+      "portme": [
+        "Witness CPU selection and authored geometry in game before any runtime promotion.",
+        "Prove the native validator and unidentified relation before enlarging the supported authoring space."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Projects contain canonical logical JSON only. Compile the owner's retail bytes locally in memory and write only to the existing BUILT-copy pipeline.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "UNWITNESSED in-game on BASE and TU 1.1; writer, receipts and offscreen controls proved only.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "apf2k8_play_design/v1 logical JSON with exact baseline SHA, stock donors, explicit indices, names, numeric fields and CPU calls",
+            "name": "plan",
+            "required": true
+          }
+        ],
+        "notes": "Provider apf_play_design; selector play-design:apf:playbook:180:0; a single atomic staged plan. Whole-resource designs reject staged legacy MASTER/SPLB edits."
+      },
+      "source_container": {
+        "format": "APF outer / IFF / H7A / MASTER PLAY and CPU SPLB",
+        "hash_pins": [
+          "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891",
+          "18de1e3ee886aceba6535be2c8472d0af3f5554f8c9023d553068005416dd1f5",
+          "2191bc3a494f58d279e79449abd6f619b83dd8b7170b86847ae445c930c4b428",
+          "2fd2b7587127120f90cb5fb536abe6c2691303fda08ca544b1aeaa271e1b9016",
+          "63a55ab11da38dcbdabc3107fa44d4aa26c1b61e0a1b6cfb0595cffdfac8a015",
+          "67ef383cc1fcde7a44639fa761fbb4efbd82aa3d4560035d27abd704d30ae218",
+          "d7a9c2f703d8892929184dce3fef10dd9e9dad29f7506121bfe7ec73ca4a3432",
+          "9a145a97495f347ccef08b719d9e20cde4b9bf7b1546d03a7ca99f9545bc6e83",
+          "8a23184ad5675ff5cc6c75fcfa92c3006537e8bfd2d730a6bccc122b1cb0dcca",
+          "a2ce06b26b10dd3b9be637553fef01e4f961c9f74cfc162be35b5267fd301fa3",
+          "45ee87e572dfa573c82db722e95b45b4d999efea9d822276b73d1a832e939dcf",
+          "07ad3538b6ff994600b1f0b468bea0b962e758fa42444f242d89bc79f0a32797"
+        ],
+        "resource": "Outer 180 mpb PLAY; named CPU SPLB resources only",
+        "retail_file": "User-provided extracted APF 2K8 (USA) 0A, 0B, 1A, 1B"
+      },
+      "summary": "Add plays to pinned named SPLB books, including explicit empty-record creation for a donor-compatible new formation; CPU books only.",
+      "surface": "cpu_ai_draft",
+      "title": "Add authored APF CPU calls",
+      "validation_command": "python3 -m mod_editor.core.apf2k8_play_design_build --index <read-only-0A> --plan <user-design.json> --receipt <outside-source/receipt.json>"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.apf2k8_play_design_build --index <read-only-0A> --plan <user-design.json> --receipt <outside-source/receipt.json>",
+        "module": "mod_editor/core/apf2k8_play_design_build.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/research/apf_play_format.md",
+        "docs/research/apf_play_format_derived.json",
+        "docs/research/apf_play_design_build_derived.json",
+        "tests/mod_editor/test_apf_play_designer.py",
+        "tests/mod_editor/test_apf_play_designer_project.py",
+        "tests/mod_editor/test_apf_play_designer_qt.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Integrate WIRING.md page/build/closure changes together. Expose as explicit experimental authoring with the UNWITNESSED status; this proposal is not yet registered or rendered."
+      },
+      "id": "apf2k8.cpu_ai_draft.play_design.create_formation",
+      "input_constraints": [
+        "Every authored result is UNWITNESSED in-game; no complete native gameplay validator is claimed.",
+        "Full retail SHA pins, independent reparse, idempotent baseline application, H7A exact/no-overlap and fixed-allocation fit are mandatory.",
+        "The trailing relation is unidentified; no invented membership bits. New formations clone the donor row.",
+        "Physical QB depth is not step count; no dedicated spy and no user-save writes."
+      ],
+      "portme": [
+        "Witness CPU selection and authored geometry in game before any runtime promotion.",
+        "Prove the native validator and unidentified relation before enlarging the supported authoring space."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Projects contain canonical logical JSON only. Compile the owner's retail bytes locally in memory and write only to the existing BUILT-copy pipeline.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "UNWITNESSED in-game on BASE and TU 1.1; writer, receipts and offscreen controls proved only.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "apf2k8_play_design/v1 logical JSON with exact baseline SHA, stock donors, explicit indices, names, numeric fields and CPU calls",
+            "name": "plan",
+            "required": true
+          }
+        ],
+        "notes": "Provider apf_play_design; selector play-design:apf:playbook:180:0; a single atomic staged plan. Whole-resource designs reject staged legacy MASTER/SPLB edits."
+      },
+      "source_container": {
+        "format": "APF outer / IFF / H7A / MASTER PLAY and CPU SPLB",
+        "hash_pins": [
+          "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891"
+        ],
+        "resource": "Outer 180 mpb PLAY; named CPU SPLB resources only",
+        "retail_file": "User-provided extracted APF 2K8 (USA) 0A, 0B, 1A, 1B"
+      },
+      "summary": "Append at indices 163..175; clone donor personnel/slot ordering and opaque row, author all three X/Y coordinate variants.",
+      "surface": "cpu_ai_draft",
+      "title": "Create APF formation",
+      "validation_command": "python3 -m mod_editor.core.apf2k8_play_design_build --index <read-only-0A> --plan <user-design.json> --receipt <outside-source/receipt.json>"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.apf2k8_play_design_build --index <read-only-0A> --plan <user-design.json> --receipt <outside-source/receipt.json>",
+        "module": "mod_editor/core/apf2k8_play_design_build.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/research/apf_play_format.md",
+        "docs/research/apf_play_format_derived.json",
+        "docs/research/apf_play_design_build_derived.json",
+        "tests/mod_editor/test_apf_play_designer.py",
+        "tests/mod_editor/test_apf_play_designer_project.py",
+        "tests/mod_editor/test_apf_play_designer_qt.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Integrate WIRING.md page/build/closure changes together. Expose as explicit experimental authoring with the UNWITNESSED status; this proposal is not yet registered or rendered."
+      },
+      "id": "apf2k8.cpu_ai_draft.play_design.create_play",
+      "input_constraints": [
+        "Every authored result is UNWITNESSED in-game; no complete native gameplay validator is claimed.",
+        "Full retail SHA pins, independent reparse, idempotent baseline application, H7A exact/no-overlap and fixed-allocation fit are mandatory.",
+        "The trailing relation is unidentified; no invented membership bits. New formations clone the donor row.",
+        "Physical QB depth is not step count; no dedicated spy and no user-save writes."
+      ],
+      "portme": [
+        "Witness CPU selection and authored geometry in game before any runtime promotion.",
+        "Prove the native validator and unidentified relation before enlarging the supported authoring space."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Projects contain canonical logical JSON only. Compile the owner's retail bytes locally in memory and write only to the existing BUILT-copy pipeline.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "UNWITNESSED in-game on BASE and TU 1.1; writer, receipts and offscreen controls proved only.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "apf2k8_play_design/v1 logical JSON with exact baseline SHA, stock donors, explicit indices, names, numeric fields and CPU calls",
+            "name": "plan",
+            "required": true
+          }
+        ],
+        "notes": "Provider apf_play_design; selector play-design:apf:playbook:180:0; a single atomic staged plan. Whole-resource designs reject staged legacy MASTER/SPLB edits."
+      },
+      "source_container": {
+        "format": "APF outer / IFF / H7A / MASTER PLAY and CPU SPLB",
+        "hash_pins": [
+          "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891"
+        ],
+        "resource": "Outer 180 mpb PLAY; named CPU SPLB resources only",
+        "retail_file": "User-provided extracted APF 2K8 (USA) 0A, 0B, 1A, 1B"
+      },
+      "summary": "Append at indices 586..591 or explicitly replace a same-side chosen play; preserve donor descriptors and opaque relation.",
+      "surface": "cpu_ai_draft",
+      "title": "Create APF play",
+      "validation_command": "python3 -m mod_editor.core.apf2k8_play_design_build --index <read-only-0A> --plan <user-design.json> --receipt <outside-source/receipt.json>"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.apf2k8_play_design_build --index <read-only-0A> --plan <user-design.json> --receipt <outside-source/receipt.json>",
+        "module": "mod_editor/core/apf2k8_play_design_build.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/research/apf_play_format.md",
+        "docs/research/apf_play_format_derived.json",
+        "docs/research/apf_play_design_build_derived.json",
+        "tests/mod_editor/test_apf_play_designer.py",
+        "tests/mod_editor/test_apf_play_designer_project.py",
+        "tests/mod_editor/test_apf_play_designer_qt.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Integrate WIRING.md page/build/closure changes together. Expose as explicit experimental authoring with the UNWITNESSED status; this proposal is not yet registered or rendered."
+      },
+      "id": "apf2k8.cpu_ai_draft.play_design.defensive_assignments",
+      "input_constraints": [
+        "Every authored result is UNWITNESSED in-game; no complete native gameplay validator is claimed.",
+        "Full retail SHA pins, independent reparse, idempotent baseline application, H7A exact/no-overlap and fixed-allocation fit are mandatory.",
+        "The trailing relation is unidentified; no invented membership bits. New formations clone the donor row.",
+        "Physical QB depth is not step count; no dedicated spy and no user-save writes."
+      ],
+      "portme": [
+        "Witness CPU selection and authored geometry in game before any runtime promotion.",
+        "Prove the native validator and unidentified relation before enlarging the supported authoring space."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Projects contain canonical logical JSON only. Compile the owner's retail bytes locally in memory and write only to the existing BUILT-copy pipeline.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "UNWITNESSED in-game on BASE and TU 1.1; writer, receipts and offscreen controls proved only.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "apf2k8_play_design/v1 logical JSON with exact baseline SHA, stock donors, explicit indices, names, numeric fields and CPU calls",
+            "name": "plan",
+            "required": true
+          }
+        ],
+        "notes": "Provider apf_play_design; selector play-design:apf:playbook:180:0; a single atomic staged plan. Whole-resource designs reject staged legacy MASTER/SPLB edits."
+      },
+      "source_container": {
+        "format": "APF outer / IFF / H7A / MASTER PLAY and CPU SPLB",
+        "hash_pins": [
+          "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891"
+        ],
+        "resource": "Outer 180 mpb PLAY; named CPU SPLB resources only",
+        "retail_file": "User-provided extracted APF 2K8 (USA) 0A, 0B, 1A, 1B"
+      },
+      "summary": "Clone defensive plays, copy coverage chains or change proved zone landmarks, man cushion and rush/dual-lane numeric fields.",
+      "surface": "cpu_ai_draft",
+      "title": "Design APF defensive assignments",
+      "validation_command": "python3 -m mod_editor.core.apf2k8_play_design_build --index <read-only-0A> --plan <user-design.json> --receipt <outside-source/receipt.json>"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.apf2k8_play_design_build --index <read-only-0A> --plan <user-design.json> --receipt <outside-source/receipt.json>",
+        "module": "mod_editor/core/apf2k8_play_design_build.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/research/apf_play_format.md",
+        "docs/research/apf_play_format_derived.json",
+        "docs/research/apf_play_design_build_derived.json",
+        "tests/mod_editor/test_apf_play_designer.py",
+        "tests/mod_editor/test_apf_play_designer_project.py",
+        "tests/mod_editor/test_apf_play_designer_qt.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Integrate WIRING.md page/build/closure changes together. Expose as explicit experimental authoring with the UNWITNESSED status; this proposal is not yet registered or rendered."
+      },
+      "id": "apf2k8.cpu_ai_draft.play_design.edit_play",
+      "input_constraints": [
+        "Every authored result is UNWITNESSED in-game; no complete native gameplay validator is claimed.",
+        "Full retail SHA pins, independent reparse, idempotent baseline application, H7A exact/no-overlap and fixed-allocation fit are mandatory.",
+        "The trailing relation is unidentified; no invented membership bits. New formations clone the donor row.",
+        "Physical QB depth is not step count; no dedicated spy and no user-save writes."
+      ],
+      "portme": [
+        "Witness CPU selection and authored geometry in game before any runtime promotion.",
+        "Prove the native validator and unidentified relation before enlarging the supported authoring space."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Projects contain canonical logical JSON only. Compile the owner's retail bytes locally in memory and write only to the existing BUILT-copy pipeline.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "UNWITNESSED in-game on BASE and TU 1.1; writer, receipts and offscreen controls proved only.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "apf2k8_play_design/v1 logical JSON with exact baseline SHA, stock donors, explicit indices, names, numeric fields and CPU calls",
+            "name": "plan",
+            "required": true
+          }
+        ],
+        "notes": "Provider apf_play_design; selector play-design:apf:playbook:180:0; a single atomic staged plan. Whole-resource designs reject staged legacy MASTER/SPLB edits."
+      },
+      "source_container": {
+        "format": "APF outer / IFF / H7A / MASTER PLAY and CPU SPLB",
+        "hash_pins": [
+          "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891"
+        ],
+        "resource": "Outer 180 mpb PLAY; named CPU SPLB resources only",
+        "retail_file": "User-provided extracted APF 2K8 (USA) 0A, 0B, 1A, 1B"
+      },
+      "summary": "Edit the existing play index; copy same-slot stock assignments, detach shared chains, change supported route, movement, read and coverage fields.",
+      "surface": "cpu_ai_draft",
+      "title": "Edit APF play assignments",
+      "validation_command": "python3 -m mod_editor.core.apf2k8_play_design_build --index <read-only-0A> --plan <user-design.json> --receipt <outside-source/receipt.json>"
+    },
+    {
+      "backend": {
+        "command": null,
+        "module": null,
+        "operation": "none"
+      },
+      "classification": "unsafe/deferred",
+      "evidence": [
+        "docs/research/apf_play_format.md",
+        "docs/research/apf_play_format_derived.json",
+        "docs/research/apf_play_design_build_derived.json",
+        "tests/mod_editor/test_apf_play_designer.py",
+        "tests/mod_editor/test_apf_play_designer_project.py",
+        "tests/mod_editor/test_apf_play_designer_qt.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "deferred",
+        "reason": "Movement Y has proved feet encoding; Pass operand 1 is a receiver selector, not a step-count switch."
+      },
+      "id": "apf2k8.cpu_ai_draft.play_design.five_step_drop",
+      "input_constraints": [
+        "Every authored result is UNWITNESSED in-game; no complete native gameplay validator is claimed.",
+        "Full retail SHA pins, independent reparse, idempotent baseline application, H7A exact/no-overlap and fixed-allocation fit are mandatory.",
+        "The trailing relation is unidentified; no invented membership bits. New formations clone the donor row.",
+        "Physical QB depth is not step count; no dedicated spy and no user-save writes."
+      ],
+      "portme": [
+        "Witness CPU selection and authored geometry in game before any runtime promotion.",
+        "Prove the native validator and unidentified relation before enlarging the supported authoring space."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "none-until-safe",
+        "rule": "Projects contain canonical logical JSON only. Compile the owner's retail bytes locally in memory and write only to the existing BUILT-copy pipeline.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "UNWITNESSED in-game on BASE and TU 1.1; writer, receipts and offscreen controls proved only.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "apf2k8_play_design/v1 logical JSON with exact baseline SHA, stock donors, explicit indices, names, numeric fields and CPU calls",
+            "name": "plan",
+            "required": true
+          }
+        ],
+        "notes": "Provider apf_play_design; selector play-design:apf:playbook:180:0; a single atomic staged plan. Whole-resource designs reject staged legacy MASTER/SPLB edits."
+      },
+      "source_container": {
+        "format": "APF outer / IFF / H7A / MASTER PLAY and CPU SPLB",
+        "hash_pins": [
+          "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891"
+        ],
+        "resource": "Outer 180 mpb PLAY; named CPU SPLB resources only",
+        "retail_file": "User-provided extracted APF 2K8 (USA) 0A, 0B, 1A, 1B"
+      },
+      "summary": "Movement Y has proved feet encoding; Pass operand 1 is a receiver selector, not a step-count switch.",
+      "surface": "cpu_ai_draft",
+      "title": "APF five-step drop cadence",
+      "validation_command": null
+    },
+    {
+      "backend": {
+        "command": null,
+        "module": null,
+        "operation": "none"
+      },
+      "classification": "unsafe/deferred",
+      "evidence": [
+        "docs/research/apf_play_format.md",
+        "docs/research/apf_play_format_derived.json",
+        "docs/research/apf_play_design_build_derived.json",
+        "tests/mod_editor/test_apf_play_designer.py",
+        "tests/mod_editor/test_apf_play_designer_project.py",
+        "tests/mod_editor/test_apf_play_designer_qt.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "deferred",
+        "reason": "No mapped APF opcode/runtime owner proves QB tracking; native 1C is not advertised as spy."
+      },
+      "id": "apf2k8.cpu_ai_draft.play_design.spy",
+      "input_constraints": [
+        "Every authored result is UNWITNESSED in-game; no complete native gameplay validator is claimed.",
+        "Full retail SHA pins, independent reparse, idempotent baseline application, H7A exact/no-overlap and fixed-allocation fit are mandatory.",
+        "The trailing relation is unidentified; no invented membership bits. New formations clone the donor row.",
+        "Physical QB depth is not step count; no dedicated spy and no user-save writes."
+      ],
+      "portme": [
+        "Witness CPU selection and authored geometry in game before any runtime promotion.",
+        "Prove the native validator and unidentified relation before enlarging the supported authoring space."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "none-until-safe",
+        "rule": "Projects contain canonical logical JSON only. Compile the owner's retail bytes locally in memory and write only to the existing BUILT-copy pipeline.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "UNWITNESSED in-game on BASE and TU 1.1; writer, receipts and offscreen controls proved only.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "apf2k8_play_design/v1 logical JSON with exact baseline SHA, stock donors, explicit indices, names, numeric fields and CPU calls",
+            "name": "plan",
+            "required": true
+          }
+        ],
+        "notes": "Provider apf_play_design; selector play-design:apf:playbook:180:0; a single atomic staged plan. Whole-resource designs reject staged legacy MASTER/SPLB edits."
+      },
+      "source_container": {
+        "format": "APF outer / IFF / H7A / MASTER PLAY and CPU SPLB",
+        "hash_pins": [
+          "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891"
+        ],
+        "resource": "Outer 180 mpb PLAY; named CPU SPLB resources only",
+        "retail_file": "User-provided extracted APF 2K8 (USA) 0A, 0B, 1A, 1B"
+      },
+      "summary": "No mapped APF opcode/runtime owner proves QB tracking; native 1C is not advertised as spy.",
+      "surface": "cpu_ai_draft",
+      "title": "APF dedicated QB spy",
+      "validation_command": null
+    }
+  ],
+  "schema": "apf_play_design_capability_proposal/v1"
+}

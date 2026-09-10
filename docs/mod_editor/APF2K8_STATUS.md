@@ -1,6 +1,16 @@
 # APF 2K8 Mod Studio — Status
 
-> **Product identity (source/UI): `0.1.0-alpha.84`.** Historical sealed packages below retain prior alpha numbers.
+> **Product identity (source/UI): `0.1.0-alpha.85`.** Historical sealed packages below retain prior alpha numbers.
+
+## Unreleased APF wave — 2026-09-09
+
+Source/UI alpha.85 integrates bounded Play Design, shared Coverage Geometry,
+Book Identity and final CPU-book cloning, three scheme presets, CPU audibles
+and personnel guards, emulator-only pass-fetch patch export, and paired PS3
+texture-bundle import. The registry now has 139 total records, including 52 APF
+records: 31 Editable, 9 Preview, 3 Export-only, 4 Evidence and 5 Research.
+All new gameplay is UNWITNESSED; see the [wave guide](apf_wave_2026_09_09.md).
+Historical counts and package identities below describe their original releases.
 
 ## 0.1.0-alpha.84 — maintenance identity (beta-53)
 

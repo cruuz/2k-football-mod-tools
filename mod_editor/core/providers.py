@@ -1738,9 +1738,9 @@ class Apf2k8JerseyColorProvider:
     provider_id = "apf2k8-jersey-color-v1"
     capability_ids = frozenset({"apf2k8.uniforms.jersey_00_23"})
     backend_module = "tools/apf_jersey_family_patch.py"
-    backend_module_sha256 = "a07d2d28f287185b231e93405e3c2a0354567d28ba70f38b0d3e9f4e9b621821"
+    backend_module_sha256 = "4af9b5258406c2151e033aab475ef6216e081daa26b1cde18130bcd68ef593b9"
     verifier_module = "tools/apf_jersey_family_verify.py"
-    verifier_module_sha256 = "96b5b6602cbe9c60f51c02029a6e173ddaedde4fee0a6ff0ec1c278b172cb7af"
+    verifier_module_sha256 = "3509315eb7c5b95e892eab150453c7881235bd62adc00c626ea54f1451006f5d"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/platform_compat.py": "6b81b87274b211571d162f43324315a4b10158a30b0e731cb51b52853c1b322f",
         "tools/apf_inner.py": "4175688c9df2cb8d8253f5b4d08570a3a3486cb9856d000a4146e5a952982847",
@@ -2274,7 +2274,7 @@ class Apf2k8PantsColorProvider(Apf2k8JerseyColorProvider):
         backend_module: backend_module_sha256,
         verifier_module: verifier_module_sha256,
         "tools/apf_texture_patch.py": "301cbea24825ddc914498d99befa4db633cb4cd4a47119dec698942f3cd40f18",
-        "tools/apf_xenos_bc1_mip_layout.py": "56f53603e73e563ff66305430956373468160fb0af9380fe0257c5a5edde9234",
+        "tools/apf_xenos_bc1_mip_layout.py": "02b4198299b7a97e3474460c6bb07763c1aac10518b6fe7c2bd16d473927f07c",
         "tools/nfl_dxt1.py": "bce75aca68acbfaa5112927e228672d4d77c58fc27cd3ce047751d8875dcb9a2",
     }
     recipe_schema_file = "mod_editor/apf_pants_recipe.schema.json"

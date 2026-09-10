@@ -41,7 +41,7 @@ _FIELD_EXTRA_TARGETS = (
     / "data"
     / "apf2k8_field_extra_targets.v1.json"
 )
-_WRITABLE_XENOS_FORMATS = frozenset({6, 18, 20})
+_WRITABLE_XENOS_FORMATS = frozenset({6, 18, 20, 59})
 _CORE_FIELD_ART_KEYS = ((6, 0), (6, 1), (659, 18), (659, 23), (659, 252), (53, 0))
 
 
@@ -158,6 +158,10 @@ class _Source:
 
 
 class _Facade:
+    def revert_field_art(self, key):
+        self.reverted_field_key = key
+        return False  # This fixture stages a panel-only PNG, not a session edit.
+
     def __init__(self, catalog: ApfCatalog, *, ready: bool = True):
         self.catalog = catalog
         self.source_ready = ready
@@ -415,14 +419,14 @@ class ApfFieldArtGuiTests(unittest.TestCase):
                 for row in extra_rows
                 if int(row["format"]) in _WRITABLE_XENOS_FORMATS
             ]
-            refused_fmt59 = [
+            supported_fmt59 = [
                 row for row in extra_rows if int(row["format"]) == 59
             ]
             # 6 core + 21 weave/dirt + 194 format-18 endzones (196 including
-            # the two core endzone layers). Format 59 stays out.
-            self.assertEqual(len(writable_extras), 21 + 196)
-            self.assertEqual(len(refused_fmt59), 39)
-            self.assertGreaterEqual(len(offered), 6 + 21 + 194)
+            # the two core endzone layers), plus 39 format-59 layers.
+            self.assertEqual(len(writable_extras), 21 + 235)
+            self.assertEqual(len(supported_fmt59), 39)
+            self.assertGreaterEqual(len(offered), 6 + 21 + 233)
             self.assertIn("weave_jersey0", offered)
             self.assertIn("dirtmap_helmet", offered)
             self.assertEqual(page.editor.slot.count(), len(offered))
@@ -451,22 +455,22 @@ class ApfFieldArtGuiTests(unittest.TestCase):
                 page.editor.slot.itemText(index)
                 for index in range(page.editor.slot.count())
             ]
-            for row in refused_fmt59:
+            for row in supported_fmt59:
                 key = (int(row["entry_index"]), int(row["file_index"]))
-                self.assertNotIn(key, key_set)
+                self.assertIn(key, key_set)
                 needle = f"outer {row['entry_index']} / inner {row['file_index']}"
-                self.assertFalse(
+                self.assertTrue(
                     any(needle in label for label in labels),
-                    msg=f"format-59 slot {key} leaked into the picker",
+                    msg=f"format-59 slot {key} missing from the picker",
                 )
         finally:
             page.deleteLater()
             self.application.processEvents()
 
-    def test_editor_filter_keeps_the_221_slot_combo_usable(self) -> None:
+    def test_editor_filter_keeps_the_expanded_slot_combo_usable(self) -> None:
         page = self._page()
         try:
-            self.assertGreaterEqual(page.editor.slot.count(), 6 + 21 + 194)
+            self.assertGreaterEqual(page.editor.slot.count(), 6 + 21 + 233)
             self.assertTrue(page.editor.slot.isEnabled())
             self.assertTrue(page.editor.slot_filter.isEnabled())
             page.editor.slot_filter.setText("weave_jersey0")
@@ -500,8 +504,8 @@ class ApfFieldArtGuiTests(unittest.TestCase):
             self.assertIn("export-only", folded)
             self.assertIn("weave", folded)
             self.assertIn("browse", folded)
-            # Inventory may name ~118 packages; the writer does not own the
-            # 39 format-59 endzone_l1 layers, so "all 118 teams" is a lie.
+            # Packages do not establish runtime team ownership.
+            self.assertIn("117 complete writable pairs", folded)
             self.assertNotIn("all 118 teams", folded)
             self.assertNotIn("every team", folded)
         finally:
@@ -523,7 +527,7 @@ class ApfFieldArtGuiTests(unittest.TestCase):
             self.assertTrue(
                 str(page.editor.revert_button.property("disableReason") or "").strip()
             )
-            self.assertIn("not proved without a Xenia capture", page.editor.description.text())
+            self.assertIn("UNWITNESSED", page.editor.description.text())
         finally:
             page.deleteLater()
             self.application.processEvents()
@@ -573,6 +577,7 @@ class ApfFieldArtGuiTests(unittest.TestCase):
                 self.assertEqual(page.editor.status.text(), "● Staged")
 
                 page.editor._revert()
+                self.assertEqual(page.editor.facade.reverted_field_key, page.editor.current_target().key)
                 self.application.processEvents()
                 self.assertIsNone(page.editor.staged_path(target))
                 self.assertTrue(page.editor.build_button.isEnabled())

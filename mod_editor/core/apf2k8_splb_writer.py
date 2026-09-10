@@ -1,5 +1,13 @@
 """Edit APF 2K8 stock CPU playbooks (``SPLB``) in a copied volume.
 
+September 2026 correction: compile and independent verification now refuse
+new empty-twin, tags-only, lost-category, and hidden-prefix transitions.
+Personnel receipts distinguish category IDs from rows, record reachability,
+first-record resolution of duplicate formations, and cached bitmap contents.
+0x84A8C790 can rebuild +0x7E04 from primary AND secondary memberships; clearing
+only the stored book mask is not a durable exclusion. See ASTRA_REPORT.md for
+instruction evidence and corrections to the earlier descriptor/fetch account.
+
 These are the stock playbook resources the game ships.  A roster save's 36
 offensive and 33 defensive playbook records are only *labels*: they carry a
 name, a type string and a side, with no content pointer at all, and they resolve
@@ -17,9 +25,10 @@ is not offered. The package-map byte at formation ``+0x11`` is consumed
 (``lbz`` at ``0x84a19f04``) and stored on the on-field object at ``+0x34``
 (``0x8485e7e0``). Byte table ``0x820FC320`` (loaded by ``0x84a9ae68``) converts
 that role id: 8 → TE (roster 9), 9 → WR (roster 3). That is the WR3↔TE pair.
-The 11-player builder at ``0x84860020`` indexes that map by slot 0..10
-(``addi r29, r25, 5`` / ``lbzx`` at ``0x848605b4``, loop ``cmpwi r31, 44`` at
-``0x848605d8``) and the assigner stores the role at on-field ``+0x34``.
+The 11-player builder at ``0x84860020`` indexes MASTER CATEGORY role bytes
+by slot 0..10 (r25 is its category argument, not a formation pointer;
+``addi r29, r25, 5`` at ``0x848605AC`` / ``lbzx`` at ``0x848605b4``).
+The assigner stores that role at on-field ``+0x34``.
 Swapping map bytes 8 and 9 has not been runtime-proved. MASTER PLAY's 28
 named categories at ``+0x44`` (stride ``0x10``) are personnel packages
 (Ace, Pro Set, 5 Wide, Flush, …). SPLB trailer bits 23..17 index them;
@@ -351,7 +360,9 @@ A tag may never be duplicated or given a value the retail books never use.
 
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import dataclass
+from functools import lru_cache
 import hashlib
 import json
 from pathlib import Path
@@ -382,6 +393,20 @@ TRAILER_OFFSET = 0xA8
 TRAILER_WORD_B_DELTA = 4
 BOOK_CATEGORY_MASK_OFFSET = 0x7E04
 CATEGORY_COUNT = 28
+# Derived catalog identifiers, not copies of MASTER records. Category ids and
+# personnel row ids are DIFFERENT namespaces (Ace is category 2, row 3).
+PERSONNEL_ROWS = (0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15,
+                  16, 17, 18, 19, 20, 21, 22, 23, 24, 13, 14, 15, 0, 12)
+PERSONNEL_NAMES = (
+    "Jacks", "Jokers", "Ace", "Pro Set", "Trio", "Kings", "Queens",
+    "Straight", "Flush", "5 Wide", "Goalline", "4-3", "Nickel", "Dime",
+    "Prevent", "Punt", "Punt Return", "Field Goal", "Block Field Goal",
+    "Kickoff", "Onside Kickoff Team", "Kick Return", "Onside Kickoff Return Team",
+    "3-4", "Nickel:3-3", "Dime:3-2", "Load", "5-2:Big",
+)
+TE_OFFENSE_CATEGORIES = frozenset((0, 1, 2, 3, 4, 5, 7, 26))
+RETAIL_FLIP_PAIRS = ((62, 63, "Ace / Ace Flip"), (69, 70, "Quads / Quads Flip"))
+BOOK_PLAY_MASK_OFFSET = 0x7DB0
 MASTER_FORMATION_INDEX_MAX = 162
 ARRAY_END = RECORD_BASE + RECORD_STRIDE * RECORD_COUNT   # 0x7970
 RESOURCE_SIZE = 32_288
@@ -620,10 +645,9 @@ STATIC_CONSUMER_WORDS: Mapping[int, int] = {
     0x846302F4: 0x892B0035,  # lbz r9, 53(r11)  first .text fn +0x35
     0x844DBE00: 0x846302D8,  # .pdata[0] start == first .text function
     # Trailer consumption chain (trailer-replace feature): the lineup resolver
-    # asks the book for a record matching a personnel row; the book walk tests
-    # the category mask at book+0x7E04 and each record's word B; a miss walks
-    # the row ladder at 0x820B9080 (clamped 0..10 on offense) and re-asks, so
-    # a book lacking the requested package silently drops to a lighter row.
+    # asks for a MASTER CATEGORY matching a personnel row. 0x84A8B438 uses
+    # book+0x7E04; word B is checked separately by 0x84A8A330 during formation
+    # selection. Ladder deltas are +1,-1,+2,-2,+3,-3, not monotonically lighter.
     0x84860730: 0x7D8802A6,  # lineup personnel resolver mflr
     0x8486076C: 0x4822ACCD,  # bl 0x84a8b438  book-row search
     0x84860788: 0x3BAB9080,  # addi r29 → ladder 0x820B9080
@@ -636,23 +660,24 @@ STATIC_CONSUMER_WORDS: Mapping[int, int] = {
     0x84A896AC: 0x81470000,  # lwz mask word
 }
 
-#: outer entry -> book name, as shipped. Fifteen resources; four carry no name.
+#: Outer entry -> decoded header name. The four formerly unnamed resources
+#: were reidentified by header reparse AND uppercase filename CRC32 (2026-09-09).
 STOCK_BOOKS: Mapping[int, str] = {
     130: "O-ManBlock",
     134: "X-43Cover2",
     259: "O-TwoBack",
-    293: "",
+    293: "USER-d",
     369: "O-SinglebackAce",
     618: "X-34Base",
-    656: "",
+    656: "global-d",
     767: "O-Singleback3WR",
     891: "O-WestCoast",
     943: "O-ZoneBlock",
     957: "X-43Blitz",
-    1037: "",
+    1037: "USER-o",
     1405: "X-34ZoneBlitz",
     1411: "O-Shotgun",
-    1439: "",
+    1439: "global-o",
 }
 
 
@@ -830,7 +855,7 @@ def trailer_selector(outer_index: int, record_index: int) -> str:
 
 
 def book_category_rows(body: bytes) -> tuple[int, ...]:
-    """The personnel rows a book's mask at +0x7E04 promises, sorted.
+    """Category ids advertised by +0x7E04 (legacy name; these are NOT row ids).
 
     The lineup resolver asks the book for a personnel row and tests this mask
     first (book-row search ``0x84A8B438``, mask-bit walk ``0x84A89680``), so
@@ -846,6 +871,127 @@ def book_category_rows(body: bytes) -> tuple[int, ...]:
     return tuple(index for index in range(CATEGORY_COUNT) if mask & (1 << index))
 
 
+def personnel_availability(book: SplbBook) -> dict[str, Any]:
+    """Describe advertised categories, reachable records, and cached plays.
+
+    0x84A8B438 compares MASTER category +4 & 63 with a requested ROW.
+    0x84A8A330 checks record word B. 0x84A89AA0/0x84A8A258 stop at the
+    FIRST empty record, even if later records contain plays. A mask bit alone
+    therefore does not establish that formation selection can answer a request.
+    """
+    advertised = set(book_category_rows(book.body))
+    prefix: list[SplbRecord] = []
+    for record in book.records:
+        if not record.populated:
+            break
+        prefix.append(record)
+    reachable = {record.record_index for record in prefix}
+    # Formation reverse lookup uses the FIRST record with that MASTER id.
+    first_records: dict[int, SplbRecord] = {}
+    for record in prefix:
+        first_records.setdefault(record.formation_index, record)
+    resolvable = tuple(first_records.values())
+    # 0x84A8C790 rebuilds the mask from all populated primary + word-B bits.
+    # This is a conditional runtime normalization result, not an on-load claim.
+    normalized_mask = 0
+    for record in book.records:
+        if record.populated:
+            normalized_mask |= (1 << record.category_index) | int.from_bytes(record.trailer[4:], "big")
+    categories = []
+    for category, (name, row) in enumerate(zip(PERSONNEL_NAMES, PERSONNEL_ROWS)):
+        members = [r for r in resolvable
+                   if struct.unpack_from(">I", r.trailer, 4)[0] & (1 << category)]
+        categories.append({
+            "category_index": category, "name": name, "personnel_row": row,
+            "advertised": category in advertised,
+            "advertised_after_normalization": bool(normalized_mask & (1 << category)),
+            "record_indices": [r.record_index for r in members],
+            "primary_record_indices": [r.record_index for r in prefix
+                                       if r.category_index == category],
+            "ordinary_play_instances": sum(not e.tagged for r in members for e in r.entries),
+            "can_select_formation": category in advertised and bool(members),
+            "te_offense": category in TE_OFFENSE_CATEGORIES,
+        })
+    ordinary = {e.play_index for r in book.records for e in r.entries}
+    mask_words = struct.unpack_from(">21I", book.body, BOOK_PLAY_MASK_OFFSET)
+    cached = {i for i in range(672) if mask_words[i // 32] & (1 << (i % 32))}
+    return {
+        "outer_index": book.outer_index, "book_name": book.name,
+        "categories": categories,
+        "advertised_category_indices": sorted(advertised),
+        "advertised_personnel_rows": sorted({PERSONNEL_ROWS[c] for c in advertised}),
+        "answerable_personnel_rows": sorted({c["personnel_row"] for c in categories
+                                             if c["can_select_formation"]}),
+        "reachable_record_indices": sorted(reachable),
+        "duplicate_formation_record_indices": [r.record_index for r in prefix
+                                               if r is not first_records[r.formation_index]],
+        "normalization_restores_category_indices": [c for c in range(CATEGORY_COUNT)
+                                                    if normalized_mask & (1 << c) and c not in advertised],
+        "normalization_boundary": "0x84A8C790 rebuilds caches after book edits; invocation during CPU play is unwitnessed",
+        "catalog_basis": "Retail MASTER category rows/roles; MASTER role edits and Subs can change actual personnel",
+        "hidden_populated_record_indices": [r.record_index for r in book.records
+                                            if r.populated and r.record_index not in reachable],
+        "cached_play_count": len(cached),
+        "cached_plays_without_records": sorted(cached - ordinary),
+        "stored_plays_missing_from_cache": sorted(ordinary - cached),
+        "runtime_status": "unwitnessed",
+    }
+
+
+def validate_personnel_edit(before: SplbBook, after: SplbBook) -> None:
+    """Refuse newly introduced empty/hidden supply; tolerate existing defects.
+
+    Retail has legitimate short records containing only tags. Do not reject
+    those on a tag move or when a short record gains a play. The dangerous
+    transition is removing ALL ordinary plays from a previously longer record.
+    """
+    for first, second, label in RETAIL_FLIP_PAIRS:
+        was = [r for r in before.records if r.formation_index in (first, second)]
+        if ({r.formation_index for r in was} == {first, second}
+                and any(r.populated for r in was)
+                and not any(r.populated and r.formation_index in (first, second)
+                            for r in after.records)):
+            raise ValidationError(
+                f"Book {before.name or before.outer_index}: emptying both {label} "
+                "is reported to cause an infinite load. Keep a populated twin."
+            )
+    for old, new in zip(before.records, after.records):
+        if (any(not e.tagged for e in old.entries) and new.entries
+                and all(e.tagged for e in new.entries)):
+            raise ValidationError(
+                f"Book {before.name or before.outer_index}, record {old.record_index}: "
+                "removing every ordinary play leaves only tagged plays. Keep at "
+                "least one ordinary (untagged) play in this formation."
+            )
+    previous = personnel_availability(before)
+    following = personnel_availability(after)
+    hidden = ((set(previous["reachable_record_indices"])
+               | {r.record_index for r, old in zip(after.records, before.records)
+                  if r.populated and not old.populated})
+              & {r.record_index for r in after.records if r.populated}
+              - set(following["reachable_record_indices"]))
+    if hidden:
+        raise ValidationError(
+            f"Book {before.name or before.outer_index}: an empty formation would "
+            f"hide later records {sorted(hidden)}. The game's formation lookup "
+            "stops at the first empty record; keep the populated prefix contiguous."
+        )
+    old_supply = {c["category_index"] for c in previous["categories"]
+                  if c["can_select_formation"]}
+    new_supply = {c["category_index"] for c in following["categories"]
+                  if c["can_select_formation"]}
+    lost = old_supply - new_supply
+    if lost:
+        names = ", ".join(f"{PERSONNEL_NAMES[c]} (category {c}, row {PERSONNEL_ROWS[c]})"
+                          for c in sorted(lost))
+        raise ValidationError(
+            f"Book {before.name or before.outer_index} loses every reachable record "
+            f"for {names}. The personnel ladder/category picker can still request "
+            "these packages. Keep a reachable record for each advertised category."
+        )
+
+
+
 def record_play_sharing(
     book: SplbBook, record_index: int, entries: Iterable[SplbEntry] | None = None
 ) -> dict[int, int]:
@@ -854,9 +1000,9 @@ def record_play_sharing(
     Returns ``{other record index: shared play count}``.  ``entries`` may
     supply the record's staged future entries; the other records are read as
     they stand.  A play shared with an untouched record can still resolve to
-    that record in-game — play→record resolution is per stored entry
-    (``0x84A89EA8`` maps an entry pointer onto its record), so sharing bounds
-    how much of a one-record edit the game can see.
+    that record in-game — sharing bounds how much of a one-record edit the game can see.
+    0x84A8A258 reverse-resolves a MASTER formation to its first SPLB record;
+    0x84A89EA8 advances to the next formation.
     """
 
     record = book.records[record_index]
@@ -1178,6 +1324,46 @@ def read_book(index_path: Path, outer_index: int) -> SplbBook:
     return parse_book(body, outer_index)
 
 
+def retail_formation_packages(
+    index_0a: Path,
+) -> dict[int, tuple[tuple[int, int], ...]]:
+    """Retail category/count pairs, ordered by frequency then category index.
+
+    Reuse the studio's stock-book inventory and count only populated records.
+    The source volume is read-only: scan once per resolved index path, returning
+    a fresh dict so callers cannot alter another panel's cached defaults.
+    """
+
+    return dict(_retail_formation_packages(Path(index_0a).resolve()))
+
+
+@lru_cache(maxsize=None)
+def _retail_formation_packages(
+    index_0a: Path,
+) -> dict[int, tuple[tuple[int, int], ...]]:
+    counts: dict[int, Counter[int]] = {}
+    for outer_index in STOCK_BOOKS:
+        for record in read_book(index_0a, outer_index).records:
+            if record.populated:
+                counts.setdefault(record.formation_index, Counter())[
+                    record.category_index
+                ] += 1
+    return {
+        formation: tuple(sorted(packages.items(), key=lambda pair: (-pair[1], pair[0])))
+        for formation, packages in sorted(counts.items())
+    }
+
+
+def natural_package(
+    formation_index: int,
+    table: Mapping[int, tuple[tuple[int, int], ...]],
+) -> int | None:
+    """Most frequent retail category; ties use the lower category index."""
+
+    pairs = table.get(formation_index, ())
+    return min(pairs, key=lambda pair: (-pair[1], pair[0]))[0] if pairs else None
+
+
 def _normalize(
     changes: Iterable[MembershipChange | TagMove | TrailerReplace],
 ) -> _Request:
@@ -1309,6 +1495,8 @@ def apply_record_changes(
     record: SplbRecord,
     memberships: Iterable[MembershipChange] = (),
     moves: Iterable[TagMove] = (),
+    *,
+    master_play_count: int = 586,
 ) -> tuple[SplbEntry, ...]:
     """Return one record's entries after the requested edits, or raise.
 
@@ -1316,7 +1504,7 @@ def apply_record_changes(
     the same request can be named as the heir of a slot the request removes.
     """
 
-    play_count = 586
+    play_count = _bounded_int(master_play_count, "MASTER play count", minimum=1, maximum=640)
     before = record.entries
     entries = list(before)
 
@@ -1422,7 +1610,8 @@ def apply_record_changes(
 
 
 def compile_book(
-    book: SplbBook, changes: Iterable[MembershipChange | TagMove]
+    book: SplbBook, changes: Iterable[MembershipChange | TagMove | TrailerReplace],
+    *, master_play_count: int = 586,
 ) -> CompiledBook:
     """Rewrite only the entry prefixes the changes touch."""
 
@@ -1447,7 +1636,7 @@ def compile_book(
         moves = tuple(
             move for move in request.moves if move.record_index == record_index
         )
-        entries = apply_record_changes(book, record, memberships, moves)
+        entries = apply_record_changes(book, record, memberships, moves, master_play_count=master_play_count)
         final_entries[record_index] = entries
         if not retail_tag_shape(entries):
             off_distribution.append(record_index)
@@ -1559,7 +1748,8 @@ def compile_book(
     populated_before = {
         record.record_index for record in book.records if record.populated
     }
-    surviving = populated_before - set(emptied)
+    parsed_after = parse_book(bytes(replacement), book.outer_index)
+    surviving = {r.record_index for r in parsed_after.records if r.populated}
     if populated_before and not surviving:
         # Static: count 0x84a8ac30 returns 0 and get-nth 0x84a8bd20 returns null
         # for an empty record.  Runtime (Urianus, alpha.70): the director does
@@ -1575,6 +1765,10 @@ def compile_book(
             "produce out-of-book plays and personnel packages. Keep at least one "
             "formation populated."
         )
+    validate_personnel_edit(book, parsed_after)
+    verification = verify_book(book.body, bytes(replacement), (
+        *request.memberships, *request.moves, *request.trailers,
+    ), master_play_count=master_play_count)
     claims: dict[str, Any] = {
         "entry_prefix_only": not bool(request.trailers),
         "trailers_untouched": not bool(request.trailers),
@@ -1592,6 +1786,7 @@ def compile_book(
         "empty_record_runtime_safe": False,
         "empty_record_reported_out_of_book_calls": bool(emptied),
         "wr3_te_package_sub_proved": False,
+        "personnel_edit_guards_reverified": True,
     }
     if request.trailers:
         # The trailer is consumed by the lineup chain exactly as pinned:
@@ -1633,7 +1828,12 @@ def compile_book(
         "trailer_record_play_sharing": trailer_play_sharing,
         "book_category_rows_before": list(book_category_rows(book.body)),
         "book_category_rows_after": list(book_category_rows(bytes(replacement))),
+        "personnel_availability": {
+            "before": personnel_availability(book),
+            "after": personnel_availability(parsed_after),
+        },
         "populated_records_remaining": len(surviving),
+        "verification": dict(verification),
         "claims": claims,
     }
     return CompiledBook(book.outer_index, b"", bytes(replacement), report)
@@ -1643,6 +1843,7 @@ def verify_book(
     before: bytes,
     after: bytes,
     changes: Iterable[MembershipChange | TagMove | TrailerReplace],
+    *, master_play_count: int = 586,
 ) -> Mapping[str, Any]:
     """Re-derive every changed byte without trusting the compiler.
 
@@ -1685,6 +1886,7 @@ def verify_book(
     # match that entry list.
     parsed_before = parse_book(before, request.outer_index)
     parsed_after = parse_book(after, request.outer_index)
+    validate_personnel_edit(parsed_before, parsed_after)
     for change in request.memberships:
         record = parsed_after.records[change.record_index]
         present = any(e.play_index == change.play_index for e in record.entries)
@@ -1703,7 +1905,8 @@ def verify_book(
             move for move in request.moves if move.record_index == record_index
         )
         expected = apply_record_changes(
-            parsed_before, parsed_before.records[record_index], memberships, moves
+            parsed_before, parsed_before.records[record_index], memberships, moves,
+            master_play_count=master_play_count,
         )
         actual = parsed_after.records[record_index].entries
         _check_tag_rule(
@@ -1795,11 +1998,12 @@ def verify_book(
         "trailer_records": sorted(trailer_records),
         "tag_rule_reverified": True,
         "independent_reparse": True,
+        "personnel_edit_guards_reverified": True,
     }
 
 
 def build_book_patch(
-    index_path: Path, changes: Iterable[MembershipChange | TagMove]
+    index_path: Path, changes: Iterable[MembershipChange | TagMove | TrailerReplace]
 ) -> CompiledBook:
     """Compile changes into a rebuilt outer entry without touching the source."""
 
@@ -1942,6 +2146,8 @@ __all__ = [
     "TagMove",
     "apply_record_changes",
     "book_category_rows",
+    "personnel_availability",
+    "validate_personnel_edit",
     "build_book_patch",
     "change_from_mapping",
     "change_metadata",

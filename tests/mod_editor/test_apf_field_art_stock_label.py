@@ -39,7 +39,7 @@ _FIELD_EXTRA_TARGETS = (
     / "data"
     / "apf2k8_field_extra_targets.v1.json"
 )
-_WRITABLE_XENOS_FORMATS = frozenset({6, 18, 20})
+_WRITABLE_XENOS_FORMATS = frozenset({6, 18, 20, 59})
 
 
 class FieldArtStockLabelTests(unittest.TestCase):
@@ -95,16 +95,16 @@ class OuterSixIsNotSharedTests(unittest.TestCase):
             for target in FIELD_ART_COVERED_TARGETS
             if str(target.name).startswith("endzone_")
         ]
-        # 196 format-18 layers: every l0 plus the 78 format-18 l1 siblings.
-        # 39 format-59 l1 layers stay out, so this is not all 235 inventory rows.
-        self.assertEqual(len(endzone_targets), 196)
+        # All 235 inventory rows: every l0 plus the 78 format-18 l1 siblings
+        # and, since the beta-64 DXT5A writer, the 39 format-59 l1 layers too.
+        self.assertEqual(len(endzone_targets), 235)
         self.assertEqual(
             sum(1 for target in endzone_targets if target.name == "endzone_l0"),
             118,
         )
         self.assertEqual(
             sum(1 for target in endzone_targets if target.name == "endzone_l1"),
-            78,
+            117,
         )
         package_six = [t for t in endzone_targets if t.entry_index == 6]
         self.assertEqual({t.name for t in package_six}, {"endzone_l0", "endzone_l1"})
@@ -112,7 +112,7 @@ class OuterSixIsNotSharedTests(unittest.TestCase):
             with self.subTest(key=target.key):
                 self.assertIn("not a shared layer", target.note.casefold())
 
-    def test_format_59_endzones_are_refused_and_copy_stays_honest(self) -> None:
+    def test_format_59_endzones_are_offered_and_copy_stays_honest(self) -> None:
         document = json.loads(_FIELD_EXTRA_TARGETS.read_text(encoding="utf-8"))
         fmt59 = [
             (int(row["entry_index"]), int(row["file_index"]))
@@ -133,9 +133,10 @@ class OuterSixIsNotSharedTests(unittest.TestCase):
         offered = {target.key for target in FIELD_ART_COVERED_TARGETS}
         for key in writable_extras:
             self.assertIn(key, offered)
+        # The beta-64 DXT5A writer made every format-59 l1 layer a real target.
         for key in fmt59:
-            self.assertNotIn(key, offered)
-        self.assertNotIn((78, 1), offered)
+            self.assertIn(key, offered)
+        self.assertIn((78, 1), offered)
 
     def test_the_wall_document_records_the_correction(self) -> None:
         text = WALL_DOC.read_text(encoding="utf-8")

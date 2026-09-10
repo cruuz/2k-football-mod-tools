@@ -1,42 +1,22 @@
 #!/usr/bin/env python3
-"""Safely replace one proven APF 2K8 field-art base texture in a copied volume.
+"""Fixed-allocation, retail-pinned APF 2K8 field-art replacement.
 
-This is an evidence-bounded, fail-closed writer for the *writable* field-art
-``TXTR`` families enumerated in ``mod_editor/apf_studio/field_art.py``.  Every
-target is pinned by a frozen per-slot contract (outer entry, inner file, Xenos
-descriptor, base/mip lengths, part layout, and retail entry/base SHA-256); the
-writer refuses anything that disagrees with its pin.  It rewrites only the base
-mip level of one texture, byte-preserves the descriptor pad, the packed mip
-tail, and every sibling inner part, recompresses only the single containing H7A
-block, rebuilds the IFF inside its fixed outer allocation, independently
-reparses the rebuilt entry in RAM, and can only ever write a newly *copied* 0A
-volume.  The retail source is never opened for writing.
+Endzones use tiled DXT1 (18) or grayscale DXT5A (59), 2048x512, with
+8 declared mip levels. Changed endzones regenerate all active levels using
+nearest sampling, preserve inactive padding, and reparse/decode the rebuilt
+IFF before returning it. Unchanged input returns the exact retail entry.
 
-Shipped families (proved bit-exact this session against
-``All-Pro Football 2K8 (USA)``):
+Safe H7A greedy compression is followed by the reviewed optimal helper on
+overflow. Endzones may then simplify RGB to endpoints, followed by bounded
+2x/4x nearest downsampling of the top level (upscaled to the fixed dimensions).
+Every reduction and per-mip codec error is receipted. Further overflow refuses
+output with its byte overage. No emitted H7A match may have length > distance.
 
-* ``endzone_l0`` / ``endzone_l1`` -- Xenos DXT1 (format 18), 2048x512, identity
-  swizzle, shared VRAM block, packed mip tail (the money asset).
-* ``pc_field_goal`` -- Xenos DXT1 (format 18), 256x256, packed mip tail.
-* ``Field_Pass_text`` / ``Stride_number_field`` -- Xenos DXT4_5/BC3 (format 20),
-  128x128, packed mip tail (identical codec to the proven draft_logo writer).
-* ``divots`` -- Xenos 8_8_8_8 (format 6), 64x64, permutation (BGRA) swizzle,
-  single-part descriptor+base+mip layout (uncompressed, so lossless).
-
-Deliberately OUT OF SCOPE (documented, not guessed): ``field_radiance``
-(format 59 DXT5A) and the ``divot_Grass*`` weather textures (format 4 5_6_5)
-need a new single-channel/RGB565 codec *and* a non-permutation const-channel
-swizzle path; the ``field`` / practice SCNE families and the penalty CurveAnim
-have no serializer.  Those raise a typed PORTME refusal rather than a guess.
-
-Only the base mip is regenerated; the packed mip tail is byte-preserved (stale
-relative to an edit) until a Xenos packed-mip regenerator lands.  Like the
-sibling ``apf_texture_patch``/``apf_logo_patch`` writers, this module makes no
-in-game/runtime claim without a Xenia capture -- it proves the exact bytes it
-changes.  The small, format-agnostic H7A/tiling/IFF/output-safety helpers are
-copied verbatim from ``apf_texture_patch.py`` so this writer neither edits nor
-couples to that concurrently-merged module; only the stable ``apf_inner`` and
-``apf_outer`` parsing libraries are imported.
+Other pinned field-art families retain their existing base-only behavior:
+DXT1/BC3 practice overlays and RGBA8888 divots/weaves/dirtmaps. Field radiance,
+weather divots and scene/animation records remain outside this writer.
+Descriptors, unrelated parts, footer and outer allocations stay fixed.
+Retail sources are read-only. Runtime appearance remains UNWITNESSED.
 """
 
 from __future__ import annotations
@@ -52,7 +32,7 @@ from pathlib import Path
 import stat
 import struct
 import sys
-from typing import Callable, Iterable, Mapping
+from typing import Callable, Iterable, Mapping, Sequence
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(_REPO_ROOT) not in sys.path:
@@ -70,6 +50,8 @@ except ImportError as exc:  # pragma: no cover - exercised by the CLI error path
 
 import apf_inner  # noqa: E402
 import apf_outer  # noqa: E402
+import apf_xenos_bc1_mip_layout as endzone_mips  # noqa: E402
+import apf_xenos_dxt5a as dxt5a  # noqa: E402
 
 
 SCHEMA = "apf_field_art_patch/v1"
@@ -95,7 +77,7 @@ class FieldArtContract:
     name: str
     type_name: str
     kind: str
-    codec: str  # "dxt1" | "bc3" | "rgba8888"
+    codec: str  # "dxt1" | "dxt5a" | "bc3" | "rgba8888"
     format: int
     width: int
     height: int
@@ -112,7 +94,7 @@ class FieldArtContract:
 
     @property
     def block_dims(self) -> tuple[int, int, int]:
-        if self.codec == "dxt1":
+        if self.codec in {"dxt1", "dxt5a"}:
             return (4, 4, 8)
         if self.codec == "bc3":
             return (4, 4, 16)
@@ -221,7 +203,7 @@ def _contract_from_row(row: Mapping[str, object]) -> FieldArtContract:
 
 
 def _load_extra_contracts() -> None:
-    """Merge descriptor-derived weave/dirtmap/endzone pins. Skip format 59."""
+    """Merge descriptor-derived weave/dirtmap/endzone pins."""
 
     document = json.loads(_EXTRA_TARGETS.read_text(encoding="utf-8"))
     if document.get("schema") != "apf2k8_field_extra_targets/v1":
@@ -235,11 +217,12 @@ def _load_extra_contracts() -> None:
         if not isinstance(rows, list):
             raise PatchError(f"field extra target catalog missing {group}")
         for row in rows:
-            if int(row["format"]) != int(row["format"]):
+            if int(row["format"]) == 59:
+                if group != "endzones" or row["codec"] != "dxt5a":
+                    raise PatchError("DXT5A requires a reviewed endzone contract")
+            elif int(row["format"]) not in {6, 18, 20}:
                 continue
-            if int(row["format"]) not in {6, 18, 20}:
-                continue
-            if str(row["codec"]) not in {"rgba8888", "dxt1", "bc3"}:
+            if str(row["codec"]) not in {"rgba8888", "dxt1", "dxt5a", "bc3"}:
                 continue
             key = (int(row["entry_index"]), int(row["file_index"]))
             if key in _CONTRACTS:
@@ -268,18 +251,11 @@ _UNSUPPORTED_KINDS = {
 }
 
 _PORTME = [
-    "validate each changed copied volume in Xenia and on user-owned hardware "
-    "before describing any in-game/runtime effect as proved",
-    "implement packed-mip regeneration: the mip tail is currently byte-preserved "
-    "(stale relative to an edit), not downsampled+re-tiled from the new base",
-    "add field_radiance (DXT5A) and divot_Grass* weather (5_6_5): both need a new "
-    "codec AND a non-permutation const-channel swizzle path",
-    "replace the provisional DXT1/BC3 touched-block endpoint search with a "
-    "perceptual production encoder (uncompressed 8_8_8_8 divots are already lossless)",
-    "generalize the endzone contract to all 118 packages by appending one pinned "
-    "row per slot (the descriptor is identical across the family)",
-    "co-editing several textures inside one shared package (e.g. entry 659) means "
-    "chaining outputs so each edit re-pins the previous rebuild as its retail source",
+    "in-game appearance and hardware consumption remain UNWITNESSED",
+    "non-endzone field art still preserves its existing mip tail",
+    "field_radiance and weather divots remain outside the pinned writer table",
+    "DXT1/BC3/DXT5A endpoint encoders are deterministic; review the measured codec error",
+    "optimal H7A is available only with the reviewed Linux x86_64 helper; other platforms use safe greedy and quality fallbacks",
 ]
 
 
@@ -325,6 +301,10 @@ def sha256_bytes(data: bytes) -> str:
 
 
 def _match_length(data: bytes, current: int, candidate: int, maximum: int) -> int:
+    # Flat DXT5A planes produce long equal spans. Compare those in C instead
+    # of walking every byte in Python for every candidate; parse is unchanged.
+    if data[current:current + maximum] == data[candidate:candidate + maximum]:
+        return maximum
     length = 0
     while length < maximum:
         if data[current + length] != data[candidate + length]:
@@ -386,7 +366,7 @@ def compress_h7a(
                             data,
                             cursor,
                             candidate,
-                            min(max_length, len(data) - cursor),
+                            min(max_length, len(data) - cursor, distance),
                         )
                         # Never emit a match that reads bytes it is still
                         # writing.  Our decoder copies one byte at a time and so
@@ -475,14 +455,14 @@ def _optimal_binary() -> Path | None:
     return _OPTIMAL_BINARY
 
 
-def compress_h7a_best(data: bytes, shift: int) -> bytes:
+def compress_h7a_best(data: bytes, shift: int, *, greedy: bytes | None = None) -> bytes:
     """The smaller of the greedy and minimum-cost parses, both verified.
 
     Never returns a stream that does not decode back to ``data``, and never
     returns the optimal parse unless it is actually smaller, so this can only
     improve on the greedy result or match it.
     """
-    greedy = compress_h7a(data, shift)
+    greedy = compress_h7a(data, shift) if greedy is None else greedy
     try:
         binary = _optimal_binary()
     except OSError:
@@ -906,6 +886,143 @@ def _encode_bc_base(
     return new_base, changed_blocks
 
 
+def decode_field_art_base(metadata: dict[str, object], base: bytes) -> tuple[int, int, bytes]:
+    """Decode the pinned DXT5A broadcast swizzle as well as legacy formats."""
+    if metadata["format"] != 59:
+        return apf_inner.decode_txtr_base_rgba(metadata, base)
+    if tuple(metadata["swizzle_components"]) != (0, 0, 0, 5):
+        raise PatchError("endzone DXT5A requires grayscale RGB and constant opaque alpha")
+    width, height = int(metadata["width"]), int(metadata["height"])
+    linear = dxt5a.extract_linear_general(base, width, height, int(metadata["pitch_pixels"]),
+                                         endian_mode=int(metadata["endianness"]))
+    scalar = dxt5a.decode_linear_alpha_general(linear, width, height)
+    return width, height, Image.frombytes("L", (width, height), scalar).convert("RGBA").tobytes()
+
+
+def _decode_endzone_level(codec: str, linear: bytes, location) -> bytes:
+    if len(linear) != location.logical_block_count * 8:
+        raise PatchError("endzone linear mip length changed")
+    output = bytearray(location.width * location.height * 4)
+    for by in range(location.height_blocks):
+        for bx in range(location.width_blocks):
+            offset = (by * location.width_blocks + bx) * 8
+            block = linear[offset:offset + 8]
+            pixels = ([(v, v, v, 255) for v in dxt5a.decode_block(block)]
+                      if codec == "dxt5a" else apf_inner._decode_bc1(block))
+            for y in range(4):
+                for x in range(4):
+                    px, py = bx * 4 + x, by * 4 + y
+                    if px < location.width and py < location.height:
+                        dest = (py * location.width + px) * 4
+                        output[dest:dest + 4] = bytes(pixels[y * 4 + x])
+    return bytes(output)
+
+
+def _encode_endzone_level(codec: str, linear: bytes, wanted: bytes, location) -> bytes:
+    """Preserve unchanged blocks, including noncanonical lossless encodings."""
+    current = _decode_endzone_level(codec, linear, location)
+    if len(wanted) != len(current):
+        raise PatchError("endzone RGBA mip length changed")
+    if codec == "dxt5a" and any(
+        wanted[i] != wanted[i + 1] or wanted[i] != wanted[i + 2] or wanted[i + 3] != 255
+        for i in range(0, len(wanted), 4)
+    ):
+        raise PatchError("DXT5A endzone input must have grayscale RGB and opaque alpha; color cannot be represented")
+    output = bytearray(linear)
+    cache: dict[bytes, bytes] = {}
+    for by in range(location.height_blocks):
+        for bx in range(location.width_blocks):
+            indices = [
+                (min(by * 4 + y, location.height - 1) * location.width
+                 + min(bx * 4 + x, location.width - 1)) * 4
+                for y in range(4) for x in range(4)
+            ]
+            pixels = b"".join(wanted[i:i + 4] for i in indices)
+            if all(wanted[i:i + 4] == current[i:i + 4] for i in indices):
+                continue
+            encoded = cache.get(pixels)
+            if encoded is None:
+                encoded = (dxt5a.encode_block(tuple(pixels[::4]))[0] if codec == "dxt5a"
+                           else encode_dxt1_block([tuple(pixels[i:i + 4]) for i in range(0, 64, 4)]))
+                cache[pixels] = encoded
+            offset = (by * location.width_blocks + bx) * 8
+            output[offset:offset + 8] = encoded
+    return bytes(output)
+
+
+def _endzone_image(rgba: bytes, size: tuple[int, int], factor: int = 1,
+                   simplify: bool = False) -> Image.Image:
+    if factor not in (1, 2, 4):
+        raise PatchError("endzone quality factor must be 1, 2 or 4")
+    image = Image.frombytes("RGBA", size, rgba)
+    if simplify:
+        # Endzone masks use independent channel weights. Snap each RGB weight
+        # to its nearest endpoint; keep alpha exactly as supplied. This keeps
+        # overlaps (yellow/cyan/magenta/white), unlike a four-colour palette.
+        channels = image.split()
+        table = [0 if value < 128 else 255 for value in range(256)]
+        image = Image.merge("RGBA", tuple(c.point(table) for c in channels[:3]) + (channels[3],))
+    if factor != 1:
+        image = image.resize((size[0] // factor, size[1] // factor), Image.Resampling.NEAREST)
+        image = image.resize(size, Image.Resampling.NEAREST)
+    return image
+
+
+def _encode_endzone_texture(contract: FieldArtContract, metadata: dict[str, object],
+                            original: bytes, wanted: bytes) -> tuple[bytes, list[dict[str, object]]]:
+    locations = endzone_mips.derive_layout(metadata)
+    if len(original) != contract.base_len + contract.mip_len:
+        raise PatchError("endzone base/mip allocation changed")
+    if endzone_mips.transport_roundtrip(original, locations) != original:
+        raise PatchError("endzone packed-mip transport is not bit-exact")
+    image = _endzone_image(wanted, (contract.width, contract.height))
+    output, levels = original, []
+    for location in locations:
+        # Endzones are region masks. Nearest retains source channel values;
+        # averaging would invent new region weights. This is also the digit
+        # writer's documented nearest-mip option.
+        wanted_level = image.resize((location.width, location.height), Image.Resampling.NEAREST).tobytes()
+        before = endzone_mips.extract_linear_bc1(original, location)
+        encoded = _encode_endzone_level(contract.codec, before, wanted_level, location)
+        output = endzone_mips.insert_linear_bc1(output, location, encoded)
+        decoded = _decode_endzone_level(contract.codec, encoded, location)
+        levels.append({**location.manifest(), "linear_sha256": sha256_bytes(encoded),
+                       "wanted_rgba_sha256": sha256_bytes(wanted_level),
+                       "decoded_rgba_sha256": sha256_bytes(decoded),
+                       "decode_back_metrics": _rgba_metrics(wanted_level, decoded)})
+    if endzone_mips.transport_roundtrip(output, locations) != output:
+        raise PatchError("encoded endzone packed-mip transport is not bit-exact")
+    return output, levels
+
+
+def _validate_h7a_stream(stream: bytes, data: bytes, shift: int) -> None:
+    """Bound by declared output: console-unsafe overlap is never publishable."""
+    cursor = produced = 0
+    try:
+        while produced < len(data):
+            flags = stream[cursor]
+            cursor += 1
+            for bit in range(8):
+                if produced == len(data):
+                    break
+                if flags >> bit & 1:
+                    word = (stream[cursor] << 8) | stream[cursor + 1]
+                    cursor += 2
+                    distance, length = word & ((1 << shift) - 1), (word >> shift) + 3
+                    if length > distance or distance > produced:
+                        raise PatchError("H7A match overlaps or precedes its decoded history")
+                    produced += length
+                else:
+                    cursor += 1
+                    produced += 1
+    except IndexError as exc:
+        raise PatchError("truncated H7A stream") from exc
+    if produced != len(data) or cursor != len(stream):
+        raise PatchError("H7A stream length differs from its declaration")
+    if apf_inner.decompress_h7a(stream, len(data), shift) != data:
+        raise PatchError("H7A encode/decode round-trip failed")
+
+
 def _changed_pixels(original_rgba: bytes, wanted_rgba: bytes) -> int:
     return sum(
         1
@@ -962,6 +1079,9 @@ def _validate_descriptor(contract: FieldArtContract, metadata: dict[str, object]
         "vc_base_data_length": contract.base_len,
         "vc_mip_data_length": contract.mip_len,
     }
+    if contract.kind == "ENDZONE_TEXTURE":
+        required.update(mip_min_level=0, mip_max_level=7, packed_mips=True,
+                        mip_address_pages=128, base_address_pages=0)
     disagreements = {
         key: (metadata.get(key), value)
         for key, value in required.items()
@@ -993,7 +1113,7 @@ def build_field_art_patch(
 def build_field_art_patch_many(
     index_path: Path,
     entry_index: int,
-    targets: "Sequence[tuple[int, Path]]",
+    targets: Sequence[tuple[int, Path]],
 ) -> PatchResult:
     """Build one bit-exact copied-volume patch for several pinned field-art
     TXTRs of the SAME entry (e.g. both endzone layers) in a single rebuild.
@@ -1092,7 +1212,7 @@ def build_field_art_patch_many(
                 f"Xenos untile/endian/tile transport for {contract.name} is not bit-exact"
             )
 
-        _, _, spec["original_rgba"] = apf_inner.decode_txtr_base_rgba(
+        _, _, spec["original_rgba"] = decode_field_art_base(
             spec["metadata"], spec["base"]
         )
         spec["wanted_rgba"] = _load_png(
@@ -1143,6 +1263,8 @@ def build_field_art_patch_many(
             "validation": {
                 "xenos_transport_bit_exact": True,
                 "input_matches_decoded_source": True,
+                "codec_maximum_absolute_error": 0,
+                "rebuilt_iff_reparsed": True,
                 "entry_bit_exact": True,
                 "mip_tail_preserved": True,
                 "descriptor_preserved": True,
@@ -1158,95 +1280,112 @@ def build_field_art_patch_many(
         }
         return PatchResult(original_entry, manifest)
 
-    # Encode every changed target into a new base, preserving head, mip tail,
-    # and siblings.  Several targets of one entry may live in the same decoded
-    # block (both endzone layers do), so each changed pixel part is written
-    # into a shared per-block buffer and the block is compressed once.
-    new_blocks = list(original_blocks)
-    buffers: dict[int, bytearray] = {}
-    encoded_specs: list[dict[str, object]] = []
-    for spec in specs:
-        spec_contract = spec["contract"]
-        spec_base = spec["base"]
-        if spec["wanted_rgba"] == spec["original_rgba"]:
-            continue
-        if spec_contract.codec == "rgba8888":
-            spec_new_base = encode_8888_base(
-                spec["metadata"], spec["wanted_rgba"], spec_contract.base_len
-            )
-            spec_changed_blocks = _changed_pixels(
-                spec["original_rgba"], spec["wanted_rgba"]
-            )
-        else:
-            spec_new_base, _touched = _encode_bc_base(
-                spec_contract,
-                spec["metadata"],
-                spec_base,
-                spec["original_rgba"],
-                spec["wanted_rgba"],
-            )
-            spec_changed_blocks = len(_touched)
-        if spec_new_base == spec_base:
-            raise PatchError(
-                "no-op detection was inconsistent: encode reproduced retail base"
-            )
-        spec_head_len = int(spec["head_len"])
-        spec_pixel_part = spec["pixel_part"]
-        new_pixel = spec["preserved_head"] + spec_new_base + spec["mip_tail"]
-        if (
-            len(new_pixel) != spec_pixel_part.length
-            or new_pixel[:spec_head_len] != spec["preserved_head"]
-            or new_pixel[spec_head_len + spec_contract.base_len :] != spec["mip_tail"]
-        ):
-            raise PatchError("head/base/mip preservation invariant failed")
-        buffer = buffers.setdefault(
-            spec_pixel_part.block_index,
-            bytearray(new_blocks[spec_pixel_part.block_index]),
+    if record.footer is None:
+        raise PatchError(f"PORTME: {contract.name} IFF has no validated name footer")
+    footer_total = 8 + record.footer.payload_size
+    allocation_limit = entry.size - record.header_size - footer_total
+    fit_attempts = []
+    quality_steps = ((1, False), (1, True), (2, True), (4, True)) if all(
+        s["contract"].kind == "ENDZONE_TEXTURE" for s in specs
+    ) else ((1, False),)
+    for quality_factor, simplify in quality_steps:
+        new_blocks = list(original_blocks)
+        buffers: dict[int, bytearray] = {}
+        encoded_specs: list[dict[str, object]] = []
+        for spec in specs:
+            spec_contract = spec["contract"]
+            spec_base = spec["base"]
+            spec.pop("new_base", None)
+            spec.pop("mip_levels", None)
+            spec.pop("changed_block_count", None)
+            is_endzone = spec_contract.kind == "ENDZONE_TEXTURE"
+            spec["effective_rgba"] = _endzone_image(
+                spec["wanted_rgba"], (spec_contract.width, spec_contract.height), quality_factor, simplify
+            ).tobytes() if is_endzone else spec["wanted_rgba"]
+            if not is_endzone and spec["wanted_rgba"] == spec["original_rgba"]:
+                continue
+            if is_endzone:
+                new_texture, spec["mip_levels"] = _encode_endzone_texture(
+                    spec_contract, spec["metadata"], spec_base + spec["mip_tail"], spec["effective_rgba"]
+                )
+                spec_new_base = new_texture[:spec_contract.base_len]
+                spec_new_mip = new_texture[spec_contract.base_len:]
+                spec_changed_blocks = sum(
+                    spec_new_base[i:i + 8] != spec_base[i:i + 8]
+                    for i in range(0, len(spec_base), 8)
+                )
+            elif spec_contract.codec == "rgba8888":
+                spec_new_base = encode_8888_base(spec["metadata"], spec["effective_rgba"], spec_contract.base_len)
+                spec_new_mip = spec["mip_tail"]
+                spec_changed_blocks = _changed_pixels(spec["original_rgba"], spec["effective_rgba"])
+            else:
+                spec_new_base, touched = _encode_bc_base(
+                    spec_contract, spec["metadata"], spec_base, spec["original_rgba"], spec["effective_rgba"]
+                )
+                spec_new_mip = spec["mip_tail"]
+                spec_changed_blocks = len(touched)
+            spec["new_mip"] = spec_new_mip
+            new_pixel = spec["preserved_head"] + spec_new_base + spec_new_mip
+            part = spec["pixel_part"]
+            if len(new_pixel) != part.length or new_pixel[:spec["head_len"]] != spec["preserved_head"]:
+                raise PatchError("head/base/mip allocation invariant failed")
+            if new_pixel == spec["pixel_bytes"]:
+                continue
+            buffer = buffers.setdefault(part.block_index, bytearray(new_blocks[part.block_index]))
+            buffer[part.offset:part.offset + part.length] = new_pixel
+            spec["new_base"] = spec_new_base
+            spec["changed_block_count"] = spec_changed_blocks
+            encoded_specs.append(spec)
+        if not encoded_specs:
+            raise PatchError("encode reproduced retail pixels; no representable change")
+
+        new_stored = list(original_stored)
+        shifts: dict[int, int] = {}
+        streams: dict[int, bytes] = {}
+        for block_index, buffer in sorted(buffers.items()):
+            block = record.blocks[block_index]
+            if not block.is_compressed or block.wrapper is None:
+                raise PatchError(f"PORTME: pixel block {block_index} is not H7A-compressed")
+            shifts[block_index] = block.wrapper.shift
+            new_blocks[block_index] = bytes(buffer)
+            streams[block_index] = compress_h7a(new_blocks[block_index], block.wrapper.shift)
+
+        for parser in ("greedy", "optimal_if_available"):
+            for block_index in buffers:
+                block = record.blocks[block_index]
+                block_bytes = new_blocks[block_index]
+                if parser != "greedy":
+                    streams[block_index] = compress_h7a_best(
+                        block_bytes, shifts[block_index], greedy=streams[block_index]
+                    )
+                compressed = streams[block_index]
+                _validate_h7a_stream(compressed, block_bytes, shifts[block_index])
+                new_stored[block_index] = struct.pack(
+                    ">5I", apf_inner.H7A_MAGIC, len(block_bytes),
+                    apf_inner.H7A_HEADER_SIZE + len(compressed), block.unknown_10, shifts[block_index]
+                ) + compressed
+            overage = sum(map(len, new_stored)) - allocation_limit
+            fit_attempts.append({"top_mip_downsample_factor": quality_factor, "rgb_endpoint_simplification": simplify, "parser": parser,
+                                 "active_bytes": entry.size + overage, "overage_bytes": max(0, overage),
+                                 "optimal_available": optimal_encoder_diagnostic()["available"]})
+            if overage <= 0:
+                break
+        if overage <= 0:
+            break
+    else:
+        diagnostic = optimal_encoder_diagnostic()
+        detail = "" if diagnostic["available"] else "; " + str(diagnostic["detail"])
+        raise PatchError(
+            f"rebuilt {contract.name} IFF exceeds its fixed outer allocation by {overage} bytes; "
+            f"refusing output after safe H7A, RGB endpoint simplification and top-mip factors 1/2/4{detail}"
         )
-        buffer[
-            spec_pixel_part.offset : spec_pixel_part.offset + spec_pixel_part.length
-        ] = new_pixel
-        spec["new_base"] = spec_new_base
-        spec["changed_block_count"] = spec_changed_blocks
-        encoded_specs.append(spec)
 
-    if not encoded_specs:
-        raise PatchError("no-op detection was inconsistent: nothing changed")
-
-    new_stored = list(original_stored)
-    shifts: dict[int, int] = {}
-    for block_index in sorted(buffers):
-        block_bytes = bytes(buffers[block_index])
-        changed_block_descriptor = record.blocks[block_index]
-        if (
-            not changed_block_descriptor.is_compressed
-            or changed_block_descriptor.wrapper is None
-        ):
-            raise PatchError(f"PORTME: pixel block {block_index} is not H7A-compressed")
-        block_shift = changed_block_descriptor.wrapper.shift
-        shifts[block_index] = block_shift
-        compressed = compress_h7a_best(block_bytes, block_shift)
-        if apf_inner.decompress_h7a(compressed, len(block_bytes), block_shift) != block_bytes:
-            raise PatchError("H7A encode/decode round-trip failed")
-        encoded_stored = struct.pack(
-            ">5I",
-            apf_inner.H7A_MAGIC,
-            len(block_bytes),
-            apf_inner.H7A_HEADER_SIZE + len(compressed),
-            changed_block_descriptor.unknown_10,
-            block_shift,
-        ) + compressed
-        new_stored[block_index] = encoded_stored
-        new_blocks[block_index] = block_bytes
-    shift: object = (
-        shifts[next(iter(shifts))] if len(shifts) == 1 else dict(sorted(shifts.items()))
-    )
-    first_encoded = encoded_specs[0]
-    new_base = first_encoded["new_base"]
-    changed_block_count = int(first_encoded["changed_block_count"])
-    _, _, decoded_new_rgba = apf_inner.decode_txtr_base_rgba(
-        first_encoded["metadata"], new_base
-    )
+    shift: object = shifts[next(iter(shifts))] if len(shifts) == 1 else dict(sorted(shifts.items()))
+    # Top-level legacy fields always describe the first requested target, even
+    # when only its sibling changed. Per-target receipts describe both layers.
+    new_base = specs[0].get("new_base", base)
+    changed_block_count = int(specs[0].get("changed_block_count", 0))
+    _, _, decoded_new_rgba = decode_field_art_base(metadata, new_base)
 
     # Rebuild the IFF inside the fixed outer allocation.
     header = bytearray(original_entry[: record.header_size])
@@ -1298,12 +1437,7 @@ def build_field_art_patch_many(
         raise PatchError(f"PORTME: {contract.name} outer allocation tail is nonzero")
     active = bytes(header) + bytes(body) + footer_bytes
     if len(active) > entry.size:
-        diagnostic = optimal_encoder_diagnostic()
-        detail = '' if diagnostic['available'] else '; ' + str(diagnostic['detail'])
-        raise PatchError(
-            f"rebuilt {contract.name} IFF exceeds its fixed outer allocation by "
-            f"{len(active) - entry.size} bytes; refusing output{detail}"
-        )
+        raise PatchError("allocation preflight disagrees with rebuilt IFF size")
     rebuilt_entry = active + b"\0" * (entry.size - len(active))
 
     # Reparse gate: rebuilt entry must decode to the intended blocks and change
@@ -1329,6 +1463,14 @@ def build_field_art_patch_many(
         raise PatchError(
             f"unrelated inner payload changed; changed part keys are {changed_parts}"
         )
+    from apf_field_art_verify import verify_endzone_mips
+    for spec in specs:
+        if "mip_levels" not in spec:
+            continue
+        _, _, _, reparsed_pixel, reparsed_meta = _resolve_target(rebuilt_record, rebuilt_blocks, spec["contract"])
+        _validate_descriptor(spec["contract"], reparsed_meta)
+        verify_endzone_mips(spec["contract"], reparsed_meta, spec["base"] + spec["mip_tail"],
+                            reparsed_pixel, spec["wanted_rgba"], quality_factor, spec["mip_levels"], simplify=simplify)
     footer_after = rebuilt_entry[new_file_length : new_file_length + footer_total]
     manifest = {
         "schema": SCHEMA,
@@ -1352,32 +1494,38 @@ def build_field_art_patch_many(
         "mip_tail": {
             "length": contract.mip_len,
             "sha256": sha256_bytes(mip_tail),
-            "bit_exact": True,
+            "sha256_before": sha256_bytes(mip_tail),
+            "sha256_after": sha256_bytes(specs[0].get("new_mip", mip_tail)),
+            "bit_exact": specs[0].get("new_mip", mip_tail) == mip_tail,
         },
         "descriptor_pad": {
             "length": head_len,
             "sha256": sha256_bytes(preserved_head),
             "bit_exact": True,
         },
-        **(
+        "quality": {
+            "top_mip_downsample_factor": quality_factor,
+            "rgb_endpoint_simplification": simplify,
+            "rgb_reduction": "each RGB channel <128 becomes 0, otherwise 255; alpha preserved" if simplify else "none",
+            "method": "none" if quality_factor == 1 else "nearest downsample then nearest upscale to fixed dimensions",
+            "mip_filter": "nearest (preserves region values)",
+            "fit_attempts": fit_attempts,
+        },
+        "targets": [
             {
-                "targets": [
-                    {
-                        "file_index": int(spec["file_index"]),
-                        "name": spec["contract"].name,
-                        "type": spec["contract"].type_name,
-                        "changed": bool(spec.get("new_base")),
-                        "base_sha256_before": sha256_bytes(spec["base"]),
-                        "base_sha256_after": sha256_bytes(
-                            spec["new_base"] if spec.get("new_base") else spec["base"]
-                        ),
-                    }
-                    for spec in specs
-                ]
+                "file_index": int(spec["file_index"]), "name": spec["contract"].name,
+                "type": spec["contract"].type_name, "codec": spec["contract"].codec,
+                "changed": "new_base" in spec,
+                "base_sha256_before": sha256_bytes(spec["base"]),
+                "base_sha256_after": sha256_bytes(spec.get("new_base", spec["base"])),
+                "effective_dimensions": [spec["contract"].width // quality_factor, spec["contract"].height // quality_factor],
+                "requested_to_effective_metrics": _rgba_metrics(spec["wanted_rgba"], spec["effective_rgba"]),
+                "requested_to_decoded_metrics": _rgba_metrics(spec["wanted_rgba"], decode_field_art_base(
+                    spec["metadata"], spec.get("new_base", spec["base"]))[2]),
+                "mip_levels": spec.get("mip_levels", []),
             }
-            if len(specs) > 1
-            else {}
-        ),
+            for spec in specs
+        ],
         "iff": {
             "allocation_size": entry.size,
             "file_length_before": record.file_length,
@@ -1403,7 +1551,10 @@ def build_field_art_patch_many(
             "h7a_decode_encode_decode_exact": True,
             "rebuilt_iff_reparsed": True,
             "footer_bit_exact": footer_after == footer_bytes,
-            "mip_tail_preserved": True,
+            "mip_tail_preserved": all(spec.get("new_mip", spec["mip_tail"]) == spec["mip_tail"] for spec in specs),
+            "endzone_mips_regenerated": any("mip_levels" in spec for spec in specs),
+            "h7a_no_overlapping_matches": True,
+            "endzone_mips_independently_verified": any("mip_levels" in spec for spec in specs),
             "descriptor_pad_preserved": all(
                 int(spec["head_len"]) == 0
                 or spec["preserved_head"] == spec["pixel_bytes"][: int(spec["head_len"])]
@@ -1430,6 +1581,7 @@ def build_field_art_patch_many(
                 {
                     "dxt1": "project-native deterministic touched-block DXT1 encoder (provisional)",
                     "bc3": "project-native deterministic touched-block BC3 encoder (provisional)",
+                    "dxt5a": "deterministic scalar endpoint DXT5A encoder; grayscale RGB, opaque alpha",
                     "rgba8888": "exact 8_8_8_8 permutation+endian+tile (lossless)",
                 }[contract.codec]
                 if len(specs) == 1
@@ -1437,12 +1589,13 @@ def build_field_art_patch_many(
                     spec["contract"].codec: {
                         "dxt1": "project-native deterministic touched-block DXT1 encoder (provisional)",
                         "bc3": "project-native deterministic touched-block BC3 encoder (provisional)",
+                        "dxt5a": "deterministic scalar endpoint DXT5A encoder; grayscale RGB, opaque alpha",
                         "rgba8888": "exact 8_8_8_8 permutation+endian+tile (lossless)",
                     }[spec["contract"].codec]
                     for spec in encoded_specs
                 }
             ),
-            "h7a": "project-native greedy H7A encoder",
+            "h7a": "safe greedy, then reviewed optimal parse on overflow",
         },
         "portme": _PORTME,
     }

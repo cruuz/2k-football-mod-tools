@@ -1,0 +1,15 @@
+test_changed_scalar_mips_swizzle_transport_and_padding (__main__.DXT5ASyntheticTests.test_changed_scalar_mips_swizzle_transport_and_padding) ... ok
+test_descriptor_drift_and_aliases_refused (__main__.DXT5ASyntheticTests.test_descriptor_drift_and_aliases_refused) ... ok
+test_quality_step_preserves_alpha_and_is_receipted (__main__.DXT5ASyntheticTests.test_quality_step_preserves_alpha_and_is_receipted) ... ok
+test_safe_h7a_gate_and_greedy_parse_parity (__main__.DXT5ASyntheticTests.test_safe_h7a_gate_and_greedy_parse_parity) ... ok
+test_scalar_endpoint_modes_and_exact_unchanged_blocks (__main__.DXT5ASyntheticTests.test_scalar_endpoint_modes_and_exact_unchanged_blocks) ... ok
+test_unrepresentable_color_and_alpha_refused (__main__.DXT5ASyntheticTests.test_unrepresentable_color_and_alpha_refused) ... ok
+test_all_39_retail_pins_and_mip_layouts (__main__.RetailDXT5ATests.test_all_39_retail_pins_and_mip_layouts) ... ok
+test_retail_decode_encode_unchanged_exact (__main__.RetailDXT5ATests.test_retail_decode_encode_unchanged_exact) ... ok
+test_all_eight_pairs_stage_idempotently_and_prepare_54 (__main__.SuppliedPS3Tests.test_all_eight_pairs_stage_idempotently_and_prepare_54) ... ok
+test_supplied_chicago_and_washington_build_and_reparse (__main__.SuppliedPS3Tests.test_supplied_chicago_and_washington_build_and_reparse) ... skipped 'set APF_ENDZONE_SLOW=1 for supplied-pair allocation builds (about 4 minutes)'
+
+----------------------------------------------------------------------
+Ran 10 tests in 39.549s
+
+OK (skipped=1)

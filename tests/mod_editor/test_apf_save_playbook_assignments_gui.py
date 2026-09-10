@@ -3,12 +3,15 @@
 from __future__ import annotations
 
 import os
+import json
 from pathlib import Path
+import sys
 import tempfile
 import unittest
 
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from PyQt5.QtWidgets import QApplication  # noqa: E402
 
@@ -49,6 +52,10 @@ class ServiceTests(unittest.TestCase):
             self.assertTrue(receipt.verification_passed)
             self.assertFalse(receipt.runtime_in_game_proved)
             self.assertTrue(receipt.manifest.is_file())
+            book_identity = json.loads(receipt.manifest.read_text())["book_identity"]
+            self.assertEqual(len(book_identity["assignments"]), 80)
+            self.assertFalse(book_identity["archive_inspected"])
+            self.assertIn("UNWITNESSED", book_identity["runtime_status"])
             self.assertEqual(source.read_bytes(), source_payload)
             parsed = low_level.parse_save(output.read_bytes())
             self.assertEqual(parsed.teams[0].offensive_playbook_id, 64)
@@ -147,7 +154,8 @@ class PanelTests(unittest.TestCase):
         from mod_editor.apf_studio.models import ApfCategory
 
         class _Facade:
-            pass
+            source_ready = False
+            session = None
 
         page = InspectorCategoryPage(
             _Facade(),  # type: ignore[arg-type]
@@ -172,6 +180,10 @@ class PanelTests(unittest.TestCase):
                     "Who lines up",
                     "Assignment Routes",
                     "Save Assignments",
+                    "Design Plays / Formations",
+                    "Coverage Geometry (experimental)",
+                    "Book Identity",
+                    "CPU Play Calling",
                     "Raw Playbook Assets",
                 ],
             )

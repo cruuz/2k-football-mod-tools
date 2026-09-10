@@ -1,0 +1,17 @@
+COMMAND: QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_ps3_probes.py -v
+test_identical_synthetic_payload_has_zero_differences (__main__.RosterProbeTests.test_identical_synthetic_payload_has_zero_differences) ... ok
+test_odd_nickname_pointer_is_reported_without_normalization (__main__.RosterProbeTests.test_odd_nickname_pointer_is_reported_without_normalization) ... ok
+test_truncated_inputs_and_missing_zip_member (__main__.RosterProbeTests.test_truncated_inputs_and_missing_zip_member) ... ok
+test_accelerated_decoder_matches_existing_decoder (__main__.TextureStreamTests.test_accelerated_decoder_matches_existing_decoder) ... ok
+test_candidate_kinds (__main__.TextureStreamTests.test_candidate_kinds) ... ok
+test_compressed_outer_and_overlapping_directory_refused (__main__.TextureStreamTests.test_compressed_outer_and_overlapping_directory_refused) ... ok
+test_inline_ps3_texture_uses_relative_pixel_pointer (__main__.TextureStreamTests.test_inline_ps3_texture_uses_relative_pixel_pointer) ... ok
+test_nested_compressed_volumes_cross_pack_entry (__main__.TextureStreamTests.test_nested_compressed_volumes_cross_pack_entry) ... ok
+test_prefix_then_remainder_stays_forward_and_bounded (__main__.TextureStreamTests.test_prefix_then_remainder_stays_forward_and_bounded) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.937s
+
+OK
+
+EXIT: 0

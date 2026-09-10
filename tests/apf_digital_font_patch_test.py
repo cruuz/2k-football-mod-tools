@@ -282,10 +282,14 @@ def run(report_path: Path, full_copy: bool) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--report", required=True, type=Path)
+    parser.add_argument("--report", type=Path, help="optional persistent receipt; otherwise use a temporary report")
     parser.add_argument("--full-copy", action="store_true")
     args = parser.parse_args()
-    run(args.report, args.full_copy)
+    if args.report is None:
+        with tempfile.TemporaryDirectory(prefix="apf-digital_font-test-") as temporary:
+            run(Path(temporary) / "report.json", args.full_copy)
+    else:
+        run(args.report, args.full_copy)
     return 0
 
 

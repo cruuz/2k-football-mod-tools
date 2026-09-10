@@ -1,0 +1,32 @@
+{
+  "schema": "apf_coverage_verification/v1",
+  "runtime_witnessed": false,
+  "test_count": 55,
+  "tests": [
+    {
+      "command": "python3 tests/mod_editor/test_apf2k8_coverage_tuning.py",
+      "exit_code": 0,
+      "output": ".........\n----------------------------------------------------------------------\nRan 9 tests in 1.058s\n\nOK\n"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_apf_coverage_research_tools.py",
+      "exit_code": 0,
+      "output": ".......\n----------------------------------------------------------------------\nRan 7 tests in 0.012s\n\nOK\n"
+    },
+    {
+      "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf2k8_playbook_route_writer.py",
+      "exit_code": 0,
+      "output": "............\n----------------------------------------------------------------------\nRan 12 tests in 0.171s\n\nOK\n"
+    },
+    {
+      "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_package_map_writer.py",
+      "exit_code": 0,
+      "output": "...........................\n----------------------------------------------------------------------\nRan 27 tests in 0.382s\n\nOK\n"
+    }
+  ],
+  "retail_rebuild_gate": "ran; not skipped",
+  "proposed_capability": "schema validation passed; registry not modified",
+  "git_diff_check": "passed",
+  "protected_files_modified": false,
+  "retail_binary_artifacts_added": false
+}

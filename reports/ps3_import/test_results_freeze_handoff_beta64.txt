@@ -1,0 +1,17 @@
+TEMPORARY_GUI_HANDOFF_IMPORT_OK; protected file unchanged
+test_ci_hydrate_tag_is_a_published_beta (astra_handoff_freeze.Beta45HonestyFreezeTests.test_ci_hydrate_tag_is_a_published_beta) ... ok
+test_copied_and_studio_built_0a_are_refused_as_source (astra_handoff_freeze.Beta45HonestyFreezeTests.test_copied_and_studio_built_0a_are_refused_as_source) ... ok
+test_field_art_gate_prints_core_six_and_writable_extras_only (astra_handoff_freeze.Beta45HonestyFreezeTests.test_field_art_gate_prints_core_six_and_writable_extras_only) ... ok
+test_format_59_endzones_have_pinned_scalar_writers (astra_handoff_freeze.Beta45HonestyFreezeTests.test_format_59_endzones_have_pinned_scalar_writers) ... ok
+test_live_copy_does_not_make_the_four_forbidden_claims (astra_handoff_freeze.Beta45HonestyFreezeTests.test_live_copy_does_not_make_the_four_forbidden_claims) ... ok
+test_product_identity_is_beta_47 (astra_handoff_freeze.Beta45HonestyFreezeTests.test_product_identity_is_beta_47) ... ok
+test_the_shell_shows_both_release_identities (astra_handoff_freeze.Beta45HonestyFreezeTests.test_the_shell_shows_both_release_identities)
+Beta 34, 35 and the Beta 36 preview all shipped with ... This plugin does not support propagateSizeHints()
+ok
+test_third_and_long_writer_refuses_and_names_executable (astra_handoff_freeze.Beta45HonestyFreezeTests.test_third_and_long_writer_refuses_and_names_executable) ... ok
+test_weave_skin_weights_are_bc3_256_not_lossless_64 (astra_handoff_freeze.Beta45HonestyFreezeTests.test_weave_skin_weights_are_bc3_256_not_lossless_64) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.639s
+
+OK

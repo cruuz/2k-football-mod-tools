@@ -626,8 +626,16 @@ def _dependency_warnings() -> tuple[str, ...]:
         )
         if result.returncode != 0:
             missing.append(label)
+    optional = subprocess.run(
+        [sys.executable, "-c", "import capstone; assert capstone.__version__ == '5.0.7'"],
+        env=environment, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL, check=False,
+    )
+    patch_warning = (() if optional.returncode == 0 else (
+        "Pass-fetch patch export needs Capstone 5.0.7 in the runtime Python. "
+        "Install capstone==5.0.7 to enable the verified export; book editing remains available.",))
     if not missing:
-        return ()
+        return patch_warning
     return (
         "The app was installed, but it cannot open until these system Python packages are present: "
         + ", ".join(missing)

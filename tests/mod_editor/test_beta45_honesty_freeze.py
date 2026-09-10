@@ -21,9 +21,42 @@ class Beta45HonestyFreezeTests(unittest.TestCase):
         from mod_editor.apf_studio import __version__ as apf_version
         from mod_editor.core.update_check import BUILD_RELEASE_TAG
 
-        self.assertEqual(mod_editor.__version__, "1.0.0rc87")
-        self.assertEqual(apf_version, "0.1.0-alpha.84")
-        self.assertEqual(BUILD_RELEASE_TAG, "beta-63.1")
+        self.assertEqual(mod_editor.__version__, "1.0.0rc88")
+        self.assertEqual(apf_version, "0.1.0-alpha.85")
+        self.assertEqual(BUILD_RELEASE_TAG, "beta-64")
+
+    def test_the_shell_shows_both_release_identities(self) -> None:
+        """Beta 34, 35 and the Beta 36 preview all shipped with
+        BUILD_RELEASE_TAG left at "beta-33" while __version__ moved 65 -> 68,
+        so the update banner told users they were on beta-33 whatever they had
+        installed. A 2026-08-25 screenshot showed "Alpha 68" beside "You are
+        running beta-33" in a window that also had the Who lines up tab, which
+        did not exist at alpha.68 -- only a spliced install produces that.
+        Printing both identities makes such a screenshot self-diagnosing."""
+
+        import os
+
+        os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+        from PyQt5.QtWidgets import QApplication, QLabel
+
+        from mod_editor.apf_studio import __version__ as apf_version
+        from mod_editor.apf_studio.gui import ApfStudioMainWindow
+        from mod_editor.core.update_check import BUILD_RELEASE_TAG
+
+        application = QApplication.instance() or QApplication([])
+        window = ApfStudioMainWindow()
+        try:
+            shown = [
+                label.text()
+                for label in window.findChildren(QLabel)
+                if label.objectName() == "mutedLabel" and "retail-free" in label.text()
+            ]
+            self.assertEqual(len(shown), 1, shown)
+            self.assertIn(apf_version.replace("0.1.0-alpha.", "Alpha "), shown[0])
+            self.assertIn(BUILD_RELEASE_TAG, shown[0])
+        finally:
+            window.deleteLater()
+            application.processEvents()
 
     def test_ci_hydrate_tag_is_a_published_beta(self) -> None:
         workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
@@ -68,13 +101,13 @@ class Beta45HonestyFreezeTests(unittest.TestCase):
         self.assertEqual(code, 0)
         printed = buffer.getvalue()
         self.assertIn("core=6", printed)
-        self.assertIn("extras=215", printed)
+        self.assertIn("extras=254", printed)
         extra_keys = field_gate._writable_extra_keys()
-        self.assertEqual(len(extra_keys), 215)
+        self.assertEqual(len(extra_keys), 254)
         for key in extra_keys:
             contract = field_gate.patch._CONTRACTS[key]
-            self.assertIn(contract.format, {6, 18, 20})
-            self.assertIn(contract.codec, {"rgba8888", "dxt1", "bc3"})
+            self.assertIn(contract.format, {6, 18, 20, 59})
+            self.assertIn(contract.codec, {"rgba8888", "dxt1", "dxt5a", "bc3"})
 
     def test_weave_skin_weights_are_bc3_256_not_lossless_64(self) -> None:
         import apf_field_art_patch as writer
@@ -89,7 +122,7 @@ class Beta45HonestyFreezeTests(unittest.TestCase):
             self.assertEqual((contract.width, contract.height), (256, 256))
             self.assertNotEqual((contract.codec, contract.width), ("rgba8888", 64))
 
-    def test_format_59_endzones_stay_out_of_the_writer(self) -> None:
+    def test_format_59_endzones_have_pinned_scalar_writers(self) -> None:
         import json
 
         import apf_field_art_patch as writer
@@ -106,7 +139,8 @@ class Beta45HonestyFreezeTests(unittest.TestCase):
         ]
         self.assertEqual(len(refused), 39)
         for key in refused:
-            self.assertNotIn(key, writer._CONTRACTS)
+            self.assertEqual(writer._CONTRACTS[key].codec, "dxt5a")
+            self.assertEqual(writer._CONTRACTS[key].swizzle, (0, 0, 0, 5))
 
     def test_third_and_long_writer_refuses_and_names_executable(self) -> None:
         from mod_editor.core.errors import ValidationError

@@ -67,7 +67,7 @@ EXPECTED_SHA256 = {
     "apf_team_assets":
         "d112710582b223d32425a79eedf321a2d9f61a01152c1c9d03b74f250231d82b",
     "apf_jersey_layout":
-        "b60783b9c47b57e9b9f545e95f5c17d3c850e263e0d7d453aa6c3be4a0f809e4",
+        "f07e054e50a85a3d8b02523ac2b1b9c062c5b963bbda0d4e726db80057d8b0e3",
 }
 
 TSET_FAMILIES = {

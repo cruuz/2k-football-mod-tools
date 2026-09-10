@@ -1,0 +1,10 @@
+{
+  "schema": "apf2k8_book_clone_requests/v1",
+  "clones": [
+    {"label_id": 20, "team_index": 20, "donor_type": "O-WestCoast"},
+    {"label_id": 10, "team_index": 10, "donor_type": "O-Shotgun"},
+    {"label_id": 5, "team_index": 5, "donor_type": "O-ZoneBlock"},
+    {"label_id": 7, "team_index": 7, "donor_type": "O-Singleback3WR"},
+    {"label_id": 11, "team_index": 11, "donor_type": "O-SinglebackAce"}
+  ]
+}

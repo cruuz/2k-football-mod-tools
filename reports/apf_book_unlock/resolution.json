@@ -1,0 +1,1873 @@
+{
+  "archive": {
+    "alignment": 2048,
+    "books": [
+      {
+        "allocation_bytes": 2048,
+        "decoded_bytes": 32288,
+        "file_length": 1431,
+        "filename": "O-ManBlock-spb.iff",
+        "h7a_overlaps": 0,
+        "header_name": "O-ManBlock",
+        "memberships": 507,
+        "name_id": "0x1569CB3C",
+        "outer_index": 130,
+        "populated_records": 23,
+        "sha256": "18de1e3ee886aceba6535be2c8472d0af3f5554f8c9023d553068005416dd1f5",
+        "stock_outer_index": 130
+      },
+      {
+        "allocation_bytes": 2048,
+        "decoded_bytes": 32288,
+        "file_length": 834,
+        "filename": "X-43Cover2-spb.iff",
+        "h7a_overlaps": 0,
+        "header_name": "X-43Cover2",
+        "memberships": 116,
+        "name_id": "0x161999DE",
+        "outer_index": 134,
+        "populated_records": 4,
+        "sha256": "2191bc3a494f58d279e79449abd6f619b83dd8b7170b86847ae445c930c4b428",
+        "stock_outer_index": 134
+      },
+      {
+        "allocation_bytes": 2048,
+        "decoded_bytes": 32288,
+        "file_length": 1543,
+        "filename": "O-TwoBack-spb.iff",
+        "h7a_overlaps": 0,
+        "header_name": "O-TwoBack",
+        "memberships": 599,
+        "name_id": "0x2A9D1104",
+        "outer_index": 259,
+        "populated_records": 25,
+        "sha256": "2fd2b7587127120f90cb5fb536abe6c2691303fda08ca544b1aeaa271e1b9016",
+        "stock_outer_index": 259
+      },
+      {
+        "allocation_bytes": 2048,
+        "decoded_bytes": 32288,
+        "file_length": 1049,
+        "filename": "USER-d-spb.iff",
+        "h7a_overlaps": 0,
+        "header_name": "USER-d",
+        "memberships": 180,
+        "name_id": "0x2F551CF1",
+        "outer_index": 293,
+        "populated_records": 6,
+        "sha256": "83b3da4aa3fd412f50e242c130c6613d59aa27e0c7ddcf3943689dedb00d92e1",
+        "stock_outer_index": 293
+      },
+      {
+        "allocation_bytes": 2048,
+        "decoded_bytes": 32288,
+        "file_length": 1247,
+        "filename": "O-SinglebackAce-spb.iff",
+        "h7a_overlaps": 0,
+        "header_name": "O-SinglebackAce",
+        "memberships": 764,
+        "name_id": "0x3D357833",
+        "outer_index": 369,
+        "populated_records": 17,
+        "sha256": "63a55ab11da38dcbdabc3107fa44d4aa26c1b61e0a1b6cfb0595cffdfac8a015",
+        "stock_outer_index": 369
+      },
+      {
+        "allocation_bytes": 2048,
+        "decoded_bytes": 32288,
+        "file_length": 936,
+        "filename": "X-34Base-spb.iff",
+        "h7a_overlaps": 0,
+        "header_name": "X-34Base",
+        "memberships": 185,
+        "name_id": "0x663CC76E",
+        "outer_index": 618,
+        "populated_records": 4,
+        "sha256": "67ef383cc1fcde7a44639fa761fbb4efbd82aa3d4560035d27abd704d30ae218",
+        "stock_outer_index": 618
+      },
+      {
+        "allocation_bytes": 2048,
+        "decoded_bytes": 32288,
+        "file_length": 779,
+        "filename": "global-d-spb.iff",
+        "h7a_overlaps": 0,
+        "header_name": "global-d",
+        "memberships": 24,
+        "name_id": "0x6C4EBF6F",
+        "outer_index": 656,
+        "populated_records": 5,
+        "sha256": "2740c33db3378ec9ffb8be222aed7cbd17c99f376c46b2ef240b28ca7e4e1408",
+        "stock_outer_index": 656
+      },
+      {
+        "allocation_bytes": 2048,
+        "decoded_bytes": 32288,
+        "file_length": 1159,
+        "filename": "O-Singleback3WR-spb.iff",
+        "h7a_overlaps": 0,
+        "header_name": "O-Singleback3WR",
+        "memberships": 1674,
+        "name_id": "0x7D9F9D2B",
+        "outer_index": 767,
+        "populated_records": 27,
+        "sha256": "d7a9c2f703d8892929184dce3fef10dd9e9dad29f7506121bfe7ec73ca4a3432",
+        "stock_outer_index": 767
+      },
+      {
+        "allocation_bytes": 2048,
+        "decoded_bytes": 32288,
+        "file_length": 1109,
+        "filename": "O-WestCoast-spb.iff",
+        "h7a_overlaps": 0,
+        "header_name": "O-WestCoast",
+        "memberships": 1159,
+        "name_id": "0x95B17E5C",
+        "outer_index": 891,
+        "populated_records": 22,
+        "sha256": "9a145a97495f347ccef08b719d9e20cde4b9bf7b1546d03a7ca99f9545bc6e83",
+        "stock_outer_index": 891
+      },
+      {
+        "allocation_bytes": 2048,
+        "decoded_bytes": 32288,
+        "file_length": 942,
+        "filename": "O-ZoneBlock-spb.iff",
+        "h7a_overlaps": 0,
+        "header_name": "O-ZoneBlock",
+        "memberships": 505,
+        "name_id": "0x9CC47B00",
+        "outer_index": 943,
+        "populated_records": 17,
+        "sha256": "8a23184ad5675ff5cc6c75fcfa92c3006537e8bfd2d730a6bccc122b1cb0dcca",
+        "stock_outer_index": 943
+      },
+      {
+        "allocation_bytes": 2048,
+        "decoded_bytes": 32288,
+        "file_length": 1041,
+        "filename": "X-43Blitz-spb.iff",
+        "h7a_overlaps": 0,
+        "header_name": "X-43Blitz",
+        "memberships": 191,
+        "name_id": "0xA0062F65",
+        "outer_index": 957,
+        "populated_records": 5,
+        "sha256": "a2ce06b26b10dd3b9be637553fef01e4f961c9f74cfc162be35b5267fd301fa3",
+        "stock_outer_index": 957
+      },
+      {
+        "allocation_bytes": 2048,
+        "decoded_bytes": 32288,
+        "file_length": 1405,
+        "filename": "USER-o-spb.iff",
+        "h7a_overlaps": 0,
+        "header_name": "USER-o",
+        "memberships": 258,
+        "name_id": "0xAD00822C",
+        "outer_index": 1037,
+        "populated_records": 20,
+        "sha256": "e973cc4933d6678f3ff2493adf9a227a43d14c4ab89f8d50ae4d97fedbcd75a2",
+        "stock_outer_index": 1037
+      },
+      {
+        "allocation_bytes": 2048,
+        "decoded_bytes": 32288,
+        "file_length": 961,
+        "filename": "X-34ZoneBlitz-spb.iff",
+        "h7a_overlaps": 0,
+        "header_name": "X-34ZoneBlitz",
+        "memberships": 218,
+        "name_id": "0xE949846D",
+        "outer_index": 1405,
+        "populated_records": 4,
+        "sha256": "45ee87e572dfa573c82db722e95b45b4d999efea9d822276b73d1a832e939dcf",
+        "stock_outer_index": 1405
+      },
+      {
+        "allocation_bytes": 2048,
+        "decoded_bytes": 32288,
+        "file_length": 1281,
+        "filename": "O-Shotgun-spb.iff",
+        "h7a_overlaps": 0,
+        "header_name": "O-Shotgun",
+        "memberships": 809,
+        "name_id": "0xEA0DA03B",
+        "outer_index": 1411,
+        "populated_records": 23,
+        "sha256": "07ad3538b6ff994600b1f0b468bea0b962e758fa42444f242d89bc79f0a32797",
+        "stock_outer_index": 1411
+      },
+      {
+        "allocation_bytes": 2048,
+        "decoded_bytes": 32288,
+        "file_length": 745,
+        "filename": "global-o-spb.iff",
+        "h7a_overlaps": 0,
+        "header_name": "global-o",
+        "memberships": 23,
+        "name_id": "0xEE1B21B2",
+        "outer_index": 1439,
+        "populated_records": 7,
+        "sha256": "e5ca4ff34db2eb19fd71869104ab8148f3bc34ea3a1a8f68d9156e851d9812f1",
+        "stock_outer_index": 1439
+      }
+    ],
+    "entries": 1543,
+    "first_payload": 20480,
+    "label_table": [
+      {
+        "index": 0,
+        "kind": "O-ZoneBlock",
+        "name": "49ers",
+        "offset": 1913304,
+        "side": "offense"
+      },
+      {
+        "index": 1,
+        "kind": "O-WestCoast",
+        "name": "Bears",
+        "offset": 1913316,
+        "side": "offense"
+      },
+      {
+        "index": 2,
+        "kind": "O-ManBlock",
+        "name": "Bengals",
+        "offset": 1913328,
+        "side": "offense"
+      },
+      {
+        "index": 3,
+        "kind": "O-Singleback3WR",
+        "name": "Bills",
+        "offset": 1913340,
+        "side": "offense"
+      },
+      {
+        "index": 4,
+        "kind": "O-SinglebackAce",
+        "name": "Broncos",
+        "offset": 1913352,
+        "side": "offense"
+      },
+      {
+        "index": 5,
+        "kind": "O-ZoneBlock",
+        "name": "Browns",
+        "offset": 1913364,
+        "side": "offense"
+      },
+      {
+        "index": 6,
+        "kind": "O-ZoneBlock",
+        "name": "Buccaneers",
+        "offset": 1913376,
+        "side": "offense"
+      },
+      {
+        "index": 7,
+        "kind": "O-Singleback3WR",
+        "name": "Cardinals",
+        "offset": 1913388,
+        "side": "offense"
+      },
+      {
+        "index": 8,
+        "kind": "O-Shotgun",
+        "name": "Chargers",
+        "offset": 1913400,
+        "side": "offense"
+      },
+      {
+        "index": 9,
+        "kind": "O-ZoneBlock",
+        "name": "Chiefs",
+        "offset": 1913412,
+        "side": "offense"
+      },
+      {
+        "index": 10,
+        "kind": "O-Shotgun",
+        "name": "Colts",
+        "offset": 1913424,
+        "side": "offense"
+      },
+      {
+        "index": 11,
+        "kind": "O-SinglebackAce",
+        "name": "Cowboys",
+        "offset": 1913436,
+        "side": "offense"
+      },
+      {
+        "index": 12,
+        "kind": "O-ZoneBlock",
+        "name": "Dolphins",
+        "offset": 1913448,
+        "side": "offense"
+      },
+      {
+        "index": 13,
+        "kind": "O-SinglebackAce",
+        "name": "Eagles",
+        "offset": 1913460,
+        "side": "offense"
+      },
+      {
+        "index": 14,
+        "kind": "O-ZoneBlock",
+        "name": "Falcons",
+        "offset": 1913472,
+        "side": "offense"
+      },
+      {
+        "index": 15,
+        "kind": "O-ZoneBlock",
+        "name": "Giants",
+        "offset": 1913484,
+        "side": "offense"
+      },
+      {
+        "index": 16,
+        "kind": "O-ManBlock",
+        "name": "Jaguars",
+        "offset": 1913496,
+        "side": "offense"
+      },
+      {
+        "index": 17,
+        "kind": "O-SinglebackAce",
+        "name": "Jets",
+        "offset": 1913508,
+        "side": "offense"
+      },
+      {
+        "index": 18,
+        "kind": "O-Shotgun",
+        "name": "Lions",
+        "offset": 1913520,
+        "side": "offense"
+      },
+      {
+        "index": 19,
+        "kind": "O-Singleback3WR",
+        "name": "Packers",
+        "offset": 1913532,
+        "side": "offense"
+      },
+      {
+        "index": 20,
+        "kind": "O-WestCoast",
+        "name": "Panthers",
+        "offset": 1913544,
+        "side": "offense"
+      },
+      {
+        "index": 21,
+        "kind": "O-ManBlock",
+        "name": "Patriots",
+        "offset": 1913556,
+        "side": "offense"
+      },
+      {
+        "index": 22,
+        "kind": "O-ManBlock",
+        "name": "Raiders",
+        "offset": 1913568,
+        "side": "offense"
+      },
+      {
+        "index": 23,
+        "kind": "O-ZoneBlock",
+        "name": "Rams",
+        "offset": 1913580,
+        "side": "offense"
+      },
+      {
+        "index": 24,
+        "kind": "O-TwoBack",
+        "name": "Ravens",
+        "offset": 1913592,
+        "side": "offense"
+      },
+      {
+        "index": 25,
+        "kind": "USER-o",
+        "name": "Redskins",
+        "offset": 1913604,
+        "side": "offense"
+      },
+      {
+        "index": 26,
+        "kind": "USER-o",
+        "name": "Saints",
+        "offset": 1913616,
+        "side": "offense"
+      },
+      {
+        "index": 27,
+        "kind": "USER-o",
+        "name": "Seahawks",
+        "offset": 1913628,
+        "side": "offense"
+      },
+      {
+        "index": 28,
+        "kind": "USER-o",
+        "name": "Steelers",
+        "offset": 1913640,
+        "side": "offense"
+      },
+      {
+        "index": 29,
+        "kind": "USER-o",
+        "name": "Texans",
+        "offset": 1913652,
+        "side": "offense"
+      },
+      {
+        "index": 30,
+        "kind": "USER-o",
+        "name": "Titans",
+        "offset": 1913664,
+        "side": "offense"
+      },
+      {
+        "index": 31,
+        "kind": "USER-o",
+        "name": "Vikings",
+        "offset": 1913676,
+        "side": "offense"
+      },
+      {
+        "index": 32,
+        "kind": "X-34Base",
+        "name": "49ers",
+        "offset": 1913688,
+        "side": "defense"
+      },
+      {
+        "index": 33,
+        "kind": "X-43Cover2",
+        "name": "Bears",
+        "offset": 1913700,
+        "side": "defense"
+      },
+      {
+        "index": 34,
+        "kind": "X-43Blitz",
+        "name": "Bengals",
+        "offset": 1913712,
+        "side": "defense"
+      },
+      {
+        "index": 35,
+        "kind": "X-34ZoneBlitz",
+        "name": "Bills",
+        "offset": 1913724,
+        "side": "defense"
+      },
+      {
+        "index": 36,
+        "kind": "X-43Blitz",
+        "name": "Broncos",
+        "offset": 1913736,
+        "side": "defense"
+      },
+      {
+        "index": 37,
+        "kind": "X-34ZoneBlitz",
+        "name": "Browns",
+        "offset": 1913748,
+        "side": "defense"
+      },
+      {
+        "index": 38,
+        "kind": "X-43Cover2",
+        "name": "Buccaneers",
+        "offset": 1913760,
+        "side": "defense"
+      },
+      {
+        "index": 39,
+        "kind": "X-34ZoneBlitz",
+        "name": "Cardinals",
+        "offset": 1913772,
+        "side": "defense"
+      },
+      {
+        "index": 40,
+        "kind": "X-43Cover2",
+        "name": "Chargers",
+        "offset": 1913784,
+        "side": "defense"
+      },
+      {
+        "index": 41,
+        "kind": "X-43Cover2",
+        "name": "Chiefs",
+        "offset": 1913796,
+        "side": "defense"
+      },
+      {
+        "index": 42,
+        "kind": "X-43Cover2",
+        "name": "Colts",
+        "offset": 1913808,
+        "side": "defense"
+      },
+      {
+        "index": 43,
+        "kind": "X-34Base",
+        "name": "Cowboys",
+        "offset": 1913820,
+        "side": "defense"
+      },
+      {
+        "index": 44,
+        "kind": "X-43Blitz",
+        "name": "Dolphins",
+        "offset": 1913832,
+        "side": "defense"
+      },
+      {
+        "index": 45,
+        "kind": "X-34ZoneBlitz",
+        "name": "Eagles",
+        "offset": 1913844,
+        "side": "defense"
+      },
+      {
+        "index": 46,
+        "kind": "X-43Blitz",
+        "name": "Falcons",
+        "offset": 1913856,
+        "side": "defense"
+      },
+      {
+        "index": 47,
+        "kind": "X-34ZoneBlitz",
+        "name": "Giants",
+        "offset": 1913868,
+        "side": "defense"
+      },
+      {
+        "index": 48,
+        "kind": "X-43Cover2",
+        "name": "Jaguars",
+        "offset": 1913880,
+        "side": "defense"
+      },
+      {
+        "index": 49,
+        "kind": "X-43Blitz",
+        "name": "Jets",
+        "offset": 1913892,
+        "side": "defense"
+      },
+      {
+        "index": 50,
+        "kind": "X-34Base",
+        "name": "Lions",
+        "offset": 1913904,
+        "side": "defense"
+      },
+      {
+        "index": 51,
+        "kind": "X-43Cover2",
+        "name": "Packers",
+        "offset": 1913916,
+        "side": "defense"
+      },
+      {
+        "index": 52,
+        "kind": "X-34Base",
+        "name": "Panthers",
+        "offset": 1913928,
+        "side": "defense"
+      },
+      {
+        "index": 53,
+        "kind": "X-43Cover2",
+        "name": "Patriots",
+        "offset": 1913940,
+        "side": "defense"
+      },
+      {
+        "index": 54,
+        "kind": "X-34ZoneBlitz",
+        "name": "Raiders",
+        "offset": 1913952,
+        "side": "defense"
+      },
+      {
+        "index": 55,
+        "kind": "X-43Blitz",
+        "name": "Rams",
+        "offset": 1913964,
+        "side": "defense"
+      },
+      {
+        "index": 56,
+        "kind": "USER-d",
+        "name": "Ravens",
+        "offset": 1913976,
+        "side": "defense"
+      },
+      {
+        "index": 57,
+        "kind": "USER-d",
+        "name": "Redskins",
+        "offset": 1913988,
+        "side": "defense"
+      },
+      {
+        "index": 58,
+        "kind": "USER-d",
+        "name": "Saints",
+        "offset": 1914000,
+        "side": "defense"
+      },
+      {
+        "index": 59,
+        "kind": "USER-d",
+        "name": "Seahawks",
+        "offset": 1914012,
+        "side": "defense"
+      },
+      {
+        "index": 60,
+        "kind": "USER-d",
+        "name": "Steelers",
+        "offset": 1914024,
+        "side": "defense"
+      },
+      {
+        "index": 61,
+        "kind": "USER-d",
+        "name": "Texans",
+        "offset": 1914036,
+        "side": "defense"
+      },
+      {
+        "index": 62,
+        "kind": "USER-d",
+        "name": "Titans",
+        "offset": 1914048,
+        "side": "defense"
+      },
+      {
+        "index": 63,
+        "kind": "USER-d",
+        "name": "Vikings",
+        "offset": 1914060,
+        "side": "defense"
+      },
+      {
+        "index": 64,
+        "kind": "USER-o",
+        "name": "West Coast",
+        "offset": 1914072,
+        "side": "offense"
+      },
+      {
+        "index": 65,
+        "kind": "USER-o",
+        "name": "General",
+        "offset": 1914084,
+        "side": "offense"
+      },
+      {
+        "index": 66,
+        "kind": "USER-o",
+        "name": "User A",
+        "offset": 1914096,
+        "side": "offense"
+      },
+      {
+        "index": 67,
+        "kind": "USER-o",
+        "name": "User B",
+        "offset": 1914108,
+        "side": "offense"
+      },
+      {
+        "index": 68,
+        "kind": "USER-d",
+        "name": "General",
+        "offset": 1914120,
+        "side": "defense"
+      }
+    ],
+    "packs": [
+      {
+        "bytes": 1140850688,
+        "name": "0A"
+      },
+      {
+        "bytes": 1073838080,
+        "name": "0B"
+      },
+      {
+        "bytes": 1140850688,
+        "name": "1A"
+      },
+      {
+        "bytes": 517971968,
+        "name": "1B"
+      }
+    ],
+    "sorted_unique_ids": true,
+    "table_end": 18604,
+    "table_start": 88,
+    "tail_covered": true,
+    "unaccounted_payload_boundaries": [],
+    "virtual_size": 3873511424
+  },
+  "complete_receipt_sha256": "0bbfbffa5d5858ef601d8311a5be04c78b88acfcd872ed052872baf52c93a4e7",
+  "evidence_projection": "Omitted duplicate identity tables and/or the full ordinal map; complete receipts remain with the local build.",
+  "pe": {
+    "bytes": 54001664,
+    "crc_table": {
+      "address": "0x844C4DB8",
+      "entries": 256,
+      "polynomial": "0xEDB88320",
+      "sha256": "da5c898b03a4b8559186e7ce3b034e14aab00e7672966ce3032e2b2a2fd4574e"
+    },
+    "flat_base": "0x82000000",
+    "grade": "A_PROVEN static base image",
+    "instruction_groups": {
+      "archive_dynamic_directory_and_hash_lookup": [
+        {
+          "address": "0x84B91640",
+          "assembly": "lis r11, -0x5600",
+          "word": "3d60aa00"
+        },
+        {
+          "address": "0x84B91648",
+          "assembly": "ori r11, r11, 0xb3bf",
+          "word": "616bb3bf"
+        },
+        {
+          "address": "0x84B91654",
+          "assembly": "lwz r10, 0x60(r1)",
+          "word": "81410060"
+        },
+        {
+          "address": "0x84B9165C",
+          "assembly": "lwz r11, 0x58(r1)",
+          "word": "81610058"
+        },
+        {
+          "address": "0x84B91660",
+          "assembly": "slwi r7, r10, 1",
+          "word": "5547083c"
+        },
+        {
+          "address": "0x84B91668",
+          "assembly": "add r7, r10, r7",
+          "word": "7cea3a14"
+        },
+        {
+          "address": "0x84B9167C",
+          "assembly": "slwi r6, r7, 2",
+          "word": "54e6103a"
+        },
+        {
+          "address": "0x84B916AC",
+          "assembly": "lwz r11, 0xc(r29)",
+          "word": "817d000c"
+        },
+        {
+          "address": "0x84B916B4",
+          "assembly": "bctrl ",
+          "word": "4e800421"
+        },
+        {
+          "address": "0x84B916BC",
+          "assembly": "stw r3, 0x220(r31)",
+          "word": "907f0220"
+        },
+        {
+          "address": "0x84B91700",
+          "assembly": "stw r10, 0xc(r11)",
+          "word": "914b000c"
+        },
+        {
+          "address": "0x84B91708",
+          "assembly": "stw r9, 0x14(r11)",
+          "word": "912b0014"
+        },
+        {
+          "address": "0x84B91750",
+          "assembly": "lwz r11, 0x60(r1)",
+          "word": "81610060"
+        },
+        {
+          "address": "0x84B91764",
+          "assembly": "slwi r6, r11, 2",
+          "word": "5566103a"
+        },
+        {
+          "address": "0x84B91768",
+          "assembly": "bl 0x84b55fd8",
+          "word": "4bfc4871"
+        },
+        {
+          "address": "0x84B91A50",
+          "assembly": "bl 0x84b91300",
+          "word": "4bfff8b1"
+        },
+        {
+          "address": "0x84B91380",
+          "assembly": "bl 0x84b210a0",
+          "word": "4bf8fd21"
+        },
+        {
+          "address": "0x84B9138C",
+          "assembly": "bl 0x84b21020",
+          "word": "4bf8fc95"
+        },
+        {
+          "address": "0x84B91390",
+          "assembly": "lwz r11, 0x10(r28)",
+          "word": "817c0010"
+        },
+        {
+          "address": "0x84B91398",
+          "assembly": "addi r8, r11, -1",
+          "word": "390bffff"
+        },
+        {
+          "address": "0x84B913A4",
+          "assembly": "lwz r7, 0x14(r28)",
+          "word": "80fc0014"
+        },
+        {
+          "address": "0x84B913BC",
+          "assembly": "add r10, r11, r10",
+          "word": "7d4b5214"
+        },
+        {
+          "address": "0x84B913C0",
+          "assembly": "slwi r10, r10, 2",
+          "word": "554a103a"
+        },
+        {
+          "address": "0x84B913C4",
+          "assembly": "lwzx r10, r10, r7",
+          "word": "7d4a382e"
+        },
+        {
+          "address": "0x84B913C8",
+          "assembly": "cmplw cr6, r3, r10",
+          "word": "7f035040"
+        },
+        {
+          "address": "0x84B913CC",
+          "assembly": "beq cr6, 0x84b913f4",
+          "word": "419a0028"
+        },
+        {
+          "address": "0x84B913D4",
+          "assembly": "addi r8, r11, -1",
+          "word": "390bffff"
+        },
+        {
+          "address": "0x84B913DC",
+          "assembly": "addi r9, r11, 1",
+          "word": "392b0001"
+        },
+        {
+          "address": "0x84B21028",
+          "assembly": "lhz r11, 0(r3)",
+          "word": "a1630000"
+        },
+        {
+          "address": "0x84B2103C",
+          "assembly": "addi r9, r9, 0x4db8",
+          "word": "39294db8"
+        },
+        {
+          "address": "0x84B21048",
+          "assembly": "addi r8, r11, -0x61",
+          "word": "390bff9f"
+        },
+        {
+          "address": "0x84B2104C",
+          "assembly": "cmplwi cr6, r8, 0x19",
+          "word": "2b080019"
+        },
+        {
+          "address": "0x84B21054",
+          "assembly": "addi r11, r11, -0x20",
+          "word": "396bffe0"
+        },
+        {
+          "address": "0x84B21078",
+          "assembly": "lwzx r8, r8, r9",
+          "word": "7d08482e"
+        },
+        {
+          "address": "0x84B21090",
+          "assembly": "nor r3, r10, r10",
+          "word": "7d4350f8"
+        }
+      ],
+      "eight_saved_combined_user_books": [
+        {
+          "address": "0x84AE8938",
+          "assembly": "lis r3, 3",
+          "word": "3c600003"
+        },
+        {
+          "address": "0x84AE893C",
+          "assembly": "ori r3, r3, 0xf100",
+          "word": "6063f100"
+        },
+        {
+          "address": "0x84AE8960",
+          "assembly": "addi r24, r11, -0x910",
+          "word": "3b0bf6f0"
+        },
+        {
+          "address": "0x84AE89A0",
+          "assembly": "addi r31, r11, 0x6010",
+          "word": "3beb6010"
+        },
+        {
+          "address": "0x84AE89DC",
+          "assembly": "mr r6, r31",
+          "word": "7fe6fb78"
+        },
+        {
+          "address": "0x84AE89E8",
+          "assembly": "bl 0x8468da70",
+          "word": "4bba5089"
+        },
+        {
+          "address": "0x84AE8A00",
+          "assembly": "addi r6, r31, 0x94",
+          "word": "38df0094"
+        },
+        {
+          "address": "0x84AE8A28",
+          "assembly": "bl 0x8468da70",
+          "word": "4bba5049"
+        },
+        {
+          "address": "0x84AE8AA0",
+          "assembly": "bl 0x84b16398",
+          "word": "4802d8f9"
+        },
+        {
+          "address": "0x84AE8AD0",
+          "assembly": "bl 0x84b16398",
+          "word": "4802d8c9"
+        },
+        {
+          "address": "0x84AE8B0C",
+          "assembly": "bl 0x84a8d740",
+          "word": "4bfa4c35"
+        },
+        {
+          "address": "0x84AE8B14",
+          "assembly": "ori r31, r11, 0xf100",
+          "word": "617ff100"
+        },
+        {
+          "address": "0x84AE8B18",
+          "assembly": "addi r11, r24, 0x10",
+          "word": "39780010"
+        },
+        {
+          "address": "0x84AE8B20",
+          "assembly": "addi r11, r3, 0x7e20",
+          "word": "39637e20"
+        },
+        {
+          "address": "0x84AE8B58",
+          "assembly": "addi r25, r25, 0x7e20",
+          "word": "3b397e20"
+        },
+        {
+          "address": "0x84AE8B5C",
+          "assembly": "cmpw cr6, r25, r31",
+          "word": "7f19f800"
+        },
+        {
+          "address": "0x84AE8B60",
+          "assembly": "blt cr6, 0x84ae8b18",
+          "word": "4198ffb8"
+        },
+        {
+          "address": "0x84AE8C1C",
+          "assembly": "ori r5, r5, 0xf100",
+          "word": "60a5f100"
+        },
+        {
+          "address": "0x84AE8C24",
+          "assembly": "addi r4, r11, 0x10",
+          "word": "388b0010"
+        },
+        {
+          "address": "0x84AE8C28",
+          "assembly": "bl 0x84b45ce8",
+          "word": "4805d0c1"
+        },
+        {
+          "address": "0x84AE8C68",
+          "assembly": "ori r5, r5, 0xf100",
+          "word": "60a5f100"
+        },
+        {
+          "address": "0x84AE8C70",
+          "assembly": "addi r3, r31, 0x10",
+          "word": "387f0010"
+        },
+        {
+          "address": "0x84AE8C74",
+          "assembly": "bl 0x84b45ce8",
+          "word": "4805d075"
+        },
+        {
+          "address": "0x84750FD4",
+          "assembly": "stw r11, 0(r30)",
+          "word": "917e0000"
+        },
+        {
+          "address": "0x84750FD8",
+          "assembly": "addi r30, r30, 4",
+          "word": "3bde0004"
+        },
+        {
+          "address": "0x84750FE8",
+          "assembly": "bl 0x84b45ce8",
+          "word": "483f4d01"
+        },
+        {
+          "address": "0x84750FFC",
+          "assembly": "add r3, r11, r30",
+          "word": "7c6bf214"
+        },
+        {
+          "address": "0x84751000",
+          "assembly": "bl 0x84ae8bf8",
+          "word": "48397bf9"
+        },
+        {
+          "address": "0x84751028",
+          "assembly": "lwz r31, 0(r3)",
+          "word": "83e30000"
+        },
+        {
+          "address": "0x8475102C",
+          "assembly": "addi r29, r3, 4",
+          "word": "3ba30004"
+        },
+        {
+          "address": "0x847510A0",
+          "assembly": "add r3, r31, r29",
+          "word": "7c7fea14"
+        },
+        {
+          "address": "0x847510A4",
+          "assembly": "bl 0x84ae8c40",
+          "word": "48397b9d"
+        },
+        {
+          "address": "0x84AE8D24",
+          "assembly": "mulli r10, r31, 0x7e20",
+          "word": "1d5f7e20"
+        },
+        {
+          "address": "0x84AE8D2C",
+          "assembly": "addi r11, r11, 0x10",
+          "word": "396b0010"
+        },
+        {
+          "address": "0x84AE8F9C",
+          "assembly": "lwz r11, 0xd0(r31)",
+          "word": "817f00d0"
+        },
+        {
+          "address": "0x84AE8FA0",
+          "assembly": "cmpwi cr6, r11, 2",
+          "word": "2f0b0002"
+        },
+        {
+          "address": "0x84AE8FAC",
+          "assembly": "bl 0x8474ba88",
+          "word": "4bc62add"
+        },
+        {
+          "address": "0x84AE8FBC",
+          "assembly": "mulli r10, r3, 0x7e20",
+          "word": "1d437e20"
+        },
+        {
+          "address": "0x84AE8FC4",
+          "assembly": "addi r11, r11, 0x10",
+          "word": "396b0010"
+        }
+      ],
+      "request_pool_and_loaded_match_books": [
+        {
+          "address": "0x8468D614",
+          "assembly": "ori r11, r11, 0x300",
+          "word": "616b0300"
+        },
+        {
+          "address": "0x8468D618",
+          "assembly": "lwzx r9, r3, r11",
+          "word": "7d23582e"
+        },
+        {
+          "address": "0x8468D62C",
+          "assembly": "lwz r8, 0(r30)",
+          "word": "811e0000"
+        },
+        {
+          "address": "0x8468D644",
+          "assembly": "addi r11, r11, 0x288",
+          "word": "396b0288"
+        },
+        {
+          "address": "0x8468D648",
+          "assembly": "cmpw cr6, r10, r9",
+          "word": "7f0a4800"
+        },
+        {
+          "address": "0x8468D66C",
+          "assembly": "mulli r31, r10, 0x288",
+          "word": "1fea0288"
+        },
+        {
+          "address": "0x849D4080",
+          "assembly": "bl 0x84b16398",
+          "word": "48142319"
+        },
+        {
+          "address": "0x849D4090",
+          "assembly": "bl 0x849fd6c8",
+          "word": "48029639"
+        },
+        {
+          "address": "0x849D40A0",
+          "assembly": "stw r11, 0x7e0c(r27)",
+          "word": "917b7e0c"
+        },
+        {
+          "address": "0x849D40CC",
+          "assembly": "bl 0x84b16398",
+          "word": "481422cd"
+        },
+        {
+          "address": "0x849D40E8",
+          "assembly": "bl 0x84a8d740",
+          "word": "480b9659"
+        },
+        {
+          "address": "0x849D4110",
+          "assembly": "bl 0x84b16398",
+          "word": "48142289"
+        },
+        {
+          "address": "0x849D4118",
+          "assembly": "bl 0x849fd6d8",
+          "word": "480295c1"
+        },
+        {
+          "address": "0x849D4154",
+          "assembly": "bl 0x84b16398",
+          "word": "48142245"
+        },
+        {
+          "address": "0x849D4170",
+          "assembly": "bl 0x84a8d740",
+          "word": "480b95d1"
+        },
+        {
+          "address": "0x849D4198",
+          "assembly": "bl 0x84b16398",
+          "word": "48142201"
+        },
+        {
+          "address": "0x849D41B4",
+          "assembly": "bl 0x84a8d740",
+          "word": "480b958d"
+        },
+        {
+          "address": "0x849D41C8",
+          "assembly": "bl 0x84a8d740",
+          "word": "480b9579"
+        },
+        {
+          "address": "0x849D41F0",
+          "assembly": "bl 0x84b16398",
+          "word": "481421a9"
+        },
+        {
+          "address": "0x849D420C",
+          "assembly": "bl 0x84a8d740",
+          "word": "480b9535"
+        },
+        {
+          "address": "0x849D4210",
+          "assembly": "bl 0x849fd6b8",
+          "word": "480294a9"
+        },
+        {
+          "address": "0x849FD6C8",
+          "assembly": "lis r11, -0x7b0c",
+          "word": "3d6084f4"
+        },
+        {
+          "address": "0x849FD6D0",
+          "assembly": "stw r3, 0x2c(r11)",
+          "word": "906b002c"
+        },
+        {
+          "address": "0x849FD6D8",
+          "assembly": "lis r11, -0x7b0c",
+          "word": "3d6084f4"
+        },
+        {
+          "address": "0x849FD6E0",
+          "assembly": "stw r3, 0x30(r11)",
+          "word": "906b0030"
+        },
+        {
+          "address": "0x849D8074",
+          "assembly": "addi r6, r11, 0x20c4",
+          "word": "38cb20c4"
+        },
+        {
+          "address": "0x849D8098",
+          "assembly": "ori r5, r5, 0x71c8",
+          "word": "60a571c8"
+        },
+        {
+          "address": "0x849D80B0",
+          "assembly": "bl 0x8468da70",
+          "word": "4bcb59c1"
+        },
+        {
+          "address": "0x849D8124",
+          "assembly": "addi r6, r11, 0x20e8",
+          "word": "38cb20e8"
+        },
+        {
+          "address": "0x849D8148",
+          "assembly": "ori r5, r5, 0xa840",
+          "word": "60a5a840"
+        },
+        {
+          "address": "0x849D8160",
+          "assembly": "bl 0x8468da70",
+          "word": "4bcb5911"
+        }
+      ],
+      "root_and_label_relocation": [
+        {
+          "address": "0x84750F84",
+          "assembly": "bl 0x8474f950",
+          "word": "4bffe9cd"
+        },
+        {
+          "address": "0x8474F96C",
+          "assembly": "bl 0x8474c088",
+          "word": "4bffc71d"
+        },
+        {
+          "address": "0x8474C438",
+          "assembly": "addi r27, r31, 0x5c",
+          "word": "3b7f005c"
+        },
+        {
+          "address": "0x8474C450",
+          "assembly": "add r11, r11, r27",
+          "word": "7d6bda14"
+        },
+        {
+          "address": "0x8474C454",
+          "assembly": "addi r11, r11, -1",
+          "word": "396bffff"
+        },
+        {
+          "address": "0x8474C45C",
+          "assembly": "lwz r11, 0x58(r31)",
+          "word": "817f0058"
+        },
+        {
+          "address": "0x8474C478",
+          "assembly": "bl 0x8473d4b0",
+          "word": "4bff1039"
+        },
+        {
+          "address": "0x8474C484",
+          "assembly": "addi r29, r29, 0xc",
+          "word": "3bbd000c"
+        },
+        {
+          "address": "0x8473D4B0",
+          "assembly": "lwz r11, 0(r3)",
+          "word": "81630000"
+        },
+        {
+          "address": "0x8473D4C8",
+          "assembly": "add r11, r11, r3",
+          "word": "7d6b1a14"
+        },
+        {
+          "address": "0x8473D4CC",
+          "assembly": "addi r11, r11, -1",
+          "word": "396bffff"
+        },
+        {
+          "address": "0x8473D4D4",
+          "assembly": "addi r11, r3, 4",
+          "word": "39630004"
+        },
+        {
+          "address": "0x8473D4D8",
+          "assembly": "lwz r10, 0(r11)",
+          "word": "814b0000"
+        },
+        {
+          "address": "0x8473D4EC",
+          "assembly": "add r10, r10, r11",
+          "word": "7d4a5a14"
+        },
+        {
+          "address": "0x8473D4F0",
+          "assembly": "addi r10, r10, -1",
+          "word": "394affff"
+        },
+        {
+          "address": "0x8473D554",
+          "assembly": "li r10, 0xc",
+          "word": "3940000c"
+        },
+        {
+          "address": "0x8473D564",
+          "assembly": "lwz r3, 4(r11)",
+          "word": "806b0004"
+        },
+        {
+          "address": "0x8473D568",
+          "assembly": "lwz r30, 0(r11)",
+          "word": "83cb0000"
+        },
+        {
+          "address": "0x84747C84",
+          "assembly": "lwz r3, 0x58(r11)",
+          "word": "806b0058"
+        },
+        {
+          "address": "0x84747CBC",
+          "assembly": "lwz r11, 0x5c(r11)",
+          "word": "816b005c"
+        },
+        {
+          "address": "0x8474C210",
+          "assembly": "bl 0x84752e08",
+          "word": "48006bf9"
+        },
+        {
+          "address": "0x8474C21C",
+          "assembly": "addi r29, r29, 0x180",
+          "word": "3bbd0180"
+        },
+        {
+          "address": "0x84752F1C",
+          "assembly": "addi r11, r3, 0xe0",
+          "word": "396300e0"
+        },
+        {
+          "address": "0x84752F34",
+          "assembly": "add r10, r10, r11",
+          "word": "7d4a5a14"
+        },
+        {
+          "address": "0x84752F38",
+          "assembly": "addi r10, r10, -1",
+          "word": "394affff"
+        },
+        {
+          "address": "0x84752F40",
+          "assembly": "addi r11, r3, 0xe4",
+          "word": "396300e4"
+        },
+        {
+          "address": "0x84752F58",
+          "assembly": "add r10, r10, r11",
+          "word": "7d4a5a14"
+        },
+        {
+          "address": "0x84752F5C",
+          "assembly": "addi r10, r10, -1",
+          "word": "394affff"
+        }
+      ],
+      "two_UA_UB_working_buffers": [
+        {
+          "address": "0x849FCF60",
+          "assembly": "lis r11, -0x7ae2",
+          "word": "3d60851e"
+        },
+        {
+          "address": "0x849FCF64",
+          "assembly": "mulli r10, r3, 0x7e20",
+          "word": "1d437e20"
+        },
+        {
+          "address": "0x849FCF68",
+          "assembly": "addi r11, r11, -0x69a0",
+          "word": "396b9660"
+        },
+        {
+          "address": "0x849FCF6C",
+          "assembly": "add r3, r10, r11",
+          "word": "7c6a5a14"
+        },
+        {
+          "address": "0x84A8F270",
+          "assembly": "li r3, 0x7e20",
+          "word": "38607e20"
+        },
+        {
+          "address": "0x84A8F290",
+          "assembly": "bl 0x849fcf60",
+          "word": "4bf6dcd1"
+        },
+        {
+          "address": "0x84A8F294",
+          "assembly": "addi r10, r31, 0x7e20",
+          "word": "395f7e20"
+        },
+        {
+          "address": "0x84A8F2E8",
+          "assembly": "bl 0x849fcf60",
+          "word": "4bf6dc79"
+        },
+        {
+          "address": "0x84A8F2EC",
+          "assembly": "addi r11, r3, 0x7e20",
+          "word": "39637e20"
+        },
+        {
+          "address": "0x84A8F564",
+          "assembly": "lwz r11, 4(r11)",
+          "word": "816b0004"
+        },
+        {
+          "address": "0x84A8F584",
+          "assembly": "bl 0x84b3e740",
+          "word": "480af1bd"
+        },
+        {
+          "address": "0x84A8F5BC",
+          "assembly": "bl 0x8468da70",
+          "word": "4bbfe4b5"
+        },
+        {
+          "address": "0x84A8F5F8",
+          "assembly": "bl 0x84b16398",
+          "word": "48086da1"
+        }
+      ],
+      "type_to_filename_and_request": [
+        {
+          "address": "0x849D6224",
+          "assembly": "bl 0x84682730",
+          "word": "4bcac50d"
+        },
+        {
+          "address": "0x849D6238",
+          "assembly": "lwz r29, 0xe0(r31)",
+          "word": "83bf00e0"
+        },
+        {
+          "address": "0x849D6248",
+          "assembly": "bl 0x84682798",
+          "word": "4bcac551"
+        },
+        {
+          "address": "0x849D625C",
+          "assembly": "lwz r29, 0xe0(r31)",
+          "word": "83bf00e0"
+        },
+        {
+          "address": "0x849D6268",
+          "assembly": "lwz r29, 0xe4(r31)",
+          "word": "83bf00e4"
+        },
+        {
+          "address": "0x849D6280",
+          "assembly": "lwz r3, 4(r30)",
+          "word": "807e0004"
+        },
+        {
+          "address": "0x849D6288",
+          "assembly": "bl 0x84b438b0",
+          "word": "4816d629"
+        },
+        {
+          "address": "0x849D6294",
+          "assembly": "li r3, 0",
+          "word": "38600000"
+        },
+        {
+          "address": "0x849D6298",
+          "assembly": "bl 0x849fcf60",
+          "word": "48026cc9"
+        },
+        {
+          "address": "0x849D629C",
+          "assembly": "lwz r11, 0x7e10(r3)",
+          "word": "81637e10"
+        },
+        {
+          "address": "0x849D638C",
+          "assembly": "lwz r3, 4(r30)",
+          "word": "807e0004"
+        },
+        {
+          "address": "0x849D639C",
+          "assembly": "li r3, 1",
+          "word": "38600001"
+        },
+        {
+          "address": "0x849D63A0",
+          "assembly": "bl 0x849fcf60",
+          "word": "48026bc1"
+        },
+        {
+          "address": "0x849D6490",
+          "assembly": "lwz r11, 4(r30)",
+          "word": "817e0004"
+        },
+        {
+          "address": "0x849D6494",
+          "assembly": "b 0x849d64b8",
+          "word": "48000024"
+        },
+        {
+          "address": "0x849D64B4",
+          "assembly": "lwz r11, 4(r29)",
+          "word": "817d0004"
+        },
+        {
+          "address": "0x849D64B8",
+          "assembly": "stw r11, 0x50(r1)",
+          "word": "91610050"
+        },
+        {
+          "address": "0x849D64C8",
+          "assembly": "li r4, 0x40",
+          "word": "38800040"
+        },
+        {
+          "address": "0x849D64E4",
+          "assembly": "bl 0x84b65b00",
+          "word": "4818f61d"
+        },
+        {
+          "address": "0x849D820C",
+          "assembly": "bl 0x849d6208",
+          "word": "4bffdffd"
+        },
+        {
+          "address": "0x849D8240",
+          "assembly": "lis r5, 0x279f",
+          "word": "3ca0279f"
+        },
+        {
+          "address": "0x849D8250",
+          "assembly": "ori r5, r5, 0x5352",
+          "word": "60a55352"
+        },
+        {
+          "address": "0x849D8268",
+          "assembly": "bl 0x8468da70",
+          "word": "4bcb5809"
+        },
+        {
+          "address": "0x8468DB14",
+          "assembly": "bl 0x8468d7d0",
+          "word": "4bfffcbd"
+        },
+        {
+          "address": "0x8468D7FC",
+          "assembly": "bl 0x8468d5f8",
+          "word": "4bfffdfd"
+        },
+        {
+          "address": "0x8468D824",
+          "assembly": "mr r8, r27",
+          "word": "7f68db78"
+        },
+        {
+          "address": "0x8468D864",
+          "assembly": "bl 0x84b698b8",
+          "word": "484dc055"
+        },
+        {
+          "address": "0x84B698DC",
+          "assembly": "mr r24, r8",
+          "word": "7d184378"
+        },
+        {
+          "address": "0x84B69908",
+          "assembly": "mr r4, r24",
+          "word": "7f04c378"
+        },
+        {
+          "address": "0x84B69924",
+          "assembly": "bl 0x84b68d48",
+          "word": "4bfff425"
+        },
+        {
+          "address": "0x84B68D50",
+          "assembly": "addi r11, r3, 0x50",
+          "word": "39630050"
+        },
+        {
+          "address": "0x84B68D54",
+          "assembly": "lhz r9, 0(r10)",
+          "word": "a12a0000"
+        },
+        {
+          "address": "0x84B69504",
+          "assembly": "addi r5, r11, 0x50",
+          "word": "38ab0050"
+        },
+        {
+          "address": "0x84B69534",
+          "assembly": "lwz r11, 8(r27)",
+          "word": "817b0008"
+        },
+        {
+          "address": "0x84B69548",
+          "assembly": "bctrl ",
+          "word": "4e800421"
+        }
+      ]
+    },
+    "runtime_status": "UNWITNESSED",
+    "sha256": "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf",
+    "strings": {
+      "0x845F1758": "UA",
+      "0x845F1764": "{0}-spb.iff",
+      "0x845F177C": "UB",
+      "0x845F1784": "PRACTICE-s-spb.iff",
+      "0x845F20C4": "global-o-spb.iff",
+      "0x845F20E8": "global-d-spb.iff",
+      "0x84618F30": "%s-spb.iff",
+      "0x84626010": "user-o-spb.iff",
+      "0x846260A4": "user-d-spb.iff"
+    }
+  },
+  "runtime_status": "UNWITNESSED",
+  "saves": [
+    {
+      "bank_start": 2457604,
+      "bytes": 2715908,
+      "grade": "A_PROVEN serialized capacity; runtime editing/selection UNWITNESSED",
+      "roster_extent": 2457600,
+      "serialized_slots": 8,
+      "sha256": "85fdf0d82360294463ff6d7396d7bfc84ed175f0a40573cf3249ad12cc4263f1",
+      "slots": [
+        {
+          "mask_is_template_OR": true,
+          "matches_20_USER_o_records": true,
+          "matches_6_USER_d_records": true,
+          "memberships": 438,
+          "name": "USER-o",
+          "offset": 2457604,
+          "populated_records": 26,
+          "sha256": "852813e81b1e2de5044903aa8fa05260f99eea7735f6bdb84a7683e651db22a4",
+          "slot": 0
+        },
+        {
+          "mask_is_template_OR": true,
+          "matches_20_USER_o_records": true,
+          "matches_6_USER_d_records": true,
+          "memberships": 438,
+          "name": "USER-o",
+          "offset": 2489892,
+          "populated_records": 26,
+          "sha256": "852813e81b1e2de5044903aa8fa05260f99eea7735f6bdb84a7683e651db22a4",
+          "slot": 1
+        },
+        {
+          "mask_is_template_OR": true,
+          "matches_20_USER_o_records": true,
+          "matches_6_USER_d_records": true,
+          "memberships": 438,
+          "name": "USER-o",
+          "offset": 2522180,
+          "populated_records": 26,
+          "sha256": "852813e81b1e2de5044903aa8fa05260f99eea7735f6bdb84a7683e651db22a4",
+          "slot": 2
+        },
+        {
+          "mask_is_template_OR": true,
+          "matches_20_USER_o_records": true,
+          "matches_6_USER_d_records": true,
+          "memberships": 438,
+          "name": "USER-o",
+          "offset": 2554468,
+          "populated_records": 26,
+          "sha256": "852813e81b1e2de5044903aa8fa05260f99eea7735f6bdb84a7683e651db22a4",
+          "slot": 3
+        },
+        {
+          "mask_is_template_OR": true,
+          "matches_20_USER_o_records": true,
+          "matches_6_USER_d_records": true,
+          "memberships": 438,
+          "name": "USER-o",
+          "offset": 2586756,
+          "populated_records": 26,
+          "sha256": "852813e81b1e2de5044903aa8fa05260f99eea7735f6bdb84a7683e651db22a4",
+          "slot": 4
+        },
+        {
+          "mask_is_template_OR": true,
+          "matches_20_USER_o_records": true,
+          "matches_6_USER_d_records": true,
+          "memberships": 438,
+          "name": "USER-o",
+          "offset": 2619044,
+          "populated_records": 26,
+          "sha256": "852813e81b1e2de5044903aa8fa05260f99eea7735f6bdb84a7683e651db22a4",
+          "slot": 5
+        },
+        {
+          "mask_is_template_OR": true,
+          "matches_20_USER_o_records": true,
+          "matches_6_USER_d_records": true,
+          "memberships": 438,
+          "name": "USER-o",
+          "offset": 2651332,
+          "populated_records": 26,
+          "sha256": "852813e81b1e2de5044903aa8fa05260f99eea7735f6bdb84a7683e651db22a4",
+          "slot": 6
+        },
+        {
+          "mask_is_template_OR": true,
+          "matches_20_USER_o_records": true,
+          "matches_6_USER_d_records": true,
+          "memberships": 438,
+          "name": "USER-o",
+          "offset": 2683620,
+          "populated_records": 26,
+          "sha256": "852813e81b1e2de5044903aa8fa05260f99eea7735f6bdb84a7683e651db22a4",
+          "slot": 7
+        }
+      ]
+    },
+    {
+      "bank_start": 2457604,
+      "bytes": 2715908,
+      "grade": "A_PROVEN serialized capacity; runtime editing/selection UNWITNESSED",
+      "roster_extent": 2457600,
+      "serialized_slots": 8,
+      "sha256": "e5d3f9ab05d9cd1b632316042a665de6df567495cb378cd39e4a3d99006b5969",
+      "slots": [
+        {
+          "mask_is_template_OR": true,
+          "matches_20_USER_o_records": true,
+          "matches_6_USER_d_records": true,
+          "memberships": 438,
+          "name": "USER-o",
+          "offset": 2457604,
+          "populated_records": 26,
+          "sha256": "852813e81b1e2de5044903aa8fa05260f99eea7735f6bdb84a7683e651db22a4",
+          "slot": 0
+        },
+        {
+          "mask_is_template_OR": true,
+          "matches_20_USER_o_records": true,
+          "matches_6_USER_d_records": true,
+          "memberships": 438,
+          "name": "USER-o",
+          "offset": 2489892,
+          "populated_records": 26,
+          "sha256": "852813e81b1e2de5044903aa8fa05260f99eea7735f6bdb84a7683e651db22a4",
+          "slot": 1
+        },
+        {
+          "mask_is_template_OR": true,
+          "matches_20_USER_o_records": true,
+          "matches_6_USER_d_records": true,
+          "memberships": 438,
+          "name": "USER-o",
+          "offset": 2522180,
+          "populated_records": 26,
+          "sha256": "852813e81b1e2de5044903aa8fa05260f99eea7735f6bdb84a7683e651db22a4",
+          "slot": 2
+        },
+        {
+          "mask_is_template_OR": true,
+          "matches_20_USER_o_records": true,
+          "matches_6_USER_d_records": true,
+          "memberships": 438,
+          "name": "USER-o",
+          "offset": 2554468,
+          "populated_records": 26,
+          "sha256": "852813e81b1e2de5044903aa8fa05260f99eea7735f6bdb84a7683e651db22a4",
+          "slot": 3
+        },
+        {
+          "mask_is_template_OR": true,
+          "matches_20_USER_o_records": true,
+          "matches_6_USER_d_records": true,
+          "memberships": 438,
+          "name": "USER-o",
+          "offset": 2586756,
+          "populated_records": 26,
+          "sha256": "852813e81b1e2de5044903aa8fa05260f99eea7735f6bdb84a7683e651db22a4",
+          "slot": 4
+        },
+        {
+          "mask_is_template_OR": true,
+          "matches_20_USER_o_records": true,
+          "matches_6_USER_d_records": true,
+          "memberships": 438,
+          "name": "USER-o",
+          "offset": 2619044,
+          "populated_records": 26,
+          "sha256": "852813e81b1e2de5044903aa8fa05260f99eea7735f6bdb84a7683e651db22a4",
+          "slot": 5
+        },
+        {
+          "mask_is_template_OR": true,
+          "matches_20_USER_o_records": true,
+          "matches_6_USER_d_records": true,
+          "memberships": 438,
+          "name": "USER-o",
+          "offset": 2651332,
+          "populated_records": 26,
+          "sha256": "852813e81b1e2de5044903aa8fa05260f99eea7735f6bdb84a7683e651db22a4",
+          "slot": 6
+        },
+        {
+          "mask_is_template_OR": true,
+          "matches_20_USER_o_records": true,
+          "matches_6_USER_d_records": true,
+          "memberships": 438,
+          "name": "USER-o",
+          "offset": 2683620,
+          "populated_records": 26,
+          "sha256": "852813e81b1e2de5044903aa8fa05260f99eea7735f6bdb84a7683e651db22a4",
+          "slot": 7
+        }
+      ]
+    }
+  ],
+  "schema": "apf2k8_book_resolution_evidence/v1"
+}

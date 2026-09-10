@@ -173,6 +173,42 @@ class ApfStudioFacade:
     def source_ready(self) -> bool:
         return self.source is not None and self.catalog is not None and self.session is not None
 
+    def coverage_context(self, progress: Progress = _noop):
+        with self._session_lock:
+            progress("Reading shared zone geometry", 0, 1)
+            return self.require_session().coverage_context()
+
+    def apply_coverage_geometry(self, edits, progress: Progress = _noop):
+        with self._session_lock:
+            progress("Verifying composed coverage geometry", 0, 1)
+            result = self.require_session().apply_coverage_geometry(edits)
+            self.last_build = None
+            return result
+
+    def apply_scheme_presets(self, preset_ids, progress: Progress = _noop):
+        with self._session_lock:
+            progress("Verifying scheme presets after staged CPU edits", 0, 1)
+            result = self.require_session().apply_scheme_presets(preset_ids)
+            self.last_build = None
+            return result
+
+    def play_design_context(self, progress: Progress = _noop):
+        from mod_editor.core.apf2k8_splb_writer import STOCK_BOOKS, read_book
+        with self._session_lock:
+            session = self.require_session()
+            progress("Reading APF play design sources", 0, 1)
+            body = session._master_play_body()
+            books = {i: read_book(session.source.index_0a, i) for i, name in STOCK_BOOKS.items() if name}
+            return body, session.staged_play_design(), books
+
+    def apply_play_design(self, plan: dict, progress: Progress = _noop) -> dict:
+        with self._session_lock:
+            progress("Verifying APF design and CPU book allocations", 0, 1)
+            result = self.require_session().apply_play_design(plan)
+            self.last_build = None
+            progress("APF design verified and staged", 1, 1)
+            return result
+
     @property
     def source_display_name(self) -> str:
         return self.source.display_name if self.source else "No game loaded"
@@ -1233,6 +1269,14 @@ class ApfStudioFacade:
         with self._session_lock:
             session = self.session
             return session.master_categories() if session is not None else ()
+
+    def retail_formation_packages(self) -> dict[int, tuple[tuple[int, int], ...]]:
+        from mod_editor.core.apf2k8_splb_writer import retail_formation_packages
+
+        with self._session_lock:
+            if self.session is None:
+                return {}
+            return retail_formation_packages(self.session.source.index_0a)
 
     def staged_splb_outers(self) -> tuple:
         with self._session_lock:

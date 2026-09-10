@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Evidence-bounded Xenos BC1 mip addressing for APF 2K8 pants.
+"""Evidence-bounded Xenos BC1/DXT5A 8-byte-block mip addressing.
 
 This is the BC1/8-byte-block counterpart to ``apf_xenos_mip_layout.py``.
 The formulas are transcribed from Xenia commit
 ``95a5c3ee250f80c3b9d139658649d9ffb6db3eec`` and deliberately accept only
-the tiled, packed, 2D DXT1 descriptor class used by ``pants_color``.
+the tiled, packed, 2D descriptor classes used by ``pants_color`` and endzones.
 """
 
 from __future__ import annotations
@@ -117,8 +117,11 @@ def get_packed_tile_offset(
 
 
 def derive_layout(metadata: dict[str, object]) -> tuple[MipLocation, ...]:
+    # DXT5A has exactly the same 4x4 / 8-byte Xenos addressing as BC1.
+    # Channel interpretation belongs to the caller, never to the transport.
+    if metadata.get("format") not in (18, 59):
+        raise MipLayoutError("expected BC1 (18) or DXT5A (59) block storage")
     required = {
-        "format": 18,
         "endianness": 1,
         "tiled": True,
         "stacked": False,

@@ -1,0 +1,8 @@
+test_digital_font_path_still_requires_8192 (__main__.Dxt5aGeneralUnitTests.test_digital_font_path_still_requires_8192) ... ok
+test_digital_font_still_previews (__main__.RealDxt5aGeneralPreviewTests.test_digital_font_still_previews) ... skipped 'APF 0A dump not present'
+test_non_font_dxt5a_previews (__main__.RealDxt5aGeneralPreviewTests.test_non_font_dxt5a_previews) ... skipped 'APF 0A dump not present'
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK (skipped=2)

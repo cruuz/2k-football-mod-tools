@@ -1,0 +1,67 @@
+{
+  "schema": "apf2k8_coverage_tuning/v1",
+  "runtime_witnessed": false,
+  "verifier": "full PLAY reparse and exact allowed-bit comparison",
+  "source_sha256": "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891",
+  "replacement_sha256": "f8e7bd93a048e6d2ade46d6b68d99f1814a6ac1110d6dd37cd6ab5008bffe40f",
+  "changed_byte_count": 1,
+  "changed_body_offsets": [
+    120833
+  ],
+  "edits": [
+    {
+      "node_index": 2983,
+      "landmark_x_feet": null,
+      "drop_depth_feet": 27,
+      "lateral_extent_yards": null,
+      "depth_extent_yards": null
+    }
+  ],
+  "affected_nodes": [
+    {
+      "node_index": 2983,
+      "body_offset": 120828,
+      "landmark_x_feet": 33,
+      "drop_depth_feet": 27,
+      "lateral_extent_yards": 10,
+      "depth_extent_yards": 3,
+      "mode": 4,
+      "operand_f": 0,
+      "operand_g": 0,
+      "uses": [
+        {
+          "play_index": 278,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 439,
+          "slot_index": 4,
+          "chain_step": 1
+        },
+        {
+          "play_index": 473,
+          "slot_index": 0,
+          "chain_step": 1
+        }
+      ]
+    }
+  ],
+  "outer_index": 180,
+  "container": {
+    "outer_index": 180,
+    "output_entry_size": 57344,
+    "output_entry_sha256": "ac67a9807da107ac0b096d72a82826b587496b75c7e434659c048fd36b3d6f7b",
+    "h7a_transport": {
+      "strategy": "retail-token-preserving",
+      "retail_token_count": 34708,
+      "output_token_count": 34709,
+      "retail_tokens_preserved_semantically": 34706,
+      "retail_tokens_split_or_replaced": 2,
+      "retail_payload_consumed_bytes": 56162,
+      "retail_zero_alignment_bytes": 0,
+      "compressed_block_size": 56183,
+      "file_length": 56267
+    }
+  }
+}

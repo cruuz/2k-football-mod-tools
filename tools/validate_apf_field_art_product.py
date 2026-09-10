@@ -117,7 +117,7 @@ def _validate_independent_boundary() -> None:
 def _writable_extra_keys() -> set[tuple[int, int]]:
     """Descriptor-derived extras the writer may add beside the six core pins.
 
-    Format 59 DXT5A and any codec outside the three proved writers stay out.
+    Format 59 DXT5A is accepted only for the reviewed grayscale endzone class.
     The core six remain independently pinned even when this catalog grows.
     """
 
@@ -135,9 +135,9 @@ def _writable_extra_keys() -> set[tuple[int, int]]:
         rows = document.get(group)
         require(isinstance(rows, list), f"field extra target catalog missing {group}")
         for row in rows:
-            if int(row["format"]) not in {6, 18, 20}:
+            if int(row["format"]) not in {6, 18, 20, 59}:
                 continue
-            if str(row["codec"]) not in {"rgba8888", "dxt1", "bc3"}:
+            if str(row["codec"]) not in {"rgba8888", "dxt1", "dxt5a", "bc3"}:
                 continue
             key = (int(row["entry_index"]), int(row["file_index"]))
             if key in EXPECTED_TARGETS:
@@ -167,17 +167,23 @@ def validate_fast(evidence_path: Path = EVIDENCE) -> dict[str, Any]:
     for key in extra_keys:
         contract = patch._CONTRACTS[key]
         require(
-            contract.format in {6, 18, 20},
+            contract.format in {6, 18, 20, 59},
             f"field-art extra {key} is not a writable format",
         )
         require(
-            contract.codec in {"rgba8888", "dxt1", "bc3"},
+            contract.codec in {"rgba8888", "dxt1", "dxt5a", "bc3"},
             f"field-art extra {key} is not a writable codec",
         )
         require(
             len(contract.entry_sha256) == len(contract.base_sha256) == 64,
             f"field-art extra hash pins are malformed for {key}",
         )
+    scalar_contracts = [c for c in patch._CONTRACTS.values() if c.format == 59]
+    require(len(scalar_contracts) == 39, "DXT5A endzone coverage differs")
+    require(all(c.kind == "ENDZONE_TEXTURE" and c.name == "endzone_l1"
+                and c.codec == "dxt5a" and c.swizzle == (0, 0, 0, 5)
+                and (c.width, c.height, c.base_len, c.mip_len) == (2048, 512, 0x80000, 0x30000)
+                for c in scalar_contracts), "DXT5A endzone class differs")
     _validate_independent_boundary()
 
     report = _load_evidence(evidence_path)

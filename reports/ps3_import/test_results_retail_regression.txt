@@ -1,0 +1,94 @@
+Unmodified test files copied into tempfile.TemporaryDirectory; tools symlink to this worktree; extracted game symlink to read-only retail input. No game bytes copied to repository.
+
+COMMAND: QT_QPA_PLATFORM=offscreen PYTHONPATH=/home/noah/2k-worktrees/astra-apf-ps3-texture-import python3 <temporary mirror>/tests/mod_editor/test_apf_logo_patch.py -v
+test_both_layers_change_only_their_two_base_subspans (__main__.LogoWriterDualLayerTests.test_both_layers_change_only_their_two_base_subspans) ... ok
+test_dual_call_with_retail_l1_touches_only_l0 (__main__.LogoWriterDualLayerTests.test_dual_call_with_retail_l1_touches_only_l0) ... ok
+test_dual_no_op_returns_source_entry (__main__.LogoWriterDualLayerTests.test_dual_no_op_returns_source_entry) ... ok
+test_dual_wrong_l1_dimensions_are_refused (__main__.LogoWriterDualLayerTests.test_dual_wrong_l1_dimensions_are_refused) ... ok
+test_drifted_base_hash_is_refused (__main__.LogoWriterFailClosedTests.test_drifted_base_hash_is_refused) ... ok
+test_drifted_entry_hash_is_refused (__main__.LogoWriterFailClosedTests.test_drifted_entry_hash_is_refused) ... ok
+test_existing_output_is_refused_and_untouched (__main__.LogoWriterFailClosedTests.test_existing_output_is_refused_and_untouched) ... ok
+test_source_as_output_is_refused (__main__.LogoWriterFailClosedTests.test_source_as_output_is_refused) ... ok
+test_source_volume_is_never_modified_by_a_copy (__main__.LogoWriterFailClosedTests.test_source_volume_is_never_modified_by_a_copy) ... ok
+test_wrong_dimensions_are_refused (__main__.LogoWriterFailClosedTests.test_wrong_dimensions_are_refused) ... ok
+test_spawn_workers_match_sequential_and_preserve_input_order (__main__.LogoWriterParallelBatchTests.test_spawn_workers_match_sequential_and_preserve_input_order) ... ok
+test_worker_count_is_strictly_bounded (__main__.LogoWriterParallelBatchTests.test_worker_count_is_strictly_bounded) ... ok
+test_worker_refusal_propagates_without_any_output_write (__main__.LogoWriterParallelBatchTests.test_worker_refusal_propagates_without_any_output_write) ... ok
+test_pinned_constants (__main__.LogoWriterPinTests.test_pinned_constants) ... ok
+test_retail_hashes_and_descriptor_hold (__main__.LogoWriterPinTests.test_retail_hashes_and_descriptor_hold) ... ok
+test_transport_is_bit_exact (__main__.LogoWriterPinTests.test_transport_is_bit_exact) ... ok
+test_controlled_edit_changes_only_logo_l0_base (__main__.LogoWriterRoundTripTests.test_controlled_edit_changes_only_logo_l0_base) ... ok
+test_decode_png_encode_is_bit_exact_no_op (__main__.LogoWriterRoundTripTests.test_decode_png_encode_is_bit_exact_no_op) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 140.224s
+
+OK
+
+EXIT: 0; elapsed 140.38s
+
+COMMAND: QT_QPA_PLATFORM=offscreen PYTHONPATH=/home/noah/2k-worktrees/astra-apf-ps3-texture-import python3 <temporary mirror>/tests/mod_editor/test_apf_logocache_patch.py -v
+test_drifted_directory_hash_refused (__main__.CacheWriterFailClosedTests.test_drifted_directory_hash_refused) ... ok
+test_drifted_payload_hash_refused (__main__.CacheWriterFailClosedTests.test_drifted_payload_hash_refused) ... ok
+test_out_of_range_catalog_index_refused (__main__.CacheWriterFailClosedTests.test_out_of_range_catalog_index_refused) ... ok
+test_oversize_repack_fails_closed (__main__.CacheWriterFailClosedTests.test_oversize_repack_fails_closed) ... ok
+test_wrong_png_dimensions_refused (__main__.CacheWriterFailClosedTests.test_wrong_png_dimensions_refused) ... ok
+test_pinned_layout (__main__.CacheWriterPinTests.test_pinned_layout) ... ok
+test_public_raw_pair_structure_verifier (__main__.CacheWriterPinTests.test_public_raw_pair_structure_verifier) ... ok
+test_public_raw_pair_structure_verifier_rejects_corruption (__main__.CacheWriterPinTests.test_public_raw_pair_structure_verifier_rejects_corruption) ... ok
+test_retail_hashes_and_directory_parse (__main__.CacheWriterPinTests.test_retail_hashes_and_directory_parse) ... ok
+test_both_layers_edit (__main__.CacheWriterRoundTripTests.test_both_layers_edit) ... ok
+test_duplicate_catalog_spec_refused (__main__.CacheWriterRoundTripTests.test_duplicate_catalog_spec_refused) ... ok
+test_no_op_returns_source_pair (__main__.CacheWriterRoundTripTests.test_no_op_returns_source_pair) ... ok
+test_single_layer_edit (__main__.CacheWriterRoundTripTests.test_single_layer_edit) ... ok
+test_two_crests_one_pass (__main__.CacheWriterRoundTripTests.test_two_crests_one_pass) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 119.503s
+
+OK
+
+EXIT: 0; elapsed 119.67s
+
+COMMAND: QT_QPA_PLATFORM=offscreen PYTHONPATH=/home/noah/2k-worktrees/astra-apf-ps3-texture-import python3 <temporary mirror>/tests/mod_editor/test_apf_all_crest_slots.py -v
+test_a_facade_with_no_source_leaves_the_teams_alone (__main__.PickerWidensOnLoadTests.test_a_facade_with_no_source_leaves_the_teams_alone) ... ok
+test_it_widens_from_the_teams_to_every_slot (__main__.PickerWidensOnLoadTests.test_it_widens_from_the_teams_to_every_slot) ... ok
+test_library_slots_are_labelled_by_index (__main__.PickerWidensOnLoadTests.test_library_slots_are_labelled_by_index) ... ok
+test_repopulating_is_idempotent (__main__.PickerWidensOnLoadTests.test_repopulating_is_idempotent)
+set_context runs on every refresh; it must not multiply the list. ... ok
+test_the_payload_stays_writer_compatible (__main__.PickerWidensOnLoadTests.test_the_payload_stays_writer_compatible)
+The build path uses only these two attributes. ... ok
+test_entry_indices_are_scattered_not_sequential (__main__.ResolvedSlotTests.test_entry_indices_are_scattered_not_sequential)
+Guards against anyone 'simplifying' this into index arithmetic. ... ok
+test_every_built_in_team_still_appears (__main__.ResolvedSlotTests.test_every_built_in_team_still_appears) ... ok
+test_every_slot_resolves (__main__.ResolvedSlotTests.test_every_slot_resolves) ... ok
+test_resolution_agrees_with_the_team_table_entry_indices (__main__.ResolvedSlotTests.test_resolution_agrees_with_the_team_table_entry_indices)
+A CRC mismatch would silently point a writer at the wrong package. ... ok
+test_slot_zero_is_a_library_slot_at_the_measured_entry (__main__.ResolvedSlotTests.test_slot_zero_is_a_library_slot_at_the_measured_entry) ... ok
+test_the_split_is_twenty_four_teams_and_the_rest_library (__main__.ResolvedSlotTests.test_the_split_is_twenty_four_teams_and_the_rest_library) ... ok
+test_a_library_slot_is_never_given_a_team_name (__main__.SlotContractTests.test_a_library_slot_is_never_given_a_team_name)
+Writable is proved; which picker position it backs is not. ... ok
+test_a_team_slot_is_labelled_by_team (__main__.SlotContractTests.test_a_team_slot_is_labelled_by_team) ... ok
+test_the_catalog_count_matches_the_logo_cache (__main__.SlotContractTests.test_the_catalog_count_matches_the_logo_cache)
+The two must agree or one of them is describing a different game. ... ok
+test_the_team_table_is_unchanged (__main__.SlotContractTests.test_the_team_table_is_unchanged)
+Existing callers must keep hitting exactly the targets they did. ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.511s
+
+OK
+
+EXIT: 0; elapsed 0.60s
+
+
+COMMAND: QT_QPA_PLATFORM=offscreen PYTHONPATH=/home/noah/2k-worktrees/astra-apf-ps3-texture-import python3 <temporary mirror>/tests/apf_h7a_no_overlap_test.py RetailDisciplineTests -v
+test_the_rule_matches_what_retail_shipped (__main__.RetailDisciplineTests.test_the_rule_matches_what_retail_shipped)
+The pinned retail crest block, if the disc is available. ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.056s
+
+OK
+
+EXIT: 0

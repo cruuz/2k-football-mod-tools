@@ -1,0 +1,1208 @@
+{
+  "manifest_count": 120,
+  "outer_hash_matches": 120,
+  "unique_hash_count": 59,
+  "unique_semantic_layer_matches": 120,
+  "rows": [
+    {
+      "manifest": "NFL Logos/Atlanta Falcons/End Zone/selected_subfile_948_0_1785962846143/manifest.json",
+      "entry_hash": "0x9e8f94b9",
+      "ps3_entry_index": 948,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 951,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Atlanta Falcons/End Zone/selected_subfile_948_1_1785962860244/manifest.json",
+      "entry_hash": "0x9e8f94b9",
+      "ps3_entry_index": 948,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 951,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Atlanta Falcons/selected_subfile_753_0_1784821182614/manifest.json",
+      "entry_hash": "0x7ba6e2b0",
+      "ps3_entry_index": 753,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 756,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Atlanta Falcons/selected_subfile_753_1_1784821180320/manifest.json",
+      "entry_hash": "0x7ba6e2b0",
+      "ps3_entry_index": 753,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 756,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Buffalo Bills/End Zone/selected_subfile_692_0_1785712524827/manifest.json",
+      "entry_hash": "0x72cee7be",
+      "ps3_entry_index": 692,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 695,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Buffalo Bills/End Zone/selected_subfile_692_1_1785712527205/manifest.json",
+      "entry_hash": "0x72cee7be",
+      "ps3_entry_index": 692,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 695,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Buffalo Bills/selected_subfile_904_0_1784745110934/manifest.json",
+      "entry_hash": "0x97e791b7",
+      "ps3_entry_index": 904,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 907,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Buffalo Bills/selected_subfile_904_1_1784745105871/manifest.json",
+      "entry_hash": "0x97e791b7",
+      "ps3_entry_index": 904,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 907,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Chicago Bears/End Zone/selected_subfile_77_0_1786020734962/manifest.json",
+      "entry_hash": "0x0cd8a0cb",
+      "ps3_entry_index": 77,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 78,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Chicago Bears/End Zone/selected_subfile_77_1_1786020736906/manifest.json",
+      "entry_hash": "0x0cd8a0cb",
+      "ps3_entry_index": 77,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 78,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Chicago Bears/selected_subfile_1407_0_1785436645508/manifest.json",
+      "entry_hash": "0xe9f1d6c2",
+      "ps3_entry_index": 1407,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 1409,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Chicago Bears/selected_subfile_1407_1_1785436646927/manifest.json",
+      "entry_hash": "0xe9f1d6c2",
+      "ps3_entry_index": 1407,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 1409,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Cincinati Bengals/Bengals Stripe/selected_subfile_1307_0_1784923414436/manifest.json",
+      "entry_hash": "0xdb2e64f1",
+      "ps3_entry_index": 1307,
+      "subfile_name": "helmet_color",
+      "xbox_entry_index": 1309,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Cincinati Bengals/Bengals Stripe/selected_subfile_1307_0_1785176856883/manifest.json",
+      "entry_hash": "0xdb2e64f1",
+      "ps3_entry_index": 1307,
+      "subfile_name": "helmet_color",
+      "xbox_entry_index": 1309,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Cincinati Bengals/End Zone/selected_subfile_979_0_1788441742381/manifest.json",
+      "entry_hash": "0xa3efbd09",
+      "ps3_entry_index": 979,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 982,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Cincinati Bengals/End Zone/selected_subfile_979_1_1788441744083/manifest.json",
+      "entry_hash": "0xa3efbd09",
+      "ps3_entry_index": 979,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 982,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Cincinati Bengals/selected_subfile_419_0_1785169479673/manifest.json",
+      "entry_hash": "0x46c6cb00",
+      "ps3_entry_index": 419,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 421,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Cincinati Bengals/selected_subfile_419_1_1785169477990/manifest.json",
+      "entry_hash": "0x46c6cb00",
+      "ps3_entry_index": 419,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 421,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Cleveland Browns/End Zone/selected_subfile_1137_0_1788442082293/manifest.json",
+      "entry_hash": "0xbef87cdb",
+      "ps3_entry_index": 1137,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 1140,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Cleveland Browns/End Zone/selected_subfile_1137_1_1788442084221/manifest.json",
+      "entry_hash": "0xbef87cdb",
+      "ps3_entry_index": 1137,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 1140,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Cleveland Browns/selected_subfile_549_0_1788443507103/manifest.json",
+      "entry_hash": "0x5bd10ad2",
+      "ps3_entry_index": 549,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 551,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Cleveland Browns/selected_subfile_549_1_1788443503849/manifest.json",
+      "entry_hash": "0x5bd10ad2",
+      "ps3_entry_index": 549,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 551,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Dallas Cowboys/EndZone/Orginal/selected_subfile_1158_0_1785619836917/manifest.json",
+      "entry_hash": "0xc352677b",
+      "ps3_entry_index": 1158,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 1161,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Dallas Cowboys/EndZone/Orginal/selected_subfile_1158_1_1785619838788/manifest.json",
+      "entry_hash": "0xc352677b",
+      "ps3_entry_index": 1158,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 1161,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Dallas Cowboys/EndZone/selected_subfile_1158_0_1785362448260/manifest.json",
+      "entry_hash": "0xc352677b",
+      "ps3_entry_index": 1158,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 1161,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Dallas Cowboys/EndZone/selected_subfile_1158_1_1785362449243/manifest.json",
+      "entry_hash": "0xc352677b",
+      "ps3_entry_index": 1158,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 1161,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Dallas Cowboys/selected_subfile_228_0_1785243967235/manifest.json",
+      "entry_hash": "0x267b1172",
+      "ps3_entry_index": 228,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 229,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Dallas Cowboys/selected_subfile_228_1_1785243965364/manifest.json",
+      "entry_hash": "0x267b1172",
+      "ps3_entry_index": 228,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 229,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Denver Broncos/End Zone/selected_subfile_1345_0_1785941336648/manifest.json",
+      "entry_hash": "0xe08b22a6",
+      "ps3_entry_index": 1345,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 1347,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Denver Broncos/End Zone/selected_subfile_1345_1_1785941338226/manifest.json",
+      "entry_hash": "0xe08b22a6",
+      "ps3_entry_index": 1345,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 1347,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Denver Broncos/SteamersLogo_32_0/manifest.json",
+      "entry_hash": "0x05a254af",
+      "ps3_entry_index": 32,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 32,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Denver Broncos/SteamersLogo_32_1/manifest.json",
+      "entry_hash": "0x05a254af",
+      "ps3_entry_index": 32,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 32,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Detriot Lions/End Zone/selected_subfile_713_0_1786026929625/manifest.json",
+      "entry_hash": "0x75b65e14",
+      "ps3_entry_index": 713,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 716,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Detriot Lions/End Zone/selected_subfile_713_1_1786026931558/manifest.json",
+      "entry_hash": "0x75b65e14",
+      "ps3_entry_index": 713,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 716,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Detriot Lions/selected_subfile_1528_0_1784826100000/manifest.json",
+      "entry_hash": "0xfd32901e",
+      "ps3_entry_index": 1528,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 1530,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Detriot Lions/selected_subfile_1528_1_1784742381318/manifest.json",
+      "entry_hash": "0xfd32901e",
+      "ps3_entry_index": 1528,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 1530,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Detriot Lions/selected_subfile_865_0_1786033559582/manifest.json",
+      "entry_hash": "0x909f281d",
+      "ps3_entry_index": 865,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 868,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Detriot Lions/selected_subfile_865_1_1786033557964/manifest.json",
+      "entry_hash": "0x909f281d",
+      "ps3_entry_index": 865,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 868,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Green Bay Packers/Endzone/selected_subfile_1192_0_1785936977539/manifest.json",
+      "entry_hash": "0xc9284dca",
+      "ps3_entry_index": 1192,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 1195,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Green Bay Packers/Endzone/selected_subfile_1192_1_1785936979099/manifest.json",
+      "entry_hash": "0xc9284dca",
+      "ps3_entry_index": 1192,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 1195,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Green Bay Packers/selected_subfile_268_0_1784752700210/manifest.json",
+      "entry_hash": "0x2c013bc3",
+      "ps3_entry_index": 268,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 269,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Green Bay Packers/selected_subfile_268_1_1784752702002/manifest.json",
+      "entry_hash": "0x2c013bc3",
+      "ps3_entry_index": 268,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 269,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Houston Oilers/End Zone/selected_subfile_799_0_1785872761439/manifest.json",
+      "entry_hash": "0x8398556b",
+      "ps3_entry_index": 799,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 802,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Houston Oilers/End Zone/selected_subfile_799_1_1785872763780/manifest.json",
+      "entry_hash": "0x8398556b",
+      "ps3_entry_index": 799,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 802,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Houston Oilers/selected_subfile_619_0_1784673043825/manifest.json",
+      "entry_hash": "0x66b12362",
+      "ps3_entry_index": 619,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 621,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Houston Oilers/selected_subfile_619_1_1784673042201/manifest.json",
+      "entry_hash": "0x66b12362",
+      "ps3_entry_index": 619,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 621,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Indianapolis Colts/End zone/selected_subfile_257_0_1785962083803/manifest.json",
+      "entry_hash": "0x2a98e560",
+      "ps3_entry_index": 257,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 258,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Indianapolis Colts/End zone/selected_subfile_257_1_1785962085422/manifest.json",
+      "entry_hash": "0x2a98e560",
+      "ps3_entry_index": 257,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 258,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Indianapolis Colts/selected_subfile_494_0_1785517665838/manifest.json",
+      "entry_hash": "0x53a174b2",
+      "ps3_entry_index": 494,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 496,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Indianapolis Colts/selected_subfile_494_1_1785517667347/manifest.json",
+      "entry_hash": "0x53a174b2",
+      "ps3_entry_index": 494,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 496,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Kansas City Chiefs/Endzone/selected_subfile_983_0_1785933271483/manifest.json",
+      "entry_hash": "0xa49704a3",
+      "ps3_entry_index": 983,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 986,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Kansas City Chiefs/Endzone/selected_subfile_983_1_1785933273146/manifest.json",
+      "entry_hash": "0xa49704a3",
+      "ps3_entry_index": 983,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 986,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Kansas City Chiefs/selected_subfile_392_0_1785259190716/manifest.json",
+      "entry_hash": "0x41be72aa",
+      "ps3_entry_index": 392,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 394,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Kansas City Chiefs/selected_subfile_392_1_1785259189110/manifest.json",
+      "entry_hash": "0x41be72aa",
+      "ps3_entry_index": 392,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 394,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Los Angeles Raiders/End Zone/selected_subfile_891_0_1787934745633/manifest.json",
+      "entry_hash": "0x961407d4",
+      "ps3_entry_index": 891,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 894,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Los Angeles Raiders/End Zone/selected_subfile_891_1_1787934747373/manifest.json",
+      "entry_hash": "0x961407d4",
+      "ps3_entry_index": 891,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 894,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Los Angeles Raiders/selected_subfile_771_0_1785444417111/manifest.json",
+      "entry_hash": "0x7f6207cf",
+      "ps3_entry_index": 771,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 774,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Los Angeles Raiders/selected_subfile_771_1_1785444415746/manifest.json",
+      "entry_hash": "0x7f6207cf",
+      "ps3_entry_index": 771,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 774,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Los Angeles Rams/End Zone/selected_subfile_1467_0_1787940534924/manifest.json",
+      "entry_hash": "0xf3222cba",
+      "ps3_entry_index": 1467,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 1469,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Los Angeles Rams/End Zone/selected_subfile_1467_1_1787940536868/manifest.json",
+      "entry_hash": "0xf3222cba",
+      "ps3_entry_index": 1467,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 1469,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Los Angeles Rams/selected_subfile_132_0_1785336340355/manifest.json",
+      "entry_hash": "0x160b5ab3",
+      "ps3_entry_index": 132,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 133,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Los Angeles Rams/selected_subfile_132_1_1785336341835/manifest.json",
+      "entry_hash": "0x160b5ab3",
+      "ps3_entry_index": 132,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 133,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Miami Dolphins/End Zone/selected_subfile_328_0_1785710822985/manifest.json",
+      "entry_hash": "0x356e9d6e",
+      "ps3_entry_index": 328,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 329,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Miami Dolphins/End Zone/selected_subfile_328_1_1785710825307/manifest.json",
+      "entry_hash": "0x356e9d6e",
+      "ps3_entry_index": 328,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 329,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Miami Dolphins/selected_subfile_1230_0_1784826748812/manifest.json",
+      "entry_hash": "0xd047eb67",
+      "ps3_entry_index": 1230,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 1233,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Miami Dolphins/selected_subfile_1230_1_1784826731332/manifest.json",
+      "entry_hash": "0xd047eb67",
+      "ps3_entry_index": 1230,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 1233,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Minnesota Vikings/End Zone/selected_subfile_750_0_1785784569048/manifest.json",
+      "entry_hash": "0x7b1a60b0",
+      "ps3_entry_index": 750,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 753,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Minnesota Vikings/End Zone/selected_subfile_750_1_1785784570335/manifest.json",
+      "entry_hash": "0x7b1a60b0",
+      "ps3_entry_index": 750,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 753,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Minnesota Vikings/selected_subfile_945_0_1785164118921/manifest.json",
+      "entry_hash": "0x9e3316b9",
+      "ps3_entry_index": 945,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 948,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Minnesota Vikings/selected_subfile_945_1_1785164117286/manifest.json",
+      "entry_hash": "0x9e3316b9",
+      "ps3_entry_index": 945,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 948,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/New England Patriots/End Zone/selected_subfile_1531_0_1787939182772/manifest.json",
+      "entry_hash": "0xfd8e121e",
+      "ps3_entry_index": 1531,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 1533,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/New England Patriots/End Zone/selected_subfile_1531_1_1787939184154/manifest.json",
+      "entry_hash": "0xfd8e121e",
+      "ps3_entry_index": 1531,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 1533,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/New England Patriots/selected_subfile_153_0_1785608582139/manifest.json",
+      "entry_hash": "0x18a76417",
+      "ps3_entry_index": 153,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 154,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/New England Patriots/selected_subfile_153_1_1785608580513/manifest.json",
+      "entry_hash": "0x18a76417",
+      "ps3_entry_index": 153,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 154,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/New Orleans Saints/End Zone/selected_subfile_546_0_1788375510854/manifest.json",
+      "entry_hash": "0x5b7f79b8",
+      "ps3_entry_index": 546,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 548,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/New Orleans Saints/End Zone/selected_subfile_546_1_1788375512559/manifest.json",
+      "entry_hash": "0x5b7f79b8",
+      "ps3_entry_index": 546,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 548,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/New Orleans Saints/selected_subfile_1133_0_1785516241777/manifest.json",
+      "entry_hash": "0xbe560fb1",
+      "ps3_entry_index": 1133,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 1136,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/New Orleans Saints/selected_subfile_1133_1_1785516244031/manifest.json",
+      "entry_hash": "0xbe560fb1",
+      "ps3_entry_index": 1133,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 1136,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/New York Giants/End Zone/selected_subfile_498_0_1787933191726/manifest.json",
+      "entry_hash": "0x53e4ead5",
+      "ps3_entry_index": 498,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 500,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/New York Giants/End Zone/selected_subfile_498_1_1787933193401/manifest.json",
+      "entry_hash": "0x53e4ead5",
+      "ps3_entry_index": 498,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 500,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/New York Giants/selected_subfile_261_0_1784823376873/manifest.json",
+      "entry_hash": "0x2add7b07",
+      "ps3_entry_index": 261,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 262,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/New York Giants/selected_subfile_261_1_1784823373622/manifest.json",
+      "entry_hash": "0x2add7b07",
+      "ps3_entry_index": 261,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 262,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/New York Jets/End Zone/selected_subfile_997_0_1785935776487/manifest.json",
+      "entry_hash": "0xa6644c15",
+      "ps3_entry_index": 997,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 1000,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/New York Jets/End Zone/selected_subfile_997_1_1785935784504/manifest.json",
+      "entry_hash": "0xa6644c15",
+      "ps3_entry_index": 997,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 1000,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/New York Jets/selected_subfile_1337_0_1785350085721/manifest.json",
+      "entry_hash": "0xdf5dddc7",
+      "ps3_entry_index": 1337,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 1339,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/New York Jets/selected_subfile_1337_1_1785350083849/manifest.json",
+      "entry_hash": "0xdf5dddc7",
+      "ps3_entry_index": 1337,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 1339,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Philadelia Eagles/End Zone/selected_subfile_508_0_1788380005931/manifest.json",
+      "entry_hash": "0x55d3471c",
+      "ps3_entry_index": 508,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 510,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Philadelia Eagles/End Zone/selected_subfile_508_1_1788380008001/manifest.json",
+      "entry_hash": "0x55d3471c",
+      "ps3_entry_index": 508,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 510,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Philadelia Eagles/selected_subfile_1057_0_1785179158038/manifest.json",
+      "entry_hash": "0xb0fa3115",
+      "ps3_entry_index": 1057,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 1060,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Philadelia Eagles/selected_subfile_1057_1_1785179156507/manifest.json",
+      "entry_hash": "0xb0fa3115",
+      "ps3_entry_index": 1057,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 1060,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Phoenix Cardinals/End Zone/selected_subfile_128_0_1786022824959/manifest.json",
+      "entry_hash": "0x150b8466",
+      "ps3_entry_index": 128,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 129,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Phoenix Cardinals/End Zone/selected_subfile_128_1_1786022826731/manifest.json",
+      "entry_hash": "0x150b8466",
+      "ps3_entry_index": 128,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 129,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Phoenix Cardinals/selected_subfile_1451_0_1785525469651/manifest.json",
+      "entry_hash": "0xf022f26f",
+      "ps3_entry_index": 1451,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 1453,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Phoenix Cardinals/selected_subfile_1451_1_1785525471671/manifest.json",
+      "entry_hash": "0xf022f26f",
+      "ps3_entry_index": 1451,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 1453,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Pittsburgh Steelers/EndZone/selected_subfile_189_0_1787927658591/manifest.json",
+      "entry_hash": "0x1f635fbd",
+      "ps3_entry_index": 189,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 190,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Pittsburgh Steelers/EndZone/selected_subfile_189_1_1787927661898/manifest.json",
+      "entry_hash": "0x1f635fbd",
+      "ps3_entry_index": 189,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 190,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Pittsburgh Steelers/selected_subfile_1508_0_1787924278827/manifest.json",
+      "entry_hash": "0xfa4a29b4",
+      "ps3_entry_index": 1508,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 1510,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Pittsburgh Steelers/selected_subfile_1508_1_1787924280406/manifest.json",
+      "entry_hash": "0xfa4a29b4",
+      "ps3_entry_index": 1508,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 1510,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/San Deigo Chargers/End Zone/selected_subfile_470_0_1788378508731/manifest.json",
+      "entry_hash": "0x4faece0e",
+      "ps3_entry_index": 470,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 472,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/San Deigo Chargers/End Zone/selected_subfile_470_1_1788378510788/manifest.json",
+      "entry_hash": "0x4faece0e",
+      "ps3_entry_index": 470,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 472,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/San Deigo Chargers/selected_subfile_1016_0_1785532228046/manifest.json",
+      "entry_hash": "0xaa87b807",
+      "ps3_entry_index": 1016,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 1019,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/San Deigo Chargers/selected_subfile_1016_1_1785532226572/manifest.json",
+      "entry_hash": "0xaa87b807",
+      "ps3_entry_index": 1016,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 1019,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/San Franciso 49ers/End Zone/selected_subfile_917_0_1787947995013/manifest.json",
+      "entry_hash": "0x9a4b71c6",
+      "ps3_entry_index": 917,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 920,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/San Franciso 49ers/End Zone/selected_subfile_917_1_1787947996588/manifest.json",
+      "entry_hash": "0x9a4b71c6",
+      "ps3_entry_index": 917,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 920,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/San Franciso 49ers/Z_925_l1/manifest.json",
+      "entry_hash": "0x9b41fbc2",
+      "ps3_entry_index": 925,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 928,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/San Franciso 49ers/Z-925_l0/manifest.json",
+      "entry_hash": "0x9b41fbc2",
+      "ps3_entry_index": 925,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 928,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Seattle Seahawks/End Zone/selected_subfile_1533_0_1787943158749/manifest.json",
+      "entry_hash": "0xfe324ecb",
+      "ps3_entry_index": 1533,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 1535,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Seattle Seahawks/End Zone/selected_subfile_1533_1_1787943160189/manifest.json",
+      "entry_hash": "0xfe324ecb",
+      "ps3_entry_index": 1533,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 1535,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Seattle Seahawks/selected_subfile_167_0_1785364842658/manifest.json",
+      "entry_hash": "0x1b1b38c2",
+      "ps3_entry_index": 167,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 168,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Seattle Seahawks/selected_subfile_167_1_1785364840924/manifest.json",
+      "entry_hash": "0x1b1b38c2",
+      "ps3_entry_index": 167,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 168,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Stripe Update 1 (White Outside)/selected_subfile_96_0_1784918978995/manifest.json",
+      "entry_hash": "0x1072b754",
+      "ps3_entry_index": 96,
+      "subfile_name": "helmet_color",
+      "xbox_entry_index": 97,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Stripe Update 2 (3 with Gap)/selected_subfile_96_0_1784754625138/manifest.json",
+      "entry_hash": "0x1072b754",
+      "ps3_entry_index": 96,
+      "subfile_name": "helmet_color",
+      "xbox_entry_index": 97,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Tampa Bay Buccaneers/End Zone/selected_subfile_48_0_1785708043982/manifest.json",
+      "entry_hash": "0x080eb4de",
+      "ps3_entry_index": 48,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 48,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Tampa Bay Buccaneers/End Zone/selected_subfile_48_1_1785708045851/manifest.json",
+      "entry_hash": "0x080eb4de",
+      "ps3_entry_index": 48,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 48,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Tampa Bay Buccaneers/selected_subfile_1431_0_1785017566637/manifest.json",
+      "entry_hash": "0xed27c2d7",
+      "ps3_entry_index": 1431,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 1433,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Tampa Bay Buccaneers/selected_subfile_1431_1_1785017564898/manifest.json",
+      "entry_hash": "0xed27c2d7",
+      "ps3_entry_index": 1431,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 1433,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Washington Redskins/Endzone/selected_subfile_69_0_1785874330269/manifest.json",
+      "entry_hash": "0x0bb2e80b",
+      "ps3_entry_index": 69,
+      "subfile_name": "endzone_l0",
+      "xbox_entry_index": 70,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Washington Redskins/Endzone/selected_subfile_69_1_1785874332278/manifest.json",
+      "entry_hash": "0x0bb2e80b",
+      "ps3_entry_index": 69,
+      "subfile_name": "endzone_l1",
+      "xbox_entry_index": 70,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Washington Redskins/selected_subfile_1440_0_1785101008385/manifest.json",
+      "entry_hash": "0xee9b9e02",
+      "ps3_entry_index": 1440,
+      "subfile_name": "logo_l1",
+      "xbox_entry_index": 1442,
+      "xbox_matching_inner_indices": [
+        0
+      ]
+    },
+    {
+      "manifest": "NFL Logos/Washington Redskins/selected_subfile_1440_1_1785101006171/manifest.json",
+      "entry_hash": "0xee9b9e02",
+      "ps3_entry_index": 1440,
+      "subfile_name": "logo_l0",
+      "xbox_entry_index": 1442,
+      "xbox_matching_inner_indices": [
+        1
+      ]
+    }
+  ]
+}

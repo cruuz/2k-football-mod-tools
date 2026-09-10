@@ -645,6 +645,513 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.apf2k8_play_design_build --index <read-only-0A> --plan <user-design.json> --receipt <outside-source/receipt.json>",
+        "module": "mod_editor/core/apf2k8_play_design_build.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf_wave_2026_09_09.md"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Integrated in the APF Studio with offline validation; gameplay UNWITNESSED."
+      },
+      "id": "apf2k8.cpu_ai_draft.play_design.concept_recipes",
+      "input_constraints": [
+        "Every authored result is UNWITNESSED in-game; no complete native gameplay validator is claimed.",
+        "Full retail SHA pins, independent reparse, idempotent baseline application, H7A exact/no-overlap and fixed-allocation fit are mandatory.",
+        "The trailing relation is unidentified; no invented membership bits. New formations clone the donor row.",
+        "Physical QB depth is not step count; no dedicated spy and no user-save writes."
+      ],
+      "portme": [
+        "Witness CPU selection and authored geometry in game before any runtime promotion.",
+        "Prove the native validator and unidentified relation before enlarging the supported authoring space."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Projects contain canonical logical JSON only. Compile the owner's retail bytes locally in memory and write only to the existing BUILT-copy pipeline.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "UNWITNESSED in-game on BASE and TU 1.1; writer, receipts and offscreen controls proved only.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "apf2k8_play_design/v1 logical JSON with exact baseline SHA, stock donors, explicit indices, names, numeric fields and CPU calls",
+            "name": "plan",
+            "required": true
+          }
+        ],
+        "notes": "Provider apf_play_design; selector play-design:apf:playbook:180:0; a single atomic staged plan. Whole-resource designs reject staged legacy MASTER/SPLB edits."
+      },
+      "source_container": {
+        "format": "APF outer / IFF / H7A / MASTER PLAY and CPU SPLB",
+        "hash_pins": [
+          "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891"
+        ],
+        "resource": "Outer 180 mpb PLAY; named CPU SPLB resources only",
+        "retail_file": "User-provided extracted APF 2K8 (USA) 0A, 0B, 1A, 1B"
+      },
+      "summary": "Compile Smash, Levels / Drive, Dagger, Curl-Flat and Mesh with explicit route landmarks and a -21-foot QB movement; five-step timing is unproved.",
+      "surface": "cpu_ai_draft",
+      "title": "APF concept recipes",
+      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.apf2k8_play_design_build --index <read-only-0A> --plan <user-design.json> --receipt <outside-source/receipt.json>",
+        "module": "mod_editor/core/apf2k8_play_design_build.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf_wave_2026_09_09.md"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Integrated in the APF Studio with offline validation; gameplay UNWITNESSED."
+      },
+      "id": "apf2k8.cpu_ai_draft.play_design.cpu_calls",
+      "input_constraints": [
+        "Every authored result is UNWITNESSED in-game; no complete native gameplay validator is claimed.",
+        "Full retail SHA pins, independent reparse, idempotent baseline application, H7A exact/no-overlap and fixed-allocation fit are mandatory.",
+        "The trailing relation is unidentified; no invented membership bits. New formations clone the donor row.",
+        "Physical QB depth is not step count; no dedicated spy and no user-save writes."
+      ],
+      "portme": [
+        "Witness CPU selection and authored geometry in game before any runtime promotion.",
+        "Prove the native validator and unidentified relation before enlarging the supported authoring space."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Projects contain canonical logical JSON only. Compile the owner's retail bytes locally in memory and write only to the existing BUILT-copy pipeline.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "UNWITNESSED in-game on BASE and TU 1.1; writer, receipts and offscreen controls proved only.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "apf2k8_play_design/v1 logical JSON with exact baseline SHA, stock donors, explicit indices, names, numeric fields and CPU calls",
+            "name": "plan",
+            "required": true
+          }
+        ],
+        "notes": "Provider apf_play_design; selector play-design:apf:playbook:180:0; a single atomic staged plan. Whole-resource designs reject staged legacy MASTER/SPLB edits."
+      },
+      "source_container": {
+        "format": "APF outer / IFF / H7A / MASTER PLAY and CPU SPLB",
+        "hash_pins": [
+          "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891",
+          "18de1e3ee886aceba6535be2c8472d0af3f5554f8c9023d553068005416dd1f5",
+          "2191bc3a494f58d279e79449abd6f619b83dd8b7170b86847ae445c930c4b428",
+          "2fd2b7587127120f90cb5fb536abe6c2691303fda08ca544b1aeaa271e1b9016",
+          "63a55ab11da38dcbdabc3107fa44d4aa26c1b61e0a1b6cfb0595cffdfac8a015",
+          "67ef383cc1fcde7a44639fa761fbb4efbd82aa3d4560035d27abd704d30ae218",
+          "d7a9c2f703d8892929184dce3fef10dd9e9dad29f7506121bfe7ec73ca4a3432",
+          "9a145a97495f347ccef08b719d9e20cde4b9bf7b1546d03a7ca99f9545bc6e83",
+          "8a23184ad5675ff5cc6c75fcfa92c3006537e8bfd2d730a6bccc122b1cb0dcca",
+          "a2ce06b26b10dd3b9be637553fef01e4f961c9f74cfc162be35b5267fd301fa3",
+          "45ee87e572dfa573c82db722e95b45b4d999efea9d822276b73d1a832e939dcf",
+          "07ad3538b6ff994600b1f0b468bea0b962e758fa42444f242d89bc79f0a32797"
+        ],
+        "resource": "Outer 180 mpb PLAY; named CPU SPLB resources only",
+        "retail_file": "User-provided extracted APF 2K8 (USA) 0A, 0B, 1A, 1B"
+      },
+      "summary": "Add plays to pinned named SPLB books, including explicit empty-record creation for a donor-compatible new formation; CPU books only.",
+      "surface": "cpu_ai_draft",
+      "title": "Add authored APF CPU calls",
+      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.apf2k8_play_design_build --index <read-only-0A> --plan <user-design.json> --receipt <outside-source/receipt.json>",
+        "module": "mod_editor/core/apf2k8_play_design_build.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf_wave_2026_09_09.md"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Integrated in the APF Studio with offline validation; gameplay UNWITNESSED."
+      },
+      "id": "apf2k8.cpu_ai_draft.play_design.create_formation",
+      "input_constraints": [
+        "Every authored result is UNWITNESSED in-game; no complete native gameplay validator is claimed.",
+        "Full retail SHA pins, independent reparse, idempotent baseline application, H7A exact/no-overlap and fixed-allocation fit are mandatory.",
+        "The trailing relation is unidentified; no invented membership bits. New formations clone the donor row.",
+        "Physical QB depth is not step count; no dedicated spy and no user-save writes."
+      ],
+      "portme": [
+        "Witness CPU selection and authored geometry in game before any runtime promotion.",
+        "Prove the native validator and unidentified relation before enlarging the supported authoring space."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Projects contain canonical logical JSON only. Compile the owner's retail bytes locally in memory and write only to the existing BUILT-copy pipeline.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "UNWITNESSED in-game on BASE and TU 1.1; writer, receipts and offscreen controls proved only.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "apf2k8_play_design/v1 logical JSON with exact baseline SHA, stock donors, explicit indices, names, numeric fields and CPU calls",
+            "name": "plan",
+            "required": true
+          }
+        ],
+        "notes": "Provider apf_play_design; selector play-design:apf:playbook:180:0; a single atomic staged plan. Whole-resource designs reject staged legacy MASTER/SPLB edits."
+      },
+      "source_container": {
+        "format": "APF outer / IFF / H7A / MASTER PLAY and CPU SPLB",
+        "hash_pins": [
+          "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891"
+        ],
+        "resource": "Outer 180 mpb PLAY; named CPU SPLB resources only",
+        "retail_file": "User-provided extracted APF 2K8 (USA) 0A, 0B, 1A, 1B"
+      },
+      "summary": "Append at indices 163..175; clone donor personnel/slot ordering and opaque row, author all three X/Y coordinate variants.",
+      "surface": "cpu_ai_draft",
+      "title": "Create APF formation",
+      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.apf2k8_play_design_build --index <read-only-0A> --plan <user-design.json> --receipt <outside-source/receipt.json>",
+        "module": "mod_editor/core/apf2k8_play_design_build.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf_wave_2026_09_09.md"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Integrated in the APF Studio with offline validation; gameplay UNWITNESSED."
+      },
+      "id": "apf2k8.cpu_ai_draft.play_design.create_play",
+      "input_constraints": [
+        "Every authored result is UNWITNESSED in-game; no complete native gameplay validator is claimed.",
+        "Full retail SHA pins, independent reparse, idempotent baseline application, H7A exact/no-overlap and fixed-allocation fit are mandatory.",
+        "The trailing relation is unidentified; no invented membership bits. New formations clone the donor row.",
+        "Physical QB depth is not step count; no dedicated spy and no user-save writes."
+      ],
+      "portme": [
+        "Witness CPU selection and authored geometry in game before any runtime promotion.",
+        "Prove the native validator and unidentified relation before enlarging the supported authoring space."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Projects contain canonical logical JSON only. Compile the owner's retail bytes locally in memory and write only to the existing BUILT-copy pipeline.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "UNWITNESSED in-game on BASE and TU 1.1; writer, receipts and offscreen controls proved only.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "apf2k8_play_design/v1 logical JSON with exact baseline SHA, stock donors, explicit indices, names, numeric fields and CPU calls",
+            "name": "plan",
+            "required": true
+          }
+        ],
+        "notes": "Provider apf_play_design; selector play-design:apf:playbook:180:0; a single atomic staged plan. Whole-resource designs reject staged legacy MASTER/SPLB edits."
+      },
+      "source_container": {
+        "format": "APF outer / IFF / H7A / MASTER PLAY and CPU SPLB",
+        "hash_pins": [
+          "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891"
+        ],
+        "resource": "Outer 180 mpb PLAY; named CPU SPLB resources only",
+        "retail_file": "User-provided extracted APF 2K8 (USA) 0A, 0B, 1A, 1B"
+      },
+      "summary": "Append at indices 586..591 or explicitly replace a same-side chosen play; preserve donor descriptors and opaque relation.",
+      "surface": "cpu_ai_draft",
+      "title": "Create APF play",
+      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.apf2k8_play_design_build --index <read-only-0A> --plan <user-design.json> --receipt <outside-source/receipt.json>",
+        "module": "mod_editor/core/apf2k8_play_design_build.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf_wave_2026_09_09.md"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Integrated in the APF Studio with offline validation; gameplay UNWITNESSED."
+      },
+      "id": "apf2k8.cpu_ai_draft.play_design.defensive_assignments",
+      "input_constraints": [
+        "Every authored result is UNWITNESSED in-game; no complete native gameplay validator is claimed.",
+        "Full retail SHA pins, independent reparse, idempotent baseline application, H7A exact/no-overlap and fixed-allocation fit are mandatory.",
+        "The trailing relation is unidentified; no invented membership bits. New formations clone the donor row.",
+        "Physical QB depth is not step count; no dedicated spy and no user-save writes."
+      ],
+      "portme": [
+        "Witness CPU selection and authored geometry in game before any runtime promotion.",
+        "Prove the native validator and unidentified relation before enlarging the supported authoring space."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Projects contain canonical logical JSON only. Compile the owner's retail bytes locally in memory and write only to the existing BUILT-copy pipeline.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "UNWITNESSED in-game on BASE and TU 1.1; writer, receipts and offscreen controls proved only.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "apf2k8_play_design/v1 logical JSON with exact baseline SHA, stock donors, explicit indices, names, numeric fields and CPU calls",
+            "name": "plan",
+            "required": true
+          }
+        ],
+        "notes": "Provider apf_play_design; selector play-design:apf:playbook:180:0; a single atomic staged plan. Whole-resource designs reject staged legacy MASTER/SPLB edits."
+      },
+      "source_container": {
+        "format": "APF outer / IFF / H7A / MASTER PLAY and CPU SPLB",
+        "hash_pins": [
+          "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891"
+        ],
+        "resource": "Outer 180 mpb PLAY; named CPU SPLB resources only",
+        "retail_file": "User-provided extracted APF 2K8 (USA) 0A, 0B, 1A, 1B"
+      },
+      "summary": "Clone defensive plays, copy coverage chains or change proved zone landmarks, man cushion and rush/dual-lane numeric fields.",
+      "surface": "cpu_ai_draft",
+      "title": "Design APF defensive assignments",
+      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.apf2k8_play_design_build --index <read-only-0A> --plan <user-design.json> --receipt <outside-source/receipt.json>",
+        "module": "mod_editor/core/apf2k8_play_design_build.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf_wave_2026_09_09.md"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Integrated in the APF Studio with offline validation; gameplay UNWITNESSED."
+      },
+      "id": "apf2k8.cpu_ai_draft.play_design.edit_play",
+      "input_constraints": [
+        "Every authored result is UNWITNESSED in-game; no complete native gameplay validator is claimed.",
+        "Full retail SHA pins, independent reparse, idempotent baseline application, H7A exact/no-overlap and fixed-allocation fit are mandatory.",
+        "The trailing relation is unidentified; no invented membership bits. New formations clone the donor row.",
+        "Physical QB depth is not step count; no dedicated spy and no user-save writes."
+      ],
+      "portme": [
+        "Witness CPU selection and authored geometry in game before any runtime promotion.",
+        "Prove the native validator and unidentified relation before enlarging the supported authoring space."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Projects contain canonical logical JSON only. Compile the owner's retail bytes locally in memory and write only to the existing BUILT-copy pipeline.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "UNWITNESSED in-game on BASE and TU 1.1; writer, receipts and offscreen controls proved only.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "apf2k8_play_design/v1 logical JSON with exact baseline SHA, stock donors, explicit indices, names, numeric fields and CPU calls",
+            "name": "plan",
+            "required": true
+          }
+        ],
+        "notes": "Provider apf_play_design; selector play-design:apf:playbook:180:0; a single atomic staged plan. Whole-resource designs reject staged legacy MASTER/SPLB edits."
+      },
+      "source_container": {
+        "format": "APF outer / IFF / H7A / MASTER PLAY and CPU SPLB",
+        "hash_pins": [
+          "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891"
+        ],
+        "resource": "Outer 180 mpb PLAY; named CPU SPLB resources only",
+        "retail_file": "User-provided extracted APF 2K8 (USA) 0A, 0B, 1A, 1B"
+      },
+      "summary": "Edit the existing play index; copy same-slot stock assignments, detach shared chains, change supported route, movement, read and coverage fields.",
+      "surface": "cpu_ai_draft",
+      "title": "Edit APF play assignments",
+      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+    },
+    {
+      "backend": {
+        "command": null,
+        "module": null,
+        "operation": "none"
+      },
+      "classification": "unsafe/deferred",
+      "evidence": [
+        "docs/mod_editor/apf_wave_2026_09_09.md"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "deferred",
+        "reason": "Movement Y has proved feet encoding; Pass operand 1 is a receiver selector, not a step-count switch."
+      },
+      "id": "apf2k8.cpu_ai_draft.play_design.five_step_drop",
+      "input_constraints": [
+        "Every authored result is UNWITNESSED in-game; no complete native gameplay validator is claimed.",
+        "Full retail SHA pins, independent reparse, idempotent baseline application, H7A exact/no-overlap and fixed-allocation fit are mandatory.",
+        "The trailing relation is unidentified; no invented membership bits. New formations clone the donor row.",
+        "Physical QB depth is not step count; no dedicated spy and no user-save writes."
+      ],
+      "portme": [
+        "Witness CPU selection and authored geometry in game before any runtime promotion.",
+        "Prove the native validator and unidentified relation before enlarging the supported authoring space."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "none-until-safe",
+        "rule": "Projects contain canonical logical JSON only. Compile the owner's retail bytes locally in memory and write only to the existing BUILT-copy pipeline.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "UNWITNESSED in-game on BASE and TU 1.1; writer, receipts and offscreen controls proved only.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "apf2k8_play_design/v1 logical JSON with exact baseline SHA, stock donors, explicit indices, names, numeric fields and CPU calls",
+            "name": "plan",
+            "required": true
+          }
+        ],
+        "notes": "Provider apf_play_design; selector play-design:apf:playbook:180:0; a single atomic staged plan. Whole-resource designs reject staged legacy MASTER/SPLB edits."
+      },
+      "source_container": {
+        "format": "APF outer / IFF / H7A / MASTER PLAY and CPU SPLB",
+        "hash_pins": [
+          "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891"
+        ],
+        "resource": "Outer 180 mpb PLAY; named CPU SPLB resources only",
+        "retail_file": "User-provided extracted APF 2K8 (USA) 0A, 0B, 1A, 1B"
+      },
+      "summary": "Movement Y has proved feet encoding; Pass operand 1 is a receiver selector, not a step-count switch.",
+      "surface": "cpu_ai_draft",
+      "title": "APF five-step drop cadence",
+      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+    },
+    {
+      "backend": {
+        "command": null,
+        "module": null,
+        "operation": "none"
+      },
+      "classification": "unsafe/deferred",
+      "evidence": [
+        "docs/mod_editor/apf_wave_2026_09_09.md"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "deferred",
+        "reason": "No mapped APF opcode/runtime owner proves QB tracking; native 1C is not advertised as spy."
+      },
+      "id": "apf2k8.cpu_ai_draft.play_design.spy",
+      "input_constraints": [
+        "Every authored result is UNWITNESSED in-game; no complete native gameplay validator is claimed.",
+        "Full retail SHA pins, independent reparse, idempotent baseline application, H7A exact/no-overlap and fixed-allocation fit are mandatory.",
+        "The trailing relation is unidentified; no invented membership bits. New formations clone the donor row.",
+        "Physical QB depth is not step count; no dedicated spy and no user-save writes."
+      ],
+      "portme": [
+        "Witness CPU selection and authored geometry in game before any runtime promotion.",
+        "Prove the native validator and unidentified relation before enlarging the supported authoring space."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "none-until-safe",
+        "rule": "Projects contain canonical logical JSON only. Compile the owner's retail bytes locally in memory and write only to the existing BUILT-copy pipeline.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "UNWITNESSED in-game on BASE and TU 1.1; writer, receipts and offscreen controls proved only.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "apf2k8_play_design/v1 logical JSON with exact baseline SHA, stock donors, explicit indices, names, numeric fields and CPU calls",
+            "name": "plan",
+            "required": true
+          }
+        ],
+        "notes": "Provider apf_play_design; selector play-design:apf:playbook:180:0; a single atomic staged plan. Whole-resource designs reject staged legacy MASTER/SPLB edits."
+      },
+      "source_container": {
+        "format": "APF outer / IFF / H7A / MASTER PLAY and CPU SPLB",
+        "hash_pins": [
+          "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891"
+        ],
+        "resource": "Outer 180 mpb PLAY; named CPU SPLB resources only",
+        "retail_file": "User-provided extracted APF 2K8 (USA) 0A, 0B, 1A, 1B"
+      },
+      "summary": "No mapped APF opcode/runtime owner proves QB tracking; native 1C is not advertised as spy.",
+      "surface": "cpu_ai_draft",
+      "title": "APF dedicated QB spy",
+      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+    },
+    {
+      "backend": {
         "command": "python3 tools/cross_title_model_compatibility.py --json-out <compatibility.json> --matrix-tsv <matrix.tsv> --bones-tsv <bones.tsv>",
         "module": "tools/cross_title_model_compatibility.py",
         "operation": "inspect"
@@ -837,6 +1344,67 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.apf_studio.coverage_service <0A> <profile.json> --receipt <receipt.json>",
+        "module": "mod_editor/apf_studio/coverage_service.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf_wave_2026_09_09.md"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Coverage Geometry panel stages a validated numeric profile; shared-use preview and Build are integrated. Gameplay UNWITNESSED."
+      },
+      "id": "apf2k8.gameplay_tuning_sliders.coverage_geometry",
+      "input_constraints": [
+        "Apply coverage before other MASTER writers; encode outer 180 once.",
+        "Preserve first node word and payload mode/F/G bits.",
+        "Whole non-geometry body must match the masked retail pin."
+      ],
+      "portme": [
+        "Witness geometry separately from receiver-carry decisions on base and TU."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Share numeric profiles and tooling only; source/extracted/rebuilt retail binaries stay private.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Base and TU consumers mapped; no in-game geometry or matching witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "368 pinned opcode-0x0D nodes; inspect_zones returns exact IDs",
+            "name": "node_index",
+            "required": true
+          }
+        ],
+        "notes": "Shared across assignments. Four integer geometry knobs; mode/F/G preserved."
+      },
+      "source_container": {
+        "format": "APF 0A/0B, H7A, IFF PLAY",
+        "hash_pins": [
+          "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891",
+          "ca1f83e389e9c6705438f5e05230fdc820c77c76c08e2828888121a9ee4aad28"
+        ],
+        "resource": "MASTER outer 180, mpb PLAY 0x33CDF8E3",
+        "retail_file": "All-Pro Football 2K8 (USA)/0A and 0B"
+      },
+      "summary": "Edit shared zone-node landmarks and extents; gameplay UNWITNESSED.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Coverage Geometry (experimental)",
+      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+    },
+    {
+      "backend": {
         "command": "python3 tools/apf_roster.py <0A> --report <roster.json> --players-tsv <players.tsv> --teams-tsv <teams.tsv> --stadiums-tsv <stadiums.tsv> --memberships-tsv <memberships.tsv>",
         "module": "tools/apf_roster.py",
         "operation": "inspect"
@@ -981,6 +1549,72 @@
       "surface": "logos_cards",
       "title": "APF bounded draft-logo PNG writer",
       "validation_command": "bash tools/validate_apf_texture_patch.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.apf_studio.ps3_texture_bundle <bundle> --index-0a <0A> --mapping <mapping.json> --receipt <plan.json>",
+        "module": "mod_editor/apf_studio/ps3_texture_bundle.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf_wave_2026_09_09.md"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "PS3 pair staging and Build integrated; allocation checks required; gameplay UNWITNESSED. Crest mips regenerate; Field Art preserves stale mip tails."
+      },
+      "id": "apf2k8.logos_cards.ps3_texture_bundle",
+      "input_constraints": [
+        "APFe ZIP/folder exports with distinct logo_l0/logo_l1 or endzone_l0/endzone_l1 pairs at native dimensions.",
+        "Use outer hash plus semantic layer name, or explicit live destination slots; never PS3 numeric entry offsets.",
+        "DDS takes precedence. GTF is decoded only when DDS is absent. Ambiguous variants and duplicate destination assignments are refused.",
+        "Only existing crest/Field Art writer contracts can be staged. Full-shell projects, unsupported endzone codecs and over-allocation builds are refused."
+      ],
+      "portme": [
+        "Integrate buttons, run the clean packaged runtime smoke and witness a complete-project build in game.",
+        "Regenerate Field Art mip tails before claiming full mip replacement; retain allocation/no-overlap H7A checks.",
+        "The roster probe is read-only: PS3 nickname-pointer/string compatibility is not proved."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship code and documentation only; downloaded exports, roster saves, volumes and decoded game textures stay private.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "UNWITNESSED. Offline staging and crest rebuild/reparse are proved; rendered colors, linked-cache consumption and Xenia appearance require a witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "validated imported pair IDs",
+            "name": "pair_id",
+            "required": true
+          },
+          {
+            "allowed": "compatible live writer-owned logo/endzone slot IDs",
+            "name": "destination_slot",
+            "required": true
+          }
+        ],
+        "notes": "Source team names do not prove Xbox selector ownership; crest and endzone choices remain independent."
+      },
+      "source_container": {
+        "format": "APFe DDS/GTF exports; Xbox 360 IFF/H7A destinations",
+        "hash_pins": [],
+        "resource": "paired logo/endzone region masks",
+        "retail_file": "0A and declared sibling volumes"
+      },
+      "summary": "Map paired APFe logo/endzone pixels to existing Xbox 360 writers with source and destination receipts.",
+      "surface": "logos_cards",
+      "title": "Import PS3 APFe texture bundle",
+      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
     },
     {
       "backend": {
@@ -1642,6 +2276,320 @@
     },
     {
       "backend": {
+        "command": "python3 tools/apf_book_unlock.py clone --source <0A> --requests <clones.json> --output <new-game>",
+        "module": "tools/apf_book_unlock.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf_wave_2026_09_09.md"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Integrated in the APF Studio with offline validation; gameplay UNWITNESSED."
+      },
+      "id": "apf2k8.playbooks.clone",
+      "input_constraints": [
+        "Use a separate new destination; source game files remain read-only.",
+        "Reject malformed ownership, hash collisions, shared clone labels, occupied directory slack, IFF overflow, and H7A length greater than distance.",
+        "Only existing plays/formations are used; no CPU situational frequency, WR depth flip, true RPO, or TU compatibility is established."
+      ],
+      "portme": [
+        "Witness base-XEX loading and per-team cloned-book consumption; reconstruct TU resolver before claiming TU compatibility."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute JSON selectors and tooling; each user builds from their own game. Never bundle copied game outputs.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "UNWITNESSED: base-XEX static resolver and offline data proofs only; TU compatibility UNKNOWN.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "unused offensive label 0..68",
+            "name": "label_id",
+            "required": true
+          },
+          {
+            "allowed": "team slot 0..39",
+            "name": "team_index",
+            "required": true
+          },
+          {
+            "allowed": "one of the seven stock O- types",
+            "name": "donor_type",
+            "required": true
+          }
+        ],
+        "notes": "Append a name-only SPLB clone, insert its sorted filename hash, reuse an existing label name as type, and bind one team. Finish other Studio edits first."
+      },
+      "source_container": {
+        "format": "APF AA00B3BF four-volume archive, IFF/H7A, SPLB and ROST",
+        "hash_pins": [
+          "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf"
+        ],
+        "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
+        "retail_file": "user-owned extracted APF Xbox 360 game folder"
+      },
+      "summary": "Append a name-only SPLB clone, insert its sorted filename hash, reuse an existing label name as type, and bind one team. Finish other Studio edits first.",
+      "surface": "scripts_config",
+      "title": "Independent offensive CPU books",
+      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.apf2k8_audibles --index <0A> --outer <130|259|369|767|891|943|1411>",
+        "module": "mod_editor/core/apf2k8_audibles.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf_wave_2026_09_09.md"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Integrated in the APF Studio with offline validation; gameplay UNWITNESSED."
+      },
+      "id": "apf2k8.playbooks.cpu_audibles",
+      "input_constraints": [
+        "Seven offensive CPU SPLB books; plays must come from their own record and have known MASTER run/pass flags.",
+        "Records lacking either kind are reported as impossible. Existing staged changes in the selected book must be built or reverted before automatic balancing.",
+        "The compile and independent verifier reject newly empty twins, ordinary-to-tags-only records, hidden populated records and lost category supply. Personnel role labels assume stock MASTER; later Subs can change the lineup."
+      ],
+      "portme": [
+        "Obtain an in-game witness before changing the unwitnessed runtime status."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship authored code and logical selectors only. Retail books, executable images and reconstructed title updates remain private.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Unwitnessed. Offline retail proof balances all 142 eligible records with 132 moves across seven books; 12 pass-only records are impossible under the same-record constraint. All fixed allocations, H7A round trips, no-overlap and reparses pass. This does not prove the CPU uses the tags in game.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "130,259,369,767,891,943,1411",
+            "name": "outer_index",
+            "required": true
+          }
+        ],
+        "notes": "The planner emits existing TagMove selectors; the studio facade stages them and the existing Build path regenerates private bytes."
+      },
+      "source_container": {
+        "format": "APF SPLB/PLAY inside IFF/H7A",
+        "hash_pins": [],
+        "resource": "Seven offensive CPU books and MASTER PLAY outer 180",
+        "retail_file": "All-Pro Football 2K8 (USA)/0A and its companion volumes"
+      },
+      "summary": "Balance tags 0/1/2 with a same-record run and pass where possible; inspect category availability and enforce empty-formation compile guards. Runtime unwitnessed.",
+      "surface": "scripts_config",
+      "title": "CPU audibles and personnel availability",
+      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+    },
+    {
+      "backend": {
+        "command": "python3 tools/apf_book_unlock.py identity --source <0A>",
+        "module": "tools/apf_book_unlock.py",
+        "operation": "inspect"
+      },
+      "classification": "read-only-mapped",
+      "evidence": [
+        "docs/mod_editor/apf_wave_2026_09_09.md"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "view",
+        "reason": "Integrated in the APF Studio with offline validation; gameplay UNWITNESSED."
+      },
+      "id": "apf2k8.playbooks.identity",
+      "input_constraints": [
+        "Use a separate new destination; source game files remain read-only.",
+        "Reject malformed ownership, hash collisions, shared clone labels, occupied directory slack, IFF overflow, and H7A length greater than distance.",
+        "Only existing plays/formations are used; no CPU situational frequency, WR depth flip, true RPO, or TU compatibility is established."
+      ],
+      "portme": [
+        "Witness base-XEX loading and per-team cloned-book consumption; reconstruct TU resolver before claiming TU compatibility."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute JSON selectors and tooling; each user builds from their own game. Never bundle copied game outputs.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "UNWITNESSED: base-XEX static resolver and offline data proofs only; TU compatibility UNKNOWN.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "user-owned APF game index",
+            "name": "source",
+            "required": true
+          }
+        ],
+        "notes": "Reparse each team label and resolved resource; report shared real books and unresolved types."
+      },
+      "source_container": {
+        "format": "APF AA00B3BF four-volume archive, IFF/H7A, SPLB and ROST",
+        "hash_pins": [
+          "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf"
+        ],
+        "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
+        "retail_file": "user-owned extracted APF Xbox 360 game folder"
+      },
+      "summary": "Reparse each team label and resolved resource; report shared real books and unresolved types.",
+      "surface": "scripts_config",
+      "title": "Book Identity",
+      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.apf2k8_playcall_patch --image <flat-image.pe> --output <new.patch.toml>",
+        "module": "mod_editor/core/apf2k8_playcall_patch.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf_wave_2026_09_09.md"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Integrated in the APF Studio with offline validation; gameplay UNWITNESSED."
+      },
+      "id": "apf2k8.playbooks.pass_fetch_te_bias",
+      "input_constraints": [
+        "Only the pinned flat BASE or reconstructed TU 1.1 image; full SHA, fetch hash, original hook and entire zero cave reservation are checked.",
+        "Pass subtypes 2/3/4 on any down, including user calls. Main CPU weighted picker and untyped emergency fetch use different paths.",
+        "Reserve 0x84D0E000..0x84D0EFFF exclusively; Capstone is required. Shared plays, later formation resolution and Subs can still produce a lineup without a TE."
+      ],
+      "portme": [
+        "Obtain an in-game witness before changing the unwitnessed runtime status."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship authored code and logical selectors only. Retail books, executable images and reconstructed title updates remain private.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Unwitnessed. Capstone redecodes all 179 cave instructions and checks all 34 branches; synthetic execution and BASE/TU image identities pass. Live down/distance is not proved, so this is unconditional for offensive pass fetches, not a third-and-long or forced-lineup claim.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "Pinned BASE or TU 1.1 flat image",
+            "name": "image",
+            "required": true
+          },
+          {
+            "allowed": "Separate authored .patch.toml file",
+            "name": "output",
+            "required": true
+          }
+        ],
+        "notes": "Module hash selects the Xenia image; no game or executable is modified by export."
+      },
+      "source_container": {
+        "format": "Flat decompressed Xbox 360 XEX image; authored Xenia patch TOML output",
+        "hash_pins": [
+          "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf",
+          "65f522ce1cdda42cf19c112e9ec07302e89c81e4148c9f22e6db5e03952f9457"
+        ],
+        "resource": "BASE fetch 0x84869B20 or TU fetch 0x8486A820 and cave 0x84D0E000",
+        "retail_file": "Private BASE apf.pe or reconstructed TU 1.1 image"
+      },
+      "summary": "Export an assembled, SHA-pinned BASE or TU 1.1 Xenia patch that prefers TE-compatible records for offensive pass fetches at every down, with zero-match fallback.",
+      "surface": "scripts_config",
+      "title": "TE bias for pass fetches (unwitnessed)",
+      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+    },
+    {
+      "backend": {
+        "command": "python3 tools/apf_book_unlock.py preset --source <0A> --preset <wide-zone|spread-to-run|pro-power> --output <new-game>",
+        "module": "tools/apf_book_unlock.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf_wave_2026_09_09.md"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Integrated in the APF Studio with offline validation; gameplay UNWITNESSED."
+      },
+      "id": "apf2k8.playbooks.scheme_presets",
+      "input_constraints": [
+        "Use a separate new destination; source game files remain read-only.",
+        "Reject malformed ownership, hash collisions, shared clone labels, occupied directory slack, IFF overflow, and H7A length greater than distance.",
+        "Only existing plays/formations are used; no CPU situational frequency, WR depth flip, true RPO, or TU compatibility is established."
+      ],
+      "portme": [
+        "Witness base-XEX loading and per-team cloned-book consumption; reconstruct TU resolver before claiming TU compatibility."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute JSON selectors and tooling; each user builds from their own game. Never bundle copied game outputs.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "UNWITNESSED: base-XEX static resolver and offline data proofs only; TU compatibility UNKNOWN.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "wide-zone, spread-to-run, pro-power",
+            "name": "preset",
+            "required": true
+          }
+        ],
+        "notes": "Select existing plays and retarget tagged slots through the SPLB writer; preserve formations, personnel fields, fallback records, and all other bytes."
+      },
+      "source_container": {
+        "format": "APF AA00B3BF four-volume archive, IFF/H7A, SPLB and ROST",
+        "hash_pins": [
+          "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf"
+        ],
+        "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
+        "retail_file": "user-owned extracted APF Xbox 360 game folder"
+      },
+      "summary": "Select existing plays and retarget tagged slots through the SPLB writer; preserve formations, personnel fields, fallback records, and all other bytes.",
+      "surface": "scripts_config",
+      "title": "Wide Zone, Spread-to-Run, Pro Power",
+      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+    },
+    {
+      "backend": {
         "command": "python3 tools/apf_roster_identity_patch.py <0A> --check-writer",
         "module": "tools/apf_roster_identity_patch.py",
         "operation": "write"
@@ -1770,6 +2718,73 @@
       "surface": "players_rosters",
       "title": "APF on-disc roster and raw Save Players editor",
       "validation_command": "python3 tools/validate_apf_roster_identity_patch.py"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.apf_studio.ps3_roster_convert <USERDATA-or-zip> <Roster.ROS> [--member <zip member>] [--receipt <json>]",
+        "module": "mod_editor/apf_studio/ps3_roster_convert.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_B64_PS3_ROSTER_REPORT.md",
+        "reports/ps3_import/roster_convert_receipt.json"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Pointer rule, palette byte order and runtime words proved from all 42,825 string references and both Xbox fixtures; output re-parsed by save_roster_players, apf_save_playbook_assignments and the team graph; loading in Xenia UNWITNESSED."
+      },
+      "id": "apf2k8.players_rosters.ps3_roster_import",
+      "input_constraints": [
+        "Exactly one 2,715,908-byte PS3 roster USERDATA (raw or the one BLUS30049-ROS/USERDATA member of its ZIP); STFS containers and Xbox-layout rosters are refused, so the action is idempotent.",
+        "Platform is decided by the palette alpha position (2,660 colours vote); mixed or ambiguous files are refused rather than guessed.",
+        "Editor-damaged text is repaired structurally only: misaligned runs shift or relocate, stale/garbage/below-pool references become the shared empty string; intended text is never invented.",
+        "Output is a raw payload plus receipt next to it; no container is written and the source is never modified."
+      ],
+      "portme": [
+        "Witness the converted 1993 roster in Xenia (load, names, positions, teams, colours), then move runtime.status.",
+        "If the game rejects it, the next suspects are the four root runtime words, the eight-word block at 0x230224 and the bank header words (all written the way the Xbox fixtures carry them).",
+        "Optional: restore the created-player name pools (t12/t13, 475 stale entries blanked) from a stock Xbox roster."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship code, tests and the counted receipt only; the 1993 roster archive and the Xbox fixtures stay private inputs.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "UNWITNESSED. Nobody has loaded a converted roster in Xenia; names, positions, teams and palette colours need an in-game witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "PS3 USERDATA or its ZIP",
+            "name": "source",
+            "required": true
+          },
+          {
+            "allowed": "new .ROS path; existing files are refused",
+            "name": "output",
+            "required": true
+          }
+        ],
+        "notes": "The receipt lists players, teams, memberships, labels, odd runs, repointed references and rewritten runtime words."
+      },
+      "source_container": {
+        "format": "raw APF 2K8 roster object graph (PS3 USERDATA / Xbox 360 Roster.ROS)",
+        "hash_pins": [],
+        "resource": "players, teams, playbook labels, palettes, user playbook banks",
+        "retail_file": "user-supplied PS3 save (never bundled)"
+      },
+      "summary": "Convert a PS3 APF 2K8 roster USERDATA into the raw Xbox 360 Roster.ROS layout with a counted receipt; strict readers re-parse the output.",
+      "surface": "players_rosters",
+      "title": "Import PS3 roster",
+      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
     },
     {
       "backend": {

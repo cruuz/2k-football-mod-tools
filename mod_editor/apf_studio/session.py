@@ -53,6 +53,9 @@ from mod_editor.core.apf2k8_splb_writer import (
     read_book as read_splb_book,
 )
 from mod_editor.core.errors import ValidationError
+from . import play_design_service as play_design
+from . import coverage_service, scheme_service
+from mod_editor.core import apf2k8_coverage_tuning as coverage
 
 from .asset_io import ApfAssetIO, AssetIoError, AudioPreviewCancelled
 from .audio_annotations import (
@@ -2342,14 +2345,55 @@ class ApfSession:
             result.append(change)
         return tuple(sorted(result, key=lambda item: item.formation_index))
 
+    def apply_coverage_geometry(self, edits):
+        try:
+            return coverage_service.stage_profile(self, edits)
+        except ValidationError as exc:
+            raise SessionError(str(exc)) from exc
+
+    def coverage_context(self):
+        return coverage_service.context(self)
+
+    def apply_scheme_presets(self, preset_ids):
+        try:
+            return scheme_service.stage_presets(self, preset_ids)
+        except ValidationError as exc:
+            raise SessionError(str(exc)) from exc
+
+    def _validate_schemes(self, modifications):
+        profiles = [m for m in modifications.values() if m.kind == scheme_service.PROVIDER_KIND]
+        if len(profiles) > 1:
+            raise ValidationError("Only one Scheme Presets profile may be staged")
+        for profile in profiles:
+            scheme_service.compile_recipes(self.source.index_0a, scheme_service.read_profile(profile),
+                                           self._active_splb_changes(modifications), encode=False)
+
+    def staged_play_design(self) -> dict | None:
+        return play_design.staged_plan(self)
+
+    def apply_play_design(self, plan: dict) -> dict:
+        try:
+            return play_design.stage_plan(self, plan)
+        except ValidationError as exc:
+            raise SessionError(str(exc)) from exc
+
     def staged_package_maps(self) -> tuple[PackageMapChange, ...]:
         return self._active_package_maps()
 
     def _compile_master_play(
         self, modifications: Mapping[str, Modification] | None = None
     ) -> None:
-        maps = self._active_package_maps(modifications)
-        routes = self._active_route_requests(modifications)
+        selected = self._modifications if modifications is None else modifications
+        play_design.check_composition(selected.values())
+        maps = self._active_package_maps(selected)
+        routes = self._active_route_requests(selected)
+        profiles = [m for m in selected.values() if m.kind == coverage.PROVIDER_KIND]
+        if len(profiles) > 1:
+            raise ValidationError("Only one Coverage Geometry profile may be staged")
+        if profiles:
+            coverage.compose_geometry(self._master_play_body(), coverage_service.read_profile(profiles[0]),
+                                      package_maps=maps, routes=routes)
+            return
         if not maps and not routes:
             return
         compile_master_play_edits(
@@ -2792,6 +2836,11 @@ class ApfSession:
             updated[asset_id] = modification
         for modification in prepared:
             updated[modification.asset_id] = modification
+        try:
+            play_design.check_composition(updated.values())
+            self._validate_schemes(updated)
+        except ValidationError as exc:
+            raise SessionError(str(exc)) from exc
         active = self._active_splb_changes(updated)
         if active:
             try:
@@ -3129,6 +3178,9 @@ class ApfSession:
             self._record_undo()
             self._modifications = updated
             return True
+        if previous.kind == coverage.PROVIDER_KIND:
+            self.apply_coverage_geometry(())
+            return True
         if previous.kind == SPLB_MEMBERSHIP_KIND:
             # One staged change can depend on another: a removal names an heir
             # that a staged add put in the record. Dropping one in isolation can
@@ -3136,6 +3188,10 @@ class ApfSession:
             # compiles rather than discovering it at build time.
             updated = dict(self._modifications)
             updated.pop(asset_id)
+            try:
+                self._validate_schemes(updated)
+            except ValidationError as exc:
+                raise SessionError(str(exc)) from exc
             active = self._active_splb_changes(updated)
             if active:
                 try:
@@ -3228,6 +3284,18 @@ class ApfSession:
                         )
                     except HelmetCrestDesignError as exc:
                         raise SessionError(str(exc)) from exc
+                    detail_digest = target_metadata.get("detail_sha256")
+                    if detail_digest is not None:
+                        detail_path = modification.replacement_path.parent / f"{detail_digest}.png"
+                        if detail_path.is_symlink():
+                            raise SessionError("Project crest detail must be a regular PNG")
+                        detail_data, actual_detail_digest = self._validated_png(
+                            detail_path, width=512, height=512, contract="helmet_crest_design")
+                        if actual_detail_digest != detail_digest:
+                            raise SessionError("Project crest detail hash changed")
+                        # The import directory is temporary. Retain both layers
+                        # together in the live session before its cleanup.
+                        self._store_payload(detail_digest, detail_data, ".png")
                     self._require_helmet_crest_slot(
                         int(target_metadata["crest_asset_index"]),
                         int(target_metadata["crest_outer_entry_index"]),
@@ -3405,6 +3473,24 @@ class ApfSession:
                             "Project roster-name allocation changed: "
                             f"{modification.asset_id}"
                         )
+                    suffix = ".json"
+                elif modification.kind in {coverage.PROVIDER_KIND, scheme_service.PROVIDER_KIND}:
+                    service = coverage_service if modification.kind == coverage.PROVIDER_KIND else scheme_service
+                    try:
+                        data = modification.replacement_path.read_bytes()
+                        service.validate_payload(data, modification.asset_id, dict(modification.metadata))
+                    except (OSError, ValidationError) as exc:
+                        raise SessionError(f"Project playbook profile is invalid: {exc}") from exc
+                    digest = hashlib.sha256(data).hexdigest()
+                    suffix = ".json"
+                elif modification.kind == play_design.PROVIDER_KIND:
+                    try:
+                        data = modification.replacement_path.read_bytes()
+                        play_design.validate_payload(data, modification.asset_id, dict(modification.metadata))
+                        play_design.compile_modification(self.source.index_0a, modification)
+                    except (OSError, ValidationError) as exc:
+                        raise SessionError(f"Project APF design is invalid: {exc}") from exc
+                    digest = hashlib.sha256(data).hexdigest()
                     suffix = ".json"
                 elif modification.kind == PLAY_ASSIGNMENT_ROUTE_KIND:
                     try:
@@ -3757,10 +3843,15 @@ class ApfSession:
                 validate_crest_set(validated)
             except HelmetCrestDesignError as exc:
                 raise SessionError(str(exc)) from exc
+            try:
+                play_design.check_composition(validated)
+                self._validate_schemes({m.asset_id: m for m in validated})
+            except ValidationError as exc:
+                raise SessionError(str(exc)) from exc
             master_play_modifications = {
                 item.asset_id: item
                 for item in validated
-                if item.kind in {PLAY_ASSIGNMENT_ROUTE_KIND, PACKAGE_MAP_KIND}
+                if item.kind in {PLAY_ASSIGNMENT_ROUTE_KIND, PACKAGE_MAP_KIND, coverage.PROVIDER_KIND}
             }
             if master_play_modifications:
                 try:

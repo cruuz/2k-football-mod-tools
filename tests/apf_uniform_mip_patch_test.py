@@ -20,6 +20,7 @@ import apf_inner  # noqa: E402
 import apf_outer  # noqa: E402
 import apf_texture_patch as archive_patch  # noqa: E402
 import apf_uniform_mip_patch as uniform_patch  # noqa: E402
+import apf_jersey_family_verify as verifier  # noqa: E402
 import apf_xenos_mip_layout as xenos_mips  # noqa: E402
 
 
@@ -180,13 +181,22 @@ def run(report_path: Path, full_copy: bool) -> None:
         manifest = changed.manifest
         assert manifest["mode"] == "patched"
         assert len(manifest["levels"]) == 9
-        for level, expected_count in zip(
-            manifest["levels"], EXPECTED_CHANGED_BLOCK_COUNTS
+        reparsed = verifier.decode_entry_bytes(changed.entry_bytes, {
+            "outer_allocation": {"size": source["entry"].size},
+            "outer_table_index": source["entry"].table_index,
+            "outer_name_id": hex(source["entry"].name_id),
+        })
+        for level, expected_count, location in zip(
+            manifest["levels"], EXPECTED_CHANGED_BLOCK_COUNTS, reparsed["locations"]
         ):
             assert level["changed_bc3_blocks"]["count"] == expected_count
-            metrics = level["decode_back_metrics"]
-            assert metrics["different_components"] == 0
-            assert metrics["maximum_absolute_error"] == 0
+            # Opaque preview alpha is restored to the unused retail mask zero.
+            linear = xenos_mips.extract_linear_bc3(reparsed["texture"], location)
+            decoded = verifier.decode_linear_bc3(linear, location)
+            count = location.width * location.height
+            assert decoded == bytes((255, 0, 255, 0)) * count
+            assert level["decode_back_metrics"] == verifier.rgba_metrics(
+                bytes((255, 0, 255, 255)) * count, decoded)
         assert manifest["texture"]["inactive_padding_bit_exact"] is True
         assert manifest["iff"]["allocation_size"] == source["entry"].size
         assert manifest["iff"]["allocation_slack_after"] >= 0
@@ -296,7 +306,7 @@ def run(report_path: Path, full_copy: bool) -> None:
             "wanted_base_rgba_sha256": hashlib.sha256(
                 bytes((255, 0, 255, 255)) * (1024 * 1024)
             ).hexdigest(),
-            "reason": "uniform-color BC3 is exactly representable, so every mip has a zero-error decode-back oracle",
+            "reason": "uniform-color BC3 is exactly representable; every mip must store exact magenta RGB and preserve unused retail alpha=0",
         },
         "patched": controlled_manifest,
         "copied_volume": copied_summary,
