@@ -481,10 +481,10 @@ SCRAMBLE_AGILITY_THRESHOLD = 1.5               # 0.01*Scramble + 0.01*Agility, [
 KICKING_STYLE_PRESETS = (("Punter", 1), ("Default", 49), ("Kicker", 99))
 
 # The game's own create-a-player templates ("Pocket QB", "Scrambling QB", "Speed WR", "Power HB",
-# ...): .rdata 0x005561B8, 36 records of 0x74 = a label pointer plus 28 int32 slots.  The record for
+# ...): .rdata 0x005561B8, 51 records of 0x74 = a label pointer plus 28 int32 slots.  The record for
 # a player is ``3 * position + variant`` (0x343466..0x34347B: ``movzx eax,[edx+0x35]`` then
-# ``lea ecx,[ecx+eax*2] ; add eax,ecx ; imul eax,eax,0x74``), so the table covers the twelve
-# positions QB..ILB and stops there -- C, G, T, DT and DE have no template.  **All 28 slots are
+# ``lea ecx,[ecx+eax*2] ; add eax,ecx ; imul eax,eax,0x74``), so the table covers all seventeen
+# positions QB..DE (the old 36-record census stopped fifteen records too early).  **All 28 slots are
 # proved** by the apply routine at 0x343460 (FUN_00343460, the only reader of the table besides the
 # label getter at 0x343FA0): it is unrolled, one ``mov ecx,[eax+4+4*slot]`` per slot followed by a
 # ``mov byte ptr [record+OFF],cl``, and CREATE_PLAYER_TEMPLATE_SLOT_OFFSETS is that sequence read
@@ -493,16 +493,16 @@ KICKING_STYLE_PRESETS = (("Punter", 1), ("Default", 49), ("Kicker", 99))
 # (``cmp cl,0x64`` at 0x3434AE and siblings).  The values below are the retail table, pinned by
 # CREATE_PLAYER_TEMPLATES_SHA256; ``read_templates`` reads the same table out of any default.xbe.
 CREATE_PLAYER_TEMPLATES_RDATA = 0x005561B8
-CREATE_PLAYER_TEMPLATE_COUNT = 36
+CREATE_PLAYER_TEMPLATE_COUNT = 51
 CREATE_PLAYER_TEMPLATE_STRIDE = 0x74
 CREATE_PLAYER_TEMPLATE_APPLY_VA = 0x343460
 CREATE_PLAYER_TEMPLATE_APPLY_END_VA = 0x343BFA
 CREATE_PLAYER_TEMPLATE_APPLY_SHA256 = "484d5eed9b63b4e6a74e9d002ec53c078af2294d902331c30e1322badf2ebad9"
-CREATE_PLAYER_TEMPLATES_SHA256 = "df39b34c497215f7749a16b2f10974c99d95c027ef5f929538bf9340b0face61"
+CREATE_PLAYER_TEMPLATES_SHA256 = "1bfe454b4a3764b9663de78064f54651e48551e7b36c4519983398460dea685d"
 CREATE_PLAYER_TEMPLATE_DEFAULT = 75            # mov bl,0x4B at 0x34349F: what a -1 slot writes
 CREATE_PLAYER_TEMPLATE_MAX = 100               # cmp cl,0x64: values above are clamped, below 0 -> 0
 CREATE_PLAYER_TEMPLATE_VARIANTS = 3
-CREATE_PLAYER_TEMPLATE_POSITIONS = 12          # QB K P WR CB FS SS HB FB TE OLB ILB
+CREATE_PLAYER_TEMPLATE_POSITIONS = 17          # all retail position codes
 CREATE_PLAYER_TEMPLATE_SLOT_OFFSETS = (
     0x36, 0x37, 0x42, 0x38, 0x43, 0x41, 0x47, 0x4D, 0x44, 0x45, 0x46, 0x3F, 0x49, 0x48,
     0x40, 0x3E, 0x3A, 0x4A, 0x39, 0x3B, 0x4C, 0x4F, 0x4E, 0x3C, 0x3D, 0x4B, 0x50, 0x51,
@@ -548,6 +548,21 @@ RETAIL_CREATE_PLAYER_TEMPLATES: tuple[tuple[str, tuple[int, ...]], ...] = (
     ('Run Stop ILB', (68, 65, 35, 35, 10, 35, 50, 50, 10, 20, 20, 10, 92, 55, 90, 50, 10, 10, 80, 75, 55, 10, 65, 75, 50, 55, 50, 75)),
     ('Coverage ILB', (80, 75, 35, 35, 10, 35, 50, 50, 25, 20, 20, 10, 70, 75, 80, 70, 10, 10, 80, 75, 55, 10, 65, 65, 50, 85, 50, 60)),
     ('Balanced ILB', (75, 70, 35, 35, 10, 35, 50, 50, 10, 20, 20, 10, 83, 68, 85, 60, 10, 10, 80, 75, 55, 10, 65, 70, 50, 65, 50, 60)),
+    ('Run Blocking OL', (50, 50, 35, 35, 10, 35, 50, 99, 10, 85, 75, 10, 15, 15, 20, 20, 10, 10, 80, 75, 55, 10, 65, 75, 50, 55, 50, 75)),
+    ('Pass Blocking OL', (50, 55, 35, 35, 10, 35, 50, 99, 10, 75, 85, 10, 15, 15, 20, 20, 10, 10, 80, 75, 55, 10, 65, 70, 50, 85, 50, 60)),
+    ('Balanced OL', (50, 55, 35, 35, 10, 35, 50, 99, 10, 80, 80, 10, 15, 15, 20, 20, 10, 10, 80, 75, 55, 10, 65, 65, 50, 65, 50, 60)),
+    ('Run Blocking OL', (50, 50, 35, 35, 10, 35, 50, 99, 10, 85, 75, 10, 15, 15, 20, 20, 10, 10, 80, 75, 55, 10, 65, 75, 50, 55, 50, 75)),
+    ('Pass Blocking OL', (50, 55, 35, 35, 10, 35, 50, 99, 10, 75, 85, 10, 15, 15, 20, 20, 10, 10, 80, 75, 55, 10, 65, 70, 50, 85, 50, 60)),
+    ('Balanced OL', (50, 55, 35, 35, 10, 35, 50, 99, 10, 80, 80, 10, 15, 15, 20, 20, 10, 10, 80, 75, 55, 10, 65, 65, 50, 65, 50, 60)),
+    ('Run Blocking OL', (50, 50, 35, 35, 10, 35, 50, 99, 10, 85, 75, 10, 15, 15, 20, 20, 10, 10, 80, 75, 55, 10, 65, 75, 50, 55, 50, 75)),
+    ('Pass Blocking OL', (50, 55, 35, 35, 10, 35, 50, 99, 10, 75, 85, 10, 15, 15, 20, 20, 10, 10, 80, 75, 55, 10, 65, 70, 50, 85, 50, 60)),
+    ('Balanced OL', (50, 55, 35, 35, 10, 35, 50, 99, 10, 80, 80, 10, 15, 15, 20, 20, 10, 10, 80, 75, 55, 10, 65, 65, 50, 65, 50, 60)),
+    ('Run Stop DL', (50, 55, 35, 35, 10, 35, 50, 99, 10, 20, 20, 10, 92, 60, 90, 20, 10, 10, 80, 75, 55, 10, 65, 80, 50, 55, 50, 75)),
+    ('Pass Rush DL', (70, 65, 35, 35, 10, 35, 50, 99, 10, 20, 20, 10, 70, 88, 80, 20, 10, 10, 80, 75, 55, 10, 65, 70, 50, 70, 50, 75)),
+    ('Balanced DL', (60, 60, 35, 35, 10, 35, 50, 99, 10, 20, 20, 10, 83, 80, 85, 20, 10, 10, 80, 75, 55, 10, 65, 75, 50, 65, 50, 75)),
+    ('Run Stop DL', (50, 55, 35, 35, 10, 35, 50, 99, 10, 20, 20, 10, 92, 60, 90, 20, 10, 10, 80, 75, 55, 10, 65, 80, 50, 55, 50, 75)),
+    ('Pass Rush DL', (70, 65, 35, 35, 10, 35, 50, 99, 10, 20, 20, 10, 70, 88, 80, 20, 10, 10, 80, 75, 55, 10, 65, 70, 50, 70, 50, 75)),
+    ('Balanced DL', (60, 60, 35, 35, 10, 35, 50, 99, 10, 20, 20, 10, 83, 80, 85, 20, 10, 10, 80, 75, 55, 10, 65, 75, 50, 65, 50, 75)),
 )
 
 ENUMS["power_run_style_bucket"] = POWER_RUN_STYLES
@@ -3411,11 +3426,23 @@ class CreatePlayerTemplate:
         return out
 
 
-def create_player_templates() -> tuple[CreatePlayerTemplate, ...]:
+def create_player_templates(scheme: str = "retail") -> tuple[CreatePlayerTemplate, ...]:
     """The retail table, as the game applies it."""
 
-    return tuple(CreatePlayerTemplate(index, label, tuple(slots))
-                 for index, (label, slots) in enumerate(RETAIL_CREATE_PLAYER_TEMPLATES))
+    table = [CreatePlayerTemplate(index, label, tuple(slots))
+             for index, (label, slots) in enumerate(RETAIL_CREATE_PLAYER_TEMPLATES)]
+    if normalise_scheme(scheme) == "one_pool":
+        # Retain the native 3*position+variant indexing. DE's power rusher and
+        # OLB's faster coverage/rush body are the two EDGE archetypes; their
+        # balanced variants supply the third. No player position byte changes.
+        for variant, source in enumerate((49, 31, None)):
+            slots = (table[source].slots if source is not None else
+                     tuple((a + b) // 2 for a, b in zip(table[50].slots, table[32].slots)))
+            table[48 + variant] = CreatePlayerTemplate(
+                48 + variant, ("Power EDGE", "Speed EDGE", "Balanced EDGE")[variant], slots)
+        for i in range(33, 36):
+            table[i] = CreatePlayerTemplate(i, table[i].label.replace("ILB", "LB"), table[i].slots)
+    return tuple(table)
 
 
 def read_templates(payload: bytes) -> tuple[CreatePlayerTemplate, ...]:
@@ -3438,10 +3465,11 @@ def read_templates(payload: bytes) -> tuple[CreatePlayerTemplate, ...]:
     return tuple(out)
 
 
-def templates_for_position(code: int, templates: Sequence[CreatePlayerTemplate] | None = None) -> tuple[CreatePlayerTemplate, ...]:
-    """The three templates the game offers for a position code, or none (C, G, T, DT, DE have none)."""
+def templates_for_position(code: int, templates: Sequence[CreatePlayerTemplate] | None = None, *,
+                           scheme: str = "retail") -> tuple[CreatePlayerTemplate, ...]:
+    """The three native templates for any valid position; scheme selects pooled EDGE ratings."""
 
-    table = templates if templates is not None else create_player_templates()
+    table = templates if templates is not None else create_player_templates(scheme)
     if not 0 <= int(code) < CREATE_PLAYER_TEMPLATE_POSITIONS:
         return ()
     return tuple(t for t in table if t.position_code == int(code))

@@ -37,25 +37,27 @@ def measure():
         mode.assembly = SimpleNamespace(**compiled)
         try:
             try:
-                mode.code_for(code, data)
+                _, candidate_labels = mode.code_for(code, data)
             except mode.legacy.MyCareerError as exc:
-                match = re.fullmatch(r"generic MyCareer needs (\d+) bytes; exceeds its 8192-byte budget by (\d+) bytes", str(exc))
+                match = re.fullmatch(rf"generic MyCareer needs (\d+) bytes; exceeds its {mode.CODE_SIZE}-byte budget by (\d+) bytes", str(exc))
                 if match is None:
                     raise
                 required, shortfall = map(int, match.groups())
             else:
-                raise ValueError("candidate fits; revise the capacity conclusion")
+                required = candidate_labels["content_end"] - code + len(mode.TAG)
+                shortfall = 0
         finally:
             mode.assembly = base
         layouts.append(dict(name=name, code_va=hex(code), data_va=hex(data),
                             content_bytes=labels["content_end"] - code,
                             remaining_bytes=mode.TAG_OFFSET - labels["content_end"] + code,
                             candidate_required_rx=required, candidate_shortfall=shortfall,
-                            normal_owner_refused=True))
+                            normal_owner_refused=shortfall > 0))
     return dict(schema="nfl2k5.mycareer.mode4-capacity.v1", experimental=True,
                 runtime_witnessed=False, candidate_installed=False, candidate_executed=False,
                 compiler_flags="build_runtime.py: gcc -m32 -Oz -fomit-frame-pointer",
-                reservation_rx=mode.CODE_SIZE, reservation_rw=mode.DATA_SIZE,
+                reservation_rx=mode.CODE_SIZE,
+                reservation_rw=sum(size for _, kind, size, _ in mode.REQUESTS if kind == "data"),
                 format_tag_bytes=len(mode.TAG), baseline_machine_bytes=len(base.CODE),
                 candidate_machine_bytes=len(compiled["CODE"]),
                 candidate_machine_delta=len(compiled["CODE"]) - len(base.CODE),
@@ -64,7 +66,7 @@ def measure():
                 included=["existing complete mode", "admission, presence/end checks and bounded native-frame loop"],
                 excluded=["UI, pause and interruption", "timestep, scene, audio and animation handling",
                           "safe live resume", "stop-to-Apartment lifecycle"],
-                claim="Lower bound for this incomplete design, not a universal minimum or a working Supersim.")
+                claim="Capacity only. Fitting the current owner does not prove a safe scheduler; the historical mode-4 receipt remains historical.")
 
 
 if __name__ == "__main__":
@@ -73,6 +75,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     result = json.dumps(measure(), indent=2, sort_keys=True) + "\n"
     if args.output:
-        args.output.write_text(result, encoding="utf-8")
+        args.output.write_bytes(result.encode("utf-8"))
     else:
         print(result, end="")

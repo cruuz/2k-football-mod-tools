@@ -54,6 +54,7 @@ def restore(panel, state):
         for field, value in (("momentum_level", choices["momentum"]),
                              ("momentum_collision_level", choices["momentum_collision_level"]),
                              ("cpu_money_downs_level", choices["cpu_money_downs"] or "retail"),
+                             ("accelerated_clock_minimum", choices["accelerated_clock_minimum_seconds"]),
                              ("abilities_week", choices["abilities_off_week"]),
                              ("uniform_choice_mode", choices["uniform_choice"] or "choice"),
                              ("hires_scale_combo", choices["hires_scale"]),
@@ -88,7 +89,7 @@ class GameplayBuildLink:
         for key in self.shared:
             build._boxes()[key].toggled.connect(lambda _on, k=key: self.copy_from_build(k))
             gameplay.checks[key].toggled.connect(lambda _on, k=key: self.copy_from_gameplay(k))
-        for name in ("momentum_level", "momentum_collision_level", "cpu_money_downs_level", "screen_timing_combo"):
+        for name in ("momentum_level", "momentum_collision_level", "cpu_money_downs_level", "accelerated_clock_minimum", "screen_timing_combo"):
             for origin in (build, gameplay):
                 getattr(origin, name).currentIndexChanged.connect(
                     lambda _index, p=origin: self.copy_levels(p))
@@ -105,7 +106,7 @@ class GameplayBuildLink:
             self.gameplay._refresh()
 
     def _levels(self, origin, destination):
-        for name in ("momentum_level", "momentum_collision_level", "cpu_money_downs_level", "screen_timing_combo"):
+        for name in ("momentum_level", "momentum_collision_level", "cpu_money_downs_level", "accelerated_clock_minimum", "screen_timing_combo"):
             source = getattr(origin, name)
             _combo(getattr(destination, name), source.currentData() if name != "screen_timing_combo" else source.currentText())
         destination._momentum_last_positive = origin._momentum_last_positive

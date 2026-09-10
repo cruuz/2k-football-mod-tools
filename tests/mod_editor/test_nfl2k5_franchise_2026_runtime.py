@@ -101,11 +101,16 @@ class SaveOwnershipTests(unittest.TestCase):
     def test_resealed_reserved_footer_bytes_are_not_spare_storage(self):
         source = week_save()
         block = block_for(source)
-        for at in (82, 83, *range(88, 128)):
+        # Beta 65: byte 82 carries the three MyCareer Settings bits (values 0..7); 83 and 88.. stay reserved.
+        for at in (83, *range(88, 128)):
             bad = bytearray(block)
             bad[at] = 1
             with self.subTest(offset=at), self.assertRaisesRegex(ValueError, 'reserved career bytes'):
                 f.save_ownership_assessment(source + career_save.seal(bad))
+        unknown = bytearray(block)
+        unknown[82] = 8
+        with self.subTest(offset=82), self.assertRaisesRegex(ValueError, 'unknown settings'):
+            f.save_ownership_assessment(source + career_save.seal(unknown))
 
     def test_corrupt_identity_overflow_auxiliary_and_appended_ledgers_refuse(self):
         source = week_save(grown=True)
@@ -209,9 +214,10 @@ class NativeBoundaryTests(unittest.TestCase):
     def test_native_footer_validator_and_encoder_own_reserved_bytes(self):
         block = block_for(self.grown)
         with Machine(self.payload) as m:
-            for at in (82, 83, *range(88, 128)):
+            # Beta 65: byte 82 is the MyCareer Settings byte (0..7 valid); 83 and 88.. stay reserved.
+            for at, value in ((83, 1), (82, 8), *((at, 1) for at in range(88, 128))):
                 bad = bytearray(block)
-                bad[at] = 1
+                bad[at] = value
                 m.uc.mem_write(m.SAVE, career_save.seal(bad))
                 self.assertEqual(m.call('inline_valid', ecx=m.SAVE, edx=arena.ARENA_SIZE), 0, at)
             m.uc.mem_write(m.state, career_save.to_runtime(block))

@@ -109,7 +109,8 @@ class Mode4Tests(unittest.TestCase):
             slot = m.call('mode_next_fixture')
             self.assertEqual(slot // 17, 1)
             self.assertEqual(m.get(0xE576B4), 0)
-            expected = ['Play next game', 'Practice', 'MyPlayer', 'Start MyPlayer', 'Save', 'Quit to main menu', 'Upgrades']
+            # Native MRKS shows seven rows; Quit is the eighth, below Save.
+            expected = ['Play next game', 'Practice', 'MyPlayer', 'Start MyPlayer', 'Upgrades', 'Settings', 'Save']
             draws = self.glyphs(m.draw())
             self.assertEqual({r['text'] for r in m.native_rows if r['text']}, set(expected))
             self.assertEqual(len(draws), 2)  # fixture footer and calendar card

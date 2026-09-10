@@ -94,6 +94,7 @@ import ntpath
 import os
 from pathlib import Path, PureWindowsPath
 import shutil
+import time
 import stat
 import sys
 import tempfile
@@ -3772,6 +3773,7 @@ PUBLISH_POSIX_LINK = "posix-link-then-unlink"
 PUBLISH_POSIX_MKDIR_RESERVE = "posix-mkdir-reserve-then-rename"
 PUBLISH_MACOS_RENAMEX_EXCL = "macos-renamex-np-exclusive"
 PUBLISH_WINDOWS_RENAME = "windows-rename-noreplace"
+PUBLISH_WINDOWS_COPY_RESERVE = "windows-mkdir-reserve-then-copy"
 
 # Names for the two private-staging mechanisms :func:`open_private_stage` uses.
 STAGE_LINUX_O_TMPFILE = "linux-o-tmpfile-anonymous"
@@ -4911,6 +4913,86 @@ def _publish_file_via_link(
     )
 
 
+# Windows refuses to rename a directory while any file inside it is held open
+# by another process.  Right after a Team Kit export that is the normal state
+# of affairs: real-time antivirus and the search indexer open each freshly
+# written PNG for a moment, and MoveFileEx answers ERROR_ACCESS_DENIED (5) or
+# ERROR_SHARING_VIOLATION (32) for the whole folder.  That is what Coach
+# Edwards hit on 2026-09-10 ("[WinError 5] Access is denied:
+# '...\\2k5-digit-sheet-m3p9_x6k\\.team-kit-9374wirw' -> '...\\team-kit'") while
+# importing a number sheet on a work laptop.  The condition is transient, so
+# the rename is retried for a few seconds; if the scanner still holds the
+# folder, the staged tree is copied into a freshly reserved destination
+# instead.  Neither path ever overwrites an existing destination: os.rename
+# raises FileExistsError there, and the copy path reserves the name with an
+# exclusive os.mkdir first.
+WINDOWS_DIRECTORY_RENAME_DELAYS = (0.05, 0.1, 0.2, 0.4, 0.8, 1.6, 3.2)
+_WINDOWS_TRANSIENT_WINERRORS = frozenset({5, 32})
+
+
+def _transient_windows_rename_refusal(error: OSError) -> bool:
+    """Was this rename refused for a reason that a moment's patience can cure?"""
+
+    if isinstance(error, FileExistsError):
+        return False
+    winerror = getattr(error, "winerror", None)
+    if winerror is not None:
+        return winerror in _WINDOWS_TRANSIENT_WINERRORS
+    return error.errno in (errno.EACCES, errno.EPERM)
+
+
+def _publish_directory_windows(
+    staging: str,
+    destination: str,
+    *,
+    require_atomic: bool,
+    delays: tuple[float, ...] = WINDOWS_DIRECTORY_RENAME_DELAYS,
+) -> NoReplacePublication:
+    """Windows folder publish: no-clobber os.rename, retried, then copy-reserve."""
+
+    last_error: OSError | None = None
+    for attempt, delay in enumerate((0.0,) + tuple(delays)):
+        if delay:
+            time.sleep(delay)
+        try:
+            os.rename(staging, destination)
+        except OSError as exc:
+            if not _transient_windows_rename_refusal(exc):
+                raise
+            last_error = exc
+            continue
+        return NoReplacePublication(
+            mechanism=PUBLISH_WINDOWS_RENAME,
+            kind="directory",
+            atomic_no_clobber=True,
+            detail=(
+                "os.rename (Windows: fails if destination exists)"
+                if attempt == 0
+                else f"os.rename after {attempt} refused attempt(s): {last_error}"
+            ),
+        )
+    assert last_error is not None
+    if require_atomic:
+        raise last_error
+    # Reserve the destination exclusively, then copy the staged tree into it.
+    # os.mkdir raises FileExistsError if anything already carries the name, so
+    # the no-clobber promise holds; the copy is not one atomic step, which the
+    # result says plainly.
+    os.mkdir(destination)
+    shutil.copytree(staging, destination, dirs_exist_ok=True)
+    shutil.rmtree(staging, ignore_errors=True)
+    return NoReplacePublication(
+        mechanism=PUBLISH_WINDOWS_COPY_RESERVE,
+        kind="directory",
+        atomic_no_clobber=False,
+        detail=(
+            "os.rename kept failing with a transient Windows refusal "
+            f"({last_error}); published by exclusive os.mkdir and a copy of the "
+            "staged tree"
+        ),
+    )
+
+
 def _publish_directory_via_reserve(
     staging: str,
     destination: str,
@@ -4926,12 +5008,8 @@ def _publish_directory_via_reserve(
                 "Windows cannot publish a folder through a directory descriptor: "
                 "it has no dir_fd, so this transaction cannot run there"
             )
-        os.rename(staging, destination)
-        return NoReplacePublication(
-            mechanism=PUBLISH_WINDOWS_RENAME,
-            kind="directory",
-            atomic_no_clobber=True,
-            detail="os.rename (Windows: fails if destination exists)",
+        return _publish_directory_windows(
+            staging, destination, require_atomic=require_atomic
         )
     # macOS: renameatx_np(RENAME_EXCL) IS a single atomic exclusive rename of the
     # staged folder -- it fails with EEXIST if the destination exists and leaves

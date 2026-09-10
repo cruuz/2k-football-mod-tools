@@ -892,10 +892,10 @@ class TemplateTests(unittest.TestCase):
 
     def test_the_retail_table_reads_as_the_game_lays_it_out(self) -> None:
         templates = rr.create_player_templates()
-        self.assertEqual(len(templates), 36)
+        self.assertEqual(len(templates), 51)
         self.assertEqual([t.label for t in templates[:3]], ["Pocket QB", "Scrambling QB", "Balanced QB"])
         self.assertEqual([t.position_name for t in templates[::3]],
-                         ["QB", "K", "P", "WR", "CB", "FS", "SS", "HB", "FB", "TE", "OLB", "ILB"])
+                         list(rr.POSITIONS))
         pocket, scrambling, balanced = templates[:3]
         self.assertEqual((pocket.ratings()["scramble"], scrambling.ratings()["scramble"], balanced.ratings()["scramble"]),
                          (10, 90, 50))
@@ -903,8 +903,8 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual((finesse.label, power.label, balanced_hb.label), ("Finesse HB", "Power HB", "Balanced HB"))
         self.assertEqual((finesse.ratings()["power_run_style"], power.ratings()["power_run_style"],
                           balanced_hb.ratings()["power_run_style"]), (1, 99, 50))
-        self.assertEqual(rr.templates_for_position(rr.POSITIONS.index("DE")), ())
-        self.assertEqual(rr.templates_for_position(rr.POSITIONS.index("C")), ())
+        self.assertEqual(len(rr.templates_for_position(rr.POSITIONS.index("DE"))), 3)
+        self.assertEqual(len(rr.templates_for_position(rr.POSITIONS.index("C"))), 3)
         speed_wr = rr.templates_for_position(rr.POSITIONS.index("WR"))[0]
         self.assertEqual(speed_wr.slots[25], -1, "the WR/HB/FB/TE templates leave slot 25 at -1")
         self.assertEqual(speed_wr.ratings()["kicking_style"], rr.CREATE_PLAYER_TEMPLATE_DEFAULT,
@@ -1429,7 +1429,7 @@ class RetailMembershipTests(unittest.TestCase):
         payload = RETAIL_XBE.read_bytes()
         from mod_editor.core.nfl2k5_rdata_sites import offset_of
         table = offset_of(payload, rr.CREATE_PLAYER_TEMPLATES_RDATA)
-        self.assertEqual(hashlib.sha256(payload[table: table + 36 * 0x74]).hexdigest(), rr.CREATE_PLAYER_TEMPLATES_SHA256)
+        self.assertEqual(hashlib.sha256(payload[table: table + 51 * 0x74]).hexdigest(), rr.CREATE_PLAYER_TEMPLATES_SHA256)
         routine = offset_of(payload, rr.CREATE_PLAYER_TEMPLATE_APPLY_VA)
         span = rr.CREATE_PLAYER_TEMPLATE_APPLY_END_VA - rr.CREATE_PLAYER_TEMPLATE_APPLY_VA
         self.assertEqual(hashlib.sha256(payload[routine: routine + span]).hexdigest(), rr.CREATE_PLAYER_TEMPLATE_APPLY_SHA256)

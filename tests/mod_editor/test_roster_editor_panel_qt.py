@@ -391,9 +391,12 @@ class RosterEditorPanelTests(unittest.TestCase):
         self.panel.team_list.setCurrentRow(self.panel.team_list.count() - 2)      # the DT prospect
         self.application.processEvents()
         self.panel._fill_template_menu()
+        # Beta 65: the game's template table has 51 records, so linemen have
+        # their three native styles too (the old 36-record census was wrong).
         first = self.panel.template_menu.actions()[0]
-        self.assertFalse(first.isEnabled())
-        self.assertIn("No template for DT", first.text())
+        self.assertTrue(first.isEnabled())
+        labels = [a.text() for a in self.panel.template_menu.actions() if a.text() and not a.menu()]
+        self.assertEqual(labels[:3], ["Run Stop DL", "Pass Rush DL", "Balanced DL"])
 
     def test_a_player_data_backup_round_trips_with_undo(self) -> None:
         backup = self.panel.export_player_data_bytes()

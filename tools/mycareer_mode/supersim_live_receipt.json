@@ -1,0 +1,892 @@
+{
+  "accelerated_runtime_ready": false,
+  "frames": [
+    {
+      "clock_seconds": 600.0,
+      "groups": 8,
+      "host_seconds": 8.191007,
+      "phase_entries": [
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0xaf2c0",
+          "writes": 1096
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x28dfe0",
+          "writes": 1072
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x217c90",
+          "writes": 184
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0xa28c0",
+          "writes": 16
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {
+            "0x17b010": 352
+          },
+          "va": "0x75bd0",
+          "writes": 3032
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x5d830",
+          "writes": 410
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x190d00",
+          "writes": 8
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x18c1f0",
+          "writes": 136
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {
+            "0x63810": 16,
+            "0x65550": 8
+          },
+          "va": "0x156a80",
+          "writes": 2408
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x89ba0",
+          "writes": 31
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0xe9210",
+          "writes": 232
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x214fc0",
+          "writes": 14828
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0xf7c10",
+          "writes": 216
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x1e08d0",
+          "writes": 20795
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x2180d0",
+          "writes": 433196
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x28ecf0",
+          "writes": 2198536
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x28cc30",
+          "writes": 8640
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x1ccfa0",
+          "writes": 64
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x28f4f0",
+          "writes": 2824
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x1dfaa0",
+          "writes": 79872
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {
+            "0x17b010": 176
+          },
+          "va": "0x1d30f0",
+          "writes": 3408
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x17c2e0",
+          "writes": 24
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0xa7930",
+          "writes": 56
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x1d1b80",
+          "writes": 32
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {
+            "0x1c3e10": 8,
+            "0x1c3e70": 8,
+            "0x1c3ed0": 8,
+            "0x1c3f30": 8
+          },
+          "va": "0x94ab0",
+          "writes": 496
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x5da70",
+          "writes": 56
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x125bc0",
+          "writes": 42
+        }
+      ],
+      "presented_frames": 0,
+      "state_sha256": "e4298527c86644aa369529a5e9add28b6b7833aeaa3666bac89669c37c831c3c",
+      "substituted_calls": {
+        "0x17b010": 528,
+        "0x1c3e10": 8,
+        "0x1c3e70": 8,
+        "0x1c3ed0": 8,
+        "0x1c3f30": 8,
+        "0x63810": 16,
+        "0x65550": 8
+      },
+      "updates": 8,
+      "updates_per_group": 1
+    },
+    {
+      "clock_seconds": 600.0,
+      "groups": 4,
+      "host_seconds": 6.848325,
+      "phase_entries": [
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0xaf2c0",
+          "writes": 1096
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x28dfe0",
+          "writes": 1072
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x217c90",
+          "writes": 184
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0xa28c0",
+          "writes": 16
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {
+            "0x17b010": 352
+          },
+          "va": "0x75bd0",
+          "writes": 3032
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x5d830",
+          "writes": 410
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x190d00",
+          "writes": 8
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x18c1f0",
+          "writes": 136
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {
+            "0x63810": 16,
+            "0x65550": 8
+          },
+          "va": "0x156a80",
+          "writes": 2408
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x89ba0",
+          "writes": 31
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0xe9210",
+          "writes": 232
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x214fc0",
+          "writes": 14828
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0xf7c10",
+          "writes": 216
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x1e08d0",
+          "writes": 20795
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x2180d0",
+          "writes": 433196
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x28ecf0",
+          "writes": 2198536
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x28cc30",
+          "writes": 8640
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x1ccfa0",
+          "writes": 64
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x28f4f0",
+          "writes": 2824
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x1dfaa0",
+          "writes": 79872
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {
+            "0x17b010": 176
+          },
+          "va": "0x1d30f0",
+          "writes": 3408
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x17c2e0",
+          "writes": 24
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0xa7930",
+          "writes": 56
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x1d1b80",
+          "writes": 32
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {
+            "0x1c3e10": 8,
+            "0x1c3e70": 8,
+            "0x1c3ed0": 8,
+            "0x1c3f30": 8
+          },
+          "va": "0x94ab0",
+          "writes": 496
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x5da70",
+          "writes": 56
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x125bc0",
+          "writes": 42
+        }
+      ],
+      "presented_frames": 0,
+      "state_sha256": "e4298527c86644aa369529a5e9add28b6b7833aeaa3666bac89669c37c831c3c",
+      "substituted_calls": {
+        "0x17b010": 528,
+        "0x1c3e10": 8,
+        "0x1c3e70": 8,
+        "0x1c3ed0": 8,
+        "0x1c3f30": 8,
+        "0x63810": 16,
+        "0x65550": 8
+      },
+      "updates": 8,
+      "updates_per_group": 2
+    },
+    {
+      "clock_seconds": 600.0,
+      "groups": 2,
+      "host_seconds": 7.122047,
+      "phase_entries": [
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0xaf2c0",
+          "writes": 1096
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x28dfe0",
+          "writes": 1072
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x217c90",
+          "writes": 184
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0xa28c0",
+          "writes": 16
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {
+            "0x17b010": 352
+          },
+          "va": "0x75bd0",
+          "writes": 3032
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x5d830",
+          "writes": 410
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x190d00",
+          "writes": 8
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x18c1f0",
+          "writes": 136
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {
+            "0x63810": 16,
+            "0x65550": 8
+          },
+          "va": "0x156a80",
+          "writes": 2408
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x89ba0",
+          "writes": 31
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0xe9210",
+          "writes": 232
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x214fc0",
+          "writes": 14828
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0xf7c10",
+          "writes": 216
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x1e08d0",
+          "writes": 20795
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x2180d0",
+          "writes": 433196
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x28ecf0",
+          "writes": 2198536
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x28cc30",
+          "writes": 8640
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x1ccfa0",
+          "writes": 64
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x28f4f0",
+          "writes": 2824
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x1dfaa0",
+          "writes": 79872
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {
+            "0x17b010": 176
+          },
+          "va": "0x1d30f0",
+          "writes": 3408
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x17c2e0",
+          "writes": 24
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0xa7930",
+          "writes": 56
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x1d1b80",
+          "writes": 32
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {
+            "0x1c3e10": 8,
+            "0x1c3e70": 8,
+            "0x1c3ed0": 8,
+            "0x1c3f30": 8
+          },
+          "va": "0x94ab0",
+          "writes": 496
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x5da70",
+          "writes": 56
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x125bc0",
+          "writes": 42
+        }
+      ],
+      "presented_frames": 0,
+      "state_sha256": "e4298527c86644aa369529a5e9add28b6b7833aeaa3666bac89669c37c831c3c",
+      "substituted_calls": {
+        "0x17b010": 528,
+        "0x1c3e10": 8,
+        "0x1c3e70": 8,
+        "0x1c3ed0": 8,
+        "0x1c3f30": 8,
+        "0x63810": 16,
+        "0x65550": 8
+      },
+      "updates": 8,
+      "updates_per_group": 4
+    },
+    {
+      "clock_seconds": 600.0,
+      "groups": 1,
+      "host_seconds": 6.927631,
+      "phase_entries": [
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0xaf2c0",
+          "writes": 1096
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x28dfe0",
+          "writes": 1072
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x217c90",
+          "writes": 184
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0xa28c0",
+          "writes": 16
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {
+            "0x17b010": 352
+          },
+          "va": "0x75bd0",
+          "writes": 3032
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x5d830",
+          "writes": 410
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x190d00",
+          "writes": 8
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x18c1f0",
+          "writes": 136
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {
+            "0x63810": 16,
+            "0x65550": 8
+          },
+          "va": "0x156a80",
+          "writes": 2408
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x89ba0",
+          "writes": 31
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0xe9210",
+          "writes": 232
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x214fc0",
+          "writes": 14828
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0xf7c10",
+          "writes": 216
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x1e08d0",
+          "writes": 20795
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x2180d0",
+          "writes": 433196
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x28ecf0",
+          "writes": 2198536
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x28cc30",
+          "writes": 8640
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x1ccfa0",
+          "writes": 64
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x28f4f0",
+          "writes": 2824
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x1dfaa0",
+          "writes": 79872
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {
+            "0x17b010": 176
+          },
+          "va": "0x1d30f0",
+          "writes": 3408
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x17c2e0",
+          "writes": 24
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0xa7930",
+          "writes": 56
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x1d1b80",
+          "writes": 32
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {
+            "0x1c3e10": 8,
+            "0x1c3e70": 8,
+            "0x1c3ed0": 8,
+            "0x1c3f30": 8
+          },
+          "va": "0x94ab0",
+          "writes": 496
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x5da70",
+          "writes": 56
+        },
+        {
+          "calls": 8,
+          "substituted_calls": {},
+          "va": "0x125bc0",
+          "writes": 42
+        }
+      ],
+      "presented_frames": 0,
+      "state_sha256": "e4298527c86644aa369529a5e9add28b6b7833aeaa3666bac89669c37c831c3c",
+      "substituted_calls": {
+        "0x17b010": 528,
+        "0x1c3e10": 8,
+        "0x1c3e70": 8,
+        "0x1c3ed0": 8,
+        "0x1c3f30": 8,
+        "0x63810": 16,
+        "0x65550": 8
+      },
+      "updates": 8,
+      "updates_per_group": 8
+    }
+  ],
+  "limitations": [
+    "No rendered frames or audio devices in the harness",
+    "Synthetic clips do not prove automatic snaps or complete drives",
+    "FrameMachine's declared input, attribute, audio and RNG leaves retained",
+    "Equal grouped state is not a safe scheduler or a real-time speed measurement"
+  ],
+  "runtime_witnessed": false,
+  "schema": "nfl2k5.supersim-live.v1",
+  "shipped_updates_per_frame": 1,
+  "spans": {
+    "dialog": {
+      "sha256": "066c2e166ab419258b2591c8fa913644eec68c2cc283697e8f6a1ad32e67dd30",
+      "size": 808,
+      "va": "0x14e070"
+    },
+    "game_descriptor": {
+      "sha256": "1cd29661331d4a34a45249ba2188082e9e942078ae519c3048eae1fe0d90a03c",
+      "size": 44,
+      "va": "0x4e7ec0"
+    },
+    "game_events": {
+      "sha256": "8f2e54a4d67505cd06063f34d25fa3e2f29591dae597ab4d3fb8fffab6d0408b",
+      "size": 56,
+      "va": "0x4e7e88"
+    },
+    "game_update_command": {
+      "sha256": "f0d62eeefc6e5b894eb6684090bcdd567683fb429bc90fd1c3d558e04f558407",
+      "size": 72,
+      "va": "0x4e7df8"
+    },
+    "highlight_screen": {
+      "sha256": "d8052dbccdb3494a6fc178075280a50fadfbd359ff19da8570738c73432fd28c",
+      "size": 2583,
+      "va": "0x1124e0"
+    },
+    "inner_update": {
+      "sha256": "48c998480ab6886d78a814418112c0d88ab819d166d915f9fffa177e517fd00d",
+      "size": 296,
+      "va": "0x11a7c0"
+    },
+    "input_rng": {
+      "sha256": "cf12413b51056f9531bc87129da6eabd081cbbe91c01eb180d13e71a0ed715d4",
+      "size": 85,
+      "va": "0x74730"
+    },
+    "late_modal": {
+      "sha256": "ddbf6016ccf409344a430d94601af72cadd261916add8c7e607dae71929ece0c",
+      "size": 456,
+      "va": "0x11ef60"
+    },
+    "main_frame": {
+      "sha256": "fed5c5a895c4a03be8ad78685c1b27c6bbda867673d0e3674cff7a76d75326bc",
+      "size": 271,
+      "va": "0x74790"
+    },
+    "manager_render": {
+      "sha256": "2ad8f34c8865f3d80f3a6bfcaf6f79f9ce0bee39e57229c0c9c230b61428d500",
+      "size": 88,
+      "va": "0x6e6e0"
+    },
+    "manager_update": {
+      "sha256": "d0abdd95f60ad6ec3c2193dea5ed0bf700d19e003b3f937782cf0ad673167572",
+      "size": 56,
+      "va": "0x6e6a0"
+    },
+    "outer_update": {
+      "sha256": "d54ed4a52a7b7cb033ef39e435e3a34bf83fb9db35e352e0bd69317c863bcba6",
+      "size": 420,
+      "va": "0x64cd0"
+    },
+    "period_ready": {
+      "sha256": "93f7feb691e2eb96a2ee074f672d32357fa374198a94b1ac38202223a8b3e7b9",
+      "size": 192,
+      "va": "0xb8db0"
+    },
+    "player_render": {
+      "sha256": "5d369de7d8aeae8e4cae2b018326ae7499da05f93eb98155490e72bf8135575f",
+      "size": 45,
+      "va": "0x11a8f0"
+    },
+    "present_region": {
+      "sha256": "fc370630768470e9fa0e7d2a208fde81cda446442ed34d6ce197b3108720dd50",
+      "size": 1424,
+      "va": "0x27ca0"
+    },
+    "render": {
+      "sha256": "66932714a817fc0fc6a0a9b5f5db51da2dd61805702ea9ba7ae2244cadad3d5d",
+      "size": 96,
+      "va": "0x64f80"
+    },
+    "replay_screen": {
+      "sha256": "063a5aa1794b2e4f1e49d1adb72bb7015462269bb93254a4845bbd93da93e003",
+      "size": 1408,
+      "va": "0x13610"
+    },
+    "skip_pending": {
+      "sha256": "7a685071a3336ccfc0797f3813532a3503bfa0f072b5eeea862c99ec797ad4fc",
+      "size": 67,
+      "va": "0x89780"
+    },
+    "skip_request": {
+      "sha256": "fa7705cc735d0ddf6186eaded03e9281f3b5751ae4f03d2cab622f3963edbf14",
+      "size": 845,
+      "va": "0xa2120"
+    },
+    "skip_table": {
+      "sha256": "f8774cb4ec62f16e68669b95a7147094d4f47f1cbf5167d7b9040af6f0616b8c",
+      "size": 64,
+      "va": "0xa2470"
+    }
+  }
+}

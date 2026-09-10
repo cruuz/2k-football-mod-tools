@@ -57,7 +57,8 @@ def build_synthetic_xbe() -> bytes:
 
     buf = bytearray(build_modern_synthetic_xbe())
     table = struct.unpack_from("<I", buf, 0x120)[0] - IMAGE_BASE
-    for index, va, size in (FRANCHISE_SECTION, RATINGS_SECTION, FILTERS_SECTION):
+    # EDGE's fixture now includes the complete .rdata menu window.
+    for index, va, size in (RATINGS_SECTION, (15, 0x345000, 0x1000)):
         raw = (len(buf) + 0xFFF) & ~0xFFF
         buf.extend(b"\0" * (raw + size - len(buf)))
         fields = [0] * 9 + [b"\0" * 20]
@@ -107,6 +108,8 @@ def build_synthetic_xbe() -> bytes:
         if isinstance(expected, str):
             buf[off(va): off(va) + slot] = _u16(expected, slot)
     for site in pools.filter_list_sites():
+        buf[off(site.va):off(site.va) + site.size] = site.befores[0]
+    for site in pools.creation_sites():
         buf[off(site.va):off(site.va) + site.size] = site.befores[0]
     _repin(buf)
     return bytes(buf)
@@ -253,7 +256,7 @@ class RatingAndRowCountLayoutTests(unittest.TestCase):
 
 
 def _prepared_with_ratings() -> bytes:
-    patched, _ = pools.apply(_prepared())
+    patched, _ = pools.apply(_prepared(), roster_has_olb=True)
     return patched
 
 
@@ -269,7 +272,7 @@ class SyntheticXbeTests(unittest.TestCase):
 
     def test_status_and_apply_round_trip(self) -> None:
         self.assertEqual(pools.status(self.prepared), "retail")
-        patched, receipt = pools.apply(self.prepared)
+        patched, receipt = pools.apply(self.prepared, roster_has_olb=True)
         self.assertEqual(pools.status(patched), "applied")
         self.assertEqual(pools.status(self.prepared), "retail")
         self.assertEqual(modern.status(patched), "applied")
@@ -292,12 +295,12 @@ class SyntheticXbeTests(unittest.TestCase):
         self.assertEqual(_record_pools(patched, modern.UNIT_34),
                          [(15, 1), (15, 0), (15, 3), (11, 1), (11, 0), (16, 1), (16, 0), (4, 1), (4, 0), (6, 0), (5, 0)])
         labels = [(r["abbreviation"], r["long_name"]) for r in (modern.read_record(patched, modern.UNIT_34, s) for s in range(7))]
-        self.assertEqual(labels, [("DE", "LEFT DEFENSIVE END"), ("NT", "NOSE TACKLE"), ("DE", "RIGHT DEFENSIVE END"),
+        self.assertEqual(labels, [("DT", "LEFT DEFENSIVE TACKLE"), ("NT", "NOSE TACKLE"), ("DT", "RIGHT DEFENSIVE TACKLE"),
                                   ("WILL", "WEAKSIDE LINEBACKER"), ("MIKE", "MIDDLE LINEBACKER"),
                                   ("EDGE", "RIGHT EDGE RUSHER"), ("EDGE", "LEFT EDGE RUSHER")])
 
     def test_only_the_sites_and_digests_change(self) -> None:
-        patched, receipt = pools.apply(self.prepared)
+        patched, receipt = pools.apply(self.prepared, roster_has_olb=True)
         allowed: set[int] = set()
         touched_sections: set[int] = set()
         sections = strength._sections(self.prepared)
@@ -318,7 +321,7 @@ class SyntheticXbeTests(unittest.TestCase):
                 self.assertEqual(section.stored_digest, strength.section_digest(patched, section), section.index)
 
     def test_strings_shrink_in_place(self) -> None:
-        patched, _ = pools.apply(self.prepared)
+        patched, _ = pools.apply(self.prepared, roster_has_olb=True)
         for label, va, slot, _old, new in pools.STRING_SITES:
             off = pools._offset(patched, va)
             self.assertEqual(patched[off: off + slot], _u16(new, slot), label)
@@ -327,7 +330,7 @@ class SyntheticXbeTests(unittest.TestCase):
         self.assertIn("Outside Linebacker".encode("utf-16le"), patched)
 
     def test_code_sites(self) -> None:
-        patched, _ = pools.apply(self.prepared)
+        patched, _ = pools.apply(self.prepared, roster_has_olb=True)
         off = pools._offset(patched, pools.PENALTY_JNE_VA)
         self.assertEqual(patched[off: off + 2], b"\x74\x59")
         off = pools._offset(patched, pools.ROW_LOOKUP_SITE_VA)
@@ -341,7 +344,7 @@ class SyntheticXbeTests(unittest.TestCase):
         self.assertEqual(patched[off: off + 16], pools.chain_index_bytes())
 
     def test_rating_filters_and_consistency_sites(self) -> None:
-        patched, receipt = pools.apply(self.prepared)
+        patched, receipt = pools.apply(self.prepared, roster_has_olb=True)
         for name, (va, count, _hex) in pools.RATING_TABLES.items():
             off = pools._offset(patched, va)
             self.assertEqual(patched[off: off + count * 20], pools.rating_table_edit(name)[2], name)
@@ -362,7 +365,7 @@ class SyntheticXbeTests(unittest.TestCase):
         self.assertTrue(pools.retail_olb_identity(patched))
 
     def test_every_screen_shows_exactly_one_linebackers_row(self) -> None:
-        patched, receipt = pools.apply(self.prepared)
+        patched, receipt = pools.apply(self.prepared, roster_has_olb=True)
         rows = pools.filter_rows(patched)
         self.assertEqual(len(rows), 15)
         for row in rows:
@@ -377,7 +380,7 @@ class SyntheticXbeTests(unittest.TestCase):
         self.assertFalse(any(r["duplicate"] for r in pools.filter_rows(self.prepared)))
 
     def test_optional_code_sites_can_be_left_out(self) -> None:
-        patched, receipt = pools.apply(self.prepared, linebacker_penalty_fix=False, depth_chart_third_starter=False)
+        patched, receipt = pools.apply(self.prepared, roster_has_olb=True, linebacker_penalty_fix=False, depth_chart_third_starter=False)
         self.assertEqual(pools.status(patched, linebacker_penalty_fix=False, depth_chart_third_starter=False), "applied")
         self.assertEqual(pools.status(patched), "foreign")           # the default profile expects the code sites
         self.assertIsNone(receipt["cave_va"])
@@ -392,8 +395,8 @@ class SyntheticXbeTests(unittest.TestCase):
         self.assertEqual(pools.rating_table_rows(patched, "defense_b")[3]["position"], "ILB")
 
     def test_apply_replays_applied_and_refuses_foreign(self) -> None:
-        patched, _ = pools.apply(self.prepared)
-        replay, receipt = pools.apply(patched)
+        patched, _ = pools.apply(self.prepared, roster_has_olb=True)
+        replay, receipt = pools.apply(patched, roster_has_olb=True)
         self.assertEqual(replay, patched)
         self.assertEqual(receipt["changed_bytes"], 0)
         self.assertEqual(receipt["edits"], [])
@@ -411,12 +414,12 @@ class SyntheticXbeTests(unittest.TestCase):
     def test_three_four_line_labels_before_pools_are_accepted(self) -> None:
         labelled, _ = modern.apply(edge.apply(self.retail)[0], three_four_line=True)
         self.assertEqual(pools.status(labelled), "retail")
-        patched, _ = pools.apply(labelled)
+        patched, _ = pools.apply(labelled, roster_has_olb=True)
         self.assertEqual(pools.status(patched), "applied")
         self.assertEqual(edge.status(patched), "applied")
 
     def test_modern_status_reads_foreign_on_a_mixed_pool_profile(self) -> None:
-        patched, _ = pools.apply(self.prepared)
+        patched, _ = pools.apply(self.prepared, roster_has_olb=True)
         mixed = bytearray(patched)
         off = pools._offset(patched, modern.record_va(modern.UNIT_43, 4)) + modern.SLOT_TEXT_BYTES
         struct.pack_into("<II", mixed, off, pools.ENUM_OLB, 1)          # SAM back to retail, the rest one-pool
@@ -438,7 +441,7 @@ class RetailXbeSmokeTests(unittest.TestCase):
         edged, _ = edge.apply(payload)
         labelled, _ = modern.apply(edged)
         self.assertEqual(pools.status(labelled), "retail")
-        patched, receipt = pools.apply(labelled)
+        patched, receipt = pools.apply(labelled, roster_has_olb=True)
         self.assertEqual(pools.status(patched), "applied")
         self.assertEqual(modern.status(patched), "applied")
         self.assertEqual(edge.status(patched), "applied")

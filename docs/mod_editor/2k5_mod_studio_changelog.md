@@ -1,5 +1,55 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC89, beta 65: accelerated clock, MyCareer supersim and positions, the Windows folder-publish fix (2026-09-10)
+
+- **Fixed: "[WinError 5] Access is denied" while importing a number sheet on Windows (Coach Edwards, 2026-09-10).**
+  The digit-sheet import exports a private Team Kit into its own temporary folder and publishes it with one
+  `os.rename`. Windows refuses to rename a folder while another process holds a file inside it open, which is exactly
+  what real-time antivirus and the search indexer do right after 39 fresh PNGs are written, so on a work laptop the
+  import died at the publish step ("Your original game disc was not changed" was true). The publish now retries the
+  no-clobber rename over about six seconds of backoff on the two transient Windows refusals and, when the caller
+  allows a non-atomic publish, falls back to reserving the destination with an exclusive `mkdir` and copying the
+  staged tree into it. An existing destination is still refused at once, nothing is ever overwritten, and the
+  Windows branch is exercised on every CI platform by `tests/mod_editor/test_windows_folder_publish_retry.py`.
+
+- **EDGE and LB are the only edge and linebacker choices when the position pools are on (Noah, MyCareer position
+  picker, 2026-09-10).** With merged position pools, Create Player and Create MyPlayer cycle through EDGE and LB
+  without an OLB entry, in both directions, with no blank row. EDGE has Power, Speed and Balanced templates drawn
+  from the game's DE and OLB ratings; roster, draft, scouting, free-agency, contracts, trade-needs and the other
+  native selectors skip the retired row; the 3-4 interior depth slots read DT. The seventh "Defensive End" consumer,
+  the Create Player long-name table, now says Edge Rusher too. The completed build requires reclassified rosters:
+  the old "Keep Outside Linebackers" compatibility profile is retired and an uncertified roster refuses the build.
+  `ASTRA_B65_POSITIONS_REPORT.md`; unwitnessed in game.
+- **MyCareer uses the game's own templates for linemen, and says what each position can really do.** MyCareer now
+  uses the native Create Player templates for offensive and defensive linemen instead of substituting 65s. Its
+  position descriptions distinguish proved input handling (every position's controller decode, port restore and
+  switch guards were executed natively) from what is still unwitnessed: routes, mesh movement, catches and
+  blocking under the stick. No speculative first-person control flag is enabled; Noah's QB play remains the only
+  witness.
+- **Selected players get a filled white star at their feet.** The existing Rosters star tags now draw a solid
+  five-point star with a near-black edge, replacing the hollow outline at the same size and position. Builds
+  upgrade recognized beta-58–64 star patches automatically when the star option is enabled. The same 22-player
+  bound, HUD/coach/replay visibility rules and ordinary controller circles remain. No new style switch or preset
+  change. Native CPU submissions, complete fill, material fields and legacy upgrades are proved offline;
+  in-game appearance still needs Noah's witness. `ASTRA_REPORT.md`; preview `nfl2k5_player_star_filled.png`.
+
+- **MyCareer Settings: first person, off-field play and MyPlayer's star.** Open Settings below Upgrades in the
+  Apartment. First Person Football defaults Off and uses the same native toggle as Franchise Settings.
+  Off-field play offers Spectate or Skip presentation, defaulting to Skip; both sides retain native AI at normal
+  speed. MyPlayer star defaults On and changes only MyPlayer's star bit, preserving every other tag and player.
+  All three choices now survive save/load, including migration of older careers. B returns from Settings;
+  B during an eligible off-field presentation switches to Spectate. Native skips, menu dispatch, masked tags and
+  saved choices are proved in bounded execution. Fast forward and a guaranteed pre-snap return remain unproved.
+  The existing 16 KiB code and 8 KiB writable owners still fit, with at least 145 code bytes spare in the measured layouts; no other owner moves.
+  Built by Astra; experimental, opt-in and unwitnessed. See `ASTRA_REPORT.md` for Noah's witness script.
+- **Accelerated clock (Madden style), opt-in.** After a huddled play call, the human or CPU offense's play
+  clock jumps to a chosen 25, 20, 15, 10 or 5 seconds. The game clock loses the same time only when its native
+  running state permits it. Final-two-minute and no-huddle snaps keep their normal clocks; kickoffs and the
+  first snap of a quarter are excluded, and a snap latch prevents repeated runoff after a re-spot. The writer,
+  option read-back and bounded native proofs are complete. Build-time controls require the integration in
+  `WIRING.md`; no in-game settings row is included. Off in every preset, 20-second minimum when enabled.
+  Scorebug rendering, full-game play counts and actual console play remain UNWITNESSED; see `ASTRA_REPORT.md`.
+
 ## v1.0 RC88, the 2K8 beta: no 2K5 changes beyond the version and the release tag (2026-09-09)
 
 - Beta 64 is the first All-Pro Football 2K8 beta (APF 2K8 Mod Studio 0.1.0-alpha.85, see

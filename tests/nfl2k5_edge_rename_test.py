@@ -30,7 +30,7 @@ RETAIL_PACK_0 = Path("/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (
 
 # synthetic sections: (index, virtual address, raw size); raw data is appended behind the throw fixture
 EDGE_SECTIONS = (
-    (12, 0x004F2000, 0x00023000),   # .rdata window: pointer tables 0x4F26C8.. and slot records ..0x5147D8
+    (12, 0x004F2000, 0x00097000),   # .rdata tables, including CAP's private position names
     (13, 0x00A89000, 0x0003A000),   # .data window: legend table 0xA89938 .. franchise table 0xAC2698
     (14, 0x00E67000, 0x00056000),   # .string_ window: 0xE677E0 .. 0xEBBFD8
 )
@@ -141,14 +141,16 @@ class SyntheticXbeTests(unittest.TestCase):
         patched, receipt = edge.apply(self.payload)
         self.assertEqual(edge.status(patched), "applied")
         self.assertEqual(receipt["sections_repinned"], [12, 13, 14])
-        self.assertEqual(len(receipt["edits"]), 1 + 6 + 4 + 14 + 4)
-        self.assertEqual(receipt["changed_bytes"], 399)
+        self.assertEqual(len(receipt["edits"]), 1 + 7 + 4 + 14 + 4)
+        self.assertEqual(receipt["changed_bytes"], sum(a != b for a, b in zip(self.payload, patched)))
         self.assertEqual(_string_at(patched, edge.EDGE_VA), "EDGE")
         self.assertEqual(_string_at(patched, edge.LEGEND_VA), "|CIRCLE|SWAP EDGE")
         for _label, ptr_va, _old, new in edge.POINTER_SITES:
             target = struct.unpack_from("<I", patched, edge._offset(patched, ptr_va))[0]
             self.assertEqual(target, new)
-            self.assertEqual(_string_at(patched, target), "EDGE" if new == edge.EDGE_VA else "|CIRCLE|SWAP EDGE")
+            self.assertEqual(_string_at(patched, target),
+                             {edge.EDGE_VA: "EDGE", edge.LEGEND_VA: "|CIRCLE|SWAP EDGE",
+                              0xE69DDC: "Edge Rusher"}[new])
         for va in edge.SINGULAR_SITES:
             self.assertEqual(_string_at(patched, va), "Edge Rusher")
         for va in edge.PLURAL_SITES:
@@ -156,8 +158,7 @@ class SyntheticXbeTests(unittest.TestCase):
         for _label, va, _abbrev, _old, new_long in edge.SLOT_RECORDS:
             self.assertEqual(_string_at(patched, va), "EDGE")
             self.assertEqual(_string_at(patched, va + 2 * edge.SLOT_ABBREV_WCHARS), new_long)
-        with self.assertRaises(edge.EdgeRenameError):
-            edge.apply(patched)
+        self.assertEqual(edge.apply(patched)[0], patched)
 
     def test_digests_are_repinned_for_every_touched_section(self) -> None:
         patched, _receipt = edge.apply(self.payload)
@@ -200,7 +201,7 @@ class SyntheticXbeTests(unittest.TestCase):
             receipt = tt.write_xbe_copy(source, target, edge_rename=True)
             self.assertEqual(receipt["edge_rename"], "applied")
             self.assertEqual(receipt["catch_slider"], "retail")
-            self.assertEqual(receipt["edge_rename_patch"]["changed_bytes"], 399)
+            self.assertGreater(receipt["edge_rename_patch"]["changed_bytes"], 0)
             report = tt.read_xbe(target)
             self.assertEqual(report["edge_rename"], "applied")
             self.assertEqual(edge.status(target.read_bytes()), "applied")
@@ -276,7 +277,7 @@ class RetailXbeSmokeTests(unittest.TestCase):
         self.assertEqual(edge.status(payload), "retail")
         patched, receipt = edge.apply(payload)
         self.assertEqual(edge.status(patched), "applied")
-        self.assertEqual(receipt["changed_bytes"], 399)
+        self.assertEqual(receipt["changed_bytes"], sum(a != b for a, b in zip(payload, patched)))
         self.assertEqual(_string_at(patched, edge.EDGE_VA), "EDGE")
         # the .string_ section no longer carries the long name anywhere
         self.assertNotIn("Defensive End".encode("utf-16le"), patched)

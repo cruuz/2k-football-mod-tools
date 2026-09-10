@@ -89,6 +89,21 @@ class SectionTableTests(unittest.TestCase):
 class PatchWriteTests(unittest.TestCase):
     """Every absolute memory write in every patch's changed code targets writable memory."""
 
+    def test_accelerated_clock_code_latch_and_options_have_separate_permissions(self):
+        from mod_editor.core import nfl2k5_accelerated_clock as patch
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        places, image = patch.allocations(self.patched), XbeImage(self.patched)
+        self.assertTrue(patch.verify(self.patched, enabled=True, minimum_seconds=20)['enabled'])
+        self.assertFalse(image.runtime_writable(places['code']['va'], patch.CODE_SIZE))
+        self.assertTrue(image.runtime_writable(places['data']['va'], patch.DATA_SIZE))
+        self.assertFalse(image.runtime_writable(places['read_only']['va'], patch.OPTIONS_SIZE))
+        start = places['code']['va']
+        writes = absolute_writes(self.patched, [(start, start + len(patch.assembly.CODE))])
+        absolute = [w for w in writes if w['target'] is not None]
+        self.assertTrue(absolute)
+        self.assertTrue(all(int(w['target'], 0) == places['data']['va'] and w['writable']
+                            for w in absolute), absolute)
+
     def test_deep_zone_code_is_rx_and_runtime_records_are_rw(self):
         from mod_editor.core import nfl2k5_deep_zone as patch
         from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes

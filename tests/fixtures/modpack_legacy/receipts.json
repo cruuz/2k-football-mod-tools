@@ -15,10 +15,10 @@
     "format": 2,
     "base_size": 12021779,
     "result_size": 24045568,
-    "base_sha256": "06e106420015c5144fc2aa0f4b3a31d2b4553dd2cc95143c2e2150aa1b067269",
-    "result_sha256": "afe6adbbbe12c3fa67b770cab482b5784274dfe6f08ddd10a679cf617cf3601b",
-    "pack_sha256": "a1cb7bf2d58d7d4b3c3170099c365e86b9e45588a2179e7f93d8b96e714eabe7",
-    "regenerated": "2026-09-08: same tag exporter, re-exported after the position-pools fixture gained the OLB filter-list sites"
+    "base_sha256": "00de0cfbdd4d2675ebf1fd91b1097906af95e9ed555baa6e6050659ae14ea807",
+    "result_sha256": "ac6559051a6a5ae4a4fa973fbea2fbdd9140422bca5c77a3d0e08f9b93059f58",
+    "pack_sha256": "324f62ebec3c445bab00763923516e1f2cd99f520394a87434bf7c2fcfe5484a",
+    "regenerated": "2026-09-10: same tag exporter, re-exported after the position-pools fixture gained the EDGE-only creation sites (Create Player cycle callbacks, the 51-record template table, the long-name table and the compacted trade-needs picker)"
   },
   {
     "file": "beta-61-basic.2k5patch",
@@ -36,9 +36,9 @@
     "format": 2,
     "base_size": 12021779,
     "result_size": 24045568,
-    "base_sha256": "06e106420015c5144fc2aa0f4b3a31d2b4553dd2cc95143c2e2150aa1b067269",
-    "result_sha256": "4ac1f2fa424b39b60d6355d4729a433b80ef0c09794ab0738d67f7c5049043f5",
-    "pack_sha256": "1a7122df679b65b9a3e59a8a0e2dab926534c8696e34c90b4cedde56826d619b",
-    "regenerated": "2026-09-08: same tag exporter, re-exported after the position-pools fixture gained the OLB filter-list sites"
+    "base_sha256": "00de0cfbdd4d2675ebf1fd91b1097906af95e9ed555baa6e6050659ae14ea807",
+    "result_sha256": "ec698fa22bad768b1fb260e199b9a4f13c9ad6c2fba8fa868853de934871708a",
+    "pack_sha256": "6ca7182a3e1426229f90ad8d7de1be1d95929694a62bbc689d6155aa7f03410d",
+    "regenerated": "2026-09-10: same tag exporter, re-exported after the position-pools fixture gained the EDGE-only creation sites (Create Player cycle callbacks, the 51-record template table, the long-name table and the compacted trade-needs picker)"
   }
 ]

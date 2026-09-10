@@ -477,6 +477,16 @@ class GameplayPatchesPanel(QWidget):
                 self.cpu_money_downs_level.currentIndexChanged.connect(self._money_downs_changed)
                 check.toggled.connect(self._money_downs_toggled)
                 head.addWidget(self.cpu_money_downs_level)
+            if key == "accelerated_clock":
+                self.accelerated_clock_minimum = QComboBox()
+                for seconds in tt.accelerated_clock_patch.MINIMUM_SECONDS:
+                    self.accelerated_clock_minimum.addItem(f"{seconds} s", seconds)
+                self.accelerated_clock_minimum.setCurrentIndex(self.accelerated_clock_minimum.findData(20))
+                self.accelerated_clock_minimum.setAccessibleName("Minimum Play Clock Time")
+                self.accelerated_clock_minimum.setToolTip("Minimum Play Clock Time")
+                self.accelerated_clock_minimum.currentIndexChanged.connect(lambda _i: self._refresh())
+                head.addWidget(QLabel("Minimum Play Clock Time"))
+                head.addWidget(self.accelerated_clock_minimum)
             if key == "momentum_collisions":
                 self.momentum_collision_level = QComboBox()
                 for text, value in (("Retail (0)", 0), ("Light (25)", 25), ("Medium (50)", 50), ("Heavy (100)", 100)):
@@ -652,6 +662,9 @@ class GameplayPatchesPanel(QWidget):
             elif key == "cpu_money_downs":
                 level = str(self.cpu_money_downs_level.currentData() or "modern")
                 plan.cpu_money_downs = ("modern" if level == "retail" else level) if on else "retail"
+            elif key == "accelerated_clock":
+                plan.accelerated_clock = on
+                plan.accelerated_clock_minimum_seconds = int(self.accelerated_clock_minimum.currentData() or 20)
             elif key == "momentum":
                 plan.momentum = int(self.momentum_level.currentData() or 50) if on else 0
             elif key == "music_policy":
@@ -781,6 +794,21 @@ class GameplayPatchesPanel(QWidget):
                 combo.setCurrentIndex(max(0, combo.findData("retail")))
             combo.blockSignals(False)
             combo.setEnabled(money.isEnabled())
+        if "accelerated_clock" in self.checks:
+            clock = self.checks["accelerated_clock"]
+            installed_clock = (self._state or {}).get("accelerated_clock_settings") or None
+            combo = self.accelerated_clock_minimum
+            if installed_clock and installed_clock.get("status") == "applied":
+                clock.blockSignals(True)
+                clock.setChecked(bool(installed_clock["enabled"]))
+                clock.blockSignals(False)
+                combo.blockSignals(True)
+                combo.setCurrentIndex(combo.findData(installed_clock["minimum_seconds"]))
+                combo.blockSignals(False)
+                clock.setEnabled(False)
+                combo.setEnabled(False)
+            else:
+                combo.setEnabled(clock.isEnabled() and clock.isChecked())
         if "momentum_collisions" in self.checks:
             check = self.checks["momentum_collisions"]
             installed = settings.get("status") == "applied"

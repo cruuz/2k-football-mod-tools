@@ -43,6 +43,23 @@ def sections(xbe: bytes):
 
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
 class CaveReferenceTests(unittest.TestCase):
+    def test_accelerated_clock_hooks_and_owned_children_are_reserved(self):
+        from mod_editor.core import nfl2k5_accelerated_clock as patch
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        places = patch.allocations(self.patched)
+        self.assertTrue(patch.verify(self.patched, enabled=True, minimum_seconds=20)['enabled'])
+        retail, installed = XbeImage(self.retail), XbeImage(self.patched)
+        for name, va, before, after in patch.sites(places['code']['va']):
+            self.assertEqual(retail.read(va, len(before)), before)
+            self.assertEqual(installed.read(va, len(after)), after)
+            self.assertEqual(self.manifest.overlaps(va, va+len(before), exclude_owner=patch.OWNER), [], name)
+            self.assertTrue(self.manifest.overlaps(va, va+len(before)), name)
+        for allocation in places.values():
+            start, end = allocation['va'], allocation['va']+allocation['size']
+            self.assertTrue(any(r.detail.startswith(patch.OWNER + ':') for r in self.manifest.overlaps(start, end)))
+            self.assertTrue(all(r.detail.startswith('nfl2k5_xbe_space:')
+                                for r in self.manifest.overlaps(start, end, exclude_owner=patch.OWNER)))
+
     def test_deep_zone_hooks_have_exclusive_live_ownership(self):
         from mod_editor.core import nfl2k5_deep_zone as patch
         self.assertEqual(patch.status(self.patched), "applied")

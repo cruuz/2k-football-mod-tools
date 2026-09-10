@@ -43,26 +43,29 @@ class PatchTests(unittest.TestCase):
         at = ps._offset(buf, ps.GATE_VA)
         buf[at:at+ps.GATE_SIZE] = ps.LEGACY_GATE
         cls.legacy = bytes(buf)
-        buf = bytearray(cls.retail)
-        at = ps._offset(buf, ps.DRAW_CALL_VA)
-        buf[at:at+5] = ps.PATCHED_DRAW_CALL
-        fixture = json.loads((ROOT/'tests/fixtures/nfl2k5_player_star_thin_v1.json').read_text())
-        for row in fixture['caves']:
-            va = int(row['va'], 16)
-            code = bytes.fromhex(row['code']).ljust(row['capacity'], b'\x90')
-            assert hashlib.sha256(code).hexdigest() == ps.LEGACY_OUTLINE_PINS[va]
-            at = ps._offset(buf, va)
-            buf[at:at+len(code)] = code
-        for s in _sections(buf):
-            buf[s.header_offset+36:s.header_offset+56] = section_digest(bytes(buf), s)
-        cls.thin = bytes(buf)
+        for name, revision, pins in (
+                ('thin', 'thin_v1', ps.LEGACY_OUTLINE_PINS),
+                ('bold', 'bold_v2', ps.LEGACY_BOLD_OUTLINE_PINS)):
+            buf = bytearray(cls.retail)
+            at = ps._offset(buf, ps.DRAW_CALL_VA)
+            buf[at:at+5] = ps.PATCHED_DRAW_CALL
+            fixture = json.loads((ROOT/f'tests/fixtures/nfl2k5_player_star_{revision}.json').read_text())
+            for row in fixture['caves']:
+                va = int(row['va'], 16)
+                code = bytes.fromhex(row['code']).ljust(row['capacity'], b'\x90')
+                assert hashlib.sha256(code).hexdigest() == pins[va]
+                at = ps._offset(buf, va)
+                buf[at:at+len(code)] = code
+            for section in _sections(buf):
+                buf[section.header_offset+36:section.header_offset+56] = section_digest(bytes(buf), section)
+            setattr(cls, name, bytes(buf))
 
     def test_upgrade_status_and_idempotence(self):
         self.assertEqual(ps.status(self.retail), 'retail')
         self.assertEqual(ps.status(self.legacy), 'legacy')
         self.assertTrue(ps.read_settings(self.legacy)['needs_upgrade'])
         self.assertEqual(ps.status(self.patched), 'applied')
-        self.assertEqual(ps.read_settings(self.patched)['renderer'], 'white_star_outline')
+        self.assertEqual(ps.read_settings(self.patched)['renderer'], 'white_star_filled')
         upgraded, receipt = ps.apply(self.legacy)
         self.assertEqual(upgraded, self.patched)
         self.assertTrue(receipt['controller_gate_restored'])
@@ -83,7 +86,7 @@ class PatchTests(unittest.TestCase):
         self.assertEqual(upgraded, self.patched)
         self.assertEqual(receipt['upgraded_renderer'], 'thin_v1')
         self.assertFalse(receipt['controller_gate_restored'])
-        self.assertEqual(ps.read_settings(upgraded)['renderer_revision'], 'bold_contrast_v2')
+        self.assertEqual(ps.read_settings(upgraded)['renderer_revision'], 'filled_contrast_v3')
         dispatched, receipt = tt._apply_all(self.thin, None, catch_slider=False, player_star=True)
         self.assertEqual(dispatched, self.patched)
         self.assertEqual(receipt['player_star_patch']['upgraded_renderer'], 'thin_v1')
@@ -98,8 +101,32 @@ class PatchTests(unittest.TestCase):
             with self.assertRaises(ps.PlayerStarError):
                 ps.apply(bytes(b))
 
+    def test_exact_bold_outline_upgrades_only_inset_and_digest_through_dispatcher(self):
+        from mod_editor.core import nfl2k5_throw_tuning as tt
+
+        self.assertEqual(ps.status(self.bold), 'legacy')
+        self.assertEqual(ps.read_settings(self.bold)['renderer_revision'], 'bold_contrast_v2')
+        self.assertEqual(ps.read_settings(self.bold)['renderer'], 'white_star_outline')
+        self.assertTrue(ps.read_settings(self.bold)['needs_upgrade'])
+        upgraded, receipt = ps.apply(self.bold)
+        self.assertEqual(upgraded, self.patched)
+        self.assertEqual(receipt['upgraded_renderer'], 'bold_contrast_v2')
+        self.assertFalse(receipt['controller_gate_restored'])
+        self.assertEqual([edit['label'] for edit in receipt['edits']], ['star_runtime_31e650'])
+        allowed = set(range(ps._offset(self.bold, ps.SYMBOLS['star_inset']),
+                            ps._offset(self.bold, ps.SYMBOLS['star_inset'])+4))
+        for section in _sections(self.bold):
+            allowed.update(range(section.header_offset+36, section.header_offset+56))
+        self.assertTrue(all(i in allowed for i, (a, b) in enumerate(zip(self.bold, upgraded)) if a != b))
+        dispatched, receipt = tt._apply_all(self.bold, None, catch_slider=False, player_star=True)
+        self.assertEqual(dispatched, self.patched)
+        self.assertEqual(receipt['player_star_patch']['upgraded_renderer'], 'bold_contrast_v2')
+        repeat, receipt = tt._apply_all(dispatched, None, catch_slider=False, player_star=True)
+        self.assertEqual(repeat, dispatched)
+        self.assertTrue(receipt['player_star_patch']['already_applied'])
+
     def test_modified_and_mixed_sites_fail_closed(self):
-        for source in (self.retail, self.legacy, self.thin, self.patched):
+        for source in (self.retail, self.legacy, self.thin, self.bold, self.patched):
             for _, va, code in ps.sites():
                 b = bytearray(source)
                 b[ps._offset(b, va)] ^= 1
@@ -173,6 +200,24 @@ class PatchTests(unittest.TestCase):
         self.assertEqual(result['external_references'], [])
         self.assertTrue(all(not row['overlaps'] for row in result['spans']))
 
+    def test_filled_star_composes_with_every_pairwise_owner_in_both_orders(self):
+        from tests.mod_editor.test_nfl2k5_owner_pairwise_composition import OWNERS, prerequisites
+        from tests import nfl2k5_allocator_stack as stack
+        from mod_editor.core import nfl2k5_xbe_space as space
+
+        seed, _ = space.apply(prerequisites(self.retail), stack.REQUESTS, scaleout=True)
+        for name, owner in OWNERS:
+            with self.subTest(owner=name):
+                before_star, _ = owner.apply(seed)
+                left, _ = ps.apply(before_star)
+                before_owner, _ = ps.apply(seed)
+                right, _ = owner.apply(before_owner)
+                self.assertEqual(left, right)
+                self.assertEqual(ps.status(left), 'applied')
+                self.assertEqual(owner.status(left), 'applied')
+                self.assertEqual(ps.apply(left)[0], left)
+                self.assertEqual(owner.apply(left)[0], left)
+
 
 @unittest.skipUnless(RETAIL.is_file() and HAVE_UNICORN, 'private XBE or Unicorn absent')
 class DrawTests(unittest.TestCase):
@@ -203,17 +248,20 @@ class DrawTests(unittest.TestCase):
         self.assertEqual(new.u32(ps.STAR_COUNT_VA)&255, 1)
         self.assertEqual(len(new.strips), 6)
 
-    def test_all_22_get_white_outlines_across_modes_and_control_assignments(self):
+    def test_all_22_get_one_filled_star_pair_across_modes_and_control_assignments(self):
         for mode in range(9):
             for controlled in ((), (0,), (3, 12)):
                 with self.subTest(mode=mode, controlled=controlled):
                     vm = self.Machine(self.fixed)
-                    vm.entities([1]*22, mode=mode, controlled=controlled)
+                    entities = vm.entities([1]*22, mode=mode, controlled=controlled)
                     vm.frame()
                     self.assertEqual(len(vm.strips), 44)
                     self.assertEqual(vm.u32(ps.STAR_COUNT_VA)&255, len(controlled))
                     self.assertEqual(len(vm.models), len(controlled))
                     for index, strip in enumerate(vm.strips):
+                        self.assertEqual(strip['entity'], entities[index//2])
+                        self.assertEqual(strip['world_mode'], 1)
+                        self.assertEqual(strip['material_address'] % 16, 0)
                         self.assertEqual(strip['primitive'], 6)
                         self.assertEqual(strip['transform'], 0)
                         self.assertEqual(strip['vertex_mode'], 0)
@@ -225,7 +273,7 @@ class DrawTests(unittest.TestCase):
                         self.assertEqual(struct.unpack_from('<I', mat, 0x30)[0], 0)
                         self.assertEqual(struct.unpack_from('<I', mat, 0x60)[0]&0x0F000000, 0)
 
-    def test_geometry_is_closed_five_point_outline_at_interpolated_feet(self):
+    def test_geometry_is_a_complete_filled_star_at_interpolated_feet(self):
         vm = self.Machine(self.fixed)
         vm.entities([1])
         vm.frame()
@@ -237,18 +285,29 @@ class DrawTests(unittest.TestCase):
             outer = vertices[::2][:-1]
             for j, (x, y, z, _) in enumerate(vertices[:-2]):
                 i, inner = divmod(j, 2)
-                radius = (108 if i%2 == 0 else 51)*scale*(0.58 if inner else 1)
+                radius = (108 if i%2 == 0 else 51)*scale*(0 if inner else 1)
                 angle = -math.pi/2+i*math.pi/5
                 self.assertAlmostEqual(x, cx+radius*math.cos(angle), places=3)
                 self.assertAlmostEqual(z, cz+radius*math.sin(angle), places=3)
                 self.assertEqual(y, height)
-            # Each pass covers only the annulus, leaving the center hollow.
-            def area(a, b, c):
-                return abs((b[0]-a[0])*(c[2]-a[2])-(b[2]-a[2])*(c[0]-a[0]))/2
-            triangles = sum(area(*vertices[i:i+3]) for i in range(20))
+            # Strip winding alternates. Ten consistently wound triangles tile
+            # the whole polygon; ten repeated-centre triangles have zero area.
+            def signed_area(a, b, c):
+                return ((b[0]-a[0])*(c[2]-a[2])-(b[2]-a[2])*(c[0]-a[0]))/2
+            areas = [signed_area(*vertices[i:i+3]) * (-1 if i%2 else 1) for i in range(20)]
+            filled = [area for area in areas if area != 0]
+            self.assertEqual(len(filled), 10)
+            self.assertTrue(all(area < 0 for area in filled))
             polygon = sum(outer[i][0]*outer[(i+1)%10][2]-outer[(i+1)%10][0]*outer[i][2]
                           for i in range(10))/2
-            self.assertAlmostEqual(triangles, abs(polygon)*(1-0.58**2), delta=0.1)
+            self.assertAlmostEqual(sum(abs(area) for area in filled), abs(polygon), delta=0.01)
+            center = (cx, height, cz, 0xFFFFFFFF)
+            self.assertEqual(vertices[1::2], [center]*11)
+            # Each visible triangle shares its complete radial edges with its
+            # neighbours. No hole, overlap, or rounded duplicate at a join.
+            for i in range(10):
+                self.assertEqual(vertices[2*i+1], center)
+                self.assertEqual(vertices[2*i+2], vertices[(2*i+2)%20])
 
     def test_untagged_and_control_changes_preserve_retail_rendering_and_shared_material(self):
         from tools.player_star.emulate import MATERIAL
@@ -279,12 +338,37 @@ class DrawTests(unittest.TestCase):
             self.assertEqual(len(vm.strips), 2*expected)
             self.assertEqual(len(vm.models), expected)
 
+    def test_replay_camera_branch_skips_both_renderers(self):
+        for replay in (False, True):
+            vm = self.Machine(self.fixed, replay_camera=replay)
+            vm.entities([1, 0, 1], controlled=(0,))
+            vm.frame()
+            self.assertEqual(len(vm.strips), 0 if replay else 4)
+            self.assertEqual(len(vm.models), 0 if replay else 1)
+            self.assertEqual(vm.trace.count(ps.SYMBOLS['star_frame']), 0 if replay else 1)
+            self.assertEqual(vm.trace.count(0xF9320), 0 if replay else 1)
+
+    def test_material_copy_changes_only_diffuse_texture_and_culling(self):
+        from tools.player_star.emulate import MATERIAL
+        vm = self.Machine(self.fixed)
+        vm.entities([1])
+        original = bytes(vm.uc.mem_read(MATERIAL, 128))
+        vm.frame()
+        for strip, color in zip(vm.strips, (0xFF101010, 0xFFFFFFFF)):
+            expected = bytearray(original)
+            struct.pack_into('<I', expected, 0x18, color)
+            struct.pack_into('<I', expected, 0x30, 0)
+            struct.pack_into('<I', expected, 0x60, struct.unpack_from('<I', original, 0x60)[0] & 0xF0FFFFFF)
+            self.assertEqual(strip['material'], bytes(expected))
+        self.assertEqual(bytes(vm.uc.mem_read(MATERIAL, 128)), original)
+
     def test_no_human_and_inactive_null_or_other_bits(self):
         vm = self.Machine(self.fixed)
-        vm.entities([1, 2, 3, 1, 1, 1], inactive=(3,), missing_record=(4,), missing_body=(5,))
+        entities = vm.entities([1, 2, 3, 1, 1, 1], inactive=(3,), missing_record=(4,), missing_body=(5,))
         vm.set32(0xE5FC50, 0)
         vm.frame()
         self.assertEqual(len(vm.strips), 4)
+        self.assertEqual([strip['entity'] for strip in vm.strips], [entities[0]]*2 + [entities[2]]*2)
         self.assertEqual(vm.u32(ps.STAR_COUNT_VA)&255, 0)
 
     def test_tag_walk_is_bounded_even_with_a_corrupt_cycle(self):

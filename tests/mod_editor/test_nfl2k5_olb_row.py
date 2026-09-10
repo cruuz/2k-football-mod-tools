@@ -76,7 +76,7 @@ class RetailTablesTests(unittest.TestCase):
         if hashlib.sha256(cls.retail).hexdigest() != RETAIL_SHA256:
             raise unittest.SkipTest("extracted XBE is not the pinned USA retail image")
         cls.base = modern.apply(edge.apply(cls.retail)[0])[0]
-        cls.retained = pools.apply(cls.base)[0]
+        cls.retained = pools.apply(cls.base, roster_has_olb=True)[0]
         cls.removed, cls.receipt = pools.apply(cls.retained, roster_has_olb=False)
 
     def test_all_sixteen_lists_shift_four_and_preserve_every_page_and_neighbor(self):

@@ -87,6 +87,7 @@ class BuildPlanCoverageTests(unittest.TestCase):
         bound = set(boxes) | set(NOT_A_CONTROL) | {
             "max_deep_yards", "arc", "player_tags", "team_history", "career_stats", "prospect_names",
             "roster_edits", "commentary", "playbook_packs", "name", "author", "notes",
+            "accelerated_clock_minimum_seconds",  # the Minimum Play Clock Time combo beside the clock check box
         }
         self.assertEqual(fields - bound, set(), "BuildPlan fields with no control on the Build tab")
         self.assertEqual(bound - fields, set(), "controls that name a field BuildPlan no longer has")

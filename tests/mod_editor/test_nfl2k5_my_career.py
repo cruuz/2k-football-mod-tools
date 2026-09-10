@@ -135,8 +135,8 @@ class AnyPositionTests(unittest.TestCase):
         self.assertEqual(receipt["template"], "Balanced WR")
 
     def test_template_position_and_starter_refusals(self):
-        with self.assertRaisesRegex(c.MyCareerError, "0 retail templates"):
-            prepared("DE", template=0)
+        with self.assertRaisesRegex(c.MyCareerError, "3 retail templates"):
+            prepared("DE", template=3)
         with self.assertRaisesRegex(c.MyCareerError, "3 retail templates"):
             prepared("QB", template=3)
         with self.assertRaises(rr.RosterRecordError):

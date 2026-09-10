@@ -1,0 +1,48 @@
+{
+  "baseline_machine_bytes": 10954,
+  "candidate_executed": false,
+  "candidate_installed": false,
+  "candidate_machine_bytes": 11002,
+  "candidate_machine_delta": 48,
+  "candidate_source_sha256": "0c2abc555372efdd71daea6b45eece03f0aa7d8cbda913f75f24998c173e8df7",
+  "claim": "Capacity only. Fitting the current owner does not prove a safe scheduler; the historical mode-4 receipt remains historical.",
+  "compiler_flags": "build_runtime.py: gcc -m32 -Oz -fomit-frame-pointer",
+  "excluded": [
+    "UI, pause and interruption",
+    "timestep, scene, audio and animation handling",
+    "safe live resume",
+    "stop-to-Apartment lifecycle"
+  ],
+  "experimental": true,
+  "format_tag_bytes": 17,
+  "included": [
+    "existing complete mode",
+    "admission, presence/end checks and bounded native-frame loop"
+  ],
+  "layouts": [
+    {
+      "candidate_required_rx": 15382,
+      "candidate_shortfall": 0,
+      "code_va": "0x14dc000",
+      "content_bytes": 15316,
+      "data_va": "0x14f2000",
+      "name": "minimal",
+      "normal_owner_refused": false,
+      "remaining_bytes": 1051
+    },
+    {
+      "candidate_required_rx": 15381,
+      "candidate_shortfall": 0,
+      "code_va": "0x14e89e0",
+      "content_bytes": 15316,
+      "data_va": "0x14f34d0",
+      "name": "budget_union",
+      "normal_owner_refused": false,
+      "remaining_bytes": 1051
+    }
+  ],
+  "reservation_rw": 8192,
+  "reservation_rx": 16384,
+  "runtime_witnessed": false,
+  "schema": "nfl2k5.mycareer.mode4-capacity.v1"
+}

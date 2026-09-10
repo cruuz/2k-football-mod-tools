@@ -5011,6 +5011,82 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_accelerated_clock apply source.xbe --output new-clock.xbe --enabled on --minimum-seconds 20",
+        "module": "mod_editor/core/nfl2k5_accelerated_clock.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_B65_CLOCK_REPORT.md",
+        "docs/research/nfl2k5_accelerated_clock_research.md",
+        "tests/mod_editor/test_nfl2k5_accelerated_clock.py",
+        "tests/mod_editor/test_nfl2k5_accelerated_clock_manifest.py",
+        "tests/nfl2k5_accelerated_clock_native.py",
+        "tools/nfl2k5_accelerated_clock.S"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Advanced gameplay option, opt-in and Off in every preset. Build-time controls specified in WIRING.md; in-game play UNWITNESSED."
+      },
+      "id": "nfl2k5.gameplay.accelerated_clock",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input; reserve complete RX/RW/RO owner union before installation. Foreign or mixed bytes refuse.",
+        "Boolean accelerated_clock and accelerated_clock_minimum_seconds from 25, 20, 15, 10, 5. Defaults Off/20; rebuild from base to change an installed choice.",
+        "Native offense completion, finite countdown timers, positive period and scrimmage/PAT phase. Kickoffs, quarter-opening snaps, no-huddle and final two minutes of each half/OT bypass acceleration."
+      ],
+      "portme": [
+        "Integrate BuildPlan, dispatcher, Gameplay/Build controls, packaging and registry from WIRING.md; regenerate the protected production cave manifest.",
+        "Run Noah's scorebug, clock-stoppage, two-minute, no-huddle, CPU and full-game witness list in ASTRA_REPORT.md."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_REPORT.md",
+          "docs/research/nfl2k5_accelerated_clock_research.md",
+          "tests/mod_editor/test_nfl2k5_accelerated_clock.py",
+          "tests/mod_editor/test_nfl2k5_accelerated_clock_manifest.py"
+        ],
+        "scope": "Bounded native timer, human accepted-selection continuation, CPU selected-play completion, no-huddle, snap rearm and warning/period/delay dispatch proved with synthetic objects and explicit scene stubs. Rendered gameplay, complete UI interaction, console loading and full-game pacing are UNWITNESSED.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false | true; Off in Basic, Advanced and Experimental",
+            "name": "accelerated_clock",
+            "required": true
+          },
+          {
+            "allowed": "25 | 20 | 15 | 10 | 5; default 20",
+            "name": "accelerated_clock_minimum_seconds",
+            "required": true
+          }
+        ],
+        "notes": "Build-time settings. Off skips the writer in the Studio. An explicit installed Off word is also supported for native equivalence proof."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Four pinned live hooks: B86E0 (5), B6EB0 (6), B6DC0 (5), A24B0 (7). Owned 1024 RX bytes, 4 RW latch bytes, 8 RO option bytes.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "After a huddled human or CPU play call, shorten the play clock and apply equal runoff to a running game clock, with late-half and no-huddle exceptions.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Accelerated clock (Madden style)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_accelerated_clock"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_penalties <source.xbe> <new-copy.xbe>",
         "module": "mod_editor/core/nfl2k5_penalties.py",
         "operation": "write"
@@ -6546,7 +6622,11 @@
         "ASTRA_MY_CAREER_REPORT.md",
         "tests/mod_editor/test_nfl2k5_my_career.py",
         "tests/mod_editor/test_nfl2k5_my_career_unicorn.py",
-        "tests/mod_editor/test_nfl2k5_my_career_panel.py"
+        "tests/mod_editor/test_nfl2k5_my_career_panel.py",
+        "ASTRA_B65_POSITIONS_REPORT.md",
+        "docs/mod_editor/nfl2k5_b65_positions_evidence.json",
+        "tests/mod_editor/test_nfl2k5_position_choices.py",
+        "tests/mod_editor/test_nfl2k5_my_career_position_inputs.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -6559,7 +6639,7 @@
       "input_constraints": [
         "Pinned USA executable; reserve the full selected owner union before installation.",
         "Create setup from a signed, real NFL Draft stage Franchise save with an eligible unassigned primary-pool prospect at the chosen position (any of the 17 retail codes).",
-        "Positions with retail create-a-player templates take one of their three templates or the generated ratings; C, G, T, DT and DE keep the generated prospect ratings.",
+        "All 17 retail positions have three native Create Player templates; the pools profile offers 16 live positions and merges EDGE ratings. Position-specific input decode and switch guards are bounded-native proofs; mesh movement, manual routes, catches and block animations remain unwitnessed outside Noah's reported QB play.",
         "Configure MyCareer.json (schema v2) in Build, import its paired MyCareer.zip and choose MyCareer where First Person Football was in Game Modes. All presets off.",
         "First Person Football stays a Franchise Settings toggle; its exhibition entry row is replaced.",
         "Native journal I/O, on-field control per position, camera and gameplay require the witness list. Missing or mismatched checkpoints disable MyPlayer control."
@@ -6621,7 +6701,19 @@
         "ASTRA_MYCAREER_DRAFT_REPORT.md",
         "tests/mod_editor/test_nfl2k5_my_career_draft.py",
         "tests/mod_editor/test_nfl2k5_my_career_upgrades.py",
-        "tests/mod_editor/test_nfl2k5_my_career_m3_budget.py"
+        "tests/mod_editor/test_nfl2k5_my_career_m3_budget.py",
+        "ASTRA_B65_POSITIONS_REPORT.md",
+        "docs/mod_editor/nfl2k5_b65_positions_evidence.json",
+        "tests/mod_editor/test_nfl2k5_position_choices.py",
+        "tests/mod_editor/test_nfl2k5_my_career_position_inputs.py",
+        "ASTRA_B65_SUPERSIM_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_supersim_live.py",
+        "tools/mycareer_mode/supersim_live_receipt.json",
+        "tools/mycareer_mode/supersim_budget.json",
+        "ASTRA_B65_SETTINGS_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_my_career_settings.py",
+        "tools/mycareer_mode/settings_budget.json",
+        "tools/mycareer_mode/settings_validation.json"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -6637,10 +6729,13 @@
         "Mutually exclusive with the previous journal/prepared-save MyCareer install; rebuild from an original XBE.",
         "M3 requires 16384 RX and two named 4096-byte RW blocks. Old reservations must rebuild from base; every other owner keeps its address.",
         "Career footer follows the complete native Franchise container. Sizes 720172 or 724268; ordinary saves are unchanged.",
-        "Senior Bowl preparation only: the default seed-1 squads include MyPlayer. Native event transport and stat isolation are unresolved. Requests, trades and Supersim stay out."
+        "Senior Bowl preparation only: the default seed-1 squads include MyPlayer. Native event transport and stat isolation are unresolved. Requests, trades and accelerated Supersim stay out.",
+        "All 17 retail positions have three native Create Player templates; the pools profile offers 16 live positions and merges EDGE ratings. Position-specific input decode and switch guards are bounded-native proofs; mesh movement, manual routes, catches and block animations remain unwitnessed outside Noah's reported QB play.",
+        "Apartment > Settings offers First Person Football Off/On (default Off), Off-field play Spectate/Skip presentation (default Skip presentation), and MyPlayer star On/Off (default On). First person calls the original Franchise Settings toggle at 0x147E60 and shares native word 0xE5FFE4. All three choices persist in the signed 128-byte career footer; old zero-filled footers load the defaults. B on Settings returns to Apartment. B during an eligible off-field presentation changes the saved choice to Spectate. Stage 1 remains at 1x; uninterrupted drives, headless fast forward and full-play-clock return remain unproved."
       ],
       "portme": [
-        "Complete the Noah witness list in ASTRA_MYCAREER_DRAFT_REPORT.md."
+        "Complete the Noah witness list in ASTRA_MYCAREER_DRAFT_REPORT.md.",
+        "Complete the Stage 1 QB, CB, kick, halftime, two-minute and save/load witnesses in ASTRA_B65_SUPERSIM_REPORT.md."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -6651,9 +6746,15 @@
       "runtime": {
         "evidence": [
           "ASTRA_MYCAREER_MODE_REPORT.md",
-          "ASTRA_MYCAREER_DRAFT_REPORT.md"
+          "ASTRA_MYCAREER_DRAFT_REPORT.md",
+          "ASTRA_B65_SUPERSIM_REPORT.md",
+          "tests/mod_editor/test_nfl2k5_supersim_live.py",
+          "ASTRA_B65_SETTINGS_REPORT.md",
+          "tests/mod_editor/test_nfl2k5_my_career_settings.py",
+          "tools/mycareer_mode/settings_budget.json",
+          "tools/mycareer_mode/settings_validation.json"
         ],
-        "scope": "Bounded native creation, class placement, seven-round AI draft, signing, played-XP purchase, signed container and cold-load routes. Explicit fixture preconditions and hardware seams are documented; no game boot or played witness.",
+        "scope": "Bounded native creation, class placement, seven-round AI draft, signing, played-XP purchase, signed container and cold-load routes. Explicit fixture preconditions and hardware seams are documented; no game boot or played witness. Bounded native skip readiness/cleanup, replay input consumers, presence guards and Apartment row dispatch are also proved. No headless scheduler, audio gating, uninterrupted drive or pre-snap return is proved. Settings menu dispatch, native row labels and yellow selection, the shared retail first-person word, all eight saved setting combinations, cold relocation/migration and bit-0-only MyPlayer star writes are proved in bounded native execution. A first-person snap and displayed in-game star still need Noah's witness.",
         "status": "not-tested"
       },
       "selectors": {
@@ -6674,7 +6775,7 @@
         "resource": "Game Modes row, pinned native hooks, owned 16384 RX/8192 RW and an appended 128-byte career save footer.",
         "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
       },
-      "summary": "Native draft or undrafted entry, Senior Bowl preparation, played-XP upgrades and next-fixture calendar in the existing Apartment loop. EXPERIMENTAL / UNWITNESSED.",
+      "summary": "Native draft or undrafted entry, Senior Bowl preparation, played-XP upgrades, next-fixture calendar and optional native off-field presentation skips at 1x in the Apartment loop. Accelerated sim to next appearance is unavailable. EXPERIMENTAL / UNWITNESSED. Apartment Settings saves first person, off-field presentation and MyPlayer star choices.",
       "surface": "mode_state_routing",
       "title": "In-game MyCareer (experimental, unwitnessed)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_my_career_draft"
@@ -7627,6 +7728,76 @@
       "surface": "players_rosters",
       "title": "2026 team names (experimental)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_team_names_2026"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_patch_cli player_star source.xbe output.xbe",
+        "module": "mod_editor/core/nfl2k5_patch_cli.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_player_star_draw.py",
+        "reports/gameplay_tuning/nfl2k5_star_filled_proof.json",
+        "reports/gameplay_tuning/nfl2k5_star_filled_cave_audit.json",
+        "docs/mod_editor/nfl2k5_player_star_filled.png"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "ADVANCED; existing Basic off, Advanced and Experimental on. Filled replaces Outline under the existing player_star option. In-game appearance unwitnessed."
+      },
+      "id": "nfl2k5.players_rosters.filled_star",
+      "input_constraints": [
+        "Pinned USA retail, exact beta-58..64 star patch, or current filled renderer; mixed and foreign bytes refuse before writing.",
+        "Record +0x53 bit 0 through entity +0x3C. Up to 22 active entities; no roster-tag quota.",
+        "Common live indicator pass preserves HUD, coach and replay-camera gates. Recorded replay packets do not serialize the added stars."
+      ],
+      "portme": [
+        "Witness the filled shape in a game and practice, bright turf/yard lines, HUD off, coach camera, replay and a tagged franchise roster."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source, authored geometry and proof metadata; no retail executable or disc.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "reports/gameplay_tuning/nfl2k5_star_filled_proof.json"
+        ],
+        "scope": "Native queue, decoder, model selection, tag walk, material copy and vertex writes executed with bounded service/GPU stubs; no rasterization or played-mode witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "boolean; false in Basic, true in Advanced and Experimental",
+            "name": "player_star",
+            "required": true
+          },
+          {
+            "allowed": "existing Rosters star selection; unchanged tag writer",
+            "name": "player_tags",
+            "required": false
+          }
+        ],
+        "notes": "No style selector. MyCareer creation/signing tag assignment belongs to the separate runtime job."
+      },
+      "source_container": {
+        "format": "USA Xbox XBE",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Frame call 0x64F21 and the same five pinned star spans (474 bytes total)",
+        "retail_file": "User-owned default.xbe"
+      },
+      "summary": "Draw an opaque white five-point star with a near-black edge at every active tagged player\u2019s feet.",
+      "surface": "players_rosters",
+      "title": "Filled star under tagged players",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_player_star_draw"
     },
     {
       "backend": {
@@ -9814,7 +9985,10 @@
         "ASTRA_OLB_ROW_REPORT.md",
         "docs/mod_editor/nfl2k5_olb_row_evidence.json",
         "mod_editor/core/nfl2k5_position_pools.py",
-        "tests/mod_editor/test_nfl2k5_olb_row.py"
+        "tests/mod_editor/test_nfl2k5_olb_row.py",
+        "ASTRA_B65_POSITIONS_REPORT.md",
+        "docs/mod_editor/nfl2k5_b65_positions_evidence.json",
+        "tests/mod_editor/test_nfl2k5_position_choices.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -9825,12 +9999,12 @@
       },
       "id": "nfl2k5_xbox.position_pool_filters",
       "input_constraints": [
-        "Pinned native selector readers and all sixteen complete pointer tables. Mixed or foreign bytes refuse before mutation.",
-        "All 76 disc ROST resources must be scanned after the final roster writer. Existing/unscanned saves require retained rows."
+        "Pinned USA callbacks, long-name sites, all 51 native template records and sixteen complete selector tables; foreign bytes refuse.",
+        "Certify all 76 disc ROST resources after final roster edits. External enum-10 saves require reclassification. The legacy retained-row API is outside this EDGE-only product profile."
       ],
       "portme": [
-        "Wire the protected Build final scan and compatibility option; regenerate the protected reservation manifest.",
-        "Witness all selectors in game, including a custom enum-10 roster and an empty Fullbacks group."
+        "Apply Beta 65 job C WIRING.md and regenerate the protected reservation manifest.",
+        "Witness position cycling, templates and every listed selector in game."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -9848,17 +10022,12 @@
       "selectors": {
         "fields": [
           {
-            "allowed": "complete position-pools build",
+            "allowed": "complete EDGE-only position-pools build",
             "name": "position_pools",
             "required": true
-          },
-          {
-            "allowed": "boolean compatibility override for existing or unscanned saves",
-            "name": "position_pools_keep_olb",
-            "required": false
           }
         ],
-        "notes": "Only a complete scan with zero enum-10 players permits removal. Count and getters remain separate for enums 10 and 11."
+        "notes": "One selectable EDGE (16), one LB (11); enum 10 is retired. Native counts/getters retain exact-enum semantics."
       },
       "source_container": {
         "format": "USA Xbox XBE plus fixed-span ROST resources",
@@ -9868,10 +10037,10 @@
         "resource": "Sixteen .rdata pointer lists; ROST outer 5 and 113 through 187",
         "retail_file": "default.xbe and vc_53450030/0"
       },
-      "summary": "EXPERIMENTAL / UNWITNESSED. Complete disc roster scans select compact or retained Outside Linebackers selectors. Build applies the guarded XBE policy after all roster writers.",
+      "summary": "EXPERIMENTAL / UNWITNESSED. Pools skips OLB in native Create Player/MyPlayer, merges DE/OLB ratings under EDGE, and compacts sixteen filters plus the trade-needs picker. Requires reclassified rosters.",
       "surface": "players_rosters",
-      "title": "Merged positions with one Linebackers group",
-      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_olb_row"
+      "title": "EDGE and LB position pickers and templates",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_position_choices"
     },
     {
       "backend": {

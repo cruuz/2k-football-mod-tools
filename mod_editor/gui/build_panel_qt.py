@@ -408,6 +408,16 @@ class BuildPanel(QWidget):
         g.addWidget(self.cpu_money_downs_level)
         self.cpu_money_downs_level.currentIndexChanged.connect(self._money_downs_changed)
         self.cpu_money_downs_check.toggled.connect(self._money_downs_toggled)
+        self.accelerated_clock_minimum = QComboBox()
+        for seconds in tt.accelerated_clock_patch.MINIMUM_SECONDS:
+            self.accelerated_clock_minimum.addItem(f"{seconds} s", seconds)
+        self.accelerated_clock_minimum.setCurrentIndex(self.accelerated_clock_minimum.findData(20))
+        self.accelerated_clock_minimum.setAccessibleName("Minimum Play Clock Time")
+        self.accelerated_clock_minimum.setToolTip("Minimum Play Clock Time: after the huddle break the play clock drops to this "
+                                                  "value and a running game clock loses the same time. Off in every preset; unwitnessed.")
+        g.addWidget(QLabel("Minimum Play Clock Time"))
+        g.addWidget(self.accelerated_clock_minimum)
+        self.accelerated_clock_minimum.currentIndexChanged.connect(lambda _index: self._refresh())
         for parent, children in r62_ui.CHILDREN.items():
             getattr(self, parent + "_check").toggled.connect(lambda on, p=parent: self._parent_toggled(p, on))
             for child in children:
@@ -603,10 +613,10 @@ class BuildPanel(QWidget):
                                        "Rosters, depth charts, the draft, the formation editor and the scorebug legend say EDGE.")
         self.scheme_labels_check = self._option(r, "scheme_labels", "Use scheme-specific depth-chart names",
                                                 "4-3: SAM, MIKE, WILL; 3-4: EDGE, MIKE, WILL, NT.")
-        self.position_pools_check = self._option(r, "position_pools", "Merge positions and remove the empty OLB group",
-                                                 "Creates EDGE, interior-line and linebacker pools. Removes the Outside Linebackers group only after "
-                                                 "all disc rosters pass the scan. Keeps Fullbacks and every other group. EXPERIMENTAL / UNWITNESSED.",
-                                                 needs_image=True)
+        self.position_pools_check = self._option(r, "position_pools", "Use EDGE and LB throughout position pickers",
+                                                 "Create Player and MyPlayer skip OLB; EDGE combines DE and OLB template ratings. "
+                                                 "Roster, draft, scouting, free-agency and depth choices use the merged pools. "
+                                                 "Requires reclassified rosters. EXPERIMENTAL / UNWITNESSED.", needs_image=True)
         self.position_pools_keep_olb_check = self._option(r, "position_pools_keep_olb", "Keep Outside Linebackers for existing saves",
                                                           "Use this if you will load an existing or custom roster or franchise save. Keeps the Outside "
                                                           "Linebackers group so its players remain selectable. New pooled saves can leave this off.",
@@ -673,11 +683,14 @@ class BuildPanel(QWidget):
         self.espn25_rosters_check = self._option(r, "espn25_rosters", "Historic moments: real rosters",
                                                  tt.espn25_rosters_patch.HELP_TEXT, needs_image=True)
         self._espn25_plan_cache: tuple[tuple[str, int, int] | None, str] = (None, "")
-        self.player_star_check = self._option(r, "player_star", "Show a star under selected players",
-                                             "A white star outline under every tagged player on the field; not yet tested in-game.", badge=NOT_TESTED,
-                                             details="The game's own controller star follows every player you select. With nobody selected nothing "
-                                                     "changes on screen. The same routine gates the on-field name/number indicator, so a selected player "
-                                                     "gets that too when Player Indicator Text is on. The tags reach franchises created from the copy.")
+        self.player_star_check = self._option(
+            r, "player_star", "Show a filled star under selected players",
+            "A filled white star with a dark edge under every tagged player on the field; in-game appearance unwitnessed.",
+            badge=NOT_TESTED,
+            details="Select players with the Rosters star column. Each active tagged player gets a filled star at his feet, "
+                    "following the existing HUD and camera visibility rules. Tags reach new franchises made from this copy; "
+                    "existing saves need their own tagged roster. Recorded replay packets do not store these added stars.",
+        )
         self.star_players_label = QLabel("")
         self.star_players_label.setObjectName("throwMuted")
         self.star_players_label.setWordWrap(True)
@@ -1226,6 +1239,10 @@ class BuildPanel(QWidget):
         self.cpu_money_downs_level.blockSignals(True)
         self.cpu_money_downs_level.setCurrentIndex(0)
         self.cpu_money_downs_level.blockSignals(False)
+        self.accelerated_clock_minimum.blockSignals(True)
+        self.accelerated_clock_minimum.setCurrentIndex(
+            self.accelerated_clock_minimum.findData(values.get("accelerated_clock_minimum_seconds", 20)))
+        self.accelerated_clock_minimum.blockSignals(False)
         self.my_career_setup_field.clear()
         self.screen_timing_combo.setCurrentText(values.get("screen_timing") or "D")
         boxes = self._boxes()
@@ -1320,12 +1337,18 @@ class BuildPanel(QWidget):
         self.star_players_label.setText(text)
 
     def _sync_keep_olb(self, pools_on: bool) -> None:
+        # Beta 65: the EDGE-only pools build always certifies the rosters, so the
+        # "Keep Outside Linebackers" compatibility profile is retired. The check box
+        # object stays for old project files; its whole row is hidden and forced off.
         keep = getattr(self, "position_pools_keep_olb_check", None)
         if keep is None:
             return
-        keep.setEnabled(bool(pools_on) and self.position_pools_check.isEnabled())
-        if not pools_on:
-            keep.setChecked(False)
+        keep.setChecked(False)
+        keep.setEnabled(False)
+        row = keep.parentWidget()
+        if row is not None:
+            row.hide()
+        keep.hide()
 
     def plan(self) -> mod_build.BuildPlan:
         plan = mod_build.BuildPlan(
@@ -1359,7 +1382,7 @@ class BuildPanel(QWidget):
             scheme_labels=self.scheme_labels_check.isChecked(), camera=self.camera_check.isChecked(),
             kick_rules=self.kick_rules_check.isChecked(), kick_power=self.kick_power_check.isChecked(),
             position_pools=self.position_pools_check.isChecked(),
-            position_pools_keep_olb=self.position_pools_keep_olb_check.isChecked() and self.position_pools_check.isChecked(),
+            position_pools_keep_olb=False,
             espn25_rosters=self.espn25_rosters_check.isChecked(),
             depth_roles=self.depth_roles_check.isChecked(),
             depth_chart_rows=self.depth_chart_rows_check.isChecked(),
@@ -1405,6 +1428,7 @@ class BuildPanel(QWidget):
         for key in r62_ui.KEYS:
             setattr(plan, key, getattr(self, key + "_check").isChecked())
         plan.cpu_money_downs = self._money_downs_level() if self.cpu_money_downs_check.isChecked() else "retail"
+        plan.accelerated_clock_minimum_seconds = int(self.accelerated_clock_minimum.currentData() or 20)
         plan.created_teams_extra = 2 if self.created_teams_extra_check.isChecked() else 0
         plan.momentum_collision_level = int(self.momentum_collision_level.currentData() or 50) if plan.momentum_collisions else 0
         plan.guardian_everyone_practice = self.guardian_everyone_practice_check.isChecked()
@@ -1596,6 +1620,20 @@ class BuildPanel(QWidget):
             self.cpu_money_downs_level.setCurrentIndex(max(0, self.cpu_money_downs_level.findData("retail")))
         self.cpu_money_downs_level.blockSignals(False)
         self.cpu_money_downs_level.setEnabled(money.isEnabled())
+        clock = self.accelerated_clock_check
+        installed_clock = (self._state or {}).get("accelerated_clock_settings") or None
+        combo = self.accelerated_clock_minimum
+        if installed_clock and installed_clock.get("status") == "applied":
+            clock.blockSignals(True)
+            clock.setChecked(bool(installed_clock["enabled"]))
+            clock.blockSignals(False)
+            combo.blockSignals(True)
+            combo.setCurrentIndex(combo.findData(installed_clock["minimum_seconds"]))
+            combo.blockSignals(False)
+            clock.setEnabled(False)
+            combo.setEnabled(False)
+        else:
+            combo.setEnabled(clock.isEnabled() and clock.isChecked())
         for key, reason in r62_ui.UNAVAILABLE.items():
             getattr(self, key + "_check").setEnabled(False)
             getattr(self, key + "_check").setToolTip(reason)

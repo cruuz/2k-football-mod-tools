@@ -1,4 +1,4 @@
-# 2K5 Mod Studio v1.0 RC88 — Getting Started
+# 2K5 Mod Studio v1.0 RC89 — Getting Started
 
 2K5 Mod Studio lets you modify your own legally dumped USA Xbox copy of
 **ESPN NFL 2K5** without using a hex editor. Think of the source XISO as the
@@ -17,6 +17,14 @@ Community: questions, bug reports and shared patches live on the Discord,
 https://discord.gg/dpMJCnJZD (also under Help > Join the Discord… in both studios).
 
 ## Before you begin
+
+Beta 65's **Accelerated clock (Madden style)** is an optional build-time gameplay setting. After the Studio
+controls in `WIRING.md` are integrated, enable it on the Gameplay tab and choose **Minimum Play Clock Time**
+(25, 20, 15, 10 or 5 seconds; start with 20). Build a fresh copy and select 15-minute quarters in the game.
+After a huddled play call, watch the play clock jump to the minimum; a running game clock should lose the
+same time. A stopped game clock stays stopped. No-huddle and the final two minutes of each half or overtime
+keep normal clock management. This option defaults Off in every preset and does not add an in-game menu
+row. Native code tests pass; the scorebug and full-game pacing still need the play checks in `ASTRA_REPORT.md`.
 
 You need:
 

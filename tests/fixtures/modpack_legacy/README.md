@@ -28,3 +28,8 @@ The two Advanced packs were re-exported again on 2026-09-08 (beta 63) with the s
 synthetic executable changed under them: the 7-on-7 v2 landing moved the synthetic section table from 0x200 to the
 retail 0x370 (the old offset overlapped the arc certificate bytes at 0x310 and corrupted section 5) and seeds the
 retail rush reads. The Basic packs are untouched.
+
+The two Advanced packs were re-exported again on 2026-09-10 (beta 65) with the same tag exporters because the
+synthetic retail fixture gained the EDGE-only creation sites of the one-pool positions change (the Create Player
+cycle callbacks, the complete 51-record template table, the Create Player long-name table and the compacted
+trade-needs picker). The Basic packs are untouched. Script: the ship record's `reexport_legacy_packs.py`.

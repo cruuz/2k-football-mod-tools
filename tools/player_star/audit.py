@@ -75,11 +75,14 @@ def oracle_audit(payload):
     oracle = CaveOracle(payload, manifest=manifest, reference_budget=6_000_000).analyze()
     queries = []
     for va, size, _ in ps.CAVES:
-        row = oracle.assess(va, size)
+        # These spans are now owned by this writer. Exclude only that owner;
+        # all other reservations and every retail reachability witness remain.
+        row = oracle.assess(va, size, exclude_owner='nfl2k5_player_star')
         row['external_witnesses'] = [e.report() for e in oracle.witnesses(va, va+size)
                                      if e.source is not None and not va <= e.source < va+size]
         queries.append(row)
-    return {'queries': queries, 'instruction_count': oracle.instruction_count,
+    return {'queries': queries, 'excluded_owner': 'nfl2k5_player_star',
+            'instruction_count': oracle.instruction_count,
             'reference_count': oracle.reference_count, 'unresolved_count': len(oracle.unknowns),
             'unresolved_kinds': sorted(oracle._unknown_kinds),
             'budget_exhausted': {'instructions': oracle._instruction_limit, 'references': oracle._reference_limit}}
