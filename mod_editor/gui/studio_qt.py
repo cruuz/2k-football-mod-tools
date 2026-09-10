@@ -2875,6 +2875,7 @@ class StudioMainWindow(QMainWindow):
         self.pages.addWidget(self._page_scroll_host(self._create_play_tabs))
         self._my_career_panel = MyCareerPanel()
         self._my_career_panel.setup_ready.connect(self._my_career_setup_ready)
+        self._sync_mycareer_position_scheme()
         self.pages.addWidget(self._page_scroll_host(self._my_career_panel))
         self._scorebar_panel = ScorebugStudioPanel()
         self._scorebar_panel.folder_chosen.connect(self._scorebar_folder_chosen)
@@ -8628,6 +8629,26 @@ class StudioMainWindow(QMainWindow):
         self._mark_workspace_changed()
         self._set_status("Scorebar folder handed to Build. Tick Experimental ESPN scorebar on the Build tab.")
 
+    def _sync_mycareer_position_scheme(self, *_args):
+        """Point the MyCareer picker at the retail or EDGE/LB position scheme.
+
+        Reads the Build panel's position-pools choice (or an already applied
+        pools patch on the open image) so Create MyPlayer offers exactly the
+        positions the built game will accept.
+        """
+
+        panel = getattr(self, "_my_career_panel", None)
+        build = getattr(self, "_build_panel", None)
+        if panel is None or build is None:
+            return
+
+        def enabled():
+            return (build.position_pools_check.isChecked()
+                    or (getattr(build, "_state", None) or {}).get("position_pools") == "applied")
+
+        panel.position_pools_enabled = enabled
+        panel.set_position_pools(enabled())
+
     def _my_career_setup_ready(self, path):
         self._build_panel.set_my_career_setup(path)
         self._capture_music_build_settings()
@@ -8658,6 +8679,10 @@ class StudioMainWindow(QMainWindow):
         tabs.setObjectName("buildShareTabs")
         tabs.setAccessibleName("Build and share workspaces")
         self._build_panel = BuildPanel(self.facade)
+        # The MyCareer picker follows the position-pools option (EDGE and LB only
+        # when it is on); either panel may be built first.
+        self._sync_mycareer_position_scheme()
+        self._build_panel.position_pools_check.toggled.connect(self._sync_mycareer_position_scheme)
         from .gameplay_project_ui import observe_build_choices
         observe_build_choices(self._build_panel, self._gameplay_build_changed)
         self._connect_gameplay_build()

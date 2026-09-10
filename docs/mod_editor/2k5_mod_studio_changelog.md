@@ -12,6 +12,21 @@
   staged tree into it. An existing destination is still refused at once, nothing is ever overwritten, and the
   Windows branch is exercised on every CI platform by `tests/mod_editor/test_windows_folder_publish_retry.py`.
 
+- **EDGE and LB are the only edge and linebacker choices when the position pools are on (Noah, MyCareer position
+  picker, 2026-09-10).** With merged position pools, Create Player and Create MyPlayer cycle through EDGE and LB
+  without an OLB entry, in both directions, with no blank row. EDGE has Power, Speed and Balanced templates drawn
+  from the game's DE and OLB ratings; roster, draft, scouting, free-agency, contracts, trade-needs and the other
+  native selectors skip the retired row; the 3-4 interior depth slots read DT. The seventh "Defensive End" consumer,
+  the Create Player long-name table, now says Edge Rusher too. The completed build requires reclassified rosters:
+  the old "Keep Outside Linebackers" compatibility profile is retired and an uncertified roster refuses the build.
+  `ASTRA_B65_POSITIONS_REPORT.md`; unwitnessed in game.
+- **MyCareer uses the game's own templates for linemen, and says what each position can really do.** MyCareer now
+  uses the native Create Player templates for offensive and defensive linemen instead of substituting 65s. Its
+  position descriptions distinguish proved input handling (every position's controller decode, port restore and
+  switch guards were executed natively) from what is still unwitnessed: routes, mesh movement, catches and
+  blocking under the stick. No speculative first-person control flag is enabled; Noah's QB play remains the only
+  witness.
+
 ## v1.0 RC88, the 2K8 beta: no 2K5 changes beyond the version and the release tag (2026-09-09)
 
 - Beta 64 is the first All-Pro Football 2K8 beta (APF 2K8 Mod Studio 0.1.0-alpha.85, see

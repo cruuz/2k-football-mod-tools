@@ -1020,8 +1020,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         plan = replace(plan, season_cap=True, calendar_engine=True, season_2026=True, xbe_space=True)
     if type(plan.position_pools_keep_olb) is not bool:
         raise ValueError("position_pools_keep_olb must be boolean")
-    if plan.position_pools_keep_olb and not plan.position_pools:
-        raise ValueError("Keep Outside Linebackers needs the merged position pools")
+    if plan.position_pools_keep_olb:
+        raise ValueError("The EDGE-only pools build requires reclassified rosters; rebuild an old compatibility "
+                         "project with Keep Outside Linebackers off")
     if type(plan.team_names_2026) is not bool:
         raise ValueError("team_names_2026 must be boolean")
     if type(plan.espn25_plan) is not str:
@@ -1738,9 +1739,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             raise RuntimeError("the roster scan for the Outside Linebackers rows is not available in this build")
         progress("Scanning every disc roster for outside linebackers", 0, 0)
         scan = roster_scan.olb_filter_policy(target)
-        # Only the literal False from a complete scan certifies absence; incomplete evidence keeps the rows.
-        keep_olb = plan.position_pools_keep_olb or scan["roster_has_olb"] is not False
-        xbe, filter_receipt = pools_final.apply(_xbe_bytes(target), roster_has_olb=keep_olb)
+        # Only the literal False from a complete scan certifies absence. Beta 65 ships the EDGE-only
+        # product profile: an uncertified roster refuses the build instead of keeping OLB rows.
+        if scan["roster_has_olb"] is not False:
+            raise ValueError("The EDGE-only position build still contains enum-10 players or an incomplete "
+                             "roster scan; reclassify every selectable roster before building")
+        xbe, filter_receipt = pools_final.apply(_xbe_bytes(target), roster_has_olb=False)
         _write_xbe_bytes(target, xbe)
         receipt["steps"].append({"step": "position_pool_filters", "scan": scan,
                                  "compatibility_override": plan.position_pools_keep_olb,

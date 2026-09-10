@@ -6546,7 +6546,11 @@
         "ASTRA_MY_CAREER_REPORT.md",
         "tests/mod_editor/test_nfl2k5_my_career.py",
         "tests/mod_editor/test_nfl2k5_my_career_unicorn.py",
-        "tests/mod_editor/test_nfl2k5_my_career_panel.py"
+        "tests/mod_editor/test_nfl2k5_my_career_panel.py",
+        "ASTRA_B65_POSITIONS_REPORT.md",
+        "docs/mod_editor/nfl2k5_b65_positions_evidence.json",
+        "tests/mod_editor/test_nfl2k5_position_choices.py",
+        "tests/mod_editor/test_nfl2k5_my_career_position_inputs.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -6559,7 +6563,7 @@
       "input_constraints": [
         "Pinned USA executable; reserve the full selected owner union before installation.",
         "Create setup from a signed, real NFL Draft stage Franchise save with an eligible unassigned primary-pool prospect at the chosen position (any of the 17 retail codes).",
-        "Positions with retail create-a-player templates take one of their three templates or the generated ratings; C, G, T, DT and DE keep the generated prospect ratings.",
+        "All 17 retail positions have three native Create Player templates; the pools profile offers 16 live positions and merges EDGE ratings. Position-specific input decode and switch guards are bounded-native proofs; mesh movement, manual routes, catches and block animations remain unwitnessed outside Noah's reported QB play.",
         "Configure MyCareer.json (schema v2) in Build, import its paired MyCareer.zip and choose MyCareer where First Person Football was in Game Modes. All presets off.",
         "First Person Football stays a Franchise Settings toggle; its exhibition entry row is replaced.",
         "Native journal I/O, on-field control per position, camera and gameplay require the witness list. Missing or mismatched checkpoints disable MyPlayer control."
@@ -6621,7 +6625,11 @@
         "ASTRA_MYCAREER_DRAFT_REPORT.md",
         "tests/mod_editor/test_nfl2k5_my_career_draft.py",
         "tests/mod_editor/test_nfl2k5_my_career_upgrades.py",
-        "tests/mod_editor/test_nfl2k5_my_career_m3_budget.py"
+        "tests/mod_editor/test_nfl2k5_my_career_m3_budget.py",
+        "ASTRA_B65_POSITIONS_REPORT.md",
+        "docs/mod_editor/nfl2k5_b65_positions_evidence.json",
+        "tests/mod_editor/test_nfl2k5_position_choices.py",
+        "tests/mod_editor/test_nfl2k5_my_career_position_inputs.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -6637,7 +6645,8 @@
         "Mutually exclusive with the previous journal/prepared-save MyCareer install; rebuild from an original XBE.",
         "M3 requires 16384 RX and two named 4096-byte RW blocks. Old reservations must rebuild from base; every other owner keeps its address.",
         "Career footer follows the complete native Franchise container. Sizes 720172 or 724268; ordinary saves are unchanged.",
-        "Senior Bowl preparation only: the default seed-1 squads include MyPlayer. Native event transport and stat isolation are unresolved. Requests, trades and Supersim stay out."
+        "Senior Bowl preparation only: the default seed-1 squads include MyPlayer. Native event transport and stat isolation are unresolved. Requests, trades and Supersim stay out.",
+        "All 17 retail positions have three native Create Player templates; the pools profile offers 16 live positions and merges EDGE ratings. Position-specific input decode and switch guards are bounded-native proofs; mesh movement, manual routes, catches and block animations remain unwitnessed outside Noah's reported QB play."
       ],
       "portme": [
         "Complete the Noah witness list in ASTRA_MYCAREER_DRAFT_REPORT.md."
@@ -9814,7 +9823,10 @@
         "ASTRA_OLB_ROW_REPORT.md",
         "docs/mod_editor/nfl2k5_olb_row_evidence.json",
         "mod_editor/core/nfl2k5_position_pools.py",
-        "tests/mod_editor/test_nfl2k5_olb_row.py"
+        "tests/mod_editor/test_nfl2k5_olb_row.py",
+        "ASTRA_B65_POSITIONS_REPORT.md",
+        "docs/mod_editor/nfl2k5_b65_positions_evidence.json",
+        "tests/mod_editor/test_nfl2k5_position_choices.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -9825,12 +9837,12 @@
       },
       "id": "nfl2k5_xbox.position_pool_filters",
       "input_constraints": [
-        "Pinned native selector readers and all sixteen complete pointer tables. Mixed or foreign bytes refuse before mutation.",
-        "All 76 disc ROST resources must be scanned after the final roster writer. Existing/unscanned saves require retained rows."
+        "Pinned USA callbacks, long-name sites, all 51 native template records and sixteen complete selector tables; foreign bytes refuse.",
+        "Certify all 76 disc ROST resources after final roster edits. External enum-10 saves require reclassification. The legacy retained-row API is outside this EDGE-only product profile."
       ],
       "portme": [
-        "Wire the protected Build final scan and compatibility option; regenerate the protected reservation manifest.",
-        "Witness all selectors in game, including a custom enum-10 roster and an empty Fullbacks group."
+        "Apply Beta 65 job C WIRING.md and regenerate the protected reservation manifest.",
+        "Witness position cycling, templates and every listed selector in game."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -9848,17 +9860,12 @@
       "selectors": {
         "fields": [
           {
-            "allowed": "complete position-pools build",
+            "allowed": "complete EDGE-only position-pools build",
             "name": "position_pools",
             "required": true
-          },
-          {
-            "allowed": "boolean compatibility override for existing or unscanned saves",
-            "name": "position_pools_keep_olb",
-            "required": false
           }
         ],
-        "notes": "Only a complete scan with zero enum-10 players permits removal. Count and getters remain separate for enums 10 and 11."
+        "notes": "One selectable EDGE (16), one LB (11); enum 10 is retired. Native counts/getters retain exact-enum semantics."
       },
       "source_container": {
         "format": "USA Xbox XBE plus fixed-span ROST resources",
@@ -9868,10 +9875,10 @@
         "resource": "Sixteen .rdata pointer lists; ROST outer 5 and 113 through 187",
         "retail_file": "default.xbe and vc_53450030/0"
       },
-      "summary": "EXPERIMENTAL / UNWITNESSED. Complete disc roster scans select compact or retained Outside Linebackers selectors. Build applies the guarded XBE policy after all roster writers.",
+      "summary": "EXPERIMENTAL / UNWITNESSED. Pools skips OLB in native Create Player/MyPlayer, merges DE/OLB ratings under EDGE, and compacts sixteen filters plus the trade-needs picker. Requires reclassified rosters.",
       "surface": "players_rosters",
-      "title": "Merged positions with one Linebackers group",
-      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_olb_row"
+      "title": "EDGE and LB position pickers and templates",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_position_choices"
     },
     {
       "backend": {

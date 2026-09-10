@@ -603,10 +603,10 @@ class BuildPanel(QWidget):
                                        "Rosters, depth charts, the draft, the formation editor and the scorebug legend say EDGE.")
         self.scheme_labels_check = self._option(r, "scheme_labels", "Use scheme-specific depth-chart names",
                                                 "4-3: SAM, MIKE, WILL; 3-4: EDGE, MIKE, WILL, NT.")
-        self.position_pools_check = self._option(r, "position_pools", "Merge positions and remove the empty OLB group",
-                                                 "Creates EDGE, interior-line and linebacker pools. Removes the Outside Linebackers group only after "
-                                                 "all disc rosters pass the scan. Keeps Fullbacks and every other group. EXPERIMENTAL / UNWITNESSED.",
-                                                 needs_image=True)
+        self.position_pools_check = self._option(r, "position_pools", "Use EDGE and LB throughout position pickers",
+                                                 "Create Player and MyPlayer skip OLB; EDGE combines DE and OLB template ratings. "
+                                                 "Roster, draft, scouting, free-agency and depth choices use the merged pools. "
+                                                 "Requires reclassified rosters. EXPERIMENTAL / UNWITNESSED.", needs_image=True)
         self.position_pools_keep_olb_check = self._option(r, "position_pools_keep_olb", "Keep Outside Linebackers for existing saves",
                                                           "Use this if you will load an existing or custom roster or franchise save. Keeps the Outside "
                                                           "Linebackers group so its players remain selectable. New pooled saves can leave this off.",
@@ -1320,12 +1320,18 @@ class BuildPanel(QWidget):
         self.star_players_label.setText(text)
 
     def _sync_keep_olb(self, pools_on: bool) -> None:
+        # Beta 65: the EDGE-only pools build always certifies the rosters, so the
+        # "Keep Outside Linebackers" compatibility profile is retired. The check box
+        # object stays for old project files; its whole row is hidden and forced off.
         keep = getattr(self, "position_pools_keep_olb_check", None)
         if keep is None:
             return
-        keep.setEnabled(bool(pools_on) and self.position_pools_check.isEnabled())
-        if not pools_on:
-            keep.setChecked(False)
+        keep.setChecked(False)
+        keep.setEnabled(False)
+        row = keep.parentWidget()
+        if row is not None:
+            row.hide()
+        keep.hide()
 
     def plan(self) -> mod_build.BuildPlan:
         plan = mod_build.BuildPlan(
@@ -1359,7 +1365,7 @@ class BuildPanel(QWidget):
             scheme_labels=self.scheme_labels_check.isChecked(), camera=self.camera_check.isChecked(),
             kick_rules=self.kick_rules_check.isChecked(), kick_power=self.kick_power_check.isChecked(),
             position_pools=self.position_pools_check.isChecked(),
-            position_pools_keep_olb=self.position_pools_keep_olb_check.isChecked() and self.position_pools_check.isChecked(),
+            position_pools_keep_olb=False,
             espn25_rosters=self.espn25_rosters_check.isChecked(),
             depth_roles=self.depth_roles_check.isChecked(),
             depth_chart_rows=self.depth_chart_rows_check.isChecked(),

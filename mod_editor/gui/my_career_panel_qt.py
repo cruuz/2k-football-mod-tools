@@ -42,6 +42,10 @@ class MyCareerPanel(QWidget):
         self._task = None
         self._plan = None
         self.setup_path = ""
+        # Position scheme follows the Build panel's position-pools option (wired by
+        # the studio through position_pools_enabled / set_position_pools).
+        self._position_scheme = "retail"
+        self.position_pools_enabled = lambda: False
         layout = QVBoxLayout(self)
         title = QLabel("MyCareer")
         title.setStyleSheet("font-size: 22px; font-weight: bold;")
@@ -66,8 +70,8 @@ class MyCareerPanel(QWidget):
         form.addRow("First name", self.first)
         form.addRow("Last name", self.last)
         self.position = QComboBox()
-        for code in range(career.POSITION_COUNT):
-            self.position.addItem(f"{roster.position_name(code)} ({roster.position_long_name(code)})", code)
+        for code, short, long_name in career.position_choices(self._position_scheme):
+            self.position.addItem(f"{short} ({long_name})", code)
         self.position.currentIndexChanged.connect(self._position_changed)
         form.addRow("Position", self.position)
         self.template = QComboBox()
@@ -122,7 +126,8 @@ class MyCareerPanel(QWidget):
         row.addWidget(self.rebuild_button)
         form.addRow(row)
         layout.addWidget(group)
-        self.result = QLabel("Both options are off in all presets. No gameplay witness has been recorded.")
+        self.result = QLabel("Both options are off in all presets. Noah reports QB play works; this build's "
+                             "position behavior still needs a gameplay witness.")
         self.result.setWordWrap(True)
         self.result.setTextInteractionFlags(self.result.textInteractionFlags() | Qt.TextSelectableByMouse)
         layout.addWidget(self.result)
@@ -131,17 +136,43 @@ class MyCareerPanel(QWidget):
     def set_source(self, source):
         self.image.setText(str(source or ""))
 
+    def set_position_pools(self, enabled):
+        """Switch the picker between the retail 17 positions and the EDGE/LB pools."""
+        scheme = "one_pool" if enabled else "retail"
+        if scheme == self._position_scheme:
+            return
+        old_code = self.position.currentData()
+        old_variant = self.template.currentData()
+        self._position_scheme = scheme
+        code = roster.replacement_position_code(old_code or 0, scheme)
+        self.position.blockSignals(True)
+        try:
+            self.position.clear()
+            for value, short, long_name in career.position_choices(scheme):
+                self.position.addItem(f"{short} ({long_name})", value)
+            self.position.setCurrentIndex(max(0, self.position.findData(code)))
+        finally:
+            self.position.blockSignals(False)
+        self._position_changed()
+        variant_index = self.template.findData(old_variant)
+        if variant_index >= 0:
+            self.template.setCurrentIndex(variant_index)
+
+    def showEvent(self, event):
+        self.set_position_pools(bool(self.position_pools_enabled()))
+        super().showEvent(event)
+
     def _position_changed(self):
-        """Templates follow the position: three retail styles, or the generated ratings."""
+        """Templates follow the position: the native styles of the active scheme."""
         code = self.position.currentData()
         self.template.clear()
-        for template in career.templates_for(code):
+        for template in career.templates_for(code, scheme=self._position_scheme):
             self.template.addItem(template.label, template.variant)
         if self.template.count() == 0:
             self.template.addItem("Keep the generated prospect ratings (no retail template)", None)
         group = career.position_group(code)
         proved, hypothesis = career.POSITION_CONTRACT[group]
-        self.contract.setText(f"{group}: {proved}. {hypothesis}. Nothing is witnessed in play.")
+        self.contract.setText(f"{group}: {proved}. {hypothesis}. This build's rendered play is unwitnessed.")
 
     def _invalidate_plan(self):
         self._plan = None
@@ -194,7 +225,7 @@ class MyCareerPanel(QWidget):
         options = dict(first=self.first.text().strip(), last=self.last.text().strip(),
                        position=self.position.currentData(), template=self.template.currentData(),
                        port=self.port.value() - 1, camera=self.camera.currentIndex(),
-                       starter_lock=self.starter.isChecked())
+                       starter_lock=self.starter.isChecked(), scheme=self._position_scheme)
 
         def done(receipt):
             self.setup_path = str(Path(receipt["output"]) / "MyCareer.json")
