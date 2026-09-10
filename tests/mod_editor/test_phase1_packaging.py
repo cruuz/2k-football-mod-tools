@@ -54,7 +54,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         )
         status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
         self.assertTrue(getting_started.startswith(
-            "# 2K5 Mod Studio v1.0 RC87 — Getting Started"
+            "# 2K5 Mod Studio v1.0 RC88 — Getting Started"
         ))
         self.assertIn(
             "## v1.0 RC48 Audio Converter, Stadium Model Export, Update Check", changelog
