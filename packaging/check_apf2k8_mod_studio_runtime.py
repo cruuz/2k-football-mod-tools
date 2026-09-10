@@ -1322,6 +1322,7 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         "apf2k8.uniforms.jersey_00_23",
         "apf2k8.uniforms.pants_color_00_23",
         "apf2k8.uniforms.shoulder_color_00_23",
+        "apf2k8.players_rosters.ps3_roster_import",
     }
     require(
         editable == expected_editable
