@@ -1,5 +1,12 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC88, the 2K8 beta: no 2K5 changes beyond the version and the release tag (2026-09-09)
+
+- Beta 64 is the first All-Pro Football 2K8 beta (APF 2K8 Mod Studio 0.1.0-alpha.85, see
+  `apf2k8_mod_studio_changelog.md`). The 2K5 studio is beta 63.1 unchanged: `1.0.0rc88` and release tag `beta-64`
+  exist only so the in-app Update button offers the release and reports it correctly. The SOFTDRINK packs are the
+  beta 63.1 files. The 2K5 runtime closure now pins the canonical registry at 139 rows (86 NFL 2K5, 52 APF, 1 PS2).
+
 ## Beta 63.1 hotfix (2026-09-09)
 
 - **Build no longer refuses the whole disc over one jersey digit (Coach Edwards, #2k5-bugs 2026-09-09).** A Team

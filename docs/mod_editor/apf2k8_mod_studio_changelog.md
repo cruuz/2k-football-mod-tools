@@ -1,6 +1,6 @@
 # APF 2K8 Mod Studio Changelog
 
-## Unreleased (APF wave 2026-09-09)
+## 0.1.0-alpha.85 — the 2K8 beta (beta-64): playbooks, play design, coverage, book identity, CPU play calling, PS3 imports — 2026-09-09
 
 Product identity: **0.1.0-alpha.85**. All new gameplay is **UNWITNESSED**.
 
