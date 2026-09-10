@@ -291,10 +291,11 @@ class CaveOracleTests(unittest.TestCase):
             ReservationManifest(manifest_for(p, complete=False), XbeImage(p))
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)
-            (tmp_path / "owner.py").write_text("pass\n")
+            # Bytes, not text: Windows write_text would store CRLF and drift the hash.
+            (tmp_path / "owner.py").write_bytes(b"pass\n")
             doc = manifest_for(p, source_sha256={"owner.py": hashlib.sha256(b"pass\n").hexdigest()})
             ReservationManifest(doc, XbeImage(p), source_root=tmp_path)
-            (tmp_path / "owner.py").write_text("changed\n")
+            (tmp_path / "owner.py").write_bytes(b"changed\n")
             with self.assertRaisesRegex(OracleError, "stale reservation source"):
                 ReservationManifest(doc, XbeImage(p), source_root=tmp_path)
 
