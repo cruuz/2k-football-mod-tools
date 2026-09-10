@@ -70,7 +70,7 @@ class MenuTests(unittest.TestCase):
                                    (bytes((1,1,27,0,5)), '1/1/2027 at 00:05')):
                 m.uc.mem_write(0xE57C40+8*slot+3,date)  # supplied schedule dates
                 self.assertTrue(any(expected in t for t in self.rendered(m)))
-            m.select(6)
+            m.select(4)
             self.assertEqual(m.top(),m.labels['m3_upgrade_menu'])
             self.rendered(m)
             rows={r['text'] for r in m.native_rows if r['text']}

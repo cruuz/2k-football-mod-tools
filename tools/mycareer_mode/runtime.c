@@ -14,14 +14,25 @@ extern u8 state[4096];
 extern u8 m3[4096];
 #define M(n) W(m3,n)
 extern const u8 m3_menu_template[],m3_menu_bytes[];
-extern u8 hub_rows[];
+extern u8 settings_rows[];
 extern const u16 m3_supersim_off_text[],m3_supersim_skip_text[];
+extern const u16 m3_star_off_text[],m3_star_on_text[],m3_settings_note[];
+extern const u16 m3_fpf_off_text[],m3_fpf_on_text[];
+extern const u8 m3_settings_menu[];
 extern u32 primary(void);
 extern void resolve_team(void), settle(void);
 extern void rebind(void);
 #define S(n) W(state,n)
 #define STAGED (state+1280)
 #define ROOT ((u8 *)G(0xB72918))
+/* +2696 Spectate, +2700 star disabled, +2704 serialized FPF snapshot.
+ * The retail word E5FFE4 remains authoritative; only load reapplies it. */
+static NI void settings_labels(void) {
+    W(settings_rows,4)=(u32)(G(0xE5FFE4)?m3_fpf_on_text:m3_fpf_off_text);
+    W(settings_rows,52+4)=(u32)(S(2696)?m3_supersim_off_text:m3_supersim_skip_text);
+    W(settings_rows,104+4)=(u32)(S(2700)?m3_star_off_text:m3_star_on_text);
+}
+static NI void player_star(u8 *p) { p[0x53]=(p[0x53]&0xfe)|!S(2700); }
 extern const u8 menu_template[];
 extern const u8 text_template[], text_bytes[];
 static NI void init_menus(void) {
@@ -34,7 +45,7 @@ static NI void init_menus(void) {
         else p+=i;
         while(i--) *dst++=*q++;
     }
-    W(hub_rows,7*52+4)=(u32)(S(2696)?m3_supersim_off_text:m3_supersim_skip_text);
+    settings_labels();
 }
 static NI void move_bytes(u8 *out,const u8 *in,u32 n) { while(n--) *out++=*in++; }
 static NI void zero(u8 *out,u32 n) { while(n--) *out++=0; }
@@ -52,7 +63,7 @@ u32 FC inline_valid(const u8 *b,u32 arena) {
        W(b,68)>0x7f92b1 || B(b,72)>2 || B(b,73) ||
        (B(b,74)>=32 && B(b,74)!=255) || B(b,75) || W(b,76)>0x7f92b1 ||
        (!B(b,72) && (B(b,74)!=255 || W(b,76))) ||
-       B(b,80)>1 || B(b,81)>1 || B(b,82) || B(b,83)) return 0;
+       B(b,80)>1 || B(b,81)>1 || B(b,82)>7 || B(b,83)) return 0;
     for(i=16;i<32;i++) token|=b[i];
     for(i=44;i<56;i+=4) if(W(b,i)<0x70 || W(b,i)>=arena) return 0;
     for(i=88;i<128;i++) if(b[i]) return 0;
@@ -68,11 +79,15 @@ void FC inline_encode(u8 *b) {
     B(b,36)=S(24); B(b,37)=S(32); B(b,38)=S(36); B(b,39)=state[149];
     W(b,60)&=0x0ffff000;
     B(b,80)=S(180); B(b,81)=S(184);
+    S(2704)=G(0xE5FFE4)!=0;
+    B(b,82)=S(2704)|(S(2696)<<1)|(S(2700)<<2);
     W(b,12)=fnv(b+16,112);
 }
 void inline_decode(void) {
     u8 *b=STAGED; u32 i;
-    zero(state,200); S(2696)=0; zero(m3,256); zero(m3+3600,496); init_menus();
+    zero(state,200);
+    S(2696)=(b[82]>>1)&1; S(2700)=(b[82]>>2)&1; S(2704)=b[82]&1;
+    zero(m3,256); zero(m3+3600,496); init_menus();
     S(4)=0x31303030; S(8)=1280;
     move_bytes(state+40,b+16,16);
     for(i=0;i<14;i++) if(save_words[i]) S(4*save_words[i])=W(b,32+4*i);
@@ -82,7 +97,7 @@ void inline_decode(void) {
     /* Enable only after the whole native deserialization has completed. */
     S(0)=0x4251434d; S(2580)=2;
     if(!primary()) { S(24)=6; S(2576)=7; }
-    else resolve_team();
+    else { G(0xE5FFE4)=S(2704); player_star((u8 *)primary()); resolve_team(); }
 }
 static NI u32 relative(const u8 *root,u32 arena,u32 field,u32 n) {
     u32 at=field+W(root,field)-1;
@@ -156,8 +171,8 @@ u32 FC mode_human(u8 *t) {
 #define CALL0(a) ({ u32 ax_; __asm__ volatile("call %c1" : "=a"(ax_) : "i"(a) : "ecx", "edx", "memory", "cc", "st", "st(1)", "st(2)", "st(3)", "st(4)", "st(5)", "st(6)", "st(7)"); ax_; })
 
 /* Stage 1 only: repeat the native presentation-skip REQUEST at normal speed.
- * +2696 is a session choice: 0 skip presentation (default), 1 off. New/cold
- * careers reset it; the signed footer format is unchanged. No simulation
+ * +2696 is a saved choice: 0 skip presentation (default), 1 Spectate.
+ * The Settings footer preserves it on cold load. No simulation
  * delta, football clock, camera phase or native completion flag is written.
  * A2120 retains its replay/readiness/period guards and cleanup. */
 static NI u32 mode_skip_ready(void) {
@@ -274,7 +289,7 @@ u32 FC mode_created(u32 manager) {
     if(!owner(manager) || S(2680)!=1 || (u32)p!=G(0xCB8B14) || !p || !(p[8]&4)) return 0;
     for(i=0;i<W(ROOT,0x38);i++) if(W((u8 *)W(ROOT,0x3c),4*i)==(u32)p) count++;
     if(count!=1) return 0;
-    S(2680)=3; return 1;
+    p[0x53]|=1; S(2680)=3; return 1;
 }
 u32 mode_cap_ratings(void) {
     u8 *p=(u8 *)S(2676);
@@ -346,6 +361,7 @@ void FC mode_draw(u32 manager) {
     if(d==team_menu) text((const u16 *)W(team(S(2684)),0x104),0,320,380,1);
     if(d==m3_progress_menu) text(m3_progress_note,0,320,404,0);
     if(d==m3_prep_menu) text(m3_prep_note,0,320,404,0);
+    if(d==m3_settings_menu) text(m3_settings_note,0,320,404,0);
     if(d==m3_draft_menu) {
         u32 args[2]={G(0xE3C0A8)+1,G(0xE3C0A4)+1};
         ((void (FC *)(u8 *,u32,const u16 *,u32 *))0x49f00)(m3+2700,400,m3_pick_format,args);
@@ -389,10 +405,17 @@ static NI u32 on_stack(u32 manager,const u8 *descriptor) {
     return 0;
 }
 static NI u32 hub(u32 manager) { return owner(manager) && inline_active() && on_stack(manager,apartment); }
-void FC mode_supersim_toggle(u32 manager) {
-    if(hub(manager)) {
-        S(2696)=!S(2696);
-        W(hub_rows,7*52+4)=(u32)(S(2696)?m3_supersim_off_text:m3_supersim_skip_text);
+void FC mode_settings_open(u32 manager) {
+    if(hub(manager)) CALL2(0x6e390,manager,(u32)m3_settings_menu);
+}
+void FC mode_settings_toggle(u32 manager) {
+    u32 row; u8 *p;
+    if(hub(manager) && W((u8 *)manager,8*W((u8 *)manager,0x100))==(u32)m3_settings_menu) {
+        row=W((u8 *)manager,8*W((u8 *)manager,0x100)+4);
+        if(row==0) CALL0(0x147e60); /* Retail Franchise Settings toggle. */
+        if(row==1) S(2696)=!S(2696);
+        if(row==2 && (p=(u8 *)primary())) { S(2700)=!S(2700); player_star(p); }
+        settings_labels();
         /* Native row construction caches each label pointer. Refresh that
          * cache while retaining the selected row; native scrolling resumes. */
         CALL1(0x14ff80,manager);
@@ -404,7 +427,8 @@ void FC mode_start(u32 manager) {
 }
 static NI void capture(u8 *p) {
     u32 i;
-    zero(state,200); S(2696)=0; S(4)=0x31303030; S(8)=1280;
+    zero(state,200); S(2696)=S(2700)=S(2704)=G(0xE5FFE4)=0;
+    player_star(p); S(4)=0x31303030; S(8)=1280;
     S(24)=3; S(28)=((u32)p-W(ROOT,4))/84; S(56)=S(2684);
     /* Native RNG supplies a new per-career token. It is data, never identity
      * selected by name, a pre-generated player, or an executable recipe. */
@@ -459,7 +483,7 @@ void FC mode_sign(u32 manager) {
     ((void (FC *)(u32,u32,u32))0x2bd260)((u32)p,(u32)t,1);
     CALL2(0xc3ee0,(u32)t,(u32)p); CALL1(0x243790,(u32)t); CALL1(0xc3f00,(u32)t);
     CALL1(0x13ec90,(u32)t);
-    if(continuing) { S(2680)=0; resolve_team(); }
+    if(continuing) { S(2680)=0; player_star(p); resolve_team(); }
     else capture(p);
     start_player();
     CALL1(0x13f1b0,manager);

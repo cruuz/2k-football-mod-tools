@@ -4,6 +4,8 @@ The 128-byte block follows the COMPLETE native franchise container. Neither
 ROST version nor any byte of the four native blocks is repurposed. The native
 save transaction signs this footer together with the other serialized bytes.
 FNV is a corruption check, not authentication. This module performs no I/O.
+Byte 82 uses three formerly reserved bits: first person On, Spectate, star Off.
+Old zero-filled footers retain the defaults Off / Skip presentation / star On.
 """
 from __future__ import annotations
 
@@ -65,7 +67,8 @@ def validate(block, *, arena_size=0x92000):
     require(block[72] <= 2 and block[73] == 0 and (block[74] < 32 or block[74] == 255)
             and block[75] == 0 and block[80] <= 1 and block[81] <= 1,
             "invalid request or starter preference")
-    require(not any(block[82:84]) and not any(block[88:]), "nonzero reserved career bytes")
+    require(block[82] <= 7 and block[83] == 0 and not any(block[88:]),
+            "unknown settings or nonzero reserved career bytes")
     require(word(block, 76) <= 0x7F92B1, "invalid request week key")
     require(block[72] != 0 or (block[74] == 255 and word(block, 76) == 0),
             "inactive request has a destination or due week")
@@ -127,7 +130,11 @@ def append(payload, block):
 
 
 def from_runtime(state):
-    """Encode the existing binder's RW fields, excluding ALL live pointers."""
+    """Encode pointer-free fields; +2704 is the native encoder's FPF snapshot.
+
+    Short legacy binder snapshots have the three default settings. The runtime
+    refreshes +2704 from the authoritative retail word before each save.
+    """
     require(len(state) >= 212, "short binder state")
     b = bytearray(SIZE)
     b[:8] = MAGIC
@@ -141,13 +148,17 @@ def from_runtime(state):
     b[64:72], b[72:80] = state[64:72], state[188:196]
     b[80:82] = bytes((word(state, 180), word(state, 184)))
     b[84:88] = state[196:200]
+    if len(state) >= 2708:
+        settings = [word(state, at) for at in (2704, 2696, 2700)]
+        require(all(v <= 1 for v in settings), "invalid runtime settings")
+        b[82] = sum(v << bit for bit, v in enumerate(settings))
     return validate(seal(b))
 
 
 def to_runtime(block):
     """Reconstruct pointer-free binder fields. Native load resolves live objects."""
     b = validate(block)
-    s = bytearray(1280)
+    s = bytearray(4096)
     s[:8] = b"MCQB0001"
     struct.pack_into("<I", s, 8, 1280)
     for at, value in ((24, b[36]), (32, b[37]), (36, b[38]), (180, b[80]), (184, b[81])):
@@ -157,4 +168,6 @@ def to_runtime(block):
     s[96:100], s[112:116], s[116:120] = b[44:48], b[48:52], b[52:56]
     s[149] = b[39]
     s[64:72], s[188:196], s[196:200] = b[64:72], b[72:80], b[84:88]
+    for bit, at in enumerate((2704, 2696, 2700)):
+        struct.pack_into("<I", s, at, (b[82] >> bit) & 1)
     return bytes(s)

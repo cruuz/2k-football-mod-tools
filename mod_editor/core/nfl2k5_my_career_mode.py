@@ -63,6 +63,13 @@ MODE_HOOKS = (
     ("mode_loaded_replace", 0x16DDE0, "e9fb04f0ff", 0xE9),
 )
 GUARDS = (
+    (0x500b24, 0x34, "9e7ff0531fda6217550ff709cf03ac524b8b83e87c07b0be740f8caa4e6cfe9e"),
+    (0x147e60, 0x90, "102121001c2959a8e7892fe8d4f18a315d2eea554c4cecd8342600d0dd913973"),
+    (0x148960, 0xd, "07435c92b02d685b30d2ee71b1f267a6ed8722299cdc9dbf0ed2c664c038da6a"),
+    (0x627c0, 0x37, "9d3a6914d421ca163aa63e8c1f272fd1673f10f1d5d9717acf97ad65ecd7ef17"),
+    (0x64530, 0x54, "6e1511894f1fedc41031ddbeb081c32eac950d270e07dc98319b4d4e1eb39045"),
+    (0x2c1fec, 0x1e, "cd7f04bc79981d35c76a371ee21756892bb141c577cc38355d559ab5025255ce"),
+    (0x4ed994, 8, "9b2756c8bf5c8853bb5a5c059dca323c92f4d993eebfe7c72fc118953772580b"),
     (0xa2120, 0x34d, "fa7705cc735d0ddf6186eaded03e9281f3b5751ae4f03d2cab622f3963edbf14"),
     (0xa2470, 0x40, "f8774cb4ec62f16e68669b95a7147094d4f47f1cbf5167d7b9040af6f0616b8c"),
     (0x89780, 0x43, "7a685071a3336ccfc0797f3813532a3503bfa0f072b5eeea862c99ec797ad4fc"),
@@ -194,8 +201,14 @@ def code_for(code_va, data_va):
         ("m3_unsigned_text", "Undrafted. Choose a club and sign."),
         ("m3_sign_text", "Sign with this club?"),
         ("m3_sign_cut_text", "Sign with this club and allow roster cuts?"),
-        ("m3_supersim_off_text", "Supersim: Off"),
-        ("m3_supersim_skip_text", "Supersim: Skip presentation"),
+        ("m3_settings_text", "Settings"),
+        ("m3_fpf_off_text", "First Person Football: Off"),
+        ("m3_fpf_on_text", "First Person Football: On"),
+        ("m3_settings_note", "Spectate keeps all presentation. B returns to Apartment."),
+        ("m3_supersim_off_text", "Off-field play: Spectate"),
+        ("m3_supersim_skip_text", "Off-field play: Skip presentation"),
+        ("m3_star_off_text", "MyPlayer star: Off"),
+        ("m3_star_on_text", "MyPlayer star: On"),
     ):
         string(name, value)
     names = []
@@ -231,7 +244,7 @@ def code_for(code_va, data_va):
     menu_reserve("club_menu", 56)
     for name in ("entry_menu", "apartment", "team_menu", "practice_menu"):
         menu_reserve(name, 44)
-    for name in ("m3_progress_menu", "m3_prep_menu", "m3_draft_menu", "m3_upgrade_menu"):
+    for name in ("m3_progress_menu", "m3_prep_menu", "m3_draft_menu", "m3_upgrade_menu", "m3_settings_menu"):
         extra_reserve(name, 44)
 
     def rows(name, content, extra=False):
@@ -248,9 +261,12 @@ def code_for(code_va, data_va):
                         ("load_text", "mode_load"), ("quit_text", "mode_quit")))
     rows("hub_rows", (("play_text", "mode_play"), (0xE9C3BC, "mode_practice"),
                       ("card_text", "mode_card"), ("start_text", "mode_start"),
-                      ("save_text", "mode_save_menu"), ("quit_text", "mode_quit"),
                       ("m3_upgrade_text", "m3_upgrade_open"),
-                      ("m3_supersim_skip_text", "mode_supersim_toggle")), extra=True)
+                      ("m3_settings_text", "mode_settings_open"),
+                      ("save_text", "mode_save_menu"), ("quit_text", "mode_quit")), extra=True)
+    rows("settings_rows", (("m3_fpf_off_text", "mode_settings_toggle"),
+                                ("m3_supersim_skip_text", "mode_settings_toggle"),
+                                ("m3_star_on_text", "mode_settings_toggle")), extra=True)
     rows("team_rows", (("team_text", "mode_team_open"), ("sign_text", "mode_sign")))
     rows("m3_progress_rows", (("quit_text", "mode_quit"),), extra=True)
     rows("m3_draft_rows", (("save_text", "mode_save_menu"), ("quit_text", "mode_quit")), extra=True)
@@ -261,10 +277,12 @@ def code_for(code_va, data_va):
     for name, title, table in (("m3_progress_menu", "m3_progress_text", "m3_progress_rows"),
                                 ("m3_prep_menu", "m3_prep_text", "m3_prep_rows"),
                                 ("m3_draft_menu", "m3_draft_text", "m3_draft_rows"),
-                                ("m3_upgrade_menu", "m3_upgrade_text", "m3_upgrade_rows")):
+                                ("m3_upgrade_menu", "m3_upgrade_text", "m3_upgrade_rows"),
+                                ("m3_settings_menu", "m3_settings_text", "settings_rows")):
         struct.pack_into("<11I", extra_menu, labels[name] - EXTRA_VA - 256,
                          labels[title], 0, labels["mode_handler"], 0, labels[table], 0,
-                         0xE7F928, 0xAA281C, 0x02400044, 0x018D0052, 3)
+                         0xE7F928, 0xAA281C, 0x02400044, 0x018D0052,
+                         0x13 if name == "m3_settings_menu" else 3)
     legacy.require(len(extra_menu) <= 1900, "M3 menus exceed owned workspace")
     at = reserve("m3_menu_template", len(extra_menu))
     out[at:at + len(extra_menu)] = extra_menu

@@ -266,20 +266,20 @@ class RuntimeTests(unittest.TestCase):
         with CareerMachine(self.payload) as m:
             m.create(retail_roster(), preseason=False)
             self.assertEqual(m.get(m.state + 2696), 0)
+            m.select(5)  # Apartment Settings
             for expected in (1, 0):
-                m.call("mode_supersim_toggle", ecx=m.manager)
+                m.select(1)  # Off-field play
                 self.assertEqual(m.get(m.state + 2696), expected)
-                label = m.get(m.labels["hub_rows"] + 7*52 + 4)
+                label = m.get(m.labels["settings_rows"] + 52 + 4)
                 self.assertEqual(label, m.labels["m3_supersim_off_text" if expected else "m3_supersim_skip_text"])
-            m.call("mode_supersim_toggle", ecx=0)
+            m.call("mode_settings_toggle", ecx=0)
             self.assertEqual(m.get(m.state + 2696), 0)
+            m.select(1)
             m.call("inline_encode", ecx=m.state + 1280)
-            footer = bytes(m.uc.mem_read(m.state + 1280, 128))
-            m.put(m.state + 2696, 1)
-            m.call("inline_encode", ecx=m.state + 1280)
-            self.assertEqual(bytes(m.uc.mem_read(m.state + 1280, 128)), footer)
+            self.assertEqual(m.uc.mem_read(m.state + 1280 + 82, 1), b"\x02")
+            m.put(m.state + 2696, 0)
             m.call("inline_decode")
-            self.assertEqual(m.get(m.state + 2696), 0)
+            self.assertEqual(m.get(m.state + 2696), 1)
 
     def test_presence_is_identity_not_a_pre_snap_or_full_clock_predicate(self):
         from tests.mod_editor.test_nfl2k5_my_career_control import ControlTests
@@ -374,17 +374,16 @@ class RuntimeTests(unittest.TestCase):
             # Native selection dispatch, LAYT/MRKS traversal and row text
             # submission. The existing fixture captures the final scene draw;
             # it does not prove the option's pixels/scrolling on a display.
-            for expected, text in ((1, "Supersim: Off"),
-                                   (0, "Supersim: Skip presentation")):
-                if m.get(m.state + 2696) != expected:
-                    m.select(7)
-                    self.assertEqual(m.get(m.manager + 8*m.depth() + 4), 7)
-                    checker.rendered(m)
-                    m.frame()  # native scroll offset catches up to selection
+            m.select(5)  # Settings is an owned child of the Apartment.
+            for expected, text in ((1, "Off-field play: Spectate"),
+                                   (0, "Off-field play: Skip presentation")):
+                m.select(1)
+                self.assertEqual(m.get(m.manager + 8*m.depth() + 4), 1)
                 self.assertEqual(m.get(m.state + 2696), expected)
                 m.native_rows.clear()
                 checker.rendered(m)
                 self.assertIn(text, [r["text"] for r in m.native_rows])
+
 
 
 if __name__ == "__main__":

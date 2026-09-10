@@ -101,7 +101,7 @@ class NativeTests(unittest.TestCase):
                 and 0 < policy.cost(m.uc.mem_read(p+f, 1)[0]) <= 25)
             old = bytes(m.uc.mem_read(p, 84))
             token = bytes(m.uc.mem_read(m.state + 40, 16))
-            m.select(6)
+            m.select(4)
             self.assertEqual(m.top(), m.labels['m3_upgrade_menu'])
             for _ in range(index):
                 m.select(1)
