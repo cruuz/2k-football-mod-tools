@@ -44,6 +44,7 @@ HELP_TEXT = (
     "play art. Off the field the CPU plays at normal speed and a footer says so; Supersim is not available. With Franchise "
     "Auto Save installed and on, completed results save to the slot chosen by a manual Save or Load. Draft entry "
     "advances the prior season, creates MyPlayer in the rookie class and lets the draft AI choose a club. "
+    "Non-QB route, block and catch behavior remains unverified in play; native input behavior is retained. "
     "Senior Bowl preparation selects MyPlayer; its game is unavailable. Upgrades spend played-game XP with position caps. "
     "The Apartment shows the next fixture date. Rebuild older MyCareer executables from base. Experimental / Unwitnessed."
 )
@@ -65,30 +66,58 @@ WITNESS_LIST = (
     "Finish a season, playoffs and offseason, then save and reload again.",
     "Confirm First Person Football still toggles from Franchise Settings.",
 )
-# Per position group: what the retail engine gives a human-bound body, as far as
-# offline evidence goes. Binding is position-agnostic (proved: the input walk
-# 0x1563F0 decodes every on-field entity whose controller ID is not -1, and the
-# port context comes from that entity's own block through 0x1565F0/0x120880).
-# What each context lets the player do on the field is HYPOTHESIS until played.
+# Beta 65 evidence: tools/nfl2k5_my_career_position_evidence.py pins the
+# native spans/tables; test_nfl2k5_my_career_position_inputs.py executes the
+# input pipeline. Decoding a command is not proof of movement or animation.
+# The same binder/Standard-Far camera ships for every group. No global FPF
+# flag is borrowed and no unproved "Run your own routes" option is installed.
 POSITION_CONTRACT = {
-    "QB": ("proved: retail human quarterback control (context tables 3/9/10); templates Pocket/Scrambling/Balanced",
-           "hypothesis: the CPU-called play still waits for MyPlayer's snap; passing icons and scramble are retail"),
-    "RB": ("proved: retail ball-carrier control after the handoff (contexts 8/10); HB and FB templates",
-           "hypothesis: before the handoff MyPlayer's body must reach the mesh point himself"),
-    "WR": ("proved: retail ball-carrier control after a catch; Speed/Hands/Balanced WR templates",
-           "hypothesis: route running and the catch before the ball arrives are the receiver's own context, unwitnessed outside First Person Football"),
-    "TE": ("proved: retail ball-carrier control after a catch; Catching/Blocking/Balanced TE templates",
-           "hypothesis: route running, blocking and the catch before the ball arrives are the body's own context, unwitnessed outside First Person Football"),
-    "OL": ("proved: prospect replacement, identity and camera follow the body; no retail create-a-player template, generated ratings kept",
-           "hypothesis: blocking stays the body's own behaviour; stick input may only steer him"),
-    "DL": ("proved: retail defender control (context 16); no retail template, generated ratings kept",
-           "hypothesis: rush moves and shed follow the defender context every play"),
-    "LB": ("proved: retail defender control (context 16); OLB and ILB templates",
-           "hypothesis: coverage drops and blitz paths follow the defender context every play"),
-    "DB": ("proved: retail defender control (context 16); CB, FS and SS templates",
-           "hypothesis: coverage assignments, swat and interception follow the defender context every play"),
-    "K/P": ("proved: retail kick-meter control (context 2); K and P templates",
-            "hypothesis: the CPU calls the kick and MyPlayer only sees the field on kicks and punts"),
+    "QB": (
+        "proved: Noah reports QB play works; native pre-snap context 3, QB context 6 and carrier contexts 8/10; "
+        "body-to-port restore 0x1565F0 -> 0x120880; three native QB templates",
+        "hypothesis: snap, passing and scrambling remain reliable across all MyCareer formations and transitions; "
+        "the new build still needs a play witness"),
+    "RB": (
+        "proved: HB/FB bind by identity; native phase walk 0x1569E0 assigns off-ball offense context 9 and "
+        "carrier context 10; stick and off-ball command decode with FPF off; three native templates each",
+        "hypothesis: pre-handoff stick overrides mesh-point AI, and a catch/handoff completes under that control; "
+        "no body-specific human-back mode is proved; native behavior retained"),
+    "WR": (
+        "proved: native off-ball context 9 decodes stick and commands 0x67/0x68 outside FPF; "
+        "0x18EC40 dispatches 0x67 to 0x18FAC0; carrier context 10; Speed/Hands/Balanced WR templates",
+        "hypothesis: stick overrides route AI and a catch button completes the catch; FPF entry 0x2C1FC0 sets "
+        "global 0xE5FFE4, not a proved per-receiver mode; run-your-own-routes option withheld"),
+    "TE": (
+        "proved: same native context 9 input/dispatch and carrier context 10 as WR; "
+        "Catching/Blocking/Balanced TE templates; identity and camera remain on MyPlayer",
+        "hypothesis: manual routes, catches and blocking animations work through every assignment; "
+        "no safe body-specific FPF mode proved; native behavior retained"),
+    "OL": (
+        "proved: identity/camera binding and native context 9 stick/button decode also accept C/G/T; "
+        "all nine native OL templates exist at 0x5561B8 + (3*position+variant)*0x74 and apply ratings",
+        "hypothesis: steering changes locomotion or a button chooses pass-set/run-block; neither is proved. "
+        "Ship existing MyPlayer camera with native blocking behavior; blocker-view auto-block is a witness target"),
+    "DL": (
+        "proved: DT/EDGE bind even when a different defender is requested; native context 11 after snap; "
+        "engaged context 16 command 6 reaches 0x2324F0 and changes move state only in behavior 0x02000000; "
+        "native DL templates, merged EDGE templates under pools",
+        "hypothesis: alignment, rush and shed animations work in all plays; command/state proofs do not prove "
+        "successful moves. Automatic/manual/transfer guards hold identity in bounded tests; live turnovers unwitnessed"),
+    "LB": (
+        "proved: LB and legacy OLB identity binding; native pre-snap 4/5 and post-snap 11/engaged 16 tables; "
+        "switch guards retain the bound body; three LB templates; pools retires OLB from creation",
+        "hypothesis: pre-snap shifts, coverage drops, blitz movement and shed animations respond as intended; "
+        "no complete snapped-play witness at LB"),
+    "DB": (
+        "proved: CB/FS/SS identity binding; native pre-snap 4/5 and post-snap 11/engaged 16 command tables; "
+        "switch guards retain the bound non-default defender; three templates per position",
+        "hypothesis: alignment, coverage steering, swat and interception animations work as expected; "
+        "complete catch/turnover sequences remain unwitnessed"),
+    "K/P": (
+        "proved: context 2 decodes kick commands; native 0x1891B0 returns CPU play-call ownership for K/P; "
+        "binder detaches when MyPlayer has no active body; three native templates each",
+        "hypothesis: rendered kick meter works in MyCareer; only-kicks field time is NOT established "
+        "(formation/substitution assignments can differ); kick, punt, PAT and kickoff need witnesses"),
 }
 
 
@@ -233,20 +262,27 @@ def read_setup(source):
     return state
 
 
-def templates_for(position):
-    """The retail create-a-player templates for a position code; () for C/G/T/DT/DE."""
+def position_choices(scheme="retail"):
+    """Live position codes and labels for a picker; aliases never add rows."""
     from . import nfl2k5_roster_records as rr
-    return rr.templates_for_position(position)
+    return tuple((code, rr.position_name(code, scheme), rr.position_long_name(code, scheme))
+                 for code in rr.live_position_codes(scheme))
 
 
-def prepare(payload, *, first, last, position=0, template=0, port=0, camera=0, starter_lock=True, token=None):
+def templates_for(position, *, scheme="retail"):
+    """All 51 native templates; pooled EDGE variants share the XBE writer's data."""
+    from . import nfl2k5_roster_records as rr
+    return rr.templates_for_position(position, scheme=scheme)
+
+
+def prepare(payload, *, first, last, position=0, template=0, port=0, camera=0, starter_lock=True, token=None,
+            scheme="retail"):
     """Prepare one existing prospect at the chosen position in a genuine draft save.
 
     Returns fixed-length save bytes, setup JSON and an exact receipt. Publication
     and EXTRA signing belong to prepare_save/SaveContainer. No team assignment.
-    Positions with retail create-a-player templates (QB K P WR CB FS SS HB FB TE
-    OLB ILB) take one of their three templates or None; C, G, T, DT and DE have
-    no retail template, so MyPlayer keeps the generated prospect's ratings.
+    Every position takes one of three native templates or None to keep the
+    generated ratings. The one_pool scheme hides OLB and uses EDGE templates.
     """
     from . import nfl2k5_roster_records as rr, nfl2k5_franchise_save as fs
     save_key(payload)
@@ -255,7 +291,8 @@ def prepare(payload, *, first, last, position=0, template=0, port=0, camera=0, s
     require(payload[fs.SEASON_BLOCK + fs.S_STAGE] == 5, "MyCareer setup requires an existing NFL Draft stage save")
     code = rr.position_code(position)
     require(0 <= code < POSITION_COUNT, "choose one of the 17 retail positions")
-    choices = templates_for(code)
+    rr.check_position_code(code, scheme)
+    choices = templates_for(code, scheme=scheme)
     require(template is None or (type(template) is int and 0 <= template < len(choices)),
             f"{rr.position_name(code)} offers {len(choices)} retail templates; choose one of them or None")
     require(type(port) is int and 0 <= port < 8 and type(camera) is int and camera in (0, 1)
@@ -307,12 +344,15 @@ def prepare(payload, *, first, last, position=0, template=0, port=0, camera=0, s
              "save_sha256": hashlib.sha256(result).hexdigest()}
     receipt = {"mode": "MyCareer", "myplayer": chosen.display, "experimental": True,
                "runtime_witnessed": False, "pool": "primary", "index": player.index,
-               "position": rr.position_name(code), "position_code": code,
+               "position": rr.position_name(code, scheme), "position_code": code,
+               "position_scheme": rr.normalise_scheme(scheme),
                "position_group": position_group(code), "starter_lock": starter_lock,
                "contract": dict(zip(("proved", "hypothesis"), POSITION_CONTRACT[position_group(code)])),
                "token": str(uuid.UUID(bytes=creation)),
                "template": None if template is None else choices[template].label,
-               "ratings": "retail create-a-player template" if template is not None else "generated prospect ratings kept",
+               "ratings": ("merged EDGE template" if template is not None and code == 16 and
+                           rr.normalise_scheme(scheme) == "one_pool" else
+                           "retail create-a-player template" if template is not None else "generated prospect ratings kept"),
                "record_offset": player.offset, "record_before": before.hex(),
                "record_after": result[player.offset:player.offset + 84].hex(),
                "changed_bytes": sum(a != b for a, b in zip(payload, result)),
@@ -562,6 +602,8 @@ def main(argv=None):
     create.add_argument("--last", required=True)
     create.add_argument("--position", default="QB",
                         help="one of the 17 retail position names or codes (QB K P WR CB FS SS HB FB TE OLB ILB C G T DT DE)")
+    create.add_argument("--scheme", choices=("retail", "one_pool"), default="retail",
+                        help="one_pool offers EDGE/LB templates and refuses retired OLB (10)")
     create.add_argument("--template", default="0",
                         help="retail create-a-player template 0..2 for the position, or 'generated' to keep the prospect's ratings")
     create.add_argument("--port", type=int, choices=range(1, 9), default=1)
@@ -579,7 +621,7 @@ def main(argv=None):
     else:
         template = None if args.template == "generated" else int(args.template)
         result = prepare_save(args.source, args.output, first=args.first, last=args.last,
-                              position=args.position, template=template, port=args.port - 1,
+                              position=args.position, scheme=args.scheme, template=template, port=args.port - 1,
                               camera=(args.camera == "Far") * 1, starter_lock=not args.no_starter_lock)
     print(json.dumps(result, indent=2))
 

@@ -252,6 +252,14 @@ def _site_state(payload: bytes, site: LabelSite) -> str:
     got = payload[off: off + SLOT_TEXT_BYTES]
     if got == slot_text(*site.after):
         return "applied"
+    # Pools turns these two scheme slots into interior linemen. Recognize
+    # its truthful DT label only with the exact pool fields it owns.
+    if site.label in ("34_de_left", "34_de_right"):
+        side = "LEFT" if site.label == "34_de_left" else "RIGHT"
+        if (got == slot_text("DT", side + " DEFENSIVE TACKLE")
+                and struct.unpack_from("<II", payload, off + SLOT_TEXT_BYTES)
+                == ONE_POOL_POOLS[site.label]):
+            return "applied"
     if any(got == slot_text(abbrev, long_name) for abbrev, long_name in site.before):
         return "retail"
     return "foreign"

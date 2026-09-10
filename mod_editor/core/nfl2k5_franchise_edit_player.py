@@ -190,12 +190,26 @@ def _recognize(payload):
         from . import nfl2k5_music_playlist as playlist
         require(playlist.status(payload) == "applied", "foreign playlist screen dispatcher")
         companions.append(("playlist_dispatch", 0x6E4E0, bytes.fromhex("5155578bf9"), image.read(0x6E4E0, 5)))
+    # Pools owns both CAP cycles, also used by this editor's Position row.
+    # Validate its complete installation before normalizing the overlapping
+    # prerequisite hash (the old hash ends inside the previous callback).
+    from . import nfl2k5_position_pools as pools
+    cycles = pools.creation_sites()[:2]
+    pooled_cycles = any(image.read(s.va, s.size) != s.befores[0] for s in cycles)
+    if pooled_cycles:
+        require(pools.status(payload) == "applied", "foreign position-pool editor companion")
+        require(all(image.read(s.va, s.size) == s.after for s in cycles), "foreign position cycles")
     for va, size, digest in GUARDS:
         blob = bytearray(image.read(va, size))
         for _, at, before, after in [*edits, *companions]:
             if va <= at and at + len(before) <= va + size:
                 require(bytes(blob[at-va:at-va+len(before)]) in (before, after), "foreign editor prerequisite site")
                 blob[at-va:at-va+len(before)] = before
+        if pooled_cycles:
+            for site in cycles:
+                lo, hi = max(va, site.va), min(va + size, site.va + site.size)
+                if lo < hi:
+                    blob[lo-va:hi-va] = site.befores[0][lo-site.va:hi-site.va]
         require(hashlib.sha256(blob).hexdigest() == digest, f"foreign Contracts editor prerequisite at {va:#x}")
     return state
 

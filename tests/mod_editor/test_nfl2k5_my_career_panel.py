@@ -69,9 +69,9 @@ class PanelTests(unittest.TestCase):
         self.assertTrue(self.page.contract.text().startswith("QB: proved"))
         self.page.position.setCurrentIndex(16)
         self.assertEqual(self.page.position.currentText(), "DE (Defensive End)")
-        self.assertEqual(self.page.template.count(), 1)
-        self.assertIsNone(self.page.template.currentData())
-        self.assertIn("generated", self.page.template.currentText())
+        self.assertEqual(self.page.template.count(), 3)
+        self.assertEqual([self.page.template.itemText(i) for i in range(3)],
+                         ["Run Stop DL", "Pass Rush DL", "Balanced DL"])
         self.assertTrue(self.page.contract.text().startswith("DL: proved"))
         self.page.position.setCurrentIndex(3)
         self.assertEqual([self.page.template.itemText(i) for i in range(3)], ["Speed WR", "Hands WR", "Balanced WR"])

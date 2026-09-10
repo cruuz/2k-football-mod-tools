@@ -90,10 +90,10 @@ class FrontendTests(unittest.TestCase):
                 # Model a native CAP field edit, not an executable player recipe.
                 m.uc.mem_write(p + 0x35, bytes((position,)))
                 m.call(0x343460)
-                if position >= 12:
-                    for offset in range(0x36, 0x52):
-                        if offset not in (0x4B, 0x4D, 0x4F):
-                            self.assertEqual(m.uc.mem_read(p + offset, 1), b"A")
+                from mod_editor.core import nfl2k5_roster_records as rr
+                template = rr.templates_for_position(position)[0]
+                for offset, value in zip(rr.CREATE_PLAYER_TEMPLATE_SLOT_OFFSETS, template.slots):
+                    self.assertEqual(m.uc.mem_read(p + offset, 1)[0], 75 if value == -1 else value)
                 m.frame(0x200)
                 self.assertEqual(m.top(), m.labels["entry_menu"])
                 self.assertEqual(m.uc.mem_read(m.root, len(before)), before)

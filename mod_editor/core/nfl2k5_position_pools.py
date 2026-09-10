@@ -75,6 +75,18 @@ Code, two optional sites (both on by default):
   cave. Without the cave the SAM record shows the WILL starter twice and the 3-4 tab shows
   the #2 interior lineman twice; the game still fields the right players (that is the playbooks' job).
 
+Beta 65 creation and remaining consumers:
+* CAP/MyPlayer/Edit Player callbacks 0x345560/0x345590 skip enum 10 and wrap
+  through the sixteen live enums. Full 0x30-byte functions including padding
+  are pattern-checked. With pools off these callbacks are untouched.
+* CAP's complete 51-record template table is at 0x5561B8, stride 0x74. Live
+  EDGE rows 48..50 merge DE/OLB ratings; retired OLB label slots host their
+  Power/Speed/Balanced EDGE names. LB rows 33..35 keep native ratings.
+* Trade-needs' separate {label,enum} list at 0x557EC8 is compacted at
+  0x557ED8; the native modal returns the stored enum, not a display ordinal.
+* CAP, trade-needs and depth long names use Linebacker; 3-4 interior tabs
+  drawing from enum 15 say DT. EDGE rename owns CAP's seventh name consumer.
+
 Team ratings, the sim's unit strengths and the depth-chart row counts (2026-09-03 night, after Noah's
 playtest: "defense is 19, overall 60, offense 80 for the Falcons, and most teams are similar"):
 
@@ -104,7 +116,7 @@ playtest: "defense is 19, overall 60, offense 80 for the Falcons, and most teams
   copies read ``Linebackers``.  The ``Outside Linebackers`` pages retain their retail identity; row membership is conditional, see
   "One LB row" below.
 
-One LB row (r64, 2026-09-07; EXPERIMENTAL / UNWITNESSED)
+One LB row (r64, updated beta 65; EXPERIMENTAL / UNWITNESSED)
 -------------------------------------------------------
 Fifteen page-descriptor families serve SIXTEEN position selectors: Player Trade and Trading Block
 share their pages. The old investigation mistook each page's name field (+8) for an array record.
@@ -114,14 +126,16 @@ pointers at sheet+0xF4. ``FILTER_TABLES`` pins every complete table, including i
 ``FUN_00174d30`` selects by ordinal. ``FUN_00174140`` binds the selected page's enum at +0x20
 and calls its original count/getter pair. No visibility flag is consulted by these readers.
 
-Given ``roster_has_olb=False`` from a complete scan, remove exactly the OLB page pointer, shift the
+By default (``roster_has_olb=False``), remove exactly the OLB page pointer, shift the
 remaining pointers left four bytes, and leave two NULL words in the original span. Keep all other
 rows, including empty Fullbacks, All Positions, Scouting Targets, Targets and Picks. Absolute page
 references and callback arguments keep their addresses. Pro Bowl ordering composes in either order.
 
 The native count AND getter callbacks match enum 10 separately from enum 11. Therefore a custom
 roster with enum-10 players uses ``roster_has_olb=True``: retain or restore the OLB row on all screens,
-where those players remain selectable. A new unscanned build also retains it. Removal requires
+where those players remain selectable. This is an explicit legacy compatibility profile, not the default picker.
+Beta 65 defaults to the EDGE-only profile; the build must still reclassify all
+selectable roster sources. The existing build scanner is
 ``tools.nfl2k5_roster_reclassify.olb_filter_policy`` after all ROST writers: all 76 resources, every
 primary player (including free agents/prospects), plus team-owned secondary players. Unowned
 secondary generation templates are excluded. This certifies disc rosters, not external saves loaded
@@ -204,6 +218,17 @@ STRING_SITES: tuple[tuple[str, int, int, str, str], ...] = (
     ("franchise_olb", 0x00E87EE8, 8, "OLB", "LB"),
     ("legend_swap_ilb", 0x00E67820, 36, "|CIRCLE|SWAP ILB", "|CIRCLE|SWAP LB"),
     ("legend_swap_olb", 0x00E6779C, 36, "|SQUARE|SWAP OLB", "|SQUARE|SWAP LB2"),
+    ("create_player_lb", 0x00EABCFC, 36, "Inside Linebacker", "Linebacker"),
+    ("trade_need_lb", 0x00EAD468, 36, "Inside Linebacker", "Linebacker"),
+    ("depth_long_lb", 0x00E83CAC, 36, "Inside Linebacker", "Linebacker"),
+    # Reuse the retired OLB template label slots; the live EDGE records below
+    # now point here. DT keeps its separate Run Stop/Pass Rush/Balanced DL text.
+    ("template_power_edge", 0x00EAC6E4, 28, "Run Stop OLB", "Power EDGE"),
+    ("template_speed_edge", 0x00EAC700, 28, "Coverage OLB", "Speed EDGE"),
+    ("template_balanced_edge", 0x00EAC71C, 28, "Balanced OLB", "Balanced EDGE"),
+    ("template_run_stop_lb", 0x00EAC738, 28, "Run Stop ILB", "Run Stop LB"),
+    ("template_coverage_lb", 0x00EAC754, 28, "Coverage ILB", "Coverage LB"),
+    ("template_balanced_lb", 0x00EAC770, 28, "Balanced ILB", "Balanced LB"),
 )
 
 # The retired enum 10 keeps its retail name everywhere the game prints a roster position, so no
@@ -230,9 +255,9 @@ POOL_RECORDS: tuple[tuple[str, int, int, tuple[int, int], tuple[int, int]], ...]
 # the two 3-4 end records also get their text: accepted "before" texts and the new text
 END_RECORD_TEXT: Mapping[str, tuple[tuple[tuple[str, str], ...], tuple[str, str]]] = {
     "34_de_left": ((("LDE", "LEFT DEF END"), ("EDGE", "LEFT EDGE RUSHER"), ("DE", "LEFT DEFENSIVE END")),
-                   ("DE", "LEFT DEFENSIVE END")),
+                   ("DT", "LEFT DEFENSIVE TACKLE")),
     "34_de_right": ((("RDE", "RIGHT DEF TACKLE"), ("EDGE", "RIGHT EDGE RUSHER"), ("DE", "RIGHT DEFENSIVE END")),
-                    ("DE", "RIGHT DEFENSIVE END")),
+                    ("DT", "RIGHT DEFENSIVE TACKLE")),
 }
 # records that must already point at the right pool (asserted, never written)
 ASSERTED_RECORDS: tuple[tuple[str, int, int, tuple[int, int]], ...] = (
@@ -587,6 +612,51 @@ class Site:
         return len(self.after)
 
 
+CREATE_POSITION_NEXT_VA = 0x345560
+CREATE_POSITION_PREVIOUS_VA = 0x345590
+CREATE_POSITION_TABLE_VA = 0x555AE0
+CREATE_POSITION_PROLOGUE = bytes.fromhex("8b0d148bcb00c7052088cb0001000000")
+RETAIL_CREATE_NEXT = CREATE_POSITION_PROLOGUE + bytes.fromhex("8a41353c107205c6413500c3fec0884135c3") + b"\x90" * 14
+RETAIL_CREATE_PREVIOUS = CREATE_POSITION_PROLOGUE + bytes.fromhex("8a413584c07705c6413510c3fec8884135c3") + b"\x90" * 14
+
+
+def create_position_cycle_bytes(forward: bool) -> bytes:
+    """Native CAP callbacks, in place: skip enum 10 in both directions.
+
+    Both original functions own 0x30 bytes including their alignment tail.
+    No branch leaves that span, no new cave/data is needed, and the dirty
+    flag and record pointer ABI stay intact. MyCareer uses these callbacks.
+    """
+    body = ("8a4135 fec0 3c0a 7502 fec0 3c10 7602 30c0 884135 c3" if forward else
+            "8a4135 fec8 3c0a 7502 fec8 3c10 7602 b010 884135 c3")
+    return (CREATE_POSITION_PROLOGUE + bytes.fromhex(body)).ljust(0x30, b"\x90")
+
+
+def creation_sites() -> list[Site]:
+    """Pattern-checked CAP cycles, EDGE templates, and trade-needs picker."""
+    from . import nfl2k5_roster_records as rr
+    sites = [Site("create_position_next", CREATE_POSITION_NEXT_VA,
+                  (RETAIL_CREATE_NEXT,), create_position_cycle_bytes(True), "creation"),
+             Site("create_position_previous", CREATE_POSITION_PREVIOUS_VA,
+                  (RETAIL_CREATE_PREVIOUS,), create_position_cycle_bytes(False), "creation")]
+    retail, pooled = rr.create_player_templates(), rr.create_player_templates("one_pool")
+    for variant, (old_label, new_label) in enumerate(zip(
+            (0xEAC7E8, 0xEAC800, 0xEAC81C), (0xEAC6E4, 0xEAC700, 0xEAC71C))):
+        index = 48 + variant
+        sites.append(Site(f"edge_template_{variant}", rr.CREATE_PLAYER_TEMPLATES_RDATA + index * 0x74,
+                          (struct.pack("<I28i", old_label, *retail[index].slots),),
+                          struct.pack("<I28i", new_label, *pooled[index].slots), "templates"))
+    # The native modal menu is {label, return-value} pairs terminated by
+    # {0,0}; return values are enums, not row indices (0x348E2E..0x348E5A).
+    # Preserve every other pair and both terminator words inside the span.
+    pairs = ((0xEAD440, 10), (0xEAD468, 11), (0xEAD48C, 4), (0xEAD4A4, 6),
+             (0xEAD4C0, 5), (0xEAD4D8, 1), (0xEAD4E8, 2), (0, 0))
+    pack = lambda rows: b"".join(struct.pack("<II", *row) for row in rows)
+    sites.append(Site("trade_need_positions", 0x557ED8, (pack(pairs),),
+                      pack((*pairs[1:], (0, 0))), "creation"))
+    return sites
+
+
 def filter_list_sites(*, probowl_ordered: bool = False) -> list[Site]:
     """Complete pointer tables, including both the new and original terminator.
 
@@ -637,7 +707,7 @@ def _sites(linebacker_penalty_fix: bool, depth_chart_third_starter: bool,
            slots_per_unit: int = modern.SLOTS_PER_UNIT,
            table_va: int = modern.SLOT_TABLE_VA, *, include_filter_lists: bool = True,
            probowl_ordered: bool = False) -> list[Site]:
-    sites: list[Site] = []
+    sites: list[Site] = creation_sites()
 
     def add(label: str, va: int, before: bytes | Sequence[bytes], after: bytes, group: str = "data") -> None:
         befores = (before,) if isinstance(before, bytes) else tuple(before)
@@ -813,16 +883,17 @@ def retail_olb_identity(payload: bytes) -> bool:
 
 def apply(payload: bytes, *, linebacker_penalty_fix: bool = True,
           depth_chart_third_starter: bool = True,
-          roster_has_olb: bool | None = None) -> tuple[bytes, Mapping[str, object]]:
+          roster_has_olb: bool | None = False) -> tuple[bytes, Mapping[str, object]]:
     """Apply/replay pools and an explicitly certified roster-filter policy.
 
-    ``False``: a scan of every selectable roster found no enum-10 players, so
-    remove OLB from all sixteen pointer lists. ``True``: retain/restore those
+    ``False`` (default): the one-pool profile retires enum 10; remove OLB from
+    all sixteen pointer lists. ``True``: legacy compatibility, retain/restore those
     entries for custom players. ``None``: retain on a new installation; keep
     the existing policy on replay. Unknown roster evidence never removes rows.
 
     This is a build-time policy, not a detector for subsequently loaded saves.
-    Discs intended for unscanned saves must use the retained profile. Replaying
+    Legacy enum-10 saves need reclassification or the explicit retained profile.
+    Creation always skips enum 10 under pools, including that legacy profile. Replaying
     an identical request returns identical XBE bytes and an exact zero-edit
     receipt. All mixed/foreign tables refuse before any mutation.
     """

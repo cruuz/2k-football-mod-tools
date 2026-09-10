@@ -247,10 +247,11 @@ u32 FC mode_created(u32 manager) {
     S(2680)=3; return 1;
 }
 u32 mode_cap_ratings(void) {
-    u8 *p=(u8 *)S(2676); u32 i;
-    if(S(2680)!=1 || !p || (u32)p!=G(0xCB8B14) || p[0x35]<12) return 0;
-    if(p[0x35]<17) for(i=0x36;i<=0x51;i++)
-        if(i!=0x4b && i!=0x4d && i!=0x4f) p[i]=65;
+    u8 *p=(u8 *)S(2676);
+    /* Retail has 51 templates, including OL/DT/DE. Let the native writer
+     * use all of them, including the pools owner's EDGE rows. Only an
+     * invalid position needs the bounds guard. */
+    if(S(2680)!=1 || !p || (u32)p!=G(0xCB8B14) || p[0x35]<17) return 0;
     G(0xCB8B98)=0; return 1;
 }
 void FC mode_event(u32 manager,u32 event) {

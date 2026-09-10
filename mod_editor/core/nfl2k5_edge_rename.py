@@ -21,9 +21,15 @@ hosted elsewhere and the pointers repointed.
 * ``.data 0xAC2698``   franchise table (``0x221F03``), entry 12
 * ``.data 0xA89938``   the play-call Package menu legend ``|CIRCLE|SWAP DE``
 
-All six are repointed to a new string hosted in the XBE header's boot-logo bitmap (never read by
+These six are repointed to a new string hosted in the XBE header's boot-logo bitmap (never read by
 the game; the catch/accel/draft caves already live there): ``|CIRCLE|SWAP EDGE`` at
 ``0x10C88``, whose tail ``EDGE`` at ``0x10CA2`` is the abbreviation.
+
+The seventh consumer is Create Player's private long-name table at ``0x555AE0``
+(getter ``0x345540``), entry 16 at ``0x555B20``. It now explicitly shares the
+common long name at ``0xE69DDC``. Its old literal ``0xEABD70`` was already among
+the four shrink sites; this is an additional consumer, not a newly discovered
+seventh literal. MyCareer uses the same native Create Player screen.
 
 The long names are shrunk in place: four ``Defensive End`` slots (28 bytes) become
 ``Edge Rusher`` and fourteen ``Defensive Ends`` slots (32 bytes) become ``Edge Rushers``.
@@ -35,7 +41,7 @@ for the right end).  The abbreviation field cannot hold ``LEDGE`` (five characte
 one wchar too many, and the long name starts right behind it), so both sides become ``EDGE``
 and the side moves into the long name: ``LEFT EDGE RUSHER`` / ``RIGHT EDGE RUSHER``.
 The retail stride and active table base are read through
-``nfl2k5_modern_positions``. Scheme/pool-owned 3-4 DE text is preserved, so
+``nfl2k5_modern_positions``. Scheme-owned 3-4 DE / pool-owned DT text is preserved, so
 EDGE can be applied before or after relocation to the SPECIAL table.
 
 On the disc, 247 historic-team players are literally named "<Team> Def End" (ROST resources in
@@ -83,6 +89,9 @@ POINTER_SITES: tuple[tuple[str, int, int, int], ...] = (
     ("abbrev_depth_table", 0x00AAB800, 0x00E83D64, EDGE_VA),
     ("abbrev_franchise_table", 0x00AC2698, 0x00E87ED0, EDGE_VA),
     ("package_legend", 0x00A89938, 0x00E677E0, LEGEND_VA),
+    # Seventh consumer: Create Player (also the in-game Create MyPlayer
+    # bridge), getter 0x345540. Its private long-name table bypasses E5F90.
+    ("create_player_long_name", 0x00555B20, 0x00EABD70, 0x00E69DDC),
 )
 
 # "Defensive End" (28-byte slots) and "Defensive Ends" (32-byte slots) in .string_
@@ -109,8 +118,8 @@ SLOT_RECORDS: tuple[tuple[str, int, str, str, str], ...] = (
 # relabel the two 3-4 end records "DE" / LEFT|RIGHT DEFENSIVE END once those slots draw from the
 # interior pool; that text counts as "applied" here so every module's status stays truthful.
 SLOT_RECORD_ALTERNATIVES: Mapping[str, tuple[tuple[str, str], ...]] = {
-    "slot_unit2_lde": (("DE", "LEFT DEFENSIVE END"),),
-    "slot_unit2_rde": (("DE", "RIGHT DEFENSIVE END"),),
+    "slot_unit2_lde": (("DE", "LEFT DEFENSIVE END"), ("DT", "LEFT DEFENSIVE TACKLE")),
+    "slot_unit2_rde": (("DE", "RIGHT DEFENSIVE END"), ("DT", "RIGHT DEFENSIVE TACKLE")),
 }
 
 # The strings this patch retires.  They stay in .string_ (nothing points at them any more) and
@@ -211,7 +220,11 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     """Return the patched XBE bytes plus a receipt; refuses anything but retail sites."""
 
     state = status(payload)
-    _require(state == "retail", f"EDGE-rename sites are {state}, not retail")
+    _require(state in ("retail", "applied"), f"EDGE-rename sites are {state}, not retail")
+    if state == "applied":
+        return payload, {"edits": [], "changed_bytes": 0, "sections_repinned": [],
+                         "already_applied": True, "abbreviation": ABBREVIATION,
+                         "long_name": LONG_SINGULAR, "legend": LEGEND_TEXT}
     buf = bytearray(payload)
     sections = _sections(payload)
     header = _header_size(payload)
