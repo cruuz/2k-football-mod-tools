@@ -1,0 +1,14 @@
+test_deep_inputs_are_never_accepted_implicitly (__main__.NoArgumentProductValidationTests.test_deep_inputs_are_never_accepted_implicitly) ... error: full-volume inputs require --full-volume
+error: full-volume inputs require --full-volume
+error: --source-volume is required with --full-volume
+error: --source is required with --full-volume
+ok
+test_duplicate_json_keys_fail_closed_even_with_a_matching_outer_pin (__main__.NoArgumentProductValidationTests.test_duplicate_json_keys_fail_closed_even_with_a_matching_outer_pin) ... ok
+test_fast_gates_validate_the_pinned_fixtures (__main__.NoArgumentProductValidationTests.test_fast_gates_validate_the_pinned_fixtures) ... ok
+test_forged_evidence_is_refused_before_semantic_use (__main__.NoArgumentProductValidationTests.test_forged_evidence_is_refused_before_semantic_use) ... ok
+test_symlinked_evidence_is_refused (__main__.NoArgumentProductValidationTests.test_symlinked_evidence_is_refused) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.083s
+
+OK

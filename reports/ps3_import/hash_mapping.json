@@ -281,7 +281,7 @@
     "logo": 118
   },
   "writable_destinations_per_kind": {
-    "endzone": 78,
+    "endzone": 117,
     "logo": 118
   },
   "pairs": [
@@ -366,14 +366,14 @@
         {
           "slot_id": "endzone:78",
           "label": "C's",
-          "writable": false,
+          "writable": true,
           "inner_indices": [
             0,
             1
           ]
         }
       ],
-      "receipt_plan": "unsupported or alternate; not selected"
+      "receipt_plan": "selected"
     },
     {
       "pair_id": "Chicago Bears/logo/default/e9f1d6c2",
@@ -420,14 +420,14 @@
         {
           "slot_id": "endzone:1140",
           "label": "Unidentified endzone 1140",
-          "writable": false,
+          "writable": true,
           "inner_indices": [
             0,
             1
           ]
         }
       ],
-      "receipt_plan": "unsupported or alternate; not selected"
+      "receipt_plan": "selected"
     },
     {
       "pair_id": "Cleveland Browns/logo/default/5bd10ad2",
@@ -564,14 +564,14 @@
         {
           "slot_id": "endzone:1195",
           "label": "Unidentified endzone 1195",
-          "writable": false,
+          "writable": true,
           "inner_indices": [
             0,
             1
           ]
         }
       ],
-      "receipt_plan": "unsupported or alternate; not selected"
+      "receipt_plan": "selected"
     },
     {
       "pair_id": "Green Bay Packers/logo/default/2c013bc3",
@@ -600,14 +600,14 @@
         {
           "slot_id": "endzone:802",
           "label": "A's",
-          "writable": false,
+          "writable": true,
           "inner_indices": [
             0,
             1
           ]
         }
       ],
-      "receipt_plan": "unsupported or alternate; not selected"
+      "receipt_plan": "selected"
     },
     {
       "pair_id": "Houston Oilers/logo/default/66b12362",
@@ -636,14 +636,14 @@
         {
           "slot_id": "endzone:258",
           "label": "U's",
-          "writable": false,
+          "writable": true,
           "inner_indices": [
             0,
             1
           ]
         }
       ],
-      "receipt_plan": "unsupported or alternate; not selected"
+      "receipt_plan": "selected"
     },
     {
       "pair_id": "Indianapolis Colts/logo/default/53a174b2",
@@ -708,14 +708,14 @@
         {
           "slot_id": "endzone:894",
           "label": "Unidentified endzone 894",
-          "writable": false,
+          "writable": true,
           "inner_indices": [
             0,
             1
           ]
         }
       ],
-      "receipt_plan": "unsupported or alternate; not selected"
+      "receipt_plan": "selected"
     },
     {
       "pair_id": "Los Angeles Raiders/logo/default/7f6207cf",
@@ -924,14 +924,14 @@
         {
           "slot_id": "endzone:500",
           "label": "N's",
-          "writable": false,
+          "writable": true,
           "inner_indices": [
             0,
             1
           ]
         }
       ],
-      "receipt_plan": "unsupported or alternate; not selected"
+      "receipt_plan": "selected"
     },
     {
       "pair_id": "New York Giants/logo/default/2add7b07",
@@ -960,14 +960,14 @@
         {
           "slot_id": "endzone:1000",
           "label": "J's",
-          "writable": false,
+          "writable": true,
           "inner_indices": [
             0,
             1
           ]
         }
       ],
-      "receipt_plan": "unsupported or alternate; not selected"
+      "receipt_plan": "selected"
     },
     {
       "pair_id": "New York Jets/logo/default/df5dddc7",
@@ -1273,8 +1273,10 @@
           ]
         }
       ],
-      "receipt_plan": "unsupported or alternate; not selected"
+      "receipt_plan": "alternate Dallas variant; not selected"
     }
   ],
-  "plan_selection_rule": "Hash-matched writable pairs; prefer Dallas EndZone over its Orginal archive alternative. This is a reviewable staging plan, not a build."
+  "plan_selection_rule": "Hash-matched writable pairs; prefer Dallas EndZone over its Orginal archive alternative. This is a reviewable staging plan, not a build.",
+  "prepared_pair_count": 54,
+  "prepared_texture_count": 108
 }

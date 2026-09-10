@@ -1,0 +1,10 @@
+test_a_flat_region_still_compresses (__main__.NoOverlappingMatchTests.test_a_flat_region_still_compresses)
+Guard against 'fixing' overlap by refusing to match at all. ... ok
+test_every_encoder_still_round_trips (__main__.NoOverlappingMatchTests.test_every_encoder_still_round_trips)
+The clamp must cost ratio, never correctness. ... ok
+test_no_encoder_emits_an_overlapping_match (__main__.NoOverlappingMatchTests.test_no_encoder_emits_an_overlapping_match) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 17.156s
+
+OK

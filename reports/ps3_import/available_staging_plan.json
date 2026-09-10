@@ -271,8 +271,8 @@
       ]
     }
   ],
-  "assignment_count": 46,
-  "texture_count": 92,
+  "assignment_count": 54,
+  "texture_count": 108,
   "assignments": [
     {
       "source_pair": {
@@ -363,7 +363,8 @@
       "destination_label": "Unidentified endzone 951",
       "destination_entry_hash": "0x9e8f94b9",
       "mapping_method": "entry_hash_and_layer_name",
-      "mips": "existing writer preserves tail; stale mip limitation",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
@@ -456,6 +457,7 @@
       "destination_entry_hash": "0x7ba6e2b0",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
     },
     {
@@ -547,7 +549,8 @@
       "destination_label": "Unidentified endzone 695",
       "destination_entry_hash": "0x72cee7be",
       "mapping_method": "entry_hash_and_layer_name",
-      "mips": "existing writer preserves tail; stale mip limitation",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
@@ -640,7 +643,101 @@
       "destination_entry_hash": "0x97e791b7",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
+    },
+    {
+      "source_pair": {
+        "pair_id": "Chicago Bears/endzone/End Zone/0cd8a0cb",
+        "team": "Chicago Bears",
+        "original_folder": "Chicago Bears",
+        "kind": "endzone",
+        "variant": "End Zone",
+        "entry_hash": "0x0cd8a0cb",
+        "layers": [
+          {
+            "layer": "endzone_l0",
+            "source_path": "NFL Logos/Chicago Bears/End Zone/selected_subfile_77_0_1786020734962/000_endzone_l0.dds",
+            "width": 2048,
+            "height": 512,
+            "mode": "RGBA",
+            "decoded_pixels_sha256": "0195296ac560a3b919771036b2c276ab47d06d206e16b2dec37350ecb17b6d6a",
+            "source_manifest_row": {
+              "id": "subfile:77:0",
+              "kind": "subfile",
+              "type": "TXTR",
+              "entryIndex": 77,
+              "entryHash": "0x0cd8a0cb",
+              "entryName": "endzone_l0",
+              "name": "endzone_l0",
+              "itemIndex": 0,
+              "subfileIndex": 0,
+              "subfileName": "endzone_l0",
+              "byteLength": 699312,
+              "storedBytes": 699312,
+              "size": "682.9 KB",
+              "offset": 536199168,
+              "offsetHex": "0x1ff5c000",
+              "relOffset": 0,
+              "volume": "0A",
+              "details": "2 blocks",
+              "blocks": "176 B / 682.8 KB",
+              "tags": [
+                "TXTR"
+              ],
+              "names": [
+                "endzone_l0",
+                "endzone_l0"
+              ],
+              "description": ""
+            }
+          },
+          {
+            "layer": "endzone_l1",
+            "source_path": "NFL Logos/Chicago Bears/End Zone/selected_subfile_77_1_1786020736906/001_endzone_l1.dds",
+            "width": 2048,
+            "height": 512,
+            "mode": "RGBA",
+            "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+            "source_manifest_row": {
+              "id": "subfile:77:1",
+              "kind": "subfile",
+              "type": "TXTR",
+              "entryIndex": 77,
+              "entryHash": "0x0cd8a0cb",
+              "entryName": "endzone_l0",
+              "name": "endzone_l1",
+              "itemIndex": 1,
+              "subfileIndex": 1,
+              "subfileName": "endzone_l1",
+              "byteLength": 699216,
+              "storedBytes": 699216,
+              "size": "682.8 KB",
+              "offset": 536199344,
+              "offsetHex": "0x1ff5c0b0",
+              "relOffset": 176,
+              "volume": "0A",
+              "details": "2 blocks",
+              "blocks": "176 B / 682.7 KB",
+              "tags": [
+                "TXTR"
+              ],
+              "names": [
+                "endzone_l0",
+                "endzone_l1"
+              ],
+              "description": ""
+            }
+          }
+        ]
+      },
+      "destination_slot": "endzone:78",
+      "destination_label": "C's",
+      "destination_entry_hash": "0x0cd8a0cb",
+      "mapping_method": "entry_hash_and_layer_name",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
+      "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
       "source_pair": {
@@ -732,6 +829,7 @@
       "destination_entry_hash": "0xe9f1d6c2",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
     },
     {
@@ -824,7 +922,101 @@
       "destination_entry_hash": "0x46c6cb00",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
+    },
+    {
+      "source_pair": {
+        "pair_id": "Cleveland Browns/endzone/End Zone/bef87cdb",
+        "team": "Cleveland Browns",
+        "original_folder": "Cleveland Browns",
+        "kind": "endzone",
+        "variant": "End Zone",
+        "entry_hash": "0xbef87cdb",
+        "layers": [
+          {
+            "layer": "endzone_l0",
+            "source_path": "NFL Logos/Cleveland Browns/End Zone/selected_subfile_1137_0_1788442082293/000_endzone_l0.dds",
+            "width": 2048,
+            "height": 512,
+            "mode": "RGBA",
+            "decoded_pixels_sha256": "a427e0c71aba0dab967f0b6ac999c1d076ce84b1fd598af9c01af840e6b276d0",
+            "source_manifest_row": {
+              "id": "subfile:1137:0",
+              "kind": "subfile",
+              "type": "TXTR",
+              "entryIndex": 1137,
+              "entryHash": "0xbef87cdb",
+              "entryName": "endzone_l0",
+              "name": "endzone_l0",
+              "itemIndex": 0,
+              "subfileIndex": 0,
+              "subfileName": "endzone_l0",
+              "byteLength": 699312,
+              "storedBytes": 699312,
+              "size": "682.9 KB",
+              "offset": 536094720,
+              "offsetHex": "0x1ff42800",
+              "relOffset": 0,
+              "volume": "0A",
+              "details": "2 blocks",
+              "blocks": "176 B / 682.8 KB",
+              "tags": [
+                "TXTR"
+              ],
+              "names": [
+                "endzone_l0",
+                "endzone_l0"
+              ],
+              "description": ""
+            }
+          },
+          {
+            "layer": "endzone_l1",
+            "source_path": "NFL Logos/Cleveland Browns/End Zone/selected_subfile_1137_1_1788442084221/001_endzone_l1.dds",
+            "width": 2048,
+            "height": 512,
+            "mode": "RGBA",
+            "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+            "source_manifest_row": {
+              "id": "subfile:1137:1",
+              "kind": "subfile",
+              "type": "TXTR",
+              "entryIndex": 1137,
+              "entryHash": "0xbef87cdb",
+              "entryName": "endzone_l0",
+              "name": "endzone_l1",
+              "itemIndex": 1,
+              "subfileIndex": 1,
+              "subfileName": "endzone_l1",
+              "byteLength": 699216,
+              "storedBytes": 699216,
+              "size": "682.8 KB",
+              "offset": 536094896,
+              "offsetHex": "0x1ff428b0",
+              "relOffset": 176,
+              "volume": "0A",
+              "details": "2 blocks",
+              "blocks": "176 B / 682.7 KB",
+              "tags": [
+                "TXTR"
+              ],
+              "names": [
+                "endzone_l0",
+                "endzone_l1"
+              ],
+              "description": ""
+            }
+          }
+        ]
+      },
+      "destination_slot": "endzone:1140",
+      "destination_label": "Unidentified endzone 1140",
+      "destination_entry_hash": "0xbef87cdb",
+      "mapping_method": "entry_hash_and_layer_name",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
+      "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
       "source_pair": {
@@ -916,6 +1108,7 @@
       "destination_entry_hash": "0x5bd10ad2",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
     },
     {
@@ -1007,7 +1200,8 @@
       "destination_label": "Unidentified endzone 1161",
       "destination_entry_hash": "0xc352677b",
       "mapping_method": "entry_hash_and_layer_name",
-      "mips": "existing writer preserves tail; stale mip limitation",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
@@ -1100,6 +1294,7 @@
       "destination_entry_hash": "0x267b1172",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
     },
     {
@@ -1191,7 +1386,8 @@
       "destination_label": "Unidentified endzone 1347",
       "destination_entry_hash": "0xe08b22a6",
       "mapping_method": "entry_hash_and_layer_name",
-      "mips": "existing writer preserves tail; stale mip limitation",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
@@ -1283,7 +1479,8 @@
       "destination_label": "Unidentified endzone 716",
       "destination_entry_hash": "0x75b65e14",
       "mapping_method": "entry_hash_and_layer_name",
-      "mips": "existing writer preserves tail; stale mip limitation",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
@@ -1376,6 +1573,7 @@
       "destination_entry_hash": "0x909f281d",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
     },
     {
@@ -1468,7 +1666,101 @@
       "destination_entry_hash": "0xfd32901e",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
+    },
+    {
+      "source_pair": {
+        "pair_id": "Green Bay Packers/endzone/Endzone/c9284dca",
+        "team": "Green Bay Packers",
+        "original_folder": "Green Bay Packers",
+        "kind": "endzone",
+        "variant": "Endzone",
+        "entry_hash": "0xc9284dca",
+        "layers": [
+          {
+            "layer": "endzone_l0",
+            "source_path": "NFL Logos/Green Bay Packers/Endzone/selected_subfile_1192_0_1785936977539/000_endzone_l0.dds",
+            "width": 2048,
+            "height": 512,
+            "mode": "RGBA",
+            "decoded_pixels_sha256": "096b47a24132f85d6b2ae0a78761f7561568cb2b93ef3bc54905de60938fa577",
+            "source_manifest_row": {
+              "id": "subfile:1192:0",
+              "kind": "subfile",
+              "type": "TXTR",
+              "entryIndex": 1192,
+              "entryHash": "0xc9284dca",
+              "entryName": "endzone_l0",
+              "name": "endzone_l0",
+              "itemIndex": 0,
+              "subfileIndex": 0,
+              "subfileName": "endzone_l0",
+              "byteLength": 699312,
+              "storedBytes": 699312,
+              "size": "682.9 KB",
+              "offset": 536526848,
+              "offsetHex": "0x1ffac000",
+              "relOffset": 0,
+              "volume": "0A",
+              "details": "2 blocks",
+              "blocks": "176 B / 682.8 KB",
+              "tags": [
+                "TXTR"
+              ],
+              "names": [
+                "endzone_l0",
+                "endzone_l0"
+              ],
+              "description": ""
+            }
+          },
+          {
+            "layer": "endzone_l1",
+            "source_path": "NFL Logos/Green Bay Packers/Endzone/selected_subfile_1192_1_1785936979099/001_endzone_l1.dds",
+            "width": 2048,
+            "height": 512,
+            "mode": "RGBA",
+            "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+            "source_manifest_row": {
+              "id": "subfile:1192:1",
+              "kind": "subfile",
+              "type": "TXTR",
+              "entryIndex": 1192,
+              "entryHash": "0xc9284dca",
+              "entryName": "endzone_l0",
+              "name": "endzone_l1",
+              "itemIndex": 1,
+              "subfileIndex": 1,
+              "subfileName": "endzone_l1",
+              "byteLength": 699216,
+              "storedBytes": 699216,
+              "size": "682.8 KB",
+              "offset": 536527024,
+              "offsetHex": "0x1ffac0b0",
+              "relOffset": 176,
+              "volume": "0A",
+              "details": "2 blocks",
+              "blocks": "176 B / 682.7 KB",
+              "tags": [
+                "TXTR"
+              ],
+              "names": [
+                "endzone_l0",
+                "endzone_l1"
+              ],
+              "description": ""
+            }
+          }
+        ]
+      },
+      "destination_slot": "endzone:1195",
+      "destination_label": "Unidentified endzone 1195",
+      "destination_entry_hash": "0xc9284dca",
+      "mapping_method": "entry_hash_and_layer_name",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
+      "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
       "source_pair": {
@@ -1560,7 +1852,101 @@
       "destination_entry_hash": "0x2c013bc3",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
+    },
+    {
+      "source_pair": {
+        "pair_id": "Houston Oilers/endzone/End Zone/8398556b",
+        "team": "Houston Oilers",
+        "original_folder": "Houston Oilers",
+        "kind": "endzone",
+        "variant": "End Zone",
+        "entry_hash": "0x8398556b",
+        "layers": [
+          {
+            "layer": "endzone_l0",
+            "source_path": "NFL Logos/Houston Oilers/End Zone/selected_subfile_799_0_1785872761439/000_endzone_l0.dds",
+            "width": 2048,
+            "height": 512,
+            "mode": "RGBA",
+            "decoded_pixels_sha256": "2342ecfb54887b5e0ae1b748ce055367580cb04ca9f54b8146cb180b663a4b90",
+            "source_manifest_row": {
+              "id": "subfile:799:0",
+              "kind": "subfile",
+              "type": "TXTR",
+              "entryIndex": 799,
+              "entryHash": "0x8398556b",
+              "entryName": "endzone_l0",
+              "name": "endzone_l0",
+              "itemIndex": 0,
+              "subfileIndex": 0,
+              "subfileName": "endzone_l0",
+              "byteLength": 699312,
+              "storedBytes": 699312,
+              "size": "682.9 KB",
+              "offset": 536002560,
+              "offsetHex": "0x1ff2c000",
+              "relOffset": 0,
+              "volume": "0A",
+              "details": "2 blocks",
+              "blocks": "176 B / 682.8 KB",
+              "tags": [
+                "TXTR"
+              ],
+              "names": [
+                "endzone_l0",
+                "endzone_l0"
+              ],
+              "description": ""
+            }
+          },
+          {
+            "layer": "endzone_l1",
+            "source_path": "NFL Logos/Houston Oilers/End Zone/selected_subfile_799_1_1785872763780/001_endzone_l1.dds",
+            "width": 2048,
+            "height": 512,
+            "mode": "RGBA",
+            "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+            "source_manifest_row": {
+              "id": "subfile:799:1",
+              "kind": "subfile",
+              "type": "TXTR",
+              "entryIndex": 799,
+              "entryHash": "0x8398556b",
+              "entryName": "endzone_l0",
+              "name": "endzone_l1",
+              "itemIndex": 1,
+              "subfileIndex": 1,
+              "subfileName": "endzone_l1",
+              "byteLength": 699216,
+              "storedBytes": 699216,
+              "size": "682.8 KB",
+              "offset": 536002736,
+              "offsetHex": "0x1ff2c0b0",
+              "relOffset": 176,
+              "volume": "0A",
+              "details": "2 blocks",
+              "blocks": "176 B / 682.7 KB",
+              "tags": [
+                "TXTR"
+              ],
+              "names": [
+                "endzone_l0",
+                "endzone_l1"
+              ],
+              "description": ""
+            }
+          }
+        ]
+      },
+      "destination_slot": "endzone:802",
+      "destination_label": "A's",
+      "destination_entry_hash": "0x8398556b",
+      "mapping_method": "entry_hash_and_layer_name",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
+      "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
       "source_pair": {
@@ -1652,7 +2038,101 @@
       "destination_entry_hash": "0x66b12362",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
+    },
+    {
+      "source_pair": {
+        "pair_id": "Indianapolis Colts/endzone/End zone/2a98e560",
+        "team": "Indianapolis Colts",
+        "original_folder": "Indianapolis Colts",
+        "kind": "endzone",
+        "variant": "End zone",
+        "entry_hash": "0x2a98e560",
+        "layers": [
+          {
+            "layer": "endzone_l0",
+            "source_path": "NFL Logos/Indianapolis Colts/End zone/selected_subfile_257_0_1785962083803/000_endzone_l0.dds",
+            "width": 2048,
+            "height": 512,
+            "mode": "RGBA",
+            "decoded_pixels_sha256": "eb9de03eb24cf52ada55a54361e6cead0e79d54b9fae79478b8c99192d0e7b99",
+            "source_manifest_row": {
+              "id": "subfile:257:0",
+              "kind": "subfile",
+              "type": "TXTR",
+              "entryIndex": 257,
+              "entryHash": "0x2a98e560",
+              "entryName": "endzone_l0",
+              "name": "endzone_l0",
+              "itemIndex": 0,
+              "subfileIndex": 0,
+              "subfileName": "endzone_l0",
+              "byteLength": 699312,
+              "storedBytes": 699312,
+              "size": "682.9 KB",
+              "offset": 524007424,
+              "offsetHex": "0x1f3bb800",
+              "relOffset": 0,
+              "volume": "0A",
+              "details": "2 blocks",
+              "blocks": "176 B / 682.8 KB",
+              "tags": [
+                "TXTR"
+              ],
+              "names": [
+                "endzone_l0",
+                "endzone_l0"
+              ],
+              "description": ""
+            }
+          },
+          {
+            "layer": "endzone_l1",
+            "source_path": "NFL Logos/Indianapolis Colts/End zone/selected_subfile_257_1_1785962085422/001_endzone_l1.dds",
+            "width": 2048,
+            "height": 512,
+            "mode": "RGBA",
+            "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+            "source_manifest_row": {
+              "id": "subfile:257:1",
+              "kind": "subfile",
+              "type": "TXTR",
+              "entryIndex": 257,
+              "entryHash": "0x2a98e560",
+              "entryName": "endzone_l0",
+              "name": "endzone_l1",
+              "itemIndex": 1,
+              "subfileIndex": 1,
+              "subfileName": "endzone_l1",
+              "byteLength": 699216,
+              "storedBytes": 699216,
+              "size": "682.8 KB",
+              "offset": 524007600,
+              "offsetHex": "0x1f3bb8b0",
+              "relOffset": 176,
+              "volume": "0A",
+              "details": "2 blocks",
+              "blocks": "176 B / 682.7 KB",
+              "tags": [
+                "TXTR"
+              ],
+              "names": [
+                "endzone_l0",
+                "endzone_l1"
+              ],
+              "description": ""
+            }
+          }
+        ]
+      },
+      "destination_slot": "endzone:258",
+      "destination_label": "U's",
+      "destination_entry_hash": "0x2a98e560",
+      "mapping_method": "entry_hash_and_layer_name",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
+      "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
       "source_pair": {
@@ -1744,6 +2224,7 @@
       "destination_entry_hash": "0x53a174b2",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
     },
     {
@@ -1835,7 +2316,8 @@
       "destination_label": "Unidentified endzone 986",
       "destination_entry_hash": "0xa49704a3",
       "mapping_method": "entry_hash_and_layer_name",
-      "mips": "existing writer preserves tail; stale mip limitation",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
@@ -1928,7 +2410,101 @@
       "destination_entry_hash": "0x41be72aa",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
+    },
+    {
+      "source_pair": {
+        "pair_id": "Los Angeles Raiders/endzone/End Zone/961407d4",
+        "team": "Los Angeles Raiders",
+        "original_folder": "Los Angeles Raiders",
+        "kind": "endzone",
+        "variant": "End Zone",
+        "entry_hash": "0x961407d4",
+        "layers": [
+          {
+            "layer": "endzone_l0",
+            "source_path": "NFL Logos/Los Angeles Raiders/End Zone/selected_subfile_891_0_1787934745633/000_endzone_l0.dds",
+            "width": 2048,
+            "height": 512,
+            "mode": "RGBA",
+            "decoded_pixels_sha256": "070a5a70b7c779a142ed7ce6da2c57298bab20a0f29e54bb92f7b0bb8d5bb039",
+            "source_manifest_row": {
+              "id": "subfile:891:0",
+              "kind": "subfile",
+              "type": "TXTR",
+              "entryIndex": 891,
+              "entryHash": "0x961407d4",
+              "entryName": "endzone_l0",
+              "name": "endzone_l0",
+              "itemIndex": 0,
+              "subfileIndex": 0,
+              "subfileName": "endzone_l0",
+              "byteLength": 699312,
+              "storedBytes": 699312,
+              "size": "682.9 KB",
+              "offset": 523491328,
+              "offsetHex": "0x1f33d800",
+              "relOffset": 0,
+              "volume": "0A",
+              "details": "2 blocks",
+              "blocks": "176 B / 682.8 KB",
+              "tags": [
+                "TXTR"
+              ],
+              "names": [
+                "endzone_l0",
+                "endzone_l0"
+              ],
+              "description": ""
+            }
+          },
+          {
+            "layer": "endzone_l1",
+            "source_path": "NFL Logos/Los Angeles Raiders/End Zone/selected_subfile_891_1_1787934747373/001_endzone_l1.dds",
+            "width": 2048,
+            "height": 512,
+            "mode": "RGBA",
+            "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+            "source_manifest_row": {
+              "id": "subfile:891:1",
+              "kind": "subfile",
+              "type": "TXTR",
+              "entryIndex": 891,
+              "entryHash": "0x961407d4",
+              "entryName": "endzone_l0",
+              "name": "endzone_l1",
+              "itemIndex": 1,
+              "subfileIndex": 1,
+              "subfileName": "endzone_l1",
+              "byteLength": 699216,
+              "storedBytes": 699216,
+              "size": "682.8 KB",
+              "offset": 523491504,
+              "offsetHex": "0x1f33d8b0",
+              "relOffset": 176,
+              "volume": "0A",
+              "details": "2 blocks",
+              "blocks": "176 B / 682.7 KB",
+              "tags": [
+                "TXTR"
+              ],
+              "names": [
+                "endzone_l0",
+                "endzone_l1"
+              ],
+              "description": ""
+            }
+          }
+        ]
+      },
+      "destination_slot": "endzone:894",
+      "destination_label": "Unidentified endzone 894",
+      "destination_entry_hash": "0x961407d4",
+      "mapping_method": "entry_hash_and_layer_name",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
+      "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
       "source_pair": {
@@ -2020,6 +2596,7 @@
       "destination_entry_hash": "0x7f6207cf",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
     },
     {
@@ -2111,7 +2688,8 @@
       "destination_label": "Unidentified endzone 1469",
       "destination_entry_hash": "0xf3222cba",
       "mapping_method": "entry_hash_and_layer_name",
-      "mips": "existing writer preserves tail; stale mip limitation",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
@@ -2204,6 +2782,7 @@
       "destination_entry_hash": "0x160b5ab3",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
     },
     {
@@ -2295,7 +2874,8 @@
       "destination_label": "Porpoises",
       "destination_entry_hash": "0x356e9d6e",
       "mapping_method": "entry_hash_and_layer_name",
-      "mips": "existing writer preserves tail; stale mip limitation",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
@@ -2388,6 +2968,7 @@
       "destination_entry_hash": "0xd047eb67",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
     },
     {
@@ -2479,7 +3060,8 @@
       "destination_label": "Gorillas",
       "destination_entry_hash": "0x7b1a60b0",
       "mapping_method": "entry_hash_and_layer_name",
-      "mips": "existing writer preserves tail; stale mip limitation",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
@@ -2572,6 +3154,7 @@
       "destination_entry_hash": "0x9e3316b9",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
     },
     {
@@ -2663,7 +3246,8 @@
       "destination_label": "Redcoats",
       "destination_entry_hash": "0xfd8e121e",
       "mapping_method": "entry_hash_and_layer_name",
-      "mips": "existing writer preserves tail; stale mip limitation",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
@@ -2756,6 +3340,7 @@
       "destination_entry_hash": "0x18a76417",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
     },
     {
@@ -2847,7 +3432,8 @@
       "destination_label": "Crusaders",
       "destination_entry_hash": "0x5b7f79b8",
       "mapping_method": "entry_hash_and_layer_name",
-      "mips": "existing writer preserves tail; stale mip limitation",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
@@ -2940,7 +3526,101 @@
       "destination_entry_hash": "0xbe560fb1",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
+    },
+    {
+      "source_pair": {
+        "pair_id": "New York Giants/endzone/End Zone/53e4ead5",
+        "team": "New York Giants",
+        "original_folder": "New York Giants",
+        "kind": "endzone",
+        "variant": "End Zone",
+        "entry_hash": "0x53e4ead5",
+        "layers": [
+          {
+            "layer": "endzone_l0",
+            "source_path": "NFL Logos/New York Giants/End Zone/selected_subfile_498_0_1787933191726/000_endzone_l0.dds",
+            "width": 2048,
+            "height": 512,
+            "mode": "RGBA",
+            "decoded_pixels_sha256": "1a7b5bc4a96923798edc71d48f9c60127bfd5b2b5e58e5069fb87ae255b14d7e",
+            "source_manifest_row": {
+              "id": "subfile:498:0",
+              "kind": "subfile",
+              "type": "TXTR",
+              "entryIndex": 498,
+              "entryHash": "0x53e4ead5",
+              "entryName": "endzone_l0",
+              "name": "endzone_l0",
+              "itemIndex": 0,
+              "subfileIndex": 0,
+              "subfileName": "endzone_l0",
+              "byteLength": 699312,
+              "storedBytes": 699312,
+              "size": "682.9 KB",
+              "offset": 522956800,
+              "offsetHex": "0x1f2bb000",
+              "relOffset": 0,
+              "volume": "0A",
+              "details": "2 blocks",
+              "blocks": "176 B / 682.8 KB",
+              "tags": [
+                "TXTR"
+              ],
+              "names": [
+                "endzone_l0",
+                "endzone_l0"
+              ],
+              "description": ""
+            }
+          },
+          {
+            "layer": "endzone_l1",
+            "source_path": "NFL Logos/New York Giants/End Zone/selected_subfile_498_1_1787933193401/001_endzone_l1.dds",
+            "width": 2048,
+            "height": 512,
+            "mode": "RGBA",
+            "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+            "source_manifest_row": {
+              "id": "subfile:498:1",
+              "kind": "subfile",
+              "type": "TXTR",
+              "entryIndex": 498,
+              "entryHash": "0x53e4ead5",
+              "entryName": "endzone_l0",
+              "name": "endzone_l1",
+              "itemIndex": 1,
+              "subfileIndex": 1,
+              "subfileName": "endzone_l1",
+              "byteLength": 699216,
+              "storedBytes": 699216,
+              "size": "682.8 KB",
+              "offset": 522956976,
+              "offsetHex": "0x1f2bb0b0",
+              "relOffset": 176,
+              "volume": "0A",
+              "details": "2 blocks",
+              "blocks": "176 B / 682.7 KB",
+              "tags": [
+                "TXTR"
+              ],
+              "names": [
+                "endzone_l0",
+                "endzone_l1"
+              ],
+              "description": ""
+            }
+          }
+        ]
+      },
+      "destination_slot": "endzone:500",
+      "destination_label": "N's",
+      "destination_entry_hash": "0x53e4ead5",
+      "mapping_method": "entry_hash_and_layer_name",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
+      "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
       "source_pair": {
@@ -3032,7 +3712,101 @@
       "destination_entry_hash": "0x2add7b07",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
+    },
+    {
+      "source_pair": {
+        "pair_id": "New York Jets/endzone/End Zone/a6644c15",
+        "team": "New York Jets",
+        "original_folder": "New York Jets",
+        "kind": "endzone",
+        "variant": "End Zone",
+        "entry_hash": "0xa6644c15",
+        "layers": [
+          {
+            "layer": "endzone_l0",
+            "source_path": "NFL Logos/New York Jets/End Zone/selected_subfile_997_0_1785935776487/000_endzone_l0.dds",
+            "width": 2048,
+            "height": 512,
+            "mode": "RGBA",
+            "decoded_pixels_sha256": "566fa035f9a2797d8f846e2d52fc647a585e8e3b865c4dcd9bbb225a8410dc49",
+            "source_manifest_row": {
+              "id": "subfile:997:0",
+              "kind": "subfile",
+              "type": "TXTR",
+              "entryIndex": 997,
+              "entryHash": "0xa6644c15",
+              "entryName": "endzone_l0",
+              "name": "endzone_l0",
+              "itemIndex": 0,
+              "subfileIndex": 0,
+              "subfileName": "endzone_l0",
+              "byteLength": 699312,
+              "storedBytes": 699312,
+              "size": "682.9 KB",
+              "offset": 522475520,
+              "offsetHex": "0x1f245800",
+              "relOffset": 0,
+              "volume": "0A",
+              "details": "2 blocks",
+              "blocks": "176 B / 682.8 KB",
+              "tags": [
+                "TXTR"
+              ],
+              "names": [
+                "endzone_l0",
+                "endzone_l0"
+              ],
+              "description": ""
+            }
+          },
+          {
+            "layer": "endzone_l1",
+            "source_path": "NFL Logos/New York Jets/End Zone/selected_subfile_997_1_1785935784504/001_endzone_l1.dds",
+            "width": 2048,
+            "height": 512,
+            "mode": "RGBA",
+            "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+            "source_manifest_row": {
+              "id": "subfile:997:1",
+              "kind": "subfile",
+              "type": "TXTR",
+              "entryIndex": 997,
+              "entryHash": "0xa6644c15",
+              "entryName": "endzone_l0",
+              "name": "endzone_l1",
+              "itemIndex": 1,
+              "subfileIndex": 1,
+              "subfileName": "endzone_l1",
+              "byteLength": 699216,
+              "storedBytes": 699216,
+              "size": "682.8 KB",
+              "offset": 522475696,
+              "offsetHex": "0x1f2458b0",
+              "relOffset": 176,
+              "volume": "0A",
+              "details": "2 blocks",
+              "blocks": "176 B / 682.7 KB",
+              "tags": [
+                "TXTR"
+              ],
+              "names": [
+                "endzone_l0",
+                "endzone_l1"
+              ],
+              "description": ""
+            }
+          }
+        ]
+      },
+      "destination_slot": "endzone:1000",
+      "destination_label": "J's",
+      "destination_entry_hash": "0xa6644c15",
+      "mapping_method": "entry_hash_and_layer_name",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
+      "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
       "source_pair": {
@@ -3124,6 +3898,7 @@
       "destination_entry_hash": "0xdf5dddc7",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
     },
     {
@@ -3215,7 +3990,8 @@
       "destination_label": "Unidentified endzone 510",
       "destination_entry_hash": "0x55d3471c",
       "mapping_method": "entry_hash_and_layer_name",
-      "mips": "existing writer preserves tail; stale mip limitation",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
@@ -3308,6 +4084,7 @@
       "destination_entry_hash": "0xb0fa3115",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
     },
     {
@@ -3399,7 +4176,8 @@
       "destination_label": "Unidentified endzone 129",
       "destination_entry_hash": "0x150b8466",
       "mapping_method": "entry_hash_and_layer_name",
-      "mips": "existing writer preserves tail; stale mip limitation",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
@@ -3492,6 +4270,7 @@
       "destination_entry_hash": "0xf022f26f",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
     },
     {
@@ -3583,7 +4362,8 @@
       "destination_label": "Unidentified endzone 190",
       "destination_entry_hash": "0x1f635fbd",
       "mapping_method": "entry_hash_and_layer_name",
-      "mips": "existing writer preserves tail; stale mip limitation",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
@@ -3676,6 +4456,7 @@
       "destination_entry_hash": "0xfa4a29b4",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
     },
     {
@@ -3767,7 +4548,8 @@
       "destination_label": "Unidentified endzone 472",
       "destination_entry_hash": "0x4faece0e",
       "mapping_method": "entry_hash_and_layer_name",
-      "mips": "existing writer preserves tail; stale mip limitation",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
@@ -3860,6 +4642,7 @@
       "destination_entry_hash": "0xaa87b807",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
     },
     {
@@ -3951,7 +4734,8 @@
       "destination_label": "Unidentified endzone 920",
       "destination_entry_hash": "0x9a4b71c6",
       "mapping_method": "entry_hash_and_layer_name",
-      "mips": "existing writer preserves tail; stale mip limitation",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
@@ -4043,7 +4827,8 @@
       "destination_label": "Unidentified endzone 1535",
       "destination_entry_hash": "0xfe324ecb",
       "mapping_method": "entry_hash_and_layer_name",
-      "mips": "existing writer preserves tail; stale mip limitation",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
@@ -4136,6 +4921,7 @@
       "destination_entry_hash": "0x1b1b38c2",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
     },
     {
@@ -4227,7 +5013,8 @@
       "destination_label": "Unidentified endzone 48",
       "destination_entry_hash": "0x080eb4de",
       "mapping_method": "entry_hash_and_layer_name",
-      "mips": "existing writer preserves tail; stale mip limitation",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
@@ -4320,6 +5107,7 @@
       "destination_entry_hash": "0xed27c2d7",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
     },
     {
@@ -4411,7 +5199,8 @@
       "destination_label": "Unidentified endzone 70",
       "destination_entry_hash": "0x0bb2e80b",
       "mapping_method": "entry_hash_and_layer_name",
-      "mips": "existing writer preserves tail; stale mip limitation",
+      "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_field_art_patch.build_field_art_patch_many"
     },
     {
@@ -4504,6 +5293,7 @@
       "destination_entry_hash": "0xee9b9e02",
       "mapping_method": "entry_hash_and_layer_name",
       "mips": "regenerated",
+      "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
       "writer": "apf_logo_patch.build_patch_rgba + linked logocache"
     }
   ],
@@ -4821,6 +5611,84 @@
       "mapping_method": "entry_hash_and_layer_name"
     },
     {
+      "layer": "endzone_l0",
+      "source_path": "NFL Logos/Chicago Bears/End Zone/selected_subfile_77_0_1786020734962/000_endzone_l0.dds",
+      "width": 2048,
+      "height": 512,
+      "mode": "RGBA",
+      "decoded_pixels_sha256": "0195296ac560a3b919771036b2c276ab47d06d206e16b2dec37350ecb17b6d6a",
+      "source_manifest_row": {
+        "id": "subfile:77:0",
+        "kind": "subfile",
+        "type": "TXTR",
+        "entryIndex": 77,
+        "entryHash": "0x0cd8a0cb",
+        "entryName": "endzone_l0",
+        "name": "endzone_l0",
+        "itemIndex": 0,
+        "subfileIndex": 0,
+        "subfileName": "endzone_l0",
+        "byteLength": 699312,
+        "storedBytes": 699312,
+        "size": "682.9 KB",
+        "offset": 536199168,
+        "offsetHex": "0x1ff5c000",
+        "relOffset": 0,
+        "volume": "0A",
+        "details": "2 blocks",
+        "blocks": "176 B / 682.8 KB",
+        "tags": [
+          "TXTR"
+        ],
+        "names": [
+          "endzone_l0",
+          "endzone_l0"
+        ],
+        "description": ""
+      },
+      "destination_asset_id": "apf:outer:78:inner:0",
+      "mapping_method": "entry_hash_and_layer_name"
+    },
+    {
+      "layer": "endzone_l1",
+      "source_path": "NFL Logos/Chicago Bears/End Zone/selected_subfile_77_1_1786020736906/001_endzone_l1.dds",
+      "width": 2048,
+      "height": 512,
+      "mode": "RGBA",
+      "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+      "source_manifest_row": {
+        "id": "subfile:77:1",
+        "kind": "subfile",
+        "type": "TXTR",
+        "entryIndex": 77,
+        "entryHash": "0x0cd8a0cb",
+        "entryName": "endzone_l0",
+        "name": "endzone_l1",
+        "itemIndex": 1,
+        "subfileIndex": 1,
+        "subfileName": "endzone_l1",
+        "byteLength": 699216,
+        "storedBytes": 699216,
+        "size": "682.8 KB",
+        "offset": 536199344,
+        "offsetHex": "0x1ff5c0b0",
+        "relOffset": 176,
+        "volume": "0A",
+        "details": "2 blocks",
+        "blocks": "176 B / 682.7 KB",
+        "tags": [
+          "TXTR"
+        ],
+        "names": [
+          "endzone_l0",
+          "endzone_l1"
+        ],
+        "description": ""
+      },
+      "destination_asset_id": "apf:outer:78:inner:1",
+      "mapping_method": "entry_hash_and_layer_name"
+    },
+    {
       "layer": "logo_l0",
       "source_path": "NFL Logos/Chicago Bears/selected_subfile_1407_1_1785436646927/001_logo_l0.dds",
       "width": 512,
@@ -4974,6 +5842,84 @@
         "description": ""
       },
       "destination_asset_id": "apf:outer:421:inner:0",
+      "mapping_method": "entry_hash_and_layer_name"
+    },
+    {
+      "layer": "endzone_l0",
+      "source_path": "NFL Logos/Cleveland Browns/End Zone/selected_subfile_1137_0_1788442082293/000_endzone_l0.dds",
+      "width": 2048,
+      "height": 512,
+      "mode": "RGBA",
+      "decoded_pixels_sha256": "a427e0c71aba0dab967f0b6ac999c1d076ce84b1fd598af9c01af840e6b276d0",
+      "source_manifest_row": {
+        "id": "subfile:1137:0",
+        "kind": "subfile",
+        "type": "TXTR",
+        "entryIndex": 1137,
+        "entryHash": "0xbef87cdb",
+        "entryName": "endzone_l0",
+        "name": "endzone_l0",
+        "itemIndex": 0,
+        "subfileIndex": 0,
+        "subfileName": "endzone_l0",
+        "byteLength": 699312,
+        "storedBytes": 699312,
+        "size": "682.9 KB",
+        "offset": 536094720,
+        "offsetHex": "0x1ff42800",
+        "relOffset": 0,
+        "volume": "0A",
+        "details": "2 blocks",
+        "blocks": "176 B / 682.8 KB",
+        "tags": [
+          "TXTR"
+        ],
+        "names": [
+          "endzone_l0",
+          "endzone_l0"
+        ],
+        "description": ""
+      },
+      "destination_asset_id": "apf:outer:1140:inner:0",
+      "mapping_method": "entry_hash_and_layer_name"
+    },
+    {
+      "layer": "endzone_l1",
+      "source_path": "NFL Logos/Cleveland Browns/End Zone/selected_subfile_1137_1_1788442084221/001_endzone_l1.dds",
+      "width": 2048,
+      "height": 512,
+      "mode": "RGBA",
+      "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+      "source_manifest_row": {
+        "id": "subfile:1137:1",
+        "kind": "subfile",
+        "type": "TXTR",
+        "entryIndex": 1137,
+        "entryHash": "0xbef87cdb",
+        "entryName": "endzone_l0",
+        "name": "endzone_l1",
+        "itemIndex": 1,
+        "subfileIndex": 1,
+        "subfileName": "endzone_l1",
+        "byteLength": 699216,
+        "storedBytes": 699216,
+        "size": "682.8 KB",
+        "offset": 536094896,
+        "offsetHex": "0x1ff428b0",
+        "relOffset": 176,
+        "volume": "0A",
+        "details": "2 blocks",
+        "blocks": "176 B / 682.7 KB",
+        "tags": [
+          "TXTR"
+        ],
+        "names": [
+          "endzone_l0",
+          "endzone_l1"
+        ],
+        "description": ""
+      },
+      "destination_asset_id": "apf:outer:1140:inner:1",
       "mapping_method": "entry_hash_and_layer_name"
     },
     {
@@ -5523,6 +6469,84 @@
       "mapping_method": "entry_hash_and_layer_name"
     },
     {
+      "layer": "endzone_l0",
+      "source_path": "NFL Logos/Green Bay Packers/Endzone/selected_subfile_1192_0_1785936977539/000_endzone_l0.dds",
+      "width": 2048,
+      "height": 512,
+      "mode": "RGBA",
+      "decoded_pixels_sha256": "096b47a24132f85d6b2ae0a78761f7561568cb2b93ef3bc54905de60938fa577",
+      "source_manifest_row": {
+        "id": "subfile:1192:0",
+        "kind": "subfile",
+        "type": "TXTR",
+        "entryIndex": 1192,
+        "entryHash": "0xc9284dca",
+        "entryName": "endzone_l0",
+        "name": "endzone_l0",
+        "itemIndex": 0,
+        "subfileIndex": 0,
+        "subfileName": "endzone_l0",
+        "byteLength": 699312,
+        "storedBytes": 699312,
+        "size": "682.9 KB",
+        "offset": 536526848,
+        "offsetHex": "0x1ffac000",
+        "relOffset": 0,
+        "volume": "0A",
+        "details": "2 blocks",
+        "blocks": "176 B / 682.8 KB",
+        "tags": [
+          "TXTR"
+        ],
+        "names": [
+          "endzone_l0",
+          "endzone_l0"
+        ],
+        "description": ""
+      },
+      "destination_asset_id": "apf:outer:1195:inner:0",
+      "mapping_method": "entry_hash_and_layer_name"
+    },
+    {
+      "layer": "endzone_l1",
+      "source_path": "NFL Logos/Green Bay Packers/Endzone/selected_subfile_1192_1_1785936979099/001_endzone_l1.dds",
+      "width": 2048,
+      "height": 512,
+      "mode": "RGBA",
+      "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+      "source_manifest_row": {
+        "id": "subfile:1192:1",
+        "kind": "subfile",
+        "type": "TXTR",
+        "entryIndex": 1192,
+        "entryHash": "0xc9284dca",
+        "entryName": "endzone_l0",
+        "name": "endzone_l1",
+        "itemIndex": 1,
+        "subfileIndex": 1,
+        "subfileName": "endzone_l1",
+        "byteLength": 699216,
+        "storedBytes": 699216,
+        "size": "682.8 KB",
+        "offset": 536527024,
+        "offsetHex": "0x1ffac0b0",
+        "relOffset": 176,
+        "volume": "0A",
+        "details": "2 blocks",
+        "blocks": "176 B / 682.7 KB",
+        "tags": [
+          "TXTR"
+        ],
+        "names": [
+          "endzone_l0",
+          "endzone_l1"
+        ],
+        "description": ""
+      },
+      "destination_asset_id": "apf:outer:1195:inner:1",
+      "mapping_method": "entry_hash_and_layer_name"
+    },
+    {
       "layer": "logo_l0",
       "source_path": "NFL Logos/Green Bay Packers/selected_subfile_268_1_1784752702002/001_logo_l0.dds",
       "width": 512,
@@ -5601,6 +6625,84 @@
       "mapping_method": "entry_hash_and_layer_name"
     },
     {
+      "layer": "endzone_l0",
+      "source_path": "NFL Logos/Houston Oilers/End Zone/selected_subfile_799_0_1785872761439/000_endzone_l0.dds",
+      "width": 2048,
+      "height": 512,
+      "mode": "RGBA",
+      "decoded_pixels_sha256": "2342ecfb54887b5e0ae1b748ce055367580cb04ca9f54b8146cb180b663a4b90",
+      "source_manifest_row": {
+        "id": "subfile:799:0",
+        "kind": "subfile",
+        "type": "TXTR",
+        "entryIndex": 799,
+        "entryHash": "0x8398556b",
+        "entryName": "endzone_l0",
+        "name": "endzone_l0",
+        "itemIndex": 0,
+        "subfileIndex": 0,
+        "subfileName": "endzone_l0",
+        "byteLength": 699312,
+        "storedBytes": 699312,
+        "size": "682.9 KB",
+        "offset": 536002560,
+        "offsetHex": "0x1ff2c000",
+        "relOffset": 0,
+        "volume": "0A",
+        "details": "2 blocks",
+        "blocks": "176 B / 682.8 KB",
+        "tags": [
+          "TXTR"
+        ],
+        "names": [
+          "endzone_l0",
+          "endzone_l0"
+        ],
+        "description": ""
+      },
+      "destination_asset_id": "apf:outer:802:inner:0",
+      "mapping_method": "entry_hash_and_layer_name"
+    },
+    {
+      "layer": "endzone_l1",
+      "source_path": "NFL Logos/Houston Oilers/End Zone/selected_subfile_799_1_1785872763780/001_endzone_l1.dds",
+      "width": 2048,
+      "height": 512,
+      "mode": "RGBA",
+      "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+      "source_manifest_row": {
+        "id": "subfile:799:1",
+        "kind": "subfile",
+        "type": "TXTR",
+        "entryIndex": 799,
+        "entryHash": "0x8398556b",
+        "entryName": "endzone_l0",
+        "name": "endzone_l1",
+        "itemIndex": 1,
+        "subfileIndex": 1,
+        "subfileName": "endzone_l1",
+        "byteLength": 699216,
+        "storedBytes": 699216,
+        "size": "682.8 KB",
+        "offset": 536002736,
+        "offsetHex": "0x1ff2c0b0",
+        "relOffset": 176,
+        "volume": "0A",
+        "details": "2 blocks",
+        "blocks": "176 B / 682.7 KB",
+        "tags": [
+          "TXTR"
+        ],
+        "names": [
+          "endzone_l0",
+          "endzone_l1"
+        ],
+        "description": ""
+      },
+      "destination_asset_id": "apf:outer:802:inner:1",
+      "mapping_method": "entry_hash_and_layer_name"
+    },
+    {
       "layer": "logo_l0",
       "source_path": "NFL Logos/Houston Oilers/selected_subfile_619_1_1784673042201/001_logo_l0.dds",
       "width": 512,
@@ -5676,6 +6778,84 @@
         "description": ""
       },
       "destination_asset_id": "apf:outer:621:inner:0",
+      "mapping_method": "entry_hash_and_layer_name"
+    },
+    {
+      "layer": "endzone_l0",
+      "source_path": "NFL Logos/Indianapolis Colts/End zone/selected_subfile_257_0_1785962083803/000_endzone_l0.dds",
+      "width": 2048,
+      "height": 512,
+      "mode": "RGBA",
+      "decoded_pixels_sha256": "eb9de03eb24cf52ada55a54361e6cead0e79d54b9fae79478b8c99192d0e7b99",
+      "source_manifest_row": {
+        "id": "subfile:257:0",
+        "kind": "subfile",
+        "type": "TXTR",
+        "entryIndex": 257,
+        "entryHash": "0x2a98e560",
+        "entryName": "endzone_l0",
+        "name": "endzone_l0",
+        "itemIndex": 0,
+        "subfileIndex": 0,
+        "subfileName": "endzone_l0",
+        "byteLength": 699312,
+        "storedBytes": 699312,
+        "size": "682.9 KB",
+        "offset": 524007424,
+        "offsetHex": "0x1f3bb800",
+        "relOffset": 0,
+        "volume": "0A",
+        "details": "2 blocks",
+        "blocks": "176 B / 682.8 KB",
+        "tags": [
+          "TXTR"
+        ],
+        "names": [
+          "endzone_l0",
+          "endzone_l0"
+        ],
+        "description": ""
+      },
+      "destination_asset_id": "apf:outer:258:inner:0",
+      "mapping_method": "entry_hash_and_layer_name"
+    },
+    {
+      "layer": "endzone_l1",
+      "source_path": "NFL Logos/Indianapolis Colts/End zone/selected_subfile_257_1_1785962085422/001_endzone_l1.dds",
+      "width": 2048,
+      "height": 512,
+      "mode": "RGBA",
+      "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+      "source_manifest_row": {
+        "id": "subfile:257:1",
+        "kind": "subfile",
+        "type": "TXTR",
+        "entryIndex": 257,
+        "entryHash": "0x2a98e560",
+        "entryName": "endzone_l0",
+        "name": "endzone_l1",
+        "itemIndex": 1,
+        "subfileIndex": 1,
+        "subfileName": "endzone_l1",
+        "byteLength": 699216,
+        "storedBytes": 699216,
+        "size": "682.8 KB",
+        "offset": 524007600,
+        "offsetHex": "0x1f3bb8b0",
+        "relOffset": 176,
+        "volume": "0A",
+        "details": "2 blocks",
+        "blocks": "176 B / 682.7 KB",
+        "tags": [
+          "TXTR"
+        ],
+        "names": [
+          "endzone_l0",
+          "endzone_l1"
+        ],
+        "description": ""
+      },
+      "destination_asset_id": "apf:outer:258:inner:1",
       "mapping_method": "entry_hash_and_layer_name"
     },
     {
@@ -5910,6 +7090,84 @@
         "description": ""
       },
       "destination_asset_id": "apf:outer:394:inner:0",
+      "mapping_method": "entry_hash_and_layer_name"
+    },
+    {
+      "layer": "endzone_l0",
+      "source_path": "NFL Logos/Los Angeles Raiders/End Zone/selected_subfile_891_0_1787934745633/000_endzone_l0.dds",
+      "width": 2048,
+      "height": 512,
+      "mode": "RGBA",
+      "decoded_pixels_sha256": "070a5a70b7c779a142ed7ce6da2c57298bab20a0f29e54bb92f7b0bb8d5bb039",
+      "source_manifest_row": {
+        "id": "subfile:891:0",
+        "kind": "subfile",
+        "type": "TXTR",
+        "entryIndex": 891,
+        "entryHash": "0x961407d4",
+        "entryName": "endzone_l0",
+        "name": "endzone_l0",
+        "itemIndex": 0,
+        "subfileIndex": 0,
+        "subfileName": "endzone_l0",
+        "byteLength": 699312,
+        "storedBytes": 699312,
+        "size": "682.9 KB",
+        "offset": 523491328,
+        "offsetHex": "0x1f33d800",
+        "relOffset": 0,
+        "volume": "0A",
+        "details": "2 blocks",
+        "blocks": "176 B / 682.8 KB",
+        "tags": [
+          "TXTR"
+        ],
+        "names": [
+          "endzone_l0",
+          "endzone_l0"
+        ],
+        "description": ""
+      },
+      "destination_asset_id": "apf:outer:894:inner:0",
+      "mapping_method": "entry_hash_and_layer_name"
+    },
+    {
+      "layer": "endzone_l1",
+      "source_path": "NFL Logos/Los Angeles Raiders/End Zone/selected_subfile_891_1_1787934747373/001_endzone_l1.dds",
+      "width": 2048,
+      "height": 512,
+      "mode": "RGBA",
+      "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+      "source_manifest_row": {
+        "id": "subfile:891:1",
+        "kind": "subfile",
+        "type": "TXTR",
+        "entryIndex": 891,
+        "entryHash": "0x961407d4",
+        "entryName": "endzone_l0",
+        "name": "endzone_l1",
+        "itemIndex": 1,
+        "subfileIndex": 1,
+        "subfileName": "endzone_l1",
+        "byteLength": 699216,
+        "storedBytes": 699216,
+        "size": "682.8 KB",
+        "offset": 523491504,
+        "offsetHex": "0x1f33d8b0",
+        "relOffset": 176,
+        "volume": "0A",
+        "details": "2 blocks",
+        "blocks": "176 B / 682.7 KB",
+        "tags": [
+          "TXTR"
+        ],
+        "names": [
+          "endzone_l0",
+          "endzone_l1"
+        ],
+        "description": ""
+      },
+      "destination_asset_id": "apf:outer:894:inner:1",
       "mapping_method": "entry_hash_and_layer_name"
     },
     {
@@ -6771,6 +8029,84 @@
       "mapping_method": "entry_hash_and_layer_name"
     },
     {
+      "layer": "endzone_l0",
+      "source_path": "NFL Logos/New York Giants/End Zone/selected_subfile_498_0_1787933191726/000_endzone_l0.dds",
+      "width": 2048,
+      "height": 512,
+      "mode": "RGBA",
+      "decoded_pixels_sha256": "1a7b5bc4a96923798edc71d48f9c60127bfd5b2b5e58e5069fb87ae255b14d7e",
+      "source_manifest_row": {
+        "id": "subfile:498:0",
+        "kind": "subfile",
+        "type": "TXTR",
+        "entryIndex": 498,
+        "entryHash": "0x53e4ead5",
+        "entryName": "endzone_l0",
+        "name": "endzone_l0",
+        "itemIndex": 0,
+        "subfileIndex": 0,
+        "subfileName": "endzone_l0",
+        "byteLength": 699312,
+        "storedBytes": 699312,
+        "size": "682.9 KB",
+        "offset": 522956800,
+        "offsetHex": "0x1f2bb000",
+        "relOffset": 0,
+        "volume": "0A",
+        "details": "2 blocks",
+        "blocks": "176 B / 682.8 KB",
+        "tags": [
+          "TXTR"
+        ],
+        "names": [
+          "endzone_l0",
+          "endzone_l0"
+        ],
+        "description": ""
+      },
+      "destination_asset_id": "apf:outer:500:inner:0",
+      "mapping_method": "entry_hash_and_layer_name"
+    },
+    {
+      "layer": "endzone_l1",
+      "source_path": "NFL Logos/New York Giants/End Zone/selected_subfile_498_1_1787933193401/001_endzone_l1.dds",
+      "width": 2048,
+      "height": 512,
+      "mode": "RGBA",
+      "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+      "source_manifest_row": {
+        "id": "subfile:498:1",
+        "kind": "subfile",
+        "type": "TXTR",
+        "entryIndex": 498,
+        "entryHash": "0x53e4ead5",
+        "entryName": "endzone_l0",
+        "name": "endzone_l1",
+        "itemIndex": 1,
+        "subfileIndex": 1,
+        "subfileName": "endzone_l1",
+        "byteLength": 699216,
+        "storedBytes": 699216,
+        "size": "682.8 KB",
+        "offset": 522956976,
+        "offsetHex": "0x1f2bb0b0",
+        "relOffset": 176,
+        "volume": "0A",
+        "details": "2 blocks",
+        "blocks": "176 B / 682.7 KB",
+        "tags": [
+          "TXTR"
+        ],
+        "names": [
+          "endzone_l0",
+          "endzone_l1"
+        ],
+        "description": ""
+      },
+      "destination_asset_id": "apf:outer:500:inner:1",
+      "mapping_method": "entry_hash_and_layer_name"
+    },
+    {
       "layer": "logo_l0",
       "source_path": "NFL Logos/New York Giants/selected_subfile_261_1_1784823373622/001_logo_l0.dds",
       "width": 512,
@@ -6846,6 +8182,84 @@
         "description": ""
       },
       "destination_asset_id": "apf:outer:262:inner:0",
+      "mapping_method": "entry_hash_and_layer_name"
+    },
+    {
+      "layer": "endzone_l0",
+      "source_path": "NFL Logos/New York Jets/End Zone/selected_subfile_997_0_1785935776487/000_endzone_l0.dds",
+      "width": 2048,
+      "height": 512,
+      "mode": "RGBA",
+      "decoded_pixels_sha256": "566fa035f9a2797d8f846e2d52fc647a585e8e3b865c4dcd9bbb225a8410dc49",
+      "source_manifest_row": {
+        "id": "subfile:997:0",
+        "kind": "subfile",
+        "type": "TXTR",
+        "entryIndex": 997,
+        "entryHash": "0xa6644c15",
+        "entryName": "endzone_l0",
+        "name": "endzone_l0",
+        "itemIndex": 0,
+        "subfileIndex": 0,
+        "subfileName": "endzone_l0",
+        "byteLength": 699312,
+        "storedBytes": 699312,
+        "size": "682.9 KB",
+        "offset": 522475520,
+        "offsetHex": "0x1f245800",
+        "relOffset": 0,
+        "volume": "0A",
+        "details": "2 blocks",
+        "blocks": "176 B / 682.8 KB",
+        "tags": [
+          "TXTR"
+        ],
+        "names": [
+          "endzone_l0",
+          "endzone_l0"
+        ],
+        "description": ""
+      },
+      "destination_asset_id": "apf:outer:1000:inner:0",
+      "mapping_method": "entry_hash_and_layer_name"
+    },
+    {
+      "layer": "endzone_l1",
+      "source_path": "NFL Logos/New York Jets/End Zone/selected_subfile_997_1_1785935784504/001_endzone_l1.dds",
+      "width": 2048,
+      "height": 512,
+      "mode": "RGBA",
+      "decoded_pixels_sha256": "4571a45562870efcbcbaacbe46976b780a3be00a4b3651d8a0a3329e6f38ac3b",
+      "source_manifest_row": {
+        "id": "subfile:997:1",
+        "kind": "subfile",
+        "type": "TXTR",
+        "entryIndex": 997,
+        "entryHash": "0xa6644c15",
+        "entryName": "endzone_l0",
+        "name": "endzone_l1",
+        "itemIndex": 1,
+        "subfileIndex": 1,
+        "subfileName": "endzone_l1",
+        "byteLength": 699216,
+        "storedBytes": 699216,
+        "size": "682.8 KB",
+        "offset": 522475696,
+        "offsetHex": "0x1f2458b0",
+        "relOffset": 176,
+        "volume": "0A",
+        "details": "2 blocks",
+        "blocks": "176 B / 682.7 KB",
+        "tags": [
+          "TXTR"
+        ],
+        "names": [
+          "endzone_l0",
+          "endzone_l1"
+        ],
+        "description": ""
+      },
+      "destination_asset_id": "apf:outer:1000:inner:1",
       "mapping_method": "entry_hash_and_layer_name"
     },
     {

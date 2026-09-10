@@ -1,0 +1,8 @@
+test_collision_requires_explicit_variant_selection (__main__.DialogTests.test_collision_requires_explicit_variant_selection) ... ok
+test_hash_default_produces_two_distinct_layers (__main__.DialogTests.test_hash_default_produces_two_distinct_layers) ... ok
+test_missing_destination_does_not_accept (__main__.DialogTests.test_missing_destination_does_not_accept) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.113s
+
+OK

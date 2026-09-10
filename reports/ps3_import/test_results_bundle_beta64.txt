@@ -1,0 +1,33 @@
+test_aliases_keep_historical_names (__main__.BundleTests.test_aliases_keep_historical_names) ... ok
+test_bad_dds_does_not_fall_back_to_gtf (__main__.BundleTests.test_bad_dds_does_not_fall_back_to_gtf) ... ok
+test_decoded_memory_budget_applies_to_compressed_images (__main__.BundleTests.test_decoded_memory_budget_applies_to_compressed_images) ... ok
+test_duplicate_variants_need_choice (__main__.BundleTests.test_duplicate_variants_need_choice) ... ok
+test_folder_layout_order_and_receipt (__main__.BundleTests.test_folder_layout_order_and_receipt) ... ok
+test_gtf_fallback_only_when_dds_missing (__main__.BundleTests.test_gtf_fallback_only_when_dds_missing) ... ok
+test_hash_mapping_uses_semantic_names (__main__.BundleTests.test_hash_mapping_uses_semantic_names) ... ok
+test_identical_and_incomplete_pairs_rejected (__main__.BundleTests.test_identical_and_incomplete_pairs_rejected) ... ok
+test_manifest_layer_mismatch_and_wrong_size (__main__.BundleTests.test_manifest_layer_mismatch_and_wrong_size) ... ok
+test_mapping_table_names_and_collisions (__main__.BundleTests.test_mapping_table_names_and_collisions) ... ok
+test_missing_hash_requires_chosen_destination (__main__.BundleTests.test_missing_hash_requires_chosen_destination) ... ok
+test_rejected_pair_does_not_hide_valid_team (__main__.BundleTests.test_rejected_pair_does_not_hide_valid_team) ... ok
+test_reviewed_pixel_mutation_refused (__main__.BundleTests.test_reviewed_pixel_mutation_refused) ... ok
+test_stage_failure_rolls_back_previous_operations (__main__.BundleTests.test_stage_failure_rolls_back_previous_operations) ... ok
+test_team_folder_as_input (__main__.BundleTests.test_team_folder_as_input) ... ok
+test_traversal_and_case_collision_zip (__main__.BundleTests.test_traversal_and_case_collision_zip) ... ok
+test_two_alias_folders_cannot_silently_replace_one_pair (__main__.BundleTests.test_two_alias_folders_cannot_silently_replace_one_pair) ... ok
+test_unwritable_and_wrong_kind_refused (__main__.BundleTests.test_unwritable_and_wrong_kind_refused) ... ok
+test_wrong_layer_dimensions_refused (__main__.BundleTests.test_wrong_layer_dimensions_refused) ... ok
+test_zip_matches_folder (__main__.BundleTests.test_zip_matches_folder) ... ok
+test_apfe_argb4444_dds (__main__.CodecTests.test_apfe_argb4444_dds) ... ok
+test_dx10_array_is_not_silently_imported_as_one_image (__main__.CodecTests.test_dx10_array_is_not_silently_imported_as_one_image) ... ok
+test_dxt1_and_dxt5_from_pillow (__main__.CodecTests.test_dxt1_and_dxt5_from_pillow) ... ok
+test_gtf_declared_offset_not_fixed_128 (__main__.CodecTests.test_gtf_declared_offset_not_fixed_128) ... ok
+test_gtf_morton_rectangular_layout (__main__.CodecTests.test_gtf_morton_rectangular_layout) ... ok
+test_raw_dds_preserves_rgba (__main__.CodecTests.test_raw_dds_preserves_rgba) ... ok
+test_truncation_and_oversize_are_rejected (__main__.CodecTests.test_truncation_and_oversize_are_rejected) ... ok
+test_synthetic_bundle_stages_and_rebuilt_retail_resource_reparses (__main__.RetailWriterTests.test_synthetic_bundle_stages_and_rebuilt_retail_resource_reparses) ... ok
+
+----------------------------------------------------------------------
+Ran 28 tests in 26.280s
+
+OK

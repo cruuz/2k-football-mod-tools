@@ -1,0 +1,50 @@
+{
+  "schema": "apf_endzone_washington_diagnosis/v1",
+  "entry_index": 70,
+  "allocation": 137216,
+  "retail_active_bytes": 136059,
+  "retail_vram_stored_bytes": 135525,
+  "baseline_base_only_safe_greedy_active_bytes": 151951,
+  "baseline_base_only_safe_best_active_bytes": 150740,
+  "baseline_overage_bytes": 13524,
+  "uncompressed_vram_bytes": 1441792,
+  "layers": [
+    {
+      "layer": "endzone_l0",
+      "retail_rgba_colors": 253,
+      "import_rgba_colors": 576,
+      "retail_alpha_range": [
+        255,
+        255
+      ],
+      "import_alpha_range": [
+        255,
+        255
+      ],
+      "retail_distinct_stored_bc1_blocks": 650,
+      "import_distinct_stored_bc1_blocks": 4733,
+      "base_bytes": 524288,
+      "preserved_mip_bytes": 196608,
+      "changed_bc1_blocks": 35136
+    },
+    {
+      "layer": "endzone_l1",
+      "retail_rgba_colors": 2994,
+      "import_rgba_colors": 31,
+      "retail_alpha_range": [
+        255,
+        255
+      ],
+      "import_alpha_range": [
+        255,
+        255
+      ],
+      "retail_distinct_stored_bc1_blocks": 6337,
+      "import_distinct_stored_bc1_blocks": 2146,
+      "base_bytes": 524288,
+      "preserved_mip_bytes": 196608,
+      "changed_bc1_blocks": 33692
+    }
+  ],
+  "conclusion": "Equal base/mip allocations and opaque alpha; source color/BC1 block diversity raises H7A stored size. Baseline retains retail mips exactly."
+}

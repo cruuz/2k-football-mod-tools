@@ -1,0 +1,36 @@
+test_contract_table_pins_every_shipped_slot (__main__.FieldArtContractPinTests.test_contract_table_pins_every_shipped_slot) ... ok
+test_field_radiance_and_weather_divots_are_not_writable (__main__.FieldArtContractPinTests.test_field_radiance_and_weather_divots_are_not_writable) ... ok
+test_endzone_edit_is_verified_by_the_independent_verifier (__main__.FieldArtCopiedVolumeTests.test_endzone_edit_is_verified_by_the_independent_verifier) ... ok
+test_noop_copied_volume_is_byte_identical (__main__.FieldArtCopiedVolumeTests.test_noop_copied_volume_is_byte_identical) ... ok
+test_source_volume_is_never_modified_by_a_copy (__main__.FieldArtCopiedVolumeTests.test_source_volume_is_never_modified_by_a_copy) ... ok
+test_all_quality_steps_exhausted_names_remaining_overage (__main__.FieldArtEditTests.test_all_quality_steps_exhausted_names_remaining_overage)
+A valid-size incompressible codec result must never escape the allocation gate. ... ok
+test_both_endzone_layers_land_in_one_pass (__main__.FieldArtEditTests.test_both_endzone_layers_land_in_one_pass)
+The retail entry pin no longer blocks the second layer. ... ok
+test_divots_edit_changes_only_its_base (__main__.FieldArtEditTests.test_divots_edit_changes_only_its_base) ... ok
+test_endzone_l0_edit_regenerates_its_mips (__main__.FieldArtEditTests.test_endzone_l0_edit_regenerates_its_mips)
+``endzone_l0`` accepts an edit now.  It did not, and why is worth keeping. ... ok
+test_endzone_l1_edit_changes_only_its_base (__main__.FieldArtEditTests.test_endzone_l1_edit_changes_only_its_base) ... ok
+test_drifted_base_hash_is_refused (__main__.FieldArtFailClosedTests.test_drifted_base_hash_is_refused) ... ok
+test_drifted_entry_hash_is_refused (__main__.FieldArtFailClosedTests.test_drifted_entry_hash_is_refused) ... ok
+test_existing_output_is_refused_and_untouched (__main__.FieldArtFailClosedTests.test_existing_output_is_refused_and_untouched) ... ok
+test_source_as_output_is_refused (__main__.FieldArtFailClosedTests.test_source_as_output_is_refused) ... ok
+test_unsupported_slot_is_refused (__main__.FieldArtFailClosedTests.test_unsupported_slot_is_refused) ... ok
+test_wrong_dimensions_are_refused (__main__.FieldArtFailClosedTests.test_wrong_dimensions_are_refused) ... ok
+test_divots_pins_and_transport (__main__.FieldArtPinAndTransportTests.test_divots_pins_and_transport) ... ok
+test_endzone_l0_pins_and_transport (__main__.FieldArtPinAndTransportTests.test_endzone_l0_pins_and_transport) ... ok
+test_endzone_l1_pins_and_transport (__main__.FieldArtPinAndTransportTests.test_endzone_l1_pins_and_transport) ... ok
+test_field_pass_text_pins_and_transport (__main__.FieldArtPinAndTransportTests.test_field_pass_text_pins_and_transport) ... ok
+test_divots_noop_is_bit_exact (__main__.FieldArtRoundTripTests.test_divots_noop_is_bit_exact) ... ok
+test_endzone_l0_noop_is_bit_exact (__main__.FieldArtRoundTripTests.test_endzone_l0_noop_is_bit_exact) ... ok
+test_endzone_l1_noop_is_bit_exact (__main__.FieldArtRoundTripTests.test_endzone_l1_noop_is_bit_exact) ... ok
+test_field_pass_text_noop_is_bit_exact (__main__.FieldArtRoundTripTests.test_field_pass_text_noop_is_bit_exact) ... ok
+test_field_pass_text_bc3_edit_and_verify (__main__.FieldArtSlowPracticeTests.test_field_pass_text_bc3_edit_and_verify) ... skipped 'practice-overlay recompress is slow; set APF_FIELD_ART_SLOW=1'
+test_pc_field_goal_dxt1_edit_and_verify (__main__.FieldArtSlowPracticeTests.test_pc_field_goal_dxt1_edit_and_verify) ... skipped 'practice-overlay recompress is slow; set APF_FIELD_ART_SLOW=1'
+
+----------------------------------------------------------------------
+Ran 26 tests in 296.485s
+
+OK (skipped=2)
+APF_FIELD_ART_PATCH_PASS mode=patched entry=6 files=1 sha256=ffd24d220c2a28447ab23222751113be3c622e4df549ec71984ded9ae90d8837
+APF_FIELD_ART_PATCH_PASS mode=no_op entry=6 files=0 sha256=d8fb70d2bdb180306f49aa2b268d287b35eb33289c69959a74fd6c7dcac9af26
