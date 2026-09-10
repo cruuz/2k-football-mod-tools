@@ -6709,7 +6709,11 @@
         "ASTRA_B65_SUPERSIM_REPORT.md",
         "tests/mod_editor/test_nfl2k5_supersim_live.py",
         "tools/mycareer_mode/supersim_live_receipt.json",
-        "tools/mycareer_mode/supersim_budget.json"
+        "tools/mycareer_mode/supersim_budget.json",
+        "ASTRA_B65_SETTINGS_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_my_career_settings.py",
+        "tools/mycareer_mode/settings_budget.json",
+        "tools/mycareer_mode/settings_validation.json"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -6727,7 +6731,7 @@
         "Career footer follows the complete native Franchise container. Sizes 720172 or 724268; ordinary saves are unchanged.",
         "Senior Bowl preparation only: the default seed-1 squads include MyPlayer. Native event transport and stat isolation are unresolved. Requests, trades and accelerated Supersim stay out.",
         "All 17 retail positions have three native Create Player templates; the pools profile offers 16 live positions and merges EDGE ratings. Position-specific input decode and switch guards are bounded-native proofs; mesh movement, manual routes, catches and block animations remain unwitnessed outside Noah's reported QB play.",
-        "Supersim Stage 1 requests native off-field presentation skips at 1x. The Apartment choice is Skip presentation or Off; B cancels eligible off-field skip requests for the session. Cold load resets the choice. Complete unattended drives and full-play-clock return are unproved."
+        "Apartment > Settings offers First Person Football Off/On (default Off), Off-field play Spectate/Skip presentation (default Skip presentation), and MyPlayer star On/Off (default On). First person calls the original Franchise Settings toggle at 0x147E60 and shares native word 0xE5FFE4. All three choices persist in the signed 128-byte career footer; old zero-filled footers load the defaults. B on Settings returns to Apartment. B during an eligible off-field presentation changes the saved choice to Spectate. Stage 1 remains at 1x; uninterrupted drives, headless fast forward and full-play-clock return remain unproved."
       ],
       "portme": [
         "Complete the Noah witness list in ASTRA_MYCAREER_DRAFT_REPORT.md.",
@@ -6744,9 +6748,13 @@
           "ASTRA_MYCAREER_MODE_REPORT.md",
           "ASTRA_MYCAREER_DRAFT_REPORT.md",
           "ASTRA_B65_SUPERSIM_REPORT.md",
-          "tests/mod_editor/test_nfl2k5_supersim_live.py"
+          "tests/mod_editor/test_nfl2k5_supersim_live.py",
+          "ASTRA_B65_SETTINGS_REPORT.md",
+          "tests/mod_editor/test_nfl2k5_my_career_settings.py",
+          "tools/mycareer_mode/settings_budget.json",
+          "tools/mycareer_mode/settings_validation.json"
         ],
-        "scope": "Bounded native creation, class placement, seven-round AI draft, signing, played-XP purchase, signed container and cold-load routes. Explicit fixture preconditions and hardware seams are documented; no game boot or played witness. Bounded native skip readiness/cleanup, replay input consumers, presence guards and Apartment row dispatch are also proved. No headless scheduler, audio gating, uninterrupted drive or pre-snap return is proved.",
+        "scope": "Bounded native creation, class placement, seven-round AI draft, signing, played-XP purchase, signed container and cold-load routes. Explicit fixture preconditions and hardware seams are documented; no game boot or played witness. Bounded native skip readiness/cleanup, replay input consumers, presence guards and Apartment row dispatch are also proved. No headless scheduler, audio gating, uninterrupted drive or pre-snap return is proved. Settings menu dispatch, native row labels and yellow selection, the shared retail first-person word, all eight saved setting combinations, cold relocation/migration and bit-0-only MyPlayer star writes are proved in bounded native execution. A first-person snap and displayed in-game star still need Noah's witness.",
         "status": "not-tested"
       },
       "selectors": {
@@ -6767,7 +6775,7 @@
         "resource": "Game Modes row, pinned native hooks, owned 16384 RX/8192 RW and an appended 128-byte career save footer.",
         "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
       },
-      "summary": "Native draft or undrafted entry, Senior Bowl preparation, played-XP upgrades, next-fixture calendar and optional native off-field presentation skips at 1x in the Apartment loop. Accelerated sim to next appearance is unavailable. EXPERIMENTAL / UNWITNESSED.",
+      "summary": "Native draft or undrafted entry, Senior Bowl preparation, played-XP upgrades, next-fixture calendar and optional native off-field presentation skips at 1x in the Apartment loop. Accelerated sim to next appearance is unavailable. EXPERIMENTAL / UNWITNESSED. Apartment Settings saves first person, off-field presentation and MyPlayer star choices.",
       "surface": "mode_state_routing",
       "title": "In-game MyCareer (experimental, unwitnessed)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_my_career_draft"

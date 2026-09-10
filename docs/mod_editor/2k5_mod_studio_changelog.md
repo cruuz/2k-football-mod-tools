@@ -33,14 +33,15 @@
   change. Native CPU submissions, complete fill, material fields and legacy upgrades are proved offline;
   in-game appearance still needs Noah's witness. `ASTRA_REPORT.md`; preview `nfl2k5_player_star_filled.png`.
 
-- **MyCareer Supersim, first stage (existing `my_career` option, experimental and opt-in).** While MyPlayer is off the
-  field, the live game can request the retail post-play, replay, injury/timeout and period-presentation skips. Both
-  sides keep their native AI and gameplay stays at normal speed. Scroll below Upgrades in the Apartment for
-  **Supersim: Skip presentation / Off**; Skip presentation is the session default, and B during an eligible off-field
-  presentation turns it off. The choice resets on a cold career load. Native skip readiness and cleanup, replay-button
-  consumers and the scrolling option are proved in bounded execution. Fast forward, headless CPU drives and a
-  guaranteed pre-snap return with a full play clock are not proved or shipped. The existing 16 KiB code and 8 KiB
-  writable reservations still fit, with 1,051 code bytes spare; no other owner moves. Built by Astra; unwitnessed.
+- **MyCareer Settings: first person, off-field play and MyPlayer's star.** Open Settings below Upgrades in the
+  Apartment. First Person Football defaults Off and uses the same native toggle as Franchise Settings.
+  Off-field play offers Spectate or Skip presentation, defaulting to Skip; both sides retain native AI at normal
+  speed. MyPlayer star defaults On and changes only MyPlayer's star bit, preserving every other tag and player.
+  All three choices now survive save/load, including migration of older careers. B returns from Settings;
+  B during an eligible off-field presentation switches to Spectate. Native skips, menu dispatch, masked tags and
+  saved choices are proved in bounded execution. Fast forward and a guaranteed pre-snap return remain unproved.
+  The existing 16 KiB code and 8 KiB writable owners still fit, with at least 145 code bytes spare in the measured layouts; no other owner moves.
+  Built by Astra; experimental, opt-in and unwitnessed. See `ASTRA_REPORT.md` for Noah's witness script.
 - **Accelerated clock (Madden style), opt-in.** After a huddled play call, the human or CPU offense's play
   clock jumps to a chosen 25, 20, 15, 10 or 5 seconds. The game clock loses the same time only when its native
   running state permits it. Final-two-minute and no-huddle snaps keep their normal clocks; kickoffs and the
