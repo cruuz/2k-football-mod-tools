@@ -1279,12 +1279,12 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         check_files=False,
     )
     require(
-        len(registry.capabilities) == 139
-        and len(registry.for_game(core_model.GameId.APF2K8)) == 52,
+        len(registry.capabilities) == 140
+        and len(registry.for_game(core_model.GameId.APF2K8)) == 53,
         "shared/APF capability registry counts changed",
     )
     cards = catalog.build_capability_cards()
-    require(len(cards) == 52 and len({item.capability_id for item in cards}) == 52,
+    require(len(cards) == 53 and len({item.capability_id for item in cards}) == 53,
             "APF capability surface is not exactly 52 unique rows")
     require(len(models.APF_CATEGORY_ORDER) == 14,
             "APF complete sidebar category count changed")
