@@ -2,6 +2,10 @@
 
 ## 0.1.0-alpha.85 — the 2K8 beta (beta-64): playbooks, play design, coverage, book identity, CPU play calling, PS3 imports — 2026-09-09
 
+- **Fixed: Fine-tune Plays > Change formation follows the formation's retail personnel package.**
+  I Jacks → Singleback Quads now selects Flush (1 RB / 0 TE / 4 WR), instead of keeping Jacks
+  (2 RB / 3 TE / 0 WR). Add a formation uses the same defaults; retail alternatives are shown and
+  hand-picked packages remain available with a warning for unpaired personnel. **UNWITNESSED in Xenia.**
 - **Rosters: Import PS3 Roster (beta 64).** Converts a PS3 APF 2K8 roster `USERDATA` (raw, or the one
   `BLUS30049-ROS/USERDATA` member of a PS3 mod package zip) into the raw Xbox 360 `Roster.ROS` layout as a new
   file with a receipt. Both platforms use the same self-relative pointers (`target = field + stored - 1`, proved

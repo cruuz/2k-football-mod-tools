@@ -360,7 +360,9 @@ A tag may never be duplicated or given a value the retail books never use.
 
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import dataclass
+from functools import lru_cache
 import hashlib
 import json
 from pathlib import Path
@@ -1320,6 +1322,46 @@ def read_book(index_path: Path, outer_index: int) -> SplbBook:
     except (OSError, IndexError, apf_inner.FormatError, apf_outer.FormatError) as exc:
         raise ValidationError(f"Could not open the APF stock playbook: {exc}") from exc
     return parse_book(body, outer_index)
+
+
+def retail_formation_packages(
+    index_0a: Path,
+) -> dict[int, tuple[tuple[int, int], ...]]:
+    """Retail category/count pairs, ordered by frequency then category index.
+
+    Reuse the studio's stock-book inventory and count only populated records.
+    The source volume is read-only: scan once per resolved index path, returning
+    a fresh dict so callers cannot alter another panel's cached defaults.
+    """
+
+    return dict(_retail_formation_packages(Path(index_0a).resolve()))
+
+
+@lru_cache(maxsize=None)
+def _retail_formation_packages(
+    index_0a: Path,
+) -> dict[int, tuple[tuple[int, int], ...]]:
+    counts: dict[int, Counter[int]] = {}
+    for outer_index in STOCK_BOOKS:
+        for record in read_book(index_0a, outer_index).records:
+            if record.populated:
+                counts.setdefault(record.formation_index, Counter())[
+                    record.category_index
+                ] += 1
+    return {
+        formation: tuple(sorted(packages.items(), key=lambda pair: (-pair[1], pair[0])))
+        for formation, packages in sorted(counts.items())
+    }
+
+
+def natural_package(
+    formation_index: int,
+    table: Mapping[int, tuple[tuple[int, int], ...]],
+) -> int | None:
+    """Most frequent retail category; ties use the lower category index."""
+
+    pairs = table.get(formation_index, ())
+    return min(pairs, key=lambda pair: (-pair[1], pair[0]))[0] if pairs else None
 
 
 def _normalize(

@@ -662,6 +662,8 @@ class ApfPlaybookMembershipPanel(QFrame):
         self._loaded_index: Path | None = None
         self._plays: list[str] = []
         self._formations: dict[int, str] = {}
+        self._categories: tuple[dict[str, object], ...] = ()
+        self._formation_packages: dict[int, tuple[tuple[int, int], ...]] = {}
         # record index -> {play index: wanted membership}
         self._staged: dict[int, dict[int, bool]] = {}
         # record index -> {play losing a tagged slot: play carrying it on}
@@ -864,6 +866,8 @@ class ApfPlaybookMembershipPanel(QFrame):
         if not bool(getattr(self.facade, "source_ready", False)):
             self._book = None
             self._loaded_index = None
+            self._categories = ()
+            self._formation_packages = {}
             self._clear_staged()
             self.formation_list.clear()
             self.play_list.clear()
@@ -910,17 +914,24 @@ class ApfPlaybookMembershipPanel(QFrame):
         def operation(progress: Callable[[str, int, int], None]) -> dict:
             import playbook_inventory  # type: ignore
 
-            progress("Reading the stock playbook", 0, 2)
+            progress("Reading the stock playbook", 0, 3)
             book = splb.read_book(index_0a, int(outer))
-            progress("Reading MASTER play names", 1, 2)
+            progress("Reading MASTER play names", 1, 3)
             master = playbook_inventory.parse_apf(index_0a, 64 * 1024 * 1024)[0]
-            progress("Playbook ready", 2, 2)
+            progress("Reading retail personnel pairings", 2, 3)
+            package_reader = getattr(self.facade, "retail_formation_packages", None)
+            formation_packages = package_reader() if package_reader is not None else {}
+            category_reader = getattr(self.facade, "master_categories", None)
+            categories = tuple(category_reader()) if category_reader is not None else ()
+            progress("Playbook ready", 3, 3)
             return {
                 "book": book,
                 "plays": [str(p["name"]) for p in master["plays"]],
                 "formations": {
                     int(f["index"]): str(f["name"]) for f in master["formations"]
                 },
+                "formation_packages": formation_packages,
+                "categories": categories,
             }
 
         def done(result: object) -> None:
@@ -928,6 +939,8 @@ class ApfPlaybookMembershipPanel(QFrame):
             self._book = payload["book"]  # type: ignore[index]
             self._plays = payload["plays"]  # type: ignore[index]
             self._formations = payload["formations"]  # type: ignore[index]
+            self._formation_packages = payload["formation_packages"]  # type: ignore[index]
+            self._categories = payload["categories"]  # type: ignore[index]
             self._loaded_index = index_0a
             self._restore_from_project()
             used = [r for r in self._book.records if r.populated]
@@ -1287,15 +1300,10 @@ class ApfPlaybookMembershipPanel(QFrame):
         self._after_stage()
 
     def _package_labels(self) -> list[tuple[int, str]]:
-        reader = getattr(self.facade, "master_categories", None)
-        try:
-            categories = tuple(reader()) if reader is not None else ()
-        except Exception:
-            categories = ()
-        if not categories:
+        if not self._categories:
             return [(index, f"package {index}") for index in range(splb.CATEGORY_COUNT)]
         labels = []
-        for item in categories:
+        for item in self._categories:
             roles = tuple(item["roles"])
             te = roles.count(8)
             wr = roles.count(9)
@@ -1337,12 +1345,14 @@ class ApfPlaybookMembershipPanel(QFrame):
         )
         form = QVBoxLayout()
         formation_combo = QComboBox()
+        formation_combo.setAccessibleName("MASTER formation")
         for index in sorted(self._formations):
             formation_combo.addItem(f"{index} {self._formations[index]}", index)
         row = formation_combo.findData(initial[0])
         if row >= 0:
             formation_combo.setCurrentIndex(row)
         package_combo = QComboBox()
+        package_combo.setAccessibleName("Personnel package")
         for index, label in self._package_labels():
             package_combo.addItem(label, index)
         row = package_combo.findData(initial[1])
@@ -1352,6 +1362,78 @@ class ApfPlaybookMembershipPanel(QFrame):
         form.addWidget(formation_combo)
         form.addWidget(QLabel("Personnel package"))
         form.addWidget(package_combo)
+        pairing_hint = QLabel()
+        pairing_hint.setObjectName("retailPairingHint")
+        pairing_hint.setWordWrap(True)
+        form.addWidget(pairing_hint)
+        pairing_warning = QLabel()
+        pairing_warning.setObjectName("retailPairingWarning")
+        pairing_warning.setWordWrap(True)
+        pairing_warning.setStyleSheet("color: #f0b04c;")
+        form.addWidget(pairing_warning)
+        categories = {int(item["index"]): item for item in self._categories}
+
+        def package_name(index: int) -> str:
+            return str(categories.get(index, {}).get("name", f"package {index}"))
+
+        def personnel(index: int) -> str:
+            item = categories.get(index)
+            if item is None:
+                return "personnel roles unavailable"
+            roles = tuple(item["roles"])
+            return (
+                f"{roles.count(10) + roles.count(11)} RB, "
+                f"{roles.count(8)} TE, {roles.count(9)} WR"
+            )
+
+        def update_warning() -> None:
+            formation = formation_combo.currentData()
+            package = package_combo.currentData()
+            pairs = self._formation_packages.get(formation, ())
+            warning = ""
+            if pairs and package is not None and package not in dict(pairs):
+                warning = (
+                    f"Retail never lines {self._formations.get(formation, '?')} up "
+                    f"with {package_name(package)} personnel; "
+                )
+                warning += (
+                    f"the CPU will field {personnel(package)}"
+                    if package in categories else "personnel roles unavailable"
+                )
+            pairing_warning.setText(warning)
+            pairing_warning.setVisible(bool(warning))
+
+        def update_pairing(choose_natural: bool = True) -> None:
+            formation = formation_combo.currentData()
+            name = self._formations.get(formation, "?")
+            pairs = self._formation_packages.get(formation, ())
+            if pairs:
+                descriptions = []
+                for category, count in pairs:
+                    detail = personnel(category)
+                    if len(pairs) > 1:
+                        detail += f"; {count} retail record{'s' if count != 1 else ''}"
+                    descriptions.append(f"{package_name(category)} ({detail})")
+                pairing_hint.setText(
+                    f"Retail pairs {name} with " + "; ".join(descriptions)
+                )
+                if choose_natural:
+                    row = package_combo.findData(
+                        splb.natural_package(formation, self._formation_packages)
+                    )
+                    if row >= 0:
+                        package_combo.setCurrentIndex(row)
+            else:
+                pairing_hint.setText(
+                    f"No retail pairing is known for {name}; package kept as selected."
+                )
+            update_warning()
+
+        formation_combo.currentIndexChanged.connect(lambda _i: update_pairing())
+        package_combo.currentIndexChanged.connect(lambda _i: update_warning())
+        # Preserve an existing record's deliberate override on open. A new
+        # record has no authored package, so resolve its initial formation too.
+        update_pairing(choose_natural=allow_plays)
         plays_list: QListWidget | None = None
         if allow_plays:
             plays_list = QListWidget()

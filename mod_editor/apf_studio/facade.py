@@ -1270,6 +1270,14 @@ class ApfStudioFacade:
             session = self.session
             return session.master_categories() if session is not None else ()
 
+    def retail_formation_packages(self) -> dict[int, tuple[tuple[int, int], ...]]:
+        from mod_editor.core.apf2k8_splb_writer import retail_formation_packages
+
+        with self._session_lock:
+            if self.session is None:
+                return {}
+            return retail_formation_packages(self.session.source.index_0a)
+
     def staged_splb_outers(self) -> tuple:
         with self._session_lock:
             session = self.session
