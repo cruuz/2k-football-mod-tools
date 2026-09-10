@@ -70,6 +70,9 @@ EXPECTED_RETAIL_HASHES = frozenset(
 )
 
 PRODUCT_MODULES = (
+    'mod_editor.core.apf_field_material_writer',
+    'mod_editor.apf_studio.field_material_service',
+    'mod_editor.apf_studio.field_material_qt',
     'mod_editor.apf_studio.play_design_service',
     'mod_editor.apf_studio.play_designer_qt',
     'mod_editor.apf_studio.coverage_service',
@@ -1279,12 +1282,12 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         check_files=False,
     )
     require(
-        len(registry.capabilities) == 142
-        and len(registry.for_game(core_model.GameId.APF2K8)) == 53,
+        len(registry.capabilities) == 143
+        and len(registry.for_game(core_model.GameId.APF2K8)) == 54,
         "shared/APF capability registry counts changed",
     )
     cards = catalog.build_capability_cards()
-    require(len(cards) == 53 and len({item.capability_id for item in cards}) == 53,
+    require(len(cards) == 54 and len({item.capability_id for item in cards}) == 54,
             "APF capability surface is not exactly 52 unique rows")
     require(len(models.APF_CATEGORY_ORDER) == 14,
             "APF complete sidebar category count changed")

@@ -1286,6 +1286,75 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.apf_field_material_writer --index <0A> --entry <53|252|578|1333> --alpha <material=0..1> [--alpha ...] --output-entry <compiled.iff> --manifest <report.json>",
+        "module": "mod_editor/core/apf_field_material_writer.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/research/apf_b66_gameplay_data.md",
+        "reports/apf_b66_gameplay_witness.json",
+        "tests/mod_editor/test_apf_field_material_writer.py",
+        "tests/mod_editor/test_apf_field_material_project.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "ADVANCED, off by default. Source/staged scalar preview, Stage, Revert, Undo, save/reopen and copied-game Build. All four retail entries refit and reparse; rendering UNWITNESSED."
+      },
+      "id": "apf2k8.field_art.material_opacity",
+      "input_constraints": [
+        "Entry 53, 252, 578 or 1333, pinned name and material/shader identities; one field SCNE in one warning-free H7A block.",
+        "Select only field_grass, endzone_grass, ticks, chalk_lines, graphic_overlay_4/5/7/8/9, outside_grass_10/11. Alpha is finite 0..1; RGB stays (1,1,1).",
+        "Self-relative bounded tables, 0x28 material stride; constants payload tint at +0x70 except material 1 at +0x100. Only selected alpha words may change.",
+        "Token-preserving H7A must fit the fixed allocation and contain no length-greater-than-distance match. Nonzero tail bytes and changed sibling data are refused."
+      ],
+      "portme": [
+        "Witness each scene, weather variant and composited texture on user-owned hardware. Material-to-visible-surface descriptions are not gameplay proof."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute tooling, selectors, and user-authored PNGs only; each user rebuilds a copied 0A from their own retail game.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "UNWITNESSED rendering. Four retail entry refits and synthetic build composition reparse exactly.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "53, 252, 578, 1333",
+            "name": "outer_index",
+            "required": true
+          },
+          {
+            "allowed": "nonempty mapping of named material to alpha 0..1",
+            "name": "alphas",
+            "required": true
+          }
+        ],
+        "notes": "Portable scalar JSON; no retail payload in project recipes. Optional material checkboxes start unticked."
+      },
+      "source_container": {
+        "format": "IFF/H7A field SCNE in fixed 0A entry",
+        "hash_pins": [
+          "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e"
+        ],
+        "resource": "field scenes 53, 252, 578, 1333",
+        "retail_file": "All-Pro Football 2K8 (USA)/0A"
+      },
+      "summary": "Stage alpha values for eleven named field materials in four scenes; reparse and refit H7A within the original allocation, composing with staged field textures.",
+      "surface": "stadiums_fields",
+      "title": "Field overlay opacity",
+      "validation_command": "python3 -m mod_editor.core.apf_field_material_writer --index <0A> --entry 53 --alpha graphic_overlay_4=0.25 --manifest <report.json>"
+    },
+    {
+      "backend": {
         "command": null,
         "module": null,
         "operation": "none"
@@ -1780,7 +1849,8 @@
       "evidence": [
         "docs/mod_editor/apf2k8_logo_surface_ownership.md",
         "tests/mod_editor/test_apf_textlogo_writer.py",
-        "tests/mod_editor/test_apf_textlogo_gui.py"
+        "tests/mod_editor/test_apf_textlogo_gui.py",
+        "tests/mod_editor/test_apf_wordmark_regions.py"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
@@ -1794,7 +1864,8 @@
         "The typed target is exactly one source-resolved uniform_textlogo_00.iff through uniform_textlogo_205.iff package selected by asset index 0..205; every package owns one inner-0 TXTR named textlogo_color.",
         "The native authoring payload is an opaque 512x128 RGBA PNG. The GUI may high-quality Contain-fit or Cover-fit ordinary source art and composites transparent pixels over black before staging; the writer rejects other sizes, modes, and residual alpha.",
         "Every target is tiled Xenos DXT1/BC1 with a 0x8000 base, 0x8000 packed mip span, and levels 0..5. All six levels are regenerated and decoded back, while inactive packed-tail bytes and the 224-byte descriptor part stay exact.",
-        "The retail source is opened read-only. The selected H7A/IFF must fit its original 6,144..14,336-byte allocation or the operation fails before publication, and the independent verifier requires every byte outside that one fixed package range to match the source."
+        "The retail source is opened read-only. The selected H7A/IFF must fit its original 6,144..14,336-byte allocation or the operation fails before publication, and the independent verifier requires every byte outside that one fixed package range to match the source.",
+        "Beta 66 (Aszemple): the single textlogo_color mask has three region channels; the authoring helper may permute those three channels (identity default). Six regions and arbitrary team palette-slot assignments are unproved and not offered."
       ],
       "portme": [
         "Capture a changed wordmark on each runtime menu/uniform surface before describing visual consumption as runtime-proved.",
@@ -2728,7 +2799,9 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "ASTRA_B64_PS3_ROSTER_REPORT.md",
-        "reports/ps3_import/roster_convert_receipt.json"
+        "reports/ps3_import/roster_convert_receipt.json",
+        "tests/mod_editor/test_apf_b66_appearance.py",
+        "reports/apf_b66_gameplay_witness.json"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
@@ -2742,7 +2815,8 @@
         "Exactly one 2,715,908-byte PS3 roster USERDATA (raw or the one BLUS30049-ROS/USERDATA member of its ZIP); STFS containers and Xbox-layout rosters are refused, so the action is idempotent.",
         "Platform is decided by the palette alpha position (2,660 colours vote); mixed or ambiguous files are refused rather than guessed.",
         "Editor-damaged text is repaired structurally only: misaligned runs shift or relocate, stale/garbage/below-pool references become the shared empty string; intended text is never invented.",
-        "Output is a raw payload plus receipt next to it; no container is written and the source is never modified."
+        "Output is a raw payload plus receipt next to it; no container is written and the source is never modified.",
+        "Beta 66 (Aszemple): team appearance (both uniform banks and team palettes) is reviewed with 'Also apply team appearance (N teams)', unchecked until reviewed; leaving it off requires a raw Xbox roster whose appearance is retained while players come from PS3. Every team's selector changes are receipted per bank and reparsed. The default conversion already transported the PS3 selectors; this adds verification and review."
       ],
       "portme": [
         "Witness the converted 1993 roster in Xenia (load, names, positions, teams, colours), then move runtime.status.",

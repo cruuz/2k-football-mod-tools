@@ -346,6 +346,17 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
         "gameplay.findings_inspector",
         _actions(ApfProductAction.PREVIEW, ApfProductAction.EXPORT),
     ),
+    "apf2k8.field_art.material_opacity": CapabilityActionBinding(
+        "apf2k8.field_art.material_opacity",
+        "field_art.material_opacity_editor",
+        _actions(ApfProductAction.PREVIEW, ApfProductAction.REPLACE,
+                 ApfProductAction.REVERT),
+        replace_method="apply_field_material",
+        revert_method="revert",
+        product_note=("Select named field alpha constants; preview source/staged values, "
+                      "stage, revert, save/reopen, and build a copied game. "
+                      "Token-preserving fixed-allocation H7A refit; rendering UNWITNESSED."),
+    ),
     "apf2k8.field_art.base_texture": CapabilityActionBinding(
         "apf2k8.field_art.base_texture",
         "field_art.base_texture_png_editor",

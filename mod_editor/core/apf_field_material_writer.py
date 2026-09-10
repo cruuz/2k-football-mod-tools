@@ -206,3 +206,42 @@ def build_patch(index: Path, outer_index: int, alphas: Mapping[str, float], *,
         with apf_inner.ArchiveReader(archive) as reader:
             current_entry = reader.read(entry, 0, entry.size)
     return compile_entry(entry, current_entry, alphas)
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Compile one field entry's alpha edits from a copy of the volume; writes a receipt, never the source."""
+    import argparse
+    import json
+
+    parser = argparse.ArgumentParser(
+        description="Compile named field material alphas (entries 53, 252, 578, 1333) and report the refit.")
+    parser.add_argument("--index", required=True, help="the 0A volume (opened read-only)")
+    parser.add_argument("--entry", type=int, required=True, choices=sorted(ENTRY_NAME_IDS))
+    parser.add_argument("--alpha", action="append", default=[], metavar="MATERIAL=VALUE",
+                        help="one named material and its alpha 0..1, repeatable: " + ", ".join(MATERIALS))
+    parser.add_argument("--output-entry", help="write the compiled entry bytes here (a copy; the volume is untouched)")
+    parser.add_argument("--manifest", help="write the compile report as JSON here")
+    args = parser.parse_args(argv)
+    alphas: dict[str, float] = {}
+    for item in args.alpha:
+        name, _, value = item.partition("=")
+        if name not in MATERIALS:
+            parser.error(f"unknown material {name!r}; choose one of {', '.join(MATERIALS)}")
+        try:
+            alphas[name] = float(value)
+        except ValueError:
+            parser.error(f"alpha for {name} must be a number 0..1, not {value!r}")
+    if not alphas:
+        parser.error("give at least one --alpha MATERIAL=VALUE")
+    compiled, report = build_patch(Path(args.index), args.entry, alphas)
+    if args.output_entry:
+        Path(args.output_entry).write_bytes(compiled)
+    if args.manifest:
+        Path(args.manifest).write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    print(json.dumps({"entry": args.entry, "alphas": alphas, "compiled_bytes": len(compiled),
+                      "written": bool(args.output_entry)}, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

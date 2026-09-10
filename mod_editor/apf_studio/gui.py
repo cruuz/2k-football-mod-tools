@@ -6341,6 +6341,20 @@ class ApfTextLogoPanel(QFrame):
         selector.addWidget(self.fit_mode, 1)
         content.addLayout(selector)
 
+        from .textlogo_authoring import WORDMARK_REGION_ORDERS, WORDMARK_REGION_NOTE
+        region_row = QHBoxLayout()
+        region_row.addWidget(QLabel("Region channels (3):"))
+        self.region_order = QComboBox()
+        for label, order in WORDMARK_REGION_ORDERS:
+            self.region_order.addItem(label, order)
+        self.region_order.setToolTip(WORDMARK_REGION_NOTE)
+        region_row.addWidget(self.region_order, 1)
+        content.addLayout(region_row)
+        region_note = QLabel(WORDMARK_REGION_NOTE)
+        region_note.setWordWrap(True)
+        region_note.setObjectName("mutedLabel")
+        content.addWidget(region_note)
+
         self.identity = QLabel(
             "uniform_textlogo is a rectangular wordmark. It is not the square "
             "uniform_logo helmet crest and is never squeezed into that texture."
@@ -6576,6 +6590,7 @@ class ApfTextLogoPanel(QFrame):
         if asset is None:
             return
         fit_mode = str(self.fit_mode.currentData() or "contain")
+        region_order = tuple(self.region_order.currentData() or (0, 1, 2))
         prepared_path = self._prepared_path()
 
         def prepare_operation(
@@ -6583,7 +6598,7 @@ class ApfTextLogoPanel(QFrame):
         ) -> object:
             progress("Fitting your image to the 512×128 wordmark slot", 0, 1)
             return prepare_wordmark_png(
-                source_path, prepared_path, fit_mode=fit_mode
+                source_path, prepared_path, fit_mode=fit_mode, region_order=region_order
             )
 
         self.run_task(
@@ -7779,7 +7794,8 @@ class FieldArtStudioPage(QWidget):
         "does not prove the runtime field material or its team/stadium "
         "selector, and the deferred codecs (field_radiance and "
         "the divot_Grass* weather textures) and the "
-        "SCNE/CurveAnim rows have no bounded writer at all."
+        "SCNE/CurveAnim rows have no bounded writer, except the eleven named field material "
+        "alphas of entries 53, 252, 578 and 1333 (Field overlay opacity, beta 66)."
     )
 
     def __init__(self, facade: ApfStudioFacade, run_task: TaskRunner):
@@ -7800,6 +7816,12 @@ class FieldArtStudioPage(QWidget):
         self.editor = ApfFieldArtPanel(facade, run_task)
         self.editor.modifiedChanged.connect(self.modifiedChanged)
         layout.addWidget(self.editor)
+
+        # Beta 66 (davidhbui): the eleven named field material alphas (entries 53, 252, 578, 1333).
+        from .field_material_qt import FieldMaterialOpacityPanel
+        self.field_opacity = FieldMaterialOpacityPanel(facade, run_task)
+        self.field_opacity.modifiedChanged.connect(self.modifiedChanged)
+        layout.addWidget(self.field_opacity)
 
         semantic_panel = QFrame()
         semantic_panel.setObjectName("panel")
@@ -8142,6 +8164,7 @@ class FieldArtStudioPage(QWidget):
 
     def set_context(self) -> None:
         self.editor.set_context()
+        self.field_opacity.set_context()
         if not self.facade.source_ready:
             self.capabilities.set_cards(())
             self._clear_semantic_view(
@@ -8177,6 +8200,7 @@ class FieldArtStudioPage(QWidget):
 
     def refresh(self) -> None:
         self.editor.set_context()
+        self.field_opacity.set_context()
         self.browser.refresh()
 
 
