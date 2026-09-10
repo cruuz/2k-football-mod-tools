@@ -7639,6 +7639,76 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_patch_cli player_star source.xbe output.xbe",
+        "module": "mod_editor/core/nfl2k5_patch_cli.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_player_star_draw.py",
+        "reports/gameplay_tuning/nfl2k5_star_filled_proof.json",
+        "reports/gameplay_tuning/nfl2k5_star_filled_cave_audit.json",
+        "docs/mod_editor/nfl2k5_player_star_filled.png"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "ADVANCED; existing Basic off, Advanced and Experimental on. Filled replaces Outline under the existing player_star option. In-game appearance unwitnessed."
+      },
+      "id": "nfl2k5.players_rosters.filled_star",
+      "input_constraints": [
+        "Pinned USA retail, exact beta-58..64 star patch, or current filled renderer; mixed and foreign bytes refuse before writing.",
+        "Record +0x53 bit 0 through entity +0x3C. Up to 22 active entities; no roster-tag quota.",
+        "Common live indicator pass preserves HUD, coach and replay-camera gates. Recorded replay packets do not serialize the added stars."
+      ],
+      "portme": [
+        "Witness the filled shape in a game and practice, bright turf/yard lines, HUD off, coach camera, replay and a tagged franchise roster."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source, authored geometry and proof metadata; no retail executable or disc.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "reports/gameplay_tuning/nfl2k5_star_filled_proof.json"
+        ],
+        "scope": "Native queue, decoder, model selection, tag walk, material copy and vertex writes executed with bounded service/GPU stubs; no rasterization or played-mode witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "boolean; false in Basic, true in Advanced and Experimental",
+            "name": "player_star",
+            "required": true
+          },
+          {
+            "allowed": "existing Rosters star selection; unchanged tag writer",
+            "name": "player_tags",
+            "required": false
+          }
+        ],
+        "notes": "No style selector. MyCareer creation/signing tag assignment belongs to the separate runtime job."
+      },
+      "source_container": {
+        "format": "USA Xbox XBE",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Frame call 0x64F21 and the same five pinned star spans (474 bytes total)",
+        "retail_file": "User-owned default.xbe"
+      },
+      "summary": "Draw an opaque white five-point star with a near-black edge at every active tagged player\u2019s feet.",
+      "surface": "players_rosters",
+      "title": "Filled star under tagged players",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_player_star_draw"
+    },
+    {
+      "backend": {
         "command": "python3 tools/nfl_live_face_texture_xiso_workflow.py --source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> --manifest <manifest.json> --preview-dir <preview-dir> --plan <plan.json>",
         "module": "tools/nfl_live_face_texture_xiso_workflow.py",
         "operation": "write"

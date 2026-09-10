@@ -673,11 +673,14 @@ class BuildPanel(QWidget):
         self.espn25_rosters_check = self._option(r, "espn25_rosters", "Historic moments: real rosters",
                                                  tt.espn25_rosters_patch.HELP_TEXT, needs_image=True)
         self._espn25_plan_cache: tuple[tuple[str, int, int] | None, str] = (None, "")
-        self.player_star_check = self._option(r, "player_star", "Show a star under selected players",
-                                             "A white star outline under every tagged player on the field; not yet tested in-game.", badge=NOT_TESTED,
-                                             details="The game's own controller star follows every player you select. With nobody selected nothing "
-                                                     "changes on screen. The same routine gates the on-field name/number indicator, so a selected player "
-                                                     "gets that too when Player Indicator Text is on. The tags reach franchises created from the copy.")
+        self.player_star_check = self._option(
+            r, "player_star", "Show a filled star under selected players",
+            "A filled white star with a dark edge under every tagged player on the field; in-game appearance unwitnessed.",
+            badge=NOT_TESTED,
+            details="Select players with the Rosters star column. Each active tagged player gets a filled star at his feet, "
+                    "following the existing HUD and camera visibility rules. Tags reach new franchises made from this copy; "
+                    "existing saves need their own tagged roster. Recorded replay packets do not store these added stars.",
+        )
         self.star_players_label = QLabel("")
         self.star_players_label.setObjectName("throwMuted")
         self.star_players_label.setWordWrap(True)
