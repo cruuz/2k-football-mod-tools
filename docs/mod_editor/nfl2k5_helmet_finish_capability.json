@@ -1,0 +1,65 @@
+{
+  "backend": {
+    "command": "python3 -m mod_editor.core.nfl2k5_helmet_finish source.xbe matte.xbe --finish matte",
+    "module": "mod_editor/core/nfl2k5_helmet_finish.py",
+    "operation": "write"
+  },
+  "classification": "offline-writer-proved",
+  "evidence": [
+    "ASTRA_REPORT.md",
+    "tests/mod_editor/test_nfl2k5_helmet_finish.py",
+    "tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py"
+  ],
+  "game": "nfl2k5_xbox",
+  "gui": {
+    "default_enabled": false,
+    "expose": true,
+    "mode": "edit",
+    "reason": "ADVANCED / UNWITNESSED. Default Glossy (retail) in every preset. Protected Gameplay/Uniforms integration is in WIRING.md."
+  },
+  "id": "nfl2k5.uniforms.helmet_finish",
+  "input_constraints": [
+    "Pinned USA XBE or exactly recognized composition, including Guardian overlay.",
+    "Only three native A/B/C helmet branches change; no scene, texture or archive resizing.",
+    "Matte sets reflection weight to zero; Glossy restores retail branch bytes. Game appearance remains unwitnessed."
+  ],
+  "portme": [
+    "Apply protected BuildPlan, Gameplay/Uniforms, registry and release allowlist handoff in WIRING.md.",
+    "Run Noah's helmet comparison witness in ASTRA_REPORT.md."
+  ],
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "rule": "Distribute source and patch recipes. Never distribute the generated executable or retail disc bytes.",
+    "tooling": "source-and-schemas-only"
+  },
+  "runtime": {
+    "status": "not-tested",
+    "evidence": [
+      "ASTRA_REPORT.md"
+    ],
+    "scope": "Bounded native full material-refresh execution for both LODs; no GPU rendering or console witness."
+  },
+  "selectors": {
+    "fields": [
+      {
+        "name": "helmet_finish",
+        "required": true,
+        "allowed": "glossy or matte; glossy in all presets"
+      }
+    ],
+    "notes": "Global helmet shell finish; no per-team selector."
+  },
+  "source_container": {
+    "format": "XBE in XDVDFS",
+    "hash_pins": [
+      "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+    ],
+    "resource": "Three two-byte conditional branches at 0x8FB43, 0x8FB4E and 0x8FB59; no allocated space",
+    "retail_file": "user-owned NFL 2K5 USA default.xbe"
+  },
+  "summary": "Choose Glossy (retail) or Matte for helmet shell materials in both LODs.",
+  "surface": "gameplay_tuning_sliders",
+  "title": "Helmet finish",
+  "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_helmet_finish"
+}

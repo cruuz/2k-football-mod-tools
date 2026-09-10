@@ -133,6 +133,9 @@ def _inspect(payload):
     image = XbeImage(payload)
     for va, size, digest in GUARDS:
         blob = bytearray(image.read(va, size))
+        if va == 0x8fad0:
+            from .nfl2k5_helmet_finish import normalize_refresh
+            blob, _ = normalize_refresh(blob)
         for hook, before in HOOKS.values():
             if va <= hook and hook+len(before) <= va+size:
                 blob[hook-va:hook-va+len(before)] = before

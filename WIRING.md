@@ -17900,3 +17900,208 @@ Verify selected-book pre-existing changes disable balancing, other-book
 changes survive, and source/project changes invalidate previews. These
 main-window/packaged checks require the protected wiring and were not claimed
 as passing in Astra's standalone-panel evidence.
+
+## Beta 66 D2: collection bounds, paired intent and helmet finish
+
+This section supersedes the old paired-read-option/QB-spy refusal handoff.
+Implementation and instruction-level evidence: `ASTRA_REPORT.md`. No protected
+file was edited by D2. Pairing stays EXPERIMENTAL and false in every preset.
+Helmet finish is ADVANCED, Glossy (retail) by default in every preset.
+
+### D1 music collection integration
+
+The new core dependency is already installed in the unprotected metadata
+writer. Preserve these lines when merging D1's dedicated collection changes:
+
+```python
+from . import nfl2k5_jukebox_list as jukebox_list
+# In status(), an otherwise recognized expanded metadata owner requires:
+if jukebox_list.status(payload) != "applied":
+    return "foreign"
+# In apply(), after the shared allocation and before returning the result:
+payload, collection_list_receipt = jukebox_list.apply(payload)
+```
+
+Use the actual D2 implementation's local variable names/receipt nesting; the
+snippet describes the exact dependency, not a second application. Its repair
+has no collection-number literal. Do not replace it with a check for Incite #2
+or the new Custom collection. `test_nfl2k5_jukebox_list.py` executes the whole
+native list build for both collection slots and 59 through 200 songs. Add its
+new backend to packaging even when the new UI collection comes from D1.
+
+### Protected mod_build paired refusal
+
+In `mod_editor/core/mod_build.py`, `_build`, delete this whole block (old line
+1083), after the generic MyCareer draft-AI dependency:
+
+```python
+if plan.playbook_pair and (plan.read_option_runtime or plan.qb_spy):
+    raise ValueError(tt.PLAYBOOK_PAIR_CONFLICT)
+```
+
+Remove the obsolete “refuses with read option / QB spy” wording from the
+`BuildPlan.playbook_pair` comment. Three corresponding core throw-tuning
+refusals are already removed. Its old message constant is temporarily retained
+so the protected caller raises its normal refusal until this handoff lands.
+Keep all existing final authored-table, signature and capacity checks. The
+pair, read and spy owners must reserve their combined request union before any
+owner is applied. The paired runtime table lives at `pair.contract_va(payload)`;
+never hard-code a different union's address into the GUI or builder.
+
+Replace the central registry object `nfl2k5.gameplay.playbook_pair` with
+`docs/mod_editor/nfl2k5_playbook_pair_capability.json`. Its updated input
+constraints and evidence describe the active contract. Keep all presets off.
+
+### Protected mod_build Helmet finish field and final executable pass
+
+In `BuildPlan`, adjacent to `uniform_choice`, add:
+
+```python
+helmet_finish: str = "glossy"  # ADVANCED; matte is off in every preset
+```
+
+Add `"helmet_finish": "glossy"` to each preset dictionary, including when a
+preset is applied over an existing plan. Add
+`or self.helmet_finish == "matte"` to `wants_xbe_patch()`. In the first-pass
+`replace(plan, depth_chart_rows=False, ...)` expression near old line 1293,
+add `helmet_finish="glossy"`: the final pass below owns this field, so it must
+not make the initial throw-tuning pass run with no supported arguments.
+Serialization uses the existing `asdict` recipe path.
+
+At the beginning of `_build`, before any copy/write, add:
+
+```python
+if plan.helmet_finish not in ("glossy", "matte"):
+    raise ValueError("Helmet finish must be glossy or matte")
+if _core_module("nfl2k5_helmet_finish") is None:
+    if plan.helmet_finish == "matte":
+        raise RuntimeError("Helmet finish writer is not available in this build")
+```
+
+In `availability()`'s returned dict add the independent backend check:
+
+```python
+"helmet_finish": _core_module("nfl2k5_helmet_finish") is not None,
+```
+
+After the final `if plan.music_library:` rebuild block and before
+`inspection = inspect(target, screen_timing=plan.screen_timing)`, add:
+
+```python
+finish = _core_module("nfl2k5_helmet_finish")
+if finish is not None:
+    current = _xbe_bytes(target)
+    if plan.helmet_finish == "matte" or finish.status(current) == "applied":
+        patched, finish_receipt = finish.apply(current, finish=plan.helmet_finish)
+        _write_xbe_bytes(target, patched)
+        finish.verify(_xbe_bytes(target), finish=plan.helmet_finish)
+        receipt["steps"].append({"step": "helmet_finish", **finish_receipt})
+```
+
+This works for the existing loose-XBE and image transport helpers and reparses
+the actual output. The final-pass placement permits both Guardian orders and
+retains the finish through a music image rebuild. Choosing Glossy on an already
+recognized Matte input restores the retail branches while retaining Guardian.
+
+In `inspect(source, ...)`, after `out` is constructed and before returning it:
+
+```python
+finish = _core_module("nfl2k5_helmet_finish")
+out["helmet_finish"] = finish.status(_xbe_bytes(Path(source))) if finish else "unavailable"
+```
+
+No allocator requests, archive material refit or texture copy is necessary.
+Do not expose the writer as a flat-texture replacement; it controls the native
+A/B/C material weight refresh.
+
+### Protected Gameplay / Uniforms controls
+
+Add this row to `mod_editor/gui/gameplay_patches_panel_qt.py`'s `PATCHES` and to
+the Uniforms/equipment subset used by the main window (one shared recipe key):
+
+```python
+("helmet_finish", "Helmet finish",
+ "ADVANCED / UNWITNESSED. Glossy (retail) keeps helmet reflections. "
+ "Matte sets shell reflection weight to zero in both LODs. Rebuild to compare."),
+```
+
+Add to `LABELS`:
+
+```python
+"helmet_finish": ("Helmet finish", "Both helmet LODs; game appearance needs a witness.",
+                  "ADVANCED / UNWITNESSED"),
+```
+
+In `GameplayPatchesPanel.__init__`, inside the row loop after the checkbox is
+created and before the existing selector cases, add:
+
+```python
+if key == "helmet_finish":
+    self.helmet_finish_combo = QComboBox()
+    self.helmet_finish_combo.setAccessibleName("Helmet finish")
+    self.helmet_finish_combo.addItem("Glossy (retail)", "glossy")
+    self.helmet_finish_combo.addItem("Matte", "matte")
+    self.helmet_finish_combo.currentIndexChanged.connect(
+        lambda index, box=check: box.setChecked(index == 1))
+    check.toggled.connect(
+        lambda on, combo=self.helmet_finish_combo: combo.setCurrentIndex(1 if on else 0))
+    head.addWidget(self.helmet_finish_combo)
+```
+
+In `plan()`'s checkbox dispatch, before the `screen_timing` case, add:
+
+```python
+if key == "helmet_finish":
+    plan.helmet_finish = "matte" if on else "glossy"
+elif key == "screen_timing":
+    # existing screen_timing body
+```
+
+Where preset choices are reflected into checks, use
+`choices.get("helmet_finish", "glossy") == "matte"` for this key rather than
+truth-testing the string `"glossy"`. The inspection states remain the existing
+`retail`/`applied`/`foreign` vocabulary. Do not add this key to `NEEDS_IMAGE`;
+it also works on a loose XBE. Both the Gameplay row and the Uniforms access
+must read/write the same BuildPlan key, including project save/reopen.
+
+Integration acceptance: offscreen main-window checks must cover both controls,
+Glossy default in all presets, Matte-only build, Matte+Guardian in both orders,
+Glossy restoration, project roundtrip, output reparse and an absent backend.
+Do not claim “rendered” or “usable in the shipped UI” until those checks run.
+
+### Registry, distribution and manifest
+
+Merge `docs/mod_editor/nfl2k5_helmet_finish_capability.json` as capability
+`nfl2k5.uniforms.helmet_finish`. Keep its runtime status `not-tested`; bounded
+native execution is not a console witness. The collection fix is a dependency
+of music import, not a new optional checkbox. Add its test/report evidence to
+the existing music-library capability rather than claiming a separate music
+feature with no control.
+
+Add to protected `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_jukebox_list.py
+mod_editor/core/nfl2k5_helmet_finish.py
+docs/mod_editor/nfl2k5_helmet_finish_capability.json
+```
+
+The two new dependency pins are already added to `providers.py`. Include both
+modules in any explicit frozen imports alongside music_metadata and
+Guardian. Existing pair/read/spy generated modules and updated pair capability
+must ship together. Do not package `.scratch/`, the extraction symlink or
+private resource inventories.
+
+**Regenerate the protected cave manifest** after merging all jobs. New live
+reservations: jukebox `0x32A159..0x32A169`, `0x32A24F..0x32A255`; helmet
+`0x8FB43..0x8FB45`, `0x8FB4E..0x8FB50`, `0x8FB59..0x8FB5B`. These are occupied
+live instructions, not caves. Existing pair/read/spy allocation sizes do not
+change; regenerate source hashes and observed code spans. The test-only
+allocator projection adds only the exact fully verified new live spans and
+checks other-owner overlap; it does not modify the product manifest.
+
+Run both XBE gates, oracle and the expanded 28-owner pairwise matrix after the
+protected wiring. Run standalone collection, paired-intent, helmet, music
+metadata, pair/read/spy and Guardian suites as listed in `ASTRA_REPORT.md`.
+No BASIC playoff-starter fix or general skeleton-import control is handed off:
+their exact instruction-level blockers remain in the report.

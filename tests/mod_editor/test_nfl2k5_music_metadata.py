@@ -63,7 +63,12 @@ class RetailMetadataTests(unittest.TestCase):
             off=music._offset(self.retail,music.COLLECTIONS+c*32,24)
             self.assertEqual(self.retail[off:off+24],self.patched[off:off+24])
         text=image.section(0x11000)
-        self.assertEqual(self.retail[text.raw:text.raw+text.raw_size],self.patched[text.raw:text.raw+text.raw_size])
+        from mod_editor.core import nfl2k5_jukebox_list
+        restored = bytearray(self.patched)
+        for va, before, _ in nfl2k5_jukebox_list.SITES:
+            at = image.offset(va, len(before))
+            restored[at:at+len(before)] = before
+        self.assertEqual(self.retail[text.raw:text.raw+text.raw_size],restored[text.raw:text.raw+text.raw_size])
 
     def test_mixed_foreign_corruption_and_different_recipe_refuse(self):
         for offset in (storage.RAW,storage.RAW+12,storage.RAW+storage.PREFIX+100,

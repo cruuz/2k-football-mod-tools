@@ -11,6 +11,7 @@ import json
 import struct
 
 from . import nfl2k5_music_storage as storage
+from . import nfl2k5_jukebox_list as jukebox_list
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_bump_strength import _sections, section_digest
 from .nfl2k5_cave_oracle import XbeImage
@@ -115,6 +116,7 @@ def status(payload):
                            'foreign collection bank pointers/enabled word')
         if not space.has_music(payload):
             return 'retail' if _fields(payload) == list(RETAIL) else 'foreign'
+        space._require(jukebox_list.status(payload) == 'applied', 'unbounded collection list builder')
         _, fields = build(songs(payload))
         return 'applied' if _fields(payload) == fields else 'foreign'
     except (ValueError, TypeError, KeyError, IndexError, struct.error, UnicodeError):
@@ -129,6 +131,7 @@ def apply(payload, song_records):
         space._require(songs(payload) == _document(song_records), 'different jukebox recipe; rebuild from base')
         return payload, dict(status='already_applied', changed_bytes=0)
     grown, allocation = space.apply(payload)
+    grown, list_fix = jukebox_list.apply(grown)
     grown, ro = storage.install(grown, data)
     buf = bytearray(grown)
     edits = []
@@ -143,5 +146,6 @@ def apply(payload, song_records):
     space._require(status(result) == 'applied', 'jukebox metadata postcondition failed')
     return result, dict(status='applied', experimental=True, runtime_witnessed=False,
                         count=len(song_records), edits=edits, allocation=allocation, read_only=ro,
+                        collection_list=list_fix,
                         changed_bytes=sum(a != b for a,b in zip(payload,result))+len(result)-len(payload),
                         file_growth=len(result)-len(payload), identities=identities(len(song_records)))

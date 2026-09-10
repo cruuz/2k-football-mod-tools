@@ -200,7 +200,14 @@ struct side_state {
     u32 choice, team, original, extra, merged, queued, error;
     u8 request[36];
 };
-struct workspace { u32 loading, started, warned; struct side_state side[2]; };
+struct paired_root { u32 merged, offense, defense; };
+struct workspace {
+    u32 loading, started, warned;
+    struct side_state side[2];
+    u32 reserved[5];
+    u32 read_root, spy_source; /* fixed offsets 160/164 in owned RW */
+    struct paired_root roots[2];
+};
 extern struct workspace state;
 extern const u32 ro[];
 extern u32 FAST heap_native(void);
@@ -212,6 +219,40 @@ extern u32 FAST queue_native(u32 name,u32 file,void *request,u32 heap,u32 callba
 extern void load_callback_native(void);
 extern void FAST home_loaded(u32 root);
 extern void FAST away_loaded(u32 root);
+
+/* Publication contains only complete private merges. The ordinal map is
+ * owned by the same heap allocation, immediately after its fixed PLAY body.
+ * Readers never search the resource manager or wait for a pending load. */
+u32 FAST pair_read_root(u32 field) {
+    for (u32 s=0;s<2;s++) {
+        u32 base=state.roots[s].merged;
+        if (base && field-base>=PLAY+8 && field-base<PLAY+270*96)
+            return base;
+    }
+    return 0;
+}
+unsigned long long FAST pair_spy_source(u32 field) {
+    for (u32 s=0;s<2;s++) {
+        struct paired_root *r=&state.roots[s];
+        u32 base=r->merged, offset=field-base-PLAY-8;
+        if (!base || offset>=270*96-8) continue;
+        u32 pi=offset/96, slot=(offset%96)/8;
+        if ((offset&7) || slot>=11 || pi>=U(base,0x38)) return 0;
+        u32 source=((u16 *)(base+BODY))[pi];
+        u32 original=(source&0x8000) ? r->defense : r->offense;
+        pi=source&0x7fff;
+        if (!original || pi>=U(original,0x38)) return 0;
+        u32 from=original+PLAY+pi*96+8+slot*8;
+        /* A post-bind change to the live fallback must not borrow intent
+         * from the original. Both scripts remain exact bounded two-node rows. */
+        if (U(from,0)!=U(field,0) || (U(field,0)&15)!=2
+            || !span((u8 *)base,PTR(field,4),16,NODE,NODE+U(base,0x40)*8)
+            || !span((u8 *)original,PTR(from,4),16,NODE,NODE+U(original,0x40)*8)
+            || !equal(PTR(from,4),PTR(field,4),16)) return 0;
+        return ((unsigned long long)original<<32)|from;
+    }
+    return 0;
+}
 
 static u32 team(u32 s) { return *(u32 *)(0xe5fe68+s*4); }
 static u32 *root(u32 s) { return (u32 *)(0xe5fe80+s*4); }
@@ -292,12 +333,26 @@ void pair_bind(void) {
         v->original=*root(s);
         if (!v->original || !v->extra || v->error) v->error=5;
         else {
-            u32 dest=allocate_native(heap_native(),BODY);
+            u32 dest=allocate_native(heap_native(),BODY+270*2);
             if (!dest) v->error=6;
             else {
                 v->error=pair_merge((u8 *)dest,(u8 *)v->original,(u8 *)v->extra);
                 if (v->error) free_native(dest);
-                else { v->merged=dest; *root(s)=dest; }
+                else {
+                    u32 n=0;
+                    for (u32 unit=0;unit<2;unit++) {
+                        u32 src=unit ? v->extra : v->original;
+                        for (u32 pi=0;pi<U(src,0x38);pi++)
+                            if (defense_play((u8 *)(src+PLAY+pi*96))==(int)unit)
+                                ((u16 *)(dest+BODY))[n++]=(u16)(pi|(unit<<15));
+                    }
+                    v->merged=dest; *root(s)=dest;
+                    state.roots[s].offense=v->original;
+                    state.roots[s].defense=v->extra;
+                    state.roots[s].merged=dest;
+                    state.read_root=(u32)pair_read_root;
+                    state.spy_source=(u32)pair_spy_source;
+                }
             }
         }
         if (v->error) notice(75+s);
@@ -305,6 +360,7 @@ void pair_bind(void) {
     state.loading=0;
 }
 void pair_cleanup(void) {
+    state.read_root=state.spy_source=0; /* revoke before free or callbacks */
     if (!state.started) { zero(&state,sizeof(state)); return; }
     state.loading=0; /* callbacks during cancellation must not publish */
     for (u32 s=0;s<2;s++) {

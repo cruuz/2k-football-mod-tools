@@ -10,7 +10,9 @@
     "tests/mod_editor/test_nfl2k5_playbook_pair.py",
     "tests/mod_editor/test_nfl2k5_playbook_pair_unicorn.py",
     "tools/nfl2k5_playbook_pair.c",
-    "tools/nfl2k5_playbook_pair.S"
+    "tools/nfl2k5_playbook_pair.S",
+    "ASTRA_REPORT.md",
+    "tests/mod_editor/test_nfl2k5_paired_intent.py"
   ],
   "game": "nfl2k5_xbox",
   "gui": {
@@ -25,7 +27,7 @@
     "Stock club, Generic or West Coast books only. Refuses native User A/B sources. Special teams remain with the offensive book.",
     "Pairs must fit 50 formations, 270 plays, 26 categories, 3500 nodes, 36 links per formation and the fixed name pool. Failure keeps the original book and shows a notice.",
     "Choice lasts one game and is not saved to Franchise. VIP learning and replay are bypassed for paired sides.",
-    "Authored read-option and QB-spy identity tables target the original two buffers. Their custom controls are not supported on a paired side."
+    "Authored read-option and QB-spy controls use the paired-root publication and original-source identity map. Exact script pins remain required; unpaired sides retain native fallback."
   ],
   "portme": [
     "Apply the protected dispatcher, BuildPlan, GUI and packaging handoff in WIRING.md.",
@@ -40,7 +42,8 @@
   "runtime": {
     "status": "not-tested",
     "evidence": [
-      "ASTRA_PLAYBOOK_PAIR_REPORT.md"
+      "ASTRA_PLAYBOOK_PAIR_REPORT.md",
+      "ASTRA_REPORT.md"
     ],
     "scope": "Bounded emitted x86 merges retail books and exercises load callbacks, failures, cleanup and retail accessors. Retail User A/B serialization roundtrips in memory. No game, drawing, device I/O or signed save was run."
   },

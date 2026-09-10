@@ -2,7 +2,7 @@
 
 CODE = bytes.fromhex(
     "68ee030000eb0568f90300005589e58d6424d09c6083e4f081ec000200000fae0424dbe389cbc745"
-    "fc000000008b7320c745dc0000000085f60f8449030000817d047e06000072228b861003000085c0"
+    "fc000000008b7320c745dc0000000085f60f8449030000817d049e06000072228b861003000085c0"
     "0f84320300008945dc8b108955d88b50408955d48b50488955d0bf4000000031d2b916000000391f"
     "7416833f00750289fa83c720e2f089d785ff0f84f80200008b861c040000397704750d3947087508"
     "8b4b3c394f187415891f8977048947088b433c894718c7471400000000837f14030f84c1020000f7"
@@ -26,26 +26,26 @@ CODE = bytes.fromhex(
     "dab930b32e00e8fcffffffebdb837f14007405e8400000008b45dc85c0741b39861003000075138b"
     "55d83910750c8b55d48950408b55d08950480fae0c24837dfc008d65ac6175059d89ec5dc39d89ec"
     "5d8d64240431c0c3c747140300000081a620040000ffffffdf8b8610030000c7404000000000c740"
-    "4800000000c35589e583e4f0e9fcffffff5589e583e4f0e9fcffffff608bbe1c040000bb405ab700"
-    "89f829d83d90330100721581c39033010089f829d83d903301000f83d30000002d043400003d3865"
-    "00000f83c300000031d2b960000000f7f1f7c2070000000f85ae000000c1ea0383fa0b0f83a20000"
-    "00c1e21009d00d000000018945f08b7330e8980000000f82870000008945f88b45f00fb7c06bc060"
-    "8bb403fc330000e87a000000726d8945f48b0783e00f83f802756089feb904000000b8c59d1c81e8"
-    "900000008b770489f229da81eadc9a000081fa506d0000773ab910000000e871000000be10000000"
-    "8b0d0800000085c9742139460875178b55f0395604750f8b55f8391675088b55f439560c740983c6"
-    "10e2db6131c0c361b801000000c389f229da81fa40080100722681fa10330100771eb8c59d1c81b9"
-    "4000000066833e00741051b902000000e80700000059e2ecf9c3f8c30fb61631d069c09301000146"
-    "e2f2c39c60fcbf0000000031c0b9c0000000f3aba18c4fbe0085c074258b501885d2741e8b523089"
-    "d181e1ffffff7f81f900247449730ba300000000891504000000619dc705b802e6000e000000e9fc"
-    "ffffff9c6089ca81ea1c040000e830000000619d31c039c2894104e9fcffffff9c608b512081a220"
-    "040000ffffffdfe80e000000619d0fbe412e8b5e0ce9fcffffffbf40000000b91600000039570475"
-    "14c70700000000c7470400000000c747140000000083c720e2e2c36800000000eb0c6800000000eb"
-    "05680000000051ff5424049c608b4424248b5020e8b1ffffff619d8d642408c3687e060000e9caf9"
-    "ffff6889060000e9c0f9ffff6894060000e9b6f9ffff689e060000e9acf9ffff68a9060000e9a2f9"
-    "ffff68b7060000e998f9ffff68c2060000e98ef9ffff5589e583e4f0e9fcffffff5689ce8b4620e9"
-    "fcffffff83ec185355e9fcffffff5589e583e4f0e9fcffffff8b41208b9010030000e9fcffffff8b"
-    "41108b4004e9fcffffff5589e583e4f0e9fcffffffcccccc48e1b64348e1b6c2f62889430000003f"
-    "48410745484107c5"
+    "4800000000c35589e583e4f0e9fcffffff5589e583e4f0e9fcffffff608bbe1c040000b800000000"
+    "85c0741783780400741189f9ff500485c0740889c789d329d8eb25bb405ab70089f829d83d903301"
+    "00721581c39033010089f829d83d903301000f83d30000002d043400003d386500000f83c3000000"
+    "31d2b960000000f7f1f7c2070000000f85ae000000c1ea0383fa0b0f83a2000000c1e21009d00d00"
+    "0000018945f08b7330e8980000000f82870000008945f88b45f00fb7c06bc0608bb403fc330000e8"
+    "7a000000726d8945f48b0783e00f83f802756089feb904000000b8c59d1c81e8900000008b770489"
+    "f229da81eadc9a000081fa506d0000773ab910000000e871000000be100000008b0d0800000085c9"
+    "742139460875178b55f0395604750f8b55f8391675088b55f439560c740983c610e2db6131c0c361"
+    "b801000000c389f229da81fa40080100722681fa10330100771eb8c59d1c81b94000000066833e00"
+    "741051b902000000e80700000059e2ecf9c3f8c30fb61631d069c09301000146e2f2c39c60fcbf00"
+    "00000031c0b9c0000000f3aba18c4fbe0085c074258b501885d2741e8b523089d181e1ffffff7f81"
+    "f900247449730ba300000000891504000000619dc705b802e6000e000000e9fcffffff9c6089ca81"
+    "ea1c040000e830000000619d31c039c2894104e9fcffffff9c608b512081a220040000ffffffdfe8"
+    "0e000000619d0fbe412e8b5e0ce9fcffffffbf40000000b9160000003957047514c70700000000c7"
+    "470400000000c747140000000083c720e2e2c36800000000eb0c6800000000eb05680000000051ff"
+    "5424049c608b4424248b5020e8b1ffffff619d8d642408c3689e060000e9aaf9ffff68a9060000e9"
+    "a0f9ffff68b4060000e996f9ffff68be060000e98cf9ffff68c9060000e982f9ffff68d7060000e9"
+    "78f9ffff68e2060000e96ef9ffff5589e583e4f0e9fcffffff5689ce8b4620e9fcffffff83ec1853"
+    "55e9fcffffff5589e583e4f0e9fcffffff8b41208b9010030000e9fcffffff8b41108b4004e9fcff"
+    "ffff5589e583e4f0e9fcffffffcccccc48e1b64348e1b6c2f62889430000003f48410745484107c5"
 )
 RELOCATIONS = (
     (1, 1, 'code', 0),
@@ -54,109 +54,111 @@ RELOCATIONS = (
     (107, 1, 'state_data', 0),
     (482, 1, 'state_data', 0),
     (497, 1, 'state_data', 0),
-    (601, 1, 'code', 1744),
-    (634, 1, 'code', 1744),
-    (699, 1, 'code', 1744),
-    (708, 1, 'code', 1744),
-    (720, 1, 'code', 1744),
-    (738, 1, 'code', 1744),
+    (601, 1, 'code', 1776),
+    (634, 1, 'code', 1776),
+    (699, 1, 'code', 1776),
+    (708, 1, 'code', 1776),
+    (720, 1, 'code', 1776),
+    (738, 1, 'code', 1776),
     (808, 2, 'steer', 0),
     (852, 2, 'pursue', 0),
     (887, 2, 'transition', 0),
-    (1236, 1, 'intent_table', 0),
-    (1242, 1, 'intent_table', 0),
-    (1367, 1, 'state_data', 0),
-    (1416, 1, 'state_data', 0),
-    (1422, 1, 'state_data', 0),
-    (1507, 1, 'state_data', 0),
-    (1548, 1, 'init_rush_native', 0),
-    (1555, 1, 'init_lane_native', 0),
-    (1562, 1, 'init_man_native', 0),
-    (1593, 1, 'code', 0),
-    (1603, 1, 'code', 0),
-    (1613, 1, 'code', 0),
-    (1623, 1, 'code', 0),
-    (1633, 1, 'code', 0),
-    (1643, 1, 'code', 0),
-    (1653, 1, 'code', 0),
+    (1036, 1, 'paired_contract', 0),
+    (1268, 1, 'intent_table', 0),
+    (1274, 1, 'intent_table', 0),
+    (1399, 1, 'state_data', 0),
+    (1448, 1, 'state_data', 0),
+    (1454, 1, 'state_data', 0),
+    (1539, 1, 'state_data', 0),
+    (1580, 1, 'init_rush_native', 0),
+    (1587, 1, 'init_lane_native', 0),
+    (1594, 1, 'init_man_native', 0),
+    (1625, 1, 'code', 0),
+    (1635, 1, 'code', 0),
+    (1645, 1, 'code', 0),
+    (1655, 1, 'code', 0),
+    (1665, 1, 'code', 0),
+    (1675, 1, 'code', 0),
+    (1685, 1, 'code', 0),
     (1013, 2, 'resume_first', 0),
     (1024, 2, 'resume_later', 0),
-    (1439, 2, 'resume_snap', 0),
-    (1468, 2, 'resume_assignment', 0),
-    (1502, 2, 'resume_command', 0),
-    (1669, 2, 'resume_rush', 0),
-    (1680, 2, 'resume_delay', 0),
-    (1690, 2, 'resume_lane', 0),
-    (1701, 2, 'resume_man', 0),
-    (1715, 2, 'resume_press', 0),
-    (1726, 2, 'resume_release', 0),
-    (1737, 2, 'resume_exchange', 0),
+    (1471, 2, 'resume_snap', 0),
+    (1500, 2, 'resume_assignment', 0),
+    (1534, 2, 'resume_command', 0),
+    (1701, 2, 'resume_rush', 0),
+    (1712, 2, 'resume_delay', 0),
+    (1722, 2, 'resume_lane', 0),
+    (1733, 2, 'resume_man', 0),
+    (1747, 2, 'resume_press', 0),
+    (1758, 2, 'resume_release', 0),
+    (1769, 2, 'resume_exchange', 0),
 )
 LABELS = {
-    'buffer_found': 1072,
+    'buffer_found': 1104,
     'carrier_exit': 868,
     'chase': 674,
-    'clear_loop': 1516,
-    'clear_next': 1541,
-    'clear_state': 1506,
-    'code_end': 1768,
-    'config': 1744,
+    'clear_loop': 1548,
+    'clear_next': 1573,
+    'clear_state': 1538,
+    'code_end': 1800,
+    'config': 1776,
     'direction_ok': 582,
     'dispatch': 12,
     'end_spy': 893,
-    'ext_originals': 1662,
+    'ext_originals': 1694,
     'find_record': 118,
     'finish': 904,
     'finite_loop': 446,
     'first_original': 1006,
+    'fixed_buffers': 1067,
     'found': 144,
     'fresh': 168,
     'goal_ready': 754,
     'handled': 856,
-    'hash_bytes': 1348,
+    'hash_bytes': 1380,
     'identity_ok': 189,
-    'init_lane': 1554,
-    'init_man': 1561,
-    'init_rush': 1547,
-    'initialize': 1566,
+    'init_lane': 1586,
+    'init_man': 1593,
+    'init_rush': 1579,
+    'initialize': 1598,
     'latch': 667,
     'later_original': 1017,
     'lookup_intent': 1028,
-    'lookup_no': 1283,
-    'lookup_row': 1246,
-    'lookup_yes': 1287,
-    'man_exchange': 1652,
-    'man_exchange_original': 1730,
-    'man_main': 1622,
-    'man_main_original': 1694,
-    'man_press': 1632,
-    'man_press_original': 1705,
-    'man_release': 1642,
-    'man_release_original': 1719,
+    'lookup_no': 1315,
+    'lookup_row': 1278,
+    'lookup_yes': 1319,
+    'man_exchange': 1684,
+    'man_exchange_original': 1762,
+    'man_main': 1654,
+    'man_main_original': 1726,
+    'man_press': 1664,
+    'man_press_original': 1737,
+    'man_release': 1674,
+    'man_release_original': 1751,
     'move_pursuit': 814,
-    'name_bad': 1344,
-    'name_done': 1346,
-    'name_hash': 1294,
-    'name_loop': 1324,
-    'next_row': 1278,
+    'name_bad': 1376,
+    'name_done': 1378,
+    'name_hash': 1326,
+    'name_loop': 1356,
+    'next_row': 1310,
     'nonfinite': 865,
     'occupied': 129,
     'pursuit_heading': 850,
     'requested': 224,
-    'reset_assignment': 1443,
-    'reset_command': 1472,
+    'reset_assignment': 1475,
+    'reset_command': 1504,
     'retained': 511,
     'retire': 968,
     'return_spy': 957,
-    'rush_delay': 1602,
-    'rush_delay_original': 1673,
-    'rush_lane': 1612,
-    'rush_lane_original': 1684,
-    'rush_main': 1592,
-    'rush_main_original': 1662,
+    'rush_delay': 1634,
+    'rush_delay_original': 1705,
+    'rush_lane': 1644,
+    'rush_lane_original': 1716,
+    'rush_main': 1624,
+    'rush_main_original': 1694,
     'shadow': 691,
-    'snap': 1363,
-    'snap_done': 1426,
+    'snap': 1395,
+    'snap_done': 1458,
     'targets_restored': 938,
     'targets_saved': 106,
     'zone_first': 0,
