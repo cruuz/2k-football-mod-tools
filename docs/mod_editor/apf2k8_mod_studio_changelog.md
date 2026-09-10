@@ -1,5 +1,13 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.86 — beta 66
+
+- **Ulf the White: formation moves clear old personnel memberships.** Fine-tune Plays normalizes primary category and word B to the destination's retail package. Design Plays / Formations clears the donor's secondary memberships when creating a CPU row. Receipts show before/after personnel. The three genuine retail alternative-package formations remain supported; the last-reachable-package guard remains active. In-game lineups are UNWITNESSED.
+- **Aszemple: review uniforms when importing a PS3 roster or PS3-layout .ROS.** “Also apply team appearance (N teams)” reviews both uniform banks and team palettes. Leave it off and choose an Xbox roster to retain that roster's appearance while importing PS3 players. Every team's selector changes are receipted and reparsed; custom uniform texture files are imported separately. Loading the result is UNWITNESSED.
+- **Aszemple: wordmark colour-region research and channel order.** All 206 wordmarks contain one RGB mask texture. The authoring helper can permute its three channels, with a Wordmarks control handed off for the beta-66 GUI merge. Six-region wordmarks and arbitrary team-palette-slot assignments remain unproved; paired crests support six-region artwork on their own surface.
+- **davidhbui: field material opacity writer.** Eleven named material alpha constants in field scenes 53, 252, 578 and 1333 now have scalar project recipes, Undo/Revert and normal Build composition with field textures. All four retail entries pass token-preserving H7A refit within allocation and independent reparse. The Field Art row is supplied for GUI integration; ADVANCED, off by default, rendering UNWITNESSED.
+- **Urianus Magnus Ursulinus and Aszemple: Deep Threat release-glitch investigation.** Documented the packed ability bit, dispatcher, two scoring branches and title-update matches. An animation-only repair is not proved, so no ability-disabling patch is offered. The reported release glitch remains open.
+
 ## 0.1.0-alpha.85 — the 2K8 beta (beta-64): playbooks, play design, coverage, book identity, CPU play calling, PS3 imports — 2026-09-09
 
 - **Fixed: Fine-tune Plays > Change formation follows the formation's retail personnel package.**

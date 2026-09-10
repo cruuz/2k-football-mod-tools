@@ -174,6 +174,7 @@ class DialogPersonnelTests(unittest.TestCase):
                 (3, "Pro Set", (10, 11, 8, 9, 9)), (5, "Kings", (10, 8, 9, 9, 9)),
                 (6, "Queens", (10, 11, 9, 9, 9)), (7, "Straight", (8, 9, 9, 9, 9)),
                 (8, "Flush", (10, 9, 9, 9, 9)),
+                (18, "Unused package", (10, 8, 8, 9, 9)),
             )
         )
 
@@ -242,7 +243,7 @@ class DialogPersonnelTests(unittest.TestCase):
             package.setCurrentIndex(package.findData(0))
             self.assertTrue(warning.isVisible())
             self.assertEqual(warning.text(),
-                "Retail never lines Quads up with Jacks personnel; the CPU will field 2 RB, 3 TE, 0 WR")
+                "This formation move will use Flush personnel (1 RB, 0 TE, 4 WR); previous package memberships are cleared.")
 
         with self.accept_dialog(choose):
             self.panel._change_trailer()
@@ -273,14 +274,14 @@ class DialogPersonnelTests(unittest.TestCase):
         with self.accept_dialog(choose):
             self.assertEqual(self.panel._trailer_dialog("Test", (9, 0), False), (120, 3, ()))
 
-    def test_unknown_formation_keeps_hand_picked_package_and_clears_warning(self):
+    def test_formation_absent_from_cpu_census_uses_master_category(self):
         def choose(formation, package, hint, warning, _dialog):
             formation.setCurrentIndex(formation.findData(69))
             package.setCurrentIndex(package.findData(0))
             self.assertTrue(warning.isVisible())
             formation.setCurrentIndex(formation.findData(162))
-            self.assertEqual(package.currentData(), 0)
-            self.assertIn("No retail pairing is known for Unused formation", hint.text())
+            self.assertEqual(package.currentData(), 18)
+            self.assertIn("No CPU retail pairing is known for Unused formation", hint.text())
             self.assertFalse(warning.isVisible())
             formation.setCurrentIndex(formation.findData(69))
             self.assertEqual(package.currentData(), 8)
@@ -325,7 +326,7 @@ class DialogPersonnelTests(unittest.TestCase):
         self.assertEqual(self.panel._categories, ())
         with self.accept_dialog(lambda _f, p, h, w, _d: (
             self.assertEqual(p.currentData(), 7),
-            self.assertIn("No retail pairing", h.text()), self.assertFalse(w.isVisible())
+            self.assertIn("No CPU retail pairing", h.text()), self.assertFalse(w.isVisible())
         )):
             self.assertEqual(self.panel._trailer_dialog("Add", (133, 7), True), (133, 7, ()))
 

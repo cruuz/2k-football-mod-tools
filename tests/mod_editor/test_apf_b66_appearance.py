@@ -40,8 +40,14 @@ class AppearanceTests(unittest.TestCase):
             for bank in team['banks']:
                 baseline[bank['selectors'][6]['offset']] = 19
                 baseline[bank['palette_offset']:bank['palette_offset']+4] = bytes.fromhex('ff123456')
+        expected = bytes(baseline)
+        # Xbox jersey-number identity differs; the imported player must still
+        # come from PS3 while the Xbox selector/palette values are retained.
+        jersey_number_byte = self.fixture.player + 35
+        baseline[jersey_number_byte] ^= 2
         output, receipt = w.convert(self.ps3, apply_team_appearance=False, xbox_appearance=bytes(baseline))
-        self.assertEqual(output, bytes(baseline))
+        self.assertEqual(output, expected)
+        self.assertNotEqual(output[jersey_number_byte], baseline[jersey_number_byte])
         self.assertFalse(receipt['team_appearance']['applied_from_ps3'])
         self.assertTrue(all(t['selector_changes'] == 0 for t in receipt['team_appearance']['teams']))
 

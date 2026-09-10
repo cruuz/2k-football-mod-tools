@@ -294,6 +294,7 @@ class DesignerTests(unittest.TestCase):
         self.assertEqual(int.from_bytes(rows[0].trailer[4:], "big"), 257)
         self.assertEqual(int.from_bytes(rows[1].trailer[4:], "big"), 1)
         self.assertEqual(receipt["personnel"][0]["word_b_after"], 1)
+        self.assertEqual(receipt["personnel"][0]["donor_word_b_before"], 257)
 
     def test_synthetic_transport_for_both_master_and_cpu_resource_sizes(self):
         self.plan["plays"] = [play_request("append", 4, 0, "Transport", [[1, 1, "distance_ft", 45]])]

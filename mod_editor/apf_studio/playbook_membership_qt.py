@@ -1396,14 +1396,13 @@ class ApfPlaybookMembershipPanel(QFrame):
             pairs = self._formation_packages.get(formation, ())
             warning = ""
             if pairs and package is not None and package not in dict(pairs):
-                warning = (
-                    f"Retail never lines {self._formations.get(formation, '?')} up "
-                    f"with {package_name(package)} personnel; "
-                )
-                warning += (
-                    f"the CPU will field {personnel(package)}"
-                    if package in categories else "personnel roles unavailable"
-                )
+                if allow_plays or formation != initial[0]:
+                    effective = splb.destination_category(formation, package)
+                    warning = (f"This formation move will use {package_name(effective)} "
+                               f"personnel ({personnel(effective)}); previous package memberships are cleared.")
+                else:
+                    warning = (f"Retail does not pair this formation with {package_name(package)}. "
+                               "This package-only override is experimental; in-game personnel is unwitnessed.")
             pairing_warning.setText(warning)
             pairing_warning.setVisible(bool(warning))
 
@@ -1429,8 +1428,12 @@ class ApfPlaybookMembershipPanel(QFrame):
                         package_combo.setCurrentIndex(row)
             else:
                 pairing_hint.setText(
-                    f"No retail pairing is known for {name}; package kept as selected."
+                    f"No CPU retail pairing is known for {name}; new or moved records use its MASTER category."
                 )
+                if choose_natural:
+                    row = package_combo.findData(splb.destination_category(formation, -1))
+                    if row >= 0:
+                        package_combo.setCurrentIndex(row)
             update_warning()
 
         formation_combo.currentIndexChanged.connect(lambda _i: update_pairing())

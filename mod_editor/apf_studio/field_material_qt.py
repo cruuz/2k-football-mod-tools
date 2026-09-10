@@ -23,6 +23,8 @@ class FieldMaterialOpacityPanel(QWidget):
         for name in MATERIALS:
             row = QHBoxLayout()
             enabled = QCheckBox(name.replace('_', ' ').capitalize())
+            if name == 'ticks':
+                enabled.setToolTip('Material 2 is shared by ticks and some chalk-line draws.')
             value = QDoubleSpinBox()
             value.setRange(0, 100)
             value.setDecimals(2)
@@ -39,7 +41,10 @@ class FieldMaterialOpacityPanel(QWidget):
         layout.addWidget(self.note)
         self.stage_button = QPushButton('Stage opacity changes')
         layout.addWidget(self.stage_button)
+        self.revert_button = QPushButton('Revert this field opacity')
+        layout.addWidget(self.revert_button)
         self.stage_button.clicked.connect(self._stage)
+        self.revert_button.clicked.connect(self._revert)
         self.entry.currentIndexChanged.connect(self._load)
         self.setEnabled(False)
 
@@ -54,6 +59,7 @@ class FieldMaterialOpacityPanel(QWidget):
         if self._source is None: return
         outer, source = self.entry.currentData(), self._source
         self.stage_button.setEnabled(False)
+        self.revert_button.setEnabled(False)
         def done(result):
             if self._source is not source or self.entry.currentData() != outer: return
             materials, staged = result
@@ -62,6 +68,7 @@ class FieldMaterialOpacityPanel(QWidget):
                 checkbox.setChecked(material.name in staged)
                 value.setValue(staged.get(material.name, material.alpha) * 100)
             self.stage_button.setEnabled(True)
+            self.revert_button.setEnabled(bool(staged))
         self.run_task('Reading field opacity', lambda progress: self.facade.field_material_context(outer, progress), done, True)
 
     def _stage(self):
@@ -75,4 +82,14 @@ class FieldMaterialOpacityPanel(QWidget):
             self.note.setText('Staged: ' + ', '.join(f"{c['material'].replace('_', ' ')} {c['before']:.0%} → {c['after']:.0%}" for c in report['changes'])
                              + '. Verified by reparse; in-game appearance is unwitnessed.')
             self.modifiedChanged.emit()
+            self.revert_button.setEnabled(True)
         self.run_task('Staging field opacity', lambda progress: self.facade.apply_field_material(outer, values, progress), done, True)
+
+    def _revert(self):
+        outer, source = self.entry.currentData(), self._source
+        def done(changed):
+            if self._source is not source: return
+            self.note.setText('Field opacity reverted. Source values are shown; in-game appearance is unwitnessed.')
+            if changed: self.modifiedChanged.emit()
+            self._load()
+        self.run_task('Reverting field opacity', lambda progress: self.facade.revert(f'field-material:{outer}', progress), done, True)

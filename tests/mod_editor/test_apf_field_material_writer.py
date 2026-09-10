@@ -42,7 +42,7 @@ class FieldMaterialTests(unittest.TestCase):
             with self.subTest(value=value), self.assertRaises(ValidationError):
                 w.compile_scene(before, {'ticks': value})
         with self.assertRaises(ValidationError): w.compile_scene(before, {'unknown': 0.5})
-        for at, value in ((0x38, 0), (0x38, 0xFFFF0000), (0x30, 1000), (0x100, 0), (0x120, 1)):
+        for at, value in ((0x38, 0), (0x38, 0xFFFF0000), (0x30, 12), (0x30, 1000), (0x100, 0), (0x120, 1)):
             bad = bytearray(before); struct.pack_into('>I', bad, at, value)
             with self.subTest(offset=at), self.assertRaises(ValidationError): w.parse_scene(bytes(bad))
 

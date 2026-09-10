@@ -208,7 +208,10 @@ def compile_cpu_calls(source: bytes, outer: int, master_source: bytes, master_af
              "category_before": original_book.records[ri].category_index,
              "category_after": parsed.records[ri].category_index,
              "word_b_before": int.from_bytes(original_book.records[ri].trailer[4:], "big"),
-             "word_b_after": int.from_bytes(parsed.records[ri].trailer[4:], "big")}
+             "word_b_after": int.from_bytes(parsed.records[ri].trailer[4:], "big"),
+             "donor_record_index": donor,
+             "donor_category_before": original_book.records[donor].category_index if donor is not None else None,
+             "donor_word_b_before": int.from_bytes(original_book.records[donor].trailer[4:], "big") if donor is not None else None}
             for ri, (fi, donor) in claimed.items()], "reparsed": True, "cpu_only": True, "user_save_written": False}
 
 

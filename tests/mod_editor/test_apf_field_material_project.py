@@ -90,7 +90,9 @@ class FieldProjectTests(unittest.TestCase):
         calls = []
         def apply(outer, values, progress):
             calls.append((outer, values)); return service.writer.compile_scene(scene_fixture(), values)[1]
-        facade = SimpleNamespace(source=object(), field_material_context=lambda o,p:(materials,{}), apply_field_material=apply)
+        reverted = []
+        facade = SimpleNamespace(source=object(), field_material_context=lambda o,p:(materials,{}), apply_field_material=apply,
+                                 revert=lambda asset_id,p: reverted.append(asset_id) or True)
         def run(title, work, done, modal): done(work(lambda *a:None)); return True
         panel = FieldMaterialOpacityPanel(facade,run); panel.set_context()
         self.assertTrue(all(not box.isChecked() for box,value in panel.controls.values()))
@@ -98,6 +100,9 @@ class FieldProjectTests(unittest.TestCase):
         panel.stage_button.click()
         self.assertEqual(calls,[(53,{'graphic_overlay_4':0.25})])
         self.assertIn('25%',panel.note.text()); self.assertIn('unwitnessed',panel.note.text())
+        panel.revert_button.click()
+        self.assertEqual(reverted, ['field-material:53'])
+        self.assertTrue(all(not box.isChecked() for box,value in panel.controls.values()))
         panel.close(); app.processEvents()
 
 
