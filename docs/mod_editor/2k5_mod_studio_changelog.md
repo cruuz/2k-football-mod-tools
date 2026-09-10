@@ -33,6 +33,15 @@
   change. Native CPU submissions, complete fill, material fields and legacy upgrades are proved offline;
   in-game appearance still needs Noah's witness. `ASTRA_REPORT.md`; preview `nfl2k5_player_star_filled.png`.
 
+- **MyCareer Supersim, first stage (existing `my_career` option, experimental and opt-in).** While MyPlayer is off the
+  field, the live game can request the retail post-play, replay, injury/timeout and period-presentation skips. Both
+  sides keep their native AI and gameplay stays at normal speed. Scroll below Upgrades in the Apartment for
+  **Supersim: Skip presentation / Off**; Skip presentation is the session default, and B during an eligible off-field
+  presentation turns it off. The choice resets on a cold career load. Native skip readiness and cleanup, replay-button
+  consumers and the scrolling option are proved in bounded execution. Fast forward, headless CPU drives and a
+  guaranteed pre-snap return with a full play clock are not proved or shipped. The existing 16 KiB code and 8 KiB
+  writable reservations still fit, with 1,051 code bytes spare; no other owner moves. Built by Astra; unwitnessed.
+
 ## v1.0 RC88, the 2K8 beta: no 2K5 changes beyond the version and the release tag (2026-09-09)
 
 - Beta 64 is the first All-Pro Football 2K8 beta (APF 2K8 Mod Studio 0.1.0-alpha.85, see
