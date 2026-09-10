@@ -7157,7 +7157,13 @@ class StudioMainWindow(QMainWindow):
             if getattr(self.facade, "source_sha256", None) != source_identity:
                 raise ValidationError("The game source changed. Preview the sheet again.")
             outputs = prepared_outputs
-            with tempfile.TemporaryDirectory(prefix="2k5-digit-sheet-") as temporary:
+            # ignore_cleanup_errors: on Windows a virus scanner can still hold one
+            # of the freshly written digit PNGs open when this block ends; a
+            # failed temp-folder removal must not turn a staged import into an
+            # error dialog (the folder lives under %TEMP% and is cleaned later).
+            with tempfile.TemporaryDirectory(
+                prefix="2k5-digit-sheet-", ignore_cleanup_errors=True
+            ) as temporary:
                 root = Path(temporary).resolve(strict=True)
                 kit = root / "team-kit"
                 self.facade.export_team_kit_sets(
