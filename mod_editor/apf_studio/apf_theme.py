@@ -370,7 +370,7 @@ def install_theme(app=None):
             path = Path(app._apf_theme_glyphs.name) / f"{name}.svg"
             path.write_text(f'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">'
                             f'<polyline points="{points}" fill="none" stroke="{color(token)}" stroke-width="2"/></svg>',
-                            encoding="utf-8")
+                            encoding="utf-8", newline="\n")
             app._apf_theme_icon_paths[name] = path.as_posix()
     app.setPalette(palette())
     app.setStyleSheet(stylesheet(app._apf_theme_icon_paths))

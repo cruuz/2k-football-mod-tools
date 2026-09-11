@@ -260,7 +260,7 @@ def main(argv=None) -> int:
              "layers": [{"name": l.name, "inner_index": l.inner_index, "width": l.width, "height": l.height,
                          "codec": l.codec, "writable": l.writable} for l in p.layers]} for p in packages]
     if args.json:
-        args.json.write_text(json.dumps(rows, indent=2) + "\n", encoding="utf-8")
+        args.json.write_text(json.dumps(rows, indent=2) + "\n", encoding="utf-8", newline="\n")
     for row in rows:
         layers = ", ".join(f"{l['name']} {l['width']}x{l['height']} {l['codec']}" for l in row["layers"])
         print(f"{row['family']:<8} entry {row['outer_index']:>5}  {row['package']:<26} {row['label']:<24} "

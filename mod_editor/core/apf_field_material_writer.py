@@ -237,7 +237,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.output_entry:
         Path(args.output_entry).write_bytes(compiled)
     if args.manifest:
-        Path(args.manifest).write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        Path(args.manifest).write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     print(json.dumps({"entry": args.entry, "alphas": alphas, "compiled_bytes": len(compiled),
                       "written": bool(args.output_entry)}, sort_keys=True))
     return 0

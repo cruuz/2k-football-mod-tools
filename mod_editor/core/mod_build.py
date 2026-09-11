@@ -1387,7 +1387,6 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         (plan.commentary, "nfl2k5_commentary_swap", True),
         (plan.guardian_cap, "nfl2k5_guardian_cap", False),
         (plan.read_option_runtime or plan.qb_spy, "nfl2k5_play_intents", False),
-        (plan.position_pools or plan.roster_edits, "nfl2k5_roster_records", False),
     ):
         if enabled and (_tools_module(module) if tool else _core_module(module)) is None:
             raise RuntimeError(f"{module} is not available in this build")
