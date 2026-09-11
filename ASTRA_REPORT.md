@@ -246,3 +246,14 @@ OK
 During development, two fixture assertions were corrected (relative pointer encoding and float equality). The additional skin check was corrected after measuring the existing retail high-muscle rest displacement described above. The provider closure expectation grew from 268 to 269 for the new pinned core module. The final standalone suites above all pass; these were not waived failures.
 
 The GUI/registry/allowlist changes are complete, reviewable handoffs in `WIRING.md`, not changes to protected files. No game witness was invented.
+
+## Commits and final checks
+
+Explicit-path commits on `astra/b661-models`:
+
+- `0fc572a2` — Models: add bounded paired player bind import core.
+- `19e87463` — Models: prove paired axial skeleton imports through Blender and retail native gates.
+
+Git metadata accepted the two implementation commits, then became read-only for the final report-record commit (`index.lock: Read-only file system`). The final delivery is therefore also in **`ASTRA_H4.bundle`** at the worktree root. It contains both implementation commits and a report-only follow-up, authored using isolated writable Git metadata under `.scratch/h4-delivery.git`; the shared read-only Git metadata was not changed. No push was performed. The pre-existing untracked context, triage, scratch directory and extraction symlink were retained.
+
+Final `python3 packaging/repin.py --apply` output: `applied 0 pin update(s)`. Final `git diff --check` produced no output. Comparing each proof-artifact source hash to the actual file printed `H4_PROOF_SOURCE_HASHES_PASS 12`. The full edited-model test suite, existing Models/animation suites, protected GUI replay, Studio route, provider suite and exact provider import-closure suite passed as shown above. The temporary H4 Blender exports were deleted.
