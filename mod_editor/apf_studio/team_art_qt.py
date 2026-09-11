@@ -187,6 +187,7 @@ class TeamArtBrowser(QWidget):
         self.grid.setTextElideMode(Qt.ElideRight)
         self.grid.verticalScrollBar().valueChanged.connect(lambda _value: self._decode_next())
         self.grid.viewport().installEventFilter(self)
+        self.grid.installEventFilter(self)  # Return/Enter opens the inspector on every platform
         splitter.addWidget(self.grid)
         inspector = QFrame()
         inspector.setObjectName("inspectorDetail")
@@ -231,7 +232,7 @@ class TeamArtBrowser(QWidget):
         self.search.textChanged.connect(self.refresh)
         self.family.currentIndexChanged.connect(self.refresh)
         self.grid.currentItemChanged.connect(self.inspect)
-        self.grid.itemActivated.connect(lambda _item: self.layers.setFocus(Qt.ShortcutFocusReason))
+        self.grid.itemActivated.connect(lambda _item: self._focus_inspector())
 
     def set_context(self):
         session = getattr(self.facade, "session", None) if self.facade.source_ready else None
@@ -420,7 +421,17 @@ class TeamArtBrowser(QWidget):
         self.set_context()
         self._decode_next()
 
+    def _focus_inspector(self):
+        """Move keyboard focus to the layer description of the current package."""
+        if self.grid.currentItem() is not None:
+            self.layers.setFocus(Qt.ShortcutFocusReason)
+
     def eventFilter(self, watched, event):
         if watched is self.grid.viewport() and event.type() == QEvent.Resize:
             QTimer.singleShot(0, self._decode_next)
+        if watched is self.grid and event.type() == QEvent.KeyPress and event.key() in (Qt.Key_Return, Qt.Key_Enter):
+            # macOS item views treat Return as an edit request rather than an activation;
+            # open the inspector directly so the keyboard flow is the same everywhere.
+            self._focus_inspector()
+            return True
         return super().eventFilter(watched, event)
