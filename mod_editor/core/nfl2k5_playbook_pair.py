@@ -2,7 +2,7 @@
 
 USA Xbox retail pins. Reserve the complete REQUESTS union before installation.
 The patch adds Options rows; Same as offense is the default. No save is changed.
-Authored read-option and QB-spy controls are unsupported on paired sides.
+Publishes bounded source identities for authored read-option and QB-spy controls.
 """
 from __future__ import annotations
 
@@ -27,7 +27,7 @@ HELP_TEXT = (
     "Pairs must fit the game's limits. Special teams use the offensive book. "
     "The choice lasts one game and is not saved to Franchise. "
     "Paired sides use ordinary CPU coaching without VIP learning or replay. "
-    "Custom read-option and QB-spy controls are unsupported on paired sides."
+    "Authored read-option and QB-spy controls retain their source identities."
 )
 BOOKS = (
     ("ARZ", "Cardinals"), ("ATL", "Falcons"), ("BAL", "Ravens"), ("BUF", "Bills"),
@@ -214,6 +214,21 @@ def allocations(payload):
             {(kind, size, align) for _, kind, size, align in REQUESTS} and len(rows) == 3,
             "reserve Playbook pair with the complete owner union on a clean base")
     return {a["kind"]: a for a in rows}
+
+
+CONTRACT_OFFSET = 160
+CONTRACT_SIZE = 32
+
+
+def contract_va(payload):
+    """Fixed absolute address for this sealed build, zero when pair is absent.
+
+    Two callback words precede home/away (merged, offense, defense) roots.
+    All words are zero on disc; complete merges publish, cleanup revokes.
+    An allocated but disabled pair therefore follows the retail fallback.
+    """
+    rows = [a for a in space.layout(payload)['allocations'] if a['owner'] == OWNER]
+    return allocations(payload)['data']['va'] + CONTRACT_OFFSET if rows else 0
 
 
 def apply(payload):

@@ -12,6 +12,7 @@ import json
 import struct
 
 from . import nfl2k5_music_storage as storage
+from . import nfl2k5_jukebox_list as jukebox_list
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_bump_strength import _sections, section_digest
 from .nfl2k5_cave_oracle import XbeImage
@@ -219,6 +220,7 @@ def status(payload):
                            'foreign collection bank pointers/enabled word')
         if not space.has_music(payload):
             return ('retail' if _fields(payload) == list(RETAIL) and collections.matches(payload) else 'foreign')
+        space._require(jukebox_list.status(payload) == 'applied', 'unbounded collection list builder')
         _, _, fields, table = _contents(payload)
         collection_table(payload)
         return ('applied' if _fields(payload) == fields[:18]
@@ -237,6 +239,7 @@ def apply(payload, song_records, collection_name='My songs'):
                        'different jukebox recipe; rebuild from base')
         return payload, dict(status='already_applied', changed_bytes=0)
     grown, allocation = space.apply(payload)
+    grown, list_fix = jukebox_list.apply(grown)
     grown, ro = storage.install(grown, data)
     table = storage.VA + storage.PREFIX + len(data) - len(fields)*32
     grown, edits = collections.apply(grown, table, len(fields))
@@ -253,6 +256,8 @@ def apply(payload, song_records, collection_name='My songs'):
     return result, dict(status='applied', experimental=True, runtime_witnessed=False,
                         count=len(song_records), collection_name=collection_name,
                         collections=collection_table(result), table_va=hex(table),
-                        collection_entry_freeze='UNWITNESSED; separate D2 investigation', edits=edits, allocation=allocation, read_only=ro,
+                        collection_list=list_fix,
+                        collection_entry_freeze='collection-list builder bounded by nfl2k5_jukebox_list (D2); entering the collection in game is UNWITNESSED',
+                        edits=edits, allocation=allocation, read_only=ro,
                         changed_bytes=sum(a != b for a,b in zip(payload,result))+len(result)-len(payload),
                         file_growth=len(result)-len(payload), identities=identities(len(song_records)))

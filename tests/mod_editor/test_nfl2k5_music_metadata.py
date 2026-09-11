@@ -71,6 +71,11 @@ class RetailMetadataTests(unittest.TestCase):
             self.assertEqual(before[at:at+len(old)], old)
             self.assertEqual(after[at:at+len(new)], new)
             after[at:at+len(new)] = old
+        # Beta 66 D2: the bounded collection-list builder owns the only other .text edits.
+        from mod_editor.core import nfl2k5_jukebox_list
+        for va, old, _new in nfl2k5_jukebox_list.SITES:
+            at = image.offset(va, len(old)) - text.raw
+            after[at:at+len(old)] = old
         self.assertEqual(before, after)
         rows = music.collection_table(self.patched)
         self.assertEqual([row['count'] for row in rows[:18]], [row[0] for row in music.RETAIL])

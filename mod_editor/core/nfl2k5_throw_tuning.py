@@ -1035,6 +1035,7 @@ class _dynamic_kickoff_adapter:
 
 
 # Shared keys keep byte writers and paired image allocation on the same union.
+# Retained until the protected mod_build refusal is removed through WIRING.md.
 PLAYBOOK_PAIR_CONFLICT = ("Separate playbooks cannot be combined with custom read-option or QB-spy controls in this build. "
                           "Turn one option off.")
 R62_SPACE_KEYS = ('momentum_collisions', 'momentum_collision_level', 'read_option_runtime', 'franchise_2026_rules', 'senior_bowl', 'guardian_overlay', 'my_career', 'screen_hooks', 'reserves_16', 'created_teams_extra', 'franchise_autosave', 'coverage_trail', 'franchise_edit_player', 'cpu_money_downs', 'accelerated_clock', 'weekly_prep', 'playbook_pair', 'deep_zone_facing', 'deep_zone_bail')
@@ -1538,8 +1539,6 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
     weekly_prep = r62["weekly_prep"] = bool(weekly_prep or weekly_prep_cpu or weekly_prep_remember)
     if my_career and my_career_setup is None:
         draft_ai = True  # M3's draft reuses the draft-AI ratings/need implementation and receipt
-    if playbook_pair and (read_option_runtime or qb_spy):
-        raise ValueError(PLAYBOOK_PAIR_CONFLICT)
     clock_state = accelerated_clock_patch.status(payload)
     # Synthetic or partial images (test fixtures, foreign discs) report "foreign";
     # that only matters when the clock is actually requested or already installed.
@@ -1843,8 +1842,6 @@ def write_xbe_copy(
 
     r62 = _r62_options(locals())
     _validate_r62_options(**r62)
-    if playbook_pair and (read_option_runtime or qb_spy):
-        raise ValueError(PLAYBOOK_PAIR_CONFLICT)
     momentum_patch._settings(momentum, momentum_contact, momentum_collisions, momentum_collision_level)
     if my_career and my_career_setup is not None:
         my_career_setup = r62["my_career_setup"] = my_career_patch.read_setup(my_career_setup)
@@ -2061,8 +2058,6 @@ def write_image_copy(
 
     r62 = _r62_options(locals())
     _validate_r62_options(**r62)
-    if playbook_pair and (read_option_runtime or qb_spy):
-        raise ValueError(PLAYBOOK_PAIR_CONFLICT)
     momentum_patch._settings(momentum, momentum_contact, momentum_collisions, momentum_collision_level)
     if my_career and my_career_setup is not None:
         my_career_setup = r62["my_career_setup"] = my_career_patch.read_setup(my_career_setup)

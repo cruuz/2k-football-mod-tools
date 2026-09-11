@@ -332,6 +332,17 @@ class CaveReferenceTests(unittest.TestCase):
                 a = 0x2A7E50
             if b - a >= CAVE_MIN:
                 ranges.add((a, b))
+        # The Crib list repair moves the loop entry from 0x32A160 to 0x32A159
+        # and retargets its backward branch at 0x32A24F. Treat those two edits
+        # as one completely pinned function, including its retained bytes.
+        # Otherwise the displaced internal back edge appears external to the
+        # first changed run. Every genuinely external entry is still checked.
+        from mod_editor.core import nfl2k5_jukebox_list as jukebox
+        if jukebox.status(self.patched) == 'applied':
+            self.assertEqual(jukebox.status(self.retail), 'retail')
+            lo, hi = jukebox.FUNCTION_VA, jukebox.FUNCTION_VA + jukebox.FUNCTION_SIZE
+            ranges = {(a, b) for a, b in ranges if not (a < hi and b > lo)}
+            ranges.add((lo, hi))
         # Scorebar v3 replaces complete pinned live spans. Split adjacent
         # callbacks at their independently referenced entries, and include
         # retained byte islands so their displaced branches remain internal.

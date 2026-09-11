@@ -29,6 +29,17 @@ behaviour remains UNWITNESSED until played.
   MyCareer; the choice survives save/load. The line reads MyPlayer's live match stats, updates after native
   play events and stays out of menus and replay states. The native font, glyph submissions, player identity
   and one draw invocation per presented frame are proved; in-game readability remains unwitnessed.
+- **Added-song collection crash fix (Mud).** Mud reported that the jukebox froze when entering Incite #2 while the same songs played in the stadium music creator. The native disc list used the thirteen-row HDD limit on a four-row screen and reached a null widget label with two added songs. Music metadata builds now include the bounded list repair. Native list-building tests cover 59 through 200 songs and different collection numbers; the played result still needs a witness.
+
+- **Separate playbooks with authored read option and QB spy (Smuzz).** A paired-root publication now lets read-option controls find the relocated offensive book, while an original-source map preserves donor QB-spy identity after play renumbering. Both teams, unpaired fallback, changed-script refusal and teardown are covered by native tests. Protected build/UI integration is specified in WIRING.md. This remains EXPERIMENTAL and off in every preset.
+
+- **Helmet finish backend (maumau78).** Added a reversible Glossy (retail) / Matte writer for both helmet LODs. Matte redirects the three shell branches to the native zero-reflection store; the other material path retains retail lighting. Full native refresh, scene-name reparse, exact Glossy restoration and Guardian composition pass. ADVANCED, Matte off by default; Gameplay/Uniforms wiring and a lighting comparison in game remain required.
+
+- **SEGA and play-call freeze investigation (jrolling2003, CER).** Audited the experimental music, screen, widescreen, scorebar, calendar, practice squad, abilities, Guardian, seven-on-seven, position-pool, MyCareer and Broadcast paths. Bounded hook tests pass, but they do not reproduce a complete failed boot or kickoff-to-play-call lifecycle. No owner or preset is blamed and no speculative freeze fix is shipped. ASTRA_REPORT.md records the exact native continuation boundaries and witness steps.
+
+- **Playoff starting-QB investigation (BigTimeEmpire).** Native weekly sorting retains the higher-rated QB across the tested playoff weeks; a separate injury-reserve path compares injury duration with 22 minus the current week. The affected save and actual injury-adjusted rating are still needed to prove the first incorrect change. No unproved BASIC lineup patch was added.
+
+- **Edited skeleton investigation (maumau78).** The Models glTF contains SCNE bind translations, while SKEL stores normalized axes consumed by the high-body pose builder. The existing bounded forearm-length operation remains available; arbitrary glTF bone import is not advertised as complete. The report identifies the native axis/derived-joint conversion that still needs proof.
 
 ## v1.0 RC89, beta 65: accelerated clock, MyCareer supersim and positions, the Windows folder-publish fix (2026-09-10)
 

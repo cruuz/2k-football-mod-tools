@@ -35,6 +35,7 @@ from mod_editor.core import nfl2k5_weekly_prep as weekly_prep
 from mod_editor.core import nfl2k5_cpu_money_downs as money_downs
 from mod_editor.core import nfl2k5_franchise_edit_player as edit_player
 from mod_editor.core import nfl2k5_accelerated_clock as accelerated_clock
+from mod_editor.core import nfl2k5_helmet_finish as helmet_finish
 
 
 LEGACY_REQUESTS = (kickoff.REQUESTS + runtime.REQUESTS + momentum.REQUESTS
@@ -96,7 +97,7 @@ def owner_calls(*, read_option_diagnostic=False):
               (practice_screen, {}), (abilities, dict(abilities_off_week=7)), (qb_spy, {}), (calendar, {}),
               (read_option, dict(diagnostic=read_option_diagnostic)), (franchise_2026, {}), (senior_bowl, {}), (animation_xbe, {}), (guardian, {}),
               (my_career, {}), (crib_reclaim, {}), (autosave, {}), (coverage_trail, {}), (seven, {}), (deep_zone, {}), (playbook_pair, {}), (weekly_prep, {}), (money_downs, {}), (edit_player, {}),
-              (screen_hooks, {}), (AcceleratedClockOn, {}),
+              (screen_hooks, {}), (AcceleratedClockOn, {}), (helmet_finish, {}),
               (arena_growth, dict(created_teams_extra=2)))
 
 
@@ -200,6 +201,21 @@ def manifest_for_allocated_union(manifest, retail, allocated):
     from mod_editor.core import nfl2k5_dynamic_kickoff as legacy_kickoff
     image = XbeImage(retail)
     installed_image = XbeImage(allocated)
+    from mod_editor.core import nfl2k5_jukebox_list as jukebox_list
+    if jukebox_list.status(allocated) == 'applied':
+        for va, before, after in jukebox_list.SITES:
+            if image.read(va, len(before)) != before or installed_image.read(va, len(after)) != after:
+                raise AssertionError('Crib collection loop pin differs')
+            if manifest.overlaps(va, va+len(before), exclude_owner=jukebox_list.OWNER):
+                raise AssertionError('Crib collection loop overlaps another owner')
+        spans += jukebox_list.reservations(allocated)
+    if helmet_finish.status(allocated) == 'applied':
+        for va, before, after in helmet_finish.SITES:
+            if image.read(va, len(before)) != before or installed_image.read(va, len(after)) != after:
+                raise AssertionError('Helmet material branch pin differs')
+            if manifest.overlaps(va, va+len(before), exclude_owner=helmet_finish.OWNER):
+                raise AssertionError('Helmet material branch overlaps another owner')
+        spans += helmet_finish.reservations(allocated)
     if espn25.xbe_status(allocated) == "applied":
         va, size = espn25.XBE_SITE_VA, len(espn25.XBE_BEFORE)
         if image.read(va, size) != espn25.XBE_BEFORE or installed_image.read(va, size) != espn25.XBE_AFTER:

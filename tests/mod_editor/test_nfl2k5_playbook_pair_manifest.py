@@ -68,13 +68,13 @@ class XbeManifestTests(unittest.TestCase):
             self.assertEqual(final[section.header_offset+36:section.header_offset+56],
                              section_digest(final,section),section.index)
         document = dict(schema=MANIFEST_SCHEMA, retail_sha256=RETAIL_SHA256, complete=True,
-            model='TEST ONLY: freshly observed current XBE gate union; no disc/archive build or inherited source pins',
+            model='Observed pure XBE safety-gate composition with all allocator owners; no disc or resource build',
             stack_image_size=XbeImage(final).image_size, stack_xbe_sha256=hashlib.sha256(final).hexdigest(),
             section_digests_verified=True, allocator_layout=pair.space.layout(final),
             source_sha256=sources, spans=spans, steps=recorder.steps,
-            image_steps=['scorebug_runtime','season_2026'],
+            image_steps=[],
             xbe_only=True, new_disc_built=False, release_manifest=False, runtime_witnessed=False,
-            scope='image_steps label the XBE components only; disc transport and archive writes were not run')
+            scope='XBE transactions only; disc transport and archive writes were not run')
         observed = ReservationManifest(document,XbeImage(retail),source_root=ROOT)
         for owner, va, size in ((espn25.OWNER,espn25.XBE_SITE_VA,len(espn25.XBE_BEFORE)),
                                 (trail.OWNER,trail.HOOK_VA,6)):

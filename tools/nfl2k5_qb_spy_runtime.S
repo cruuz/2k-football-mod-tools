@@ -342,6 +342,20 @@ later_original:
 lookup_intent:
     pushad
     mov edi, [esi+0x41c]
+    mov eax, offset paired_contract
+    test eax, eax
+    jz fixed_buffers
+    cmp dword ptr [eax+4], 0
+    je fixed_buffers
+    mov ecx, edi
+    call dword ptr [eax+4]
+    test eax, eax
+    jz fixed_buffers
+    mov edi, eax
+    mov ebx, edx
+    sub eax, ebx
+    jmp buffer_found
+fixed_buffers:
     mov ebx, 0xb75a40
     mov eax, edi
     sub eax, ebx
