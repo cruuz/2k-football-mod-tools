@@ -201,8 +201,7 @@ class ProviderIntegrityTests(unittest.TestCase):
             # formation/play clone writer, fixed-slot audio, the fail-closed
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
-            # Beta 66.1 adds responsive_json to unified visuals and scorebug.
-            [269, 10, 8, 9, 8, 9]  # beta 66: + nfl2k5_digit_art (G: Coach Edwards' number sheets), build_io, metadata_cache (B), jukebox_list, helmet_finish (D2)  # beta 66: +3 equipment palette / library collection / college warning helpers; beta 65: +2 accelerated clock writer + generated code; +1 MyCareer M3 progression policy, +2 deep zone owner + template (the bail authoring module is not in the writer closure), +1 tools playbook position recode (match coverage census reads book entries), +1 match coverage census/authoring, +2 playbook pair owner + template, +3 weekly prep owner + template + save reader, +2 CPU money downs owner + template, +1 franchise edit player owner, +2 coverage trail owner + template, +2 equipment chain helpers (explicit PNG intent, bounded lossless compression), +6 seedless MyCareer (mode, code, save), final-book play intents, depth roles and special roles; +1 number-sheet digit texture encoder, +1 ESPN 25th real rosters data owner, +1 scorebar v3 helper, +2 Franchise Auto Save owner + byte template, +10 wave-A runtime modules and their byte templates, +1 scorebar template compiler, +1 broadcast-exact scorebar, +1 build outcome measure, +1 image destination check, +1 scorebar fonts (beta 62); the hi-res and 2026-name modules load via mod_build, not the backend closure,
+            [270, 10, 8, 9, 8, 9]  # beta 66.1: + responsive_json (H1, unified + scorebug), nfl2k5_model_skeleton (H4); beta 66: + nfl2k5_digit_art (G), build_io, metadata_cache (B), jukebox_list, helmet_finish (D2)
         )
         for provider in providers:
             entries = [provider.backend_module]

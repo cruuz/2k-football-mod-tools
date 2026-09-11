@@ -7173,24 +7173,33 @@
         "mod_editor/gui/models_panel_qt.py",
         "tests/mod_editor/test_nfl2k5_crib_geometry_writer.py",
         "tests/mod_editor/test_nfl2k5_models.py",
-        "reports/specs/nfl2k5_xbox_static_scne.v1.json"
+        "reports/specs/nfl2k5_xbox_static_scne.v1.json",
+        "mod_editor/core/nfl2k5_model_skeleton.py",
+        "tools/nfl2k5_model_skeleton_validate.py",
+        "tools/nfl2k5_model_skeleton_blender_witness.py",
+        "tests/mod_editor/test_nfl2k5_model_skeleton.py",
+        "tests/mod_editor/test_models_skeleton_wiring.py",
+        "docs/mod_editor/nfl2k5_model_skeleton.md",
+        "docs/mod_editor/nfl2k5_model_skeleton_proof.json"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "The Models page lists every scene on the loaded disc, exports any of them as Blender-ready glTF, and imports an edited glTF/GLB by fitting it onto the game's own vertices (vertex-index lane, order, or nearest vertex), re-encoding positions (range widened when needed), normals and UVs for exact matches, and rebuilding the resource into its retail span before writing a copy of the disc. Vertex count, topology, bones, weights and every other byte stay as shipped. The pinned Stadium/Crib position staging remains."
+        "reason": "Models > Import edited .gltf/.glb defaults to Geometry only. Geometry and skeleton checks the complete sibling lo_body/hi_body/hi_head export set, reports every changed bind length in centimetres, and writes a new disc copy after all four native resources pass preflight. The GUI is exposed only after applying the complete H4 WIRING blocks."
       },
       "id": "nfl2k5.models.scne_gltf",
       "input_constraints": [
-        "Every SCNE exports; an edited glTF/GLB imports onto the same vertices only: the vertex count and triangle topology of the game's shape are kept, and a file with a different count is fitted by nearest vertex with a warning.",
-        "Imports may move existing positions only. Vertex count and triangle topology must remain identical; UVs, materials, collision, indices, normals, all other vertex registers, commands, transforms, and opaque tails remain source bytes.",
-        "Every recipe is checked against the user's exact source and must recompress into the original fixed SCNE allocation before it can be staged. Arbitrary topology replacement remains unsupported."
+        "Geometry only retains the existing fitted vertex import: native vertex count, triangles, skeleton and weights stay authored; matched position, normal, UV and colour lanes can be re-encoded within a fixed compressed span.",
+        "Geometry and skeleton requires pinned player SCNE 3/113 and 3/114, the pinned head 3/115, SKEL 3/116, all three model files and their manifest from one export, unchanged joint names/parents, and translations only. A missing or unedited second LOD refuses with edit both LOD files from one export.",
+        "One axial length per import, 95%-105%: left/right forearm (both elbow-wrist and wrist-hand segments together), thigh, shin or foot. Distal primary positions must agree across LODs. High derived pivots are regenerated. Upper arms are disabled because the tested refits exceed their allocations. Hand tips, spine/neck/head, direction changes, rotations/scales, animation, topology/name changes, and multiple lengths are refused.",
+        "Blender unit conversions are accepted within 0.001 cm; serialized canonical binds reparse within 0.0001 cm. Recomputed normalized directions must match canonical SKEL within 2e-6 per component. Head bind, weights, morph records, counts and angular muscle constants stay authored. Every resource must fit its original compressed span and scratch wrapper; the whole set is published together."
       ],
       "portme": [
-        "Complete SCNE attributes, material/texture graph, transforms, skinning, SHAP, skeletons, animation, collision, and LODs.",
-        "Build a catalog-aware edited-glTF conformer only after proving coordinate conversion, complete active attributes, bounds/semantic ownership, topology serialization beyond group36, catalog-wide XISO integration, and per-target runtime behavior."
+        "Direction edits need a proved update of the fixed angular muscle graph. Hand terminal lengths and spine/neck/head need a proved endpoint/frame and attachment mapping.",
+        "Upper-arm axial refits at +1%/+5% exceed the fixed compressed allocation. Multiple simultaneous lengths, arbitrary topology, animation and morph authoring remain unsupported.",
+        "No claim for idle/run/pass/catch/tackle, body profiles, collision, ball/helmet attachment appearance or original hardware until witnessed."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -7203,7 +7212,7 @@
           "docs/research/nfl_group36_xemu_runtime_result_v2.md",
           "reports/assets/nfl2k5_group36_s42_xemu_runtime_positive.v2.json"
         ],
-        "scope": "Exported models open in Blender 4 (verified headless: meshes, UV layers, armatures with the game's joint counts, textures; the referee's shirt, shoes and cap only line up under the u=(n+1)/2, v=(1-n)/2 texture-coordinate mapping). Same-topology imports rebuild into the retail span with the wrapper byte-identical and decode back exactly; in-game witnessing of an imported model and original-hardware acceptance remain untested.",
+        "scope": "The H4 gate executes retail 0x92140/0x92252 and 0x233C0 on edited SCNE/SKEL inputs, compares authored rest joint positions, and compares recovered C and Python matrices at identity and six player celebration samples. Headless Blender 4.0.2 +5% forearm/thigh GLB edits are checked separately. Synthetic/direct-export no-op bytes, fixed spans, four-resource compact-copy transport, replay and refusals are tested. Idle/run/pass/catch/tackle, ball and helmet attachments, body sizes and played appearance remain UNWITNESSED.",
         "status": "not-tested"
       },
       "selectors": {
@@ -7214,7 +7223,7 @@
             "required": true
           }
         ],
-        "notes": "Every scene is exportable and importable for same-topology vertex edits; adding or removing vertices/triangles, bones, animations and morph deltas are not implied (morph channels are exported as names only)."
+        "notes": "Every scene retains geometry export/import. The optional paired skeleton path is limited to player outer 3 and the eight named axial limb segments; arbitrary skeletons, directions, animation or body morph authoring are not implied."
       },
       "source_container": {
         "format": "NFL SCNE resources in VC archive",
@@ -7224,10 +7233,10 @@
         "resource": "4,616 SCNE resources",
         "retail_file": "ESPN NFL 2K5 (USA).xiso.iso"
       },
-      "summary": "Export every NFL 2K5 SCNE model (4,616 scenes) as glTF with positions, normals, UVs, vertex colours, embedded textures and skins, and import same-topology vertex edits for any of them into a copy of the disc, plus the earlier bounded Stadium/Crib position staging.",
+      "summary": "Export every NFL 2K5 SCNE as glTF and import fitted geometry into a disc copy. Player outer 3 additionally accepts one paired axial forearm, thigh, shin or foot bind-length edit within +/-5%, with regenerated high pivots, coordinated mesh/normals, recomputed and checked canonical SKEL directions, and a guarded low/high/head/SKEL transaction. EXPERIMENTAL / UNWITNESSED.",
       "surface": "models_shap_scne",
       "title": "NFL 2K5 bounded SCNE glTF editing",
-      "validation_command": "bash tools/validate_nfl_static_gltf.sh"
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_model_skeleton"
     },
     {
       "backend": {

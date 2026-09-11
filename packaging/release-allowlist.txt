@@ -81,6 +81,7 @@ mod_editor/core/nfl2k5_crib.py
 mod_editor/core/nfl2k5_crib_electronics_targets.py
 mod_editor/core/nfl2k5_crib_geometry_writer.py
 mod_editor/core/nfl2k5_models.py
+mod_editor/core/nfl2k5_model_skeleton.py
 mod_editor/core/nfl2k5_crib_scene_texture_writer.py
 mod_editor/core/nfl2k5_crib_standalone_texture_writer.py
 mod_editor/core/nfl2k5_digit_preview.py

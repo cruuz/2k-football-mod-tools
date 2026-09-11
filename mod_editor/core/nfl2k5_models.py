@@ -1926,11 +1926,14 @@ def export_body_set(source: ModelSource, body_set: BodySet, folder: Path, *,
                                     include_vertex_colors_as_color0=include_vertex_colors_as_color0))
     (folder / "player-body-set-README.txt").write_text(body_set_readme(body_set, results),
                                                        encoding="utf-8", newline="\n")
+    from . import nfl2k5_model_skeleton
+    nfl2k5_model_skeleton.export_contract(source, body_set, folder, results)
     progress("Body set exported", total, total)
     return results
 
 
 def body_set_readme(body_set: BodySet, results: Sequence[ExportResult]) -> str:
+    from .nfl2k5_model_skeleton import HELP as skeleton_help
     lines = [f"NFL 2K5 player body set (pack entry {body_set.outer_index})",
              "=" * 44, "",
              "A player is not one model. The game draws the high-detail body up close, swaps in the",
@@ -1951,7 +1954,7 @@ def body_set_readme(body_set: BodySet, results: Sequence[ExportResult]) -> str:
               "did not touch is skipped and named in the report, so editing only the head (or only the two",
               "bodies) is fine. If any one of them no longer fits its space on the disc, nothing is written",
               "at all.", ""]
-    return "\n".join(lines)
+    return "\n".join(lines) + "\nSkeleton import\n" + skeleton_help + "\n"
 
 
 def find_body_set_files(body_set: BodySet, folder: Path) -> dict[str, Path]:
@@ -1987,18 +1990,26 @@ class CompiledModelSet:
     members: list[CompiledModelImport] = field(default_factory=list)
     files: dict[str, str] = field(default_factory=dict)          # model key -> edited file
     notes: list[str] = field(default_factory=list)
+    skeleton_plan: Any = field(default=None, repr=False)
 
     @property
     def changed_bytes(self) -> int:
+        if self.skeleton_plan is not None:
+            return sum(sum(a != b for a, b in zip(m.before, m.after)) for m in self.skeleton_plan.members)
         return sum(member.changed_bytes for member in self.members)
 
     def summary(self) -> str:
+        if self.skeleton_plan is not None:
+            count = len(self.skeleton_plan.receipt['changed_bones'])
+            return f"player body set: {count} bone length(s) changed; {self.changed_bytes:,} bytes change on disc; EXPERIMENTAL / UNWITNESSED"
         moved = sum(sum(s.positions_changed for s in m.shapes) for m in self.members)
         names = ", ".join(m.name for m in self.members)
         return (f"player body set ({names}): {moved:,} vertices moved across "
                 f"{sum(len(m.shapes) for m in self.members)} mesh(es); {self.changed_bytes:,} bytes change on disc")
 
     def report(self) -> dict[str, Any]:
+        if self.skeleton_plan is not None:
+            return {**self.skeleton_plan.receipt, 'edited_files': dict(self.files), 'notes': list(self.notes)}
         return {"schema": SCHEMA_SET_IMPORT, "outer_index": self.outer_index,
                 "edited_files": dict(self.files), "notes": list(self.notes),
                 "models": [member.report() for member in self.members]}
@@ -2007,6 +2018,7 @@ class CompiledModelSet:
 def compile_body_set_import(source: ModelSource, body_set: BodySet, folder: Path, *, write_normals: bool = True,
                             write_uvs: bool = False, allow_rescale: bool = True, write_colours: bool = True,
                             require_all: bool = True,
+                            import_skeleton: bool = False,
                             progress: ProgressSink | None = None) -> CompiledModelSet:
     """Fit every edited member of one body set, refusing the whole set if any one of them fails.
 
@@ -2018,6 +2030,10 @@ def compile_body_set_import(source: ModelSource, body_set: BodySet, folder: Path
     where nothing changed is refused.  With ``require_all`` off, members with no edited file in the
     folder are skipped and named in the notes as well.
     """
+    if import_skeleton:
+        from .nfl2k5_model_skeleton import compile_set
+        return compile_set(source, body_set, folder, write_normals=write_normals, write_uvs=write_uvs,
+                           allow_rescale=allow_rescale, write_colours=write_colours, progress=progress)
     progress = progress or (lambda *_a: None)
     files = find_body_set_files(body_set, folder)
     missing = [entry for entry in body_set.entries if entry.key not in files]
@@ -2057,6 +2073,12 @@ def write_import_set_copy(source: ModelSource, compiled_set: CompiledModelSet, s
     Every member's spans are located and checked FIRST; only when all of them are writable does any
     byte move, so a set never lands half-applied.
     """
+    if compiled_set.skeleton_plan is not None:
+        from .nfl2k5_animation_bones import image_edits
+        from .nfl2k5_animation_import import write_copy
+        plan = compiled_set.skeleton_plan
+        return write_copy(source_image, target_image, image_edits(plan, source_image),
+                          receipt=compiled_set.report(), progress=progress)
     import shutil
     progress = progress or (lambda *_a: None)
     _require(bool(compiled_set.members), "Nothing to write: the body set compiled to no models")

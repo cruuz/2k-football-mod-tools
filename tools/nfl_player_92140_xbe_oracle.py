@@ -17,10 +17,11 @@ import math
 from pathlib import Path
 import struct
 
-from unicorn import Uc, UC_ARCH_X86, UC_MODE_32, UC_PROT_ALL
+from unicorn import Uc, UC_ARCH_X86, UC_MODE_32, UC_PROT_ALL, UC_HOOK_CODE
 from unicorn.x86_const import (
     UC_X86_REG_EAX,
     UC_X86_REG_ECX,
+    UC_X86_REG_EDX,
     UC_X86_REG_EFLAGS,
     UC_X86_REG_EIP,
     UC_X86_REG_ESP,
@@ -57,7 +58,11 @@ def page_ceil(value: int) -> int:
 def emulate(
     xbe: bytes, header: dict[str, object], skeleton: list[list[float]],
     low: list[list[float]],
-) -> list[list[float]]:
+    *, scenes: list[tuple[bytes, int, int]] | None = None,
+    trace: dict | None = None,
+) -> list[list[float]] | dict:
+    if hashlib.md5(xbe).hexdigest() != EXPECTED_XBE_MD5:
+        raise ValueError("native pose gate requires the pinned retail XBE")
     emulator = Uc(UC_ARCH_X86, UC_MODE_32)
     image = header["header"]
     assert isinstance(image, dict)
@@ -98,6 +103,14 @@ def emulate(
     emulator.reg_write(UC_X86_REG_ECX, MATRIX_BASE)
     emulator.reg_write(UC_X86_REG_EFLAGS, 2)
     emulator.reg_write(UC_X86_REG_MXCSR, 0x1F80)
+    if trace is not None:
+        def axis_call(cpu, address, size, data):
+            pointer = cpu.reg_read(UC_X86_REG_ECX)
+            trace['axis_call_0x92252'] = {
+                'pointer': pointer,
+                'vector': list(struct.unpack('<4f', cpu.mem_read(pointer, 16))),
+            }
+        emulator.hook_add(UC_HOOK_CODE, axis_call, begin=0x92252, end=0x92252)
     emulator.emu_start(FUNCTION, SENTINEL, count=10_000_000)
     if emulator.reg_read(UC_X86_REG_EIP) != SENTINEL:
         raise ValueError("original function did not return to the sentinel")
@@ -107,7 +120,37 @@ def emulate(
         raise ValueError("original function unexpectedly changed low matrices")
     raw = emulator.mem_read(MATRIX_BASE + LOW * 0x40, HIGH * 0x40)
     values = struct.unpack("<" + "f" * (HIGH * 16), raw)
-    return [list(values[index * 16 : (index + 1) * 16]) for index in range(HIGH)]
+    high = [list(values[index * 16 : (index + 1) * 16]) for index in range(HIGH)]
+    if scenes is None:
+        return high
+    if len(scenes) != 2:
+        raise ValueError('native bind gate requires both SCNE bodies')
+    # 0x93800 calls this very expander for high and low. Map the edited
+    # decoded SCNE bytes and perform the loader's one pointer relocation.
+    # The +0x50 count and 112-byte bind records are read by native 0x233c0.
+    worlds = []
+    identity = struct.pack('<16f', *(float(i % 5 == 0) for i in range(16)))
+    root = STACK_BASE + 0x100
+    emulator.mem_write(root, identity)
+    for lod, ((body, shape_offset, bind_offset), count) in enumerate(zip(scenes, (LOW, HIGH))):
+        base = 0x02400000 + lod * 0x200000
+        emulator.mem_map(base, page_ceil(len(body)), UC_PROT_ALL)
+        emulator.mem_write(base, body)
+        if struct.unpack_from('<H', body, shape_offset + 0x50)[0] != count:
+            raise ValueError('native SCNE transform count differs')
+        emulator.mem_write(base + shape_offset + 0x64, struct.pack('<I', base + bind_offset))
+        matrices = MATRIX_BASE + (LOW * 0x40 if lod else 0)
+        emulator.mem_write(stack, struct.pack('<III', SENTINEL, matrices, root))
+        emulator.reg_write(UC_X86_REG_ESP, stack)
+        emulator.reg_write(UC_X86_REG_ECX, base + shape_offset)
+        emulator.reg_write(UC_X86_REG_EDX, matrices)
+        emulator.emu_start(0x233c0, SENTINEL, count=10_000_000)
+        if emulator.reg_read(UC_X86_REG_EIP) != SENTINEL or emulator.reg_read(UC_X86_REG_ESP) != stack + 12:
+            raise ValueError('native hierarchy did not return with RET 8')
+        raw = emulator.mem_read(matrices, count * 0x40)
+        rows = struct.unpack('<' + 'f' * (count * 16), raw)
+        worlds.append([list(rows[i*16:(i+1)*16]) for i in range(count)])
+    return {'high_local': high, 'low_world': worlds[0], 'high_world': worlds[1]}
 
 
 def main() -> None:

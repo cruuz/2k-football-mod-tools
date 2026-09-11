@@ -1,0 +1,319 @@
+{
+  "schema": "nfl2k5_model_skeleton_proof/v1",
+  "classification": "offline-writer-proved",
+  "runtime_witnessed": false,
+  "baseline_evidence": "ASTRA_B66_2K5_GAME_REPORT.md section 9 (PROVED)",
+  "supported_scope": "one axial left/right forearm, thigh, shin or foot at 95%-105%, both body LODs and unchanged head bind from one tagged export",
+  "refused_scope": [
+    "directions",
+    "upper arms (fixed-span fit)",
+    "hand terminal lengths",
+    "spine/neck/head",
+    "rotations/scales",
+    "topology/names",
+    "multiple lengths",
+    "unpaired LODs",
+    "foreign source/export",
+    "out-of-bound or unencodable edits"
+  ],
+  "gui_status": "complete protected-file handoff tested in memory; integration pending",
+  "synthetic_noop_byte_identical": true,
+  "direct_export_noop_byte_identical": true,
+  "compact_four_resource_copy_replay_and_head_guard": true,
+  "source_sha256": {
+    "mod_editor/core/nfl2k5_models.py": "8b2e86bd0e6f2ba8d192bcdb452bc8e45fc38a4a0af8a95350a0e2f816bc6176",
+    "mod_editor/core/nfl2k5_model_skeleton.py": "4c868c8e15742f15cb7f9d725f70d525d57e3d9d2a614cdc90e46bbc9d95ac95",
+    "mod_editor/core/nfl2k5_animation_bones.py": "b82275d45fd4f0b34aaa4613e0ea266724f14270c9069650b5aded3a3f929eb8",
+    "mod_editor/core/providers.py": "aae7064e9b8c1b288d6ab76a56390393938519492bd225be2e9915a3ce048e67",
+    "tools/nfl_player_92140_native_validate.py": "d61880f867577a7e002db67caefc9ec3c9c1843be3eae8881647e2c34e812e80",
+    "tools/nfl_player_92140_xbe_oracle.py": "52c3cf04761b3d3b54677d9d6cab5e7815c5d2ba0fb9dcec4b51d322640e6a04",
+    "tools/nfl2k5_model_skeleton_validate.py": "6e2fe86c21f519e11711c20c09fe622ec8b69fcb87927e8ab3bcfa8d8df6d63f",
+    "tools/nfl2k5_model_skeleton_blender_witness.py": "ccbd0344cd27246730e86e958738ce242de40f79d4bb91ca0301f768d8aa72fa",
+    "src/recovered/nfl2k5/player_local_postprocess.c": "b170f37740bfc5aeaa9e62a74e42cde2ba54470425f0d6cb0fd50fefe136b4a0",
+    "tests/mod_editor/test_nfl2k5_model_skeleton.py": "96b9c4bcece062c74ba1f9ec7266e9449f0dfefe8e4fa5e5eac051e60d3fa817",
+    "tests/mod_editor/test_models_skeleton_wiring.py": "192e00be7857b9525180283ab9eef30d568a15fbadaf1de880ddba5dd91cd1b6",
+    "docs/mod_editor/nfl2k5_model_skeleton_gui.patch": "2737cccc0b27f8d117fe8234ae6695e010a2fc313a3e1a9c55cdef0d575d61ea"
+  },
+  "direct_gltf": [
+    {
+      "bone": "left_forearm",
+      "scale": 1.05,
+      "poses": 7,
+      "native_matrix_components": 6944,
+      "maximum_native_c_error": 0.00023456488270312548,
+      "maximum_native_python_error": 0.00013944720558356494,
+      "maximum_rest_target_error_cm": 4.015637068421404e-06,
+      "maximum_lod_error_cm": 3.814697265625e-06,
+      "maximum_hierarchy_component_error": 0.0,
+      "world_tolerance_cm": 0.0001,
+      "rest_target_joints": 87,
+      "skinned_vertex_comparisons": 87227,
+      "maximum_rest_skin_displacement_cm": 2.016201980313131,
+      "matrix_tolerance": "2.5e-4 + abs(expected)*2.5e-5",
+      "derived_constants_sha256": "e8c9a58a80d9531ecfb446d0c5350d5579fea1c1eea6fc47a2f802cdaa06129b",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "runtime_witnessed": false,
+      "axis_call_0x92252": {
+        "pointer": 34603056,
+        "vector": [
+          0.05911945551633835,
+          -0.9797630310058594,
+          -0.19123110175132751,
+          0.0
+        ]
+      }
+    },
+    {
+      "bone": "left_thigh",
+      "scale": 1.05,
+      "poses": 7,
+      "native_matrix_components": 6944,
+      "maximum_native_c_error": 0.00023456488270312548,
+      "maximum_native_python_error": 0.00013944720558356494,
+      "maximum_rest_target_error_cm": 1.6186584798809629e-06,
+      "maximum_lod_error_cm": 3.814697265625e-06,
+      "maximum_hierarchy_component_error": 0.0,
+      "world_tolerance_cm": 0.0001,
+      "rest_target_joints": 87,
+      "skinned_vertex_comparisons": 87227,
+      "maximum_rest_skin_displacement_cm": 2.016201980313131,
+      "matrix_tolerance": "2.5e-4 + abs(expected)*2.5e-5",
+      "derived_constants_sha256": "e8c9a58a80d9531ecfb446d0c5350d5579fea1c1eea6fc47a2f802cdaa06129b",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "runtime_witnessed": false,
+      "axis_call_0x92252": {
+        "pointer": 34603056,
+        "vector": [
+          0.05911945551633835,
+          -0.9797630310058594,
+          -0.19123110175132751,
+          0.0
+        ]
+      }
+    },
+    {
+      "bone": "left_shin",
+      "scale": 1.05,
+      "poses": 7,
+      "native_matrix_components": 6944,
+      "maximum_native_c_error": 0.00023456488270312548,
+      "maximum_native_python_error": 0.00013944720558356494,
+      "maximum_rest_target_error_cm": 4.76837158203125e-07,
+      "maximum_lod_error_cm": 3.814697265625e-06,
+      "maximum_hierarchy_component_error": 0.0,
+      "world_tolerance_cm": 0.0001,
+      "rest_target_joints": 87,
+      "skinned_vertex_comparisons": 87227,
+      "maximum_rest_skin_displacement_cm": 2.016201980313131,
+      "matrix_tolerance": "2.5e-4 + abs(expected)*2.5e-5",
+      "derived_constants_sha256": "e8c9a58a80d9531ecfb446d0c5350d5579fea1c1eea6fc47a2f802cdaa06129b",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "runtime_witnessed": false,
+      "axis_call_0x92252": {
+        "pointer": 34603056,
+        "vector": [
+          0.05911945551633835,
+          -0.9797630310058594,
+          -0.19123110175132751,
+          0.0
+        ]
+      }
+    },
+    {
+      "bone": "left_foot",
+      "scale": 1.05,
+      "poses": 7,
+      "native_matrix_components": 6944,
+      "maximum_native_c_error": 0.00023456488270312548,
+      "maximum_native_python_error": 0.00013944720558356494,
+      "maximum_rest_target_error_cm": 0.0,
+      "maximum_lod_error_cm": 3.814697265625e-06,
+      "maximum_hierarchy_component_error": 0.0,
+      "world_tolerance_cm": 0.0001,
+      "rest_target_joints": 87,
+      "skinned_vertex_comparisons": 87227,
+      "maximum_rest_skin_displacement_cm": 2.016201980313131,
+      "matrix_tolerance": "2.5e-4 + abs(expected)*2.5e-5",
+      "derived_constants_sha256": "e8c9a58a80d9531ecfb446d0c5350d5579fea1c1eea6fc47a2f802cdaa06129b",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "runtime_witnessed": false,
+      "axis_call_0x92252": {
+        "pointer": 34603056,
+        "vector": [
+          0.05911945551633835,
+          -0.9797630310058594,
+          -0.19123110175132751,
+          0.0
+        ]
+      }
+    },
+    {
+      "bone": "right_forearm",
+      "scale": 1.05,
+      "poses": 7,
+      "native_matrix_components": 6944,
+      "maximum_native_c_error": 0.00023456488270312548,
+      "maximum_native_python_error": 0.00013944720558356494,
+      "maximum_rest_target_error_cm": 4.227478077923623e-06,
+      "maximum_lod_error_cm": 3.814697265625e-06,
+      "maximum_hierarchy_component_error": 0.0,
+      "world_tolerance_cm": 0.0001,
+      "rest_target_joints": 87,
+      "skinned_vertex_comparisons": 87227,
+      "maximum_rest_skin_displacement_cm": 2.016201980313131,
+      "matrix_tolerance": "2.5e-4 + abs(expected)*2.5e-5",
+      "derived_constants_sha256": "e8c9a58a80d9531ecfb446d0c5350d5579fea1c1eea6fc47a2f802cdaa06129b",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "runtime_witnessed": false,
+      "axis_call_0x92252": {
+        "pointer": 34603056,
+        "vector": [
+          0.05911945551633835,
+          -0.9797630310058594,
+          -0.19123110175132751,
+          0.0
+        ]
+      }
+    },
+    {
+      "bone": "right_thigh",
+      "scale": 1.05,
+      "poses": 7,
+      "native_matrix_components": 6944,
+      "maximum_native_c_error": 0.00023456488270312548,
+      "maximum_native_python_error": 0.00013944720558356494,
+      "maximum_rest_target_error_cm": 1.0994354624040355e-05,
+      "maximum_lod_error_cm": 3.814697265625e-06,
+      "maximum_hierarchy_component_error": 0.0,
+      "world_tolerance_cm": 0.0001,
+      "rest_target_joints": 87,
+      "skinned_vertex_comparisons": 87227,
+      "maximum_rest_skin_displacement_cm": 2.016201980313131,
+      "matrix_tolerance": "2.5e-4 + abs(expected)*2.5e-5",
+      "derived_constants_sha256": "e8c9a58a80d9531ecfb446d0c5350d5579fea1c1eea6fc47a2f802cdaa06129b",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "runtime_witnessed": false,
+      "axis_call_0x92252": {
+        "pointer": 34603056,
+        "vector": [
+          0.05911945551633835,
+          -0.9797630310058594,
+          -0.19123110175132751,
+          0.0
+        ]
+      }
+    },
+    {
+      "bone": "right_shin",
+      "scale": 1.05,
+      "poses": 7,
+      "native_matrix_components": 6944,
+      "maximum_native_c_error": 0.00023456488270312548,
+      "maximum_native_python_error": 0.00013944720558356494,
+      "maximum_rest_target_error_cm": 4.76837158203125e-07,
+      "maximum_lod_error_cm": 3.814697265625e-06,
+      "maximum_hierarchy_component_error": 0.0,
+      "world_tolerance_cm": 0.0001,
+      "rest_target_joints": 87,
+      "skinned_vertex_comparisons": 87227,
+      "maximum_rest_skin_displacement_cm": 2.016201980313131,
+      "matrix_tolerance": "2.5e-4 + abs(expected)*2.5e-5",
+      "derived_constants_sha256": "e8c9a58a80d9531ecfb446d0c5350d5579fea1c1eea6fc47a2f802cdaa06129b",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "runtime_witnessed": false,
+      "axis_call_0x92252": {
+        "pointer": 34603056,
+        "vector": [
+          0.05911945551633835,
+          -0.9797630310058594,
+          -0.19123110175132751,
+          0.0
+        ]
+      }
+    },
+    {
+      "bone": "right_foot",
+      "scale": 1.05,
+      "poses": 7,
+      "native_matrix_components": 6944,
+      "maximum_native_c_error": 0.00023456488270312548,
+      "maximum_native_python_error": 0.00013944720558356494,
+      "maximum_rest_target_error_cm": 0.0,
+      "maximum_lod_error_cm": 3.814697265625e-06,
+      "maximum_hierarchy_component_error": 0.0,
+      "world_tolerance_cm": 0.0001,
+      "rest_target_joints": 87,
+      "skinned_vertex_comparisons": 87227,
+      "maximum_rest_skin_displacement_cm": 2.016201980313131,
+      "matrix_tolerance": "2.5e-4 + abs(expected)*2.5e-5",
+      "derived_constants_sha256": "e8c9a58a80d9531ecfb446d0c5350d5579fea1c1eea6fc47a2f802cdaa06129b",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "runtime_witnessed": false,
+      "axis_call_0x92252": {
+        "pointer": 34603056,
+        "vector": [
+          0.05911945551633835,
+          -0.9797630310058594,
+          -0.19123110175132751,
+          0.0
+        ]
+      }
+    }
+  ],
+  "blender_4_0_2_glb": [
+    {
+      "poses": 1,
+      "native_matrix_components": 992,
+      "maximum_native_c_error": 0.00023456488270312548,
+      "maximum_native_python_error": 0.00013944720558356494,
+      "maximum_rest_target_error_cm": 0.00037870380438047654,
+      "maximum_lod_error_cm": 3.814697265625e-06,
+      "maximum_hierarchy_component_error": 0.0,
+      "world_tolerance_cm": 0.001,
+      "rest_target_joints": 48,
+      "skinned_vertex_comparisons": 12461,
+      "maximum_rest_skin_displacement_cm": 2.016201980313131,
+      "matrix_tolerance": "2.5e-4 + abs(expected)*2.5e-5",
+      "derived_constants_sha256": "e8c9a58a80d9531ecfb446d0c5350d5579fea1c1eea6fc47a2f802cdaa06129b",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "runtime_witnessed": false,
+      "axis_call_0x92252": {
+        "pointer": 34603056,
+        "vector": [
+          0.05911945551633835,
+          -0.9797630310058594,
+          -0.19123110175132751,
+          0.0
+        ]
+      },
+      "bone": "left_forearm"
+    },
+    {
+      "poses": 1,
+      "native_matrix_components": 992,
+      "maximum_native_c_error": 0.00023456488270312548,
+      "maximum_native_python_error": 0.00013944720558356494,
+      "maximum_rest_target_error_cm": 0.00037480401640162193,
+      "maximum_lod_error_cm": 3.814697265625e-06,
+      "maximum_hierarchy_component_error": 0.0,
+      "world_tolerance_cm": 0.001,
+      "rest_target_joints": 48,
+      "skinned_vertex_comparisons": 12461,
+      "maximum_rest_skin_displacement_cm": 2.016201980313131,
+      "matrix_tolerance": "2.5e-4 + abs(expected)*2.5e-5",
+      "derived_constants_sha256": "e8c9a58a80d9531ecfb446d0c5350d5579fea1c1eea6fc47a2f802cdaa06129b",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "runtime_witnessed": false,
+      "axis_call_0x92252": {
+        "pointer": 34603056,
+        "vector": [
+          0.05911945551633835,
+          -0.9797630310058594,
+          -0.19123110175132751,
+          0.0
+        ]
+      },
+      "bone": "left_thigh"
+    }
+  ]
+}

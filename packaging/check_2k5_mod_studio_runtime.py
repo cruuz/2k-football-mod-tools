@@ -1765,6 +1765,7 @@ def main() -> int:
         "mod_editor.gui.playbook_pack_dialog_qt",
         "mod_editor.gui.stadium_viewer",
         "mod_editor.core.nfl2k5_models",
+        "mod_editor.core.nfl2k5_model_skeleton",
         "mod_editor.core.self_update",
         "mod_editor.core.nfl2k5_team_column",
         "mod_editor.core.nfl2k5_rdata_sites",
