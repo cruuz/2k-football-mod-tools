@@ -367,7 +367,12 @@ if __name__ == "__main__":
     import argparse
     import json
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--image", type=Path, required=True)
+    inputs = parser.add_mutually_exclusive_group(required=True)
+    inputs.add_argument("--game-folder", type=Path, help="Xbox 360 game folder containing default.xex")
+    inputs.add_argument("--image", type=Path, help="Expert flat image (or default.xex)")
+    parser.add_argument("--title-update", type=Path, help="Installed TU 1.1 package, default.xexp, or content folder")
+    parser.add_argument("--content-root", type=Path, action="append", default=[], help="Xenia content root to check")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
-    print(json.dumps(write_patch(args.image, args.output), indent=2))
+    print(json.dumps(write_patch(args.game_folder or args.image, args.output,
+                                 title_update=args.title_update, content_roots=args.content_root), indent=2))

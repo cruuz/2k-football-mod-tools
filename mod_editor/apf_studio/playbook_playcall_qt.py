@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import QStandardPaths, pyqtSignal
 from PyQt5.QtWidgets import (QComboBox, QFileDialog, QHBoxLayout, QLabel,
                              QPushButton, QTableWidget, QTableWidgetItem,
                              QVBoxLayout, QWidget)
@@ -257,12 +257,15 @@ class ApfPlaycallPanel(QWidget):
         settings = getattr(getattr(self.facade, "launcher", None), "settings", None)
         update = (self._title_update or getattr(settings, "title_update_path", None)) if folder_mode else None
         xenia = getattr(settings, "xenia_path", None)
+        user_storage = tuple(Path(path) / "Xenia" for kind in
+                             (QStandardPaths.DocumentsLocation, QStandardPaths.GenericDataLocation)
+                             if (path := QStandardPaths.writableLocation(kind)))
         self.set_busy(True)
         self.patch_notice.setText("Reading your game's executable and checking retail BASE / Title Update 1.1. Game files are only read.")
 
         def prepare(progress):
             try:
-                roots = game_image.xenia_content_roots(xenia) if folder_mode and xenia else ()
+                roots = game_image.xenia_content_roots(xenia, user_storage=user_storage) if folder_mode and xenia else ()
                 image, receipt = game_image.derive_image(Path(source), title_update=update,
                                                          content_roots=roots, progress=progress)
                 return code_patch.compile_patch(image), receipt, None

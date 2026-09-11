@@ -245,7 +245,22 @@ class InputTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / "xenia-canary.config.toml").write_text('[Storage]\nstorage_root = "data"\ncontent_root = "updates"\n')
-            self.assertIn(root / "data" / "updates", x.xenia_content_roots(root / "xenia.exe"))
+            with patch.object(x.Path, "home", return_value=root), \
+                    patch.dict("os.environ", {"XDG_DATA_HOME": str(root / "xdg")}):
+                self.assertIn(root / "data" / "updates", x.xenia_content_roots(root / "xenia.exe"))
+
+    def test_xenia_redirected_documents_and_portable_mode(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); documents = root / "redirected" / "Xenia"
+            documents.mkdir(parents=True)
+            (documents / "xenia-canary.config.toml").write_text('[Storage]\ncontent_root = "installed"\n')
+            with patch.object(x.Path, "home", return_value=root), \
+                    patch.dict("os.environ", {"XDG_DATA_HOME": str(root / "xdg")}):
+                roots = x.xenia_content_roots(root / "xenia.exe", user_storage=(documents,))
+            self.assertIn(documents / "installed", roots)
+            (root / "portable.txt").touch()
+            roots = x.xenia_content_roots(root / "xenia.exe", user_storage=(documents,))
+            self.assertNotIn(documents / "installed", roots)
 
     def test_no_codec_subprocess_native_or_research_dependency(self):
         import ast

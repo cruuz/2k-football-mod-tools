@@ -271,25 +271,38 @@ def discover_title_update(game_folder, *, configured=None, content_roots=()):
     return paths[0]
 
 
-def xenia_content_roots(executable):
-    """Read nearby Xenia configuration; resolve relative paths beside Xenia."""
+def xenia_content_roots(executable, *, user_storage=()):
+    """Check portable and per-user Xenia storage, including custom content roots.
+
+    The UI supplies Qt's actual Documents/data directories (including Windows
+    redirection). Command-line callers can supply equivalent storage folders.
+    """
+    import os
     import tomllib
 
     directory = Path(executable).parent
-    roots = [directory / "content"]
-    for name in ("xenia-canary.config.toml", "xenia.config.toml"):
-        config = directory / name
-        if not config.is_file():
-            continue
-        try:
-            storage = tomllib.loads(read_input(config).decode("utf-8-sig")).get("Storage", {})
-            base = Path(storage.get("storage_root") or directory).expanduser()
-            if not base.is_absolute():
-                base = directory / base
-            content = Path(storage.get("content_root") or "content").expanduser()
-            roots.append(content if content.is_absolute() else base / content)
-        except (ValueError, TypeError, UnicodeError) as exc:
-            raise ValidationError(f"Could not read Xenia content settings in {config}: {exc}") from exc
+    locations = [directory]
+    if not (directory / "portable.txt").is_file():
+        locations.extend(map(Path, user_storage))
+        locations.extend((Path.home() / "Documents" / "Xenia",
+                          Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local" / "share") / "Xenia"))
+    roots = []
+    for location in dict.fromkeys(locations):
+        roots.append(location / "content")
+        for name in ("xenia-canary.config.toml", "xenia.config.toml"):
+            config = location / name
+            if not config.is_file():
+                continue
+            try:
+                storage = tomllib.loads(read_input(config).decode("utf-8-sig")).get("Storage", {})
+                require(isinstance(storage, dict), f"Invalid Storage settings in {config}")
+                base = Path(storage.get("storage_root") or location).expanduser()
+                if not base.is_absolute():
+                    base = location / base
+                content = Path(storage.get("content_root") or "content").expanduser()
+                roots.append(content if content.is_absolute() else base / content)
+            except (ValueError, TypeError, UnicodeError) as exc:
+                raise ValidationError(f"Could not read Xenia content settings in {config}: {exc}") from exc
     return tuple(dict.fromkeys(roots))
 
 

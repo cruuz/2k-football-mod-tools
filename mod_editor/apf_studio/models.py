@@ -246,8 +246,9 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
     one_shot_target="mod_editor.core.apf2k8_playcall_patch:write_patch",
     output_kind="authored-xenia-patch-toml",
     product_note=(
-        "Export TE bias for pass fetches writes a verified authored TOML. "
-        "The one-shot writer does not stage project replacements. Applies "
+        "Choose game folder to read and check your retail BASE or Title Update 1.1 "
+        "executable, then export a Xenia patch file next to your build. "
+        "Choose flat image is an expert option. Applies "
         "at every down; main CPU weighted picker unchanged; unwitnessed. "
         "Remove or disable the exported file to reverse its installation."
     ),
