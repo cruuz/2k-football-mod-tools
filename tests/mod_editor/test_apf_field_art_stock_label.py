@@ -75,7 +75,7 @@ class FieldArtStockLabelTests(unittest.TestCase):
         )
         self.assertIn("format-18", folded)
         self.assertIn("format-59", folded)
-        self.assertIn("browse-only", folded)
+        self.assertIn("format-59 dxt5a endzone detail layers are also writable", folded)
         self.assertNotIn("all 118 teams", folded)
         self.assertNotIn("every team", folded)
 

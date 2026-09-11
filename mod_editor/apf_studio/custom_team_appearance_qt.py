@@ -6,6 +6,8 @@ from pathlib import Path
 import sys
 from typing import Callable
 
+from .apf_theme import color as theme_color
+
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import (
     QComboBox,
@@ -161,11 +163,11 @@ class _BankEditor(QWidget):
         text = self.palette[index].text().strip().upper()
         if len(text) == 8 and all(character in "0123456789ABCDEF" for character in text):
             self.swatches[index].setStyleSheet(
-                f"background: #{text[2:]}; border: 1px solid #8795aa;"
+                f"background: #{text[2:]}; border: 1px solid {theme_color('border')};"
             )
         else:
             self.swatches[index].setStyleSheet(
-                "background: transparent; border: 1px solid #8795aa;"
+                f"background: transparent; border: 1px solid {theme_color('border')};"
             )
 
     def set_bank(self, bank: apf_custom_team_appearance_patch.AppearanceBank) -> None:

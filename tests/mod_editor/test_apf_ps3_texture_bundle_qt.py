@@ -56,6 +56,26 @@ class DialogTests(unittest.TestCase):
         dialog.accept()
         self.assertIsNotNone(dialog.plan)
 
+    def test_banner_bulk_selection_and_next_free_slot(self):
+        files = bundle_files()
+        files.update({k.replace("/selected_", "/Alternative/selected_"): v for k, v in bundle_files().items()})
+        write_folder(self.root, files)
+        dialog = Ps3BundleMappingDialog(read_bundle(self.root), [slot(), slot(hash_value=42, outer=1000)])
+        self.addCleanup(dialog.close)
+        dialog.show()
+        self.app.processEvents()
+        button = dialog.buttons.button(QDialogButtonBox.Ok)
+        self.assertFalse(button.isEnabled())
+        self.assertTrue(dialog.message.text())
+        self.assertLess(dialog.message.geometry().bottom(), dialog.table.geometry().top())
+        dialog.resolve_button.click()
+        self.assertTrue(button.isEnabled())
+        self.assertEqual(len({choices.currentData() for _, enabled, choices in dialog.rows if enabled.isChecked()}), 2)
+        dialog.clear_button.click()
+        self.assertTrue(all(not enabled.isChecked() for _, enabled, _ in dialog.rows))
+        dialog.select_matched_button.click()
+        self.assertTrue(all(enabled.isChecked() for _, enabled, _ in dialog.rows))
+
 
 if __name__ == "__main__":
     unittest.main()

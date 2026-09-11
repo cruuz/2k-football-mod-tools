@@ -15,9 +15,27 @@ REGISTRY = ROOT / "mod_editor" / "capabilities" / "registry.v1.json"
 class ApfLogoSurfaceOwnershipTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.inventory = json.loads(INVENTORY.read_text(encoding="utf-8"))
         registry = json.loads(REGISTRY.read_text(encoding="utf-8"))
         cls.capabilities = {row["id"]: row for row in registry["capabilities"]}
+        cls._inventory = None
+
+    @property
+    def inventory(self):
+        cls = type(self)
+        if cls._inventory is None:
+            if INVENTORY.is_file():
+                cls._inventory = json.loads(INVENTORY.read_text(encoding="utf-8"))
+            else:
+                source = ROOT / "extracted/All-Pro Football 2K8 (USA)/0A"
+                if not source.is_file():
+                    self.skipTest("Retail APF 0A and optional uniform research inventory are absent")
+                from mod_editor.apf_studio.backend import ensure_tools_importable
+                ensure_tools_importable()
+                import apf_uniform_inventory
+                # Read-only metadata, in memory. Never copy retail payloads or
+                # require an untracked report to run these ownership gates.
+                cls._inventory = apf_uniform_inventory._build_inventory(source, None)[0]
+        return cls._inventory
 
     def test_all_three_logo_domains_remain_distinct(self) -> None:
         families = {

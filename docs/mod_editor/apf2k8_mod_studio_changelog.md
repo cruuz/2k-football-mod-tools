@@ -5,6 +5,14 @@
 Beta 66 answers every APF report in Discord since beta 64 (Aszemple, Ulf the White, davidhbui, Urianus Magnus
 Ursulinus). The bullets below are added as each change lands; in-game behaviour remains UNWITNESSED until played.
 
+- Noah asked for a “vastly improved” and “super polished” APF editor; SOFTDRINKTV called out how far the UI lagged behind 2K5. All 14 workspaces now share a compact header, consistent controls, visible empty-state loading actions, and a fixed action footer. Capability counts replace the opening wall of cards; Details keeps the complete explanations and research boundaries reachable.
+- Aszemple reported invisible dialog buttons, light text on white Playbooks tables, and popups extending offscreen. One application theme now covers every page, authoring dialog, table, combo popup, and file chooser. Tables have readable alternating rows, sortable headers and full-text hover tips. Oversized dialogs scroll their contents while keeping confirmation buttons visible.
+- Ctrl+F targets the current page search, Escape clears it, and Enter moves from a selected list record to its inspector. The private workspace store remembers window geometry, the last page, and its selected workspace. Audio batch tools have their own tab. Field Art separates its editor, inventory and ownership map, and correctly includes the Stride_number_field practice overlay in that map.
+- davidhbui’s Team Art browser is available under Logos & Team Art and linked from Uniforms and Field Art. Browse all 118 crests, 118 endzones, 206 wordmarks, and every jersey, shoulder, pants and digit package by thumbnail. Search labels, entries and package names; filter writable, staged or proved retail-team uses. Previews decode progressively in workers and use a versioned private PNG cache.
+- Team Art replacement resolves package, inner-layer and linked logocache identities automatically. Crests and paired endzones require their separate PNG layers, with exact dimensions and codec shown before staging. The existing writers retain mip regeneration, compression, allocation and decode-back checks; multi-layer staging is one Undo action. Changed art remains in-game UNWITNESSED.
+- PS3 bundle mapping now explains disabled staging above the table, offers Select all matched and Clear, and resolves repeated destinations through an explicit Next free matching slot action.
+- Added davidhbui’s six confirmed endzone names: Flames (190), Phoenix (205), Cannons (225), Gunslingers (268), Sunspots (334), and Owls (368). Entries 48 and 683 explicitly remain tentative: “Swashbucklers?” and “bird (matches crest 836)?”. Crest and wordmark labels use only the 24 proved retail selector assignments; other entries keep their numbers.
+- Fixed davidhbui’s three-argument digit encoder case: base-only calls preserve existing mip bytes and no longer fail a guard intended for regenerated mips. Normal build calls still regenerate mips. Updated the old format-59 endzone restriction below to match the shipped writer.
 - **Ulf the White: formation moves clear old personnel memberships.** Fine-tune Plays normalizes primary category and word B to the destination's retail package. Design Plays / Formations clears the donor's secondary memberships when creating a CPU row. Receipts show before/after personnel. The three genuine retail alternative-package formations remain supported; the last-reachable-package guard remains active. In-game lineups are UNWITNESSED.
 - **Aszemple: review uniforms when importing a PS3 roster or PS3-layout .ROS.** “Also apply team appearance (N teams)” reviews both uniform banks and team palettes. Leave it off and choose an Xbox roster to retain that roster's appearance while importing PS3 players. Every team's selector changes are receipted and reparsed; custom uniform texture files are imported separately. Loading the result is UNWITNESSED.
 - **Aszemple: wordmark colour-region research and channel order.** All 206 wordmarks contain one RGB mask texture. The authoring helper can permute its three channels, with a Wordmarks control handed off for the beta-66 GUI merge. Six-region wordmarks and arbitrary team-palette-slot assignments remain unproved; paired crests support six-region artwork on their own surface.
@@ -59,8 +67,8 @@ Product identity: **0.1.0-alpha.85**. All new gameplay is **UNWITNESSED**.
   exclusively reserves 0x84D0E000..0x84D0EFFF. Capstone 5.0.7 is packaged for
   Windows and checked in the configured runtime.
 - PS3 APFe bundles: paired logo/endzone import, destination review, dirty state,
-  project refresh and Revert. Crest mips regenerate; Field Art preserves old
-  mip tails and format-59 endzones remain read-only. Allocation checks remain
+  project refresh and Revert. Crest and Field Art mips regenerate, including writable
+  format-59 endzones. Allocation checks remain
   mandatory. PS3 roster/texture probes remain read-only diagnostics.
 - Registries, APF release closure, desktop/runtime gates and offscreen replay
   cover the integrated wave. See [wave guide](apf_wave_2026_09_09.md) for scope

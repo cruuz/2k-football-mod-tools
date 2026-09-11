@@ -198,6 +198,8 @@ then selects the repointed record is runtime-unproved; the receipt says so.
 from __future__ import annotations
 
 import os
+from .apf_theme import status_style
+
 from pathlib import Path
 import shutil
 from typing import Callable
@@ -1373,7 +1375,7 @@ class ApfPlaybookMembershipPanel(QFrame):
         pairing_warning = QLabel()
         pairing_warning.setObjectName("retailPairingWarning")
         pairing_warning.setWordWrap(True)
-        pairing_warning.setStyleSheet("color: #f0b04c;")
+        pairing_warning.setStyleSheet(status_style("warning"))
         form.addWidget(pairing_warning)
         categories = {int(item["index"]): item for item in self._categories}
 

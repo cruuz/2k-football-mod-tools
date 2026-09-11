@@ -38,8 +38,6 @@ from mod_editor.core.errors import ValidationError
 
 TaskRunner = Callable[..., bool]
 
-TABLE_FG = QColor("#dce8f5")
-TABLE_BG = QColor("#0c1421")
 
 
 class ApfPackageMapPanel(QWidget):
@@ -328,8 +326,6 @@ class ApfPackageMapPanel(QWidget):
             values = (str(slot + 1), str(int(role)), role_label(int(role)))
             for column, value in enumerate(values):
                 item = QTableWidgetItem(value)
-                item.setForeground(TABLE_FG)
-                item.setBackground(TABLE_BG)
                 self.table.setItem(slot, column, item)
 
     def _set_draft(self, formation_index: int, package_map: tuple[int, ...]) -> None:

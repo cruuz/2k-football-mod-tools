@@ -779,9 +779,10 @@ def _encode_color(
     wanted: bytes,
     *,
     wanted_image: Image.Image | None = None,
-    regenerate_mips: bool = True,
+    regenerate_mips: bool | None = None,
     downsample: str = "majority",
 ) -> bytes:
+    regenerate_mips = wanted_image is not None if regenerate_mips is None else regenerate_mips
     locations = bc1_mips.derive_layout(dict(metadata))
     if bc1_mips.transport_roundtrip(original, locations) != original:
         raise NumberPatchError("retail number DXT1 transport is not bit-exact")
@@ -800,7 +801,7 @@ def _encode_color(
         new_texture = _regenerate_mip_tail_bc1(new_texture, locations, wanted_image, downsample)
     if new_texture[int(metadata["vc_base_data_length"]) :] == original[
         int(metadata["vc_base_data_length"]) :
-    ] and regenerate_mips:
+    ] and regenerate_mips and wanted_image is not None:
         raise NumberPatchError(
             "number DXT1 mip tail regeneration produced no tail change"
         )
@@ -813,9 +814,10 @@ def _encode_normal(
     wanted: bytes,
     *,
     wanted_image: Image.Image | None = None,
-    regenerate_mips: bool = True,
+    regenerate_mips: bool | None = None,
     downsample: str = "majority",
 ) -> bytes:
+    regenerate_mips = wanted_image is not None if regenerate_mips is None else regenerate_mips
     locations = dxn_mips.derive_layout(dict(metadata))
     if dxn_mips.transport_roundtrip(original, locations) != original:
         raise NumberPatchError("retail number DXN transport is not bit-exact")
@@ -834,7 +836,7 @@ def _encode_normal(
         new_texture = _regenerate_mip_tail_dxn(new_texture, locations, wanted_image, downsample)
     if new_texture[int(metadata["vc_base_data_length"]) :] == original[
         int(metadata["vc_base_data_length"]) :
-    ] and regenerate_mips:
+    ] and regenerate_mips and wanted_image is not None:
         raise NumberPatchError(
             "number DXN mip tail regeneration produced no tail change"
         )

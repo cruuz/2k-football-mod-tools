@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from contextlib import nullcontext
+from contextlib import contextmanager, nullcontext
 from dataclasses import dataclass, replace
 from io import BytesIO
 import hashlib
@@ -3899,6 +3899,27 @@ class ApfSession:
     def _set(self, asset_id: str, modification: Modification) -> None:
         self._record_undo()
         self._modifications[asset_id] = modification
+
+    @contextmanager
+    def atomic_edit(self):
+        """Compose validated layer edits into one reversible project action.
+
+        Call under the facade's session lock. Failed preparation restores the
+        original edits and undo history; content-addressed private PNGs may be
+        reused later and are removed with the session.
+        """
+        snapshot = _SessionSnapshot(dict(self._modifications), dict(self._audio_annotations))
+        undo_count = len(self._undo)
+        try:
+            yield
+        except BaseException:
+            self._modifications = dict(snapshot.modifications)
+            self._audio_annotations = dict(snapshot.audio_annotations)
+            del self._undo[undo_count:]
+            raise
+        else:
+            changed = self._modifications != snapshot.modifications or self._audio_annotations != snapshot.audio_annotations
+            self._undo[undo_count:] = [snapshot] if changed else []
 
     def _record_undo(self) -> None:
         self._undo.append(
