@@ -115,10 +115,26 @@ def selection_evidence(retail):
             for state,values in camera.PRESETS['far_look'].items()})
 
 
+def map_owned(uc, payload):
+    for region in camera.space.layout(payload)['regions']:
+        uc.mem_map(region['va'], region['size'])
+        uc.mem_write(region['va'], payload[region['raw']:region['raw'] + region['size']])
+        flags = fixtures.u.UC_PROT_READ
+        if region['kind'].startswith('code'):
+            flags |= fixtures.u.UC_PROT_EXEC
+        elif region['kind'].startswith('data'):
+            flags |= fixtures.u.UC_PROT_WRITE
+        uc.mem_protect(region['va'], region['size'], flags)
+
+
 class Projection:
     def __init__(self, payload):
         self.h = fixtures.RetailExecutionTests()
         self.uc = self.h.load(payload)
+        # v6 has a common post-smoothing hook even when a Far descriptor is
+        # selected. Map the installed owner before executing any camera row.
+        if camera.space.status(payload) == "applied":
+            map_owned(self.uc, payload)
         self.payload = payload
         self.predicates = {0x12DF0: 0, 0x64BE0: 0, 0x887D0: 0}
         predicates = self.predicates

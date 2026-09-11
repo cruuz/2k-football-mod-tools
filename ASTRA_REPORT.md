@@ -193,10 +193,73 @@ merging its own runtime additions.
 
 ## Verification
 
-Final standalone commands, results and gate receipts are recorded below after
-the complete run. The source and generated-code self-integrity pins were renewed
-with `python3 packaging/repin.py --apply` after every pinned-source edit, and again
-immediately before commits. No protected release manifest was edited.
+The final receipt is [`docs/presentation/validation.json`](docs/presentation/validation.json).
+It records each standalone file, test count, result, log hash and the exact
+pairwise batch arguments. **Across 41 standalone files: 833 tests passed,
+1 skipped, zero failures or errors.** The one skip is the oracle's release-resource receipt
+check: the private manifest explicitly covers XBE composition only. No disc or
+resource build is claimed.
+
+| Check | Result |
+|---|---|
+| Memory-write XBE gate | 115 passed |
+| Cave-reference XBE gate | 127 passed |
+| Cave oracle | 28 passed; 1 explicit XBE-only manifest skip |
+| Owner pairwise file | 335 passed; 8 complete standalone batches |
+| Camera v6 native proof; Broadcast/Far regressions | 30 passed |
+| MyPlayer native HUD | 5 passed |
+| All MyCareer standalone files, including settings and cold loads | 145 passed |
+| Supersim live | 17 passed |
+| Allocator integration and scale-out | 30 passed |
+| Observed complete-stack manifest | 1 passed |
+
+All `test_nfl2k5_my_career*.py` files were run standalone, together with the new
+HUD/final-eye tests, both camera suites, Supersim live, allocator integration and
+scale-out. The pairwise file's 335 discovered methods were covered exactly once
+by eight independent standalone invocations. Each invocation constructs its own
+fixtures; the receipt lists every method argument. The Far proof now maps the
+installed callback owner even for a native Far descriptor. Receipt and capacity
+expectations account for v6's 47 edits and additional 352 RX / 240 RO bytes.
+
+Both complete XBE gates cover forward/reverse owner installation and scale-out.
+The fresh observed manifest attributes every changed byte in 125 real writer
+steps, with 12,364 reserved spans and matching fingerprints for 304 source files.
+Its fully composed XBE SHA-256 is
+`2c03d6decca1ab8eb1a7433489770c312d4b629e324fc6a9331e731081755391`;
+section digests pass. The protected release manifest remains untouched.
+
+Reproduce the private manifest and gate environment:
+
+```bash
+PYTHONPATH=. NFL2K5_GUARDIAN_MANIFEST_OUTPUT=.scratch/b66-presentation/observed-xbe-manifest.json \
+  python3 tests/mod_editor/test_nfl2k5_guardian_manifest.py
+export PYTHONPATH=.
+export QT_QPA_PLATFORM=offscreen
+export NFL2K5_CAVE_MANIFEST="$PWD/.scratch/b66-presentation/observed-xbe-manifest.json"
+python3 tests/mod_editor/test_xbe_patch_memory_writes.py
+python3 tests/mod_editor/test_xbe_patch_cave_references.py
+python3 tests/mod_editor/test_nfl2k5_cave_oracle.py
+python3 tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py
+python3 tools/mycareer_mode/build_runtime.py --check
+```
+
+Reproduce the full native capture and 53-model survey from the local stadium
+cache (only numeric measurements are written):
+
+```bash
+OPENBLAS_NUM_THREADS=1 NUMBA_NUM_THREADS=1 python3 tools/nfl2k5_presentation_proof.py \
+  --xbe "extracted/ESPN NFL 2K5 (USA)/default.xbe" \
+  --capture docs/presentation/camera_native_v6.json \
+  --cache /home/noah/.cache/2k5-mod-studio/7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9/derived/stadium-studio-v1 \
+  --survey docs/presentation/camera_survey_v6.json
+```
+
+Generated C/S runtime matches its checked-in module. The proposed WIRING camera
+row validates against the capability schema. Source and generated-code integrity
+pins were renewed with `python3 packaging/repin.py --apply` after every pinned
+source edit and immediately before commits. Protected GUI/registry/release
+integration remains the concrete handoff in WIRING; gameplay appearance remains
+Noah's witness below.
 
 ## HYPOTHESIS / UNWITNESSED and Noah's witness script
 
@@ -228,4 +291,3 @@ UNWITNESSED. The 53-model zero count uses the declared historical >2% threshold.
 6. Spot-check RB/WR/TE, defense (including a half sack), K and P careers against
    their box scores; check long names, EDGE/LB labels and both 4:3 and 16:9.
    Confirm text contrast and the top-right position do not obscure useful HUD.
-
