@@ -19,17 +19,20 @@ SCHEMA = 'nfl2k5_model_skeleton/v1'
 MANIFEST = 'player-body-set.skeleton.json'
 EXPORT_TAG = 'nfl2k5_body_export'
 TOLERANCE_CM = 1e-4
+INPUT_TOLERANCE_CM = 1e-3  # Blender 4.0.2 float32 armature roundtrip: <0.0004 cm.
 AXIS_TOLERANCE = 2e-6
 BOUND = .05
+HEAD_SHA256 = '69fb85d28c33cf290a115621293001b74dfbc34b43c446110836a5e72d884e22'
 PAIR_REASON = 'edit both LOD files from one export'
 HELP = (
     'Geometry and skeleton is EXPERIMENTAL. Export the lo_body / hi_body / hi_head set together. '
     'Keep the skeleton manifest and export custom properties in Blender. Keep all joint names and '
     'parents unchanged; edit bind translations only. Edit both LOD files from one export. '
-    'One bone length per import, from 95% to 105%: left or right upper arm, forearm, thigh, shin or foot. '
+    'One bone length per import, from 95% to 105%: left or right forearm, thigh, shin or foot. '
     'Keep its direction and all other lengths unchanged; translate the distal chain. For a forearm, '
     'scale elbow-to-wrist and wrist-to-hand together. High twist and muscle pivots are regenerated; '
-    'leave them unchanged or supply the regenerated positions. Hand tips, spine, neck, head, direction '
+    'leave them unchanged or supply the regenerated positions. Upper arms are refused because the '
+    'tested changes exceed their fixed compressed allocation. Hand tips, spine, neck, head, direction '
     'changes, rotations, scales, animations and topology/name changes are refused. The head bind stays '
     'unchanged. Imported mesh geometry is carried with the length change; do not also bake that stretch '
     'into the mesh. Every resource must fit its original compressed span. Idle/run/pass/catch/tackle '
@@ -150,10 +153,16 @@ def read_bind(gltf, transforms, shape_name):
     for i, matrix in zip(joints, inverse):
         t = names[nodes[i]['name']]
         require(len(matrix) == 16 and all(math.isfinite(v) for v in matrix), f'{t["name"]}: invalid inverse bind')
-        require(all(abs(matrix[j] - float(j % 5 == 0)) < 1e-6 for j in range(16) if j not in (12, 13, 14)),
+        # Blender exports world inverse binds (diagonal 100 under the .01
+        # unit root); Models exports mesh-space inverses (diagonal 1). Both
+        # carry translation in native cm. Check the basis after normalising
+        # this known unit factor, including Blender's float32 rotation noise.
+        unit = 100. if abs(matrix[0]-100.) < 1e-3 else 1.
+        require(all(abs(matrix[j]/unit - float(j % 5 == 0)) < 1e-6 for j in range(12))
+                and abs(matrix[15]-1.) < 1e-6,
                 f'{t["name"]}: inverse bind rotation or scale edit')
         p = tuple(-matrix[j] for j in (12, 13, 14))
-        require(min(math.dist(p, t['absolute']), math.dist(p, result[t['name']])) <= TOLERANCE_CM,
+        require(min(math.dist(p, t['absolute']), math.dist(p, result[t['name']])) <= INPUT_TOLERANCE_CM,
                 f'{t["name"]}: inverse bind disagrees with exported or edited translations')
     return result
 
@@ -201,7 +210,7 @@ def target_positions(transforms, bone, scale):
 def infer_edit(transforms, requested):
     original = {t['name']: t['absolute'] for t in transforms}
     require(set(requested) == set(original), 'joint name change')
-    if max(math.dist(requested[n], p) for n, p in original.items()) <= TOLERANCE_CM:
+    if max(math.dist(requested[n], p) for n, p in original.items()) <= INPUT_TOLERANCE_CM:
         return None, 1.
     candidates = []
     for bone in BONES:
@@ -213,8 +222,9 @@ def infer_edit(transforms, requested):
         error = max(math.dist(requested[n], p) for n,p in expected.items())
         candidates.append((error, bone, scale))
     error, bone, scale = min(candidates, key=lambda v:v[0])
-    if error <= TOLERANCE_CM:
-        require(1.-BOUND-1e-7 <= scale <= 1.+BOUND+1e-7,
+    if error <= INPUT_TOLERANCE_CM:
+        rounding = INPUT_TOLERANCE_CM / math.dist(original[bone.pivot], original[bone.tip])
+        require(1.-BOUND-rounding <= scale <= 1.+BOUND+rounding,
                 f'{bone.name}: length change exceeds the proved +/-5% bound')
         return bone, min(1.+BOUND, max(1.-BOUND, scale))
     # Name the independent local changes, rather than all their descendants.
@@ -223,7 +233,7 @@ def infer_edit(transforms, requested):
         parent = transforms[t['parent']]['name'] if t['parent'] >= 0 else None
         delta = tuple(requested[t['name']][a]-t['absolute'][a] -
                       (requested[parent][a]-original[parent][a] if parent else 0.) for a in range(3))
-        if math.sqrt(sum(v*v for v in delta)) > TOLERANCE_CM:
+        if math.sqrt(sum(v*v for v in delta)) > INPUT_TOLERANCE_CM:
             changed.append(t['name'])
     supported = {b.tip for b in BONES} | {'lwrist','rwrist'}
     unsupported = [n for n in changed if n not in supported]
@@ -358,6 +368,8 @@ def compile_set(source, body_set, folder, *, write_normals=True, write_uvs=False
     for key in body_set.keys:
         parsed[key] = _skin(source,key)
         _,body,_,_,lanes,skin = parsed[key]
+        if key == 'o3c115':
+            require(M._sha256(body) == HEAD_SHA256, 'hi_head: source is not the pinned coordinated head')
         require(manifest['members'][key]['decoded_sha256'] == M._sha256(body), f'{key}: export source differs')
         gltf = M.GltfFile(files[key])
         gltfs[key] = gltf
@@ -368,10 +380,12 @@ def compile_set(source, body_set, folder, *, write_normals=True, write_uvs=False
     high = parsed['o3c114'][-1].transforms
     # A present but untouched second LOD is still a one-LOD edit.
     common = set(requested['o3c113']) & set(requested['o3c114'])
-    require(all(math.dist(requested['o3c113'][n],requested['o3c114'][n]) <= TOLERANCE_CM for n in common), PAIR_REASON)
+    require(all(math.dist(requested['o3c113'][n],requested['o3c114'][n]) <= INPUT_TOLERANCE_CM for n in common), PAIR_REASON)
     bone, scale = infer_edit(low,requested['o3c113'])
+    require(bone is None or bone.kind != 'upper_arm',
+            f'{bone.name if bone else "upper_arm"}: compressed span cannot fit at the +1%/+5% witnesses; upper-arm import is not enabled')
     for t in parsed['o3c115'][-1].transforms:
-        require(math.dist(requested['o3c115'][t['name']],t['absolute']) <= TOLERANCE_CM,
+        require(math.dist(requested['o3c115'][t['name']],t['absolute']) <= INPUT_TOLERANCE_CM,
                 f'hi_head:{t["name"]}: head/spine/neck coordination is not proved')
     targets = {}
     for key,transforms in (('o3c113',low),('o3c114',high)):
@@ -379,10 +393,10 @@ def compile_set(source, body_set, folder, *, write_normals=True, write_uvs=False
         for t in transforms:
             n = t['name']
             if key == 'o3c114' and n not in common:
-                require(min(math.dist(requested[key][n],t['absolute']),math.dist(requested[key][n],targets[key][n])) <= TOLERANCE_CM,
+                require(min(math.dist(requested[key][n],t['absolute']),math.dist(requested[key][n],targets[key][n])) <= INPUT_TOLERANCE_CM,
                         f'{n}: derived pivot edit differs from the proved limb coordination')
             else:
-                require(math.dist(requested[key][n],targets[key][n]) <= TOLERANCE_CM, f'{n}: uncoordinated bind translation')
+                require(math.dist(requested[key][n],targets[key][n]) <= INPUT_TOLERANCE_CM, f'{n}: uncoordinated bind translation')
     members = []
     for key in ('o3c113','o3c114','o3c115'):
         if progress:
@@ -414,8 +428,14 @@ def compile_set(source, body_set, folder, *, write_normals=True, write_uvs=False
         changed_bones.append({'bone':bone.name,'before_cm':math.dist(old[bone.pivot],old[bone.tip]),
                               'after_cm':math.dist(targets['o3c113'][bone.pivot],targets['o3c113'][bone.tip]),'scale':scale})
     receipt = {'schema':SCHEMA,'changed_bones':changed_bones,'axis_segments':axes['segments'],
+               'changed_bind_lengths':[
+                   {'member':m.key,'bone':j['name'],
+                    'before_cm':math.sqrt(sum(v*v for v in j['local_before'])),
+                    'after_cm':math.sqrt(sum(v*v for v in j['local_after']))}
+                   for m in members for j in m.receipt.get('joints',[])
+                   if math.dist(j['local_before'],j['local_after']) > TOLERANCE_CM],
                'members':[m.receipt for m in members],'experimental':True,'witnessed':False,
-               'preflight_passed':True,'tolerance_cm':TOLERANCE_CM,'bound_fraction':BOUND,
+               'preflight_passed':True,'tolerance_cm':TOLERANCE_CM,'input_tolerance_cm':INPUT_TOLERANCE_CM,'bound_fraction':BOUND,
                'help':HELP,'export_id':manifest['export_id'],
                'skeleton_overlay':{key:[{'name':t['name'],'parent':t['parent'],'position_cm':targets[key][t['name']]}
                                        for t in transforms] for key,transforms in (('o3c113',low),('o3c114',high))}}

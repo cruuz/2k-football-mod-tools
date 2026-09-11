@@ -362,6 +362,21 @@ def project_sine_cosine(
     return sine, cosine
 
 
+def bind_world_matrices(transforms, local):
+    """Independent float32 equation for native 0x233c0's SCNE bind expansion.
+
+    Used by the edited-model gate after the high local graph. The native gate
+    separately maps the edited SCNE bytes and executes the retail expander.
+    """
+    worlds = []
+    for transform, row in zip(transforms, local):
+        matrix = list(row)
+        matrix[12:15] = [add(a, b) for a, b in zip(matrix[12:15], transform['local'])]
+        parent = transform['parent']
+        worlds.append(matmul(matrix, worlds[parent]) if parent >= 0 else matrix)
+    return worlds
+
+
 def oracle(
     skeleton: list[list[float]], tables: dict[str, object],
     low: list[list[float]], initial_high: list[list[float]],

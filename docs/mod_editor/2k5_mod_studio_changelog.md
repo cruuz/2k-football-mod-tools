@@ -6,6 +6,8 @@ Beta 66.1 is the hotfix for what came in after beta 66 (Coach Edwards, maumau78,
 
 - **Builds with a shoe or other equipment texture no longer fail (Coach Edwards, maumau78).** "The modded XISO could not be built. ImportError: attempted relative import with no known parent package" came from the beta-66 palette projection inside the equipment writer, which the build tool loads by file path; the writer now falls back to the absolute import and a test scans every writer the tool loads that way.
 
+- **maumau78: bounded edited player skeleton import.** “reimport not only the model .bin but also the model .gltf file” now has a Geometry and skeleton option in the Models handoff. One left or right forearm, thigh, shin or foot can change length by up to 5%, with unchanged joint names and parents, translations only, and both LOD files plus the head from one export. The writer coordinates high twist pivots, mesh and normals, recomputes and checks the retained SKEL directions, verifies both fixed compressed spans and lists every changed bind length in cm. One-LOD edits say “edit both LOD files from one export”. Upper arms exceed the tested fixed allocations; hand, spine/neck/head, direction, rotation and topology edits are refused. Native XBE and headless Blender gates cover the admitted edits; idle/run/pass/catch/tackle, ball and helmet attachments, and body sizes remain UNWITNESSED. EXPERIMENTAL, off by default.
+
 ## v1.0 RC90, beta 66: full Supersim, a faster studio, the Discord fixes (2026-09-11)
 
 Beta 66 answers every ESPN NFL 2K5 report in Discord since beta 63.1 (Smuzz, Mud, maumau78, Coach Edwards, iwb3,
