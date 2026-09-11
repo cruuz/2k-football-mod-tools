@@ -6,7 +6,7 @@ import importlib
 import json
 from pathlib import Path
 
-OWNERS = ("abilities_runtime", "practice_squad_screen", "xbe_space", "dynamic_kickoff_relocated", "zone_drop", "roster_storage", "player_star")
+OWNERS = ("abilities_runtime", "practice_squad_screen", "xbe_space", "dynamic_kickoff_relocated", "zone_drop", "roster_storage", "player_star", "camera")
 
 
 def main(argv=None):

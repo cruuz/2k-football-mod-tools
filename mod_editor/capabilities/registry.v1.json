@@ -4165,6 +4165,70 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_patch_cli camera source.xbe output.xbe",
+        "module": "mod_editor/core/nfl2k5_patch_cli.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_presentation_v6.py",
+        "docs/presentation/camera_survey_v6.json",
+        "ASTRA_B66_PRESENTATION_REPORT.md"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Uses the existing Build Camera option and in-game Broadcast row; Standard remains the default."
+      },
+      "id": "nfl2k5.camera.broadcast_v6",
+      "input_constraints": [
+        "Reserve the complete allocator union before applying.",
+        "Exact v5.4 installations are recognized and must rebuild from retail; foreign or mixed code refuses."
+      ],
+      "portme": [
+        "Witness Chicago near-sideline run, Lambeau corners, PAT to kickoff and a deep pass as specified in ASTRA_REPORT.md."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute source and measurements; never a generated XBE or retail stadium geometry.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/presentation/camera_native_v6.json",
+          "docs/presentation/camera_survey_v6.json"
+        ],
+        "scope": "Bounded native final-eye solver, lens projection, kickoff selection and 53-model static occlusion survey. No console, emulator or GPU witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "existing boolean; enabled in ADVANCED/EXPERIMENTAL",
+            "name": "camera",
+            "required": true
+          }
+        ],
+        "notes": "Broadcast is a session selection, engine row 7. No new preset default."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Camera table, pinned native hooks, owned 512 RX and 320 RO bytes",
+        "retail_file": "user-owned NFL 2K5 USA default.xbe"
+      },
+      "summary": "Broadcast follows gameplay with a final-eye boundary, corner pull-in, run/pass lenses and a wide kickoff transition. ADVANCED choice; gameplay appearance unwitnessed.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Broadcast camera v6",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_presentation_v6"
+    },
+    {
+      "backend": {
         "command": null,
         "module": null,
         "operation": "none"
@@ -6787,7 +6851,9 @@
         "ASTRA_B65_SETTINGS_REPORT.md",
         "tests/mod_editor/test_nfl2k5_my_career_settings.py",
         "tools/mycareer_mode/settings_budget.json",
-        "tools/mycareer_mode/settings_validation.json"
+        "tools/mycareer_mode/settings_validation.json",
+        "tests/mod_editor/test_nfl2k5_myplayer_hud.py",
+        "ASTRA_B66_PRESENTATION_REPORT.md"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -6826,9 +6892,11 @@
           "ASTRA_B65_SETTINGS_REPORT.md",
           "tests/mod_editor/test_nfl2k5_my_career_settings.py",
           "tools/mycareer_mode/settings_budget.json",
-          "tools/mycareer_mode/settings_validation.json"
+          "tools/mycareer_mode/settings_validation.json",
+          "tests/mod_editor/test_nfl2k5_myplayer_hud.py",
+          "ASTRA_B66_PRESENTATION_REPORT.md"
         ],
-        "scope": "Bounded native creation, class placement, seven-round AI draft, signing, played-XP purchase, signed container and cold-load routes. Explicit fixture preconditions and hardware seams are documented; no game boot or played witness. Bounded native skip readiness/cleanup, replay input consumers, presence guards and Apartment row dispatch are also proved. No headless scheduler, audio gating, uninterrupted drive or pre-snap return is proved. Settings menu dispatch, native row labels and yellow selection, the shared retail first-person word, all eight saved setting combinations, cold relocation/migration and bit-0-only MyPlayer star writes are proved in bounded native execution. A first-person snap and displayed in-game star still need Noah's witness.",
+        "scope": "Bounded native creation, class placement, seven-round AI draft, signing, played-XP purchase, signed container and cold-load routes. Explicit fixture preconditions and hardware seams are documented; no game boot or played witness. Bounded native skip readiness/cleanup, replay input consumers, presence guards and Apartment row dispatch are also proved. No headless scheduler, audio gating, uninterrupted drive or pre-snap return is proved. Settings menu dispatch, native row labels and yellow selection, the shared retail first-person word, all eight saved setting combinations, cold relocation/migration and bit-0-only MyPlayer star writes are proved in bounded native execution. A first-person snap and displayed in-game star still need Noah's witness. MyPlayer stat line defaults On in an enabled career; Apartment Settings offers On/Off. Bounded native proof executes one HUD call per presented gameplay frame, excludes menus and both replay channels, checks MyPlayer identity, reads live bank-0 game stats and submits real font4 glyphs. Actual game appearance remains UNWITNESSED.",
         "status": "not-tested"
       },
       "selectors": {
@@ -6849,7 +6917,7 @@
         "resource": "Game Modes row, pinned native hooks, owned 16384 RX/8192 RW and an appended 128-byte career save footer.",
         "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
       },
-      "summary": "Native draft or undrafted entry, Senior Bowl preparation, played-XP upgrades, next-fixture calendar and optional native off-field presentation skips at 1x in the Apartment loop. Accelerated sim to next appearance is unavailable. EXPERIMENTAL / UNWITNESSED. Apartment Settings saves first person, off-field presentation and MyPlayer star choices.",
+      "summary": "Native draft or undrafted entry, Senior Bowl preparation, played-XP upgrades, next-fixture calendar and optional native off-field presentation skips at 1x in the Apartment loop. Accelerated sim to next appearance is unavailable. EXPERIMENTAL / UNWITNESSED. Apartment Settings saves first person, off-field presentation and MyPlayer star choices. MyPlayer stat line defaults On in an enabled career; Apartment Settings offers On/Off. Bounded native proof executes one HUD call per presented gameplay frame, excludes menus and both replay channels, checks MyPlayer identity, reads live bank-0 game stats and submits real font4 glyphs. Actual game appearance remains UNWITNESSED.",
       "surface": "mode_state_routing",
       "title": "In-game MyCareer (experimental, unwitnessed)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_my_career_draft"

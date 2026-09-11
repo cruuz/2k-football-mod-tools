@@ -54,6 +54,15 @@ class MyCareerPanel(QWidget):
         description.setWordWrap(True)
         layout.addWidget(description)
 
+        # Beta 66 (Mud): the stat line is an in-game Settings row, not a build-time preference.
+        stat_line_help = QLabel(
+            "In-game MyCareer: Apartment > Settings > MyPlayer stat line. "
+            "On by default; shows MyPlayer's current game stats in the top right. "
+            "The choice is saved with the career."
+        )
+        stat_line_help.setWordWrap(True)
+        layout.addWidget(stat_line_help)
+
         group = QGroupBox("Create MyPlayer")
         form = QFormLayout(group)
         self.save = QLineEdit()
