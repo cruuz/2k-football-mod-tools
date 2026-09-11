@@ -115,6 +115,10 @@ PRODUCT_MODULES = (
     "mod_editor.apf_studio.facade",
     "mod_editor.apf_studio.field_art",
     "mod_editor.apf_studio.gui",
+    "mod_editor.apf_studio.apf_theme",
+    "mod_editor.apf_studio.page_layout",
+    "mod_editor.apf_studio.team_art",
+    "mod_editor.apf_studio.team_art_qt",
     "mod_editor.apf_studio.helmet_crest_design",
     "mod_editor.apf_studio.helmet_logo_placement",
     "mod_editor.apf_studio.helmet_logo_placement_qt",
@@ -1282,12 +1286,12 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         check_files=False,
     )
     require(
-        len(registry.capabilities) == 145
-        and len(registry.for_game(core_model.GameId.APF2K8)) == 54,
+        len(registry.capabilities) == 146
+        and len(registry.for_game(core_model.GameId.APF2K8)) == 55,
         "shared/APF capability registry counts changed",
     )
     cards = catalog.build_capability_cards()
-    require(len(cards) == 54 and len({item.capability_id for item in cards}) == 54,
+    require(len(cards) == 55 and len({item.capability_id for item in cards}) == 55,
             "APF capability surface is not exactly 52 unique rows")
     require(len(models.APF_CATEGORY_ORDER) == 14,
             "APF complete sidebar category count changed")
@@ -1312,6 +1316,7 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         "apf2k8.field_art.base_texture",
         "apf2k8.field_art.material_opacity",
         "apf2k8.logos_cards.draft_logo",
+        "apf2k8.logos_cards.team_art_browser",
         "apf2k8.logos_cards.team_logo",
         "apf2k8.logos_cards.team_logo_cache",
         "apf2k8.logos_cards.textlogo_wordmarks",

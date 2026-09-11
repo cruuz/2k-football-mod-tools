@@ -497,6 +497,23 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
             "or copies a crest into this wordmark family."
         ),
     ),
+    "apf2k8.logos_cards.team_art_browser": CapabilityActionBinding(
+        "apf2k8.logos_cards.team_art_browser",
+        "logos_cards.team_art_browser",
+        _actions(
+            ApfProductAction.PREVIEW,
+            ApfProductAction.REPLACE,
+            ApfProductAction.REVERT,
+        ),
+        replace_method="replace_team_art",
+        revert_method="revert_team_art",
+        product_note=(
+            "Browse every source-resolved Team Art package. Paired crest/endzone "
+            "PNGs retain their semantic layers and stage as one Undo action. "
+            "Existing build writers regenerate mips, enforce allocations and "
+            "verify decode-back; changed art remains in-game UNWITNESSED."
+        ),
+    ),
     "apf2k8.models.scne_gltf": CapabilityActionBinding(
         "apf2k8.models.scne_gltf",
         "uniforms.model_position_roundtrip",

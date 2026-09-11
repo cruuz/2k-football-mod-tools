@@ -393,9 +393,19 @@ REVIEWED_METADATA: dict[str, tuple[int, str, str]] = {
     # no compressed spans, and nothing that is not already visible to anyone
     # who exports a contact sheet from their own game.
     "mod_editor/data/apf2k8_endzone_labels.v1.json": (
-        4_899,
-        "63f827a548da7d0aaa2f01382cd08d4b3aeec2887ba9343dcc351da4af239715",
+        7_714,
+        "b873910626d63bf476d55e12253047f88758124697216e9439689dfe5e7e8618",
         "apf2k8_endzone_labels/v1",
+    ),
+    "mod_editor/data/apf2k8_logo_labels.v1.json": (
+        5_811,
+        "a3a033f1528e50ee9fff831e7b20f0ceabb3e235b86c7859930cf89a6b32a5a2",
+        "apf2k8_logo_labels/v1",
+    ),
+    "mod_editor/data/apf2k8_textlogo_labels.v1.json": (
+        5_904,
+        "79f0b6855e25cef7097bf689dde039970a81b25fd5f97faf3973cffbe95db60e",
+        "apf2k8_textlogo_labels/v1",
     ),
 }
 

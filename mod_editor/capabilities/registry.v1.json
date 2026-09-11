@@ -1687,6 +1687,81 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.apf_studio.team_art --source <APF folder or ISO> --family <logo|endzone|textlogo|jersey|shoulder|pants|number> [--json <inventory.json>]",
+        "module": "mod_editor/apf_studio/team_art.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf2k8_team_art_browser.md",
+        "tests/mod_editor/test_apf_team_art.py",
+        "tests/mod_editor/test_apf_team_art_qt.py",
+        "tests/mod_editor/test_apf_theme_layout_qt.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "A rendered Team Art workspace under Logos & Team Art, also linked from Field Art and Uniforms. Progressive worker thumbnails, exact layer inspector, paired PNG replacement and per-package Revert use the normal project transaction."
+      },
+      "id": "apf2k8.logos_cards.team_art_browser",
+      "input_constraints": [
+        "Use the selected read-only retail APF source. Resolve package names against archive filename CRCs and inner layers by semantic names.",
+        "All 118 crests, 118 endzones, 206 wordmarks and 24 packages each of jerseys, shoulders, pants and digits are reachable. Only the proved 24 retail crest and wordmark selector assignments acquire team labels; tentative endzone labels retain question marks.",
+        "Crests require separate 512x512 logo_l0 and logo_l1 PNGs for six region masks; the existing crest builder also updates the corresponding uniform_logocache index. Never mirror one layer into both.",
+        "Every selected endzone layer is required. Single-layer packages require one PNG; paired packages require both. Wordmarks, jerseys, shoulders and pants use their exact existing color-layer contract. Digit subsets share a combined allocation preflight.",
+        "The existing family writers and build verifiers retain mip regeneration, compression, fixed-allocation and decode-back checks. All package layers stage or revert as one Undo action. Authored PNGs and numeric recipes enter projects; retail payloads do not.",
+        "Thumbnails and staged image decoding run in workers. Source-scoped, decoder-versioned PNG caches include both crest image hashes and stay private."
+      ],
+      "portme": [
+        "Witness changed non-retail crest art and its linked Team Select cache, paired endzones, wordmarks and uniform art in game.",
+        "Retail endzone selector ownership remains unproved; the retail-use filter excludes unproved assignments."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute tooling, structural pins, and user-authored PNGs only; each user rebuilds a copied game from their own retail source.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/mod_editor/apf2k8_team_art_browser.md"
+        ],
+        "scope": "Offline package counts, source identity resolution, six-mask pairing, existing writer dispatch, private thumbnail cache behavior, project transaction rollback and Qt interactions are tested. Changed art consumption remains in-game UNWITNESSED.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "logo|endzone|textlogo|jersey|shoulder|pants|number",
+            "name": "family",
+            "required": true
+          },
+          {
+            "allowed": "a source-resolved outer entry with named supported texture layers",
+            "name": "outer_entry",
+            "required": true
+          }
+        ],
+        "notes": "The browser resolves the family catalog index, outer entry, inner indices and linked crest cache catalog identity together. Built-in team selector assignments seed retail labels; the other library slots remain entry-labeled."
+      },
+      "source_container": {
+        "format": "Source-resolved APF H7A/IFF texture packages and linked uniform_logocache",
+        "hash_pins": [
+          "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e",
+          "39a1e0c944a846e24d7a11c52d6a0fbba4091959f01856d3a087efde01ba490c"
+        ],
+        "resource": "All 118 crest and 118 endzone packages, 206 wordmarks and all jersey/shoulder/pants/digit packages in retail 0A; existing family writers own source pins and fixed allocations.",
+        "retail_file": "All-Pro Football 2K8 (USA)/0A"
+      },
+      "summary": "Browse every crest, endzone, wordmark, jersey, shoulder, pants and digit package by decoded thumbnails; resolve named layers and stage or revert paired artwork as one project action.",
+      "surface": "logos_cards",
+      "title": "APF visual Team Art package browser",
+      "validation_command": "python3 -m tests.mod_editor.test_apf_team_art"
+    },
+    {
+      "backend": {
         "command": "python3 tools/apf_logo_patch.py --index <0A> --png <512x512-logo_l0.png> --png-l1 <512x512-logo_l1.png> --output-volume <new-0A> --manifest <patch.json>",
         "module": "tools/apf_logo_patch.py",
         "operation": "write"

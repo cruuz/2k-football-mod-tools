@@ -233,3 +233,41 @@ def stage_package(session, package, supplied: Mapping[str, Path]):
                 else:
                     result.append(session.replace_uniform(layer.writer_asset_id or layer.asset_id, supplied[layer.name]))
     return tuple(result)
+
+
+def main(argv=None) -> int:
+    """Print the Team Art inventory of a user's own APF source (metadata only; nothing is written)."""
+    import argparse
+
+    parser = argparse.ArgumentParser(description="List every Team Art package (crests, endzones, wordmarks, jerseys, "
+                                                 "shoulders, pants, digits) resolved from an APF 2K8 source, with its "
+                                                 "layers, sizes, codecs and writable state.")
+    parser.add_argument("--source", type=Path, required=True, help="the APF game folder or ISO (opened read-only)")
+    parser.add_argument("--family", choices=("logo", "endzone", "textlogo", "jersey", "shoulder", "pants", "number"),
+                        help="only this family (default: every family)")
+    parser.add_argument("--json", type=Path, help="write the inventory as JSON here")
+    args = parser.parse_args(argv)
+    from .facade import ApfStudioFacade
+
+    facade = ApfStudioFacade()
+    facade.load_source(args.source)
+    session = facade.require_session()
+    packages = [package for package in inventory(session.source, session.catalog)
+                if args.family is None or package.family == args.family]
+    rows = [{"family": p.family, "outer_index": p.outer_index, "package": p.package_name,
+             "catalog_index": p.catalog_index, "label": p.label, "retail_teams": list(p.retail_teams),
+             "writable": p.writable,
+             "layers": [{"name": l.name, "inner_index": l.inner_index, "width": l.width, "height": l.height,
+                         "codec": l.codec, "writable": l.writable} for l in p.layers]} for p in packages]
+    if args.json:
+        args.json.write_text(json.dumps(rows, indent=2) + "\n", encoding="utf-8")
+    for row in rows:
+        layers = ", ".join(f"{l['name']} {l['width']}x{l['height']} {l['codec']}" for l in row["layers"])
+        print(f"{row['family']:<8} entry {row['outer_index']:>5}  {row['package']:<26} {row['label']:<24} "
+              f"{'writable' if row['writable'] else 'browse only':<11} {layers}")
+    print(f"{len(rows)} packages")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
