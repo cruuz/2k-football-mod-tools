@@ -25,7 +25,7 @@ from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
 from tests.mod_editor.test_nfl2k5_xbe_space import synthetic, PublicTests, RETAIL, repin
 from tests.nfl2k5_allocator_stack import LEGACY_REQUESTS, REQUESTS, compose
 
-LARGE = (("synthetic_scaleout", "code", 20 * 1024, 4096),  # sized to fit beside every landed beta-63 owner (40 KiB before deep zone and MyCareer M3)
+LARGE = (("synthetic_scaleout", "code", 16 * 1024, 4096),  # sized to fill the code pages beside every landed beta-66 owner (20 KiB until MyCareer M3 grew to 20,480 RX for Supersim; 40 KiB before deep zone and M3)
          # no writable request: MyCareer M3's fixed state page takes the last RW page of the beta-63 union
          ("synthetic_scaleout", "read_only", 1024, 16))
 
@@ -38,7 +38,7 @@ class PlannerTests(unittest.TestCase):
         self.assertEqual([report['capacity'][k]['capacity_bytes'] for k in ('code', 'data', 'read_only')],
                          [106496, 86016, 20480])
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [0, 0, 1936])  # beta 66: camera v6 adds 352 RX / 240 RO; synthetic RX fills the remaining code pages
+                         [0, 0, 1936])  # beta 66: camera v6 adds 352 RX / 240 RO and MyCareer M3 4,096 RX; the 16 KiB synthetic RX fills the remaining code pages
         self.assertEqual(len(report['pages']), 52)
         for a in report['allocations']:
             self.assertEqual(a['va'] % a['align'], 0)
@@ -51,7 +51,7 @@ class PlannerTests(unittest.TestCase):
             self.assertIn(list(request), requests)
         report = space.plan(requests)
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [20672, 0, 2968])  # complete beta-66 union; M3 HUD stays within its existing reservations
+                         [16576, 0, 2968])  # complete beta-66 union incl. MyCareer M3 at 20,480 RX (Supersim); the M3 HUD stays within those reservations
 
     def test_every_kind_exact_capacity_alignment_and_overflow(self):
         for kind, capacity in [('code', 98304), ('data', 81920), ('read_only', 16384)]:

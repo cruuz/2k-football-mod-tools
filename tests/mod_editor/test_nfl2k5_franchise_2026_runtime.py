@@ -101,16 +101,17 @@ class SaveOwnershipTests(unittest.TestCase):
     def test_resealed_reserved_footer_bytes_are_not_spare_storage(self):
         source = week_save()
         block = block_for(source)
-        # Beta 65: byte 82 carries the three MyCareer Settings bits (values 0..7); 83 and 88.. stay reserved.
+        # Beta 66: byte 82 carries the five MyCareer Settings bits (0..31; bits 1 and 3 are exclusive); 83 and 88.. stay reserved.
         for at in (83, *range(88, 128)):
             bad = bytearray(block)
             bad[at] = 1
             with self.subTest(offset=at), self.assertRaisesRegex(ValueError, 'reserved career bytes'):
                 f.save_ownership_assessment(source + career_save.seal(bad))
-        unknown = bytearray(block)
-        unknown[82] = 8
-        with self.subTest(offset=82), self.assertRaisesRegex(ValueError, 'unknown settings'):
-            f.save_ownership_assessment(source + career_save.seal(unknown))
+        for value in (32, 10):
+            unknown = bytearray(block)
+            unknown[82] = value
+            with self.subTest(offset=82, value=value), self.assertRaisesRegex(ValueError, 'unknown settings'):
+                f.save_ownership_assessment(source + career_save.seal(unknown))
 
     def test_corrupt_identity_overflow_auxiliary_and_appended_ledgers_refuse(self):
         source = week_save(grown=True)
@@ -214,8 +215,8 @@ class NativeBoundaryTests(unittest.TestCase):
     def test_native_footer_validator_and_encoder_own_reserved_bytes(self):
         block = block_for(self.grown)
         with Machine(self.payload) as m:
-            # Beta 65: byte 82 is the MyCareer Settings byte (0..7 valid); 83 and 88.. stay reserved.
-            for at, value in ((83, 1), (82, 8), *((at, 1) for at in range(88, 128))):
+            # Beta 66: byte 82 is the MyCareer Settings byte (0..31 valid, bits 1 and 3 exclusive); 83 and 88.. stay reserved.
+            for at, value in ((83, 1), (82, 32), (82, 10), *((at, 1) for at in range(88, 128))):
                 bad = bytearray(block)
                 bad[at] = value
                 m.uc.mem_write(m.SAVE, career_save.seal(bad))

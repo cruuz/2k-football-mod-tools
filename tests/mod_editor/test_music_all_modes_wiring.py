@@ -150,6 +150,7 @@ class WidgetHandoffTests(unittest.TestCase):
         host._music_playlist_document = host._music_playlist_catalog = None
         host._restoring_music_playlist = False
         host._music_policy_values = {}  # beta 66: the studio keeps the policy choices beside the playlist
+        host._sync_uniform_helmet_finish = lambda: None  # beta 66: the studio mirrors the helmet finish after quiet restores
         host._mark_workspace_changed = Mock()
         host.statusBar = lambda:types.SimpleNamespace(showMessage=Mock())
         state = {}
