@@ -1,0 +1,19 @@
+test_all_synthetic_sheets_layouts_sizes_palette_and_alpha_contract (__main__.DigitQualityTests.test_all_synthetic_sheets_layouts_sizes_palette_and_alpha_contract) ... ok
+test_area_is_from_base_and_alpha_stays_eight_bits (__main__.DigitQualityTests.test_area_is_from_base_and_alpha_stays_eight_bits) ... ok
+test_bad_cell_mapping_reports_layout_size_and_consequence (__main__.DigitQualityTests.test_bad_cell_mapping_reports_layout_size_and_consequence) ... ok
+test_before_after_mip_hashes_and_images_match_recorded_fixture (__main__.DigitQualityTests.test_before_after_mip_hashes_and_images_match_recorded_fixture) ... ok
+test_encoded_decoder_and_renderer_refuse_invalid_inputs (__main__.DigitQualityTests.test_encoded_decoder_and_renderer_refuse_invalid_inputs) ... ok
+test_exact_large_palette_does_not_report_solid_colour_approximation (__main__.DigitQualityTests.test_exact_large_palette_does_not_report_solid_colour_approximation) ... ok
+test_float_cell_resize_avoids_eight_bit_premultiplication_colour_loss (__main__.DigitQualityTests.test_float_cell_resize_avoids_eight_bit_premultiplication_colour_loss) ... ok
+test_grid_alignment_changes_old_filter_coverage_despite_same_cell_size (__main__.DigitQualityTests.test_grid_alignment_changes_old_filter_coverage_despite_same_cell_size) ... ok
+test_hidden_rgb_cannot_bleed_in_cell_resize_or_mips (__main__.DigitQualityTests.test_hidden_rgb_cannot_bleed_in_cell_resize_or_mips) ... ok
+test_majority_loses_coverage_and_rare_outline_wins_ties (__main__.DigitQualityTests.test_majority_loses_coverage_and_rare_outline_wins_ties) ... ok
+test_palette_protects_rare_opaque_outline_and_partial_alpha (__main__.DigitQualityTests.test_palette_protects_rare_opaque_outline_and_partial_alpha) ... ok
+test_preview_bilinear_uses_two_texels_without_extra_downscale_blur (__main__.DigitQualityTests.test_preview_bilinear_uses_two_texels_without_extra_downscale_blur) ... ok
+test_quality_floor_refuses_instead_of_dropping_outline (__main__.DigitQualityTests.test_quality_floor_refuses_instead_of_dropping_outline) ... ok
+setUpClass (__main__.RetailDigitQualityTests) ... skipped 'Private retail digit evidence absent: /home/noah/2k-worktrees/astra-b66-digits/reports/assets/nfl2k5_resource_chunks_v2.json, /home/noah/2k-worktrees/astra-b66-digits/ESPN NFL 2K5 (USA).xiso.iso'
+
+----------------------------------------------------------------------
+Ran 13 tests in 7.054s
+
+OK (skipped=1)

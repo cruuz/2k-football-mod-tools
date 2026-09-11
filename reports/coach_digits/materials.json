@@ -1,0 +1,922 @@
+{
+  "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+  "pinned_instruction_addresses": [
+    "0x8e8f0",
+    "0x8e8f3",
+    "0x8e8fa",
+    "0x32043",
+    "0x32052",
+    "0x320c7",
+    "0x30816",
+    "0x30826",
+    "0x30833"
+  ],
+  "interpretation": {
+    "address_3": "NV2A CLAMP_TO_EDGE",
+    "source_0x302": "SRC_ALPHA",
+    "destination_0x303": "ONE_MINUS_SRC_ALPHA",
+    "caution": "Static material and emitted-state path. Camera pixel size, lighting and in-game appearance remain unwitnessed."
+  },
+  "scenes": [
+    {
+      "scene": "lo_body",
+      "outer": 3,
+      "chunk": 113,
+      "chunk_offset": 854096,
+      "decoded_sha256": "2a89df4b2e83dee4c7937194e5cd885c4b3662720bf976d8440ab5c3fb423e56",
+      "number_submeshes": [
+        {
+          "material": "NUMBER_L",
+          "record_offset": 4032,
+          "vertices": 17,
+          "uv_bounds_after_material_scale": [
+            [
+              -0.075746,
+              0.839091
+            ],
+            [
+              -0.029392,
+              1.252747
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_M",
+          "record_offset": 4160,
+          "vertices": 18,
+          "uv_bounds_after_material_scale": [
+            [
+              -0.119555,
+              1.115593
+            ],
+            [
+              -0.035183,
+              1.262708
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_R",
+          "record_offset": 4288,
+          "vertices": 17,
+          "uv_bounds_after_material_scale": [
+            [
+              0.152546,
+              1.070873
+            ],
+            [
+              -0.032122,
+              1.25544
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_helmet_A_L",
+          "record_offset": 576,
+          "vertices": 10,
+          "uv_bounds_after_material_scale": [
+            [
+              0.167705,
+              0.842881
+            ],
+            [
+              0.002738,
+              0.996624
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_helmet_A_M",
+          "record_offset": 704,
+          "vertices": 12,
+          "uv_bounds_after_material_scale": [
+            [
+              0.158307,
+              0.84182
+            ],
+            [
+              0.005394,
+              0.995997
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_helmet_A_R",
+          "record_offset": 448,
+          "vertices": 10,
+          "uv_bounds_after_material_scale": [
+            [
+              0.167705,
+              0.842881
+            ],
+            [
+              0.002738,
+              0.996624
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_helmet_B_L",
+          "record_offset": 960,
+          "vertices": 4,
+          "uv_bounds_after_material_scale": [
+            [
+              0.190747,
+              0.820597
+            ],
+            [
+              0.002738,
+              0.996624
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_helmet_B_M",
+          "record_offset": 1088,
+          "vertices": 4,
+          "uv_bounds_after_material_scale": [
+            [
+              0.190747,
+              0.820597
+            ],
+            [
+              0.002738,
+              0.996624
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_helmet_B_R",
+          "record_offset": 832,
+          "vertices": 4,
+          "uv_bounds_after_material_scale": [
+            [
+              0.190747,
+              0.820597
+            ],
+            [
+              0.002738,
+              0.996624
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_helmet_C_L",
+          "record_offset": 1344,
+          "vertices": 4,
+          "uv_bounds_after_material_scale": [
+            [
+              0.182864,
+              0.833634
+            ],
+            [
+              0.007902,
+              0.991644
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_helmet_C_M",
+          "record_offset": 1472,
+          "vertices": 4,
+          "uv_bounds_after_material_scale": [
+            [
+              0.182864,
+              0.833634
+            ],
+            [
+              0.007902,
+              0.991644
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_helmet_C_R",
+          "record_offset": 1216,
+          "vertices": 4,
+          "uv_bounds_after_material_scale": [
+            [
+              0.182864,
+              0.833634
+            ],
+            [
+              0.007902,
+              0.991644
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_helmet_D_L",
+          "record_offset": 1728,
+          "vertices": 4,
+          "uv_bounds_after_material_scale": [
+            [
+              0.182864,
+              0.833634
+            ],
+            [
+              0.007902,
+              0.991644
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_helmet_D_M",
+          "record_offset": 1856,
+          "vertices": 4,
+          "uv_bounds_after_material_scale": [
+            [
+              0.182864,
+              0.833634
+            ],
+            [
+              0.007902,
+              0.991644
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_helmet_D_R",
+          "record_offset": 1600,
+          "vertices": 4,
+          "uv_bounds_after_material_scale": [
+            [
+              0.182864,
+              0.833634
+            ],
+            [
+              0.007902,
+              0.991644
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_shoulder_A_L",
+          "record_offset": 4416,
+          "vertices": 8,
+          "uv_bounds_after_material_scale": [
+            [
+              0.117833,
+              0.869864
+            ],
+            [
+              -0.061669,
+              1.112346
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_shoulder_A_M",
+          "record_offset": 4544,
+          "vertices": 12,
+          "uv_bounds_after_material_scale": [
+            [
+              -0.176856,
+              1.156523
+            ],
+            [
+              -0.066243,
+              1.118691
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_shoulder_A_R",
+          "record_offset": 4672,
+          "vertices": 8,
+          "uv_bounds_after_material_scale": [
+            [
+              0.141784,
+              0.896543
+            ],
+            [
+              -0.060673,
+              1.105743
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_shoulder_B_L",
+          "record_offset": 4800,
+          "vertices": 12,
+          "uv_bounds_after_material_scale": [
+            [
+              0.117833,
+              0.869864
+            ],
+            [
+              -0.37474,
+              1.251751
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_shoulder_B_M",
+          "record_offset": 4928,
+          "vertices": 18,
+          "uv_bounds_after_material_scale": [
+            [
+              -0.213388,
+              1.192906
+            ],
+            [
+              -0.372084,
+              1.275213
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_shoulder_B_R",
+          "record_offset": 5056,
+          "vertices": 12,
+          "uv_bounds_after_material_scale": [
+            [
+              0.117833,
+              0.869864
+            ],
+            [
+              -0.37474,
+              1.251751
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_sleeve_A_L",
+          "record_offset": 5184,
+          "vertices": 12,
+          "uv_bounds_after_material_scale": [
+            [
+              -0.050431,
+              0.972035
+            ],
+            [
+              -0.1623,
+              1.350947
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_sleeve_A_M",
+          "record_offset": 5312,
+          "vertices": 18,
+          "uv_bounds_after_material_scale": [
+            [
+              -0.315256,
+              1.316758
+            ],
+            [
+              -0.178421,
+              1.418381
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_sleeve_A_R",
+          "record_offset": 5440,
+          "vertices": 12,
+          "uv_bounds_after_material_scale": [
+            [
+              0.054923,
+              1.079363
+            ],
+            [
+              -0.1623,
+              1.350947
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_sleeve_B_L",
+          "record_offset": 5568,
+          "vertices": 15,
+          "uv_bounds_after_material_scale": [
+            [
+              -0.004045,
+              0.965971
+            ],
+            [
+              -0.342426,
+              1.632045
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_sleeve_B_M",
+          "record_offset": 5696,
+          "vertices": 18,
+          "uv_bounds_after_material_scale": [
+            [
+              -0.407877,
+              1.255362
+            ],
+            [
+              -0.331433,
+              1.558819
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_sleeve_B_R",
+          "record_offset": 5824,
+          "vertices": 15,
+          "uv_bounds_after_material_scale": [
+            [
+              0.045222,
+              1.010691
+            ],
+            [
+              -0.342426,
+              1.632045
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        }
+      ]
+    },
+    {
+      "scene": "hi_body",
+      "outer": 3,
+      "chunk": 114,
+      "chunk_offset": 989936,
+      "decoded_sha256": "43c95e150c72805b419e05db3cff6cacc69c56791c349caa2f0456782775893b",
+      "number_submeshes": [
+        {
+          "material": "NUMBER_L",
+          "record_offset": 704,
+          "vertices": 21,
+          "uv_bounds_after_material_scale": [
+            [
+              -0.106136,
+              0.823964
+            ],
+            [
+              -0.029524,
+              1.252868
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_M",
+          "record_offset": 832,
+          "vertices": 24,
+          "uv_bounds_after_material_scale": [
+            [
+              -0.139968,
+              1.136132
+            ],
+            [
+              -0.035278,
+              1.262827
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_R",
+          "record_offset": 960,
+          "vertices": 21,
+          "uv_bounds_after_material_scale": [
+            [
+              0.17375,
+              1.105737
+            ],
+            [
+              -0.032217,
+              1.25556
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_shoulder_A_L",
+          "record_offset": 1088,
+          "vertices": 8,
+          "uv_bounds_after_material_scale": [
+            [
+              0.117746,
+              0.869792
+            ],
+            [
+              -0.061689,
+              1.112365
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_shoulder_A_M",
+          "record_offset": 1216,
+          "vertices": 12,
+          "uv_bounds_after_material_scale": [
+            [
+              -0.176967,
+              1.15662
+            ],
+            [
+              -0.066263,
+              1.118672
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_shoulder_A_R",
+          "record_offset": 1344,
+          "vertices": 8,
+          "uv_bounds_after_material_scale": [
+            [
+              0.141738,
+              0.89648
+            ],
+            [
+              -0.060693,
+              1.105762
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_shoulder_B_L",
+          "record_offset": 1472,
+          "vertices": 12,
+          "uv_bounds_after_material_scale": [
+            [
+              0.117746,
+              0.869792
+            ],
+            [
+              -0.37474,
+              1.251761
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_shoulder_B_M",
+          "record_offset": 1600,
+          "vertices": 18,
+          "uv_bounds_after_material_scale": [
+            [
+              -0.213427,
+              1.19308
+            ],
+            [
+              -0.372084,
+              1.275221
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_shoulder_B_R",
+          "record_offset": 1728,
+          "vertices": 12,
+          "uv_bounds_after_material_scale": [
+            [
+              0.117746,
+              0.869792
+            ],
+            [
+              -0.37474,
+              1.251761
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_sleeve_A_L",
+          "record_offset": 1856,
+          "vertices": 12,
+          "uv_bounds_after_material_scale": [
+            [
+              -0.038406,
+              0.858739
+            ],
+            [
+              -0.130666,
+              1.163638
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_sleeve_A_M",
+          "record_offset": 1984,
+          "vertices": 18,
+          "uv_bounds_after_material_scale": [
+            [
+              -0.298815,
+              1.279209
+            ],
+            [
+              -0.067406,
+              1.255708
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_sleeve_A_R",
+          "record_offset": 2112,
+          "vertices": 12,
+          "uv_bounds_after_material_scale": [
+            [
+              0.113432,
+              1.020013
+            ],
+            [
+              -0.172642,
+              1.11657
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_sleeve_B_L",
+          "record_offset": 2240,
+          "vertices": 15,
+          "uv_bounds_after_material_scale": [
+            [
+              -0.004035,
+              0.965963
+            ],
+            [
+              -0.342428,
+              1.632067
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_sleeve_B_M",
+          "record_offset": 2368,
+          "vertices": 18,
+          "uv_bounds_after_material_scale": [
+            [
+              -0.407858,
+              1.255419
+            ],
+            [
+              -0.331436,
+              1.558846
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        },
+        {
+          "material": "NUMBER_sleeve_B_R",
+          "record_offset": 2496,
+          "vertices": 15,
+          "uv_bounds_after_material_scale": [
+            [
+              0.04523,
+              1.010847
+            ],
+            [
+              -0.342428,
+              1.632067
+            ]
+          ],
+          "address_word": "0x133",
+          "u_address": 3,
+          "v_address": 3,
+          "blend_word": "0x3030302",
+          "source_blend_factor": "0x302",
+          "destination_blend_factor": "0x303"
+        }
+      ]
+    }
+  ]
+}

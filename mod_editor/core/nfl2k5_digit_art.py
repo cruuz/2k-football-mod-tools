@@ -170,13 +170,28 @@ def prepare_digit(image: Image.Image, retail: Image.Image, mode: str = "retail")
         "cleanup": {**cleanup, "final_visible_rgb": after["visible_rgb_after"],
                     "alpha_below_to_zero": ALPHA_LOW, "alpha_at_or_above_to_opaque": ALPHA_HIGH,
                     "antialias_band_texels": 1, "resample": "float_premultiplied_lanczos",
-                    "transparent_rgb": "nearest_visible_edge", "applied": True},
+                    "transparent_rgb": "nearest_visible_edge", "mip_border_alpha_zero": True,
+                    "applied": True},
     }
 
 
 def prepared_mips(image: Image.Image, count: int) -> list:
-    return [replace(m, rgba=extend_edge_colours(Image.frombytes("RGBA", (m.width, m.height), m.rgba)).tobytes())
-            for m in make_digit_mips(image.tobytes(), image.width, image.height, count)]
+    result = []
+    for mip in make_digit_mips(image.tobytes(), image.width, image.height, count):
+        level = Image.frombytes("RGBA", (mip.width, mip.height), mip.rgba)
+        if mip.level and min(level.size) >= 3:
+            # Retail number mips retain a clear one-texel border. Area reduction
+            # alone averages a one-pixel base margin into nonzero border alpha
+            # (223/255 at 8px), which clamp sampling stretches outside the quad.
+            # Keep the base placement, including an expert's As authored choice.
+            alpha = level.getchannel("A")
+            alpha.paste(0, (0, 0, level.width, 1))
+            alpha.paste(0, (0, level.height-1, level.width, level.height))
+            alpha.paste(0, (0, 0, 1, level.height))
+            alpha.paste(0, (level.width-1, 0, level.width, level.height))
+            level.putalpha(alpha)
+        result.append(replace(mip, rgba=extend_edge_colours(level).tobytes()))
+    return result
 
 
 def edge_quantizer(levels, maximum=256):

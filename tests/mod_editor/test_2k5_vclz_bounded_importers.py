@@ -71,6 +71,9 @@ CONDITIONAL_PATHS = frozenset({
 #: own their compression separately. Named so the discovery test cannot be
 #: quietly widened: anything new has to be classified on purpose.
 NOT_PNG_IMPORTERS = frozenset({
+    # Read-only Coach Edwards study measures unbounded sizes at every tier;
+    # it never writes a replacement or a disc.
+    "tools/inspect_coach_digit_slots.py",
     "tools/nfl_tset_png_import.py",
     "mod_editor/core/nfl2k5_stadium_texture_writer.py",
     "tools/nfl_crib_bar_monitor_png_xiso.py",

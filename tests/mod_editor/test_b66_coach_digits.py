@@ -89,6 +89,19 @@ class SyntheticTests(unittest.TestCase):
             if 0<a<255:self.assertEqual(m,255)
         self.assertEqual(len({c[:3] for c in image.getdata() if c[3]==255}),2)
 
+    def test_tall_glyph_cannot_refill_the_transparent_border_in_small_mips(self):
+        source=Image.new('RGBA',(64,64))
+        source.paste(resize_cell(ai_digit(0),(37,64)),(13,0))
+        image,_=art.prepare_digit(source,reference())
+        old=make_digit_mips(image.tobytes(),64,64,4)
+        last=old[-1]
+        self.assertGreater(max(last.rgba[3:last.width*4:4]),200)
+        for mip in art.prepared_mips(image,4):
+            pixels=Image.frombytes('RGBA',(mip.width,mip.height),mip.rgba)
+            self.assertTrue(all(m>=1 for m in art.measure(pixels)['margins']))
+            sample=_filtered_level(mip,(64,64),uv_bounds=(-.12,-.03,1.12,1.26))
+            self.assertIsNone(sample.getchannel('A').crop((0,63,64,64)).getbbox())
+
     def test_no_dark_halo_after_chain_palette_and_straight_alpha_filter(self):
         source=Image.new('RGBA',(64,64),(250,0,250,0))
         source.paste((224,219,208,255),(15,7,49,58))
@@ -199,8 +212,10 @@ class RetailTests(unittest.TestCase):
                             self.assertEqual((reopened[:5],reopened[-5:]),(b'guard',b'guard'))
                             self.assertEqual(sha(reopened[5:-5]),receipt['replacement']['span_sha256'])
                             actual=decode_digit_texture(reopened[5:-5]); base=actual.levels[0]
-                            margins=art.measure(Image.frombytes('RGBA',(base.width,base.height),base.rgba))['margins']
-                            self.assertTrue(all(n>=1 for n in margins))
+                            for mip in actual.levels:
+                                alpha=Image.frombytes('RGBA',(mip.width,mip.height),mip.rgba).getchannel('A')
+                                box=alpha.getbbox()
+                                self.assertTrue(box is None or (box[0]>=1 and box[1]>=1 and box[2]<mip.width and box[3]<mip.height))
                             self.assertLessEqual(receipt['rebuild']['recompressed_bytes'],receipt['target']['stored_size'])
                             # At 32px an outline may be entirely partial coverage.
                             # It must still survive in the actually used colours.

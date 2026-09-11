@@ -1,0 +1,182 @@
+[
+  {
+    "new_tier": 256,
+    "old_tier": 256,
+    "native_size": 64,
+    "old_max_delta_alpha_ge_1": 210,
+    "new_max_delta_alpha_ge_1": 0,
+    "old_max_delta_alpha_ge_16": 210,
+    "new_max_delta_alpha_ge_16": 0
+  },
+  {
+    "new_tier": 256,
+    "old_tier": 256,
+    "native_size": 32,
+    "old_max_delta_alpha_ge_1": 210,
+    "new_max_delta_alpha_ge_1": 0,
+    "old_max_delta_alpha_ge_16": 182,
+    "new_max_delta_alpha_ge_16": 0
+  },
+  {
+    "new_tier": 256,
+    "old_tier": 256,
+    "native_size": 16,
+    "old_max_delta_alpha_ge_1": 210,
+    "new_max_delta_alpha_ge_1": 0,
+    "old_max_delta_alpha_ge_16": 168,
+    "new_max_delta_alpha_ge_16": 0
+  },
+  {
+    "new_tier": 256,
+    "old_tier": 256,
+    "native_size": 8,
+    "old_max_delta_alpha_ge_1": 168,
+    "new_max_delta_alpha_ge_1": 0,
+    "old_max_delta_alpha_ge_16": 56,
+    "new_max_delta_alpha_ge_16": 0
+  },
+  {
+    "new_tier": 32,
+    "old_tier": 32,
+    "native_size": 64,
+    "old_max_delta_alpha_ge_1": 210,
+    "new_max_delta_alpha_ge_1": 0,
+    "old_max_delta_alpha_ge_16": 210,
+    "new_max_delta_alpha_ge_16": 0
+  },
+  {
+    "new_tier": 32,
+    "old_tier": 32,
+    "native_size": 32,
+    "old_max_delta_alpha_ge_1": 210,
+    "new_max_delta_alpha_ge_1": 0,
+    "old_max_delta_alpha_ge_16": 182,
+    "new_max_delta_alpha_ge_16": 0
+  },
+  {
+    "new_tier": 32,
+    "old_tier": 32,
+    "native_size": 16,
+    "old_max_delta_alpha_ge_1": 210,
+    "new_max_delta_alpha_ge_1": 0,
+    "old_max_delta_alpha_ge_16": 168,
+    "new_max_delta_alpha_ge_16": 0
+  },
+  {
+    "new_tier": 32,
+    "old_tier": 32,
+    "native_size": 8,
+    "old_max_delta_alpha_ge_1": 168,
+    "new_max_delta_alpha_ge_1": 0,
+    "old_max_delta_alpha_ge_16": 56,
+    "new_max_delta_alpha_ge_16": 0
+  },
+  {
+    "new_tier": 16,
+    "old_tier": 16,
+    "native_size": 64,
+    "old_max_delta_alpha_ge_1": 210,
+    "new_max_delta_alpha_ge_1": 0,
+    "old_max_delta_alpha_ge_16": 210,
+    "new_max_delta_alpha_ge_16": 0
+  },
+  {
+    "new_tier": 16,
+    "old_tier": 16,
+    "native_size": 32,
+    "old_max_delta_alpha_ge_1": 210,
+    "new_max_delta_alpha_ge_1": 0,
+    "old_max_delta_alpha_ge_16": 182,
+    "new_max_delta_alpha_ge_16": 0
+  },
+  {
+    "new_tier": 16,
+    "old_tier": 16,
+    "native_size": 16,
+    "old_max_delta_alpha_ge_1": 210,
+    "new_max_delta_alpha_ge_1": 0,
+    "old_max_delta_alpha_ge_16": 168,
+    "new_max_delta_alpha_ge_16": 0
+  },
+  {
+    "new_tier": 16,
+    "old_tier": 16,
+    "native_size": 8,
+    "old_max_delta_alpha_ge_1": 168,
+    "new_max_delta_alpha_ge_1": 0,
+    "old_max_delta_alpha_ge_16": 56,
+    "new_max_delta_alpha_ge_16": 0
+  },
+  {
+    "new_tier": 12,
+    "old_tier": 16,
+    "native_size": 64,
+    "old_max_delta_alpha_ge_1": 210,
+    "new_max_delta_alpha_ge_1": 0,
+    "old_max_delta_alpha_ge_16": 210,
+    "new_max_delta_alpha_ge_16": 0
+  },
+  {
+    "new_tier": 12,
+    "old_tier": 16,
+    "native_size": 32,
+    "old_max_delta_alpha_ge_1": 210,
+    "new_max_delta_alpha_ge_1": 0,
+    "old_max_delta_alpha_ge_16": 182,
+    "new_max_delta_alpha_ge_16": 0
+  },
+  {
+    "new_tier": 12,
+    "old_tier": 16,
+    "native_size": 16,
+    "old_max_delta_alpha_ge_1": 210,
+    "new_max_delta_alpha_ge_1": 0,
+    "old_max_delta_alpha_ge_16": 168,
+    "new_max_delta_alpha_ge_16": 0
+  },
+  {
+    "new_tier": 12,
+    "old_tier": 16,
+    "native_size": 8,
+    "old_max_delta_alpha_ge_1": 168,
+    "new_max_delta_alpha_ge_1": 0,
+    "old_max_delta_alpha_ge_16": 56,
+    "new_max_delta_alpha_ge_16": 0
+  },
+  {
+    "new_tier": 8,
+    "old_tier": 16,
+    "native_size": 64,
+    "old_max_delta_alpha_ge_1": 210,
+    "new_max_delta_alpha_ge_1": 0,
+    "old_max_delta_alpha_ge_16": 210,
+    "new_max_delta_alpha_ge_16": 0
+  },
+  {
+    "new_tier": 8,
+    "old_tier": 16,
+    "native_size": 32,
+    "old_max_delta_alpha_ge_1": 210,
+    "new_max_delta_alpha_ge_1": 0,
+    "old_max_delta_alpha_ge_16": 182,
+    "new_max_delta_alpha_ge_16": 0
+  },
+  {
+    "new_tier": 8,
+    "old_tier": 16,
+    "native_size": 16,
+    "old_max_delta_alpha_ge_1": 210,
+    "new_max_delta_alpha_ge_1": 0,
+    "old_max_delta_alpha_ge_16": 168,
+    "new_max_delta_alpha_ge_16": 0
+  },
+  {
+    "new_tier": 8,
+    "old_tier": 16,
+    "native_size": 8,
+    "old_max_delta_alpha_ge_1": 168,
+    "new_max_delta_alpha_ge_1": 0,
+    "old_max_delta_alpha_ge_16": 56,
+    "new_max_delta_alpha_ge_16": 0
+  }
+]

@@ -1,0 +1,8 @@
+test_high_resolution_sheet_becomes_ten_exact_target_pngs (__main__.DigitSheetTests.test_high_resolution_sheet_becomes_ten_exact_target_pngs) ... ok
+test_missing_digit_or_mixed_family_is_refused (__main__.DigitSheetTests.test_missing_digit_or_mixed_family_is_refused) ... ok
+test_per_target_dimensions_are_used_instead_of_a_family_default (__main__.DigitSheetTests.test_per_target_dimensions_are_used_instead_of_a_family_default) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.371s
+
+OK

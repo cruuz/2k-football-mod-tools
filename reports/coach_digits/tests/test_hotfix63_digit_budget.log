@@ -1,0 +1,18 @@
+setUpClass (__main__.BackendKeepsRetailTests) ... skipped 'Private retail digit evidence absent: /home/noah/2k-worktrees/astra-b66-digits/reports/assets/nfl2k5_resource_chunks_v2.json'
+test_a_forged_row_shape_is_refused (__main__.BuildReceiptTests.test_a_forged_row_shape_is_refused) ... ok
+test_build_and_share_completion_names_the_kept_slot (__main__.BuildReceiptTests.test_build_and_share_completion_names_the_kept_slot) ... ok
+test_kept_retail_rows_reach_the_result_and_its_message (__main__.BuildReceiptTests.test_kept_retail_rows_reach_the_result_and_its_message) ... ok
+test_no_rows_means_no_message_so_the_gui_fallback_stands (__main__.BuildReceiptTests.test_no_rows_means_no_message_so_the_gui_fallback_stands) ... ok
+test_last_build_kept_retail_maps_rows_to_catalog_asset_ids (__main__.FacadeKeptRetailTests.test_last_build_kept_retail_maps_rows_to_catalog_asset_ids) ... ok
+test_a_real_digit_edit_and_noise_elsewhere_are_told_apart (__main__.KitRoundTripDigitsTests.test_a_real_digit_edit_and_noise_elsewhere_are_told_apart) ... ok
+test_colour_managed_resave_noise_is_not_an_edit_of_a_digit (__main__.KitRoundTripDigitsTests.test_colour_managed_resave_noise_is_not_an_edit_of_a_digit)
+The reported case: every digit 'Modified' after an editor re-save. ... ok
+test_reencoded_but_pixel_equal_digits_stage_nothing (__main__.KitRoundTripDigitsTests.test_reencoded_but_pixel_equal_digits_stage_nothing) ... ok
+test_scope_is_digits_only_and_a_large_step_is_still_an_edit (__main__.KitRoundTripDigitsTests.test_scope_is_digits_only_and_a_large_step_is_still_an_edit)
+Torso and nameplate keep the exact-pixel rule; ±4 on a digit is an edit. ... ok
+test_preview_shows_the_retail_digit_for_an_unfit_slot (__main__.PreviewKeepsRetailTests.test_preview_shows_the_retail_digit_for_an_unfit_slot) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 13.801s
+
+OK (skipped=1)
