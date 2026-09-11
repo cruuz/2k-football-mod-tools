@@ -204,6 +204,35 @@ class DialogTests(unittest.TestCase):
             receipt = SimpleNamespace(modified_assets=('crest',), manifest=manifest)
             self.assertIn(status, ApfStudioMainWindow._build_edit_detail(receipt))
 
+    def test_team_art_replace_restores_and_forwards_saved_opt_out(self):
+        from mod_editor.apf_studio.team_art_qt import TeamArtBrowser
+        from test_apf_team_art import package as art_package
+        from mod_editor.apf_studio.models import Modification
+        package = art_package()
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'mask.png'
+            Image.new('RGBA', (512, 512), 'red').save(path)
+            modification = Modification('crest', 'helmet_crest_design', path, 'a' * 64,
+                {'crest_outer_entry_index': package.outer_index, 'allow_simplification': False})
+            session = SimpleNamespace(modifications=(modification,))
+            facade = SimpleNamespace(source_ready=False, session=None, replace_team_art=Mock())
+            tasks = []
+            browser = TeamArtBrowser(facade, lambda _label, operation, _done, _blocking: tasks.append(operation))
+            self.addCleanup(browser.close)
+            browser._session = session
+            def review(dialog):
+                self.assertFalse(dialog.allow_simplification.isChecked())
+                for button in dialog.inputs.values():
+                    button.set_path(path)
+                return QDialog.Accepted
+            with patch.object(browser, 'selected_package', return_value=package), \
+                 patch.object(TeamArtReplaceDialog, 'exec_', new=review):
+                browser.replace()
+            self.assertEqual(len(tasks), 1)
+            tasks[0](lambda *_: None)
+            self.assertFalse(facade.replace_team_art.call_args.kwargs['allow_simplification'])
+            self.assertIs(facade.replace_team_art.call_args.kwargs['expected_session'], session)
+
     def test_team_art_setting_defaults_on_and_explains_saved_policy(self):
         layer = SimpleNamespace(name='logo_l0', width=512, height=512, codec='4444')
         package = SimpleNamespace(label='Logo slot 92', outer_index=621, family='logo', layers=(layer,))

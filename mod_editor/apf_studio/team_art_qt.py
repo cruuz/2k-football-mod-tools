@@ -387,7 +387,7 @@ class TeamArtBrowser(QWidget):
         self._queue = []
         dialog = TeamArtReplaceDialog(package, self)
         if package.family == "logo" and self._session is not None:
-            existing = package_modifications(self._session, package)
+            existing = package_modifications(package, self._session.modifications)
             if existing:
                 dialog.allow_simplification.setChecked(existing[0].metadata.get("allow_simplification", True))
         if dialog.exec_() != QDialog.Accepted:

@@ -2,9 +2,8 @@
 
 The importer reads APFe exports and prepares the Xbox 360 studio's existing
 Team Logo and Field Art edits. It transfers decoded pixels, never PS3 archive
-offsets, GTF containers, or PS3 compression. The core API and receipt CLI are
-available. This beta-64 writer extension needs the Field Art label/preview
-handoff in `WIRING.md` before the protected GUI is integrated.
+offsets, GTF containers, or PS3 compression. The mapping dialog is available through the studio's Import PS3 bundle action;
+the core API and receipt CLI are also available.
 
 ## Beta 66.1 crest budgets
 
