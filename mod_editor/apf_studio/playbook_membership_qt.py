@@ -1397,7 +1397,7 @@ class ApfPlaybookMembershipPanel(QFrame):
             package = package_combo.currentData()
             pairs = self._formation_packages.get(formation, ())
             warning = ""
-            if pairs and package is not None and package not in dict(pairs):
+            if pairs and package is not None and package not in dict(pairs) and isinstance(formation, int):
                 if allow_plays or formation != initial[0]:
                     effective = splb.destination_category(formation, package)
                     warning = (f"This formation move will use {package_name(effective)} "
@@ -1432,7 +1432,8 @@ class ApfPlaybookMembershipPanel(QFrame):
                 pairing_hint.setText(
                     f"No CPU retail pairing is known for {name}; new or moved records use its MASTER category."
                 )
-                if choose_natural:
+                # An empty formation list (no game loaded, or a dialog fixture) has no category to choose.
+                if choose_natural and isinstance(formation, int):
                     row = package_combo.findData(splb.destination_category(formation, -1))
                     if row >= 0:
                         package_combo.setCurrentIndex(row)
