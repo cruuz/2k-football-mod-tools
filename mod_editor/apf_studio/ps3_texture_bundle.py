@@ -293,6 +293,7 @@ class DestinationSlot:
     inner_indices: tuple[int, int]
     crest_asset_index: int | None = None
     writable: bool = True
+    compressed_art_budget: int | None = None
 
 
 def destination_slots(index_0a: Path) -> tuple[DestinationSlot, ...]:
@@ -304,6 +305,7 @@ def destination_slots(index_0a: Path) -> tuple[DestinationSlot, ...]:
     import apf_inner
     import apf_team_crests
     import apf_field_art_patch
+    import apf_logo_patch
     import zlib
     archive = apf_outer.parse_archive(Path(index_0a))
     crest_hashes = {zlib.crc32(f"UNIFORM_LOGO_{i:02d}.IFF".encode()): i for i in range(118)}
@@ -327,8 +329,78 @@ def destination_slots(index_0a: Path) -> tuple[DestinationSlot, ...]:
                 label = teams.get(index, f"Logo slot {index:02d}") if kind == "logo" else labels.get(entry.table_index, f"Unidentified endzone {entry.table_index}")
                 slots.append(DestinationSlot(f"{kind}:{entry.table_index}", label, kind, entry.table_index,
                              entry.name_id, tuple(f"apf:outer:{entry.table_index}:inner:{i}" for i in indices),
-                             indices, index, writable))
+                             indices, index, writable,
+                             apf_logo_patch.compressed_art_budget(entry, record) if kind == "logo" else None))
     return tuple(slots)
+
+
+def measure_bundle_logos(bundle, slots, index_0a, progress=lambda *_: None):
+    """Expensive writer-owned preflight. Invoke only on a worker, never in Qt callbacks."""
+    from .backend import ensure_tools_importable
+    ensure_tools_importable()
+    import apf_logo_patch as writer
+    logos = [pair for pair in bundle.pairs if pair.kind == "logo"]
+    destinations = [slot for slot in slots if slot.kind == "logo" and slot.writable]
+    if not logos or not destinations:
+        return {}
+    identities, templates = writer.logo_measurement_templates(index_0a,
+        [slot.outer_index for slot in destinations], progress)
+    results = {}
+    for ordinal, pair in enumerate(logos):
+        images = tuple(layer.image.tobytes() for layer in pair.layers)
+        profiles = {}
+        for key, template in templates.items():
+            budget = min(slot.compressed_art_budget for slot in destinations
+                         if identities[slot.outer_index] == key)
+            def update(message, _done, _total):
+                progress(f"{pair.team}: {message} ({ordinal + 1}/{len(logos)})", ordinal, len(logos))
+            profiles[key] = writer.measure_logo_pair(*images, template,
+                                                    minimum_budget=budget, progress=update)
+        results[pair.pair_id] = {"pixel_hashes": tuple(hashlib.sha256(image).hexdigest() for image in images),
+            "destinations": {slot.slot_id: profiles[identities[slot.outer_index]] for slot in destinations}}
+        progress(f"Measured {pair.team}", ordinal + 1, len(logos))
+    return results
+
+
+def logo_fit_row(pair, slot, slots, measurements, *, allow_simplification=True):
+    """A cheap comparison of measured streams with the explicitly chosen slot."""
+    if pair.kind != "logo":
+        return {"status": "allocation checked during endzone build", "fits": None}
+    measurement = measurements.get(pair.pair_id) if measurements is not None else None
+    if slot.compressed_art_budget is None or measurement is None:
+        return {"status": "crest budget measurement required", "fits": None}
+    hashes = tuple(hashlib.sha256(layer.image.tobytes()).hexdigest() for layer in pair.layers)
+    if hashes != tuple(measurement["pixel_hashes"]):
+        raise BundleError("Logo pixels changed since budget measurement")
+    def permitted(target):
+        return [row for row in measurement["destinations"].get(target.slot_id, ())
+                if allow_simplification or row["shades_per_region"] == 16]
+    attempts = permitted(slot)
+    if not attempts:
+        return {"status": "crest budget measurement required", "fits": None}
+    budget = slot.compressed_art_budget
+    selected = next((row for row in attempts if row["compressed_art_bytes"] <= budget), attempts[-1])
+    size, shades = selected["compressed_art_bytes"], selected["shades_per_region"]
+    fits = size <= budget
+    alternatives = []
+    for target in slots:
+        if target.kind != "logo" or not target.writable or target.compressed_art_budget is None:
+            continue
+        choices = permitted(target)
+        chosen = next((row for row in choices if row["compressed_art_bytes"] <= target.compressed_art_budget), None)
+        if chosen is not None:
+            alternatives.append({"slot": target.crest_asset_index, "slot_id": target.slot_id,
+                "label": target.label, "budget_bytes": target.compressed_art_budget, **chosen})
+    alternatives.sort(key=lambda row: (row["shades_per_region"] != 16, -row["budget_bytes"], row["slot"]))
+    status = ("fits as is" if shades == 16 else f"fits after simplification to {shades} shades") if fits else f"does not fit (needs {size - budget:,} more bytes)"
+    from .backend import ensure_tools_importable
+    ensure_tools_importable()
+    import apf_logo_patch as writer
+    return {"status": status, "fits": fits, "budget_bytes": budget,
+            "compressed_art_bytes": size, "shades_per_region": shades,
+            "encoder": selected["encoder"], "allow_simplification": allow_simplification,
+            "packages_with_room": alternatives,
+            "refusal": None if fits else writer.fit_refusal(budget, size, shades, alternatives)}
 
 
 @dataclass(frozen=True)
@@ -355,7 +427,8 @@ class StagingPlan:
 
 
 def build_plan(bundle: TextureBundle, slots: Iterable[DestinationSlot],
-               assignments: Iterable[Assignment] | None = None) -> StagingPlan:
+               assignments: Iterable[Assignment] | None = None, *, measurements=None,
+               allow_simplification: bool = True) -> StagingPlan:
     destinations = {s.slot_id: s for s in slots}
     sources = {p.pair_id: p for p in bundle.pairs}
     if assignments is None:
@@ -379,10 +452,12 @@ def build_plan(bundle: TextureBundle, slots: Iterable[DestinationSlot],
         used_sources.add(pair.pair_id)
         used_destinations.add(slot.slot_id)
         method = "entry_hash_and_layer_name" if pair.entry_hash == slot.entry_hash else "chosen_destination_and_layer_name"
-        row = {"source_pair": pair.receipt(), "destination_slot": slot.slot_id,
+        fit = logo_fit_row(pair, slot, tuple(destinations.values()), measurements,
+                           allow_simplification=allow_simplification)
+        row = {"source_pair": pair.receipt(), "fit": fit, "destination_slot": slot.slot_id,
                "destination_label": slot.label, "destination_entry_hash": f"0x{slot.entry_hash:08x}",
                "mapping_method": method, "mips": "regenerated",
-               "allocation_policy": "fixed allocation; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipt records any reduction",
+               "allocation_policy": "fixed allocation; crests try greedy, safe optimal H7A, then 8/4/2 RGB shades per region if enabled; endzones try safe optimal H7A, RGB endpoint simplification, then 2x/4x top-mip reduction; receipts record any reduction",
                "writer": "apf_logo_patch.build_patch_rgba + linked logocache" if pair.kind == "logo" else "apf_field_art_patch.build_field_art_patch_many"}
         for index, layer in enumerate(pair.layers):
             if layer.layer != f"{pair.kind}_l{index}" or layer.image.size != LAYER_SIZE[pair.kind]:
@@ -396,7 +471,7 @@ def build_plan(bundle: TextureBundle, slots: Iterable[DestinationSlot],
     if not resolved:
         raise BundleError("Mapping table is empty")
     return StagingPlan(tuple(items), tuple(resolved), {"schema": SCHEMA, "status": STATUS, "source": bundle.source,
-                       "rejected_pairs": list(bundle.rejected_pairs),
+                       "rejected_pairs": list(bundle.rejected_pairs), "allow_simplification": allow_simplification,
                        "assignment_count": len(rows), "texture_count": len(items), "assignments": rows,
                        "textures": [i.receipt for i in items]})
 
@@ -457,6 +532,18 @@ def stage_plan(session, plan: StagingPlan) -> tuple:
     for pair, slot in plan.assignments:
         if live.get(slot.slot_id) != slot:
             raise BundleError(f"Destination changed since planning: {slot.slot_id}")
+    allow_simplification = plan.receipt.get("allow_simplification", True)
+    if type(allow_simplification) is not bool:
+        raise BundleError("Crest simplification setting changed")
+    if any(pair.kind == "logo" and slot.compressed_art_budget is not None for pair, slot in plan.assignments):
+        selected_bundle = TextureBundle(plan.receipt["source"], tuple(p for p, _ in plan.assignments), ())
+        measurements = measure_bundle_logos(selected_bundle, tuple(live.values()), session.source.index_0a)
+        for pair, slot in plan.assignments:
+            if pair.kind == "logo":
+                fit = logo_fit_row(pair, slot, tuple(live.values()), measurements,
+                                   allow_simplification=allow_simplification)
+                if fit["fits"] is not True:
+                    raise BundleError(fit.get("refusal") or fit["status"])
     if any(m.metadata.get("profile") == "front_crown_to_rear_v1" for m in session.modifications):
         raise BundleError("Revert the shared full-shell crest profile before a PS3 bundle import")
     count, modifications = 0, []
@@ -474,7 +561,7 @@ def stage_plan(session, plan: StagingPlan) -> tuple:
                 if pair.kind == "logo":
                     modifications.append(session.replace_helmet_crest_design(paths[0], profile=RETAIL_CREST_PROFILE,
                                          crest_asset_index=slot.crest_asset_index, crest_outer_entry_index=slot.outer_index,
-                                         detail_png=paths[1]))
+                                         detail_png=paths[1], allow_simplification=allow_simplification))
                     count += 1
                 else:
                     for index, path in enumerate(paths):
@@ -499,7 +586,8 @@ def main(argv=None) -> int:
     if args.index_0a:
         slots = destination_slots(args.index_0a)
         assignments = team_mapping(bundle, slots, json.loads(args.mapping.read_text())) if args.mapping else None
-        receipt = build_plan(bundle, slots, assignments).receipt
+        measurements = measure_bundle_logos(bundle, slots, args.index_0a)
+        receipt = build_plan(bundle, slots, assignments, measurements=measurements).receipt
     elif args.mapping:
         parser.error("--mapping requires --index-0a")
     with args.receipt.open("x", encoding="utf-8") as stream:

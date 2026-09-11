@@ -30,7 +30,7 @@ rather than guessed.
 from __future__ import annotations
 
 import argparse
-from collections import defaultdict, deque
+from collections import OrderedDict, defaultdict, deque
 from concurrent.futures import Future, ProcessPoolExecutor
 from dataclasses import dataclass
 import hashlib
@@ -42,6 +42,7 @@ from pathlib import Path
 import stat
 import struct
 import sys
+from threading import Lock
 from typing import Callable, Iterable
 import zlib
 
@@ -799,6 +800,267 @@ def read_logo_layers(
     return l0.rgba, l1.rgba
 
 
+# Only compressed streams are cached, never source paths or PNGs. The pixel-derived
+# VRAM hash includes layer order, regenerated mips and preserved allocation slack.
+_STREAM_CACHE: OrderedDict = OrderedDict()
+_CACHE_LOCK = Lock()
+
+
+def verify_h7a_stream(stream: bytes, data: bytes, shift: int) -> None:
+    """Check the console's non-overlap rule as well as an exact decode."""
+    cursor = produced = 0
+    while produced < len(data):
+        if cursor >= len(stream):
+            raise PatchError("truncated H7A descriptor")
+        descriptor = stream[cursor]
+        cursor += 1
+        for bit in range(8):
+            if produced >= len(data):
+                break
+            if descriptor & (1 << bit):
+                if cursor + 2 > len(stream):
+                    raise PatchError("truncated H7A match")
+                word = int.from_bytes(stream[cursor:cursor + 2], "big")
+                cursor += 2
+                distance = word & ((1 << shift) - 1)
+                length = (word >> shift) + 3
+                if length > distance or distance > produced:
+                    raise PatchError("unsafe H7A match: length exceeds distance or history")
+                produced += length
+            else:
+                cursor += 1
+                produced += 1
+    if produced != len(data) or cursor != len(stream):
+        raise PatchError("H7A stream length differs")
+    if apf_inner.decompress_h7a(stream, len(data), shift) != data:
+        raise PatchError("H7A encode/decode round-trip failed")
+
+
+def compress_h7a_best(data: bytes, shift: int, *, greedy: bytes | None = None) -> bytes:
+    """Use the field writer's reviewed binary predicate and verified fallback."""
+    import apf_field_art_patch
+    greedy = compress_h7a(data, shift) if greedy is None else greedy
+    verify_h7a_stream(greedy, data, shift)
+    candidate = apf_field_art_patch.compress_h7a_best(data, shift, greedy=greedy)
+    try:
+        verify_h7a_stream(candidate, data, shift)
+    except (PatchError, apf_inner.FormatError):
+        return greedy
+    return candidate
+
+
+def _compressed(data: bytes, shift: int, optimal: bool = False) -> bytes:
+    key = (sha256_bytes(data), shift, MAX_H7A_CANDIDATES, optimal)
+    with _CACHE_LOCK:
+        cached = _STREAM_CACHE.get(key)
+        if cached is not None:
+            _STREAM_CACHE.move_to_end(key)
+            return cached
+    stream = (compress_h7a_best(data, shift, greedy=_compressed(data, shift))
+              if optimal else compress_h7a(data, shift))
+    verify_h7a_stream(stream, data, shift)
+    with _CACHE_LOCK:
+        _STREAM_CACHE[key] = stream
+        while len(_STREAM_CACHE) > 128:
+            _STREAM_CACHE.popitem(last=False)
+    return stream
+
+
+def simplify_regions(rgba: bytes, shades: int) -> bytes:
+    """Snap each RGB nibble independently; preserve the input alpha bytes."""
+    if shades not in (8, 4, 2) or len(rgba) != WIDTH * HEIGHT * 4:
+        raise PatchError("region simplification needs 512x512 RGBA and 8, 4 or 2 shades")
+    # First use the same nearest-nibble rule as the 4_4_4_4 writer, then
+    # evenly space the selected nibbles across 0..15 (ties round upward).
+    palette = tuple((level * 15 * 2 + shades - 1) // (2 * (shades - 1)) * 17
+                    for level in range(shades))
+    table = bytes(palette[(2 * ((value * 15 + 127) // 255) * (shades - 1) + 15) // 30]
+                  for value in range(256))
+    result = bytearray(rgba)
+    for channel in range(3):
+        result[channel::4] = rgba[channel::4].translate(table)
+    return bytes(result)
+
+
+def compressed_art_budget(entry, record) -> int:
+    """Bytes available for the shared VRAM stream, excluding its H7A header."""
+    if (record.block_count != 2 or record.footer is None
+            or not record.blocks[1].is_compressed or record.blocks[1].wrapper is None):
+        raise PatchError("PORTME: crest budget requires the validated two-block H7A layout")
+    return (entry.size - record.header_size - record.blocks[0].stored_length
+            - 8 - record.footer.payload_size - apf_inner.H7A_HEADER_SIZE)
+
+
+def crest_package_budgets(index_path: Path) -> tuple[dict, ...]:
+    """Resolve only known crest names through the archive index, without scans."""
+    archive = apf_outer.parse_archive(Path(index_path))
+    hashes = {zlib.crc32(f"UNIFORM_LOGO_{slot:02d}.IFF".encode()): slot for slot in range(118)}
+    rows = []
+    with apf_inner.ArchiveReader(archive) as reader:
+        for entry in archive.entries:
+            if entry.name_id in hashes:
+                record = apf_inner.parse_iff(reader, entry)
+                resolve_layer_indices(record)
+                rows.append({"slot": hashes[entry.name_id], "outer_index": entry.table_index,
+                             "budget_bytes": compressed_art_budget(entry, record)})
+    return tuple(sorted(rows, key=lambda row: (-row["budget_bytes"], row["slot"])))
+
+
+@dataclass(frozen=True)
+class LogoMeasurementTemplate:
+    shift: int
+    seed: bytes
+    layers: tuple[_LayerTarget, ...]
+
+
+def logo_measurement_templates(index_path: Path, entry_indices, progress=lambda *_: None):
+    """Group destinations by exact encoder inputs, including untouched mip holes.
+
+    No source pixels are guessed from a canonical package. Only regions the
+    writer overwrites are masked out when comparing the destination layouts.
+    """
+    wanted = set(entry_indices)
+    archive = apf_outer.parse_archive(Path(index_path))
+    identities, templates, masks = {}, {}, {}
+    with apf_inner.ArchiveReader(archive) as reader:
+        for ordinal, entry_index in enumerate(sorted(wanted)):
+            progress("Reading crest allocation layouts", ordinal, len(wanted))
+            entry = archive.entries[entry_index]
+            record = apf_inner.parse_iff(reader, entry)
+            compressed_art_budget(entry, record)
+            indices = resolve_layer_indices(record)
+            blocks = [apf_inner.decode_block(reader, record, i, 1 << 30) for i in range(2)]
+            seed = bytearray(blocks[1])
+            layers, signatures = [], []
+            for name, file_index in zip((INNER_NAME, SIBLING_NAME), indices):
+                target = record.files[file_index]
+                if (len(target.parts) != 2 or target.parts[0].block_index != 0
+                        or target.parts[1].block_index != 1 or target.parts[0].length != DRAM_PART_LEN
+                        or target.parts[1].length != PAYLOAD_LEN):
+                    raise PatchError("PORTME: crest measurement layer layout differs")
+                dram, vram = target.parts
+                metadata = apf_inner.parse_txtr_metadata(blocks[0][dram.offset:dram.offset + dram.length])
+                _strict_descriptor(metadata)
+                signature = json.dumps(metadata, sort_keys=True)
+                if signature not in masks:
+                    mask = bytearray(b"\xff" * PAYLOAD_LEN)
+                    mask[:BASE_LEN] = bytes(BASE_LEN)
+                    for location in mip4444.derive_layout(metadata)[1:]:
+                        mip4444.write_level(mask, location, bytes(location.width * location.height * 2))
+                    masks[signature] = int.from_bytes(mask, "little")
+                payload = (int.from_bytes(blocks[1][vram.offset:vram.offset + PAYLOAD_LEN], "little")
+                           & masks[signature]).to_bytes(PAYLOAD_LEN, "little")
+                seed[vram.offset:vram.offset + PAYLOAD_LEN] = payload
+                layers.append(_LayerTarget(file_index, name, "TXTR", metadata,
+                    payload[:BASE_LEN], payload[BASE_LEN:], vram.offset, b""))
+                signatures.append((name, vram.offset, signature))
+            shift = record.blocks[1].wrapper.shift
+            key = sha256_bytes(bytes(seed) + json.dumps((shift, signatures)).encode())
+            identities[entry_index] = key
+            templates.setdefault(key, LogoMeasurementTemplate(shift, bytes(seed), tuple(layers)))
+    return identities, templates
+
+
+_MEASUREMENT_CACHE: OrderedDict = OrderedDict()
+
+
+def measure_logo_pair(rgba_l0: bytes, rgba_l1: bytes, template: LogoMeasurementTemplate,
+                      *, minimum_budget: int, progress=lambda *_: None) -> tuple[dict, ...]:
+    """Writer-owned sizes; call in a worker, then compare cheap rows on the UI."""
+    import apf_field_art_patch
+    availability = apf_field_art_patch.optimal_encoder_diagnostic()["available"]
+    key = (sha256_bytes(rgba_l0 + rgba_l1), template.shift, sha256_bytes(template.seed),
+           tuple((layer.vram_offset, json.dumps(layer.metadata, sort_keys=True)) for layer in template.layers),
+           minimum_budget, availability)
+    with _CACHE_LOCK:
+        if key in _MEASUREMENT_CACHE:
+            _MEASUREMENT_CACHE.move_to_end(key)
+            return tuple(dict(row) for row in _MEASUREMENT_CACHE[key])
+    rows = []
+    edits = tuple(zip(template.layers, (rgba_l0, rgba_l1)))
+    for step, shades in enumerate((16, 8, 4, 2)):
+        progress(f"Measuring logo at {shades} shades per region", step, 4)
+        block = _layer_blocks([b"", template.seed], edits, shades, True)[1]
+        greedy = _compressed(block, template.shift)
+        rows.append({"shades_per_region": shades, "encoder": "greedy H7A",
+                     "compressed_art_bytes": len(greedy)})
+        if len(greedy) <= minimum_budget:
+            break
+        optimal = _compressed(block, template.shift, True)
+        rows.append({"shades_per_region": shades,
+                     "encoder": "safe optimal H7A" if len(optimal) < len(greedy) else "greedy H7A",
+                     "compressed_art_bytes": len(optimal)})
+        if len(optimal) <= minimum_budget:
+            break
+    with _CACHE_LOCK:
+        _MEASUREMENT_CACHE[key] = tuple(dict(row) for row in rows)
+        while len(_MEASUREMENT_CACHE) > 64:
+            _MEASUREMENT_CACHE.popitem(last=False)
+    return tuple(rows)
+
+
+def fit_refusal(budget: int, needed: int, shades: int, alternatives=()) -> str:
+    examples = ", ".join(str(row["slot"]) for row in alternatives[:3])
+    remedy = f" (for example Logo slot {examples})" if examples else ""
+    detail = f"at {shades} shades" if shades != 16 else "with simplification disabled"
+    return (f"This crest package holds {budget:,} bytes of compressed art; this logo needs "
+            f"{needed:,} {detail}. Choose a package with room{remedy} or flatten the art.")
+
+
+def _layer_blocks(original_blocks, edits, shades, regenerate_mips):
+    block = bytearray(original_blocks[1])
+    for layer, rgba in edits:
+        art = rgba if shades == 16 else simplify_regions(rgba, shades)
+        tail = (rebuild_mip_tail(layer.metadata, art, layer.mip_tail)
+                if regenerate_mips else layer.mip_tail)
+        payload = encode_4444_base(layer.metadata, art) + tail
+        block[layer.vram_offset:layer.vram_offset + PAYLOAD_LEN] = payload
+    return [original_blocks[0], bytes(block)]
+
+
+def _fit_rebuild(index_path, entry, record, original_entry, original_blocks,
+                 original_stored, new_blocks, edits, *, allow_simplification=False,
+                 regenerate_mips=True):
+    budget = compressed_art_budget(entry, record)
+    shift = record.blocks[1].wrapper.shift
+    attempts = []
+    for shades in ((16, 8, 4, 2) if allow_simplification and regenerate_mips else (16,)):
+        blocks = new_blocks if shades == 16 else _layer_blocks(original_blocks, edits, shades, True)
+        for optimal in (False, True):
+            stream = _compressed(blocks[1], shift, optimal)
+            parser = "safe optimal H7A" if optimal and len(stream) < len(_compressed(blocks[1], shift)) else "greedy H7A"
+            attempts.append({"shades_per_region": shades, "encoder": parser,
+                             "compressed_art_bytes": len(stream), "fits": len(stream) <= budget})
+            if len(stream) > budget:
+                continue
+            result = _recompress_rebuild_reparse(entry, record, original_entry,
+                original_blocks, original_stored, blocks, vram_stream=stream)
+            name = resolve_outer_name(entry)
+            slot = int(name[len("uniform_logo_"):-4]) if name.startswith("uniform_logo_") else entry.table_index
+            action = (f"16 shades reduced to {shades} per region" if shades < 16
+                      else f"art unchanged using {parser}")
+            status = f"Logo slot {slot}: {action} to fit {budget:,} bytes; {len(stream):,} used"
+            return result, blocks, {"budget_bytes": budget, "compressed_art_bytes": len(stream),
+                "shades_per_region": shades, "encoder": parser, "allow_simplification": allow_simplification,
+                "changed_layers": [layer.name for layer, _ in edits], "alpha_preserved": True,
+                "mips_regenerated": regenerate_mips, "attempts": attempts, "status": status}
+    alternatives = []
+    if {layer.name for layer, _ in edits} == {INNER_NAME, SIBLING_NAME}:
+        # Shifts differ across retail packages. A byte budget alone cannot
+        # prove another package fits; measure its actual preserved layout.
+        packages = crest_package_budgets(index_path)
+        if packages:
+            identities, templates = logo_measurement_templates(index_path, [row["outer_index"] for row in packages])
+            wanted = {layer.name: rgba for layer, rgba in edits}
+            sizes = {}
+            for key, template in templates.items():
+                candidate = _layer_blocks([b"", template.seed],
+                    [(layer, wanted[layer.name]) for layer in template.layers], shades, True)[1]
+                sizes[key] = len(_compressed(candidate, template.shift, True))
+            alternatives = [row for row in packages if row["budget_bytes"] >= sizes[identities[row["outer_index"]]]]
+    raise PatchError(fit_refusal(budget, len(stream), shades, alternatives))
+
+
 def _recompress_rebuild_reparse(
     entry: apf_outer.Entry,
     record: apf_inner.IFFRecord,
@@ -806,6 +1068,7 @@ def _recompress_rebuild_reparse(
     original_blocks: list[bytes],
     original_stored: list[bytes],
     new_blocks: list[bytes],
+    *, vram_stream: bytes | None = None,
 ) -> _RebuildResult:
     """Recompress changed blocks, rebuild the IFF in-allocation, and reparse-gate.
 
@@ -830,7 +1093,7 @@ def _recompress_rebuild_reparse(
         if block.wrapper is None:
             raise PatchError("PORTME: logo VRAM block is not H7A-compressed")
         shift = block.wrapper.shift
-        compressed = compress_h7a(new_dec, shift)
+        compressed = vram_stream if vram_stream is not None and block is record.blocks[1] else _compressed(new_dec, shift)
         stored = struct.pack(
             ">5I",
             apf_inner.H7A_MAGIC,
@@ -839,8 +1102,7 @@ def _recompress_rebuild_reparse(
             block.unknown_10,
             shift,
         ) + compressed
-        if apf_inner.decompress_h7a(compressed, len(new_dec), shift) != new_dec:
-            raise PatchError("H7A encode/decode round-trip failed")
+        verify_h7a_stream(compressed, new_dec, shift)
         new_stored.append(stored)
 
     header = bytearray(original_entry[: record.header_size])
@@ -939,6 +1201,7 @@ def build_patch(
     file_index_l1: int | None = None,
     regenerate_mips: bool = True,
     clear_l1: bool = False,
+    allow_simplification: bool = False,
 ) -> PatchResult:
     """Build a rebuilt uniform_logo entry with ``logo_l0`` (and optionally ``logo_l1``).
 
@@ -994,6 +1257,7 @@ def build_patch(
             original_blocks,
             original_stored,
             regenerate_mips,
+            allow_simplification=allow_simplification,
         )
     if png_path_l1 is None:
         return _build_single_layer(
@@ -1007,6 +1271,7 @@ def build_patch(
             original_blocks,
             original_stored,
             regenerate_mips,
+            allow_simplification=allow_simplification,
         )
     return _build_dual_layer(
         index_path,
@@ -1021,6 +1286,7 @@ def build_patch(
         original_blocks,
         original_stored,
         regenerate_mips,
+        allow_simplification=allow_simplification,
     )
 
 
@@ -1035,11 +1301,13 @@ def _build_single_layer(
     original_blocks: list[bytes],
     original_stored: list[bytes],
     regenerate_mips: bool = True,
+    allow_simplification: bool = False,
 ) -> PatchResult:
     target = _extract_layer(
         record, original_blocks, file_index, INNER_NAME,
         pinned_base_sha(entry_index, INNER_NAME),
     )
+    sibling_file_index = resolve_layer_indices(record)[1]
     metadata = target.metadata
     base = target.base
     mip_tail = target.mip_tail
@@ -1105,9 +1373,13 @@ def _build_single_layer(
     new_block1[target.vram_offset : target.vram_offset + PAYLOAD_LEN] = new_payload
     new_blocks = [original_blocks[0], bytes(new_block1)]
 
-    result = _recompress_rebuild_reparse(
-        entry, record, original_entry, original_blocks, original_stored, new_blocks
+    result, fitted_blocks, fit = _fit_rebuild(
+        index_path, entry, record, original_entry, original_blocks, original_stored,
+        new_blocks, [(target, wanted_rgba)], allow_simplification=allow_simplification,
+        regenerate_mips=regenerate_mips,
     )
+    new_base = fitted_blocks[1][target.vram_offset:target.vram_offset + BASE_LEN]
+    new_tail = fitted_blocks[1][target.vram_offset + BASE_LEN:target.vram_offset + PAYLOAD_LEN]
     if result.changed_parts != [(file_index, 1)]:
         raise PatchError(
             f"unrelated inner payload changed; changed part keys are "
@@ -1119,6 +1391,7 @@ def _build_single_layer(
     manifest = {
         "schema": SCHEMA,
         "mode": "patched",
+        "fit": fit,
         "source": common_source,
         "target": {
             "name": target.name,
@@ -1168,8 +1441,8 @@ def _build_single_layer(
             "footer_bit_exact": result.footer_after == result.footer_bytes,
             "mip_tail_preserved": new_tail == mip_tail,
             "mip_tail_regenerated": regenerate_mips,
-            "other_level_l1_preserved": result.before_parts[(0, 1)]
-            == result.after_parts[(0, 1)],
+            "other_level_l1_preserved": result.before_parts[(sibling_file_index, 1)]
+            == result.after_parts[(sibling_file_index, 1)],
             "unrelated_inner_part_count": len(result.before_parts) - 1,
             "unrelated_inner_parts_preserved": True,
             "changed_inner_parts": [
@@ -1185,7 +1458,7 @@ def _build_single_layer(
                 "PNG->4bit quantized)"
             ),
             "encoder_caveat": PRODUCTION_ENCODER_CAVEAT,
-            "h7a": "project-native greedy H7A encoder",
+            "h7a": fit["encoder"],
         },
         "portme": _PORTME,
     }
@@ -1206,6 +1479,7 @@ def _build_dual_layer_rgba_opened(
     original_stored: list[bytes],
     regenerate_mips: bool = True,
     extracted_layers: tuple[_LayerTarget, _LayerTarget] | None = None,
+    allow_simplification: bool = False,
 ) -> PatchResult:
     if file_index == file_index_l1:
         raise PatchError("logo_l0 and logo_l1 must be distinct inner files")
@@ -1318,9 +1592,17 @@ def _build_dual_layer_rgba_opened(
         return PatchResult(original_entry, manifest)
 
     new_blocks = [original_blocks[0], bytes(new_block1)]
-    result = _recompress_rebuild_reparse(
-        entry, record, original_entry, original_blocks, original_stored, new_blocks
+    result, fitted_blocks, fit = _fit_rebuild(
+        index_path, entry, record, original_entry, original_blocks, original_stored,
+        new_blocks, [(layer, wanted[layer.name]) for layer, _ in changed],
+        allow_simplification=allow_simplification, regenerate_mips=regenerate_mips,
     )
+    changed = [(layer, fitted_blocks[1][layer.vram_offset:layer.vram_offset + BASE_LEN])
+               for layer, _ in changed]
+    for layer, _ in changed:
+        tail = fitted_blocks[1][layer.vram_offset + BASE_LEN:layer.vram_offset + PAYLOAD_LEN]
+        layers_report[layer.name].update(mip_tail_sha256_after=sha256_bytes(tail),
+                                        mip_tail_preserved=tail == layer.mip_tail)
     expected_changed = sorted((layer.file_index, 1) for layer, _ in changed)
     if result.changed_parts != expected_changed:
         raise PatchError(
@@ -1346,6 +1628,7 @@ def _build_dual_layer_rgba_opened(
     manifest = {
         "schema": SCHEMA,
         "mode": "patched",
+        "fit": fit,
         "source": common_source,
         "target": {
             "outer_name": resolve_outer_name(entry),
@@ -1411,7 +1694,7 @@ def _build_dual_layer_rgba_opened(
                 "PNG->4bit quantized)"
             ),
             "encoder_caveat": PRODUCTION_ENCODER_CAVEAT,
-            "h7a": "project-native greedy H7A encoder",
+            "h7a": fit["encoder"],
         },
         "portme": _PORTME,
     }
@@ -1431,6 +1714,7 @@ def _build_dual_layer(
     original_blocks: list[bytes],
     original_stored: list[bytes],
     regenerate_mips: bool = True,
+    allow_simplification: bool = False,
 ) -> PatchResult:
     """PNG boundary for the in-memory dual-layer writer."""
 
@@ -1447,6 +1731,7 @@ def _build_dual_layer(
         original_blocks,
         original_stored,
         regenerate_mips,
+        allow_simplification=allow_simplification,
     )
 
 
@@ -1457,6 +1742,7 @@ def build_patch_rgba(
     *,
     entry_index: int,
     regenerate_mips: bool = True,
+    allow_simplification: bool = False,
 ) -> PatchResult:
     """Rebuild both crest layers from RGBA without temporary PNG files."""
 
@@ -1478,6 +1764,7 @@ def build_patch_rgba(
         original_blocks,
         original_stored,
         regenerate_mips,
+        allow_simplification=allow_simplification,
     )
 
 
@@ -1498,6 +1785,7 @@ class _PreparedBatchBuild:
     original_stored: tuple[bytes, ...]
     regenerate_mips: bool
     extracted_layers: tuple[_LayerTarget, _LayerTarget]
+    allow_simplification: bool = False
 
 
 def _build_prepared_batch_package(
@@ -1519,6 +1807,7 @@ def _build_prepared_batch_package(
         list(prepared.original_stored),
         prepared.regenerate_mips,
         prepared.extracted_layers,
+        allow_simplification=prepared.allow_simplification,
     )
 
 
@@ -1529,6 +1818,7 @@ def build_patch_rgba_batch(
     *,
     regenerate_mips: bool = True,
     max_workers: int = 1,
+    allow_simplification: bool = False,
 ) -> dict[int, PatchResult]:
     """Decode, transform, and rebuild many crest packages in one archive pass.
 
@@ -1587,7 +1877,7 @@ def build_patch_rgba_batch(
             Path(index_path), bytes(rgba_l0), bytes(rgba_l1), entry_index,
             file_index, file_index_l1, entry, record, original_entry,
             tuple(original_blocks), tuple(original_stored), regenerate_mips,
-            (l0, l1),
+            (l0, l1), allow_simplification,
         )
 
     with apf_inner.ArchiveReader(archive) as reader:

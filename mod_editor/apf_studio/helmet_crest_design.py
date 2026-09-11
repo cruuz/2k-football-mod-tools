@@ -25,6 +25,12 @@ GLOBAL_HELMET_WARNING = (
 )
 
 
+CREST_SIMPLIFICATION_HELP = (
+    "Allow each RGB region mask to use fewer shades when needed to fit; alpha is kept, "
+    "mips regenerate, and clearing this option refuses shade reduction (saved with each crest in the project)."
+)
+
+
 class HelmetCrestDesignError(ValueError):
     """The shareable crest-design identity or fixed profile is invalid."""
 
@@ -67,6 +73,7 @@ def metadata(
     source_horizontal_coverage: float,
     output_horizontal_coverage: float,
     detail_sha256: str | None = None,
+    allow_simplification: bool = True,
 ) -> dict[str, object]:
     """Return canonical target metadata for a 512x512 RGBA crest payload.
 
@@ -76,6 +83,7 @@ def metadata(
     """
 
     value: dict[str, object] = {
+        "allow_simplification": allow_simplification,
         "width": 512,
         "height": 512,
         "storage_format": "xenos_4_4_4_4",
@@ -132,7 +140,7 @@ def validate_metadata(
     if (
         asset_id not in {HELMET_CREST_DESIGN_EDIT_ID, crest_edit_id(asset_index)}
         or kind != HELMET_CREST_DESIGN_KIND
-        or not required <= set(value) <= required | {"detail_sha256"}
+        or not required <= set(value) <= required | {"detail_sha256", "allow_simplification"}
         or (
             detail is not None
             and (
@@ -141,6 +149,7 @@ def validate_metadata(
                 or any(ch not in "0123456789abcdef" for ch in detail)
             )
         )
+        or type(value.get("allow_simplification", True)) is not bool
         or value.get("width") != 512
         or value.get("height") != 512
         or value.get("storage_format") != "xenos_4_4_4_4"

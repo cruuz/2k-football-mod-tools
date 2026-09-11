@@ -191,7 +191,7 @@ def thumbnail(asset_io, package, modifications=()):
     return destination
 
 
-def stage_package(session, package, supplied: Mapping[str, Path]):
+def stage_package(session, package, supplied: Mapping[str, Path], *, allow_simplification=True):
     """Resolve the package once, validate every layer, then stage one Undo unit."""
     live = next((value for value in inventory(session.source, session.catalog) if value.key == package.key), None)
     if live != package:
@@ -221,7 +221,8 @@ def stage_package(session, package, supplied: Mapping[str, Path]):
         if package.family == "logo":
             result.append(session.replace_helmet_crest_design(supplied["logo_l0"], profile=RETAIL_CREST_PROFILE,
                           crest_asset_index=package.catalog_index, crest_outer_entry_index=package.outer_index,
-                          detail_png=supplied["logo_l1"]))
+                          detail_png=supplied["logo_l1"],
+                          **({"allow_simplification": False} if not allow_simplification else {})))
         else:
             for layer in package.layers:
                 if layer.name not in supplied:

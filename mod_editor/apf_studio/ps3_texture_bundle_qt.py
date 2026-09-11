@@ -9,7 +9,9 @@ from PyQt5.QtWidgets import (
     QTableWidget, QTableWidgetItem, QVBoxLayout, QHBoxLayout, QFileDialog, QMenu, QMessageBox, QPushButton,
 )
 
-from .ps3_texture_bundle import Assignment, BundleError, build_plan, destination_slots, read_bundle, stage_plan
+from .ps3_texture_bundle import (Assignment, BundleError, build_plan, destination_slots, read_bundle,
+                                 stage_plan, measure_bundle_logos, logo_fit_row)
+from .helmet_crest_design import CREST_SIMPLIFICATION_HELP
 from .apf_theme import fit_dialog
 
 
@@ -21,11 +23,12 @@ class Ps3BundleMappingDialog(QDialog):
     in the summary but cannot enter the mapping. No game/session mutation
     occurs in this dialog.
     """
-    def __init__(self, bundle, slots, *, kind=None, parent=None):
+    def __init__(self, bundle, slots, *, measurements=None, kind=None, parent=None):
         super().__init__(parent)
         self.bundle = bundle
         self.slots = tuple(slots)
         self.plan = None
+        self.measurements = measurements or {}
         self.setWindowTitle("Import PS3 bundle — assign teams")
         self.resize(1060, 600)
         layout = QVBoxLayout(self)
@@ -41,11 +44,17 @@ class Ps3BundleMappingDialog(QDialog):
         self.message.setObjectName("validationBanner")
         self.message.setWordWrap(True)
         layout.addWidget(self.message)
+        self.allow_simplification = QCheckBox("Allow crest shade reduction to fit")
+        self.allow_simplification.setChecked(True)
+        self.allow_simplification.setToolTip(CREST_SIMPLIFICATION_HELP)
+        layout.addWidget(self.allow_simplification)
         toolbar = QHBoxLayout()
         self.select_matched_button = QPushButton("Select all matched")
         self.clear_button = QPushButton("Clear")
         self.resolve_button = QPushButton("Next free matching slot")
-        for button in (self.select_matched_button, self.clear_button, self.resolve_button):
+        self.room_button = QPushButton("Choose packages with room")
+        self.room_button.setToolTip("Explicitly assign checked logo rows to packages with room; review the new slot numbers before staging because the roster crest index must match.")
+        for button in (self.select_matched_button, self.clear_button, self.resolve_button, self.room_button):
             button.setObjectName("utilityButton")
             toolbar.addWidget(button)
         toolbar.addStretch(1)
@@ -56,12 +65,13 @@ class Ps3BundleMappingDialog(QDialog):
             rejected.setWordWrap(True)
             layout.addWidget(rejected)
         pairs = [p for p in bundle.pairs if kind is None or p.kind == kind]
-        self.table = QTableWidget(len(pairs), 4)
-        self.table.setHorizontalHeaderLabels(("Import", "Source team / pair", "Variant", "Xbox 360 destination"))
+        self.table = QTableWidget(len(pairs), 5)
+        self.table.setHorizontalHeaderLabels(("Import", "Source team / pair", "Variant", "Xbox 360 destination", "Compressed art fit"))
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
         self.table.setColumnWidth(0, 60)
         self.table.setColumnWidth(1, 230)
-        self.table.setColumnWidth(2, 170)
+        self.table.setColumnWidth(2, 140)
+        self.table.setColumnWidth(3, 320)
         self.table.horizontalHeader().setStretchLastSection(True)
         self.rows = []
         for number, pair in enumerate(pairs):
@@ -71,7 +81,9 @@ class Ps3BundleMappingDialog(QDialog):
             matching = []
             for slot in self.slots:
                 if slot.kind == pair.kind and slot.writable:
-                    choices.addItem(f"{slot.label} · {slot.slot_id}", slot.slot_id)
+                    label = (f"Logo slot {slot.crest_asset_index}: {slot.label} · {slot.compressed_art_budget:,} bytes"
+                             if slot.compressed_art_budget is not None else f"{slot.label} · {slot.slot_id}")
+                    choices.addItem(label, slot.slot_id)
                     if slot.entry_hash == pair.entry_hash:
                         matching.append(choices.count() - 1)
             if len(matching) == 1:
@@ -83,6 +95,9 @@ class Ps3BundleMappingDialog(QDialog):
                 item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
                 self.table.setItem(number, column, item)
             self.table.setCellWidget(number, 3, choices)
+            item = QTableWidgetItem()
+            item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+            self.table.setItem(number, 4, item)
             self.rows.append((pair, enabled, choices))
             enabled.toggled.connect(self._validate)
             choices.currentIndexChanged.connect(self._validate)
@@ -96,6 +111,8 @@ class Ps3BundleMappingDialog(QDialog):
         self.select_matched_button.clicked.connect(self._select_matched)
         self.clear_button.clicked.connect(self._clear)
         self.resolve_button.clicked.connect(self._resolve_collisions)
+        self.room_button.clicked.connect(self._choose_room)
+        self.allow_simplification.toggled.connect(self._validate)
         self._validate()
         fit_dialog(self)
 
@@ -137,9 +154,56 @@ class Ps3BundleMappingDialog(QDialog):
                 if choices.currentData() is None:
                     raise BundleError(f"Choose a destination for {pair.team} {pair.kind}")
                 assignments.append(Assignment(pair.pair_id, choices.currentData()))
-        return build_plan(self.bundle, self.slots, assignments)
+        plan = build_plan(self.bundle, self.slots, assignments, measurements=self.measurements,
+                          allow_simplification=self.allow_simplification.isChecked())
+        for (pair, slot), row in zip(plan.assignments, plan.receipt["assignments"]):
+            if pair.kind == "logo" and slot.compressed_art_budget is not None and row["fit"]["fits"] is not True:
+                raise BundleError(row["fit"].get("refusal") or row["fit"]["status"])
+        return plan
+
+    def _choose_room(self):
+        used = set()
+        for pair, enabled, choices in self.rows:
+            if not enabled.isChecked():
+                continue
+            if pair.kind != "logo":
+                used.add(choices.currentData())
+                continue
+            candidates = [slot for slot in self.slots if slot.kind == "logo" and slot.writable
+                          and slot.slot_id not in used and slot.compressed_art_budget is not None]
+            candidates.sort(key=lambda slot: (-slot.compressed_art_budget, slot.crest_asset_index))
+            for slot in candidates:
+                fit = logo_fit_row(pair, slot, self.slots, self.measurements,
+                                   allow_simplification=self.allow_simplification.isChecked())
+                if fit["fits"] is True:
+                    choices.setCurrentIndex(choices.findData(slot.slot_id))
+                    used.add(slot.slot_id)
+                    break
+        self._validate()
 
     def _validate(self, *_args):
+        by_id = {slot.slot_id: slot for slot in self.slots}
+        for number, (pair, _enabled, choices) in enumerate(self.rows):
+            slot = by_id.get(choices.currentData())
+            item = self.table.item(number, 4)
+            if slot is None:
+                item.setText("Choose a destination")
+                item.setToolTip("")
+                continue
+            try:
+                fit = logo_fit_row(pair, slot, self.slots, self.measurements,
+                                   allow_simplification=self.allow_simplification.isChecked())
+                item.setText(fit["status"])
+                rooms = fit.get("packages_with_room", ())
+                detail = (f"{fit['compressed_art_bytes']:,} bytes used / {fit['budget_bytes']:,} available. "
+                          if "budget_bytes" in fit else "")
+                tooltip = detail + "Packages with room: " + ("; ".join(
+                    f"Logo slot {row['slot']} ({row['budget_bytes']:,} bytes, {row['shades_per_region']} shades)"
+                    for row in rooms) or "none measured")
+                item.setToolTip(tooltip)
+                choices.setToolTip(tooltip + "\nThe roster crest index must match the slot you choose.")
+            except BundleError as exc:
+                item.setText(str(exc))
         try:
             plan = self._make_plan()
             self.message.setText(f"{len(plan.assignments)} pairs / {len(plan.items)} textures ready to stage. Build verification remains required.")
@@ -188,15 +252,17 @@ def import_button(parent, facade, run_task, on_staged, *, kind=None):
             bundle = read_bundle(Path(selected))
             progress("Resolving Xbox 360 texture slots", 1, 2)
             slots = destination_slots(session.source.index_0a)
+            measurements = (measure_bundle_logos(bundle, slots, session.source.index_0a, progress)
+                            if kind in (None, "logo") else {})
             progress("Bundle ready to review", 2, 2)
-            return bundle, slots
+            return bundle, slots, measurements
 
         def review(result):
             if facade.session is not session:
                 QMessageBox.information(parent, "Game source changed", "Import the bundle again against the selected game.")
                 return
-            bundle, slots = result
-            dialog = Ps3BundleMappingDialog(bundle, slots, kind=kind, parent=parent)
+            bundle, slots, measurements = result
+            dialog = Ps3BundleMappingDialog(bundle, slots, measurements=measurements, kind=kind, parent=parent)
             if dialog.exec_() != QDialog.Accepted:
                 return
             plan = dialog.plan
