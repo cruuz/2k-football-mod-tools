@@ -51,7 +51,7 @@
                  self._music_panel.changed.connect(self._music_changed)
                  self._music_panel.policy_changed.connect(self._music_policy_changed)
                  self._music_panel.playlist_changed.connect(self._music_playlist_changed)
-+                self._music_panel.library_changed.connect(self._music_library_changed)
++            self._music_panel.library_changed.connect(self._music_library_changed)
                  self._music_panel.receipt_ready.connect(self._music_receipt_ready)
                  self._music_panel.operation_state_changed.connect(self._music_operation_state_changed)
                  self._restore_music_build_settings()
@@ -94,7 +94,7 @@
                      raise ValueError("Music replacements need a disc image")
 -                edits = _prepare_music_project(source, plan.music_project, directory, progress or (lambda *_: None))
 +                project_library = []
-+                edits = _prepare_music_project(source, plan.music_project, directory,
++                edits = _prepare_music_project(effective_source, plan.music_project, directory,
 +                    progress or (lambda *_: None), library_result=project_library)
 +                if project_library:
 +                    if plan.music_library:
