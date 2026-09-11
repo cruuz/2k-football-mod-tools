@@ -114,7 +114,7 @@ class XemuSettingsTests(unittest.TestCase):
 
 class XemuBlockerTests(unittest.TestCase):
     def _facade(self, command):
-        return studio_facade.Nfl2k5StudioFacade(xemu_command=command)
+        return studio_facade.Nfl2k5StudioFacade(uniform_catalog=object(), xemu_command=command)
 
     def test_each_cause_is_named_separately(self) -> None:
         missing = self._facade(())

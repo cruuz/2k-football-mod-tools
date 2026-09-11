@@ -1393,6 +1393,11 @@ class RosterDocument:
         self._parse()
         self.set_scheme(self.scheme)
 
+    @property
+    def college_warning(self) -> str:
+        from .nfl2k5_college_check import warning
+        return warning(sum(player.college_index is None for player in self.players))
+
     def set_reference_year(self, year: int | None) -> None:
         """Change DOB interpretation only; no stored fields or dirty state change."""
         self.reference_year = validate_reference_year(year)

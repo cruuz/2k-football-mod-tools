@@ -55,7 +55,9 @@ def _load(recipe):
         document = json.loads(json.dumps(recipe))
         root = Path.cwd().resolve()
     require(isinstance(document, dict) and document.get('schema') == SCHEMA, 'unsupported music recipe schema')
-    require(set(document) <= {'schema', 'bank', 'tracks'}, 'unknown music recipe fields')
+    require(set(document) <= {'schema', 'bank', 'tracks', 'collection_name'}, 'unknown music recipe fields')
+    if 'collection_name' in document:
+        document['collection_name'] = metadata.collection_label(document['collection_name'])
     require(document.get('bank') in ('femusic', 'cribmusic'), 'music libraries support femusic or cribmusic')
     tracks = document.get('tracks')
     require(isinstance(tracks, list) and 1 <= len(tracks) <= 400, 'music library needs 1..400 tracks')
@@ -267,7 +269,7 @@ def _project(document, disc, tracks):
     if document['bank'] == 'cribmusic':
         song_records = [{k: t[k] for k in ('title', 'artist', 'frames')} for t in tracks]
         original_xbe = _xbe(disc)
-        new_xbe, xbe_receipt = metadata.apply(original_xbe, song_records)
+        new_xbe, xbe_receipt = metadata.apply(original_xbe, song_records, document.get('collection_name', 'My songs'))
         if new_xbe == original_xbe:
             new_xbe = None
         elif len(new_xbe) > len(original_xbe):
@@ -481,8 +483,10 @@ def verify(source, output, planned, *, track_hashes=None, progress=None):
             unrelated += 1
         if planned['xbe']:
             song_records = [{k:t[k] for k in ('title','artist','frames')} for t in planned['tracks']]
-            expected_xbe, _ = metadata.apply(_xbe(original),song_records)
+            expected_xbe, _ = metadata.apply(_xbe(original), song_records, planned['recipe'].get('collection_name', 'My songs'))
             require(_xbe(result) == expected_xbe, 'jukebox XBE read-back differs')
+            require(metadata.collection_table(_xbe(result)) == metadata.collection_table(expected_xbe),
+                    'jukebox collection table read-back differs')
         samples = []
         require(track_hashes is not None, 'track hashes from rebuild receipt required for complete verification')
         for name,b in planned['boundaries'].items():

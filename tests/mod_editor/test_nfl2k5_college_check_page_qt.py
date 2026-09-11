@@ -139,8 +139,8 @@ class CollegeCheckPageTests(unittest.TestCase):
             panel, document = self.panel, self.panel.document
             player = document.players[0]
             self.assertEqual(player.college, "")
-            with self.assertRaisesRegex(codec.SaveRostError, "college pointer"):
-                panel.write_copy_to(Path(td) / "blocked")
+            self.assertTrue(document.college_warning)
+            self.assertTrue(panel.write_copy_to(Path(td) / "unrepaired")["signed"])
             session = panel.college_check_session()
             dialog = CollegeCheckDialog(panel, session)
             try:
@@ -368,8 +368,8 @@ class CollegeCheckPageTests(unittest.TestCase):
             self.assertTrue(page.edit_game(0, 1, hour=8, minute=30), page.last_error)
             player = panel.document.players[0]
             panel.set_field(player, "speed", 77)
-            with self.assertRaisesRegex(ValueError, "college pointer"):
-                panel.write_copy_to(Path(td) / "blocked")
+            self.assertTrue(panel.document.college_warning)
+            self.assertTrue(panel.write_copy_to(Path(td) / "unrepaired")["signed"])
             session = panel.college_check_session()
             self.assertEqual(session["source_kind"], "save")
             edited = panel.document.to_body()                               # schedule + rating, bad college
@@ -384,8 +384,8 @@ class CollegeCheckPageTests(unittest.TestCase):
             self.assertEqual(panel.document.to_body(), edited)              # the exact prior word, edits intact
             self.assertEqual(panel.document.players[0].record.values["speed"], 77)
             self.assertEqual(len(page.edit_labels()), 1)
-            with self.assertRaisesRegex(ValueError, "college pointer"):
-                panel.write_copy_to(Path(td) / "blocked2")
+            self.assertTrue(panel.document.college_warning)
+            self.assertTrue(panel.write_copy_to(Path(td) / "unrepaired-undo")["signed"])
             self.assertEqual(panel.redo(), "college repair (1)")
             self.assertEqual(panel.document.to_body(), after)
             self.assertEqual(panel.undo(), "college repair (1)")

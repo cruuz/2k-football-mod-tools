@@ -203,7 +203,10 @@ def _recolour(path: Path) -> None:
 class KitRoundTripDigitsTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.catalog = load_nfl2k5_uniform_catalog()
+        try:
+            cls.catalog = load_nfl2k5_uniform_catalog()
+        except FileNotFoundError as exc:
+            raise unittest.SkipTest(f"private uniform catalog reports absent: {exc.filename}") from exc
 
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory(prefix="hf63-digit-kit-")

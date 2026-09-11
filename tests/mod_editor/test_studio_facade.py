@@ -334,6 +334,9 @@ class StudioFacadeTests(unittest.TestCase):
         # to ours where the OS temp dir sits under a symlink (macOS /private/var)
         # or a short name (Windows).
         self.root = Path(self.temporary.name).resolve()
+        config_path = mock.patch('mod_editor.studio.xemu_settings.config_path', return_value=self.root / 'xemu.toml')
+        config_path.start()
+        self.addCleanup(config_path.stop)
         source = SimpleNamespace(selected_path=str(self.root / "NFL2K5.iso"))
         self.cache = SimpleNamespace(source=source, resource_count=86882)
         self.catalog = _Catalog()

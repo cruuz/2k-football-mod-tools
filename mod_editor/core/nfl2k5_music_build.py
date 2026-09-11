@@ -56,7 +56,7 @@ def slot_for_stream(stream):
         stream.sample_rate, stream.frame_count, (), tuple(spans))
 
 
-def song_library_recipe(songs):
+def song_library_recipe(songs, collection_name="My songs"):
     """Keep the 7 menu and 59 jukebox songs; append at most 134 authored songs.
 
     Existing BuildPlan.music_library consumes this unchanged v1 recipe. The
@@ -75,7 +75,9 @@ def song_library_recipe(songs):
         if artist.strip():
             row["artist"] = artist
         tracks.append(row)
-    return dict(schema="nfl2k5_music_library/v1", bank="cribmusic", tracks=tracks)
+    from .nfl2k5_music_metadata import collection_label
+    return dict(schema="nfl2k5_music_library/v1", bank="cribmusic", tracks=tracks,
+                collection_name=collection_label(collection_name))
 
 
 def encode_library_song(source, encoded_path, preview_path, *, cancelled=None, progress=None):

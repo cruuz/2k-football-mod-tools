@@ -15,7 +15,7 @@ from mod_editor.studio.facade import ExternalBuild, Nfl2k5StudioFacade, Validati
 
 class ExternalBuildTests(unittest.TestCase):
     def test_a_regular_file_becomes_the_latest_build(self) -> None:
-        facade = Nfl2k5StudioFacade()
+        facade = Nfl2k5StudioFacade(uniform_catalog=object(), xemu_command=())
         with tempfile.TemporaryDirectory() as tmp:
             image = Path(tmp) / "modded.xiso.iso"
             image.write_bytes(b"\0" * 32)
@@ -24,7 +24,7 @@ class ExternalBuildTests(unittest.TestCase):
             self.assertNotIn("Build a modded XISO first", facade.xemu_blocker)
 
     def test_missing_or_linked_files_are_refused(self) -> None:
-        facade = Nfl2k5StudioFacade()
+        facade = Nfl2k5StudioFacade(uniform_catalog=object(), xemu_command=())
         with tempfile.TemporaryDirectory() as tmp:
             with self.assertRaises(ValidationError):
                 facade.register_external_build(Path(tmp) / "missing.iso")
