@@ -435,6 +435,7 @@ class GameplayPatchesPanel(QWidget):
             "QCheckBox:disabled { color: #6b7385; }"
             "QLabel#optionBadge { color: #f3d27a; background: #2a2a1c; border: 1px solid #6a5a2a; border-radius: 6px; padding: 1px 6px; }")
         self.badges: dict[str, QLabel] = {}
+        self._helpers: dict[str, QLabel] = {}
         self._static_badges: dict[str, str] = {}
         list_box = QGroupBox("Changes")
         lb = QVBoxLayout(list_box)
@@ -531,12 +532,13 @@ class GameplayPatchesPanel(QWidget):
             head.addWidget(badge_label)
             head.addStretch(1)
             rl.addLayout(head)
-            if helper:
-                helper_label = QLabel(helper)
-                helper_label.setObjectName("throwMuted")
-                helper_label.setWordWrap(True)
-                helper_label.setIndent(30)
-                rl.addWidget(helper_label)
+            helper_label = QLabel(helper)
+            helper_label.setObjectName("throwMuted")
+            helper_label.setWordWrap(True)
+            helper_label.setIndent(30)
+            helper_label.setVisible(bool(helper))
+            rl.addWidget(helper_label)
+            self._helpers[key] = helper_label
             more = Details("Details")
             more.add_text(explanation)
             more.setContentsMargins(30, 0, 0, 0)
@@ -829,10 +831,15 @@ class GameplayPatchesPanel(QWidget):
             self.guardian_everyone_practice_check.setEnabled(on and self.checks["guardian_overlay"].isEnabled())
             if on and "guardian_cap" in self.checks:
                 self.checks["guardian_cap"].setChecked(False)
+        from mod_editor.studio.plan_controls import refresh_playbook_controls
+        self._playbook_blockers = refresh_playbook_controls(
+            self.checks, self._helpers, self._state)
         any_on = any(c.isChecked() for c in self.checks.values())
         configured = True   # MyCareer no longer needs a setup file: an empty field selects in-game creation
         self.write_button.setEnabled(configured and any_on and bool(self.source_field.text()) and bool(self.target_field.text())
-                                     and self._task is None and not self._reading)
+                                     and self._task is None and not self._reading
+                                     and not self._playbook_blockers)
+        self.write_button.setToolTip(" ".join(self._playbook_blockers))
 
     def _choose_source(self) -> None:
         chosen, _f = QFileDialog.getOpenFileName(self, "Choose your game disc (.iso) or default.xbe", str(Path.home()), SOURCE_FILTER)
@@ -853,6 +860,9 @@ class GameplayPatchesPanel(QWidget):
             self._refresh()
 
     def _write(self) -> None:
+        self._refresh()
+        if self._playbook_blockers:
+            return
         plan = self.plan()
         if not any(check.isChecked() for check in self.checks.values()):
             return

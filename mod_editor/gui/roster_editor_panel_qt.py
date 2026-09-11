@@ -2005,10 +2005,34 @@ class RosterEditorPanel(QWidget):
             f"{summary['players']:,} players · {summary['teams']} teams · {summary['free_agents']} free "
             f"agents · {summary['draft_class']} draft prospects{repairs}")
         self._edits_snapshot = None
+        if document.college_warning:
+            from PyQt5.QtCore import QTimer
+            # A timer parented to this panel dies with it, so a torn-down panel never runs the prompt.
+            prompt = QTimer(self)
+            prompt.setSingleShot(True)
+            prompt.timeout.connect(lambda doc=document: self._offer_college_repair(doc))
+            prompt.start(0)
         if self._repair_plans:
             self.report.setPlainText("Check & repair found:\n" + "\n".join(
                 f"  - {plan['detail']}" for plan in self._repair_plans)
                 + "\n\nNothing has been changed. Press Repair to apply these, or leave them.")
+
+    def _offer_college_repair(self, document) -> None:
+        """Offer Check my rosters for a document that loaded with unresolved colleges (non-blocking)."""
+        if self.document is not document or not document.college_warning:
+            return
+        box = QMessageBox(QMessageBox.Question, "Missing or invalid colleges",
+                          document.college_warning + ".\n\nOpen Check my rosters now?",
+                          QMessageBox.Yes | QMessageBox.No, self)
+        box.setDefaultButton(QMessageBox.Yes)
+        box.setAttribute(Qt.WA_DeleteOnClose)
+
+        def answered(button, box=box):
+            if box.standardButton(button) == QMessageBox.Yes:
+                self.open_college_check()
+
+        box.buttonClicked.connect(answered)
+        box.open()
 
     def load_from_facade(self) -> bool:
         """Load the roster out of whatever disc the studio already has open."""
@@ -3915,7 +3939,8 @@ class RosterEditorPanel(QWidget):
             self.franchise_panel.redo_button.setEnabled(self.undo_stack.can_redo())
 
     def _set_status(self, text: str) -> None:
-        self.status_label.setText(text)
+        warning = self.document.college_warning if self.document is not None else ""
+        self.status_label.setText(text + ("\n" + warning if warning else ""))
 
 
 __all__ = ["AgeShiftDialog", "AttributeCard", "CollegeCheckDialog", "GlobalEditDialog", "IdPickerDialog", "RosterEditorPanel", "SwapPlayerDialog",

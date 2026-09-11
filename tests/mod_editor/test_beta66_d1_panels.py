@@ -127,12 +127,18 @@ class PanelTests(unittest.TestCase):
         bad, _ = corrupt(synthetic_body(), 'outside')
         bad, _ = corrupt(bad, 'null', player=1)
         document = rr.RosterDocument(bad, base=rr.find_block_base(bad))
-        with patch.object(module.QMessageBox, 'question', return_value=QMessageBox.No) as ask:
-            panel.load_document(document)
+        panel.load_document(document)
+        self.app.processEvents()
+        # The offer is a non-blocking question box parented to the panel (no nested event loop).
+        prompts = [box for box in panel.findChildren(module.QMessageBox) if 'Open Check my rosters' in box.text()]
+        self.assertEqual(len(prompts), 1)
+        self.assertIn('2 players have a missing/invalid college', prompts[0].text())
+        with patch.object(panel, 'open_college_check') as opened:
+            prompts[0].button(QMessageBox.No).click()
             self.app.processEvents()
-            self.assertTrue(ask.called)
-            self.assertIn('2 players have a missing/invalid college', panel.status_label.text())
-            self.assertIsNotNone(panel.college_check_session())
+            self.assertFalse(opened.called)
+        self.assertIn('2 players have a missing/invalid college', panel.status_label.text())
+        self.assertIsNotNone(panel.college_check_session())
 
 
 if __name__ == '__main__':

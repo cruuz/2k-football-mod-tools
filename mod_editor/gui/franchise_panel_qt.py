@@ -1294,7 +1294,8 @@ class FranchisePanel(QWidget):
 
     # ------------------------------------------------------------------ chrome
     def _set_status(self, text: str) -> None:
-        self.status_label.setText(text)
+        warning = self._document.college_warning if self._document is not None else ""
+        self.status_label.setText(text + ("\n" + warning if warning else ""))
 
     @property
     def last_error(self) -> str:

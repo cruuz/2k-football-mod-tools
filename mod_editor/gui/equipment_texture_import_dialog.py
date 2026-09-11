@@ -19,12 +19,14 @@ class EquipmentTextureImportDialog(QDialog):
         target = QLabel(f"{asset.label}\nPNG size: {asset.width} x {asset.height}")
         target.setWordWrap(True)
         layout.addWidget(target)
-        default = QLabel("Default: change colours only. " + PALETTE_HELP)
+        default = QLabel(
+            "Gloves and shoes default to their own artwork, including when you copy an exported style. "
+            "Untick below only for a recolour of the existing shared design. " + PALETTE_HELP)
         default.setWordWrap(True)
         layout.addWidget(default)
         self.own_texture = QCheckBox(CHOICE_CAPTION)
         self.own_texture.setObjectName("equipmentOwnTexture")
-        self.own_texture.setChecked(False)
+        self.own_texture.setChecked(supports_own_texture(asset.asset_id))
         self.own_texture.setEnabled(supports_own_texture(asset.asset_id))
         self.own_texture.setToolTip(CHOICE_HELP)
         layout.addWidget(self.own_texture)
@@ -37,7 +39,7 @@ class EquipmentTextureImportDialog(QDialog):
         for scale in (1, 2, 4):
             self.game_size.addItem(f"{asset.width // scale} x {asset.height // scale}"
                                   + (" (original size)" if scale == 1 else ""), scale)
-        self.game_size.setEnabled(False)
+        self.game_size.setEnabled(self.independent)
         self.own_texture.toggled.connect(
             lambda checked: self.game_size.setEnabled(checked and self.own_texture.isEnabled()))
         layout.addWidget(self.game_size)

@@ -137,7 +137,10 @@ class BuildPanel(QWidget):
         root.addWidget(title)
         intro = QLabel("Choose a preset or select changes, then Make my disc. The source stays unchanged. "
                        "This uses the selections on this tab; project edits (art, text, audio) use Make disc "
-                       "from project on their own pages. " + XEMU_LINE)
+                       "from project on their own pages. " + XEMU_LINE + " "
+                       "Your disc: ~/2K5 Mod Studio Builds/NFL 2K5 Modded.xiso.iso. "
+                       "To play again later: open xemu, then Machine > Load Disc. "
+                       "Launch shows the exact file and folder if you saved elsewhere.")
         intro.setObjectName("throwMuted")
         intro.setWordWrap(True)
         root.addWidget(intro)
@@ -1498,6 +1501,9 @@ class BuildPanel(QWidget):
             return denial
         if self._reading:
             return "Reading disc…"
+        conflicts = getattr(self, "_playbook_blockers", ())
+        if conflicts:
+            return " ".join(conflicts)
         source = self.source_field.text().strip()
         if not source:
             return "Open your game disc (top right), or choose a disc / default.xbe above."
@@ -1660,6 +1666,9 @@ class BuildPanel(QWidget):
             self.summary_label.setText(f"Selected: {len(labels)} change{'s' if len(labels) != 1 else ''} — {shown}.")
         else:
             self.summary_label.setText("Selected: nothing yet.")
+        from mod_editor.studio.plan_controls import refresh_playbook_controls
+        self._playbook_blockers = refresh_playbook_controls(
+            self._boxes(), self._helpers, self._state, self._available)
         blocker = self.blocker()
         self.cancel_button.setEnabled(self._task is not None)
         self.music_preview_button.setEnabled(bool(

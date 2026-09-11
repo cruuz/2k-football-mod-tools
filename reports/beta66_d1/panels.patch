@@ -1,6 +1,8 @@
+diff --git a/mod_editor/gui/build_panel_qt.py b/mod_editor/gui/build_panel_qt.py
+index 8d50eeb1..6f4b65c2 100644
 --- a/mod_editor/gui/build_panel_qt.py
 +++ b/mod_editor/gui/build_panel_qt.py
-@@ -137,7 +137,10 @@
+@@ -137,7 +137,10 @@ class BuildPanel(QWidget):
          root.addWidget(title)
          intro = QLabel("Choose a preset or select changes, then Make my disc. The source stays unchanged. "
                         "This uses the selections on this tab; project edits (art, text, audio) use Make disc "
@@ -12,7 +14,7 @@
          intro.setObjectName("throwMuted")
          intro.setWordWrap(True)
          root.addWidget(intro)
-@@ -1498,6 +1501,9 @@
+@@ -1498,6 +1501,9 @@ class BuildPanel(QWidget):
              return denial
          if self._reading:
              return "Reading disc…"
@@ -22,7 +24,7 @@
          source = self.source_field.text().strip()
          if not source:
              return "Open your game disc (top right), or choose a disc / default.xbe above."
-@@ -1660,6 +1666,9 @@
+@@ -1660,6 +1666,9 @@ class BuildPanel(QWidget):
              self.summary_label.setText(f"Selected: {len(labels)} change{'s' if len(labels) != 1 else ''} — {shown}.")
          else:
              self.summary_label.setText("Selected: nothing yet.")
@@ -32,9 +34,55 @@
          blocker = self.blocker()
          self.cancel_button.setEnabled(self._task is not None)
          self.music_preview_button.setEnabled(bool(
+diff --git a/mod_editor/gui/equipment_texture_import_dialog.py b/mod_editor/gui/equipment_texture_import_dialog.py
+index 1d954e4f..09cb26db 100644
+--- a/mod_editor/gui/equipment_texture_import_dialog.py
++++ b/mod_editor/gui/equipment_texture_import_dialog.py
+@@ -19,12 +19,14 @@ class EquipmentTextureImportDialog(QDialog):
+         target = QLabel(f"{asset.label}\nPNG size: {asset.width} x {asset.height}")
+         target.setWordWrap(True)
+         layout.addWidget(target)
+-        default = QLabel("Default: change colours only. " + PALETTE_HELP)
++        default = QLabel(
++            "Gloves and shoes default to their own artwork, including when you copy an exported style. "
++            "Untick below only for a recolour of the existing shared design. " + PALETTE_HELP)
+         default.setWordWrap(True)
+         layout.addWidget(default)
+         self.own_texture = QCheckBox(CHOICE_CAPTION)
+         self.own_texture.setObjectName("equipmentOwnTexture")
+-        self.own_texture.setChecked(False)
++        self.own_texture.setChecked(supports_own_texture(asset.asset_id))
+         self.own_texture.setEnabled(supports_own_texture(asset.asset_id))
+         self.own_texture.setToolTip(CHOICE_HELP)
+         layout.addWidget(self.own_texture)
+@@ -37,7 +39,7 @@ class EquipmentTextureImportDialog(QDialog):
+         for scale in (1, 2, 4):
+             self.game_size.addItem(f"{asset.width // scale} x {asset.height // scale}"
+                                   + (" (original size)" if scale == 1 else ""), scale)
+-        self.game_size.setEnabled(False)
++        self.game_size.setEnabled(self.independent)
+         self.own_texture.toggled.connect(
+             lambda checked: self.game_size.setEnabled(checked and self.own_texture.isEnabled()))
+         layout.addWidget(self.game_size)
+diff --git a/mod_editor/gui/franchise_panel_qt.py b/mod_editor/gui/franchise_panel_qt.py
+index 01124235..18f923b5 100644
+--- a/mod_editor/gui/franchise_panel_qt.py
++++ b/mod_editor/gui/franchise_panel_qt.py
+@@ -1294,7 +1294,8 @@ class FranchisePanel(QWidget):
+ 
+     # ------------------------------------------------------------------ chrome
+     def _set_status(self, text: str) -> None:
+-        self.status_label.setText(text)
++        warning = self._document.college_warning if self._document is not None else ""
++        self.status_label.setText(text + ("\n" + warning if warning else ""))
+ 
+     @property
+     def last_error(self) -> str:
+diff --git a/mod_editor/gui/gameplay_patches_panel_qt.py b/mod_editor/gui/gameplay_patches_panel_qt.py
+index adb42ad6..98c7655f 100644
 --- a/mod_editor/gui/gameplay_patches_panel_qt.py
 +++ b/mod_editor/gui/gameplay_patches_panel_qt.py
-@@ -435,6 +435,7 @@
+@@ -435,6 +435,7 @@ class GameplayPatchesPanel(QWidget):
              "QCheckBox:disabled { color: #6b7385; }"
              "QLabel#optionBadge { color: #f3d27a; background: #2a2a1c; border: 1px solid #6a5a2a; border-radius: 6px; padding: 1px 6px; }")
          self.badges: dict[str, QLabel] = {}
@@ -42,7 +90,7 @@
          self._static_badges: dict[str, str] = {}
          list_box = QGroupBox("Changes")
          lb = QVBoxLayout(list_box)
-@@ -531,12 +532,13 @@
+@@ -531,12 +532,13 @@ class GameplayPatchesPanel(QWidget):
              head.addWidget(badge_label)
              head.addStretch(1)
              rl.addLayout(head)
@@ -62,7 +110,7 @@
              more = Details("Details")
              more.add_text(explanation)
              more.setContentsMargins(30, 0, 0, 0)
-@@ -829,10 +831,15 @@
+@@ -829,10 +831,15 @@ class GameplayPatchesPanel(QWidget):
              self.guardian_everyone_practice_check.setEnabled(on and self.checks["guardian_overlay"].isEnabled())
              if on and "guardian_cap" in self.checks:
                  self.checks["guardian_cap"].setChecked(False)
@@ -76,12 +124,12 @@
 +                                     and self._task is None and not self._reading
 +                                     and not self._playbook_blockers)
 +        self.write_button.setToolTip(" ".join(self._playbook_blockers))
-
+ 
      def _choose_source(self) -> None:
          chosen, _f = QFileDialog.getOpenFileName(self, "Choose your game disc (.iso) or default.xbe", str(Path.home()), SOURCE_FILTER)
-@@ -853,6 +860,9 @@
+@@ -853,6 +860,9 @@ class GameplayPatchesPanel(QWidget):
              self._refresh()
-
+ 
      def _write(self) -> None:
 +        self._refresh()
 +        if self._playbook_blockers:
@@ -89,78 +137,53 @@
          plan = self.plan()
          if not any(check.isChecked() for check in self.checks.values()):
              return
---- a/mod_editor/gui/equipment_texture_import_dialog.py
-+++ b/mod_editor/gui/equipment_texture_import_dialog.py
-@@ -19,12 +19,14 @@
-         target = QLabel(f"{asset.label}\nPNG size: {asset.width} x {asset.height}")
-         target.setWordWrap(True)
-         layout.addWidget(target)
--        default = QLabel("Default: change colours only. " + PALETTE_HELP)
-+        default = QLabel(
-+            "Gloves and shoes default to their own artwork, including when you copy an exported style. "
-+            "Untick below only for a recolour of the existing shared design. " + PALETTE_HELP)
-         default.setWordWrap(True)
-         layout.addWidget(default)
-         self.own_texture = QCheckBox(CHOICE_CAPTION)
-         self.own_texture.setObjectName("equipmentOwnTexture")
--        self.own_texture.setChecked(False)
-+        self.own_texture.setChecked(supports_own_texture(asset.asset_id))
-         self.own_texture.setEnabled(supports_own_texture(asset.asset_id))
-         self.own_texture.setToolTip(CHOICE_HELP)
-         layout.addWidget(self.own_texture)
-@@ -37,7 +39,7 @@
-         for scale in (1, 2, 4):
-             self.game_size.addItem(f"{asset.width // scale} x {asset.height // scale}"
-                                   + (" (original size)" if scale == 1 else ""), scale)
--        self.game_size.setEnabled(False)
-+        self.game_size.setEnabled(self.independent)
-         self.own_texture.toggled.connect(
-             lambda checked: self.game_size.setEnabled(checked and self.own_texture.isEnabled()))
-         layout.addWidget(self.game_size)
+diff --git a/mod_editor/gui/roster_editor_panel_qt.py b/mod_editor/gui/roster_editor_panel_qt.py
+index 92dd0282..69d9ee3d 100644
 --- a/mod_editor/gui/roster_editor_panel_qt.py
 +++ b/mod_editor/gui/roster_editor_panel_qt.py
-@@ -2005,10 +2005,22 @@
+@@ -2005,11 +2005,35 @@ class RosterEditorPanel(QWidget):
              f"{summary['players']:,} players · {summary['teams']} teams · {summary['free_agents']} free "
              f"agents · {summary['draft_class']} draft prospects{repairs}")
          self._edits_snapshot = None
 +        if document.college_warning:
 +            from PyQt5.QtCore import QTimer
-+            QTimer.singleShot(0, lambda doc=document: self._offer_college_repair(doc))
++            # A timer parented to this panel dies with it, so a torn-down panel never runs the prompt.
++            prompt = QTimer(self)
++            prompt.setSingleShot(True)
++            prompt.timeout.connect(lambda doc=document: self._offer_college_repair(doc))
++            prompt.start(0)
          if self._repair_plans:
              self.report.setPlainText("Check & repair found:\n" + "\n".join(
                  f"  - {plan['detail']}" for plan in self._repair_plans)
                  + "\n\nNothing has been changed. Press Repair to apply these, or leave them.")
-+
+ 
 +    def _offer_college_repair(self, document) -> None:
++        """Offer Check my rosters for a document that loaded with unresolved colleges (non-blocking)."""
 +        if self.document is not document or not document.college_warning:
 +            return
-+        answer = QMessageBox.question(
-+            self, "Missing or invalid colleges", document.college_warning + ".\n\nOpen Check my rosters now?",
-+            QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
-+        if answer == QMessageBox.Yes:
-+            self.open_college_check()
-
++        box = QMessageBox(QMessageBox.Question, "Missing or invalid colleges",
++                          document.college_warning + ".\n\nOpen Check my rosters now?",
++                          QMessageBox.Yes | QMessageBox.No, self)
++        box.setDefaultButton(QMessageBox.Yes)
++        box.setAttribute(Qt.WA_DeleteOnClose)
++
++        def answered(button, box=box):
++            if box.standardButton(button) == QMessageBox.Yes:
++                self.open_college_check()
++
++        box.buttonClicked.connect(answered)
++        box.open()
++
      def load_from_facade(self) -> bool:
          """Load the roster out of whatever disc the studio already has open."""
-@@ -3915,7 +3927,8 @@
+ 
+@@ -3915,7 +3939,8 @@ class RosterEditorPanel(QWidget):
              self.franchise_panel.redo_button.setEnabled(self.undo_stack.can_redo())
-
+ 
      def _set_status(self, text: str) -> None:
 -        self.status_label.setText(text)
 +        warning = self.document.college_warning if self.document is not None else ""
 +        self.status_label.setText(text + ("\n" + warning if warning else ""))
-
-
+ 
+ 
  __all__ = ["AgeShiftDialog", "AttributeCard", "CollegeCheckDialog", "GlobalEditDialog", "IdPickerDialog", "RosterEditorPanel", "SwapPlayerDialog",
---- a/mod_editor/gui/franchise_panel_qt.py
-+++ b/mod_editor/gui/franchise_panel_qt.py
-@@ -1294,7 +1294,8 @@
-
-     # ------------------------------------------------------------------ chrome
-     def _set_status(self, text: str) -> None:
--        self.status_label.setText(text)
-+        warning = self._document.college_warning if self._document is not None else ""
-+        self.status_label.setText(text + ("\n" + warning if warning else ""))
-
-     @property
-     def last_error(self) -> str:

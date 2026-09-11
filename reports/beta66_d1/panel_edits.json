@@ -52,11 +52,11 @@
   "mod_editor/gui/roster_editor_panel_qt.py": [
     {
       "old": "    def load_from_facade(self) -> bool:",
-      "new": "    def _offer_college_repair(self, document) -> None:\n        if self.document is not document or not document.college_warning:\n            return\n        answer = QMessageBox.question(\n            self, \"Missing or invalid colleges\", document.college_warning + \".\\n\\nOpen Check my rosters now?\",\n            QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)\n        if answer == QMessageBox.Yes:\n            self.open_college_check()\n\n    def load_from_facade(self) -> bool:"
+      "new": "    def _offer_college_repair(self, document) -> None:\n        \"\"\"Offer Check my rosters for a document that loaded with unresolved colleges (non-blocking).\"\"\"\n        if self.document is not document or not document.college_warning:\n            return\n        box = QMessageBox(QMessageBox.Question, \"Missing or invalid colleges\",\n                          document.college_warning + \".\\n\\nOpen Check my rosters now?\",\n                          QMessageBox.Yes | QMessageBox.No, self)\n        box.setDefaultButton(QMessageBox.Yes)\n        box.setAttribute(Qt.WA_DeleteOnClose)\n\n        def answered(button, box=box):\n            if box.standardButton(button) == QMessageBox.Yes:\n                self.open_college_check()\n\n        box.buttonClicked.connect(answered)\n        box.open()\n\n    def load_from_facade(self) -> bool:"
     },
     {
       "old": "        self._edits_snapshot = None\n        if self._repair_plans:",
-      "new": "        self._edits_snapshot = None\n        if document.college_warning:\n            from PyQt5.QtCore import QTimer\n            QTimer.singleShot(0, lambda doc=document: self._offer_college_repair(doc))\n        if self._repair_plans:"
+      "new": "        self._edits_snapshot = None\n        if document.college_warning:\n            from PyQt5.QtCore import QTimer\n            # A timer parented to this panel dies with it, so a torn-down panel never runs the prompt.\n            prompt = QTimer(self)\n            prompt.setSingleShot(True)\n            prompt.timeout.connect(lambda doc=document: self._offer_college_repair(doc))\n            prompt.start(0)\n        if self._repair_plans:"
     },
     {
       "old": "    def _set_status(self, text: str) -> None:\n        self.status_label.setText(text)",

@@ -187,7 +187,9 @@ class SchedulePanelTests(_PanelCase):
         for status in (page.status_label.text(), self.panel.status_label.text()):
             self.assertNotIn("Refused", status)
             self.assertNotIn(REPORTED, status)
-        self.assertEqual(page.status_label.text(), "Week 1 game 2: hour 4 → 8, minute 15 → 30")
+        # Beta 66: the Franchise status keeps the college warning on a second line until it is repaired.
+        self.assertTrue(page.status_label.text().startswith("Week 1 game 2: hour 4 → 8, minute 15 → 30"), page.status_label.text())
+        self.assertIn("missing/invalid college; use Check my rosters to repair", page.status_label.text())
         self.assertEqual((page.save.game(0, 1).hour, page.save.game(0, 1).minute), (8, 30))
         self.assertTrue(page.swap_home_away(0, 1), page.status_label.text())
         receipt = self.panel.write_copy_to(self.root / "copy")

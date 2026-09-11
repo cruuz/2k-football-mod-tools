@@ -110,6 +110,7 @@ docs/mod_editor/nfl2k5_coverage_trail_capability.json
 docs/mod_editor/nfl2k5_scorebug_template_capability.json
 mod_editor/core/nfl2k5_scorebug_author.py
 mod_editor/core/build_feedback.py
+mod_editor/core/equipment_palette.py
 mod_editor/core/image_use.py
 docs/mod_editor/number_sheets.md
 docs/mod_editor/discord_bugs_2_faq.md
@@ -629,6 +630,8 @@ mod_editor/core/nfl2k5_music_metadata.py
 mod_editor/core/nfl2k5_music_storage.py
 mod_editor/core/nfl2k5_music_archive.py
 mod_editor/studio/music_service.py
+mod_editor/studio/plan_controls.py
+mod_editor/studio/xemu_settings.py
 mod_editor/gui/music_panel_qt.py
 tools/nfl2k5_music_banks.py
 tools/nfl2k5_scorebug_reference.py
@@ -819,6 +822,7 @@ docs/scorebug_ingame/freeze_v2/validation.json
 mod_editor/core/nfl2k5_deep_zone.py
 mod_editor/core/nfl2k5_deep_zone_code.py
 mod_editor/core/nfl2k5_deep_zone_bail.py
+mod_editor/core/nfl2k5_music_collections.py
 docs/mod_editor/nfl2k5_deep_zone_capability.json
 ASTRA_DEEP_ZONE_TIERS_V2_REPORT.md
 mod_editor/core/nfl2k5_my_career_progression.py
