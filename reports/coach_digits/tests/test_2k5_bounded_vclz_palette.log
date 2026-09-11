@@ -1,0 +1,13 @@
+test_bound_is_inclusive_and_one_byte_short_still_fails (__main__.Exact1568BytePaletteFitTests.test_bound_is_inclusive_and_one_byte_short_still_fails) ... ok
+test_box_mips_spend_the_span_on_blends_the_majority_filter_saves (__main__.Exact1568BytePaletteFitTests.test_box_mips_spend_the_span_on_blends_the_majority_filter_saves)
+A thin-outline digit is the art users actually author. ... ok
+test_compressible_art_keeps_its_complete_palette (__main__.Exact1568BytePaletteFitTests.test_compressible_art_keeps_its_complete_palette) ... ok
+test_high_entropy_digit_fits_the_exact_reported_bound (__main__.Exact1568BytePaletteFitTests.test_high_entropy_digit_fits_the_exact_reported_bound) ... ok
+test_number_and_sleeve_importers_use_the_same_bounded_path (__main__.Exact1568BytePaletteFitTests.test_number_and_sleeve_importers_use_the_same_bounded_path) ... ok
+test_high_colour_art_fits_quality_floor_and_reopens_from_composed_xiso_window (__main__.Real1568ByteComposedBuildTests.test_high_colour_art_fits_quality_floor_and_reopens_from_composed_xiso_window) ... skipped 'private retail XISO/index inputs are unavailable'
+test_original_random_rgba_fixture_refuses_excessive_colour_loss (__main__.Real1568ByteComposedBuildTests.test_original_random_rgba_fixture_refuses_excessive_colour_loss) ... skipped 'private retail XISO/index inputs are unavailable'
+
+----------------------------------------------------------------------
+Ran 7 tests in 3.064s
+
+OK (skipped=2)

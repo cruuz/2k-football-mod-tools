@@ -1545,17 +1545,22 @@ changes. Big projects save fast again: a 351-edit save takes a tenth of a second
 On an older build, export a fresh bundle from the main project, copy your edited PNGs over it and import
 that.
 
-## Number-sheet preview (RC86)
+## Number sheets and encoded preview (RC90, beta 66)
 
-**Import number sheet 0-9...** now asks two questions: the digit family (jersey, helmet, arm and
-shoulder) and the sheet layout (one row, one column, five columns by two rows, or two columns by five
-rows; digits 0 to 9 read left to right, then top to bottom, in ten equal cells). Before anything is
-staged, the **Number sheet: encoded game preview** dialog shows every digit exactly as the game will
-store it, at jersey size on light and dark backgrounds, with the size notes; **Import all ten digits**
-imports, Cancel stages nothing. The smaller textures are now true coverage averages that share one
-palette with the outline colours kept, so thin outlines no longer come out as stair steps; the game still
-adds lighting and picks detail by camera distance, so in-game placement needs a witness. Layout, padding
-and transparency rules are in `docs/mod_editor/number_sheets.md`.
+Use a 640x64 transparent PNG with ten 64x64 cells in digit order. A 64x640
+column, 320x128 grid or 128x320 grid also works. Use one flat fill and one
+outline colour. Keep a margin inside each cell. Leave out noise, gradients,
+guides and labels. AI output needs the cleanup the tool now applies.
+
+Choose the uniform, digit family, layout and Match retail size. Each glyph
+is fitted inside the original digit's box without changing its aspect.
+As authored keeps your placement for expert work. The encoded preview shows
+what the build will write above the retail comparison at every level, plus
+a 57 pair at an estimated small size. KEPT RETAIL badges and the Import
+button count any digits that cannot fit. Check my images predicts the same
+outcome when the game source is loaded. Save the project and inspect front,
+back and shoulder numbers in play. Camera lighting and appearance remain
+unwitnessed until played. See [the number sheet guide](number_sheets.md).
 
 ## Franchise Auto Save (RC86)
 

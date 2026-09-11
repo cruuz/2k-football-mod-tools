@@ -1,0 +1,12 @@
+test_all_team_kit_routes_hold_the_active_source_session_lock (__main__.TeamKitFacadeIntegrationTests.test_all_team_kit_routes_hold_the_active_source_session_lock) ... ok
+test_controls_explain_private_scope_format_and_source_gating (__main__.TeamKitOffscreenGuiTests.test_controls_explain_private_scope_format_and_source_gating) ... ok
+test_digit_sheet_import_resizes_every_arm_digit_and_stages_one_batch (__main__.TeamKitOffscreenGuiTests.test_digit_sheet_import_resizes_every_arm_digit_and_stages_one_batch) ... ok
+test_export_selected_set_and_paired_zip_use_clear_dialog_contracts (__main__.TeamKitOffscreenGuiTests.test_export_selected_set_and_paired_zip_use_clear_dialog_contracts) ... ok
+test_folder_import_marks_modified_once_emits_receipt_and_enables_undo (__main__.TeamKitOffscreenGuiTests.test_folder_import_marks_modified_once_emits_receipt_and_enables_undo) ... ok
+test_selected_set_opens_one_searchable_canonical_equipment_list (__main__.TeamKitOffscreenGuiTests.test_selected_set_opens_one_searchable_canonical_equipment_list) ... ok
+test_unchanged_or_invalid_import_does_not_dirty_the_project (__main__.TeamKitOffscreenGuiTests.test_unchanged_or_invalid_import_does_not_dirty_the_project) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 10.005s
+
+OK

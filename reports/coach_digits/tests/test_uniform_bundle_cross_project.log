@@ -1,0 +1,13 @@
+test_cross_project_saved_destination_sheet_first_and_repeat_receipt (__main__.CrossProjectTests.test_cross_project_saved_destination_sheet_first_and_repeat_receipt) ... ok
+test_foreign_staged_edit_is_still_refused_before_mutation (__main__.CrossProjectTests.test_foreign_staged_edit_is_still_refused_before_mutation) ... ok
+test_fresh_bundle_imports_into_project_with_earlier_torso_edit (__main__.CrossProjectTests.test_fresh_bundle_imports_into_project_with_earlier_torso_edit) ... ok
+test_main_project_baseline_and_source_overwrite_and_replay (__main__.CrossProjectTests.test_main_project_baseline_and_source_overwrite_and_replay) ... ok
+test_number_sheet_then_kit_and_kit_then_sheet_attribute_earlier_edits (__main__.CrossProjectTests.test_number_sheet_then_kit_and_kit_then_sheet_attribute_earlier_edits) ... ok
+test_selection_and_manifest_refusals_are_atomic (__main__.CrossProjectTests.test_selection_and_manifest_refusals_are_atomic) ... ok
+test_unchanged_rgba_skips_despite_reencoding_origin_and_current_change (__main__.CrossProjectTests.test_unchanged_rgba_skips_despite_reencoding_origin_and_current_change) ... ok
+test_zip_cross_project_and_edited_input_snapshot (__main__.CrossProjectTests.test_zip_cross_project_and_edited_input_snapshot) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 2.054s
+
+OK

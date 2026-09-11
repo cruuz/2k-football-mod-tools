@@ -1,105 +1,80 @@
 # Import number sheets 0-9
 
-Choose a physical uniform set in 2K5 Studio, then **Import number sheet 0-9**.
-Choose Jersey, Helmet, or Arm / shoulder, and select your sheet's layout.
-The layout chooser requires the Discord batch 2 GUI wiring.
+Choose the physical uniform set in Uniforms & Equipment, then Import number
+sheet 0-9. Choose Jersey, Helmet, or Arm / shoulder, the layout, and Match
+retail size. The original game uses different sizes and different compressed
+budgets for individual digits, even within the same uniform.
 
-Use ten equal rectangular cells. Supported layouts read as follows:
+Use a transparent PNG with ten equal cells in 0-9 order. Leave out labels,
+guides, gutters and outside borders. These four layouts work:
 
-| Layout | Digit order | Example with 128 x 128 cells |
+| Layout | Order | Size with 64x64 cells |
 | --- | --- | --- |
-| One row | 0 1 2 3 4 5 6 7 8 9, left to right | 1280 x 128 |
-| One column | 0 at the top through 9 at the bottom | 128 x 1280 |
-| Five columns, two rows | First row 0 1 2 3 4; second 5 6 7 8 9 | 640 x 256 |
-| Two columns, five rows | 0 1; 2 3; 4 5; 6 7; 8 9 | 256 x 640 |
+| One row | 0 through 9 from left to right | 640x64 |
+| One column | 0 at the top, 9 at the bottom | 64x640 |
+| Five columns, two rows | 0-4 above 5-9 | 320x128 |
+| Two columns, five rows | 0 1, then 2 3, through 8 9 | 128x320 |
 
-PNG with transparency is recommended. Other Pillow-readable images are decoded
-to RGBA; JPEG cannot preserve transparency. Export a flat raster image, not a
-Photoshop document or font file. Only the first frame is used; EXIF orientation
-is applied before layout. There must be no grid lines, labels, outside border,
-or gaps between cells. Put the intended padding inside each cell. Center and
-align each digit against the exported game digit for that exact set and family;
-the importer does not detect glyph bounds, remove a background or find digits.
-It cannot recognize a sheet in 1-9-0 order or diagnose drawn-in guides.
+Use one flat fill colour and one outline colour. Keep the glyph inside its
+cell with a transparent margin. Avoid gradients, noise and glow. AI output
+usually needs cleanup. The tool now applies that cleanup before encoding.
+It does not find a wrong digit order, remove a painted background or redraw
+an illegible number. JPEG cannot retain transparency.
 
-Cell width and height may differ. Each whole cell, including its transparent
-padding, is resized independently to the live catalog's target dimensions.
-The size notes report the detected layout, cell size, slot size, enlargement
-and any change in shape. This can stretch artwork if its aspect differs. Jersey, helmet and arm slots
-can have different sizes; export their original PNGs to check the shape first.
-Do not crop every character tightly: a narrow 1 should retain the same cell
-and baseline convention as the other digits. Compare alpha and margins at
-native size before making the disc. In-game placement still needs a witness.
+Use ordinary straight-alpha PNG. Do not darken RGB by multiplying it by
+alpha yourself. That error is indistinguishable from intentionally dark
+art, so re-export it from your image editor with ordinary transparency.
 
-For equal cells the sheet width must divide evenly by its column count, and
-height by its row count. The error gives actual dimensions and exact divisors.
-The input must be a regular file of at most 128 MiB and at most 16 million
-pixels. Oversized images are rejected before full pixel conversion.
+Match retail size measures the original digit for the selected slot. It
+scales your glyph to fit inside that box, preserves its aspect, centres it,
+and retains at least the original transparent margins. A very wide glyph
+can become shorter when fitted. Compare the entire family before importing.
+As authored is the expert choice for preserving your cell placement. It
+still applies colour and edge cleanup, but never shrinks the registration
+to rescue a compressed slot. The choice travels with the staged PNG and
+saved project. Re-saving that PNG in another editor may remove the choice;
+preview again after editing.
 
-Older API callers can retain automatic orientation for a strip at least five
-times longer than its other side. Less elongated inputs require an explicit
-layout rather than guessing. Automatic orientation does not recognize grids.
+The tool binds faint alpha to transparent and nearly solid alpha to opaque,
+merges nearby shades, limits the soft edge to one texel, and filters with
+premultiplied colour before saving ordinary straight alpha. It extends edge
+colours into invisible pixels so filtering cannot pull in transparent black.
+Every smaller texture level is rebuilt with a clear border, matching the
+retail mip margins, and all levels share one palette.
+The receipt records the box, scale, cleanup and selected palette.
 
-Studio stages all ten digits through one validated Team Kit import and one
-Undo action. Save the project and include it in the disc build. It does not
-create a sheet for you. To author one, use an image editor and the exported
-original digits as size and padding references. The earlier Windows long-path
-fix is separate from this layout fix.
+The encoder first tries the usual palette budgets down to 16 colours. Clean
+one-fill, one-outline art can also try 12 and 8 colours while keeping both
+regions. Match retail size may then try an additional 6% or 12% reduction.
+It does not erase an outline or accept a one-colour version of a two-colour
+number to force a fit. A digit that still cannot fit stays retail.
 
-## Clean digit recipe
+In the preview, each top sample is what the build will write and each bottom
+sample is the original retail digit at the same level. KEPT RETAIL marks a
+fallback beside the digit. The Import button counts the outcome, for example
+Import 7 digits, 3 kept retail. The 57 pair and small size views estimate how
+the digits look together. They do not reproduce camera perspective or jersey
+lighting. Inspect every row and the notes before accepting.
 
-The r64 number quality correction is **EXPERIMENTAL / UNWITNESSED**. Its encoded
-preview requires the protected GUI patch listed in WIRING.md.
+The ten cells stage together through Team Kit as one Undo action. Check my
+images and the build use the same encoding policy and say which digits will
+stay retail. Load the game source so Check my images can measure the original
+registration. Save the project and include its edits in the build. Verify
+front, back, shoulder and helmet numbers in play, both up close and from the
+broadcast camera. In-game appearance remains UNWITNESSED until played.
 
-1. Export the original digits for the exact physical team, style, side and
-   family. Match those cell dimensions and their padding. Jersey digits are
-   64x64; helmet and arm digits can be 32x32 or 64x64 depending on the target.
-   Do not assume every family or team uses the same dimensions.
-2. Create ten equal cells in 0-9 order with no gutters or outside border.
-   For 64x64 cells use 640x64, 64x640, 320x128 (5x2), or 128x320 (2x5).
-   Keep a narrow 1 on the same canvas and baseline as a wide 8. Check that
-   artwork never crosses a cell boundary. The importer cannot identify a
-   wrongly centered glyph, a digit order mistake or hidden guides.
-3. Use flat fills and distinct outline colours. Two or three solid colours
-   plus transparent padding are a useful starting point. Avoid photographic
-   noise, glow and repeated resize/export cycles. Keep outlines several pixels
-   wide at the actual game-slot size when the design permits; a one-pixel line
-   has very little coverage in a small camera view. This is guidance, not a
-   universal minimum or a guarantee for every font and camera.
-4. Export PNG with straight (ordinary, unassociated) alpha. RGBA PNG is easiest
-   to inspect; indexed PNG with transparency also works. Keep soft edges in
-   alpha, with the edge's real RGB colour behind them. Do not paint a checkerboard
-   or a background into the file. Do not manually multiply RGB by alpha: this
-   darkens the edge twice when treated as ordinary PNG. The importer cannot
-   reliably distinguish that mistake from intentionally dark art and does not
-   guess a repair. Re-export from the authoring project if needed.
-5. Select the matching uniform set, number family and layout, then choose the
-   PNG. Read the cell-to-slot notes. A 62x62 or 66x66 cell is resized, including
-   its padding; matching the native size avoids that extra conversion. A width
-   that does not divide into equal cells is refused with its dimensions.
-6. In the encoded preview, inspect all ten rows, all smaller levels, and both
-   light and dark backgrounds. The level columns magnify each saved texture to
-   a 32-pixel cell. The 24- and 12-pixel views estimate how reduced textures
-   combine; they do not simulate jersey shading, UV distortion or the actual
-   camera. If the fill or outline changes too much, cancel and simplify the art.
-7. Choose **Import all ten digits**. Save the project and build with those edits.
-   All ten still import as one Team Kit transaction and one Undo action. If any
-   texture cannot fit at the allowed quality, preview refuses before staging.
-   Verify the numbers from the broadcast camera and up close in the game.
+Other equal cell sizes also work. Width must divide by the number of columns
+and height by the number of rows. The source must be a regular file no larger
+than 128 MiB or 16 million pixels. Automatic orientation identifies long rows
+or columns; select either grid layout explicitly.
 
-The game stores palettized P8 digits. That means 8-bit indices into one shared
-256-entry palette with **8 bits of alpha per entry**, not one-bit transparency.
-The encoder regenerates every declared smaller level from the imported base
-using area coverage and fits the whole chain to that one palette. It preserves
-up to sixteen exact solid colours; artwork with more solid shades is approximated
-and reported. Compression fitting may choose a smaller palette, down to a
-16-entry budget. A simple two-colour design can naturally use fewer entries
-without losing colours. Complicated art that cannot fit at this floor is refused.
-Palette size is not a promise that every font fits: each digit's compressed byte
-budget is fixed by its original slot, and different teams have different budgets.
+## Why did some digits stay old, look larger, or bleed?
 
-Making a digit smaller inside the same cell does not increase texture resolution,
-add colours or repair a bad mip filter. Making the whole sheet smaller introduces
-another resize if the cells then differ from the slots. Author at the native
-size or resize from a clean larger master once, then judge the encoded small
-views. The new preview and error messages are more useful than the PNG file size.
+Each digit has its own small compressed slot. A noisy number can fit one
+slot and overflow another, which kept the original digit and made the set
+look mixed. Filling the whole cell also makes a number wider than the
+original. An opaque edge can smear when the game samples past the cell,
+and transparent black can darken a soft edge. The new cleanup and retail
+size fitting address those problems. The preview now makes any remaining
+retail digits clear. Start with a transparent sheet, one fill and one
+outline colour, and a margin. Check every digit before building.

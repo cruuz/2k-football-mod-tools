@@ -1,0 +1,11 @@
+test_digit_ladder_reduces_or_refuses_without_going_below_sixteen (__main__.DigitTests.test_digit_ladder_reduces_or_refuses_without_going_below_sixteen) ... ok
+test_per_target_contract_allocation_and_three_digit_families (__main__.DigitTests.test_per_target_contract_allocation_and_three_digit_families) ... ok
+test_256_colour_base_survives_extra_mip_shades (__main__.PaletteTests.test_256_colour_base_survives_extra_mip_shades) ... ok
+test_budget_reduction_keeps_dominant_saturated_colours_and_reports_merges (__main__.PaletteTests.test_budget_reduction_keeps_dominant_saturated_colours_and_reports_merges) ... ok
+test_export_png_preserves_straight_alpha_and_hidden_rgb (__main__.PaletteTests.test_export_png_preserves_straight_alpha_and_hidden_rgb) ... ok
+test_export_one_palette_import_other_style_default_and_decode (__main__.ShoeRoundtripTests.test_export_one_palette_import_other_style_default_and_decode) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 1.252s
+
+OK

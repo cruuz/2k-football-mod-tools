@@ -108,8 +108,15 @@ class DigitTests(unittest.TestCase):
                     self.assertEqual(pf.slot_allocation_bytes(family+'_digit','28','H',0,digit=7),896)
                     selected.assert_called_once_with(family,'28','H',0,7)
                 verdict=pf.predict_edits(inputs)[0]
-                self.assertEqual(verdict.outcome,pf.FULL)
-                self.assertIn('fits as authored',verdict.summary())
+                self.assertEqual(verdict.outcome,pf.UNMODELLED)
+                self.assertIn('retail registration',verdict.summary())
+                # A real source supplies the registration pixels. Here an
+                # original synthetic box stands in for that template.
+                template=Image.new('RGBA',(32,32));template.paste((255,255,255,255),(5,2,27,30))
+                bound=replace(inputs[0][5],retail_rgba=template.tobytes())
+                verdict=pf.predict_slot(png,bound,896)
+                self.assertEqual(verdict.outcome,pf.REDUCED)
+                self.assertIn('fits after retail registration and cleanup',verdict.summary())
                 self.assertIn(family+'_digit',pf.CONTRACTS)
 
     def test_digit_ladder_reduces_or_refuses_without_going_below_sixteen(self):
@@ -118,11 +125,12 @@ class DigitTests(unittest.TestCase):
             rnd=random.Random(17)
             colours=[(rnd.randrange(256),rnd.randrange(256),rnd.randrange(256),255) for _ in range(64)]
             image=Image.new('RGBA',(16,16));image.putdata([rnd.choice(colours) for _ in range(256)]);image.save(png)
-            contract=pf.SlotContract('arm_digit',16,16,1,128,1,digit=True)
+            template=Image.new('RGBA',(16,16));template.paste((255,255,255,255),(1,1,15,15))
+            contract=pf.SlotContract('arm_digit',16,16,1,128,1,digit=True,retail_rgba=template.tobytes())
             results=[pf.predict_slot(png,contract,bound) for bound in (1400,500,300,32)]
-            self.assertEqual(results[0].outcome,pf.FULL)
+            self.assertEqual(results[0].outcome,pf.REDUCED)
             self.assertIn(pf.REDUCED,[r.outcome for r in results])
-            self.assertEqual(results[-1].outcome,pf.REFUSED)
+            self.assertEqual(results[-1].outcome,pf.KEPT_RETAIL)
             for row in results:
                 self.assertTrue(all(tier>=16 for tier in row.refused_tiers))
                 self.assertNotEqual(row.outcome,pf.UNMODELLED)

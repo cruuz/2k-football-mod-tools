@@ -1,0 +1,25 @@
+test_a_majority_size_package_is_unchanged (__main__.DigitDimensionsFollowTheReportTests.test_a_majority_size_package_is_unchanged)
+A control: the fix must not move the 5,960 arm digits that were right. ... ok
+test_every_catalogued_digit_matches_its_authored_size (__main__.DigitDimensionsFollowTheReportTests.test_every_catalogued_digit_matches_its_authored_size)
+The whole point: no target may carry a family constant instead. ... ok
+test_the_lookup_is_built_once (__main__.DigitDimensionsFollowTheReportTests.test_the_lookup_is_built_once)
+A 63 MB parse per asset would be unusable; it must be memoized. ... ok
+test_the_minority_sizes_are_actually_present_in_the_catalog (__main__.DigitDimensionsFollowTheReportTests.test_the_minority_sizes_are_actually_present_in_the_catalog)
+Guards against a lookup that silently returns only family defaults. ... ok
+test_the_nameplate_atlas_keeps_the_catalog_orientation (__main__.DigitDimensionsFollowTheReportTests.test_the_nameplate_atlas_keeps_the_catalog_orientation)
+The report is the stale side here -- 1024x32 is the real strip. ... ok
+test_the_reported_titans_packages_are_32_square (__main__.DigitDimensionsFollowTheReportTests.test_the_reported_titans_packages_are_32_square)
+The three packages a human actually reported. ... ok
+test_titans_sets_include_sleeves_and_every_arm_number_route (__main__.DigitDimensionsFollowTheReportTests.test_titans_sets_include_sleeves_and_every_arm_number_route)
+No Titans component is omitted from inventory or provider import. ... ok
+test_a_missing_report_yields_no_overrides_rather_than_an_error (__main__.GracefulWithoutTheReportTests.test_a_missing_report_yields_no_overrides_rather_than_an_error)
+``reports/assets`` is gitignored, so a clean clone has no report. ... ok
+test_the_family_mapping_is_shared_with_the_target_selector (__main__.GracefulWithoutTheReportTests.test_the_family_mapping_is_shared_with_the_target_selector)
+One mapping, so a selector and a dimension cannot disagree. ... ok
+test_every_reported_sleeve_and_arm_number_exports_and_reimports (__main__.TitansRealSourceRoundTripTests.test_every_reported_sleeve_and_arm_number_exports_and_reimports)
+The actual 33 Titans PNGs satisfy the editor's import contract. ... skipped 'private extracted NFL 2K5 fixture is absent'
+
+----------------------------------------------------------------------
+Ran 10 tests in 1.498s
+
+OK (skipped=1)

@@ -1,0 +1,10 @@
+test_cancel_or_encoder_failure_or_source_change_cannot_stage (__main__.CoachWiringTests.test_cancel_or_encoder_failure_or_source_change_cannot_stage) ... ok
+test_encoded_review_precedes_single_atomic_team_kit_import (__main__.CoachWiringTests.test_encoded_review_precedes_single_atomic_team_kit_import) ... ok
+test_facade_encoding_holds_source_session_lock (__main__.CoachWiringTests.test_facade_encoding_holds_source_session_lock) ... ok
+test_preview_dialog_keeps_encoded_pixels_at_native_display_size_and_notes (__main__.CoachWiringTests.test_preview_dialog_keeps_encoded_pixels_at_native_display_size_and_notes) ... ok
+test_complete_patch_parses_and_runtime_closure_is_included (__main__.PatchTests.test_complete_patch_parses_and_runtime_closure_is_included) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 1.082s
+
+OK

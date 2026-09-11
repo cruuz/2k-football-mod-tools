@@ -1,0 +1,10 @@
+test_all_sets_and_39_component_surfaces_are_unique (__main__.Nfl2k5UniformCatalogTests.test_all_sets_and_39_component_surfaces_are_unique) ... ok
+test_each_component_emits_the_exact_unified_provider_edit_shape (__main__.Nfl2k5UniformCatalogTests.test_each_component_emits_the_exact_unified_provider_edit_shape) ... ok
+test_every_generated_edit_has_only_a_named_selector_and_png_path (__main__.Nfl2k5UniformCatalogTests.test_every_generated_edit_has_only_a_named_selector_and_png_path) ... ok
+test_giants_home_metadata_groups_dimensions_and_stable_ids (__main__.Nfl2k5UniformCatalogTests.test_giants_home_metadata_groups_dimensions_and_stable_ids) ... ok
+test_unknown_ids_selectors_and_empty_paths_are_human_readable_errors (__main__.Nfl2k5UniformCatalogTests.test_unknown_ids_selectors_and_empty_paths_are_human_readable_errors) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.240s
+
+OK

@@ -122,7 +122,8 @@ class NumberSheetQualityWiringTests(unittest.TestCase):
             labels = dialog.findChildren(QLabel)
             picture = next(label for label in labels if label.pixmap() is not None)
             self.assertEqual((picture.pixmap().width(), picture.pixmap().height()), (730, 850))
-            self.assertEqual(dialog.findChild(QDialogButtonBox).button(QDialogButtonBox.Ok).text(), "Import all ten digits")
+            self.assertEqual(dialog.findChild(QDialogButtonBox).button(QDialogButtonBox.Ok).text(),
+                             preview.import_button_text if "preview.import_button_text" in proposed_source() else "Import all ten digits")
             return QDialog.Accepted
         host = QWidget()
         try:
@@ -200,7 +201,7 @@ class NumberSheetQualityWiringTests(unittest.TestCase):
             ns = self.ns
             with patch.dict(ns, {
                 "QFileDialog": SimpleNamespace(getOpenFileName=lambda *a: (str(source), "")),
-                "QInputDialog": SimpleNamespace(getItem=Mock(side_effect=[("Jersey numbers", True), (SHEET_LAYOUTS[0][0], True)])),
+                "QInputDialog": SimpleNamespace(getItem=Mock(side_effect=[("Jersey numbers", True), (SHEET_LAYOUTS[0][0], True), ("Match retail size", True)])),
             }):
                 if encode_error:
                     with self.assertRaises(ValidationError): ns["_choose_digit_sheet_import"](host)
@@ -222,16 +223,19 @@ class NumberSheetQualityWiringTests(unittest.TestCase):
         from mod_editor.studio.facade import Nfl2k5StudioFacade
         from threading import RLock
         gate = RLock()
-        session = SimpleNamespace(cache=SimpleNamespace(pack0=Path("index")))
+        session = SimpleNamespace(cache=SimpleNamespace(pack0=Path("index")),
+                                  current_path=lambda _: Path("jersey.png"))
         outputs = (SimpleNamespace(asset_id="digit"),)
-        target = object()
+        target = SimpleNamespace(set_selector="synthetic")
         host = SimpleNamespace(_lock=gate, _require_session=lambda: session,
-                               uniform_catalog=SimpleNamespace(get_asset=lambda _: target))
-        def encode(index, selected, supplied, progress):
+                               uniform_catalog=SimpleNamespace(get_asset=lambda _: target,
+                                   assets_for_set=lambda _: (SimpleNamespace(kind="torso"),)))
+        def encode(index, selected, supplied, progress, **kwargs):
             if hasattr(gate, "_is_owned"): self.assertTrue(gate._is_owned())
             self.assertEqual((index, selected, supplied), (Path("index"), (target,), outputs))
             return "preview"
-        with patch("mod_editor.core.nfl2k5_digit_preview.preview_digit_sheet", encode):
+        with patch("mod_editor.core.nfl2k5_digit_preview.jersey_preview_colour", return_value=(20,40,60)), \
+             patch("mod_editor.core.nfl2k5_digit_preview.preview_digit_sheet", encode):
             self.assertEqual(Nfl2k5StudioFacade.preview_digit_sheet(host, outputs, Mock()), "preview")
 
 
