@@ -177,7 +177,7 @@ class ResizeOffscreenInteractionTests(unittest.TestCase):
         self.original_bytes = self.source.read_bytes()
 
         self.facade = _ResizeFacade()
-        self.window = StudioMainWindow(
+        self.window = StudioMainWindow(eager_pages=True,
             facade=self.facade,
             offer_recovery=False,
         )

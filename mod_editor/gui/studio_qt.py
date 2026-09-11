@@ -17,12 +17,13 @@ from dataclasses import dataclass
 import json
 from pathlib import Path
 import tempfile
+import time
 from typing import Any, Callable, Iterable, Mapping, Protocol, Sequence, runtime_checkable
 from uuid import uuid4
 import weakref
 
 from PyQt5.QtCore import (
-    QObject, QRunnable, QSize, Qt, QThreadPool, QTimer, QUrl, pyqtSignal,
+    QObject, QRunnable, QSize, Qt, QThreadPool, QTimer, QUrl, pyqtSignal, QAbstractListModel, QModelIndex,
 )
 from PyQt5.QtGui import (
     QColor, QCloseEvent, QDesktopServices, QFont, QIcon, QImageReader,
@@ -42,6 +43,7 @@ from PyQt5.QtWidgets import (
     QInputDialog,
     QLabel,
     QListWidget,
+    QListView,
     QListWidgetItem,
     QMainWindow,
     QMenu,
@@ -1375,10 +1377,91 @@ def _configure_search_field(
     field.setProperty("studioSearch", True)
 
 
+class _WorkspaceMap(dict):
+    """Legacy direct category lookups construct their page on demand."""
+    def __init__(self, window):
+        super().__init__()
+        self.window = window
+
+    def __missing__(self, category):
+        self.window._ensure_workspace(PRODUCT_CATEGORY_ORDER.index(category) + 1)
+        if category not in self:
+            raise KeyError(category)
+        return self[category]
+
+
+class _VisualListModel(QAbstractListModel):
+    """Keep metadata rows, creating icons only for rows Qt actually paints."""
+    def __init__(self, owner, parent):
+        super().__init__(parent)
+        self.owner, self.rows, self.modified = owner, (), frozenset()
+
+    def rowCount(self, parent=QModelIndex()):
+        return 0 if parent.isValid() else len(self.rows)
+
+    def data(self, index, role=Qt.DisplayRole):
+        if not index.isValid() or not 0 <= index.row() < len(self.rows):
+            return None
+        asset = self.rows[index.row()]
+        changed = asset.asset_id in self.modified
+        if role == Qt.DisplayRole:
+            return ("●  " if changed else "") + asset.label
+        if role == Qt.UserRole:
+            return asset.asset_id
+        if role == Qt.DecorationRole:
+            return self.owner._visual_icon(asset)
+        if role == Qt.SizeHintRole:
+            return QSize(330, 49)
+        if role == Qt.ToolTipRole:
+            return f"{asset.target_selector} • {asset.width}×{asset.height} • {asset.group}"
+        if role == Qt.ForegroundRole and changed:
+            return QColor("#ffbe5c")
+        return None
+
+
+class _VisualList(QListView):
+    currentItemChanged = pyqtSignal(object, object)
+
+    def __init__(self, owner):
+        super().__init__()
+        self.rows_model = _VisualListModel(owner, self)
+        self.setModel(self.rows_model)
+        self.setUniformItemSizes(True)
+        self.selectionModel().currentChanged.connect(
+            lambda current, previous: self.currentItemChanged.emit(
+                self.item(current.row()), self.item(previous.row())))
+
+    def set_rows(self, rows, modified):
+        model = self.rows_model
+        model.beginResetModel()
+        model.rows, model.modified = rows, frozenset(modified)
+        model.endResetModel()
+
+    def count(self):
+        return self.rows_model.rowCount()
+
+    def item(self, row):
+        if not 0 <= row < self.count():
+            return None
+        index = self.rows_model.index(row)
+        item = QListWidgetItem(self.rows_model.data(index))
+        item.setData(Qt.UserRole, self.rows_model.data(index, Qt.UserRole))
+        return item
+
+    def currentItem(self):
+        return self.item(self.currentIndex().row())
+
+    def currentRow(self):
+        return self.currentIndex().row()
+
+    def setCurrentRow(self, row):
+        self.setCurrentIndex(self.rows_model.index(row))
+
+
 class _TaskSignals(QObject):
     result = pyqtSignal(object)
     error = pyqtSignal(str)
-    progress = pyqtSignal(str, int, int)
+    progress = pyqtSignal(str, object, object)
     finished = pyqtSignal()
 
 
@@ -1393,7 +1476,13 @@ class _BackgroundTask(QRunnable):
 
     def run(self) -> None:
         try:
-            result = self.operation(self.signals.progress.emit)
+            last = [0.0, None]
+            def progress(stage, completed, total):
+                now = time.monotonic()
+                if stage != last[1] or now - last[0] >= 0.1 or (total and completed == total):
+                    last[:] = [now, stage]
+                    self.signals.progress.emit(stage, completed, total)
+            result = self.operation(progress)
         except BaseException as exc:  # Qt must receive failures, never lose them.
             message = str(exc).strip() or exc.__class__.__name__
             self.signals.error.emit(message)
@@ -1624,6 +1713,7 @@ class StudioMainWindow(QMainWindow):
         extended_visual_catalog: Nfl2k5ExtendedVisualCatalog | None = None,
         workspace_store: WorkspaceStateStore | None = None,
         offer_recovery: bool = False,
+        eager_pages: bool = False,
     ) -> None:
         super().__init__()
         self.facade: StudioFacade = facade or BrowseOnlyFacade()
@@ -1632,10 +1722,15 @@ class StudioMainWindow(QMainWindow):
                 allow_sample_fallback=False, check_files=False
             )
         )
-        self.uniform_catalog = uniform_catalog or load_nfl2k5_uniform_catalog()
-        self.extended_visual_catalog = (
-            extended_visual_catalog or load_nfl2k5_extended_visual_catalog()
-        )
+        self._uniform_catalog = uniform_catalog
+        self._extended_visual_catalog = extended_visual_catalog
+        self._page_factories = {}
+        self._page_loads = set()
+        self._available_build_options = None
+        self._prefilled_embedded = set()
+        self._source_state = None
+        self._senior_bowl_panel = None
+        self._scorebar_panel = None
         self.thread_pool = QThreadPool.globalInstance()
         self._workers: set[_BackgroundTask] = set()
         self._blocking = False
@@ -1649,10 +1744,10 @@ class StudioMainWindow(QMainWindow):
         self._selected_asset: Any | None = None
         self._selected_set: UniformSet | None = None
         self._component_items: dict[str, QTreeWidgetItem] = {}
-        self._monogram_icons: dict[str, QIcon] = {}
+        self._monogram_icons: dict[object, QIcon] = {}
         self._preview_generation = 0
-        self._category_pages: dict[ProductCategory, QWidget] = {}
-        self._visual_browsers: dict[ProductCategory, _VisualBrowserState] = {}
+        self._category_pages: dict[ProductCategory, QWidget] = _WorkspaceMap(self)
+        self._visual_browsers: dict[ProductCategory, _VisualBrowserState] = _WorkspaceMap(self)
         # Where resized copies live for this session. Created lazily so a
         # user who never needs a resize never gets a temp directory.
         self._fit_dir: Path | None = None
@@ -1743,13 +1838,19 @@ class StudioMainWindow(QMainWindow):
         self.resize(1480, 920)
         self.setObjectName("studioWindow")
         self._build_ui()
+        self._operation_stage = ""
+        self._operation_started = time.monotonic()
+        self._heartbeat_timer = QTimer(self)
+        self._heartbeat_timer.setInterval(1000)
+        self._heartbeat_timer.timeout.connect(self._busy_heartbeat)
+        if eager_pages:
+            for row in tuple(self._page_factories):
+                self._ensure_workspace(row)
         self._build_file_menu()
         self._install_keyboard_shortcuts()
         self._apply_style()
-        self._populate_uniform_filters()
-        self._filter_uniforms()
         self._refresh_edit_state()
-        if bool(getattr(self.facade, "source_ready", False)):
+        if hasattr(self, "unif_color_set") and bool(getattr(self.facade, "source_ready", False)):
             self._load_selected_unif_colors()
         # After the window is up, never during construction: a slow network
         # must not delay the app appearing.
@@ -1952,8 +2053,12 @@ class StudioMainWindow(QMainWindow):
             state = self._build_panel.project_build_settings()
         else:
             document = playlist.copy_options(self._music_playlist_document)
-            state = {} if document is None else {
-                "music_shuffle": document["music_shuffle"], "music_shuffle_selection": document}
+            getter = getattr(self.facade, "project_build_settings", None)
+            state = dict(getter()) if callable(getter) and getattr(self.facade, "source_ready", False) else {}
+            if document is not None:
+                state.update(music_shuffle=document["music_shuffle"], music_shuffle_selection=document)
+        if self._build_panel is None:
+            state.update(self._music_policy_values)
         if self._build_panel is None and hasattr(self, "_music_library_recipe"):
             state["music_library"] = self._music_library_recipe
         setter = getattr(self.facade, "set_project_build_settings", None)
@@ -2626,241 +2731,8 @@ class StudioMainWindow(QMainWindow):
         self.pages.setObjectName("pages")
         self.welcome_page = self._build_welcome_page()
         self.pages.addWidget(self._page_scroll_host(self.welcome_page))
-        text_specialist_host = _EmbeddedOperationGuardedHost(
-            self.facade,
-            requester="text",
-            team_names_enabled=self._team_names_preview_enabled,
-            modern_naming_enabled=self._modern_naming_preview_enabled,
-            require_mutation_admission=self._require_specialist_mutation_admission,
-        )
-        crib_specialist_host = _EmbeddedOperationGuardedHost(
-            self.facade,
-            requester="crib",
-            require_mutation_admission=self._require_specialist_mutation_admission,
-        )
         for category in PRODUCT_CATEGORY_ORDER:
-            section = self.product_catalog.section(category)
-            visual_kinds = {
-                ProductCategory.ROSTERS_PLAYERS: frozenset({
-                    "player_portrait", "live_face",
-                }),
-                ProductCategory.FIELD_ART_CREATE_TEAM: frozenset({
-                    "create_team_field_art",
-                }),
-                ProductCategory.SCOREBUG_PRESENTATION: frozenset({
-                    "scorebug_texture",
-                }),
-                ProductCategory.TEXTURES: frozenset({
-                    "p8_texture", "uniform_equipment_texture",
-                }),
-            }.get(category)
-            if category == ProductCategory.UNIFORMS_EQUIPMENT:
-                # The uniform browser is built around one capability
-                # (nfl2k5.uniforms.all_visual). Every other capability filed
-                # under Uniforms & Equipment -- the facemask/turtleneck packed
-                # colours and the Team Select cards among them -- used to be
-                # dropped on the floor here, so enabling one changed nothing a
-                # modder could see and the only honest answer to "where is it?"
-                # was "nowhere". They get their own tab, the same shape Rosters
-                # & Players already uses for its two workspaces.
-                uniform_tabs = QTabWidget()
-                uniform_tabs.setObjectName("uniformsEquipmentTabs")
-                uniform_tabs.setAccessibleName("Uniforms and equipment workspaces")
-                uniform_tabs.addTab(self._build_uniform_page(section), tab_title("Uniform Sets"))
-                uniform_tabs.addTab(
-                    self._build_colors_page(section), tab_title("Colours & Other Tools")
-                )
-                self._bump_panel = BumpPanel(self.facade)
-                uniform_tabs.addTab(self._bump_panel, "Bump Maps (advanced)")
-                # The uniform browser is why people open this page; never let a
-                # newly added tab take the landing position away from it.
-                uniform_tabs.setCurrentIndex(0)
-                page = uniform_tabs
-            elif category == ProductCategory.TEXTURES:
-                # This category shipped as a bare capability card with nothing
-                # to click. It gets the same browser every other visual family
-                # uses: search, preview, Export/Replace PNG, Revert.
-                if visual_kinds is None:
-                    raise RuntimeError("All Textures visual kinds are unavailable")
-                page = self._build_visual_page(section, visual_kinds)
-            elif category == ProductCategory.ROSTERS_PLAYERS:
-                if visual_kinds is None:
-                    raise RuntimeError("Rosters & Players visual kinds are unavailable")
-                portrait_page = self._build_visual_page(section, visual_kinds)
-                self._roster_panel = TextRosterPanel(
-                    text_specialist_host,
-                    view="rosters",
-                    on_status=self._specialized_panel_status,
-                    on_refresh=self._specialized_panel_refresh,
-                )
-                self._connect_star_players()
-                roster_tabs = QTabWidget()
-                roster_tabs.setObjectName("rostersPlayersTabs")
-                roster_tabs.setAccessibleName("Rosters and players workspaces")
-                roster_tabs.addTab(self._roster_panel, tab_title("Names & Numbers"))
-                roster_tabs.addTab(portrait_page, tab_title("Portraits & Faces"))
-                # "Which face is this player?" had no answer in the app: faces
-                # are found by a face_id buried in the roster record and filed
-                # under a number, so the only method was scrolling 1,872
-                # textures hoping a label matched.
-                roster_tabs.addTab(self._build_player_assets_page(), "Find player images")
-                page = roster_tabs
-            elif category == ProductCategory.TEAM_IDENTITY:
-                self._text_roster_panel = TextRosterPanel(
-                    text_specialist_host,
-                    view="text",
-                    on_status=self._specialized_panel_status,
-                    on_refresh=self._specialized_panel_refresh,
-                )
-                # The DE -> EDGE rename is a text patch (executable position
-                # tables + the disc's text spans), so it lives with the other
-                # text tools rather than under Gameplay.
-                identity_tabs = QTabWidget()
-                identity_tabs.setObjectName("teamIdentityTabs")
-                identity_tabs.setAccessibleName("Text and team identity workspaces")
-                identity_tabs.addTab(self._text_roster_panel, "Game Text")
-                self._edge_panel = GameplayPatchesPanel(
-                    self.facade, patches=TEXT_PATCHES, title="Position names",
-                    intro="Change what the game calls positions and write one copy. "
-                          "For presets and other changes, use ★ Build & Share.",
-                    target_suffix="position names",
-                )
-                identity_tabs.addTab(self._edge_panel, "Position Names (EDGE)")
-                identity_tabs.setCurrentIndex(0)
-                page = identity_tabs
-            elif category == ProductCategory.CRIB:
-                self._crib_panel = CribPanel(
-                    crib_specialist_host,
-                    operation_admission=lambda: self._embedded_operation_denial(
-                        "Crib"
-                    ),
-                )
-                self._crib_panel.operation_state_changed.connect(
-                    self._crib_operation_state_changed
-                )
-                if self._crib_panel.operation_in_progress:
-                    self._crib_operation_state_changed(True)
-                self._crib_panel.crib_modified.connect(
-                    lambda _asset_id: self._specialized_panel_refresh()
-                )
-                self._crib_panel.crib_reverted.connect(
-                    lambda _asset_id: self._specialized_panel_refresh()
-                )
-                page = self._crib_panel
-            elif category == ProductCategory.SCOREBUG_PRESENTATION:
-                # Presentation = the scorebug texture inventory plus the two
-                # writable presentation workspaces: the ESPN horizontal
-                # scorebug/ticker re-layout and commentary line swaps.  Both
-                # write a copy of the disc, never the source.
-                if visual_kinds is None:
-                    raise RuntimeError("Presentation visual kinds are unavailable")
-                presentation_tabs = QTabWidget()
-                presentation_tabs.setObjectName("presentationTabs")
-                presentation_tabs.setAccessibleName("Presentation workspaces")
-                presentation_tabs.addTab(self._build_visual_page(section, visual_kinds), "Scorebug Images")
-                self._presentation_panel = PresentationPanel(self.facade)
-                presentation_tabs.addTab(self._presentation_panel, "ESPN Scorebug && Ticker")
-                self._commentary_panel = CommentaryPanel(self.facade)
-                presentation_tabs.addTab(self._commentary_panel, "Commentary")
-                presentation_tabs.setCurrentIndex(0)
-                page = presentation_tabs
-            elif visual_kinds is not None:
-                page = self._build_visual_page(section, visual_kinds)
-            elif category == ProductCategory.MENUS_UI:
-                raw_fallback = self._build_universal_asset_page(section)
-                self._menus_panel = MenusPanel(
-                    self.facade,
-                    raw_fallback=raw_fallback,
-                    capability_page=self._build_capability_page(section),
-                )
-                page = self._menus_panel
-            elif category == ProductCategory.STADIUMS:
-                page = self._build_stadium_page(section)
-            elif category == ProductCategory.AUDIO:
-                self._audio_panel = AudioPanel(
-                    self.facade,
-                    operation_admission=lambda: self._embedded_operation_denial(
-                        "Audio"
-                    ),
-                )
-                self._audio_panel.operation_state_changed.connect(
-                    self._audio_operation_state_changed
-                )
-                self._audio_panel.audio_modified.connect(
-                    lambda _asset_id: self._mark_workspace_changed()
-                )
-                self._audio_panel.audio_reverted.connect(
-                    lambda _asset_id: self._mark_workspace_changed()
-                )
-                self._audio_panel.audio_batch_imported.connect(
-                    lambda _changed_count: self._mark_workspace_changed()
-                )
-                self._audio_panel.audio_annotation_changed.connect(
-                    lambda _asset_id: self._mark_workspace_changed()
-                )
-                self._audio_panel.setToolTip("Browse, preview, export and replace supported audio — drop any common file (MP3, WAV, FLAC, OGG, M4A); it is converted to the slot's exact shape when FFmpeg is available.")
-                self._audio_panel.setAccessibleDescription("Audio workspace: searchable playable cues and ranges with replace support for exact-slot standalone and streaming-range sounds.")
-                # Sounds: the rotating SFX banks (hits, whistles, crowd
-                # reactions, QB cadence) and the standalone AUDO cues,
-                # replaced through the soundbank/audo swap tools into a COPY
-                # of the disc -- the same shape Presentation uses for its
-                # copy-writing workspaces.
-                audio_tabs = QTabWidget()
-                audio_tabs.setObjectName("audioTabs")
-                audio_tabs.setAccessibleName("Audio workspaces")
-                audio_tabs.addTab(self._audio_panel, tab_title("Audio Cues"))
-                self._music_panel = MusicPanel()
-                self._music_panel.operation_guard = lambda: self._embedded_operation_denial("Music")
-                self._music_panel.changed.connect(self._music_changed)
-                self._music_panel.policy_changed.connect(self._music_policy_changed)
-                self._music_panel.playlist_changed.connect(self._music_playlist_changed)
-                self._music_panel.library_changed.connect(self._music_library_changed)
-                self._music_panel.receipt_ready.connect(self._music_receipt_ready)
-                self._music_panel.operation_state_changed.connect(self._music_operation_state_changed)
-                self._restore_music_build_settings()
-                audio_tabs.addTab(self._music_panel, "Music")
-                audio_tabs.currentChanged.connect(lambda _index: self._music_panel.stop_preview())
-                self.navigation.currentRowChanged.connect(lambda _index: self._music_panel.stop_preview())
-                for signal in (self._audio_panel.audio_modified, self._audio_panel.audio_reverted,
-                               self._audio_panel.audio_batch_imported):
-                    signal.connect(lambda *_: self._music_panel.invalidate_audio_content())
-                self._sounds_panel = SoundsPanel(self.facade)
-                audio_tabs.addTab(self._sounds_panel, "Replace a Sound")
-                audio_tabs.setCurrentIndex(0)
-                page = audio_tabs
-            elif category == ProductCategory.PLAYBOOKS_PLAYS:
-                self._playbooks_panel = PlaybooksPanel(self.facade)
-                page = self._playbooks_panel
-            elif category == ProductCategory.SLIDERS_GAMEPLAY:
-                # Throw Distance & Arc is the one writable workspace on this
-                # page: two sliders over the game's own arm-strength curve
-                # tables, written to a COPY of default.xbe (xemu-only), the
-                # same contract Bump strength ships under.
-                self._throw_tuning_panel = ThrowTuningPanel(self.facade)
-                # Gameplay Patches: the executable caves (Catching/Interception
-                # sliders, acceleration ramp, franchise draft AI) with their
-                # explanations, written through mod_build.
-                self._gameplay_patches_panel = GameplayPatchesPanel(self.facade)
-                self._gameplay_patches_panel.open_anniversary.connect(self._open_rosters_anniversary)
-                self._connect_gameplay_build()
-                # The Xbox save editor (sliders + franchise year) is a gameplay tool, not a
-                # uniform tool: one instance, moved here from Uniforms & Equipment (GP-02).
-                self._save_panel = SavePanel(self.facade)
-                self._senior_bowl_panel = SeniorBowlPanel()
-                self._senior_bowl_panel.settings_changed.connect(self._senior_bowl_settings_changed)
-                self._gameplay_panel = GameplayPanel(
-                    self.facade,
-                    capability_page=self._build_capability_page(section),
-                    extra_tabs=((self._gameplay_patches_panel, "Game Fixes"),
-                                (self._throw_tuning_panel, "Throw Distance && Arc"),
-                                (self._save_panel, tab_title("Saves & Sliders")),
-                                (self._senior_bowl_panel, "Senior Bowl")),
-                )
-                page = self._gameplay_panel
-            else:
-                page = self._build_capability_page(section)
-            self._category_pages[category] = page
-            self.pages.addWidget(self._page_scroll_host(page))
+            self._add_lazy_page(category.value, lambda category=category: self._build_category_page(category))
         self._roster_editor_panel = _BuildContextRosterPanel(self.facade)
         self.pages.addWidget(self._page_scroll_host(self._roster_editor_panel))
         self._models_panel = ModelsPanel(self.facade)
@@ -2877,18 +2749,367 @@ class StudioMainWindow(QMainWindow):
         self._my_career_panel.setup_ready.connect(self._my_career_setup_ready)
         self._sync_mycareer_position_scheme()
         self.pages.addWidget(self._page_scroll_host(self._my_career_panel))
-        self._scorebar_panel = ScorebugStudioPanel()
-        self._scorebar_panel.folder_chosen.connect(self._scorebar_folder_chosen)
-        self.pages.addWidget(self._page_scroll_host(self._scorebar_panel))
-        self._build_share_page = self._build_build_share_page()
-        self.pages.addWidget(self._page_scroll_host(self._build_share_page))
+        self._add_lazy_page("scorebar", self._build_scorebar_page)
+        self._add_lazy_page("build_share", self._build_build_share_page)
         workspace_layout.addWidget(self.pages, 1)
         workspace_layout.addWidget(footer)
         root_layout.addWidget(workspace, 1)
 
-        self.navigation.currentRowChanged.connect(self.pages.setCurrentIndex)
+        self.navigation.currentRowChanged.connect(self._show_workspace)
         self.navigation.currentRowChanged.connect(self._refresh_entered_page)
         self.navigation.setCurrentRow(0)
+
+    @property
+    def uniform_catalog(self):
+        if self._uniform_catalog is None:
+            self._uniform_catalog = load_nfl2k5_uniform_catalog()
+        return self._uniform_catalog
+
+    @property
+    def extended_visual_catalog(self):
+        if self._extended_visual_catalog is None:
+            self._extended_visual_catalog = load_nfl2k5_extended_visual_catalog()
+        return self._extended_visual_catalog
+
+    def _add_lazy_page(self, key, factory):
+        placeholder = QWidget()
+        layout = QVBoxLayout(placeholder)
+        layout.addWidget(QLabel("Loading workspace…"))
+        self._page_factories[self.pages.addWidget(placeholder)] = factory
+
+    def open_workspace(self, key):
+        """Construct a workspace on demand, including replay/script entry points."""
+        for row in range(self.navigation.count()):
+            if self._navigation_key(row) == str(getattr(key, "value", key)):
+                self._ensure_workspace(row)
+                self.navigation.setCurrentRow(row)
+                return self.pages.widget(row)
+        raise ValueError(f"Unknown workspace: {key}")
+
+    def _ensure_workspace(self, row):
+        factory = self._page_factories.pop(row, None)
+        if factory is None:
+            return
+        placeholder = self.pages.widget(row)
+        try:
+            page = factory()
+        except BaseException:
+            self._page_factories[row] = factory
+            raise
+        self.pages.removeWidget(placeholder)
+        self.pages.insertWidget(row, self._page_scroll_host(page))
+        placeholder.deleteLater()
+        if self._navigation_key(row) == "build_share":
+            preset = getattr(self, "_pending_build_navigation_preset", None)
+            self._pending_build_navigation_preset = None
+            if preset:
+                self._apply_build_navigation_preset(preset)
+        self._refresh_action_states()
+
+    def _show_workspace(self, row, *, select=True):
+        if select:
+            self.pages.setCurrentIndex(row)
+        if row not in self._page_factories or row in self._page_loads:
+            return
+        key = self._navigation_key(row)
+        needs_uniforms = key == "uniforms_equipment" and self._uniform_catalog is None
+        needs_visuals = key in {"rosters_players", "field_art_create_team", "scorebug_presentation", "textures"} and self._extended_visual_catalog is None
+        needs_build = key in {"sliders_gameplay", "build_share"} and self._available_build_options is None
+        if not (needs_uniforms or needs_visuals or needs_build):
+            self._ensure_workspace(row)
+            return
+        self._page_loads.add(row)
+        def prepare(_progress):
+            return (load_nfl2k5_uniform_catalog() if needs_uniforms else None,
+                    load_nfl2k5_extended_visual_catalog() if needs_visuals else None,
+                    mod_build.availability() if needs_build else None)
+        def ready(values):
+            uniform, visual, available = values
+            if uniform is not None:
+                self._uniform_catalog = uniform
+            if visual is not None:
+                self._extended_visual_catalog = visual
+            if available is not None:
+                self._available_build_options = available
+            self._ensure_workspace(row)
+            if self.navigation.currentRow() == row:
+                self.pages.setCurrentIndex(row)
+                self._refresh_entered_page(row)
+            elif key == "build_share" and self._navigation_key(self.navigation.currentRow()) == "rosters":
+                self._prefill_roster_if_pending()
+        worker = _BackgroundTask(prepare)
+        self._workers.add(worker)
+        worker.signals.result.connect(bound(self, ready))
+        worker.signals.error.connect(bound(self, self._set_status))
+        worker.signals.finished.connect(bound(self, lambda: (self._workers.discard(worker), self._page_loads.discard(row))))
+        self.thread_pool.start(worker)
+
+    def _build_category_page(self, category):
+        text_specialist_host = _EmbeddedOperationGuardedHost(
+            self.facade,
+            requester="text",
+            team_names_enabled=self._team_names_preview_enabled,
+            modern_naming_enabled=self._modern_naming_preview_enabled,
+            require_mutation_admission=self._require_specialist_mutation_admission,
+        )
+        crib_specialist_host = _EmbeddedOperationGuardedHost(
+            self.facade,
+            requester="crib",
+            require_mutation_admission=self._require_specialist_mutation_admission,
+        )
+        section = self.product_catalog.section(category)
+        visual_kinds = {
+            ProductCategory.ROSTERS_PLAYERS: frozenset({
+                "player_portrait", "live_face",
+            }),
+            ProductCategory.FIELD_ART_CREATE_TEAM: frozenset({
+                "create_team_field_art",
+            }),
+            ProductCategory.SCOREBUG_PRESENTATION: frozenset({
+                "scorebug_texture",
+            }),
+            ProductCategory.TEXTURES: frozenset({
+                "p8_texture", "uniform_equipment_texture",
+            }),
+        }.get(category)
+        if category == ProductCategory.UNIFORMS_EQUIPMENT:
+            # The uniform browser is built around one capability
+            # (nfl2k5.uniforms.all_visual). Every other capability filed
+            # under Uniforms & Equipment -- the facemask/turtleneck packed
+            # colours and the Team Select cards among them -- used to be
+            # dropped on the floor here, so enabling one changed nothing a
+            # modder could see and the only honest answer to "where is it?"
+            # was "nowhere". They get their own tab, the same shape Rosters
+            # & Players already uses for its two workspaces.
+            uniform_tabs = QTabWidget()
+            uniform_tabs.setObjectName("uniformsEquipmentTabs")
+            uniform_tabs.setAccessibleName("Uniforms and equipment workspaces")
+            uniform_tabs.addTab(self._build_uniform_page(section), tab_title("Uniform Sets"))
+            uniform_tabs.addTab(
+                self._build_colors_page(section), tab_title("Colours & Other Tools")
+            )
+            self._bump_panel = BumpPanel(self.facade)
+            uniform_tabs.addTab(self._bump_panel, "Bump Maps (advanced)")
+            # The uniform browser is why people open this page; never let a
+            # newly added tab take the landing position away from it.
+            uniform_tabs.setCurrentIndex(0)
+            page = uniform_tabs
+        elif category == ProductCategory.TEXTURES:
+            # This category shipped as a bare capability card with nothing
+            # to click. It gets the same browser every other visual family
+            # uses: search, preview, Export/Replace PNG, Revert.
+            if visual_kinds is None:
+                raise RuntimeError("All Textures visual kinds are unavailable")
+            page = self._build_visual_page(section, visual_kinds)
+        elif category == ProductCategory.ROSTERS_PLAYERS:
+            if visual_kinds is None:
+                raise RuntimeError("Rosters & Players visual kinds are unavailable")
+            portrait_page = self._build_visual_page(section, visual_kinds)
+            self._roster_panel = TextRosterPanel(
+                text_specialist_host,
+                view="rosters",
+                on_status=self._specialized_panel_status,
+                on_refresh=self._specialized_panel_refresh,
+            )
+            self._connect_star_players()
+            roster_tabs = QTabWidget()
+            roster_tabs.setObjectName("rostersPlayersTabs")
+            roster_tabs.setAccessibleName("Rosters and players workspaces")
+            roster_tabs.addTab(self._roster_panel, tab_title("Names & Numbers"))
+            roster_tabs.addTab(portrait_page, tab_title("Portraits & Faces"))
+            # "Which face is this player?" had no answer in the app: faces
+            # are found by a face_id buried in the roster record and filed
+            # under a number, so the only method was scrolling 1,872
+            # textures hoping a label matched.
+            roster_tabs.addTab(self._build_player_assets_page(), "Find player images")
+            page = roster_tabs
+        elif category == ProductCategory.TEAM_IDENTITY:
+            self._text_roster_panel = TextRosterPanel(
+                text_specialist_host,
+                view="text",
+                on_status=self._specialized_panel_status,
+                on_refresh=self._specialized_panel_refresh,
+            )
+            # The DE -> EDGE rename is a text patch (executable position
+            # tables + the disc's text spans), so it lives with the other
+            # text tools rather than under Gameplay.
+            identity_tabs = QTabWidget()
+            identity_tabs.setObjectName("teamIdentityTabs")
+            identity_tabs.setAccessibleName("Text and team identity workspaces")
+            identity_tabs.addTab(self._text_roster_panel, "Game Text")
+            self._edge_panel = GameplayPatchesPanel(
+                self.facade, patches=TEXT_PATCHES, title="Position names",
+                intro="Change what the game calls positions and write one copy. "
+                      "For presets and other changes, use ★ Build & Share.",
+                target_suffix="position names",
+            )
+            identity_tabs.addTab(self._edge_panel, "Position Names (EDGE)")
+            identity_tabs.setCurrentIndex(0)
+            page = identity_tabs
+        elif category == ProductCategory.CRIB:
+            self._crib_panel = CribPanel(
+                crib_specialist_host,
+                operation_admission=lambda: self._embedded_operation_denial(
+                    "Crib"
+                ),
+            )
+            self._crib_panel.operation_state_changed.connect(
+                self._crib_operation_state_changed
+            )
+            if self._crib_panel.operation_in_progress:
+                self._crib_operation_state_changed(True)
+            self._crib_panel.crib_modified.connect(
+                lambda _asset_id: self._specialized_panel_refresh()
+            )
+            self._crib_panel.crib_reverted.connect(
+                lambda _asset_id: self._specialized_panel_refresh()
+            )
+            page = self._crib_panel
+        elif category == ProductCategory.SCOREBUG_PRESENTATION:
+            # Presentation = the scorebug texture inventory plus the two
+            # writable presentation workspaces: the ESPN horizontal
+            # scorebug/ticker re-layout and commentary line swaps.  Both
+            # write a copy of the disc, never the source.
+            if visual_kinds is None:
+                raise RuntimeError("Presentation visual kinds are unavailable")
+            presentation_tabs = QTabWidget()
+            presentation_tabs.setObjectName("presentationTabs")
+            presentation_tabs.setAccessibleName("Presentation workspaces")
+            presentation_tabs.addTab(self._build_visual_page(section, visual_kinds), "Scorebug Images")
+            self._presentation_panel = PresentationPanel(self.facade)
+            presentation_tabs.addTab(self._presentation_panel, "ESPN Scorebug && Ticker")
+            self._commentary_panel = CommentaryPanel(self.facade)
+            presentation_tabs.addTab(self._commentary_panel, "Commentary")
+            presentation_tabs.setCurrentIndex(0)
+            page = presentation_tabs
+        elif visual_kinds is not None:
+            page = self._build_visual_page(section, visual_kinds)
+        elif category == ProductCategory.MENUS_UI:
+            raw_fallback = self._build_universal_asset_page(section)
+            self._menus_panel = MenusPanel(
+                self.facade,
+                raw_fallback=raw_fallback,
+                capability_page=self._build_capability_page(section),
+            )
+            page = self._menus_panel
+        elif category == ProductCategory.STADIUMS:
+            page = self._build_stadium_page(section)
+        elif category == ProductCategory.AUDIO:
+            self._audio_panel = AudioPanel(
+                self.facade,
+                operation_admission=lambda: self._embedded_operation_denial(
+                    "Audio"
+                ),
+            )
+            self._audio_panel.operation_state_changed.connect(
+                self._audio_operation_state_changed
+            )
+            self._audio_panel.audio_modified.connect(
+                lambda _asset_id: self._mark_workspace_changed()
+            )
+            self._audio_panel.audio_reverted.connect(
+                lambda _asset_id: self._mark_workspace_changed()
+            )
+            self._audio_panel.audio_batch_imported.connect(
+                lambda _changed_count: self._mark_workspace_changed()
+            )
+            self._audio_panel.audio_annotation_changed.connect(
+                lambda _asset_id: self._mark_workspace_changed()
+            )
+            self._audio_panel.setToolTip("Browse, preview, export and replace supported audio — drop any common file (MP3, WAV, FLAC, OGG, M4A); it is converted to the slot's exact shape when FFmpeg is available.")
+            self._audio_panel.setAccessibleDescription("Audio workspace: searchable playable cues and ranges with replace support for exact-slot standalone and streaming-range sounds.")
+            # Sounds: the rotating SFX banks (hits, whistles, crowd
+            # reactions, QB cadence) and the standalone AUDO cues,
+            # replaced through the soundbank/audo swap tools into a COPY
+            # of the disc -- the same shape Presentation uses for its
+            # copy-writing workspaces.
+            audio_tabs = QTabWidget()
+            audio_tabs.setObjectName("audioTabs")
+            audio_tabs.setAccessibleName("Audio workspaces")
+            audio_tabs.addTab(self._audio_panel, tab_title("Audio Cues"))
+            self._music_panel = MusicPanel()
+            self._music_panel.operation_guard = lambda: self._embedded_operation_denial("Music")
+            self._music_panel.changed.connect(self._music_changed)
+            self._music_panel.policy_changed.connect(self._music_policy_changed)
+            self._music_panel.playlist_changed.connect(self._music_playlist_changed)
+            self._music_panel.library_changed.connect(self._music_library_changed)
+            self._music_panel.receipt_ready.connect(self._music_receipt_ready)
+            self._music_panel.operation_state_changed.connect(self._music_operation_state_changed)
+            self._restore_music_build_settings()
+            audio_tabs.addTab(self._music_panel, "Music")
+            audio_tabs.currentChanged.connect(lambda _index: self._music_panel.stop_preview())
+            self.navigation.currentRowChanged.connect(lambda _index: self._music_panel.stop_preview())
+            for signal in (self._audio_panel.audio_modified, self._audio_panel.audio_reverted,
+                           self._audio_panel.audio_batch_imported):
+                signal.connect(lambda *_: self._music_panel.invalidate_audio_content())
+            self._sounds_panel = SoundsPanel(self.facade)
+            audio_tabs.addTab(self._sounds_panel, "Replace a Sound")
+            audio_tabs.setCurrentIndex(0)
+            page = audio_tabs
+        elif category == ProductCategory.PLAYBOOKS_PLAYS:
+            self._playbooks_panel = PlaybooksPanel(self.facade)
+            page = self._playbooks_panel
+        elif category == ProductCategory.SLIDERS_GAMEPLAY:
+            self._ensure_workspace(self.navigation.count() - 1)
+            # Throw Distance & Arc is the one writable workspace on this
+            # page: two sliders over the game's own arm-strength curve
+            # tables, written to a COPY of default.xbe (xemu-only), the
+            # same contract Bump strength ships under.
+            self._throw_tuning_panel = ThrowTuningPanel(self.facade)
+            # Gameplay Patches: the executable caves (Catching/Interception
+            # sliders, acceleration ramp, franchise draft AI) with their
+            # explanations, written through mod_build.
+            self._gameplay_patches_panel = GameplayPatchesPanel(self.facade)
+            self._gameplay_patches_panel.open_anniversary.connect(self._open_rosters_anniversary)
+            self._connect_gameplay_build()
+            # The Xbox save editor (sliders + franchise year) is a gameplay tool, not a
+            # uniform tool: one instance, moved here from Uniforms & Equipment (GP-02).
+            self._save_panel = SavePanel(self.facade)
+            self._senior_bowl_panel = SeniorBowlPanel()
+            self._senior_bowl_panel.settings_changed.connect(self._senior_bowl_settings_changed)
+            self._gameplay_panel = GameplayPanel(
+                self.facade,
+                capability_page=self._build_capability_page(section),
+                extra_tabs=((self._gameplay_patches_panel, "Game Fixes"),
+                            (self._throw_tuning_panel, "Throw Distance && Arc"),
+                            (self._save_panel, tab_title("Saves & Sliders")),
+                            (self._senior_bowl_panel, "Senior Bowl")),
+            )
+            page = self._gameplay_panel
+        else:
+            page = self._build_capability_page(section)
+        self._category_pages[category] = page
+        if category == ProductCategory.UNIFORMS_EQUIPMENT:
+            self._populate_uniform_filters()
+            self._filter_uniforms()
+        self._sync_constructed_page()
+        return page
+
+    def _build_scorebar_page(self):
+        self._scorebar_panel = ScorebugStudioPanel(defer_preview=True)
+        self._scorebar_panel.folder_chosen.connect(self._scorebar_folder_chosen)
+        return self._scorebar_panel
+
+    def _sync_constructed_page(self):
+        """New pages inherit the current source without resetting existing edits."""
+        source = getattr(self.facade, "source_path", None)
+        for panel in (self._throw_tuning_panel, self._presentation_panel, self._commentary_panel,
+                      self._sounds_panel, self._bump_panel):
+            if panel is not None and source is not None and id(panel) not in self._prefilled_embedded:
+                self._prefilled_embedded.add(id(panel))
+                if panel is self._throw_tuning_panel:
+                    panel.load_source(source, quiet=True)
+                else:
+                    panel.load_source(source)
+        previous = self._restoring_music_playlist
+        self._restoring_music_playlist = True
+        try:
+            for panel in (self._build_panel, self._gameplay_patches_panel, self._edge_panel):
+                if panel is not None and self._source_state is not None and not getattr(panel, "_state", None):
+                    panel.apply_state(self._source_state)
+        finally:
+            self._restoring_music_playlist = previous
+        self._restore_music_build_settings(keep_current_when_empty=True)
 
     def _build_header(self) -> QWidget:
         header = QFrame()
@@ -3079,8 +3300,14 @@ class StudioMainWindow(QMainWindow):
 
         for row in range(self.navigation.count()):
             if self.navigation.item(row).data(Qt.UserRole) == "build_share":
+                if self._build_panel is None:
+                    self._pending_build_navigation_preset = preset
                 self.navigation.setCurrentRow(row)
+                self._show_workspace(row)
                 break
+        self._apply_build_navigation_preset(preset)
+
+    def _apply_build_navigation_preset(self, preset):
         if not preset or self._build_panel is None:
             return
         if not bool(getattr(self.facade, "source_ready", False)):
@@ -4008,7 +4235,7 @@ class StudioMainWindow(QMainWindow):
         for group in sorted({asset.group for asset in assets}, key=str.casefold):
             group_filter.addItem(group, group)
         browser_layout.addWidget(group_filter)
-        asset_list = QListWidget()
+        asset_list = _VisualList(self)
         asset_list.setObjectName("assetList")
         asset_list.setIconSize(QSize(36, 36))
         asset_list.setSpacing(3)
@@ -4767,9 +4994,6 @@ class StudioMainWindow(QMainWindow):
         return icon
 
     def _visual_icon(self, asset: ExtendedVisualAsset) -> QIcon:
-        cached = self._monogram_icons.get(asset.asset_id)
-        if cached is not None:
-            return cached
         abbreviation = {
             "player_portrait": "P",
             "live_face": (asset.family or "F").upper(),
@@ -4778,6 +5002,10 @@ class StudioMainWindow(QMainWindow):
         }.get(asset.kind, "2K5")[:3]
         seed = sum(asset.asset_id.encode("utf-8"))
         colors = ("#3269d6", "#6b45c7", "#16857a", "#a34e66", "#a06427")
+        key = ("visual", abbreviation, seed % len(colors))
+        cached = self._monogram_icons.get(key)
+        if cached is not None:
+            return cached
         pixmap = QPixmap(42, 42)
         pixmap.fill(Qt.transparent)
         painter = QPainter(pixmap)
@@ -4793,7 +5021,7 @@ class StudioMainWindow(QMainWindow):
         painter.drawText(pixmap.rect(), Qt.AlignCenter, abbreviation)
         painter.end()
         icon = QIcon(pixmap)
-        self._monogram_icons[asset.asset_id] = icon
+        self._monogram_icons[key] = icon
         return icon
 
     def _filter_visual_assets(self, category: ProductCategory) -> None:
@@ -4814,27 +5042,14 @@ class StudioMainWindow(QMainWindow):
                 asset.kind,
                 asset.target_selector,
                 *asset.search_terms,
-            )).casefold()
+            )).casefold() if words else ""
             if words and not all(word in haystack for word in words):
                 continue
             rows.append(asset)
         state.asset_list.blockSignals(True)
-        state.asset_list.clear()
-        restore_row = -1
-        for index, asset in enumerate(rows):
-            changed = asset.asset_id in modified
-            item = QListWidgetItem(("●  " if changed else "") + asset.label)
-            item.setData(Qt.UserRole, asset.asset_id)
-            item.setToolTip(
-                f"{asset.target_selector} • {asset.width}×{asset.height} • {asset.group}"
-            )
-            item.setSizeHint(QSize(330, 49))
-            item.setIcon(self._visual_icon(asset))
-            if changed:
-                item.setForeground(QColor("#ffbe5c"))
-            state.asset_list.addItem(item)
-            if asset.asset_id == state.selected_asset_id:
-                restore_row = index
+        state.asset_list.set_rows(rows, modified)
+        restore_row = next((index for index, asset in enumerate(rows)
+                            if asset.asset_id == state.selected_asset_id), -1)
         state.asset_list.blockSignals(False)
         state.count_label.setText(f"{len(rows):,}")
         if rows:
@@ -7863,7 +8078,10 @@ class StudioMainWindow(QMainWindow):
         self.thread_pool.start(worker)
 
     def _task_progress(self, stage: str, completed: int, total: int) -> None:
-        self.operation_status.setText(stage or "Working…")
+        self._operation_stage = stage or "Working…"
+        if total > 0 and "copy" in self._operation_stage.casefold():
+            self._operation_stage += f" • {completed / total:.0%}"
+        self.operation_status.setText(self._operation_stage)
         self.progress_bar.show()
         if total > 0:
             self.progress_bar.setRange(0, 1000)
@@ -7875,13 +8093,21 @@ class StudioMainWindow(QMainWindow):
     def _set_busy(self, busy: bool, label: str = "") -> None:
         self._blocking = busy
         if busy:
+            self._operation_started = time.monotonic()
+            self._operation_stage = label
+            self._heartbeat_timer.start()
             self.operation_status.setText(label)
             self.progress_bar.setRange(0, 0)
             self.progress_bar.show()
         else:
+            self._heartbeat_timer.stop()
             self.progress_bar.hide()
             self.progress_bar.setRange(0, 100)
         self._refresh_action_states()
+
+    def _busy_heartbeat(self):
+        self.operation_status.setText(
+            f"{self._operation_stage} • {int(time.monotonic() - self._operation_started)} s")
 
     def _set_status(self, message: str) -> None:
         # Pages are built before the footer that owns this label, and a page
@@ -7925,7 +8151,9 @@ class StudioMainWindow(QMainWindow):
 
         self._animations_panel.image_field.setText(str(source or ""))
         self._my_career_panel.set_source(source)
-        self._senior_bowl_panel.set_players((), source="")
+        if self._senior_bowl_panel is not None:
+            self._senior_bowl_panel.set_players((), source="")
+        self._source_state = None
         if source is None or not bool(getattr(self.facade, "source_ready", False)):
             return
         source = Path(source)
@@ -7945,6 +8173,7 @@ class StudioMainWindow(QMainWindow):
             self._source_inspect_pending = False
             if not isinstance(state, dict):
                 return
+            self._source_state = state
             self._restoring_music_playlist = True
             try:
                 for panel in (self._build_panel, self._gameplay_patches_panel, self._edge_panel):
@@ -7957,6 +8186,7 @@ class StudioMainWindow(QMainWindow):
             if state.get("music_playlist_catalog_error"):
                 self.statusBar().showMessage(f"Playlist library unavailable: {state['music_playlist_catalog_error']}", 8000)
             self._describe_source_pill(state)
+            self._sync_mycareer_position_scheme()
             self._refresh_welcome_state()
 
         def inspect_failed(message: str) -> None:
@@ -8622,8 +8852,7 @@ class StudioMainWindow(QMainWindow):
 
     def _scorebar_folder_chosen(self, folder: str) -> None:
         """Scorebar Studio saved a folder: fill the Build tab's scorebar folder field."""
-        if self._build_panel is None:
-            return
+        self._ensure_workspace(self.navigation.count() - 1)
         self._build_panel.scorebug_folder_field.setText(folder)
         self._capture_music_build_settings()
         self._mark_workspace_changed()
@@ -8639,7 +8868,13 @@ class StudioMainWindow(QMainWindow):
 
         panel = getattr(self, "_my_career_panel", None)
         build = getattr(self, "_build_panel", None)
-        if panel is None or build is None:
+        if panel is None:
+            return
+        if build is None:
+            getter = getattr(self.facade, "project_build_settings", None)
+            settings = getter() if callable(getter) and getattr(self.facade, "source_ready", False) else {}
+            panel.set_position_pools(bool(settings.get("position_pools")
+                or (self._source_state or {}).get("position_pools") == "applied"))
             return
 
         def enabled():
@@ -8650,6 +8885,7 @@ class StudioMainWindow(QMainWindow):
         panel.set_position_pools(enabled())
 
     def _my_career_setup_ready(self, path):
+        self._ensure_workspace(self.navigation.count() - 1)
         self._build_panel.set_my_career_setup(path)
         self._capture_music_build_settings()
         self._mark_workspace_changed()
@@ -8657,12 +8893,19 @@ class StudioMainWindow(QMainWindow):
     def _modern_naming_preview_enabled(self):
         panel = getattr(self, "_build_panel", None)
         source = getattr(self.facade, "source_path", None)
+        if panel is None and source is not None:
+            getter = getattr(self.facade, "project_build_settings", None)
+            return bool(callable(getter) and getter().get("modern_naming"))
         return bool(panel and source and panel.modern_naming_check.isChecked()
                     and Path(panel.source_field.text()).resolve() == Path(source).resolve())
 
     def _team_names_preview_enabled(self) -> bool:
         panel = getattr(self, "_build_panel", None)
-        if panel is None or not panel.team_names_2026_check.isChecked():
+        if panel is None:
+            getter = getattr(self.facade, "project_build_settings", None)
+            return bool(getattr(self.facade, "source_ready", False) and callable(getter)
+                        and getter().get("team_names_2026"))
+        if not panel.team_names_2026_check.isChecked():
             return False
         source = getattr(self.facade, "source_path", None)
         return bool(source and Path(panel.source_field.text()).resolve() == Path(source).resolve())
@@ -8678,7 +8921,8 @@ class StudioMainWindow(QMainWindow):
         tabs = QTabWidget()
         tabs.setObjectName("buildShareTabs")
         tabs.setAccessibleName("Build and share workspaces")
-        self._build_panel = BuildPanel(self.facade)
+        self._build_share_page = tabs
+        self._build_panel = BuildPanel(self.facade, available=self._available_build_options)
         # The MyCareer picker follows the position-pools option (EDGE and LB only
         # when it is on); either panel may be built first.
         self._sync_mycareer_position_scheme()
@@ -8691,6 +8935,7 @@ class StudioMainWindow(QMainWindow):
         self._build_panel.source_field.textChanged.connect(self._refresh_team_names_preview)
         self._build_panel.operation_guard = self._build_operation_guard
         self._build_panel.operation_state_changed.connect(self._build_operation_state_changed)
+        self._build_panel.progress_text_changed.connect(self.operation_status.setText)
         self._build_panel.music_shuffle_check.toggled.connect(self._build_music_shuffle_changed)
         self._build_panel.music_library_preview_ready.connect(self._music_library_preview_ready)
         self._restore_music_build_settings()
@@ -8727,6 +8972,7 @@ class StudioMainWindow(QMainWindow):
         if models_panel is not None:
             models_panel.disc_written.connect(self._register_external_disc)
         tabs.setCurrentIndex(0)
+        self._sync_constructed_page()
         return tabs
 
     def _connect_gameplay_build(self):
@@ -8822,6 +9068,10 @@ class StudioMainWindow(QMainWindow):
         self, row: int, *, refresh_embedded: bool = True
     ) -> None:
         if self._navigation_key(row) == "rosters":
+            if self._build_panel is None:
+                self._show_workspace(self.navigation.count() - 1, select=False)
+                if self._build_panel is None:
+                    return
             self._prefill_roster_if_pending()
             return
         if self._navigation_key(row) == "animations":

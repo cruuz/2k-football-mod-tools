@@ -208,7 +208,7 @@ class DialogTests(unittest.TestCase):
 
     def _window(self, rows: tuple[object, ...]) -> tuple[StudioMainWindow, _CheckFacade]:
         facade = _CheckFacade(rows)
-        window = StudioMainWindow(facade=facade, offer_recovery=False)
+        window = StudioMainWindow(eager_pages=True, facade=facade, offer_recovery=False)
         # Previews decode off-thread; leaving them running past teardown makes
         # Qt tear down a deleted QLabel from a worker callback.
         window._load_preview = lambda _asset: None  # type: ignore[method-assign]

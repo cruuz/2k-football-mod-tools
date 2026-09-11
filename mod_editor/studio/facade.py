@@ -797,12 +797,8 @@ class Nfl2k5StudioFacade:
         audio_origin_preparation: Nfl2k5AudioOriginPreparation | None = None,
     ) -> None:
         supplied_uniform_catalog = uniform_catalog
-        self.uniform_catalog = uniform_catalog or load_nfl2k5_uniform_catalog()
-        self.visual_catalog = visual_catalog or (
-            load_nfl2k5_product_visual_catalog()
-            if supplied_uniform_catalog is None
-            else self.uniform_catalog
-        )
+        self._uniform_catalog = uniform_catalog
+        self._visual_catalog = visual_catalog or supplied_uniform_catalog
         self.source_cache = source_cache or Nfl2k5SourceCache()
         self.build_service = build_service or Nfl2k5BuildService()
         self.session_factory = session_factory
@@ -847,6 +843,18 @@ class Nfl2k5StudioFacade:
         self._crib_io: Nfl2k5CribIO | None = None
         self._lock = threading.RLock()
         self._audio_preparation_lock = threading.Lock()
+
+    @property
+    def uniform_catalog(self):
+        if self._uniform_catalog is None:
+            self._uniform_catalog = load_nfl2k5_uniform_catalog()
+        return self._uniform_catalog
+
+    @property
+    def visual_catalog(self):
+        if self._visual_catalog is None:
+            self._visual_catalog = load_nfl2k5_product_visual_catalog()
+        return self._visual_catalog
 
     @property
     def source_ready(self) -> bool:

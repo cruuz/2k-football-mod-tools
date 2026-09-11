@@ -25,7 +25,7 @@ class ProductShellAccessibilityTests(unittest.TestCase):
         cls.application = QApplication.instance() or QApplication([])
 
     def setUp(self) -> None:
-        self.two_k5 = StudioMainWindow(
+        self.two_k5 = StudioMainWindow(eager_pages=True,
             facade=BrowseOnlyFacade(), offer_recovery=False
         )
         self.apf = ApfStudioMainWindow(offer_recovery=False)

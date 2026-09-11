@@ -139,7 +139,7 @@ class BuildPlan:
     deep_zone_facing: bool = False        # deep-zone corners keep facing the QB on a slower drop; experimental, off in every preset
     deep_zone_bail: bool = False          # three-deep press start with a directional bail (ends at seven yards alone); experimental, off in every preset
     deep_zone_bail_calls: tuple = ()      # staged press-bail authoring calls (asset selector + formation/front/coverage indices); staging is not wired yet, must stay empty
-    playbook_pair: bool = False           # separate offensive and defensive playbooks (pregame Options rows); refuses with read option / QB spy; experimental, off in every preset
+    playbook_pair: bool = False           # separate offensive and defensive playbooks (pregame Options rows); composes with read option / QB spy since beta 66 (paired-root contract); experimental, off in every preset
     cpu_money_downs: str = "retail"      # CPU fourth downs and first downs: retail / modern / aggressive; experimental, retail in every preset
     accelerated_clock: bool = False      # Madden-style accelerated clock; ADVANCED classification, off in every preset until witnessed
     accelerated_clock_minimum_seconds: int = 20   # minimum play clock after the huddle break: 25 / 20 / 15 / 10 / 5
@@ -882,18 +882,20 @@ PLAYBOOK_OPTION_LABELS = {
 
 
 def validate_plan(plan: BuildPlan) -> list[str]:
-    """Cheap selection checks, before reading files or preparing project edits."""
-    if not plan.playbook_pair:
-        return []
-    return [
-        f'"{PLAYBOOK_OPTION_LABELS["playbook_pair"]}" cannot be combined with '
-        f'"{PLAYBOOK_OPTION_LABELS[key]}". Turn one option off.'
-        for key in ("read_option_runtime", "qb_spy") if getattr(plan, key)
-    ]
+    """Cheap selection checks, before reading files or preparing project edits (beta 66, job D1).
+
+    Returns the on-screen reasons a selection cannot be built. Beta 66 has none: separate playbooks now
+    compose with the authored read-option and QB-spy controls through the pair owner's paired-root
+    contract (job D2), so the old "turn one option off" refusal is gone. The gate stays so a future
+    selection conflict is reported at tick time, never after a fifteen-minute build.
+    """
+    return []
 
 
-def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, Any]:
+def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_builder=None) -> dict[str, Any]:
     """Apply the plan to a copy; archive rebuilds publish only a complete result."""
+    from .build_io import StageProgress
+    progress = StageProgress(progress)
     try:
         blockers = validate_plan(plan)
         if blockers:
@@ -909,18 +911,35 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
         with tempfile.TemporaryDirectory(prefix=".studio-build-", dir=target.parent) as folder:
             directory = Path(folder)
             edits = None
+            project_result = None
+            effective_source = source
+            if _project_builder is not None or plan.music_project:
+                preflight_plan(plan, progress)
+            if _project_builder is not None:
+                # All plan refusals run before materializing project textures or
+                # creating the first disc copy. Revalidate against the staged
+                # resources below before consuming that private intermediate.
+                project_directory = directory / "project"
+                project_directory.mkdir()
+                effective_source = project_directory / "source.iso"
+                project_result = _project_builder(effective_source)
+                if effective_source.is_symlink() or effective_source.stat().st_nlink != 1:
+                    raise ValueError("Project builder did not produce a private image")
             if plan.music_project:
                 if not tt.is_disc_image(source):
                     raise ValueError("Music replacements need a disc image")
                 project_library = []
-                edits = _prepare_music_project(source, plan.music_project, directory,
+                edits = _prepare_music_project(effective_source, plan.music_project, directory,
                     progress or (lambda *_: None), library_result=project_library)
                 if project_library:
                     if plan.music_library:
                         raise ValueError("Choose the Music project or the separate music library, then build again.")
                     plan = replace(plan, music_library=project_library[0])
-            receipt = _build(replace(plan, target=str(directory / target.name), overwrite=False), progress,
-                             music_edits=edits, r62_options=r62)
+            receipt = _build(replace(plan, source=str(effective_source), target=str(directory / target.name), overwrite=False), progress,
+                             music_edits=edits, r62_options=r62, _consume_source=project_result is not None)
+            if project_result is not None:
+                receipt["steps"].insert(0, {"step": "shared_project", **asdict(project_result)})
+                receipt["source"] = str(source)
             if plan.music_shuffle or plan.music_library:
                 library = _core_module("nfl2k5_music_banks")
                 expected = (plan.music_shuffle_selection or tt.music_playlist_patch.default_options()) if plan.music_shuffle else None
@@ -930,17 +949,38 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
                     preflight = step.get("music_shuffle_preflight")
                     if preflight is not None:
                         preflight.update(checked)
+            progress("Hashing the verified disc", 0, 0)
             from .build_feedback import measure
-            receipt["outcome"] = measure(source, directory / target.name)
+            if project_result is not None and getattr(project_result, "source_sha256", ""):
+                from .build_feedback import compare, _digest
+                receipt["outcome"] = compare(
+                    {"sha256": project_result.source_sha256, "size": project_result.output_size},
+                    _digest(directory / target.name))
+            else:
+                receipt["outcome"] = measure(source, directory / target.name)
             if progress:
                 progress(receipt["outcome"]["message"], 0, 0)
+            progress("Publishing the verified disc", 0, 0)
             publish_image(directory / target.name, target, previous_target)
+            receipt["stage_seconds"] = progress.finish()
             receipt["target"] = str(target)
             receipt["result"]["path"] = str(target)
             return receipt
     except ValueError as exc:
         source = Path(plan.source)
         raise _with_identity(exc, source, tt.is_disc_image(source)) from exc
+
+
+def preflight_plan(plan: BuildPlan, progress: ProgressSink | None = None):
+    """Run configuration and source preflights without creating a disc output (beta 66, job B)."""
+    return _build(plan, progress, _preflight_only=True)
+
+
+def build_with_project(plan, service, cache, session, progress=None):
+    """One private project copy, then gameplay, then one final publication."""
+    report = progress or (lambda *_: None)
+    return build(plan, progress, _project_builder=lambda output: service.build(
+        cache, session, output, lambda event: report(event.message, event.completed, event.total)))
 
 
 def _preview_play_intents(source, paths):
@@ -1011,7 +1051,7 @@ def _validated_r62_plan_options(plan):
     return r62
 
 
-def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits=None, r62_options=None) -> dict[str, Any]:
+def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits=None, r62_options=None, _consume_source=False, _preflight_only=False) -> dict[str, Any]:
     progress = progress or (lambda *_a: None)
     blockers = validate_plan(plan)
     if blockers:
@@ -1064,6 +1104,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         if plan.arc or plan.realistic_flight or plan.arc_by_distance:
             raise ValueError("Flatter flight must be selected on its own; choose one flight option")
         plan = replace(plan, throw=True, max_deep_yards=plan.max_deep_yards if plan.throw else 80.0)
+    if plan.throw:
+        tt.TuningSettings(plan.max_deep_yards, plan.arc,
+                          plan.realistic_flight, plan.arc_by_distance).validated()
+    uniform_choice_mode(plan.uniform_choice)
     if type(plan.hires_pack) is not bool:
         raise ValueError("hires_pack must be boolean")
     if type(plan.hires_scale) is not int or plan.hires_scale not in (1, 2):
@@ -1104,8 +1148,6 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         plan = replace(plan, weekly_prep=True, xbe_space=True)
     if plan.my_career and plan.my_career_setup is None:
         plan = replace(plan, draft_ai=True)  # generic MyCareer (M3 draft) reuses the draft-AI implementation
-    if plan.playbook_pair and (plan.read_option_runtime or plan.qb_spy):
-        raise ValueError(tt.PLAYBOOK_PAIR_CONFLICT)
     if type(plan.deep_zone_bail_calls) not in (tuple, list) or plan.deep_zone_bail_calls:
         raise ValueError("Press corner bail authoring calls are not staged by this build; leave deep_zone_bail_calls empty "
                          "(the runtime bail option serves an already authored press call)")
@@ -1310,6 +1352,45 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         if plan.qb_spy:
             tt.qb_spy_patch.compile_intent_table(preview_pairs)
 
+    # Availability is a plan refusal, not a reason to discard a copied disc.
+    for enabled, module, tool in (
+        (plan.scorebug and not plan.scorebug_runtime, "nfl2k5_scorebug_layout", True),
+        (plan.position_pools, "nfl2k5_position_pools", False),
+        (plan.position_pools, "nfl2k5_playbook_position_recode", True),
+        (plan.position_pools, "nfl2k5_roster_reclassify", True),
+        (plan.kickoff_alignment, "nfl2k5_kickoff_alignment", True),
+        (plan.dynamic_kickoff, "nfl2k5_kickoff_returns", True),
+        (plan.seven_on_seven, "nfl2k5_seven_on_seven_book", False),
+        (plan.screen_timing is not None, "nfl2k5_screen_timing", False),
+        (plan.team_history, "nfl2k5_team_history", False),
+        (plan.career_stats, "nfl2k5_career_stats", False),
+        (plan.prospect_names, "nfl2k5_prospect_names", False),
+        (plan.player_tags, "nfl2k5_player_tags", False),
+        (plan.roster_edits, "nfl2k5_roster_records", False),
+        (plan.season_2026, "nfl2k5_season_length", False),
+        (plan.season_2026, "nfl2k5_franchise_schedule", True),
+        (plan.season_2026, "nfl2k5_playoff_picture", False),
+        (plan.commentary, "nfl2k5_commentary_swap", True),
+        (plan.guardian_cap, "nfl2k5_guardian_cap", False),
+        (plan.read_option_runtime or plan.qb_spy, "nfl2k5_play_intents", False),
+        (plan.position_pools or plan.roster_edits, "nfl2k5_roster_records", False),
+    ):
+        if enabled and (_tools_module(module) if tool else _core_module(module)) is None:
+            raise RuntimeError(f"{module} is not available in this build")
+    # Parse user-authored documents before any expensive project preparation or
+    # image copy. The later writers still resolve them against composed bytes.
+    for document, module in ((plan.team_history, "nfl2k5_team_history"),
+                             (plan.career_stats, "nfl2k5_career_stats"),
+                             (plan.prospect_names, "nfl2k5_prospect_names")):
+        if document:
+            _core_module(module).load_rows(document)
+    if plan.roster_edits:
+        _core_module("nfl2k5_roster_records").read_edits(plan.roster_edits)
+    if plan.music_project and not Path(plan.music_project).is_file():
+        raise ValueError(f"The Music project is missing: {plan.music_project}")
+    if _preflight_only:
+        return receipt
+
     # 1. copy + executable and text patches through the proven writer (throw tables, caves, EDGE rename
     #    including its disc text spans when the source is an image)
     # the rows run after the pools step below (their cave and stride depend on it), so they never ride the first pass
@@ -1339,13 +1420,19 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                                   "dynamic_kickoff": plan.dynamic_kickoff, "dynamic_kickoff_settings": plan.dynamic_kickoff_settings}
         if settings is not None:
             kwargs["settings"] = settings
+        if _consume_source:
+            kwargs["_consume_source"] = True
         step = tt.write_copy(source, target, **kwargs)
         receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("modern_naming_patch", "crib_reclaim_patch", "catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "scheme_labels", "camera", "kick_rules", "kick_power", "dynamic_kickoff", "dynamic_kickoff_settings", "dynamic_kickoff_patch", "depth_chart_rows", "practice_squad", "practice_reserves", "depth_locks", "season_cap", "season_cap_patch", "widescreen", "widescreen_patch", "overtime", "team_column", "seven_on_seven", "position_row", "probowl_order", "penalties", "flatter_deep_ball", "flatter_deep_ball_patch", "chop_block_toggle", "chop_block_toggle_patch", "chop_block_evidence", "uniform_choice", "kick_laces", "franchise_practice", "prospect_names", "player_star", "music_policy", "music_unlock", "music_userlist", "music_state", "music_policy_patch", "scorebug_xbe", "changed_byte_count")}})
     else:
         progress("Copying the image", 0, 0)
         if target.exists():
             target.unlink()
-        shutil.copyfile(source, target)
+        if _consume_source:
+            os.replace(source, target)
+        else:
+            from .build_io import copy_image
+            copy_image(source, target, progress)
         receipt["steps"].append({"step": "copy"})
 
     # 3. presentation on the copy
@@ -1721,6 +1808,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             os.replace(destination, target)
         receipt["steps"].append({"step": "music_library", "library": plan.music_library, **rec})
 
+    progress("Verifying the composed disc", 0, 0)
     inspection = inspect(target, screen_timing=plan.screen_timing)
     if plan.hires_pack:
         # Retain fixed-offset inspector results only with their pre-remap scope.
@@ -1752,8 +1840,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     # prospect names, user roster edits, arena growth) from a complete scan of every disc roster.
     olb_filtered = False
     pools_final = _core_module("nfl2k5_position_pools")
-    run_olb_filter = bool(plan.position_pools) and pools_final is not None and tt.is_disc_image(source)
-    if not run_olb_filter and pools_final is not None and tt.is_disc_image(source):
+    run_olb_filter = bool(plan.position_pools) and pools_final is not None and is_image
+    if not run_olb_filter and pools_final is not None and is_image:
         # A source that already carries the pools gets the same final decision; an executable that
         # cannot be read here was never patched by this build, so the rows are left alone.
         try:

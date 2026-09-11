@@ -35,18 +35,15 @@ def wired_module(name):
 
 
 class PlanTests(unittest.TestCase):
-    def test_both_conflicts_and_three_presets(self):
+    def test_pairing_composes_with_read_option_and_qb_spy_and_presets_stay_clean(self):
+        """Beta 66: the paired-root contract (job D2) lets separate playbooks build with the authored controls."""
         for key in ('read_option_runtime', 'qb_spy'):
             plan = mod_build.BuildPlan('missing.iso', 'out.iso', playbook_pair=True, **{key: True})
-            messages = mod_build.validate_plan(plan)
-            self.assertEqual(len(messages), 1)
-            for label in (mod_build.PLAYBOOK_OPTION_LABELS[key], mod_build.PLAYBOOK_OPTION_LABELS['playbook_pair']):
-                self.assertIn(label, messages[0])
-            with patch.object(mod_build, '_validated_r62_plan_options', side_effect=AssertionError('late')):
-                with self.assertRaisesRegex(ValueError, 'cannot be combined'):
-                    mod_build.build(plan)
+            self.assertEqual(mod_build.validate_plan(plan), [])
         for name in mod_build.PRESETS:
-            self.assertEqual(mod_build.validate_plan(mod_build.apply_preset(mod_build.BuildPlan('in.iso', 'out.iso'), name)), [])
+            plan = mod_build.apply_preset(mod_build.BuildPlan('in.iso', 'out.iso'), name)
+            self.assertEqual(mod_build.validate_plan(plan), [])
+            self.assertFalse(plan.playbook_pair)
 
 
 class PanelTests(unittest.TestCase):
@@ -56,7 +53,8 @@ class PanelTests(unittest.TestCase):
         cls.build_module = wired_module('mod_editor.gui.build_panel_qt')
         cls.game_module = wired_module('mod_editor.gui.gameplay_patches_panel_qt')
 
-    def test_every_toggle_both_tabs_linked_and_restored_conflicts(self):
+    def test_every_toggle_keeps_both_tabs_linked_and_every_playbook_row_enabled(self):
+        """Beta 66: no playbook selection conflict exists; the shared gate keeps every row available."""
         from mod_editor.gui.gameplay_project_ui import GameplayBuildLink
         build = self.build_module.BuildPanel()
         game = self.game_module.GameplayPatchesPanel()
@@ -64,7 +62,6 @@ class PanelTests(unittest.TestCase):
         self.addCleanup(game.deleteLater)
         state = {key: 'retail' for key in mod_build.PLAYBOOK_OPTION_LABELS}
         state.update(container='xiso', path='synthetic.iso')
-        # A source snapshot sufficient for all selected playbook gates.
         for p in (build, game):
             p._state = state
             p.source_field.setText('synthetic.iso')
@@ -74,35 +71,19 @@ class PanelTests(unittest.TestCase):
         for origin in (build._boxes(), game.checks):
             for key in ('read_option_runtime', 'qb_spy', 'playbook_pair'):
                 origin[key].click()
-                opposing = ('read_option_runtime', 'qb_spy') if key == 'playbook_pair' else ('playbook_pair',)
-                for view in (build._boxes(), game.checks):
-                    for other in opposing:
-                        self.assertFalse(view[other].isEnabled())
-                        self.assertIn(mod_build.PLAYBOOK_OPTION_LABELS[key], view[other].toolTip())
-                    self.assertTrue(view[key].isEnabled())
-                self.assertEqual(mod_build.validate_plan(build.plan()), [])
-                origin[key].click()
                 for view in (build._boxes(), game.checks):
                     self.assertTrue(all(view[k].isEnabled() for k in mod_build.PLAYBOOK_OPTION_LABELS))
-        # Restored/programmatic invalid selections must block both build buttons
-        # but remain possible to untick.
+                    self.assertEqual(view[key].toolTip(), "")
+                self.assertEqual(mod_build.validate_plan(build.plan()), [])
+                origin[key].click()
         build.playbook_pair_check.setChecked(True)
         build.qb_spy_check.setChecked(True)
-        self.assertFalse(build.build_button.isEnabled())
-        self.assertFalse(game.write_button.isEnabled())
-        self.assertIn('QB spy', build.blocker())
+        self.assertFalse(getattr(build, '_playbook_blockers', ()))
+        self.assertNotIn('QB spy', build.blocker() or '')
         build.playbook_pair_check.click()
-        self.assertEqual(mod_build.validate_plan(build.plan()), [])
         build.qb_spy_check.click()
-        state['read_option_runtime'] = 'applied'
-        for p in (build, game):
-            p._refresh()
-        self.assertFalse(build.playbook_pair_check.isEnabled())
-        self.assertFalse(game.checks['playbook_pair'].isEnabled())
-        state['read_option_runtime'] = 'foreign'
-        for p in (build, game):
-            p._refresh()
-        self.assertFalse(build.read_option_runtime_check.isEnabled())
+        self.assertEqual(mod_build.validate_plan(build.plan()), [])
+        del link
 
     def test_equipment_default_and_explicit_recolour(self):
         from types import SimpleNamespace

@@ -6,7 +6,7 @@
   },
   "classification": "offline-writer-proved",
   "evidence": [
-    "ASTRA_REPORT.md",
+    "ASTRA_B66_2K5_GAME_REPORT.md",
     "tests/mod_editor/test_nfl2k5_helmet_finish.py",
     "tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py"
   ],
@@ -36,7 +36,7 @@
   "runtime": {
     "status": "not-tested",
     "evidence": [
-      "ASTRA_REPORT.md"
+      "ASTRA_B66_2K5_GAME_REPORT.md"
     ],
     "scope": "Bounded native full material-refresh execution for both LODs; no GPU rendering or console witness."
   },

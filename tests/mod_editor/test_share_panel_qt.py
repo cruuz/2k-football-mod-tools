@@ -177,7 +177,7 @@ class SharePanelTests(unittest.TestCase):
     def test_studio_offers_the_tab(self) -> None:
         from mod_editor.gui.studio_qt import StudioMainWindow
 
-        window = StudioMainWindow()
+        window = StudioMainWindow(eager_pages=True, )
         try:
             panels = window.findChildren(SharePanel)
             self.assertEqual(len(panels), 1)

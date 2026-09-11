@@ -1,6 +1,7 @@
 """Beta-62 Build/Share handoff contracts; host byte proofs, never played evidence."""
 from contextlib import ExitStack
 import hashlib
+import json
 import os
 from pathlib import Path
 import shutil
@@ -125,7 +126,9 @@ class PlanTests(unittest.TestCase):
                 return {'log':[]}
             stack.enter_context(patch.object(records, 'apply', new=roster_edits))
             target = root/'built.iso'
-            receipt = build.build(build.BuildPlan(str(fixture.path),str(target),team_names_2026=True,roster_edits='edits.json'))
+            edits_path = root/'edits.json'
+            edits_path.write_text(json.dumps({'schema': records.EDITS_SCHEMA, 'edits': []}), encoding='utf-8')
+            receipt = build.build(build.BuildPlan(str(fixture.path),str(target),team_names_2026=True,roster_edits=str(edits_path)))
             self.assertEqual([r['step'] for r in receipt['steps']], ['copy','roster_edits','team_names_2026'])
             self.assertEqual(names.image_status(target), 'applied')
             self.assertEqual(len(receipt['steps'][-1]['writes']), 17)
@@ -138,7 +141,7 @@ class PlanTests(unittest.TestCase):
                 return {'log':[]}
             target.write_bytes(b'preserve previous')
             with patch.object(records, 'apply', new=conflicting), self.assertRaises(ValueError):
-                build.build(build.BuildPlan(str(fixture.path),str(target),overwrite=True,team_names_2026=True,roster_edits='edits.json'))
+                build.build(build.BuildPlan(str(fixture.path),str(target),overwrite=True,team_names_2026=True,roster_edits=str(edits_path)))
             self.assertEqual(target.read_bytes(), b'preserve previous')
 
 

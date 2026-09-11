@@ -6,7 +6,7 @@ Beta 66 answers every ESPN NFL 2K5 report in Discord since beta 63.1 (Smuzz, Mud
 jrolling2003, BigTimeEmpire, CER, andrethealchemist). The bullets below are added as each change lands; in-game
 behaviour remains UNWITNESSED until played.
 
-- **Smuzz: “Couldn't make the disc” now stops at the option choice.** Separate offensive and defensive playbooks cannot be selected alongside Read option mesh controls or QB spy for zone, man and rush. The conflicting row explains why, restored projects block Make my disc, and the core checks before preparing any project edits. Basic, Modern and Experimental presets keep these options off. This also makes the suspected conflicting-options case behind imdakine1's build report explicit; their original error was not supplied.
+- **Smuzz: “Couldn't make the disc” after a fifteen-minute build is gone, and the two options now work together.** Separate offensive and defensive playbooks used to refuse the authored Read option mesh controls and QB spy, and only said so after the disc had been copied. Beta 66 removes the refusal: the pair owner publishes both teams' paired roots and source identities, and the read-option and QB-spy runtimes read that contract (job D2, native proofs). The studio also validates every selection before any copying (job D1's shared Build/Gameplay gate and job B's preflight), so a plan that cannot build is reported at the tick, never after the build. All three presets keep these EXPERIMENTAL options off. imdakine1's “wouldn't create” report carried no error text; if it was this conflict, it is gone.
 - **maumau78: exported shoes keep their authored colours when the slot has room.** Copying “this shoe ... into another slot” now defaults to its own artwork for gloves and shoes. The palette preserves every base colour when it can, and budget reductions select existing colours instead of averaging them into washed-out shades. Check and import lists each changed RGBA colour, its replacement and the fixed budget. Export preserves straight RGBA pixels and removes the old slot's project-only import choice. A full-size image can still exceed the fixed budget; choose a smaller game image when the import explains that limit.
 - **Coach Edwards: Check my images predicts jersey, helmet and arm / shoulder digits.** The “no fixed-span prediction yet” gap is closed with each digit's own target dimensions, allocation, mip layout and palette ladder, including the 896-byte slots. Missing target reports remain explicitly unpredicted.
 - **iwb3 and Ju3tin: xemu remembers the disc after the editor closes.** Launch saves the disc in xemu's settings and grants persistent read-only access to the build folder for Flatpak. Settings or permission failures are reported without hiding a successful launch. Your disc: ~/2K5 Mod Studio Builds/NFL 2K5 Modded.xiso.iso. To play again later: open xemu, then Machine > Load Disc. The footer names your actual file and folder if you saved elsewhere. The .xiso.iso name is valid.
@@ -40,6 +40,18 @@ behaviour remains UNWITNESSED until played.
 - **Playoff starting-QB investigation (BigTimeEmpire).** Native weekly sorting retains the higher-rated QB across the tested playoff weeks; a separate injury-reserve path compares injury duration with 22 minus the current week. The affected save and actual injury-adjusted rating are still needed to prove the first incorrect change. No unproved BASIC lineup patch was added.
 
 - **Edited skeleton investigation (maumau78).** The Models glTF contains SCNE bind translations, while SKEL stores normalized axes consumed by the high-body pose builder. The existing bounded forearm-length operation remains available; arbitrary glTF bone import is not advertised as complete. The report identifies the native axis/derived-joint conversion that still needs proof.
+- **Faster startup, disc builds and Add Songs (Smuzz, maumau78 and Mud, 2026-09-10).**
+  In response to "the performance since 59 is now more sluggish" and "Why does it take so long to convert the songs?",
+  workspaces load when opened, large texture lists create only visible row artwork, and versioned metadata caches
+  avoid expanding the same catalogs on every launch. A project plus gameplay build uses one private disc copy,
+  validates the plan before preparing textures, and publishes only after its checks pass. Independent uniform
+  encodes use a bounded process pool, and PNG/palette conversion copies exact bytes in bulk; equipment keeps its
+  existing grouped compile cache. Preparing 40 synthetic uniform edits against the retail source fell from
+  123 seconds to 17 seconds. The offscreen window appeared in 0.52 seconds instead of 6.33 seconds. Both build paths show
+  elapsed time and copy progress. The dependency-free song encoder keeps the same ADPCM bytes and audible preview
+  while avoiding work on candidate states that cannot win; the four-minute synthetic stereo probe fell from
+  1,189 seconds to 89 seconds. Disc-byte parity and source preservation are covered by synthetic build tests.
+  In-game behavior and Windows responsiveness still require Noah's witness.
 
 ## v1.0 RC89, beta 65: accelerated clock, MyCareer supersim and positions, the Windows folder-publish fix (2026-09-10)
 

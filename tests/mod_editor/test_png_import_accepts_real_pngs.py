@@ -133,6 +133,33 @@ class RealWorldPngTests(unittest.TestCase):
 class ContractTests(unittest.TestCase):
     """These run without Pillow, so CI covers them on every job."""
 
+    def test_rgba_fast_path_keeps_high_bytes_and_filter_dependencies(self):
+        import zlib
+        # An unfiltered row must still supply the previous row for UP.
+        first = bytes(range(24))
+        second = bytes((n + 7) % 256 for n in first)
+        raw = b"\0" + first + b"\2" + bytes([7] * 24)
+        self.assertEqual(importer._png_samples_to_rgba(
+            zlib.compress(raw), 3, 2, 16, 6, 0, None, None),
+            first[::2] + second[::2])
+        self.assertEqual(importer._png_samples_to_rgba(
+            zlib.compress(raw), 6, 2, 8, 6, 0, None, None), first + second)
+        with self.assertRaises(importer.ImportError):
+            importer._png_samples_to_rgba(zlib.compress(raw + b"x"),
+                                          6, 2, 8, 6, 0, None, None)
+
+    def test_palette_translation_matches_pixel_reference(self):
+        import random
+        rng = random.Random(6602)
+        for count in (1, 2, 16, 255, 256):
+            palette = [tuple(rng.randrange(256) for _ in range(4)) for _ in range(count)]
+            indices = bytes(rng.randrange(count) for _ in range(2048))
+            self.assertEqual(importer.rgba_from_indices(indices, palette),
+                             b"".join(bytes(palette[i]) for i in indices))
+        self.assertEqual(importer.rgba_from_indices(b"", []), b"")
+        with self.assertRaises(importer.ImportError):
+            importer.rgba_from_indices(b"\1", [(1, 2, 3, 4)])
+
     def test_all_five_colour_types_are_declared(self) -> None:
         self.assertEqual(sorted(importer._PNG_CHANNELS), [0, 2, 3, 4, 6])
         self.assertEqual(importer._PNG_CHANNELS[2], 3)

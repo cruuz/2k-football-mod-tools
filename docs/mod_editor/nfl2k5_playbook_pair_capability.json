@@ -11,7 +11,7 @@
     "tests/mod_editor/test_nfl2k5_playbook_pair_unicorn.py",
     "tools/nfl2k5_playbook_pair.c",
     "tools/nfl2k5_playbook_pair.S",
-    "ASTRA_REPORT.md",
+    "ASTRA_B66_2K5_GAME_REPORT.md",
     "tests/mod_editor/test_nfl2k5_paired_intent.py"
   ],
   "game": "nfl2k5_xbox",
@@ -43,7 +43,7 @@
     "status": "not-tested",
     "evidence": [
       "ASTRA_PLAYBOOK_PAIR_REPORT.md",
-      "ASTRA_REPORT.md"
+      "ASTRA_B66_2K5_GAME_REPORT.md"
     ],
     "scope": "Bounded emitted x86 merges retail books and exercises load callbacks, failures, cleanup and retail accessors. Retail User A/B serialization roundtrips in memory. No game, drawing, device I/O or signed save was run."
   },

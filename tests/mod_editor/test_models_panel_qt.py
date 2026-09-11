@@ -162,7 +162,7 @@ class ModelsPanelTests(unittest.TestCase):
         from PyQt5.QtCore import Qt
         from mod_editor.gui.studio_qt import StudioMainWindow
 
-        window = StudioMainWindow()
+        window = StudioMainWindow(eager_pages=True, )
         try:
             rows = [window.navigation.item(i).text().strip() for i in range(window.navigation.count())]
             self.assertIn("★ Models", rows)
