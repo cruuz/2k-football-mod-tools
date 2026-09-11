@@ -4,7 +4,9 @@ The 128-byte block follows the COMPLETE native franchise container. Neither
 ROST version nor any byte of the four native blocks is repurposed. The native
 save transaction signs this footer together with the other serialized bytes.
 FNV is a corruption check, not authentication. This module performs no I/O.
-Byte 82 uses three formerly reserved bits: first person On, Spectate, star Off.
+Byte 82 bit 4 is stat line Off (zero defaults On). Bit 3 is reserved for
+beta 66 Supersim job A; this writer preserves its existing three settings:
+ first person On, Spectate, star Off.
 Old zero-filled footers retain the defaults Off / Skip presentation / star On.
 """
 from __future__ import annotations
@@ -67,7 +69,7 @@ def validate(block, *, arena_size=0x92000):
     require(block[72] <= 2 and block[73] == 0 and (block[74] < 32 or block[74] == 255)
             and block[75] == 0 and block[80] <= 1 and block[81] <= 1,
             "invalid request or starter preference")
-    require(block[82] <= 7 and block[83] == 0 and not any(block[88:]),
+    require(block[82] & ~23 == 0 and block[83] == 0 and not any(block[88:]),
             "unknown settings or nonzero reserved career bytes")
     require(word(block, 76) <= 0x7F92B1, "invalid request week key")
     require(block[72] != 0 or (block[74] == 255 and word(block, 76) == 0),
@@ -152,6 +154,9 @@ def from_runtime(state):
         settings = [word(state, at) for at in (2704, 2696, 2700)]
         require(all(v <= 1 for v in settings), "invalid runtime settings")
         b[82] = sum(v << bit for bit, v in enumerate(settings))
+    if len(state) >= 2716:
+        require(word(state, 2712) <= 1, "invalid stat-line setting")
+        b[82] |= word(state, 2712) << 4
     return validate(seal(b))
 
 
@@ -170,4 +175,5 @@ def to_runtime(block):
     s[64:72], s[188:196], s[196:200] = b[64:72], b[72:80], b[84:88]
     for bit, at in enumerate((2704, 2696, 2700)):
         struct.pack_into("<I", s, at, (b[82] >> bit) & 1)
+    struct.pack_into("<I", s, 2712, (b[82] >> 4) & 1)
     return bytes(s)

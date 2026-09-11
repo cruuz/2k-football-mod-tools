@@ -740,7 +740,7 @@ class CaveReferenceTests(unittest.TestCase):
         self.assertFalse(image.section(descriptor['va']).writable)
         self.assertFalse(image.section(descriptor['va']).executable)
         self.assertEqual(camera._read(self.patched, descriptor['va'], descriptor['size']),
-                         camera.broadcast_descriptor())
+                         camera.broadcast_records(allocation['va']))
         self.assertEqual(camera.status(self.patched), 'applied')
         # Existing descriptors and complete instruction edits allocate no
         # retail cave. Check the expanded v3 edit list against every owner.

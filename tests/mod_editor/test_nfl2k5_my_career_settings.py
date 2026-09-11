@@ -39,7 +39,7 @@ class SettingsTests(unittest.TestCase):
         row = struct.unpack('<13I', im.read(0x500B24, 52))
         self.assertEqual(row, (5, 0xE7D5C4, 0, 0x147EC0, 0x147ED0, 0x147EB0,
                                0x147E60, 0x147E80, 0x148960, 0x147EE0, 0, 0, 0))
-        for va, size, digest in mode.GUARDS[:7]:
+        for va, size, digest in [g for g in mode.GUARDS if g[0] in (0x500B24,0x147E60,0x148960,0x627C0,0x64530,0x2C1FEC,0x4ED994)]:
             self.assertEqual(hashlib.sha256(im.read(va, size)).hexdigest(), digest)
         m = NativeMachine(self.retail)
         for value in (0, 1):
@@ -63,7 +63,7 @@ class SettingsTests(unittest.TestCase):
     def test_changed_first_person_prerequisites_refuse_before_install(self):
         from tests.mod_editor.test_nfl2k5_owner_pairwise_composition import repin_edit
         image = XbeImage(self.retail)
-        for va, _, _ in mode.GUARDS[:7]:
+        for va, _, _ in [g for g in mode.GUARDS if g[0] in (0x500B24,0x147E60,0x148960,0x627C0,0x64530,0x2C1FEC,0x4ED994)]:
             damaged = repin_edit(self.retail, va, bytes((image.read(va, 1)[0] ^ 1,)))
             with self.subTest(va=hex(va)):
                 self.assertEqual(mode.status(damaged), 'foreign')
@@ -74,10 +74,11 @@ class SettingsTests(unittest.TestCase):
     def test_all_footer_choices_match_host_and_native_and_reserved_bits_refuse(self):
         with Machine(self.payload) as m:
             m.native_load(self.source+self.footer)
-            for flags in range(8):
+            for flags in (*range(8), *range(16,24)):
                 m.put(0xE5FFE4, flags & 1)
                 m.put(m.state+2696, (flags >> 1) & 1)
                 m.put(m.state+2700, (flags >> 2) & 1)
+                m.put(m.state+2712, (flags >> 4) & 1)
                 m.call('inline_encode', ecx=m.OUT)
                 block = bytes(m.uc.mem_read(m.OUT, 128))
                 self.assertEqual(block[82], flags)
@@ -114,19 +115,20 @@ class SettingsTests(unittest.TestCase):
         other = mode.apply(mode.space.apply(self.retail, REQUESTS, scaleout=True)[0])[0]
         with Machine(self.payload) as m:
             m.native_load(self.source+self.footer)
-            m.put(0xE5FFE4, 1); m.put(m.state+2696, 1); m.put(m.state+2700, 1)
+            m.put(0xE5FFE4, 1); m.put(m.state+2696, 1); m.put(m.state+2700, 1); m.put(m.state+2712, 1)
             output = m.native_save()
-            self.assertEqual(save.read(output)[82], 7)
+            self.assertEqual(save.read(output)[82], 23)
             with Machine(other) as cold:
                 cold.native_load(output)
                 self.assertNotEqual(cold.state, m.state)
+                self.assertEqual(cold.get(cold.state+2712),1)
                 self.assertEqual((cold.get(0xE5FFE4), cold.get(cold.state+2696), cold.get(cold.state+2700)), (1, 1, 1))
                 self.assertEqual(cold.uc.mem_read(cold.call('primary')+0x53, 1)[0] & 1, 0)
                 # The original Franchise callback still changes the same word;
                 # the next career save samples it, never a stale shadow flag.
                 cold.call(0x147E80)
                 cold.call('inline_encode', ecx=cold.OUT)
-                self.assertEqual(cold.uc.mem_read(cold.OUT+82, 1), b'\x06')
+                self.assertEqual(cold.uc.mem_read(cold.OUT+82, 1), b'\x16')
 
     def test_settings_native_navigation_labels_selection_cancel_and_masked_star(self):
         from tests.mod_editor.test_nfl2k5_my_career_m3_menus import MenuTests, Machine as MenuMachine
@@ -151,8 +153,9 @@ class SettingsTests(unittest.TestCase):
             m.select(5)
             self.assertEqual(m.top(), m.labels['m3_settings_menu'])
             texts = checker.rendered(m)
-            self.assertIn('Spectate keeps all presentation. B returns to Apartment.', texts)
-            for index, expected in ((0, 'First Person Football: On'), (1, 'Off-field play: Spectate'), (2, 'MyPlayer star: Off')):
+            self.assertIn("MyPlayer stat line: On",[r["text"] for r in m.native_rows])
+            self.assertIn('B: Apartment.', texts)
+            for index, expected in ((0, 'First Person Football: On'), (1, 'Off-field play: Spectate'), (2, 'MyPlayer star: Off'), (3, 'MyPlayer stat line: Off')):
                 m.select(index)
                 m.native_rows.clear(); checker.rendered(m)
                 selected = [r['text'] for r in m.native_rows if r['color'] & 0xFFFFFF == 0xFFFF00]

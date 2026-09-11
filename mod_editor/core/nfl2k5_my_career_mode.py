@@ -33,6 +33,7 @@ SAVE_HOOKS = (
     ("inline_load_end", 0x16E815, "e8661f1600", 0xE8),
 )
 MODE_HOOKS = (
+    ("mode_hud_frame", 0x74879, "e8d2560100", 0xE8),
     ("mode_skip_tick", 0x64D27, "e814520200", 0xE8),
     ("mode_skip_buttons", 0x13856, "e8b5d10500", 0xE8),
     ("mode_skip_buttons", 0x112DD9, "e832dcf5ff", 0xE8),
@@ -63,6 +64,21 @@ MODE_HOOKS = (
     ("mode_loaded_replace", 0x16DDE0, "e9fb04f0ff", 0xE9),
 )
 GUARDS = (
+    (0x83940, 0x1f, "818ae4133d0f5530eab6a475fb255da53c4f6fc4a365710688edb7f1233bbe5c"),
+    (0x49410, 0x2f, "c9967c0bfbe41418d22b8d5b085d0510b0d32e1283cdc009e6ce24004be5b700"),
+    (0x493e0, 0x27, "877d0a907ecec38e656c6473c23c71d50c0419586c3765d4c4d33487f94aae78"),
+    (0x47420, 0x65, "9139e722cbec6eb58e5e61fb29acb28121c4840149ed5d52b4a314633c27cb71"),
+    (0x46df0, 0xd9, "950e82b183bd9a16e89762f4d50dd6007d5e2a71b91258e7898e62e04677cb02"),
+    (0x24df60, 0x1a00, "6362e748c3407fec96f32d83ef374123df2336ba4e27ed35868936395b186a5d"),
+    (0x74790, 0x10f, "fed5c5a895c4a03be8ad78685c1b27c6bbda867673d0e3674cff7a76d75326bc"),
+    (0x89f50, 0x1, "ae3f4619b0413d70d3004b9131c3752153074e45725be13b9a148978895e359e"),
+    (0xc9510, 0x9c, "23b43a0db261da889300954bd2f167efa61fc9a7e5f1344138235a48e307bf5e"),
+    (0xc96b0, 0x6, "522c87ae0f5f352bdee133f549f9c4ed7052047c1134b1f6b08c7378bd225a30"),
+    (0xca470, 0x43, "7f47f5c6b15545973baf6611442d148fbefc7a2ccdbc915b6d1e6efc9904b248"),
+    (0xcb240, 0x81, "f98d0fcdba98107cf3d3ad9435decd99a3a3916c105c06b7092939d439373535"),
+    (0xcb0c0, 0x173, "6401c2f9e312656e11406bdf00a5f2221fb5b740759f08944797dd5fb941fe47"),
+    (0xa8a50c, 0x1404, "1763fee56025f60ba08994138a7c4ed9fa6081b091f9df40f70ef8434afc0f8c"),
+    (0xa8b910, 0x138, "90cbe2d1b696a920a93d9224d396ed4c2052f6eaac5a544a2dd7d0d9704810a2"),
     (0x500b24, 0x34, "9e7ff0531fda6217550ff709cf03ac524b8b83e87c07b0be740f8caa4e6cfe9e"),
     (0x147e60, 0x90, "102121001c2959a8e7892fe8d4f18a315d2eea554c4cecd8342600d0dd913973"),
     (0x148960, 0xd, "07435c92b02d685b30d2ee71b1f267a6ed8722299cdc9dbf0ed2c664c038da6a"),
@@ -143,6 +159,42 @@ GUARDS = (
 )
 
 
+def _encode_menu(source):
+    # Bounded LZ: 1..127 literal bytes; 128..255 encode length 3..130 and
+    # a little-endian backward distance. Zero ends this immutable template.
+    encoded = bytearray()
+    literal = bytearray()
+
+    def flush():
+        if literal:
+            encoded.append(len(literal))
+            encoded.extend(literal)
+            literal.clear()
+
+    i = 0
+    while i < len(source):
+        count = distance = 0
+        for j in range(i):
+            n = 0
+            while n < 130 and i + n < len(source) and source[j + n] == source[i + n]:
+                n += 1
+            if n > count:
+                count, distance = n, i - j
+        if count >= 4:
+            flush()
+            encoded.append(128 + count - 3)
+            encoded.extend(struct.pack('<H', distance))
+            i += count
+        else:
+            literal.append(source[i])
+            i += 1
+            if len(literal) == 127:
+                flush()
+    flush()
+    encoded.append(0)
+    return bytes(encoded)
+
+
 def code_for(code_va, data_va):
     from . import nfl2k5_franchise_autosave_code as autosave_code
     from . import nfl2k5_my_career_progression as progression
@@ -204,11 +256,13 @@ def code_for(code_va, data_va):
         ("m3_settings_text", "Settings"),
         ("m3_fpf_off_text", "First Person Football: Off"),
         ("m3_fpf_on_text", "First Person Football: On"),
-        ("m3_settings_note", "Spectate keeps all presentation. B returns to Apartment."),
+        ("m3_settings_note", "B: Apartment."),
         ("m3_supersim_off_text", "Off-field play: Spectate"),
         ("m3_supersim_skip_text", "Off-field play: Skip presentation"),
         ("m3_star_off_text", "MyPlayer star: Off"),
         ("m3_star_on_text", "MyPlayer star: On"),
+        ("m3_stat_on_text", "MyPlayer stat line: On"),
+        ("m3_stat_off_text", "MyPlayer stat line: Off"),
     ):
         string(name, value)
     names = []
@@ -266,7 +320,8 @@ def code_for(code_va, data_va):
                       ("save_text", "mode_save_menu"), ("quit_text", "mode_quit")), extra=True)
     rows("settings_rows", (("m3_fpf_off_text", "mode_settings_toggle"),
                                 ("m3_supersim_skip_text", "mode_settings_toggle"),
-                                ("m3_star_on_text", "mode_settings_toggle")), extra=True)
+                                ("m3_star_on_text", "mode_settings_toggle"),
+                                ("m3_stat_on_text", "mode_settings_toggle")), extra=True)
     rows("team_rows", (("team_text", "mode_team_open"), ("sign_text", "mode_sign")))
     rows("m3_progress_rows", (("quit_text", "mode_quit"),), extra=True)
     rows("m3_draft_rows", (("save_text", "mode_save_menu"), ("quit_text", "mode_quit")), extra=True)
@@ -284,8 +339,9 @@ def code_for(code_va, data_va):
                          0xE7F928, 0xAA281C, 0x02400044, 0x018D0052,
                          0x13 if name == "m3_settings_menu" else 3)
     legacy.require(len(extra_menu) <= 1900, "M3 menus exceed owned workspace")
-    at = reserve("m3_menu_template", len(extra_menu))
-    out[at:at + len(extra_menu)] = extra_menu
+    compressed = _encode_menu(extra_menu)
+    at = reserve("m3_menu_template", len(compressed))
+    out[at:at + len(compressed)] = compressed
     labels["m3_menu_bytes"] = len(extra_menu)
     for name, title, table, flags in (("entry_menu", "mode_text", "entry_rows", 3),
                                       ("apartment", "apartment_text", "hub_rows", 3),
@@ -305,38 +361,7 @@ def code_for(code_va, data_va):
                      0xE7D8B0, labels["practice_hooks"], 0xF3FC0, 0,
                      0x5016C8, 0, 0xE7D7E0, 0xAC9800, 0x02400044, 0x018D0052, 0x55)
     legacy.require(len(menu) <= 1080, "MyCareer menu RW exceeds 200..1279")
-    # Bounded LZ: 1..127 literal bytes; 128..255 encode length 3..130 and
-    # a little-endian backward distance. Zero ends this immutable template.
-    encoded = bytearray()
-    literal = bytearray()
-
-    def flush():
-        if literal:
-            encoded.append(len(literal))
-            encoded.extend(literal)
-            literal.clear()
-
-    i = 0
-    while i < len(menu):
-        count = distance = 0
-        for j in range(i):
-            n = 0
-            while n < 130 and i + n < len(menu) and menu[j + n] == menu[i + n]:
-                n += 1
-            if n > count:
-                count, distance = n, i - j
-        if count >= 4:
-            flush()
-            encoded.append(128 + count - 3)
-            encoded.extend(struct.pack('<H', distance))
-            i += count
-        else:
-            literal.append(menu[i])
-            i += 1
-            if len(literal) == 127:
-                flush()
-    flush()
-    encoded.append(0)
+    encoded = _encode_menu(menu)
     at = reserve("menu_template", len(encoded))
     out[at:at + len(encoded)] = encoded
     labels["menu_bytes"] = len(menu)
@@ -382,6 +407,17 @@ def recognized(payload):
 def check_context(payload, edits, *, installed=False):
     image = XbeImage(payload)
     legacy.check_context(image)
+    # Shared enum abbreviations follow the installed EDGE/LB labels. Only
+    # the exact retail pointers or those two known label pointers are valid.
+    names = ("QB", "K", "P", "WR", "CB", "FS", "SS", "HB", "FB", "TE", "OLB", "ILB", "C", "G", "T", "DT", "DE")
+    pointers = (15113192, 15113200, 15113204, 15113208, 15113216, 15113224, 15113232, 15113240, 15113248, 15113256, 15113300, 15113308, 15113272, 15113276, 15113280, 15113284, 15113292)
+    for i, (pointer, name) in enumerate(zip(pointers, names)):
+        actual = struct.unpack("<I", image.read(0x4F26D0+4*i, 4))[0]
+        if i == 11 and actual == 0xE69C30: name, pointer = "LB", actual
+        if i == 16 and actual == 0x10CA2: name, pointer = "EDGE", actual
+        legacy.require(actual == pointer and image.read(actual,2*(len(name)+1)) == (name+"\0").encode("utf-16le"),
+                       "foreign MyPlayer HUD position label")
+
     from . import nfl2k5_draft_ai as draft_ai
     legacy.require(draft_ai.status(payload) in ("retail", "applied"), "foreign draft AI owner")
     camera_edits = []
@@ -446,6 +482,16 @@ def check_context(payload, edits, *, installed=False):
         camera_edits += [(name, camera.HOOKS[name][0], before, after)
                         for name, _, before, after in camera._sites(payload, camera.DEFAULT_PRESET)
                         if name == "franchise_load_select"]
+    # Defensive-try stats extend CB240 with one extra selector. Its complete
+    # owner must validate before normalizing that exact seven-byte hook;
+    # ordinary MyPlayer selectors continue through the native getter.
+    from . import nfl2k5_defensive_try as defensive_try
+    hook, before, _ = defensive_try.HOOKS["player_stat"]
+    before = bytes.fromhex(before)
+    if image.read(hook, len(before)) != before:
+        legacy.require(defensive_try.status(payload) == "applied", "foreign live-stat companion")
+        after = defensive_try._hook_bytes("player_stat", defensive_try.assembled(payload)[3])
+        camera_edits.append(("defensive_try_player_stat", hook, before, after))
     for va, size, digest in GUARDS:
         raw = bytearray(image.read(va, size))
         for _, hook, before, after in [*edits, *camera_edits]:

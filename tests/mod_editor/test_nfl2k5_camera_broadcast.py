@@ -30,7 +30,7 @@ class IntegrityTests(unittest.TestCase):
         for row in range(8):
             for state in range(29):
                 if row == c.BROADCAST_ROW and state in c.BROADCAST_STATES:
-                    self.assertEqual(after[row][state], (before[row][state][0], ro['va']))
+                    self.assertEqual(after[row][state], (before[row][state][0], ro['va']+80*c.broadcast_slot(state)))
                 else:
                     self.assertEqual(before[row][state], after[row][state])
         self.assertEqual(c._read(self.patched, c.BROADCAST_TEMPLATE_VA, 80), c.BROADCAST_RETAIL_DESCRIPTOR)
@@ -39,10 +39,10 @@ class IntegrityTests(unittest.TestCase):
         # x and y (+48, +52: the loge front, 45 m out and 14 m up, instead of the template's press box) differ from
         # the retail template; the mount's z (+56), flag, lag pointer, callbacks and padding stay exact.
         self.assertEqual([i for i in range(0, 80, 4)
-                          if descriptor[i:i+4] != c.BROADCAST_RETAIL_DESCRIPTOR[i:i+4]], [0, 16, 24, 32, 48, 52])
+                          if descriptor[i:i+4] != c.BROADCAST_RETAIL_DESCRIPTOR[i:i+4]], [0, 16, 24, 32, 48, 52, 64])
         self.assertEqual(c.decode_descriptor(descriptor)['type'], 2)
         self.assertEqual(c.decode_descriptor(descriptor)['flag'], 0)
-        self.assertEqual(self.receipt['version'], 5)
+        self.assertEqual(self.receipt['version'], 6)
         self.assertFalse(self.receipt['coach_mode_changed'])
         self.assertFalse(self.receipt['exact_coach_director_proved'])
 
@@ -69,7 +69,7 @@ class IntegrityTests(unittest.TestCase):
         allocated = space.apply(self.retail, ((c.OWNER, 'code', 64, 16),), scaleout=True)[0]
         with self.assertRaises(c.CameraPatchError):
             c.apply(allocated)
-        self.assertEqual((ro['size'], c.CODE_SIZE), (80, 160))
+        self.assertEqual((ro['size'], c.CODE_SIZE), (320, 512))
 
 
 @unittest.skipUnless(old.XBE.is_file() and old.u is not None,
@@ -261,7 +261,7 @@ class NativeTests(unittest.TestCase):
         from tools.nfl2k5_camera_broadcast_proof import (BALL_GRID_X, CLEAN_BALL_X, STANDS, V52_EYE_FOCUS_RELATIVE,
                                                          stands_violations)
         evidence = self.evidence()
-        self.assertEqual(len(evidence['rows']), 156)
+        self.assertEqual(len(evidence['rows']), 168)
         self.assertEqual(max(BALL_GRID_X), CLEAN_BALL_X)
         self.assertGreaterEqual(CLEAN_BALL_X, 900.0)   # past the near hash (282) and up to the near numbers (1097)
         for row in evidence['rows']:
@@ -283,12 +283,12 @@ class NativeTests(unittest.TestCase):
 
     def test_native_projection_all_gameplay_states_aspects_and_pass_options(self):
         evidence = self.evidence()
-        self.assertEqual(len(evidence['rows']), 156)
+        self.assertEqual(len(evidence['rows']), 168)
         references = {}
         for row in evidence['rows']:
             metrics = row['metrics']
             target, lens, eye = c.BROADCAST_VALUES
-            self.assertEqual(metrics['lens_word'], int(lens))
+            self.assertEqual(metrics['lens_word'], c._f32(c.BROADCAST_LENSES[c.broadcast_slot(row['state'])]))
             self.assertAlmostEqual(metrics['downward_pitch_degrees'],
                                    math.degrees(math.atan2(eye[1], math.hypot(eye[0], eye[2]))), places=5)
             # the eye follows the shifted, led target: relative to the focus it is the look-at plus the mount's offset
@@ -301,6 +301,10 @@ class NativeTests(unittest.TestCase):
             else:
                 for a, b in zip(y, references[key]):
                     self.assertAlmostEqual(a, b, places=3)
+            if row['state'] != 9:
+                # V6's other states have deliberately different lenses. The
+                # dedicated final-eye suite checks their native framing.
+                continue
             for name, (x, y) in row['points_640x480'].items():
                 # v5.2 is the TV director's wide shot following the ball: the focus, the backfield, both flats and
                 # the 15-yard receiver stay inside every aspect and above the scorebug; receivers 25 and 40 yards

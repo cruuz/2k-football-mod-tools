@@ -12,6 +12,23 @@ behaviour remains UNWITNESSED until played.
 - **iwb3 and Ju3tin: xemu remembers the disc after the editor closes.** Launch saves the disc in xemu's settings and grants persistent read-only access to the build folder for Flatpak. Settings or permission failures are reported without hiding a successful launch. Your disc: ~/2K5 Mod Studio Builds/NFL 2K5 Modded.xiso.iso. To play again later: open xemu, then Machine > Load Disc. The footer names your actual file and folder if you saved elsewhere. The .xiso.iso name is valid.
 - **BigTimeEmpire: missing or invalid college references no longer prevent roster/save editing.** Files that “can't be edited if a player doesn't have a college” load with a count and an offer to open Check my rosters. The repair still changes only college references and supports Undo and signed-copy verification. Invalid tables or unrelated broken fields remain errors.
 - **Mud: added songs have their own My songs jukebox collection.** The 59 retail rows keep their retail collections. Named library recipes use that name, and a second library collection is used above 256 added songs. The collection table and native lookups are checked offline. The reported freeze on entering a collection is a separate investigation and is not claimed fixed here; playback remains UNWITNESSED.
+- **Broadcast camera v6 follows runs more closely and opens up for passes (maumau78).**
+  The final smoothed eye now stays within an owned boundary that pulls inward at the stadium corners.
+  The 53-model offline survey falls from 18.6% dirty samples in v5.3 and 3.4% in v5.4 to zero in v6,
+  including Chicago, Lambeau and tested kickoff/PAT transitions. Run states zoom in 15%; passes in the
+  air and after the catch widen 15%; the midfield pre-snap frame retains v5.3. Broadcast remains the
+  existing ADVANCED camera choice. Gameplay appearance still needs Noah's witness.
+- **A wide Broadcast shot replaces the low kickoff-transition camera reported by CER.**
+  Row 7's state 7 now uses the owned wide descriptor instead of the retail goal-post/sideline setup.
+  Native state selection, descriptor lookup and final-eye clamping are proved offline. CER's intermittent
+  play-call freeze is a separate, unreproduced report; this change does not claim to resolve that stall.
+  Exactly recognized v5.4 installations require rebuilding from the retail base.
+- **MyPlayer's live stat line appears in the top right during gameplay (Mud).**
+  It shows the player's name, position and the position's key game counters, including half sacks and
+  punting average. Apartment > Settings > MyPlayer stat line offers On/Off and defaults On for enabled
+  MyCareer; the choice survives save/load. The line reads MyPlayer's live match stats, updates after native
+  play events and stays out of menus and replay states. The native font, glyph submissions, player identity
+  and one draw invocation per presented frame are proved; in-game readability remains unwitnessed.
 
 ## v1.0 RC89, beta 65: accelerated clock, MyCareer supersim and positions, the Windows folder-publish fix (2026-09-10)
 

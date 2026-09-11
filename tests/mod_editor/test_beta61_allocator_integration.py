@@ -82,7 +82,7 @@ class CompleteOwnerTests(unittest.TestCase):
         layout = space.layout(self.full)
         regions = layout["regions"]
         self.assertEqual([r["size"] for r in regions if r["kind"] == "code"], [4096, 4096, 24 * 4096])
-        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 73991)  # complete beta-65 union (beta-63 owners + the accelerated clock, 1,024 RX): beta-63 union: beta-62 owners plus MyCareer draft (M3, 16 KiB promoted code), coverage trail, read option v5, deep-zone tiers, CPU 4th downs, weekly prep, abilities v2, 7-on-7 v2
+        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 74343)  # beta 66: camera RX 160 -> 512; other owners retain their budgets
         self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "data"), 83758)  # complete beta-65 union (+ the accelerated clock latch): beta-63 union RW state, including the fixed M3 MyCareer state page at 0x1505000 (last RW page)
         image = XbeImage(self.full)
         for a in layout["allocations"]:
