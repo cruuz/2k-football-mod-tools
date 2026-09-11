@@ -98,13 +98,14 @@ class CollectionTests(unittest.TestCase):
         return metadata.apply(self.retail, songs)[0]
 
     def test_retail_loop_runs_out_of_widget_labels_at_sixth_disc_song(self):
-        payload = bytearray(self.library(61))
+        # Beta 66 (D1): added songs form their own library collection (index 18); six of them give six disc rows.
+        payload = bytearray(self.library(59 + 6))
         image = XbeImage(payload)
         for va, before, _ in fix.SITES:
             at = image.offset(va, len(before))
             payload[at:at+len(before)] = before
         machine = Machine(bytes(payload))
-        machine.put(0xcb69f4, 17)
+        machine.put(0xcb69f4, 18)
         with self.assertRaises(u.UcError):
             machine.run(0x32a0f0)
         self.assertEqual(machine.uc.reg_read(UC_X86_REG_EIP), 0x3865d)
@@ -113,14 +114,19 @@ class CollectionTests(unittest.TestCase):
 
     def test_fixed_native_list_every_window_and_collection_independent(self):
         for count in (59, 60, 61, 193, 200):
-            payload, _ = fix.apply(self.library(count))
+            library = self.library(count)
+            if len(metadata.collection_table(library)) == 18:
+                self.assertEqual(count, 59)  # no added songs: no library collection to enter
+                continue
+            payload, _ = fix.apply(library)
             machine = Machine(payload)
-            # Relocate the same expanded record list into another collection
-            # in memory. Collection ownership/naming is D1's independent work.
-            count17 = machine.get(metadata.COLLECTIONS+17*32+24)
-            root17 = machine.get(metadata.COLLECTIONS+17*32+28)
-            machine.put(metadata.COLLECTIONS+14*32+24, count17, root17)
-            for collection in (14, 17):
+            # Relocate the library collection's record list into a retail collection in memory (D1's table
+            # holds every collection): the repair must not depend on the collection number.
+            table = metadata._contents(payload)[3]
+            count17 = machine.get(table+18*32+24)
+            root17 = machine.get(table+18*32+28)
+            machine.put(table+14*32+24, count17, root17)
+            for collection in (14, 18):
                 machine.put(0xcb69f4, collection)
                 machine.run(0x329f20, eax=0)
                 for first in range(max(1, count17-3)):
@@ -131,7 +137,7 @@ class CollectionTests(unittest.TestCase):
                     rows = min(4, count17-first)
                     self.assertEqual(len(machine.labels), rows*3+1)
                     self.assertTrue(all(machine.labels))
-                    expected = [f'Song {55+first+i}' for i in range(rows)]
+                    expected = [f'Song {59+first+i}' for i in range(rows)]
                     self.assertEqual(machine.texts[1:rows*3:3], expected)
 
     def test_hdd_label_window_keeps_thirteen_rows(self):
@@ -149,10 +155,11 @@ class CollectionTests(unittest.TestCase):
                                  0x32a255 if row == expected else 0x32a165)
 
     def test_native_down_button_scrolls_to_last_added_song(self):
-        machine = Machine(self.library(193))
-        machine.put(0xcb69f4, 17)
+        library = self.library(193)
+        machine = Machine(library)
+        machine.put(0xcb69f4, 18)
         machine.run(0x329f20, eax=0)
-        count = machine.get(metadata.COLLECTIONS+17*32+24)
+        count = machine.get(metadata._contents(library)[3]+18*32+24)
         # Actual disc down-button arm. Its retail disc/HDD capacity choice
         # already uses four/thirteen; only the list builder was inconsistent.
         for press in range(1, count+3):

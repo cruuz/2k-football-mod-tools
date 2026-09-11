@@ -808,6 +808,7 @@ ASTRA_MATCH_COVERAGE_REPORT.md
 mod_editor/core/nfl2k5_abilities_editor.py
 mod_editor/gui/abilities_panel_qt.py
 docs/mod_editor/nfl2k5_abilities_editor_capability.json
+docs/mod_editor/nfl2k5_beta66_d2_validation.json
 ASTRA_ABILITIES_V2_REPORT.md
 docs/mod_editor/match_coverage/README.md
 docs/mod_editor/match_coverage/capability.json
@@ -824,8 +825,11 @@ docs/scorebug_ingame/freeze_v2/validation.json
 mod_editor/core/nfl2k5_deep_zone.py
 mod_editor/core/nfl2k5_deep_zone_code.py
 mod_editor/core/nfl2k5_deep_zone_bail.py
+mod_editor/core/nfl2k5_helmet_finish.py
+mod_editor/core/nfl2k5_jukebox_list.py
 mod_editor/core/nfl2k5_music_collections.py
 docs/mod_editor/nfl2k5_deep_zone_capability.json
+docs/mod_editor/nfl2k5_helmet_finish_capability.json
 ASTRA_DEEP_ZONE_TIERS_V2_REPORT.md
 mod_editor/core/nfl2k5_my_career_progression.py
 ASTRA_MYCAREER_DRAFT_REPORT.md

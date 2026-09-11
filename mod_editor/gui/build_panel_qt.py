@@ -527,6 +527,22 @@ class BuildPanel(QWidget):
         mode_row.addWidget(self.uniform_choice_mode)
         mode_row.addStretch(1)
         g.addLayout(mode_row)
+        # beta 66 (maumau78 / xevan): one shared reflection weight for every helmet, Glossy (retail) or Matte
+        self.helmet_finish_check = self._option(g, "helmet_finish", "Matte helmet finish (advanced)",
+                                                "Both helmet LODs: the native reflection weight is zeroed. Untick to keep Glossy (retail); "
+                                                "choosing Glossy on a Matte disc restores the retail bytes. Appearance is unwitnessed.", badge=NOT_TESTED)
+        finish_row = QHBoxLayout()
+        finish_row.addSpacing(30)
+        finish_row.addWidget(QLabel("Helmet finish"))
+        self.helmet_finish_combo = QComboBox()
+        self.helmet_finish_combo.setAccessibleName("Helmet finish")
+        self.helmet_finish_combo.addItem("Glossy (retail)", "glossy")
+        self.helmet_finish_combo.addItem("Matte", "matte")
+        self.helmet_finish_combo.currentIndexChanged.connect(lambda i: self.helmet_finish_check.setChecked(i == 1))
+        self.helmet_finish_check.toggled.connect(lambda on: self.helmet_finish_combo.setCurrentIndex(1 if on else 0))
+        finish_row.addWidget(self.helmet_finish_combo)
+        finish_row.addStretch(1)
+        g.addLayout(finish_row)
         ol.addWidget(gameplay)
 
         # ---- Franchise
@@ -1165,6 +1181,15 @@ class BuildPanel(QWidget):
         gate(self.probowl_order_check, "probowl_order")
         gate(self.penalties_check, "penalties")
         gate(self.uniform_choice_check, "uniform_choice")
+        finish_state = str(state.get("helmet_finish"))
+        finish_available = self._available.get("helmet_finish", False)
+        finish_enabled = finish_available and finish_state in ("retail", "applied")
+        self.helmet_finish_check.setEnabled(finish_enabled)
+        self.helmet_finish_combo.setEnabled(finish_enabled)
+        self.helmet_finish_check.setChecked(finish_state == "applied")
+        self.helmet_finish_combo.setCurrentIndex(1 if finish_state == "applied" else 0)
+        self._set_badge("helmet_finish", "ADVANCED / UNWITNESSED" if finish_enabled else
+                        "Unrecognized source data" if finish_available else "Not available in this release")
         gate(self.kick_laces_check, "kick_laces")
         gate(self.franchise_practice_check, "franchise_practice")
         gate(self.practice_squad_check, "practice_squad")
@@ -1270,7 +1295,9 @@ class BuildPanel(QWidget):
         for key, box in boxes.items():
             if key not in values:
                 continue
-            want = values[key] != "retail" if key in ("music_policy", *r62_ui.LEVELS) else bool(values[key])
+            want = (values[key] == "matte" if key == "helmet_finish" else
+                    values[key] != "retail" if key in ("music_policy", *r62_ui.LEVELS) else
+                    bool(values[key]))
             if want and not box.isEnabled() and key not in ("realistic_flight", "arc_by_distance"):
                 skipped.append(key)
                 continue
@@ -1323,7 +1350,7 @@ class BuildPanel(QWidget):
             "team_history": self.team_history_check, "career_stats": self.career_stats_check,
             "prospect_names": self.prospect_names_check, "seven_on_seven": self.seven_on_seven_check,
             "position_row": self.position_row_check, "probowl_order": self.probowl_order_check,
-            "penalties": self.penalties_check, "uniform_choice": self.uniform_choice_check,
+            "penalties": self.penalties_check, "uniform_choice": self.uniform_choice_check, "helmet_finish": self.helmet_finish_check,
             "kick_laces": self.kick_laces_check, "franchise_practice": self.franchise_practice_check,
             "practice_squad": self.practice_squad_check, "depth_locks": self.depth_locks_check,
             "player_star": self.player_star_check, "roster_edits": self.roster_edits_check,
@@ -1413,6 +1440,7 @@ class BuildPanel(QWidget):
             position_row=self.position_row_check.isChecked(), probowl_order=self.probowl_order_check.isChecked(),
             penalties=("nfl" if self.penalties_check.isChecked() else ""),
             uniform_choice=(str(self.uniform_choice_mode.currentData() or "choice") if self.uniform_choice_check.isChecked() else ""),
+            helmet_finish=("matte" if self.helmet_finish_check.isChecked() else "glossy"),
             kick_laces=self.kick_laces_check.isChecked(),
             franchise_practice=self.franchise_practice_check.isChecked(),
             practice_squad=self.practice_squad_check.isChecked(),
@@ -1464,7 +1492,14 @@ class BuildPanel(QWidget):
         return bool(self._include_session_project() or p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression
                     or any(getattr(p, key) for key in r62_ui.KEYS if key not in r62_ui.LEVELS) or p.cpu_money_downs != "retail" or p.scorebug_runtime or p.momentum > 0 or p.defensive_try or p.zone_drop_cap or p.all_stadiums or p.coverage_slider or p.scramble_tuning or p.flatter_deep_ball or p.chop_block_toggle or p.team_names_2026 or p.music_shuffle or p.practice_squad_screen or p.abilities or p.qb_spy or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.hires_pack or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
                     or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.espn25_plan
-                    or p.commentary or p.playbook_packs)
+                    or p.commentary or p.playbook_packs or self._helmet_finish_changed())
+
+    def _helmet_finish_changed(self) -> bool:
+        """True when the chosen finish differs from what the source carries (a Glossy restoration counts)."""
+        combo = getattr(self, "helmet_finish_combo", None)
+        state = (self._state or {}).get("helmet_finish")
+        return bool(combo is not None and combo.isEnabled() and state in ("retail", "applied")
+                    and combo.currentData() != ("matte" if state == "applied" else "glossy"))
 
     @staticmethod
     def _team_names_details() -> str:
@@ -1497,6 +1532,8 @@ class BuildPanel(QWidget):
                     text += f" ({self.hires_scale_combo.currentText()}, {self.hires_target_combo.currentText()}, {self.hires_folder_field.text().strip()})"
                 if key == "throw":
                     text += f" ({self.ceiling_spin.value()} yd)"
+                if key == "helmet_finish" and not self._helmet_finish_changed():
+                    continue
                 labels.append(text)
         if self.star_players:
             labels.append(f"star players ({len(self.star_players)})")

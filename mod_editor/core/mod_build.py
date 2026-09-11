@@ -216,6 +216,7 @@ class BuildPlan:
     # "choice" = the retail default plus a per-side colour flip on the same up/down that picks the era on
     # Controller Assign / Team Select (past the last era: flip and restart); "" = retail. Unwitnessed.
     uniform_choice: str = ""
+    helmet_finish: str = "glossy"  # ADVANCED (beta 66, maumau78): "matte" zeroes both helmet LODs' shell reflection weight; off in every preset
     # laces to the posts on FG/PAT holds: one 6-byte hook on the held-ball join point + a 143-byte cave in a
     # dead routine that rolls the ball 180 degrees about its long axis on live Field Goal formation plays
     # (the game's own quaternion product; kickoff tee, punts and carries untouched). Opt-in until witnessed.
@@ -297,7 +298,7 @@ class BuildPlan:
         return (self.throw or self.catch_slider or self.accel_ramp or self.draft_ai or self.returner_fix
                 or self.progression or self.scheme_labels or self.camera or self.kick_rules or self.kick_power or self.position_pools or self.xbe_space or self.kickoff_relocated or self.dynamic_kickoff or self.depth_chart_rows or self.practice_squad or self.depth_locks
                 or self.season_cap or self.season_2026 or self.widescreen or self.overtime or self.team_column or self.seven_on_seven
-                or self.position_row or self.probowl_order or bool(self.penalties) or bool(self.uniform_choice)
+                or self.position_row or self.probowl_order or bool(self.penalties) or bool(self.uniform_choice) or self.helmet_finish == "matte"
                 or self.kick_laces or self.franchise_practice or bool(self.prospect_names) or self.player_star
                 or self.modern_naming or self.crib_reclaim or self.read_option_runtime or self.franchise_2026_rules or self.senior_bowl
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave
@@ -331,7 +332,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": False, "draft_ai": True, "returner_fix": True, "progression": False,
         "edge_rename": False, "scorebug": False, "guardian_cap": False, "scheme_labels": False, "camera": False,
         "kick_rules": False, "kick_power": True, "kickoff_alignment": False, "dynamic_kickoff": False, "xbe_space": False, "kickoff_relocated": False,
-        "position_pools": False, "position_pools_keep_olb": False, "season_cap": False, "season_2026": False, "widescreen": False, "overtime": False, "team_column": True, "seven_on_seven": False, "team_history": "", "career_stats": "", "screen_timing": None, "depth_roles": False, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "", "uniform_choice": "", "kick_laces": False, "franchise_practice": False, "practice_squad": False, "depth_locks": False, "prospect_names": "", "player_star": False,
+        "position_pools": False, "position_pools_keep_olb": False, "season_cap": False, "season_2026": False, "widescreen": False, "overtime": False, "team_column": True, "seven_on_seven": False, "team_history": "", "career_stats": "", "screen_timing": None, "depth_roles": False, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "", "uniform_choice": "", "helmet_finish": "glossy", "kick_laces": False, "franchise_practice": False, "practice_squad": False, "depth_locks": False, "prospect_names": "", "player_star": False,
         "espn25_plan": "", "espn25_rosters": False,
     },
     # ADVANCED = basic + everything that modernises the game (Noah's tweaks and breakthroughs).
@@ -348,7 +349,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
         "edge_rename": True, "scorebug": False, "guardian_cap": False, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": False, "dynamic_kickoff": False, "xbe_space": False, "kickoff_relocated": False,
-        "position_pools": True, "position_pools_keep_olb": False, "season_cap": False, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": None, "depth_roles": True, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": False, "franchise_practice": True, "practice_squad": False, "depth_locks": False, "prospect_names": "modern", "player_star": True,
+        "position_pools": True, "position_pools_keep_olb": False, "season_cap": False, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": None, "depth_roles": True, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "helmet_finish": "glossy", "kick_laces": False, "franchise_practice": True, "practice_squad": False, "depth_locks": False, "prospect_names": "modern", "player_star": True,
         "espn25_plan": "", "espn25_rosters": False,
     },
     # EXPERIMENTAL = advanced + widescreen and anything still rough (dynamic-kickoff line-up).
@@ -366,7 +367,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
         "edge_rename": True, "scorebug": True, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": True, "dynamic_kickoff": True, "xbe_space": False, "kickoff_relocated": False,
-        "position_pools": True, "position_pools_keep_olb": False, "season_cap": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": "D", "depth_roles": True, "depth_chart_rows": True, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": True, "franchise_practice": True, "practice_squad": True, "depth_locks": True, "prospect_names": "modern", "player_star": True,
+        "position_pools": True, "position_pools_keep_olb": False, "season_cap": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": "D", "depth_roles": True, "depth_chart_rows": True, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "helmet_finish": "glossy", "kick_laces": True, "franchise_practice": True, "practice_squad": True, "depth_locks": True, "prospect_names": "modern", "player_star": True,
         "espn25_plan": "", "espn25_rosters": False,
     },
 }
@@ -414,6 +415,7 @@ def availability() -> dict[str, bool]:
 
     return {
         "throw": True, "catch_slider": True, "accel_ramp": True, "draft_ai": True,
+        "helmet_finish": _core_module("nfl2k5_helmet_finish") is not None,
         **{key: _core_module(module) is not None and _core_module("nfl2k5_xbe_space") is not None
            for key, module in (("momentum", "nfl2k5_momentum"), ("momentum_contact", "nfl2k5_momentum"),
                                ("momentum_collisions", "nfl2k5_momentum"),
@@ -734,6 +736,14 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         out["disc_identity"] = None
         out["disc_identity_line"] = ""
         out["disc_identity_headline"] = ""
+    finish = _core_module("nfl2k5_helmet_finish")
+    if finish is None:
+        out["helmet_finish"] = "unavailable"
+    else:
+        try:
+            out["helmet_finish"] = finish.status(_xbe_bytes(source))
+        except (OSError, ValueError):  # a synthetic or foreign image without a readable executable
+            out["helmet_finish"] = "unknown"
     return out
 
 
@@ -1056,6 +1066,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     blockers = validate_plan(plan)
     if blockers:
         raise ValueError("\n".join(blockers))
+    if plan.helmet_finish not in ("glossy", "matte"):
+        raise ValueError("Helmet finish must be glossy or matte")
+    if plan.helmet_finish == "matte" and _core_module("nfl2k5_helmet_finish") is None:
+        raise RuntimeError("Helmet finish writer is not available in this build")
     if plan.screen_timing is not None and (
             not isinstance(plan.screen_timing, str) or plan.screen_timing not in ("A", "B", "C", "D")):
         raise ValueError("screen_timing must be None or A, B, C, D")
@@ -1395,7 +1409,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     #    including its disc text spans when the source is an image)
     # the rows run after the pools step below (their cave and stride depend on it), so they never ride the first pass
     # the 2026 season step patches the executable itself, so a season-only plan is copy-first too
-    if replace(plan, depth_chart_rows=False, season_2026=False, xbe_space=False, kickoff_relocated=False, scorebug_runtime=False, momentum=0, momentum_contact=False, defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False, scramble_tuning=False, music_library=None,
+    if replace(plan, helmet_finish="glossy", depth_chart_rows=False, season_2026=False, xbe_space=False, kickoff_relocated=False, scorebug_runtime=False, momentum=0, momentum_contact=False, defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False, scramble_tuning=False, music_library=None,
                music_shuffle=False, music_shuffle_selection=None, practice_squad_screen=False, abilities=False, abilities_off_week=None, qb_spy=False, calendar_engine=False,
                momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False,
                franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False,
@@ -1807,6 +1821,24 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             rec = library.rebuild(target, destination, plan.music_library, expected_plan=preview, progress=progress)
             os.replace(destination, target)
         receipt["steps"].append({"step": "music_library", "library": plan.music_library, **rec})
+
+    # beta 66 (maumau78): the helmet finish is the final executable pass, after every allocator owner and a
+    # possible music image rebuild, so Matte survives them and Glossy restores an already-Matte input.
+    finish = _core_module("nfl2k5_helmet_finish")
+    if finish is not None:
+        try:
+            current = _xbe_bytes(target)
+        except (OSError, ValueError):
+            # a synthetic or foreign image without a readable executable: nothing to restore; Matte still needs one
+            if plan.helmet_finish == "matte":
+                raise
+            current = None
+        if current is not None and (plan.helmet_finish == "matte" or finish.status(current) == "applied"):
+            progress(f"Helmet finish: {plan.helmet_finish}", 0, 0)
+            patched, finish_receipt = finish.apply(current, finish=plan.helmet_finish)
+            _write_xbe_bytes(target, patched)
+            finish.verify(_xbe_bytes(target), finish=plan.helmet_finish)
+            receipt["steps"].append({"step": "helmet_finish", **finish_receipt})
 
     progress("Verifying the composed disc", 0, 0)
     inspection = inspect(target, screen_timing=plan.screen_timing)

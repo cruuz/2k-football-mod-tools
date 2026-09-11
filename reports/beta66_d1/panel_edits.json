@@ -23,8 +23,8 @@
       "new": "            helper_label = QLabel(helper)\n            helper_label.setObjectName(\"throwMuted\")\n            helper_label.setWordWrap(True)\n            helper_label.setIndent(30)\n            helper_label.setVisible(bool(helper))\n            rl.addWidget(helper_label)\n            self._helpers[key] = helper_label"
     },
     {
-      "old": "        any_on = any(c.isChecked() for c in self.checks.values())",
-      "new": "        from mod_editor.studio.plan_controls import refresh_playbook_controls\n        self._playbook_blockers = refresh_playbook_controls(\n            self.checks, self._helpers, self._state)\n        any_on = any(c.isChecked() for c in self.checks.values())"
+      "old": "        any_on = any(c.isChecked() for key, c in self.checks.items() if key != \"helmet_finish\") or self._helmet_finish_changed()",
+      "new": "        from mod_editor.studio.plan_controls import refresh_playbook_controls\n        self._playbook_blockers = refresh_playbook_controls(\n            self.checks, self._helpers, self._state)\n        any_on = any(c.isChecked() for key, c in self.checks.items() if key != \"helmet_finish\") or self._helmet_finish_changed()"
     },
     {
       "old": "                                     and self._task is None and not self._reading)",
