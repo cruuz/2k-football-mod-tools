@@ -3536,6 +3536,10 @@ class StudioMainWindow(QMainWindow):
         team_kit_actions.addWidget(self.import_digit_sheet_button)
         team_kit_actions.addStretch(1)
         team_kit_layout.addLayout(team_kit_actions)
+        number_help = QLabel(SHEET_HELP, team_kit)
+        number_help.setWordWrap(True)
+        number_help.setObjectName("metadataText")
+        team_kit_layout.addWidget(number_help)
         detail_layout.addWidget(team_kit)
 
         split = QHBoxLayout()
@@ -7278,9 +7282,10 @@ class StudioMainWindow(QMainWindow):
         dialog.setWindowTitle("Number sheet: encoded game preview")
         layout = QVBoxLayout(dialog)
         note = QLabel(
-            "EXPERIMENTAL / UNWITNESSED. These are the saved number textures at "
-            "small sizes. The game adds jersey lighting and chooses detail by camera distance. "
-            "Check every digit and the size notes before importing.", dialog,
+            "Each row shows the build result above the retail digit at the same size. "
+            "A KEPT RETAIL badge means that slot will use its original number. "
+            "The 57 comparison uses the jersey base colour at an estimated screen size. "
+            "The game adds lighting and camera-dependent detail. In-game appearance is unwitnessed.", dialog,
         )
         note.setWordWrap(True)
         layout.addWidget(note)
@@ -7299,7 +7304,7 @@ class StudioMainWindow(QMainWindow):
         details.setMaximumHeight(160)
         layout.addWidget(details)
         buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, dialog)
-        buttons.button(QDialogButtonBox.Ok).setText("Import all ten digits")
+        buttons.button(QDialogButtonBox.Ok).setText(preview.import_button_text)
         buttons.accepted.connect(dialog.accept)
         buttons.rejected.connect(dialog.reject)
         layout.addWidget(buttons)
@@ -7347,6 +7352,15 @@ class StudioMainWindow(QMainWindow):
         if not accepted:
             return
         orientation = dict(SHEET_LAYOUTS).get(str(layout_label), SHEET_LAYOUTS[0][1])
+        from mod_editor.core.nfl2k5_digit_art import REGISTRATION_CHOICES
+        registration_label, accepted = QInputDialog.getItem(
+            self, "Number size", "Match retail size keeps the glyph inside the original number box. "
+            "As authored keeps your placement and can extend beyond the number mesh.",
+            [row[0] for row in REGISTRATION_CHOICES], 0, False,
+        )
+        if not accepted:
+            return
+        registration = dict(REGISTRATION_CHOICES)[str(registration_label)]
         filename, _ = QFileDialog.getOpenFileName(
             self,
             f"Choose the {label.lower()} 0-9 sheet (ten equal cells)",
@@ -7368,7 +7382,7 @@ class StudioMainWindow(QMainWindow):
         prepared_outputs = ()
 
         def prepare(progress: ProgressSink) -> object:
-            outputs = split_digit_sheet(source, targets, orientation=orientation)
+            outputs = split_digit_sheet(source, targets, orientation=orientation, registration=registration)
             preview = self.facade.preview_digit_sheet(outputs, progress)
             return outputs, preview
 

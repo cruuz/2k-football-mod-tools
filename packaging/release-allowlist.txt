@@ -84,6 +84,7 @@ mod_editor/core/nfl2k5_models.py
 mod_editor/core/nfl2k5_crib_scene_texture_writer.py
 mod_editor/core/nfl2k5_crib_standalone_texture_writer.py
 mod_editor/core/nfl2k5_digit_preview.py
+mod_editor/core/nfl2k5_digit_art.py
 mod_editor/core/nfl2k5_digit_sheet.py
 mod_editor/core/nfl2k5_digit_texture.py
 mod_editor/core/nfl2k5_extended_visual_catalog.py

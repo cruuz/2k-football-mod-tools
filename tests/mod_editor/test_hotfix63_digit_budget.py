@@ -420,7 +420,7 @@ class BackendKeepsRetailTests(unittest.TestCase):
                     digit_writer.read_png(args[7], (64, 64))
                     raise QualityBudgetError("test full-ladder exhaustion")
                 return real(*args, **kwargs)
-            with patch.object(digit_writer, "build_import", side_effect=guarded):
+            with mock.patch.object(digit_writer, "build_import", side_effect=guarded):
                 prepared = backend.prepare_project(
                     project, index_pin, inventory_pin, reports, root, placeholder, {})
             return backend, prepared

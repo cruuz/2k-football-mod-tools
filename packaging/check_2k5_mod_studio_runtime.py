@@ -99,13 +99,13 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "64ac47e2f3d28c374d4b0b8d44e5eba16b69ce5d70bbbeb6288ddadeb2be10ed",
     "mod_editor/gui/studio_qt.py":
-        "5a2e7c1d79fec352582973400e8421574bcfba80f4cda15633205f857d0f963b",
+        "231ece9783aed9377d2693bb162b45b86121de51fdb430418e1f171ac60ddcbf",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
         "68b6887e0778391916a6465a722b062d1c09afe3a376c318026e9db8bd7ed23a",
     "mod_editor/studio/facade.py":
-        "370b13121741c3256ec967d2c1abf69471ae4cb3a84e7bed1231a348a2b6afa4",
+        "5b1d7be0a186b4d173bc3abfbd924dd86ac143e20c20acb47e5762955e3b6045",
     "mod_editor/studio/project_archive.py":
         "3556062a7cf178ef416706543e71270783d04439494420810fb7a10ca7f01479",
     "mod_editor/studio/session.py":
@@ -1820,6 +1820,7 @@ def main() -> int:
         "mod_editor.core.build_feedback",
         "mod_editor.core.image_use",
         "mod_editor.core.nfl2k5_digit_preview",
+        "mod_editor.core.nfl2k5_digit_art",
         "mod_editor.core.nfl2k5_digit_sheet",
         "mod_editor.core.nfl2k5_digit_texture",
         "mod_editor.core.nfl2k5_equipment_import",
