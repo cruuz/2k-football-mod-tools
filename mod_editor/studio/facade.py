@@ -843,6 +843,7 @@ class Nfl2k5StudioFacade:
         self._crib_io: Nfl2k5CribIO | None = None
         self._lock = threading.RLock()
         self._audio_preparation_lock = threading.Lock()
+        self._preview_io_lock = threading.Lock()
 
     @property
     def uniform_catalog(self):
@@ -3084,7 +3085,15 @@ class Nfl2k5StudioFacade:
         """Read one set's current facemask/faceshield and turtleneck pair."""
         progress(f"Reading {selector} uniform colours", 0, 1)
         with self._lock:
-            chosen = self._require_session().uniform_colors(selector)
+            session = self._require_session()
+        # The first colour read also opens/parses the archive. UI status
+        # getters must remain available while that worker prepares the pair.
+        chosen = session.uniform_colors(selector)
+        with self._lock:
+            if session is not self._session:
+                raise ValidationError("The source changed while reading uniform colours")
+            if hasattr(session, "staged_uniform_colors"):
+                chosen = session.staged_uniform_colors(selector) or chosen
         progress(f"{selector} uniform colours ready", 1, 1)
         return chosen
 
@@ -3195,7 +3204,20 @@ class Nfl2k5StudioFacade:
         progress(f"Preparing {asset.label}", 0, 1)
         with self._lock:
             session = self._require_session()
-            path = session.current_path(asset)
+            staged = session.staged_path(asset) if hasattr(session, "staged_path") else None
+        if staged is not None:
+            path = staged
+        else:
+            # UI getters also take _lock. Holding it across cold decoding made
+            # the page-completion callback wait on the preview it just started.
+            # Serialize original-cache writes separately from project state.
+            with self._preview_io_lock:
+                path = session.current_path(asset)
+            with self._lock:
+                if session is not self._session:
+                    raise ValidationError("The source changed while preparing the preview")
+                if hasattr(session, "staged_path"):
+                    path = session.staged_path(asset) or path
         progress(f"{asset.label} ready", 1, 1)
         return path
 

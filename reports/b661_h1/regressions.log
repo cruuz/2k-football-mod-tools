@@ -1,0 +1,32 @@
+test_uniforms_first_cold_and_cached_without_navigation_and_no_stall (test_b661_workspace_qt.WorkspaceTests.test_uniforms_first_cold_and_cached_without_navigation_and_no_stall) ... 
+  test_uniforms_first_cold_and_cached_without_navigation_and_no_stall (test_b661_workspace_qt.WorkspaceTests.test_uniforms_first_cold_and_cached_without_navigation_and_no_stall) (cached=True) ... FAIL
+
+======================================================================
+FAIL: test_uniforms_first_cold_and_cached_without_navigation_and_no_stall (test_b661_workspace_qt.WorkspaceTests.test_uniforms_first_cold_and_cached_without_navigation_and_no_stall) (cached=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b66-2k5-tool/tests/mod_editor/test_b661_workspace_qt.py", line 117, in test_uniforms_first_cold_and_cached_without_navigation_and_no_stall
+    self.assertEqual(window.pages.currentIndex(), row)
+AssertionError: 2 != 1
+
+----------------------------------------------------------------------
+Ran 1 test in 0.986s
+
+FAILED (failures=1)
+uniforms_first cached=False max_ui_gap=0.083s
+EXPECTED_REGRESSION_REPRODUCED test_uniforms_first_cold_and_cached_without_navigation_and_no_stall
+test_cold_preview_does_not_hold_the_ui_state_lock (test_b661_workspace_qt.WorkspaceTests.test_cold_preview_does_not_hold_the_ui_state_lock) ... FAIL
+
+======================================================================
+FAIL: test_cold_preview_does_not_hold_the_ui_state_lock (test_b661_workspace_qt.WorkspaceTests.test_cold_preview_does_not_hold_the_ui_state_lock)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b66-2k5-tool/tests/mod_editor/test_b661_workspace_qt.py", line 155, in test_cold_preview_does_not_hold_the_ui_state_lock
+    self.assertLess(time.monotonic()-start, .1)
+AssertionError: 0.5046906360657886 not less than 0.1
+
+----------------------------------------------------------------------
+Ran 1 test in 0.509s
+
+FAILED (failures=1)
+EXPECTED_REGRESSION_REPRODUCED test_cold_preview_does_not_hold_the_ui_state_lock

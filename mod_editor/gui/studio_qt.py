@@ -122,6 +122,7 @@ from mod_editor.gui.presentation_panel_qt import PresentationPanel
 from mod_editor.gui.share_panel_qt import SharePanel
 from mod_editor.gui.commentary_panel_qt import CommentaryPanel
 from mod_editor.gui.task_delivery import bound
+from mod_editor.gui.workspace_runtime import install as install_workspace_runtime
 from mod_editor.gui.sounds_panel_qt import SoundsPanel
 from mod_editor.gui.build_panel_qt import BuildPanel
 from mod_editor.gui.models_panel_qt import ModelsPanel
@@ -1838,6 +1839,7 @@ class StudioMainWindow(QMainWindow):
         self.resize(1480, 920)
         self.setObjectName("studioWindow")
         self._build_ui()
+        self._stall_watchdog = install_workspace_runtime(self)
         self._operation_stage = ""
         self._operation_started = time.monotonic()
         self._heartbeat_timer = QTimer(self)
@@ -2799,6 +2801,7 @@ class StudioMainWindow(QMainWindow):
             raise
         self.pages.removeWidget(placeholder)
         self.pages.insertWidget(row, self._page_scroll_host(page))
+        self.pages.setCurrentIndex(self.navigation.currentRow())
         placeholder.deleteLater()
         if self._navigation_key(row) == "build_share":
             preset = getattr(self, "_pending_build_navigation_preset", None)
@@ -2820,6 +2823,27 @@ class StudioMainWindow(QMainWindow):
             self._ensure_workspace(row)
             return
         self._page_loads.add(row)
+        placeholder = self.pages.widget(row)
+        loading = placeholder.findChild(QLabel)
+        started = time.monotonic()
+        heartbeat = QTimer(placeholder)
+        heartbeat.setInterval(1000)
+        heartbeat.timeout.connect(bound(self, lambda: loading.setText(
+            f"Loading workspace… {int(time.monotonic() - started)} s")))
+        heartbeat.start()
+
+        def failed(message):
+            heartbeat.stop()
+            self._page_loads.discard(row)
+            self._set_status(f"Could not load workspace: {message}")
+            if row not in self._page_factories:
+                return
+            loading.setText(f"Could not load this workspace: {message}")
+            loading.setWordWrap(True)
+            retry = QPushButton("Retry loading workspace", placeholder)
+            retry.clicked.connect(bound(self, lambda _checked=False: self._show_workspace(row)))
+            placeholder.layout().addWidget(retry)
+
         def prepare(_progress):
             return (load_nfl2k5_uniform_catalog() if needs_uniforms else None,
                     load_nfl2k5_extended_visual_catalog() if needs_visuals else None,
@@ -2832,7 +2856,12 @@ class StudioMainWindow(QMainWindow):
                 self._extended_visual_catalog = visual
             if available is not None:
                 self._available_build_options = available
-            self._ensure_workspace(row)
+            heartbeat.stop()
+            try:
+                self._ensure_workspace(row)
+            except Exception as exc:
+                failed(str(exc))
+                return
             if self.navigation.currentRow() == row:
                 self.pages.setCurrentIndex(row)
                 self._refresh_entered_page(row)
@@ -2841,7 +2870,7 @@ class StudioMainWindow(QMainWindow):
         worker = _BackgroundTask(prepare)
         self._workers.add(worker)
         worker.signals.result.connect(bound(self, ready))
-        worker.signals.error.connect(bound(self, self._set_status))
+        worker.signals.error.connect(bound(self, failed))
         worker.signals.finished.connect(bound(self, lambda: (self._workers.discard(worker), self._page_loads.discard(row))))
         self.thread_pool.start(worker)
 
@@ -8211,12 +8240,14 @@ class StudioMainWindow(QMainWindow):
             if generation != self._source_generation:
                 return
             self._source_inspect_pending = False
+            self._set_status(f"Could not read build options: {message}")
             for panel in (self._build_panel, self._gameplay_patches_panel, self._edge_panel):
                 if panel is not None and hasattr(panel, "reading_failed"):
                     panel.reading_failed(message)
 
         def inspect_source(progress):
-            state = mod_build.inspect(source)
+            from mod_editor.core.studio_inspection import inspect_source
+            state = inspect_source(source)
             if state.get("container") == "xiso" and state.get("music_library") == "available":
                 from mod_editor.core import nfl2k5_music_banks
                 try:
@@ -8242,12 +8273,13 @@ class StudioMainWindow(QMainWindow):
             self._sounds_panel.load_source(source)
         if self._bump_panel is not None:
             self._bump_panel.load_source(source)
-        if self._models_panel is not None:
+        if self._models_panel is not None and self._navigation_key(self.navigation.currentRow()) == "models":
             self._models_panel.reload()
         paths = getattr(self.facade, "models_source_paths", None)
         if paths:
             self._animations_panel.set_source_paths(*paths)
-            self._animations_panel.reload()
+            if self._navigation_key(self.navigation.currentRow()) == "animations":
+                self._animations_panel.reload()
         # 3. Share: the export "Starting disc" only while no build owns the pair; the
         #    install "Your disc" whenever it is empty or still following the last disc
         if self._share_panel is not None:
@@ -9137,6 +9169,10 @@ class StudioMainWindow(QMainWindow):
                 if self._build_panel is None:
                     return
             self._prefill_roster_if_pending()
+            return
+        if self._navigation_key(row) == "models":
+            if bool(getattr(self.facade, "source_ready", False)):
+                self._models_panel.reload()
             return
         if self._navigation_key(row) == "animations":
             if getattr(self.facade, "models_source_paths", None):

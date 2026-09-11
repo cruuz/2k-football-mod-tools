@@ -124,7 +124,8 @@ def load_report(path: Path = DEFAULT_REPORT) -> tuple[Path, dict[str, object], b
     require(sha256_bytes(payload) == REPORT_SHA256,
             "compatibility report SHA-256 mismatch")
     try:
-        value = json.loads(payload)
+        from mod_editor.core.responsive_json import loads
+        value = loads(payload)
     except json.JSONDecodeError as exc:
         raise TargetError("compatibility report is invalid JSON") from exc
     require(isinstance(value, dict) and value.get("schema") == SCHEMA,

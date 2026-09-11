@@ -122,6 +122,7 @@ class TeamKitBundleImportResult:
         return (
             f"Imported: {self.imported_count}. Skipped unchanged: "
             f"{self.skipped_unchanged_count}. Overwritten: {self.overwritten_count}."
+            + _staged_summary(self.components)
         )
 
     @property
@@ -151,6 +152,14 @@ class TeamKitBundleImportResult:
 _last_import_receipts: WeakKeyDictionary[
     StudioSession, tuple[int, str, tuple[TeamKitComponentImport, ...]]
 ] = WeakKeyDictionary()
+
+
+def _staged_summary(components: Sequence[TeamKitComponentImport]) -> str:
+    names = [row.display_label for row in components if row.decision == "imported"]
+    if not names:
+        return " No kit components changed."
+    return (" Staged components: " + "; ".join(names)
+            + ". Build Modded XISO to apply these edits to a new game disc.")
 
 
 def _require(condition: bool, message: str) -> None:
@@ -1067,6 +1076,7 @@ class TeamKitBundleService:
                 + (f"{changed_count} project component"
                    f"{'s' if changed_count != 1 else ''} changed as one Undo action."
                    if changed_count else "No project pixels changed; no Undo action was added.")
+                + _staged_summary(receipt)
                 + " Your source XISO was not changed."
             )
             result = TeamKitBundleImportResult(

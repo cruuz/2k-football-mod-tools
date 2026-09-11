@@ -43,6 +43,11 @@ ProgressSink = Callable[[str, int, int], None]
 USER_AGENT = "2k-football-mod-tools-self-update"
 MAX_ASSET_BYTES = 400 * 1024 * 1024
 CHUNK = 1 << 20
+UNSUPPORTED_LAYOUT_MESSAGE = (
+    "This copy was not installed with the Setup or the portable archive; "
+    "download the latest Setup.exe from the release page and run it. "
+    "The release page is on GitHub."
+)
 
 # Release identities from BETA_RELEASE_NOTES.md, not an RC-minus-offset guess.
 # Older RC labels can name more than one shared product release (notably RC62).
@@ -126,11 +131,17 @@ def detect_install(root: Path | None = None, product: str = "2k5", *, platform: 
     args = tuple(str(a) for a in spec["args"])  # type: ignore[index]
     if (root / ".git").exists() or (root.parent / ".git").exists():
         return InstallKind("checkout", root, (executable, *args), "a git checkout updates with git pull")
+    # GitHub's source ZIP contains the launchers too. It is not a portable
+    # release and must never be swapped out as though it were one.
+    if (root / ".github").is_dir() or (root / "tests").is_dir():
+        return InstallKind("unknown", root, (executable, *args), UNSUPPORTED_LAYOUT_MESSAGE)
     runtime = root.parent / "runtime"
     pythonw = runtime / "pythonw.exe"
-    if root.name.lower() == "app" and pythonw.exists() and platform.startswith("win"):
+    if root.name.lower() == "app" and pythonw.is_file() and platform.startswith("win"):
         return InstallKind("windows-installer", root, (str(pythonw), *args), str(root.parent))
-    if (root / str(spec["launcher_sh"])).exists() or (root / str(spec["launcher_bat"])).exists():
+    if (root / str(spec["launcher_sh"])).is_file() or (root / str(spec["launcher_bat"])).is_file():
+        if platform.startswith("win") and root.name.lower() == "app" and not pythonw.is_file():
+            return InstallKind("unknown", root, (executable, *args), UNSUPPORTED_LAYOUT_MESSAGE)
         return InstallKind("tarball", root, (executable, *args), str(root))
     if (root / "mod_editor" / "__main__.py").exists():
         return InstallKind("unknown", root, (executable, *args), "the folder carries no launcher this updater knows")
@@ -162,7 +173,7 @@ def plan_update(document: Mapping[str, object], install: InstallKind, product: s
     elif install.kind == "checkout":
         raise SelfUpdateError("This is a git checkout: update it with git pull.")
     else:
-        raise SelfUpdateError(f"This copy cannot update itself ({install.detail}). Download the release from GitHub instead.")
+        raise SelfUpdateError(UNSUPPORTED_LAYOUT_MESSAGE)
     assert isinstance(pattern, re.Pattern)
     candidates = [a for a in assets if pattern.match(a.name)]
     if not candidates:

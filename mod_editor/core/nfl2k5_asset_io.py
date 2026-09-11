@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import shutil
 import sys
+import threading
 from threading import Lock
 from typing import Any
 
@@ -142,8 +143,10 @@ class Nfl2k5AssetIO:
 
     def __init__(self, cache: SourceCache) -> None:
         self.cache = cache
+        self._original_lock = threading.RLock()
         try:
-            self.inventory = json.loads(cache.inventory.read_text(encoding="utf-8"))
+            from nfl_uniform_inventory import load_inventory_document as load
+            self.inventory = load(cache.inventory)
         except (OSError, json.JSONDecodeError) as exc:
             raise ValidationError(f"Could not open the private game index: {exc}") from exc
         if self.inventory.get("schema") != "nfl2k5_resource_chunk_inventory/v1":
@@ -157,6 +160,12 @@ class Nfl2k5AssetIO:
         return self.cache.originals / f"{_safe_key(asset.asset_id)}.png"
 
     def ensure_original(self, asset: Any) -> Path:
+        # Preview workers may overlap an import/export. Publish the PNG and
+        # its receipt as one serialized operation without the facade UI lock.
+        with self._original_lock:
+            return self._ensure_original(asset)
+
+    def _ensure_original(self, asset: Any) -> Path:
         path = self.original_path(asset)
         metadata = path.with_suffix(".json")
         tampered = ValidationError(

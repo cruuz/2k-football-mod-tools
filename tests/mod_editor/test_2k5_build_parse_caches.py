@@ -137,16 +137,17 @@ class InventoryCacheTests(unittest.TestCase):
         self.addCleanup(nfl_uniform_inventory.clear_inventory_cache)
 
     def test_repeated_loads_parse_the_document_once(self) -> None:
+        from mod_editor.core import responsive_json
         counter = Counter()
-        real_loads = nfl_uniform_inventory.json.loads
+        real_loads = responsive_json.load
 
         def counting_loads(payload, *args, **kwargs):
             counter["loads"] += 1
             return real_loads(payload, *args, **kwargs)
 
-        nfl_uniform_inventory.json.loads = counting_loads
+        responsive_json.load = counting_loads
         self.addCleanup(
-            setattr, nfl_uniform_inventory.json, "loads", real_loads
+            setattr, responsive_json, "load", real_loads
         )
         first = nfl_uniform_inventory.load_inventory_document(self.inventory_path)
         second = nfl_uniform_inventory.load_inventory_document(self.inventory_path)
