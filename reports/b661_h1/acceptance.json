@@ -1,0 +1,18 @@
+{
+  "source_ready": true,
+  "open_seconds": 15.500977423973382,
+  "content_seconds": 0.6597463069483638,
+  "content_arrived": true,
+  "preview_arrived": true,
+  "inspection_ready": true,
+  "visible_row": 1,
+  "expected_row": 1,
+  "open_max_gap_seconds": 0.1487818619934842,
+  "settling_seconds": 8.438163244049065,
+  "settling_max_gap_seconds": 0.1487818619934842,
+  "idle_seconds": 120.00042575097177,
+  "idle_max_gap_seconds": 0.02365482202731073,
+  "stalls": 0,
+  "errors": [],
+  "within_budget": true
+}
