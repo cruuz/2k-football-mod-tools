@@ -154,6 +154,8 @@ def stylesheet(icons=None):
     QListWidget#navigation::item { color: $muted; padding: 6px 9px; border-radius: 5px; }
     QListWidget#navigation::item:selected { background: $selection; color: $text; border-left: 3px solid $accent; }
     QListWidget#navigation::item:hover { background: $raised; }
+    QListWidget#navigation:focus { border: 2px solid $accent; border-radius: 6px; }
+    QListWidget#assetList:focus { border: 2px solid $accent; }
     QTabWidget::pane { background: $surface; border: 1px solid $border; border-radius: 6px; }
     QTabBar::tab { background: $surface; color: $muted; padding: 7px 10px;
                   border-bottom: 2px solid transparent; margin-right: 2px; }

@@ -172,7 +172,8 @@ class ProductShellAccessibilityTests(unittest.TestCase):
                 assert header is not None and footer is not None
                 self.assertGreater(header.maximumHeight(), header.minimumHeight())
                 self.assertGreater(footer.maximumHeight(), footer.minimumHeight())
-                style = window.styleSheet()
+                # beta 66: the APF studio installs its theme on the application, not the window
+                style = window.styleSheet() or QApplication.instance().styleSheet()
                 self.assertIn("QListWidget#navigation:focus", style)
                 self.assertIn("border: 2px solid", style)
                 self.assertIn("QListWidget#assetList:focus", style)
