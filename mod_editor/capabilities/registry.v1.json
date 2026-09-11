@@ -2612,24 +2612,30 @@
     },
     {
       "backend": {
-        "command": "python3 -m mod_editor.core.apf2k8_playcall_patch --image <flat-image.pe> --output <new.patch.toml>",
+        "command": "python3 -m mod_editor.core.apf2k8_playcall_patch --game-folder <game-folder> --output <new.patch.toml> [--title-update <installed-content>]",
         "module": "mod_editor/core/apf2k8_playcall_patch.py",
         "operation": "write"
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/mod_editor/apf_wave_2026_09_09.md"
+        "ASTRA_B661_APF2_REPORT.md",
+        "docs/research/apf_playcall_receipt.json",
+        "tests/mod_editor/test_apf_playcall_patch.py",
+        "tools/apf_playcall_audit.py",
+        "tests/mod_editor/test_apf_xex_image.py",
+        "tests/mod_editor/test_apf_xex_image_retail.py",
+        "tests/mod_editor/test_apf_pass_fetch_export_qt.py"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "Integrated in the APF Studio with offline validation; gameplay UNWITNESSED."
+        "reason": "CPU Audibles & Personnel workspace: Export TE bias for pass fetches. The export is a verified one-shot authored TOML file; removing or disabling that file reverses deployment."
       },
       "id": "apf2k8.playbooks.pass_fetch_te_bias",
       "input_constraints": [
-        "Only the pinned flat BASE or reconstructed TU 1.1 image; full SHA, fetch hash, original hook and entire zero cave reservation are checked.",
+        "Choose the Xbox 360 game folder with default.xex and optional installed Title Update 1.1; expert flat images are also accepted. Python derives the image in memory. Full SHA, fetch hash, original hook and entire zero cave reservation are checked.",
         "Pass subtypes 2/3/4 on any down, including user calls. Main CPU weighted picker and untyped emergency fetch use different paths.",
         "Reserve 0x84D0E000..0x84D0EFFF exclusively; Capstone is required. Shared plays, later formation resolution and Subs can still produce a lineup without a TE."
       ],
@@ -2650,7 +2656,7 @@
       "selectors": {
         "fields": [
           {
-            "allowed": "Pinned BASE or TU 1.1 flat image",
+            "allowed": "Xbox 360 game folder / default.xex, or expert pinned BASE or TU 1.1 flat image",
             "name": "image",
             "required": true
           },
@@ -2660,21 +2666,21 @@
             "required": true
           }
         ],
-        "notes": "Module hash selects the Xenia image; no game or executable is modified by export."
+        "notes": "Optional --title-update selects installed TU 1.1 content. Nearby Xenia content is detected. Module hash selects the Xenia image; no game or executable is modified by export."
       },
       "source_container": {
-        "format": "Flat decompressed Xbox 360 XEX image; authored Xenia patch TOML output",
+        "format": "Xbox 360 XEX2 plus optional LIVE STFS Title Update / XEXP delta, or expert flat PE; authored Xenia patch TOML output",
         "hash_pins": [
           "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf",
           "65f522ce1cdda42cf19c112e9ec07302e89c81e4148c9f22e6db5e03952f9457"
         ],
         "resource": "BASE fetch 0x84869B20 or TU fetch 0x8486A820 and cave 0x84D0E000",
-        "retail_file": "Private BASE apf.pe or reconstructed TU 1.1 image"
+        "retail_file": "User-owned Xbox 360 game folder / default.xex and optional installed Title Update 1.1 content"
       },
       "summary": "Export an assembled, SHA-pinned BASE or TU 1.1 Xenia patch that prefers TE-compatible records for offensive pass fetches at every down, with zero-match fallback.",
       "surface": "scripts_config",
       "title": "TE bias for pass fetches (unwitnessed)",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 -m tests.mod_editor.test_apf_playcall_patch"
     },
     {
       "backend": {
