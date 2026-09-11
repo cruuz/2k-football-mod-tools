@@ -437,14 +437,23 @@ def build_import(index_path: Path, compatibility_path: Path, family: str,
                 "rebuilt video allocation size mismatch")
         return decoded[:target.system_bytes] + rebuilt_video
 
-    bounded = quantize_levels_to_vc_lz_bound(
-        input_mips,
-        candidate_decoded,
-        stream_tag=target.stream_tag,
-        offset_bits=target.offset_bits,
-        max_encoded_size=target.stored_size,
-        **quality_options,
-    )
+    preparation = None
+    if is_digit:
+        from PIL import Image
+        from mod_editor.core.nfl2k5_digit_art import fit_digit, registration_mode, fit_summary
+        retail_rgba = decode_levels(decoded, chunk, texture)[0].rgba
+        bounded, input_mips, preparation = fit_digit(
+            Image.frombytes("RGBA", (target.width, target.height), rgba),
+            Image.frombytes("RGBA", (target.width, target.height), retail_rgba),
+            registration_mode(png_payload), target.mip_levels,
+            lambda _levels, p, i: candidate_decoded(p, i),
+            stream_tag=target.stream_tag, offset_bits=target.offset_bits,
+            stored_size=target.stored_size)
+    else:
+        bounded = quantize_levels_to_vc_lz_bound(
+            input_mips, candidate_decoded, stream_tag=target.stream_tag,
+            offset_bits=target.offset_bits, max_encoded_size=target.stored_size,
+            **quality_options)
     palette = bounded.palette
     index_levels = bounded.index_levels
     quantization = bounded.quantization
@@ -527,8 +536,10 @@ def build_import(index_path: Path, compatibility_path: Path, family: str,
                  "decoded_rgba_sha256": [digest(level.rgba) for level in decoded_levels],
                  "input_rgba_sha256": [digest(level.rgba) for level in input_mips]},
         "quantization": quantization,
+        **({"digit_preparation": preparation, "digit_outcome": fit_summary(preparation, len(palette))}
+           if preparation is not None else {}),
         **({"digit_quality": {"palette_policy": PALETTE_POLICY,
-                              "minimum_palette_budget": 16,
+                              "minimum_palette_budget": preparation["fit"]["minimum_palette_budget"],
                               "alpha_bits": 8,
                               "evidence": "EXPERIMENTAL / UNWITNESSED"}} if is_digit else {}),
         **({"bounded_palette_fit": {

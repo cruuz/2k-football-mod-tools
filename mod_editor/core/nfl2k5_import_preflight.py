@@ -25,6 +25,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, replace
 from functools import lru_cache
+import hashlib
 from pathlib import Path
 import sys
 from typing import Callable, Iterable, Sequence
@@ -50,6 +51,7 @@ FULL = "full"
 REDUCED = "reduced"
 REFUSED = "refused"
 UNMODELLED = "unmodelled"
+KEPT_RETAIL = "kept_retail"
 
 
 @dataclass(frozen=True, slots=True)
@@ -77,6 +79,7 @@ class SlotContract:
     offset_bits: int = 12
     system_payload: bytes | None = None
     palette_gap_payload: bytes | None = None
+    retail_rgba: bytes | None = None
 
     @property
     def mip_dimensions(self) -> tuple[tuple[int, int], ...]:
@@ -273,7 +276,8 @@ def edits_for_assets(
                     _chunk, decoded, _texture = writer.validate_template(span, target)
                     gap_start = target.system_bytes + target.index_chain_bytes
                     contract = replace(contract, system_payload=decoded[:target.system_bytes],
-                                       palette_gap_payload=decoded[gap_start:gap_start+target.pre_palette_gap_bytes])
+                                       palette_gap_payload=decoded[gap_start:gap_start+target.pre_palette_gap_bytes],
+                                       retail_rgba=writer.decode_levels(decoded, _chunk, _texture)[0].rgba)
             except (OSError, ValueError, KeyError, IndexError, TxtrError, ValidationError):
                 contract, allocation = None, None
             # The optional sixth value carries the exact target contract.
@@ -307,6 +311,7 @@ class SlotPrediction:
     allocation_bytes: int | None = None
     refused_tiers: tuple[int, ...] = ()
     detail: str = ""
+    decoded_sha256: str | None = None
 
     @property
     def headroom_bytes(self) -> int | None:
@@ -316,11 +321,13 @@ class SlotPrediction:
 
     @property
     def needs_attention(self) -> bool:
-        return self.outcome in {REDUCED, REFUSED}
+        return self.outcome in {REDUCED, REFUSED, KEPT_RETAIL}
 
     def summary(self) -> str:
         """One line a user can act on."""
 
+        if self.kind.endswith("_digit") and self.detail:
+            return f"{self.label}: {self.detail}"
         if self.outcome == FULL:
             return f"{self.label}: fits as authored ({self.palette_entries} colours)."
         if self.outcome == REDUCED:
@@ -392,8 +399,15 @@ def predict_slot(
     """
 
     name = label or asset_id or contract.kind
+    if contract.digit and contract.retail_rgba is None:
+        return SlotPrediction(asset_id, name, contract.kind, UNMODELLED,
+                              detail="Load the game source to measure retail registration and predict this digit.")
     try:
-        rgba = _load_rgba(Path(png_path), contract.width, contract.height)
+        if contract.digit:
+            import nfl_live_numbers_nameplate_png_import as writer
+            _path, png_payload, rgba = writer.read_png(Path(png_path), (contract.width, contract.height))
+        else:
+            rgba = _load_rgba(Path(png_path), contract.width, contract.height)
     except Exception as exc:
         return SlotPrediction(
             asset_id, name, contract.kind, UNMODELLED,
@@ -429,16 +443,32 @@ def predict_slot(
     try:
         quality_options = {}
         if contract.digit:
-            from .nfl2k5_digit_texture import quantize_digit_levels
-            quality_options = {"quantizer": quantize_digit_levels, "minimum_palette_limit": 16}
-        fit = palette_tools.quantize_levels_to_vc_lz_bound(
-            levels,
-            candidate,
-            stream_tag=contract.stream_tag if stream_tag is None else stream_tag,
-            offset_bits=contract.offset_bits if offset_bits is None else offset_bits,
-            max_encoded_size=allocation_bytes,
-            **quality_options,
-        )
+            from PIL import Image
+            from .nfl2k5_digit_art import fit_digit, registration_mode, fit_summary
+            fit, levels, preparation = fit_digit(
+                Image.frombytes("RGBA", (contract.width, contract.height), rgba),
+                Image.frombytes("RGBA", (contract.width, contract.height), contract.retail_rgba),
+                registration_mode(png_payload), contract.mip_levels,
+                lambda _levels, p, i: candidate(p, i),
+                stream_tag=contract.stream_tag if stream_tag is None else stream_tag,
+                offset_bits=contract.offset_bits if offset_bits is None else offset_bits,
+                stored_size=allocation_bytes)
+        else:
+            fit = palette_tools.quantize_levels_to_vc_lz_bound(
+                levels, candidate,
+                stream_tag=contract.stream_tag if stream_tag is None else stream_tag,
+                offset_bits=contract.offset_bits if offset_bits is None else offset_bits,
+                max_encoded_size=allocation_bytes, **quality_options)
+    except palette_tools.QualityBudgetError as exc:
+        if contract.digit:
+            from .nfl2k5_digit_art import kept_retail_reason
+            return SlotPrediction(asset_id, name, contract.kind, KEPT_RETAIL,
+                                  source_colours=source_colours, allocation_bytes=allocation_bytes,
+                                  refused_tiers=tuple(int(a['maximum_palette_entries']) for a in getattr(exc,'attempts',())),
+                                  detail=kept_retail_reason(allocation_bytes))
+        return SlotPrediction(asset_id, name, contract.kind, REFUSED,
+                              detail=f"{exc} Remove fine noise, dithering, and long smooth gradients.",
+                              source_colours=source_colours, allocation_bytes=allocation_bytes)
     except (TxtrError, ValueError, ValidationError) as exc:
         return SlotPrediction(
             asset_id, name, contract.kind, REFUSED,
@@ -458,13 +488,14 @@ def predict_slot(
         asset_id=asset_id,
         label=name,
         kind=contract.kind,
-        outcome=REDUCED if refused or fit.quantization.get("maximum_channel_error", 0) else FULL,
+        outcome=REDUCED if contract.digit or refused or fit.quantization.get("maximum_channel_error", 0) else FULL,
         palette_entries=len(fit.palette),
         source_colours=source_colours,
         encoded_bytes=len(fit.compressed),
         allocation_bytes=allocation_bytes,
+        decoded_sha256=hashlib.sha256(fit.decoded).hexdigest() if contract.digit else None,
         refused_tiers=refused,
-        detail=(
+        detail=fit_summary(preparation, len(fit.palette)) if contract.digit else (
             "Distinct shade count is what costs compressed space here, not "
             "image resolution — the editor resizes to the slot either way."
             if refused else ""
@@ -531,8 +562,12 @@ def report(predictions: Sequence[SlotPrediction]) -> str:
     full = [row for row in predictions if row.outcome == FULL]
     reduced = [row for row in predictions if row.outcome == REDUCED]
     refused = [row for row in predictions if row.outcome == REFUSED]
+    kept = [row for row in predictions if row.outcome == KEPT_RETAIL]
     unmodelled = [row for row in predictions if row.outcome == UNMODELLED]
     lines: list[str] = []
+    if kept:
+        lines.append(f"{len(kept)} digit slots will be kept retail:")
+        lines.extend(f"  • {row.summary()}" for row in kept)
     if refused:
         lines.append(
             f"{len(refused)} will not fit and will stop the build:"
@@ -540,7 +575,7 @@ def report(predictions: Sequence[SlotPrediction]) -> str:
         lines.extend(f"  • {row.summary()}" for row in refused)
     if reduced:
         lines.append(
-            f"{len(reduced)} will build, but lose colours to fit a fixed slot:"
+            f"{len(reduced)} will build with image adjustments and may lose colours to fit a fixed slot:"
         )
         lines.extend(f"  • {row.summary()}" for row in reduced)
     if full:

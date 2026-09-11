@@ -2566,6 +2566,8 @@ def kept_retail_record(edit: dict[str, Any], failure: BaseException,
         edit["digit"], report_path)
     label = (f"{edit['family']} digit {edit['digit']} "
              f"({edit['asset_code']}{edit['side']}{edit['variant']})")
+    from mod_editor.core.nfl2k5_digit_art import kept_retail_reason
+    reason = kept_retail_reason(target.stored_size)
     return {
         "kind": "live_number_nameplate",
         "selector": target.selector,
@@ -2577,12 +2579,11 @@ def kept_retail_record(edit: dict[str, Any], failure: BaseException,
         "stored_size": int(target.stored_size),
         "outcome": "kept_retail",
         "input_sha256": input_pin.sha256,
-        "reason": str(cause),
-        "message": (
-            f"{label}: kept retail: could not fit its {target.stored_size}-byte "
-            "texture slot at the 16-colour quality budget; the retail digit was "
-            "kept and the rest of the project was built."
-        ),
+        "reason": reason,
+        "message": f"{label}: {reason}",
+        "replacement": {"span_sha256": target.span_sha256},
+        "digit_preparation": getattr(cause, "preparation", None),
+        "fit_attempts": list(getattr(cause, "attempts", ())),
     }
 
 

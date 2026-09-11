@@ -524,7 +524,16 @@ class PreviewKeepsRetailTests(unittest.TestCase):
                 asset.digit, asset.asset_id, asset.width, asset.height,
                 encode_rgba_png(asset.width, asset.height, rgba), "horizontal", (64, 64),
             ))
-        preview = preview_digit_sheet(self.index, selected, outputs)
+        # Cleanup now repairs this formerly failing resave. Exercise a real
+        # exhausted-slot outcome explicitly, independent of artist noise.
+        original_build = writer.build_import
+        def exhausted_slot(*args, **kwargs):
+            from nfl_tset_png_import import QualityBudgetError
+            if args[6] == 1:
+                raise QualityBudgetError("forced slot exhaustion")
+            return original_build(*args, **kwargs)
+        with mock.patch.object(writer, "build_import", side_effect=exhausted_slot):
+            preview = preview_digit_sheet(self.index, selected, outputs)
         self.assertEqual(len(preview.receipts), 10)
         kept = preview.receipts[1]
         self.assertTrue(kept.get("kept_retail"))

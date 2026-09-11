@@ -101,7 +101,7 @@ def _premultiplied(color: tuple[int, ...]) -> tuple[int, int, int, int]:
             (b * a + 127) // 255, a)
 
 
-def quantize_digit_levels(levels: list[Any], maximum: int = 256):
+def quantize_digit_levels(levels: list[Any], maximum: int = 256, *, preserve_transparent_rgb: bool = False):
     """One deterministic palette, protected solid colours and soft edges.
 
     Give each mip equal total influence so the base cannot monopolize entries.
@@ -115,8 +115,8 @@ def quantize_digit_levels(levels: list[Any], maximum: int = 256):
     """
     from nfl_tset_png_import import median_cut_palette, rgba_tuples
 
-    if not levels or not 16 <= maximum <= 256:
-        raise ValidationError("Digit quality needs a palette budget of 16 to 256 colours.")
+    if not levels or not (8 if preserve_transparent_rgb else 16) <= maximum <= 256:
+        raise ValidationError("Digit quality needs 16 to 256 colours, or 8 to 12 for cleaned two-tone art.")
     colors = [rgba_tuples(level.rgba) for level in levels]
     hist: Counter = Counter()
     for level, pixels in zip(levels, colors):
@@ -131,12 +131,22 @@ def quantize_digit_levels(levels: list[Any], maximum: int = 256):
                 anchors.append(color)
                 if len(anchors) == 8:
                     break
+    if preserve_transparent_rgb and len(anchors) > maximum - 7:
+        anchors = sorted(anchors, key=lambda c: (-opaque[c], c))[:max(2, maximum - 7)]
     palette = list(anchors)
     if any(c[3] == 0 for c in hist):
-        palette.append((0, 0, 0, 0))
+        if preserve_transparent_rgb:
+            transparent = sorted((c for c in hist if c[3] == 0), key=lambda c: (-hist[c], c))
+            palette.append(transparent[0])
+            other = next((c for c in transparent if max(abs(c[k]-transparent[0][k]) for k in range(3)) >= 24), None)
+            if other is not None:
+                palette.append(other)
+        else:
+            palette.append((0, 0, 0, 0))
     # Reserve one real partial colour per occupied coverage band. These also
     # guarantee an eligible mapping when median-cut rounds an endpoint.
-    for low, high in ((1, 63), (64, 127), (128, 191), (192, 254)):
+    bands = ((1, 127), (128, 254)) if maximum < 16 else ((1, 63), (64, 127), (128, 191), (192, 254))
+    for low, high in bands:
         partial = [c for c in hist if low <= c[3] <= high]
         if partial:
             palette.append(max(partial, key=lambda c: (hist[c], c)))
