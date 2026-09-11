@@ -1,5 +1,12 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.87 — beta 66.1
+
+- Urianus: “prevents me from swapping all formations of a specific personnel type, like all Queens.” Fine-tune now carries safe personnel retirements with swaps and removals. The O-ManBlock bulk Queens swap succeeds and reports “Queens retired from this book's ladder”. Unsafe holes, restored hidden categories and exhausted fallback ladders still explain why they are refused. Bounded BASE native lookup passes; gameplay is UNWITNESSED.
+- Urianus: “The 4 scheme presets (what are those supposed to be?) grey out all other options.” Book Identity explains the team, unused label, starting book and three content recipes. Recipes fill the donor and copy's plays/audibles while leaving team, label and donor editable. Choosing another donor clears the recipe. The redundant all-three choice is removed from the single-team form.
+- Independent offensive copies now open directly in Fine-tune. Change clone formations, plays and same-formation audible slots, save a named book-edit recipe, and build a verified new game folder. The shared donor stays unchanged. The page explains why the original Studio project must be built before cloning and how to continue editing afterward.
+- Urianus: “I wouldn't mess with the general playcalling logic at all until we figure out how to take full control of CPU PBs.” This update changes book content and assignments without changing play-calling logic. The content-control plan and exact witness steps are in `apf_b661_cpu_book_control.md`. Expanded-book gameplay and TU compatibility remain UNWITNESSED.
+
 ## 0.1.0-alpha.86 — beta 66: the UI overhaul, the Team Art browser, Discord fixes — 2026-09-11
 
 Beta 66 answers every APF report in Discord since beta 64 (Aszemple, Ulf the White, davidhbui, Urianus Magnus
