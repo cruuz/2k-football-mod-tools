@@ -389,7 +389,7 @@
       }
     },
     "simwin66": {
-      "xbe_sha256": "29694dd0c7ea9a5bc08a675738870d87d94afacd56f0285d744a94c16e752f21",
+      "xbe_sha256": "769048c61d4f81a61a69909d74874cd4deca3e43f03ac0522e3cfcb02e5ade61",
       "build": {
         "plan": {
           "throw": true,
@@ -508,8 +508,8 @@
           "espn25_plan": "",
           "espn25_rosters": false,
           "playbook_packs": [
-            "/home/noah/2k-worktrees/astra-b66-2k5-game/data/playbooks/softdrink_option.2k5book",
-            "/home/noah/2k-worktrees/astra-b66-2k5-game/data/playbooks/softdrink_modern_defense.2k5book"
+            "/home/noah/2k-worktrees/astra-b661-mycareer/data/playbooks/softdrink_option.2k5book",
+            "/home/noah/2k-worktrees/astra-b661-mycareer/data/playbooks/softdrink_modern_defense.2k5book"
           ],
           "screen_timing": "D",
           "depth_roles": true,
@@ -921,6 +921,60 @@
         ],
         "approach": 14
       },
+      "career_creation": {
+        "outcome": "fresh CAP -> sign -> Apartment -> Team Select",
+        "signing": {
+          "club": 2,
+          "career_state": 3,
+          "team_count": 53,
+          "limit": 53,
+          "fixture": 1
+        },
+        "trace": [
+          {
+            "call": "0x14e297e",
+            "count": 53,
+            "stage": 5,
+            "argument": 0
+          },
+          {
+            "call": "0x14e297e",
+            "count": 53,
+            "stage": 8,
+            "argument": 1
+          },
+          {
+            "call": "0x2bf9a0",
+            "count": 53,
+            "stage": 8,
+            "argument": 52
+          },
+          {
+            "call": "0x14e297e",
+            "count": 52,
+            "stage": 8,
+            "argument": 116
+          },
+          {
+            "call": "0xc3ee0",
+            "count": 52,
+            "stage": 8,
+            "argument": 37988856
+          }
+        ],
+        "team_metadata_version": 0,
+        "mode_create": "0x14e378a",
+        "mode_sign": "0x14e3d7b",
+        "fixture_row": "000206090d1a0100",
+        "resource_passes": [
+          "position pools ROST / PLAY",
+          "kickoff alignment",
+          "kickoff return assignments",
+          "depth roles",
+          "screen timing D",
+          "2026 regular and preseason templates"
+        ]
+      },
       "selected_play": {
         "missing_pc": "0x894b0",
         "present_state": 8,
@@ -994,11 +1048,44 @@
           "2026 regular and preseason templates"
         ],
         "fresh_sign": {
-          "club": 4294967295,
-          "career_state": 4,
+          "club": 2,
+          "career_state": 3,
           "team_count": 53,
-          "limit": 53
+          "limit": 53,
+          "fixture": 1
         },
+        "signing_trace": [
+          {
+            "call": "0x14e297e",
+            "count": 53,
+            "stage": 5,
+            "argument": 0
+          },
+          {
+            "call": "0x14e297e",
+            "count": 53,
+            "stage": 8,
+            "argument": 1
+          },
+          {
+            "call": "0x2bf9a0",
+            "count": 53,
+            "stage": 8,
+            "argument": 52
+          },
+          {
+            "call": "0x14e297e",
+            "count": 52,
+            "stage": 8,
+            "argument": 116
+          },
+          {
+            "call": "0xc3ee0",
+            "count": 52,
+            "stage": 8,
+            "argument": 37988856
+          }
+        ],
         "updates": {
           "match_rng_draws": 12,
           "polls": 1,
@@ -1008,7 +1095,7 @@
         },
         "ready_state": 13,
         "approach_state": 14,
-        "boundary": "existing-career membership from native cut/append; approach command input; inherited device/scene services"
+        "boundary": "fresh career; approach command input; inherited device/scene services"
       },
       "touchback": {
         "frames": 62,
@@ -1022,7 +1109,7 @@
       }
     },
     "everything": {
-      "xbe_sha256": "bf01e176a85338513a1c8b4c029de05701b4a409a8a2fe5e4c208b717d2a241b",
+      "xbe_sha256": "8a7af250765d483b7f386e248e42ba5c30974722309ecd935b29b794575767a7",
       "build": {
         "plan": {
           "throw": true,
@@ -1141,8 +1228,8 @@
           "espn25_plan": "",
           "espn25_rosters": false,
           "playbook_packs": [
-            "/home/noah/2k-worktrees/astra-b66-2k5-game/data/playbooks/softdrink_option.2k5book",
-            "/home/noah/2k-worktrees/astra-b66-2k5-game/data/playbooks/softdrink_modern_defense.2k5book"
+            "/home/noah/2k-worktrees/astra-b661-mycareer/data/playbooks/softdrink_option.2k5book",
+            "/home/noah/2k-worktrees/astra-b661-mycareer/data/playbooks/softdrink_modern_defense.2k5book"
           ],
           "screen_timing": "D",
           "depth_roles": true,
@@ -1727,10 +1814,50 @@
         "approach": 14
       },
       "career_creation": {
-        "outcome": "returned to entry menu; no game loaded",
-        "notice": "Roster is full.",
+        "outcome": "fresh CAP -> sign -> Apartment -> Team Select",
+        "signing": {
+          "club": 2,
+          "career_state": 3,
+          "team_count": 53,
+          "limit": 53,
+          "fixture": 1
+        },
+        "trace": [
+          {
+            "call": "0x14e6efe",
+            "count": 53,
+            "stage": 5,
+            "argument": 0
+          },
+          {
+            "call": "0x14e6efe",
+            "count": 53,
+            "stage": 8,
+            "argument": 1
+          },
+          {
+            "call": "0x2bf9a0",
+            "count": 53,
+            "stage": 8,
+            "argument": 52
+          },
+          {
+            "call": "0x14e6efe",
+            "count": 52,
+            "stage": 8,
+            "argument": 116
+          },
+          {
+            "call": "0xc3ee0",
+            "count": 52,
+            "stage": 8,
+            "argument": 37989872
+          }
+        ],
         "team_metadata_version": 2,
-        "mode_create": "0x14e7b80",
+        "mode_create": "0x14e7d0a",
+        "mode_sign": "0x14e82fb",
+        "fixture_row": "000206090d1a0100",
         "resource_passes": [
           "position pools ROST / PLAY",
           "kickoff alignment",
@@ -1803,6 +1930,66 @@
             ]
           ]
         }
+      },
+      "series": {
+        "resource_passes": [
+          "position pools ROST / PLAY",
+          "kickoff alignment",
+          "kickoff return assignments",
+          "depth roles",
+          "screen timing D",
+          "2026 regular and preseason templates",
+          "roster arena migration"
+        ],
+        "fresh_sign": {
+          "club": 2,
+          "career_state": 3,
+          "team_count": 53,
+          "limit": 53,
+          "fixture": 1
+        },
+        "signing_trace": [
+          {
+            "call": "0x14e6efe",
+            "count": 53,
+            "stage": 5,
+            "argument": 0
+          },
+          {
+            "call": "0x14e6efe",
+            "count": 53,
+            "stage": 8,
+            "argument": 1
+          },
+          {
+            "call": "0x2bf9a0",
+            "count": 53,
+            "stage": 8,
+            "argument": 52
+          },
+          {
+            "call": "0x14e6efe",
+            "count": 52,
+            "stage": 8,
+            "argument": 116
+          },
+          {
+            "call": "0xc3ee0",
+            "count": 52,
+            "stage": 8,
+            "argument": 37989872
+          }
+        ],
+        "updates": {
+          "match_rng_draws": 12,
+          "polls": 1,
+          "updates": 8,
+          "complete_updates": 8,
+          "presents": 1
+        },
+        "ready_state": 13,
+        "approach_state": 14,
+        "boundary": "fresh career; approach command input; inherited device/scene services"
       },
       "title_start": [
         {
@@ -1947,8 +2134,8 @@
           "espn25_plan": "",
           "espn25_rosters": false,
           "playbook_packs": [
-            "/home/noah/2k-worktrees/astra-b66-2k5-game/data/playbooks/softdrink_option.2k5book",
-            "/home/noah/2k-worktrees/astra-b66-2k5-game/data/playbooks/softdrink_modern_defense.2k5book"
+            "/home/noah/2k-worktrees/astra-b661-mycareer/data/playbooks/softdrink_option.2k5book",
+            "/home/noah/2k-worktrees/astra-b661-mycareer/data/playbooks/softdrink_modern_defense.2k5book"
           ],
           "screen_timing": "D",
           "depth_roles": true,

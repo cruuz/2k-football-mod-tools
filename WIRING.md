@@ -17900,3 +17900,31 @@ Verify selected-book pre-existing changes disable balancing, other-book
 changes survive, and source/project changes invalidate previews. These
 main-window/packaged checks require the protected wiring and were not claimed
 as passing in Astra's standalone-panel evidence.
+
+---
+
+# Beta 66.1 H6: regenerate the cave reservation manifest
+
+Protected file: `data/nfl2k5_cave_reservations.json`. Regenerate the entire
+manifest after integrating H6. The fingerprinted writer
+`mod_editor/core/nfl2k5_my_career_mode.py` and generated
+`mod_editor/core/nfl2k5_my_career_mode_code.py` changed, including a new guarded
+call hook at `0x617F3` after match staging. The MyCareer allocation
+is unchanged: 20,480 bytes RX and two 4,096-byte RW allocations. Other owners'
+allocation addresses, section geometry and file size are unchanged.
+
+Use the normal release manifest builder after checking the free-space floor:
+
+```sh
+mkdir -p '/media/noah/Storage/.b66-h6-manifest'
+python3 tools/nfl2k5_cave_oracle.py manifest \
+  '/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe' \
+  --xiso '/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso' \
+  --work-dir '/media/noah/Storage/.b66-h6-manifest' \
+  --json data/nfl2k5_cave_reservations.json
+```
+
+H6 uses `tools/mycareer_mode/refresh_gate_manifest.py` with base `9e4bc5d4`
+for scratch XBE gate reservations. That projection observes the changed
+writer and retains parent reservations; it is not a release disc manifest.
+No GUI, capability registry or build-dispatcher change is needed.

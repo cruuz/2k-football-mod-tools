@@ -79,36 +79,34 @@ def resources(plan):
 
 
 class Machine(SeriesMachine):
-    def __init__(self, payload, plan, *, existing_career=False):
+    def __init__(self, payload, plan):
         super().__init__(payload)
         self.roster_input, self.play_input, self.resource_passes = resources(plan)
-        self.existing_career = existing_career
         self.signing_input = None
+        self.signing_trace = []
 
     def create(self, roster, **kwargs):
+        def observe(va):
+            # Observe direct calls from mode_sign, excluding league-wide
+            # initialization. No instruction or return value is replaced.
+            if not self.labels['mode_sign'] <= self.get(self.reg('ESP')) < self.labels['mode_next_fixture']:
+                return
+            team = self.reg('EAX' if va == self.labels['m3_sign_limit'] else 'ECX')
+            self.signing_trace.append(dict(call=hex(va),
+                count=self.uc.mem_read(team + 0x11C, 1)[0],
+                stage=self.get(0xE576A4), argument=self.reg('EDX')))
+        for va in (self.labels['m3_sign_limit'], 0x2BF9A0, 0xC3EE0):
+            self.stub(va, lambda va=va: observe(va))
         player = super().create(roster, **kwargs)
         team = self.get(self.root + 0x1C) + 500 * kwargs.get('club', 2)
         limit = self.call(0x3EE10C, ecx=team)
         self.signing_input = dict(club=self.get(self.state + 56),
             career_state=self.get(self.state + 24),
-            team_count=self.uc.mem_read(team + 0x11C, 1)[0], limit=limit)
-        if self.existing_career:
-            # Explicit scenario input: a signed player already belongs to
-            # the club. First retain the fresh-sign result as separate
-            # evidence, then construct membership with native cut/append.
-            # This does not repair the product's creation route or supply
-            # any lineup, animation, camera, readiness or snap flags.
-            if self.signing_input != dict(club=0xFFFFFFFF, career_state=4,
-                                          team_count=53, limit=53):
-                raise AssertionError('fresh-sign boundary changed; review the existing-career input')
-            if self.call(0xC3EE0, ecx=team, edx=player) != 0:
-                raise AssertionError('full-team append unexpectedly succeeded')
-            self.call(0x2BF9A0, ecx=team, edx=limit - 1, budget=10000000)
-            if self.call(0xC3EE0, ecx=team, edx=player) != 1:
-                raise AssertionError('native membership input failed')
-            self.call('resolve_team')
-            if self.get(self.state + 56) != kwargs.get('club', 2):
-                raise AssertionError('native membership did not resolve the career club')
+            team_count=self.uc.mem_read(team + 0x11C, 1)[0], limit=limit,
+            fixture=self.call('mode_next_fixture'))
+        if (self.signing_input['club'] != kwargs.get('club', 2) or
+                self.signing_input['career_state'] != 3 or self.signing_input['fixture'] >= 374):
+            raise AssertionError('fresh career lacks active membership or a playable fixture')
         return player
 
     def frontend(self, roster):

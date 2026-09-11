@@ -156,7 +156,7 @@ class FrontendTests(unittest.TestCase):
             self.assertEqual(m.get(mode.EXTRA_VA), 0)
             self.assertEqual(m.top(), m.labels["entry_menu"])
 
-    def test_team_limit_and_confirmation_cancel_leave_no_partial_franchise(self):
+    def test_invalid_team_count_and_confirmation_cancel_leave_no_partial_franchise(self):
         with Machine(self.payload) as m:
             self.enter(m)
             m.select(1)
@@ -168,7 +168,7 @@ class FrontendTests(unittest.TestCase):
             self.assertEqual(m.get(m.state + 2684), 0)
             t = m.get(m.root + 0x1C)
             count = bytes(m.uc.mem_read(t + 0x11C, 1))
-            m.uc.mem_write(t + 0x11C, b"6")
+            m.uc.mem_write(t + 0x11C, b"B")  # 66 exceeds the native 65 slots
             before = bytes(m.uc.mem_read(m.root, len(self.roster) - 64))
             m.select(1)
             self.assertEqual(m.uc.mem_read(m.root, len(before)), before)

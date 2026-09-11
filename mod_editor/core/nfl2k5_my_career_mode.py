@@ -33,6 +33,7 @@ SAVE_HOOKS = (
     ("inline_load_end", 0x16E815, "e8661f1600", 0xE8),
 )
 MODE_HOOKS = (
+    ("mode_stage", 0x617F3, "e838ffffff", 0xE8),
     ("mode_hud_frame", 0x74879, "e8d2560100", 0xE8),
     ("mode_ff_frame", 0x747CC, "e8cf9effff", 0xE8),
     ("mode_ff_audio", 0x3E94D, "e86ef2ffff", 0xE8),

@@ -241,42 +241,60 @@ class TransitionTests(unittest.TestCase):
                     rows.append(dict(missing_banks=missing, queued=len(vm.queued), pc='0xf5b81'))
             RESULTS[name]['title_start'] = rows
 
-    def test_larger_roster_career_creation_refuses_before_game_loading(self):
+    def test_fresh_careers_sign_and_find_a_fixture_in_both_roster_arenas(self):
         from tests.nfl2k5_b661_series import Machine as SeriesMachine
         from tests.mod_editor.test_nfl2k5_my_career_frontend import retail_roster
-        with SeriesMachine(self.payloads['everything'], plan_for('everything')) as m:
-            m.frontend(retail_roster())
-            m.call(0x6E390, ecx=m.manager, edx=0x5015CC)
-            m.select(1)
-            m.select(1)
-            self.assertEqual(m.top(), m.labels['entry_menu'])
-            self.assertEqual(m.get(0xCB8B14), 0)
-            self.assertEqual(m.events, [('notice', 'Roster is full.')])
-            teams = m.get(m.root + 0x1C)
-            self.assertEqual(m.uc.mem_read(teams + 0x19B, 1), b'\x02')
-            RESULTS['everything']['career_creation'] = dict(
-                outcome='returned to entry menu; no game loaded',
-                notice='Roster is full.', team_metadata_version=2,
-                mode_create=hex(m.labels['mode_create']), resource_passes=m.resource_passes)
+        for name, version in (('simwin66', 0), ('everything', 2)):
+            with self.subTest(name=name), SeriesMachine(self.payloads[name], plan_for(name)) as m:
+                player = m.create(retail_roster(), preseason=False)
+                team = m.get(m.root + 0x1C) + 2 * 500
+                self.assertEqual(m.top(), m.labels['apartment'])
+                self.assertEqual(m.get(m.state + 24), 3)  # signed, active; 5 is reserve
+                self.assertEqual(m.get(m.state + 56), 2)
+                self.assertEqual(m.get(m.state + 2588), team)
+                self.assertEqual(m.signing_input['team_count'], 53)
+                self.assertEqual(m.signing_input['limit'], 53)
+                cut = [r for r in m.signing_trace if r['call'] == '0x2bf9a0']
+                append = [r for r in m.signing_trace if r['call'] == '0xc3ee0']
+                self.assertEqual([(r['count'], r['argument']) for r in cut], [(53, 52)])
+                self.assertEqual([r['count'] for r in append], [52])
+                self.assertEqual(m.uc.mem_read(team + 0x19B, 1)[0], version)
+                slots = [m.get(team + 4*i) for i in range(53)]
+                self.assertEqual(slots.count(player), 1)
+                fa = m.get(m.root + 0x3C)
+                self.assertNotIn(player, [m.get(fa + 4*i) for i in range(m.get(m.root + 0x38))])
+                fixture = m.call('mode_next_fixture')
+                self.assertLess(fixture, 374)
+                row = bytes(m.uc.mem_read(0xE57C40 + fixture * 8, 8))
+                self.assertLess(row[0], 2)
+                self.assertIn(2, row[1:3])
+                m.child_services()  # existing scene/device and UI allocation boundary
+                m.select(0, budget=10000000)
+                self.assertEqual(m.top(), 0x51B908)  # native Team Select
+                RESULTS[name]['career_creation'] = dict(
+                    outcome='fresh CAP -> sign -> Apartment -> Team Select',
+                    signing=m.signing_input, trace=m.signing_trace, team_metadata_version=version,
+                    mode_create=hex(m.labels['mode_create']),
+                    mode_sign=hex(m.labels['mode_sign']), fixture_row=row.hex(),
+                    resource_passes=m.resource_passes)
 
-    def test_series_paired_inputs_and_existing_career_kickoff_command(self):
+    def test_series_paired_inputs_and_fresh_career_kickoff_command(self):
         from tests.nfl2k5_b661_series import Machine as SeriesMachine
-        with SeriesMachine(self.payloads['simwin66'], plan_for('simwin66'),
-                           existing_career=True) as m:
-            m.series_scene(kickoff=True)
-            m.presentation_services()
-            m.presented_frame()
-            self.assertEqual(m.counts['updates'], 8)
-            self.assertEqual(m.counts['complete_updates'], 8)
-            self.assertEqual(m.get(0xE602B8), 13)
-            # Kick/approach button command at its native ABI. Readiness and
-            # the game-state write remain native, as in PreKickMachine.
-            m.call(0xB6F30, budget=3000000)
-            self.assertEqual(m.get(0xE602B8), 14)
-            RESULTS['simwin66']['series'] = dict(resource_passes=m.resource_passes,
-                fresh_sign=m.signing_input, updates=dict(m.counts),
-                ready_state=13, approach_state=14,
-                boundary='existing-career membership from native cut/append; approach command input; inherited device/scene services')
+        for name in ('simwin66', 'everything'):
+            with self.subTest(name=name), SeriesMachine(self.payloads[name], plan_for(name)) as m:
+                m.series_scene(kickoff=True)
+                m.presentation_services()
+                m.presented_frame()
+                self.assertEqual(m.counts['updates'], 8)
+                self.assertEqual(m.counts['complete_updates'], 8)
+                self.assertEqual(m.get(0xE602B8), 13)
+                # Kick/approach command input, with native readiness and state writes.
+                m.call(0xB6F30, budget=3000000)
+                self.assertEqual(m.get(0xE602B8), 14)
+                RESULTS[name]['series'] = dict(resource_passes=m.resource_passes,
+                    fresh_sign=m.signing_input, signing_trace=m.signing_trace, updates=dict(m.counts),
+                    ready_state=13, approach_state=14,
+                    boundary='fresh career; approach command input; inherited device/scene services')
 
     def test_v6_catch_kneel_and_next_play_with_optional_owners(self):
         from tests.mod_editor.test_nfl2k5_kickoff_v6 import replay
