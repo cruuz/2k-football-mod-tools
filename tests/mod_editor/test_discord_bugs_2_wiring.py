@@ -179,14 +179,16 @@ class GuiWiringTests(unittest.TestCase):
         ns=functions_from(path,{'_choose_digit_sheet_import'},owner.name)
         split=Mock(side_effect=RuntimeError('split sentinel'))
         ns['split_digit_sheet']=split
-        ns['QInputDialog']=SimpleNamespace(getItem=Mock(side_effect=[('Jersey numbers',True),(SHEET_LAYOUTS[2][0],True)]))
+        from mod_editor.core.nfl2k5_digit_art import REGISTRATION_CHOICES
+        # Beta 66 (Coach Edwards): a third chooser picks the registration (retail box / as authored).
+        ns['QInputDialog']=SimpleNamespace(getItem=Mock(side_effect=[('Jersey numbers',True),(SHEET_LAYOUTS[2][0],True),(REGISTRATION_CHOICES[0][0],True)]))
         ns['QFileDialog']=SimpleNamespace(getOpenFileName=lambda *args:('grid.png',''))
         host=SimpleNamespace(_selected_set=SimpleNamespace(selector='28H0'),_selected_asset=None,
             facade=SimpleNamespace(source_ready=True),uniform_catalog=SimpleNamespace(assets_for_set=lambda _:()),
             _start_task=lambda operation, success, **kw:operation(lambda *_:None))
         with self.assertRaisesRegex(RuntimeError,'split sentinel'):
             ns['_choose_digit_sheet_import'](host)
-        self.assertEqual(split.call_args.kwargs,{'orientation':'grid_5x2'})
+        self.assertEqual(split.call_args.kwargs,{'orientation':'grid_5x2','registration':REGISTRATION_CHOICES[0][1]})
 
 
 if __name__=='__main__': unittest.main()
