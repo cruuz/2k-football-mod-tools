@@ -182,6 +182,47 @@ class SigningTests(unittest.TestCase):
             self.assertEqual((m.get(m.state + 24), m.get(m.state + 56), m.get(m.state + 80)), (3, 2, 0))
             self.assertEqual(bytes(m.uc.mem_read(m.state + 40, 16)), token)
             self.assertLess(m.call('mode_next_fixture'), 374)
+            m.child_services()
+            bound = m.launch()
+            self.assertNotEqual(bound, 0)
+            self.assertEqual(m.get(bound + 16), m.get(player + 16))
+            self.assertEqual(m.get(bound + 20), m.get(player + 20))
+
+    def test_staged_match_identity_rejects_aliases_and_malformed_arrays(self):
+        with Machine(self.extended, self.grown) as m:
+            player = m.create(self.roster, preseason=False)
+            m.child_services()
+            copies, before_binding = [], []
+            m.stub(0xC3C60, lambda: copies.append(m.reg('ECX')))
+            m.stub('mode_match_copy', lambda: before_binding.append(m.get(m.state + 2564)))
+            bound = m.launch()
+            self.assertEqual(copies, [])  # grown staging bypasses the old copy hook
+            self.assertEqual(before_binding, [0])
+            self.assertNotEqual(bound, 0)
+            team = 0xB30864 if bound < 0xB321A0 else 0xB30A58
+            other = m.get(team)
+            if other == bound:
+                other = m.get(team + 4)
+            original = bytes(m.uc.mem_read(other, 84))
+            # Two copied creation identities must detach, even on one side.
+            m.uc.mem_write(other, bytes(m.uc.mem_read(bound, 84)))
+            m.call('mode_match_copy')
+            self.assertEqual(m.get(m.state + 2564), 0)
+            m.uc.mem_write(other, original)
+            m.call('mode_match_copy')
+            self.assertEqual(m.get(m.state + 2564), bound)
+            first = m.get(team)
+            m.put(team, player)  # source pointer is not a staged match slot
+            m.call('mode_match_copy')
+            self.assertEqual(m.get(m.state + 2564), 0)
+            m.put(team, first)
+            m.call('mode_match_copy')
+            self.assertEqual(m.get(m.state + 2564), bound)
+            count = bytes(m.uc.mem_read(team + 0x11C, 1))
+            m.uc.mem_write(team + 0x11C, b'\x42')
+            m.call('mode_match_copy')
+            self.assertEqual(m.get(m.state + 2564), 0)
+            m.uc.mem_write(team + 0x11C, count)
 
 
 if __name__ == '__main__':

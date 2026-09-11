@@ -344,6 +344,28 @@ u32 FC mode_grown_member(u8 *t,u32 player) {
     }
     return found;
 }
+/* The arena owner stages player copies without calling C3C60. Bind after
+ * the shared staging call, using the copied creation identity and bounded
+ * native arrays, never a name/position guess or a source slot ordinal. */
+void mode_match_copy(void) {
+    u8 *p=(u8 *)primary(),*t,*q; u32 side,i,found=0;
+    S(2564)=S(2568)=0;
+    if(!p) return;
+    for(side=0;side<2;side++) {
+        t=(u8 *)(0xb30864+500*side); q=(u8 *)(0xb30c4c+5460*side);
+        if(t[0x11c]>65) return;
+        for(i=0;i<t[0x11c];i++,q+=84) {
+            if(W(t,4*i)!=(u32)q) return;
+            if(W(q,0)==W(p,0) && W(q,4)==W(p,4) &&
+               W(q,16)==W(p,16) && W(q,20)==W(p,20) &&
+               !((W(q,24)^W(p,24))&0x0ffff000) && q[0x35]==p[0x35]) {
+                if(found) return;
+                found=(u32)q;
+            }
+        }
+    }
+    S(2564)=found;
+}
 static NI void rollback(void) {
     u8 *p=(u8 *)S(2676);
     if(p && ROOT && player_bounds(p)) {
