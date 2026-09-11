@@ -1,5 +1,9 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.87 — beta 66.1: fixes for the reports after beta 66 — 2026-09-11
+
+Beta 66.1 is the hotfix for what came in after beta 66; bullets are added as each change lands.
+
 ## 0.1.0-alpha.86 — beta 66: the UI overhaul, the Team Art browser, Discord fixes — 2026-09-11
 
 Beta 66 answers every APF report in Discord since beta 64 (Aszemple, Ulf the White, davidhbui, Urianus Magnus

@@ -1,4 +1,4 @@
-# 2K5 Mod Studio v1.0 RC90 — Getting Started
+# 2K5 Mod Studio v1.0 RC91 — Getting Started
 
 2K5 Mod Studio lets you modify your own legally dumped USA Xbox copy of
 **ESPN NFL 2K5** without using a hex editor. Think of the source XISO as the
@@ -1545,7 +1545,7 @@ changes. Big projects save fast again: a 351-edit save takes a tenth of a second
 On an older build, export a fresh bundle from the main project, copy your edited PNGs over it and import
 that.
 
-## Number sheets and encoded preview (RC90, beta 66)
+## Number sheets and encoded preview (RC91, beta 66)
 
 Use a 640x64 transparent PNG with ten 64x64 cells in digit order. A 64x640
 column, 320x128 grid or 128x320 grid also works. Use one flat fill and one

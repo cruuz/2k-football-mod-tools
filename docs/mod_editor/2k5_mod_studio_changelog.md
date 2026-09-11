@@ -1,5 +1,11 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC91, beta 66.1: fixes for the reports after beta 66 (2026-09-11)
+
+Beta 66.1 is the hotfix for what came in after beta 66 (Coach Edwards, maumau78, TheWildJeffrey, Ju3tin, GoldenTiger, Urianus); bullets are added as each change lands.
+
+- **Builds with a shoe or other equipment texture no longer fail (Coach Edwards, maumau78).** "The modded XISO could not be built. ImportError: attempted relative import with no known parent package" came from the beta-66 palette projection inside the equipment writer, which the build tool loads by file path; the writer now falls back to the absolute import and a test scans every writer the tool loads that way.
+
 ## v1.0 RC90, beta 66: full Supersim, a faster studio, the Discord fixes (2026-09-11)
 
 Beta 66 answers every ESPN NFL 2K5 report in Discord since beta 63.1 (Smuzz, Mud, maumau78, Coach Edwards, iwb3,
