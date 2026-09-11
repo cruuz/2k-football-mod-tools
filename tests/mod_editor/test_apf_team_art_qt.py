@@ -13,7 +13,7 @@ from unittest.mock import patch
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 from PIL import Image
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QCoreApplication, QEvent, Qt
 from PyQt5.QtTest import QTest
 from PyQt5.QtWidgets import QApplication, QDialogButtonBox
 from mod_editor.apf_studio.apf_theme import install_theme
@@ -43,7 +43,14 @@ class BrowserTests(unittest.TestCase):
         self.browser.resize(1000, 570)
         self.browser.show()
         self.app.processEvents()
-        self.addCleanup(self.browser.close)
+        self.addCleanup(self._destroy, self.browser)
+
+    def _destroy(self, widget):
+        # Delete Qt objects before interpreter exit; a widget outliving the QApplication segfaults at shutdown.
+        widget.close()
+        widget.deleteLater()
+        QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
+        self.app.processEvents()
 
     def run_one(self):
         label, operation, done = self.tasks.pop(0)
@@ -123,7 +130,7 @@ class BrowserTests(unittest.TestCase):
 
     def test_pair_dialog_requires_each_png_and_digits_allow_subset(self):
         dialog = TeamArtReplaceDialog(self.first)
-        self.addCleanup(dialog.close)
+        self.addCleanup(self._destroy, dialog)
         stage = dialog.buttons.button(QDialogButtonBox.Ok)
         self.assertFalse(stage.isEnabled())
         dialog.inputs["logo_l0"].set_path(self.png)
@@ -131,7 +138,7 @@ class BrowserTests(unittest.TestCase):
         dialog.inputs["logo_l1"].set_path(self.png)
         self.assertTrue(stage.isEnabled())
         digits = TeamArtReplaceDialog(package("number"))
-        self.addCleanup(digits.close)
+        self.addCleanup(self._destroy, digits)
         digits.inputs["number_0_color"].set_path(self.png)
         self.assertTrue(digits.buttons.button(QDialogButtonBox.Ok).isEnabled())
 
