@@ -1,5 +1,9 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC91, beta 66.1
+
+- **Game hang checks (TheWildJeffrey: "freezing right after Berman and repeating audio"; jrolling2003: "stuck on the sega screen").** Added bounded native checks for the ADVANCED preset and the beta-66 optional patch combinations, including kickoff readiness, camera selection, missing play/music records and the SEGA resource wait. Corrected a harness that omitted owned code in the XBE header. The reported hangs remain unproved offline; no speculative game-code fix is included. The report gives the exact addresses, MyCareer creation limits, and the first option to switch off for each witness test. In-game behavior remains UNWITNESSED.
+
 ## v1.0 RC90, beta 66: full Supersim, a faster studio, the Discord fixes (2026-09-11)
 
 Beta 66 answers every ESPN NFL 2K5 report in Discord since beta 63.1 (Smuzz, Mud, maumau78, Coach Edwards, iwb3,
