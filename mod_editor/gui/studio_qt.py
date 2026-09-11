@@ -2084,6 +2084,7 @@ class StudioMainWindow(QMainWindow):
                         {key: state[key] for key in saved.MUSIC_KEYS if key in state})
                 else:
                     self._build_panel.restore_project_build_settings(state)
+                    self._sync_uniform_helmet_finish()
                 link = getattr(self, "_gameplay_build_link", None)
                 if link is not None:
                     link.refresh_from_build()
@@ -2890,6 +2891,7 @@ class StudioMainWindow(QMainWindow):
             )
             self._bump_panel = BumpPanel(self.facade)
             uniform_tabs.addTab(self._bump_panel, "Bump Maps (advanced)")
+            uniform_tabs.addTab(self._build_helmet_finish_page(), "Helmet finish")  # beta 66
             # The uniform browser is why people open this page; never let a
             # newly added tab take the landing position away from it.
             uniform_tabs.setCurrentIndex(0)
@@ -3110,6 +3112,7 @@ class StudioMainWindow(QMainWindow):
         finally:
             self._restoring_music_playlist = previous
         self._restore_music_build_settings(keep_current_when_empty=True)
+        self._sync_uniform_helmet_finish()
 
     def _build_header(self) -> QWidget:
         header = QFrame()
@@ -8181,6 +8184,7 @@ class StudioMainWindow(QMainWindow):
                         panel.apply_state(state)
             finally:
                 self._restoring_music_playlist = False
+            self._sync_uniform_helmet_finish()
             self._music_playlist_catalog = state.get("music_playlist_catalog")
             self._restore_music_build_settings(keep_current_when_empty=True)
             if state.get("music_playlist_catalog_error"):
@@ -8930,6 +8934,7 @@ class StudioMainWindow(QMainWindow):
         from .gameplay_project_ui import observe_build_choices
         observe_build_choices(self._build_panel, self._gameplay_build_changed)
         self._connect_gameplay_build()
+        self._connect_helmet_finish()
         self._build_panel.team_names_2026_check.toggled.connect(self._refresh_team_names_preview)
         self._build_panel.modern_naming_check.toggled.connect(self._refresh_team_names_preview)
         self._build_panel.source_field.textChanged.connect(self._refresh_team_names_preview)
@@ -8974,6 +8979,51 @@ class StudioMainWindow(QMainWindow):
         tabs.setCurrentIndex(0)
         self._sync_constructed_page()
         return tabs
+
+    def _build_helmet_finish_page(self) -> QWidget:
+        """Beta 66 (maumau78 / xevan): the Helmet finish choice on the Uniforms tab, one value with Gameplay and Build."""
+        page = QWidget()
+        layout = QVBoxLayout(page)
+        layout.addWidget(QLabel("Helmet finish applies to both teams and both helmet LODs."))
+        self._uniform_helmet_finish = QComboBox()
+        self._uniform_helmet_finish.setAccessibleName("Helmet finish")
+        self._uniform_helmet_finish.addItem("Glossy (retail)", "glossy")
+        self._uniform_helmet_finish.addItem("Matte", "matte")
+        layout.addWidget(self._uniform_helmet_finish)
+        note = QLabel("ADVANCED / UNWITNESSED. Matte zeroes the one reflection weight every helmet shell shares "
+                      "(xevan: all helmets use the same reflection texture); Glossy is retail. Build & Share writes "
+                      "the choice into a new copy; this is the same setting as the Gameplay and Build tabs.")
+        note.setWordWrap(True)
+        layout.addWidget(note)
+        layout.addStretch(1)
+        self._connect_helmet_finish()
+        return page
+
+    def _connect_helmet_finish(self):
+        """The Uniforms tab's Helmet finish combo and the Build tab's are one value; either panel may exist first."""
+        build = getattr(self, "_build_panel", None)
+        combo = getattr(self, "_uniform_helmet_finish", None)
+        if build is None or combo is None or getattr(self, "_helmet_finish_linked", False):
+            return
+        self._helmet_finish_linked = True
+        combo.currentIndexChanged.connect(build.helmet_finish_combo.setCurrentIndex)
+        build.helmet_finish_combo.currentIndexChanged.connect(combo.setCurrentIndex)
+        self._sync_uniform_helmet_finish()
+
+    def _sync_uniform_helmet_finish(self):
+        """Copy the Build tab's Helmet finish choice and availability onto the Uniforms tab (used after
+        signal-quiet restores and after the source is inspected)."""
+        build = getattr(self, "_build_panel", None)
+        combo = getattr(self, "_uniform_helmet_finish", None)
+        if build is None or combo is None:
+            return
+        combo.blockSignals(True)
+        try:
+            combo.setCurrentIndex(build.helmet_finish_combo.currentIndex())
+        finally:
+            combo.blockSignals(False)
+        combo.setEnabled(build.helmet_finish_combo.isEnabled())
+        combo.setToolTip("" if combo.isEnabled() else "Open a recognised game disc first; a disc changed by another tool cannot take this change.")
 
     def _connect_gameplay_build(self):
         build = getattr(self, "_build_panel", None)

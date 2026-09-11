@@ -141,5 +141,35 @@ class PanelTests(unittest.TestCase):
             self.assertFalse(build.helmet_finish_check.isChecked(), name)
 
 
+@unittest.skipUnless(QApplication is not None, "PyQt5 is absent")
+class StudioMirrorTests(unittest.TestCase):
+    """The Uniforms & Equipment tab's Helmet finish combo is the Build tab's choice (D2 wiring)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.app = QApplication.instance() or QApplication([])
+
+    def test_uniforms_and_build_combos_follow_each_other(self):
+        from mod_editor.gui.studio_qt import BrowseOnlyFacade, StudioMainWindow
+        window = StudioMainWindow(eager_pages=True, facade=BrowseOnlyFacade(), offer_recovery=False)
+        self.addCleanup(window.deleteLater)
+        self.app.processEvents()
+        uniforms, build = window._uniform_helmet_finish, window._build_panel.helmet_finish_combo
+        self.assertEqual((uniforms.currentData(), build.currentData()), ("glossy", "glossy"))
+        uniforms.setCurrentIndex(1)
+        self.assertEqual(build.currentData(), "matte")
+        self.assertTrue(window._build_panel.helmet_finish_check.isChecked())
+        build.setCurrentIndex(0)
+        self.assertEqual(uniforms.currentData(), "glossy")
+        self.assertFalse(window._build_panel.helmet_finish_check.isChecked())
+        # a signal-quiet restore is mirrored explicitly
+        build.blockSignals(True)
+        build.setCurrentIndex(1)
+        build.blockSignals(False)
+        window._sync_uniform_helmet_finish()
+        self.assertEqual(uniforms.currentData(), "matte")
+        self.assertEqual(uniforms.isEnabled(), build.isEnabled())
+
+
 if __name__ == "__main__":
     unittest.main()
