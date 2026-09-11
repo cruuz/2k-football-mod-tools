@@ -14,6 +14,7 @@ from PyQt5.QtWidgets import (QComboBox, QFileDialog, QHBoxLayout, QLabel,
 
 from mod_editor.core import apf2k8_audibles as audibles
 from mod_editor.core import apf2k8_playcall_patch as code_patch
+from mod_editor.core import apf2k8_xex as game_image
 from mod_editor.core import apf2k8_splb_writer as splb
 from mod_editor.core.apf2k8_playbook_route_writer import read_master_play_body
 from mod_editor.core.errors import ValidationError
@@ -55,6 +56,7 @@ class ApfPlaycallPanel(QWidget):
         self._preview = None
         self._generation = 0
         self._busy = False
+        self._title_update = None
         root = QVBoxLayout(self)
         intro = QLabel("Balance CPU audibles using plays already in each formation. "
                        "Records without both a run and a pass are listed below. "
@@ -84,14 +86,35 @@ class ApfPlaycallPanel(QWidget):
                                                         "Advertised before / after", "TE in stock MASTER"))
         self.personnel_table.setAccessibleName("Personnel availability before and after")
         root.addWidget(self.personnel_table)
+        patch_row = QHBoxLayout()
+        self.image_picker = QComboBox()
+        self.image_picker.addItem("Choose game folder", "folder")
+        self.image_picker.addItem("Choose flat image (expert)", "flat")
+        self.image_picker.setAccessibleName("Pass-fetch patch input")
+        self.update_button = QPushButton("Choose Title Update 1.1…")
+        self.update_button.clicked.connect(self.choose_title_update)
+        self.auto_update_button = QPushButton("Detect installed update")
+        self.auto_update_button.clicked.connect(self.reset_title_update)
+        self.image_picker.currentIndexChanged.connect(self._update_input_controls)
+        for widget in (self.image_picker, self.update_button, self.auto_update_button):
+            patch_row.addWidget(widget)
+        root.addLayout(patch_row)
+        self.update_notice = QLabel("Title Update: detect the studio's configured update or installed Xenia content.")
+        self.update_notice.setWordWrap(True)
+        root.addWidget(self.update_notice)
         self.patch_button = QPushButton("Export TE bias for pass fetches…")
         self.patch_button.clicked.connect(self.export_patch)
         root.addWidget(self.patch_button)
-        note = QLabel("Patch experiment: applies to pass fetches at every down, including user calls. "
-                      "The main CPU weighted picker uses another path. Choose a flat BASE or reconstructed "
-                      "TU 1.1 image; export a Xenia patch into a separate file. "
-                      "Personnel selection and Subs can still choose a lineup without a TE.")
-        note.setWordWrap(True); root.addWidget(note)
+        self.patch_note = QLabel(
+            "The studio reads your game's executable, checks it is the retail BASE or Title Update 1.1, "
+            "and writes a Xenia patch file next to your build. If your update is installed elsewhere, "
+            "choose its content file above. Your game files are only read. "
+            "Patch experiment: applies to pass fetches at every down, including user calls. "
+            "The main CPU weighted picker uses another path. Personnel selection and Subs can still "
+            "choose a lineup without a TE. In-game behavior is unwitnessed.")
+        self.patch_note.setWordWrap(True); root.addWidget(self.patch_note)
+        self.patch_notice = QLabel("Choose game folder to read and check your executable, then save a Xenia patch next to your build.")
+        self.patch_notice.setWordWrap(True); root.addWidget(self.patch_notice)
         self.set_context()
 
     def _source(self):
@@ -112,6 +135,25 @@ class ApfPlaycallPanel(QWidget):
         self.preview_button.setEnabled(not busy and bool(getattr(self.facade, "source_ready", False)))
         self.stage_button.setEnabled(not busy and bool(self._preview and self._preview["stageable"]))
         self.patch_button.setEnabled(not busy)
+        self.image_picker.setEnabled(not busy)
+        self._update_input_controls()
+
+    def _update_input_controls(self, *args):
+        enabled = not self._busy and self.image_picker.currentData() == "folder"
+        self.update_button.setEnabled(enabled)
+        self.auto_update_button.setEnabled(enabled)
+
+    def choose_title_update(self):
+        source, _ = QFileDialog.getOpenFileName(
+            self, "Choose installed Title Update 1.1 content", "",
+            "Title Update content (TU_* *.xexp);;All files (*)")
+        if source:
+            self._title_update = Path(source)
+            self.update_notice.setText(f"Title Update: {source}")
+
+    def reset_title_update(self):
+        self._title_update = None
+        self.update_notice.setText("Title Update: detect the studio's configured update or installed Xenia content.")
 
     @staticmethod
     def _fill(table, rows):
@@ -202,13 +244,63 @@ class ApfPlaycallPanel(QWidget):
                      if m.kind == "apf_scheme_presets"), None)
 
     def export_patch(self):
-        source, _ = QFileDialog.getOpenFileName(self, "Choose flat BASE or reconstructed TU 1.1 image", "", "Flat image (*.pe);;All files (*)")
+        folder_mode = self.image_picker.currentData() == "folder"
+        built = getattr(getattr(self.facade, "last_build", None), "output_game", None)
+        initial = built or getattr(getattr(self.facade, "source", None), "game_root", None)
+        if folder_mode:
+            source = QFileDialog.getExistingDirectory(self, "Choose game folder", str(initial or ""))
+        else:
+            source, _ = QFileDialog.getOpenFileName(
+                self, "Choose flat image (expert)", "", "Flat image (*.pe);;All files (*)")
         if not source:
             return
-        output, _ = QFileDialog.getSaveFileName(self, "Export TE bias for pass fetches", "54540807-pass-fetch-te.patch.toml", "Xenia patch (*.patch.toml)")
-        if not output:
-            return
-        def done(receipt):
-            self.notice.setText(f"Exported {receipt['image']} pass-fetch patch. Status: unwitnessed. "
-                                "Disable it by removing the exported patch or setting is_enabled = false.")
-        self.run_task("Export TE bias for pass fetches", lambda progress: code_patch.write_patch(Path(source), Path(output)), done, False)
+        settings = getattr(getattr(self.facade, "launcher", None), "settings", None)
+        update = (self._title_update or getattr(settings, "title_update_path", None)) if folder_mode else None
+        xenia = getattr(settings, "xenia_path", None)
+        self.set_busy(True)
+        self.patch_notice.setText("Reading your game's executable and checking retail BASE / Title Update 1.1. Game files are only read.")
+
+        def prepare(progress):
+            try:
+                roots = game_image.xenia_content_roots(xenia) if folder_mode and xenia else ()
+                image, receipt = game_image.derive_image(Path(source), title_update=update,
+                                                         content_roots=roots, progress=progress)
+                return code_patch.compile_patch(image), receipt, None
+            except (ValidationError, OSError) as exc:
+                return None, None, str(exc)
+
+        def prepared(result):
+            self.set_busy(False)
+            patch, receipt, error = result
+            if error:
+                self.patch_notice.setText(error)
+                return
+            name = "retail BASE" if patch.profile.name == "base" else "Title Update 1.1"
+            self.patch_notice.setText(f"Checked {name}. Choose where to write the Xenia patch file next to your build.")
+            parent = Path(built or source).parent
+            suggested = parent / f"54540807-{patch.profile.name}-pass-fetch-te.patch.toml"
+            output, _ = QFileDialog.getSaveFileName(
+                self, "Export TE bias for pass fetches", str(suggested), "Xenia patch (*.patch.toml)")
+            if not output:
+                self.patch_notice.setText(f"Checked {name}; export cancelled. No patch file written.")
+                return
+            self.set_busy(True)
+
+            def write(progress):
+                try:
+                    return code_patch.export_patch(patch, Path(output), receipt), None
+                except (ValidationError, OSError) as exc:
+                    return None, str(exc)
+
+            def done(result):
+                self.set_busy(False)
+                exported, error = result
+                if error:
+                    self.patch_notice.setText(error)
+                    return
+                self.patch_notice.setText(
+                    f"Read and checked {name}; wrote the Xenia patch file to {exported['output_path']}. "
+                    "Status: unwitnessed in game. Disable it by removing the exported patch or setting is_enabled = false.")
+            self.run_task("Write pass-fetch Xenia patch", write, done, False)
+
+        self.run_task("Read game executable for pass-fetch patch", prepare, prepared, False)

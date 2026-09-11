@@ -275,11 +275,23 @@ class PlaycallPatch:
         return "\n".join(lines) + "\n"
 
 
-def compile_patch(image: bytes) -> PlaycallPatch:
+def check_image(image: bytes) -> ImageProfile:
+    """One identity gate for game folders, decoded executables and expert PEs."""
     digest = hashlib.sha256(image).hexdigest()
     profile = next((p for p in PROFILES if p.sha256 == digest), None)
     if profile is None or len(image) != IMAGE_SIZE:
-        raise ValidationError("Expected the pinned flat BASE or reconstructed TU 1.1 image; SHA-256 mismatch")
+        accepted = "; ".join(f"{'retail BASE' if p.name == 'base' else 'Title Update 1.1'} {p.sha256}"
+                             for p in PROFILES)
+        raise ValidationError(
+            f"Executable SHA-256 mismatch. Saw {digest} ({len(image)} bytes). "
+            f"Accepts {accepted} ({IMAGE_SIZE} bytes each). "
+            "Choose the original Xbox 360 game folder, or a supported flat image under the expert option.")
+    return profile
+
+
+def compile_patch(image: bytes) -> PlaycallPatch:
+    profile = check_image(image)
+    digest = profile.sha256
     hook_offset = profile.hook - IMAGE_BASE
     fetch = image[hook_offset - 0x148:hook_offset + 0x30]
     if hashlib.sha256(fetch).hexdigest() != profile.fetch_sha256:
@@ -306,13 +318,27 @@ def compile_patch(image: bytes) -> PlaycallPatch:
     })
 
 
-def write_patch(image_path: Path, output_path: Path) -> dict:
+def write_patch(image_path: Path, output_path: Path, *, title_update=None,
+                content_roots=(), progress=None) -> dict:
+    """Derive a player's image, then export verified TOML beside their build."""
+    from .apf2k8_xex import derive_image
+
+    image, source_receipt = derive_image(image_path, title_update=title_update,
+                                        content_roots=content_roots, progress=progress)
+    return export_patch(compile_patch(image), output_path, source_receipt)
+
+
+def export_patch(patch: PlaycallPatch, output_path: Path, source_receipt: dict) -> dict:
     """Idempotent, atomic export; reparse TOML and compare every patch word."""
     import tomllib
-    image_path, output_path = Path(image_path), Path(output_path)
-    if image_path.resolve() == output_path.resolve():
-        raise ValidationError("Export path must differ from the input image")
-    patch = compile_patch(image_path.read_bytes())
+    output_path = Path(output_path)
+    if not output_path.name.casefold().endswith(".patch.toml"):
+        raise ValidationError("Export to a separate .patch.toml file next to your build")
+    for source in source_receipt["input_paths"]:
+        path = Path(source)
+        if (path.resolve() == output_path.resolve()
+                or (output_path.exists() and path.samefile(output_path))):
+            raise ValidationError("Export path must differ from the executable and Title Update inputs")
     payload = patch.as_toml().encode("utf-8")
     parsed = tomllib.loads(payload.decode("utf-8"))
     words = tuple((w["address"], w["value"]) for w in parsed["patch"][0]["be32"])
@@ -329,7 +355,8 @@ def write_patch(image_path: Path, output_path: Path) -> dict:
             os.replace(temporary, output_path)
         finally:
             Path(temporary).unlink(missing_ok=True)
-    return {**patch.receipt, "toml_reparsed": True, "output_sha256": hashlib.sha256(payload).hexdigest()}
+    return {**patch.receipt, "source": source_receipt, "output_path": str(output_path.resolve()),
+            "toml_reparsed": True, "output_sha256": hashlib.sha256(payload).hexdigest()}
 
 
 def status() -> str:
