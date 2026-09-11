@@ -120,6 +120,14 @@ class Machine:
         self.uc.mem_map(0x2000000, 0x20000)
         self.uc.mem_map(0x3020000, 0x20000)
         self.state_va = dk.FLAGS if state_va is None else state_va
+        # Presets include catch-slider/acceleration/draft code in the owned
+        # header-logo span. The Xbox loader maps these bytes too; loading only
+        # sections executed zeros at 10A60 when testing a composed preset.
+        headers = struct.unpack_from('<I', payload, 0x108)[0]
+        if not 0x178 <= headers <= 4096:
+            raise ValueError('bounded XBE header geometry required')
+        self.uc.mem_write(0x10000, payload[:headers])
+        self.uc.mem_protect(0x10000, 4096, uni.UC_PROT_READ | uni.UC_PROT_EXEC)
         for sec in _sections(payload):
             if sec.virtual_address >= 0x1000000:
                 self.uc.mem_map(sec.virtual_address & -4096, (sec.raw_size + 4095) & -4096)
