@@ -1,0 +1,2443 @@
+{
+  "scope": "H6 final source; bounded native execution; in-game UNWITNESSED",
+  "source_commit": "0d3c5a41f60ed72ee6eb92364de17a857e6a6677",
+  "environment": {
+    "PYTHONPATH": ".",
+    "QT_QPA_PLATFORM": "offscreen",
+    "PYTHONHASHSEED": "0",
+    "NFL2K5_CAVE_MANIFEST": ".scratch/h6/final-gate-manifest.json"
+  },
+  "manifest_sha256": "450de3c3bf4b1f8291b8e6b72572ba5e83a655cadae9cd8c0a10c419cd83975a",
+  "release_manifest": false,
+  "source_sha256": {
+    "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+    "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+    "tools/nfl2k5_my_career.S": "6f718a1a87f0ddc8fe75685f35e6dd97be31bfd26c44f9df45e2a95a506dbb24",
+    "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+    "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+    "mod_editor/core/providers.py": "20c3fa499fa6eee25092d998422f8ca3a42251e458a743732e3c2a8fa5d08338",
+    "tests/nfl2k5_b661_series.py": "7417144c2b31db5c8b4a060f54fd7f3c841ccfac316ca532c29389689c6d67b8",
+    "tests/mod_editor/test_beta66_supersim_wiring.py": "bed8eb7b7bf786cacaa6cf745b2493a47e7ccc4031505ed44c2868c1cd90232b",
+    "tests/mod_editor/test_nfl2k5_b661_transition.py": "e323dbd3a35bb65ee8bbfd9901cabb9c3b536d5a4185f915f04f676347109df6",
+    "tests/mod_editor/test_nfl2k5_cave_oracle.py": "3dcd4d3ca172d6b0968afe4094d99e0fd0f41d6d540379863ad96663135bd378",
+    "tests/mod_editor/test_nfl2k5_my_career.py": "49a6db609c119defbc4e44327e16593475509bb667c2c2c68a8248785de9f247",
+    "tests/mod_editor/test_nfl2k5_my_career_completion.py": "8788d1a460270828112f51719f9574c58bdfde8e25e83ca953763f5e053dd980",
+    "tests/mod_editor/test_nfl2k5_my_career_control.py": "c9dddb8bebbe17e05830c9574ea8f7ef40d61c63d0ec1f0e53e9895ba281a591",
+    "tests/mod_editor/test_nfl2k5_my_career_cpu_choice.py": "e649e7c6a037cf255b45414cb02b36dbc7eb3f2c5545ea4c444e1b79dea74758",
+    "tests/mod_editor/test_nfl2k5_my_career_cpu_frame.py": "b348da60863c950ab3263cf3ac06e5915b4f15f02b64f34f5029b3a198f31042",
+    "tests/mod_editor/test_nfl2k5_my_career_cpu_injury.py": "822512080e1ba3eb0ad21aeeffcd40ee4687d2ae92ea66973d93faeab47f5a45",
+    "tests/mod_editor/test_nfl2k5_my_career_cpu_period.py": "482e1788cdbf00be75838b42ab824a04327cbf776599c246e0a7ccc191ce3a78",
+    "tests/mod_editor/test_nfl2k5_my_career_cpu_timeout.py": "e5bdf5f8d5ff538489351f9497eb3be90ae91c9261fdc8ece98f6d918ae99717",
+    "tests/mod_editor/test_nfl2k5_my_career_cpu_turnover.py": "a8416834d8ab8793e02069be880ad1e8e59e8af2bd4df39634c0870b3fcd0eeb",
+    "tests/mod_editor/test_nfl2k5_my_career_creation_boundary.py": "305b726526e05f8179a5105c3728608d1e67f71016ca3c19992ca20c2f68ba10",
+    "tests/mod_editor/test_nfl2k5_my_career_draft.py": "5758788619161868c603814463f0d335d0356e69848ee128fc958b9d3b2ad752",
+    "tests/mod_editor/test_nfl2k5_my_career_frontend.py": "59a0624f8464e045f419c147b4af79c8e709aa1af827a101287b0462e4128522",
+    "tests/mod_editor/test_nfl2k5_my_career_generic_build.py": "b924e3475f72be67f2d0ba507e3c7a81d0a8106552061e92c5bbb2ebbbe34555",
+    "tests/mod_editor/test_nfl2k5_my_career_inline.py": "f3f10d401c35c8df78c75cea7d828e6cff4c397ebd7bfb0d89447adf5e630a58",
+    "tests/mod_editor/test_nfl2k5_my_career_m3_budget.py": "a0a2ee6c7e35e3489c2514439af8d9cb526ac9dfb4dda35b8f73dbd39c334b63",
+    "tests/mod_editor/test_nfl2k5_my_career_m3_menus.py": "9967ba6cb9247366ca26f65f5d5dd1e38848ff6a73ad2bae23630adb8808cb87",
+    "tests/mod_editor/test_nfl2k5_my_career_manifest.py": "5f863be1d76e800cfe7326e7ed3f0ce3d2cd7dea189cc3259f8dd0f0be1eaf50",
+    "tests/mod_editor/test_nfl2k5_my_career_mode4.py": "6030e36315f2320f18caa0556bb0e082e9c31be2cf336ac7012212c839d23f89",
+    "tests/mod_editor/test_nfl2k5_my_career_mode5.py": "ae4ce27a8e7589ec7bdca1c34ac9384b14696e0dfa1d9e7ba13f25fe88d563c3",
+    "tests/mod_editor/test_nfl2k5_my_career_mode_audit.py": "b756f92522a410b2fb1a4f491ed99bb3b15e498ce319226392fd15aa6eeac324",
+    "tests/mod_editor/test_nfl2k5_my_career_mode_routes.py": "63963056231ea328ae0a0e8cebedc70ab6077219843f3c39bf347689a27d0adc",
+    "tests/mod_editor/test_nfl2k5_my_career_panel.py": "52dbe6510b52f0d636cb108df9e088a426e3228cb1ca3d3bf4e6f4353fc00efd",
+    "tests/mod_editor/test_nfl2k5_my_career_played.py": "4f11b84b73df95ce46819cb7909290ba5eb7ebd08677522d629423b1accf96e8",
+    "tests/mod_editor/test_nfl2k5_my_career_position_inputs.py": "5242785ca31691496e112e8fc8664bca825bbe83eaf9edc8d0bb48e4456cccb6",
+    "tests/mod_editor/test_nfl2k5_my_career_season.py": "220019cdfa28146c3b80133ce204dabdbb0297b9f35240818cd5fdd3dfb4a220",
+    "tests/mod_editor/test_nfl2k5_my_career_settings.py": "1dd7fef68f76a77ec93bc2b0b30916d4b309bf471ba620113beb253b7efc75c7",
+    "tests/mod_editor/test_nfl2k5_my_career_signing.py": "50f799e7bb2bae5feeb6939657719d57387d896ff28b52ba0b873f1ee0d2c66d",
+    "tests/mod_editor/test_nfl2k5_my_career_unicorn.py": "c4de32479ba67fcffbc5c2ea6da32cc465cd1f018e785749d46676571070ab85",
+    "tests/mod_editor/test_nfl2k5_my_career_upgrades.py": "70ab3d5eb80451e4eb1c52d2d816bf60f7dc13b88b571c12d70c75a9118b6ca5",
+    "tests/mod_editor/test_nfl2k5_my_career_week.py": "48adcea14f4b945c54e7de7536c838de3660464f11e101dedd870ea842c48ced",
+    "tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py": "57a979f9bc5796681c74e244be6181a0bbe61a96737f81f172ac778bd82c6190",
+    "tests/mod_editor/test_nfl2k5_practice_reserves.py": "1cf02e1af81467909d9259b20f994bfebdf7300f868c2a1f9728ea7ff90399e3",
+    "tests/mod_editor/test_nfl2k5_roster_arena_growth.py": "fa2d79da3f716eb8122db81bfa88b9342272b8756e8a63a9ec36c3b62d5e172e",
+    "tests/mod_editor/test_nfl2k5_supersim.py": "2873f53f5c620fdb1a89452a86ea4acdc7911a63eca7ab1d9869c9b3d5fbb0f4",
+    "tests/mod_editor/test_nfl2k5_supersim_live.py": "fb605ce1f83a8e158509b6a6eaff05397dc9c1a76d75337764b15182c8f68d04",
+    "tests/mod_editor/test_xbe_patch_cave_references.py": "e435c211614fb390589e5222f211d2e993c6ab66707ca2bc8b0037d809acd555",
+    "tests/mod_editor/test_xbe_patch_memory_writes.py": "d335ca879f5ae4ad2a25e9615d387852a6cdec4c615693b7cabf8efef5571145"
+  },
+  "addresses": {
+    "simwin66": {
+      "labels": {
+        "mode_grown_member": "0x14e35c9",
+        "mode_match_copy": "0x14e365f",
+        "mode_create": "0x14e378a",
+        "mode_sign": "0x14e3d7b",
+        "m3_sign_limit": "0x14e297e",
+        "capture": "0x14e2a4d",
+        "resolve_team": "0x14e1ed5",
+        "mode_stage": "0x14e5192",
+        "mode_next_fixture": "0x14e3f83"
+      },
+      "rx_allocation": {
+        "owner": "nfl2k5_my_career",
+        "kind": "code",
+        "size": 20480,
+        "align": 16,
+        "va": 21896640,
+        "raw": 12131776,
+        "owner_offset": 0
+      },
+      "rw_allocation": {
+        "owner": "nfl2k5_my_career",
+        "kind": "data",
+        "size": 4096,
+        "align": 16,
+        "va": 21963152,
+        "raw": 12198288,
+        "owner_offset": 0
+      },
+      "content_bytes": 18455,
+      "signing_instructions": [
+        {
+          "va": "0x14e3d7b",
+          "instruction": "push ebp"
+        },
+        {
+          "va": "0x14e3d7c",
+          "instruction": "push edi"
+        },
+        {
+          "va": "0x14e3d7d",
+          "instruction": "push esi"
+        },
+        {
+          "va": "0x14e3d7e",
+          "instruction": "push ebx"
+        },
+        {
+          "va": "0x14e3d7f",
+          "instruction": "sub esp, 0x60"
+        },
+        {
+          "va": "0x14e3d82",
+          "instruction": "mov dword ptr [esp], ecx"
+        },
+        {
+          "va": "0x14e3d85",
+          "instruction": "call 0x14e51a1"
+        },
+        {
+          "va": "0x14e3d8a",
+          "instruction": "test eax, eax"
+        },
+        {
+          "va": "0x14e3d8c",
+          "instruction": "je 0x14e3da2"
+        },
+        {
+          "va": "0x14e3d8e",
+          "instruction": "cmp dword ptr [0x14f21a8], 4"
+        },
+        {
+          "va": "0x14e3d95",
+          "instruction": "jne 0x14e3da2"
+        },
+        {
+          "va": "0x14e3d97",
+          "instruction": "call 0x14e1e02"
+        },
+        {
+          "va": "0x14e3d9c",
+          "instruction": "push 1"
+        },
+        {
+          "va": "0x14e3d9e",
+          "instruction": "pop ebp"
+        },
+        {
+          "va": "0x14e3d9f",
+          "instruction": "xchg edi, eax"
+        },
+        {
+          "va": "0x14e3da0",
+          "instruction": "jmp 0x14e3daa"
+        },
+        {
+          "va": "0x14e3da2",
+          "instruction": "mov edi, dword ptr [0x14f2c04]"
+        },
+        {
+          "va": "0x14e3da8",
+          "instruction": "xor ebp, ebp"
+        },
+        {
+          "va": "0x14e3daa",
+          "instruction": "mov eax, dword ptr [0x14f2c0c]"
+        },
+        {
+          "va": "0x14e3daf",
+          "instruction": "call 0x14e2842"
+        },
+        {
+          "va": "0x14e3db4",
+          "instruction": "xchg esi, eax"
+        },
+        {
+          "va": "0x14e3db5",
+          "instruction": "mov eax, dword ptr [esp]"
+        },
+        {
+          "va": "0x14e3db8",
+          "instruction": "call 0x14e281f"
+        },
+        {
+          "va": "0x14e3dbd",
+          "instruction": "test eax, eax"
+        },
+        {
+          "va": "0x14e3dbf",
+          "instruction": "je 0x14e3f7b"
+        },
+        {
+          "va": "0x14e3dc5",
+          "instruction": "cmp dword ptr [0x14f2c08], 2"
+        },
+        {
+          "va": "0x14e3dcc",
+          "instruction": "jne 0x14e3f7b"
+        },
+        {
+          "va": "0x14e3dd2",
+          "instruction": "test esi, esi"
+        },
+        {
+          "va": "0x14e3dd4",
+          "instruction": "je 0x14e3f7b"
+        },
+        {
+          "va": "0x14e3dda",
+          "instruction": "test edi, edi"
+        },
+        {
+          "va": "0x14e3ddc",
+          "instruction": "je 0x14e3f7b"
+        },
+        {
+          "va": "0x14e3de2",
+          "instruction": "mov eax, edi"
+        },
+        {
+          "va": "0x14e3de4",
+          "instruction": "call 0x14e2865"
+        },
+        {
+          "va": "0x14e3de9",
+          "instruction": "test eax, eax"
+        },
+        {
+          "va": "0x14e3deb",
+          "instruction": "je 0x14e3f7b"
+        },
+        {
+          "va": "0x14e3df1",
+          "instruction": "cmp byte ptr [edi + 0x35], 0x10"
+        },
+        {
+          "va": "0x14e3df5",
+          "instruction": "ja 0x14e3f7b"
+        },
+        {
+          "va": "0x14e3dfb",
+          "instruction": "mov eax, esi"
+        },
+        {
+          "va": "0x14e3dfd",
+          "instruction": "call 0x14e297e"
+        },
+        {
+          "va": "0x14e3e02",
+          "instruction": "xchg ebx, eax"
+        },
+        {
+          "va": "0x14e3e03",
+          "instruction": "test ebx, ebx"
+        },
+        {
+          "va": "0x14e3e05",
+          "instruction": "je 0x14e3f18"
+        },
+        {
+          "va": "0x14e3e0b",
+          "instruction": "mov edx, dword ptr [0xb72918]"
+        },
+        {
+          "va": "0x14e3e11",
+          "instruction": "and dword ptr [esp + 4], 0"
+        },
+        {
+          "va": "0x14e3e16",
+          "instruction": "mov eax, dword ptr [edx + 0x38]"
+        },
+        {
+          "va": "0x14e3e19",
+          "instruction": "add edx, 0x3c"
+        },
+        {
+          "va": "0x14e3e1c",
+          "instruction": "mov dword ptr [esp + 8], eax"
+        },
+        {
+          "va": "0x14e3e20",
+          "instruction": "xor eax, eax"
+        },
+        {
+          "va": "0x14e3e22",
+          "instruction": "cmp dword ptr [esp + 8], eax"
+        },
+        {
+          "va": "0x14e3e26",
+          "instruction": "je 0x14e3e36"
+        },
+        {
+          "va": "0x14e3e28",
+          "instruction": "mov ecx, dword ptr [edx]"
+        },
+        {
+          "va": "0x14e3e2a",
+          "instruction": "cmp edi, dword ptr [ecx + eax*4]"
+        },
+        {
+          "va": "0x14e3e2d",
+          "instruction": "jne 0x14e3e33"
+        },
+        {
+          "va": "0x14e3e2f",
+          "instruction": "inc dword ptr [esp + 4]"
+        },
+        {
+          "va": "0x14e3e33",
+          "instruction": "inc eax"
+        },
+        {
+          "va": "0x14e3e34",
+          "instruction": "jmp 0x14e3e22"
+        },
+        {
+          "va": "0x14e3e36",
+          "instruction": "cmp dword ptr [esp + 4], 1"
+        },
+        {
+          "va": "0x14e3e3b",
+          "instruction": "jne 0x14e3f18"
+        },
+        {
+          "va": "0x14e3e41",
+          "instruction": "test byte ptr [edi + 8], 4"
+        },
+        {
+          "va": "0x14e3e45",
+          "instruction": "je 0x14e3f18"
+        },
+        {
+          "va": "0x14e3e4b",
+          "instruction": "test ebp, ebp"
+        },
+        {
+          "va": "0x14e3e4d",
+          "instruction": "je 0x14e3e76"
+        },
+        {
+          "va": "0x14e3e4f",
+          "instruction": "movzx eax, byte ptr [esi + 0x11c]"
+        },
+        {
+          "va": "0x14e3e56",
+          "instruction": "mov edx, 0x14e5ae8"
+        },
+        {
+          "va": "0x14e3e5b",
+          "instruction": "mov ecx, dword ptr [esp]"
+        },
+        {
+          "va": "0x14e3e5e",
+          "instruction": "cmp eax, ebx"
+        },
+        {
+          "va": "0x14e3e60",
+          "instruction": "mov eax, 0x14e5b14"
+        },
+        {
+          "va": "0x14e3e65",
+          "instruction": "cmovae edx, eax"
+        },
+        {
+          "va": "0x14e3e68",
+          "instruction": "call 0x14e540"
+        },
+        {
+          "va": "0x14e3e6d",
+          "instruction": "test eax, eax"
+        },
+        {
+          "va": "0x14e3e6f",
+          "instruction": "jne 0x14e3e9c"
+        },
+        {
+          "va": "0x14e3e71",
+          "instruction": "jmp 0x14e3f7b"
+        },
+        {
+          "va": "0x14e3e76",
+          "instruction": "mov ecx, dword ptr [esp]"
+        },
+        {
+          "va": "0x14e3e79",
+          "instruction": "call 0x148ab0"
+        },
+        {
+          "va": "0x14e3e7e",
+          "instruction": "test eax, eax"
+        },
+        {
+          "va": "0x14e3e80",
+          "instruction": "je 0x14e3f7b"
+        },
+        {
+          "va": "0x14e3e86",
+          "instruction": "call 0x148c60"
+        },
+        {
+          "va": "0x14e3e8b",
+          "instruction": "and dword ptr [0xe6011c], 0"
+        },
+        {
+          "va": "0x14e3e92",
+          "instruction": "call 0x10ea10"
+        },
+        {
+          "va": "0x14e3e97",
+          "instruction": "call 0x13ee10"
+        },
+        {
+          "va": "0x14e3e9c",
+          "instruction": "mov eax, esi"
+        },
+        {
+          "va": "0x14e3e9e",
+          "instruction": "call 0x14e297e"
+        },
+        {
+          "va": "0x14e3ea3",
+          "instruction": "test eax, eax"
+        },
+        {
+          "va": "0x14e3ea5",
+          "instruction": "je 0x14e3f18"
+        },
+        {
+          "va": "0x14e3ea7",
+          "instruction": "movzx edx, byte ptr [esi + 0x11c]"
+        },
+        {
+          "va": "0x14e3eae",
+          "instruction": "mov ebx, edx"
+        },
+        {
+          "va": "0x14e3eb0",
+          "instruction": "cmp edx, eax"
+        },
+        {
+          "va": "0x14e3eb2",
+          "instruction": "jb 0x14e3ed3"
+        },
+        {
+          "va": "0x14e3eb4",
+          "instruction": "lea edx, [eax - 1]"
+        },
+        {
+          "va": "0x14e3eb7",
+          "instruction": "mov ecx, esi"
+        },
+        {
+          "va": "0x14e3eb9",
+          "instruction": "call 0x2bf9a0"
+        },
+        {
+          "va": "0x14e3ebe",
+          "instruction": "mov eax, esi"
+        },
+        {
+          "va": "0x14e3ec0",
+          "instruction": "call 0x14e297e"
+        },
+        {
+          "va": "0x14e3ec5",
+          "instruction": "test eax, eax"
+        },
+        {
+          "va": "0x14e3ec7",
+          "instruction": "je 0x14e3f18"
+        },
+        {
+          "va": "0x14e3ec9",
+          "instruction": "cmp byte ptr [esi + 0x11c], bl"
+        },
+        {
+          "va": "0x14e3ecf",
+          "instruction": "jb 0x14e3ea7"
+        },
+        {
+          "va": "0x14e3ed1",
+          "instruction": "jmp 0x14e3f18"
+        },
+        {
+          "va": "0x14e3ed3",
+          "instruction": "push 0x54"
+        },
+        {
+          "va": "0x14e3ed5",
+          "instruction": "pop ecx"
+        },
+        {
+          "va": "0x14e3ed6",
+          "instruction": "mov edx, edi"
+        },
+        {
+          "va": "0x14e3ed8",
+          "instruction": "lea eax, [esp + 0xc]"
+        },
+        {
+          "va": "0x14e3edc",
+          "instruction": "call 0x14e2735"
+        },
+        {
+          "va": "0x14e3ee1",
+          "instruction": "push 0"
+        },
+        {
+          "va": "0x14e3ee3",
+          "instruction": "mov ecx, edi"
+        },
+        {
+          "va": "0x14e3ee5",
+          "instruction": "mov eax, 0x3228a0"
+        },
+        {
+          "va": "0x14e3eea",
+          "instruction": "push 1"
+        },
+        {
+          "va": "0x14e3eec",
+          "instruction": "push 1"
+        },
+        {
+          "va": "0x14e3eee",
+          "instruction": "pop edx"
+        },
+        {
+          "va": "0x14e3eef",
+          "instruction": "call eax"
+        },
+        {
+          "va": "0x14e3ef1",
+          "instruction": "mov edx, esi"
+        },
+        {
+          "va": "0x14e3ef3",
+          "instruction": "mov ecx, edi"
+        },
+        {
+          "va": "0x14e3ef5",
+          "instruction": "mov eax, 0x2bd260"
+        },
+        {
+          "va": "0x14e3efa",
+          "instruction": "push 1"
+        },
+        {
+          "va": "0x14e3efc",
+          "instruction": "call eax"
+        },
+        {
+          "va": "0x14e3efe",
+          "instruction": "mov ecx, esi"
+        },
+        {
+          "va": "0x14e3f00",
+          "instruction": "mov edx, edi"
+        },
+        {
+          "va": "0x14e3f02",
+          "instruction": "call 0xc3ee0"
+        },
+        {
+          "va": "0x14e3f07",
+          "instruction": "test eax, eax"
+        },
+        {
+          "va": "0x14e3f09",
+          "instruction": "jne 0x14e3f2c"
+        },
+        {
+          "va": "0x14e3f0b",
+          "instruction": "push 0x54"
+        },
+        {
+          "va": "0x14e3f0d",
+          "instruction": "pop ecx"
+        },
+        {
+          "va": "0x14e3f0e",
+          "instruction": "xchg edi, eax"
+        },
+        {
+          "va": "0x14e3f0f",
+          "instruction": "lea edx, [esp + 0xc]"
+        },
+        {
+          "va": "0x14e3f13",
+          "instruction": "call 0x14e2735"
+        },
+        {
+          "va": "0x14e3f18",
+          "instruction": "mov eax, dword ptr [esp]"
+        },
+        {
+          "va": "0x14e3f1b",
+          "instruction": "add esp, 0x60"
+        },
+        {
+          "va": "0x14e3f1e",
+          "instruction": "mov edx, 0x14f2912"
+        },
+        {
+          "va": "0x14e3f23",
+          "instruction": "pop ebx"
+        },
+        {
+          "va": "0x14e3f24",
+          "instruction": "pop esi"
+        },
+        {
+          "va": "0x14e3f25",
+          "instruction": "pop edi"
+        },
+        {
+          "va": "0x14e3f26",
+          "instruction": "pop ebp"
+        },
+        {
+          "va": "0x14e3f27",
+          "instruction": "jmp 0x14e283b"
+        },
+        {
+          "va": "0x14e3f2c",
+          "instruction": "mov eax, dword ptr [0xb72918]"
+        },
+        {
+          "va": "0x14e3f31",
+          "instruction": "mov edx, edi"
+        },
+        {
+          "va": "0x14e3f33",
+          "instruction": "lea ecx, [eax + 0x38]"
+        },
+        {
+          "va": "0x14e3f36",
+          "instruction": "call 0x2425c0"
+        },
+        {
+          "va": "0x14e3f3b",
+          "instruction": "mov ecx, esi"
+        },
+        {
+          "va": "0x14e3f3d",
+          "instruction": "call 0x243790"
+        },
+        {
+          "va": "0x14e3f42",
+          "instruction": "mov ecx, esi"
+        },
+        {
+          "va": "0x14e3f44",
+          "instruction": "call 0xc3f00"
+        },
+        {
+          "va": "0x14e3f49",
+          "instruction": "mov ecx, esi"
+        },
+        {
+          "va": "0x14e3f4b",
+          "instruction": "call 0x13ec90"
+        },
+        {
+          "va": "0x14e3f50",
+          "instruction": "test ebp, ebp"
+        },
+        {
+          "va": "0x14e3f52",
+          "instruction": "je 0x14e3f68"
+        },
+        {
+          "va": "0x14e3f54",
+          "instruction": "xchg edi, eax"
+        },
+        {
+          "va": "0x14e3f55",
+          "instruction": "and dword ptr [0x14f2c08], 0"
+        },
+        {
+          "va": "0x14e3f5c",
+          "instruction": "call 0x14e26aa"
+        },
+        {
+          "va": "0x14e3f61",
+          "instruction": "call 0x14e1ed5"
+        },
+        {
+          "va": "0x14e3f66",
+          "instruction": "jmp 0x14e3f6e"
+        },
+        {
+          "va": "0x14e3f68",
+          "instruction": "xchg edi, eax"
+        },
+        {
+          "va": "0x14e3f69",
+          "instruction": "call 0x14e2a4d"
+        },
+        {
+          "va": "0x14e3f6e",
+          "instruction": "call 0x14e54e2"
+        },
+        {
+          "va": "0x14e3f73",
+          "instruction": "mov ecx, dword ptr [esp]"
+        },
+        {
+          "va": "0x14e3f76",
+          "instruction": "call 0x13f1b0"
+        },
+        {
+          "va": "0x14e3f7b",
+          "instruction": "add esp, 0x60"
+        },
+        {
+          "va": "0x14e3f7e",
+          "instruction": "pop ebx"
+        },
+        {
+          "va": "0x14e3f7f",
+          "instruction": "pop esi"
+        },
+        {
+          "va": "0x14e3f80",
+          "instruction": "pop edi"
+        },
+        {
+          "va": "0x14e3f81",
+          "instruction": "pop ebp"
+        },
+        {
+          "va": "0x14e3f82",
+          "instruction": "ret "
+        }
+      ]
+    },
+    "everything": {
+      "labels": {
+        "mode_grown_member": "0x14e7b49",
+        "mode_match_copy": "0x14e7bdf",
+        "mode_create": "0x14e7d0a",
+        "mode_sign": "0x14e82fb",
+        "m3_sign_limit": "0x14e6efe",
+        "capture": "0x14e6fcd",
+        "resolve_team": "0x14e6455",
+        "mode_stage": "0x14e9712",
+        "mode_next_fixture": "0x14e8503"
+      },
+      "rx_allocation": {
+        "owner": "nfl2k5_my_career",
+        "kind": "code",
+        "size": 20480,
+        "align": 16,
+        "va": 21914432,
+        "raw": 12149568,
+        "owner_offset": 0
+      },
+      "rw_allocation": {
+        "owner": "nfl2k5_my_career",
+        "kind": "data",
+        "size": 4096,
+        "align": 16,
+        "va": 21963664,
+        "raw": 12198800,
+        "owner_offset": 0
+      },
+      "content_bytes": 18456,
+      "signing_instructions": [
+        {
+          "va": "0x14e82fb",
+          "instruction": "push ebp"
+        },
+        {
+          "va": "0x14e82fc",
+          "instruction": "push edi"
+        },
+        {
+          "va": "0x14e82fd",
+          "instruction": "push esi"
+        },
+        {
+          "va": "0x14e82fe",
+          "instruction": "push ebx"
+        },
+        {
+          "va": "0x14e82ff",
+          "instruction": "sub esp, 0x60"
+        },
+        {
+          "va": "0x14e8302",
+          "instruction": "mov dword ptr [esp], ecx"
+        },
+        {
+          "va": "0x14e8305",
+          "instruction": "call 0x14e9721"
+        },
+        {
+          "va": "0x14e830a",
+          "instruction": "test eax, eax"
+        },
+        {
+          "va": "0x14e830c",
+          "instruction": "je 0x14e8322"
+        },
+        {
+          "va": "0x14e830e",
+          "instruction": "cmp dword ptr [0x14f23a8], 4"
+        },
+        {
+          "va": "0x14e8315",
+          "instruction": "jne 0x14e8322"
+        },
+        {
+          "va": "0x14e8317",
+          "instruction": "call 0x14e6382"
+        },
+        {
+          "va": "0x14e831c",
+          "instruction": "push 1"
+        },
+        {
+          "va": "0x14e831e",
+          "instruction": "pop ebp"
+        },
+        {
+          "va": "0x14e831f",
+          "instruction": "xchg edi, eax"
+        },
+        {
+          "va": "0x14e8320",
+          "instruction": "jmp 0x14e832a"
+        },
+        {
+          "va": "0x14e8322",
+          "instruction": "mov edi, dword ptr [0x14f2e04]"
+        },
+        {
+          "va": "0x14e8328",
+          "instruction": "xor ebp, ebp"
+        },
+        {
+          "va": "0x14e832a",
+          "instruction": "mov eax, dword ptr [0x14f2e0c]"
+        },
+        {
+          "va": "0x14e832f",
+          "instruction": "call 0x14e6dc2"
+        },
+        {
+          "va": "0x14e8334",
+          "instruction": "xchg esi, eax"
+        },
+        {
+          "va": "0x14e8335",
+          "instruction": "mov eax, dword ptr [esp]"
+        },
+        {
+          "va": "0x14e8338",
+          "instruction": "call 0x14e6d9f"
+        },
+        {
+          "va": "0x14e833d",
+          "instruction": "test eax, eax"
+        },
+        {
+          "va": "0x14e833f",
+          "instruction": "je 0x14e84fb"
+        },
+        {
+          "va": "0x14e8345",
+          "instruction": "cmp dword ptr [0x14f2e08], 2"
+        },
+        {
+          "va": "0x14e834c",
+          "instruction": "jne 0x14e84fb"
+        },
+        {
+          "va": "0x14e8352",
+          "instruction": "test esi, esi"
+        },
+        {
+          "va": "0x14e8354",
+          "instruction": "je 0x14e84fb"
+        },
+        {
+          "va": "0x14e835a",
+          "instruction": "test edi, edi"
+        },
+        {
+          "va": "0x14e835c",
+          "instruction": "je 0x14e84fb"
+        },
+        {
+          "va": "0x14e8362",
+          "instruction": "mov eax, edi"
+        },
+        {
+          "va": "0x14e8364",
+          "instruction": "call 0x14e6de5"
+        },
+        {
+          "va": "0x14e8369",
+          "instruction": "test eax, eax"
+        },
+        {
+          "va": "0x14e836b",
+          "instruction": "je 0x14e84fb"
+        },
+        {
+          "va": "0x14e8371",
+          "instruction": "cmp byte ptr [edi + 0x35], 0x10"
+        },
+        {
+          "va": "0x14e8375",
+          "instruction": "ja 0x14e84fb"
+        },
+        {
+          "va": "0x14e837b",
+          "instruction": "mov eax, esi"
+        },
+        {
+          "va": "0x14e837d",
+          "instruction": "call 0x14e6efe"
+        },
+        {
+          "va": "0x14e8382",
+          "instruction": "xchg ebx, eax"
+        },
+        {
+          "va": "0x14e8383",
+          "instruction": "test ebx, ebx"
+        },
+        {
+          "va": "0x14e8385",
+          "instruction": "je 0x14e8498"
+        },
+        {
+          "va": "0x14e838b",
+          "instruction": "mov edx, dword ptr [0xb72918]"
+        },
+        {
+          "va": "0x14e8391",
+          "instruction": "and dword ptr [esp + 4], 0"
+        },
+        {
+          "va": "0x14e8396",
+          "instruction": "mov eax, dword ptr [edx + 0x38]"
+        },
+        {
+          "va": "0x14e8399",
+          "instruction": "add edx, 0x3c"
+        },
+        {
+          "va": "0x14e839c",
+          "instruction": "mov dword ptr [esp + 8], eax"
+        },
+        {
+          "va": "0x14e83a0",
+          "instruction": "xor eax, eax"
+        },
+        {
+          "va": "0x14e83a2",
+          "instruction": "cmp dword ptr [esp + 8], eax"
+        },
+        {
+          "va": "0x14e83a6",
+          "instruction": "je 0x14e83b6"
+        },
+        {
+          "va": "0x14e83a8",
+          "instruction": "mov ecx, dword ptr [edx]"
+        },
+        {
+          "va": "0x14e83aa",
+          "instruction": "cmp edi, dword ptr [ecx + eax*4]"
+        },
+        {
+          "va": "0x14e83ad",
+          "instruction": "jne 0x14e83b3"
+        },
+        {
+          "va": "0x14e83af",
+          "instruction": "inc dword ptr [esp + 4]"
+        },
+        {
+          "va": "0x14e83b3",
+          "instruction": "inc eax"
+        },
+        {
+          "va": "0x14e83b4",
+          "instruction": "jmp 0x14e83a2"
+        },
+        {
+          "va": "0x14e83b6",
+          "instruction": "cmp dword ptr [esp + 4], 1"
+        },
+        {
+          "va": "0x14e83bb",
+          "instruction": "jne 0x14e8498"
+        },
+        {
+          "va": "0x14e83c1",
+          "instruction": "test byte ptr [edi + 8], 4"
+        },
+        {
+          "va": "0x14e83c5",
+          "instruction": "je 0x14e8498"
+        },
+        {
+          "va": "0x14e83cb",
+          "instruction": "test ebp, ebp"
+        },
+        {
+          "va": "0x14e83cd",
+          "instruction": "je 0x14e83f6"
+        },
+        {
+          "va": "0x14e83cf",
+          "instruction": "movzx eax, byte ptr [esi + 0x11c]"
+        },
+        {
+          "va": "0x14e83d6",
+          "instruction": "mov edx, 0x14ea068"
+        },
+        {
+          "va": "0x14e83db",
+          "instruction": "mov ecx, dword ptr [esp]"
+        },
+        {
+          "va": "0x14e83de",
+          "instruction": "cmp eax, ebx"
+        },
+        {
+          "va": "0x14e83e0",
+          "instruction": "mov eax, 0x14ea094"
+        },
+        {
+          "va": "0x14e83e5",
+          "instruction": "cmovae edx, eax"
+        },
+        {
+          "va": "0x14e83e8",
+          "instruction": "call 0x14e540"
+        },
+        {
+          "va": "0x14e83ed",
+          "instruction": "test eax, eax"
+        },
+        {
+          "va": "0x14e83ef",
+          "instruction": "jne 0x14e841c"
+        },
+        {
+          "va": "0x14e83f1",
+          "instruction": "jmp 0x14e84fb"
+        },
+        {
+          "va": "0x14e83f6",
+          "instruction": "mov ecx, dword ptr [esp]"
+        },
+        {
+          "va": "0x14e83f9",
+          "instruction": "call 0x148ab0"
+        },
+        {
+          "va": "0x14e83fe",
+          "instruction": "test eax, eax"
+        },
+        {
+          "va": "0x14e8400",
+          "instruction": "je 0x14e84fb"
+        },
+        {
+          "va": "0x14e8406",
+          "instruction": "call 0x148c60"
+        },
+        {
+          "va": "0x14e840b",
+          "instruction": "and dword ptr [0xe6011c], 0"
+        },
+        {
+          "va": "0x14e8412",
+          "instruction": "call 0x10ea10"
+        },
+        {
+          "va": "0x14e8417",
+          "instruction": "call 0x13ee10"
+        },
+        {
+          "va": "0x14e841c",
+          "instruction": "mov eax, esi"
+        },
+        {
+          "va": "0x14e841e",
+          "instruction": "call 0x14e6efe"
+        },
+        {
+          "va": "0x14e8423",
+          "instruction": "test eax, eax"
+        },
+        {
+          "va": "0x14e8425",
+          "instruction": "je 0x14e8498"
+        },
+        {
+          "va": "0x14e8427",
+          "instruction": "movzx edx, byte ptr [esi + 0x11c]"
+        },
+        {
+          "va": "0x14e842e",
+          "instruction": "mov ebx, edx"
+        },
+        {
+          "va": "0x14e8430",
+          "instruction": "cmp edx, eax"
+        },
+        {
+          "va": "0x14e8432",
+          "instruction": "jb 0x14e8453"
+        },
+        {
+          "va": "0x14e8434",
+          "instruction": "lea edx, [eax - 1]"
+        },
+        {
+          "va": "0x14e8437",
+          "instruction": "mov ecx, esi"
+        },
+        {
+          "va": "0x14e8439",
+          "instruction": "call 0x2bf9a0"
+        },
+        {
+          "va": "0x14e843e",
+          "instruction": "mov eax, esi"
+        },
+        {
+          "va": "0x14e8440",
+          "instruction": "call 0x14e6efe"
+        },
+        {
+          "va": "0x14e8445",
+          "instruction": "test eax, eax"
+        },
+        {
+          "va": "0x14e8447",
+          "instruction": "je 0x14e8498"
+        },
+        {
+          "va": "0x14e8449",
+          "instruction": "cmp byte ptr [esi + 0x11c], bl"
+        },
+        {
+          "va": "0x14e844f",
+          "instruction": "jb 0x14e8427"
+        },
+        {
+          "va": "0x14e8451",
+          "instruction": "jmp 0x14e8498"
+        },
+        {
+          "va": "0x14e8453",
+          "instruction": "push 0x54"
+        },
+        {
+          "va": "0x14e8455",
+          "instruction": "pop ecx"
+        },
+        {
+          "va": "0x14e8456",
+          "instruction": "mov edx, edi"
+        },
+        {
+          "va": "0x14e8458",
+          "instruction": "lea eax, [esp + 0xc]"
+        },
+        {
+          "va": "0x14e845c",
+          "instruction": "call 0x14e6cb5"
+        },
+        {
+          "va": "0x14e8461",
+          "instruction": "push 0"
+        },
+        {
+          "va": "0x14e8463",
+          "instruction": "mov ecx, edi"
+        },
+        {
+          "va": "0x14e8465",
+          "instruction": "mov eax, 0x3228a0"
+        },
+        {
+          "va": "0x14e846a",
+          "instruction": "push 1"
+        },
+        {
+          "va": "0x14e846c",
+          "instruction": "push 1"
+        },
+        {
+          "va": "0x14e846e",
+          "instruction": "pop edx"
+        },
+        {
+          "va": "0x14e846f",
+          "instruction": "call eax"
+        },
+        {
+          "va": "0x14e8471",
+          "instruction": "mov edx, esi"
+        },
+        {
+          "va": "0x14e8473",
+          "instruction": "mov ecx, edi"
+        },
+        {
+          "va": "0x14e8475",
+          "instruction": "mov eax, 0x2bd260"
+        },
+        {
+          "va": "0x14e847a",
+          "instruction": "push 1"
+        },
+        {
+          "va": "0x14e847c",
+          "instruction": "call eax"
+        },
+        {
+          "va": "0x14e847e",
+          "instruction": "mov ecx, esi"
+        },
+        {
+          "va": "0x14e8480",
+          "instruction": "mov edx, edi"
+        },
+        {
+          "va": "0x14e8482",
+          "instruction": "call 0xc3ee0"
+        },
+        {
+          "va": "0x14e8487",
+          "instruction": "test eax, eax"
+        },
+        {
+          "va": "0x14e8489",
+          "instruction": "jne 0x14e84ac"
+        },
+        {
+          "va": "0x14e848b",
+          "instruction": "push 0x54"
+        },
+        {
+          "va": "0x14e848d",
+          "instruction": "pop ecx"
+        },
+        {
+          "va": "0x14e848e",
+          "instruction": "xchg edi, eax"
+        },
+        {
+          "va": "0x14e848f",
+          "instruction": "lea edx, [esp + 0xc]"
+        },
+        {
+          "va": "0x14e8493",
+          "instruction": "call 0x14e6cb5"
+        },
+        {
+          "va": "0x14e8498",
+          "instruction": "mov eax, dword ptr [esp]"
+        },
+        {
+          "va": "0x14e849b",
+          "instruction": "add esp, 0x60"
+        },
+        {
+          "va": "0x14e849e",
+          "instruction": "mov edx, 0x14f2b12"
+        },
+        {
+          "va": "0x14e84a3",
+          "instruction": "pop ebx"
+        },
+        {
+          "va": "0x14e84a4",
+          "instruction": "pop esi"
+        },
+        {
+          "va": "0x14e84a5",
+          "instruction": "pop edi"
+        },
+        {
+          "va": "0x14e84a6",
+          "instruction": "pop ebp"
+        },
+        {
+          "va": "0x14e84a7",
+          "instruction": "jmp 0x14e6dbb"
+        },
+        {
+          "va": "0x14e84ac",
+          "instruction": "mov eax, dword ptr [0xb72918]"
+        },
+        {
+          "va": "0x14e84b1",
+          "instruction": "mov edx, edi"
+        },
+        {
+          "va": "0x14e84b3",
+          "instruction": "lea ecx, [eax + 0x38]"
+        },
+        {
+          "va": "0x14e84b6",
+          "instruction": "call 0x2425c0"
+        },
+        {
+          "va": "0x14e84bb",
+          "instruction": "mov ecx, esi"
+        },
+        {
+          "va": "0x14e84bd",
+          "instruction": "call 0x243790"
+        },
+        {
+          "va": "0x14e84c2",
+          "instruction": "mov ecx, esi"
+        },
+        {
+          "va": "0x14e84c4",
+          "instruction": "call 0xc3f00"
+        },
+        {
+          "va": "0x14e84c9",
+          "instruction": "mov ecx, esi"
+        },
+        {
+          "va": "0x14e84cb",
+          "instruction": "call 0x13ec90"
+        },
+        {
+          "va": "0x14e84d0",
+          "instruction": "test ebp, ebp"
+        },
+        {
+          "va": "0x14e84d2",
+          "instruction": "je 0x14e84e8"
+        },
+        {
+          "va": "0x14e84d4",
+          "instruction": "xchg edi, eax"
+        },
+        {
+          "va": "0x14e84d5",
+          "instruction": "and dword ptr [0x14f2e08], 0"
+        },
+        {
+          "va": "0x14e84dc",
+          "instruction": "call 0x14e6c2a"
+        },
+        {
+          "va": "0x14e84e1",
+          "instruction": "call 0x14e6455"
+        },
+        {
+          "va": "0x14e84e6",
+          "instruction": "jmp 0x14e84ee"
+        },
+        {
+          "va": "0x14e84e8",
+          "instruction": "xchg edi, eax"
+        },
+        {
+          "va": "0x14e84e9",
+          "instruction": "call 0x14e6fcd"
+        },
+        {
+          "va": "0x14e84ee",
+          "instruction": "call 0x14e9a62"
+        },
+        {
+          "va": "0x14e84f3",
+          "instruction": "mov ecx, dword ptr [esp]"
+        },
+        {
+          "va": "0x14e84f6",
+          "instruction": "call 0x13f1b0"
+        },
+        {
+          "va": "0x14e84fb",
+          "instruction": "add esp, 0x60"
+        },
+        {
+          "va": "0x14e84fe",
+          "instruction": "pop ebx"
+        },
+        {
+          "va": "0x14e84ff",
+          "instruction": "pop esi"
+        },
+        {
+          "va": "0x14e8500",
+          "instruction": "pop edi"
+        },
+        {
+          "va": "0x14e8501",
+          "instruction": "pop ebp"
+        },
+        {
+          "va": "0x14e8502",
+          "instruction": "ret "
+        }
+      ]
+    }
+  },
+  "budget": {
+    "content_bytes": 18457,
+    "experimental": true,
+    "format_tag_bytes": 17,
+    "historical_measurement": "docs/nfl2k5_my_career_m3_budget.json",
+    "immutable_code_sha256_at_budget_address": "875b846d8dbc9876d54c9ec0b25b487330c59ea234909a4f850f1e2bce8aa65c",
+    "machine_code_bytes": 14588,
+    "requests": [
+      [
+        "nfl2k5_my_career",
+        "code",
+        20480,
+        16
+      ],
+      [
+        "nfl2k5_my_career",
+        "data",
+        4096,
+        16
+      ],
+      [
+        "nfl2k5_my_career_m3",
+        "data",
+        4096,
+        16
+      ]
+    ],
+    "runtime_witnessed": false,
+    "same_file_size": true,
+    "schema": "nfl2k5.mycareer.m3-installed-budget.v1",
+    "senior_bowl_playable": false,
+    "spare_rx_bytes": 2006
+  },
+  "tests": [
+    {
+      "command": "python3 tests/mod_editor/test_beta66_supersim_wiring.py",
+      "exit_code": 0,
+      "tests": 3,
+      "seconds": 0.265,
+      "wall_seconds": 0.465,
+      "max_rss_kib": 78684,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-supersim/test_beta66_supersim_wiring.log",
+      "log_sha256": "0be9092b19f35b3d38d746a70e23bd2810d7d709b9c6bdb876b8383935d33cbf",
+      "output": "Ran 3 tests in 0.265s\n\nOK\nMAX_RSS_KIB=78684"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_b661_transition.py --record",
+      "result": "passed",
+      "exit_code": 0,
+      "tests": 11,
+      "seconds": 558.286,
+      "skipped": 0,
+      "output": "Ran 11 tests in 558.286s\n\nOK",
+      "log": ".scratch/h6/final-transition.log",
+      "log_sha256": "b9f7701e69f48be6a61cd21d7e7e27c45a96c982d063abb4ebc0b9550fcefef5"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_cave_oracle.py",
+      "exit_code": 0,
+      "tests": 29,
+      "seconds": 408.499,
+      "wall_seconds": 414.474,
+      "max_rss_kib": 910576,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-test_nfl2k5_cave_oracle/test_nfl2k5_cave_oracle.log",
+      "log_sha256": "25044444df40fb470afa9075027362ac6c35c7f1cc0e63dc5fd70405f0912c23",
+      "output": "Ran 29 tests in 408.499s\n\nOK\nMAX_RSS_KIB=910576"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career.py",
+      "exit_code": 0,
+      "tests": 13,
+      "seconds": 21.322,
+      "wall_seconds": 21.568,
+      "max_rss_kib": 132260,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career.log",
+      "log_sha256": "c042e29a98779bc85c661a877b240853fb3b615efdbbca1f863d1daa03c419ca",
+      "output": "Ran 13 tests in 21.322s\n\nOK\nMAX_RSS_KIB=132260"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_completion.py",
+      "exit_code": 0,
+      "tests": 6,
+      "seconds": 40.762,
+      "wall_seconds": 41.035,
+      "max_rss_kib": 303072,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_completion.log",
+      "log_sha256": "45551f1831fae213f5108395e1ca379e7c6fbe71a0de4854eda70b79ed488cb4",
+      "output": "Ran 6 tests in 40.762s\n\nOK\nMAX_RSS_KIB=303072"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_control.py",
+      "exit_code": 0,
+      "tests": 2,
+      "seconds": 18.707,
+      "wall_seconds": 18.964,
+      "max_rss_kib": 238792,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_control.log",
+      "log_sha256": "f3037bb5e59db5c23423141980526faf966e1fdedf76862f6bbebe7a5c580551",
+      "output": "Ran 2 tests in 18.707s\n\nOK\nMAX_RSS_KIB=238792"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_choice.py",
+      "exit_code": 0,
+      "tests": 1,
+      "seconds": 29.254,
+      "wall_seconds": 29.498,
+      "max_rss_kib": 146392,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_cpu_choice.log",
+      "log_sha256": "8051fcb58f3b4a06a1697d909d8470f3f35754d01660ad3d0684db781f82a346",
+      "output": "Ran 1 test in 29.254s\n\nOK\nMAX_RSS_KIB=146392"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_frame.py",
+      "exit_code": 0,
+      "tests": 1,
+      "seconds": 64.73,
+      "wall_seconds": 65.008,
+      "max_rss_kib": 133500,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_cpu_frame.log",
+      "log_sha256": "9e2e56b0e847b3e148f5d999ed4e948cc863eed1689601461f41836595bcacf3",
+      "output": "Ran 1 test in 64.730s\n\nOK\nMAX_RSS_KIB=133500"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_injury.py",
+      "exit_code": 0,
+      "tests": 1,
+      "seconds": 37.572,
+      "wall_seconds": 37.817,
+      "max_rss_kib": 135348,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_cpu_injury.log",
+      "log_sha256": "0702c534fe91e4bd479dc6b0ff98ff461508acc0083d79324fc9d1bf4af5278a",
+      "output": "Ran 1 test in 37.572s\n\nOK\nMAX_RSS_KIB=135348"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_period.py",
+      "exit_code": 0,
+      "tests": 2,
+      "seconds": 47.609,
+      "wall_seconds": 47.909,
+      "max_rss_kib": 169860,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_cpu_period.log",
+      "log_sha256": "4f2133a02186bdd816b3d2a17411939c0701da18530d4ed4c24fe53af746f401",
+      "output": "Ran 2 tests in 47.609s\n\nOK\nMAX_RSS_KIB=169860"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_timeout.py",
+      "exit_code": 0,
+      "tests": 1,
+      "seconds": 33.786,
+      "wall_seconds": 34.174,
+      "max_rss_kib": 135828,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_cpu_timeout.log",
+      "log_sha256": "5b2ef4e84076310d98862a192197a4d29fd49e55f3f15485ec5ecd1b58b80b9f",
+      "output": "Ran 1 test in 33.786s\n\nOK\nMAX_RSS_KIB=135828"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_turnover.py",
+      "exit_code": 0,
+      "tests": 3,
+      "seconds": 88.769,
+      "wall_seconds": 89.061,
+      "max_rss_kib": 169788,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_cpu_turnover.log",
+      "log_sha256": "851a2b8aa2b32c8fc551b0f4da33f51f1244a59751aa2cb04fbd6559c043ace2",
+      "output": "Ran 3 tests in 88.769s\n\nOK\nMAX_RSS_KIB=169788"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_creation_boundary.py",
+      "exit_code": 0,
+      "tests": 4,
+      "seconds": 3.296,
+      "wall_seconds": 3.572,
+      "max_rss_kib": 162676,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_creation_boundary.log",
+      "log_sha256": "705c6a172406d7ddea68b4c1965b5c502005ab947abc66a1935f63163cf38011",
+      "output": "Ran 4 tests in 3.296s\n\nOK\nMAX_RSS_KIB=162676"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_draft.py",
+      "exit_code": 0,
+      "tests": 6,
+      "seconds": 1163.562,
+      "wall_seconds": 1163.794,
+      "max_rss_kib": 288828,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-draft/test_nfl2k5_my_career_draft.log",
+      "log_sha256": "756f319c4c9908411e74d4964037dd852e9f26c776adf309cde7027d9459c98f",
+      "output": "Ran 6 tests in 1163.562s\n\nOK\nMAX_RSS_KIB=288828"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_frontend.py",
+      "exit_code": 0,
+      "tests": 7,
+      "seconds": 70.204,
+      "wall_seconds": 70.476,
+      "max_rss_kib": 226744,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_frontend.log",
+      "log_sha256": "06f39d1a9539bf1bf9bb4b5b870aab633d94cbe2596130df3b122af9d71dc64d",
+      "output": "Ran 7 tests in 70.204s\n\nOK\nMAX_RSS_KIB=226744"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_generic_build.py",
+      "exit_code": 0,
+      "tests": 5,
+      "seconds": 11.01,
+      "wall_seconds": 11.238,
+      "max_rss_kib": 162732,
+      "skipped": 1,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_generic_build.log",
+      "log_sha256": "6a30c13ada383b0acac0b3bede6c6ac013f3e01e842bc0f9f82fd7008045f53c",
+      "output": "Ran 5 tests in 11.010s\n\nOK (skipped=1)\nMAX_RSS_KIB=162732"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_inline.py",
+      "exit_code": 0,
+      "tests": 8,
+      "seconds": 13.527,
+      "wall_seconds": 13.849,
+      "max_rss_kib": 293000,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_inline.log",
+      "log_sha256": "80837d521aa2e9308dba41701d5dbac56fdb95285b6cdecfe269a30072238c6e",
+      "output": "Ran 8 tests in 13.527s\n\nOK\nMAX_RSS_KIB=293000"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_m3_budget.py",
+      "exit_code": 0,
+      "tests": 5,
+      "seconds": 4.48,
+      "wall_seconds": 4.825,
+      "max_rss_kib": 126752,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_m3_budget.log",
+      "log_sha256": "6f7a9534e3d17f70d9bfeb6ecd8d476db8c6016b6fd1290a84dd0625649c2b2b",
+      "output": "Ran 5 tests in 4.480s\n\nOK\nMAX_RSS_KIB=126752"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_m3_menus.py",
+      "exit_code": 0,
+      "tests": 4,
+      "seconds": 46.8,
+      "wall_seconds": 47.044,
+      "max_rss_kib": 185876,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_m3_menus.log",
+      "log_sha256": "4122adaf610f4c5bd2e7eedf7622a73f6c8fea1d771c25a3850c771baa3fd34f",
+      "output": "Ran 4 tests in 46.800s\n\nOK\nMAX_RSS_KIB=185876"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_manifest.py",
+      "exit_code": 0,
+      "tests": 3,
+      "seconds": 7.977,
+      "wall_seconds": 8.285,
+      "max_rss_kib": 140048,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_manifest.log",
+      "log_sha256": "676eaafa856796f2857ad4c31f39fcbbce5495d92ced81ca224b6acc384b0948",
+      "output": "Ran 3 tests in 7.977s\n\nOK\nMAX_RSS_KIB=140048"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_mode4.py",
+      "exit_code": 0,
+      "tests": 8,
+      "seconds": 431.44,
+      "wall_seconds": 431.654,
+      "max_rss_kib": 325752,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_mode4.log",
+      "log_sha256": "628fdc1bdb5612d1003bcf3f669fefc5b5b82b3b116c54cbf4067b912b825e20",
+      "output": "Ran 8 tests in 431.440s\n\nOK\nMAX_RSS_KIB=325752"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_mode5.py",
+      "exit_code": 0,
+      "tests": 4,
+      "seconds": 279.645,
+      "wall_seconds": 279.875,
+      "max_rss_kib": 434904,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_mode5.log",
+      "log_sha256": "0110df85e693020103cc07091e51fe6f8fefd9ca233fdbf8c89c702151a1b562",
+      "output": "Ran 4 tests in 279.645s\n\nOK\nMAX_RSS_KIB=434904"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_mode_audit.py",
+      "exit_code": 0,
+      "tests": 6,
+      "seconds": 0.065,
+      "wall_seconds": 0.215,
+      "max_rss_kib": 65804,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_mode_audit.log",
+      "log_sha256": "533c9cb8d19f9b35a8f8e77ee22c4a085bc9e2ef21c5456451bbfd60844606b6",
+      "output": "Ran 6 tests in 0.065s\n\nOK\nMAX_RSS_KIB=65804"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_mode_routes.py",
+      "exit_code": 0,
+      "tests": 7,
+      "seconds": 2.747,
+      "wall_seconds": 2.971,
+      "max_rss_kib": 325744,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_mode_routes.log",
+      "log_sha256": "ddd522132d912be87b895aac209f2b7d1677148bb0b5fa6869719c68803e326c",
+      "output": "Ran 7 tests in 2.747s\n\nOK\nMAX_RSS_KIB=325744"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_panel.py",
+      "exit_code": 0,
+      "tests": 4,
+      "seconds": 0.177,
+      "wall_seconds": 0.315,
+      "max_rss_kib": 69176,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_panel.log",
+      "log_sha256": "92573ebd83f23548ca9dd3b23fa25df8963703c96b0f203519bdfc0096809bd1",
+      "output": "Ran 4 tests in 0.177s\n\nOK\nMAX_RSS_KIB=69176"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_played.py",
+      "exit_code": 0,
+      "tests": 4,
+      "seconds": 57.229,
+      "wall_seconds": 57.43,
+      "max_rss_kib": 200276,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_played.log",
+      "log_sha256": "20221d1da451d3b4b63c4bce4996dacbae1b7acd3c7f654ea252f3ca282e400a",
+      "output": "Ran 4 tests in 57.229s\n\nOK\nMAX_RSS_KIB=200276"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_position_inputs.py",
+      "exit_code": 0,
+      "tests": 9,
+      "seconds": 17.419,
+      "wall_seconds": 17.602,
+      "max_rss_kib": 309724,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_position_inputs.log",
+      "log_sha256": "333fa251f89f7741d6a3714f35a44a9c02fb96ef9774c43f07f1e17881570ad5",
+      "output": "Ran 9 tests in 17.419s\n\nOK\nMAX_RSS_KIB=309724"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_season.py",
+      "exit_code": 0,
+      "tests": 1,
+      "seconds": 149.544,
+      "wall_seconds": 149.712,
+      "max_rss_kib": 193608,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_season.log",
+      "log_sha256": "6f1f6a2e7c981eed8a52c6fd9680d100fd2dc7768525f8ec92bb51cde31e4cd2",
+      "output": "Ran 1 test in 149.544s\n\nOK\nMAX_RSS_KIB=193608"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_settings.py",
+      "exit_code": 0,
+      "tests": 9,
+      "seconds": 29.505,
+      "wall_seconds": 29.726,
+      "max_rss_kib": 268660,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_settings.log",
+      "log_sha256": "0df711b4582ea4b7c04f7b6066dd9f6db1504f84c04f75a07c1334f8a5d765f8",
+      "output": "Ran 9 tests in 29.505s\n\nOK\nMAX_RSS_KIB=268660"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_signing.py",
+      "exit_code": 0,
+      "tests": 6,
+      "seconds": 62.682,
+      "wall_seconds": 62.986,
+      "max_rss_kib": 369272,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-signing/test_nfl2k5_my_career_signing.log",
+      "log_sha256": "4357d007a24eb99f6b7a9d405b0f402ef046b8def4fc7589704ae7b3cf917e33",
+      "output": "Ran 6 tests in 62.682s\n\nOK\nMAX_RSS_KIB=369272"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_unicorn.py",
+      "exit_code": 0,
+      "tests": 18,
+      "seconds": 11.996,
+      "wall_seconds": 12.191,
+      "max_rss_kib": 298976,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_unicorn.log",
+      "log_sha256": "9f16115ed0d53d10e96414fbc69c6129bb069d3922fcf55301add372db9f665f",
+      "output": "Ran 18 tests in 11.996s\n\nOK\nMAX_RSS_KIB=298976"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_upgrades.py",
+      "exit_code": 0,
+      "tests": 4,
+      "seconds": 250.75,
+      "wall_seconds": 250.914,
+      "max_rss_kib": 370372,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_upgrades.log",
+      "log_sha256": "f238ad1f87a4e3b552cf12628efc7451ad9f978c694e2e7d929230139303cfe2",
+      "output": "Ran 4 tests in 250.750s\n\nOK\nMAX_RSS_KIB=370372"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_week.py",
+      "exit_code": 0,
+      "tests": 1,
+      "seconds": 323.631,
+      "wall_seconds": 323.772,
+      "max_rss_kib": 168816,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-mycareer/test_nfl2k5_my_career_week.log",
+      "log_sha256": "f5b39293a106c683b6200b15c25182089fb012e4b04013f4390675ac5733f5dd",
+      "output": "Ran 1 test in 323.631s\n\nOK\nMAX_RSS_KIB=168816"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py",
+      "exit_code": 0,
+      "tests": 388,
+      "seconds": 2218.047,
+      "wall_seconds": 2218.389,
+      "max_rss_kib": 195044,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-test_nfl2k5_owner_pairwise_composition/test_nfl2k5_owner_pairwise_composition.log",
+      "log_sha256": "3d1696f6259650ed39c54df408f254d0e800866cef05a15b56a67bc8fe2846c3",
+      "output": "Ran 388 tests in 2218.047s\n\nOK\nMAX_RSS_KIB=195044"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_practice_reserves.py",
+      "exit_code": 0,
+      "tests": 9,
+      "seconds": 26.213,
+      "wall_seconds": 26.43,
+      "max_rss_kib": 173892,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-arena/test_nfl2k5_practice_reserves.log",
+      "log_sha256": "79d70632eb8ebc71f7d454a6928b999921a3d86c01932082d6f818f44d4b57e8",
+      "output": "Ran 9 tests in 26.213s\n\nOK\nMAX_RSS_KIB=173892"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_roster_arena_growth.py",
+      "exit_code": 0,
+      "tests": 13,
+      "seconds": 49.918,
+      "wall_seconds": 50.263,
+      "max_rss_kib": 244136,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-arena/test_nfl2k5_roster_arena_growth.log",
+      "log_sha256": "0319892922be0bc179c71ede35da05575b7ac249ea412dff0444a96e0b30cd15",
+      "output": "Ran 13 tests in 49.918s\n\nOK\nMAX_RSS_KIB=244136"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_supersim.py",
+      "exit_code": 0,
+      "tests": 12,
+      "seconds": 8.653,
+      "wall_seconds": 8.84,
+      "max_rss_kib": 264620,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-supersim/test_nfl2k5_supersim.log",
+      "log_sha256": "8c431bc6b200685e6eb0d875fc91dfc1a815c1e36f8e734455deafb4614bfe92",
+      "output": "Ran 12 tests in 8.653s\n\nOK\nMAX_RSS_KIB=264620"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_supersim_live.py",
+      "exit_code": 0,
+      "tests": 29,
+      "seconds": 3289.161,
+      "wall_seconds": 3289.395,
+      "max_rss_kib": 518656,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-supersim/test_nfl2k5_supersim_live.log",
+      "log_sha256": "739c22b78346e4922e47ee572ff5a0d011ae52a7dedcaafc5262b3f65c9f89b6",
+      "output": "Ran 29 tests in 3289.161s\n\nOK\nMAX_RSS_KIB=518656"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_xbe_patch_cave_references.py",
+      "exit_code": 0,
+      "tests": 127,
+      "seconds": 1786.42,
+      "wall_seconds": 1786.821,
+      "max_rss_kib": 555264,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-test_xbe_patch_cave_references/test_xbe_patch_cave_references.log",
+      "log_sha256": "e272b080ff486ac493edce0b7c4e7881c41b77d19f378876c5e2d42756dc0c4f",
+      "output": "Ran 127 tests in 1786.420s\n\nOK\nMAX_RSS_KIB=555264"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_xbe_patch_memory_writes.py",
+      "exit_code": 0,
+      "tests": 115,
+      "seconds": 1588.262,
+      "wall_seconds": 1588.443,
+      "max_rss_kib": 330028,
+      "skipped": 0,
+      "result": "passed",
+      "source_sha256": {
+        "tools/mycareer_mode/runtime.c": "381956a800fb3e50b3701e3b730e8dc85ebea333e4fde51269974b0e5120bb32",
+        "tools/mycareer_mode/runtime.S": "aa5011c390f840919f0b754c953c00f7050152c3bb58c37504fba127a8214fbf",
+        "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c"
+      },
+      "log": ".scratch/h6/final-test_xbe_patch_memory_writes/test_xbe_patch_memory_writes.log",
+      "log_sha256": "74cc925cc69cc5aeefa9b1b3b9298904b0f0efc43fd1b09f7e9cafb705072f2f",
+      "output": "Ran 115 tests in 1588.262s\n\nOK\nMAX_RSS_KIB=330028"
+    }
+  ],
+  "suites": 40,
+  "total_tests": 889,
+  "total_skipped": 1
+}
