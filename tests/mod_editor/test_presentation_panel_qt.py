@@ -39,7 +39,7 @@ class PresentationPanelTests(unittest.TestCase):
     def test_studio_offers_the_tab(self) -> None:
         from mod_editor.gui.studio_qt import StudioMainWindow
 
-        window = StudioMainWindow()
+        window = StudioMainWindow(eager_pages=True, )
         try:
             self.assertEqual(len(window.findChildren(PresentationPanel)), 1)
         finally:

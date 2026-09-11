@@ -2050,6 +2050,7 @@ def write_image_copy(
     modern_naming=False,
     guardian_players=None,
     _defer_image_resources=False,
+    _consume_source=False,
     espn25_rosters=False,
 ) -> dict[str, object]:
     """Copy a disc image and patch ``default.xbe`` inside the COPY.
@@ -2104,6 +2105,7 @@ def write_image_copy(
         original = platform_compat.pread(src, length, offset)
         _require(len(original) == length, "short read of default.xbe from the source image")
         arc_table = settings is not None and settings.arc_by_distance
+        report("Preparing default.xbe patches", 0, 0)
         patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera and not defer_grown, kick_rules, widescreen, overtime, arc_table=arc_table, flatter_deep_ball=flatter_deep_ball, chop_block_toggle=chop_block_toggle, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks, season_cap=season_cap, xbe_space=xbe_space and not defer_grown, kickoff_relocated=kickoff_relocated and not defer_grown, scorebug_runtime=False, momentum=0 if defer_grown else momentum, momentum_contact=False if defer_grown else momentum_contact, defensive_try=defensive_try and not defer_grown, zone_drop_cap=zone_drop_cap and not defer_grown, all_stadiums=all_stadiums and not defer_grown, coverage_slider=coverage_slider and not defer_grown, scramble_tuning=scramble_tuning and not defer_grown, music_policy=music_policy, music_unlock=music_unlock, music_userlist=music_userlist, music_metadata=None if defer_grown else music_metadata, music_shuffle=music_shuffle and not defer_grown, music_shuffle_selection=None if defer_grown else music_shuffle_selection, practice_squad_screen=practice_squad_screen and not defer_grown, abilities=abilities and not defer_grown, abilities_off_week=None if defer_grown else abilities_off_week, abilities_lock_right_stick=abilities_lock_right_stick, abilities_lock_special_moves=abilities_lock_special_moves, abilities_lock_speedster=abilities_lock_speedster, qb_spy=qb_spy and not defer_grown, qb_spy_intent_table=None if defer_grown else qb_spy_intent_table, calendar_engine=calendar_engine and not defer_grown, **_deferred_r62_options(r62, defer_grown))
         entries: dict[str, object] = {}
         disc_before: dict[str, object] = {}
@@ -2113,18 +2115,21 @@ def write_image_copy(
         _require(defer_grown or reserves_16 or created_teams_extra or crib_reclaim or modern_naming or patched != original or disc_before.get("status") == "retail",
                  "nothing to write: the requested curves and patches already match the image")
         _prepare_target(source, target, overwrite)
-        dst = _open_binary(target, os.O_RDWR | os.O_CREAT | os.O_EXCL)   # read-write: the disc text pass verifies as it goes
+        if _consume_source:
+            # Only mod_build's owned, verified private intermediate uses this.
+            # Close the source handle before moving it (Windows sharing rules).
+            _require(os.fstat(src).st_nlink == 1, "staged image must not have hard links")
+            os.close(src)
+            src = None
+            os.replace(source, target)
+            dst = _open_binary(target, os.O_RDWR)
+        else:
+            dst = _open_binary(target, os.O_RDWR | os.O_CREAT | os.O_EXCL)
         try:
-            copied = 0
-            while copied < size:
-                chunk = platform_compat.pread(src, min(_COPY_CHUNK, size - copied), copied)
-                _require(bool(chunk), "source image shrank during the copy")
-                view = memoryview(chunk)
-                done = 0
-                while done < len(chunk):
-                    done += os.write(dst, view[done:])
-                copied += len(chunk)
-                report("Copying disc image", copied, size)
+            if not _consume_source:
+                from .build_io import copy_descriptors
+                copy_descriptors(src, dst, size, report)
+            report("Writing default.xbe changes", 0, 0)
             ranges: list[tuple[int, int]] = []
             i = 0
             while i < len(original):
@@ -2152,7 +2157,8 @@ def write_image_copy(
         finally:
             os.close(dst)
     finally:
-        os.close(src)
+        if src is not None:
+            os.close(src)
     report("Verifying the patched copy", 0, 0)
     check = _open_binary(target, os.O_RDONLY)
     try:

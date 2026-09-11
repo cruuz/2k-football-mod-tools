@@ -1,5 +1,20 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC90, beta 66
+
+- **Faster startup, disc builds and Add Songs (Smuzz, maumau78 and Mud, 2026-09-10).**
+  In response to "the performance since 59 is now more sluggish" and "Why does it take so long to convert the songs?",
+  workspaces load when opened, large texture lists create only visible row artwork, and versioned metadata caches
+  avoid expanding the same catalogs on every launch. A project plus gameplay build uses one private disc copy,
+  validates the plan before preparing textures, and publishes only after its checks pass. Independent uniform
+  encodes use a bounded process pool, and PNG/palette conversion copies exact bytes in bulk; equipment keeps its
+  existing grouped compile cache. Preparing 40 synthetic uniform edits against the retail source fell from
+  123 seconds to 17 seconds. The offscreen window appeared in 0.52 seconds instead of 6.33 seconds. Both build paths show
+  elapsed time and copy progress. The dependency-free song encoder keeps the same ADPCM bytes and audible preview
+  while avoiding work on candidate states that cannot win; the four-minute synthetic stereo probe fell from
+  1,189 seconds to 89 seconds. Disc-byte parity and source preservation are covered by synthetic build tests.
+  In-game behavior and Windows responsiveness still require Noah's witness.
+
 ## v1.0 RC89, beta 65: accelerated clock, MyCareer supersim and positions, the Windows folder-publish fix (2026-09-10)
 
 - **Fixed: "[WinError 5] Access is denied" while importing a number sheet on Windows (Coach Edwards, 2026-09-10).**

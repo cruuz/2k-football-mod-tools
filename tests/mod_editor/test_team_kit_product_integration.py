@@ -221,7 +221,7 @@ class TeamKitOffscreenGuiTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory(prefix="team-kit-gui-")
         self.root = Path(self.temporary.name)
         self.facade = _WindowTeamKitFacade()
-        self.window = StudioMainWindow(facade=self.facade)
+        self.window = StudioMainWindow(eager_pages=True, facade=self.facade)
         self.errors: list[str] = []
         self.window._show_error = self.errors.append  # type: ignore[method-assign]
         self.window._save_recovery_snapshot = lambda: None  # type: ignore[method-assign]

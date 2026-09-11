@@ -715,7 +715,7 @@ class ShellPlacementTests(unittest.TestCase):
 
         if not (ROOT / "reports" / "assets").exists():
             self.skipTest("Studio shell requires the private uniform catalog under reports/assets")
-        window = StudioMainWindow(facade=BrowseOnlyFacade(), offer_recovery=False)
+        window = StudioMainWindow(eager_pages=True, facade=BrowseOnlyFacade(), offer_recovery=False)
         try:
             rows = [window.navigation.item(i).text().strip() for i in range(window.navigation.count())]
             self.assertIn("★ Rosters", rows)

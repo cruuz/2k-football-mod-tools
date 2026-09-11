@@ -215,6 +215,12 @@ def _png_unfilter(raw: bytes, width: int, height: int, bits_per_pixel: int) -> b
         filter_type = raw[start]
         require(filter_type <= 4, f"unsupported PNG filter {filter_type}")
         encoded = raw[start + 1:start + 1 + row_bytes]
+        if filter_type == 0:
+            # The exporter writes unfiltered rows. Preserve them directly,
+            # including the previous-row state needed by a following filter.
+            out[y * row_bytes:(y + 1) * row_bytes] = encoded
+            previous = encoded
+            continue
         row = bytearray(row_bytes)
         for x, value in enumerate(encoded):
             left = row[x - step] if x >= step else 0
@@ -304,6 +310,19 @@ def _png_samples_to_rgba(compressed: bytes, width: int, height: int, bit_depth: 
     raw += decompressor.flush()
     require(decompressor.eof and not decompressor.unused_data and len(raw) == expected,
             "PNG IDAT stream is truncated, trailing, or wrong-sized")
+
+    if interlace == 0 and color_type == 6:
+        # RGBA already has the destination channel layout. Sixteen-bit samples
+        # use their high byte, exactly as widen() below. All chunk, CRC, size,
+        # inflate and filter checks still run before returning.
+        block = _png_unfilter(raw, width, height, bits_per_pixel)
+        return block if bit_depth == 8 else block[::2]
+    if interlace == 0 and color_type == 2 and bit_depth == 8 and not trns:
+        block = _png_unfilter(raw, width, height, bits_per_pixel)
+        rgba = bytearray(width * height * 4)
+        rgba[0::4], rgba[1::4], rgba[2::4] = block[0::3], block[1::3], block[2::3]
+        rgba[3::4] = b"\xff" * (width * height)
+        return bytes(rgba)
 
     palette_entries = len(plte) // 3 if plte else 0
     scale = {1: 255, 2: 85, 4: 17, 8: 1, 16: 1}[bit_depth]
@@ -644,9 +663,15 @@ def palette_bytes(palette: list[tuple[int, int, int, int]]) -> bytes:
 
 def rgba_from_indices(indices: bytes,
                       palette: list[tuple[int, int, int, int]]) -> bytes:
-    require(all(index < len(palette) for index in indices),
+    require(not indices or max(indices) < len(palette),
             "index references an absent palette entry")
-    return b"".join(bytes(palette[index]) for index in indices)
+    # Byte translation performs the palette lookup in C, once per channel.
+    # Retain validation before indexing, including the empty-index case.
+    rgba = bytearray(len(indices) * 4)
+    for channel in range(4):
+        table = bytes(color[channel] for color in palette[:256]).ljust(256, b"\0")
+        rgba[channel::4] = indices.translate(table)
+    return bytes(rgba)
 
 
 def derive_mud_palette(clean: list[tuple[int, int, int, int]], mode: str) \

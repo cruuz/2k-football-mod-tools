@@ -32,6 +32,7 @@ from PyQt5.QtWidgets import (
 )
 
 import threading
+import time
 import tempfile
 from dataclasses import replace, asdict
 
@@ -73,6 +74,9 @@ class _Task(QRunnable):
         self.signals = _Signals()
         self._operation = operation
         self.cancelled = threading.Event()
+        self.latest_progress = "Preparing the build"
+        self.started = time.monotonic()
+        self._last_emit = 0.0
         self.setAutoDelete(False)
 
     def run(self) -> None:
@@ -80,9 +84,15 @@ class _Task(QRunnable):
             def progress(message, done, total):
                 if self.cancelled.is_set():
                     raise ValueError("Build cancelled; no output was published")
-                self.signals.progress.emit(message)
+                if total > 0 and "copy" in message.casefold():
+                    message += f" • {done / total:.0%}"
+                self.latest_progress = message
+                now = time.monotonic()
+                if now - self._last_emit >= 0.1:
+                    self._last_emit = now
+                    self.signals.progress.emit(message)
             result = self._operation(progress)
-        except Exception as exc:  # noqa: BLE001
+        except BaseException as exc:  # worker failures must always reach Qt
             self.signals.failed.emit(f"{type(exc).__name__}: {exc}")
         else:
             self.signals.finished.emit(result)
@@ -92,18 +102,23 @@ class BuildPanel(QWidget):
     """One-stop build of every patch into a single copy."""
 
     operation_state_changed = pyqtSignal(bool)
+    progress_text_changed = pyqtSignal(str)
     music_library_preview_ready = pyqtSignal(object, object)
     abilities_locks_changed = pyqtSignal(dict)  # rules v2 lock settings (runtime key names) for the Rosters page
     built = pyqtSignal(dict)   # the receipt of the copy just written (Share pre-fills from it)
 
-    def __init__(self, facade: object | None = None, parent: QWidget | None = None) -> None:
+    def __init__(self, facade: object | None = None, parent: QWidget | None = None, *, available=None) -> None:
         super().__init__(parent)
         self._facade = facade
         self.operation_guard = None
         self._pool = QThreadPool(self)
         self._task: _Task | None = None
+        self._heartbeat_timer = QTimer(self)
+        self._heartbeat_timer.setInterval(1000)
+        self._heartbeat_timer.timeout.connect(self._heartbeat)
+
         self._state: dict[str, object] | None = None
-        self._available = mod_build.availability()
+        self._available = mod_build.availability() if available is None else available
         self._reading = False                 # the shell is inspecting the open disc for us
         self._target_generated = False        # the target was suggested, not chosen by the user
         self.pending_preset: str | None = None  # Getting Started asked for a preset before the disc was read
@@ -2120,12 +2135,15 @@ class BuildPanel(QWidget):
         task.signals.finished.connect(self._music_preview_done)
         task.signals.failed.connect(self._music_preview_failed)
         self._task = task
+        self._heartbeat_timer.start()
+        self._heartbeat()
         self.operation_state_changed.emit(True)
         self.progress_bar.show()
         self._refresh()
         self._pool.start(task)
 
     def _finish_music_preview(self):
+        self._heartbeat_timer.stop()
         self._task = None
         self.operation_state_changed.emit(False)
         self.progress_bar.hide()
@@ -2167,25 +2185,32 @@ class BuildPanel(QWidget):
                 names.catalog_overrides(self._facade.text_catalog_snapshot(progress), enabled=True,
                                         value_lookup=self._facade.text_value)
         if not include_session:
-            return mod_build.build(plan, progress)
-        source = Path(plan.source).resolve(strict=True)
-        facade = self._facade
-        with facade._lock:
-            cache, session = facade._cache, facade._session
-            if source != Path(facade.source_path).resolve(strict=True):
-                raise ValueError("Choose the open project's source disc to include its staged edits")
-        # Compile the shared canonical project once, including both music twins.
-        # The patch plan then builds on that verified intermediate, never pristine source.
-        with tempfile.TemporaryDirectory(prefix=".shared-build-", dir=Path(plan.target).absolute().parent) as folder:
-            staged = Path(folder) / "project.iso"
-            result = facade.build_service.build(cache, session, staged,
-                lambda event: progress(event.message, event.completed, event.total))
-            receipt = mod_build.build(replace(plan, source=str(staged)), progress)
-        from mod_editor.core.build_feedback import measure
-        receipt["outcome"] = measure(source, plan.target)
-        receipt["source"] = str(source)
-        receipt["steps"].insert(0, {"step": "shared_project", **asdict(result)})
+            receipt = mod_build.build(plan, progress)
+        else:
+            source = Path(plan.source).resolve(strict=True)
+            facade = self._facade
+            with facade._lock:
+                cache, session = facade._cache, facade._session
+                if source != Path(facade.source_path).resolve(strict=True):
+                    raise ValueError("Choose the open project's source disc to include its staged edits")
+            receipt = mod_build.build_with_project(plan, facade.build_service, cache, session, progress)
+        # Some resource passes follow the receipt's earlier inspection. Keep
+        # the existing final source-state refresh, on this worker rather than
+        # in the completion dialog's GUI callback. A courtesy refresh failure
+        # does not turn an already verified/published build into a failed build.
+        progress("Reading the finished disc's settings", 0, 0)
+        receipt["_build_panel_state"] = None
+        try:
+            receipt["_build_panel_state"] = mod_build.inspect(Path(receipt["target"]))
+        except Exception:
+            pass
         return receipt
+
+    def _heartbeat(self):
+        if self._task is not None:
+            message = f"{self._task.latest_progress} • {int(time.monotonic() - self._task.started)} s"
+            self.progress_label.setText(message)
+            self.progress_text_changed.emit(message)
 
     def _build(self) -> None:
         plan = self.plan()
@@ -2201,17 +2226,21 @@ class BuildPanel(QWidget):
         task.signals.finished.connect(self._done)
         task.signals.failed.connect(self._failed)
         self._task = task
+        self._heartbeat_timer.start()
+        self._heartbeat()
         self.operation_state_changed.emit(True)
         self.progress_bar.show()
         self._refresh()
         self._pool.start(task)
 
     def _done(self, receipt: object) -> None:
+        self._heartbeat_timer.stop()
         self._task = None
         self.operation_state_changed.emit(False)
         self.progress_bar.hide()
         self.progress_label.setText("")
         assert isinstance(receipt, dict)
+        state = receipt.pop("_build_panel_state", receipt.get("result"))
         target = str(receipt.get("target"))
         steps = ", ".join(str(s.get("step")) for s in receipt.get("steps", []))
         from mod_editor.core.build_feedback import completion
@@ -2222,7 +2251,6 @@ class BuildPanel(QWidget):
         self.built.emit(dict(receipt))
         QMessageBox.information(self, title, f"{target}\n\n{message}\n\nSteps checked: {steps}.")
         try:
-            state = receipt["result"] if "pre_remap_inspection" in receipt else mod_build.inspect(Path(str(receipt.get("target"))))
             self.apply_state(state)
             hires = next((step for step in receipt.get("steps", []) if step.get("step") == "hires_pack"), None)
             if hires is not None:
@@ -2245,6 +2273,7 @@ class BuildPanel(QWidget):
         self._refresh()
 
     def _failed(self, message: str) -> None:
+        self._heartbeat_timer.stop()
         self._task = None
         self.operation_state_changed.emit(False)
         self.progress_bar.hide()

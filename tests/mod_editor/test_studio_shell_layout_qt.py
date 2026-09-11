@@ -34,7 +34,7 @@ class StudioShellLayoutTests(unittest.TestCase):
         cls.application = QApplication.instance() or QApplication([])
 
     def setUp(self) -> None:
-        self.window = StudioMainWindow(facade=BrowseOnlyFacade(), offer_recovery=False)
+        self.window = StudioMainWindow(eager_pages=True, facade=BrowseOnlyFacade(), offer_recovery=False)
         self.application.processEvents()
 
     def tearDown(self) -> None:

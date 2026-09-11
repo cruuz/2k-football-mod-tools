@@ -247,7 +247,7 @@ class ProductInspectionOffscreenTests(unittest.TestCase):
             self.application.processEvents()
 
     def test_flagship_mounts_both_inspectors_and_preserves_raw_fallback(self) -> None:
-        window = StudioMainWindow(facade=BrowseOnlyFacade())
+        window = StudioMainWindow(eager_pages=True, facade=BrowseOnlyFacade())
         self.application.processEvents()
         gameplay = window._category_pages[ProductCategory.SLIDERS_GAMEPLAY]
         menus = window._category_pages[ProductCategory.MENUS_UI]

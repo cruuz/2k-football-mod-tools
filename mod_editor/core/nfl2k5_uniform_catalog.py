@@ -14,7 +14,7 @@ not escape into the catalog model.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 from functools import lru_cache
 import json
 import os
@@ -535,7 +535,31 @@ class Nfl2k5UniformCatalog:
 
 @lru_cache(maxsize=4)
 def _load_cached(report_path: str) -> Nfl2k5UniformCatalog:
-    return Nfl2k5UniformCatalog.from_report(Path(report_path))
+    from . import metadata_cache
+    import nfl_live_numbers_nameplate_targets as live_targets
+    inputs = [Path(__file__), Path(report_path), Path(live_targets.__file__)]
+    if Path(live_targets.DEFAULT_REPORT).is_file():
+        inputs.append(Path(live_targets.DEFAULT_REPORT))
+    key = metadata_cache.source_key(inputs, "uniform-v1")
+    path = metadata_cache.cache_path("uniform-v1")
+    rows = metadata_cache.read(path, key)
+    if rows is not None:
+        try:
+            sets = []
+            for values in rows[0]:
+                row = list(values)
+                for index in (2, 3, 4, 11):
+                    row[index] = tuple(row[index])
+                sets.append(UniformSet(*row))
+            return Nfl2k5UniformCatalog(sets, (UniformAsset(*row) for row in rows[1]), Path(report_path))
+        except (TypeError, ValueError, IndexError, KeyError):
+            pass
+    catalog = Nfl2k5UniformCatalog.from_report(Path(report_path))
+    def records(items, cls):
+        names = tuple(field.name for field in fields(cls))
+        return [[getattr(item, name) for name in names] for item in items]
+    metadata_cache.write(path, key, [records(catalog.uniform_sets, UniformSet), records(catalog.assets, UniformAsset)])
+    return catalog
 
 
 def load_nfl2k5_uniform_catalog(

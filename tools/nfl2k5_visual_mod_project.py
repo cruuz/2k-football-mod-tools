@@ -3205,6 +3205,66 @@ def build_ausb_audio_imports(
     return results
 
 
+def _encode_worker_count():
+    """Bound workers by available CPUs and conservative per-process memory."""
+    import os
+    cpus = len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else (os.cpu_count() or 1)
+    try:
+        memory = os.sysconf("SC_AVPHYS_PAGES") * os.sysconf("SC_PAGE_SIZE")
+        if sys.platform.startswith("linux"):
+            # Free pages exclude reclaimable filesystem cache. A just-read
+            # retail image otherwise makes a 32 GiB machine look nearly full.
+            try:
+                for line in Path("/proc/meminfo").read_text().splitlines():
+                    if line.startswith("MemAvailable:"):
+                        memory = int(line.split()[1]) * 1024
+                        break
+            except (OSError, ValueError, IndexError):
+                pass
+        return max(1, min(8, cpus, memory // (512 * 1024**2)))
+    except (AttributeError, OSError, ValueError):
+        return max(1, min(4, cpus))
+
+
+def _parallel_uniform_import(arguments):
+    """One independent fixed-span encode. Parent alone owns output writes."""
+    order, edit, project, pins, reports, index, inventory, parent = arguments
+    with tempfile.TemporaryDirectory(prefix=".uniform-encode-", dir=parent) as folder:
+        root = ownership.track_existing(Path(folder), True)
+        files = []
+        try:
+            return build_one_import(order, edit, project, pins, reports,
+                                    index, inventory, root, files, -1)
+        finally:
+            ownership.cleanup_owned(files, [])
+
+
+def _parallel_uniform_imports(edits, project, pins, reports, index, inventory, parent, workers):
+    """Bound in-flight results, consume in project order, cancel on refusal.
+
+    Only independent one-span uniform kinds use this path. Digits retain their
+    serial kept-retail fallback/order; equipment retains its grouped compile
+    cache, so repeated shared artwork is still encoded only once.
+    """
+    from collections import deque
+    from concurrent.futures import ProcessPoolExecutor
+    import multiprocessing
+    arguments = iter((order, edit, project, pins, reports, index, inventory, parent)
+                     for order, edit in enumerate(edits))
+    with ProcessPoolExecutor(max_workers=workers, mp_context=multiprocessing.get_context("spawn")) as pool:
+        pending = deque()
+        try:
+            for arguments_row in arguments:
+                pending.append(pool.submit(_parallel_uniform_import, arguments_row))
+                if len(pending) >= workers:
+                    yield pending.popleft().result()
+            while pending:
+                yield pending.popleft().result()
+        finally:
+            for future in pending:
+                future.cancel()
+
+
 def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                     inventory_pin: ownership.PinnedLargeFile,
                     report_pins: dict[str, InputPin],
@@ -3214,7 +3274,8 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                     exact_inventory_path: Path | None = None,
                     containment_inventory_path: Path | None = None,
                     historical_import_reports:
-                        Mapping[int, dict[str, Any]] | None = None) \
+                        Mapping[int, dict[str, Any]] | None = None,
+                    parallelism: int | None = None) \
         -> PreparedProject:
     input_pins = pin_project_inputs(project)
     temporary = Path(tempfile.mkdtemp(
@@ -3222,6 +3283,7 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
     temp_root = ownership.track_existing(temporary, True)
     temp_files: list[ownership.OwnedPath] = []
     report_paths: dict[str, Path] = {}
+    parallel_imports = None
     try:
         for number, (kind, pin) in enumerate(sorted(report_pins.items())):
             path = temporary / f"report_{number:02d}_{kind}.json"
@@ -3370,6 +3432,13 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
         equipment_compile_cache = uniform_equipment_adapter.EquipmentCompileCache()
         ausb_pack_hashes: dict[str, str] = {}
         unif_color_pack_hashes: dict[str, str] = {}
+        independent_kinds = {"torso", "sleeve", "pants", "live_helmet", "team_select"}
+        workers = _encode_worker_count() if parallelism is None else max(1, parallelism)
+        if (workers > 1 and len(project.value["edits"]) >= 4
+                and historical_import_reports is None
+                and all(row["kind"] in independent_kinds for row in project.value["edits"])):
+            parallel_imports = _parallel_uniform_imports(project.value["edits"], project,
+                input_pins, report_paths, index_pin.path, inventory_pin.path, output_parent, workers)
         for edit_index, edit in enumerate(project.value["edits"]):
             kind = edit["kind"]
             if edit_index in deduplicated_ausb_edits:
@@ -3755,7 +3824,7 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                 staged_before = len(temp_files)
                 try:
                     with _naming_the_failing_edit(edit):
-                        built = [build_one_import(
+                        built = [next(parallel_imports) if parallel_imports is not None else build_one_import(
                             len(prepared), edit, project, input_pins, report_paths,
                             index_pin.path, inventory_pin.path, temp_root, temp_files,
                             source_fd, historical_import)]
@@ -3845,9 +3914,13 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
         if historical_import_reports is not None:
             require(set(historical_import_reports) == set(range(len(prepared))),
                     "historical import receipt orders differ from reconstructed spans")
+        if parallel_imports is not None:
+            parallel_imports.close()
         return PreparedProject(prepared, temp_root, temp_files, input_pins,
                                report_pins, kept_retail)
-    except Exception:
+    except BaseException:
+        if parallel_imports is not None:
+            parallel_imports.close()
         ownership.cleanup_owned(temp_files, [temp_root])
         raise
 

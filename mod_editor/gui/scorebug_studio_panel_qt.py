@@ -135,7 +135,7 @@ class ScorebugStudioPanel(QWidget):
     folder_chosen = pyqtSignal(str)
     document_changed = pyqtSignal()
 
-    def __init__(self, parent=None, *, registry=None):
+    def __init__(self, parent=None, *, registry=None, defer_preview=False):
         super().__init__(parent)
         self.registry = registry
         self.presets = author.presets(registry)
@@ -150,9 +150,17 @@ class ScorebugStudioPanel(QWidget):
         self.layer_list.setCurrentRow(0)
         self._load_document_controls()
         self._load_layer_controls()
-        self.refresh_preview()
+        self._deferred_preview = defer_preview
+        if not defer_preview:
+            self.refresh_preview()
         self.undo_stack.cleanChanged.connect(lambda _clean: self._refresh_dirty())
         self._refresh_dirty()
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        if self._deferred_preview:
+            self._deferred_preview = False
+            QTimer.singleShot(0, self.refresh_preview)
 
     # ---------------------------------------------------------------- UI build
     def _build_ui(self) -> None:
