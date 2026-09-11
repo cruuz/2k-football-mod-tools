@@ -709,7 +709,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_unif_color_writer.py": "5e950cc404e25c1fbeff7ee5aa2a3fad235115aeddd743e95be6862677a88324",
         "mod_editor/core/nfl2k5_uniform_catalog.py": "96a510843e8f64fdfd4edbe186119819f2c3786affbe2077d556d8ec1c21db5f",
         "mod_editor/core/nfl2k5_uniform_choice.py": "485a0b64855836d03573381281b079a9cdab814996fa83b894046d8b29f93d6a",
-        "mod_editor/core/nfl2k5_uniform_equipment_writer.py": "0b2cab297d9681c794613542145edd05d5a1de2ddad6127a63060d2b6360b3b9",
+        "mod_editor/core/nfl2k5_uniform_equipment_writer.py": "89959c31762e5e758d7abf25dca533c71a0436db768da2c8c5df52f4c81b3b55",
         "mod_editor/core/nfl2k5_universal_asset_index.py": "9df3c0a754abcb60fa4db3afd0f9b8af364f60551014d259e2713f5387491421",
         "mod_editor/core/nfl2k5_weekly_prep.py": "5b3b9847f24246b33be5d63d141908f7241ea3da7a62a8d9736c0964b0bff933",
         "mod_editor/core/nfl2k5_weekly_prep_code.py": "554fb7018dd0d2d5c59bd230cffd64d3be1cbc910df6410e40920cd3c08e97f8",
