@@ -19,6 +19,7 @@ import json
 import math
 import struct
 import sys
+import time
 import zlib
 from collections import Counter, OrderedDict, defaultdict
 from dataclasses import dataclass
@@ -259,9 +260,13 @@ class _InventoryRows:
     ) -> list[dict[str, object]]:
         if self._index is None:
             index: dict[tuple[int, int], list[dict[str, object]]] = {}
-            for row in self._value["chunks"]:
+            for number, row in enumerate(self._value["chunks"]):
                 chunk_key = (int(row["outer_index"]), int(row["chunk_index"]))
                 index.setdefault(chunk_key, []).append(row)
+                if number and number % 512 == 0:
+                    # The first preview builds this index in a Qt worker.
+                    # Give the interface time to finish painting the new page.
+                    time.sleep(.001)
             self._index = index
         return list(self._index.get((outer_index, chunk_index), ()))
 
@@ -294,7 +299,11 @@ def load_inventory_document(path: Path) -> dict[str, object]:
     if cached is not None:
         _INVENTORY_CACHE.move_to_end(key)
         return cached
-    value = json.loads(path.read_bytes())
+    root = str(Path(__file__).resolve().parents[1])
+    if root not in sys.path:
+        sys.path.insert(0, root)
+    from mod_editor.core.responsive_json import load
+    value = load(path)
     _INVENTORY_CACHE[key] = value
     _INVENTORY_CACHE.move_to_end(key)
     _INVENTORY_ROWS_BY_ID[id(value)] = _InventoryRows(value)

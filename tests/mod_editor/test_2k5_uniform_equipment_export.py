@@ -95,9 +95,10 @@ class CompactCatalogTests(unittest.TestCase):
             serialize,
         )
 
-        rebuilt = build(
-            _ROOT / "reports/assets/nfl2k5_uniform_tset_textures.tsv"
-        )
+        inventory = _ROOT / "reports/assets/nfl2k5_uniform_tset_textures.tsv"
+        if not inventory.is_file():
+            self.skipTest(f"Reviewed equipment source table absent: {inventory}; compact catalog tests still run")
+        rebuilt = build(inventory)
         shipped = _CATALOG_PATH.read_bytes()
         expected = json.loads(shipped)
         self.assertEqual(rebuilt, expected)

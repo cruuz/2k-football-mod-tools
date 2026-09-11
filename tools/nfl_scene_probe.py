@@ -173,7 +173,8 @@ def read_entry_range(archive: Archive, entry: Entry, offset: int, size: int) -> 
 
 
 def parse_inventory(path: Path) -> tuple[dict[str, object], list[ResourceRecord]]:
-    raw = json.loads(path.read_text(encoding="utf-8"))
+    from nfl_uniform_inventory import load_inventory_document as load
+    raw = load(path)
     if raw.get("schema") != "nfl2k5_resource_chunk_inventory/v1":
         raise ProbeError(f"unsupported inventory schema in {path}")
     records: list[ResourceRecord] = []

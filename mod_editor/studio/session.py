@@ -1363,6 +1363,11 @@ class StudioSession:
         edit = self._edits.get(asset.asset_id)
         return edit.replacement_path if edit else self.asset_io.ensure_original(asset)
 
+    def staged_path(self, asset: Any) -> Path | None:
+        """A cheap snapshot for UI preview workers, without decoding source art."""
+        edit = self._edits.get(asset.asset_id)
+        return edit.replacement_path if edit else None
+
     def export_asset(
         self, asset: Any, destination: Path, *, replace: bool = False
     ) -> Path:
@@ -1678,6 +1683,11 @@ class StudioSession:
         except colour.UnifColorWriterError as exc:
             raise ValidationError(str(exc)) from exc
         return retail.facemask_argb, retail.turtleneck_argb, False
+
+    def staged_uniform_colors(self, selector: str) -> tuple[str, str, bool] | None:
+        """Snapshot the edited pair without reading source metadata."""
+        staged = self._unif_colors.get(self.catalog.get_uniform_set(selector).selector)
+        return (staged[0], staged[1], True) if staged is not None else None
 
     def set_uniform_colors(
         self, selector: str, facemask: str, turtleneck: str

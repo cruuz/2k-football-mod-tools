@@ -1,5 +1,12 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC91, beta 66.1
+
+- **Uniforms opens on the first visit.** maumau78 reported "after switching to another section it works" and Coach Edwards said "The Loading Workspace screen is just stuck". Replacing a prepared page now preserves the selected workspace. Failed preparation offers Retry. Catalog preparation keeps a visible heartbeat; large metadata tables decode in batches and share their parsed inventory.
+- **Fewer background pauses.** Ju3tin reported "the program keeps hanging every 20 secs or so". Disc-wide Build inspection runs outside the interface interpreter, hidden Models and Animations wait until opened, and old-generation garbage collection runs less often. An optional `MOD_STUDIO_STALL_LOG=1` diagnostic records stalls and Python stacks in the log folder. A recurring 20-second idle hang was not reproduced; Windows responsiveness still needs a witness.
+- **Team Kit imports explain what changed.** Coach Edwards reported "Import Edited Kit ... then nothing actually changes". The receipt names staged components and says to use Build Modded XISO. Tests follow an edited kit through the session, selected-component preview, backend build receipt and decoded package pixels, including a separate shoe edit through the tool's own equipment loader. Alpha-only and indexed-palette edits are covered. Game appearance remains unwitnessed.
+- **Manual installations get recovery instructions.** Following GoldenTiger's failed manual update and Noah's advice to "run the setup.exe", unsupported trees, source ZIPs and incomplete Setup layouts are refused before downloading an update. The message directs users to download the latest Setup.exe from the release page and run it.
+
 ## v1.0 RC90, beta 66: full Supersim, a faster studio, the Discord fixes (2026-09-11)
 
 Beta 66 answers every ESPN NFL 2K5 report in Discord since beta 63.1 (Smuzz, Mud, maumau78, Coach Edwards, iwb3,

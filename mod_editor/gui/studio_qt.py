@@ -2799,6 +2799,7 @@ class StudioMainWindow(QMainWindow):
             raise
         self.pages.removeWidget(placeholder)
         self.pages.insertWidget(row, self._page_scroll_host(page))
+        self.pages.setCurrentIndex(self.navigation.currentRow())
         placeholder.deleteLater()
         if self._navigation_key(row) == "build_share":
             preset = getattr(self, "_pending_build_navigation_preset", None)

@@ -210,7 +210,8 @@ def _read_report(path: Path, schema: str, label: str) -> dict[str, Any]:
     resolved = requested.resolve(strict=True)
     try:
         payload = resolved.read_bytes()
-        value = json.loads(payload)
+        from .responsive_json import loads
+        value = loads(payload)
     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise ExtendedVisualCatalogError(f"Could not read {label} report: {exc}") from exc
     current = resolved.stat(follow_symlinks=False)
@@ -256,7 +257,8 @@ def _read_uniform_equipment_catalog(path: Path) -> dict[str, Any]:
         "Uniform equipment export catalog hash changed",
     )
     try:
-        value = json.loads(payload)
+        from .responsive_json import loads
+        value = loads(payload)
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise ExtendedVisualCatalogError(
             f"Uniform equipment export catalog is not valid JSON: {exc}"

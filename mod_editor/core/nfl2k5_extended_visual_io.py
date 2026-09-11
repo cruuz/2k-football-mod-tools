@@ -17,6 +17,7 @@ import os
 from pathlib import Path
 import stat
 import sys
+import threading
 from typing import Any
 
 from . import platform_compat
@@ -112,6 +113,7 @@ class Nfl2k5ExtendedVisualIO:
         self.cache = cache
         self.report_paths = report_paths
         self._decoder = original_decoder
+        self._original_lock = threading.RLock()
         self._archive: Any | None = None
         self._equipment_originals: OrderedDict[tuple[Any, ...], tuple[bytes, bytes]] = OrderedDict()
 
@@ -120,6 +122,11 @@ class Nfl2k5ExtendedVisualIO:
 
     def ensure_original(self, asset: ExtendedVisualAsset) -> Path:
         """Return a verified private original, decoding it once when absent."""
+
+        with self._original_lock:
+            return self._ensure_original(asset)
+
+    def _ensure_original(self, asset: ExtendedVisualAsset) -> Path:
 
         path = self.original_path(asset)
         metadata = path.with_suffix(".json")
