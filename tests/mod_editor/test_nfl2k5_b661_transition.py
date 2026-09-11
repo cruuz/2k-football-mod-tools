@@ -94,7 +94,8 @@ class TransitionTests(unittest.TestCase):
         for name in ('advanced', 'simwin66', 'everything', 'everything_no_career'):
             payload, receipt = compose(cls.retail, plan_for(name))
             cls.payloads[name] = payload
-            RESULTS[name] = dict(xbe_sha256=hashlib.sha256(payload).hexdigest(), build=receipt)
+            RESULTS[name] = dict(xbe_sha256=hashlib.sha256(payload).hexdigest(), build=receipt,
+                                 owned_space=space.layout(payload)['allocations'])
         RESULTS['retail'] = dict(xbe_sha256=hashlib.sha256(cls.retail).hexdigest())
 
     def test_sega_loader_completes_or_reports_pending_queue_for_every_preset(self):
@@ -121,11 +122,45 @@ class TransitionTests(unittest.TestCase):
                 self.assertEqual(set(counts.values()), {8})
                 RESULTS[name]['frame_phases'] = counts
 
-    def test_native_completed_lineup_readiness_and_approach(self):
+    def test_native_readiness_waits_for_animation_then_allows_approach(self):
+        """A loaded ready-animation input, then native aggregation/transition.
+
+        The three-key synthetic clips are not the retail ready-animation
+        library. Supply its descriptor/completion input explicitly, just as
+        boot_wait supplies asynchronous I/O completion. Never write a team
+        ready bit or advance E602B8 from Python after initial construction.
+        """
         from tests.mod_editor.test_nfl2k5_kickoff_v5 import NativeSetupMachine
         for name, payload in self.payloads.items():
             with self.subTest(name=name):
                 m = NativeSetupMachine(payload)
+                m.complete_lineup(m.players)
+                for who in m.players:
+                    m.put(who + 0x904, 0x50F1E4)  # loaded ready descriptor
+                    m.put(who + 0xA10, 0)  # no pending animation transition
+                    m.put(who + 0x9D4, 0x205F000)  # ready animation record
+                m.put(m.KICKER + 0x9D4, 0)  # one completion is still pending
+                states = []
+                for _ in range(3):
+                    m.run(0x1881E0)  # native team readiness, including owner
+                    m.run(0x158C90)  # native state 12 -> 13 gate
+                    states.append(m.get(0xE602B8))
+                self.assertEqual(states, [12, 12, 12])
+                m.put(m.KICKER + 0x9D4, 0x205F000)
+                m.run(0x1881E0)
+                m.run(0x158C90)
+                self.assertEqual(m.get(0xE602B8), 13)
+                m.approach()
+                self.assertEqual(m.get(0xE602B8), 14)
+                RESULTS[name]['readiness'] = dict(pending=states, ready=13, approach=14,
+                    boundary='loaded animation descriptor and completion input',
+                    state_writes=m.state_writes)
+
+    def test_dynamic_completed_lineup_frames_and_approach(self):
+        from tests.mod_editor.test_nfl2k5_kickoff_v5 import NativeSetupMachine
+        for name in ('simwin66', 'everything', 'everything_no_career'):
+            with self.subTest(name=name):
+                m = NativeSetupMachine(self.payloads[name])
                 m.complete_lineup(m.players)
                 states = []
                 for frame in range(32):
@@ -134,10 +169,10 @@ class TransitionTests(unittest.TestCase):
                     states.append(m.get(0xE602B8))
                     if states[-1] == 13:
                         break
-                self.assertEqual(states[-1], 13, f'{name}: lineup wait {states}')
+                self.assertEqual(states[-1], 13)
                 m.approach()
                 self.assertEqual(m.get(0xE602B8), 14)
-                RESULTS[name]['readiness'] = dict(states=states, approach=14, state_writes=m.state_writes)
+                RESULTS[name]['dynamic_lineup_frames'] = dict(states=states, approach=14)
 
     def test_camera_row7_state7_and_first_play_selection_on_composed_presets(self):
         from tests.mod_editor.test_nfl2k5_presentation_v6 import CameraV6Tests
@@ -149,6 +184,99 @@ class TransitionTests(unittest.TestCase):
                 case.patched = payload
                 case.test_kickoff_setup_and_actual_native_row7_lookup()
                 RESULTS[name]['camera'] = 'native state 7 -> row 7 -> selected kickoff state 8'
+
+    def test_missing_selected_play_is_a_native_input_failure_in_retail_and_presets(self):
+        from unicorn import UcError, UC_ERR_READ_UNMAPPED
+        for name, payload in self.payloads.items():
+            with self.subTest(name=name):
+                m = machine(payload)
+                m.put(0xE60280, m.ARENA)
+                m.put(m.ARENA + 12, m.ARENA + 0x100)
+                # The team and play-call objects exist, but selected PLAY is
+                # absent. Native 189640 returns zero; 894B0 reads [eax+4].
+                with self.assertRaises(UcError) as caught:
+                    m.call(0x894A0)
+                self.assertEqual(caught.exception.errno, UC_ERR_READ_UNMAPPED)
+                self.assertEqual(m.reg('EIP'), 0x894B0)
+                # Supply the loaded kickoff record, retaining native decoder
+                # and camera state setter. The next call must return normally.
+                m.put(m.ARENA + 0x108, m.ARENA + 0x200)
+                m.put(m.ARENA + 0x204, 8 << 8)
+                for va, pop in ((0x1889A0, 0), (0x87B90, 0), (0x880A0, 0),
+                                (0xA2D40, 0), (0x88370, 4)):
+                    m.leaf(va, lambda n=pop: m.ret(pop=n),
+                           reason='camera timer/control side effects, as in the presentation fixture')
+                m.call(0x894A0)
+                self.assertEqual(m.get(0xB616C0), 8)
+                RESULTS[name]['selected_play'] = dict(missing_pc='0x894b0', present_state=8,
+                    boundary='loaded selected PLAY record; no archive I/O')
+
+    def test_title_start_executes_installed_screen_and_playlist_routes(self):
+        from tests.mod_editor.test_nfl2k5_music_playlist_contexts import ContextMachine
+        from mod_editor.core import nfl2k5_music_playlist as playlist
+        from unicorn import x86_const as x
+        for name in ('everything', 'everything_no_career'):
+            rows = []
+            for missing in (False, True):
+                with self.subTest(name=name, missing_banks=missing):
+                    vm = ContextMachine(self.payloads[name], playlist.Selection())
+                    vm.prepare_screen()
+                    vm.stub(0x16EFE0, 'profile/storage completion input')
+                    vm.stub(0xF3590, 'controller device assignment')
+                    if missing:
+                        vm.bank_descriptors = {key: 0 for key in vm.bank_descriptors}
+                    sp = vm.STACK + 0x8000
+                    for reg, value in ((x.UC_X86_REG_EAX, 0x10),
+                            (x.UC_X86_REG_ESI, vm.CONTEXT), (x.UC_X86_REG_EDI, 0),
+                            (x.UC_X86_REG_ESP, sp)):
+                        vm.uc.reg_write(reg, value)
+                    # Start was decoded by the input device. Execute native
+                    # F5B57 through screen push and music mode, before the
+                    # unrelated title-text constructor at F5B81.
+                    vm.uc.emu_start(0xF5B57, 0xF5B81, count=30000)
+                    self.assertEqual(vm.uc.reg_read(x.UC_X86_REG_EIP), 0xF5B81)
+                    self.assertEqual(vm.uc.reg_read(x.UC_X86_REG_ESP), sp)
+                    self.assertEqual(vm.read(vm.CONTEXT + 8), 0x515660)
+                    self.assertEqual(len(vm.queued), 0 if missing else 1)
+                    rows.append(dict(missing_banks=missing, queued=len(vm.queued), pc='0xf5b81'))
+            RESULTS[name]['title_start'] = rows
+
+    def test_larger_roster_career_creation_refuses_before_game_loading(self):
+        from tests.nfl2k5_b661_series import Machine as SeriesMachine
+        from tests.mod_editor.test_nfl2k5_my_career_frontend import retail_roster
+        with SeriesMachine(self.payloads['everything'], plan_for('everything')) as m:
+            m.frontend(retail_roster())
+            m.call(0x6E390, ecx=m.manager, edx=0x5015CC)
+            m.select(1)
+            m.select(1)
+            self.assertEqual(m.top(), m.labels['entry_menu'])
+            self.assertEqual(m.get(0xCB8B14), 0)
+            self.assertEqual(m.events, [('notice', 'Roster is full.')])
+            teams = m.get(m.root + 0x1C)
+            self.assertEqual(m.uc.mem_read(teams + 0x19B, 1), b'\x02')
+            RESULTS['everything']['career_creation'] = dict(
+                outcome='returned to entry menu; no game loaded',
+                notice='Roster is full.', team_metadata_version=2,
+                mode_create=hex(m.labels['mode_create']), resource_passes=m.resource_passes)
+
+    def test_series_paired_inputs_and_existing_career_kickoff_command(self):
+        from tests.nfl2k5_b661_series import Machine as SeriesMachine
+        with SeriesMachine(self.payloads['simwin66'], plan_for('simwin66'),
+                           existing_career=True) as m:
+            m.series_scene(kickoff=True)
+            m.presentation_services()
+            m.presented_frame()
+            self.assertEqual(m.counts['updates'], 8)
+            self.assertEqual(m.counts['complete_updates'], 8)
+            self.assertEqual(m.get(0xE602B8), 13)
+            # Kick/approach button command at its native ABI. Readiness and
+            # the game-state write remain native, as in PreKickMachine.
+            m.call(0xB6F30, budget=3000000)
+            self.assertEqual(m.get(0xE602B8), 14)
+            RESULTS['simwin66']['series'] = dict(resource_passes=m.resource_passes,
+                fresh_sign=m.signing_input, updates=dict(m.counts),
+                ready_state=13, approach_state=14,
+                boundary='existing-career membership from native cut/append; approach command input; inherited device/scene services')
 
     def test_v6_catch_kneel_and_next_play_with_optional_owners(self):
         from tests.mod_editor.test_nfl2k5_kickoff_v6 import replay
@@ -163,7 +291,9 @@ class TransitionTests(unittest.TestCase):
 if __name__ == '__main__':
     result = unittest.main(exit=False).result
     if RECORD:
-        (ROOT / 'docs/nfl2k5_b661_transition_receipts.json').write_text(
-            json.dumps(dict(scope='bounded native execution; in-game UNWITNESSED',
-                            cases=RESULTS, successful=result.wasSuccessful()), indent=2) + '\n', encoding='utf-8')
+        from mod_editor.core import nfl2k5_music_collections as collections
+        (ROOT / 'docs/nfl2k5_b661_transition_receipts.json').write_bytes(
+            (json.dumps(dict(scope='bounded native execution; in-game UNWITNESSED',
+                             collection_accessors=[hex(row[0]) for row in collections.SITES],
+                             cases=RESULTS, successful=result.wasSuccessful()), indent=2) + '\n').encode('utf-8'))
     sys.exit(not result.wasSuccessful())
