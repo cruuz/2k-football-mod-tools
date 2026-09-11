@@ -23,6 +23,7 @@ def main(argv=None):
     parser.add_argument("--receipt", type=Path)
     args = parser.parse_args(argv)
     from PyQt5.QtWidgets import QApplication, QMessageBox, QPushButton
+    from PyQt5.QtCore import QCoreApplication, QEvent
     from mod_editor.apf_studio.facade import ApfStudioFacade
     from mod_editor.apf_studio.gui import ApfStudioMainWindow
     from mod_editor.apf_studio.models import ApfCategory, APF_CATEGORY_ORDER
@@ -104,9 +105,10 @@ def main(argv=None):
             assert not facade.session.coverage_context()[2]
             body, _plan, books = facade.play_design_context()
             book = Book.from_bytes(body)
-            for dialog in (PlayDesignDialog(book, 586), FormationDesignDialog(book, 163), CpuCallDialog(book, books)):
+            for dialog in (PlayDesignDialog(book, 586, window), FormationDesignDialog(book, 163, window), CpuCallDialog(book, books, window)):
                 assert dialog.request()
                 dialog.close()
+                dialog.deleteLater()
             pump("all authoring dialogs instantiated")
             playcall = page.playbook_playcall
             page.open_workspace("cpu-audibles")
@@ -150,6 +152,10 @@ def main(argv=None):
             window._allow_close = True
             window.close()
             app.processEvents()
+            # Close alone hides QWidget. Destroy its QSS proxies, pixmaps and
+            # deferred dialogs while QApplication still exists.
+            window.deleteLater()
+            QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
     text = json.dumps(captured, indent=2)+"\n"
     if args.receipt:
         args.receipt.write_text(text)

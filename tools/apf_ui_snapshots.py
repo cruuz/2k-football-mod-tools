@@ -114,6 +114,7 @@ def main():
     parser.add_argument("--height", type=int, default=900)
     args = parser.parse_args()
     from PyQt5.QtWidgets import QApplication, QMessageBox
+    from PyQt5.QtCore import QCoreApplication, QEvent
     from mod_editor.apf_studio.facade import ApfStudioFacade
     from mod_editor.apf_studio.gui import ApfStudioMainWindow
     from mod_editor.apf_studio.models import APF_CATEGORY_ORDER, ApfCategory
@@ -168,7 +169,11 @@ def main():
                     browser.family.setCurrentIndex(browser.family.findData(family))
                     pump(app, window)
                     browser.grid.setCurrentRow(0)
-                    app.processEvents()
+                    # Let the shared footer mirror the newly selected action.
+                    until = time.monotonic() + .3
+                    while time.monotonic() < until:
+                        app.processEvents()
+                        time.sleep(.01)
                     if args.audit:
                         assert not contrast_failures(browser), contrast_failures(browser)
                         assert not page_layout_failures(window), page_layout_failures(window)
@@ -197,6 +202,8 @@ def main():
             window._allow_close = True
             window.close()
             app.processEvents()
+            window.deleteLater()
+            QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
     (args.output / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
 
 

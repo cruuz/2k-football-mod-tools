@@ -68,8 +68,8 @@ class BrowserTests(unittest.TestCase):
         self.browser.grid.setFocus()
         QTest.keyClick(self.browser.grid, Qt.Key_Return)
         self.assertIs(self.app.focusWidget(), self.browser.layers)
-        self.assertIn("logo_l0", self.browser.layers.text())
-        self.assertIn("catalog 12", self.browser.layers.text())
+        self.assertIn("logo_l0", self.browser.layers.toPlainText())
+        self.assertIn("catalog 12", self.browser.layers.toPlainText())
         self.assertTrue(self.browser.replace_button.isEnabled())
 
     def test_filters_use_labels_retail_assignments_and_project_edits(self):
@@ -134,6 +134,22 @@ class BrowserTests(unittest.TestCase):
         self.addCleanup(digits.close)
         digits.inputs["number_0_color"].set_path(self.png)
         self.assertTrue(digits.buttons.button(QDialogButtonBox.Ok).isEnabled())
+
+    def test_short_inspector_preserves_preview_aspect_and_separates_layers(self):
+        self.packages[0] = replace(self.first, label="Beasts, Cobras, Cougars, Gunslingers, Red Dogs")
+        self.run_one()
+        with patch("mod_editor.apf_studio.team_art_qt.thumbnail", return_value=self.png):
+            self.run_one()
+        self.browser.resize(1100, 420)
+        self.browser.grid.setCurrentRow(0)
+        self.app.processEvents()
+        preview, layers = self.browser.preview, self.browser.layers
+        self.assertEqual(preview.width(), 260)
+        self.assertLess(preview.geometry().bottom(), layers.y())
+        self.assertLess(layers.geometry().bottom(), self.browser.replace_button.y())
+        rendered = preview.pixmap()
+        self.assertLessEqual(rendered.height(), preview.contentsRect().height())
+        self.assertAlmostEqual(rendered.width() / rendered.height(), 208 / 128, delta=.02)
 
 
 if __name__ == "__main__":

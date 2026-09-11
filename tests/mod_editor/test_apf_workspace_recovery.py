@@ -412,6 +412,13 @@ class ApfRecoveryWindowTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.application = QApplication.instance() or QApplication([])
 
+    def tearDown(self) -> None:
+        # processEvents() alone does not dispatch DeferredDelete without an
+        # enclosing Qt event loop. Release each test's styled windows while
+        # QApplication is alive, just as the product launcher does on exit.
+        from PyQt5.QtCore import QCoreApplication, QEvent
+        QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
+
     def _window(
         self, store: WorkspaceStateStore | None = None
     ) -> tuple[_WindowFacade, ApfStudioMainWindow]:

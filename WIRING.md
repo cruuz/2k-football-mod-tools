@@ -4,7 +4,7 @@ This section is the current job C handoff. The older material below the historic
 
 ## Registry row and matching action binding
 
-In `mod_editor/capabilities/registry.v1.json`, insert this object in `capabilities` immediately after `apf2k8.logos_cards.textlogo_wordmarks`. Regenerate `registry.v1.sha256` through the repository registry workflow. Existing family rows stay authoritative for their writer contracts.
+In `mod_editor/capabilities/registry.v1.json`, insert this object in `capabilities` immediately before `apf2k8.logos_cards.team_logo`, preserving the required alphabetical ID order. Validate it with `python3 mod_editor/capabilities/validate_registry.py`. This branch has no separate registry checksum file. Existing family rows stay authoritative for their writer contracts.
 
 ```json
 {
@@ -105,6 +105,65 @@ In `mod_editor/apf_studio/models.py`, insert the following entry into `CAPABILIT
         ),
     ),
 ```
+
+## Runtime capability counts and the protected installer assertion
+
+In `packaging/check_apf2k8_mod_studio_runtime.py`, `_check_static_product_contract`, replace the existing registry/card count checks with:
+
+```python
+    require(
+        len(registry.capabilities) == 143
+        and len(registry.for_game(core_model.GameId.APF2K8)) == 54,
+        "shared/APF capability registry counts changed",
+    )
+    cards = catalog.build_capability_cards()
+    require(len(cards) == 54 and len({item.capability_id for item in cards}) == 54,
+            "APF capability surface is not exactly 54 unique rows")
+```
+
+In the same function's `expected_editable` set, insert immediately before `"apf2k8.logos_cards.team_logo",`:
+
+```python
+        "apf2k8.logos_cards.team_art_browser",
+```
+
+In the protected `tests/mod_editor/test_apf_studio_installer.py`, `ReleaseClosureTests`' existing runtime-source assertion, change exactly:
+
+```python
+        self.assertIn("len(registry.capabilities) == 143", runtime)
+```
+
+This updates the exact expected count for the one added row; no assertion or gate is removed. These counts assume this job's row is the only registry addition. Combine the count deltas if other beta-66 jobs add capabilities.
+
+## Optional private-source runtime gate: stale starting-branch inventory counts
+
+The public runtime/installer gate above is exercised by this job. The separate `--source` path in `_check_private_source` still contains older inventory expectations from the starting branch (408 uniform records and 37 capabilities). Live metadata on this branch is 10,464 total assets, 302 uniform/wordmark targets, **888 Uniforms inventory records** (`TXTR: 851`, `NumberFont: 24`, `NameFont: 11`, `SCNE: 2`), and 53 APF capabilities before this job's new registry row, 54 afterward. `Stride_number_field` now correctly belongs to Field Art, which restores its 258-row ownership map.
+
+For that optional gate, replace the uniform inventory count with 888, its type dictionary with the values above, and the capability count with 54. The subsequent mapping must resolve the 302 typed uniform/wordmark targets against **all** catalog TXTR coordinates, because wordmarks belong to Logos & Team Art. Only 96 of those targets are in the Uniforms inventory; its additional inventory is therefore 792 rows (`TXTR: 755`, `NumberFont: 24`, `NameFont: 11`, `SCNE: 2`). This older optional gate was not used to claim verification here; the new live inventory tests and both screenshot audits cover the source metadata directly. If integrating its repair, preserve its exact identity, type and target checks.
+
+## Reviewed label metadata pins
+
+`packaging/check_apf2k8_mod_studio_release.py`, `REVIEWED_METADATA`: replace the existing `mod_editor/data/apf2k8_endzone_labels.v1.json` tuple with the following three tuples (the other two are new adjacent entries). `packaging/repin.py --apply` reports zero changes because this metadata uses `(size, hash, schema)` tuples, not one of that script's supported pin shapes.
+
+```python
+    "mod_editor/data/apf2k8_endzone_labels.v1.json": (
+        7_714,
+        "b873910626d63bf476d55e12253047f88758124697216e9439689dfe5e7e8618",
+        "apf2k8_endzone_labels/v1",
+    ),
+    "mod_editor/data/apf2k8_logo_labels.v1.json": (
+        5_811,
+        "a3a033f1528e50ee9fff831e7b20f0ceabb3e235b86c7859930cf89a6b32a5a2",
+        "apf2k8_logo_labels/v1",
+    ),
+    "mod_editor/data/apf2k8_textlogo_labels.v1.json": (
+        5_904,
+        "79f0b6855e25cef7097bf689dde039970a81b25fd5f97faf3973cffbe95db60e",
+        "apf2k8_textlogo_labels/v1",
+    ),
+```
+
+The unmodified protected gate refuses the changed endzone JSON, so the raw checkout's installer lifecycle suite cannot pass until this wiring is applied. The review copy under `/tmp/b66-apf-ui/integration` exercises these exact pin changes without editing protected working-tree files. No release audit or installer test has been weakened.
 
 ## Runtime import closure
 

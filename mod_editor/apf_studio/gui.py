@@ -20240,7 +20240,11 @@ class ApfStudioMainWindow(QMainWindow):
 
         focused = self.focusWidget()
         field = self._current_search_field()
-        if isinstance(focused, QLineEdit) and focused.text():
+        if isinstance(focused, QLineEdit) and focused.text() and (
+            focused.property("studioSearch")
+            or focused.placeholderText().strip().casefold().startswith(("search", "filter"))
+            or focused.accessibleName().casefold().startswith(("search", "filter"))
+        ):
             focused.clear()
             self.operation_status.setText("Search cleared")
             return
@@ -22070,7 +22074,14 @@ def launch_studio(
                 offer_matching_recovery=offer_recovery,
             ),
         )
-    return application.exec_()
+    result = application.exec_()
+    # Dispose styled widgets before the application/font/pixmap caches leave
+    # scope. This also releases closed, parented authoring dialogs.
+    from PyQt5.QtCore import QCoreApplication, QEvent
+    window.deleteLater()
+    QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
+    setattr(application, "_apf2k8_mod_studio_window", None)
+    return result
 
 
 __all__ = [

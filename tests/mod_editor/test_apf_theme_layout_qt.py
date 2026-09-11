@@ -3,13 +3,15 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+import subprocess
+import sys
 import tempfile
 import unittest
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 os.environ["MOD_STUDIO_NO_UPDATE_CHECK"] = "1"
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QCoreApplication, QEvent, Qt
 from PyQt5.QtTest import QTest
 from PyQt5.QtWidgets import QApplication, QDialogButtonBox, QLineEdit, QTableWidget, QTableWidgetItem, QWidget
 from mod_editor.apf_studio.apf_theme import TOKENS, configure_table, contrast, sort_visual_rows
@@ -39,6 +41,8 @@ class ThemeLayoutTests(unittest.TestCase):
         cls.window._allow_close = True
         cls.window.close()
         cls.app.processEvents()
+        cls.window.deleteLater()
+        QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
         cls.temporary.cleanup()
 
     def test_body_tokens_meet_aa_on_every_surface(self):
@@ -46,6 +50,29 @@ class ThemeLayoutTests(unittest.TestCase):
             for background in ("canvas", "surface", "base", "alternate", "raised"):
                 with self.subTest(foreground=foreground, background=background):
                     self.assertGreaterEqual(contrast(TOKENS[foreground], TOKENS[background]), 4.5)
+
+    def test_launcher_disposes_styled_windows_before_application_exit(self):
+        code = '''
+from pathlib import Path
+import tempfile
+from PyQt5.QtCore import QTimer
+from PyQt5.QtWidgets import QApplication
+from mod_editor.apf_studio.facade import ApfStudioFacade
+from mod_editor.apf_studio.gui import launch_studio
+from mod_editor.apf_studio.project import WorkspaceStateStore
+app = QApplication([])
+with tempfile.TemporaryDirectory() as temporary:
+    root = Path(temporary)
+    QTimer.singleShot(100, lambda: app._apf2k8_mod_studio_window.close())
+    assert launch_studio(ApfStudioFacade(cache_root=root / "cache"),
+                         workspace_store=WorkspaceStateStore(root / "state"), offer_recovery=False) == 0
+    assert app._apf2k8_mod_studio_window is None
+print("APF_LAUNCH_EXIT_PASS", flush=True)
+'''
+        result = subprocess.run([sys.executable, "-c", code], cwd=Path(__file__).resolve().parents[2],
+                                capture_output=True, text=True, timeout=60, env=dict(os.environ, PYTHONFAULTHANDLER="1"))
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("APF_LAUNCH_EXIT_PASS", result.stdout)
 
     def test_every_page_effective_palette_and_1366_layout(self):
         for row, category in enumerate(APF_CATEGORY_ORDER):
@@ -120,6 +147,20 @@ class ThemeLayoutTests(unittest.TestCase):
         self.assertEqual(table.currentRow(), 0)
         self.assertEqual(table.cellWidget(0, 1).text(), "0")
         table.deleteLater()
+
+    def test_escape_does_not_erase_an_authoring_field(self):
+        self.window.navigation.setCurrentRow(0)
+        search = self.window._current_search_field()
+        search.setText("uniform")
+        edit = QLineEdit(self.window)
+        edit.setText("My authored team name")
+        edit.show()
+        edit.setFocus()
+        self.app.processEvents()
+        self.window._clear_current_search()
+        self.assertEqual(edit.text(), "My authored team name")
+        self.assertEqual(search.text(), "")
+        edit.deleteLater()
 
     def test_workspace_store_restores_page_and_workspace(self):
         self.window.navigation.setCurrentRow(APF_CATEGORY_ORDER.index(ApfCategory.PLAYBOOKS))

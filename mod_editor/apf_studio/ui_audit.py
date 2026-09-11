@@ -55,7 +55,7 @@ def contrast_failures(root):
 
 
 def page_layout_failures(window):
-    """Allow intentional vertical scrolling; refuse horizontal page overflow."""
+    """Allow intentional scrolling; refuse oversized controls and inspector overlap."""
     host = window.pages.currentWidget()
     page = host.widget()
     failures = []
@@ -69,4 +69,10 @@ def page_layout_failures(window):
         if isinstance(widget, (QAbstractButton, QAbstractItemView, QLabel, QLineEdit, QComboBox, QAbstractSpinBox)):
             if widget.width() > host.viewport().width():
                 failures.append(f"{type(widget).__name__}#{widget.objectName()} is {widget.width()}px wide")
+            if widget.height() > host.viewport().height():
+                failures.append(f"{type(widget).__name__}#{widget.objectName()} is {widget.height()}px tall")
+    from .team_art_qt import TeamArtBrowser
+    for browser in page.findChildren(TeamArtBrowser):
+        if browser.isVisibleTo(page) and browser.preview.geometry().bottom() >= browser.layers.y():
+            failures.append("Team Art preview overlaps its layer inspector")
     return failures

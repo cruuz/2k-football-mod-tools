@@ -8,11 +8,36 @@ from PyQt5.QtGui import QIcon, QImage, QPixmap
 from PyQt5.QtWidgets import (
     QAbstractItemView, QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog,
     QFrame, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QListWidget, QListWidgetItem,
-    QPushButton, QScrollArea, QSizePolicy, QSplitter, QTableWidget, QTableWidgetItem,
+    QPushButton, QPlainTextEdit, QSizePolicy, QSplitter, QTableWidget, QTableWidgetItem,
     QVBoxLayout, QWidget,
 )
 
 from .team_art import FAMILIES, STATUS, package_modifications, thumbnail
+
+
+class ArtPreview(QLabel):
+    """Keep a consistent width while fitting artwork into short inspectors."""
+
+    def __init__(self, text):
+        super().__init__(text)
+        self._original = QPixmap()
+        self.setFixedWidth(260)
+        self.setMinimumHeight(96)
+        self.setMaximumHeight(166)
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Ignored)
+
+    def setPixmap(self, pixmap):
+        self._original = pixmap
+        super().setPixmap(pixmap.scaled(self.contentsRect().size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
+
+    def setText(self, text):
+        self._original = QPixmap()
+        super().setText(text)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if not self._original.isNull():
+            self.setPixmap(self._original)
 
 
 class LayerFileButton(QPushButton):
@@ -156,7 +181,7 @@ class TeamArtBrowser(QWidget):
         self.grid.setIconSize(QSize(208, 128))
         self.grid.setGridSize(QSize(230, 192))
         self.grid.setSpacing(6)
-        self.grid.setWordWrap(True)
+        self.grid.setWordWrap(False)  # Three fixed lines; long team labels elide, keeping entry and package visible.
         self.grid.setSelectionMode(QAbstractItemView.SingleSelection)
         self.grid.setAccessibleName("Team Art packages")
         self.grid.setTextElideMode(Qt.ElideRight)
@@ -171,32 +196,30 @@ class TeamArtBrowser(QWidget):
         self.title = QLabel("Choose artwork")
         self.title.setObjectName("panelTitle")
         self.title.setWordWrap(True)
-        self.preview = QLabel("Select a thumbnail to inspect its layers.")
+        self.preview = ArtPreview("Select a thumbnail to inspect its layers.")
         self.preview.setObjectName("imagePreview")
-        self.preview.setFixedSize(260, 166)
         self.preview.setAlignment(Qt.AlignCenter)
         self.preview.setWordWrap(True)
-        self.layers = QLabel("")
-        self.layers.setTextFormat(Qt.PlainText)
-        self.layers.setWordWrap(True)
-        self.layers.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.layers = QPlainTextEdit()
+        self.layers.setReadOnly(True)
+        self.layers.setAccessibleName("Team Art layer dimensions and codecs")
         self.layers.setFocusPolicy(Qt.StrongFocus)
+        self.layers.setMinimumHeight(64)
         detail.addWidget(self.title)
         detail.addWidget(self.preview, 0, Qt.AlignHCenter)
-        layer_scroll = QScrollArea()
-        layer_scroll.setWidgetResizable(True)
-        layer_scroll.setWidget(self.layers)
-        detail.addWidget(layer_scroll, 1)
+        detail.addWidget(self.layers, 1)
         self.replace_button = QPushButton("Replace…")
         self.replace_button.setObjectName("primaryButton")
         self.replace_button.setEnabled(False)
         self.replace_button.clicked.connect(self.replace)
-        detail.addWidget(self.replace_button)
+        actions = QHBoxLayout()
+        actions.addWidget(self.replace_button)
         self.revert_button = QPushButton("Revert package")
         self.revert_button.setObjectName("secondaryButton")
         self.revert_button.setEnabled(False)
         self.revert_button.clicked.connect(self.revert)
-        detail.addWidget(self.revert_button)
+        actions.addWidget(self.revert_button)
+        detail.addLayout(actions)
         splitter.addWidget(inspector)
         splitter.setStretchFactor(0, 1)
         layout.addWidget(splitter, 1)
@@ -343,7 +366,9 @@ class TeamArtBrowser(QWidget):
         if package.retail_teams:
             lines.append("Retail teams: " + ", ".join(package.retail_teams))
         lines += [f"\n{layer.name}\n{layer.width} × {layer.height} · {layer.codec} · inner {layer.inner_index}" for layer in package.layers]
-        self.layers.setText("\n".join(lines))
+        description = "\n".join(lines)
+        if self.layers.toPlainText() != description:
+            self.layers.setPlainText(description)
         self.layers.setToolTip(STATUS)
         item = self.grid.currentItem()
         self.preview.setPixmap(item.icon().pixmap(260, 166))
