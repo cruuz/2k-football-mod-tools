@@ -16,8 +16,8 @@ from mod_editor.core import mod_build
 
 def wired_module(name):
     filename = name.replace('.', '/') + '.py'
-    source = (ROOT / filename).read_text()
-    edits = json.loads((ROOT / 'reports/beta66_d1/panel_edits.json').read_text())[filename]
+    source = (ROOT / filename).read_text(encoding='utf-8')
+    edits = json.loads((ROOT / 'reports/beta66_d1/panel_edits.json').read_text(encoding='utf-8'))[filename]
     # Work before and after integration, with no on-disk GUI mutation.
     for edit in edits:
         if edit['old'] in source:
@@ -110,16 +110,26 @@ class PanelTests(unittest.TestCase):
         document = rr.RosterDocument(bad, base=rr.find_block_base(bad))
         panel.load_document(document)
         self.app.processEvents()
-        # The offer is a non-blocking question box parented to the panel (no nested event loop).
-        prompts = [box for box in panel.findChildren(module.QMessageBox) if 'Open Check my rosters' in box.text()]
-        self.assertEqual(len(prompts), 1)
-        self.assertIn('2 players have a missing/invalid college', prompts[0].text())
+        # The offer is an inline banner inside the panel: no dialog, no timer, no nested event loop
+        # (a message box shown from the load path crashes under the offscreen platform on Windows).
+        banner = panel._college_banner
+        self.assertFalse(banner.isHidden())
+        self.assertIn('2 players have a missing/invalid college', panel._college_banner_label.text())
+        self.assertIn('Open Check my rosters', panel._college_banner_label.text())
         with patch.object(panel, 'open_college_check') as opened:
-            prompts[0].button(QMessageBox.No).click()
+            panel._college_banner_open.click()
             self.app.processEvents()
-            self.assertFalse(opened.called)
+            self.assertTrue(opened.called)
+        later = next(b for b in banner.findChildren(module.QPushButton) if b.text() == 'Later')
+        later.click()
+        self.app.processEvents()
+        self.assertTrue(banner.isHidden())
         self.assertIn('2 players have a missing/invalid college', panel.status_label.text())
         self.assertIsNotNone(panel.college_check_session())
+        # A clean document hides the offer again.
+        panel.load_document(rr.RosterDocument(synthetic_body(), base=rr.find_block_base(synthetic_body())))
+        self.app.processEvents()
+        self.assertTrue(banner.isHidden())
 
 
 if __name__ == '__main__':

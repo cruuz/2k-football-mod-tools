@@ -23,16 +23,16 @@ class SettingsTests(unittest.TestCase):
             path.write_text(text)
             disc = root / 'folder # one' / 'quoted "disc".xiso.iso'
             x.remember_disc(path, disc)
-            data = tomllib.loads(path.read_text())
+            data = tomllib.loads(path.read_text(encoding='utf-8'))
             self.assertEqual(data['sys']['files'], dict(bootrom_path='bios.bin', dvd_path=str(disc)))
             self.assertEqual(data['display'], dict(scale=2))
-            self.assertIn('# keep me', path.read_text())
+            self.assertIn('# keep me', path.read_text(encoding='utf-8'))
             before = path.read_bytes()
             x.remember_disc(path, disc)
             self.assertEqual(path.read_bytes(), before)
             empty = root / 'new/xemu.toml'
             x.remember_disc(empty, disc)
-            self.assertEqual(tomllib.loads(empty.read_text())['sys']['files']['dvd_path'], str(disc))
+            self.assertEqual(tomllib.loads(empty.read_text(encoding='utf-8'))['sys']['files']['dvd_path'], str(disc))
 
     def test_invalid_and_unusual_toml_are_not_corrupted(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -41,7 +41,7 @@ class SettingsTests(unittest.TestCase):
                              'sys = "bad"\n', '[sys]\nfiles = 42\n'):
                 p.write_text(original)
                 with self.assertRaises(ValueError): x.remember_disc(p, Path(tmp) / 'disc.iso')
-                self.assertEqual(p.read_text(), original)
+                self.assertEqual(p.read_text(encoding='utf-8'), original)
 
     def test_sdl_platform_locations_and_windows_portable(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -79,9 +79,10 @@ class SettingsTests(unittest.TestCase):
             with patch.object(x,'config_path',return_value=config), \
                     patch('mod_editor.studio.facade._validate_xemu_executable'):
                 result = facade.launch_xemu(lambda *args: None)
-                self.assertIn(f'Your disc: {disc}', result.message)
+                # The footer abbreviates a path under the home folder with ~ (Windows temp dirs live there).
+                self.assertIn(x.disc_help(disc), result.message)
                 self.assertIn('Machine > Load Disc', result.message)
-                self.assertEqual(tomllib.loads(config.read_text())['sys']['files']['dvd_path'], str(disc))
+                self.assertEqual(tomllib.loads(config.read_text(encoding='utf-8'))['sys']['files']['dvd_path'], str(disc))
                 config.unlink(); launcher.side_effect=OSError('failed')
                 with self.assertRaises(ValidationError):facade.launch_xemu(lambda *args:None)
                 self.assertFalse(config.exists())

@@ -1,8 +1,70 @@
 diff --git a/mod_editor/gui/build_panel_qt.py b/mod_editor/gui/build_panel_qt.py
-index 8d50eeb1..6f4b65c2 100644
+index 8d50eeb1..2e83d183 100644
 --- a/mod_editor/gui/build_panel_qt.py
 +++ b/mod_editor/gui/build_panel_qt.py
-@@ -137,7 +137,10 @@ class BuildPanel(QWidget):
+@@ -32,6 +32,7 @@ from PyQt5.QtWidgets import (
+ )
+ 
+ import threading
++import time
+ import tempfile
+ from dataclasses import replace, asdict
+ 
+@@ -73,6 +74,9 @@ class _Task(QRunnable):
+         self.signals = _Signals()
+         self._operation = operation
+         self.cancelled = threading.Event()
++        self.latest_progress = "Preparing the build"
++        self.started = time.monotonic()
++        self._last_emit = 0.0
+         self.setAutoDelete(False)
+ 
+     def run(self) -> None:
+@@ -80,9 +84,15 @@ class _Task(QRunnable):
+             def progress(message, done, total):
+                 if self.cancelled.is_set():
+                     raise ValueError("Build cancelled; no output was published")
+-                self.signals.progress.emit(message)
++                if total > 0 and "copy" in message.casefold():
++                    message += f" • {done / total:.0%}"
++                self.latest_progress = message
++                now = time.monotonic()
++                if now - self._last_emit >= 0.1:
++                    self._last_emit = now
++                    self.signals.progress.emit(message)
+             result = self._operation(progress)
+-        except Exception as exc:  # noqa: BLE001
++        except BaseException as exc:  # worker failures must always reach Qt
+             self.signals.failed.emit(f"{type(exc).__name__}: {exc}")
+         else:
+             self.signals.finished.emit(result)
+@@ -92,18 +102,23 @@ class BuildPanel(QWidget):
+     """One-stop build of every patch into a single copy."""
+ 
+     operation_state_changed = pyqtSignal(bool)
++    progress_text_changed = pyqtSignal(str)
+     music_library_preview_ready = pyqtSignal(object, object)
+     abilities_locks_changed = pyqtSignal(dict)  # rules v2 lock settings (runtime key names) for the Rosters page
+     built = pyqtSignal(dict)   # the receipt of the copy just written (Share pre-fills from it)
+ 
+-    def __init__(self, facade: object | None = None, parent: QWidget | None = None) -> None:
++    def __init__(self, facade: object | None = None, parent: QWidget | None = None, *, available=None) -> None:
+         super().__init__(parent)
+         self._facade = facade
+         self.operation_guard = None
+         self._pool = QThreadPool(self)
+         self._task: _Task | None = None
++        self._heartbeat_timer = QTimer(self)
++        self._heartbeat_timer.setInterval(1000)
++        self._heartbeat_timer.timeout.connect(self._heartbeat)
++
+         self._state: dict[str, object] | None = None
+-        self._available = mod_build.availability()
++        self._available = mod_build.availability() if available is None else available
+         self._reading = False                 # the shell is inspecting the open disc for us
+         self._target_generated = False        # the target was suggested, not chosen by the user
+         self.pending_preset: str | None = None  # Getting Started asked for a preset before the disc was read
+@@ -137,7 +152,10 @@ class BuildPanel(QWidget):
          root.addWidget(title)
          intro = QLabel("Choose a preset or select changes, then Make my disc. The source stays unchanged. "
                         "This uses the selections on this tab; project edits (art, text, audio) use Make disc "
@@ -14,7 +76,99 @@ index 8d50eeb1..6f4b65c2 100644
          intro.setObjectName("throwMuted")
          intro.setWordWrap(True)
          root.addWidget(intro)
-@@ -1498,6 +1501,9 @@ class BuildPanel(QWidget):
+@@ -509,6 +527,22 @@ class BuildPanel(QWidget):
+         mode_row.addWidget(self.uniform_choice_mode)
+         mode_row.addStretch(1)
+         g.addLayout(mode_row)
++        # beta 66 (maumau78 / xevan): one shared reflection weight for every helmet, Glossy (retail) or Matte
++        self.helmet_finish_check = self._option(g, "helmet_finish", "Matte helmet finish (advanced)",
++                                                "Both helmet LODs: the native reflection weight is zeroed. Untick to keep Glossy (retail); "
++                                                "choosing Glossy on a Matte disc restores the retail bytes. Appearance is unwitnessed.", badge=NOT_TESTED)
++        finish_row = QHBoxLayout()
++        finish_row.addSpacing(30)
++        finish_row.addWidget(QLabel("Helmet finish"))
++        self.helmet_finish_combo = QComboBox()
++        self.helmet_finish_combo.setAccessibleName("Helmet finish")
++        self.helmet_finish_combo.addItem("Glossy (retail)", "glossy")
++        self.helmet_finish_combo.addItem("Matte", "matte")
++        self.helmet_finish_combo.currentIndexChanged.connect(lambda i: self.helmet_finish_check.setChecked(i == 1))
++        self.helmet_finish_check.toggled.connect(lambda on: self.helmet_finish_combo.setCurrentIndex(1 if on else 0))
++        finish_row.addWidget(self.helmet_finish_combo)
++        finish_row.addStretch(1)
++        g.addLayout(finish_row)
+         ol.addWidget(gameplay)
+ 
+         # ---- Franchise
+@@ -1147,6 +1181,15 @@ class BuildPanel(QWidget):
+         gate(self.probowl_order_check, "probowl_order")
+         gate(self.penalties_check, "penalties")
+         gate(self.uniform_choice_check, "uniform_choice")
++        finish_state = str(state.get("helmet_finish"))
++        finish_available = self._available.get("helmet_finish", False)
++        finish_enabled = finish_available and finish_state in ("retail", "applied")
++        self.helmet_finish_check.setEnabled(finish_enabled)
++        self.helmet_finish_combo.setEnabled(finish_enabled)
++        self.helmet_finish_check.setChecked(finish_state == "applied")
++        self.helmet_finish_combo.setCurrentIndex(1 if finish_state == "applied" else 0)
++        self._set_badge("helmet_finish", "ADVANCED / UNWITNESSED" if finish_enabled else
++                        "Unrecognized source data" if finish_available else "Not available in this release")
+         gate(self.kick_laces_check, "kick_laces")
+         gate(self.franchise_practice_check, "franchise_practice")
+         gate(self.practice_squad_check, "practice_squad")
+@@ -1252,7 +1295,9 @@ class BuildPanel(QWidget):
+         for key, box in boxes.items():
+             if key not in values:
+                 continue
+-            want = values[key] != "retail" if key in ("music_policy", *r62_ui.LEVELS) else bool(values[key])
++            want = (values[key] == "matte" if key == "helmet_finish" else
++                    values[key] != "retail" if key in ("music_policy", *r62_ui.LEVELS) else
++                    bool(values[key]))
+             if want and not box.isEnabled() and key not in ("realistic_flight", "arc_by_distance"):
+                 skipped.append(key)
+                 continue
+@@ -1305,7 +1350,7 @@ class BuildPanel(QWidget):
+             "team_history": self.team_history_check, "career_stats": self.career_stats_check,
+             "prospect_names": self.prospect_names_check, "seven_on_seven": self.seven_on_seven_check,
+             "position_row": self.position_row_check, "probowl_order": self.probowl_order_check,
+-            "penalties": self.penalties_check, "uniform_choice": self.uniform_choice_check,
++            "penalties": self.penalties_check, "uniform_choice": self.uniform_choice_check, "helmet_finish": self.helmet_finish_check,
+             "kick_laces": self.kick_laces_check, "franchise_practice": self.franchise_practice_check,
+             "practice_squad": self.practice_squad_check, "depth_locks": self.depth_locks_check,
+             "player_star": self.player_star_check, "roster_edits": self.roster_edits_check,
+@@ -1395,6 +1440,7 @@ class BuildPanel(QWidget):
+             position_row=self.position_row_check.isChecked(), probowl_order=self.probowl_order_check.isChecked(),
+             penalties=("nfl" if self.penalties_check.isChecked() else ""),
+             uniform_choice=(str(self.uniform_choice_mode.currentData() or "choice") if self.uniform_choice_check.isChecked() else ""),
++            helmet_finish=("matte" if self.helmet_finish_check.isChecked() else "glossy"),
+             kick_laces=self.kick_laces_check.isChecked(),
+             franchise_practice=self.franchise_practice_check.isChecked(),
+             practice_squad=self.practice_squad_check.isChecked(),
+@@ -1446,7 +1492,14 @@ class BuildPanel(QWidget):
+         return bool(self._include_session_project() or p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression
+                     or any(getattr(p, key) for key in r62_ui.KEYS if key not in r62_ui.LEVELS) or p.cpu_money_downs != "retail" or p.scorebug_runtime or p.momentum > 0 or p.defensive_try or p.zone_drop_cap or p.all_stadiums or p.coverage_slider or p.scramble_tuning or p.flatter_deep_ball or p.chop_block_toggle or p.team_names_2026 or p.music_shuffle or p.practice_squad_screen or p.abilities or p.qb_spy or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.hires_pack or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
+                     or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.espn25_plan
+-                    or p.commentary or p.playbook_packs)
++                    or p.commentary or p.playbook_packs or self._helmet_finish_changed())
++
++    def _helmet_finish_changed(self) -> bool:
++        """True when the chosen finish differs from what the source carries (a Glossy restoration counts)."""
++        combo = getattr(self, "helmet_finish_combo", None)
++        state = (self._state or {}).get("helmet_finish")
++        return bool(combo is not None and combo.isEnabled() and state in ("retail", "applied")
++                    and combo.currentData() != ("matte" if state == "applied" else "glossy"))
+ 
+     @staticmethod
+     def _team_names_details() -> str:
+@@ -1479,6 +1532,8 @@ class BuildPanel(QWidget):
+                     text += f" ({self.hires_scale_combo.currentText()}, {self.hires_target_combo.currentText()}, {self.hires_folder_field.text().strip()})"
+                 if key == "throw":
+                     text += f" ({self.ceiling_spin.value()} yd)"
++                if key == "helmet_finish" and not self._helmet_finish_changed():
++                    continue
+                 labels.append(text)
+         if self.star_players:
+             labels.append(f"star players ({len(self.star_players)})")
+@@ -1498,6 +1553,9 @@ class BuildPanel(QWidget):
              return denial
          if self._reading:
              return "Reading disc…"
@@ -24,7 +178,7 @@ index 8d50eeb1..6f4b65c2 100644
          source = self.source_field.text().strip()
          if not source:
              return "Open your game disc (top right), or choose a disc / default.xbe above."
-@@ -1660,6 +1666,9 @@ class BuildPanel(QWidget):
+@@ -1660,6 +1718,9 @@ class BuildPanel(QWidget):
              self.summary_label.setText(f"Selected: {len(labels)} change{'s' if len(labels) != 1 else ''} — {shown}.")
          else:
              self.summary_label.setText("Selected: nothing yet.")
@@ -34,6 +188,112 @@ index 8d50eeb1..6f4b65c2 100644
          blocker = self.blocker()
          self.cancel_button.setEnabled(self._task is not None)
          self.music_preview_button.setEnabled(bool(
+@@ -2120,12 +2181,15 @@ class BuildPanel(QWidget):
+         task.signals.finished.connect(self._music_preview_done)
+         task.signals.failed.connect(self._music_preview_failed)
+         self._task = task
++        self._heartbeat_timer.start()
++        self._heartbeat()
+         self.operation_state_changed.emit(True)
+         self.progress_bar.show()
+         self._refresh()
+         self._pool.start(task)
+ 
+     def _finish_music_preview(self):
++        self._heartbeat_timer.stop()
+         self._task = None
+         self.operation_state_changed.emit(False)
+         self.progress_bar.hide()
+@@ -2167,26 +2231,33 @@ class BuildPanel(QWidget):
+                 names.catalog_overrides(self._facade.text_catalog_snapshot(progress), enabled=True,
+                                         value_lookup=self._facade.text_value)
+         if not include_session:
+-            return mod_build.build(plan, progress)
+-        source = Path(plan.source).resolve(strict=True)
+-        facade = self._facade
+-        with facade._lock:
+-            cache, session = facade._cache, facade._session
+-            if source != Path(facade.source_path).resolve(strict=True):
+-                raise ValueError("Choose the open project's source disc to include its staged edits")
+-        # Compile the shared canonical project once, including both music twins.
+-        # The patch plan then builds on that verified intermediate, never pristine source.
+-        with tempfile.TemporaryDirectory(prefix=".shared-build-", dir=Path(plan.target).absolute().parent) as folder:
+-            staged = Path(folder) / "project.iso"
+-            result = facade.build_service.build(cache, session, staged,
+-                lambda event: progress(event.message, event.completed, event.total))
+-            receipt = mod_build.build(replace(plan, source=str(staged)), progress)
+-        from mod_editor.core.build_feedback import measure
+-        receipt["outcome"] = measure(source, plan.target)
+-        receipt["source"] = str(source)
+-        receipt["steps"].insert(0, {"step": "shared_project", **asdict(result)})
++            receipt = mod_build.build(plan, progress)
++        else:
++            source = Path(plan.source).resolve(strict=True)
++            facade = self._facade
++            with facade._lock:
++                cache, session = facade._cache, facade._session
++                if source != Path(facade.source_path).resolve(strict=True):
++                    raise ValueError("Choose the open project's source disc to include its staged edits")
++            receipt = mod_build.build_with_project(plan, facade.build_service, cache, session, progress)
++        # Some resource passes follow the receipt's earlier inspection. Keep
++        # the existing final source-state refresh, on this worker rather than
++        # in the completion dialog's GUI callback. A courtesy refresh failure
++        # does not turn an already verified/published build into a failed build.
++        progress("Reading the finished disc's settings", 0, 0)
++        receipt["_build_panel_state"] = None
++        try:
++            receipt["_build_panel_state"] = mod_build.inspect(Path(receipt["target"]))
++        except Exception:
++            pass
+         return receipt
+ 
++    def _heartbeat(self):
++        if self._task is not None:
++            message = f"{self._task.latest_progress} • {int(time.monotonic() - self._task.started)} s"
++            self.progress_label.setText(message)
++            self.progress_text_changed.emit(message)
++
+     def _build(self) -> None:
+         plan = self.plan()
+         if not self.has_work() or self.blocker():
+@@ -2201,17 +2272,21 @@ class BuildPanel(QWidget):
+         task.signals.finished.connect(self._done)
+         task.signals.failed.connect(self._failed)
+         self._task = task
++        self._heartbeat_timer.start()
++        self._heartbeat()
+         self.operation_state_changed.emit(True)
+         self.progress_bar.show()
+         self._refresh()
+         self._pool.start(task)
+ 
+     def _done(self, receipt: object) -> None:
++        self._heartbeat_timer.stop()
+         self._task = None
+         self.operation_state_changed.emit(False)
+         self.progress_bar.hide()
+         self.progress_label.setText("")
+         assert isinstance(receipt, dict)
++        state = receipt.pop("_build_panel_state", receipt.get("result"))
+         target = str(receipt.get("target"))
+         steps = ", ".join(str(s.get("step")) for s in receipt.get("steps", []))
+         from mod_editor.core.build_feedback import completion
+@@ -2222,7 +2297,6 @@ class BuildPanel(QWidget):
+         self.built.emit(dict(receipt))
+         QMessageBox.information(self, title, f"{target}\n\n{message}\n\nSteps checked: {steps}.")
+         try:
+-            state = receipt["result"] if "pre_remap_inspection" in receipt else mod_build.inspect(Path(str(receipt.get("target"))))
+             self.apply_state(state)
+             hires = next((step for step in receipt.get("steps", []) if step.get("step") == "hires_pack"), None)
+             if hires is not None:
+@@ -2245,6 +2319,7 @@ class BuildPanel(QWidget):
+         self._refresh()
+ 
+     def _failed(self, message: str) -> None:
++        self._heartbeat_timer.stop()
+         self._task = None
+         self.operation_state_changed.emit(False)
+         self.progress_bar.hide()
 diff --git a/mod_editor/gui/equipment_texture_import_dialog.py b/mod_editor/gui/equipment_texture_import_dialog.py
 index 1d954e4f..09cb26db 100644
 --- a/mod_editor/gui/equipment_texture_import_dialog.py
@@ -79,10 +339,31 @@ index 01124235..18f923b5 100644
      @property
      def last_error(self) -> str:
 diff --git a/mod_editor/gui/gameplay_patches_panel_qt.py b/mod_editor/gui/gameplay_patches_panel_qt.py
-index adb42ad6..98c7655f 100644
+index adb42ad6..794317cf 100644
 --- a/mod_editor/gui/gameplay_patches_panel_qt.py
 +++ b/mod_editor/gui/gameplay_patches_panel_qt.py
-@@ -435,6 +435,7 @@ class GameplayPatchesPanel(QWidget):
+@@ -215,6 +215,12 @@ PATCHES = (
+      "Retail: the extra patch space is unused. Patch: moves the dynamic kickoff "
+      "there with the same settings. Check that both teams still line up, hold "
+      "until contact and return normally. Unwitnessed in game."),
++    ("helmet_finish", "Helmet finish",
++     "Retail: every helmet shell takes one shared reflection weight from the native material refresh (xevan: "
++     "all helmets share the same reflection texture), so every helmet is glossy. Patch: Matte redirects the "
++     "three shell branches of that refresh to its zero-reflection store in both LODs; no cave, texture or "
++     "package refit, and Glossy on a Matte input restores the retail bytes. ADVANCED / UNWITNESSED: rebuild "
++     "and compare at noon, night, rain and snow."),
+     ("screen_timing", "Screen pass timing (EXPERIMENTAL / UNWITNESSED)",
+      "Retail: some screens already tell linemen to hold, release and block. "
+      "Patch: A changes half-second holds to 0.8 seconds; B changes nominal "
+@@ -281,6 +287,7 @@ if not mod_build.SEVEN_ON_SEVEN_RELEASED:
+ # What each toggle is called on screen (the same words as the Build tab), a one-line helper, and
+ # the qualifier badge that must stay visible outside Details (E4 / M12).
+ LABELS: dict[str, tuple[str, str, str]] = {
++    "helmet_finish": ("Helmet finish", "Both helmet LODs; game appearance needs a witness.", "ADVANCED / UNWITNESSED"),
+     "screen_timing": ("Screen pass timing (experimental)",
+                       "A: longer holds; B: shorter QB drops; C: explicit pass delay; D: all three. UNWITNESSED.", NOT_TESTED),
+     "guardian_cap": ("Guardian caps on helmet C (experimental)",
+@@ -435,6 +442,7 @@ class GameplayPatchesPanel(QWidget):
              "QCheckBox:disabled { color: #6b7385; }"
              "QLabel#optionBadge { color: #f3d27a; background: #2a2a1c; border: 1px solid #6a5a2a; border-radius: 6px; padding: 1px 6px; }")
          self.badges: dict[str, QLabel] = {}
@@ -90,7 +371,24 @@ index adb42ad6..98c7655f 100644
          self._static_badges: dict[str, str] = {}
          list_box = QGroupBox("Changes")
          lb = QVBoxLayout(list_box)
-@@ -531,12 +532,13 @@ class GameplayPatchesPanel(QWidget):
+@@ -518,6 +526,16 @@ class GameplayPatchesPanel(QWidget):
+                 self.momentum_level.currentIndexChanged.connect(self._momentum_changed)
+                 check.toggled.connect(self._momentum_toggled)
+                 head.addWidget(self.momentum_level)
++            if key == "helmet_finish":
++                self.helmet_finish_combo = QComboBox()
++                self.helmet_finish_combo.setAccessibleName("Helmet finish")
++                self.helmet_finish_combo.addItem("Glossy (retail)", "glossy")
++                self.helmet_finish_combo.addItem("Matte", "matte")
++                self.helmet_finish_combo.currentIndexChanged.connect(
++                    lambda index, box=check: box.setChecked(index == 1))
++                check.toggled.connect(
++                    lambda on, combo=self.helmet_finish_combo: combo.setCurrentIndex(1 if on else 0))
++                head.addWidget(self.helmet_finish_combo)
+             if key == "screen_timing":
+                 self.screen_timing_combo = QComboBox()
+                 self.screen_timing_combo.setAccessibleName("Screen timing experiment")
+@@ -531,12 +549,13 @@ class GameplayPatchesPanel(QWidget):
              head.addWidget(badge_label)
              head.addStretch(1)
              rl.addLayout(head)
@@ -110,14 +408,44 @@ index adb42ad6..98c7655f 100644
              more = Details("Details")
              more.add_text(explanation)
              more.setContentsMargins(30, 0, 0, 0)
-@@ -829,10 +831,15 @@ class GameplayPatchesPanel(QWidget):
+@@ -599,6 +618,17 @@ class GameplayPatchesPanel(QWidget):
+                 self.badges[key].setVisible(bool(badge))
+                 continue
+             check = self.checks[key]
++            if key == "helmet_finish":
++                enabled = value in ("retail", "applied")
++                check.setEnabled(enabled)
++                self.helmet_finish_combo.setEnabled(enabled)
++                check.setChecked(value == "applied")
++                self.helmet_finish_combo.setCurrentIndex(1 if value == "applied" else 0)
++                check.setToolTip("" if enabled else "Not recognised: the bytes at this change's sites are neither retail nor this patch "
++                                 "(changed by another tool), so it can't be added here.")
++                self.badges[key].setText("ADVANCED / UNWITNESSED" if enabled else "Unrecognized source data")
++                self.badges[key].setVisible(True)
++                continue
+             check.setEnabled(value == "retail" and not needs_image and key not in r62_ui.UNAVAILABLE)
+             check.setChecked(False)
+             tip = {"applied": "Already installed on this source.",
+@@ -652,7 +682,9 @@ class GameplayPatchesPanel(QWidget):
+         )
+         for key, check in self.checks.items():
+             on = check.isChecked()
+-            if key == "screen_timing":
++            if key == "helmet_finish":
++                plan.helmet_finish = "matte" if on else "glossy"
++            elif key == "screen_timing":
+                 plan.screen_timing = self.screen_timing_combo.currentText() if on else None
+             elif key == "created_teams_extra":
+                 plan.created_teams_extra = 2 if on else 0
+@@ -829,10 +861,15 @@ class GameplayPatchesPanel(QWidget):
              self.guardian_everyone_practice_check.setEnabled(on and self.checks["guardian_overlay"].isEnabled())
              if on and "guardian_cap" in self.checks:
                  self.checks["guardian_cap"].setChecked(False)
+-        any_on = any(c.isChecked() for c in self.checks.values())
 +        from mod_editor.studio.plan_controls import refresh_playbook_controls
 +        self._playbook_blockers = refresh_playbook_controls(
 +            self.checks, self._helpers, self._state)
-         any_on = any(c.isChecked() for c in self.checks.values())
++        any_on = any(c.isChecked() for key, c in self.checks.items() if key != "helmet_finish") or self._helmet_finish_changed()
          configured = True   # MyCareer no longer needs a setup file: an empty field selects in-game creation
          self.write_button.setEnabled(configured and any_on and bool(self.source_field.text()) and bool(self.target_field.text())
 -                                     and self._task is None and not self._reading)
@@ -127,57 +455,85 @@ index adb42ad6..98c7655f 100644
  
      def _choose_source(self) -> None:
          chosen, _f = QFileDialog.getOpenFileName(self, "Choose your game disc (.iso) or default.xbe", str(Path.home()), SOURCE_FILTER)
-@@ -853,6 +860,9 @@ class GameplayPatchesPanel(QWidget):
+@@ -852,12 +889,24 @@ class GameplayPatchesPanel(QWidget):
+             self._target_generated = False
              self._refresh()
  
++    def _helmet_finish_changed(self) -> bool:
++        """True when the chosen finish differs from what the source carries (Glossy restoration counts)."""
++        combo = getattr(self, "helmet_finish_combo", None)
++        state = (self._state or {}).get("helmet_finish")
++        return bool(combo is not None and combo.isEnabled() and state in ("retail", "applied")
++                    and combo.currentData() != ("matte" if state == "applied" else "glossy"))
++
      def _write(self) -> None:
 +        self._refresh()
 +        if self._playbook_blockers:
 +            return
          plan = self.plan()
-         if not any(check.isChecked() for check in self.checks.values()):
+-        if not any(check.isChecked() for check in self.checks.values()):
++        if not (any(check.isChecked() for key, check in self.checks.items() if key != "helmet_finish") or self._helmet_finish_changed()):
              return
+         is_image = tt.is_disc_image(plan.source)
+-        chosen = [LABELS.get(key, (label, "", ""))[0] for key, label, _e in self._patches if self.checks[key].isChecked()]
++        chosen = [LABELS.get(key, (label, "", ""))[0] for key, label, _e in self._patches if key != "helmet_finish" and self.checks[key].isChecked()]
++        if self._helmet_finish_changed():
++            chosen.append("Helmet finish: " + self.helmet_finish_combo.currentText())
+         answer = QMessageBox.question(self, "Make disc with these changes?" if is_image else "Save a patched executable?",
+                                       f"Source (unchanged): {plan.source}\n"
+                                       + (f"Replace existing copy: {plan.target}" if plan.overwrite
 diff --git a/mod_editor/gui/roster_editor_panel_qt.py b/mod_editor/gui/roster_editor_panel_qt.py
-index 92dd0282..69d9ee3d 100644
+index 92dd0282..0fa28937 100644
 --- a/mod_editor/gui/roster_editor_panel_qt.py
 +++ b/mod_editor/gui/roster_editor_panel_qt.py
-@@ -2005,11 +2005,35 @@ class RosterEditorPanel(QWidget):
+@@ -2005,11 +2005,46 @@ class RosterEditorPanel(QWidget):
              f"{summary['players']:,} players · {summary['teams']} teams · {summary['free_agents']} free "
              f"agents · {summary['draft_class']} draft prospects{repairs}")
          self._edits_snapshot = None
-+        if document.college_warning:
-+            from PyQt5.QtCore import QTimer
-+            # A timer parented to this panel dies with it, so a torn-down panel never runs the prompt.
-+            prompt = QTimer(self)
-+            prompt.setSingleShot(True)
-+            prompt.timeout.connect(lambda doc=document: self._offer_college_repair(doc))
-+            prompt.start(0)
++        self._offer_college_repair(document)
          if self._repair_plans:
              self.report.setPlainText("Check & repair found:\n" + "\n".join(
                  f"  - {plan['detail']}" for plan in self._repair_plans)
                  + "\n\nNothing has been changed. Press Repair to apply these, or leave them.")
  
 +    def _offer_college_repair(self, document) -> None:
-+        """Offer Check my rosters for a document that loaded with unresolved colleges (non-blocking)."""
++        """Offer Check my rosters inline for a document that loaded with unresolved colleges.
++
++        The offer is a banner inside the panel, never a dialog: a message box shown from
++        the load path is modal on some platforms and crashes under the offscreen platform
++        on Windows. The banner hides when a clean document loads or the user dismisses it.
++        """
++        banner = getattr(self, "_college_banner", None)
 +        if self.document is not document or not document.college_warning:
++            if banner is not None:
++                banner.hide()
 +            return
-+        box = QMessageBox(QMessageBox.Question, "Missing or invalid colleges",
-+                          document.college_warning + ".\n\nOpen Check my rosters now?",
-+                          QMessageBox.Yes | QMessageBox.No, self)
-+        box.setDefaultButton(QMessageBox.Yes)
-+        box.setAttribute(Qt.WA_DeleteOnClose)
-+
-+        def answered(button, box=box):
-+            if box.standardButton(button) == QMessageBox.Yes:
-+                self.open_college_check()
-+
-+        box.buttonClicked.connect(answered)
-+        box.open()
++        if banner is None:
++            banner = QFrame(self)
++            banner.setObjectName("collegeBanner")
++            banner.setFrameShape(QFrame.StyledPanel)
++            row = QHBoxLayout(banner)
++            row.setContentsMargins(8, 4, 8, 4)
++            self._college_banner_label = QLabel(banner)
++            self._college_banner_label.setWordWrap(True)
++            row.addWidget(self._college_banner_label, 1)
++            self._college_banner_open = QPushButton("Open Check my rosters", banner)
++            self._college_banner_open.clicked.connect(lambda _checked=False: self.open_college_check())
++            row.addWidget(self._college_banner_open)
++            later = QPushButton("Later", banner)
++            later.clicked.connect(banner.hide)
++            row.addWidget(later)
++            layout = self.layout()
++            layout.insertWidget(layout.indexOf(self.status_label), banner)
++            self._college_banner = banner
++        self._college_banner_label.setText(
++            document.college_warning + ". Open Check my rosters to repair the college references.")
++        banner.show()
 +
      def load_from_facade(self) -> bool:
          """Load the roster out of whatever disc the studio already has open."""
  
-@@ -3915,7 +3939,8 @@ class RosterEditorPanel(QWidget):
+@@ -3915,7 +3950,8 @@ class RosterEditorPanel(QWidget):
              self.franchise_panel.redo_button.setEnabled(self.undo_stack.can_redo())
  
      def _set_status(self, text: str) -> None:

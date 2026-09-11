@@ -2005,34 +2005,45 @@ class RosterEditorPanel(QWidget):
             f"{summary['players']:,} players · {summary['teams']} teams · {summary['free_agents']} free "
             f"agents · {summary['draft_class']} draft prospects{repairs}")
         self._edits_snapshot = None
-        if document.college_warning:
-            from PyQt5.QtCore import QTimer
-            # A timer parented to this panel dies with it, so a torn-down panel never runs the prompt.
-            prompt = QTimer(self)
-            prompt.setSingleShot(True)
-            prompt.timeout.connect(lambda doc=document: self._offer_college_repair(doc))
-            prompt.start(0)
+        self._offer_college_repair(document)
         if self._repair_plans:
             self.report.setPlainText("Check & repair found:\n" + "\n".join(
                 f"  - {plan['detail']}" for plan in self._repair_plans)
                 + "\n\nNothing has been changed. Press Repair to apply these, or leave them.")
 
     def _offer_college_repair(self, document) -> None:
-        """Offer Check my rosters for a document that loaded with unresolved colleges (non-blocking)."""
+        """Offer Check my rosters inline for a document that loaded with unresolved colleges.
+
+        The offer is a banner inside the panel, never a dialog: a message box shown from
+        the load path is modal on some platforms and crashes under the offscreen platform
+        on Windows. The banner hides when a clean document loads or the user dismisses it.
+        """
+        banner = getattr(self, "_college_banner", None)
         if self.document is not document or not document.college_warning:
+            if banner is not None:
+                banner.hide()
             return
-        box = QMessageBox(QMessageBox.Question, "Missing or invalid colleges",
-                          document.college_warning + ".\n\nOpen Check my rosters now?",
-                          QMessageBox.Yes | QMessageBox.No, self)
-        box.setDefaultButton(QMessageBox.Yes)
-        box.setAttribute(Qt.WA_DeleteOnClose)
-
-        def answered(button, box=box):
-            if box.standardButton(button) == QMessageBox.Yes:
-                self.open_college_check()
-
-        box.buttonClicked.connect(answered)
-        box.open()
+        if banner is None:
+            banner = QFrame(self)
+            banner.setObjectName("collegeBanner")
+            banner.setFrameShape(QFrame.StyledPanel)
+            row = QHBoxLayout(banner)
+            row.setContentsMargins(8, 4, 8, 4)
+            self._college_banner_label = QLabel(banner)
+            self._college_banner_label.setWordWrap(True)
+            row.addWidget(self._college_banner_label, 1)
+            self._college_banner_open = QPushButton("Open Check my rosters", banner)
+            self._college_banner_open.clicked.connect(lambda _checked=False: self.open_college_check())
+            row.addWidget(self._college_banner_open)
+            later = QPushButton("Later", banner)
+            later.clicked.connect(banner.hide)
+            row.addWidget(later)
+            layout = self.layout()
+            layout.insertWidget(layout.indexOf(self.status_label), banner)
+            self._college_banner = banner
+        self._college_banner_label.setText(
+            document.college_warning + ". Open Check my rosters to repair the college references.")
+        banner.show()
 
     def load_from_facade(self) -> bool:
         """Load the roster out of whatever disc the studio already has open."""

@@ -76,9 +76,12 @@ def dialog_fixtures(window, root):
         capabilities = getattr(page, "capabilities", None)
         if capabilities is not None and hasattr(capabilities, "create_details_dialog"):
             yield capabilities.create_details_dialog()
-    message = QMessageBox(QMessageBox.Information, "APF Mod Studio", "Your project is ready to save.",
-                          QMessageBox.Ok | QMessageBox.Cancel)
-    yield message
+    if sys.platform != "win32":
+        # Showing a QMessageBox under the offscreen platform on Windows raises an access
+        # violation (GitHub runners, PyQt5 5.15); the box carries no theme of its own.
+        message = QMessageBox(QMessageBox.Information, "APF Mod Studio", "Your project is ready to save.",
+                              QMessageBox.Ok | QMessageBox.Cancel)
+        yield message
     file_dialog = QFileDialog(None, "Choose a PNG", str(root), "PNG images (*.png)")
     file_dialog.setOption(QFileDialog.DontUseNativeDialog)
     yield file_dialog
