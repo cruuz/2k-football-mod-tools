@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QFormLayout, QGr
                             QLabel, QLineEdit, QPushButton, QSpinBox, QVBoxLayout, QWidget)
 
 from mod_editor.core import nfl2k5_my_career as career
+from mod_editor.core import nfl2k5_my_career_save as career_save
 from mod_editor.core import nfl2k5_crib_reclaim as crib
 from mod_editor.core import nfl2k5_roster_records as roster
 
@@ -111,6 +112,36 @@ class MyCareerPanel(QWidget):
         form.addRow(self.create_button)
         layout.addWidget(group)
 
+        # Beta 66 (Supersim job): the saved Supersim choice of an in-game career.
+        settings = QGroupBox("MyCareer Settings")
+        settings_form = QFormLayout(settings)
+        self._career_settings_source = ""
+        self.career_settings_path = QLineEdit()
+        self.career_settings_path.setReadOnly(True)
+        self.career_settings_path.setPlaceholderText("Choose a saved in-game MyCareer")
+        self.career_settings_load = QPushButton("Choose career save")
+        self.career_settings_load.clicked.connect(self._choose_career_settings)
+        source_row = QHBoxLayout()
+        source_row.addWidget(self.career_settings_path, 1)
+        source_row.addWidget(self.career_settings_load)
+        settings_form.addRow("Career", source_row)
+        self.career_supersim = QComboBox()
+        self.career_supersim.addItems(career_save.SUPERSIM_CHOICES)
+        self.career_supersim.setCurrentText("Fast forward")
+        self.career_supersim.setEnabled(False)
+        settings_form.addRow("Supersim", self.career_supersim)
+        note = QLabel("New in-game careers default to Fast forward. Choose a save to "
+                      "read its setting, then export a copy to change it. "
+                      "During a game, B cancels fast forward. The same three choices "
+                      "are in-game under Apartment > Settings > Supersim.")
+        note.setWordWrap(True)
+        settings_form.addRow(note)
+        self.career_settings_export = QPushButton("Export career save copy")
+        self.career_settings_export.setEnabled(False)
+        self.career_settings_export.clicked.connect(self._export_career_settings)
+        settings_form.addRow(self.career_settings_export)
+        layout.addWidget(settings)
+
         group = QGroupBox("Crib movie cut")
         form = QFormLayout(group)
         help_text = QLabel(crib.HELP_TEXT)
@@ -187,6 +218,47 @@ class MyCareerPanel(QWidget):
         self._plan = None
         self.rebuild_button.setEnabled(False)
 
+    def _choose_career_settings(self):
+        if self._task is not None:
+            return
+        source, _ = QFileDialog.getOpenFileName(
+            self, "Choose a saved MyCareer", "",
+            "Xbox saves (*.zip SAVEGAME.DAT);;All files (*)")
+        if not source:
+            return
+
+        def read_choice():
+            container = roster.SaveContainer.load(source)
+            return career_save.supersim_choice(container.savegame)
+
+        def loaded(choice):
+            self._career_settings_source = source
+            self.career_settings_path.setText(source)
+            self.career_supersim.setCurrentText(choice)
+            self.career_supersim.setEnabled(True)
+            self.career_settings_export.setEnabled(True)
+            self.result.setText(f"Saved Supersim setting: {choice}.")
+
+        self._run(read_choice, loaded)
+
+    def _export_career_settings(self):
+        if self._task is not None or not self._career_settings_source:
+            return
+        source = self._career_settings_source
+        choice = self.career_supersim.currentText()
+        target, _ = QFileDialog.getSaveFileName(
+            self, "Export MyCareer save copy", "MyCareer-settings.zip",
+            "Xbox save (*.zip)")
+        if not target:
+            return
+
+        def exported(receipt):
+            self.result.setText(
+                f"Exported {receipt['target']}. Supersim: {receipt['supersim']}. "
+                "The save signature and read-back passed.")
+
+        self._run(lambda: career_save.write_supersim(source, target, choice), exported)
+
     def _choose_save(self):
         path, _ = QFileDialog.getOpenFileName(self, "Choose a Franchise draft save", "",
                                              "Xbox saves (*.zip SAVEGAME.DAT);;All files (*)")
@@ -206,6 +278,9 @@ class MyCareerPanel(QWidget):
     def _run(self, action, done):
         if self._task is not None:
             return
+        self.career_settings_load.setEnabled(False)
+        self.career_settings_export.setEnabled(False)
+        self.career_supersim.setEnabled(False)
         self.create_button.setEnabled(False)
         self.review_button.setEnabled(False)
         self.rebuild_button.setEnabled(False)
@@ -215,6 +290,9 @@ class MyCareerPanel(QWidget):
 
         def finished(result, error):
             self._task = None
+            self.career_settings_load.setEnabled(True)
+            self.career_settings_export.setEnabled(bool(self._career_settings_source))
+            self.career_supersim.setEnabled(bool(self._career_settings_source))
             self.create_button.setEnabled(True)
             self.review_button.setEnabled(True)
             self.rebuild_button.setEnabled(self._plan is not None)

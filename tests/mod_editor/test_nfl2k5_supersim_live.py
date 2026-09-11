@@ -1,4 +1,4 @@
-"""Bounded native live-engine proofs. No emulator or full-drive acceptance.
+"""Bounded native live-engine proofs. No emulator or hardware acceptance.
 
 Read each test's declared boundary: orchestration leaves prove call ordering,
 not their bodies; synthetic presentation inputs prove native requests, not
@@ -185,25 +185,47 @@ class NativeResearchTests(unittest.TestCase):
             self.assertAlmostEqual(m.f32(m.reg("ESP") + 8), scale / 60, places=7)
             self.assertEqual(m.leaves, [])
 
-    def test_complete_outer_fixture_stops_at_missing_camera_not_frame_return(self):
+    def test_complete_outer_fixture_constructs_native_camera_and_returns(self):
         if importlib.util.find_spec("capstone") is None:
             self.skipTest("Capstone is absent; kickoff frame fixture requires it")
         from tests.nfl2k5_kickoff_frame import FrameMachine, PHASES
-        from tests.mod_editor.test_nfl2k5_dynamic_kickoff import x86, uni
         m = FrameMachine(self.payload, tasks=False)
-        m.put(0xA83A18, 3)
-        manager = 0x205D000
-        m.f32(manager + 0x104, 1 / 60)
-        m.put(0xBB6DB8 + 0x190 + 0x188, 0xFFFFFFFF)
-        m.uc.reg_write(x86.UC_X86_REG_ECX, manager)
-        m.uc.reg_write(x86.UC_X86_REG_ESP, m.STACK)
-        m.put(m.STACK, m.STOP)
-        # This is a coverage-limit witness, not a claim that retail crashes.
-        # No camera scene/manager is supplied by the kickoff fixture.
-        with self.assertRaises(uni.UcError):
-            m.uc.emu_start(0x64CD0, m.STOP, count=2000000)
-        self.assertEqual(m.uc.reg_read(x86.UC_X86_REG_EIP), 0x5F7BA)
-        self.assertEqual(tuple(m.phase_entries), PHASES)
+        m.outer_scene()
+        self.assertEqual(m.get(0xA82930), 1)
+        self.assertEqual(m.get(0xB665F0), 7)  # native CPU camera choice
+        for _ in range(8):
+            m.outer_frame()
+            self.assertEqual(tuple(m.phase_entries), PHASES)
+            self.assertEqual(m.get(0xA82D38), 0x4F0380)
+        self.assertNotIn(0xA55A0, m.calls)
+        self.assertNotIn(0xA5620, m.calls)
+        self.assertNotIn(0x5F760, m.calls)
+
+    def test_native_audio_pool_mutes_rejects_overflow_and_retires(self):
+        from tests.nfl2k5_supersim_audio import Machine as AudioMachine
+        m = AudioMachine(self.payload)
+        m.f32(0xA70830, 1)
+        m.fill()
+        self.assertEqual(m.used(), 64)
+        for _ in range(8):
+            self.assertEqual(m.allocate(), 0)
+            m.submit(mute=True)
+            self.assertEqual(m.used(), 64)
+            self.assertEqual(m.f32(0xA70830), 1)
+        self.assertEqual(set(m.volumes), {(-10000) & 0xFFFFFFFF})
+        self.assertTrue(m.mixbins)
+        self.assertTrue(all(v == (-10000) & 0xFFFFFFFF
+                            for bins in m.mixbins for v in bins))
+        m.volumes.clear()
+        m.submit(mute=False)
+        self.assertEqual(set(m.volumes), {0})
+        # Device time advances independently. The exact same muted native
+        # submission retires all completed sources and makes slots reusable.
+        m.cursor = 1000
+        m.submit(mute=True)
+        self.assertEqual(m.used(), 0)
+        self.assertEqual(m.allocate(), m.VOICES)
+        self.assertEqual(m.device_calls[0x445BC3], 64 * 10)
 
     def test_pinned_frame_and_modal_dispatch_have_presentation_and_timer_edges(self):
         if importlib.util.find_spec("capstone") is None:
@@ -232,6 +254,201 @@ class RuntimeTests(unittest.TestCase):
     def setUpClass(cls):
         cls.retail = retail_bytes()
         cls.payload = mode.apply(cls.retail)[0]
+
+    def test_installed_scheduler_eight_updates_one_poll_one_present_and_native_rng(self):
+        from tests.nfl2k5_supersim_scheduler import Machine as SchedulerMachine
+        with SchedulerMachine(self.payload) as m:
+            m.setup(); m.absent()
+            m.presented_frame()
+            self.assertEqual(dict(m.counts), dict(polls=1, updates=8, presents=1))
+            self.assertEqual(m.get(m.manager + 0x104), 0x3C888889)
+            self.assertEqual((m.get(0xE5FC50), m.get(0xE5FC90)), (0, 0))
+            actual = bytes(m.uc.mem_read(0xE5FCA0, 64))
+        baseline = Machine(self.retail)
+        baseline.seed(12345)
+        for _ in range(8):
+            baseline.call(0x74730, args=(0x3C888889,), stop=0x7473C)
+        self.assertEqual(actual, bytes(baseline.uc.mem_read(0xE5FCA0, 64)))
+
+    def test_scheduler_prerequisite_drift_refuses_before_code_install(self):
+        from unittest.mock import patch
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        from tests.mod_editor.test_nfl2k5_owner_pairwise_composition import repin_edit
+        im = XbeImage(self.retail)
+        for va in (0x74730, 0x48B50, 0x6E6A0, 0x64CD0, 0x14E070,
+                   0x3DBC0, 0x3E7C0, 0x3CF20, 0x1FF940, 0x158C90,
+                   0x2D37E0, 0x2ED020, 0x150620, 0xBCDA0):
+            with self.subTest(va=hex(va)):
+                damaged = repin_edit(self.retail, va, bytes((im.read(va, 1)[0] ^ 1,)))
+                self.assertEqual(mode.status(damaged), 'foreign')
+                with patch.object(mode.space, 'install_code', side_effect=AssertionError('installed foreign context')):
+                    with self.assertRaises(mode.legacy.MyCareerError):
+                        mode.apply(damaged)
+
+    def test_installed_scheduler_modal_and_cancel_guards(self):
+        from tests.nfl2k5_supersim_scheduler import Machine as SchedulerMachine
+        for case in ('off', 'skip', 'present', 'pause', 'ended', 'invalid',
+                     'challenge', 'initial_toss', 'ot_toss', 'tips', 'disconnect', 'cancel', 'menu'):
+            with self.subTest(case=case), SchedulerMachine(self.payload) as m:
+                m.setup()
+                if case != 'present': m.absent()
+                if case == 'off': m.put(m.state+2696, 1)
+                if case == 'skip': m.put(m.state+2696, 0)
+                if case == 'pause': m.put(0xA83A14, 1)
+                if case == 'ended': m.put(0xA83A18, 2)
+                if case == 'invalid': m.put(m.state, 0)
+                if case == 'challenge': m.put(0xB616C0, 26)
+                if case in ('initial_toss', 'ot_toss'):
+                    m.put(0xE602B4, 0); m.put(0xE602C4, 5 if case == 'ot_toss' else 1)
+                if case == 'tips': m.put(0xBB6CB4, 1)
+                if case == 'disconnect': m.put(0xB37A70, 0)
+                if case == 'cancel': m.put(0xB37A78, 0x200)
+                if case == 'menu': m.put(m.manager+0x100, 32)
+                if case == 'menu':
+                    # An invalid manager must still reach its ordinary native
+                    # update once. Its body is outside this refusal proof.
+                    calls=[]
+                    m.replace_stub(0x6E6A0, lambda: (calls.append(1),m.ret(1,pop=4)))
+                    m.call('mode_ff_frame',ecx=m.manager,args=(0x3C888889,))
+                    self.assertEqual(calls,[1])
+                else:
+                    m.presented_frame()
+                    self.assertEqual(m.counts['updates'], 1)
+                self.assertEqual(m.get(m.state+2716), 0)
+                if case in ('disconnect','cancel'): self.assertEqual(m.get(m.state+2696), 1)
+
+    def test_installed_handoff_waits_for_readiness_all_positions_and_full_clock(self):
+        from tests.nfl2k5_supersim_scheduler import Machine as SchedulerMachine
+        for position in range(17):
+            for away in (False, True):
+                with self.subTest(position=position,away=away), SchedulerMachine(self.payload) as m:
+                    m.setup(position,away); m.absent()
+                    def update():
+                        step=m.counts['updates']
+                        if step == 2:
+                            m.present(); m.put(0xE602B8,12)
+                        if step == 4: m.put(0xE602B8,13)
+                        # Every supplied unready boundary remains CPU-owned.
+                        self.assertEqual(m.get(0xBD8210),0xFFFFFFFF)
+                    m.on_update=update
+                    m.presented_frame()
+                    self.assertEqual(m.counts['updates'],4)
+                    self.assertEqual((m.get(m.state+2708),m.get(m.state+2716)),(0,0))
+                    self.assertEqual(m.get(m.get(0xE60294)+16),0x42200000)
+                    self.assertEqual(m.get(0xBD8210),0)
+                    self.assertEqual(m.get(0xE602B8),13)
+
+    def test_installed_snap_guards_and_pending_native_event_reject_handoff(self):
+        from tests.nfl2k5_supersim_scheduler import Machine as SchedulerMachine
+        with SchedulerMachine(self.payload) as m:
+            m.setup(); m.put(m.state+2708,1);m.put(m.state+2716,1)
+            tasks=[bytes(m.uc.mem_read(m.get(b+0x20)+0x310,0x100)) for b in m.actors]
+            for entry in (0x2D37E0,0x2ED020):
+                self.assertEqual(m.call(entry,ecx=m.body),0)
+            self.assertEqual(tasks,[bytes(m.uc.mem_read(m.get(b+0x20)+0x310,0x100)) for b in m.actors])
+            self.assertEqual(m.call('mode_ff_settled'),1)
+            # Native event 28 admission, with no scheduler stub or task write.
+            m.call(0x1CF5E0,ecx=m.actors[3])
+            self.assertEqual(m.call('mode_ff_settled'),0)
+            m.presented_frame()
+            self.assertEqual(m.counts['updates'],8)
+            self.assertEqual(m.get(m.state+2708),1)
+            self.assertEqual(m.get(0xBD8210),0xFFFFFFFF)
+
+    def test_installed_late_dialog_clears_fast_flag_before_native_loop(self):
+        from tests.nfl2k5_supersim_scheduler import Machine as SchedulerMachine
+        with SchedulerMachine(self.payload) as m:
+            m.setup();m.put(m.state+2716,1);m.put(m.state+2708,1)
+            m.call(0x14E070,stop=0x14E079)
+            self.assertEqual(m.get(m.state+2716),0)
+            self.assertEqual(m.get(m.state+2708),1)
+            self.assertEqual(m.reg('EBP'),m.STACK-4)
+            self.assertEqual(m.reg('ESP'),((m.STACK-4)&~7)-0x1C)
+
+    def test_installed_audio_worker_mutes_and_retires_the_native_pool(self):
+        from tests.nfl2k5_supersim_audio import Machine as AudioMachine
+        m=AudioMachine(self.payload)
+        state=mode.legacy.allocations(self.payload)[1]['va']
+        m.f32(0xA70830,1);m.fill();m.put(state+2716,1)
+        for _ in range(8):
+            self.assertEqual(m.allocate(),0)
+            m.call(0x3E94D,stop=0x3E952,budget=3000000)
+            self.assertEqual(m.used(),64)
+        self.assertEqual(set(m.volumes),{(-10000)&0xFFFFFFFF})
+        self.assertEqual(m.f32(0xA70830),1)
+        m.put(state+2716,0);m.volumes.clear()
+        m.call(0x3E94D,stop=0x3E952,budget=3000000)
+        self.assertEqual(set(m.volumes),{0})
+        m.put(state+2716,1);m.cursor=1000
+        m.call(0x3E94D,stop=0x3E952,budget=3000000)
+        self.assertEqual(m.used(),0)
+
+    def test_installed_complete_audio_worker_and_source_admission(self):
+        from tests.nfl2k5_supersim_audio import Machine as AudioMachine
+        m = AudioMachine(self.payload)
+        state = mode.legacy.allocations(self.payload)[1]['va']
+        m.f32(0xA70830, 1)
+        m.put(state + 2716, 1)
+        callbacks = []
+        callback = m.STOP + 0x200
+        m.leaf(callback, lambda: (callbacks.append((m.reg('ECX'), m.reg('EDX'))),
+                                 m.ret(pop=4)), reason='source completion callback consumer')
+        for i in range(64):
+            voice = m.source()
+            self.assertEqual(voice, m.VOICES + i*m.STRIDE)
+            m.put(voice + 0x10, 1)
+            m.put(voice + 0x14, 1)
+            m.put(voice + 0x78, callback)
+        for _ in range(8):
+            for _ in range(8):
+                self.assertEqual(m.source(), 0)
+            m.worker()
+            self.assertEqual(m.used(), 64)
+        self.assertEqual(set(m.volumes), {(-10000) & 0xFFFFFFFF})
+        m.cursor = 1000
+        m.worker()
+        self.assertEqual(m.used(), 0)
+        self.assertEqual(callbacks, [(m.VOICES+i*m.STRIDE, 3) for i in range(64)])
+        self.assertEqual(m.source(), m.VOICES)
+
+    def test_installed_ticker_native_formatter_glyphs_and_bounded_lines(self):
+        from tests.mod_editor.test_nfl2k5_my_career_m3_menus import MenuTests, Machine as MenuMachine
+        MenuTests.setUpClass()
+        with MenuMachine(self.payload) as m:
+            m.create(MenuTests.roster,preseason=False)
+            m.child_services();m.launch();m.fonts(MenuTests.fonts)
+            # Only player/model rendering is outside this text proof. The
+            # native formatter, font metrics and every glyph path execute.
+            m.replace_stub(0x75D90,lambda:m.ret())
+            m.put(0xE60268,0)
+            m.put(0xE6028C,m.OUT+0xF0000);m.put(m.OUT+0xF0010,0x42F18000)
+            m.put(0xE5FC28,m.OUT+0xF0100);m.put(m.OUT+0xF0100,21)
+            m.put(0xE5FC68,m.OUT+0xF0200);m.put(m.OUT+0xF0200,17)
+            m.put(0xE602C4,2);m.put(m.state+2716,1)
+            for kind in range(1,14):
+                with self.subTest(kind=kind):
+                    event=bytearray((0x10|kind,0,0,0,5,0,0,10,0,0,0,0,2,2,2,0,0,0,0,0))
+                    # Native penalty records use a team index here; other
+                    # records use a player index or packed result bits.
+                    if kind in (10,11):event[14]=0
+                    m.uc.mem_write(0xE53874,bytes(event));m.put(0xE53804,1)
+                    target=m.OUT+0x90000
+                    m.uc.mem_write(target,bytes(1024)+b'CANARY!!')
+                    m.call(0x150620,ecx=target,edx=0,budget=1000000)
+                    self.assertEqual(bytes(m.uc.mem_read(target+1024,8)),b'CANARY!!')
+                    raw=bytes(m.uc.mem_read(target,1024))
+                    self.assertTrue(any(raw[i:i+2]==b'\0\0' for i in range(0,1024,2)))
+                    m.draws.clear();m.call('mode_visuals',budget=3000000)
+                    visible=[d for d in m.draws if d['text'].strip()]
+                    self.assertEqual(visible[0]['text'],'21 - 17   Q2 2:01   8x   B: Cancel')
+                    self.assertGreaterEqual(len(visible),2)
+                    for draw in visible:
+                        self.assertTrue(draw['vertices'])
+                        self.assertTrue(all(20<=p[0]<=620 and 320<=p[1]<=455 for p in draw['vertices']),draw['text'])
+            m.put(0xE53804,0);m.draws.clear();m.call('mode_visuals',budget=3000000)
+            self.assertIn('Waiting for the next play',[d['text'] for d in m.draws])
+            m.put(m.state+2716,0);m.draws.clear();m.call('mode_visuals')
+            self.assertEqual(m.draws,[])
 
     def test_installed_skip_uses_native_postplay_cleanup_and_cpu_ownership(self):
         from tests.nfl2k5_my_career_cpu_fixture import Machine as CareerMachine, retail_playbook
@@ -265,15 +482,15 @@ class RuntimeTests(unittest.TestCase):
         from tests.mod_editor.test_nfl2k5_my_career_frontend import retail_roster
         with CareerMachine(self.payload) as m:
             m.create(retail_roster(), preseason=False)
-            self.assertEqual(m.get(m.state + 2696), 0)
+            self.assertEqual(m.get(m.state + 2696), 2)
             m.select(5)  # Apartment Settings
-            for expected in (1, 0):
-                m.select(1)  # Off-field play
+            for expected in (1, 0, 2):
+                m.select(1)  # Supersim
                 self.assertEqual(m.get(m.state + 2696), expected)
                 label = m.get(m.labels["settings_rows"] + 52 + 4)
-                self.assertEqual(label, m.labels["m3_supersim_off_text" if expected else "m3_supersim_skip_text"])
+                self.assertEqual(label, m.labels["m3_supersim_fast_text" if expected==2 else "m3_supersim_off_text" if expected else "m3_supersim_skip_text"])
             m.call("mode_settings_toggle", ecx=0)
-            self.assertEqual(m.get(m.state + 2696), 0)
+            self.assertEqual(m.get(m.state + 2696), 2)
             m.select(1)
             m.call("inline_encode", ecx=m.state + 1280)
             self.assertEqual(m.uc.mem_read(m.state + 1280 + 82, 1), b"\x02")
@@ -375,14 +592,64 @@ class RuntimeTests(unittest.TestCase):
             # submission. The existing fixture captures the final scene draw;
             # it does not prove the option's pixels/scrolling on a display.
             m.select(5)  # Settings is an owned child of the Apartment.
-            for expected, text in ((1, "Off-field play: Spectate"),
-                                   (0, "Off-field play: Skip presentation")):
+            for expected, text in ((1, "Supersim: Off"),
+                                   (0, "Supersim: Skip presentation"),
+                                   (2, "Supersim: Fast forward")):
                 m.select(1)
                 self.assertEqual(m.get(m.manager + 8*m.depth() + 4), 1)
                 self.assertEqual(m.get(m.state + 2696), expected)
                 m.native_rows.clear()
                 checker.rendered(m)
                 self.assertIn(text, [r["text"] for r in m.native_rows])
+
+    def test_sim_to_next_appearance_native_action_launches_and_arms_wait(self):
+        from tests.mod_editor.test_nfl2k5_my_career_m3_menus import MenuTests, Machine as MenuMachine
+        MenuTests.setUpClass()
+        with MenuMachine(self.payload) as m:
+            m.create(MenuTests.roster, preseason=False)
+            MenuTests().install(m)
+            m.draw()
+            # Scroll the actual native list, whose first viewport has seven
+            # rows, then dispatch the installed eighth row.
+            m.put(m.manager + 8*m.depth() + 4, 7)
+            m.frame()
+            m.native_rows.clear();m.draw()
+            self.assertIn('Sim to next appearance', [r['text'] for r in m.native_rows])
+            m.child_services();m.select(7)
+            self.assertEqual(m.top(), 0x51B908)
+            self.assertEqual((m.get(m.state+2696),m.get(m.state+2708)),(2,1))
+            m.frame(0x10)
+            self.assertEqual(m.top(), 0x4E7EC0)
+            self.assertEqual(m.get(m.state+2708),1)
+
+
+@unittest.skipUnless(HAVE_UC, 'Unicorn is absent; native series requires it')
+class NativeSeriesTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        if importlib.util.find_spec('capstone') is None:
+            raise unittest.SkipTest('Capstone is absent; native series requires it')
+        cls.payload = mode.apply(retail_bytes())[0]
+
+    def test_three_native_plays_grouped_cadence_and_animated_handoffs(self):
+        from tools.nfl2k5_supersim_live_probe import series_probe
+        result = series_probe(self.payload)
+        self.assertGreaterEqual(result['plays'],3)
+        self.assertEqual(result['updates'],8*result['presented_frames'])
+        self.assertEqual(result['polls'],result['presented_frames'])
+        self.assertEqual(result['updates'],result['complete_updates'])
+        self.assertEqual(len({r['state_sha256'] for r in result['cadence']}),1)
+        self.assertEqual({r['group'] for r in result['cadence']},{1,2,4,8})
+        self.assertGreater(result['match_rng_draws'],result['updates'])
+        self.assertEqual(set(result['positions']),set(range(17)))
+        self.assertTrue(all(r['phase']==13 and r['clock']==40 for r in result['handoffs']))
+        self.assertTrue(result['substitution']['native_record_changed'])
+        self.assertEqual(result['substitution']['replacement_position'],0)
+        self.assertEqual(len(result['renders']),2)
+        self.assertTrue(all(r['player_registration']==22 and r['gpu_commands']==1 for r in result['renders']))
+        # Derived acceptance evidence only; no executable, roster or RAM bytes.
+        import json
+        print('\nNATIVE_SUPERSIM_RECEIPT '+json.dumps(result,sort_keys=True),flush=True)
 
 
 

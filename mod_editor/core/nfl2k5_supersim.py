@@ -1,12 +1,13 @@
-"""EXPERIMENTAL / UNWITNESSED Supersim research and availability contract.
+"""EXPERIMENTAL / UNWITNESSED Supersim availability and abstract research.
 
 This is a host reference component, not an installed XBE patch. The retail
 simulator can import part of a live game and step to a boundary. Its finalizer
 ends that game; its scenario restore is not a complete live-state inverse.
 Consequently this module deliberately provides no apply() or live-state writer.
-The live MyCareer owner now requests native presentation skips at 1x. It does
-not install this abstract simulator, an accelerated scheduler or live resume.
-See ASTRA_REPORT.md and test_nfl2k5_supersim_live.py for the live-engine limits.
+The live MyCareer owner installs a separate eight-update scheduler with native
+CPU play, presentation skips, muted draining audio, a ticker and a settled
+pre-snap handoff. It never imports this abstract simulator's state.
+See ASTRA_B66_SUPERSIM_REPORT.md and test_nfl2k5_supersim_live.py for bounded native proofs.
 """
 from __future__ import annotations
 
@@ -17,14 +18,17 @@ import struct
 from typing import Callable
 
 OWNER = "nfl2k5_supersim"
-REQUESTS = ()  # Stage 1 uses the existing MyCareer RX/RW owner, no Supersim allocation.
-RUNTIME_READY = False  # Accelerated "sim to next appearance" is NOT ready.
-LIVE_STAGE = 1
-LIVE_UPDATES_PER_FRAME = 1
+REQUESTS = ()  # Live scheduler belongs to MyCareer, not a separate allocation.
+RUNTIME_READY = True  # Installed live scheduler; abstract live resume stays refused.
+LIVE_STAGE = 3
+LIVE_UPDATES_PER_FRAME = 8
 LIVE_STATUS = (
-    "MyCareer can request native off-field presentation skips at normal speed. "
-    "Fast forward and automatic return with a full play clock are not proved. "
-    "In-game behavior is unwitnessed."
+    "EXPERIMENTAL / UNWITNESSED. MyCareer Fast forward runs up to eight complete "
+    "native CPU updates per presented frame, with one input poll, muted draining "
+    "audio and a score/clock/last-play ticker. It returns at the settled pre-snap "
+    "appearance with the native full play clock. B cancels; modal prompts use "
+    "normal speed. Bounded native fixtures pass; console speed and visuals need "
+    "Noah's witness. The Studio Settings choice requires the protected WIRING.md integration."
 )
 INIT = 0x10B280
 STEP = 0x10B250

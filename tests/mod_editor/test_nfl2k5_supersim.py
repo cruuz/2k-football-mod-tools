@@ -75,9 +75,10 @@ class PolicyTests(unittest.TestCase):
             with self.assertRaises(sim.SupersimError):
                 state.validate()
 
-    def test_no_installed_owner_or_live_writer(self):
+    def test_live_scheduler_contract_keeps_abstract_writer_unavailable(self):
         self.assertEqual(sim.REQUESTS, ())
-        self.assertFalse(sim.RUNTIME_READY)
+        self.assertTrue(sim.RUNTIME_READY)
+        self.assertEqual((sim.LIVE_STAGE,sim.LIVE_UPDATES_PER_FRAME),(3,8))
         self.assertFalse(hasattr(sim, "apply"))
         with self.assertRaisesRegex(sim.SupersimError, "Live resume is not proved"):
             sim.require_live_resume()

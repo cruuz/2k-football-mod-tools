@@ -1157,7 +1157,7 @@ def _selected_space_requests(with_kickoff=False, runtime=False, momentum=0, defe
         + (franchise_2026_patch.REQUESTS if franchise_2026_rules else ())
         + (senior_bowl_patch.REQUESTS if senior_bowl else ())
         + (guardian_overlay_patch.REQUESTS if guardian_overlay else ())
-        + (my_career_mode_patch.REQUESTS if my_career else ())  # M3: code 16384, state 4096 and the fixed M3 state page; harmless for a legacy setup
+        + (my_career_mode_patch.REQUESTS if my_career else ())  # M3: code 20480, state 4096 and the fixed M3 state page; harmless for a legacy setup
         + (screen_hooks_patch.REQUESTS if screen_hooks else ())
         + (coverage_trail_patch.REQUESTS if coverage_trail else ())
         + (franchise_edit_player_patch.REQUESTS if franchise_edit_player else ())

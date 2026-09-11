@@ -37,7 +37,7 @@ class PlanningTests(unittest.TestCase):
                 for row in before['allocations']:
                     if (row['owner'], row['kind']) != (mode.OWNER, 'code'):
                         self.assertEqual(current[row['owner'], row['kind']], row)
-                self.assertEqual(current[mode.OWNER, 'code']['size'], 16384)
+                self.assertEqual(current[mode.OWNER, 'code']['size'], 20480)
                 extra = current[mode.EXTRA_OWNER, 'data']
                 self.assertEqual((extra['va'], extra['size']), (mode.EXTRA_VA, 4096))
                 self.assertEqual(before['file_size'], after['file_size'])

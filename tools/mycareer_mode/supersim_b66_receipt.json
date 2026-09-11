@@ -1,0 +1,540 @@
+{
+  "budget": {
+    "content_bytes": 17919,
+    "machine_code_bytes": 12736,
+    "requests": [
+      [
+        "nfl2k5_my_career",
+        "code",
+        20480,
+        16
+      ],
+      [
+        "nfl2k5_my_career",
+        "data",
+        4096,
+        16
+      ],
+      [
+        "nfl2k5_my_career_m3",
+        "data",
+        4096,
+        16
+      ]
+    ],
+    "same_file_size": true,
+    "spare_rx_bytes": 2544
+  },
+  "final_checks": {
+    "abstract_supersim": {
+      "result": "OK",
+      "seconds": 8.063,
+      "tests": 12
+    },
+    "cave_oracle": {
+      "result": "OK",
+      "seconds": 315.056,
+      "tests": 29
+    },
+    "cave_reference_gate": {
+      "result": "OK",
+      "seconds": 1497.919,
+      "tests": 127
+    },
+    "memory_gate": {
+      "result": "OK",
+      "seconds": 1314.832,
+      "tests": 115
+    },
+    "mode4": {
+      "result": "OK",
+      "seconds": 441.781,
+      "tests": 8
+    },
+    "owner_manifest": {
+      "result": "OK",
+      "seconds": 6.398,
+      "tests": 3
+    },
+    "pairwise": {
+      "result": "OK",
+      "seconds": 1850.057,
+      "tests": 335
+    },
+    "runtime_budget": {
+      "result": "OK",
+      "seconds": 3.96,
+      "tests": 5
+    },
+    "settings": {
+      "result": "OK",
+      "seconds": 28.484,
+      "tests": 9
+    }
+  },
+  "final_full_live_file": {
+    "command": "PYTHONPATH=. python3 -u tests/mod_editor/test_nfl2k5_supersim_live.py -v",
+    "result": "OK",
+    "seconds": 3240.525,
+    "tests": 29
+  },
+  "fixture_corrections": [
+    "Load skeleton reference vectors before full phase/clip constructor",
+    "Initialize native viewport from device video dimensions before camera constructor",
+    "Native dead-ball restart enum is 2, not only initial 0",
+    "Use actor+0xC controller object and BE4D60 port mapping, not fixed first controller object BD8210"
+  ],
+  "implementation_commit": "830f23e46616a75b1fc0c2119fbea23f4e5a6fdc",
+  "integration_required": "Protected Studio Settings, registry, changelog, release manifest: WIRING.md",
+  "limitations": [
+    "No hardware speed measurement, emulator, display, rasterizer or audio device",
+    "Declared initial looping clips, collision spheres, model handles and empty optional caption; retail skeletons and native clip tables",
+    "Only native match RNG E5FCA0 is unmodified; inherited general entropy service 48BC0 returns zero",
+    "P handoff uses declared native phase 1 free-punt context plus fourth down; ordinary fourth-down coaching choice is not proved"
+  ],
+  "native_handoff_research": {
+    "CB": {
+      "clock": 40,
+      "controller_object": "0xbd8474",
+      "controller_port": 0,
+      "frames": 53,
+      "match_rng_draws": 1877,
+      "phase": 13,
+      "render": {
+        "empty_caption": 71,
+        "gpu_commands": 1,
+        "player_pass": 1,
+        "player_registration": 22,
+        "player_visit": 22
+      },
+      "updates": 418
+    },
+    "K": {
+      "clock": 40,
+      "frames": 1,
+      "phase": 13,
+      "updates": 4
+    },
+    "P": {
+      "ball_phase": 2,
+      "clock": 40,
+      "frames": 1,
+      "phase": 13,
+      "updates": 5
+    },
+    "replacement_QB": {
+      "ball_phase": 2,
+      "clock": 40,
+      "frames": 48,
+      "phase": 13,
+      "updates": 379
+    }
+  },
+  "native_series": {
+    "cadence": [
+      {
+        "complete_updates": 8,
+        "group": 1,
+        "match_rng_draws": 21,
+        "polls": 8,
+        "presents": 8,
+        "state_sha256": "5befa5e20f9f0101dd975882fc32d1495fc82d05bebd0411deed65787726e1a5",
+        "updates": 8
+      },
+      {
+        "complete_updates": 8,
+        "group": 2,
+        "match_rng_draws": 21,
+        "polls": 4,
+        "presents": 4,
+        "state_sha256": "5befa5e20f9f0101dd975882fc32d1495fc82d05bebd0411deed65787726e1a5",
+        "updates": 8
+      },
+      {
+        "complete_updates": 8,
+        "group": 4,
+        "match_rng_draws": 21,
+        "polls": 2,
+        "presents": 2,
+        "state_sha256": "5befa5e20f9f0101dd975882fc32d1495fc82d05bebd0411deed65787726e1a5",
+        "updates": 8
+      },
+      {
+        "complete_updates": 8,
+        "group": 8,
+        "match_rng_draws": 21,
+        "polls": 1,
+        "presents": 1,
+        "state_sha256": "5befa5e20f9f0101dd975882fc32d1495fc82d05bebd0411deed65787726e1a5",
+        "updates": 8
+      }
+    ],
+    "complete_updates": 3376,
+    "handoffs": [
+      {
+        "clock": 40.0,
+        "frames": 53,
+        "phase": 13,
+        "position": 4,
+        "scenario": "scrimmage CB",
+        "updates": 418
+      },
+      {
+        "clock": 40.0,
+        "frames": 48,
+        "phase": 13,
+        "position": 0,
+        "scenario": "native injury replacement QB",
+        "updates": 379
+      },
+      {
+        "clock": 40.0,
+        "frames": 1,
+        "phase": 13,
+        "position": 1,
+        "scenario": "native kickoff K",
+        "updates": 4
+      },
+      {
+        "clock": 40.0,
+        "frames": 1,
+        "phase": 13,
+        "position": 2,
+        "scenario": "native punt P",
+        "updates": 5
+      }
+    ],
+    "match_rng_draws": 23223,
+    "plays": 3,
+    "polls": 422,
+    "positions": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16
+    ],
+    "presented_frames": 422,
+    "renders": [
+      {
+        "empty_caption": 71,
+        "gpu_commands": 1,
+        "player_pass": 1,
+        "player_registration": 22,
+        "player_visit": 22,
+        "scenario": "replacement scrimmage"
+      },
+      {
+        "empty_caption": 71,
+        "gpu_commands": 1,
+        "player_pass": 1,
+        "player_registration": 22,
+        "player_visit": 22,
+        "scenario": "punt"
+      }
+    ],
+    "substitution": {
+      "injured_position": 0,
+      "native_record_changed": true,
+      "replacement_position": 0
+    },
+    "transitions": [
+      [
+        304,
+        13
+      ],
+      [
+        308,
+        14
+      ],
+      [
+        523,
+        18
+      ],
+      [
+        599,
+        11
+      ],
+      [
+        1053,
+        12
+      ],
+      [
+        1378,
+        13
+      ],
+      [
+        1500,
+        14
+      ],
+      [
+        1989,
+        18
+      ],
+      [
+        2065,
+        11
+      ],
+      [
+        2493,
+        12
+      ],
+      [
+        2807,
+        13
+      ],
+      [
+        3208,
+        14
+      ],
+      [
+        3376,
+        18
+      ]
+    ],
+    "updates": 3376
+  },
+  "runtime_witnessed": false,
+  "schema": "nfl2k5.supersim-b66-validation.v1",
+  "scratch_manifest": {
+    "observed_forward_steps": 125,
+    "path": ".scratch/b66-manifest.json",
+    "release_build_receipt": false,
+    "sha256": "0bbe6d7b1e619a90c1508d603c7965cf3815eb370f2b0daed2e9da319354e174",
+    "spans": 12731
+  },
+  "source_sha256": {
+    "mod_editor/core/nfl2k5_my_career.py": "df6871963d44e369352f8fe4203116e56d07d53b0391d80c5a529136d7d1e139",
+    "mod_editor/core/nfl2k5_my_career_mode.py": "8ffc9c57e2854625950e8963e2c8232ecc8ec667f053bc5e247a4cfc083d14d0",
+    "mod_editor/core/nfl2k5_my_career_mode_code.py": "1a3b52c6bfe0e543e29f5c2611660475a384c8f366a9fac9dd08c04204d79358",
+    "mod_editor/core/nfl2k5_my_career_save.py": "79d9e8ba3a12abfb861cd07d1a76624ada2b5abf44b4154440479fab42a051b1",
+    "mod_editor/core/nfl2k5_supersim.py": "800e6c29e8fe4f37da22384fdd294d3d34f7a1b905f4cd52ee309b27664aab62",
+    "tests/mod_editor/test_nfl2k5_my_career_settings.py": "e8323a93856c582a57c6395a265b38ae374729d9ca03504cc91ac36c473f08f5",
+    "tests/mod_editor/test_nfl2k5_supersim_live.py": "6372cad710550f21083e2f859867a871b3418d1cf6e5bccb878f6fd733142728",
+    "tests/nfl2k5_supersim_audio.py": "278ebb701b32c63a6ab25f5ac014fdf3ade263c551c401221b4b483abad8a9f6",
+    "tests/nfl2k5_supersim_scheduler.py": "a74ee73518ed5bd941da36c1b128275eb7fc376cafb7af5ba4c5628057555d41",
+    "tests/nfl2k5_supersim_series.py": "709f54af8b5de0f70a67496e40286bd3ac985ccd733fb14409c137875aeb5414",
+    "tools/mycareer_mode/runtime.S": "69a45f89ace706d5e8391e89354cb810361d54c710edf6c0985015195be94e7b",
+    "tools/mycareer_mode/runtime.c": "5d6eb0c7381f30d1991211b8f6866f2ef61a13015bb5a14a42eb1ab4134585ef",
+    "tools/nfl2k5_my_career.S": "624aad98484dab9a3ba584090f25bce2e428cd0f207e0ed504b19b77bab83b99",
+    "tools/nfl2k5_supersim_live_probe.py": "2f79091c17eef3fee0432d3e927811d67b11851393fb9c56f65c69621c0585ec"
+  },
+  "stage": 3,
+  "studio_settings_projection": {
+    "choices": [
+      "Off",
+      "Skip presentation",
+      "Fast forward"
+    ],
+    "invalid_save_error": true,
+    "offscreen": true,
+    "protected_panel_unchanged": true,
+    "result": "PASS",
+    "signed_copy_export_readback": true,
+    "source_preserved": true,
+    "workers": true
+  },
+  "subject_sweep": [
+    {
+      "exit": 0,
+      "seconds": 20.053,
+      "test": "test_nfl2k5_my_career.py",
+      "tests": 13
+    },
+    {
+      "exit": 0,
+      "seconds": 28.101,
+      "test": "test_nfl2k5_my_career_completion.py",
+      "tests": 6
+    },
+    {
+      "exit": 0,
+      "seconds": 13.928,
+      "test": "test_nfl2k5_my_career_control.py",
+      "tests": 2
+    },
+    {
+      "exit": 0,
+      "seconds": 18.648,
+      "test": "test_nfl2k5_my_career_cpu_choice.py",
+      "tests": 1
+    },
+    {
+      "exit": 0,
+      "seconds": 56.517,
+      "test": "test_nfl2k5_my_career_cpu_frame.py",
+      "tests": 1
+    },
+    {
+      "exit": 0,
+      "seconds": 21.934,
+      "test": "test_nfl2k5_my_career_cpu_injury.py",
+      "tests": 1
+    },
+    {
+      "exit": 0,
+      "seconds": 37.609,
+      "test": "test_nfl2k5_my_career_cpu_period.py",
+      "tests": 2
+    },
+    {
+      "exit": 0,
+      "seconds": 20.296,
+      "test": "test_nfl2k5_my_career_cpu_timeout.py",
+      "tests": 1
+    },
+    {
+      "exit": 0,
+      "seconds": 63.909,
+      "test": "test_nfl2k5_my_career_cpu_turnover.py",
+      "tests": 3
+    },
+    {
+      "exit": 0,
+      "seconds": 2.329,
+      "test": "test_nfl2k5_my_career_creation_boundary.py",
+      "tests": 4
+    },
+    {
+      "exit": 0,
+      "seconds": 1090.558,
+      "test": "test_nfl2k5_my_career_draft.py",
+      "tests": 6
+    },
+    {
+      "exit": 0,
+      "seconds": 57.206,
+      "test": "test_nfl2k5_my_career_frontend.py",
+      "tests": 7
+    },
+    {
+      "exit": 0,
+      "seconds": 15.789,
+      "test": "test_nfl2k5_my_career_generic_build.py",
+      "tests": 5
+    },
+    {
+      "exit": 0,
+      "seconds": 11.957,
+      "test": "test_nfl2k5_my_career_inline.py",
+      "tests": 8
+    },
+    {
+      "exit": 0,
+      "seconds": 4.108,
+      "test": "test_nfl2k5_my_career_m3_budget.py",
+      "tests": 5
+    },
+    {
+      "exit": 0,
+      "seconds": 35.582,
+      "test": "test_nfl2k5_my_career_m3_menus.py",
+      "tests": 4
+    },
+    {
+      "exit": 1,
+      "seconds": 6.061,
+      "test": "test_nfl2k5_my_career_manifest.py",
+      "tests": 3
+    },
+    {
+      "exit": 1,
+      "seconds": 458.239,
+      "test": "test_nfl2k5_my_career_mode4.py",
+      "tests": 8
+    },
+    {
+      "exit": 0,
+      "seconds": 275.078,
+      "test": "test_nfl2k5_my_career_mode5.py",
+      "tests": 4
+    },
+    {
+      "exit": 0,
+      "seconds": 0.188,
+      "test": "test_nfl2k5_my_career_mode_audit.py",
+      "tests": 6
+    },
+    {
+      "exit": 0,
+      "seconds": 3.095,
+      "test": "test_nfl2k5_my_career_mode_routes.py",
+      "tests": 7
+    },
+    {
+      "exit": 0,
+      "seconds": 0.258,
+      "test": "test_nfl2k5_my_career_panel.py",
+      "tests": 4
+    },
+    {
+      "exit": 0,
+      "seconds": 57.111,
+      "test": "test_nfl2k5_my_career_played.py",
+      "tests": 4
+    },
+    {
+      "exit": 0,
+      "seconds": 17.367,
+      "test": "test_nfl2k5_my_career_position_inputs.py",
+      "tests": 9
+    },
+    {
+      "exit": 0,
+      "seconds": 158.652,
+      "test": "test_nfl2k5_my_career_season.py",
+      "tests": 1
+    },
+    {
+      "exit": 0,
+      "seconds": 27.676,
+      "test": "test_nfl2k5_my_career_settings.py",
+      "tests": 9
+    },
+    {
+      "exit": 0,
+      "seconds": 12.24,
+      "test": "test_nfl2k5_my_career_unicorn.py",
+      "tests": 18
+    },
+    {
+      "exit": 0,
+      "seconds": 256.758,
+      "test": "test_nfl2k5_my_career_upgrades.py",
+      "tests": 4
+    },
+    {
+      "exit": 0,
+      "seconds": 340.88,
+      "test": "test_nfl2k5_my_career_week.py",
+      "tests": 1
+    },
+    {
+      "exit": 0,
+      "seconds": 44.744,
+      "test": "test_nfl2k5_dynamic_kickoff.py",
+      "tests": 23
+    }
+  ],
+  "subject_sweep_note": "The initial manifest and mode4 failures are superseded by final_checks.owner_manifest and final_checks.mode4; all other files passed. The whole live file is recorded separately.",
+  "supplementary_kicker_slow_frame": {
+    "delta_seconds": 0.06666666666666667,
+    "phase": 13,
+    "still_pre_snap": true,
+    "subsequent_neutral_updates_at_normal_speed": 12,
+    "updates_to_handoff": 1
+  },
+  "updates_per_presented_frame": 8
+}

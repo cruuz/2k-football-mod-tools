@@ -109,7 +109,7 @@ class Mode4Tests(unittest.TestCase):
             slot = m.call('mode_next_fixture')
             self.assertEqual(slot // 17, 1)
             self.assertEqual(m.get(0xE576B4), 0)
-            # Native MRKS shows seven rows; Quit is the eighth, below Save.
+            # Native MRKS shows seven rows; Sim and Quit follow below Save.
             expected = ['Play next game', 'Practice', 'MyPlayer', 'Start MyPlayer', 'Upgrades', 'Settings', 'Save']
             draws = self.glyphs(m.draw())
             self.assertEqual({r['text'] for r in m.native_rows if r['text']}, set(expected))
@@ -277,7 +277,7 @@ class Mode4Tests(unittest.TestCase):
         for payload in (self.payload, self.union):
             code, data = mode.legacy.allocations(payload)
             emitted, labels = mode.code_for(code['va'], data['va'])
-            self.assertEqual((len(emitted), data['size']), (16384, 4096))
+            self.assertEqual((len(emitted), data['size']), (20480, 4096))
             self.assertLessEqual(labels['content_end'] - code['va'], mode.TAG_OFFSET)
             self.assertEqual(mode.apply(payload)[0], payload)
 

@@ -6,6 +6,23 @@ Beta 66 answers every ESPN NFL 2K5 report in Discord since beta 63.1 (Smuzz, Mud
 jrolling2003, BigTimeEmpire, CER, andrethealchemist). The bullets below are added as each change lands; in-game
 behaviour remains UNWITNESSED until played.
 
+- **Live MyCareer fast forward (Noah: "i want full supersim"; andrethealchemist:
+  "My career Super Sim hasn't worked for me.", 2026-09-10).** Supersim now offers
+  Off, Skip presentation and Fast forward. Fast forward lets the native CPU
+  engine run up to eight updates per presented frame while MyPlayer is absent,
+  skips eligible presentation, keeps audio sources draining while muted, and
+  shows score, quarter, clock and the last play. It holds the CPU snap until
+  MyPlayer's next formation settles, then restores control with the native full
+  play clock. B cancels to normal speed; toss, challenge, tips and pause prompts
+  remain at normal speed. New enabled careers default to Fast forward; existing
+  careers keep their saved choice. The Apartment also offers Sim to next
+  appearance, and the Studio's MyCareer page has a MyCareer Settings group that
+  reads a career save's choice and exports a signed save copy with any of the
+  three choices. The MyCareer runtime grows from 16,384 to 20,480 RX bytes and
+  the release cave manifest is regenerated for it. Bounded native proofs cover
+  CPU plays, actual personnel, substitutions, K/P, audio pool retirement and the
+  ticker. Console speed, visuals and audio still need Noah's witness.
+  EXPERIMENTAL / UNWITNESSED.
 - **Smuzz: “Couldn't make the disc” after a fifteen-minute build is gone, and the two options now work together.** Separate offensive and defensive playbooks used to refuse the authored Read option mesh controls and QB spy, and only said so after the disc had been copied. Beta 66 removes the refusal: the pair owner publishes both teams' paired roots and source identities, and the read-option and QB-spy runtimes read that contract (job D2, native proofs). The studio also validates every selection before any copying (job D1's shared Build/Gameplay gate and job B's preflight), so a plan that cannot build is reported at the tick, never after the build. All three presets keep these EXPERIMENTAL options off. imdakine1's “wouldn't create” report carried no error text; if it was this conflict, it is gone.
 - **maumau78: exported shoes keep their authored colours when the slot has room.** Copying “this shoe ... into another slot” now defaults to its own artwork for gloves and shoes. The palette preserves every base colour when it can, and budget reductions select existing colours instead of averaging them into washed-out shades. Check and import lists each changed RGBA colour, its replacement and the fixed budget. Export preserves straight RGBA pixels and removes the old slot's project-only import choice. A full-size image can still exceed the fixed budget; choose a smaller game image when the import explains that limit.
 - **Coach Edwards: Check my images predicts jersey, helmet and arm / shoulder digits.** The “no fixed-span prediction yet” gap is closed with each digit's own target dimensions, allocation, mip layout and palette ladder, including the 896-byte slots. Missing target reports remain explicitly unpredicted.
