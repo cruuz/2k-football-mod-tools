@@ -3,8 +3,10 @@
 The 128-byte block follows the COMPLETE native franchise container. Neither
 ROST version nor any byte of the four native blocks is repurposed. The native
 save transaction signs this footer together with the other serialized bytes.
-FNV is a corruption check, not authentication. This module performs no I/O.
-Byte 82 uses three formerly reserved bits: first person On, Spectate, star Off.
+FNV is a corruption check, not authentication. Export uses SaveContainer's
+signature validation, separate-copy writer and signed read-back.
+Byte 82 stores first person On (bit 0), Supersim Off (bit 1), star Off
+(bit 2), and Fast forward (bit 3). Bits 1 and 3 are mutually exclusive.
 Old zero-filled footers retain the defaults Off / Skip presentation / star On.
 """
 from __future__ import annotations
@@ -18,6 +20,8 @@ BASE_SIZES = (720044, 724140)
 SIZES = tuple(n + SIZE for n in BASE_SIZES)
 BALANCE_CAP = 1000000
 BIRTH_MASK = 0x0FFFF000
+SUPERSIM_CHOICES = ("Off", "Skip presentation", "Fast forward")
+_SUPERSIM_BITS = (2, 0, 8)
 
 
 class CareerSaveError(ValueError):
@@ -67,7 +71,8 @@ def validate(block, *, arena_size=0x92000):
     require(block[72] <= 2 and block[73] == 0 and (block[74] < 32 or block[74] == 255)
             and block[75] == 0 and block[80] <= 1 and block[81] <= 1,
             "invalid request or starter preference")
-    require(block[82] <= 7 and block[83] == 0 and not any(block[88:]),
+    require(block[82] <= 15 and block[82] & 10 != 10
+            and block[83] == 0 and not any(block[88:]),
             "unknown settings or nonzero reserved career bytes")
     require(word(block, 76) <= 0x7F92B1, "invalid request week key")
     require(block[72] != 0 or (block[74] == 255 and word(block, 76) == 0),
@@ -129,6 +134,37 @@ def append(payload, block):
                     "after_sha256": hashlib.sha256(result).hexdigest()}
 
 
+def supersim_choice(payload):
+    """Read the validated inline career's saved Supersim label."""
+    flags = read(payload)[82] & 10
+    return SUPERSIM_CHOICES[_SUPERSIM_BITS.index(flags)]
+
+
+def with_supersim(payload, choice):
+    """Change byte 82 and its footer checksum, preserving the native save.
+
+    This returns bytes for SaveContainer.write(), which signs a separate copy.
+    First-person and star preferences, identity and all native blocks survive.
+    """
+    require(choice in SUPERSIM_CHOICES, "unknown Supersim choice")
+    block = bytearray(read(payload))
+    block[82] = (block[82] & ~10) | _SUPERSIM_BITS[SUPERSIM_CHOICES.index(choice)]
+    result = bytes(payload[:-SIZE]) + seal(block)
+    require(supersim_choice(result) == choice, "Supersim read-back differs")
+    return result
+
+
+def write_supersim(source, target, choice):
+    """Verify the source signature and export a re-signed career save copy."""
+    from .nfl2k5_roster_records import SaveContainer
+    container = SaveContainer.load(source)
+    payload = with_supersim(container.savegame, choice)
+    receipt = container.write(target, payload)
+    receipt.update(supersim=choice, native_bytes_preserved=len(payload)-SIZE,
+                   experimental=True, runtime_witnessed=False)
+    return receipt
+
+
 def from_runtime(state):
     """Encode pointer-free fields; +2704 is the native encoder's FPF snapshot.
 
@@ -150,8 +186,9 @@ def from_runtime(state):
     b[84:88] = state[196:200]
     if len(state) >= 2708:
         settings = [word(state, at) for at in (2704, 2696, 2700)]
-        require(all(v <= 1 for v in settings), "invalid runtime settings")
-        b[82] = sum(v << bit for bit, v in enumerate(settings))
+        fpf, supersim, star_off = settings
+        require(fpf <= 1 and supersim <= 2 and star_off <= 1, "invalid runtime settings")
+        b[82] = fpf | (8 if supersim == 2 else supersim << 1) | star_off << 2
     return validate(seal(b))
 
 
@@ -170,4 +207,6 @@ def to_runtime(block):
     s[64:72], s[188:196], s[196:200] = b[64:72], b[72:80], b[84:88]
     for bit, at in enumerate((2704, 2696, 2700)):
         struct.pack_into("<I", s, at, (b[82] >> bit) & 1)
+    if b[82] & 8:
+        struct.pack_into("<I", s, 2696, 2)
     return bytes(s)

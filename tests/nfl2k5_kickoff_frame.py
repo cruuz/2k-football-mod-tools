@@ -257,6 +257,31 @@ class FrameMachine(NativeMachine):
         assert self.uc.reg_read(x86.UC_X86_REG_ESP) == self.STACK + 8, 'frame ABI imbalance'
         return self.snapshot()
 
+    def outer_scene(self):
+        """Run retail camera construction, as game setup does at 64991.
+
+        The former 5F7BA fault was a missing A55A0 call, not a missing
+        camera resource. 5F710 constructs the camera objects and A5490
+        selects the CPU camera table. A5620 then installs its retail
+        spring/configuration pointer through 60090 on the first update.
+        Player clips and skeletons remain the declared synthetic inputs.
+        """
+        self.outer_manager = 0x205D000
+        self.put(0xA83A18, 3)
+        self.f32(self.outer_manager + 0x104, 1 / 60)
+        # No active highlight in the fixture's replay slot.
+        self.put(0xBB6DB8 + 0x190 + 0x188, -1)
+        self.run(0xA55A0, budget=self.instruction_limit)
+
+    def outer_frame(self):
+        """Complete mixed game callback; rendering is a separate event."""
+        self.writes.clear()
+        self.phase_entries.clear()
+        self.run(0x64CD0, ecx=self.outer_manager, budget=self.instruction_limit)
+        assert tuple(self.phase_entries) == PHASES, self.phase_entries
+        assert self.uc.reg_read(x86.UC_X86_REG_ESP) == self.STACK + 4
+        return self.snapshot()
+
 
 PREKICK_SITES = {
     0x1853D0, 0x183D30, 0x2111D0, 0x186160, 0x183CD0, 0x1ABCF0,

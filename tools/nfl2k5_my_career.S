@@ -416,6 +416,12 @@ bind_controller:
  jnz bind_bad
  mov edi, esi
 bind_cpu:
+.ifdef MYCAREER_INLINE
+ /* Supersim keeps native membership visible while delaying input ownership
+  * until the complete settled pre-snap frame has finished. */
+ cmp DWORD PTR [state+2712],0
+ jne bind_detach
+.endif
  cmp esi, DWORD PTR [state+2584]
  jne bind_detach
  cmp edi, esi
@@ -438,6 +444,12 @@ bind_next:
  jmp bind_loop
 bind_complete:
  mov DWORD PTR [state+2568], edi
+.ifdef MYCAREER_INLINE
+ cmp DWORD PTR [state+2712],0
+ je 1f
+ xor edi,edi
+1:
+.endif
  mov DWORD PTR [state+2584], edi
  mov eax, DWORD PTR [state+32]
  imul ecx, eax, 24

@@ -15,9 +15,10 @@ extern u8 m3[4096];
 #define M(n) W(m3,n)
 extern const u8 m3_menu_template[],m3_menu_bytes[];
 extern u8 settings_rows[];
-extern const u16 m3_supersim_off_text[],m3_supersim_skip_text[];
+extern const u16 m3_supersim_off_text[],m3_supersim_skip_text[],m3_supersim_fast_text[];
 extern const u16 m3_star_off_text[],m3_star_on_text[],m3_settings_note[];
 extern const u16 m3_fpf_off_text[],m3_fpf_on_text[];
+extern const u16 m3_ff_format[],m3_ff_wait_text[];
 extern const u8 m3_settings_menu[];
 extern u32 primary(void);
 extern void resolve_team(void), settle(void);
@@ -25,11 +26,12 @@ extern void rebind(void);
 #define S(n) W(state,n)
 #define STAGED (state+1280)
 #define ROOT ((u8 *)G(0xB72918))
-/* +2696 Spectate, +2700 star disabled, +2704 serialized FPF snapshot.
+/* +2696 Supersim (0 skip, 1 off, 2 fast), +2700 star disabled, +2704 FPF.
  * The retail word E5FFE4 remains authoritative; only load reapplies it. */
 static NI void settings_labels(void) {
     W(settings_rows,4)=(u32)(G(0xE5FFE4)?m3_fpf_on_text:m3_fpf_off_text);
-    W(settings_rows,52+4)=(u32)(S(2696)?m3_supersim_off_text:m3_supersim_skip_text);
+    W(settings_rows,52+4)=(u32)(S(2696)==2?m3_supersim_fast_text:
+                              S(2696)?m3_supersim_off_text:m3_supersim_skip_text);
     W(settings_rows,104+4)=(u32)(S(2700)?m3_star_off_text:m3_star_on_text);
 }
 static NI void player_star(u8 *p) { p[0x53]=(p[0x53]&0xfe)|!S(2700); }
@@ -63,7 +65,8 @@ u32 FC inline_valid(const u8 *b,u32 arena) {
        W(b,68)>0x7f92b1 || B(b,72)>2 || B(b,73) ||
        (B(b,74)>=32 && B(b,74)!=255) || B(b,75) || W(b,76)>0x7f92b1 ||
        (!B(b,72) && (B(b,74)!=255 || W(b,76))) ||
-       B(b,80)>1 || B(b,81)>1 || B(b,82)>7 || B(b,83)) return 0;
+       B(b,80)>1 || B(b,81)>1 || B(b,82)>15 ||
+       (B(b,82)&10)==10 || B(b,83)) return 0;
     for(i=16;i<32;i++) token|=b[i];
     for(i=44;i<56;i+=4) if(W(b,i)<0x70 || W(b,i)>=arena) return 0;
     for(i=88;i<128;i++) if(b[i]) return 0;
@@ -80,13 +83,14 @@ void FC inline_encode(u8 *b) {
     W(b,60)&=0x0ffff000;
     B(b,80)=S(180); B(b,81)=S(184);
     S(2704)=G(0xE5FFE4)!=0;
-    B(b,82)=S(2704)|(S(2696)<<1)|(S(2700)<<2);
+    B(b,82)=S(2704)|(S(2696)==2?8:S(2696)<<1)|(S(2700)<<2);
     W(b,12)=fnv(b+16,112);
 }
 void inline_decode(void) {
     u8 *b=STAGED; u32 i;
     zero(state,200);
-    S(2696)=(b[82]>>1)&1; S(2700)=(b[82]>>2)&1; S(2704)=b[82]&1;
+    S(2696)=b[82]&8?2:(b[82]>>1)&1; S(2700)=(b[82]>>2)&1; S(2704)=b[82]&1;
+    S(2712)=S(2716)=0;
     zero(m3,256); zero(m3+3600,496); init_menus();
     S(4)=0x31303030; S(8)=1280;
     move_bytes(state+40,b+16,16);
@@ -151,7 +155,7 @@ u32 FC mode_human(u8 *t) {
     u8 *p; u32 mask;
     if(!inline_active()) return t?W(t,0x30):0;
     p=(u8 *)mode_unit_present();
-    if(!p || W(p,0x38)!=(u32)t || G(0xE602B4)!=4) return 0;
+    if(!p || S(2712) || W(p,0x38)!=(u32)t || G(0xE602B4)!=4) return 0;
     mask=(u32)t==G(0xE60280)?0x389:((u32)t==G(0xE60284)?0x18c70:0);
     return (mask>>state[149])&1;
 }
@@ -170,16 +174,17 @@ u32 FC mode_human(u8 *t) {
 #define CALL1(a,x) ({ u32 cx_=(u32)(x),ax_; __asm__ volatile("call %c2" : "=a"(ax_), "+c"(cx_) : "i"(a) : "edx", "memory", "cc", "st", "st(1)", "st(2)", "st(3)", "st(4)", "st(5)", "st(6)", "st(7)"); ax_; })
 #define CALL0(a) ({ u32 ax_; __asm__ volatile("call %c1" : "=a"(ax_) : "i"(a) : "ecx", "edx", "memory", "cc", "st", "st(1)", "st(2)", "st(3)", "st(4)", "st(5)", "st(6)", "st(7)"); ax_; })
 
-/* Stage 1 only: repeat the native presentation-skip REQUEST at normal speed.
- * +2696 is a saved choice: 0 skip presentation (default), 1 Spectate.
+/* Stage 1: repeat the native presentation-skip request. Stage 2 uses the
+ * same guarded path during accelerated updates. +2696 stores 0 skip,
+ * 1 off, 2 fast (the new-career default).
  * The Settings footer preserves it on cold load. No simulation
  * delta, football clock, camera phase or native completion flag is written.
  * A2120 retains its replay/readiness/period guards and cleanup. */
 static NI u32 mode_skip_ready(void) {
-    if(S(2696) || G(0xA83A18)!=3 || G(0xA83A14) ||
+    if(S(2696)==1 || G(0xA83A18)!=3 || G(0xA83A14) ||
        !G(0xE60268) || !S(2564) || !inline_active()) return 0;
     if(mode_unit_present() || S(24)!=3) return 0;
-    if(CALL2(0x70a10,S(32),0)&0x200) { S(2696)=1; return 0; }
+    if(CALL2(0x70a10,S(32),0)&0x200) { S(2696)=1; S(2712)=S(2716)=0; return 0; }
     return 1;
 }
 void mode_skip_tick(void) {
@@ -195,6 +200,96 @@ u32 FC mode_skip_buttons(u32 port,u32 bank) {
      * controller input for gameplay, play calling, pause or modal dialogs. */
     if(port==S(32) && !bank && G(0xB616C0)==20 && mode_skip_ready()) buttons|=0x100;
     return buttons;
+}
+
+/* Stage 2 candidate. Main-frame event 6 is the complete native outer update;
+ * hardware polling and render events remain outside this bounded loop.
+ * +2712 waits for a settled appearance, +2716 gates audio/ticker. Both are
+ * transient and cleared on load. Personnel membership still comes from the
+ * native binder, including substitutions, K and P. */
+static NI u32 mode_ff_settled(void) {
+    u8 *p=(u8 *)G(0xE60268),*task; u32 n=128,count=0,i;
+    if(G(0xE602B8)!=13 || !G(0xE60294) ||
+       !(G(0xE602AC)>0 && G(0xE602AC)<=0x42700000)) return 0;
+    while(p && n--) {
+        if(!W(p,0x48)) {
+            task=(u8 *)W(p,0x20);
+            if(!task || W(task,0x3e4)!=13 ||
+               !CALL1(0x1ff940,p)) return 0;
+            /* Readiness alone remains true while a CPU snap is queued.
+             * Event 28 and the post-request QB task must both be absent. */
+            for(i=0;i<8;i++) if(W(task,0x320+24*i) &&
+                                 W(task,0x334+24*i)==28) return 0;
+            if(W(task,0x310) && G(W(task,0x310))==0x2d2ad0) return 0;
+            count++;
+        }
+        p=(u8 *)W(p,0x30);
+    }
+    return !p && count==22;
+}
+u32 mode_ff_hold_snap(void) {
+    /* Both native CPU snap decision entries stop before event 28 is posted.
+     * This also covers a two-minute/no-huddle immediate-snap decision on
+     * the very frame the personnel becomes ready. No task is rewritten. */
+    return S(2716) && S(2712) && G(0xE602B8)==13 && mode_unit_present();
+}
+static NI u32 mode_ff_ready(u32 manager) {
+    u32 depth,body,phase=G(0xE602B8),camera=G(0xB616C0);
+    if(S(2696)!=2 || !inline_active() || G(0xA83A18)!=3 ||
+       G(0xA83A14) || !S(2564) || !G(0xE60268) ||
+       !manager || (depth=W((u8 *)manager,0x100))>=32 ||
+       W((u8 *)manager,8*depth)!=0x4e7ec0) return 0;
+    if(!CALL2(0x709b0,S(32),0) || (CALL2(0x70a10,S(32),0)&0x200)) {
+        S(2696)=1; S(2712)=0; return 0;
+    }
+    /* Installed modal guards: initial/OT toss, challenge, tips and every
+     * non-game manager descriptor run at 1x with native prompts intact. */
+    if(!G(0xE602B4) || camera==26 || G(0xBB6CB4) ||
+       phase<11 || phase>21) return 0;
+    body=mode_unit_present();
+    if(body) {
+        if(!S(2712)) return 0;
+        if(mode_ff_settled()) {
+            S(2712)=0;
+            S(2728)=1;
+            W((u8 *)G(0xE60294),16)=G(0xE602AC);
+            CALL1(0xaf510,G(0xE60294));
+            rebind();
+            return 0;
+        }
+        /* Unexpected mid-play membership never gives away a snap. Keep
+         * normal speed until the native next pre-snap appearance settles. */
+        if(phase!=11 && phase!=12 && phase!=13) return 0;
+    } else S(2712)=1;
+    return 1;
+}
+u32 FC mode_ff_frame(u32 manager,u32 unused,u32 delta) {
+    u32 i=0,result; (void)unused;
+    S(2728)=0;
+    S(2716)=mode_ff_ready(manager);
+    if(S(2728)) { S(2728)=0; return 1; }
+    do {
+        if(i) CALL1(0x48b50,0xE5FCA0);
+        result=((u32 (FC *)(u32,u32,u32))0x6e6a0)(manager,0,delta);
+        i++;
+        if(!S(2716)) break;
+        S(2716)=mode_ff_ready(manager);
+    } while(S(2716) && i<8);
+    S(2728)=0;
+    return result;
+}
+void mode_ff_audio(void) {
+    u32 i,gain=G(0xA70830);
+    /* Retire native voices even while muted. Invalidate cached SetVolume
+     * values in both device-buffer banks so entering/leaving mute is heard. */
+    if(S(2716) || S(2724)) for(i=0;i<64;i++) {
+        G(0xA70A90+i*0x68)=0xbf800000;
+        G(0xA72490+i*0x68)=0xbf800000;
+    }
+    S(2724)=S(2716);
+    if(S(2716)) G(0xA70830)=0;
+    CALL0(0x3dbc0);
+    G(0xA70830)=gain;
 }
 
 #define N0(a) ((u32 (*)(void))(a))
@@ -344,6 +439,22 @@ static NI void text(const u16 *s,u32 selected,float x,float y,u32 font) {
     ((void (FC *)(const u16 *,u32,float,float,float,float,u32,u32,u32,u32))0x6bc30)
         (s,0,x,y,20,240,0,0,G(0xa90ecc+4*font),selected?0xffffff00:0xffffffff);
 }
+static NI void ticker_play(u16 *s) {
+    u32 line=0,n,cut; u16 saved;
+    while(*s && line<4) {
+        n=0; while(s[n] && n<48) n++;
+        cut=n;
+        if(s[n]) { while(cut && s[cut]!=32) cut--; if(!cut) cut=n; }
+        saved=s[cut]; s[cut]=0;
+        /* Retail glyph widths, not a guessed average character width. */
+        while(cut>1 && CALL2(0x49410,G(0xa90ecc),s)>540) {
+            s[cut]=saved; saved=s[--cut]; s[cut]=0;
+        }
+        text(s,0,320,374+22*line,0);
+        s[cut]=saved; s+=cut; while(*s==32) s++;
+        line++;
+    }
+}
 static NI const u16 *footer(void) {
     u32 slot=mode_next_fixture(),args[3];
     const u8 *p=(const u8 *)(0xE57C40+8*slot);
@@ -388,8 +499,22 @@ void mode_visuals(void) {
      * control transfer and teammate AI never observe the temporary value. */
     CALL0(0x75d90);
     if(t) W(t,0x30)=old;
-    /* Live substitutions and special-team waits have no modal prompt.
-     * The Apartment explains CPU control without floating text over play. */
+    if(S(2716) && G(0xE6028C) && G(0xE5FC28) && G(0xE5FC68)) {
+        u16 header[128],last[512]; u32 seconds,args[5];
+        float clock=*(float *)(G(0xE6028C)+16);
+        seconds=clock>0 && clock<3600?(u32)(clock+.999f):0;
+        args[0]=G(G(0xE5FC28)); args[1]=G(G(0xE5FC68));
+        args[2]=G(0xE602C4); args[3]=seconds/60; args[4]=seconds%60;
+        ((void (FC *)(u16 *,u32,const u16 *,u32 *))0x49f00)
+            (header,sizeof(header),m3_ff_format,args);
+        text(header,1,320,350,0);
+        /* Same last-play formatter as the native visual simulator. The
+         * event counter is monotonic; its formatter owns ring indexing. */
+        if(G(0xE53804) && G(0xE53804)<0x80000000U) {
+            CALL2(0x150620,last,G(0xE53804)-1);
+            ticker_play(last);
+        } else text(m3_ff_wait_text,0,320,374,0);
+    }
 }
 u32 mode_result(void) {
     u32 result=G(0xA83A18);
@@ -413,7 +538,7 @@ void FC mode_settings_toggle(u32 manager) {
     if(hub(manager) && W((u8 *)manager,8*W((u8 *)manager,0x100))==(u32)m3_settings_menu) {
         row=W((u8 *)manager,8*W((u8 *)manager,0x100)+4);
         if(row==0) CALL0(0x147e60); /* Retail Franchise Settings toggle. */
-        if(row==1) S(2696)=!S(2696);
+        if(row==1) { S(2696)=S(2696)==2?1:S(2696)==1?0:2; S(2712)=S(2716)=0; }
         if(row==2 && (p=(u8 *)primary())) { S(2700)=!S(2700); player_star(p); }
         settings_labels();
         /* Native row construction caches each label pointer. Refresh that
@@ -427,7 +552,7 @@ void FC mode_start(u32 manager) {
 }
 static NI void capture(u8 *p) {
     u32 i;
-    zero(state,200); S(2696)=S(2700)=S(2704)=G(0xE5FFE4)=0;
+    zero(state,200); S(2696)=2; S(2712)=S(2716)=S(2700)=S(2704)=G(0xE5FFE4)=0;
     player_star(p); S(4)=0x31303030; S(8)=1280;
     S(24)=3; S(28)=((u32)p-W(ROOT,4))/84; S(56)=S(2684);
     /* Native RNG supplies a new per-career token. It is data, never identity
@@ -516,6 +641,16 @@ void FC mode_play(u32 manager) {
         N1(G(0xE576B4)<G(0xE576B0)?0x247D40:0x2480B0)(manager);
         if(slot<374) mode_play(manager);
     }
+}
+void FC mode_sim_appearance(u32 manager) {
+    if(!hub(manager) || !primary()) return;
+    S(2696)=2;
+    settings_labels();
+    mode_play(manager);
+    /* Arm only after the native fixture route reached Team Select. This
+     * includes MyPlayer's first appearance when his unit starts the game. */
+    if(W((u8 *)manager,8*W((u8 *)manager,0x100))==0x51b908)
+        S(2712)=1;
 }
 void FC mode_practice(u32 manager) {
     if(hub(manager) && primary()) {

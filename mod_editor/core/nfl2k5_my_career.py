@@ -26,7 +26,7 @@ from . import nfl2k5_xbe_space as space
 from .nfl2k5_cave_oracle import XbeImage
 
 OWNER = "nfl2k5_my_career"
-CODE_SIZE, DATA_SIZE = 16384, 4096
+CODE_SIZE, DATA_SIZE = 20480, 4096
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 SCHEMA = "nfl2k5_my_career/v2"
 MAGIC = b"MCQB0001"
