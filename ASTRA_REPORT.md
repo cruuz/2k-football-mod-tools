@@ -4,7 +4,7 @@ Branch: `astra/b66-2k5-game`. Retail USA XBE SHA-256:
 `73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9`.
 All game behavior remains **UNWITNESSED**. Evidence here is pinned retail bytes,
 Capstone disassembly and bounded native x86 or recovered-C execution. No console
-emulator, game boot, GPU display, audio, network, disc build or signed-save edit
+emulator, game boot, GPU display, audio, network, retail disc build or signed-save edit
 was used. The optional Ghidra project was located; the proof instruments used
 were the pinned repository readers and executable harnesses.
 
@@ -51,6 +51,14 @@ HDD rows; its scrolling transition is also tested through the last added song.
 No table allocation, executable scratch, collection-number test or I/O wait
 is added. `nfl2k5_music_metadata.apply/status` now includes this repair.
 Previously expanded executables missing the repair require a clean rebuild.
+
+The cave gate initially treated the old internal back edge
+`0x32A24F -> 0x32A160` as external to the first changed run. Its declaration
+now groups the complete pinned function, as existing multi-site function
+rewrites do. A fresh retail reference scan finds **no external interior
+entry** into `0x32A0F0..0x32A2A3`; it still checks every such entry and does
+not classify these live bytes as a free cave. Parent metadata recording
+delegates only these exactly verified child spans to the jukebox owner.
 
 **D1 coordination:** retain this automatic metadata dependency when moving the
 songs into their own collection. The D1 collection number is not part of the
@@ -176,6 +184,8 @@ absolute immediate in both runtime readers. It is zero when no pair allocation
 exists; allocation alone leaves the publication all zero. A process-wide
 hard-coded address independent of the selected allocator union would violate
 that union's ownership. No new allocation or reservation size was introduced.
+In the observed complete gate union, owned RW starts at `0x014F4390`, so the
+publication is at `0x014F4430` within its existing 512-byte allocation.
 
 | Byte offset from contract | Meaning |
 | --- | --- |
@@ -277,5 +287,104 @@ cause precise SkipTest in the added tests; this run had the retail XBE and packs
 The resource inventory was generated read-only with
 `python3 tools/nfl_resource_scan.py 'extracted/ESPN NFL 2K5 (USA)/vc_53450030/0' --json .scratch/resource_inventory.json`.
 Only metadata was written; no retail resource payload is committed.
+The existing animation suite uses disposable compact synthetic XISO transport
+fixtures for bounded resource spans. It does not copy or build a retail disc.
 
-Final standalone results are recorded below after the gate batch completes.
+The protected release manifest correctly refuses its stale source pin:
+`OracleError: stale reservation source: mod_editor/core/nfl2k5_guardian_overlay.py; regenerate manifest`.
+It was not overwritten or given copied-forward fingerprints. The standalone
+pair-manifest fixture instead observed 128 actual XBE transactions and 12,340
+reservations from the current sources, verified every section digest, and
+wrote a separate test-only manifest with `image_steps=[]`, `xbe_only=true`,
+`release_manifest=false`, and `runtime_witnessed=false`. Its oracle run leaves
+the resource/disc-build evidence check explicitly skipped. Claude must still
+regenerate the protected production manifest after applying WIRING and merging
+D1; this XBE evidence is not a release-disc certificate.
+
+Reproduce the current-source ownership checks with:
+
+```sh
+mkdir -p .scratch
+PYTHONPATH=. NFL2K5_PLAYBOOK_PAIR_MANIFEST="$PWD/.scratch/d2-xbe-manifest.json" python3 tests/mod_editor/test_nfl2k5_playbook_pair_manifest.py
+PYTHONPATH=. NFL2K5_CAVE_MANIFEST="$PWD/.scratch/d2-xbe-manifest.json" python3 tests/mod_editor/test_xbe_patch_cave_references.py
+PYTHONPATH=. NFL2K5_CAVE_MANIFEST="$PWD/.scratch/d2-xbe-manifest.json" python3 tests/mod_editor/test_nfl2k5_cave_oracle.py
+PYTHONPATH=. python3 tests/mod_editor/test_xbe_patch_memory_writes.py
+PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py
+```
+
+The matrix can also run with
+`PYTHONPATH=. python3 tests/run_nfl2k5_pairwise.py --workers 4 --log-dir .scratch/pairwise`.
+That is the final matrix command used here: it discovers the complete suite,
+partitions its 388 cases into four plain standalone invocations of the same
+test file, checks the executed case counts and exit statuses, and records every
+case name and output hash. There are 377 distinct owner pairs; the mutually
+exclusive legacy/generic MyCareer formats share an owner and are not a pair.
+No assertion, fixture or owner list is replaced by the runner.
+
+Final result: **1,063 passed, two skipped**, across 35 standalone suites
+(1,065 reported cases). The two skips are the optional pre-existing patched-disc
+smoke fixture in throw tuning and the explicitly absent resource/disc-build
+evidence in the XBE-only oracle manifest. There are no skipped matrix or new
+native-repair cases.
+
+Unless the environment/partition command above applies, the exact invocation
+for each row is `PYTHONPATH=. python3 <test file>`. Results reproduce the
+standalone unittest summaries. Full commands, output hashes, writer source
+hashes and manifest scope are in
+`docs/mod_editor/nfl2k5_beta66_d2_validation.json`.
+
+The observed test manifest SHA-256 is
+`f3e454367fd85f4918847abcad3ac0f17a12ffca17e6bd017b388bee8f16bb53`;
+its fully composed XBE SHA-256 is
+`4509b85406055b30c8da2675379a8c9b03e86499e4723518ab4f81b11f58e7e0`.
+Neither artifact contains a console witness.
+
+Both proposed distribution capability rows pass the registry schema after
+the WIRING evidence-path substitution, and their backend/public evidence paths
+exist. The canonical registry and protected UI/build files remain unchanged;
+no staged release or UI integration result is claimed.
+
+| Standalone test file | Tests | Result | Seconds |
+| --- | ---: | --- | ---: |
+| `tests/mod_editor/test_nfl2k5_jukebox_list.py` | 6 | OK | 43.001 |
+| `tests/mod_editor/test_nfl2k5_playoff_starters_research.py` | 2 | OK | 7.104 |
+| `tests/mod_editor/test_nfl2k5_playbook_pair_unicorn.py` | 20 | OK | 8.592 |
+| `tests/mod_editor/test_nfl2k5_helmet_finish.py` | 4 | OK | 82.933 |
+| `tests/mod_editor/test_nfl2k5_paired_intent.py` | 5 | OK | 37.996 |
+| `tests/mod_editor/test_nfl2k5_playbook_pair.py` | 7 | OK | 12.915 |
+| `tests/mod_editor/test_nfl2k5_my_career_mode_audit.py` | 6 | OK | 0.073 |
+| `tests/mod_editor/test_nfl2k5_my_career_mode_routes.py` | 7 | OK | 3.530 |
+| `tests/mod_editor/test_nfl2k5_screen_timing.py` | 13 | OK | 145.343 |
+| `tests/mod_editor/test_nfl2k5_music_metadata.py` | 6 | OK | 16.439 |
+| `tests/mod_editor/test_nfl2k5_music_playlist.py` | 15 | OK | 13.075 |
+| `tests/mod_editor/test_nfl2k5_music_playlist_contexts.py` | 7 | OK | 10.378 |
+| `tests/mod_editor/test_nfl2k5_abilities_unicorn.py` | 12 | OK | 7.893 |
+| `tests/mod_editor/test_nfl2k5_calendar_engine_unicorn.py` | 10 | OK | 366.891 |
+| `tests/mod_editor/test_nfl2k5_camera_broadcast.py` | 9 | OK | 28.420 |
+| `tests/mod_editor/test_nfl2k5_my_career_unicorn.py` | 18 | OK | 12.821 |
+| `tests/mod_editor/test_nfl2k5_practice_squad_screen_unicorn.py` | 14 | OK | 6.855 |
+| `tests/mod_editor/test_nfl2k5_qb_spy_runtime.py` | 13 | OK | 340.485 |
+| `tests/mod_editor/test_nfl2k5_qb_spy_unicorn.py` | 16 | OK | 6.583 |
+| `tests/mod_editor/test_nfl2k5_read_option_runtime.py` | 13 | OK | 46.385 |
+| `tests/mod_editor/test_nfl2k5_read_option_unicorn.py` | 6 | OK | 2.778 |
+| `tests/mod_editor/test_nfl2k5_scorebar_v3.py` | 9 | OK | 63.346 |
+| `tests/mod_editor/test_nfl2k5_screen_hooks_unicorn.py` | 10 | OK | 22.844 |
+| `tests/mod_editor/test_nfl2k5_seven_on_seven_v2.py` | 69 | OK | 148.400 |
+| `tests/mod_editor/test_nfl2k5_widescreen_polish.py` | 13 | OK | 6.948 |
+| `tests/mod_editor/test_xbe_patch_memory_writes.py` | 115 | OK | 1427.876 |
+| `tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py` | 388 | OK | 688.815 |
+| `tests/mod_editor/test_nfl2k5_throw_tuning.py` | 45 | OK (skipped=1) | 11.559 |
+| `tests/mod_editor/test_nfl2k5_guardian_overlay.py` | 6 | OK | 7.464 |
+| `tests/mod_editor/test_nfl2k5_guardian_unicorn.py` | 7 | OK | 246.996 |
+| `tests/mod_editor/test_nfl2k5_animation_import_retail.py` | 11 | OK | 44.507 |
+| `tests/mod_editor/test_nfl2k5_playbook_pair_manifest.py` | 1 | OK | 623.180 |
+| `tests/mod_editor/test_xbe_patch_cave_references.py` | 127 | OK | 1470.974 |
+| `tests/mod_editor/test_nfl2k5_cave_oracle.py` | 29 | OK (skipped=1) | 286.685 |
+| `tests/nfl2k5_position_pools_test.py` | 26 | OK | 23.659 |
+
+`python3 packaging/repin.py --apply`: `applied 0 pin update(s)` at final
+verification; every pinned writer edit had already been repinned. `git diff
+--check` passes. No protected product files or presets were edited. Integration
+must still apply WIRING, regenerate the release manifest, run the protected
+product checks, and obtain Noah's game witnesses before promoting any runtime
+status.

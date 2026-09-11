@@ -1,0 +1,396 @@
+{
+  "schema": "beta66-d2-validation/v1",
+  "branch": "astra/b66-2k5-game",
+  "runtime_witnessed": false,
+  "release_manifest_updated": false,
+  "scope": "Current-source XBE ownership and bounded native/recovered-C fixtures; protected GUI/build integration pending",
+  "test_files": 35,
+  "tests": 1065,
+  "skipped": 2,
+  "results": [
+    {
+      "test": "tests/mod_editor/test_nfl2k5_jukebox_list.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_jukebox_list.py",
+      "tests": 6,
+      "skipped": 0,
+      "seconds": 43.001,
+      "result": "OK",
+      "output_sha256": "b2feb818755f400e9bcc8f9f6613306b43383ed4845a623cf38fd728583cc9d4"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_playoff_starters_research.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_playoff_starters_research.py",
+      "tests": 2,
+      "skipped": 0,
+      "seconds": 7.104,
+      "result": "OK",
+      "output_sha256": "0e9b154aa188bf05f21b3a74fd442206f27b9983f5fbe7379cbd6cbd737fe50e"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_playbook_pair_unicorn.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_playbook_pair_unicorn.py",
+      "tests": 20,
+      "skipped": 0,
+      "seconds": 8.592,
+      "result": "OK",
+      "output_sha256": "7df486b12c05201ed3e30d3989a264d8a842ac049d139835bd675fa0acc98633"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_helmet_finish.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_helmet_finish.py",
+      "tests": 4,
+      "skipped": 0,
+      "seconds": 82.933,
+      "result": "OK",
+      "output_sha256": "50b3be3412eb40be5c313654351156c1584ebc06d126737767f3dbdb74ee6f5c"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_paired_intent.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_paired_intent.py",
+      "tests": 5,
+      "skipped": 0,
+      "seconds": 37.996,
+      "result": "OK",
+      "output_sha256": "a5232ba2af172ae147ed4ff74a9a9900d9f71dd19716f06fd4ac70572317ff73"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_playbook_pair.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_playbook_pair.py",
+      "tests": 7,
+      "skipped": 0,
+      "seconds": 12.915,
+      "result": "OK",
+      "output_sha256": "0efdaf032f1c9b2cdb6e239ee6f958d59e3e6212b3157984cb46d4914e2a4c83"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_my_career_mode_audit.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_my_career_mode_audit.py",
+      "tests": 6,
+      "skipped": 0,
+      "seconds": 0.073,
+      "result": "OK",
+      "output_sha256": "25d216cf950a9d015514b3c5df60576ec6f3ba23a9960c1136a7b37ec6b7e87b"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_my_career_mode_routes.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_my_career_mode_routes.py",
+      "tests": 7,
+      "skipped": 0,
+      "seconds": 3.53,
+      "result": "OK",
+      "output_sha256": "2dddb50b681bc4bd0ea15d67756ca6da9db0ea22ece1666d2f3368cdb3b5938c"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_screen_timing.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_screen_timing.py",
+      "tests": 13,
+      "skipped": 0,
+      "seconds": 145.343,
+      "result": "OK",
+      "output_sha256": "f9b97658567e5725a576400035d1604d73a888fd019bf6ead09d0e34f05444fe"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_music_metadata.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_music_metadata.py",
+      "tests": 6,
+      "skipped": 0,
+      "seconds": 16.439,
+      "result": "OK",
+      "output_sha256": "e021aa15af8273fd93c79dc276ceb791f62162c1ebfce571271a4296a20a49f1"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_music_playlist.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_music_playlist.py",
+      "tests": 15,
+      "skipped": 0,
+      "seconds": 13.075,
+      "result": "OK",
+      "output_sha256": "cf4ad6aef82d78a3033a9ee895deee88f2960aa0a9e8f8cd7505b256eb5850e1"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_music_playlist_contexts.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_music_playlist_contexts.py",
+      "tests": 7,
+      "skipped": 0,
+      "seconds": 10.378,
+      "result": "OK",
+      "output_sha256": "d063d1d2ce535a51df4f34435cf8299997bed2297e3d0cb6bb5a394d021a07cb"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_abilities_unicorn.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_abilities_unicorn.py",
+      "tests": 12,
+      "skipped": 0,
+      "seconds": 7.893,
+      "result": "OK",
+      "output_sha256": "b0beff443b577557e35b33343d48b7c4af899242e1d0d60f72cd6035dc032f47"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_calendar_engine_unicorn.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_calendar_engine_unicorn.py",
+      "tests": 10,
+      "skipped": 0,
+      "seconds": 366.891,
+      "result": "OK",
+      "output_sha256": "d9a10f06c3825454ba40b6c623586ccf03d4ff2568080c6f27771a2c7a46c291"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_camera_broadcast.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_camera_broadcast.py",
+      "tests": 9,
+      "skipped": 0,
+      "seconds": 28.42,
+      "result": "OK",
+      "output_sha256": "1a9dc839dd954e02466575692a50b96f0090ed38c3b14824e9fed6f15203bd16"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_my_career_unicorn.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_my_career_unicorn.py",
+      "tests": 18,
+      "skipped": 0,
+      "seconds": 12.821,
+      "result": "OK",
+      "output_sha256": "c3bb9c51323f00f0fdcab1ba13281e335ed9ad6254f7a3ff45a28145eb27c6d0"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_practice_squad_screen_unicorn.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_practice_squad_screen_unicorn.py",
+      "tests": 14,
+      "skipped": 0,
+      "seconds": 6.855,
+      "result": "OK",
+      "output_sha256": "7d4d1c012424badfa4807a230985ad5dc7552a6cdd16254f39e2e75d7c0a8790"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_qb_spy_runtime.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_qb_spy_runtime.py",
+      "tests": 13,
+      "skipped": 0,
+      "seconds": 340.485,
+      "result": "OK",
+      "output_sha256": "e1b1cd62441eec3bf4dca5fda41b6cde9fe66ba24bb0dc5c34c955700212c87f"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_qb_spy_unicorn.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_qb_spy_unicorn.py",
+      "tests": 16,
+      "skipped": 0,
+      "seconds": 6.583,
+      "result": "OK",
+      "output_sha256": "6fcd46f1e4742a9369711b0ec59ba7652fe6abd70f10ce978edbd80bc238c698"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_read_option_runtime.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_read_option_runtime.py",
+      "tests": 13,
+      "skipped": 0,
+      "seconds": 46.385,
+      "result": "OK",
+      "output_sha256": "6e85f4b8e6b09d47844c41e2764c213db099db51dbdb213034ce865b012957b4"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_read_option_unicorn.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_read_option_unicorn.py",
+      "tests": 6,
+      "skipped": 0,
+      "seconds": 2.778,
+      "result": "OK",
+      "output_sha256": "b52a2d33a2ff597640d2570a7e8d782fac35d27fc4220652bccb5fed6067e30a"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_scorebar_v3.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_scorebar_v3.py",
+      "tests": 9,
+      "skipped": 0,
+      "seconds": 63.346,
+      "result": "OK",
+      "output_sha256": "2898a3f78241b27776e3bfe525d4b0350aef8846429a6dff8095ed0100fccfa8"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_screen_hooks_unicorn.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_screen_hooks_unicorn.py",
+      "tests": 10,
+      "skipped": 0,
+      "seconds": 22.844,
+      "result": "OK",
+      "output_sha256": "32e3f5dabc646ab3bc29be233e6939ed53956e712f7009f048854401b3284552"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_seven_on_seven_v2.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_seven_on_seven_v2.py",
+      "tests": 69,
+      "skipped": 0,
+      "seconds": 148.4,
+      "result": "OK",
+      "output_sha256": "dc7de2026d5d090b08cf866752c6107ff48860e73a1e2e59a70914363bbdf35f"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_widescreen_polish.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_widescreen_polish.py",
+      "tests": 13,
+      "skipped": 0,
+      "seconds": 6.948,
+      "result": "OK",
+      "output_sha256": "34ccfcbb2d7dc5765a2a838e876672f48627a4ba9497e96afea7180a9ba57e22"
+    },
+    {
+      "test": "tests/mod_editor/test_xbe_patch_memory_writes.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_xbe_patch_memory_writes.py",
+      "tests": 115,
+      "skipped": 0,
+      "seconds": 1427.876,
+      "result": "OK",
+      "output_sha256": "70b71c0f27254e89e79dead14d3a39a39e6ac86a5203906efa37334f2fff918c"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py",
+      "command": "PYTHONPATH=. python3 tests/run_nfl2k5_pairwise.py --workers 4 --log-dir .scratch/pairwise",
+      "tests": 388,
+      "skipped": 0,
+      "seconds": 688.815,
+      "result": "OK",
+      "output_sha256": "3a4ba3c5ea25f0a14461f0f1797675f5d6c79c6751844442f87f91de30be8d3e"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_throw_tuning.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_throw_tuning.py",
+      "tests": 45,
+      "skipped": 1,
+      "seconds": 11.559,
+      "result": "OK (skipped=1)",
+      "output_sha256": "e6ec318ecee0cfe2c4eb512b264beafcb7563c6b00900922d01829f02303f205"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_guardian_overlay.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_guardian_overlay.py",
+      "tests": 6,
+      "skipped": 0,
+      "seconds": 7.464,
+      "result": "OK",
+      "output_sha256": "edfec80b614d860009e6f9519a478dd32c7b0c79941a46d659b0ad25e5540c3a"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_guardian_unicorn.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_guardian_unicorn.py",
+      "tests": 7,
+      "skipped": 0,
+      "seconds": 246.996,
+      "result": "OK",
+      "output_sha256": "cfab24653075d5f1fe5dafb6cd57d333b8151397b39e82944337e33050be8240"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_animation_import_retail.py",
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_animation_import_retail.py",
+      "tests": 11,
+      "skipped": 0,
+      "seconds": 44.507,
+      "result": "OK",
+      "output_sha256": "962c2c38e151112081705edfcf87b740e9117131e946a74b0b84fc24b931371d"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_playbook_pair_manifest.py",
+      "command": "PYTHONPATH=. NFL2K5_PLAYBOOK_PAIR_MANIFEST=\"$PWD/.scratch/d2-xbe-manifest.json\" python3 tests/mod_editor/test_nfl2k5_playbook_pair_manifest.py",
+      "tests": 1,
+      "skipped": 0,
+      "seconds": 623.18,
+      "result": "OK",
+      "output_sha256": "5672139f6a16d2811795890f3f1cc5ab62218727ac104304492681dccb126464"
+    },
+    {
+      "test": "tests/mod_editor/test_xbe_patch_cave_references.py",
+      "command": "PYTHONPATH=. NFL2K5_CAVE_MANIFEST=\"$PWD/.scratch/d2-xbe-manifest.json\" python3 tests/mod_editor/test_xbe_patch_cave_references.py",
+      "tests": 127,
+      "skipped": 0,
+      "seconds": 1470.974,
+      "result": "OK",
+      "output_sha256": "587e1f6da0a34f549b42d8c30f2bb676a3405130c60e4c44b2bc0c9483c58e1a"
+    },
+    {
+      "test": "tests/mod_editor/test_nfl2k5_cave_oracle.py",
+      "command": "PYTHONPATH=. NFL2K5_CAVE_MANIFEST=\"$PWD/.scratch/d2-xbe-manifest.json\" python3 tests/mod_editor/test_nfl2k5_cave_oracle.py",
+      "tests": 29,
+      "skipped": 1,
+      "seconds": 286.685,
+      "result": "OK (skipped=1)",
+      "output_sha256": "aa9e0216150c42cee794537929de8927dce19260b52c6cd3352e2e2abe5ec789"
+    },
+    {
+      "test": "tests/nfl2k5_position_pools_test.py",
+      "command": "PYTHONPATH=. python3 tests/nfl2k5_position_pools_test.py",
+      "tests": 26,
+      "skipped": 0,
+      "seconds": 23.659,
+      "result": "OK",
+      "output_sha256": "540e4f5545554d82018ff823fa252a778043d63f66c1ee890a3b5594588ea564"
+    }
+  ],
+  "matrix": {
+    "owners": 28,
+    "pairs": 377,
+    "discovered": 388,
+    "executed": 388,
+    "partitions": [
+      {
+        "partition": 1,
+        "exit": 0,
+        "tests": 97,
+        "skipped": 0,
+        "complete": true,
+        "output_sha256": "4f67258e6c15f657fb46cde905b2b4c4be1ed47140dc573bec43fff6f446d327"
+      },
+      {
+        "partition": 2,
+        "exit": 0,
+        "tests": 97,
+        "skipped": 0,
+        "complete": true,
+        "output_sha256": "8a6397fadc89910b7d5da0f73eedc2d98968f5cca8918acd75c48e2e0f4f0ee3"
+      },
+      {
+        "partition": 3,
+        "exit": 0,
+        "tests": 97,
+        "skipped": 0,
+        "complete": true,
+        "output_sha256": "3cb22fb9091a48c53f107354be86a1d5dbcc7d2706104545a09905aea6fbc8d6"
+      },
+      {
+        "partition": 4,
+        "exit": 0,
+        "tests": 97,
+        "skipped": 0,
+        "complete": true,
+        "output_sha256": "3b9e8efbedb7007b756bcf65b17434ca91c594e2bb07ebbbfc237f722ae96c3c"
+      }
+    ]
+  },
+  "observed_manifest": {
+    "sha256": "f3e454367fd85f4918847abcad3ac0f17a12ffca17e6bd017b388bee8f16bb53",
+    "retail_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+    "stack_xbe_sha256": "4509b85406055b30c8da2675379a8c9b03e86499e4723518ab4f81b11f58e7e0",
+    "transactions": 128,
+    "reservations": 12340,
+    "image_steps": [],
+    "xbe_only": true,
+    "release_manifest": false,
+    "runtime_witnessed": false
+  },
+  "changed_source_sha256": {
+    "mod_editor/core/nfl2k5_cave_manifest.py": "a5352afc4ada3c2eb739a2a3d18cec6d67ea4da63216ade60503c9a93e82dbda",
+    "mod_editor/core/nfl2k5_guardian_overlay.py": "510149cf1ebd9954fb19b56bb6f15313cee365e19e609d4c3d323646872fad3f",
+    "mod_editor/core/nfl2k5_helmet_finish.py": "667f06ddbba78b7ee3416265ab6f67ab43edf1444569b1e407e7b3c6d92b1f3d",
+    "mod_editor/core/nfl2k5_jukebox_list.py": "3752a85731a7190cda9e429ed26a6c8810be35b45b31db1710e31e82f4408eb7",
+    "mod_editor/core/nfl2k5_music_metadata.py": "cbc490386d8ecfc5d1897ea3f9d4fcece8b81e790644e18ce7a043f9495e0ac9",
+    "mod_editor/core/nfl2k5_playbook_pair.py": "2e1207d5ef86f13ab1b020d250d1bf4409fa09ac40aa449d31d006a5e1f2e7bb",
+    "mod_editor/core/nfl2k5_playbook_pair_code.py": "78e97a0ce01e49af9a22c59d540ea8121097ae26c31f6650983baa7a945969ae",
+    "mod_editor/core/nfl2k5_qb_spy_runtime.py": "d0c0f0f216c3f845a7fc233c608766b09e2d74a4e979b937480f788e8c00c2bc",
+    "mod_editor/core/nfl2k5_qb_spy_runtime_code.py": "759ee92ee3bac1d79d80ac6d6ae539ea6f0e3cef658dc945548a8c7db35c468f",
+    "mod_editor/core/nfl2k5_read_option_runtime.py": "f4b3c0126f270dc6ed4aae33d75ab0d6ab25dbe389d803002045cede1f7363dd",
+    "mod_editor/core/nfl2k5_read_option_runtime_code.py": "2f58745ddc7ad4cf28adf3223d3a85661ca79d0252a7bb7d27a7a19e90bcc69a",
+    "mod_editor/core/nfl2k5_throw_tuning.py": "01d0a91d8b46d0dc56abb7f371f6f48f562448dadd2b0b23a8c6b3217eb2d252",
+    "mod_editor/core/providers.py": "270bee7c74a1fc8093b7db8f8df01129c0236c10bea2d3bc56617be694603812",
+    "tools/nfl2k5_playbook_pair.c": "7141afa601e84e2968099cb37977996d66cc793b2380f63be11e6353f97362ac",
+    "tools/nfl2k5_qb_spy_runtime.S": "bd6f3c072d297bea343845171e753ac7162bcaa19dc86d5e79aa5627f8f36e57",
+    "tools/nfl2k5_read_option_runtime.S": "7f9fb48aea79164c2ab22026dd31e46a2d2fa0b46fd4854c074485e1ab6893f8"
+  }
+}

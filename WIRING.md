@@ -18032,7 +18032,7 @@ Add to `LABELS`:
                   "ADVANCED / UNWITNESSED"),
 ```
 
-In `GameplayPatchesPanel.__init__`, inside the row loop after the checkbox is
+In `GameplayPatchesPanel._build_ui`, inside the row loop after the checkbox is
 created and before the existing selector cases, add:
 
 ```python
@@ -18084,7 +18084,25 @@ Add to protected `packaging/release-allowlist.txt`:
 mod_editor/core/nfl2k5_jukebox_list.py
 mod_editor/core/nfl2k5_helmet_finish.py
 docs/mod_editor/nfl2k5_helmet_finish_capability.json
+docs/mod_editor/nfl2k5_beta66_d2_validation.json
 ```
+
+The proposal files retain developer test/report references. Before copying
+these two rows into the **distribution** registry, use their packaged public
+evidence paths so staged file validation does not require private scratch or
+developer tests:
+
+```python
+for row in (playbook_pair_row, helmet_finish_row):
+    proposal = ("nfl2k5_playbook_pair_capability.json" if row["id"] ==
+                "nfl2k5.gameplay.playbook_pair" else "nfl2k5_helmet_finish_capability.json")
+    row["evidence"] = ["docs/mod_editor/" + proposal,
+                       "docs/mod_editor/nfl2k5_beta66_d2_validation.json"]
+    row["runtime"]["evidence"] = ["docs/mod_editor/nfl2k5_beta66_d2_validation.json"]
+```
+
+Keep `runtime.status="not-tested"` and the scope text. The public evidence
+contains commands, counts and hashes only; it does not contain retail bytes.
 
 The two new dependency pins are already added to `providers.py`. Include both
 modules in any explicit frozen imports alongside music_metadata and
@@ -18099,6 +18117,12 @@ live instructions, not caves. Existing pair/read/spy allocation sizes do not
 change; regenerate source hashes and observed code spans. The test-only
 allocator projection adds only the exact fully verified new live spans and
 checks other-owner overlap; it does not modify the product manifest.
+Retain `Recorder.observe`'s metadata-to-jukebox delegation: the metadata parent
+receipt contains the child's writes, whose exact verified spans must keep the
+`nfl2k5_jukebox_list` owner when both writers are observed. The new standalone
+receipt test checks that attribution. The gate groups the two Crib loop edits
+as one completely pinned function when checking external entries; these are
+still live instructions and never become allocatable space.
 
 Run both XBE gates, oracle and the expanded 28-owner pairwise matrix after the
 protected wiring. Run standalone collection, paired-intent, helmet, music
@@ -18129,12 +18153,65 @@ g.addWidget(self.helmet_finish_combo)
 
 Add `"helmet_finish": self.helmet_finish_check` to `_boxes()`,
 `helmet_finish="matte" if self.helmet_finish_check.isChecked() else "glossy"`
-to the BuildPlan construction in `plan()`, and
-`gate(self.helmet_finish_check, "helmet_finish")` in `apply_state()`.
-In `_apply_preset`, override the generic truth conversion for this key with
-`values.get("helmet_finish", "glossy") == "matte"`, then set the combo to 1/0
-from that boolean. Add `or p.helmet_finish == "matte"` to the `_refresh()`
-“has changes” predicate. The checkbox/combo wiring makes existing shared-key
+to the BuildPlan construction in `plan()`. In `apply_state()`, use this
+dedicated reversible-choice gate instead of the generic retail-only gate:
+
+```python
+finish_state = str(state.get("helmet_finish"))
+finish_available = self._available.get("helmet_finish", False)
+finish_enabled = finish_available and finish_state in ("retail", "applied")
+self.helmet_finish_check.setEnabled(finish_enabled)
+self.helmet_finish_combo.setEnabled(finish_enabled)
+self.helmet_finish_check.setChecked(finish_state == "applied")
+self.helmet_finish_combo.setCurrentIndex(1 if finish_state == "applied" else 0)
+self._set_badge("helmet_finish", "ADVANCED / UNWITNESSED" if finish_enabled else
+                "Unrecognized source data" if finish_available else "Not available in this release")
+```
+In `BuildPanel.apply_preset`, replace the `want = ...` expression inside the
+`for key, box in boxes.items()` loop with:
+
+```python
+want = (values[key] == "matte" if key == "helmet_finish" else
+        values[key] != "retail" if key in ("music_policy", *r62_ui.LEVELS) else
+        bool(values[key]))
+```
+
+Then set the combo to 1/0 from that boolean. Add the following helper to both
+panels, and add `or self._helmet_finish_changed()` to BuildPanel's
+`has_work()` predicate. This permits a Glossy-only restoration build:
+
+```python
+def _helmet_finish_changed(self):
+    combo = getattr(self, "helmet_finish_combo", None)
+    state = (self._state or {}).get("helmet_finish")
+    return bool(combo is not None and combo.isEnabled()
+                and state in ("retail", "applied")
+                and combo.currentData() != ("matte" if state == "applied" else "glossy"))
+```
+
+In GameplayPatchesPanel's `apply_state()` loop, immediately after
+`check = self.checks[key]`, add:
+
+```python
+if key == "helmet_finish":
+    enabled = value in ("retail", "applied")
+    check.setEnabled(enabled)
+    self.helmet_finish_combo.setEnabled(enabled)
+    check.setChecked(value == "applied")
+    self.helmet_finish_combo.setCurrentIndex(1 if value == "applied" else 0)
+    self.badges[key].setText("ADVANCED / UNWITNESSED" if enabled else "Unrecognized source data")
+    self.badges[key].setVisible(True)
+    continue
+```
+
+In that panel's `_refresh()` and `_write()`, replace the checkbox-only
+selection test with
+`any(c.isChecked() for key, c in self.checks.items() if key != "helmet_finish") or self._helmet_finish_changed()`.
+In both panels' selected-change labels, handle this key before the generic
+checked-box branch: append `"Helmet finish: " + self.helmet_finish_combo.currentText()`
+only when `_helmet_finish_changed()`, then continue. Thus Glossy restoration
+is shown in the confirmation and an unchanged Matte input is not counted as
+a new edit. The checkbox/combo wiring makes existing shared-key
 synchronization work, but blocked project restoration also needs this key.
 
 In `mod_editor/core/nfl2k5_build_settings.py`, add `"helmet_finish"` beside

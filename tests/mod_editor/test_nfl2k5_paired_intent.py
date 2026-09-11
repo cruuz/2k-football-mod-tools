@@ -123,6 +123,14 @@ class PairedIntentTests(unittest.TestCase):
         for owner in (pair, read, spy):
             self.assertEqual(owner.status(result), 'applied')
 
+    def test_core_dispatcher_accepts_the_three_authored_owners_together(self):
+        from mod_editor.core import nfl2k5_throw_tuning as tuning
+        result, _ = tuning._apply_all(self.seed, wanted=None, catch_slider=False,
+            playbook_pair=True, read_option_runtime=True, qb_spy=True,
+            read_option_intent_table=self.rt, qb_spy_intent_table=self.st)
+        for owner in (pair, read, spy):
+            self.assertEqual(owner.status(result), 'applied')
+
 
 if __name__ == '__main__':
     unittest.main()
