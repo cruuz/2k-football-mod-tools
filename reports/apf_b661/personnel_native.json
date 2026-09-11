@@ -1,7 +1,7 @@
 {
   "status": "PROVED bounded native BASE; gameplay UNWITNESSED",
   "image_sha256": "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf",
-  "abi_adapter": "64-bit register save/restore thunks only",
+  "abi_adapter": "64-bit register save/restore thunks and three inline saves/restores only",
   "native_functions": [
     "84860730..8486088C",
     "84A8B438",

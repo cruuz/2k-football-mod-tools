@@ -948,6 +948,23 @@ def personnel_row_candidates(row: int) -> tuple[int, ...]:
     return (row, *(max(low, min(high, row + delta)) for delta in (1, -1, 2, -2, 3, -3)))
 
 
+def personnel_category_for_row(book: SplbBook, row: int) -> int | None:
+    """Model the pinned row picker only to validate edited data, never patch it.
+
+    Exact-row lookup advances to the last matching advertised category.
+    Fallback uses the first match at the first successful ladder step.
+    """
+    advertised = book_category_rows(book.body)
+    direct = [c for c in advertised if PERSONNEL_ROWS[c] == row]
+    if direct:
+        return direct[-1]
+    for candidate in personnel_row_candidates(row)[1:]:
+        for category in advertised:
+            if PERSONNEL_ROWS[category] == candidate:
+                return category
+    return None
+
+
 def _carried_category_mask(before: SplbBook, after: SplbBook, added: int) -> int:
     mask = struct.unpack_from(">I", before.body, BOOK_CATEGORY_MASK_OFFSET)[0] | added
     old, new = _validate_record_supply(before, after)
@@ -1042,11 +1059,9 @@ def validate_personnel_edit(before: SplbBook, after: SplbBook) -> None:
             "without a reachable formation. Its ladder cannot safely serve that package."
         )
     if lost:
-        old_rows = {PERSONNEL_ROWS[c] for c in old_supply}
-        new_rows = {PERSONNEL_ROWS[c] for c in new_supply}
         stranded = [row for row in range(28)
-                    if old_rows.intersection(personnel_row_candidates(row))
-                    and not new_rows.intersection(personnel_row_candidates(row))]
+                    if personnel_category_for_row(before, row) in old_supply
+                    and personnel_category_for_row(after, row) not in new_supply]
         if stranded:
             raise ValidationError(
                 f"Cannot safely retire personnel in {before.name or before.outer_index}: "
@@ -1870,8 +1885,10 @@ def compile_book(
     verification = verify_book(book.body, bytes(replacement), (
         *request.memberships, *request.moves, *request.trailers,
     ), master_play_count=master_play_count)
+    mask_unchanged = book.body[BOOK_CATEGORY_MASK_OFFSET:BOOK_CATEGORY_MASK_OFFSET + 4] == bytes(replacement)[BOOK_CATEGORY_MASK_OFFSET:BOOK_CATEGORY_MASK_OFFSET + 4]
     claims: dict[str, Any] = {
-        "entry_prefix_only": not bool(request.trailers),
+        "entry_prefix_only": not bool(request.trailers) and mask_unchanged,
+        "book_category_mask_untouched": mask_unchanged,
         "trailers_untouched": not bool(request.trailers),
         "unmapped_tail_untouched": True,
         "resource_length_unchanged": True,
@@ -1897,7 +1914,6 @@ def compile_book(
         claims.update(
             {
                 "trailer_replace_whitelisted_only": True,
-                "book_category_mask_untouched": False,
                 "trailer_cde_fields_preserved": True,
                 "trailer_low_byte_preserved": True,
                 "book_category_mask_only_gained_bits": not bool(personnel_ladder_receipt(book, parsed_after)["retired_category_indices"]),

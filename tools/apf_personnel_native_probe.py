@@ -2,8 +2,8 @@
 """Bounded BASE PPC personnel ladder/record witness. No game or retail output.
 
 Execute the real row picker through 0x8486088C, then the real formation reverse
-lookup and category membership test. Only the Xenon 64-bit ABI save/restore
-thunks are adapted for Unicorn's PPC32 core; no selection result is stubbed.
+lookup and category membership test. Only Xenon 64-bit register save/restore operations (shared thunks and
+three inline prologue/epilogue instructions) are adapted for Unicorn's PPC32 core; no selection result is stubbed.
 """
 from __future__ import annotations
 import argparse
@@ -116,7 +116,7 @@ def witness(image, master, before, after):
         if old['records']:
             assert new['records'], f"New null record path for row {new['requested_row']}"
     return {'status': 'PROVED bounded native BASE; gameplay UNWITNESSED',
-            'image_sha256': PE_SHA256, 'abi_adapter': '64-bit register save/restore thunks only',
+            'image_sha256': PE_SHA256, 'abi_adapter': '64-bit register save/restore thunks and three inline saves/restores only',
             'native_functions': ['84860730..8486088C', '84A8B438', '84A89B40',
                                  '84A89680', '84A89D60', '84A8A258', '84A8A330'],
             'before': result[0], 'after': result[1], 'retired_categories': sorted(retired),

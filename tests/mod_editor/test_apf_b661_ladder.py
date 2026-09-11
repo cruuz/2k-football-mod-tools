@@ -36,6 +36,8 @@ class LadderTests(unittest.TestCase):
         change = w.MembershipChange(130, 3, 3, False)
         compiled = w.compile_book(before, [change])
         self.assertNotIn(6, w.book_category_rows(compiled.replacement))
+        self.assertFalse(compiled.report["claims"]["entry_prefix_only"])
+        self.assertFalse(compiled.report["claims"]["book_category_mask_untouched"])
         w.verify_book(before.body, compiled.replacement, [change])
 
     def test_removing_middle_record_remains_refused_because_lookup_stops(self):
@@ -47,6 +49,17 @@ class LadderTests(unittest.TestCase):
         before = forged_book(130, ((9, 0), (20, 3), (120, 6), (69, 8), (69, 6)))
         with self.assertRaisesRegex(ValidationError, 'game can restore its ladder bit'):
             w.compile_book(before, [w.TrailerReplace(130, 2, 69, 8)])
+
+    def test_retiring_category_cannot_expose_an_existing_empty_same_row(self):
+        # 4-3 (11) and 3-4 (23) both map to row 13. Retiring 23 would expose
+        # an advertised but unsupported 11; the picker does not then ladder.
+        before = forged_book(130, ((140, 12), (155, 23)))
+        body = bytearray(before.body)
+        mask = int.from_bytes(body[w.BOOK_CATEGORY_MASK_OFFSET:w.BOOK_CATEGORY_MASK_OFFSET+4], 'big') | (1 << 11)
+        struct.pack_into('>I', body, w.BOOK_CATEGORY_MASK_OFFSET, mask)
+        before = w.parse_book(bytes(body), 130)
+        with self.assertRaisesRegex(ValidationError, 'bounded ladder would have no formation'):
+            w.compile_book(before, [w.MembershipChange(130, 1, 1, False)])
 
     @unittest.skipUnless(INDEX.is_file(), f'Retail APF 0A absent: {INDEX}')
     def test_retail_bulk_swap_h7a_and_native_picker(self):
@@ -68,6 +81,9 @@ class LadderTests(unittest.TestCase):
         from mod_editor.core.apf2k8_playbook_route_writer import read_master_play_body
         proof = witness(IMAGE, read_master_play_body(INDEX), before, after)
         self.assertEqual(proof['new_null_record_paths'], 0)
+        for book, rows in ((before, proof['before']), (after, proof['after'])):
+            self.assertEqual([w.personnel_category_for_row(book, i) for i in range(28)],
+                             [r['category'] for r in rows])
         self.assertTrue(all(row['category'] != 6 for row in proof['after']))
         self.assertTrue(proof['after'][7]['records'])
         self.assertEqual(compiled.report['h7a_transport']['overlapping_matches'], 0)

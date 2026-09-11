@@ -40,6 +40,16 @@ class RetailProof(unittest.TestCase):
             donor = identity.read_resource(self.index, identity.filename_id(item.donor_type), "spb", "SPLB")[3]
             self.assertTrue(clone.verify_clone_body(donor, item.body, item.name)["identical_except_name"])
 
+    def test_preset_is_starting_content_on_an_independent_copy(self):
+        request = clone.CloneRequest(5, 5, "O-ZoneBlock")
+        plan = clone.compile_unlock(self.index, [request], preset_ids=("wide-zone",))
+        prepared = presets.compile_preset(self.index, presets.load_preset("wide-zone"))
+        self.assertEqual(len(plan.clones), 1)
+        item = plan.clones[0]
+        self.assertTrue(clone.verify_clone_body(prepared.replacement, item.body, item.name)["identical_except_name"])
+        self.assertEqual(plan.report["preset_ids"], ["wide-zone"])
+        self.assertEqual(plan.report["clones"][0]["transport"]["h7a_overlapping_matches"], 0)
+
     def test_three_authored_presets_fit_and_repeat(self):
         counts = {"wide-zone": 13, "spread-to-run": 21, "pro-power": 20}
         for slug, count in counts.items():
