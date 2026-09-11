@@ -1,0 +1,481 @@
+{
+  "status": "PROVED bounded native BASE; gameplay UNWITNESSED",
+  "image_sha256": "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf",
+  "abi_adapter": "64-bit register save/restore thunks and three inline saves/restores only",
+  "native_functions": [
+    "84860730..8486088C",
+    "84A8B438",
+    "84A89B40",
+    "84A89680",
+    "84A89D60",
+    "84A8A258",
+    "84A8A330"
+  ],
+  "before": [
+    {
+      "requested_row": 0,
+      "category": 26,
+      "records": [
+        6
+      ]
+    },
+    {
+      "requested_row": 1,
+      "category": 1,
+      "records": [
+        3,
+        4,
+        10,
+        15,
+        17,
+        16,
+        21,
+        22
+      ]
+    },
+    {
+      "requested_row": 2,
+      "category": 1,
+      "records": [
+        3,
+        4,
+        10,
+        15,
+        17,
+        16,
+        21,
+        22
+      ]
+    },
+    {
+      "requested_row": 3,
+      "category": 3,
+      "records": [
+        0,
+        1,
+        7,
+        8,
+        12,
+        13,
+        18,
+        19,
+        20
+      ]
+    },
+    {
+      "requested_row": 4,
+      "category": 3,
+      "records": [
+        0,
+        1,
+        7,
+        8,
+        12,
+        13,
+        18,
+        19,
+        20
+      ]
+    },
+    {
+      "requested_row": 5,
+      "category": 3,
+      "records": [
+        0,
+        1,
+        7,
+        8,
+        12,
+        13,
+        18,
+        19,
+        20
+      ]
+    },
+    {
+      "requested_row": 6,
+      "category": 6,
+      "records": [
+        2,
+        9,
+        14
+      ]
+    },
+    {
+      "requested_row": 7,
+      "category": 6,
+      "records": [
+        2,
+        9,
+        14
+      ]
+    },
+    {
+      "requested_row": 8,
+      "category": 6,
+      "records": [
+        2,
+        9,
+        14
+      ]
+    },
+    {
+      "requested_row": 9,
+      "category": 6,
+      "records": [
+        2,
+        9,
+        14
+      ]
+    },
+    {
+      "requested_row": 10,
+      "category": 6,
+      "records": [
+        2,
+        9,
+        14
+      ]
+    },
+    {
+      "requested_row": 11,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 12,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 13,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 14,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 15,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 16,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 17,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 18,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 19,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 20,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 21,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 22,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 23,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 24,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 25,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 26,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 27,
+      "category": null,
+      "records": []
+    }
+  ],
+  "after": [
+    {
+      "requested_row": 0,
+      "category": 26,
+      "records": [
+        6
+      ]
+    },
+    {
+      "requested_row": 1,
+      "category": 1,
+      "records": [
+        3,
+        4,
+        10,
+        15,
+        17,
+        16,
+        21,
+        22
+      ]
+    },
+    {
+      "requested_row": 2,
+      "category": 1,
+      "records": [
+        3,
+        4,
+        10,
+        15,
+        17,
+        16,
+        21,
+        22
+      ]
+    },
+    {
+      "requested_row": 3,
+      "category": 3,
+      "records": [
+        0,
+        1,
+        7,
+        8,
+        12,
+        13,
+        18,
+        19,
+        20
+      ]
+    },
+    {
+      "requested_row": 4,
+      "category": 3,
+      "records": [
+        0,
+        1,
+        7,
+        8,
+        12,
+        13,
+        18,
+        19,
+        20
+      ]
+    },
+    {
+      "requested_row": 5,
+      "category": 3,
+      "records": [
+        0,
+        1,
+        7,
+        8,
+        12,
+        13,
+        18,
+        19,
+        20
+      ]
+    },
+    {
+      "requested_row": 6,
+      "category": 3,
+      "records": [
+        0,
+        1,
+        7,
+        8,
+        12,
+        13,
+        18,
+        19,
+        20
+      ]
+    },
+    {
+      "requested_row": 7,
+      "category": 8,
+      "records": [
+        2
+      ]
+    },
+    {
+      "requested_row": 8,
+      "category": 8,
+      "records": [
+        2
+      ]
+    },
+    {
+      "requested_row": 9,
+      "category": 8,
+      "records": [
+        2
+      ]
+    },
+    {
+      "requested_row": 10,
+      "category": 8,
+      "records": [
+        2
+      ]
+    },
+    {
+      "requested_row": 11,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 12,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 13,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 14,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 15,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 16,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 17,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 18,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 19,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 20,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 21,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 22,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 23,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 24,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 25,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 26,
+      "category": null,
+      "records": []
+    },
+    {
+      "requested_row": 27,
+      "category": null,
+      "records": []
+    }
+  ],
+  "retired_categories": [
+    6
+  ],
+  "new_null_record_paths": 0,
+  "ladder": {
+    "retired_category_indices": [
+      6
+    ],
+    "messages": [
+      "Queens retired from this book's ladder"
+    ],
+    "before": [
+      0,
+      1,
+      3,
+      6,
+      26
+    ],
+    "after": [
+      0,
+      1,
+      3,
+      8,
+      26
+    ],
+    "policy": "Retire emptied supply; preserve the game's existing personnel fallback order.",
+    "runtime_status": "UNWITNESSED"
+  },
+  "verification": {
+    "schema": "apf2k8_splb_book_membership/v1",
+    "changed_byte_count": 14,
+    "changed_records": [
+      2,
+      9,
+      14
+    ],
+    "trailer_records": [
+      2,
+      9,
+      14
+    ],
+    "tag_rule_reverified": true,
+    "independent_reparse": true,
+    "personnel_edit_guards_reverified": true
+  }
+}

@@ -675,13 +675,14 @@ class ApfPlaybookMembershipPanel(QFrame):
         # record index -> (formation index, personnel category) trailer repoint
         self._staged_trailers: dict[int, tuple[int, int]] = {}
         self._loading = False
+        self._load_generation = 0
 
         root = QVBoxLayout(self)
         root.setContentsMargins(16, 14, 16, 14)
         root.setSpacing(9)
 
         heading = QHBoxLayout()
-        title = QLabel("Stock CPU playbooks")
+        title = QLabel("CPU playbooks and independent books")
         title.setObjectName("panelTitle")
         self.status = QLabel("Not loaded")
         self.status.setObjectName("statusBadge")
@@ -691,9 +692,9 @@ class ApfPlaybookMembershipPanel(QFrame):
         root.addLayout(heading)
 
         blurb = QLabel(
-            "Reassigning a team's book usually changes nothing: the 36 offensive "
-            "and 33 defensive book names in a save are labels over seven "
-            "offensive and four defensive real books. These are those books."
+            "Team labels point to books by name. The stock game shares seven offensive "
+            "and four defensive CPU books; editing a shared book affects every team using it. "
+            "Book Identity can give one team an independent offensive copy, editable here."
         )
         blurb.setObjectName("mutedLabel")
         blurb.setWordWrap(True)
@@ -710,12 +711,15 @@ class ApfPlaybookMembershipPanel(QFrame):
             "books, USER-o / USER-d defaults, and global-o / global-d supplements. "
             "Team labels often select the same resource."
         )
-        for outer, name in sorted(splb.STOCK_BOOKS.items()):
+        for outer, name in sorted(getattr(facade, "book_choices", splb.STOCK_BOOKS).items()):
             label = name or f"(unnamed book, entry {outer})"
             self.book_picker.addItem(label, outer)
         self.book_picker.currentIndexChanged.connect(lambda _i: self._load_book())
         book_row.addWidget(self.book_picker, 1)
         root.addLayout(book_row)
+        self.ladder_status = QLabel("")
+        self.ladder_status.setWordWrap(True)
+        root.addWidget(self.ladder_status)
 
         columns = QHBoxLayout()
         columns.setSpacing(14)
@@ -866,6 +870,7 @@ class ApfPlaybookMembershipPanel(QFrame):
 
     def set_context(self) -> None:
         if not bool(getattr(self.facade, "source_ready", False)):
+            self._load_generation += 1
             self._book = None
             self._loaded_index = None
             self._categories = ()
@@ -909,9 +914,24 @@ class ApfPlaybookMembershipPanel(QFrame):
         outer = self.book_picker.currentData()
         if outer is None:
             return
-        # Other books stay staged in the project. This panel only edits one
-        # book at a time; switching no longer discards them.
+        if (self._book is not None and self._book.outer_index == int(outer)
+                and self._loaded_index == index_0a):
+            self._restore_from_project()
+            self._refresh_formations()
+            self._refresh_actions()
+            return
+        # Other books stay staged: switching no longer discards their edits.
+        # Late callbacks from a previously selected book must not replace the
+        # selected clone, or leave editable rows under the wrong picker label.
+        self._load_generation += 1
+        generation = self._load_generation
+        self._book = None
+        self._loaded_index = None
         self._clear_staged()
+        self.formation_list.clear()
+        self.play_list.clear()
+        self.status.setText("Loading playbook…")
+        self._refresh_actions()
 
         def operation(progress: Callable[[str, int, int], None]) -> dict:
             import playbook_inventory  # type: ignore
@@ -919,7 +939,9 @@ class ApfPlaybookMembershipPanel(QFrame):
             progress("Reading the stock playbook", 0, 3)
             book = splb.read_book(index_0a, int(outer))
             progress("Reading MASTER play names", 1, 3)
-            master = playbook_inventory.parse_apf(index_0a, 64 * 1024 * 1024)[0]
+            inventory_reader = getattr(self.facade, "master_inventory", None)
+            master = (inventory_reader() if inventory_reader else
+                      playbook_inventory.parse_apf(index_0a, 64 * 1024 * 1024)[0])
             progress("Reading retail personnel pairings", 2, 3)
             package_reader = getattr(self.facade, "retail_formation_packages", None)
             formation_packages = package_reader() if package_reader is not None else {}
@@ -937,6 +959,10 @@ class ApfPlaybookMembershipPanel(QFrame):
             }
 
         def done(result: object) -> None:
+            if (generation != self._load_generation or self._index_0a() != index_0a
+                    or self.book_picker.currentData() != outer
+                    or not bool(getattr(self.facade, "source_ready", False))):
+                return
             payload = result  # type: ignore[assignment]
             self._book = payload["book"]  # type: ignore[index]
             self._plays = payload["plays"]  # type: ignore[index]
@@ -1560,6 +1586,13 @@ class ApfPlaybookMembershipPanel(QFrame):
 
     def _after_stage(self) -> None:
         self._commit_to_project()
+        self.ladder_status.clear()
+        if self._book is not None and self.staged_changes():
+            try:
+                compiled = splb.compile_book(self._book, self.staged_changes())
+                self.ladder_status.setText(". ".join(compiled.report["personnel_ladder"]["messages"]))
+            except ValidationError as exc:
+                self.ladder_status.setText(str(exc))
         self._refresh_formations()
         self._refresh_plays()
         self._refresh_actions()
@@ -1949,7 +1982,7 @@ class ApfPlaybookMembershipPanel(QFrame):
             block = "Load your APF game first, then pick a playbook."
         elif self._book is None:
             block = "Choose a stock playbook first."
-        elif not staged:
+        elif not staged and not (getattr(self.facade, "build_to", None) and self._project_outers()):
             block = (
                 "Tick or untick plays for a formation, or move a tagged slot, first. "
                 "Nothing is staged yet."
@@ -2047,6 +2080,18 @@ class ApfPlaybookMembershipPanel(QFrame):
         index_0a = self._index_0a()
         if index_0a is None:
             return
+        content_builder = getattr(self.facade, "build_to", None)
+        if content_builder is not None:
+            destination, _ = QFileDialog.getSaveFileName(self, "Name a new game folder", "APF-book-content")
+            if destination:
+                def done(receipt):
+                    messages = [message for book in receipt["books"]
+                                for message in book["personnel_ladder"]["messages"]]
+                    QMessageBox.information(self, "Modded playbooks built",
+                                            f"Verified new game: {destination}\n" + "\n".join(messages) +
+                                            "\nIn-game behavior remains UNWITNESSED.")
+                self.run_task("Building edited CPU books", lambda progress: content_builder(Path(destination), progress), done, True)
+            return
         directory = QFileDialog.getExistingDirectory(
             self, "Choose the folder for the copied 0A", str(Path.home())
         )
@@ -2102,7 +2147,7 @@ class ApfPlaybookMembershipPanel(QFrame):
                 f"{'s' if len(report['changes']) != 1 else ''} to "
                 f"{report['book_name'] or 'an unnamed book'} · "
                 f"{verification.get('changed_byte_count', 0)} byte(s) differ from "
-                "your source." + sharing_note + "\n\n" + BOUNDARY,
+                "your source.\n" + "\n".join(report["personnel_ladder"]["messages"]) + sharing_note + "\n\n" + BOUNDARY,
             )
 
         self.run_task("Building the modded playbook", operation, done, True)

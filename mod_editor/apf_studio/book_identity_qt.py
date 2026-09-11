@@ -10,7 +10,7 @@ from pathlib import Path
 
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QComboBox, QFileDialog, QFormLayout, QHBoxLayout,
+    QAbstractItemView, QComboBox, QDialog, QFileDialog, QFormLayout, QHBoxLayout,
     QLabel, QPlainTextEdit, QPushButton, QTableWidget, QTableWidgetItem,
     QTabWidget, QVBoxLayout, QWidget,
 )
@@ -40,12 +40,16 @@ class BookIdentityPanel(QWidget):
         title.setObjectName("panelTitle")
         layout.addWidget(title)
         note = QLabel(
-            "Build your project first, then choose its game folder here. Review a "
-            "scheme preset or give a team its own copy of an offensive book. "
-            "Cloning is the final step: finish other Studio edits before cloning. "
-            "Build creates a new folder with a verification receipt. Expanded "
-            "books and CPU behavior remain UNWITNESSED in game. A loaded roster "
-            "save can override these disc assignments."
+            "Give one team its own offensive book, then edit its formations, plays and audibles in Fine-tune. "
+            "Team chooses who uses the copy. Unused label names that copy; the game resolves the label's "
+            "book name to its contents. Copy this book chooses the starting formations and plays. "
+            "Other teams keep their shared book. A loaded roster save can override these disc assignments.\n\n"
+            "1. Build your current Studio project and choose that game folder here. "
+            "2. Choose a team, unused label and starting book, then Review and Build new game folder. "
+            "Cloning inserts an archive entry and shifts entry numbers, so the old Studio project must be "
+            "finished first. 3. Open the new folder with Edit books in Fine-tune below; save its book-edit "
+            "recipe and build another new folder. This editor resolves the shifted entries by name. "
+            "Expanded books and CPU behavior remain UNWITNESSED in game."
         )
         note.setWordWrap(True)
         layout.addWidget(note)
@@ -58,25 +62,27 @@ class BookIdentityPanel(QWidget):
         layout.addLayout(source_row)
         form = QFormLayout()
         self.action = QComboBox()
-        self.action.addItem("Independent offensive book", "clone")
+        self.action.addItem("Copy the book as it is", "clone")
         for slug in presets.PRESET_IDS:
             self.action.addItem(presets.load_preset(slug)["name"], slug)
-        self.action.addItem("All three scheme presets", "all-presets")
         self.team = QComboBox()
         self.label = QComboBox()
         self.donor = QComboBox()
         for name in sorted(x for x in splb.STOCK_BOOKS.values() if x.startswith("O-")):
             self.donor.addItem(name, name)
-        for caption, widget in (("Action", self.action), ("Team", self.team),
+        for caption, widget in (("Starting content recipe", self.action), ("Team using this copy", self.team),
                                 ("Unused offensive label", self.label), ("Copy this book", self.donor)):
             form.addRow(caption, widget)
         layout.addLayout(form)
+        self.recipe_note = QLabel("No recipe: copies the selected book's current content. You can edit the copy in Fine-tune.")
+        self.recipe_note.setWordWrap(True)
+        layout.addWidget(self.recipe_note)
         row = QHBoxLayout()
         self.review = QPushButton("Review change")
         self.build = QPushButton("Build new game folder…")
         row.addWidget(self.review)
         row.addWidget(self.build)
-        self.stage = QPushButton("Stage scheme presets in project")
+        self.stage = QPushButton("Stage recipe on shared stock book")
         self.revert_presets = QPushButton("Revert staged presets")
         self.stage.setVisible(facade is not None)
         self.revert_presets.setVisible(facade is not None)
@@ -85,6 +91,13 @@ class BookIdentityPanel(QWidget):
         self.stage.clicked.connect(self._stage_presets)
         self.revert_presets.clicked.connect(lambda: self._stage_presets(clear=True))
         layout.addLayout(row)
+        self.edit = QPushButton("Edit books in Fine-tune…")
+        self.edit.setToolTip("Open the chosen or newly built folder's stock and independent books. Save a book-edit recipe, then build a new folder.")
+        self.edit.clicked.connect(self.open_fine_tune)
+        self._edit_index = None
+        self._edit_name = None
+        self._content_dialogs = []
+        layout.addWidget(self.edit)
         self.status = QLabel("Choose a game to inspect all 40 teams and their shared books.")
         self.status.setWordWrap(True)
         layout.addWidget(self.status)
@@ -104,6 +117,8 @@ class BookIdentityPanel(QWidget):
         self.choose.clicked.connect(self._choose_source)
         self.review.clicked.connect(self.review_selection)
         self.build.clicked.connect(self._choose_output)
+        self.action.currentIndexChanged.connect(self._fill_recipe)
+        self.donor.currentIndexChanged.connect(self._donor_changed)
         for box in (self.action, self.team, self.label, self.donor):
             box.currentIndexChanged.connect(self._invalidate)
         self._invalidate()
@@ -115,11 +130,32 @@ class BookIdentityPanel(QWidget):
         if self.source_index is not None:
             self.status.setText("Select an action and review its current result before building.")
         self.set_context()
-        cloning = self.action.currentData() == "clone"
+        ready = self.source_index is not None and not self._busy
         for box in (self.team, self.label, self.donor):
-            box.setEnabled(cloning and self.source_index is not None)
-        self.review.setEnabled(self.source_index is not None and
-                               (not cloning or self.label.currentData() is not None))
+            box.setEnabled(ready)
+        self.review.setEnabled(ready and self.label.currentData() is not None)
+        self.edit.setEnabled(not self._busy and (self._edit_index is not None or self.source_index is not None))
+
+    def _fill_recipe(self, *_args):
+        slug = self.action.currentData()
+        if slug == "clone":
+            self.recipe_note.setText("No recipe: copies the selected book's current content. Edit the copy in Fine-tune.")
+            return
+        recipe = presets.load_preset(slug)
+        self.donor.blockSignals(True)
+        self.donor.setCurrentIndex(self.donor.findData(recipe["book_type"]))
+        self.donor.blockSignals(False)
+        self.recipe_note.setText(
+            f"{recipe['name']}: {recipe['intent']} Starts from {recipe['book_type']}; "
+            "fills the copy's play membership and audible slots. Team and label remain editable. "
+            "Choosing a different starting book clears this recipe. After building, change any "
+            "formation, play or audible in Fine-tune. This changes book content, not play-calling logic. "
+            + recipe['limitations'])
+
+    def _donor_changed(self, *_args):
+        slug = self.action.currentData()
+        if slug != "clone" and presets.load_preset(slug)["book_type"] != self.donor.currentData():
+            self.action.setCurrentIndex(0)
 
     def set_context(self):
         ready = self.facade is not None and self.facade.source_ready and not self._busy
@@ -130,7 +166,13 @@ class BookIdentityPanel(QWidget):
 
     def set_busy(self, busy):
         self._busy = busy
+        for dialog in self._content_dialogs:
+            dialog.setEnabled(not busy)
         self.set_context()
+        for widget in (self.choose, self.action, self.team, self.label, self.donor, self.review, self.build, self.edit):
+            widget.setEnabled(not busy and (widget in (self.choose, self.action) or self.source_index is not None))
+        self.build.setEnabled(not busy and self.reviewed is not None)
+        self.review.setEnabled(not busy and self.source_index is not None and self.label.currentData() is not None)
 
     def _stage_presets(self, _checked=False, *, clear=False):
         selected = self.action.currentData()
@@ -156,6 +198,9 @@ class BookIdentityPanel(QWidget):
 
     def load_path(self, index_path: Path):
         self.source_index = None
+        self._edit_index = None
+        self._edit_name = None
+        self.edit.setText("Edit books in Fine-tune…")
         self.table.setRowCount(0)
         self.receipt.clear()
         self.source_label.setText("Inspecting selected game…")
@@ -203,17 +248,13 @@ class BookIdentityPanel(QWidget):
             return
         self._invalidate()
         generation, source, action = self._generation, self.source_index, self.action.currentData()
-        request = (clone.CloneRequest(self.label.currentData(), self.team.currentData(), self.donor.currentData())
-                   if action == "clone" else None)
-        slugs = presets.PRESET_IDS if action == "all-presets" else (action,)
+        request = clone.CloneRequest(self.label.currentData(), self.team.currentData(), self.donor.currentData())
+        slugs = () if action == "clone" else (action,)
 
         def work(progress):
-            progress("Compiling and independently reparsing the selection", 0, 1)
-            if request is not None:
-                plan = clone.compile_unlock(source, [request])
-                return action, plan, plan.report
-            reports = [presets.compile_preset(source, presets.load_preset(x)).report for x in slugs]
-            return action, tuple(slugs), {"presets": reports, "book_identity": reports[0]["book_identity"]}
+            progress("Compiling and independently reparsing the team book copy", 0, 1)
+            plan = clone.compile_unlock(source, [request], preset_ids=slugs)
+            return action, plan, plan.report
 
         def reviewed(result):
             if generation != self._generation:
@@ -243,16 +284,82 @@ class BookIdentityPanel(QWidget):
 
         def work(progress):
             update = lambda message: progress(message, 0, 1)
-            if action == "clone":
-                return clone.build_new_folder(plan, destination, update)
-            return presets.build_presets_folder(source, plan, destination, update,
-                                                expected_reports=report["presets"])
+            return clone.build_new_folder(plan, destination, update)
 
         def built(result):
             if generation != self._generation:
                 return
+            self._edit_index = Path(destination) / "0A"
+            bindings = report.get("roster_binding", {}).get("changes", [])
+            self._edit_name = bindings[0]["after_type"] if bindings else None
             self._invalidate()
             self.receipt.setPlainText(json.dumps(result, indent=2))
-            self.status.setText(f"Verified new game: {destination}. In-game behavior is UNWITNESSED.")
+            self.edit.setText("Edit the new independent book in Fine-tune…")
+            self.status.setText(f"Verified new game: {destination}. Use Edit the new independent book in Fine-tune next. "
+                                "In-game behavior is UNWITNESSED.")
 
         self.run_task("Building verified book folder", work, built, True)
+
+    def open_fine_tune(self):
+        index = self._edit_index or self.source_index
+        if index is None:
+            return
+        from .book_content import BookContentSession
+        generation = self._generation
+        def loaded(session):
+            if generation != self._generation:
+                return
+            dialog = BookContentDialog(session, self.run_task, self, self._edit_name)
+            self._content_dialogs.append(dialog)
+            dialog.finished.connect(lambda _result: self._content_dialogs.remove(dialog))
+            dialog.show()
+        self.run_task("Opening books by name", lambda _progress: BookContentSession(index), loaded, True)
+
+
+class BookContentDialog(QDialog):
+    def __init__(self, session, run_task, parent=None, selected_name=None):
+        super().__init__(parent)
+        from .playbook_membership_qt import ApfPlaybookMembershipPanel
+        self.setWindowTitle("Fine-tune CPU books in this game folder")
+        self.resize(1120, 800)
+        self.session = session
+        layout = QVBoxLayout(self)
+        note = QLabel(f"{session.source.index_0a.parent}\nEdits belong to this folder. Save a book-edit recipe to continue later; "
+                      "Build writes a separate new game folder with every edited book. The source stays unchanged.")
+        note.setWordWrap(True)
+        layout.addWidget(note)
+        def content_task(title, work, callback, blocking):
+            self.setEnabled(False)
+            def completed(result):
+                try:
+                    callback(result)
+                finally:
+                    self.setEnabled(True)
+            started = run_task(title, work, completed, blocking)
+            if started is False:
+                self.setEnabled(True)
+            return started
+        self.panel = ApfPlaybookMembershipPanel(session, content_task)
+        layout.addWidget(self.panel)
+        if selected_name:
+            for outer, name in session.book_choices.items():
+                if name == selected_name:
+                    self.panel.book_picker.setCurrentIndex(self.panel.book_picker.findData(outer))
+                    break
+        row = QHBoxLayout()
+        save = QPushButton("Save book-edit recipe…")
+        load = QPushButton("Open book-edit recipe…")
+        row.addWidget(save)
+        row.addWidget(load)
+        layout.addLayout(row)
+        def save_recipe():
+            path, _ = QFileDialog.getSaveFileName(self, "Save book edits", "book-edits.json", "JSON (*.json)")
+            if path:
+                content_task("Saving book edits", lambda _progress: session.save_recipe(path), lambda _result: None, True)
+        def load_recipe():
+            path, _ = QFileDialog.getOpenFileName(self, "Open book edits", "", "JSON (*.json)")
+            if path:
+                content_task("Opening book edits", lambda _progress: session.load_recipe(path),
+                         lambda _result: self.panel.set_context(), True)
+        save.clicked.connect(save_recipe)
+        load.clicked.connect(load_recipe)

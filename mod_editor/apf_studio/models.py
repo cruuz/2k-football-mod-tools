@@ -204,7 +204,8 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
         product_note=(
             "BookIdentityPanel.review_selection and build_to create a verified "
             "independent offensive book in a new folder. Finish existing Studio "
-            "edits first. CPU consumption and TU compatibility are UNWITNESSED."
+            "edits first, then use Edit books in Fine-tune to change the copy and "
+            "save a named book-edit recipe. CPU consumption and TU compatibility are UNWITNESSED."
         ),
     ),
     "apf2k8.playbooks.scheme_presets": CapabilityActionBinding(
@@ -214,9 +215,11 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
         one_shot_target="mod_editor.core.apf2k8_scheme_presets:build_presets_folder",
         output_kind="copied_extracted_game_directory",
         product_note=(
-            "BookIdentityPanel reviews Wide Zone, Spread-to-Run, Pro Power, or "
-            "all three, then verifies membership/tag edits in a copied game. "
-            "Existing plays and formations only; CPU behavior is UNWITNESSED."
+            "BookIdentityPanel fills a Wide Zone, Spread-to-Run or Pro Power "
+            "starting book without locking team, label or donor controls. Build copies "
+            "that content to an independent book; Fine-tune edits the copy afterward. "
+            "The separate Stage recipe action edits the shared stock book in the current project. "
+            "CPU behavior is UNWITNESSED."
         ),
     ),
 "apf2k8.playbooks.cpu_audibles": CapabilityActionBinding(

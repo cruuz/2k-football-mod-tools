@@ -94,6 +94,7 @@ PRODUCT_MODULES = (
     'mod_editor.apf_studio.ps3_texture_probe',
     'mod_editor.apf_studio.ps3_texture_probe_fast',
     'mod_editor.apf_studio.book_identity_qt',
+    'mod_editor.apf_studio.book_content',
     'mod_editor.core.apf2k8_book_clone',
     'mod_editor.core.apf2k8_book_identity',
     'mod_editor.core.apf2k8_scheme_presets',

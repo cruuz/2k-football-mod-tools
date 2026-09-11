@@ -94,9 +94,9 @@ class GuardTests(unittest.TestCase):
         with self.assertRaisesRegex(ValidationError,'only tagged plays'):
             s.compile_book(b,[s.MembershipChange(130,0,14,False),s.MembershipChange(130,0,15,False)])
 
-    def test_losing_only_record_of_advertised_category_is_refused(self):
+    def test_retiring_last_package_without_safe_fallback_is_refused(self):
         b=s.parse_book(book_bytes([(1,3,list(range(10,16))),(2,6,list(range(20,26)))]),130)
-        with self.assertRaisesRegex(ValidationError,r'Queens \(category 6, row 7\)'):
+        with self.assertRaisesRegex(ValidationError,'bounded ladder would have no formation'):
             s.compile_book(b,self.clear(b,1))
 
     def test_hole_refused_and_safe_trailing_clear_allowed(self):

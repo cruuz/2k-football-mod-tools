@@ -1,0 +1,52 @@
+# Beta 66.1: CPU book content control
+
+Urianus, September 11, 6:25 AM: “I wouldn't mess with the general playcalling logic at all until we figure out how to take full control of CPU PBs.” At 12:26 PM he reported that Fine-tune “prevents me from swapping all formations of a specific personnel type, like all Queens.” This work follows that direction. Play-calling logic, sliders and executable code are unchanged.
+
+The September 9 evidence is archived as `ASTRA_APF_BOOK_UNLOCK_REPORT_2026-09-09.md` in Noah's handoff folder; no file named `ASTRA_APF_BOOK_IDENTITY_REPORT.md` was present. Its traced label/type/name resolution, SPLB writer and data-only clone allocation are the starting point. Urianus's account of randomness outside set situations and Ulf's September 11 request motivate content control; they are not substituted for a full reconstruction of the calling algorithm.
+
+## What the controls now mean
+
+- **Team using this copy** selects one disc team. **Unused offensive label** provides the copy's name. The game follows that label's type name to the book resource. A loaded roster save may override the disc assignment.
+- **Copy this book** chooses the starting content from the seven stock offensive books. A copy has its own SPLB, so its subsequent membership changes do not edit the shared donor. Defensive books can be edited; independent defensive cloning is not offered.
+- **Starting content recipe** is optional. Wide Zone starts with O-ZoneBlock; Spread-to-Run starts with O-Shotgun; Pro Power starts with O-ManBlock. They choose existing plays and audible slots, without changing calling probabilities. Selecting a recipe fills the donor and contents; team and label remain editable. Choosing another donor clears the incompatible recipe. After building, Fine-tune can change the copied content. The old “All three” choice is removed from this single-team form.
+- **Stage recipe on shared stock book** is a separate action for the currently loaded Studio project. It affects the recipe's shared donor in that project. It is not necessary to create a team copy. Existing project preset composition still applies after ordinary project selectors; the copied-book editor instead begins from the already built contents, so later edits remain editable.
+- **Edit books in Fine-tune** opens an isolated book editor for the chosen game folder, or the newly built clone folder. It lists stock and independent books by decoded name and matching filename hash. Save a **book-edit recipe** here; this is separate from the Studio project used before cloning. **Build** writes another complete, separate game folder and `book-content-receipt.json`.
+
+Cloning is the last step of the original Studio project because its sorted archive directory gains rows and numeric entry indices shift. Finish that project and build first. Clone the built game, then edit its books through the named Fine-tune route on Book Identity. Do not reopen the old numeric-index Studio project against the expanded archive. Other Studio workspaces are not claimed to support expanded archives.
+
+## What is proved and what remains
+
+| Requirement | Evidence and current boundary |
+|---|---|
+| Per-team book selection | Existing ROST writer and name resolver; one team receives an unused offensive label whose type resolves to the clone. Source roster strings and other team assignments are preserved. Full asynchronous game loading remains UNWITNESSED. |
+| Independent copy | Existing directory/ROST/SPLB reparse, now also exercised through clone -> content edit -> copied multi-volume archive. All unrelated pack bytes and executable are compared. No XEX patch. |
+| Clone formation and play membership | Same Fine-tune widget and SPLB compiler as stock books. Name/hash validation replaces the stock-ordinal read restriction. Named recipes bind source book and MASTER hashes and resolve current ordinals when reopened. |
+| Personnel ladder | Swaps clear old record memberships and advertise their destination. Categories whose reachable supply disappears are retired from the book mask. The verifier rederives the mask. Hidden/duplicate records that could restore a retired category, holes, empty books and stranded bounded fallbacks are refused with reasons. |
+| Picker | The BASE native row picker/search and formation reverse lookup/category test run for 28 requested rows before/after the three Queens swaps. Queens is never returned after retirement, and every previously served request still has a populated reachable record. A stale-mask negative control returns Queens with no record. This is bounded execution, not a whole-game witness or the ordinary weighted play picker. |
+| Audibles | Existing same-record TagMove controls are available on the clone. Recipe presets can seed four audible slots. Cross-formation audibles and actual audible usage/frequency remain UNWITNESSED. |
+| Transport | Every edited SPLB reparses after H7A encoding; length > distance is explicitly rejected. Clone content builds write the correct volume segments, preserve the directory and compare untouched pack bytes. |
+
+The book mask is category IDs, not personnel row numbers. Queens is category 6, row 7. The existing ladder tries the requested row, then +1, -1, +2, -2, +3, -3 within offense/defense bounds. Retiring a bit is unsafe if a previously served request loses every answer within that range. The fix does not enlarge or patch that ladder.
+
+The full game can request a category through other untraced contexts, normalize book caches, choose shared play instances, or apply saved substitutions. Those paths are not covered by the bounded proof. Unused baseline requests already returning null are reported, not concealed; the proof asserts no newly null previously served request. The three edited O-ManBlock Queens records become Flush and leave no populated primary/secondary Queens bit for cache normalization to restore.
+
+## Next content-control job
+
+1. Run the witness below on BASE, retaining receipts and a precise team/save setup. Establish that the game actually loads the extra resource and that the assigned CPU uses its changed membership while a donor-sharing control team keeps its original book.
+2. Trace and bound the remaining loaded-book path through the ordinary play picker, shared-play instance selection, cache normalization and audible dispatch. Add negative controls for a play removed from the clone but retained in the donor, plus same-record audible changes. Do not change selection probabilities.
+3. Prove independent defensive label cloning and save-level per-team assignment compatibility. Extend the same name-bound content session only after its loading/assignment witnesses pass.
+4. Make all Studio project asset identities resilient to archive insertion before allowing ordinary mixed-asset projects to reopen expanded archives. Until then, the separate named book-edit recipe is the supported continuation.
+
+## Exact witness for Urianus
+
+Use a clean BASE game and a new test project. Record the game version, whether a roster save is loaded, and the CPU team. Start with disc assignments; a save with its own book pointers can override the experiment. Keep the original source and each output in different folders.
+
+1. Load the original game. Open **Playbooks & Plays > Fine-tune > O-ManBlock**. Change **I Spread** (record 2), **Strong I Spread** (record 9), and **Weak I Spread** (record 14) to **Quads**, choosing **Flush** personnel. These are the three stock Queens records. After the third change, expect **“Queens retired from this book's ladder”**, with no save-refusal dialog. Save/reopen the Studio project and verify all three edits remain. Build the copied playbook/game and keep the receipt. Its `personnel_ladder.after` must omit category 6 and include category 8.
+2. In a Quick Game against CPU **Beasts** (also O-ManBlock: Rollers, Top Guns and Wasps), let the CPU run several series. Use Signal Stealer if available to inspect calls; exercise ordinary downs, third downs and goal-line situations. Report any hang, unexpected Queens personnel, formation outside the edited book or missing formation. A few plays without a failure do not prove every selection path.
+3. For an independent-copy comparison, return Book Identity to the original unedited built game folder. Choose **Team using this copy: 2: Beasts**, **Unused offensive label: Browns**, **Copy this book: O-ManBlock**, and **Copy the book as it is**. Review: only Beasts should use Browns. Build a new game folder, then click **Edit the new independent book in Fine-tune**. Expect **Browns** selected, with the same stock formations initially.
+4. In Browns, repeat the three Queens -> Quads/Flush swaps. In any formation with ordinary plays, remove one ordinary play that you can recognize and move one audible slot to another retained play in that same formation. Write down the exact formation/play/audible names. Keep at least one ordinary play. Switch the book picker to **O-ManBlock**: its three original Queens formations, removed play and audible must still be unchanged. Return to Browns.
+5. Click **Save book-edit recipe**, close this editor, reopen it from Book Identity and use **Open book-edit recipe**. Confirm the Browns edits return. Build a new folder. Inspect `book-content-receipt.json`: Browns changed, Beasts resolves to Browns, the shared O-ManBlock donor remains unchanged, and the ladder receipt retires Queens.
+6. Play CPU Beasts from that final folder and compare with CPU Rollers using the shared donor. Inspect formations and the named removed play/audible where possible; report the actual evidence, not only whether the game boots. Keep BASE and TU 1.1 observations separate; TU compatibility is not established by the BASE harness.
+7. UI/preset check: choose **Wide Zone** on Book Identity. Expect O-ZoneBlock filled in, with an explanation of membership/audible changes. Change team and unused label; neither should be disabled. Change donor to O-ManBlock: expect **Copy the book as it is**. Select Wide Zone again, build the separate copy, then open it in Fine-tune and confirm individual play/formation/audible controls remain available. The recipe does not promise more frequent zone calls.
+
+Please report: source version, CPU/control team, roster-save use, the selected book/label, exact edited formation/play/audible names, whether edits survived reopening, receipt text, and what happened on the field. No claim of an in-game fix is made until this is witnessed.
