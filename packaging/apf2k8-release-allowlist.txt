@@ -250,6 +250,8 @@ mod_editor/core/apf2k8_play_concepts.py
 mod_editor/core/apf2k8_play_design_build.py
 mod_editor/core/apf2k8_play_designer.py
 mod_editor/core/apf2k8_playcall_patch.py
+mod_editor/core/apf2k8_xex.py
+mod_editor/core/xex_codec.py
 mod_editor/core/apf2k8_scheme_presets.py
 mod_editor/core/apf_field_material_writer.py
 mod_editor/core/nfl2k5_play_codec.py
