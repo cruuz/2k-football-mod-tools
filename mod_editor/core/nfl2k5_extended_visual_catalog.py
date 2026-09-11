@@ -16,7 +16,7 @@ that cannot consume it.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field as dataclass_field
+from dataclasses import dataclass, field as dataclass_field, fields
 from enum import Enum
 from functools import lru_cache
 import hashlib
@@ -271,9 +271,11 @@ def _read_uniform_equipment_catalog(path: Path) -> dict[str, Any]:
 
 def _ordered_unique(values: Iterable[str]) -> tuple[str, ...]:
     result: list[str] = []
+    seen: set[str] = set()
     for value in values:
         cleaned = value.strip()
-        if cleaned and cleaned not in result:
+        if cleaned and cleaned not in seen:
+            seen.add(cleaned)
             result.append(cleaned)
     return tuple(result)
 
@@ -1104,7 +1106,41 @@ def load_nfl2k5_product_visual_catalog() -> Nfl2k5ProductVisualCatalog:
 
 @lru_cache(maxsize=1)
 def load_nfl2k5_extended_visual_catalog() -> Nfl2k5ExtendedVisualCatalog:
-    return Nfl2k5ExtendedVisualCatalog.from_reports()
+    from . import metadata_cache
+    paths = VisualReportPaths()
+    key = metadata_cache.source_key(
+        [Path(__file__), *(getattr(paths, field.name) for field in fields(paths))], "extended-visual-v1")
+    path = metadata_cache.cache_path("extended-visual-v1")
+    rows = metadata_cache.read(path, key)
+    if rows is not None:
+        try:
+            assets = []
+            for raw in rows:
+                row = list(raw)
+                row[7] = VisualWriterRoute(row[7])
+                row[10], row[22] = tuple(row[10]), tuple(row[22])
+                if row[25] is not None:
+                    row[25] = UniformEquipmentDescriptor(*row[25])
+                assets.append(ExtendedVisualAsset(*row))
+            if len(assets) != sum((PRODUCTION_EXPECTATIONS.portrait_count,
+                    PRODUCTION_EXPECTATIONS.face_resource_count, PRODUCTION_EXPECTATIONS.field_texture_count,
+                    PRODUCTION_EXPECTATIONS.scorebug_count, PRODUCTION_EXPECTATIONS.p8_texture_count,
+                    PRODUCTION_EXPECTATIONS.uniform_equipment_count)):
+                raise ValueError("Incomplete metadata cache")
+            return Nfl2k5ExtendedVisualCatalog(assets, paths)
+        except (TypeError, ValueError, IndexError, KeyError):
+            pass
+    catalog = Nfl2k5ExtendedVisualCatalog.from_reports()
+    names = tuple(field.name for field in fields(ExtendedVisualAsset))
+    descriptor_names = tuple(field.name for field in fields(UniformEquipmentDescriptor))
+    rows = []
+    for asset in catalog.assets:
+        row = [getattr(asset, name) for name in names]
+        if asset.equipment_descriptor is not None:
+            row[25] = [getattr(asset.equipment_descriptor, name) for name in descriptor_names]
+        rows.append(row)
+    metadata_cache.write(path, key, rows)
+    return catalog
 
 
 __all__ = [

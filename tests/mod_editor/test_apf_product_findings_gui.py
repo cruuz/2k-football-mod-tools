@@ -100,7 +100,11 @@ class ApfProductFindingsGuiTests(unittest.TestCase):
             self.assertEqual(page.inspector.count.text(), "38 decoded rows")
             self.assertTrue(page.inspector.export_rows_button.isEnabled())
             self.assertIn("Sliders: 21", page.inspector.summary.text())
-            self.assertEqual(page.capabilities.layout.count(), 3)
+            self.assertEqual(page.capabilities.layout.count(), 2)
+            self.assertLessEqual(page.capabilities.height(), 36)
+            details = page.capabilities.create_details_dialog()
+            self.assertTrue(details.windowTitle())
+            details.deleteLater()
         finally:
             page.deleteLater()
             self.application.processEvents()

@@ -276,11 +276,19 @@ class ApfAudioBatchGuiTests(unittest.TestCase):
             self.application.processEvents()
 
     def test_product_theme_keeps_native_information_dialogs_high_contrast(self) -> None:
-        style_source = inspect.getsource(ApfStudioMainWindow._apply_style)
-        self.assertIn("QMessageBox QLabel", style_source)
-        self.assertIn("QMessageBox QPushButton:default", style_source)
-        self.assertIn("background: #101827", style_source)
-        self.assertIn("color: #eef4ff", style_source)
+        from PyQt5.QtGui import QPalette
+        from PyQt5.QtWidgets import QMessageBox, QWidget
+        from mod_editor.apf_studio.apf_theme import contrast, install_theme
+        install_theme(self.application)
+        dialog = QMessageBox(QMessageBox.Information, "APF", "A readable message", QMessageBox.Ok)
+        dialog.ensurePolished()
+        self.assertGreaterEqual(contrast(QWidget.palette(dialog).color(QPalette.WindowText),
+                                         QWidget.palette(dialog).color(QPalette.Window)), 4.5)
+        button = dialog.button(QMessageBox.Ok)
+        button.ensurePolished()
+        self.assertGreaterEqual(contrast(button.palette().color(QPalette.ButtonText),
+                                         button.palette().color(QPalette.Button)), 4.5)
+        dialog.deleteLater()
 
     def test_original_xma_export_uses_every_model_row_and_blocking_progress(self) -> None:
         browser, facade, tasks = self._browser()

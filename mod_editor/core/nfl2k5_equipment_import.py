@@ -95,11 +95,11 @@ def _message(target: Any, consumers: Any, *, independent: bool,
     if independent:
         return (f"Equipment artwork is ready to build at {encoded}.{approximation} "
                 f"Experimental / unwitnessed. {scope}")
-    return f"Equipment recolour is ready to build. {scope}"
+    return f"Equipment recolour is ready to build.{approximation} {scope}"
 
 
 def stage_equipment_import(session: Any, asset: Any, path: Path, *,
-                           independent: bool = False, scale: int = 1) -> EquipmentImportResult:
+                           independent: bool | None = None, scale: int = 1) -> EquipmentImportResult:
     from .nfl2k5_uniform_equipment_writer import (
         build_unified_uniform_equipment_imports, consumer_targets, encode_rgba_png, load_targets,
     )
@@ -109,10 +109,13 @@ def stage_equipment_import(session: Any, asset: Any, path: Path, *,
     if target is None or getattr(asset, "kind", None) != "uniform_equipment_texture":
         raise ValidationError("Choose a reviewed equipment texture.")
     payload, rgba = session.asset_io.validate_replacement(asset, path)
-    frozen = with_import_mode(payload, asset.asset_id, rgba, independent=independent, scale=scale)
     original, original_rgba = session.asset_io.validate_replacement(
         asset, session.asset_io.ensure_original(asset),
     )
+    if independent is None:
+        from .nfl2k5_equipment_import_intent import supports_own_texture
+        independent = supports_own_texture(asset.asset_id) and rgba != original_rgba
+    frozen = with_import_mode(payload, asset.asset_id, rgba, independent=independent, scale=scale)
     restoring = same_visual_import(asset, frozen, rgba, original, original_rgba)
     consumers = consumer_targets(target, by_id)
     # Preflight every staged sibling together. Separate palette/chain edits in
@@ -174,7 +177,8 @@ def stage_equipment_import(session: Any, asset: Any, path: Path, *,
     selected = next(row for row in receipt["edits"] if row["asset_id"] == asset.asset_id)
     encoded = " x ".join(str(value) for value in selected["encoded_dimensions"])
     quality = selected["palette_quality"] or {}
-    approximation = (" Some colours were approximated." if quality.get("maximum_channel_error", 0) else "")
+    from .equipment_palette import merge_message
+    approximation = merge_message(quality)
     return EquipmentImportResult(
         _message(target, consumers, independent=independent, encoded=encoded,
                  approximation=approximation, changed=bool(result.changed_asset_ids)),

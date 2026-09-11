@@ -129,7 +129,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS = {
     "def compile_modification(",
 ),
     "mod_editor/apf_studio/__init__.py": (
-        '__version__ = "0.1.0-alpha.85"',
+        '__version__ = "0.1.0-alpha.86"',
     ),
     "mod_editor/apf_studio/audio_annotations.py": (
         'AUDIO_ANNOTATIONS_SCHEMA = "apf2k8_audio_annotations/v1"',
@@ -279,7 +279,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS = {
         "confirmation_token",
     ),
     "APF2K8-README.md": (
-        "0.1.0-alpha.85",
+        "0.1.0-alpha.86",
         "Normal logo — convert to APF regions (recommended)",
         "APF region mask (advanced)",
         "Your cue label & notes",
@@ -304,7 +304,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS = {
         "normalized original import plus the last transform",
     ),
     "docs/mod_editor/apf2k8_mod_studio_getting_started.md": (
-        "0.1.0-alpha.85",
+        "0.1.0-alpha.86",
         "Your cue label & notes",
         "Labeled only",
         "audio-annotations.json",
@@ -324,7 +324,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS = {
         "normalized original import and last transform",
     ),
     "docs/mod_editor/apf2k8_mod_studio_changelog.md": (
-        "0.1.0-alpha.85",
+        "0.1.0-alpha.86",
         "project_metadata_only_stable_logical_cue_id",
         "audio-annotations.json",
         "selected_exact_slot_xma1_or_conformed_audio",
@@ -342,7 +342,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS = {
         "original import plus its last transform",
     ),
     "docs/mod_editor/APF2K8_STATUS.md": (
-        "0.1.0-alpha.85",
+        "0.1.0-alpha.86",
         "0.1.0-alpha.51 candidate boundary",
         "project_metadata_only_stable_logical_cue_id",
         "47,775 playable cues",
@@ -393,9 +393,19 @@ REVIEWED_METADATA: dict[str, tuple[int, str, str]] = {
     # no compressed spans, and nothing that is not already visible to anyone
     # who exports a contact sheet from their own game.
     "mod_editor/data/apf2k8_endzone_labels.v1.json": (
-        4_899,
-        "63f827a548da7d0aaa2f01382cd08d4b3aeec2887ba9343dcc351da4af239715",
+        7_714,
+        "b873910626d63bf476d55e12253047f88758124697216e9439689dfe5e7e8618",
         "apf2k8_endzone_labels/v1",
+    ),
+    "mod_editor/data/apf2k8_logo_labels.v1.json": (
+        5_811,
+        "a3a033f1528e50ee9fff831e7b20f0ceabb3e235b86c7859930cf89a6b32a5a2",
+        "apf2k8_logo_labels/v1",
+    ),
+    "mod_editor/data/apf2k8_textlogo_labels.v1.json": (
+        5_904,
+        "79f0b6855e25cef7097bf689dde039970a81b25fd5f97faf3973cffbe95db60e",
+        "apf2k8_textlogo_labels/v1",
     ),
 }
 

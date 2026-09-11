@@ -54,7 +54,7 @@ class IntegrationQtTests(unittest.TestCase):
     def test_prepared_career_path_does_not_select_the_patch(self):
         from types import SimpleNamespace
         from mod_editor.gui.studio_qt import StudioMainWindow
-        host=SimpleNamespace(_build_panel=self.panel,
+        host=SimpleNamespace(_build_panel=self.panel, _ensure_workspace=lambda index: None, navigation=SimpleNamespace(count=lambda: 1),  # beta 66: lazy pages
             _capture_music_build_settings=lambda:None, _mark_workspace_changed=lambda:None)
         self.panel.my_career_check.setChecked(False)
         StudioMainWindow._my_career_setup_ready(host,'paired/MyCareer.json')
@@ -64,7 +64,7 @@ class IntegrationQtTests(unittest.TestCase):
     def test_scorebar_folder_from_the_studio_page_fills_the_field_without_ticking_the_option(self):
         from types import SimpleNamespace
         from mod_editor.gui.studio_qt import StudioMainWindow
-        host=SimpleNamespace(_build_panel=self.panel, _set_status=lambda *_: None,
+        host=SimpleNamespace(_build_panel=self.panel, _set_status=lambda *_: None, _ensure_workspace=lambda index: None, navigation=SimpleNamespace(count=lambda: 1),
             _capture_music_build_settings=lambda:None, _mark_workspace_changed=lambda:None)
         self.panel.scorebug_check.setChecked(False)
         StudioMainWindow._scorebar_folder_chosen(host,'/tmp/my scorebar')

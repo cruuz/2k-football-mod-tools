@@ -26,6 +26,28 @@ class BuildPanelTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.app = QApplication.instance() or QApplication([])
 
+    def test_final_archive_state_is_read_by_build_operation_and_consumed_without_gui_io(self):
+        from unittest.mock import patch
+        from PyQt5.QtWidgets import QMessageBox
+        panel = BuildPanel(available={})
+        try:
+            plan = mod_build.BuildPlan('input.iso', 'output.iso')
+            stale = {'path': 'output.iso', 'espn25_rosters': 'retail'}
+            fresh = {'path': 'output.iso', 'espn25_rosters': 'applied'}
+            receipt = {'target': 'output.iso', 'steps': [], 'result': stale}
+            with patch.object(mod_build, 'build', return_value=receipt), \
+                 patch.object(mod_build, 'inspect', return_value=fresh) as inspect:
+                result = panel._build_operation(plan, lambda *args: None)
+            inspect.assert_called_once_with(Path('output.iso'))
+            with patch.object(mod_build, 'inspect', side_effect=AssertionError('GUI disc read')), \
+                 patch.object(panel, 'apply_state') as apply, \
+                 patch.object(QMessageBox, 'information'):
+                panel._done(result)
+            apply.assert_called_once_with(fresh)
+            self.assertNotIn('_build_panel_state', result)
+        finally:
+            panel.deleteLater()
+
     def test_a_real_disc_inspection_does_not_recurse_and_keeps_the_users_lock_choice(self) -> None:
         """Every real disc reports abilities rules v2 (model_version 2) even at retail, and the beta-63 refresh
         re-entered itself through set_abilities_lock_settings: RecursionError on every open. A retail disc must

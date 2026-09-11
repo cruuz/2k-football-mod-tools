@@ -284,7 +284,7 @@ class EquipmentResizeOffscreenTests(unittest.TestCase):
         Image.new("RGBA", (128, 128), (18, 140, 80, 255)).save(self.source)
         self.original = self.source.read_bytes()
         self.facade = _EquipmentResizeFacade()
-        self.window = StudioMainWindow(
+        self.window = StudioMainWindow(eager_pages=True,
             facade=self.facade,
             offer_recovery=False,
         )

@@ -148,6 +148,7 @@ class EquipmentChainTests(unittest.TestCase):
                 tex = replace(textures[0], pixel_offset=pixel)
                 levels = writer.decode_equipment_levels(actual, chunk, tex)
                 expected = make_digit_mips(artwork(f.width, f.height), f.width, f.height, f.levels)
+                expected[0] = replace(expected[0], rgba=artwork(f.width, f.height))
                 self.assertEqual(levels, [level.rgba for level in expected])
                 self.assertTrue(any(0 < alpha < 255 for level in levels[1:] for alpha in level[3::4]))
                 masked_before, masked_after = bytearray(f.decoded), bytearray(actual[:len(f.decoded)])
@@ -231,14 +232,18 @@ class EquipmentChainTests(unittest.TestCase):
         self.assertNotEqual(offsets[0], offsets[2])
         self.assertEqual(a[2]["allocation"]["independent_variant_count"], 2)
 
-    def test_refuses_overflow_without_writing_the_source(self):
+    def test_reduces_busy_art_to_budget_without_writing_the_source(self):
         f = Fixture(self.root, margin=0)
         rng = random.Random(893)
         rgba = bytes(value for _ in range(f.width * f.height)
                      for value in (rng.randrange(256), rng.randrange(256), rng.randrange(256), 255))
         original = f.pack.read_bytes()
-        with self.assertRaisesRegex(writer.UniformEquipmentWriterError, "cannot fit.*retail"):
-            f.build([f.png(rgba=rgba)])
+        span, _previews, receipt, *_ = f.build([f.png(rgba=rgba)])
+        edit = receipt['edits'][0]
+        self.assertLess(edit['palette_entries'], 16)
+        self.assertIn('budget', edit['palette_quality']['merge_reason'])
+        self.assertTrue(edit['palette_quality']['merged_colours'])
+        self.assertEqual(span[20:24], f.span[20:24])
         self.assertEqual(f.pack.read_bytes(), original)
 
     def test_refuses_lower_mip_drift_even_with_unchanged_base_and_palettes(self):

@@ -1,5 +1,74 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC90, beta 66: full Supersim, a faster studio, the Discord fixes (2026-09-11)
+
+Beta 66 answers every ESPN NFL 2K5 report in Discord since beta 63.1 (Smuzz, Mud, maumau78, Coach Edwards, iwb3,
+jrolling2003, BigTimeEmpire, CER, andrethealchemist). The bullets below are added as each change lands; in-game
+behaviour remains UNWITNESSED until played.
+
+- **Live MyCareer fast forward (Noah: "i want full supersim"; andrethealchemist:
+  "My career Super Sim hasn't worked for me.", 2026-09-10).** Supersim now offers
+  Off, Skip presentation and Fast forward. Fast forward lets the native CPU
+  engine run up to eight updates per presented frame while MyPlayer is absent,
+  skips eligible presentation, keeps audio sources draining while muted, and
+  shows score, quarter, clock and the last play. It holds the CPU snap until
+  MyPlayer's next formation settles, then restores control with the native full
+  play clock. B cancels to normal speed; toss, challenge, tips and pause prompts
+  remain at normal speed. New enabled careers default to Fast forward; existing
+  careers keep their saved choice. The Apartment also offers Sim to next
+  appearance, and the Studio's MyCareer page has a MyCareer Settings group that
+  reads a career save's choice and exports a signed save copy with any of the
+  three choices. The MyCareer runtime grows from 16,384 to 20,480 RX bytes and
+  the release cave manifest is regenerated for it. Bounded native proofs cover
+  CPU plays, actual personnel, substitutions, K/P, audio pool retirement and the
+  ticker. Console speed, visuals and audio still need Noah's witness.
+  EXPERIMENTAL / UNWITNESSED.
+- **Smuzz: “Couldn't make the disc” after a fifteen-minute build is gone, and the two options now work together.** Separate offensive and defensive playbooks used to refuse the authored Read option mesh controls and QB spy, and only said so after the disc had been copied. Beta 66 removes the refusal: the pair owner publishes both teams' paired roots and source identities, and the read-option and QB-spy runtimes read that contract (job D2, native proofs). The studio also validates every selection before any copying (job D1's shared Build/Gameplay gate and job B's preflight), so a plan that cannot build is reported at the tick, never after the build. All three presets keep these EXPERIMENTAL options off. imdakine1's “wouldn't create” report carried no error text; if it was this conflict, it is gone.
+- **maumau78: exported shoes keep their authored colours when the slot has room.** Copying “this shoe ... into another slot” now defaults to its own artwork for gloves and shoes. The palette preserves every base colour when it can, and budget reductions select existing colours instead of averaging them into washed-out shades. Check and import lists each changed RGBA colour, its replacement and the fixed budget. Export preserves straight RGBA pixels and removes the old slot's project-only import choice. A full-size image can still exceed the fixed budget; choose a smaller game image when the import explains that limit.
+- **Coach Edwards: number sheets that "take some numbers and not others" or look "slightly oversized and/or bleeding" (2026-09-10).** Digits now fit inside each original game's registration box, clean noisy fill colours and soft alpha edges, and preserve edge colours through filtering. Preview and Check my images use the build's encoder. Retail comparisons, a 57 size estimate, kept-retail badges and Import counts make any remaining original digits clear before a build. As authored keeps expert placement. All 60 synthetic cases across Seattle 26A0 / 26A3 and Cleveland 06H0 jersey and arm slots fit offline; the old path overflowed 22. Played appearance still needs Coach Edwards or Noah's witness.
+- **Coach Edwards: Check my images predicts jersey, helmet and arm / shoulder digits.** The “no fixed-span prediction yet” gap is closed with each digit's own target dimensions, allocation, mip layout and palette ladder, including the 896-byte slots. Missing target reports remain explicitly unpredicted.
+- **iwb3 and Ju3tin: xemu remembers the disc after the editor closes.** Launch saves the disc in xemu's settings and grants persistent read-only access to the build folder for Flatpak. Settings or permission failures are reported without hiding a successful launch. Your disc: ~/2K5 Mod Studio Builds/NFL 2K5 Modded.xiso.iso. To play again later: open xemu, then Machine > Load Disc. The footer names your actual file and folder if you saved elsewhere. The .xiso.iso name is valid.
+- **BigTimeEmpire: missing or invalid college references no longer prevent roster/save editing.** Files that “can't be edited if a player doesn't have a college” load with a count and an offer to open Check my rosters. The repair still changes only college references and supports Undo and signed-copy verification. Invalid tables or unrelated broken fields remain errors.
+- **Mud: added songs have their own My songs jukebox collection.** The 59 retail rows keep their retail collections. Named library recipes use that name, and a second library collection is used above 256 added songs. The collection table and native lookups are checked offline. The reported freeze on entering a collection is a separate investigation and is not claimed fixed here; playback remains UNWITNESSED.
+- **Broadcast camera v6 follows runs more closely and opens up for passes (maumau78).**
+  The final smoothed eye now stays within an owned boundary that pulls inward at the stadium corners.
+  The 53-model offline survey falls from 18.6% dirty samples in v5.3 and 3.4% in v5.4 to zero in v6,
+  including Chicago, Lambeau and tested kickoff/PAT transitions. Run states zoom in 15%; passes in the
+  air and after the catch widen 15%; the midfield pre-snap frame retains v5.3. Broadcast remains the
+  existing ADVANCED camera choice. Gameplay appearance still needs Noah's witness.
+- **A wide Broadcast shot replaces the low kickoff-transition camera reported by CER.**
+  Row 7's state 7 now uses the owned wide descriptor instead of the retail goal-post/sideline setup.
+  Native state selection, descriptor lookup and final-eye clamping are proved offline. CER's intermittent
+  play-call freeze is a separate, unreproduced report; this change does not claim to resolve that stall.
+  Exactly recognized v5.4 installations require rebuilding from the retail base.
+- **MyPlayer's live stat line appears in the top right during gameplay (Mud).**
+  It shows the player's name, position and the position's key game counters, including half sacks and
+  punting average. Apartment > Settings > MyPlayer stat line offers On/Off and defaults On for enabled
+  MyCareer; the choice survives save/load. The line reads MyPlayer's live match stats, updates after native
+  play events and stays out of menus and replay states. The native font, glyph submissions, player identity
+  and one draw invocation per presented frame are proved; in-game readability remains unwitnessed.
+- **Added-song collection crash fix (Mud).** Mud reported that the jukebox froze when entering Incite #2 while the same songs played in the stadium music creator. The native disc list used the thirteen-row HDD limit on a four-row screen and reached a null widget label with two added songs. Music metadata builds now include the bounded list repair. Native list-building tests cover 59 through 200 songs and different collection numbers; the played result still needs a witness.
+
+- **Separate playbooks with authored read option and QB spy (Smuzz).** A paired-root publication now lets read-option controls find the relocated offensive book, while an original-source map preserves donor QB-spy identity after play renumbering. Both teams, unpaired fallback, changed-script refusal and teardown are covered by native tests, the old build-time refusal is removed, and the Build and Gameplay tabs no longer grey the options out against each other. This remains EXPERIMENTAL and off in every preset.
+- **Helmet finish: Glossy or Matte (maumau78, xevan).** A reversible Glossy (retail) / Matte writer for both helmet LODs: Matte redirects the three shell branches of the native material refresh to its zero-reflection store; the other material path retains retail lighting. Full native refresh, scene-name reparse, exact Glossy restoration and Guardian composition pass. The choice is on the Gameplay tab, the Build tab and a Uniforms & Equipment page (one stored value that survives project save and reopen), runs as the last executable pass of a build so a music rebuild cannot undo it, and Glossy on a Matte disc restores the retail bytes. ADVANCED, Glossy in every preset; compare at noon, night, rain and snow before calling it done.
+- **SEGA and play-call freeze investigation (jrolling2003, CER).** Audited the experimental music, screen, widescreen, scorebar, calendar, practice squad, abilities, Guardian, seven-on-seven, position-pool, MyCareer and Broadcast paths. Bounded hook tests pass, but they do not reproduce a complete failed boot or kickoff-to-play-call lifecycle. No owner or preset is blamed and no speculative freeze fix is shipped. ASTRA_REPORT.md records the exact native continuation boundaries and witness steps.
+
+- **Playoff starting-QB investigation (BigTimeEmpire).** Native weekly sorting retains the higher-rated QB across the tested playoff weeks; a separate injury-reserve path compares injury duration with 22 minus the current week. The affected save and actual injury-adjusted rating are still needed to prove the first incorrect change. No unproved BASIC lineup patch was added.
+
+- **Edited skeleton investigation (maumau78).** The Models glTF contains SCNE bind translations, while SKEL stores normalized axes consumed by the high-body pose builder. The existing bounded forearm-length operation remains available; arbitrary glTF bone import is not advertised as complete. The report identifies the native axis/derived-joint conversion that still needs proof.
+- **Faster startup, disc builds and Add Songs (Smuzz, maumau78 and Mud, 2026-09-10).**
+  In response to "the performance since 59 is now more sluggish" and "Why does it take so long to convert the songs?",
+  workspaces load when opened, large texture lists create only visible row artwork, and versioned metadata caches
+  avoid expanding the same catalogs on every launch. A project plus gameplay build uses one private disc copy,
+  validates the plan before preparing textures, and publishes only after its checks pass. Independent uniform
+  encodes use a bounded process pool, and PNG/palette conversion copies exact bytes in bulk; equipment keeps its
+  existing grouped compile cache. Preparing 40 synthetic uniform edits against the retail source fell from
+  123 seconds to 17 seconds. The offscreen window appeared in 0.52 seconds instead of 6.33 seconds. Both build paths show
+  elapsed time and copy progress. The dependency-free song encoder keeps the same ADPCM bytes and audible preview
+  while avoiding work on candidate states that cannot win; the four-minute synthetic stereo probe fell from
+  1,189 seconds to 89 seconds. Disc-byte parity and source preservation are covered by synthetic build tests.
+  In-game behavior and Windows responsiveness still require Noah's witness.
+
 ## v1.0 RC89, beta 65: accelerated clock, MyCareer supersim and positions, the Windows folder-publish fix (2026-09-10)
 
 - **Fixed: "[WinError 5] Access is denied" while importing a number sheet on Windows (Coach Edwards, 2026-09-10).**

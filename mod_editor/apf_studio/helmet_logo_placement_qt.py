@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from .apf_theme import color, status_style
+
 from dataclasses import dataclass, replace
 
 from PyQt5.QtCore import QPoint, QRect, Qt, pyqtSignal
@@ -102,7 +104,7 @@ class HelmetLogoPlacementCanvas(QWidget):
 
     def paintEvent(self, _event: object) -> None:
         painter = QPainter(self)
-        painter.fillRect(self.rect(), QColor("#0b121e"))
+        painter.fillRect(self.rect(), QColor(color("base")))
         painter.setRenderHint(QPainter.Antialiasing, True)
 
         # A code-native guide avoids shipping or implying a proprietary helmet
@@ -114,11 +116,11 @@ class HelmetLogoPlacementCanvas(QWidget):
         shell.lineTo(430, 370)
         shell.cubicTo(314, 402, 166, 400, 24, 364)
         painter.fillPath(shell, QColor(0, 76, 84, 105))
-        painter.setPen(QPen(QColor("#70c9cf"), 2))
+        painter.setPen(QPen(QColor(color("info")), 2))
         painter.drawPath(shell)
 
         target_x_min, target_y_min, target_x_max, target_y_max = AUTO_TARGET_BOUNDS
-        guide_pen = QPen(QColor("#f5c451"), 2, Qt.DashLine)
+        guide_pen = QPen(QColor(color("warning")), 2, Qt.DashLine)
         painter.setPen(guide_pen)
         painter.drawRect(
             QRect(
@@ -128,7 +130,7 @@ class HelmetLogoPlacementCanvas(QWidget):
                 target_y_max - target_y_min,
             )
         )
-        painter.setPen(QColor("#f5c451"))
+        painter.setPen(QColor(color("warning")))
         painter.drawText(12, 24, "FRONT / CROWN")
         painter.drawText(427, 24, "REAR")
         painter.drawText(124, 46, "FULL-SHELL TARGET  →")
@@ -138,7 +140,7 @@ class HelmetLogoPlacementCanvas(QWidget):
             painter.drawImage(0, 0, self._preview)
         if self._active_bbox is not None:
             x_min, y_min, x_max, y_max = self._active_bbox
-            painter.setPen(QPen(QColor("#ffffff"), 1, Qt.DotLine))
+            painter.setPen(QPen(QColor(color("text")), 1, Qt.DotLine))
             painter.drawRect(QRect(x_min, y_min, x_max - x_min, y_max - y_min))
         painter.end()
 
@@ -348,7 +350,7 @@ class HelmetLogoPlacementDialog(QDialog):
             self._result = None
             tip = f"Move art inside the canvas before staging: {exc}"
             self.status.setText(tip)
-            self.status.setStyleSheet("color: #ff8f8f;")
+            self.status.setStyleSheet(status_style("danger"))
             # Never silent-gray: Save stays clickable; accept() re-validates and teaches.
             save = self.buttons.button(QDialogButtonBox.Save)
             save.setEnabled(True)
@@ -362,7 +364,7 @@ class HelmetLogoPlacementDialog(QDialog):
             f"y {y_min}–{y_max} • {result.active_texels:,} mask texels"
         )
         self.status.setText(ready)
-        self.status.setStyleSheet("color: #70d6a2;")
+        self.status.setStyleSheet(status_style("success"))
         save = self.buttons.button(QDialogButtonBox.Save)
         save.setEnabled(True)
         save.setToolTip("Stage this exact 512×512 helmet logo placement.")
@@ -375,7 +377,7 @@ class HelmetLogoPlacementDialog(QDialog):
             self._result = None
             tip = str(exc)
             self.status.setText(tip)
-            self.status.setStyleSheet("color: #ff8f8f;")
+            self.status.setStyleSheet(status_style("danger"))
             save = self.buttons.button(QDialogButtonBox.Save)
             save.setEnabled(True)
             save.setToolTip(tip)

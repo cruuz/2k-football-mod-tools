@@ -8,6 +8,7 @@ from pathlib import Path
 import hashlib
 import struct
 import sys
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -25,6 +26,48 @@ from tests.nfl2k5_my_career_mode_fixture import Machine
 from tests.mod_editor.test_nfl2k5_my_career_inline import block_for
 
 
+class SaveChoiceTests(unittest.TestCase):
+    def test_studio_choice_preserves_native_bytes_and_other_preferences(self):
+        source = draft_save()
+        footer = bytearray(block_for(source))
+        footer[82] = 5  # first person On, star Off
+        payload = source + save.seal(footer)
+        for choice, bits in zip(save.SUPERSIM_CHOICES, (2, 0, 8)):
+            result = save.with_supersim(payload, choice)
+            self.assertEqual(result[:-128], source)
+            self.assertEqual(save.read(result)[82], bits | 5)
+            self.assertEqual(save.supersim_choice(result), choice)
+            self.assertEqual(save.with_supersim(result, choice), result)
+        with self.assertRaises(save.CareerSaveError):
+            save.with_supersim(payload, "unknown")
+        with self.assertRaises(save.CareerSaveError):
+            save.with_supersim(source, "Fast forward")
+
+    def test_studio_export_resigns_separate_copy_and_preserves_members(self):
+        from mod_editor.core import nfl2k5_roster_records as records
+        import zipfile
+        source = draft_save()
+        payload = source + block_for(source)
+        with tempfile.TemporaryDirectory() as directory:
+            original = Path(directory) / 'source.zip'
+            target = Path(directory) / 'fast.zip'
+            members = {'SAVEGAME.DAT': payload, 'EXTRA': records.sign_save(payload),
+                       'SaveMeta.xbx': b'synthetic metadata'}
+            with zipfile.ZipFile(original, 'w') as archive:
+                for name, data in members.items():
+                    archive.writestr(name, data)
+            before = original.read_bytes()
+            receipt = save.write_supersim(original, target, 'Fast forward')
+            self.assertTrue(receipt['signed'] and receipt['readback_verified'])
+            reopened = records.SaveContainer.load(target)
+            self.assertEqual(save.supersim_choice(reopened.savegame), 'Fast forward')
+            self.assertEqual(reopened.members['SaveMeta.xbx'], members['SaveMeta.xbx'])
+            self.assertEqual(reopened.savegame[:-128], source)
+            self.assertEqual(original.read_bytes(), before)
+            with self.assertRaises(records.RosterRecordError):
+                save.write_supersim(original, original, 'Off')
+
+
 @unittest.skipUnless(HAVE_UC and XBE.is_file(), 'pinned USA retail XBE/ROST and Unicorn required')
 class SettingsTests(unittest.TestCase):
     @classmethod
@@ -39,7 +82,7 @@ class SettingsTests(unittest.TestCase):
         row = struct.unpack('<13I', im.read(0x500B24, 52))
         self.assertEqual(row, (5, 0xE7D5C4, 0, 0x147EC0, 0x147ED0, 0x147EB0,
                                0x147E60, 0x147E80, 0x148960, 0x147EE0, 0, 0, 0))
-        for va, size, digest in mode.GUARDS[:7]:
+        for va, size, digest in [g for g in mode.GUARDS if g[0] in (0x500B24,0x147E60,0x148960,0x627C0,0x64530,0x2C1FEC,0x4ED994)]:
             self.assertEqual(hashlib.sha256(im.read(va, size)).hexdigest(), digest)
         m = NativeMachine(self.retail)
         for value in (0, 1):
@@ -63,7 +106,7 @@ class SettingsTests(unittest.TestCase):
     def test_changed_first_person_prerequisites_refuse_before_install(self):
         from tests.mod_editor.test_nfl2k5_owner_pairwise_composition import repin_edit
         image = XbeImage(self.retail)
-        for va, _, _ in mode.GUARDS[:7]:
+        for va, _, _ in [g for g in mode.GUARDS if g[0] in (0x500B24,0x147E60,0x148960,0x627C0,0x64530,0x2C1FEC,0x4ED994)]:
             damaged = repin_edit(self.retail, va, bytes((image.read(va, 1)[0] ^ 1,)))
             with self.subTest(va=hex(va)):
                 self.assertEqual(mode.status(damaged), 'foreign')
@@ -74,10 +117,11 @@ class SettingsTests(unittest.TestCase):
     def test_all_footer_choices_match_host_and_native_and_reserved_bits_refuse(self):
         with Machine(self.payload) as m:
             m.native_load(self.source+self.footer)
-            for flags in range(8):
+            for flags in [v for v in range(32) if v & 10 != 10]:
                 m.put(0xE5FFE4, flags & 1)
-                m.put(m.state+2696, (flags >> 1) & 1)
+                m.put(m.state+2696, 2 if flags & 8 else (flags >> 1) & 1)
                 m.put(m.state+2700, (flags >> 2) & 1)
+                m.put(m.state+2712, (flags >> 4) & 1)
                 m.call('inline_encode', ecx=m.OUT)
                 block = bytes(m.uc.mem_read(m.OUT, 128))
                 self.assertEqual(block[82], flags)
@@ -85,7 +129,7 @@ class SettingsTests(unittest.TestCase):
                 self.assertEqual(save.from_runtime(save.to_runtime(block)), block)
                 self.assertEqual(save.from_runtime(bytes(m.uc.mem_read(m.state, 4096))), block)
                 self.assertEqual(m.call('inline_valid', ecx=m.OUT, edx=0x91000), 1)
-            for flags in (8, 128, 255):
+            for flags in (10,11,14,15,26,27,30,31,32,64,128,255):
                 block = bytearray(self.footer); block[82] = flags; block = save.seal(block)
                 with self.assertRaises(save.CareerSaveError): save.validate(block)
                 m.uc.mem_write(m.OUT, block)
@@ -112,21 +156,30 @@ class SettingsTests(unittest.TestCase):
     def test_native_save_cold_relocation_preserves_settings_and_off_star(self):
         from tests.nfl2k5_allocator_stack import REQUESTS
         other = mode.apply(mode.space.apply(self.retail, REQUESTS, scaleout=True)[0])[0]
-        with Machine(self.payload) as m:
-            m.native_load(self.source+self.footer)
-            m.put(0xE5FFE4, 1); m.put(m.state+2696, 1); m.put(m.state+2700, 1)
-            output = m.native_save()
-            self.assertEqual(save.read(output)[82], 7)
-            with Machine(other) as cold:
-                cold.native_load(output)
-                self.assertNotEqual(cold.state, m.state)
-                self.assertEqual((cold.get(0xE5FFE4), cold.get(cold.state+2696), cold.get(cold.state+2700)), (1, 1, 1))
-                self.assertEqual(cold.uc.mem_read(cold.call('primary')+0x53, 1)[0] & 1, 0)
-                # The original Franchise callback still changes the same word;
-                # the next career save samples it, never a stale shadow flag.
-                cold.call(0x147E80)
-                cold.call('inline_encode', ecx=cold.OUT)
-                self.assertEqual(cold.uc.mem_read(cold.OUT+82, 1), b'\x06')
+        # Stat line Off (bit 4, state+2712) persists; the Supersim wait flag
+        # (+2708) and audio gate (+2716) are transient and never saved.
+        for choice, flags in ((1, 7|16), (2, 13|16)):
+            with self.subTest(choice=choice), Machine(self.payload) as m:
+                m.native_load(self.source+self.footer)
+                m.put(0xE5FFE4, 1); m.put(m.state+2696, choice); m.put(m.state+2700, 1)
+                m.put(m.state+2712, 1)
+                m.put(m.state+2708,1);m.put(m.state+2716,1)
+                output = m.native_save()
+                self.assertEqual(save.read(output)[82], flags)
+                with Machine(other) as cold:
+                    cold.put(cold.state+2708,1);cold.put(cold.state+2716,1)
+                    cold.native_load(output)
+                    self.assertNotEqual(cold.state, m.state)
+                    self.assertEqual(cold.get(cold.state+2712),1)
+                    self.assertEqual((cold.get(0xE5FFE4), cold.get(cold.state+2696), cold.get(cold.state+2700)), (1, choice, 1))
+                    self.assertEqual((cold.get(cold.state+2708),cold.get(cold.state+2716)),(0,0))
+                    self.assertEqual(cold.uc.mem_read(cold.call('primary')+0x53, 1)[0] & 1, 0)
+                    # The original Franchise callback still changes the same word;
+                    # the next save samples it while keeping the Supersim and
+                    # stat-line bits, never a stale shadow flag.
+                    cold.call(0x147E80)
+                    cold.call('inline_encode', ecx=cold.OUT)
+                    self.assertEqual(cold.uc.mem_read(cold.OUT+82, 1), bytes((flags & ~1,)))
 
     def test_settings_native_navigation_labels_selection_cancel_and_masked_star(self):
         from tests.mod_editor.test_nfl2k5_my_career_m3_menus import MenuTests, Machine as MenuMachine
@@ -151,8 +204,9 @@ class SettingsTests(unittest.TestCase):
             m.select(5)
             self.assertEqual(m.top(), m.labels['m3_settings_menu'])
             texts = checker.rendered(m)
-            self.assertIn('Spectate keeps all presentation. B returns to Apartment.', texts)
-            for index, expected in ((0, 'First Person Football: On'), (1, 'Off-field play: Spectate'), (2, 'MyPlayer star: Off')):
+            self.assertIn("MyPlayer stat line: On",[r["text"] for r in m.native_rows])
+            self.assertIn('Supersim runs while you wait. B returns to Apartment.', texts)
+            for index, expected in ((0, 'First Person Football: On'), (1, 'Supersim: Off'), (2, 'MyPlayer star: Off'), (3, 'MyPlayer stat line: Off')):
                 m.select(index)
                 m.native_rows.clear(); checker.rendered(m)
                 selected = [r['text'] for r in m.native_rows if r['color'] & 0xFFFFFF == 0xFFFF00]

@@ -1,0 +1,16 @@
+{
+  "spans": 12720,
+  "observed_steps": 125,
+  "disc_built": false,
+  "changed_sources": [
+    "mod_editor/core/mod_build.py",
+    "mod_editor/core/nfl2k5_music_banks.py",
+    "mod_editor/core/nfl2k5_music_build.py",
+    "mod_editor/core/nfl2k5_music_metadata.py",
+    "mod_editor/core/nfl2k5_music_playlist.py",
+    "mod_editor/core/nfl2k5_music_policy.py",
+    "mod_editor/core/nfl2k5_roster_records.py",
+    "mod_editor/core/nfl2k5_save_rost.py"
+  ],
+  "manifest_sha256": "78d14f2c50a127359296a944d2beef1365db48119759a265d0803de18e99dd1a"
+}

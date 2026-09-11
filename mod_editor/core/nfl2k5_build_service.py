@@ -14,7 +14,7 @@ unverified build can never appear at the requested output path.
 from __future__ import annotations
 
 import ctypes
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 import errno
 import json
@@ -28,6 +28,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import threading
 import warnings
 from typing import Callable, Protocol, Sequence
 
@@ -106,6 +107,8 @@ class BuildResult:
     #: row names the slot (``selector``) and carries a user-readable
     #: ``message``; the build itself succeeded.
     kept_retail: tuple[dict[str, object], ...] = ()
+    source_sha256: str = ""
+    stage_seconds: dict[str, float] = field(default_factory=dict)
 
     @property
     def message(self) -> str:
@@ -1284,6 +1287,8 @@ class Nfl2k5BuildService:
             prefix=f".{output.name}.2k5mod-", dir=output.parent))
         try:
             os.chmod(stage, 0o700)
+            started = time.monotonic()
+            timings = {}
             project_path, needs_audio_safety = self._project_path(project, stage)
             audio_safety = (
                 _private_audio_inputs(cache) if needs_audio_safety else None
@@ -1296,7 +1301,10 @@ class Nfl2k5BuildService:
                 "build", backend, project_path, source, staged_xiso,
                 manifest, artifacts, cache, audio_safety)
             _emit(progress, BuildStage.BUILDING, 1, 4, "Building the modded XISO")
-            built = self.runner.run(build_command, ROOT)
+            timings["materialization"] = time.monotonic() - started
+            started = time.monotonic()
+            built = self._run_build_command(build_command, staged_xiso, source.stat().st_size, progress)
+            timings["builder"] = time.monotonic() - started
             if built.returncode != 0:
                 raise Nfl2k5BuildError(
                     "The modded XISO could not be built. " + _last_message(built)
@@ -1309,7 +1317,9 @@ class Nfl2k5BuildService:
                 progress, BuildStage.VERIFYING, 2, 4,
                 "Checking the finished XISO before it is published",
             )
+            started = time.monotonic()
             verified = self.runner.run(verify_command, ROOT)
+            timings["verify"] = time.monotonic() - started
             if verified.returncode != 0 or not any(
                 line.startswith(EXPECTED_VERIFY_PREFIX)
                 for line in verified.stdout.splitlines()
@@ -1320,6 +1330,7 @@ class Nfl2k5BuildService:
                     f"No output was published. {detail}"
                 )
 
+            started = time.monotonic()
             result, staged_identity = self._read_verified_result(
                 manifest, staged_xiso, source, output)
             # O_RDONLY | O_NOFOLLOW | O_CLOEXEC | O_BINARY on POSIX, unchanged.
@@ -1389,6 +1400,8 @@ class Nfl2k5BuildService:
                 edit_count=result.edit_count,
                 changed_byte_count=result.changed_byte_count,
                 kept_retail=result.kept_retail,
+                source_sha256=result.source_sha256,
+                stage_seconds={**timings, "publish": time.monotonic() - started},
             )
             _emit(progress, BuildStage.COMPLETE, 4, 4, "Modded XISO ready")
             return final
@@ -1403,6 +1416,37 @@ class Nfl2k5BuildService:
             # output parent.  It contains no user-selected descendants.
             if stage.exists():
                 shutil.rmtree(stage)
+
+    def _run_build_command(self, command, staged, size, progress):
+        """Report a quiet subprocess, including copy bytes, without pipe flooding."""
+        if progress is None:
+            return self.runner.run(command, ROOT)
+        stopped = threading.Event()
+        failures = []
+        def heartbeat():
+            while not stopped.wait(1.0):
+                try:
+                    copied = staged.stat().st_size if staged.exists() else 0
+                    copying = 0 < copied < size
+                    message = ("Copying disc image" if copying
+                               else "Preparing project changes" if copied == 0
+                               else "Checking project changes")
+                    _emit(progress, BuildStage.BUILDING, copied if copying else 1,
+                          size if copying else 4,
+                          message)
+                except BaseException as exc:
+                    failures.append(exc)
+                    return
+        thread = threading.Thread(target=heartbeat, name="2k5-build-progress", daemon=True)
+        thread.start()
+        try:
+            result = self.runner.run(command, ROOT)
+            if failures:
+                raise failures[0]
+            return result
+        finally:
+            stopped.set()
+            thread.join()
 
     @staticmethod
     def _validate_cache(cache: SourceCache) -> Path:
@@ -1574,6 +1618,7 @@ class Nfl2k5BuildService:
             output_xiso=final_output,
             output_size=source_size,
             output_sha256=output_row["xiso_sha256"],
+            source_sha256=source_row["sha256_before"],
             edit_count=project_row["edit_count"],
             changed_byte_count=patch_row["changed_byte_count"],
             kept_retail=tuple(dict(row) for row in value.get("kept_retail", [])),

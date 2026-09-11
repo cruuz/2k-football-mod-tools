@@ -1,0 +1,402 @@
+[
+  {
+    "suite": "test_2k5_build_parse_caches",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_2k5_build_parse_caches.py",
+    "tests": 14,
+    "skipped": 3,
+    "seconds": 0.087,
+    "output": "Ran 14 tests in 0.087s\n\nOK (skipped=3)"
+  },
+  {
+    "suite": "test_beta66_d1_images",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_beta66_d1_images.py",
+    "tests": 6,
+    "skipped": 0,
+    "seconds": 0.375,
+    "output": "Ran 6 tests in 0.375s\n\nOK"
+  },
+  {
+    "suite": "test_beta66_d1_panels",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_beta66_d1_panels.py",
+    "tests": 4,
+    "skipped": 0,
+    "seconds": 0.666,
+    "output": "Ran 4 tests in 0.666s\n\nOK"
+  },
+  {
+    "suite": "test_build_panel_qt",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_build_panel_qt.py",
+    "tests": 12,
+    "skipped": 0,
+    "seconds": 1.879,
+    "output": "Ran 12 tests in 1.879s\n\nOK"
+  },
+  {
+    "suite": "test_emulator_launch_polish",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_emulator_launch_polish.py",
+    "tests": 11,
+    "skipped": 0,
+    "seconds": 0.304,
+    "output": "Ran 11 tests in 0.304s\n\nOK"
+  },
+  {
+    "suite": "test_facade_external_build",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_facade_external_build.py",
+    "tests": 2,
+    "skipped": 0,
+    "seconds": 0.054,
+    "output": "Ran 2 tests in 0.054s\n\nOK"
+  },
+  {
+    "suite": "test_hotfix63_digit_budget",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_hotfix63_digit_budget.py",
+    "tests": 5,
+    "skipped": 3,
+    "seconds": 0.025,
+    "output": "Ran 5 tests in 0.025s\n\nOK (skipped=3)"
+  },
+  {
+    "suite": "test_mod_build",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_mod_build.py",
+    "tests": 11,
+    "skipped": 0,
+    "seconds": 1.544,
+    "output": "Ran 11 tests in 1.544s\n\nOK"
+  },
+  {
+    "suite": "test_mod_build_beta62_integration",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_mod_build_beta62_integration.py",
+    "tests": 8,
+    "skipped": 0,
+    "seconds": 214.577,
+    "output": "Ran 8 tests in 214.577s\n\nOK"
+  },
+  {
+    "suite": "test_mod_build_beta62_integration3",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_mod_build_beta62_integration3.py",
+    "tests": 11,
+    "skipped": 0,
+    "seconds": 144.608,
+    "output": "Ran 11 tests in 144.608s\n\nOK"
+  },
+  {
+    "suite": "test_music_playlist_project",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_music_playlist_project.py",
+    "tests": 4,
+    "skipped": 0,
+    "seconds": 0.737,
+    "output": "Ran 4 tests in 0.737s\n\nOK"
+  },
+  {
+    "suite": "test_music_service",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_music_service.py",
+    "tests": 10,
+    "skipped": 0,
+    "seconds": 3.057,
+    "output": "Ran 10 tests in 3.057s\n\nOK"
+  },
+  {
+    "suite": "test_music_simple",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_music_simple.py",
+    "tests": 12,
+    "skipped": 0,
+    "seconds": 21.656,
+    "output": "Ran 12 tests in 21.656s\n\nOK"
+  },
+  {
+    "suite": "test_nfl2k5_cave_oracle",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. NFL2K5_CAVE_MANIFEST=.scratch/beta66_d1_manifest.json python3 tests/mod_editor/test_nfl2k5_cave_oracle.py",
+    "tests": 29,
+    "skipped": 0,
+    "seconds": 683.923,
+    "output": "Ran 29 tests in 683.923s\n\nOK"
+  },
+  {
+    "suite": "test_nfl2k5_college_check",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_college_check.py",
+    "tests": 17,
+    "skipped": 0,
+    "seconds": 10.623,
+    "output": "Ran 17 tests in 10.623s\n\nOK"
+  },
+  {
+    "suite": "test_nfl2k5_college_check_page_qt",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_college_check_page_qt.py",
+    "tests": 11,
+    "skipped": 0,
+    "seconds": 2.582,
+    "output": "Ran 11 tests in 2.582s\n\nOK"
+  },
+  {
+    "suite": "test_nfl2k5_college_check_qt",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_college_check_qt.py",
+    "tests": 3,
+    "skipped": 0,
+    "seconds": 0.56,
+    "output": "Ran 3 tests in 0.560s\n\nOK"
+  },
+  {
+    "suite": "test_nfl2k5_digit_sheet",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_digit_sheet.py",
+    "tests": 3,
+    "skipped": 0,
+    "seconds": 0.429,
+    "output": "Ran 3 tests in 0.429s\n\nOK"
+  },
+  {
+    "suite": "test_nfl2k5_digit_sheet_quality",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_digit_sheet_quality.py",
+    "tests": 13,
+    "skipped": 1,
+    "seconds": 7.57,
+    "output": "Ran 13 tests in 7.570s\n\nOK (skipped=1)"
+  },
+  {
+    "suite": "test_nfl2k5_equipment_consumers",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_equipment_consumers.py",
+    "tests": 17,
+    "skipped": 0,
+    "seconds": 37.56,
+    "output": "Ran 17 tests in 37.560s\n\nOK"
+  },
+  {
+    "suite": "test_nfl2k5_equipment_import",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_equipment_import.py",
+    "tests": 11,
+    "skipped": 0,
+    "seconds": 1.462,
+    "output": "Ran 11 tests in 1.462s\n\nOK"
+  },
+  {
+    "suite": "test_nfl2k5_equipment_import_wiring",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_equipment_import_wiring.py",
+    "tests": 6,
+    "skipped": 0,
+    "seconds": 1.068,
+    "output": "Ran 6 tests in 1.068s\n\nOK"
+  },
+  {
+    "suite": "test_nfl2k5_equipment_texture_chain",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_equipment_texture_chain.py",
+    "tests": 16,
+    "skipped": 0,
+    "seconds": 5.842,
+    "output": "Ran 16 tests in 5.842s\n\nOK"
+  },
+  {
+    "suite": "test_nfl2k5_equipment_texture_native",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_equipment_texture_native.py",
+    "tests": 5,
+    "skipped": 0,
+    "seconds": 0.304,
+    "output": "Ran 5 tests in 0.304s\n\nOK"
+  },
+  {
+    "suite": "test_nfl2k5_franchise_save",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_franchise_save.py",
+    "tests": 13,
+    "skipped": 0,
+    "seconds": 1.63,
+    "output": "Ran 13 tests in 1.630s\n\nOK"
+  },
+  {
+    "suite": "test_nfl2k5_franchise_schedule_college",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_franchise_schedule_college.py",
+    "tests": 8,
+    "skipped": 0,
+    "seconds": 1.95,
+    "output": "Ran 8 tests in 1.950s\n\nOK"
+  },
+  {
+    "suite": "test_nfl2k5_import_preflight",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_import_preflight.py",
+    "tests": 17,
+    "skipped": 0,
+    "seconds": 18.992,
+    "output": "Ran 17 tests in 18.992s\n\nOK"
+  },
+  {
+    "suite": "test_nfl2k5_music_acceptance",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_music_acceptance.py",
+    "tests": 1,
+    "skipped": 1,
+    "seconds": 0.0,
+    "output": "Ran 1 test in 0.000s\n\nOK (skipped=1)"
+  },
+  {
+    "suite": "test_nfl2k5_music_banks",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_music_banks.py",
+    "tests": 15,
+    "skipped": 0,
+    "seconds": 12.58,
+    "output": "Ran 15 tests in 12.580s\n\nOK"
+  },
+  {
+    "suite": "test_nfl2k5_music_build",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_music_build.py",
+    "tests": 8,
+    "skipped": 0,
+    "seconds": 3.679,
+    "output": "Ran 8 tests in 3.679s\n\nOK"
+  },
+  {
+    "suite": "test_nfl2k5_music_metadata",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_music_metadata.py",
+    "tests": 7,
+    "skipped": 0,
+    "seconds": 31.483,
+    "output": "Ran 7 tests in 31.483s\n\nOK"
+  },
+  {
+    "suite": "test_nfl2k5_music_playlist",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_music_playlist.py",
+    "tests": 15,
+    "skipped": 0,
+    "seconds": 19.626,
+    "output": "Ran 15 tests in 19.626s\n\nOK"
+  },
+  {
+    "suite": "test_nfl2k5_music_playlist_contexts",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_music_playlist_contexts.py",
+    "tests": 7,
+    "skipped": 0,
+    "seconds": 15.912,
+    "output": "Ran 7 tests in 15.912s\n\nOK"
+  },
+  {
+    "suite": "test_nfl2k5_music_playlist_library",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_music_playlist_library.py",
+    "tests": 7,
+    "skipped": 0,
+    "seconds": 23.741,
+    "output": "Ran 7 tests in 23.741s\n\nOK"
+  },
+  {
+    "suite": "test_nfl2k5_music_playlist_manifest",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_music_playlist_manifest.py",
+    "tests": 2,
+    "skipped": 0,
+    "seconds": 4.861,
+    "output": "Ran 2 tests in 4.861s\n\nOK"
+  },
+  {
+    "suite": "test_nfl2k5_music_policy",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_music_policy.py",
+    "tests": 8,
+    "skipped": 0,
+    "seconds": 15.846,
+    "output": "Ran 8 tests in 15.846s\n\nOK"
+  },
+  {
+    "suite": "test_nfl2k5_owner_pairwise_composition",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py",
+    "tests": 335,
+    "skipped": 0,
+    "seconds": 2794.394,
+    "output": "Ran 335 tests in 2794.394s\n\nOK"
+  },
+  {
+    "suite": "test_nfl2k5_roster_records",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_roster_records.py",
+    "tests": 108,
+    "skipped": 1,
+    "seconds": 13.531,
+    "output": "Ran 108 tests in 13.531s\n\nOK (skipped=1)"
+  },
+  {
+    "suite": "test_nfl2k5_save_rost",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_save_rost.py",
+    "tests": 9,
+    "skipped": 0,
+    "seconds": 2.75,
+    "output": "Ran 9 tests in 2.750s\n\nOK"
+  },
+  {
+    "suite": "test_provider_integrity",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_provider_integrity.py",
+    "tests": 7,
+    "skipped": 0,
+    "seconds": 29.243,
+    "output": "Ran 7 tests in 29.243s\n\nOK"
+  },
+  {
+    "suite": "test_providers",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_providers.py",
+    "tests": 33,
+    "skipped": 0,
+    "seconds": 9.198,
+    "output": "Ran 33 tests in 9.198s\n\nOK"
+  },
+  {
+    "suite": "test_roster_editor_panel_franchise",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_roster_editor_panel_franchise.py",
+    "tests": 2,
+    "skipped": 0,
+    "seconds": 0.446,
+    "output": "Ran 2 tests in 0.446s\n\nOK"
+  },
+  {
+    "suite": "test_roster_editor_panel_qt",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_roster_editor_panel_qt.py",
+    "tests": 50,
+    "skipped": 1,
+    "seconds": 4.291,
+    "output": "Ran 50 tests in 4.291s\n\nOK (skipped=1)"
+  },
+  {
+    "suite": "test_save_roster_import",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_save_roster_import.py",
+    "tests": 12,
+    "skipped": 0,
+    "seconds": 0.002,
+    "output": "Ran 12 tests in 0.002s\n\nOK"
+  },
+  {
+    "suite": "test_studio_facade",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_studio_facade.py",
+    "tests": 11,
+    "skipped": 0,
+    "seconds": 0.02,
+    "output": "Ran 11 tests in 0.020s\n\nOK"
+  },
+  {
+    "suite": "test_studio_session",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_studio_session.py",
+    "tests": 18,
+    "skipped": 0,
+    "seconds": 0.849,
+    "output": "Ran 18 tests in 0.849s\n\nOK"
+  },
+  {
+    "suite": "test_uniform_bundle_cross_project",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_uniform_bundle_cross_project.py",
+    "tests": 0,
+    "skipped": 1,
+    "seconds": 0.0,
+    "output": "Ran 0 tests in 0.000s\n\nOK (skipped=1)"
+  },
+  {
+    "suite": "test_xbe_patch_cave_references",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_xbe_patch_cave_references.py",
+    "tests": 127,
+    "skipped": 0,
+    "seconds": 2206.371,
+    "output": "Ran 127 tests in 2206.371s\n\nOK"
+  },
+  {
+    "suite": "test_xbe_patch_memory_writes",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_xbe_patch_memory_writes.py",
+    "tests": 115,
+    "skipped": 0,
+    "seconds": 1800.345,
+    "output": "Ran 115 tests in 1800.345s\n\nOK"
+  },
+  {
+    "suite": "test_xemu_settings",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_xemu_settings.py",
+    "tests": 5,
+    "skipped": 0,
+    "seconds": 0.011,
+    "output": "Ran 5 tests in 0.011s\n\nOK"
+  }
+]

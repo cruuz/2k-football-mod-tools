@@ -89,16 +89,14 @@ class CodecTests(unittest.TestCase):
         # the ownership validation the franchise page runs is what the tester's edit hit
         ps.validate_save(payload)
 
-    def test_a_college_pointer_outside_the_arena_is_still_refused_naming_the_player(self) -> None:
+    def test_a_college_pointer_outside_the_arena_loads_with_a_repair_warning(self) -> None:
         payload = bytearray(synthetic_franchise())
         document = codec.decode(bytes(payload))
         _rel(payload, document.players[1].offset, document.layout.end + 0x100)
-        with self.assertRaises(codec.SaveRostError) as caught:
-            codec.decode(bytes(payload))
-        message = str(caught.exception)
-        self.assertIn("primary player 1", message)
-        self.assertIn("college pointer", message)
-        self.assertNotIn("unsupported ROST version", message)
+        loaded = codec.decode(bytes(payload))
+        self.assertEqual(loaded.to_bytes(), bytes(payload))
+        self.assertIn(("primary", 1), loaded.unresolved_colleges)
+        self.assertIn("1 players have a missing/invalid college", loaded.college_warning)
 
     def test_the_wrapper_length_is_not_reported_as_a_version(self) -> None:
         payload = bytearray(synthetic_franchise())
@@ -189,7 +187,9 @@ class SchedulePanelTests(_PanelCase):
         for status in (page.status_label.text(), self.panel.status_label.text()):
             self.assertNotIn("Refused", status)
             self.assertNotIn(REPORTED, status)
-        self.assertEqual(page.status_label.text(), "Week 1 game 2: hour 4 → 8, minute 15 → 30")
+        # Beta 66: the Franchise status keeps the college warning on a second line until it is repaired.
+        self.assertTrue(page.status_label.text().startswith("Week 1 game 2: hour 4 → 8, minute 15 → 30"), page.status_label.text())
+        self.assertIn("missing/invalid college; use Check my rosters to repair", page.status_label.text())
         self.assertEqual((page.save.game(0, 1).hour, page.save.game(0, 1).minute), (8, 30))
         self.assertTrue(page.swap_home_away(0, 1), page.status_label.text())
         receipt = self.panel.write_copy_to(self.root / "copy")

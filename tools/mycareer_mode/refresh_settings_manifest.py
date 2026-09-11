@@ -13,7 +13,9 @@ import argparse
 import hashlib
 import inspect
 import json
+import os
 import sys
+import tempfile
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
@@ -65,6 +67,31 @@ def refresh(output):
                and m.__name__.split('.')[-1] not in SHARED_HELPERS}
     recorder = oracle.Recorder(retail)
     with ExitStack() as stack:
+        # The protected release manifest still records Stage 1's 16 KiB RX
+        # request. Bootstrap only this owner's in-place growth so the gate
+        # constructor can observe the new stack; do not relax its size checks
+        # or move any other owner. The final manifest below is rebuilt from
+        # actual writer receipts, not this provisional reservation.
+        from mod_editor.core import nfl2k5_my_career_mode as mode
+        bootstrap = json.loads(parent_bytes)
+        allocated = bootstrap['allocator_layout']['allocations']
+        own = next(a for a in allocated if (a['owner'], a['kind']) == (mode.OWNER, 'code'))
+        if own['size'] != mode.CODE_SIZE:
+            if own['size'] != 16384 or mode.CODE_SIZE != 20480:
+                raise ValueError('unaccounted MyCareer request growth')
+            lo, hi = own['va'], own['va'] + mode.CODE_SIZE
+            if any(a is not own and lo < a['va']+a['size'] and a['va'] < hi for a in allocated):
+                raise ValueError('MyCareer growth would move or overlap another owner')
+            old_end = lo + own['size']
+            own['size'] = mode.CODE_SIZE
+            for span in bootstrap['spans']:
+                if (span['owner'] == mode.OWNER and span['basis'] == 'named code allocation'
+                        and int(span['start'], 0) == lo and int(span['end'], 0) == old_end):
+                    span.update(end=hex(hi), size=mode.CODE_SIZE)
+            temporary = stack.enter_context(tempfile.TemporaryDirectory(dir=ROOT/'.scratch'))
+            seed = Path(temporary)/'requested-owner-growth.json'
+            seed.write_bytes((json.dumps(bootstrap)+'\n').encode())
+            stack.enter_context(patch.dict(os.environ, NFL2K5_CAVE_MANIFEST=str(seed)))
         for module in modules.values():
             for name in ('apply', 'apply_xbe', 'xbe_apply', 'plan_patch', 'apply_arc_table', 'patch_xbe', 'apply_chop_block'):
                 function = getattr(module, name, None)

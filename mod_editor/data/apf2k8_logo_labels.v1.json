@@ -1,0 +1,175 @@
+{
+  "schema": "apf2k8_logo_labels/v1",
+  "game": "apf2k8_xbox360_usa",
+  "purpose": "Retail-worn packages proved by team selector tables. Unidentified artwork remains labelled by outer entry number.",
+  "labels": [
+    {
+      "outer_index": 36,
+      "catalog_index": 1,
+      "package_name": "uniform_logo_01.iff",
+      "team": "Assassins",
+      "source": "Retail ROST built-in team selectors, both banks; filename CRC32 matched to 0A"
+    },
+    {
+      "outer_index": 830,
+      "catalog_index": 7,
+      "package_name": "uniform_logo_07.iff",
+      "team": "Beasts",
+      "source": "Retail ROST built-in team selectors, both banks; filename CRC32 matched to 0A"
+    },
+    {
+      "outer_index": 453,
+      "catalog_index": 21,
+      "package_name": "uniform_logo_21.iff",
+      "team": "Cougars",
+      "source": "Retail ROST built-in team selectors, both banks; filename CRC32 matched to 0A"
+    },
+    {
+      "outer_index": 1133,
+      "catalog_index": 30,
+      "package_name": "uniform_logo_30.iff",
+      "team": "Americans",
+      "source": "Retail ROST built-in team selectors, both banks; filename CRC32 matched to 0A"
+    },
+    {
+      "outer_index": 780,
+      "catalog_index": 31,
+      "package_name": "uniform_logo_31.iff",
+      "team": "Top Guns",
+      "source": "Retail ROST built-in team selectors, both banks; filename CRC32 matched to 0A"
+    },
+    {
+      "outer_index": 1185,
+      "catalog_index": 32,
+      "package_name": "uniform_logo_32.iff",
+      "team": "Firebirds",
+      "source": "Retail ROST built-in team selectors, both banks; filename CRC32 matched to 0A"
+    },
+    {
+      "outer_index": 112,
+      "catalog_index": 47,
+      "package_name": "uniform_logo_47.iff",
+      "team": "Knights",
+      "source": "Retail ROST built-in team selectors, both banks; filename CRC32 matched to 0A"
+    },
+    {
+      "outer_index": 106,
+      "catalog_index": 52,
+      "package_name": "uniform_logo_52.iff",
+      "team": "Minutemen",
+      "source": "Retail ROST built-in team selectors, both banks; filename CRC32 matched to 0A"
+    },
+    {
+      "outer_index": 1371,
+      "catalog_index": 56,
+      "package_name": "uniform_logo_56.iff",
+      "team": "Gunslingers",
+      "source": "Retail ROST built-in team selectors, both banks; filename CRC32 matched to 0A"
+    },
+    {
+      "outer_index": 594,
+      "catalog_index": 66,
+      "package_name": "uniform_logo_66.iff",
+      "team": "Rhinos",
+      "source": "Retail ROST built-in team selectors, both banks; filename CRC32 matched to 0A"
+    },
+    {
+      "outer_index": 577,
+      "catalog_index": 67,
+      "package_name": "uniform_logo_67.iff",
+      "team": "Scorpions",
+      "source": "Retail ROST built-in team selectors, both banks; filename CRC32 matched to 0A"
+    },
+    {
+      "outer_index": 1328,
+      "catalog_index": 68,
+      "package_name": "uniform_logo_68.iff",
+      "team": "Cobras",
+      "source": "Retail ROST built-in team selectors, both banks; filename CRC32 matched to 0A"
+    },
+    {
+      "outer_index": 1346,
+      "catalog_index": 69,
+      "package_name": "uniform_logo_69.iff",
+      "team": "Sharks",
+      "source": "Retail ROST built-in team selectors, both banks; filename CRC32 matched to 0A"
+    },
+    {
+      "outer_index": 1442,
+      "catalog_index": 75,
+      "package_name": "uniform_logo_75.iff",
+      "team": "Indians",
+      "source": "Retail ROST built-in team selectors, both banks; filename CRC32 matched to 0A"
+    },
+    {
+      "outer_index": 887,
+      "catalog_index": 77,
+      "package_name": "uniform_logo_77.iff",
+      "team": "Cyclones",
+      "source": "Retail ROST built-in team selectors, both banks; filename CRC32 matched to 0A"
+    },
+    {
+      "outer_index": 1281,
+      "catalog_index": 80,
+      "package_name": "uniform_logo_80.iff",
+      "team": "Federals",
+      "source": "Retail ROST built-in team selectors, both banks; filename CRC32 matched to 0A"
+    },
+    {
+      "outer_index": 1041,
+      "catalog_index": 82,
+      "package_name": "uniform_logo_82.iff",
+      "team": "Rustlers",
+      "source": "Retail ROST built-in team selectors, both banks; filename CRC32 matched to 0A"
+    },
+    {
+      "outer_index": 867,
+      "catalog_index": 83,
+      "package_name": "uniform_logo_83.iff",
+      "team": "Sailors",
+      "source": "Retail ROST built-in team selectors, both banks; filename CRC32 matched to 0A"
+    },
+    {
+      "outer_index": 209,
+      "catalog_index": 84,
+      "package_name": "uniform_logo_84.iff",
+      "team": "Wasps",
+      "source": "Retail ROST built-in team selectors, both banks; filename CRC32 matched to 0A"
+    },
+    {
+      "outer_index": 192,
+      "catalog_index": 85,
+      "package_name": "uniform_logo_85.iff",
+      "team": "Rollers",
+      "source": "Retail ROST built-in team selectors, both banks; filename CRC32 matched to 0A"
+    },
+    {
+      "outer_index": 529,
+      "catalog_index": 86,
+      "package_name": "uniform_logo_86.iff",
+      "team": "Red Dogs",
+      "source": "Retail ROST built-in team selectors, both banks; filename CRC32 matched to 0A"
+    },
+    {
+      "outer_index": 612,
+      "catalog_index": 87,
+      "package_name": "uniform_logo_87.iff",
+      "team": "Iron Men",
+      "source": "Retail ROST built-in team selectors, both banks; filename CRC32 matched to 0A"
+    },
+    {
+      "outer_index": 1390,
+      "catalog_index": 88,
+      "package_name": "uniform_logo_88.iff",
+      "team": "Legends",
+      "source": "Retail ROST built-in team selectors, both banks; filename CRC32 matched to 0A"
+    },
+    {
+      "outer_index": 173,
+      "catalog_index": 90,
+      "package_name": "uniform_logo_90.iff",
+      "team": "Werewolves",
+      "source": "Retail ROST built-in team selectors, both banks; filename CRC32 matched to 0A"
+    }
+  ]
+}

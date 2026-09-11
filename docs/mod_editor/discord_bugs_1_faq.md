@@ -67,3 +67,11 @@ No new game behavior has been witnessed in this work.
 PNG color profiles are accepted as metadata. The importer does not perform ICC
 color conversion. It converts 16-bit channels to the high eight bits and keeps
 transparency comparisons at full precision before that conversion.
+
+
+## Reopening a modded 2K5 disc in xemu
+
+- **Does it need to be .iso, not .xiso?** No. A valid Xbox disc image may be named `.xiso`, `.iso` or `.xiso.iso`. Renaming the file does not convert its contents. The Studio's `.xiso.iso` output name is fine.
+- **Where is my disc after closing the tool?** Your disc: ~/2K5 Mod Studio Builds/NFL 2K5 Modded.xiso.iso. To play again later: open xemu, then Machine > Load Disc. The Launch footer gives the actual file and folder if you selected another destination.
+- **Why did standalone Flatpak xemu lose access?** Older builds allowed the build folder for one launch only. Launch now remembers a read-only folder override for `app.xemu.xemu` and tells you when it adds one. If that command fails, the current launch still receives its existing permission and the message explains that later launches may need the folder allowed in Flatpak settings.
+- **Which xemu settings are updated?** Only `[sys.files] dvd_path`. The Studio uses xemu's SDL preference location: Linux `$XDG_DATA_HOME/xemu/xemu/xemu.toml` (default `~/.local/share`), macOS `~/Library/Application Support/xemu/xemu/xemu.toml`, Windows `%APPDATA%/xemu/xemu/xemu.toml`, or an existing `xemu.toml` beside the Windows executable for portable mode. Flatpak uses `~/.var/app/app.xemu.xemu/data/xemu/xemu/xemu.toml`. An explicit `-config_path` takes priority. Existing settings and comments are retained; an unusual hand-authored TOML layout that cannot be edited safely is reported rather than overwritten.

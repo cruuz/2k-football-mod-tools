@@ -19,7 +19,7 @@ FEATURE_KEYS += (
     "scramble_tuning", "flatter_deep_ball", "chop_block_toggle", "dynamic_kickoff",
     "dynamic_kickoff_settings", "position_pools", "position_pools_keep_olb", "depth_chart_rows", "season_cap", "season_2026",
     "team_names_2026", "widescreen", "overtime", "team_column", "seven_on_seven", "team_history",
-    "career_stats", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces",
+    "career_stats", "position_row", "probowl_order", "penalties", "uniform_choice", "helmet_finish", "kick_laces",
     "franchise_practice", "practice_squad", "depth_locks", "prospect_names", "player_star",
     "player_tags", "roster_edits", "espn25_plan", "espn25_rosters", "playbook_packs", "screen_timing", "depth_roles", "edge_rename",
     "hires_pack", "hires_folder", "hires_scale", "hires_target", "guardian_cap", "scorebug",
@@ -42,6 +42,7 @@ def build_settings(value):
                 "Unsupported Build settings")
     result = music.build_settings({key: value[key] for key in MUSIC_KEYS if key in value})
     choices = {**defaults(), **deepcopy({key: value[key] for key in FEATURE_KEYS if key in value})}
+    tt._require(choices["helmet_finish"] in ("glossy", "matte"), "Helmet finish must be glossy or matte")
     expected = defaults()
     for key in FEATURE_KEYS:
         item, default = choices[key], expected[key]

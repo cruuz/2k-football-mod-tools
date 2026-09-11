@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from contextlib import nullcontext
+from contextlib import contextmanager, nullcontext
 from dataclasses import dataclass, replace
 from io import BytesIO
 import hashlib
@@ -54,7 +54,7 @@ from mod_editor.core.apf2k8_splb_writer import (
 )
 from mod_editor.core.errors import ValidationError
 from . import play_design_service as play_design
-from . import coverage_service, scheme_service
+from . import coverage_service, scheme_service, field_material_service
 from mod_editor.core import apf2k8_coverage_tuning as coverage
 
 from .asset_io import ApfAssetIO, AssetIoError, AudioPreviewCancelled
@@ -2345,6 +2345,15 @@ class ApfSession:
             result.append(change)
         return tuple(sorted(result, key=lambda item: item.formation_index))
 
+    def apply_field_material(self, outer, alphas):
+        try:
+            return field_material_service.stage_profile(self, outer, alphas)
+        except ValidationError as exc:
+            raise SessionError(str(exc)) from exc
+
+    def field_material_context(self, outer):
+        return field_material_service.context(self, outer)
+
     def apply_coverage_geometry(self, edits):
         try:
             return coverage_service.stage_profile(self, edits)
@@ -3474,8 +3483,8 @@ class ApfSession:
                             f"{modification.asset_id}"
                         )
                     suffix = ".json"
-                elif modification.kind in {coverage.PROVIDER_KIND, scheme_service.PROVIDER_KIND}:
-                    service = coverage_service if modification.kind == coverage.PROVIDER_KIND else scheme_service
+                elif modification.kind in {coverage.PROVIDER_KIND, scheme_service.PROVIDER_KIND, field_material_service.PROVIDER_KIND}:
+                    service = {coverage.PROVIDER_KIND: coverage_service, scheme_service.PROVIDER_KIND: scheme_service, field_material_service.PROVIDER_KIND: field_material_service}[modification.kind]
                     try:
                         data = modification.replacement_path.read_bytes()
                         service.validate_payload(data, modification.asset_id, dict(modification.metadata))
@@ -3890,6 +3899,27 @@ class ApfSession:
     def _set(self, asset_id: str, modification: Modification) -> None:
         self._record_undo()
         self._modifications[asset_id] = modification
+
+    @contextmanager
+    def atomic_edit(self):
+        """Compose validated layer edits into one reversible project action.
+
+        Call under the facade's session lock. Failed preparation restores the
+        original edits and undo history; content-addressed private PNGs may be
+        reused later and are removed with the session.
+        """
+        snapshot = _SessionSnapshot(dict(self._modifications), dict(self._audio_annotations))
+        undo_count = len(self._undo)
+        try:
+            yield
+        except BaseException:
+            self._modifications = dict(snapshot.modifications)
+            self._audio_annotations = dict(snapshot.audio_annotations)
+            del self._undo[undo_count:]
+            raise
+        else:
+            changed = self._modifications != snapshot.modifications or self._audio_annotations != snapshot.audio_annotations
+            self._undo[undo_count:] = [snapshot] if changed else []
 
     def _record_undo(self) -> None:
         self._undo.append(

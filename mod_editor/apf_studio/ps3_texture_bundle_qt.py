@@ -6,10 +6,11 @@ from pathlib import Path
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QCheckBox, QComboBox, QDialog, QDialogButtonBox, QHeaderView, QLabel,
-    QTableWidget, QTableWidgetItem, QVBoxLayout, QFileDialog, QMenu, QMessageBox, QPushButton,
+    QTableWidget, QTableWidgetItem, QVBoxLayout, QHBoxLayout, QFileDialog, QMenu, QMessageBox, QPushButton,
 )
 
 from .ps3_texture_bundle import Assignment, BundleError, build_plan, destination_slots, read_bundle, stage_plan
+from .apf_theme import fit_dialog
 
 
 class Ps3BundleMappingDialog(QDialog):
@@ -28,14 +29,27 @@ class Ps3BundleMappingDialog(QDialog):
         self.setWindowTitle("Import PS3 bundle — assign teams")
         self.resize(1060, 600)
         layout = QVBoxLayout(self)
-        summary = QLabel(
-            "Choose which pairs to stage and where they belong. Both layers stay together. "
-            "Team colors are controlled by the game palette.\n"
+        summary = QLabel("Choose pairs and destination slots. Both layers stay together.")
+        summary.setToolTip(
+            "Team colors are controlled by the game palette. "
             "Logo and endzone builds regenerate mip levels; endzones may simplify colors or reduce resolution to fit. "
             "Every build must still fit its fixed allocation. In-game result: UNWITNESSED."
         )
         summary.setWordWrap(True)
         layout.addWidget(summary)
+        self.message = QLabel()
+        self.message.setObjectName("validationBanner")
+        self.message.setWordWrap(True)
+        layout.addWidget(self.message)
+        toolbar = QHBoxLayout()
+        self.select_matched_button = QPushButton("Select all matched")
+        self.clear_button = QPushButton("Clear")
+        self.resolve_button = QPushButton("Next free matching slot")
+        for button in (self.select_matched_button, self.clear_button, self.resolve_button):
+            button.setObjectName("utilityButton")
+            toolbar.addWidget(button)
+        toolbar.addStretch(1)
+        layout.addLayout(toolbar)
         if bundle.rejected_pairs:
             rejected = QLabel("Rejected pairs: " + "; ".join(
                 f"{r['team']} {r['kind']}: {r['reason']}" for r in bundle.rejected_pairs))
@@ -44,7 +58,10 @@ class Ps3BundleMappingDialog(QDialog):
         pairs = [p for p in bundle.pairs if kind is None or p.kind == kind]
         self.table = QTableWidget(len(pairs), 4)
         self.table.setHorizontalHeaderLabels(("Import", "Source team / pair", "Variant", "Xbox 360 destination"))
-        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
+        self.table.setColumnWidth(0, 60)
+        self.table.setColumnWidth(1, 230)
+        self.table.setColumnWidth(2, 170)
         self.table.horizontalHeader().setStretchLastSection(True)
         self.rows = []
         for number, pair in enumerate(pairs):
@@ -70,14 +87,47 @@ class Ps3BundleMappingDialog(QDialog):
             enabled.toggled.connect(self._validate)
             choices.currentIndexChanged.connect(self._validate)
         layout.addWidget(self.table)
-        self.message = QLabel()
-        self.message.setWordWrap(True)
-        layout.addWidget(self.message)
         self.buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
         self.buttons.button(QDialogButtonBox.StandardButton.Ok).setText("Stage selected pairs")
+        self.buttons.button(QDialogButtonBox.StandardButton.Ok).setObjectName("primaryButton")
         self.buttons.accepted.connect(self.accept)
         self.buttons.rejected.connect(self.reject)
         layout.addWidget(self.buttons)
+        self.select_matched_button.clicked.connect(self._select_matched)
+        self.clear_button.clicked.connect(self._clear)
+        self.resolve_button.clicked.connect(self._resolve_collisions)
+        self._validate()
+        fit_dialog(self)
+
+    def _clear(self):
+        for _pair, enabled, _choices in self.rows:
+            enabled.setChecked(False)
+
+    def _select_matched(self):
+        for pair, enabled, choices in self.rows:
+            matches = [slot for slot in self.slots if slot.writable and slot.kind == pair.kind
+                       and slot.entry_hash == pair.entry_hash]
+            if len(matches) == 1:
+                choices.setCurrentIndex(choices.findData(matches[0].slot_id))
+                enabled.setChecked(True)
+        self._validate()
+
+    def _resolve_collisions(self):
+        """Explicitly allocate repeated destinations to the next writable family slot."""
+        used = set()
+        for pair, enabled, choices in self.rows:
+            if not enabled.isChecked():
+                continue
+            chosen = choices.currentData()
+            if chosen is None or chosen in used:
+                candidates = [slot for slot in self.slots if slot.writable and slot.kind == pair.kind
+                              and slot.slot_id not in used]
+                candidates.sort(key=lambda slot: (slot.entry_hash != pair.entry_hash, slot.outer_index))
+                if candidates:
+                    choices.setCurrentIndex(choices.findData(candidates[0].slot_id))
+                    chosen = choices.currentData()
+            if chosen is not None:
+                used.add(chosen)
         self._validate()
 
     def _make_plan(self):
@@ -97,7 +147,11 @@ class Ps3BundleMappingDialog(QDialog):
         except BundleError as exc:
             self.message.setText(str(exc))
             valid = False
+        self.message.setProperty("valid", valid)
+        self.message.style().unpolish(self.message)
+        self.message.style().polish(self.message)
         self.buttons.button(QDialogButtonBox.StandardButton.Ok).setEnabled(valid)
+        self.buttons.button(QDialogButtonBox.StandardButton.Ok).setToolTip(self.message.text())
 
     def accept(self):
         try:

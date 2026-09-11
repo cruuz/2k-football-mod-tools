@@ -58,7 +58,7 @@ class Nfl2k5StadiumSceneListTests(unittest.TestCase):
     def _window(self):
         from mod_editor.gui.studio_qt import StudioMainWindow
 
-        window = StudioMainWindow()
+        window = StudioMainWindow(eager_pages=True, )
         state = window._stadium_browser
         self.assertIsNotNone(state)
         assert state is not None

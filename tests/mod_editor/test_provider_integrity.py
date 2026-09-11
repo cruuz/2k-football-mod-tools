@@ -35,6 +35,7 @@ from tests.mod_editor.test_providers import (
     apf_request,
     request,
     scorebug_request,
+    clean_provider_workspace,
 )
 
 
@@ -177,6 +178,7 @@ def local_import_closure(
 class ProviderIntegrityTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        cls.provider_workspace = clean_provider_workspace(cls)
         cls.registry = CapabilityRegistryLoader().load(
             allow_sample_fallback=False, check_files=False
         )
@@ -199,7 +201,7 @@ class ProviderIntegrityTests(unittest.TestCase):
             # formation/play clone writer, fixed-slot audio, the fail-closed
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
-            [260, 9, 8, 9, 8, 9]  # beta 65: +2 accelerated clock writer + generated code; +1 MyCareer M3 progression policy, +2 deep zone owner + template (the bail authoring module is not in the writer closure), +1 tools playbook position recode (match coverage census reads book entries), +1 match coverage census/authoring, +2 playbook pair owner + template, +3 weekly prep owner + template + save reader, +2 CPU money downs owner + template, +1 franchise edit player owner, +2 coverage trail owner + template, +2 equipment chain helpers (explicit PNG intent, bounded lossless compression), +6 seedless MyCareer (mode, code, save), final-book play intents, depth roles and special roles; +1 number-sheet digit texture encoder, +1 ESPN 25th real rosters data owner, +1 scorebar v3 helper, +2 Franchise Auto Save owner + byte template, +10 wave-A runtime modules and their byte templates, +1 scorebar template compiler, +1 broadcast-exact scorebar, +1 build outcome measure, +1 image destination check, +1 scorebar fonts (beta 62); the hi-res and 2026-name modules load via mod_build, not the backend closure,
+            [268, 9, 8, 9, 8, 9]  # beta 66: + nfl2k5_digit_art (G: Coach Edwards' number sheets), build_io, metadata_cache (B), jukebox_list, helmet_finish (D2)  # beta 66: +3 equipment palette / library collection / college warning helpers; beta 65: +2 accelerated clock writer + generated code; +1 MyCareer M3 progression policy, +2 deep zone owner + template (the bail authoring module is not in the writer closure), +1 tools playbook position recode (match coverage census reads book entries), +1 match coverage census/authoring, +2 playbook pair owner + template, +3 weekly prep owner + template + save reader, +2 CPU money downs owner + template, +1 franchise edit player owner, +2 coverage trail owner + template, +2 equipment chain helpers (explicit PNG intent, bounded lossless compression), +6 seedless MyCareer (mode, code, save), final-book play intents, depth roles and special roles; +1 number-sheet digit texture encoder, +1 ESPN 25th real rosters data owner, +1 scorebar v3 helper, +2 Franchise Auto Save owner + byte template, +10 wave-A runtime modules and their byte templates, +1 scorebar template compiler, +1 broadcast-exact scorebar, +1 build outcome measure, +1 image destination check, +1 scorebar fonts (beta 62); the hi-res and 2026-name modules load via mod_build, not the backend closure,
         )
         for provider in providers:
             entries = [provider.backend_module]
@@ -306,7 +308,7 @@ class ProviderIntegrityTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             job = request(Path(temporary))
             with _pinned_execution_bundle(
-                WORKSPACE,
+                self.provider_workspace,
                 {**provider.module_pins, **provider.data_pins},
                 provider.backend_module,
                 "NFL unified visual backend",

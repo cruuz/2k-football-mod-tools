@@ -215,6 +215,12 @@ def _png_unfilter(raw: bytes, width: int, height: int, bits_per_pixel: int) -> b
         filter_type = raw[start]
         require(filter_type <= 4, f"unsupported PNG filter {filter_type}")
         encoded = raw[start + 1:start + 1 + row_bytes]
+        if filter_type == 0:
+            # The exporter writes unfiltered rows. Preserve them directly,
+            # including the previous-row state needed by a following filter.
+            out[y * row_bytes:(y + 1) * row_bytes] = encoded
+            previous = encoded
+            continue
         row = bytearray(row_bytes)
         for x, value in enumerate(encoded):
             left = row[x - step] if x >= step else 0
@@ -304,6 +310,19 @@ def _png_samples_to_rgba(compressed: bytes, width: int, height: int, bit_depth: 
     raw += decompressor.flush()
     require(decompressor.eof and not decompressor.unused_data and len(raw) == expected,
             "PNG IDAT stream is truncated, trailing, or wrong-sized")
+
+    if interlace == 0 and color_type == 6:
+        # RGBA already has the destination channel layout. Sixteen-bit samples
+        # use their high byte, exactly as widen() below. All chunk, CRC, size,
+        # inflate and filter checks still run before returning.
+        block = _png_unfilter(raw, width, height, bits_per_pixel)
+        return block if bit_depth == 8 else block[::2]
+    if interlace == 0 and color_type == 2 and bit_depth == 8 and not trns:
+        block = _png_unfilter(raw, width, height, bits_per_pixel)
+        rgba = bytearray(width * height * 4)
+        rgba[0::4], rgba[1::4], rgba[2::4] = block[0::3], block[1::3], block[2::3]
+        rgba[3::4] = b"\xff" * (width * height)
+        return bytes(rgba)
 
     palette_entries = len(plte) // 3 if plte else 0
     scale = {1: 255, 2: 85, 4: 17, 8: 1, 16: 1}[bit_depth]
@@ -545,6 +564,7 @@ def quantize_levels_to_vc_lz_bound(
     max_encoded_size: int,
     quantizer: Callable | None = None,
     minimum_palette_limit: int = 2,
+    palette_limits: tuple[int, ...] = _BOUNDED_PALETTE_LIMITS,
 ) -> BoundedPaletteFit:
     """Quantize art as richly as practical while honoring a retail VC-LZ cap.
 
@@ -561,23 +581,25 @@ def quantize_levels_to_vc_lz_bound(
     require(bool(levels), "bounded quantizer needs at least one mip level")
     require(max_encoded_size >= 10,
             "bounded quantizer VC-LZ span is shorter than a usable stream")
-    require(minimum_palette_limit in _BOUNDED_PALETTE_LIMITS,
+    require(minimum_palette_limit in palette_limits and
+            tuple(sorted(set(palette_limits), reverse=True)) == palette_limits and
+            all(2 <= n <= 256 for n in palette_limits),
             "minimum palette limit must be a supported quality tier")
     quantizer = quantizer or quantize_levels
     attempts: list[dict[str, object]] = []
-    tried_entry_counts: set[int] = set()
+    tried_payloads: set[bytes] = set()
     last_overflow: TxtrError | None = None
-    for maximum in _BOUNDED_PALETTE_LIMITS:
+    for maximum in palette_limits:
         if maximum < minimum_palette_limit:
             break
         palette, index_levels, quantization = quantizer(levels, maximum)
         actual_entries = len(palette)
         # If the input already contains fewer colours than this tier, the same
         # palette was just tested at the preceding tier.  Do not recompress it.
-        if actual_entries in tried_entry_counts:
-            continue
-        tried_entry_counts.add(actual_entries)
         decoded = build_decoded(palette, index_levels)
+        if decoded in tried_payloads:
+            continue
+        tried_payloads.add(decoded)
         try:
             compressed, compression = compress_vc_lz(
                 decoded,
@@ -620,12 +642,14 @@ def quantize_levels_to_vc_lz_bound(
     # here means even the minimally useful two-colour representation cannot fit.
     if last_overflow is not None:
         if minimum_palette_limit > 2:
-            raise QualityBudgetError(
+            error = QualityBudgetError(
                 f"Digit artwork cannot fit its {max_encoded_size}-byte texture slot "
                 f"without dropping below the {minimum_palette_limit}-colour quality budget. "
                 "Use flat fill and outline colours, remove noise or extra edge detail, "
                 "and preview again. No lower-quality texture was accepted."
-            ) from last_overflow
+            )
+            error.attempts = tuple(attempts)
+            raise error from last_overflow
         raise QualityBudgetError(
             f"VC-LZ target cannot fit a usable two-color version inside its "
             f"{max_encoded_size}-byte bound; simplify the image by removing "
@@ -644,9 +668,15 @@ def palette_bytes(palette: list[tuple[int, int, int, int]]) -> bytes:
 
 def rgba_from_indices(indices: bytes,
                       palette: list[tuple[int, int, int, int]]) -> bytes:
-    require(all(index < len(palette) for index in indices),
+    require(not indices or max(indices) < len(palette),
             "index references an absent palette entry")
-    return b"".join(bytes(palette[index]) for index in indices)
+    # Byte translation performs the palette lookup in C, once per channel.
+    # Retain validation before indexing, including the empty-index case.
+    rgba = bytearray(len(indices) * 4)
+    for channel in range(4):
+        table = bytes(color[channel] for color in palette[:256]).ljust(256, b"\0")
+        rgba[channel::4] = indices.translate(table)
+    return bytes(rgba)
 
 
 def derive_mud_palette(clean: list[tuple[int, int, int, int]], mode: str) \

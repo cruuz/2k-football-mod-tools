@@ -19,6 +19,7 @@ from collections.abc import Mapping
 
 from . import nfl2k5_qb_spy_runtime_code as assembly
 from . import nfl2k5_xbe_space as space
+from . import nfl2k5_playbook_pair as pair
 from .nfl2k5_bump_strength import _sections, section_digest
 from .nfl2k5_cave_oracle import XbeImage
 
@@ -193,8 +194,9 @@ def validate_intent_table(table):
     return count
 
 
-def code_for(code_va, data_va, table_va):
+def code_for(code_va, data_va, table_va, *, paired_contract=0):
     symbols = dict(code=code_va, state_data=data_va, intent_table=table_va,
+                   paired_contract=paired_contract,
                    resume_first=0x1A5796, resume_later=0x1A5096,
                    resume_assignment=0x1B8577, resume_command=0x18AF03, resume_snap=0xB6FBD,
                    steer=0x1A4170, pursue=0x1ADF90, transition=0x214B90)
@@ -244,7 +246,8 @@ def _inspect(payload, *, check_deep_zone=True):
             _require(table == bytes(TABLE_SIZE), "Mixed Spy table without runtime")
             table = None
         else:
-            _require(content == code_for(code_va, data["va"], ro["va"]), "Foreign Spy runtime")
+            _require(content == code_for(code_va, data["va"], ro["va"],
+                                         paired_contract=pair.contract_va(payload)), "Foreign Spy runtime")
             validate_intent_table(table)
             installed = True
     for name, va, before, after in sites(code_va):
@@ -305,7 +308,8 @@ def apply(payload: bytes, *, intent_table: bytes | None = None) -> tuple[bytes, 
     allocated, allocation_receipt = (space.apply(payload, REQUESTS, scaleout=True)
                                     if space.status(payload) == "retail" else (payload, {}))
     places = allocations(allocated)
-    content = code_for(places["code"]["va"], places["data"]["va"], places["read_only"]["va"])
+    content = code_for(places["code"]["va"], places["data"]["va"], places["read_only"]["va"],
+                       paired_contract=pair.contract_va(allocated))
     installed, _ = space.install_code(allocated, OWNER, content)
     installed, _ = space.install_read_only(installed, OWNER, table)
     image = XbeImage(installed)

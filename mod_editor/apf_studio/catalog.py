@@ -60,6 +60,11 @@ def _noop(_stage: str, _completed: int, _total: int) -> None:
 
 def _category_for(name: str, type_name: str) -> ApfCategory:
     value = f"{name} {type_name}".casefold()
+    # This named practice-field overlay is not a uniform digit texture.
+    # The broad historical "number_" match otherwise removes one of the
+    # 258 reviewed Field Art rows and makes its entire ownership map fail.
+    if name == "Stride_number_field" and type_name == "TXTR":
+        return ApfCategory.FIELD_ART
     if type_name in {"AUDO", "AUSB", "XMA1_BANK"} or any(
         token in value for token in ("audio", "sound", "music", "comment")
     ):

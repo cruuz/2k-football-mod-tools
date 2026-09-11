@@ -7,6 +7,7 @@ from typing import Callable
 
 from PyQt5.QtWidgets import (
     QFileDialog,
+    QCheckBox,
     QHBoxLayout,
     QLabel,
     QMessageBox,
@@ -51,6 +52,7 @@ class Ps3RosterImportPanel(QWidget):
         self.member: str | None = None
         self.summary: dict[str, object] | None = None
         self.last_receipt: ConversionReceipt | None = None
+        self.appearance_baseline: Path | None = None
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(16, 14, 16, 14)
@@ -86,6 +88,18 @@ class Ps3RosterImportPanel(QWidget):
         self.summary_label.setWordWrap(True)
         layout.addWidget(self.summary_label)
 
+        self.apply_appearance = QCheckBox("Also apply team appearance (0 teams)")
+        self.apply_appearance.setChecked(False)
+        self.apply_appearance.setToolTip("Carry both uniform selector banks and team palettes. Custom texture files need a separate PS3 texture import.")
+        self.keep_appearance_button = QPushButton("Keep appearance from Xbox roster…")
+        self.appearance_note = QLabel("Review team appearance: tick the option to use the PS3 uniforms, or choose an Xbox roster to keep its appearance.")
+        self.appearance_note.setWordWrap(True)
+        layout.addWidget(self.apply_appearance)
+        layout.addWidget(self.keep_appearance_button)
+        layout.addWidget(self.appearance_note)
+        self.keep_appearance_button.clicked.connect(self._choose_appearance_baseline)
+        self.apply_appearance.toggled.connect(self._review_appearance)
+
         action_row = QHBoxLayout()
         self.convert_button = QPushButton("Import PS3 roster…")
         self.convert_button.setEnabled(False)
@@ -104,7 +118,7 @@ class Ps3RosterImportPanel(QWidget):
             self,
             "Choose a PS3 APF 2K8 roster save",
             str(Path.home()),
-            "PS3 roster save (USERDATA *.zip);;All files (*)",
+            "PS3 roster save (USERDATA *.ROS *.ros *.zip);;All files (*)",
         )
         if selected:
             self.load_path(Path(selected))
@@ -159,7 +173,31 @@ class Ps3RosterImportPanel(QWidget):
             f"{int(result['odd_references']):,} are misaligned and "
             f"{int(result['stale_references']):,} are stale."
         )
-        self.convert_button.setEnabled(platform == PLATFORM_PS3)
+        self.apply_appearance.setText(f"Also apply team appearance ({int(result['teams'])} teams)")
+        self.apply_appearance.setChecked(False)
+        self._review_appearance()
+
+    def _choose_appearance_baseline(self) -> None:
+        selected, _ = QFileDialog.getOpenFileName(self, "Xbox roster appearance to retain", str(Path.home()),
+                                                 "Raw Xbox roster (*.ROS *.ros);;All files (*)")
+        if selected:
+            self.set_appearance_baseline(Path(selected))
+
+    def set_appearance_baseline(self, path: Path) -> None:
+        # Validate at review time and again in the worker before any output write.
+        from .ps3_roster_convert import team_appearance
+        data = read_source(path)
+        if detect_platform(data) != "xbox360":
+            raise PS3RosterConvertError("Choose a raw Xbox 360 roster for retained appearance")
+        team_appearance(data)
+        self.appearance_baseline = path
+        self.apply_appearance.setChecked(False)
+        self.appearance_note.setText(f"Unticked: retain team appearance from {path.name}. Ticked: apply PS3 appearance. Custom texture files are imported separately.")
+        self._review_appearance()
+
+    def _review_appearance(self) -> None:
+        ready = self.summary is not None and self.summary["platform"] == PLATFORM_PS3
+        self.convert_button.setEnabled(ready and (self.apply_appearance.isChecked() or self.appearance_baseline is not None))
 
     # -- conversion -------------------------------------------------------
 
@@ -180,17 +218,22 @@ class Ps3RosterImportPanel(QWidget):
         source, member = self.source, self.member
         if source is None:
             return
+        apply_appearance = self.apply_appearance.isChecked()
+        baseline = self.appearance_baseline
+        if not apply_appearance and baseline is None:
+            raise PS3RosterConvertError("Review team appearance before importing")
         self.run_task(
             "Importing PS3 roster",
-            lambda progress: self._convert_operation(source, member, destination, progress),
+            lambda progress: self._convert_operation(source, member, destination, progress, apply_appearance, baseline),
             self._converted,
             True,
         )
 
     @staticmethod
-    def _convert_operation(source: Path, member: str | None, destination: Path, progress: Progress) -> ConversionReceipt:
+    def _convert_operation(source: Path, member: str | None, destination: Path, progress: Progress, apply_appearance: bool = True, baseline: Path | None = None) -> ConversionReceipt:
         progress("Converting and re-parsing with the strict readers", 0, 2)
-        receipt = write_conversion(source, destination, member=member)
+        receipt = write_conversion(source, destination, member=member,
+                                   apply_team_appearance=apply_appearance, xbox_appearance=baseline)
         progress("Raw Xbox 360 roster and receipt written", 2, 2)
         return receipt
 
@@ -213,6 +256,10 @@ class Ps3RosterImportPanel(QWidget):
             f"{int(counts['palette_colours_rotated'])} palette colours rotated, "
             f"{int(counts['root_runtime_fields_rewritten']) + int(counts['runtime_block_words_rewritten']) + int(counts['bank_runtime_words_rewritten'])} "
             f"runtime words rewritten; {result.changed_byte_count:,} bytes changed. Source unchanged.\n\n"
+            f"Team appearance: {counts.get('appearance_teams', counts['teams'])} teams, "
+            f"{'applied from PS3' if counts.get('appearance_applied_from_ps3', True) else 'retained from Xbox roster'}. "
+            "Both selector banks reparsed; each team's before/after selectors are in the receipt. "
+            "Custom texture payloads require a separate texture import.\n\n"
             f"{XENIA_PLACEMENT}\n\nStatus: {RUNTIME_STATUS}"
         )
 

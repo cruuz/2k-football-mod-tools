@@ -420,7 +420,7 @@ class GuiInteractionTests(unittest.TestCase):
 
     def setUp(self) -> None:
         self.facade = _ColourFacade()
-        self.window = StudioMainWindow(facade=self.facade, offer_recovery=False)
+        self.window = StudioMainWindow(eager_pages=True, facade=self.facade, offer_recovery=False)
         self.facade._source_ready = True
         self.window._refresh_edit_state()
         self.window._load_selected_unif_colors()

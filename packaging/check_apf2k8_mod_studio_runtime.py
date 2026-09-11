@@ -25,7 +25,7 @@ sys.dont_write_bytecode = True
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / "tools"
-EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.85"
+EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.86"
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 if str(TOOLS) not in sys.path:
@@ -70,6 +70,9 @@ EXPECTED_RETAIL_HASHES = frozenset(
 )
 
 PRODUCT_MODULES = (
+    'mod_editor.core.apf_field_material_writer',
+    'mod_editor.apf_studio.field_material_service',
+    'mod_editor.apf_studio.field_material_qt',
     'mod_editor.apf_studio.play_design_service',
     'mod_editor.apf_studio.play_designer_qt',
     'mod_editor.apf_studio.coverage_service',
@@ -112,6 +115,10 @@ PRODUCT_MODULES = (
     "mod_editor.apf_studio.facade",
     "mod_editor.apf_studio.field_art",
     "mod_editor.apf_studio.gui",
+    "mod_editor.apf_studio.apf_theme",
+    "mod_editor.apf_studio.page_layout",
+    "mod_editor.apf_studio.team_art",
+    "mod_editor.apf_studio.team_art_qt",
     "mod_editor.apf_studio.helmet_crest_design",
     "mod_editor.apf_studio.helmet_logo_placement",
     "mod_editor.apf_studio.helmet_logo_placement_qt",
@@ -1279,12 +1286,12 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         check_files=False,
     )
     require(
-        len(registry.capabilities) == 142
-        and len(registry.for_game(core_model.GameId.APF2K8)) == 53,
+        len(registry.capabilities) == 146
+        and len(registry.for_game(core_model.GameId.APF2K8)) == 55,
         "shared/APF capability registry counts changed",
     )
     cards = catalog.build_capability_cards()
-    require(len(cards) == 53 and len({item.capability_id for item in cards}) == 53,
+    require(len(cards) == 55 and len({item.capability_id for item in cards}) == 55,
             "APF capability surface is not exactly 52 unique rows")
     require(len(models.APF_CATEGORY_ORDER) == 14,
             "APF complete sidebar category count changed")
@@ -1307,7 +1314,9 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         "apf2k8.audio.xma_export",
         "apf2k8.colors.uniform_selector_appearance_custom_team",
         "apf2k8.field_art.base_texture",
+        "apf2k8.field_art.material_opacity",
         "apf2k8.logos_cards.draft_logo",
+        "apf2k8.logos_cards.team_art_browser",
         "apf2k8.logos_cards.team_logo",
         "apf2k8.logos_cards.team_logo_cache",
         "apf2k8.logos_cards.textlogo_wordmarks",

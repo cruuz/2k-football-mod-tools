@@ -203,7 +203,10 @@ def _recolour(path: Path) -> None:
 class KitRoundTripDigitsTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.catalog = load_nfl2k5_uniform_catalog()
+        try:
+            cls.catalog = load_nfl2k5_uniform_catalog()
+        except FileNotFoundError as exc:
+            raise unittest.SkipTest(f"private uniform catalog reports absent: {exc.filename}") from exc
 
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory(prefix="hf63-digit-kit-")
@@ -371,7 +374,10 @@ class BackendKeepsRetailTests(unittest.TestCase):
         ]
         if missing or cls.index is None or cls.inventory is None:
             raise unittest.SkipTest(
-                "Private retail digit evidence absent: " + ", ".join(missing or ["index"])
+                "Private retail digit evidence absent: " + ", ".join(
+                    str(p) for p in (cls.index or ROOT / "extracted/ESPN NFL 2K5 (USA)/vc_53450030/0",
+                                     cls.inventory or ROOT / "reports/assets/nfl2k5_resource_chunks_v2.json",
+                                     targets.DEFAULT_REPORT) if not Path(p).is_file())
             )
         cls.target, retail = _retail_digit_rgba(cls.index, "arm_digit", 1)
         cls.unfit_rgba = _reencode_noise(retail, seed=2)
@@ -391,7 +397,7 @@ class BackendKeepsRetailTests(unittest.TestCase):
         }))
         return path
 
-    def _prepare(self, root: Path, edits: list[dict[str, object]]):
+    def _prepare(self, root: Path, edits: list[dict[str, object]], *, force_budget=False):
         import nfl2k5_visual_mod_project as backend
 
         project = backend.read_project(self._project(root, edits))
@@ -404,8 +410,19 @@ class BackendKeepsRetailTests(unittest.TestCase):
         placeholder = os.open(root / "not-a-source.bin", os.O_RDWR | os.O_CREAT | getattr(os, "O_BINARY", 0), 0o600)
         prepared = None
         try:
-            prepared = backend.prepare_project(
-                project, index_pin, inventory_pin, reports, root, placeholder, {})
+            # Near-identical resave noise now fits after cleanup. Inject only
+            # a budget failure to keep testing the project fallback contract.
+            import nfl_live_numbers_nameplate_png_import as digit_writer
+            from nfl_tset_png_import import QualityBudgetError
+            real = digit_writer.build_import
+            def guarded(*args, **kwargs):
+                if force_budget and args[2] == "arm" and args[6] == 1:
+                    digit_writer.read_png(args[7], (64, 64))
+                    raise QualityBudgetError("test full-ladder exhaustion")
+                return real(*args, **kwargs)
+            with mock.patch.object(digit_writer, "build_import", side_effect=guarded):
+                prepared = backend.prepare_project(
+                    project, index_pin, inventory_pin, reports, root, placeholder, {})
             return backend, prepared
         finally:
             os.close(placeholder)
@@ -425,7 +442,7 @@ class BackendKeepsRetailTests(unittest.TestCase):
                  "variant": 0, "family": "arm", "digit": 1, "png": "arm1.png"},
                 {"kind": "live_number_nameplate", "asset_code": "02", "side": "H",
                  "variant": 0, "family": "jersey", "digit": 0, "png": "jersey0.png"},
-            ])
+            ], force_budget=True)
             self.assertEqual([edit.selector for edit in prepared.edits], ["02H0:jersey_digit:0"])
             self.assertEqual(len(prepared.kept_retail), 1)
             row = prepared.kept_retail[0]
@@ -439,7 +456,7 @@ class BackendKeepsRetailTests(unittest.TestCase):
             self.assertIn("896-byte", row["message"])
             self.assertIn("arm digit 1", row["message"])
             self.assertIn("02H0", row["message"])
-            self.assertIn("16-colour", row["reason"])
+            self.assertIn("after cleanup", row["reason"])
             # The manifest and the independent verify reconstruct the same rows.
             self.assertEqual(json.loads(_canonical(prepared.kept_retail)), prepared.kept_retail)
 
@@ -464,7 +481,7 @@ class BackendKeepsRetailTests(unittest.TestCase):
             backend, prepared = self._prepare(root, [
                 {"kind": "live_number_nameplate", "asset_code": "02", "side": "H",
                  "variant": 0, "family": "arm", "digit": 1, "png": "arm1.png"},
-            ])
+            ], force_budget=True)
             self.assertEqual(prepared.edits, [])
             self.assertEqual([row["selector"] for row in prepared.kept_retail], ["02H0:arm_digit:1"])
             placeholder = os.open(root / "source.bin", os.O_RDWR | os.O_CREAT | getattr(os, "O_BINARY", 0), 0o600)
@@ -521,7 +538,16 @@ class PreviewKeepsRetailTests(unittest.TestCase):
                 asset.digit, asset.asset_id, asset.width, asset.height,
                 encode_rgba_png(asset.width, asset.height, rgba), "horizontal", (64, 64),
             ))
-        preview = preview_digit_sheet(self.index, selected, outputs)
+        # Cleanup now repairs this formerly failing resave. Exercise a real
+        # exhausted-slot outcome explicitly, independent of artist noise.
+        original_build = writer.build_import
+        def exhausted_slot(*args, **kwargs):
+            from nfl_tset_png_import import QualityBudgetError
+            if args[6] == 1:
+                raise QualityBudgetError("forced slot exhaustion")
+            return original_build(*args, **kwargs)
+        with mock.patch.object(writer, "build_import", side_effect=exhausted_slot):
+            preview = preview_digit_sheet(self.index, selected, outputs)
         self.assertEqual(len(preview.receipts), 10)
         kept = preview.receipts[1]
         self.assertTrue(kept.get("kept_retail"))

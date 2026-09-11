@@ -224,6 +224,8 @@ docs/mod_editor/ps3_bundle_import.md
 mod_editor/apf_studio/book_identity_qt.py
 mod_editor/apf_studio/coverage_qt.py
 mod_editor/apf_studio/coverage_service.py
+mod_editor/apf_studio/field_material_qt.py
+mod_editor/apf_studio/field_material_service.py
 mod_editor/apf_studio/play_design_service.py
 mod_editor/apf_studio/play_designer_qt.py
 mod_editor/apf_studio/playbook_playcall_qt.py
@@ -247,5 +249,12 @@ mod_editor/core/apf2k8_play_design_build.py
 mod_editor/core/apf2k8_play_designer.py
 mod_editor/core/apf2k8_playcall_patch.py
 mod_editor/core/apf2k8_scheme_presets.py
+mod_editor/core/apf_field_material_writer.py
 mod_editor/core/nfl2k5_play_codec.py
 tools/apf_book_unlock.py
+mod_editor/apf_studio/apf_theme.py
+mod_editor/apf_studio/page_layout.py
+mod_editor/apf_studio/team_art.py
+mod_editor/apf_studio/team_art_qt.py
+mod_editor/data/apf2k8_logo_labels.v1.json
+mod_editor/data/apf2k8_textlogo_labels.v1.json

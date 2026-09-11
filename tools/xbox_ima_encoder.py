@@ -35,6 +35,7 @@ byte-for-byte, not merely sound alike.
 from __future__ import annotations
 
 import struct
+from bisect import bisect_right
 
 CHANNEL_BLOCK_BYTES = 36
 BLOCK_FRAMES = 64
@@ -171,11 +172,104 @@ def encode_block_scalar(samples) -> bytes:
     return bytes(encoded)
 
 
+# Seven exact greedy quantizer thresholds and sixteen state transitions per
+# index. No PCM or retail data is retained in these tables.
+_THRESHOLDS = tuple(tuple((step >> 2) * (n & 1) + (step >> 1) * ((n >> 1) & 1)
+                         + step * ((n >> 2) & 1) for n in range(1, 8))
+                    for step in IMA_STEP_TABLE)
+_TRANSITIONS = tuple(tuple(
+    (((step >> 3) + (step >> 2) * (n & 1) + (step >> 1) * ((n >> 1) & 1)
+      + step * ((n >> 2) & 1)) * (-1 if n & 8 else 1),
+     max(0, min(MAX_STEP_INDEX, index + IMA_INDEX_TABLE[n & 7])))
+    for n in range(16)) for index, step in enumerate(IMA_STEP_TABLE))
+
+
+def _emit_block(samples, initial_index):
+    """Emit the winning state, including exactly the 64 audible predictors."""
+    predictor, index = samples[0], initial_index
+    decoded, nibbles = [predictor], []
+    for target in (*samples[1:], samples[-1]):
+        delta = target - predictor
+        nibble = bisect_right(_THRESHOLDS[index], abs(delta)) | (8 if delta < 0 else 0)
+        change, index = _TRANSITIONS[index][nibble]
+        predictor += change
+        if predictor > 32767:
+            predictor = 32767
+        elif predictor < -32768:
+            predictor = -32768
+        nibbles.append(nibble)
+        decoded.append(predictor)
+    encoded = struct.pack("<hH", samples[0], initial_index) + bytes(
+        a | (b << 4) for a, b in zip(nibbles[::2], nibbles[1::2]))
+    return encoded, decoded[:BLOCK_FRAMES]
+
+
+def _encode_block_exact(samples):
+    """Exact exhaustive result with a monotone squared-error lower bound.
+
+    Try a slope-based candidate first to establish a useful bound. Every other
+    candidate is still considered, but once its partial error cannot beat the
+    winner it need not encode the rest of the block. Equal errors always choose
+    the lowest initial index, including candidates visited after the seed.
+    """
+    bound, winner = 1 << 64, 0
+    tail = samples[1:]
+    seed = min(MAX_STEP_INDEX, bisect_right(IMA_STEP_TABLE,
+        max(abs(samples[i] - samples[i - 1]) for i in range(1, 8))))
+    for initial in (seed, *range(seed), *range(seed + 1, START_INDEX_CANDIDATES)):
+        predictor, index, error = samples[0], initial, 0
+        for target in tail:
+            delta = target - predictor
+            nibble = bisect_right(_THRESHOLDS[index], abs(delta)) | (8 if delta < 0 else 0)
+            change, index = _TRANSITIONS[index][nibble]
+            predictor += change
+            if predictor > 32767:
+                predictor = 32767
+            elif predictor < -32768:
+                predictor = -32768
+            delta = target - predictor
+            error += delta * delta
+            if error > bound or (error == bound and initial >= winner):
+                break
+        else:
+            bound, winner = error, initial
+            if bound == 0 and winner == 0:
+                break
+    return _emit_block(samples, winner)
+
+
+def encode_stream_with_preview(pcm: bytes, channels: int, *, progress=None):
+    """Dependency-free exact encoder plus PCM from the winning encoder state.
+
+    Uses the same block boundaries, initial-index tie break and trailing nibble
+    as encode_block_scalar. The preview never requires a second decoder pass.
+    """
+    _require(isinstance(pcm, (bytes, bytearray)), "PCM input must be bytes")
+    align = block_align(channels)
+    frames = len(pcm) // (2 * channels)
+    _require(len(pcm) % (2 * channels) == 0, "PCM does not contain whole frames")
+    _require(frames > 0 and frames % BLOCK_FRAMES == 0,
+             "PCM frame count must be a positive multiple of 64")
+    encoded, preview = bytearray(), bytearray()
+    for offset in range(0, len(pcm), BLOCK_FRAMES * channels * 2):
+        samples = struct.unpack_from(f"<{BLOCK_FRAMES * channels}h", pcm, offset)
+        columns = []
+        for channel in range(channels):
+            data, decoded = _encode_block_exact(samples[channel::channels])
+            encoded.extend(data)
+            columns.append(decoded)
+        values = [value for frame in zip(*columns) for value in frame]
+        preview.extend(struct.pack(f"<{len(values)}h", *values))
+        if progress is not None:
+            progress(len(encoded), frames // BLOCK_FRAMES * align)
+    return bytes(encoded), bytes(preview)
+
+
 def _encode_channel_scalar(samples, progress=None) -> list[bytes]:
     total = len(samples) // BLOCK_FRAMES
     blocks: list[bytes] = []
     for number, offset in enumerate(range(0, len(samples), BLOCK_FRAMES)):
-        blocks.append(encode_block_scalar(samples[offset:offset + BLOCK_FRAMES]))
+        blocks.append(_encode_block_exact(samples[offset:offset + BLOCK_FRAMES])[0])
         if progress is not None and number % 32 == 0:
             progress(number, total)
     return blocks

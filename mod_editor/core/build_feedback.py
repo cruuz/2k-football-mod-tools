@@ -18,6 +18,11 @@ def _digest(path):
 def measure(source, target):
     """Compare final files after all writers, before publishing a success notice."""
     before, after = _digest(source), _digest(target)
+    return compare(before, after)
+
+
+def compare(before, after):
+    """Compare freshly measured or independently verified manifest digests."""
     changed = before != after
     return {"status": "changed" if changed else "unchanged", "source": before, "output": after,
             "message": ("The output differs from the source. Review the build receipt for the selected changes."

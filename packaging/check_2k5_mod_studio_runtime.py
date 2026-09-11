@@ -99,17 +99,17 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "64ac47e2f3d28c374d4b0b8d44e5eba16b69ce5d70bbbeb6288ddadeb2be10ed",
     "mod_editor/gui/studio_qt.py":
-        "1f3ad7055c81a67de49fc6da266444f0f8d03608cfb4c7791098575fef02ccf6",
+        "231ece9783aed9377d2693bb162b45b86121de51fdb430418e1f171ac60ddcbf",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
         "68b6887e0778391916a6465a722b062d1c09afe3a376c318026e9db8bd7ed23a",
     "mod_editor/studio/facade.py":
-        "2eaa5929374c89c034823a11a1e79ed787ec8ca4e7c05891711e736e98cee804",
+        "5b1d7be0a186b4d173bc3abfbd924dd86ac143e20c20acb47e5762955e3b6045",
     "mod_editor/studio/project_archive.py":
         "3556062a7cf178ef416706543e71270783d04439494420810fb7a10ca7f01479",
     "mod_editor/studio/session.py":
-        "731b5f757d13ceebea0eb6b37dc9380cd0e1d9a29de1e02c136303a5d68df5f0",
+        "1e3d51bd8c8b5f6e744b55207e80ad74d6998472937abe1dcd6962a451082811",
 }
 
 REQUIRED_UNIFIED_PROVIDER_CLOSURE = frozenset(
@@ -1820,6 +1820,7 @@ def main() -> int:
         "mod_editor.core.build_feedback",
         "mod_editor.core.image_use",
         "mod_editor.core.nfl2k5_digit_preview",
+        "mod_editor.core.nfl2k5_digit_art",
         "mod_editor.core.nfl2k5_digit_sheet",
         "mod_editor.core.nfl2k5_digit_texture",
         "mod_editor.core.nfl2k5_equipment_import",
@@ -2095,11 +2096,11 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 142,
+    require(len(registry.capabilities) == 146,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
-    require(len(product_catalog.capabilities) == 88,
+    require(len(product_catalog.capabilities) == 90,
             "NFL 2K5 product capability count changed")
     _exercise_default_provider_controller(
         modules["mod_editor.core.controller"],
@@ -2502,7 +2503,7 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=142 sections=12 nfl2k5_capabilities=88 "
+        "registry=146 sections=12 nfl2k5_capabilities=90 "
         "reports=16 reviewed_metadata=24 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "

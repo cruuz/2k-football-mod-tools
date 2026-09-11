@@ -185,6 +185,9 @@ from .project import (
     WorkspaceStateStore,
     project_target_identity,
 )
+from .page_layout import WorkspaceTabs as QTabWidget
+from . import apf_theme
+from .apf_theme import CompactLabel as QLabel
 from .product_findings import gameplay_snapshot, presentation_snapshot
 from .roster_workspace_qt import RosterReservePlanner
 from .save_playbooks_qt import SavePlaybookAssignmentsPanel
@@ -243,9 +246,9 @@ CATEGORY_BLURBS: dict[ApfCategory, str] = {
     ApfCategory.UNIFORMS: "Edit all 96 mapped material-color textures and browse or export every one of the 408 indexed uniform and equipment records.",
     ApfCategory.ROSTERS: "Browse the on-disc roster or open Save Players for a raw Roster.ROS / verified STFS handoff. The save editor exposes 149 exact packed fields per player, all 15 fixed-allocation identity text fields, and count-preserving populated roster-slot swaps. Overall and capacity expansion remain locked because their complete engine contracts are not proved.",
     ApfCategory.TEAM_IDENTITY: "Browse team-facing resources; more identity editing unlocks here as each field is proven safe.",
-    ApfCategory.LOGOS: "Replace the shared 512×512 team-logo crest and the 128×128 draft logo, and browse every indexed logo and team-art record.",
+    ApfCategory.LOGOS: "Browse every crest, endzone and wordmark package in Team Art. Crest layers are six separate masks across l0 and l1; paired replacement also updates the linked Team Select cache. The 128×128 draft logo is a separate asset. Builds are verified offline; in-game results remain UNWITNESSED.",
     ApfCategory.SCOREBUG: "See the field scorebug\u2019s own artwork \u2014 every graphic embedded in its seven scene parts plus the shared score-digit mask \u2014 and preview or export any of it. Only digital_font has a proved writer; geometry, layout, and timing are read-only.",
-    ApfCategory.FIELD_ART: "Browse 235 stock endzone layers (118 endzone_l0 + 117 endzone_l1) plus practice/divot inventory. Every package is one team's own artwork — outer 6 is not a shared layer. Format-18 DXT1 endzones, package-659 weave/dirtmaps, and the original six bases are writable. Format-59 DXT5A endzones stay browse-only. Format-18 endzones are red/green/blue region masks, not paintable art.",
+    ApfCategory.FIELD_ART: "Browse 235 stock endzone layers (118 endzone_l0 + 117 endzone_l1) plus practice/divot inventory. Every package is one team's own artwork — outer 6 is not a shared layer. Format-18 DXT1 endzones, package-659 weave/dirtmaps, and the original six bases are writable. Format-59 DXT5A endzone detail layers are also writable, with regenerated mip levels. Format-18 endzones are red/green/blue region masks, not paintable art.",
     ApfCategory.STADIUMS: "Explore stadium geometry in 3D, edit any of the 78 statically owned embedded textures, and round-trip same-topology POSITION edits for 77 catalog-authorized surfaces into a separately verified copied 1A.",
     ApfCategory.MENUS: "Search menu, layout, font, and localized text structures across the complete archive.",
     ApfCategory.AUDIO: "Browse soundtrack, commentary, stadium, presentation, and standalone XMA1 audio; play verified WAV previews, export original XMA, import ordinary audio through exact-slot conversion with your own XMA1 encoder, or batch-stage a retail-free XMA1 or PCM16 WAV folder or ZIP.",
@@ -253,6 +256,24 @@ CATEGORY_BLURBS: dict[ApfCategory, str] = {
     ApfCategory.PLAYBOOKS: "Inspect PLAY and DRCT, edit stock assignment routes and shared coverage geometry, design bounded plays and formations with CPU-book calls, balance CPU audibles, and apply scheme presets. Book Identity finalizes independent books after Build. New gameplay is UNWITNESSED; freehand node graphs, five-step timing and DRCT authoring remain unproved.",
     ApfCategory.FRANCHISE: "Browse season, schedule, save, and franchise structures while deeper franchise editing is researched.",
     ApfCategory.ALL_ASSETS: "Every record the live indexer sees appears here, including opaque and export-only resources.",
+}
+
+
+PAGE_SUMMARIES = {
+    ApfCategory.GETTING_STARTED: "Load your game, make it yours, and build a playable copy.",
+    ApfCategory.UNIFORMS: "Browse uniforms and equipment. Select a texture to preview and replace it.",
+    ApfCategory.ROSTERS: "Edit player ratings and names, or open your saved roster.",
+    ApfCategory.TEAM_IDENTITY: "Explore team identities and the uniform slots they use.",
+    ApfCategory.LOGOS: "Find team artwork by sight. Replace paired layers together.",
+    ApfCategory.SCOREBUG: "Preview scorebug artwork and replace the shared score digits.",
+    ApfCategory.FIELD_ART: "Browse endzones and field textures. Replace artwork in the selected package.",
+    ApfCategory.STADIUMS: "Explore stadium geometry, textures, and supported model edits.",
+    ApfCategory.MENUS: "Find and edit menu text, or browse the original layouts and fonts.",
+    ApfCategory.AUDIO: "Find a sound, preview it, and prepare an exact-slot replacement.",
+    ApfCategory.GAMEPLAY: "Explore gameplay settings and the evidence behind each option.",
+    ApfCategory.PLAYBOOKS: "Edit plays, formations, assignments, and CPU play calling.",
+    ApfCategory.FRANCHISE: "Explore season and franchise records from your game.",
+    ApfCategory.ALL_ASSETS: "Search every indexed asset. Select a row to preview, export, or open its editor.",
 }
 
 
@@ -303,12 +324,12 @@ def _audio_player_command(
 
 def _status_color(status: ApfStatus) -> str:
     return {
-        ApfStatus.EDITABLE: "#39d98a",
-        ApfStatus.PREVIEW: "#73a8ff",
-        ApfStatus.EXPORT_ONLY: "#f2bd5a",
-        ApfStatus.COMING_SOON: "#8795aa",
-        ApfStatus.EVIDENCE: "#9aa8bd",
-        ApfStatus.RESEARCH: "#8795aa",
+        ApfStatus.EDITABLE: apf_theme.color("success"),
+        ApfStatus.PREVIEW: apf_theme.color("info"),
+        ApfStatus.EXPORT_ONLY: apf_theme.color("warning"),
+        ApfStatus.COMING_SOON: apf_theme.color("muted"),
+        ApfStatus.EVIDENCE: apf_theme.color("muted"),
+        ApfStatus.RESEARCH: apf_theme.color("muted"),
     }[status]
 
 
@@ -1386,10 +1407,10 @@ class ImageDropLabel(QLabel):
         # checkerboard than a featureless black rectangle.  This tile is
         # generated at runtime and contains no game data.
         tile = QPixmap(24, 24)
-        tile.fill(QColor("#0b121e"))
+        tile.fill(QColor(apf_theme.color("base")))
         painter = QPainter(tile)
-        painter.fillRect(0, 0, 12, 12, QColor("#21314a"))
-        painter.fillRect(12, 12, 12, 12, QColor("#21314a"))
+        painter.fillRect(0, 0, 12, 12, QColor(apf_theme.color("raised")))
+        painter.fillRect(12, 12, 12, 12, QColor(apf_theme.color("raised")))
         painter.end()
         palette = self.palette()
         palette.setBrush(QPalette.Window, QBrush(tile))
@@ -1458,13 +1479,13 @@ class ImageDropLabel(QLabel):
         # palette once a pixmap is assigned, which used to make alpha-heavy
         # uniform textures look like an unexplained empty dark box.
         canvas = QPixmap(target)
-        canvas.fill(QColor("#0b121e"))
+        canvas.fill(QColor(apf_theme.color("base")))
         painter = QPainter(canvas)
         square = 18
         for y in range(0, target.height(), square):
             for x in range(0, target.width(), square):
                 if (x // square + y // square) % 2 == 0:
-                    painter.fillRect(x, y, square, square, QColor("#21314a"))
+                    painter.fillRect(x, y, square, square, QColor(apf_theme.color("raised")))
 
         image_bounds = QSize(
             max(1, target.width() - 18),
@@ -1487,9 +1508,9 @@ class ImageDropLabel(QLabel):
         badge_x = 8
         badge_y = max(8, target.height() - badge_height - 8)
         painter.fillRect(
-            badge_x, badge_y, badge_width, badge_height, QColor(16, 27, 43, 220)
+            badge_x, badge_y, badge_width, badge_height, QColor(apf_theme.color("base"))
         )
-        painter.setPen(QColor("#d9f7eb"))
+        painter.setPen(QColor(apf_theme.color("success")))
         painter.drawText(badge_x + 9, badge_y + badge_height - 7, badge)
         painter.end()
         self.setPixmap(canvas)
@@ -1835,10 +1856,10 @@ class SlotImagePreviewDialog(QDialog):
         board = QFrame()
         board.setObjectName("previewCheckerboard")
         tile = QPixmap(24, 24)
-        tile.fill(QColor("#0b121e"))
+        tile.fill(QColor(apf_theme.color("base")))
         painter = QPainter(tile)
-        painter.fillRect(0, 0, 12, 12, QColor("#21314a"))
-        painter.fillRect(12, 12, 12, 12, QColor("#21314a"))
+        painter.fillRect(0, 0, 12, 12, QColor(apf_theme.color("raised")))
+        painter.fillRect(12, 12, 12, 12, QColor(apf_theme.color("raised")))
         painter.end()
         palette = board.palette()
         palette.setBrush(QPalette.Window, QBrush(tile))
@@ -1961,112 +1982,124 @@ class WordElidedLabel(QLabel):
 
 
 class CapabilityPanel(QFrame):
-    """Compact, registry-driven capability cards used by every category."""
+    """One-line capability strip; complete evidence stays in the Details dialog."""
 
     def __init__(self, category: ApfCategory):
         super().__init__()
         self.category = category
         self.setObjectName("capabilityPanel")
-        self.layout = QGridLayout(self)
-        self.layout.setContentsMargins(0, 0, 0, 0)
-        self.layout.setHorizontalSpacing(8)
-        self.layout.setVerticalSpacing(8)
+        self.setFixedHeight(36)
+        self.layout = QHBoxLayout(self)
+        self.layout.setContentsMargins(10, 2, 6, 2)
+        self.summary = WordElidedLabel("")
+        self.summary.setObjectName("capabilitySummary")
+        self.summary.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
+        self.details_button = QPushButton("Details")
+        self.details_button.setObjectName("utilityButton")
+        self.details_button.setAccessibleName(f"{category.title} capabilities and limitations")
+        self.details_button.clicked.connect(self.show_details)
+        self.layout.addWidget(self.summary, 1)
+        self.layout.addWidget(self.details_button)
+        self._cards = ()
         self.set_cards(())
 
-    def set_cards(
-        self,
-        cards: tuple[CapabilityCard, ...],
-        *,
-        catalog_ready: bool = False,
-        inventory_count: int = 0,
-    ) -> None:
-        while self.layout.count():
-            item = self.layout.takeAt(0)
-            widget = item.widget()
-            if widget is not None:
-                widget.deleteLater()
-        # Each entry: title, summary, status, tooltip findings, badge override.
-        # A None badge falls back to the shared status wording; the pre-load
-        # placeholder overrides it because "Coming soon" would misread a page
-        # that is simply waiting for a game.
-        display: list[tuple[str, str, ApfStatus, str, str | None]] = [
-            (card.title, card.summary, card.status, "\n".join(card.findings[:2]), None)
-            for card in cards
-        ]
-        if not display:
-            if catalog_ready:
-                display.append(
-                    (
-                        "Complete category inventory",
-                        f"All {inventory_count:,} records in this category are browsable; each row shows decoded export versus raw-only access.",
-                        ApfStatus.EXPORT_ONLY,
-                        "Rows unlock for editing only after a writer for that exact resource is proven byte-exact.",
-                        None,
-                    )
-                )
-            else:
-                display.append(
-                    (
-                        "Load a game to see what's editable here",
-                        "Capability cards appear once your APF 2K8 ISO or game folder is recognized. The source is opened read-only.",
-                        ApfStatus.COMING_SOON,
-                        "Nothing is ever written to your original files.",
-                        "○ No game loaded",
-                    )
-                )
-        for index, (title, summary, status, findings, badge_text) in enumerate(display):
-            card = QFrame()
-            card.setObjectName("capabilityCard")
-            card.setProperty("status", status.value)
-            card.setFixedHeight(66)
-            # Every card's full text ends with a plain next step, so a
-            # first-time modder always knows what to do after reading the
-            # boundary.  The one-line summary on the card itself is unchanged.
-            next_step = _capability_next_step(status)
-            details = "\n\n".join(
-                part for part in (summary, findings, next_step) if part
-            )
-            card.setToolTip(f"{title}\n\n{details}")
-            box = QVBoxLayout(card)
-            box.setContentsMargins(10, 7, 10, 7)
-            box.setSpacing(3)
-            top = QHBoxLayout()
-            top.setSpacing(6)
-            name = WordElidedLabel(title)
-            name.setObjectName("capabilityTitle")
-            name.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
-            badge = QLabel(badge_text or _status_text(status))
-            badge.setObjectName("statusBadge")
-            badge.setStyleSheet(
-                f"color: {_status_color(status)}; border-color: {_status_color(status)};"
-            )
-            top.addWidget(name, 1)
-            top.addWidget(badge, 0, Qt.AlignTop)
-            body = WordElidedLabel(summary)
-            body.setObjectName("capabilitySummary")
-            body.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
-            body.setFixedHeight(16)
-            body.setToolTip(details)
-            box.addLayout(top)
-            box.addWidget(body)
-            if len(display) == 1:
-                self.layout.addWidget(card, 0, 0, 1, 3)
-            else:
-                self.layout.addWidget(card, index // 3, index % 3)
-        for column in range(3):
-            self.layout.setColumnStretch(column, 1)
+    def set_cards(self, cards: tuple[CapabilityCard, ...], *,
+                  catalog_ready: bool = False, inventory_count: int = 0) -> None:
+        self._cards = tuple(cards)
+        self._inventory_count = inventory_count
+        self._catalog_ready = catalog_ready
+        if cards:
+            counts = []
+            for status, label in ((ApfStatus.EDITABLE, "editable"), (ApfStatus.PREVIEW, "preview"),
+                                  (ApfStatus.EXPORT_ONLY, "export only")):
+                count = sum(card.status is status for card in cards)
+                if count:
+                    counts.append(f"{count} {label}")
+            other = sum(card.status not in (ApfStatus.EDITABLE, ApfStatus.PREVIEW, ApfStatus.EXPORT_ONLY)
+                        for card in cards)
+            if other:
+                counts.append(f"{other} research")
+            text = "What you can do here: " + " · ".join(counts)
+        elif catalog_ready:
+            text = f"What you can do here: browse {inventory_count:,} records · export originals"
+        else:
+            text = "Load your game to see what you can edit here."
+        self.summary.setText(text)
+        self.summary.setToolTip(text)
+
+    def create_details_dialog(self) -> QDialog:
+        dialog = QDialog(self)
+        dialog.setWindowTitle(f"{self.category.title} · Details")
+        dialog.resize(660, 600)
+        layout = QVBoxLayout(dialog)
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        content = QWidget()
+        box = QVBoxLayout(content)
+        explanation = QLabel(CATEGORY_BLURBS[self.category])
+        explanation.setWordWrap(True)
+        explanation.setObjectName("findingText")
+        box.addWidget(explanation)
+        for card in self._cards:
+            frame = QFrame()
+            frame.setObjectName("capabilityCard")
+            card_box = QVBoxLayout(frame)
+            title = QLabel(card.title + " · " + _status_text(card.status))
+            title.setWordWrap(True)
+            title.setObjectName("panelTitle")
+            body = QLabel("\n\n".join((card.summary, *card.findings, _capability_next_step(card.status))))
+            body.setWordWrap(True)
+            body.setTextInteractionFlags(Qt.TextSelectableByMouse)
+            card_box.addWidget(title)
+            card_box.addWidget(body)
+            box.addWidget(frame)
+        if not self._cards:
+            text = "Load your APF game to inspect the available writers. Your original files stay unchanged."
+            note = QLabel(text)
+            note.setWordWrap(True)
+            box.addWidget(note)
+        page = self.parentWidget()
+        seen = {CATEGORY_BLURBS[self.category]}
+        if page is not None:
+            for label in page.findChildren(QLabel):
+                text = label.text()
+                if label.objectName() not in ("findingText", "contractText", "metadataText", "mutedLabel") or len(text) < 160 or text in seen:
+                    continue
+                seen.add(text)
+                note = QLabel(text)
+                note.setWordWrap(True)
+                note.setTextInteractionFlags(Qt.TextSelectableByMouse)
+                box.addWidget(note)
+        box.addStretch(1)
+        scroll.setWidget(content)
+        layout.addWidget(scroll, 1)
+        buttons = QDialogButtonBox(QDialogButtonBox.Close)
+        buttons.rejected.connect(dialog.reject)
+        layout.addWidget(buttons)
+        return dialog
+
+    def show_details(self) -> None:
+        dialog = self.create_details_dialog()
+        dialog.exec_()
+        dialog.deleteLater()
 
 
 class PageHeading(QWidget):
     def __init__(self, category: ApfCategory):
         super().__init__()
-        layout = QVBoxLayout(self)
+        layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
-        subtitle = QLabel(CATEGORY_BLURBS[category])
+        subtitle = QLabel(PAGE_SUMMARIES[category])
+        subtitle.setToolTip(CATEGORY_BLURBS[category])
         subtitle.setObjectName("pageSummary")
         subtitle.setWordWrap(True)
-        layout.addWidget(subtitle)
+        layout.addWidget(subtitle, 1)
+        self.primary_action = QPushButton()
+        self.primary_action.setObjectName("primaryButton")
+        self.primary_action.setProperty("apfActionProxy", True)
+        self.primary_action.hide()
+        layout.addWidget(self.primary_action)
         self.setAccessibleName(f"{category.title} summary")
 
 
@@ -2368,7 +2401,7 @@ class AssetBrowser(QWidget):
                 item = QTableWidgetItem(value)
                 item.setData(Qt.UserRole, asset.asset_id)
                 if column == 0:
-                    item.setForeground(QColor("#39d98a" if modified else _status_color(asset.status)))
+                    item.setForeground(QColor(apf_theme.color("success") if modified else _status_color(asset.status)))
                 self.table.setItem(row, column, item)
         self.table.setUpdatesEnabled(True)
         self.result_count.setText(f"{len(self._matches):,} assets")
@@ -3244,7 +3277,7 @@ class UniformStudioPage(QWidget):
             item.setData(Qt.UserRole, asset.asset_id)
             item.setSizeHint(QSize(0, 52))
             if modified:
-                item.setForeground(QColor("#55e5b0"))
+                item.setForeground(QColor(apf_theme.color("success")))
                 font = item.font()
                 font.setBold(True)
                 item.setFont(font)
@@ -3323,7 +3356,7 @@ class UniformStudioPage(QWidget):
             f"outer {asset.outer_index} / inner {asset.inner_index}"
         )
         self.modified_badge.setText("● Modified" if modified else _status_text(asset.status))
-        color = "#39d98a" if modified else _status_color(asset.status)
+        color = apf_theme.color("success") if modified else _status_color(asset.status)
         self.modified_badge.setStyleSheet(f"color: {color}; border-color: {color};")
         # A fixed-allocation slot's budget is set by how detailed retail's own
         # artwork there is, not by the free space around it, so the answer has
@@ -3879,7 +3912,7 @@ class DigitalFontPanel(QFrame):
             if modified
             else (_status_text(ApfStatus.EDITABLE) if ready else "○ Not loaded")
         )
-        color = "#39d98a" if ready else "#8795aa"
+        color = apf_theme.color("success") if ready else apf_theme.color("muted")
         self.status.setStyleSheet(f"color: {color}; border-color: {color};")
         if not ready:
             self.preview.set_message(
@@ -5117,13 +5150,13 @@ class ApfTeamLogoPanel(QFrame):
         self.preview.setAcceptDrops(ready)
         if staged and ready:
             self.status.setText("● Staged" if profile_ready else "△ Re-import needed")
-            color = "#39d98a"
+            color = apf_theme.color("success")
         elif ready:
             self.status.setText(_status_text(ApfStatus.EDITABLE))
-            color = "#39d98a"
+            color = apf_theme.color("success")
         else:
             self.status.setText("○ Not loaded")
-            color = "#8795aa"
+            color = apf_theme.color("muted")
         self.status.setStyleSheet(f"color: {color}; border-color: {color};")
 
         if not ready:
@@ -6341,6 +6374,20 @@ class ApfTextLogoPanel(QFrame):
         selector.addWidget(self.fit_mode, 1)
         content.addLayout(selector)
 
+        from .textlogo_authoring import WORDMARK_REGION_ORDERS, WORDMARK_REGION_NOTE
+        region_row = QHBoxLayout()
+        region_row.addWidget(QLabel("Region channels (3):"))
+        self.region_order = QComboBox()
+        for label, order in WORDMARK_REGION_ORDERS:
+            self.region_order.addItem(label, order)
+        self.region_order.setToolTip(WORDMARK_REGION_NOTE)
+        region_row.addWidget(self.region_order, 1)
+        content.addLayout(region_row)
+        region_note = QLabel(WORDMARK_REGION_NOTE)
+        region_note.setWordWrap(True)
+        region_note.setObjectName("mutedLabel")
+        content.addWidget(region_note)
+
         self.identity = QLabel(
             "uniform_textlogo is a rectangular wordmark. It is not the square "
             "uniform_logo helmet crest and is never squeezed into that texture."
@@ -6490,7 +6537,7 @@ class ApfTextLogoPanel(QFrame):
         modified = asset.asset_id in self.facade.modified_asset_ids
         self.status.setText("● Modified" if modified else "Editable")
         self.status.setStyleSheet(
-            "color: #39d98a; border-color: #39d98a;"
+            apf_theme.status_style("success")
         )
         owner_text = (
             ", ".join(asset.affected_teams)
@@ -6576,6 +6623,7 @@ class ApfTextLogoPanel(QFrame):
         if asset is None:
             return
         fit_mode = str(self.fit_mode.currentData() or "contain")
+        region_order = tuple(self.region_order.currentData() or (0, 1, 2))
         prepared_path = self._prepared_path()
 
         def prepare_operation(
@@ -6583,7 +6631,7 @@ class ApfTextLogoPanel(QFrame):
         ) -> object:
             progress("Fitting your image to the 512×128 wordmark slot", 0, 1)
             return prepare_wordmark_png(
-                source_path, prepared_path, fit_mode=fit_mode
+                source_path, prepared_path, fit_mode=fit_mode, region_order=region_order
             )
 
         self.run_task(
@@ -6741,6 +6789,10 @@ class LogosStudioPage(QWidget):
         layout.addWidget(self.capabilities)
         tabs = QTabWidget()
         tabs.setObjectName("workspaceTabs")
+        from .team_art_qt import TeamArtBrowser
+        self.team_art = TeamArtBrowser(facade, run_task)
+        self.team_art.modifiedChanged.connect(self.modifiedChanged)
+        tabs.addTab(self.team_art, "Team Art")
         self.team_logo = ApfTeamLogoPanel(facade, run_task)
         self.wordmarks = ApfTextLogoPanel(facade, run_task)
         self.browser = AssetBrowser(facade, ApfCategory.LOGOS, run_task)
@@ -6805,11 +6857,13 @@ class LogosStudioPage(QWidget):
             )
         else:
             self.capabilities.set_cards(())
+        self.team_art.set_context()
         self.team_logo.set_context()
         self.wordmarks.set_context()
         self.browser.set_context()
 
     def refresh(self) -> None:
+        self.team_art.set_context()
         self.team_logo.set_context()
         self.wordmarks.set_context()
         self.browser.refresh()
@@ -6982,28 +7036,14 @@ FIELD_ART_COVERED_TARGETS = FIELD_ART_COVERED_TARGETS + _extra_field_art_targets
 
 
 class ApfFieldArtPanel(QFrame):
-    """Focused editor for the offline-proved, writable field-art base textures.
+    """Edit proved Field Art slots using existing source-bound writers.
 
-    This surface mirrors :class:`ApfTeamLogoPanel` and is deliberately
-    self-contained.  It reads the loaded game's read-only ``0A`` to render a
-    source-derived preview of the selected pinned slot, stages exactly one PNG
-    at that slot's exact base dimensions, and routes the build through the
-    offline ``apf2k8.field_art.base_texture`` capability whose backend is
-    ``tools/apf_field_art_patch.py``.  That writer copies the whole volume,
-    rewrites only the selected base mip level, byte-preserves the descriptor
-    pad, the packed mip tail, and every sibling inner part, reparses the
-    rebuilt entry in RAM before it is written, and pairs the write with an
-    independent verifier; the retail source is never opened for writing.
-
-    The original six proved bases, package-659 weave/dirtmaps, and format-18
-    endzones are offered.  Format-59 DXT5A endzones, ``field_radiance``, the
-    ``divot_Grass*`` weather textures, and the SCNE/CurveAnim rows stay locked
-    in the inventory browser below.
-
-    PS3 pair imports participate in the shared project session.
-    This panel makes no in-game/runtime claim:
-    what a changed field texture looks like in play is unproved without a Xenia
-    capture.
+    Exact PNG contracts, regenerated mips, descriptor preservation and bounded
+    compression are checked by the existing family builder and verifier.
+    The original bases, weave/dirtmaps, and format-18/format-59 endzones are
+    writable. Field radiance, weather divots and scene/animation rows remain
+    browse/export-only. Paired PS3 imports use the normal project session.
+    Changed art consumption remains in-game UNWITNESSED.
     """
 
     modifiedChanged = pyqtSignal()
@@ -7067,8 +7107,8 @@ class ApfFieldArtPanel(QFrame):
         self.scope_pill = _spec_pill(
             "Writes this texture only",
             tooltip=(
-                "A build copies your 0A and regenerates only this slot's base "
-                "mip level; every other byte of the volume stays identical."
+                "A build copies your 0A and regenerates this slot's base and "
+                "mip levels; every other byte of the volume stays identical."
             ),
         )
         specs.addWidget(self.size_pill)
@@ -7088,8 +7128,8 @@ class ApfFieldArtPanel(QFrame):
         self.slot_filter.setProperty("studioSearch", True)
         self.slot_filter.setToolTip(
             "Filter the writable field-art list by name, codec, or outer/inner "
-            "index. Clear the box to see every proved slot. Format-59 DXT5A "
-            "endzones and the deferred codecs never appear here."
+            "index. Clear the box to see every proved slot, including format-59 DXT5A "
+            "endzones. Deferred field-radiance and weather codecs stay in the inventory."
         )
         self.slot = QComboBox()
         self.slot.setObjectName("comboField")
@@ -7112,11 +7152,11 @@ class ApfFieldArtPanel(QFrame):
         slot_row.addWidget(self.slot, 2)
 
         self.description = QLabel("")
-        self.description.setObjectName("cardBody")
+        self.description.setObjectName("findingText")
         self.description.setWordWrap(True)
         self.lock_note = QLabel(
             "Stock NFL endzone packages (≈118 l0/l1 pairs) appear under All "
-            "Textures / the Field Art inventory browser below — browse and "
+            "Textures / the All Field Art tab — browse and "
             "export every one. This editor writes the original six proved "
             "bases, package-659 weave/dirtmaps, and format-18/format-59 per-team "
             "endzones (117 complete writable pairs). field_radiance / "
@@ -7356,7 +7396,7 @@ class ApfFieldArtPanel(QFrame):
         self._preview_token += 1
         if not ready:
             self.status.setText("○ Not loaded")
-            self.status.setStyleSheet("color: #8795aa; border-color: #8795aa;")
+            self.status.setStyleSheet(apf_theme.status_style("muted"))
             self.preview.set_message(
                 f"{target.name} · {target.width}×{target.height} RGBA PNG\n"
                 "Load your game to see the original."
@@ -7368,7 +7408,7 @@ class ApfFieldArtPanel(QFrame):
             return
         if staged is not None:
             self.status.setText("● Staged")
-            self.status.setStyleSheet("color: #39d98a; border-color: #39d98a;")
+            self.status.setStyleSheet(apf_theme.status_style("success"))
             self.preview.set_image(staged)
             self.path_note.setText(
                 f"Current preview: your staged {target.width}×{target.height} RGBA "
@@ -7377,7 +7417,7 @@ class ApfFieldArtPanel(QFrame):
             )
             return
         self.status.setText(_status_text(ApfStatus.EDITABLE))
-        self.status.setStyleSheet("color: #39d98a; border-color: #39d98a;")
+        self.status.setStyleSheet(apf_theme.status_style("success"))
         self.preview.set_loading(f"Decoding the original {target.name} from your game…")
         self.path_note.setText(
             f"Current preview: original {target.name} decoded from your own game "
@@ -7779,7 +7819,8 @@ class FieldArtStudioPage(QWidget):
         "does not prove the runtime field material or its team/stadium "
         "selector, and the deferred codecs (field_radiance and "
         "the divot_Grass* weather textures) and the "
-        "SCNE/CurveAnim rows have no bounded writer at all."
+        "SCNE/CurveAnim rows have no bounded writer, except the eleven named field material "
+        "alphas of entries 53, 252, 578 and 1333 (Field overlay opacity, beta 66)."
     )
 
     def __init__(self, facade: ApfStudioFacade, run_task: TaskRunner):
@@ -7799,7 +7840,16 @@ class FieldArtStudioPage(QWidget):
         # proved.  The inventory below stays browse/export-only.
         self.editor = ApfFieldArtPanel(facade, run_task)
         self.editor.modifiedChanged.connect(self.modifiedChanged)
-        layout.addWidget(self.editor)
+        self.workspace_tabs = QTabWidget()
+        self.workspace_tabs.setObjectName("workspaceTabs")
+        self.workspace_tabs.addTab(self.editor, "Field Art Editor")
+        layout.addWidget(self.workspace_tabs, 1)
+
+        # Beta 66 (davidhbui): the eleven named field material alphas (entries 53, 252, 578, 1333).
+        from .field_material_qt import FieldMaterialOpacityPanel
+        self.field_opacity = FieldMaterialOpacityPanel(facade, run_task)
+        self.field_opacity.modifiedChanged.connect(self.modifiedChanged)
+        layout.addWidget(self.field_opacity)
 
         semantic_panel = QFrame()
         semantic_panel.setObjectName("panel")
@@ -7891,7 +7941,7 @@ class FieldArtStudioPage(QWidget):
         self.package_note.setWordWrap(True)
         semantic_layout.addWidget(self.group_note)
         semantic_layout.addWidget(self.package_note)
-        layout.addWidget(semantic_panel)
+        self.workspace_tabs.addTab(semantic_panel, "Ownership Map")
 
         self.browser = AssetBrowser(
             facade,
@@ -7901,7 +7951,7 @@ class FieldArtStudioPage(QWidget):
             action_lock_reason=self.ACTION_LOCK_REASON,
         )
         self.browser.modifiedChanged.connect(self.modifiedChanged)
-        layout.addWidget(self.browser, 1)
+        self.workspace_tabs.addTab(self.browser, "All Field Art")
 
         self.group_filter.currentIndexChanged.connect(self._group_changed)
         self.group_table.cellClicked.connect(self._group_row_clicked)
@@ -7958,6 +8008,7 @@ class FieldArtStudioPage(QWidget):
             )
             return
         self.group_filter.setCurrentIndex(index)
+        self.workspace_tabs.setCurrentWidget(self.browser)
 
     def _export_endzone_contact_sheet(self) -> None:
         """Turn "which package is my team's endzone" into one action.
@@ -8136,12 +8187,14 @@ class FieldArtStudioPage(QWidget):
 
         if not self.editor.focus_target(route.key):
             return False
+        self.workspace_tabs.setCurrentWidget(self.editor)
         if image is not None:
             self.editor.stage_image(image)
         return True
 
     def set_context(self) -> None:
         self.editor.set_context()
+        self.field_opacity.set_context()
         if not self.facade.source_ready:
             self.capabilities.set_cards(())
             self._clear_semantic_view(
@@ -8177,6 +8230,7 @@ class FieldArtStudioPage(QWidget):
 
     def refresh(self) -> None:
         self.editor.set_context()
+        self.field_opacity.set_context()
         self.browser.refresh()
 
 
@@ -10028,7 +10082,7 @@ class ScorebugGraphicsPanel(QFrame):
                 cell.setToolTip(f"{graphic.where}\n\n{graphic.detail}")
                 if column == 3:
                     cell.setForeground(
-                        QColor("#39d98a" if graphic.editable else "#f2bd5a")
+                        QColor(apf_theme.color("success") if graphic.editable else apf_theme.color("warning"))
                     )
                 self.table.setItem(index, column, cell)
         self.table.blockSignals(False)
@@ -10790,7 +10844,7 @@ class BaseRatingsPanel(QFrame):
             offset_item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
             state_item = QTableWidgetItem("● Modified" if modified else "Original")
             if modified:
-                state_item.setForeground(QBrush(QColor("#f2bd5a")))
+                state_item.setForeground(QBrush(QColor(apf_theme.color("warning"))))
             self.table.setItem(row_index, 0, label_item)
             self.table.setItem(row_index, 1, value_item)
             self.table.setItem(row_index, 2, offset_item)
@@ -11236,84 +11290,6 @@ class RatingSheetImportPreviewDialog(QDialog):
         self.setModal(True)
         self.setMinimumWidth(620)
         self.resize(680, 500)
-        # Keep the review gate independently legible even when Qt applies a
-        # platform dialog palette instead of the main-window palette.  This is
-        # intentionally scoped to the modal so native file choosers and the
-        # rest of the product theme remain untouched.
-        self.setStyleSheet(
-            """
-            QDialog#ratingSheetImportPreviewDialog {
-                background: #101827;
-                color: #eef4ff;
-            }
-            QDialog#ratingSheetImportPreviewDialog QLabel {
-                color: #dce7f6;
-            }
-            QDialog#ratingSheetImportPreviewDialog QLabel#panelTitle {
-                color: #ffffff;
-                font-size: 15px;
-                font-weight: 700;
-            }
-            QDialog#ratingSheetImportPreviewDialog QLabel#fieldLabel {
-                color: #f4f7fb;
-                font-weight: 700;
-            }
-            QDialog#ratingSheetImportPreviewDialog QLabel#countPill {
-                color: #ffffff;
-                background: #243750;
-                border: 1px solid #526984;
-                border-radius: 8px;
-                padding: 4px 8px;
-                font-weight: 700;
-            }
-            QDialog#ratingSheetImportPreviewDialog QLabel#findingText {
-                color: #d7e2f1;
-                background: #0b1220;
-                border: 1px solid #2d4059;
-                border-radius: 6px;
-                padding: 7px 9px;
-            }
-            QDialog#ratingSheetImportPreviewDialog QLabel#mutedLabel {
-                color: #c7d2e2;
-            }
-            QDialog#ratingSheetImportPreviewDialog QPlainTextEdit#ratingSheetImportSample {
-                background: #0b1220;
-                color: #e7edf7;
-                border: 1px solid #405673;
-                border-radius: 5px;
-                padding: 7px;
-            }
-            QDialog#ratingSheetImportPreviewDialog QCheckBox {
-                color: #eef4ff;
-            }
-            QDialog#ratingSheetImportPreviewDialog QPushButton {
-                min-height: 32px;
-                padding: 0 14px;
-                color: #eef4ff;
-                background: #25354b;
-                border: 1px solid #526984;
-                border-radius: 5px;
-                font-weight: 700;
-            }
-            QDialog#ratingSheetImportPreviewDialog QPushButton:hover {
-                border-color: #7d94b1;
-                background: #31445e;
-            }
-            QDialog#ratingSheetImportPreviewDialog QPushButton#primaryButton {
-                color: #111827;
-                background: #f29a60;
-                border-color: #f29a60;
-            }
-            QDialog#ratingSheetImportPreviewDialog QPushButton#primaryButton:hover {
-                background: #ffad76;
-            }
-            QDialog#ratingSheetImportPreviewDialog QPushButton#primaryButton:disabled {
-                color: #8090a5;
-                background: #182235;
-                border-color: #334158;
-            }
-            """
-        )
 
         self.replacement_count = self._count(
             "replacement_count", "new_replacement_count"
@@ -12652,9 +12628,11 @@ class InspectorBrowser(QFrame):
         heading = QHBoxLayout()
         title_label = QLabel(title)
         title_label.setObjectName("panelTitle")
-        self.summary = QLabel("Open this tab after loading a game to decode its live model.")
+        self.summary = WordElidedLabel("Open this tab after loading a game to decode its live model.")
         self.summary.setObjectName("mutedLabel")
-        self.summary.setWordWrap(True)
+        self.summary.setWordWrap(False)
+        self.summary.setFixedHeight(24)
+        self.summary.setMaximumWidth(380)
         heading.addWidget(title_label)
         heading.addStretch(1)
         heading.addWidget(self.summary)
@@ -12856,8 +12834,10 @@ class InspectorBrowser(QFrame):
         )
         complete_audio_catalog_actions.addWidget(self.cancel_audio_export_button)
         complete_audio_catalog_actions.addStretch(1)
-        layout.addLayout(complete_audio_catalog_actions)
-        layout.addWidget(self.complete_audio_catalog_note)
+        self.batch_tools = QWidget()
+        batch_layout = QVBoxLayout(self.batch_tools)
+        batch_layout.addLayout(complete_audio_catalog_actions)
+        batch_layout.addWidget(self.complete_audio_catalog_note)
 
         self.audio_replacement_pack_format = QComboBox()
         self.audio_replacement_pack_format.addItem("Editable folder", "folder")
@@ -12958,7 +12938,7 @@ class InspectorBrowser(QFrame):
         replacement_pack_actions.addWidget(self.import_audio_replacement_pack_button)
         replacement_pack_actions.addWidget(self.cancel_audio_import_button)
         replacement_pack_actions.addStretch(1)
-        layout.addLayout(replacement_pack_actions)
+        batch_layout.addLayout(replacement_pack_actions)
         self.audio_replacement_pack_note = QLabel(
             "Batch replacement packs • Choose pre-encoded XMA1, or exact PCM16 WAV "
             "that the app will encode with your configured external XMA1 encoder. "
@@ -12973,7 +12953,8 @@ class InspectorBrowser(QFrame):
         self.audio_replacement_pack_note.setObjectName("findingText")
         self.audio_replacement_pack_note.setWordWrap(True)
         self.audio_replacement_pack_note.setVisible(audio_mode)
-        layout.addWidget(self.audio_replacement_pack_note)
+        batch_layout.addWidget(self.audio_replacement_pack_note)
+        batch_layout.addStretch(1)
 
         splitter = QSplitter(Qt.Horizontal)
         splitter.setChildrenCollapsible(False)
@@ -14720,7 +14701,8 @@ class InspectorBrowser(QFrame):
         loaded = self.model is not None
         special_view = self._audio_review_mode or self._soundtrack_album_mode
         browser_controls_enabled = loaded and not special_view
-        self.search.setEnabled(browser_controls_enabled)
+        # Search can be prepared before loading; only special review views lock it.
+        self.search.setEnabled(not special_view)
         self.kind_filter.setEnabled(browser_controls_enabled)
         self.role_filter.setEnabled(browser_controls_enabled)
         self.source_filter.setEnabled(browser_controls_enabled)
@@ -16374,7 +16356,7 @@ class InspectorBrowser(QFrame):
         self.apply_roster_name_button.setEnabled(True)
         self.apply_roster_name_button.setToolTip(tip)
         self.apply_roster_name_button.setProperty("disableReason", block)
-        color = "#39d98a" if valid else "#ffb65c" if not product_editable else "#ff6b7a"
+        color = apf_theme.color("success") if valid else apf_theme.color("warning") if not product_editable else apf_theme.color("danger")
         self.roster_editor_label.setText(
             (
                 "Read-only "
@@ -16649,7 +16631,7 @@ class InspectorBrowser(QFrame):
         self.apply_text_button.setEnabled(True)
         self.apply_text_button.setToolTip(tip)
         self.apply_text_button.setProperty("disableReason", block)
-        color = "#39d98a" if valid else "#ff6b7a"
+        color = apf_theme.color("success") if valid else apf_theme.color("danger")
         self.text_editor_label.setText(f"Replacement  •  {units}/{limit} UTF-16 units")
         self.text_editor_label.setStyleSheet(f"color: {color};")
 
@@ -19466,6 +19448,7 @@ class InspectorCategoryPage(QWidget):
                 tabs.addTab(self.assets, "Raw Playbook Assets")  # type: ignore[arg-type]
             else:
                 tabs.addTab(self.inspector, "Audio Browser")
+                tabs.addTab(self.inspector.batch_tools, "Batch Export / Import")
                 tabs.addTab(self.assets, "Raw Audio Assets")  # type: ignore[arg-type]
             layout.addWidget(tabs, 1)
         else:
@@ -19802,6 +19785,7 @@ class GettingStartedPage(QWidget):
     chooseIso = pyqtSignal()
     chooseFolder = pyqtSignal()
     browseUniforms = pyqtSignal()
+    openCategory = pyqtSignal(object)
 
     def __init__(self):
         super().__init__()
@@ -19820,30 +19804,23 @@ class GettingStartedPage(QWidget):
         outer.addWidget(hero)
         outer.addWidget(subtitle)
 
-        steps = QHBoxLayout()
-        steps.setSpacing(12)
-        for number, title, body in (
-            ("01", "Load your own APF", "Choose the untouched USA ISO or extracted game folder. Recognition and indexing happen in the background."),
-            ("02", "Export, then paint", "Start with a PNG from your copy. Edit it in GIMP or Photoshop while keeping the exact dimensions and channels."),
-            ("03", "Replace or revert", "Drop the edited PNG into its panel. Every change gets a badge, individual Revert, and one-step Undo."),
-            ("04", "Build and launch", "Create a complete separate game folder, then start that default.xex in your configured Xenia Canary."),
-        ):
-            card = QFrame()
-            card.setObjectName("stepCard")
-            box = QVBoxLayout(card)
-            box.setContentsMargins(16, 15, 16, 15)
-            number_label = QLabel(number)
-            number_label.setObjectName("stepNumber")
-            title_label = QLabel(title)
-            title_label.setObjectName("cardTitle")
-            body_label = QLabel(body)
-            body_label.setObjectName("cardBody")
-            body_label.setWordWrap(True)
-            box.addWidget(number_label)
-            box.addWidget(title_label)
-            box.addWidget(body_label, 1)
-            steps.addWidget(card, 1)
-        outer.addLayout(steps)
+        self.search = QLineEdit()
+        self.search.setPlaceholderText("Search workspaces…")
+        self.search.setAccessibleName("Search workspaces")
+        self.search.setProperty("studioSearch", True)
+        self.search.setClearButtonEnabled(True)
+        outer.addWidget(self.search)
+        self.workspace_list = QListWidget()
+        self.workspace_list.setAccessibleName("Workspaces")
+        self.workspace_list.setObjectName("workspaceLauncher")
+        for category in APF_CATEGORY_ORDER[1:]:
+            item = QListWidgetItem(category.title)
+            item.setData(Qt.UserRole, category)
+            item.setToolTip(PAGE_SUMMARIES[category])
+            self.workspace_list.addItem(item)
+        self.search.textChanged.connect(self._filter_workspaces)
+        self.workspace_list.itemActivated.connect(lambda item: self.openCategory.emit(item.data(Qt.UserRole)))
+        outer.addWidget(self.workspace_list, 1)
 
         callout = QFrame()
         callout.setObjectName("callout")
@@ -19902,8 +19879,12 @@ class GettingStartedPage(QWidget):
             ),
         )
         self.capabilities.set_cards(cards)
-        outer.addWidget(self.capabilities)
-        outer.addStretch(1)
+        outer.insertWidget(2, self.capabilities)
+
+    def _filter_workspaces(self, text):
+        for row in range(self.workspace_list.count()):
+            item = self.workspace_list.item(row)
+            item.setHidden(text.casefold() not in (item.text() + " " + item.toolTip()).casefold())
 
     def set_context(self, facade: ApfStudioFacade) -> None:
         if not facade.source_ready:
@@ -19985,17 +19966,59 @@ class ApfStudioMainWindow(QMainWindow):
         # Its own content needs about 1,128 px, and a 1366-wide laptop must be
         # able to show the whole window rather than clip the footer actions.
         self.setMinimumSize(1040, 600)
+        self._apply_style()
         self._build_ui()
         self._build_menu()
         self._install_keyboard_shortcuts()
         self._apply_style()
         self._update_product_state()
         self._activate_page(0, force=True)
+        self._restore_ui_state()
         # After the window is up, never during construction: a slow network must
         # not delay the app appearing.
         QTimer.singleShot(1200, self._start_automatic_update_check)
         if offer_recovery and self.workspace_store is not None:
             QTimer.singleShot(0, self._offer_startup_recovery)
+
+    def _restore_ui_state(self) -> None:
+        state = self._workspace_state()
+        ui = getattr(state, "ui_state", None)
+        if not ui:
+            return
+        from PyQt5.QtCore import QRect
+        rectangle = QRect(*ui["geometry"])
+        screen = QApplication.screenAt(rectangle.center()) or self.screen()
+        available = screen.availableGeometry()
+        self.resize(min(rectangle.width(), available.width()), min(rectangle.height(), available.height()))
+        self.move(max(available.left(), min(rectangle.x(), available.right() - self.width() + 1)),
+                  max(available.top(), min(rectangle.y(), available.bottom() - self.height() + 1)))
+        for category, page in self._pages.items():
+            tabs = getattr(page, "workspace_tabs", None) or getattr(page, "tabs", None)
+            name = ui["workspaces"].get(category.value)
+            if tabs is not None and name:
+                for index in range(tabs.count()):
+                    if tabs.tabText(index) == name:
+                        tabs.setCurrentIndex(index)
+                        break
+        for row, category in enumerate(APF_CATEGORY_ORDER):
+            if category.value == ui["page"]:
+                self.navigation.setCurrentRow(row)
+                break
+
+    def _save_ui_state(self) -> None:
+        if self.workspace_store is None:
+            return
+        geometry = self.normalGeometry() if self.isMaximized() else self.geometry()
+        workspaces = {}
+        for category, page in self._pages.items():
+            tabs = getattr(page, "workspace_tabs", None) or getattr(page, "tabs", None)
+            if tabs is not None:
+                workspaces[category.value] = tabs.tabText(tabs.currentIndex())
+        try:
+            self.workspace_store.record_ui(geometry.getRect(), APF_CATEGORY_ORDER[self.navigation.currentRow()].value,
+                                           workspaces)
+        except (OSError, ValueError) as exc:
+            self.operation_status.setText(f"Window preferences could not be saved: {exc}")
 
     def _build_ui(self) -> None:
         root = QWidget()
@@ -20015,9 +20038,9 @@ class ApfStudioMainWindow(QMainWindow):
 
         sidebar = QFrame()
         sidebar.setObjectName("sidebar")
-        sidebar.setFixedWidth(250)
+        sidebar.setFixedWidth(224)
         sidebar_layout = QVBoxLayout(sidebar)
-        sidebar_layout.setContentsMargins(15, 16, 15, 15)
+        sidebar_layout.setContentsMargins(12, 14, 12, 12)
         sidebar_layout.setSpacing(10)
         brand = QHBoxLayout()
         mark = QLabel("2K8")
@@ -20060,12 +20083,11 @@ class ApfStudioMainWindow(QMainWindow):
         for category in APF_CATEGORY_ORDER:
             item = QListWidgetItem(category.title)
             item.setData(Qt.UserRole, category.value)
-            item.setSizeHint(QSize(0, 38))
+            item.setSizeHint(QSize(0, 34))
             self.navigation.addItem(item)
         sidebar_layout.addWidget(self.navigation, 1)
         safety = QLabel(
-            "SOURCE SAFETY\n\nYour original ISO or game folder is never modified. "
-            "Builds publish to a new folder; projects contain only user-authored replacements and metadata."
+            "Your original game stays unchanged.\nBuilds go to a separate folder."
         )
         safety.setObjectName("safetyCard")
         safety.setWordWrap(True)
@@ -20242,7 +20264,11 @@ class ApfStudioMainWindow(QMainWindow):
 
         focused = self.focusWidget()
         field = self._current_search_field()
-        if isinstance(focused, QLineEdit) and focused.text():
+        if isinstance(focused, QLineEdit) and focused.text() and (
+            focused.property("studioSearch")
+            or focused.placeholderText().strip().casefold().startswith(("search", "filter"))
+            or focused.accessibleName().casefold().startswith(("search", "filter"))
+        ):
             focused.clear()
             self.operation_status.setText("Search cleared")
             return
@@ -20569,6 +20595,7 @@ class ApfStudioMainWindow(QMainWindow):
         for category in APF_CATEGORY_ORDER:
             if category is ApfCategory.GETTING_STARTED:
                 page: QWidget = GettingStartedPage()
+                page.openCategory.connect(lambda category: self.navigation.setCurrentRow(APF_CATEGORY_ORDER.index(category)))
                 page.chooseIso.connect(self._choose_iso)  # type: ignore[attr-defined]
                 page.chooseFolder.connect(self._choose_game_folder)  # type: ignore[attr-defined]
                 page.browseUniforms.connect(  # type: ignore[attr-defined]
@@ -20610,6 +20637,13 @@ class ApfStudioMainWindow(QMainWindow):
             else:
                 page = CatalogCategoryPage(self.facade, category, self._run_task)
                 page.modifiedChanged.connect(self._mark_document_changed)  # type: ignore[attr-defined]
+            if category in (ApfCategory.UNIFORMS, ApfCategory.FIELD_ART):
+                heading = page.findChild(PageHeading)
+                if heading is not None:
+                    browse_art = QPushButton("Browse Team Art")
+                    browse_art.setObjectName("secondaryButton")
+                    browse_art.clicked.connect(lambda _checked=False, family=("endzone" if category is ApfCategory.FIELD_ART else "jersey"): self._open_team_art(family))
+                    heading.layout().addWidget(browse_art)
             self._pages[category] = page
             self.pages.addWidget(self._wrap_scrollable_page(page))
         # Every asset browser on every page -- including the ones nested in
@@ -20618,6 +20652,13 @@ class ApfStudioMainWindow(QMainWindow):
         for page in self._pages.values():
             for browser in page.findChildren(AssetBrowser):
                 browser.openWorkspaceRequested.connect(self._open_workspace_route)
+
+    def _open_team_art(self, family="logo") -> None:
+        self.navigation.setCurrentRow(APF_CATEGORY_ORDER.index(ApfCategory.LOGOS))
+        page = self._pages[ApfCategory.LOGOS]
+        page.tabs.setCurrentWidget(page.team_art)
+        page.team_art.family.setCurrentIndex(page.team_art.family.findData(family))
+        page.team_art.set_context()
 
     def _open_workspace_route(self, handoff: WorkspaceHandoff) -> None:
         """Open a browsed row in the workspace whose proved writer owns it."""
@@ -20654,30 +20695,8 @@ class ApfStudioMainWindow(QMainWindow):
         )
 
     def _wrap_scrollable_page(self, page: QWidget) -> QScrollArea:
-        """Host a workspace page inside a resizable vertical scroll area.
-
-        The stacked workspace previously inherited the tallest page's full
-        content height as the window's minimum, which pushed the footer action
-        bar (Configure Xenia / Build Game Folder / Launch in Xenia) off a 1080p
-        screen.  Wrapping each page keeps the shell's minimum height bounded by
-        :data:`WORKSPACE_PAGE_MIN_HEIGHT` while a taller page scrolls in place
-        rather than growing the window.  The page keeps its own identity in
-        ``self._pages`` so category dispatch and inspector wiring are unchanged.
-        """
-
-        scroll = QScrollArea()
-        scroll.setObjectName("pageScroll")
-        scroll.setWidgetResizable(True)
-        scroll.setFrameShape(QFrame.NoFrame)
-        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        scroll.setWidget(page)
-        # QScrollArea.setWidget() force-enables autoFillBackground on the page
-        # it adopts, which repainted every workspace page in the platform's
-        # default light palette on top of the dark theme.  Undo it so pages
-        # stay transparent over the shared #0b111c workspace background.
-        page.setAutoFillBackground(False)
-        scroll.viewport().setAutoFillBackground(False)
+        from .page_layout import PageViewport
+        scroll = PageViewport(page, self)
         scroll.setMinimumHeight(WORKSPACE_PAGE_MIN_HEIGHT)
         return scroll
 
@@ -21946,6 +21965,7 @@ class ApfStudioMainWindow(QMainWindow):
         self.close()
 
     def closeEvent(self, event: QCloseEvent) -> None:
+        self._save_ui_state()
         if self._workers:
             self._cancel_transient_audio_reads()
             if (
@@ -22008,395 +22028,7 @@ class ApfStudioMainWindow(QMainWindow):
             event.ignore()
 
     def _apply_style(self) -> None:
-        self.setStyleSheet(
-            """
-            QMainWindow#studioWindow, QWidget#workspace, QStackedWidget {
-                background: #0b111c; color: #ecf2fb;
-            }
-            QWidget {
-                color: #e8eef8; font-family: Inter, Noto Sans, DejaVu Sans;
-                font-size: 12px;
-            }
-            QFrame#sidebar { background: #0f1827; border-right: 1px solid #26344a; }
-            QLabel#brandMark {
-                background: #f08a4b; color: #160d09; border-radius: 10px;
-                padding: 8px 9px; font-size: 18px; font-weight: 900;
-            }
-            QLabel#brandTitle { color: #ffffff; font-size: 14px; font-weight: 850; letter-spacing: 1px; }
-            QLabel#mutedLabel { color: #bec9d9; font-size: 11px; }
-            QListWidget#navigation {
-                background: transparent; border: 2px solid transparent;
-                border-radius: 9px; outline: none;
-            }
-            QListWidget#navigation::item {
-                color: #aab6c8; border-radius: 8px; padding: 7px 10px;
-            }
-            QListWidget#navigation:focus { border-color: #f08a4b; }
-            QListWidget#navigation::item:hover { background: #172438; color: #ffffff; }
-            QListWidget#navigation::item:selected {
-                background: #263850; color: #ffb77e; border-left: 3px solid #f08a4b;
-                font-weight: 750;
-            }
-            QLabel#safetyCard {
-                background: #162438; border: 1px solid #364a64; border-radius: 9px;
-                color: #ced9e8; padding: 13px 14px; font-size: 11px;
-            }
-            QFrame#header { background: #101827; border-bottom: 1px solid #26344a; }
-            QLabel#eyebrow { color: #f29a62; font-size: 10px; font-weight: 850; letter-spacing: 1px; }
-            QLabel#pageTitle { color: #ffffff; font-size: 21px; font-weight: 780; }
-            QLabel#sourcePill {
-                background: #172235; color: #91a0b5; border: 1px solid #2b3950;
-                border-radius: 10px; padding: 7px 10px;
-            }
-            QLabel#sourcePill[ready="true"] { color: #4ee0a0; border-color: #287758; }
-            QLabel#heroTitle { color: #ffffff; font-size: 35px; font-weight: 850; }
-            QLabel#heroTitleSmall { color: #ffffff; font-size: 25px; font-weight: 820; }
-            QLabel#heroSubtitle { color: #b5c1d2; font-size: 13px; padding-top: 2px; }
-            QLabel#pageSummary {
-                color: #c0ccdc; font-size: 12px; padding: 0 1px 2px 1px;
-            }
-            QFrame#stepCard, QFrame#capabilityCard, QFrame#panel {
-                background: #121c2c; border: 1px solid #26354a; border-radius: 11px;
-            }
-            QFrame#stepCard:hover, QFrame#capabilityCard:hover { border-color: #405673; }
-            QFrame#capabilityPanel { background: transparent; border: none; }
-            QLabel#stepNumber { color: #f29a62; font-size: 13px; font-weight: 900; }
-            QLabel#cardTitle, QLabel#panelTitle, QLabel#capabilityTitle {
-                color: #f8faff; font-size: 15px; font-weight: 760;
-            }
-            QLabel#capabilityTitle { font-size: 11px; }
-            QLabel#capabilitySummary { color: #c0ccdc; font-size: 11px; }
-            QLabel#filterLabel {
-                color: #aebdd0; font-size: 10px; font-weight: 800; letter-spacing: 1px;
-            }
-            QLabel#cardBody { color: #b2bfd1; font-size: 12px; padding-top: 2px; }
-            QLabel#statusBadge {
-                background: #101827; border: 1px solid #516079; border-radius: 7px;
-                padding: 3px 7px; font-size: 10px; font-weight: 800;
-            }
-            QLabel#specPill {
-                color: #c3cfe0; background: #16233a; border: 1px solid #33455f;
-                border-radius: 7px; padding: 3px 8px; font-size: 10px;
-                font-weight: 750;
-            }
-            QLabel#specPill[emphasis="true"] {
-                color: #ffb77e; border-color: #7c4d2b; background: #201a16;
-            }
-            QLabel#findingText {
-                color: #b0bed1; background: #0d1624; border-radius: 6px;
-                padding: 8px 10px; font-size: 11px;
-            }
-            QLabel#metadataText { color: #bec9d9; font-size: 11px; padding-top: 1px; }
-            QLabel#contractText {
-                color: #c6d5e8; background: #142437; border-left: 3px solid #f08a4b;
-                border-radius: 5px; padding: 9px 11px;
-            }
-            QFrame#callout {
-                background: #182a3b; border: 1px solid #38526a; border-radius: 11px;
-            }
-            QPushButton, QToolButton {
-                min-height: 36px; border-radius: 8px; padding: 0 14px;
-                font-weight: 720;
-            }
-            QPushButton#primaryButton, QToolButton#primaryButton {
-                background: #f08a4b; color: #1a0e08; border: none;
-            }
-            /* Keep the Load APF Game menu arrow inside the button instead of
-               Qt's default bottom-right corner overhang. */
-            QToolButton#primaryButton { padding-right: 26px; }
-            QToolButton#primaryButton::menu-indicator {
-                subcontrol-origin: padding; subcontrol-position: center right;
-                right: 9px;
-            }
-            QPushButton#primaryButton:hover, QToolButton#primaryButton:hover { background: #ffab72; }
-            QPushButton#primaryButton:disabled, QToolButton#primaryButton:disabled {
-                background: #182235; color: #5f6c80; border: 1px solid #263148;
-            }
-            QPushButton#secondaryButton {
-                background: #1a2940; color: #dae5f4; border: 1px solid #334661;
-            }
-            QPushButton#secondaryButton:hover { background: #243750; border-color: #4c6483; }
-            QPushButton#secondaryButton:disabled {
-                background: #182235; color: #5f6c80; border-color: #263148;
-            }
-            QPushButton#utilityButton {
-                background: transparent; color: #c1cede; border: 1px solid #334258;
-            }
-            QPushButton#utilityButton:hover { background: #18263a; border-color: #4a607d; }
-            QPushButton#utilityButton:disabled {
-                background: transparent; color: #5f6c80; border-color: #263148;
-            }
-            QPushButton#dangerQuietButton {
-                background: transparent; color: #f29da4; border: 1px solid #5b3741;
-            }
-            QPushButton#dangerQuietButton:hover { background: #351f2a; }
-            QPushButton#dangerQuietButton:disabled {
-                background: transparent; color: #5f6979; border-color: #2a3444;
-            }
-            QPushButton#buildButton {
-                background: #3e73f2; color: white; border: none;
-                min-height: 40px; padding: 0 18px; font-size: 12px;
-            }
-            QPushButton#buildButton:hover { background: #5b8cff; }
-            QPushButton#buildButton:disabled {
-                background: #1c2c55; color: #697997; border: none;
-            }
-            QPushButton#launchButton {
-                background: #193f42; color: #68eadc; border: 1px solid #28706d;
-                min-height: 40px; padding: 0 16px;
-            }
-            QPushButton#launchButton:hover { background: #225255; }
-            QPushButton#launchButton:disabled {
-                background: #182a2d; color: #597477; border-color: #263f42;
-            }
-            QPushButton:disabled, QToolButton:disabled {
-                background: #182235; color: #5f6c80; border-color: #263148;
-            }
-            QPushButton:focus, QToolButton:focus,
-            QPushButton#primaryButton:focus, QToolButton#primaryButton:focus,
-            QPushButton#secondaryButton:focus,
-            QPushButton#utilityButton:focus,
-            QPushButton#dangerQuietButton:focus,
-            QPushButton#buildButton:focus, QPushButton#launchButton:focus,
-            QToolButton#clearSearchButton:focus {
-                border: 2px solid #ffd0ad;
-            }
-            QMessageBox {
-                background: #101827;
-                color: #eef4ff;
-            }
-            QMessageBox QLabel {
-                color: #eef4ff;
-            }
-            QMessageBox QPushButton {
-                min-width: 84px;
-                color: #eef4ff;
-                background: #25354b;
-                border: 1px solid #526984;
-            }
-            QMessageBox QPushButton:hover {
-                background: #31445e;
-                border-color: #7d94b1;
-            }
-            QMessageBox QPushButton:default {
-                color: #111827;
-                background: #f29a60;
-                border-color: #f29a60;
-            }
-            QDialog#rosterAliasOwnersDialog {
-                background: #101827; color: #eef4ff;
-            }
-            QDialog#rosterAliasOwnersDialog QLabel {
-                background: transparent; color: #dce7f5;
-            }
-            QDialog#rosterAliasOwnersDialog QLabel#panelTitle {
-                color: #ffffff; font-size: 16px; font-weight: 780;
-            }
-            QPlainTextEdit#rosterAliasOwners {
-                background: #080f19; color: #dce8f5;
-                border: 1px solid #40516a; border-radius: 8px;
-                padding: 9px; font-family: DejaVu Sans Mono; font-size: 11px;
-                selection-background-color: #31577c;
-            }
-            QDialog#rosterAliasOwnersDialog QDialogButtonBox QPushButton {
-                min-width: 92px; color: #eef4ff; background: #25354b;
-                border: 1px solid #526984;
-            }
-            QDialog#rosterAliasOwnersDialog QDialogButtonBox QPushButton:hover {
-                background: #31445e; border-color: #7d94b1;
-            }
-            QDialog#formationTrailerDialog {
-                background: #101827; color: #eef4ff;
-            }
-            QDialog#formationTrailerDialog QLabel {
-                background: transparent; color: #dce7f5;
-            }
-            QDialog#formationTrailerDialog QComboBox {
-                background: #16233a; color: #eef4ff;
-                border: 1px solid #33455f; border-radius: 7px;
-                padding: 5px 8px;
-            }
-            QDialog#formationTrailerDialog QComboBox QAbstractItemView {
-                background: #101827; color: #eef4ff;
-                selection-background-color: #263850;
-                selection-color: #ffb77e;
-            }
-            QDialog#formationTrailerDialog QListWidget {
-                background: #080f19; color: #dce8f5;
-                border: 1px solid #40516a; border-radius: 8px; padding: 4px;
-            }
-            QDialog#formationTrailerDialog QListWidget::item {
-                color: #dce8f5; padding: 3px 6px;
-            }
-            QDialog#formationTrailerDialog QListWidget::item:selected {
-                color: #ffb77e; background: #263850;
-            }
-            QDialog#formationTrailerDialog QDialogButtonBox QPushButton {
-                min-width: 96px; color: #eef4ff; background: #25354b;
-                border: 1px solid #526984;
-            }
-            QDialog#formationTrailerDialog QDialogButtonBox QPushButton:hover {
-                background: #31445e; border-color: #7d94b1;
-            }
-            QDialog#formationTrailerDialog QDialogButtonBox QPushButton:default {
-                color: #111827; background: #f29a60; border-color: #f29a60;
-            }
-            QDialog#rosterAliasOwnersDialog QDialogButtonBox QPushButton:hover {
-                background: #31445e; border-color: #7d94b1;
-            }
-            QLineEdit, QComboBox, QSpinBox {
-                background: #101a2a; color: #f0f5fc; border: 1px solid #40516a;
-                border-radius: 8px; min-height: 36px; padding: 0 10px;
-            }
-            QLineEdit { selection-background-color: #31577c; }
-            QLineEdit:focus, QComboBox:focus, QSpinBox:focus { border-color: #f08a4b; }
-            QSpinBox#baseRatingValueEditor {
-                min-width: 76px; max-width: 88px; padding-right: 22px;
-                font-size: 13px; font-weight: 800;
-            }
-            QToolButton#clearSearchButton {
-                background: transparent; color: #b9c6d7; border: 1px solid #36465d;
-                min-width: 30px; max-width: 30px; padding: 0; font-size: 16px;
-            }
-            QToolButton#clearSearchButton:hover { background: #1b2a40; color: #ffffff; }
-            QComboBox QAbstractItemView, QMenu {
-                background: #152136; color: #e5edf8; selection-background-color: #2c425e;
-                border: 1px solid #34465f;
-            }
-            QListWidget#assetList {
-                background: #0c1421; border: 1px solid #27364b; border-radius: 9px;
-                outline: none;
-            }
-            QListWidget#assetList::item { color: #cad6e6; border-radius: 7px; padding: 7px 9px; }
-            QListWidget#assetList::item:hover { background: #17263a; }
-            QListWidget#assetList::item:selected {
-                background: #263e57; color: #ffffff; border: 1px solid #486985;
-            }
-            QListWidget#assetList:focus, QTableWidget#assetTable:focus,
-            QTreeWidget:focus, QPlainTextEdit:focus {
-                border: 2px solid #f08a4b;
-            }
-            QTableWidget#assetTable, QTableWidget#fieldArtGroupTable,
-            QTableWidget#scorebugGraphicsTable, QTableWidget#scorebugComponentTable {
-                background: #0c1421; alternate-background-color: #101a2a;
-                border: 1px solid #27364b; border-radius: 8px; gridline-color: #1e2b3e;
-                selection-background-color: #29445f; selection-color: white; outline: none;
-            }
-            QHeaderView::section {
-                background: #17253a; color: #91a3ba; border: none;
-                border-bottom: 1px solid #2c3d55; padding: 7px; font-size: 11px;
-                font-weight: 750;
-            }
-            QLabel#imagePreview {
-                color: #a9b8cc; border: 1px dashed #4b607b;
-                border-radius: 10px; padding: 12px; font-size: 11px;
-            }
-            QLabel#imagePreview:hover { border-color: #f08a4b; }
-            QLabel#imagePreview[previewState="loading"] {
-                color: #b6d5f4; border-color: #547aa4;
-            }
-            QLabel#imagePreview[previewState="error"] {
-                color: #ffb0b5; border-color: #8b4652;
-            }
-            QLabel#imagePreview[previewState="ready"] {
-                border-style: solid; border-color: #3f556f; padding: 8px;
-            }
-            QFrame#audioReplacementDropZone {
-                background: #101b2b; border: 1px dashed #4b607b;
-                border-radius: 8px;
-            }
-            QFrame#audioReplacementDropZone[dropReady="true"] {
-                border-color: #4a9f7d; background: #10251f;
-            }
-            QFrame#audioReplacementDropZone:disabled {
-                border-color: #2b394c; background: #101824;
-            }
-            QLabel#audioDropTitle { color: #d8f6e9; font-weight: 750; }
-            QLabel#countPill, QLabel#editCount {
-                color: #aab9cc; background: #19283d; border-radius: 8px; padding: 4px 8px;
-            }
-            QFrame#inspectorDetail { background: #0d1624; border-radius: 8px; }
-            QFrame#audioAnnotationCard {
-                background: #101b2b; border: 1px solid #2b3d55; border-radius: 8px;
-            }
-            QFrame#baseRatingsPanel {
-                background: #101b2b; border: 1px solid #2b3d55; border-radius: 8px;
-            }
-            QTableWidget#baseRatingsTable {
-                background: #09111d; alternate-background-color: #0d1827;
-                color: #dce8f5; border: 1px solid #27384e; border-radius: 6px;
-                gridline-color: #1d2c40; selection-background-color: #29445f;
-                selection-color: white; outline: none;
-            }
-            QPlainTextEdit#textReplacementEditor {
-                background: #080f19; color: #edf4fc; border: 1px solid #40516a;
-                border-radius: 7px; padding: 6px; font-size: 11px;
-            }
-            QPlainTextEdit#textReplacementEditor:focus { border-color: #f08a4b; }
-            QTabWidget#workspaceTabs::pane {
-                background: #0f1827; border: 1px solid #27364b;
-                border-radius: 8px; top: -1px;
-            }
-            QTabWidget#workspaceTabs::tab-bar { left: 12px; }
-            /* The wide top-level tab treatment applies only to the workspace
-               tab widget's own bar (child combinator).  Nested editor tab
-               widgets style themselves smaller below so sub-tabs read as a
-               level down in the hierarchy and never overflow into scroller
-               arrows inside a narrow detail pane. */
-            QTabWidget#workspaceTabs > QTabBar::tab {
-                background: #142136; color: #9fb0c6; border: 1px solid #2d3e55;
-                border-bottom: none; border-top-left-radius: 7px;
-                border-top-right-radius: 7px; min-height: 34px;
-                min-width: 190px; padding: 0 24px; margin-right: 6px;
-                font-weight: 750;
-            }
-            QTabWidget#workspaceTabs > QTabBar::tab:selected {
-                background: #21344d; color: #ffffff; border-color: #49627e;
-            }
-            QTabWidget#rosterEditorTabs::pane {
-                background: #0f1827; border: 1px solid #27364b;
-                border-radius: 8px; top: -1px;
-            }
-            QTabWidget#rosterEditorTabs::tab-bar { left: 8px; }
-            QTabWidget#rosterEditorTabs > QTabBar::tab {
-                background: #101b2c; color: #9fb0c6; border: 1px solid #2a3a51;
-                border-bottom: none; border-top-left-radius: 6px;
-                border-top-right-radius: 6px; min-height: 28px;
-                padding: 0 16px; margin-right: 4px;
-            }
-            QTabWidget#rosterEditorTabs > QTabBar::tab:selected {
-                background: #21344d; color: #ffffff; border-color: #49627e;
-            }
-            QTabWidget#rosterEditorTabs > QTabBar::tab:disabled {
-                color: #5f6c80;
-            }
-            QPlainTextEdit#decodedFields {
-                background: #080f19; color: #bcd0e6; border: 1px solid #27374d;
-                border-radius: 7px; font-family: DejaVu Sans Mono; font-size: 10px;
-            }
-            QSplitter::handle { background: #1e2c40; }
-            QSplitter::handle:horizontal { width: 5px; }
-            QSplitter::handle:vertical { height: 5px; }
-            QFrame#footer { background: #101827; border-top: 1px solid #26344a; }
-            QFrame#reserveEditor {
-                background: #111d2d; border: 1px solid #2b3d55; border-radius: 7px;
-            }
-            QLabel#operationStatus { color: #c1cddd; font-size: 12px; }
-            QProgressBar { background: #202c40; border: none; border-radius: 2px; }
-            QProgressBar::chunk { background: #f08a4b; border-radius: 2px; }
-            QScrollArea { background: transparent; border: none; }
-            QScrollBar:vertical { background: #101827; width: 10px; margin: 2px; }
-            QScrollBar::handle:vertical { background: #34455e; min-height: 28px; border-radius: 4px; }
-            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
-            QScrollBar:horizontal { background: #101827; height: 10px; margin: 2px; }
-            QScrollBar::handle:horizontal { background: #34455e; min-width: 28px; border-radius: 4px; }
-            QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal { width: 0; }
-            QToolTip {
-                background: #192438; color: #edf3fc;
-                border: 1px solid #3b4d68; padding: 6px;
-            }
-            """
-        )
+        apf_theme.install_theme()
 
 
 # Backwards-friendly product-shell name used by a few integration harnesses.
@@ -22466,7 +22098,14 @@ def launch_studio(
                 offer_matching_recovery=offer_recovery,
             ),
         )
-    return application.exec_()
+    result = application.exec_()
+    # Dispose styled widgets before the application/font/pixmap caches leave
+    # scope. This also releases closed, parented authoring dialogs.
+    from PyQt5.QtCore import QCoreApplication, QEvent
+    window.deleteLater()
+    QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
+    setattr(application, "_apf2k8_mod_studio_window", None)
+    return result
 
 
 __all__ = [

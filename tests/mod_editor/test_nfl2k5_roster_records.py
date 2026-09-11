@@ -1394,7 +1394,9 @@ class RetailTests(unittest.TestCase):
         self.assertIn("roster_edits", plan.to_recipe())
         self.assertTrue(mod_build.availability()["roster_edits"])
         source = (ROOT / "mod_editor" / "core" / "mod_build.py").read_text(encoding="utf-8")
-        order = [source.index(f"if plan.{name}:") for name in
+        # beta 66: the document preflight parses the roster edits before any copy; the passes start after it
+        passes = source.index("if _preflight_only:")
+        order = [source.index(f"if plan.{name}:", passes) for name in
                  ("position_pools", "season_2026", "team_history", "prospect_names", "player_tags",
                   "roster_edits")]
         self.assertEqual(order, sorted(order), "roster_edits is the last ROST pass in build()")

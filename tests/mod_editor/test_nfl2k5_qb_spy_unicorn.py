@@ -70,9 +70,9 @@ class Machine:
         self.direction = direction
         self.calls, self.hits = [], []
         self.stop_at = None
-        self.uc.hook_add(uc.UC_HOOK_CODE, self.observe)
+        self.code_hook = self.uc.hook_add(uc.UC_HOOK_CODE, self.observe)
         self.writes = []
-        self.uc.hook_add(uc.UC_HOOK_MEM_WRITE, lambda _u, _t, address, size, _value, _data: self.writes.append((address, size)))
+        self.write_hook = self.uc.hook_add(uc.UC_HOOK_MEM_WRITE, lambda _u, _t, address, size, _value, _data: self.writes.append((address, size)))
         if patched: self.snap()
 
     def player(self, p, team):

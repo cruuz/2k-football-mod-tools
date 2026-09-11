@@ -248,8 +248,9 @@ class PatchWriteTests(unittest.TestCase):
                 actual = camera.decode_descriptor(camera._read(cls.patched, va, 80))
                 if (actual['target'], actual['fov'], actual['offset']) != values[state]:
                     raise AssertionError("camera recipient differs in the complete owner union")
-        for actual in camera.read_broadcast(cls.patched).values():
-            if (actual['target'], actual['fov'], actual['offset']) != camera.BROADCAST_VALUES:
+        for state, actual in camera.read_broadcast(cls.patched).items():
+            expected = (*camera.BROADCAST_VALUES[:1], camera._f32(camera.BROADCAST_LENSES[camera.broadcast_slot(state)]), camera.BROADCAST_VALUES[2])
+            if (actual['target'], actual['fov'], actual['offset']) != expected:
                 raise AssertionError("Broadcast recipient differs in the complete owner union")
         from mod_editor.core import nfl2k5_animation_xbe as animation_xbe
         if animation_xbe.status(cls.patched) != "applied":

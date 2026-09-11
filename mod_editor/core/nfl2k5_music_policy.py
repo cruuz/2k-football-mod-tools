@@ -156,6 +156,8 @@ def apply(payload: bytes, *, music_policy: str = "jukebox_menus",
             at = section.header_offset + 36
             result[at:at + 20] = section_digest(bytes(result), section)
     result = bytes(result)
+    from . import nfl2k5_music_metadata as metadata
+    result = metadata.refresh_policy(result)
     after = read_any(result)
     if after["status"] == "foreign" or any(enabled and after[key] != "applied"
                                            for key, enabled in selected.items()):

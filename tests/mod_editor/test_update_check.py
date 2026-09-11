@@ -226,14 +226,14 @@ class BuildTagTests(unittest.TestCase):
         self.assertTrue(update_check._TAG.match(update_check.BUILD_RELEASE_TAG))
 
     def test_the_build_tag_matches_beta_37(self) -> None:
-        self.assertEqual(update_check.BUILD_RELEASE_TAG, "beta-65")
+        self.assertEqual(update_check.BUILD_RELEASE_TAG, "beta-66")
 
     def test_hotfix_tags_order_after_their_beta_and_before_the_next(self) -> None:
         """beta-62.1 is newer than beta-62, older than beta-63, and beta-62 is never offered to a 62.1 build."""
         self.assertTrue(update_check._is_newer("beta-62.1", "beta-62"))
         self.assertTrue(update_check._is_newer("beta-63", "beta-62.1"))
         self.assertTrue(update_check._is_newer("beta-63.1", "beta-63"))
-        self.assertTrue(update_check._is_newer("beta-65", "beta-63.1"))
+        self.assertTrue(update_check._is_newer("beta-66", "beta-65"))
         self.assertFalse(update_check._is_newer("beta-63", "beta-63.1"))
         self.assertEqual(update_check._beta_number("beta-63.1"), (63, 1))
         self.assertTrue(update_check._is_newer("beta-62.2", "beta-62.1"))

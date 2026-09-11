@@ -1,0 +1,19 @@
+test_all_sixty_real_slots_fit_and_preflight_matches_written_bytes (__main__.RetailTests.test_all_sixty_real_slots_fit_and_preflight_matches_written_bytes) ... ok
+test_forced_fallback_displays_retail_and_matches_build_receipt (__main__.RetailTests.test_forced_fallback_displays_retail_and_matches_build_receipt) ... ok
+test_as_authored_is_explicit_and_metadata_survives_all_layouts (__main__.SyntheticTests.test_as_authored_is_explicit_and_metadata_survives_all_layouts) ... ok
+test_clamp_outside_quad_smears_authored_border_but_registered_border_is_clear (__main__.SyntheticTests.test_clamp_outside_quad_smears_authored_border_but_registered_border_is_clear) ... ok
+test_cleanup_collapses_noise_and_limits_alpha_band (__main__.SyntheticTests.test_cleanup_collapses_noise_and_limits_alpha_band) ... ok
+test_complex_colour_art_never_gets_two_tone_exception (__main__.SyntheticTests.test_complex_colour_art_never_gets_two_tone_exception) ... ok
+test_composite_colour_comes_from_the_current_jersey_base (__main__.SyntheticTests.test_composite_colour_comes_from_the_current_jersey_base) ... ok
+test_modest_shrink_is_recorded_and_as_authored_never_shrinks (__main__.SyntheticTests.test_modest_shrink_is_recorded_and_as_authored_never_shrinks) ... ok
+test_no_dark_halo_after_chain_palette_and_straight_alpha_filter (__main__.SyntheticTests.test_no_dark_halo_after_chain_palette_and_straight_alpha_filter) ... ok
+test_no_template_means_no_confident_prediction (__main__.SyntheticTests.test_no_template_means_no_confident_prediction) ... ok
+test_retail_registration_centres_preserves_aspect_and_margins (__main__.SyntheticTests.test_retail_registration_centres_preserves_aspect_and_margins) ... ok
+test_tall_glyph_cannot_refill_the_transparent_border_in_small_mips (__main__.SyntheticTests.test_tall_glyph_cannot_refill_the_transparent_border_in_small_mips) ... ok
+test_twelve_and_eight_colour_rescue_preserves_both_regions (__main__.SyntheticTests.test_twelve_and_eight_colour_rescue_preserves_both_regions) ... ok
+test_unfit_prediction_and_preview_count_use_the_same_words (__main__.SyntheticTests.test_unfit_prediction_and_preview_count_use_the_same_words) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 52.425s
+
+OK

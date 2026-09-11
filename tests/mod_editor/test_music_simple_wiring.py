@@ -91,18 +91,20 @@ class BuildHandoffTests(unittest.TestCase):
                 return ('fixed replacements',)
             received = []
             def build_private(plan, progress, **kwargs):
+                if kwargs.get('_preflight_only'):  # beta 66: the source/config preflight runs before any preparation
+                    return {'steps': [], 'result': {}}
                 received.append((plan, kwargs))
                 Path(plan.target).write_bytes(b'fully composed music')
                 return {'steps': [], 'result': {}}
             verifier = Mock(return_value={'installed': False})
-            namespace = function_namespace(sources['mod_editor/core/mod_build.py'], {'build'}, vars(mod_build))
+            namespace = function_namespace(sources['mod_editor/core/mod_build.py'], {'build', 'preflight_plan'}, vars(mod_build))
             namespace.update(_prepare_music_project=prepare, _build=build_private,
                              _core_module=lambda name: types.SimpleNamespace(revalidate_playlist=verifier))
             # Feedback is unrelated to the handoff's small synthetic image.
             from unittest.mock import patch
             image_kind = patch.object(namespace['tt'], 'is_disc_image', return_value=True)
             image_kind.start(); self.addCleanup(image_kind.stop)
-            with patch('mod_editor.core.build_feedback.measure', return_value={}):
+            with patch('mod_editor.core.build_feedback.measure', return_value={'message': 'synthetic outcome'}):
                 result = namespace['build'](mod_build.BuildPlan(str(source), str(output), music_project='songs.2k5music'))
             self.assertEqual(received[0][0].music_library, str(recipe))
             self.assertEqual(received[0][1]['music_edits'], ('fixed replacements',))
@@ -147,6 +149,7 @@ class StudioHandoffTests(unittest.TestCase):
         host._build_panel = None
         host._restoring_music_playlist = False
         host._music_playlist_document = playlist.default_options()
+        host._music_policy_values = {}  # beta 66: the studio keeps the policy choices beside the playlist
         host.facade = types.SimpleNamespace(source_ready=True, set_project_build_settings=Mock())
         panel = MusicPanel()
         self.addCleanup(panel.deleteLater)

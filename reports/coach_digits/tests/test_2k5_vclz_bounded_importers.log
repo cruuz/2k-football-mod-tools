@@ -1,0 +1,26 @@
+test_a_generous_bound_returns_the_plain_256_quantization (__main__.BoundedQuantizerBehaviourTests.test_a_generous_bound_returns_the_plain_256_quantization)
+Art that already fits must be byte-for-byte what it always was. ... ok
+test_a_tight_bound_steps_down_instead_of_refusing (__main__.BoundedQuantizerBehaviourTests.test_a_tight_bound_steps_down_instead_of_refusing) ... ok
+test_an_impossible_bound_says_what_to_do (__main__.BoundedQuantizerBehaviourTests.test_an_impossible_bound_says_what_to_do) ... ok
+test_an_always_compressed_importer_never_hard_quantizes_at_256 (__main__.BoundedQuantizerWiringTests.test_an_always_compressed_importer_never_hard_quantizes_at_256)
+A leftover plain call is exactly how this bug shipped. ... ok
+test_every_compressing_importer_uses_the_bounded_quantizer (__main__.BoundedQuantizerWiringTests.test_every_compressing_importer_uses_the_bounded_quantizer) ... ok
+test_the_conditional_importer_keeps_one_uncompressed_branch (__main__.BoundedQuantizerWiringTests.test_the_conditional_importer_keeps_one_uncompressed_branch)
+Its plain call is deliberate, and must stay behind the compressed test. ... ok
+test_the_declared_set_is_the_set_that_actually_compresses (__main__.BoundedQuantizerWiringTests.test_the_declared_set_is_the_set_that_actually_compresses)
+Derive the offenders from the tree; do not trust a hand-written list. ... ok
+test_uncompressed_importers_are_left_alone (__main__.BoundedQuantizerWiringTests.test_uncompressed_importers_are_left_alone) ... ok
+test_a_non_project_error_is_still_named (__main__.FailingEditIsNamedTests.test_a_non_project_error_is_still_named) ... ok
+test_a_selector_still_wins_when_a_kind_has_one (__main__.FailingEditIsNamedTests.test_a_selector_still_wins_when_a_kind_has_one) ... ok
+test_a_uniform_edit_is_named_by_the_coordinates_it_was_picked_by (__main__.FailingEditIsNamedTests.test_a_uniform_edit_is_named_by_the_coordinates_it_was_picked_by)
+A uniform edit has no selector, and "pants:" alone told nobody anything. ... ok
+test_an_already_named_message_is_not_doubled (__main__.FailingEditIsNamedTests.test_an_already_named_message_is_not_doubled) ... ok
+test_an_edit_with_nothing_to_say_falls_back_to_its_kind (__main__.FailingEditIsNamedTests.test_an_edit_with_nothing_to_say_falls_back_to_its_kind) ... ok
+test_an_importer_failure_names_its_edit (__main__.FailingEditIsNamedTests.test_an_importer_failure_names_its_edit) ... ok
+test_the_dispatcher_actually_wraps_the_importer (__main__.FailingEditIsNamedTests.test_the_dispatcher_actually_wraps_the_importer) ... ok
+test_the_reported_pants_failure_now_names_its_target (__main__.FailingEditIsNamedTests.test_the_reported_pants_failure_now_names_its_target) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.435s
+
+OK

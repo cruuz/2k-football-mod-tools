@@ -38,7 +38,12 @@ class ManifestTests(unittest.TestCase):
         projected = stack.manifest_for_allocated_union(manifest, retail, allocated)
         old_retail = [s for s in manifest.document["spans"] if int(s["start"], 0) < c.space.CODE_VA]
         new_retail = [s for s in projected.document["spans"] if int(s["start"], 0) < c.space.CODE_VA]
-        self.assertEqual(old_retail, new_retail)
+        # Every retail-range span survives in order; the projection may only add its own pinned live
+        # spans for owners applied in this union (beta 66: the Crib collection-list loop that the
+        # music metadata writer installs).
+        from mod_editor.core import nfl2k5_jukebox_list as jukebox_list
+        self.assertEqual([s for s in new_retail if s in old_retail], old_retail)
+        self.assertEqual([s for s in new_retail if s not in old_retail], jukebox_list.reservations(allocated))
         bad = dict(manifest.document)
         bad["spans"] = manifest.document["spans"] + [dict(start=hex(c.space.CODE_VA),
             end=hex(c.space.CODE_VA + 1), size=1, owner="foreign_owner", basis="foreign reservation")]

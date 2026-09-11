@@ -297,12 +297,13 @@ class ApfTextLogoGuiTests(unittest.TestCase):
         try:
             tab_widget = page.findChild(QTabWidget, "workspaceTabs")
             self.assertIsNotNone(tab_widget)
-            self.assertEqual(tab_widget.count(), 3)  # type: ignore[union-attr]
-            self.assertEqual(tab_widget.tabText(0), "Team Logo")  # type: ignore[union-attr]
-            self.assertEqual(tab_widget.tabText(1), "Wordmarks (206)")  # type: ignore[union-attr]
-            self.assertEqual(tab_widget.tabText(2), "All Logo && Team Art")  # type: ignore[union-attr]
-            team_tip = tab_widget.tabToolTip(0).casefold()  # type: ignore[union-attr]
-            wordmark_tip = tab_widget.tabToolTip(1).casefold()  # type: ignore[union-attr]
+            self.assertEqual(tab_widget.count(), 4)  # type: ignore[union-attr]
+            self.assertEqual(tab_widget.tabText(0), "Team Art")
+            self.assertEqual(tab_widget.tabText(1), "Team Logo")  # type: ignore[union-attr]
+            self.assertEqual(tab_widget.tabText(2), "Wordmarks (206)")  # type: ignore[union-attr]
+            self.assertEqual(tab_widget.tabText(3), "All Logo && Team Art")  # type: ignore[union-attr]
+            team_tip = tab_widget.tabToolTip(1).casefold()  # type: ignore[union-attr]
+            wordmark_tip = tab_widget.tabToolTip(2).casefold()  # type: ignore[union-attr]
             self.assertIn("selector slot 5", team_tip)
             self.assertIn("frontend/team select cache", team_tip)
             self.assertIn("separate selector slot 6", wordmark_tip)

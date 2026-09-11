@@ -76,7 +76,8 @@ class BuildIntegrationTests(unittest.TestCase):
                         receipt = build.build(selected)
                         self.assertEqual(target.read_bytes(), b'original runtime music')
                         self.assertEqual([r['step'] for r in receipt['steps']], ['copy','scorebug_runtime','music_library'])
-                        self.assertEqual(receipt['source'], str(source))
+                        # macOS temp paths resolve under /private/var: compare resolved paths.
+                        self.assertEqual(Path(receipt['source']).resolve(), source.resolve())
                         self.assertTrue(receipt['plan']['scorebug'] and receipt['plan']['xbe_space'])
                     self.assertEqual(planned, [b'original', b'original runtime'])
                     self.assertEqual(source.read_bytes(), b'original')

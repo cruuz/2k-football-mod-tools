@@ -26,7 +26,7 @@ from . import nfl2k5_xbe_space as space
 from .nfl2k5_cave_oracle import XbeImage
 
 OWNER = "nfl2k5_my_career"
-CODE_SIZE, DATA_SIZE = 16384, 4096
+CODE_SIZE, DATA_SIZE = 20480, 4096
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 SCHEMA = "nfl2k5_my_career/v2"
 MAGIC = b"MCQB0001"
@@ -494,7 +494,7 @@ def code_for(code_va, data_va, setup=None):
         if kind == 2:
             target -= code_va + offset
         struct.pack_into("<I", blob, offset, target & 0xFFFFFFFF)
-    require(len(blob) <= CODE_SIZE, "MyCareer exceeds its 16384-byte code and immutable-data budget")
+    require(len(blob) <= CODE_SIZE, "MyCareer exceeds its 20480-byte code and immutable-data budget")
     labels["seed"] = symbols["seed"]
     labels["content_end"] = code_va + len(blob)
     return bytes(blob).ljust(CODE_SIZE, b"\xcc"), labels

@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from functools import lru_cache
 from pathlib import Path, PurePosixPath
 import stat
@@ -60,7 +60,7 @@ from mod_editor.core.apf2k8_splb_writer import (
 )
 from mod_editor.core.errors import ValidationError
 from . import play_design_service as play_design
-from . import coverage_service, scheme_service
+from . import coverage_service, scheme_service, field_material_service
 from mod_editor.core import apf2k8_coverage_tuning as coverage
 
 from .player_ratings import PlayerRatingsError, load_player_rating_schema
@@ -267,6 +267,7 @@ class WorkspaceState:
     recovery_source_path: str | None = None
     recovery_source_sha256: str | None = None
     recovery_project_path: str | None = None
+    ui_state: dict[str, object] | None = None
 
     @property
     def has_recovery_metadata(self) -> bool:
@@ -359,14 +360,15 @@ class WorkspaceStateStore:
             raise ProjectError(f"Could not read APF workspace state: {exc}") from exc
         if (
             not isinstance(document, dict)
-            or set(document)
-            != {"recent_projects", "recent_sources", "recovery", "schema"}
+            or not {"recent_projects", "recent_sources", "recovery", "schema"} <= set(document)
+            or not set(document) <= {"recent_projects", "recent_sources", "recovery", "schema", "ui"}
             or document.get("schema") != WORKSPACE_STATE_SCHEMA
         ):
             raise ProjectError("APF Mod Studio workspace state has an unknown format")
         recent_sources = document.get("recent_sources")
         recent_projects = document.get("recent_projects")
         recovery = document.get("recovery")
+        ui_state = self._validate_ui_state(document.get("ui"))
         if (
             not isinstance(recent_sources, list)
             or not isinstance(recent_projects, list)
@@ -377,7 +379,7 @@ class WorkspaceStateStore:
         ):
             raise ProjectError("APF workspace recent-file metadata is malformed")
         if recovery is None:
-            return WorkspaceState(tuple(recent_sources), tuple(recent_projects))
+            return WorkspaceState(tuple(recent_sources), tuple(recent_projects), ui_state=ui_state)
         if (
             not isinstance(recovery, dict)
             or set(recovery) != {"project_path", "source_path", "source_sha256"}
@@ -394,7 +396,31 @@ class WorkspaceStateStore:
             str(recovery["source_path"]),
             _workspace_sha256(str(recovery["source_sha256"])),
             str(recovery["project_path"]),
+            ui_state,
         )
+
+    @staticmethod
+    def _validate_ui_state(value):
+        if value is None:
+            return None
+        if not isinstance(value, dict) or set(value) != {"geometry", "page", "workspaces"}:
+            raise ProjectError("APF workspace window preferences are malformed")
+        geometry = value["geometry"]
+        workspaces = value["workspaces"]
+        if (not isinstance(geometry, list) or len(geometry) != 4
+                or any(type(number) is not int or abs(number) > 100_000 for number in geometry)
+                or not 600 <= geometry[2] <= 16_384 or not 400 <= geometry[3] <= 16_384
+                or not isinstance(value["page"], str) or len(value["page"]) > 80
+                or not isinstance(workspaces, dict) or len(workspaces) > 32
+                or any(not isinstance(key, str) or not isinstance(name, str) or len(key) > 80 or len(name) > 160
+                       for key, name in workspaces.items())):
+            raise ProjectError("APF workspace window preferences are outside their limits")
+        return value
+
+    def record_ui(self, geometry, page, workspaces):
+        """Persist window placement and page/workspace choice beside recovery state."""
+        value = self._validate_ui_state(dict(geometry=list(geometry), page=page, workspaces=dict(workspaces)))
+        self._write(replace(self.read(), ui_state=value))
 
     def record_source(self, path: Path, source_sha256: str) -> None:
         if _workspace_supplied_path(path).is_symlink():
@@ -565,6 +591,10 @@ class WorkspaceStateStore:
         return self.clear_recovery(expected=candidate)
 
     def _write(self, state: WorkspaceState) -> None:
+        # Recent-file and recovery operations preserve the UI preferences too.
+        ui_state = state.ui_state
+        if ui_state is None and self.state_path.exists():
+            ui_state = self.read().ui_state
         recovery: dict[str, str] | None = None
         if state.has_recovery_metadata:
             assert state.recovery_project_path is not None
@@ -575,12 +605,15 @@ class WorkspaceStateStore:
                 "source_path": state.recovery_source_path,
                 "source_sha256": state.recovery_source_sha256,
             }
-        payload = (json.dumps({
+        document = {
             "recent_projects": list(state.recent_projects),
             "recent_sources": list(state.recent_sources),
             "recovery": recovery,
             "schema": WORKSPACE_STATE_SCHEMA,
-        }, indent=2, sort_keys=True) + "\n").encode("utf-8")
+        }
+        if ui_state is not None:
+            document["ui"] = self._validate_ui_state(ui_state)
+        payload = (json.dumps(document, indent=2, sort_keys=True) + "\n").encode("utf-8")
         if len(payload) > MAX_WORKSPACE_STATE_BYTES:
             raise ProjectError("APF workspace state exceeds its size limit")
         temporary = self.state_path.with_name(
@@ -812,6 +845,7 @@ def _payload_name(asset_id: str, kind: str) -> str:
             SPLB_MEMBERSHIP_KIND,
             play_design.PROVIDER_KIND,
             coverage.PROVIDER_KIND,
+            field_material_service.PROVIDER_KIND,
             scheme_service.PROVIDER_KIND,
         }
         else ".xma1-packets"
@@ -975,8 +1009,8 @@ def _validate_payload_source(
         decode_custom_team_appearance_payload(data, modification.asset_id)
     elif modification.kind == "uniform_equipment_colors":
         decode_uniform_equipment_color_payload(data, modification.asset_id)
-    elif modification.kind in {coverage.PROVIDER_KIND, scheme_service.PROVIDER_KIND}:
-        service = coverage_service if modification.kind == coverage.PROVIDER_KIND else scheme_service
+    elif modification.kind in {coverage.PROVIDER_KIND, scheme_service.PROVIDER_KIND, field_material_service.PROVIDER_KIND}:
+        service = {coverage.PROVIDER_KIND: coverage_service, scheme_service.PROVIDER_KIND: scheme_service, field_material_service.PROVIDER_KIND: field_material_service}[modification.kind]
         try:
             service.validate_payload(data, modification.asset_id, dict(modification.metadata))
         except ValidationError as exc:
@@ -1719,8 +1753,8 @@ def _validated_metadata(
                 f"Uniform equipment-color project target changed: {asset_id}"
             )
         return value
-    if kind in {coverage.PROVIDER_KIND, scheme_service.PROVIDER_KIND}:
-        service = coverage_service if kind == coverage.PROVIDER_KIND else scheme_service
+    if kind in {coverage.PROVIDER_KIND, scheme_service.PROVIDER_KIND, field_material_service.PROVIDER_KIND}:
+        service = {coverage.PROVIDER_KIND: coverage_service, scheme_service.PROVIDER_KIND: scheme_service, field_material_service.PROVIDER_KIND: field_material_service}[kind]
         try:
             return service.validate_metadata(asset_id, value)
         except ValidationError as exc:
@@ -2313,8 +2347,8 @@ def load_project(
             elif kind == "uniform_equipment_colors":
                 decode_uniform_equipment_color_payload(data, asset_id)
                 extension = ".json"
-            elif kind in {coverage.PROVIDER_KIND, scheme_service.PROVIDER_KIND}:
-                service = coverage_service if kind == coverage.PROVIDER_KIND else scheme_service
+            elif kind in {coverage.PROVIDER_KIND, scheme_service.PROVIDER_KIND, field_material_service.PROVIDER_KIND}:
+                service = {coverage.PROVIDER_KIND: coverage_service, scheme_service.PROVIDER_KIND: scheme_service, field_material_service.PROVIDER_KIND: field_material_service}[kind]
                 try:
                     service.validate_payload(data, asset_id, metadata)
                 except ValidationError as exc:

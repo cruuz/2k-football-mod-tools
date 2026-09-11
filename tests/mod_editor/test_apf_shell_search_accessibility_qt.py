@@ -74,15 +74,15 @@ class ApfShellSearchAccessibilityTests(unittest.TestCase):
                     "Search ready • type to filter • Esc clears • tips: logo_l0, number_0_color, font_albedo",
                 )
 
-    def test_ctrl_f_reports_when_workspace_has_no_search(self) -> None:
+    def test_ctrl_f_searches_the_getting_started_workspace_launcher(self) -> None:
         self._activate(ApfCategory.GETTING_STARTED)
 
         self.window._focus_current_search()
 
-        self.assertEqual(
-            self.window.operation_status.text(),
-            "This workspace has no available search box • press Ctrl+1 for categories",
-        )
+        page = self.window._pages[ApfCategory.GETTING_STARTED]
+        self.assertIs(self.window._current_search_field(), page.search)
+        page.search.setText("uniform")
+        self.assertTrue(any(not page.workspace_list.item(row).isHidden() for row in range(page.workspace_list.count())))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,11 @@
+test_cancel_or_encoder_failure_or_source_change_cannot_stage (__main__.NumberSheetQualityWiringTests.test_cancel_or_encoder_failure_or_source_change_cannot_stage) ... ok
+test_encoded_review_precedes_single_atomic_team_kit_import (__main__.NumberSheetQualityWiringTests.test_encoded_review_precedes_single_atomic_team_kit_import) ... ok
+test_facade_encoding_holds_source_session_lock (__main__.NumberSheetQualityWiringTests.test_facade_encoding_holds_source_session_lock) ... ok
+test_preview_dialog_keeps_encoded_pixels_at_native_display_size_and_notes (__main__.NumberSheetQualityWiringTests.test_preview_dialog_keeps_encoded_pixels_at_native_display_size_and_notes) ... ok
+test_frozen_provider_closures_accept_every_exact_source_hash (__main__.NumberSheetRuntimeWiringTests.test_frozen_provider_closures_accept_every_exact_source_hash) ... ok
+test_release_allowlist_imports_and_runtime_hashes_cover_the_proposal (__main__.NumberSheetRuntimeWiringTests.test_release_allowlist_imports_and_runtime_hashes_cover_the_proposal) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.815s
+
+OK

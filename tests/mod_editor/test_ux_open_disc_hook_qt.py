@@ -63,7 +63,7 @@ class OpenDiscHookTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.xbe = Path(self.tmp.name) / "default.xbe"
         self.xbe.write_bytes(_build_synthetic_xbe())
-        self.window = StudioMainWindow(facade=BrowseOnlyFacade(), offer_recovery=False)
+        self.window = StudioMainWindow(eager_pages=True, facade=BrowseOnlyFacade(), offer_recovery=False)
         self.app.processEvents()
         _open_source(self.window.facade, self.xbe)
 

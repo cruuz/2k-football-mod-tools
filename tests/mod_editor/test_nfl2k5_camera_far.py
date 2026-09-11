@@ -100,7 +100,7 @@ class CameraPatchTests(unittest.TestCase):
         self.assertEqual(c.option_default_status(again), 'standard')
         self.assertNotEqual(c.read_standard(again), c.read_standard(self.retail))
         self.assertEqual(c.read_preset_table(again)[:7], c.read_preset_table(self.retail)[:7])
-        self.assertEqual(len(self.receipt['edits']), 45)
+        self.assertEqual(len(self.receipt['edits']), 47)
         for edit in self.receipt['edits']:
             off, size = int(edit['file_offset'], 0), edit['size']
             self.assertEqual(again[off:off+size], bytes.fromhex(edit['after']))

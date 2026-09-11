@@ -101,7 +101,8 @@ class MultipleAdditionWriterTests(unittest.TestCase):
         self.assertEqual(reparsed.records[4].formation_index, 133)
         self.assertEqual(reparsed.records[4].category_index, 7)
         self.assertEqual(reparsed.records[5].formation_index, 134)
-        self.assertEqual(reparsed.records[5].category_index, 5)
+        # The stale requested category is normalized to retail Base Open.
+        self.assertEqual(reparsed.records[5].category_index, 3)
         # Untouched records and trailers stay byte-exact.
         for index in (0, 1, 2, 3):
             self.assertEqual(
@@ -112,7 +113,7 @@ class MultipleAdditionWriterTests(unittest.TestCase):
             )
 
     def test_two_additions_or_both_mask_bits_into_the_book_supply(self) -> None:
-        changes = _addition(4, 133, 7, (300,)) + _addition(5, 134, 9, (310,))
+        changes = _addition(4, 133, 7, (300,)) + _addition(5, 138, 9, (310,))
         compiled = splb.compile_book(self.book, changes)
         splb.verify_book(self.body, compiled.replacement, changes)
         rows_before = splb.book_category_rows(self.body)
@@ -123,7 +124,7 @@ class MultipleAdditionWriterTests(unittest.TestCase):
         self.assertEqual(compiled.report["book_category_rows_after"], [2, 3, 7, 9])
 
     def test_two_additions_under_one_package_gain_one_mask_bit(self) -> None:
-        changes = _addition(4, 133, 7, (300,)) + _addition(5, 134, 7, (310,))
+        changes = _addition(4, 133, 7, (300,)) + _addition(5, 151, 7, (310,))
         compiled = splb.compile_book(self.book, changes)
         splb.verify_book(self.body, compiled.replacement, changes)
         mask = struct.unpack_from(

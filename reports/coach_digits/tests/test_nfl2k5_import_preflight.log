@@ -1,0 +1,22 @@
+test_a_family_with_no_contract_is_reported_not_guessed (__main__.BatchTests.test_a_family_with_no_contract_is_reported_not_guessed) ... ok
+test_an_empty_set_says_so (__main__.BatchTests.test_an_empty_set_says_so) ... ok
+test_progress_is_reported_per_edit_and_completes (__main__.BatchTests.test_progress_is_reported_per_edit_and_completes) ... ok
+test_the_real_table_is_used_when_no_contracts_are_supplied (__main__.BatchTests.test_the_real_table_is_used_when_no_contracts_are_supplied) ... ok
+test_the_report_leads_with_what_blocks_the_build (__main__.BatchTests.test_the_report_leads_with_what_blocks_the_build) ... ok
+test_every_contract_matches_its_importer (__main__.ContractTests.test_every_contract_matches_its_importer) ... ok
+test_modelled_families_include_per_target_digit_contracts (__main__.ContractTests.test_modelled_families_include_per_target_digit_contracts) ... ok
+test_pants_do_share_the_torso_shape (__main__.ContractTests.test_pants_do_share_the_torso_shape) ... ok
+test_the_helmet_is_a_single_palette_family (__main__.ContractTests.test_the_helmet_is_a_single_palette_family) ... ok
+test_the_sleeve_is_not_the_torso_shape (__main__.ContractTests.test_the_sleeve_is_not_the_torso_shape) ... ok
+test_a_prediction_never_claims_more_than_the_slot_allows (__main__.PredictionTests.test_a_prediction_never_claims_more_than_the_slot_allows) ... ok
+test_an_impossible_slot_is_reported_as_refused (__main__.PredictionTests.test_an_impossible_slot_is_reported_as_refused) ... ok
+test_an_unreadable_image_is_unmodelled_not_a_crash (__main__.PredictionTests.test_an_unreadable_image_is_unmodelled_not_a_crash) ... ok
+test_busy_art_is_reported_as_reduced_with_the_number (__main__.PredictionTests.test_busy_art_is_reported_as_reduced_with_the_number) ... ok
+test_simple_art_fits_as_authored (__main__.PredictionTests.test_simple_art_fits_as_authored) ... ok
+test_the_interpalette_gap_reaches_the_encoded_payload (__main__.PredictionTests.test_the_interpalette_gap_reaches_the_encoded_payload) ... ok
+test_the_reduced_detail_blames_shade_count_not_resolution (__main__.PredictionTests.test_the_reduced_detail_blames_shade_count_not_resolution) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 15.401s
+
+OK

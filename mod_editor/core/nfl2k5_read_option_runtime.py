@@ -12,6 +12,7 @@ import struct
 
 from . import nfl2k5_read_option_runtime_code as assembly
 from . import nfl2k5_xbe_space as space
+from . import nfl2k5_playbook_pair as pair
 from .nfl2k5_bump_strength import _sections, section_digest
 from .nfl2k5_cave_oracle import XbeImage
 
@@ -129,8 +130,9 @@ def validate_intent_table(table):
     return count
 
 
-def code_for(code_va, table_va, data_va, *, diagnostic=False):
+def code_for(code_va, table_va, data_va, *, diagnostic=False, paired_contract=0):
     symbols = dict(code=code_va, intent_table=table_va, original_tail=0x1AF013,
+                   paired_contract=paired_contract,
                    result_tail=0x1AF210, lookup_actor=0x1894F0,
                    held_command=0x120960, receiver_ready=0x19B800,
                    state_data=data_va, hud_native=0xFA0B0, draw_icon=0xF97F0,
@@ -187,8 +189,10 @@ def _inspect_owner(payload, image):
             _require(table == bytes(TABLE_SIZE) and prompt == bytes(len(PROMPT)), "Mixed Read option table without runtime")
             table = None
         else:
-            diagnostic = content == code_for(code_va, ro["va"], places["data"]["va"], diagnostic=True)
-            _require(diagnostic or content == code_for(code_va, ro["va"], places["data"]["va"]),
+            diagnostic = content == code_for(code_va, ro["va"], places["data"]["va"], diagnostic=True,
+                                             paired_contract=pair.contract_va(payload))
+            _require(diagnostic or content == code_for(code_va, ro["va"], places["data"]["va"],
+                                                     paired_contract=pair.contract_va(payload)),
                      "Foreign Read option runtime")
             validate_intent_table(table)
             _require(prompt == (DIAGNOSTIC_PROMPT if diagnostic else PROMPT), "Foreign Read option prompt")
@@ -340,7 +344,8 @@ def apply(payload: bytes, *, intent_table: bytes | None = None,
     allocated, allocation_receipt = (space.apply(payload, REQUESTS, scaleout=True)
                                     if space.status(payload) == "retail" else (payload, {}))
     places = allocations(allocated)
-    content = code_for(places["code"]["va"], places["read_only"]["va"], places["data"]["va"], diagnostic=diagnostic)
+    content = code_for(places["code"]["va"], places["read_only"]["va"], places["data"]["va"],
+                       diagnostic=diagnostic, paired_contract=pair.contract_va(allocated))
     installed, code_receipt = space.install_code(allocated, OWNER, content)
     installed, table_receipt = space.install_read_only(installed, OWNER, table +
                                                      (DIAGNOSTIC_PROMPT if diagnostic else PROMPT))

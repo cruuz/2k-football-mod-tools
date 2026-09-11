@@ -15,26 +15,12 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from mod_editor.core import nfl2k5_camera as camera, nfl2k5_widescreen as wide
-from tools.nfl2k5_camera_far_proof import Projection, RETAIL_SHA256, SAFE_BAR
+from tools.nfl2k5_camera_far_proof import Projection, RETAIL_SHA256, SAFE_BAR, map_owned
 from tests.mod_editor import test_nfl2k5_widescreen_polish as fixtures
 
 
-def map_owned(uc, payload):
-    for region in camera.space.layout(payload)['regions']:
-        uc.mem_map(region['va'], region['size'])
-        uc.mem_write(region['va'], payload[region['raw']:region['raw'] + region['size']])
-        flags = fixtures.u.UC_PROT_READ
-        if region['kind'].startswith('code'):
-            flags |= fixtures.u.UC_PROT_EXEC
-        elif region['kind'].startswith('data'):
-            flags |= fixtures.u.UC_PROT_WRITE
-        uc.mem_protect(region['va'], region['size'], flags)
-
-
 class BroadcastProjection(Projection):
-    def __init__(self, payload):
-        super().__init__(payload)
-        map_owned(self.uc, payload)
+    """Public broadcast proof interface; the base maps every installed owner."""
 
 
 # The near-side stands the following mount can enter (world centimetres; the camera side is +x, y up, z along the

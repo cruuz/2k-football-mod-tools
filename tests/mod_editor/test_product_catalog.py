@@ -64,6 +64,8 @@ class ProductCatalogTests(unittest.TestCase):
             'nfl2k5.textures.hires_pack',
             'nfl2k5.players_rosters.filled_star',   # beta 65
             'nfl2k5.gameplay.accelerated_clock',    # beta 65
+            'nfl2k5.camera.broadcast_v6',           # beta 66
+            'nfl2k5.uniforms.helmet_finish',        # beta 66
             'nfl2k5.rosters.save_to_disc',
             'nfl2k5.rosters.espn25_real_rosters',
             'nfl2k5_xbox.position_pool_filters',
@@ -153,7 +155,7 @@ class ProductCatalogTests(unittest.TestCase):
         first_ids = [binding.capability_id for binding in first.capabilities]
         second_ids = [binding.capability_id for binding in second.capabilities]
 
-        self.assertEqual(len(first_ids), 88)  # beta 65: + filled star + accelerated clock
+        self.assertEqual(len(first_ids), 90)  # beta 66: + Broadcast camera v6 (beta 65: filled star + accelerated clock)
         self.assertEqual(len(first_ids), len(set(first_ids)))
         self.assertEqual(set(first_ids), expected)
         self.assertEqual(first_ids, second_ids)
@@ -196,7 +198,7 @@ class ProductCatalogTests(unittest.TestCase):
             ProductCategory.MENUS_UI: (6, 3, 2, 0, 0, 1, 0),
             ProductCategory.CRIB: (2, 2, 0, 0, 0, 0, 0),
             ProductCategory.AUDIO: (8, 7, 0, 1, 0, 0, 0),
-            ProductCategory.SLIDERS_GAMEPLAY: (30, 22, 5, 0, 0, 0, 3),
+            ProductCategory.SLIDERS_GAMEPLAY: (32, 24, 5, 0, 0, 0, 3),  # beta 66: + Broadcast camera v6, helmet finish
             ProductCategory.PLAYBOOKS_PLAYS: (5, 5, 0, 0, 0, 0, 0),
             ProductCategory.TEXTURES: (1, 1, 0, 0, 0, 0, 0),
         }
@@ -225,7 +227,7 @@ class ProductCatalogTests(unittest.TestCase):
                 catalog.counts.evidence,
                 catalog.counts.research,
             ),
-            (88, 68, 8, 1, 0, 8, 3),
+            (90, 70, 8, 1, 0, 8, 3),
         )
 
     def test_ambiguous_stadium_surface_and_team_identity_are_explicit(self) -> None:
@@ -278,7 +280,7 @@ class ProductCatalogTests(unittest.TestCase):
         )
         binding = catalog.binding("nfl2k5.audio.audo_wav")
 
-        self.assertEqual(len(seen), 88)
+        self.assertEqual(len(seen), 90)
         self.assertEqual(
             binding.findings_notes,
             ("850 AUDO records mapped", "Export stays local"),

@@ -490,8 +490,21 @@ exchange_native:
  * Offset is used only to report the source index after all four hashes match;
  * header-bounded descriptor identity tolerates native record reordering. */
 lookup:
+    mov edi, offset paired_contract
+    test edi, edi
+    jz lookup_native
+    cmp dword ptr [edi], 0
+    je lookup_native
+    mov ecx, [ebp+4]
+    call dword ptr [edi]
+    test eax, eax
+    jz lookup_native
+    mov edi, eax
+    jmp lookup_root
+lookup_native:
     mov edi, [esi+0x38]
     mov edi, [edi+0x20]
+lookup_root:
 .ifdef READ_DIAGNOSTIC
     mov [ebp+60], edi
 .endif
@@ -715,63 +728,64 @@ resolve_edge:
 edge_loop:
     mov eax, [ebp]
     test eax, eax
-    jz edge_next
+    jz edge_skip
     cmp dword ptr [eax+0x48], 0
-    jne edge_next
+    jne edge_skip
     mov edx, [esi+0x38]
     mov edx, [edx]
     cmp [eax+0x38], edx
-    jne edge_next
+    jne edge_skip
     mov edx, [edx+4]
     push 11
     pop ecx
 member:
     test edx, edx
-    jz edge_next
+    jz edge_skip
     cmp edx, eax
     je member_ok
     mov edx, [edx+0x34]
     loop member
+edge_skip:
     jmp edge_next
 member_ok:
     mov edx, [eax+0x3c]
     cmp edx, [ebp+4]
-    jne edge_next
+    jne edge_skip
     test edx, edx
-    jz edge_next
+    jz edge_skip
     movzx ecx, byte ptr [edx+0x35]
     cmp ecx, 16                       /* roster DE, not PLAY personnel12 */
     je role
     cmp ecx, 10                       /* roster OLB */
-    jne edge_next
+    jne edge_skip
 role:
     mov edx, [eax+0x20]
     mov edx, [edx+0x41c]
     cmp edx, [ebp+8]
-    jne edge_next
+    jne edge_skip
     /* Snapshot identity plus bounds in this defender's actual loaded book. */
     mov ecx, [eax+0x38]
     mov ecx, [ecx+0x20]
     test ecx, ecx
-    jz edge_next
+    jz edge_skip
     push eax
     mov eax, [edx+4]
     sub eax, [ecx+0x68]
     cmp eax, 3500*8-120
     pop eax
-    jae edge_next
+    jae edge_skip
     mov ecx, [edx]
     and ecx, 15
     mov edx, [edx+4]
 
 rush_node:
     test ecx, ecx
-    jz edge_next
+    jz edge_skip
     cmp byte ptr [edx], 11
     je rush
     add edx, 8
     loop rush_node
-    jmp edge_next
+    jmp edge_skip
 rush:
     call unblocked
     jc edge_next

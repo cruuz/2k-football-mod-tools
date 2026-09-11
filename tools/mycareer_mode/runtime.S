@@ -52,9 +52,49 @@ inline_load_begin:
  mov DWORD PTR [state+2568],eax
  mov DWORD PTR [state+2660],eax
  mov DWORD PTR [state+2664],eax
+ mov DWORD PTR [state+2708],eax
+ mov DWORD PTR [state+2716],eax
  pop eax
  popfd
  jmp 0x16ab70
+
+.global mode_ff_dialog
+mode_ff_dialog:
+ /* Any native modal restores ordinary speed/audio before its nested loop. */
+ mov DWORD PTR [state+2716],0
+ push ebp
+ mov ebp,esp
+ and esp,0xfffffff8
+ sub esp,0x1c
+ push 0x14e079
+ ret
+.global mode_ff_qb_snap, mode_ff_other_snap
+.macro ff_snap_guard
+ pushfd
+ pushad
+ call mode_ff_hold_snap
+ test eax,eax
+ popad
+ jz 1f
+ popfd
+ xor eax,eax
+ ret
+1: popfd
+.endm
+mode_ff_qb_snap:
+ ff_snap_guard
+ push esi
+ mov esi,ecx
+ mov eax,DWORD PTR [esi+0xc]
+ push 0x2d37e6
+ ret
+mode_ff_other_snap:
+ ff_snap_guard
+ sub esp,0xc
+ push esi
+ push edi
+ push 0x2ed025
+ ret
 /* Replace just type-9's expected-size branch of the native admission table. */
 inline_admission:
  mov ecx,DWORD PTR [esi+0xbdc1cc]
@@ -381,3 +421,21 @@ start_sides:
  .byte 0x40,0x04,0x28
 
 .section .note.GNU-stack,"",@progbits
+
+ .text
+.global mode_hud_frame
+mode_hud_frame:
+ /* Displaced target 89F50 is a pinned RET. Preserve the complete machine
+  * state across text formatting, x87 stat returns and native glyph work. */
+ pushfd
+ pushad
+ mov ebp,esp
+ sub esp,528
+ and esp,-16
+ fxsave [esp]
+ call mode_hud
+ fxrstor [esp]
+ mov esp,ebp
+ popad
+ popfd
+ ret

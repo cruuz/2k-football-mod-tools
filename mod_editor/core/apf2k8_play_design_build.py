@@ -126,8 +126,9 @@ def compile_cpu_calls(source: bytes, outer: int, master_source: bytes, master_af
     """Reuse SPLB's entry/tag writer; new formations use an explicit empty row.
 
     Existing rows must already name the requested formation. New rows inherit
-    the donor trailer's unknown fields, get only the requested entries, and OR
-    the proved personnel mask. No user-save addressing exists in this module.
+    the donor trailer's unknown fields, get only the requested entries, and
+    normalize word B to the destination personnel category. No user-save
+    addressing exists in this module.
     """
     before_master, after_master = c.Book.from_bytes(master_source), c.Book.from_bytes(master_after)
     original_book = splb.parse_book(source, outer)
@@ -172,7 +173,7 @@ def compile_cpu_calls(source: bytes, outer: int, master_source: bytes, master_af
                     raise ValidationError("New CPU formation must preserve donor slot ordering.")
                 at = splb.RECORD_BASE + ri * splb.RECORD_STRIDE + splb.TRAILER_OFFSET
                 a, b = struct.unpack(">II", donor_row.trailer)
-                struct.pack_into(">II", working, at, (a & 0xFFFFFF) | fi << 24, b | (1 << donor_row.category_index))
+                struct.pack_into(">II", working, at, (a & 0xFFFFFF) | fi << 24, 1 << formation.category_index)
                 mask = struct.unpack_from(">I", working, splb.BOOK_CATEGORY_MASK_OFFSET)[0]
                 struct.pack_into(">I", working, splb.BOOK_CATEGORY_MASK_OFFSET, mask | (1 << donor_row.category_index))
             claimed[ri] = signature
@@ -189,6 +190,11 @@ def compile_cpu_calls(source: bytes, outer: int, master_source: bytes, master_af
         allowed.update(range(at, at + splb.ENTRY_BYTES))
         if donor is not None:
             allowed.update(range(at + splb.TRAILER_OFFSET, at + splb.RECORD_STRIDE))
+        if donor is not None:
+            expected_category = after_master.formations[fi].category_index
+            if (parsed.records[ri].category_index != expected_category
+                    or int.from_bytes(parsed.records[ri].trailer[4:], "big") != 1 << expected_category):
+                raise ValidationError("CPU reparse retained donor personnel memberships.")
         if parsed.records[ri].formation_index != fi:
             raise ValidationError("CPU reparse did not resolve the requested formation.")
     if any(a != b and i not in allowed for i, (a, b) in enumerate(zip(source, compiled.replacement))):
@@ -197,7 +203,16 @@ def compile_cpu_calls(source: bytes, outer: int, master_source: bytes, master_af
         raise ValidationError("Current CPU book differs from the baseline and requested design.")
     return compiled.replacement, {"outer": outer, "source_sha256": sha(source), "replacement_sha256": sha(compiled.replacement),
         "already_applied": current == compiled.replacement,
-        "records": sorted(claimed), "reparsed": True, "cpu_only": True, "user_save_written": False}
+        "records": sorted(claimed), "personnel": [
+            {"record_index": ri, "formation_after": fi,
+             "category_before": original_book.records[ri].category_index,
+             "category_after": parsed.records[ri].category_index,
+             "word_b_before": int.from_bytes(original_book.records[ri].trailer[4:], "big"),
+             "word_b_after": int.from_bytes(parsed.records[ri].trailer[4:], "big"),
+             "donor_record_index": donor,
+             "donor_category_before": original_book.records[donor].category_index if donor is not None else None,
+             "donor_word_b_before": int.from_bytes(original_book.records[donor].trailer[4:], "big") if donor is not None else None}
+            for ri, (fi, donor) in claimed.items()], "reparsed": True, "cpu_only": True, "user_save_written": False}
 
 
 @dataclass(frozen=True)

@@ -797,12 +797,8 @@ class Nfl2k5StudioFacade:
         audio_origin_preparation: Nfl2k5AudioOriginPreparation | None = None,
     ) -> None:
         supplied_uniform_catalog = uniform_catalog
-        self.uniform_catalog = uniform_catalog or load_nfl2k5_uniform_catalog()
-        self.visual_catalog = visual_catalog or (
-            load_nfl2k5_product_visual_catalog()
-            if supplied_uniform_catalog is None
-            else self.uniform_catalog
-        )
+        self._uniform_catalog = uniform_catalog
+        self._visual_catalog = visual_catalog or supplied_uniform_catalog
         self.source_cache = source_cache or Nfl2k5SourceCache()
         self.build_service = build_service or Nfl2k5BuildService()
         self.session_factory = session_factory
@@ -847,6 +843,18 @@ class Nfl2k5StudioFacade:
         self._crib_io: Nfl2k5CribIO | None = None
         self._lock = threading.RLock()
         self._audio_preparation_lock = threading.Lock()
+
+    @property
+    def uniform_catalog(self):
+        if self._uniform_catalog is None:
+            self._uniform_catalog = load_nfl2k5_uniform_catalog()
+        return self._uniform_catalog
+
+    @property
+    def visual_catalog(self):
+        if self._visual_catalog is None:
+            self._visual_catalog = load_nfl2k5_product_visual_catalog()
+        return self._visual_catalog
 
     @property
     def source_ready(self) -> bool:
@@ -3298,13 +3306,21 @@ class Nfl2k5StudioFacade:
             return service.import_edited(source, progress=progress)
 
     def preview_digit_sheet(self, outputs: Sequence[object], progress: ProgressSink) -> object:
-        """Encode a frozen sheet against the active source, without staging it."""
-        from mod_editor.core.nfl2k5_digit_preview import preview_digit_sheet
+        """Encode the frozen sheet and current jersey colour under the source lock."""
+        from mod_editor.core.nfl2k5_digit_preview import preview_digit_sheet, jersey_preview_colour
 
         with self._lock:
             session = self._require_session()
             targets = tuple(self.uniform_catalog.get_asset(output.asset_id) for output in outputs)
-            return preview_digit_sheet(session.cache.pack0, targets, outputs, progress)
+            if not targets:
+                raise ValidationError("Choose ten digit slots before previewing a sheet.")
+            torso = next((asset for asset in self.uniform_catalog.assets_for_set(targets[0].set_selector)
+                          if asset.kind == "torso"), None)
+            if torso is None:
+                raise ValidationError("The selected uniform has no jersey base for the preview.")
+            background = jersey_preview_colour(session.current_path(torso))
+            return preview_digit_sheet(session.cache.pack0, targets, outputs, progress,
+                                       background=background)
 
     def replace_asset(
         self, asset: UniformAsset, supplied_png: Path, progress: ProgressSink
@@ -3317,7 +3333,7 @@ class Nfl2k5StudioFacade:
 
     def replace_equipment_texture(
         self, asset: object, supplied_png: Path, progress: ProgressSink, *,
-        independent: bool = False, scale: int = 1,
+        independent: bool | None = None, scale: int = 1,
     ) -> object:
         """Compile the selected equipment choice before changing the project."""
         from mod_editor.core.nfl2k5_equipment_import import stage_equipment_import
@@ -3624,6 +3640,7 @@ class Nfl2k5StudioFacade:
 
     def launch_xemu(self, progress: ProgressSink) -> object:
         from mod_editor.core.image_use import assert_image_available
+        from mod_editor.studio import xemu_settings
 
         command = self.xemu_command
         with self._lock:
@@ -3641,6 +3658,9 @@ class Nfl2k5StudioFacade:
         argv = _xemu_launch_argv(command, result.output_xiso)
         if sys.platform == "win32":
             _validate_xemu_executable(Path(shutil.which(command[0]) or command[0]))
+        permission_note = xemu_settings.grant_build_folder(command, result.output_xiso.parent)
+        if permission_note:
+            progress(permission_note, 0, 1)
         try:
             self._process_launcher(
                 argv,
@@ -3657,9 +3677,16 @@ class Nfl2k5StudioFacade:
                     "select xemu.exe in Set up xemu. A 64-bit xemu needs 64-bit Windows; "
                     "use a build for your PC's CPU type. The game disc was not changed.") from exc
             raise ValidationError(f"xemu could not be started: {exc}") from exc
-        progress("xemu launched", 1, 1)
+        settings_note = ""
+        try:
+            xemu_settings.remember_disc(xemu_settings.config_path(command), result.output_xiso)
+        except (OSError, ValueError, TypeError) as exc:
+            settings_note = f" Could not remember the disc in xemu settings: {exc}."
+        message = (f"xemu launched. {xemu_settings.disc_help(result.output_xiso)}."
+                   + (f" {permission_note}" if permission_note else "") + settings_note)
+        progress(message, 1, 1)
         return StudioOperationResult(
-            f"xemu launched with {result.output_xiso.name}.", result.output_xiso
+            message, result.output_xiso
         )
 
     def _require_session(self) -> StudioSession:

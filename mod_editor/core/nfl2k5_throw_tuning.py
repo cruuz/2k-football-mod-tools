@@ -1035,8 +1035,7 @@ class _dynamic_kickoff_adapter:
 
 
 # Shared keys keep byte writers and paired image allocation on the same union.
-PLAYBOOK_PAIR_CONFLICT = ("Separate playbooks cannot be combined with custom read-option or QB-spy controls in this build. "
-                          "Turn one option off.")
+# Retained until the protected mod_build refusal is removed through WIRING.md.
 R62_SPACE_KEYS = ('momentum_collisions', 'momentum_collision_level', 'read_option_runtime', 'franchise_2026_rules', 'senior_bowl', 'guardian_overlay', 'my_career', 'screen_hooks', 'reserves_16', 'created_teams_extra', 'franchise_autosave', 'coverage_trail', 'franchise_edit_player', 'cpu_money_downs', 'accelerated_clock', 'weekly_prep', 'playbook_pair', 'deep_zone_facing', 'deep_zone_bail')
 R62_RUNTIME_KEYS = ('momentum_collisions', 'momentum_collision_level', 'read_option_runtime', 'franchise_2026_rules', 'senior_bowl', 'guardian_overlay', 'my_career', 'screen_hooks', 'reserves_16', 'created_teams_extra', 'read_option_intent_table', 'guardian_everyone_practice', 'my_career_setup', 'crib_reclaim', 'modern_naming', 'franchise_autosave', 'coverage_trail', 'franchise_edit_player', 'cpu_money_downs', 'accelerated_clock', 'accelerated_clock_minimum_seconds', 'weekly_prep', 'weekly_prep_cpu', 'weekly_prep_remember', 'playbook_pair', 'deep_zone_facing', 'deep_zone_bail')
 
@@ -1158,7 +1157,7 @@ def _selected_space_requests(with_kickoff=False, runtime=False, momentum=0, defe
         + (franchise_2026_patch.REQUESTS if franchise_2026_rules else ())
         + (senior_bowl_patch.REQUESTS if senior_bowl else ())
         + (guardian_overlay_patch.REQUESTS if guardian_overlay else ())
-        + (my_career_mode_patch.REQUESTS if my_career else ())  # M3: code 16384, state 4096 and the fixed M3 state page; harmless for a legacy setup
+        + (my_career_mode_patch.REQUESTS if my_career else ())  # M3: code 20480, state 4096 and the fixed M3 state page; harmless for a legacy setup
         + (screen_hooks_patch.REQUESTS if screen_hooks else ())
         + (coverage_trail_patch.REQUESTS if coverage_trail else ())
         + (franchise_edit_player_patch.REQUESTS if franchise_edit_player else ())
@@ -1538,8 +1537,6 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
     weekly_prep = r62["weekly_prep"] = bool(weekly_prep or weekly_prep_cpu or weekly_prep_remember)
     if my_career and my_career_setup is None:
         draft_ai = True  # M3's draft reuses the draft-AI ratings/need implementation and receipt
-    if playbook_pair and (read_option_runtime or qb_spy):
-        raise ValueError(PLAYBOOK_PAIR_CONFLICT)
     clock_state = accelerated_clock_patch.status(payload)
     # Synthetic or partial images (test fixtures, foreign discs) report "foreign";
     # that only matters when the clock is actually requested or already installed.
@@ -1843,8 +1840,6 @@ def write_xbe_copy(
 
     r62 = _r62_options(locals())
     _validate_r62_options(**r62)
-    if playbook_pair and (read_option_runtime or qb_spy):
-        raise ValueError(PLAYBOOK_PAIR_CONFLICT)
     momentum_patch._settings(momentum, momentum_contact, momentum_collisions, momentum_collision_level)
     if my_career and my_career_setup is not None:
         my_career_setup = r62["my_career_setup"] = my_career_patch.read_setup(my_career_setup)
@@ -2050,6 +2045,7 @@ def write_image_copy(
     modern_naming=False,
     guardian_players=None,
     _defer_image_resources=False,
+    _consume_source=False,
     espn25_rosters=False,
 ) -> dict[str, object]:
     """Copy a disc image and patch ``default.xbe`` inside the COPY.
@@ -2061,8 +2057,6 @@ def write_image_copy(
 
     r62 = _r62_options(locals())
     _validate_r62_options(**r62)
-    if playbook_pair and (read_option_runtime or qb_spy):
-        raise ValueError(PLAYBOOK_PAIR_CONFLICT)
     momentum_patch._settings(momentum, momentum_contact, momentum_collisions, momentum_collision_level)
     if my_career and my_career_setup is not None:
         my_career_setup = r62["my_career_setup"] = my_career_patch.read_setup(my_career_setup)
@@ -2104,6 +2098,7 @@ def write_image_copy(
         original = platform_compat.pread(src, length, offset)
         _require(len(original) == length, "short read of default.xbe from the source image")
         arc_table = settings is not None and settings.arc_by_distance
+        report("Preparing default.xbe patches", 0, 0)
         patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera and not defer_grown, kick_rules, widescreen, overtime, arc_table=arc_table, flatter_deep_ball=flatter_deep_ball, chop_block_toggle=chop_block_toggle, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks, season_cap=season_cap, xbe_space=xbe_space and not defer_grown, kickoff_relocated=kickoff_relocated and not defer_grown, scorebug_runtime=False, momentum=0 if defer_grown else momentum, momentum_contact=False if defer_grown else momentum_contact, defensive_try=defensive_try and not defer_grown, zone_drop_cap=zone_drop_cap and not defer_grown, all_stadiums=all_stadiums and not defer_grown, coverage_slider=coverage_slider and not defer_grown, scramble_tuning=scramble_tuning and not defer_grown, music_policy=music_policy, music_unlock=music_unlock, music_userlist=music_userlist, music_metadata=None if defer_grown else music_metadata, music_shuffle=music_shuffle and not defer_grown, music_shuffle_selection=None if defer_grown else music_shuffle_selection, practice_squad_screen=practice_squad_screen and not defer_grown, abilities=abilities and not defer_grown, abilities_off_week=None if defer_grown else abilities_off_week, abilities_lock_right_stick=abilities_lock_right_stick, abilities_lock_special_moves=abilities_lock_special_moves, abilities_lock_speedster=abilities_lock_speedster, qb_spy=qb_spy and not defer_grown, qb_spy_intent_table=None if defer_grown else qb_spy_intent_table, calendar_engine=calendar_engine and not defer_grown, **_deferred_r62_options(r62, defer_grown))
         entries: dict[str, object] = {}
         disc_before: dict[str, object] = {}
@@ -2113,18 +2108,21 @@ def write_image_copy(
         _require(defer_grown or reserves_16 or created_teams_extra or crib_reclaim or modern_naming or patched != original or disc_before.get("status") == "retail",
                  "nothing to write: the requested curves and patches already match the image")
         _prepare_target(source, target, overwrite)
-        dst = _open_binary(target, os.O_RDWR | os.O_CREAT | os.O_EXCL)   # read-write: the disc text pass verifies as it goes
+        if _consume_source:
+            # Only mod_build's owned, verified private intermediate uses this.
+            # Close the source handle before moving it (Windows sharing rules).
+            _require(os.fstat(src).st_nlink == 1, "staged image must not have hard links")
+            os.close(src)
+            src = None
+            os.replace(source, target)
+            dst = _open_binary(target, os.O_RDWR)
+        else:
+            dst = _open_binary(target, os.O_RDWR | os.O_CREAT | os.O_EXCL)
         try:
-            copied = 0
-            while copied < size:
-                chunk = platform_compat.pread(src, min(_COPY_CHUNK, size - copied), copied)
-                _require(bool(chunk), "source image shrank during the copy")
-                view = memoryview(chunk)
-                done = 0
-                while done < len(chunk):
-                    done += os.write(dst, view[done:])
-                copied += len(chunk)
-                report("Copying disc image", copied, size)
+            if not _consume_source:
+                from .build_io import copy_descriptors
+                copy_descriptors(src, dst, size, report)
+            report("Writing default.xbe changes", 0, 0)
             ranges: list[tuple[int, int]] = []
             i = 0
             while i < len(original):
@@ -2152,7 +2150,8 @@ def write_image_copy(
         finally:
             os.close(dst)
     finally:
-        os.close(src)
+        if src is not None:
+            os.close(src)
     report("Verifying the patched copy", 0, 0)
     check = _open_binary(target, os.O_RDONLY)
     try:

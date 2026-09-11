@@ -56,7 +56,7 @@ def slot_for_stream(stream):
         stream.sample_rate, stream.frame_count, (), tuple(spans))
 
 
-def song_library_recipe(songs):
+def song_library_recipe(songs, collection_name="My songs"):
     """Keep the 7 menu and 59 jukebox songs; append at most 134 authored songs.
 
     Existing BuildPlan.music_library consumes this unchanged v1 recipe. The
@@ -75,18 +75,20 @@ def song_library_recipe(songs):
         if artist.strip():
             row["artist"] = artist
         tracks.append(row)
-    return dict(schema="nfl2k5_music_library/v1", bank="cribmusic", tracks=tracks)
+    from .nfl2k5_music_metadata import collection_label
+    return dict(schema="nfl2k5_music_library/v1", bank="cribmusic", tracks=tracks,
+                collection_name=collection_label(collection_name))
 
 
 def encode_library_song(source, encoded_path, preview_path, *, cancelled=None, progress=None):
     """The library writer's exact encoder, chunking and final-frame padding.
 
-    Preview decodes the emitted bytes, never plays the conformed source. Only
+    Preview uses the winning encoder predictors, never the conformed source. Only
     one encoder chunk is held in memory. No audio process is started here.
     """
     import wave
     from . import nfl2k5_music_banks as banks
-    from .nfl2k5_ausb_fixed_slots import decode_xbox_ima_time_block
+    from tools.xbox_ima_encoder import encode_stream_with_preview
     encoded_hash, decoded_hash = hashlib.sha256(), hashlib.sha256()
     def check():
         if cancelled and cancelled():
@@ -110,12 +112,10 @@ def encode_library_song(source, encoded_path, preview_path, *, cancelled=None, p
             remaining -= count
             if not remaining:
                 pcm += pcm[-4:]*((-count) % 64)
-            encoded = banks.encode_stream(pcm, 2)
+            encoded, decoded = encode_stream_with_preview(pcm, 2)
             banks._ima_headers(encoded, 2)
             out.write(encoded)
             encoded_hash.update(encoded)
-            decoded = b"".join(decode_xbox_ima_time_block(encoded[i:i+72], 2)
-                               for i in range(0, len(encoded), 72))
             preview.writeframesraw(decoded)
             decoded_hash.update(decoded)
             if progress:

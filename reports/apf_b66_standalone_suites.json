@@ -1,0 +1,1087 @@
+{
+  "schema": "apf_b66_standalone_suites/v1",
+  "command": "PYTHONPATH=<repo> QT_QPA_PLATFORM=offscreen python3 <each path>",
+  "suite_count": 194,
+  "passed": 169,
+  "failed": 25,
+  "results": [
+    {
+      "path": "tests/apf_crest_box_patch_test.py",
+      "returncode": 0,
+      "seconds": 0.12
+    },
+    {
+      "path": "tests/apf_digital_font_patch_test.py",
+      "returncode": 0,
+      "seconds": 315.2
+    },
+    {
+      "path": "tests/apf_eagles_crest_region_mask_test.py",
+      "returncode": 0,
+      "seconds": 0.22
+    },
+    {
+      "path": "tests/apf_gltf_units_test.py",
+      "returncode": 0,
+      "seconds": 1.57
+    },
+    {
+      "path": "tests/apf_h7a_no_overlap_test.py",
+      "returncode": 0,
+      "seconds": 17.7
+    },
+    {
+      "path": "tests/apf_h7a_optimal_is_bounded_test.py",
+      "returncode": 0,
+      "seconds": 22.17
+    },
+    {
+      "path": "tests/apf_helmet_crest_carrier_expand_test.py",
+      "returncode": 0,
+      "seconds": 0.16
+    },
+    {
+      "path": "tests/apf_helmet_crest_carrier_uv_wrap_test.py",
+      "returncode": 0,
+      "seconds": 0.16
+    },
+    {
+      "path": "tests/apf_helmet_crest_guard_band_test.py",
+      "returncode": 0,
+      "seconds": 0.77
+    },
+    {
+      "path": "tests/apf_helmet_crest_independent_verify_test.py",
+      "returncode": 0,
+      "seconds": 0.16
+    },
+    {
+      "path": "tests/apf_helmet_crest_mask_fit_test.py",
+      "returncode": 0,
+      "seconds": 0.82
+    },
+    {
+      "path": "tests/apf_helmet_crest_wrap_test.py",
+      "returncode": 0,
+      "seconds": 0.37
+    },
+    {
+      "path": "tests/apf_helmet_crest_wrap_v18_test.py",
+      "returncode": 0,
+      "seconds": 0.17
+    },
+    {
+      "path": "tests/apf_helmet_dual_lod_shell_material_route_test.py",
+      "returncode": 0,
+      "seconds": 0.27
+    },
+    {
+      "path": "tests/apf_helmet_family_patch_test.py",
+      "returncode": 1,
+      "seconds": 1.27,
+      "failure_tail": "  File \"<repo>/tests/apf_helmet_family_patch_test.py\", line 262, in main\n    run(Path(temporary) / \"report.json\", args.full_copy)\n  File \"<repo>/tests/apf_helmet_family_patch_test.py\", line 59, in run\n    catalog = json.loads(family_patch.CATALOG.read_text(encoding=\"utf-8\"))\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/pathlib.py\", line 1029, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/pathlib.py\", line 1015, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '<repo>/reports/assets/apf_helmet_family_layout.json'"
+    },
+    {
+      "path": "tests/apf_helmet_shell_atlas_audit_test.py",
+      "returncode": 0,
+      "seconds": 0.16
+    },
+    {
+      "path": "tests/apf_helmet_shell_catalog_verify_test.py",
+      "returncode": 0,
+      "seconds": 8.56
+    },
+    {
+      "path": "tests/apf_helmet_shell_literal_test.py",
+      "returncode": 1,
+      "seconds": 13.31,
+      "failure_tail": "  File \"/usr/lib/python3.12/pathlib.py\", line 1021, in read_bytes\n    with self.open(mode='rb') as f:\n         ^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/pathlib.py\", line 1015, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '<repo>/reports/assets/apf_helmet_family_layout.json'\n\n----------------------------------------------------------------------\nRan 6 tests in 13.032s\n\nFAILED (errors=1)"
+    },
+    {
+      "path": "tests/apf_helmet_shell_material_route_test.py",
+      "returncode": 0,
+      "seconds": 34.08
+    },
+    {
+      "path": "tests/apf_helmet_shell_prebuild_static_proof_test.py",
+      "returncode": 0,
+      "seconds": 2.43
+    },
+    {
+      "path": "tests/apf_helmet_shell_static_proof_test.py",
+      "returncode": 0,
+      "seconds": 3.13
+    },
+    {
+      "path": "tests/apf_helmet_static_visual_calibration_test.py",
+      "returncode": 0,
+      "seconds": 1.47
+    },
+    {
+      "path": "tests/apf_helmet_static_visual_proof_test.py",
+      "returncode": 0,
+      "seconds": 0.87
+    },
+    {
+      "path": "tests/apf_instruction_budget_instrumenter_test.py",
+      "returncode": 0,
+      "seconds": 0.11
+    },
+    {
+      "path": "tests/apf_jersey_family_export_test.py",
+      "returncode": 5,
+      "seconds": 0.27,
+      "failure_tail": "  File \"/usr/lib/python3.12/pathlib.py\", line 1021, in read_bytes\n    with self.open(mode='rb') as f:\n         ^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/pathlib.py\", line 1015, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '<repo>/reports/assets/apf_jersey_family_layout.json'\n\n----------------------------------------------------------------------\nRan 0 tests in 0.001s\n\nFAILED (errors=1)"
+    },
+    {
+      "path": "tests/apf_jersey_family_patch_test.py",
+      "returncode": 1,
+      "seconds": 0.32,
+      "failure_tail": "    catalog = family_patch._load_catalog()  # type: ignore[attr-defined]\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<repo>/tools/apf_jersey_family_patch.py\", line 48, in _load_catalog\n    data = CATALOG.read_bytes()\n           ^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/pathlib.py\", line 1021, in read_bytes\n    with self.open(mode='rb') as f:\n         ^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/pathlib.py\", line 1015, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '<repo>/reports/assets/apf_jersey_family_layout.json'"
+    },
+    {
+      "path": "tests/apf_jersey_family_verify_test.py",
+      "returncode": 1,
+      "seconds": 1.47,
+      "failure_tail": "  File \"/usr/lib/python3.12/pathlib.py\", line 1021, in read_bytes\n    with self.open(mode='rb') as f:\n         ^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/pathlib.py\", line 1015, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '<repo>/reports/assets/apf_jersey_family_layout.json'\n\n----------------------------------------------------------------------\nRan 4 tests in 1.255s\n\nFAILED (errors=2)"
+    },
+    {
+      "path": "tests/apf_logo_patch_test.py",
+      "returncode": 0,
+      "seconds": 26.97
+    },
+    {
+      "path": "tests/apf_logocache_patch_test.py",
+      "returncode": 0,
+      "seconds": 31.92
+    },
+    {
+      "path": "tests/apf_pants_family_patch_test.py",
+      "returncode": 1,
+      "seconds": 1.27,
+      "failure_tail": "  File \"<repo>/tests/apf_pants_family_patch_test.py\", line 223, in main\n    run(Path(temporary) / \"report.json\", args.full_copy)\n  File \"<repo>/tests/apf_pants_family_patch_test.py\", line 43, in run\n    catalog = json.loads(family_patch.CATALOG.read_text(encoding=\"utf-8\"))\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/pathlib.py\", line 1029, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/pathlib.py\", line 1015, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '<repo>/reports/assets/apf_pants_family_layout.json'"
+    },
+    {
+      "path": "tests/apf_player_shadow_screenshot_test.py",
+      "returncode": 0,
+      "seconds": 0.67
+    },
+    {
+      "path": "tests/apf_shoulder_family_patch_test.py",
+      "returncode": 1,
+      "seconds": 1.42,
+      "failure_tail": "  File \"<repo>/tests/apf_shoulder_family_patch_test.py\", line 257, in main\n    run(Path(temporary) / \"report.json\", args.full_copy)\n  File \"<repo>/tests/apf_shoulder_family_patch_test.py\", line 45, in run\n    catalog = json.loads(family_patch.CATALOG.read_text(encoding=\"utf-8\"))\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/pathlib.py\", line 1029, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/pathlib.py\", line 1015, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '<repo>/reports/assets/apf_shoulder_family_layout.json'"
+    },
+    {
+      "path": "tests/apf_texture_patch_test.py",
+      "returncode": 1,
+      "seconds": 67.44,
+      "failure_tail": "  File \"<repo>/tests/apf_texture_patch_test.py\", line 446, in main\n    run(Path(temporary) / \"report.json\", arguments.full_copy)\n  File \"<repo>/tests/apf_texture_patch_test.py\", line 257, in run\n    live_uniform = assess_live_uniform(index_path)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<repo>/tests/apf_texture_patch_test.py\", line 189, in assess_live_uniform\n    with (WORKSPACE / \"reports/assets/apf_uniform_team_assets.tsv\").open(\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/pathlib.py\", line 1015, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '<repo>/reports/assets/apf_uniform_team_assets.tsv'"
+    },
+    {
+      "path": "tests/apf_uniform_mip_patch_test.py",
+      "returncode": 1,
+      "seconds": 7.03,
+      "failure_tail": "    no_op = uniform_patch.build_patch(INDEX_PATH, SOURCE_PNG)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<repo>/tools/apf_uniform_mip_patch.py\", line 409, in build_patch\n    wanted_base = _load_png(png_path, locations[0].width, locations[0].height)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<repo>/tools/apf_uniform_mip_patch.py\", line 101, in _load_png\n    with Image.open(path) as image:\n         ^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3/dist-packages/PIL/Image.py\", line 3247, in open\n    fp = builtins.open(filename, \"rb\")\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '<repo>/reports/assets/apf_uniform_samples/team00_bank0_jersey_06_jersey_color.png'"
+    },
+    {
+      "path": "tests/apf_writer_path_safety_test.py",
+      "returncode": 0,
+      "seconds": 0.21
+    },
+    {
+      "path": "tests/apf_xex_shader_interfaces_test.py",
+      "returncode": 0,
+      "seconds": 0.11
+    },
+    {
+      "path": "tests/mod_editor/test_apf2k8_coverage_tuning.py",
+      "returncode": 0,
+      "seconds": 1.67
+    },
+    {
+      "path": "tests/mod_editor/test_apf2k8_playbook_route_writer.py",
+      "returncode": 0,
+      "seconds": 0.57
+    },
+    {
+      "path": "tests/mod_editor/test_apf_all_crest_slots.py",
+      "returncode": 0,
+      "seconds": 0.92
+    },
+    {
+      "path": "tests/mod_editor/test_apf_audio_annotation_facade.py",
+      "returncode": 0,
+      "seconds": 0.57
+    },
+    {
+      "path": "tests/mod_editor/test_apf_audio_annotations.py",
+      "returncode": 0,
+      "seconds": 0.47
+    },
+    {
+      "path": "tests/mod_editor/test_apf_audio_batch_export.py",
+      "returncode": 0,
+      "seconds": 0.37
+    },
+    {
+      "path": "tests/mod_editor/test_apf_audio_batch_facade.py",
+      "returncode": 0,
+      "seconds": 0.52
+    },
+    {
+      "path": "tests/mod_editor/test_apf_audio_batch_gui.py",
+      "returncode": 0,
+      "seconds": 0.82
+    },
+    {
+      "path": "tests/mod_editor/test_apf_audio_decode_cancellation.py",
+      "returncode": 0,
+      "seconds": 1.57
+    },
+    {
+      "path": "tests/mod_editor/test_apf_audio_drop_zone_gui.py",
+      "returncode": 0,
+      "seconds": 0.97
+    },
+    {
+      "path": "tests/mod_editor/test_apf_audio_encoder_gui.py",
+      "returncode": 0,
+      "seconds": 0.97
+    },
+    {
+      "path": "tests/mod_editor/test_apf_audio_encoding.py",
+      "returncode": 0,
+      "seconds": 13.55
+    },
+    {
+      "path": "tests/mod_editor/test_apf_audio_import_idle_barrier.py",
+      "returncode": 0,
+      "seconds": 1.22
+    },
+    {
+      "path": "tests/mod_editor/test_apf_audio_pcm_product_backend.py",
+      "returncode": 0,
+      "seconds": 1.32
+    },
+    {
+      "path": "tests/mod_editor/test_apf_audio_replacement_pack.py",
+      "returncode": 0,
+      "seconds": 0.92
+    },
+    {
+      "path": "tests/mod_editor/test_apf_audio_waveform_qt.py",
+      "returncode": 0,
+      "seconds": 0.97
+    },
+    {
+      "path": "tests/mod_editor/test_apf_audo_exact_slot.py",
+      "returncode": 0,
+      "seconds": 0.37
+    },
+    {
+      "path": "tests/mod_editor/test_apf_audo_product_backend.py",
+      "returncode": 0,
+      "seconds": 0.37
+    },
+    {
+      "path": "tests/mod_editor/test_apf_audo_project.py",
+      "returncode": 0,
+      "seconds": 0.26
+    },
+    {
+      "path": "tests/mod_editor/test_apf_ausb_exact_slot.py",
+      "returncode": 0,
+      "seconds": 18.97
+    },
+    {
+      "path": "tests/mod_editor/test_apf_ausb_product_backend.py",
+      "returncode": 0,
+      "seconds": 0.52
+    },
+    {
+      "path": "tests/mod_editor/test_apf_b66_appearance.py",
+      "returncode": 0,
+      "seconds": 3.89
+    },
+    {
+      "path": "tests/mod_editor/test_apf_b66_personnel.py",
+      "returncode": 0,
+      "seconds": 6.18
+    },
+    {
+      "path": "tests/mod_editor/test_apf_book_identity_qt.py",
+      "returncode": 0,
+      "seconds": 0.32
+    },
+    {
+      "path": "tests/mod_editor/test_apf_book_unlock.py",
+      "returncode": 0,
+      "seconds": 34.05
+    },
+    {
+      "path": "tests/mod_editor/test_apf_book_unlock_retail.py",
+      "returncode": 0,
+      "seconds": 0.27
+    },
+    {
+      "path": "tests/mod_editor/test_apf_browser_workspace_handoff.py",
+      "returncode": 0,
+      "seconds": 0.77
+    },
+    {
+      "path": "tests/mod_editor/test_apf_build_ausb_overlays.py",
+      "returncode": 0,
+      "seconds": 0.47
+    },
+    {
+      "path": "tests/mod_editor/test_apf_build_raw_span_overlays.py",
+      "returncode": 0,
+      "seconds": 0.47
+    },
+    {
+      "path": "tests/mod_editor/test_apf_capability_action_parity.py",
+      "returncode": 0,
+      "seconds": 0.57
+    },
+    {
+      "path": "tests/mod_editor/test_apf_copied_volume_metadata.py",
+      "returncode": 0,
+      "seconds": 0.52
+    },
+    {
+      "path": "tests/mod_editor/test_apf_coverage_research_tools.py",
+      "returncode": 0,
+      "seconds": 0.11
+    },
+    {
+      "path": "tests/mod_editor/test_apf_cpu_audibles.py",
+      "returncode": 0,
+      "seconds": 4.28
+    },
+    {
+      "path": "tests/mod_editor/test_apf_cross_domain_audio_safety.py",
+      "returncode": 0,
+      "seconds": 0.47
+    },
+    {
+      "path": "tests/mod_editor/test_apf_cubemap_face0_preview.py",
+      "returncode": 0,
+      "seconds": 25.53
+    },
+    {
+      "path": "tests/mod_editor/test_apf_custom_team_appearance_gui.py",
+      "returncode": 0,
+      "seconds": 0.37
+    },
+    {
+      "path": "tests/mod_editor/test_apf_custom_team_appearance_patch.py",
+      "returncode": 0,
+      "seconds": 10.88
+    },
+    {
+      "path": "tests/mod_editor/test_apf_digital_font.py",
+      "returncode": 0,
+      "seconds": 0.57
+    },
+    {
+      "path": "tests/mod_editor/test_apf_dxn_base_only_namefont.py",
+      "returncode": 0,
+      "seconds": 19.77
+    },
+    {
+      "path": "tests/mod_editor/test_apf_dxt5a_general_preview.py",
+      "returncode": 0,
+      "seconds": 27.99
+    },
+    {
+      "path": "tests/mod_editor/test_apf_endzone_dxt5a.py",
+      "returncode": 0,
+      "seconds": 57.24
+    },
+    {
+      "path": "tests/mod_editor/test_apf_export.py",
+      "returncode": 0,
+      "seconds": 0.22
+    },
+    {
+      "path": "tests/mod_editor/test_apf_external_audio_bank_bundle.py",
+      "returncode": 0,
+      "seconds": 0.62
+    },
+    {
+      "path": "tests/mod_editor/test_apf_field_art.py",
+      "returncode": 0,
+      "seconds": 0.26
+    },
+    {
+      "path": "tests/mod_editor/test_apf_field_art_gui.py",
+      "returncode": 0,
+      "seconds": 1.27
+    },
+    {
+      "path": "tests/mod_editor/test_apf_field_art_patch.py",
+      "returncode": 0,
+      "seconds": 358.49
+    },
+    {
+      "path": "tests/mod_editor/test_apf_field_art_stock_label.py",
+      "returncode": 0,
+      "seconds": 0.77
+    },
+    {
+      "path": "tests/mod_editor/test_apf_field_extra_roundtrip.py",
+      "returncode": 0,
+      "seconds": 259.51
+    },
+    {
+      "path": "tests/mod_editor/test_apf_field_material_project.py",
+      "returncode": 0,
+      "seconds": 0.72
+    },
+    {
+      "path": "tests/mod_editor/test_apf_field_material_writer.py",
+      "returncode": 0,
+      "seconds": 0.47
+    },
+    {
+      "path": "tests/mod_editor/test_apf_formation_alignment_writer.py",
+      "returncode": 0,
+      "seconds": 0.47
+    },
+    {
+      "path": "tests/mod_editor/test_apf_full_shell_visual_gate.py",
+      "returncode": 0,
+      "seconds": 0.06
+    },
+    {
+      "path": "tests/mod_editor/test_apf_g12_surfaces.py",
+      "returncode": 0,
+      "seconds": 0.67
+    },
+    {
+      "path": "tests/mod_editor/test_apf_helmet_crest_design_product.py",
+      "returncode": 0,
+      "seconds": 1.72
+    },
+    {
+      "path": "tests/mod_editor/test_apf_helmet_logo_placement.py",
+      "returncode": 0,
+      "seconds": 8.83
+    },
+    {
+      "path": "tests/mod_editor/test_apf_helmet_logo_regions.py",
+      "returncode": 0,
+      "seconds": 4.52
+    },
+    {
+      "path": "tests/mod_editor/test_apf_helmet_logo_regions_qt.py",
+      "returncode": 0,
+      "seconds": 1.42
+    },
+    {
+      "path": "tests/mod_editor/test_apf_import_offers_resize.py",
+      "returncode": 0,
+      "seconds": 0.92
+    },
+    {
+      "path": "tests/mod_editor/test_apf_iso_extraction_is_layout_tolerant.py",
+      "returncode": 0,
+      "seconds": 0.37
+    },
+    {
+      "path": "tests/mod_editor/test_apf_linear_txtr_png.py",
+      "returncode": 0,
+      "seconds": 0.11
+    },
+    {
+      "path": "tests/mod_editor/test_apf_logo_patch.py",
+      "returncode": 0,
+      "seconds": 158.04
+    },
+    {
+      "path": "tests/mod_editor/test_apf_logo_surface_ownership.py",
+      "returncode": 0,
+      "seconds": 0.17
+    },
+    {
+      "path": "tests/mod_editor/test_apf_logocache_patch.py",
+      "returncode": 0,
+      "seconds": 131.91
+    },
+    {
+      "path": "tests/mod_editor/test_apf_mask_preview_alpha.py",
+      "returncode": 0,
+      "seconds": 0.32
+    },
+    {
+      "path": "tests/mod_editor/test_apf_model_export_gui.py",
+      "returncode": 0,
+      "seconds": 3.97
+    },
+    {
+      "path": "tests/mod_editor/test_apf_model_import.py",
+      "returncode": 0,
+      "seconds": 67.55
+    },
+    {
+      "path": "tests/mod_editor/test_apf_number_texture_writer.py",
+      "returncode": 0,
+      "seconds": 362.28
+    },
+    {
+      "path": "tests/mod_editor/test_apf_package_map_writer.py",
+      "returncode": 0,
+      "seconds": 2.07
+    },
+    {
+      "path": "tests/mod_editor/test_apf_play_designer.py",
+      "returncode": 0,
+      "seconds": 20.67
+    },
+    {
+      "path": "tests/mod_editor/test_apf_play_designer_project.py",
+      "returncode": 0,
+      "seconds": 0.82
+    },
+    {
+      "path": "tests/mod_editor/test_apf_play_designer_qt.py",
+      "returncode": 0,
+      "seconds": 0.57
+    },
+    {
+      "path": "tests/mod_editor/test_apf_playbook_route_gui.py",
+      "returncode": 0,
+      "seconds": 0.47
+    },
+    {
+      "path": "tests/mod_editor/test_apf_playcall_patch.py",
+      "returncode": 0,
+      "seconds": 2.87
+    },
+    {
+      "path": "tests/mod_editor/test_apf_player_position_patch.py",
+      "returncode": 0,
+      "seconds": 8.29
+    },
+    {
+      "path": "tests/mod_editor/test_apf_player_position_product_backend.py",
+      "returncode": 0,
+      "seconds": 30.79
+    },
+    {
+      "path": "tests/mod_editor/test_apf_player_positions.py",
+      "returncode": 0,
+      "seconds": 0.16
+    },
+    {
+      "path": "tests/mod_editor/test_apf_player_rating_patch.py",
+      "returncode": 0,
+      "seconds": 5.18
+    },
+    {
+      "path": "tests/mod_editor/test_apf_player_rating_product_backend.py",
+      "returncode": 0,
+      "seconds": 10.54
+    },
+    {
+      "path": "tests/mod_editor/test_apf_player_rating_sheet_import.py",
+      "returncode": 0,
+      "seconds": 17.07
+    },
+    {
+      "path": "tests/mod_editor/test_apf_player_ratings.py",
+      "returncode": 0,
+      "seconds": 0.92
+    },
+    {
+      "path": "tests/mod_editor/test_apf_product_findings.py",
+      "returncode": 1,
+      "seconds": 0.21,
+      "failure_tail": "                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<repo>/mod_editor/core/presentation_inspection.py\", line 100, in inspect_apf_scorebug_presentation\n    layout = _read(\n             ^^^^^^\n  File \"<repo>/mod_editor/core/presentation_inspection.py\", line 44, in _read\n    raise ValidationError(f\"{label} report is missing: {path}\") from exc\nmod_editor.core.errors.ValidationError: Digital-font layout report is missing: <repo>/reports/assets/apf_digital_font_layout.json\n\n----------------------------------------------------------------------\nRan 6 tests in 0.010s\n\nFAILED (errors=1)"
+    },
+    {
+      "path": "tests/mod_editor/test_apf_product_findings_gui.py",
+      "returncode": 0,
+      "seconds": 0.62
+    },
+    {
+      "path": "tests/mod_editor/test_apf_product_validation_wrappers.py",
+      "returncode": 0,
+      "seconds": 0.32
+    },
+    {
+      "path": "tests/mod_editor/test_apf_project_document_workflow.py",
+      "returncode": 0,
+      "seconds": 5.03
+    },
+    {
+      "path": "tests/mod_editor/test_apf_project_streaming.py",
+      "returncode": 0,
+      "seconds": 0.32
+    },
+    {
+      "path": "tests/mod_editor/test_apf_ps3_probes.py",
+      "returncode": 0,
+      "seconds": 1.67
+    },
+    {
+      "path": "tests/mod_editor/test_apf_ps3_roster_convert.py",
+      "returncode": 0,
+      "seconds": 15.8
+    },
+    {
+      "path": "tests/mod_editor/test_apf_ps3_roster_import_qt.py",
+      "returncode": 0,
+      "seconds": 1.57
+    },
+    {
+      "path": "tests/mod_editor/test_apf_ps3_texture_bundle.py",
+      "returncode": 0,
+      "seconds": 27.94
+    },
+    {
+      "path": "tests/mod_editor/test_apf_ps3_texture_bundle_qt.py",
+      "returncode": 0,
+      "seconds": 0.57
+    },
+    {
+      "path": "tests/mod_editor/test_apf_public_docs_registry_current.py",
+      "returncode": 0,
+      "seconds": 0.32
+    },
+    {
+      "path": "tests/mod_editor/test_apf_rating_value_domains.py",
+      "returncode": 0,
+      "seconds": 0.32
+    },
+    {
+      "path": "tests/mod_editor/test_apf_retail_crest_channel_audit.py",
+      "returncode": 0,
+      "seconds": 0.06
+    },
+    {
+      "path": "tests/mod_editor/test_apf_roster_identity.py",
+      "returncode": 0,
+      "seconds": 18.48
+    },
+    {
+      "path": "tests/mod_editor/test_apf_roster_identity_gui.py",
+      "returncode": 0,
+      "seconds": 1.47
+    },
+    {
+      "path": "tests/mod_editor/test_apf_roster_workspace.py",
+      "returncode": 0,
+      "seconds": 0.27
+    },
+    {
+      "path": "tests/mod_editor/test_apf_roster_workspace_gui.py",
+      "returncode": 0,
+      "seconds": 0.62
+    },
+    {
+      "path": "tests/mod_editor/test_apf_save_playbook_assignments_gui.py",
+      "returncode": 0,
+      "seconds": 1.67
+    },
+    {
+      "path": "tests/mod_editor/test_apf_save_roster_players.py",
+      "returncode": 0,
+      "seconds": 8.01
+    },
+    {
+      "path": "tests/mod_editor/test_apf_save_roster_players_gui.py",
+      "returncode": 0,
+      "seconds": 1.52
+    },
+    {
+      "path": "tests/mod_editor/test_apf_scorebug_workspace_qt.py",
+      "returncode": 0,
+      "seconds": 1.38
+    },
+    {
+      "path": "tests/mod_editor/test_apf_shell_search_accessibility_qt.py",
+      "returncode": 0,
+      "seconds": 3.59
+    },
+    {
+      "path": "tests/mod_editor/test_apf_splb_add_multiple_formations.py",
+      "returncode": 0,
+      "seconds": 1.28
+    },
+    {
+      "path": "tests/mod_editor/test_apf_splb_formation_personnel.py",
+      "returncode": 0,
+      "seconds": 2.75
+    },
+    {
+      "path": "tests/mod_editor/test_apf_splb_tag_reassignment.py",
+      "returncode": 0,
+      "seconds": 3.79
+    },
+    {
+      "path": "tests/mod_editor/test_apf_splb_writer.py",
+      "returncode": 0,
+      "seconds": 0.78
+    },
+    {
+      "path": "tests/mod_editor/test_apf_stadium_material_findings.py",
+      "returncode": 0,
+      "seconds": 0.22
+    },
+    {
+      "path": "tests/mod_editor/test_apf_stadium_model_import.py",
+      "returncode": 0,
+      "seconds": 0.83
+    },
+    {
+      "path": "tests/mod_editor/test_apf_stadium_studio.py",
+      "returncode": 0,
+      "seconds": 0.58
+    },
+    {
+      "path": "tests/mod_editor/test_apf_stadium_studio_gui.py",
+      "returncode": 0,
+      "seconds": 1.17
+    },
+    {
+      "path": "tests/mod_editor/test_apf_stadium_texture.py",
+      "returncode": 0,
+      "seconds": 120.37
+    },
+    {
+      "path": "tests/mod_editor/test_apf_studio_audio_gui.py",
+      "returncode": 0,
+      "seconds": 2.09
+    },
+    {
+      "path": "tests/mod_editor/test_apf_studio_core.py",
+      "returncode": 0,
+      "seconds": 0.47
+    },
+    {
+      "path": "tests/mod_editor/test_apf_studio_draft_logo.py",
+      "returncode": 0,
+      "seconds": 0.77
+    },
+    {
+      "path": "tests/mod_editor/test_apf_studio_inspectors.py",
+      "returncode": 0,
+      "seconds": 4.19
+    },
+    {
+      "path": "tests/mod_editor/test_apf_studio_installer.py",
+      "returncode": 1,
+      "seconds": 4.08,
+      "failure_tail": "    from .gui import PRODUCT_NAME, launch_studio\n  File \"/tmp/apf-alpha32-runtime-stage-ii_u04__/release/mod_editor/apf_studio/gui.py\", line 117, in <module>\n    from .build import (\n  File \"/tmp/apf-alpha32-runtime-stage-ii_u04__/release/mod_editor/apf_studio/build.py\", line 42, in <module>\n    from . import play_design_service as play_design, coverage_service, scheme_service, field_material_service\nImportError: cannot import name 'field_material_service' from 'mod_editor.apf_studio' (/tmp/apf-alpha32-runtime-stage-ii_u04__/release/mod_editor/apf_studio/__init__.py)\n\n\n----------------------------------------------------------------------\nRan 16 tests in 3.874s\n\nFAILED (failures=2)"
+    },
+    {
+      "path": "tests/mod_editor/test_apf_studio_safety.py",
+      "returncode": 0,
+      "seconds": 0.92
+    },
+    {
+      "path": "tests/mod_editor/test_apf_studio_text_edit.py",
+      "returncode": 0,
+      "seconds": 1.02
+    },
+    {
+      "path": "tests/mod_editor/test_apf_team_crest_selection.py",
+      "returncode": 0,
+      "seconds": 1.13
+    },
+    {
+      "path": "tests/mod_editor/test_apf_team_logo_gui.py",
+      "returncode": 0,
+      "seconds": 3.49
+    },
+    {
+      "path": "tests/mod_editor/test_apf_text_sheet_gui.py",
+      "returncode": 0,
+      "seconds": 1.17
+    },
+    {
+      "path": "tests/mod_editor/test_apf_textlogo_gui.py",
+      "returncode": 0,
+      "seconds": 1.27
+    },
+    {
+      "path": "tests/mod_editor/test_apf_textlogo_writer.py",
+      "returncode": 0,
+      "seconds": 97.42
+    },
+    {
+      "path": "tests/mod_editor/test_apf_uniform_allocation_capacity.py",
+      "returncode": 0,
+      "seconds": 2.63
+    },
+    {
+      "path": "tests/mod_editor/test_apf_uniform_equipment_colors.py",
+      "returncode": 0,
+      "seconds": 11.62
+    },
+    {
+      "path": "tests/mod_editor/test_apf_uniform_equipment_colors_gui.py",
+      "returncode": 0,
+      "seconds": 0.52
+    },
+    {
+      "path": "tests/mod_editor/test_apf_uniform_independence.py",
+      "returncode": 0,
+      "seconds": 0.27
+    },
+    {
+      "path": "tests/mod_editor/test_apf_uniform_inventory_gui.py",
+      "returncode": 0,
+      "seconds": 1.42
+    },
+    {
+      "path": "tests/mod_editor/test_apf_wave_integration.py",
+      "returncode": 0,
+      "seconds": 23.18
+    },
+    {
+      "path": "tests/mod_editor/test_apf_wordmark_regions.py",
+      "returncode": 0,
+      "seconds": 0.32
+    },
+    {
+      "path": "tests/mod_editor/test_apf_workspace_recovery.py",
+      "returncode": 0,
+      "seconds": 23.17
+    },
+    {
+      "path": "tests/mod_editor/test_apf_xenos_4444_mip_layout.py",
+      "returncode": 0,
+      "seconds": 3.13
+    },
+    {
+      "path": "tests/mod_editor/test_apf_xenos_4444_png.py",
+      "returncode": 0,
+      "seconds": 0.22
+    },
+    {
+      "path": "tests/mod_editor/test_apf_xenos_extra_formats_png.py",
+      "returncode": 0,
+      "seconds": 0.22
+    },
+    {
+      "path": "tests/mod_editor/test_apf_xma1_wizard_gui.py",
+      "returncode": 0,
+      "seconds": 2.68
+    },
+    {
+      "path": "tests/test_apf_assassins_helmet_selector.py",
+      "returncode": 5,
+      "seconds": 0.32,
+      "failure_tail": "          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<repo>/tools/apf_jersey_selector_patch.py\", line 639, in _read_bound_file\n    path = _absolute_no_symlink_path(path, what)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<repo>/tools/apf_jersey_selector_patch.py\", line 611, in _absolute_no_symlink_path\n    raise PatchError(f\"cannot resolve {what}: {exc}\") from exc\napf_jersey_selector_patch.PatchError: cannot resolve checked all-family allocation report: [Errno 2] No such file or directory: '<repo>/reports/assets/apf_uniform_selector_allocation.json'\n\n----------------------------------------------------------------------\nRan 0 tests in 0.003s\n\nFAILED (errors=1)"
+    },
+    {
+      "path": "tests/test_apf_jersey_selector_patch.py",
+      "returncode": 5,
+      "seconds": 0.37,
+      "failure_tail": "                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<repo>/tools/apf_jersey_selector_patch.py\", line 967, in _validate_source\n    index_path = _absolute_no_symlink_path(index_path, \"source 0A\")\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<repo>/tools/apf_jersey_selector_patch.py\", line 613, in _absolute_no_symlink_path\n    raise PatchError(f\"{what} path contains a symlink\")\napf_jersey_selector_patch.PatchError: source 0A path contains a symlink\n\n----------------------------------------------------------------------\nRan 0 tests in 0.001s\n\nFAILED (errors=1)"
+    },
+    {
+      "path": "tests/test_apf_jersey_selector_verify.py",
+      "returncode": 5,
+      "seconds": 0.27,
+      "failure_tail": "======================================================================\nERROR: setUpClass (__main__.APFJerseySelectorVerifyTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"<repo>/tests/test_apf_jersey_selector_verify.py\", line 82, in setUpClass\n    raise AssertionError(\nAssertionError: required APF jersey-selector authority is missing: <repo>/reports/asset_samples/apf_roster/jersey_wasps_identity.v1.json\n\n----------------------------------------------------------------------\nRan 0 tests in 0.001s\n\nFAILED (errors=1)"
+    },
+    {
+      "path": "tests/test_apf_membership_consumer_census.py",
+      "returncode": 0,
+      "seconds": 0.42
+    },
+    {
+      "path": "tests/test_apf_roster_export_compare.py",
+      "returncode": 0,
+      "seconds": 0.12
+    },
+    {
+      "path": "tests/test_apf_save_custom_team_appearance.py",
+      "returncode": 0,
+      "seconds": 2.68
+    },
+    {
+      "path": "tests/test_apf_save_playbook_assignments.py",
+      "returncode": 0,
+      "seconds": 1.52
+    },
+    {
+      "path": "tests/test_apf_scne_static_format_spec.py",
+      "returncode": 1,
+      "seconds": 0.22,
+      "failure_tail": "  File \"<repo>/tools/apf_scne_static_format_spec.py\", line 1291, in validate\n    _validate_source_pins()\n  File \"<repo>/tools/apf_scne_static_format_spec.py\", line 1116, in _validate_source_pins\n    _require(path.is_file(), f\"missing evidence source {key}: {path}\")\n  File \"<repo>/tools/apf_scne_static_format_spec.py\", line 1110, in _require\n    raise SpecError(message)\napf_scne_static_format_spec.SpecError: missing evidence source scene_inventory: <repo>/reports/assets/apf_scene_inventory.json\n\n----------------------------------------------------------------------\nRan 9 tests in 0.025s\n\nFAILED (errors=1)"
+    },
+    {
+      "path": "tests/test_apf_slot43_xenia_experiment.py",
+      "returncode": 0,
+      "seconds": 0.32
+    },
+    {
+      "path": "tests/test_apf_stadium_catalog_position_patch.py",
+      "returncode": 1,
+      "seconds": 1.73,
+      "failure_tail": "\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"<repo>/tests/test_apf_stadium_catalog_position_patch.py\", line 158, in test_writer_refuses_symlink_inputs_parent_and_existing_output\n    with self.assertRaisesRegex(writer.PatchError, \"recipe\"):\nAssertionError: \"recipe\" does not match \"source game directory path contains a symlink\"\n\n----------------------------------------------------------------------\nRan 14 tests in 1.422s\n\nFAILED (failures=1, errors=4)"
+    },
+    {
+      "path": "tests/test_apf_stadium_node17_topology_patch.py",
+      "returncode": 1,
+      "seconds": 6.85,
+      "failure_tail": "\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"<repo>/tests/test_apf_stadium_node17_topology_patch.py\", line 161, in test_writer_refuses_symlink_inputs_and_existing_output_before_mutation\n    with self.assertRaisesRegex(writer.PatchError, \"recipe\"):\nAssertionError: \"recipe\" does not match \"source game directory path contains a symlink\"\n\n----------------------------------------------------------------------\nRan 9 tests in 6.458s\n\nFAILED (failures=1, errors=3)"
+    },
+    {
+      "path": "tests/test_apf_stadium_static_position_patch.py",
+      "returncode": 1,
+      "seconds": 0.32,
+      "failure_tail": "\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"<repo>/tests/test_apf_stadium_static_position_patch.py\", line 136, in test_writer_refuses_symlink_game_recipe_parent_and_existing_destination\n    with self.assertRaisesRegex(writer.PatchError, \"recipe\"):\nAssertionError: \"recipe\" does not match \"source game directory path contains a symlink\"\n\n----------------------------------------------------------------------\nRan 10 tests in 0.007s\n\nFAILED (failures=1, errors=3)"
+    },
+    {
+      "path": "tests/test_apf_stadium_static_target_catalog.py",
+      "returncode": 1,
+      "seconds": 0.17,
+      "failure_tail": "  File \"<repo>/tests/test_apf_stadium_static_target_catalog.py\", line 17, in _module\n    spec.loader.exec_module(module)\n  File \"<frozen importlib._bootstrap_external>\", line 995, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"<repo>/tools/apf_stadium_static_target_catalog.py\", line 22, in <module>\n    import apf_inner\nModuleNotFoundError: No module named 'apf_inner'\n\n----------------------------------------------------------------------\nRan 4 tests in 0.047s\n\nFAILED (errors=2)"
+    },
+    {
+      "path": "tests/test_apf_txt_loc_patch.py",
+      "returncode": 0,
+      "seconds": 0.37
+    },
+    {
+      "path": "tests/test_apf_uniform_selector_allocation.py",
+      "returncode": 5,
+      "seconds": 0.17,
+      "failure_tail": "Traceback (most recent call last):\n  File \"<repo>/tests/test_apf_uniform_selector_allocation.py\", line 23, in setUpClass\n    cls.inventory, cls.inventory_raw = allocation.load_inventory(\n                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<repo>/tools/apf_uniform_selector_allocation.py\", line 119, in load_inventory\n    raise AllocationError(\"pinned APF uniform inventory identity drift\")\napf_uniform_selector_allocation.AllocationError: pinned APF uniform inventory identity drift\n\n----------------------------------------------------------------------\nRan 0 tests in 0.011s\n\nFAILED (errors=1)"
+    },
+    {
+      "path": "tests/test_apf_uniform_selector_bank_ownership.py",
+      "returncode": 5,
+      "seconds": 0.17,
+      "failure_tail": "Traceback (most recent call last):\n  File \"<repo>/tests/test_apf_uniform_selector_bank_ownership.py\", line 31, in setUpClass\n    cls.report = ownership.build_report(EXPORT_ROOT, TRACE)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<repo>/tools/apf_uniform_selector_bank_ownership.py\", line 307, in build_report\n    raise EvidenceError(f\"missing authority: {path}\")\napf_uniform_selector_bank_ownership.EvidenceError: missing authority: <repo>/research/functions/apf2k8/manifest.json\n\n----------------------------------------------------------------------\nRan 0 tests in 0.001s\n\nFAILED (errors=1)"
+    },
+    {
+      "path": "tests/test_apf_uniform_selector_mod_release.py",
+      "returncode": 5,
+      "seconds": 0.33,
+      "failure_tail": "  File \"/usr/lib/python3.12/pathlib.py\", line 1029, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/pathlib.py\", line 1015, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '<repo>/reports/assets/apf_uniform_selector_mod_release.v1.json'\n\n----------------------------------------------------------------------\nRan 0 tests in 0.002s\n\nFAILED (errors=1)"
+    },
+    {
+      "path": "tests/test_apf_uniform_selector_patch.py",
+      "returncode": 5,
+      "seconds": 0.37,
+      "failure_tail": "                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<repo>/tools/apf_jersey_selector_patch.py\", line 967, in _validate_source\n    index_path = _absolute_no_symlink_path(index_path, \"source 0A\")\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<repo>/tools/apf_jersey_selector_patch.py\", line 613, in _absolute_no_symlink_path\n    raise PatchError(f\"{what} path contains a symlink\")\napf_jersey_selector_patch.PatchError: source 0A path contains a symlink\n\n----------------------------------------------------------------------\nRan 0 tests in 0.001s\n\nFAILED (errors=1)"
+    },
+    {
+      "path": "tests/test_apf_uniform_selector_xenia_gamepad.py",
+      "returncode": 0,
+      "seconds": 0.22
+    },
+    {
+      "path": "tests/test_apf_uniform_selector_xenia_match.py",
+      "returncode": 0,
+      "seconds": 0.52
+    },
+    {
+      "path": "tests/test_apf_uniform_selector_xenia_runtime_verify.py",
+      "returncode": 0,
+      "seconds": 0.22
+    },
+    {
+      "path": "tests/test_apf_uniform_texture_format_spec.py",
+      "returncode": 1,
+      "seconds": 0.17,
+      "failure_tail": "\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"<repo>/tests/test_apf_uniform_texture_format_spec.py\", line 73, in test_mutated_source_pin_is_rejected_before_facts_are_trusted\n    with self.assertRaisesRegex(format_spec.SpecError, \"source_pins\"):\nAssertionError: \"source_pins\" does not match \"immutable v1 sha256 drifted: 'b465b807200516f2bce44e8b51e490ebd98cc73171a5b7f63ed9a1fb86f9e755' != '80acb6f48408b59d305b3cfac3cfe8b61104bcd189c1fda9ff28e17df7b1c218'\"\n\n----------------------------------------------------------------------\nRan 7 tests in 0.024s\n\nFAILED (failures=4, errors=2)"
+    },
+    {
+      "path": "tests/test_apf_xenia_controller_capture_provenance.py",
+      "returncode": 1,
+      "seconds": 0.17,
+      "failure_tail": "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<repo>/tests/test_apf_xenia_controller_capture_provenance.py\", line 33, in fixture_root\n    shutil.copyfile(source, target)\n  File \"/usr/lib/python3.12/shutil.py\", line 260, in copyfile\n    with open(src, 'rb') as fsrc:\n         ^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '<repo>/reports/assets/apf_xenia_controller_capture_provenance.v1.json'\n\n----------------------------------------------------------------------\nRan 13 tests in 0.009s\n\nFAILED (errors=8)"
+    }
+  ],
+  "final_focused_rerun": [
+    {
+      "path": "tests/mod_editor/test_apf_play_designer.py",
+      "returncode": 0,
+      "tests": 28,
+      "seconds": 21.96,
+      "tail": null
+    },
+    {
+      "path": "tests/mod_editor/test_apf_ps3_roster_import_qt.py",
+      "returncode": 0,
+      "tests": 2,
+      "seconds": 2.63,
+      "tail": null
+    },
+    {
+      "path": "tests/mod_editor/test_apf_splb_add_multiple_formations.py",
+      "returncode": 0,
+      "tests": 14,
+      "seconds": 0.82,
+      "tail": null
+    },
+    {
+      "path": "tests/mod_editor/test_apf_splb_formation_personnel.py",
+      "returncode": 0,
+      "tests": 11,
+      "seconds": 2.52,
+      "tail": null
+    },
+    {
+      "path": "tests/mod_editor/test_apf_splb_tag_reassignment.py",
+      "returncode": 0,
+      "tests": 86,
+      "seconds": 3.48,
+      "tail": null
+    },
+    {
+      "path": "tests/mod_editor/test_apf_b66_appearance.py",
+      "returncode": 0,
+      "tests": 3,
+      "seconds": 4.63,
+      "tail": null
+    },
+    {
+      "path": "tests/mod_editor/test_apf_b66_personnel.py",
+      "returncode": 0,
+      "tests": 3,
+      "seconds": 7.69,
+      "tail": null
+    },
+    {
+      "path": "tests/mod_editor/test_apf_field_material_project.py",
+      "returncode": 0,
+      "tests": 4,
+      "seconds": 1.07,
+      "tail": null
+    },
+    {
+      "path": "tests/mod_editor/test_apf_field_material_writer.py",
+      "returncode": 0,
+      "tests": 5,
+      "seconds": 0.47,
+      "tail": null
+    },
+    {
+      "path": "tests/mod_editor/test_apf_wordmark_regions.py",
+      "returncode": 0,
+      "tests": 2,
+      "seconds": 0.37,
+      "tail": null
+    }
+  ],
+  "package_handoff": {
+    "protected_checkout_allowlist_changed": false,
+    "temporary_stage_added_modules": [
+      "mod_editor/core/apf_field_material_writer.py",
+      "mod_editor/apf_studio/field_material_service.py",
+      "mod_editor/apf_studio/field_material_qt.py"
+    ],
+    "capstone_dependency": "Existing local Capstone 5.0.7 directory explicitly on PYTHONPATH; PYTHONNOUSERSITE=1 retained",
+    "output": "APF2K8_MOD_STUDIO_RUNTIME_PASS modules=133 capabilities=53 universal=private_source_not_provided uniforms=private_source_not_provided uniform_inventory=private_source_not_provided audio_query_lifecycle=applied_token_debounce_guarded audio_shortlist_clear=one_level_ordered_restore audio_preview_lifecycle=request_owned_success_failure audio_preview_cancellation=request_owned_process_group_cancel audio_waveform_cancellation=request_owned_process_group_cancel audio_add_all_matching=applied_query_atomic_256 audio_session_teardown=cancel_drain_before_close_source audio_replacement_confirmation=fully_validated_read_only_preview_then_explicit_apply audio_replacement_token=exact_member_result_source_session_project_revision audio_replacement_noop=cancel_unchanged audio_replacement_lifecycle=worker_drained_before_confirmation audio_direct_drop=selected_exact_slot_xma1_or_conformed_audio audio_mutation_lifecycle=submission_to_worker_idle retail_source_required=false\nSTAGED_HANDOFF_WITH_DECLARED_DEPENDENCIES_EXIT 0",
+    "new_registry_and_gui_hooks_applied": false
+  }
+}

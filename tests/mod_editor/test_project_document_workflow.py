@@ -319,7 +319,7 @@ class ActiveProjectWindowTests(unittest.TestCase):
 
     def setUp(self) -> None:
         self.facade = BrowseOnlyFacade()
-        self.window = StudioMainWindow(
+        self.window = StudioMainWindow(eager_pages=True,
             facade=self.facade,
             workspace_store=None,
             offer_recovery=False,

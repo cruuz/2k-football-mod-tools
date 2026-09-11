@@ -346,6 +346,17 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
         "gameplay.findings_inspector",
         _actions(ApfProductAction.PREVIEW, ApfProductAction.EXPORT),
     ),
+    "apf2k8.field_art.material_opacity": CapabilityActionBinding(
+        "apf2k8.field_art.material_opacity",
+        "field_art.material_opacity_editor",
+        _actions(ApfProductAction.PREVIEW, ApfProductAction.REPLACE,
+                 ApfProductAction.REVERT),
+        replace_method="apply_field_material",
+        revert_method="revert",
+        product_note=("Select named field alpha constants; preview source/staged values, "
+                      "stage, revert, save/reopen, and build a copied game. "
+                      "Token-preserving fixed-allocation H7A refit; rendering UNWITNESSED."),
+    ),
     "apf2k8.field_art.base_texture": CapabilityActionBinding(
         "apf2k8.field_art.base_texture",
         "field_art.base_texture_png_editor",
@@ -484,6 +495,23 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
             "separate from the selector-slot-5 square helmet crest and its linked "
             "frontend/Team Select uniform_logocache index. Team Logo never squeezes "
             "or copies a crest into this wordmark family."
+        ),
+    ),
+    "apf2k8.logos_cards.team_art_browser": CapabilityActionBinding(
+        "apf2k8.logos_cards.team_art_browser",
+        "logos_cards.team_art_browser",
+        _actions(
+            ApfProductAction.PREVIEW,
+            ApfProductAction.REPLACE,
+            ApfProductAction.REVERT,
+        ),
+        replace_method="replace_team_art",
+        revert_method="revert_team_art",
+        product_note=(
+            "Browse every source-resolved Team Art package. Paired crest/endzone "
+            "PNGs retain their semantic layers and stage as one Undo action. "
+            "Existing build writers regenerate mips, enforce allocations and "
+            "verify decode-back; changed art remains in-game UNWITNESSED."
         ),
     ),
     "apf2k8.models.scne_gltf": CapabilityActionBinding(

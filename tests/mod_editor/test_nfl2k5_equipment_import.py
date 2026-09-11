@@ -202,10 +202,14 @@ class EquipmentDialogTests(unittest.TestCase):
     def setUpClass(cls):
         cls.app = QApplication.instance() or QApplication([])
 
-    def test_plain_choice_defaults_to_palette_only(self):
+    def test_shoes_and_gloves_default_to_their_own_texture(self):
+        """Beta 66 (maumau78): a copied shoe style defaults to its own artwork, not a palette-only recolour."""
         asset = SimpleNamespace(asset_id="tset:0:8:0:shoes01", label="Shoe 01", width=256, height=256)
         dialog = EquipmentTextureImportDialog(asset)
         try:
+            self.assertTrue(dialog.independent)
+            self.assertTrue(dialog.game_size.isEnabled())
+            dialog.own_texture.setChecked(False)
             self.assertFalse(dialog.independent)
             self.assertEqual(dialog.own_texture.text(), "Give this glove or shoe its own texture")
             self.assertIn("Experimental / unwitnessed", dialog.own_texture.toolTip())

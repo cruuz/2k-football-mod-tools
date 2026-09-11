@@ -37,17 +37,16 @@ def assets(size=64):
 
 
 def legacy_build(*args):
-    """Replay the retained pre-fix filter and shared quantizer in the same writer.
+    """Compare retained majority/generic policies at the same new registration.
 
-    The TXTR wrapper, swizzler, fixed-span compressor and validators are the
-    production path. Only the two changed quality policies are substituted.
+    The shared preparation, fixed-span compressor and validation remain real.
+    This ablation must patch the shared policy now used by the writer.
     """
-    def old_bound(levels, build_decoded, **kwargs):
-        kwargs.pop("quantizer", None)
-        kwargs.pop("minimum_palette_limit", None)
-        return quantize_levels_to_vc_lz_bound(levels, build_decoded, **kwargs)
-    with patch("mod_editor.core.nfl2k5_digit_texture.make_digit_mips", writer.make_mips), \
-         patch.object(writer, "quantize_levels_to_vc_lz_bound", old_bound):
+    from nfl_tset_png_import import quantize_levels
+    def old_mips(image, count):
+        return writer.make_mips(image.tobytes(), image.width, image.height, count)
+    with patch("mod_editor.core.nfl2k5_digit_art.prepared_mips", old_mips), \
+         patch("mod_editor.core.nfl2k5_digit_art.edge_quantizer", quantize_levels):
         return writer.build_import(*args)
 
 
@@ -306,7 +305,12 @@ class RetailDigitQualityTests(unittest.TestCase):
                                                     for c in actual.palette if c[3] == 255), 24)
                         self.assertTrue(any(0 < a < 255 for a in actual.levels[2].rgba[3::4]))
                         with Image.open(session.current_path(asset)) as png:
-                            ideal = make_digit_mips(png.convert("RGBA").tobytes(), asset.width, asset.height, target.mip_levels)
+                            from mod_editor.core.nfl2k5_digit_art import prepare_digit, prepared_mips
+                            retail_base = decode_digit_texture(original_window[64:-64]).levels[0]
+                            reference = Image.frombytes("RGBA", (asset.width, asset.height), retail_base.rgba)
+                            prepared, _ = prepare_digit(png.convert("RGBA"), reference)
+                            ideal = prepared_mips(prepared, target.mip_levels)
+                        self.assertEqual(receipt["digit_preparation"]["fit"]["registration_factor"], 1.0)
                         errors = {name: [sum((a - b) ** 2 for a, b in zip(m.rgba[3::4], reference.rgba[3::4]))
                                          for m, reference in zip(tex.levels, ideal)]
                                   for name, tex in (("before", before), ("after", actual))}
@@ -349,19 +353,23 @@ class RetailDigitQualityTests(unittest.TestCase):
                 path = root / "digit.png"; path.write_bytes(output.png)
                 span, _, _ = writer.build_import(self.index, targets.DEFAULT_REPORT, "jersey", "26", "H", 0, output.digit, path)
                 self.assertEqual(sha(span), receipt["replacement"]["span_sha256"])
-            # Deliberately double-filtered artwork still cannot fit Seattle 0
-            # above the quality floor. Since beta-63.1 the build keeps the
-            # RETAIL digit for that one slot instead of refusing the disc, and
-            # the preview shows that same outcome: the retail texture in row 0
-            # and a note naming the slot and its allocation.
+            # Cleanup now rescues double-filtered art. Force full-ladder
+            # exhaustion to continue testing the retained retail fallback.
             source = author_sheet(root / "sheet.png", "double_resampled62")
             outputs = split_digit_sheet(source, selected)
-            preview = preview_digit_sheet(self.index, selected, outputs)
+            from nfl_tset_png_import import QualityBudgetError
+            real = writer.build_import
+            def guarded(*args, **kwargs):
+                if args[6] == 0:
+                    raise QualityBudgetError("test full-ladder exhaustion")
+                return real(*args, **kwargs)
+            with patch.object(writer, "build_import", side_effect=guarded):
+                preview = preview_digit_sheet(self.index, selected, outputs)
             kept = preview.receipts[0]
             self.assertTrue(kept.get("kept_retail"))
             self.assertEqual(kept["target"]["selector"], "26H0:jersey_digit:0")
             self.assertEqual(kept["target"]["stored_size"], 1488)
-            self.assertRegex(preview.details, "Digit 0: kept retail.*1488-byte.*16-colour")
+            self.assertRegex(preview.details, "Digit 0: kept retail.*1488-byte.*after cleanup")
             _, _, zero = targets.select_target("jersey", "26", "H", 0, 0)
             span = writer.read_entry_range(self.archive, self.archive.entries[zero.outer_index], zero.chunk_offset, zero.span_size)
             self.assertEqual(kept["replacement"]["span_sha256"], sha(span))

@@ -45,7 +45,8 @@ def restore(panel, state):
     with quiet(panel):
         for key, box in panel._boxes().items():
             value = choices[key]
-            box.setChecked(value == "jukebox_menus" if key == "music_policy"
+            box.setChecked(value == "matte" if key == "helmet_finish"
+                           else value == "jukebox_menus" if key == "music_policy"
                            else value != "retail" if key == "cpu_money_downs" else bool(value))
         panel.ceiling_spin.setValue(round(choices["max_deep_yards"]))
         panel.arc_spin.setValue(round(choices["arc"] * 100))
@@ -57,6 +58,7 @@ def restore(panel, state):
                              ("accelerated_clock_minimum", choices["accelerated_clock_minimum_seconds"]),
                              ("abilities_week", choices["abilities_off_week"]),
                              ("uniform_choice_mode", choices["uniform_choice"] or "choice"),
+                             ("helmet_finish_combo", choices["helmet_finish"] or "glossy"),
                              ("hires_scale_combo", choices["hires_scale"]),
                              ("hires_target_combo", choices["hires_target"])):
             _combo(getattr(panel, field), value)
@@ -89,7 +91,7 @@ class GameplayBuildLink:
         for key in self.shared:
             build._boxes()[key].toggled.connect(lambda _on, k=key: self.copy_from_build(k))
             gameplay.checks[key].toggled.connect(lambda _on, k=key: self.copy_from_gameplay(k))
-        for name in ("momentum_level", "momentum_collision_level", "cpu_money_downs_level", "accelerated_clock_minimum", "screen_timing_combo"):
+        for name in ("momentum_level", "momentum_collision_level", "cpu_money_downs_level", "accelerated_clock_minimum", "screen_timing_combo", "helmet_finish_combo"):
             for origin in (build, gameplay):
                 getattr(origin, name).currentIndexChanged.connect(
                     lambda _index, p=origin: self.copy_levels(p))
@@ -106,7 +108,7 @@ class GameplayBuildLink:
             self.gameplay._refresh()
 
     def _levels(self, origin, destination):
-        for name in ("momentum_level", "momentum_collision_level", "cpu_money_downs_level", "accelerated_clock_minimum", "screen_timing_combo"):
+        for name in ("momentum_level", "momentum_collision_level", "cpu_money_downs_level", "accelerated_clock_minimum", "screen_timing_combo", "helmet_finish_combo"):
             source = getattr(origin, name)
             _combo(getattr(destination, name), source.currentData() if name != "screen_timing_combo" else source.currentText())
         destination._momentum_last_positive = origin._momentum_last_positive

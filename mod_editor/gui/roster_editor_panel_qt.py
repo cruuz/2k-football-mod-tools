@@ -2005,10 +2005,45 @@ class RosterEditorPanel(QWidget):
             f"{summary['players']:,} players · {summary['teams']} teams · {summary['free_agents']} free "
             f"agents · {summary['draft_class']} draft prospects{repairs}")
         self._edits_snapshot = None
+        self._offer_college_repair(document)
         if self._repair_plans:
             self.report.setPlainText("Check & repair found:\n" + "\n".join(
                 f"  - {plan['detail']}" for plan in self._repair_plans)
                 + "\n\nNothing has been changed. Press Repair to apply these, or leave them.")
+
+    def _offer_college_repair(self, document) -> None:
+        """Offer Check my rosters inline for a document that loaded with unresolved colleges.
+
+        The offer is a banner inside the panel, never a dialog: a message box shown from
+        the load path is modal on some platforms and crashes under the offscreen platform
+        on Windows. The banner hides when a clean document loads or the user dismisses it.
+        """
+        banner = getattr(self, "_college_banner", None)
+        if self.document is not document or not document.college_warning:
+            if banner is not None:
+                banner.hide()
+            return
+        if banner is None:
+            banner = QFrame(self)
+            banner.setObjectName("collegeBanner")
+            banner.setFrameShape(QFrame.StyledPanel)
+            row = QHBoxLayout(banner)
+            row.setContentsMargins(8, 4, 8, 4)
+            self._college_banner_label = QLabel(banner)
+            self._college_banner_label.setWordWrap(True)
+            row.addWidget(self._college_banner_label, 1)
+            self._college_banner_open = QPushButton("Open Check my rosters", banner)
+            self._college_banner_open.clicked.connect(lambda _checked=False: self.open_college_check())
+            row.addWidget(self._college_banner_open)
+            later = QPushButton("Later", banner)
+            later.clicked.connect(banner.hide)
+            row.addWidget(later)
+            layout = self.layout()
+            layout.insertWidget(layout.indexOf(self.status_label), banner)
+            self._college_banner = banner
+        self._college_banner_label.setText(
+            document.college_warning + ". Open Check my rosters to repair the college references.")
+        banner.show()
 
     def load_from_facade(self) -> bool:
         """Load the roster out of whatever disc the studio already has open."""
@@ -3915,7 +3950,8 @@ class RosterEditorPanel(QWidget):
             self.franchise_panel.redo_button.setEnabled(self.undo_stack.can_redo())
 
     def _set_status(self, text: str) -> None:
-        self.status_label.setText(text)
+        warning = self.document.college_warning if self.document is not None else ""
+        self.status_label.setText(text + ("\n" + warning if warning else ""))
 
 
 __all__ = ["AgeShiftDialog", "AttributeCard", "CollegeCheckDialog", "GlobalEditDialog", "IdPickerDialog", "RosterEditorPanel", "SwapPlayerDialog",

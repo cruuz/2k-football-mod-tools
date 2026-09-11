@@ -92,7 +92,7 @@ class MusicFreshRipGuiTests(unittest.TestCase):
                 session_factory=lambda cache, catalog: StudioSession(cache, catalog, root=root / "sessions"),
             )
             window = StudioMainWindow(
-                facade, product_catalog=build_nfl2k5_product_catalog(registry),
+                facade, eager_pages=True, product_catalog=build_nfl2k5_product_catalog(registry),
                 uniform_catalog=uniforms, extended_visual_catalog=visuals.extended,
                 workspace_store=WorkspaceStateStore(root / "workspace-state"), offer_recovery=False,
             )

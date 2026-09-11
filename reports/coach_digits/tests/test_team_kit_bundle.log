@@ -1,0 +1,12 @@
+test_batch_validates_every_input_first_and_rolls_back_a_commit_failure (__main__.TeamKitBundleTests.test_batch_validates_every_input_first_and_rolls_back_a_commit_failure) ... ok
+test_existing_destinations_and_undeclared_bundle_files_are_refused (__main__.TeamKitBundleTests.test_existing_destinations_and_undeclared_bundle_files_are_refused) ... ok
+test_import_stages_only_pixel_changes_as_one_undo_and_project_is_authored_only (__main__.TeamKitBundleTests.test_import_stages_only_pixel_changes_as_one_undo_and_project_is_authored_only) ... ok
+test_side_helper_and_complete_folder_manifest_are_general_not_giants_only (__main__.TeamKitBundleTests.test_side_helper_and_complete_folder_manifest_are_general_not_giants_only) ... ok
+test_untouched_bundle_preserves_newer_edit_and_manifest_changes_fail_closed (__main__.TeamKitBundleTests.test_untouched_bundle_preserves_newer_edit_and_manifest_changes_fail_closed) ... ok
+test_validate_all_rejects_one_bad_png_without_staging_the_other (__main__.TeamKitBundleTests.test_validate_all_rejects_one_bad_png_without_staging_the_other) ... ok
+test_zip_export_is_deterministic_and_carries_the_same_canonical_manifest (__main__.TeamKitBundleTests.test_zip_export_is_deterministic_and_carries_the_same_canonical_manifest) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 1.676s
+
+OK

@@ -221,7 +221,7 @@ class TeamKitOffscreenGuiTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory(prefix="team-kit-gui-")
         self.root = Path(self.temporary.name)
         self.facade = _WindowTeamKitFacade()
-        self.window = StudioMainWindow(facade=self.facade)
+        self.window = StudioMainWindow(eager_pages=True, facade=self.facade)
         self.errors: list[str] = []
         self.window._show_error = self.errors.append  # type: ignore[method-assign]
         self.window._save_recovery_snapshot = lambda: None  # type: ignore[method-assign]
@@ -385,7 +385,7 @@ class TeamKitOffscreenGuiTests(unittest.TestCase):
             mock.patch.object(self.window, "_review_digit_sheet_preview", return_value=True, create=True),
             mock.patch(
                 "mod_editor.gui.studio_qt.QInputDialog.getItem",
-                side_effect=[("Arm / shoulder numbers", True), ("One row: 0 1 2 3 4 5 6 7 8 9", True)],
+                side_effect=[("Arm / shoulder numbers", True), ("One row: 0 1 2 3 4 5 6 7 8 9", True), ("Match retail size", True)],
             ),
             mock.patch(
                 "mod_editor.gui.studio_qt.QFileDialog.getOpenFileName",

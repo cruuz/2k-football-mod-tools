@@ -1286,6 +1286,75 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.apf_field_material_writer --index <0A> --entry <53|252|578|1333> --alpha <material=0..1> [--alpha ...] --output-entry <compiled.iff> --manifest <report.json>",
+        "module": "mod_editor/core/apf_field_material_writer.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/research/apf_b66_gameplay_data.md",
+        "reports/apf_b66_gameplay_witness.json",
+        "tests/mod_editor/test_apf_field_material_writer.py",
+        "tests/mod_editor/test_apf_field_material_project.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "ADVANCED, off by default. Source/staged scalar preview, Stage, Revert, Undo, save/reopen and copied-game Build. All four retail entries refit and reparse; rendering UNWITNESSED."
+      },
+      "id": "apf2k8.field_art.material_opacity",
+      "input_constraints": [
+        "Entry 53, 252, 578 or 1333, pinned name and material/shader identities; one field SCNE in one warning-free H7A block.",
+        "Select only field_grass, endzone_grass, ticks, chalk_lines, graphic_overlay_4/5/7/8/9, outside_grass_10/11. Alpha is finite 0..1; RGB stays (1,1,1).",
+        "Self-relative bounded tables, 0x28 material stride; constants payload tint at +0x70 except material 1 at +0x100. Only selected alpha words may change.",
+        "Token-preserving H7A must fit the fixed allocation and contain no length-greater-than-distance match. Nonzero tail bytes and changed sibling data are refused."
+      ],
+      "portme": [
+        "Witness each scene, weather variant and composited texture on user-owned hardware. Material-to-visible-surface descriptions are not gameplay proof."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute tooling, selectors, and user-authored PNGs only; each user rebuilds a copied 0A from their own retail game.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "UNWITNESSED rendering. Four retail entry refits and synthetic build composition reparse exactly.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "53, 252, 578, 1333",
+            "name": "outer_index",
+            "required": true
+          },
+          {
+            "allowed": "nonempty mapping of named material to alpha 0..1",
+            "name": "alphas",
+            "required": true
+          }
+        ],
+        "notes": "Portable scalar JSON; no retail payload in project recipes. Optional material checkboxes start unticked."
+      },
+      "source_container": {
+        "format": "IFF/H7A field SCNE in fixed 0A entry",
+        "hash_pins": [
+          "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e"
+        ],
+        "resource": "field scenes 53, 252, 578, 1333",
+        "retail_file": "All-Pro Football 2K8 (USA)/0A"
+      },
+      "summary": "Stage alpha values for eleven named field materials in four scenes; reparse and refit H7A within the original allocation, composing with staged field textures.",
+      "surface": "stadiums_fields",
+      "title": "Field overlay opacity",
+      "validation_command": "python3 -m mod_editor.core.apf_field_material_writer --index <0A> --entry 53 --alpha graphic_overlay_4=0.25 --manifest <report.json>"
+    },
+    {
+      "backend": {
         "command": null,
         "module": null,
         "operation": "none"
@@ -1618,6 +1687,81 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.apf_studio.team_art --source <APF folder or ISO> --family <logo|endzone|textlogo|jersey|shoulder|pants|number> [--json <inventory.json>]",
+        "module": "mod_editor/apf_studio/team_art.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf2k8_team_art_browser.md",
+        "tests/mod_editor/test_apf_team_art.py",
+        "tests/mod_editor/test_apf_team_art_qt.py",
+        "tests/mod_editor/test_apf_theme_layout_qt.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "A rendered Team Art workspace under Logos & Team Art, also linked from Field Art and Uniforms. Progressive worker thumbnails, exact layer inspector, paired PNG replacement and per-package Revert use the normal project transaction."
+      },
+      "id": "apf2k8.logos_cards.team_art_browser",
+      "input_constraints": [
+        "Use the selected read-only retail APF source. Resolve package names against archive filename CRCs and inner layers by semantic names.",
+        "All 118 crests, 118 endzones, 206 wordmarks and 24 packages each of jerseys, shoulders, pants and digits are reachable. Only the proved 24 retail crest and wordmark selector assignments acquire team labels; tentative endzone labels retain question marks.",
+        "Crests require separate 512x512 logo_l0 and logo_l1 PNGs for six region masks; the existing crest builder also updates the corresponding uniform_logocache index. Never mirror one layer into both.",
+        "Every selected endzone layer is required. Single-layer packages require one PNG; paired packages require both. Wordmarks, jerseys, shoulders and pants use their exact existing color-layer contract. Digit subsets share a combined allocation preflight.",
+        "The existing family writers and build verifiers retain mip regeneration, compression, fixed-allocation and decode-back checks. All package layers stage or revert as one Undo action. Authored PNGs and numeric recipes enter projects; retail payloads do not.",
+        "Thumbnails and staged image decoding run in workers. Source-scoped, decoder-versioned PNG caches include both crest image hashes and stay private."
+      ],
+      "portme": [
+        "Witness changed non-retail crest art and its linked Team Select cache, paired endzones, wordmarks and uniform art in game.",
+        "Retail endzone selector ownership remains unproved; the retail-use filter excludes unproved assignments."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute tooling, structural pins, and user-authored PNGs only; each user rebuilds a copied game from their own retail source.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/mod_editor/apf2k8_team_art_browser.md"
+        ],
+        "scope": "Offline package counts, source identity resolution, six-mask pairing, existing writer dispatch, private thumbnail cache behavior, project transaction rollback and Qt interactions are tested. Changed art consumption remains in-game UNWITNESSED.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "logo|endzone|textlogo|jersey|shoulder|pants|number",
+            "name": "family",
+            "required": true
+          },
+          {
+            "allowed": "a source-resolved outer entry with named supported texture layers",
+            "name": "outer_entry",
+            "required": true
+          }
+        ],
+        "notes": "The browser resolves the family catalog index, outer entry, inner indices and linked crest cache catalog identity together. Built-in team selector assignments seed retail labels; the other library slots remain entry-labeled."
+      },
+      "source_container": {
+        "format": "Source-resolved APF H7A/IFF texture packages and linked uniform_logocache",
+        "hash_pins": [
+          "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e",
+          "39a1e0c944a846e24d7a11c52d6a0fbba4091959f01856d3a087efde01ba490c"
+        ],
+        "resource": "All 118 crest and 118 endzone packages, 206 wordmarks and all jersey/shoulder/pants/digit packages in retail 0A; existing family writers own source pins and fixed allocations.",
+        "retail_file": "All-Pro Football 2K8 (USA)/0A"
+      },
+      "summary": "Browse every crest, endzone, wordmark, jersey, shoulder, pants and digit package by decoded thumbnails; resolve named layers and stage or revert paired artwork as one project action.",
+      "surface": "logos_cards",
+      "title": "APF visual Team Art package browser",
+      "validation_command": "python3 -m tests.mod_editor.test_apf_team_art"
+    },
+    {
+      "backend": {
         "command": "python3 tools/apf_logo_patch.py --index <0A> --png <512x512-logo_l0.png> --png-l1 <512x512-logo_l1.png> --output-volume <new-0A> --manifest <patch.json>",
         "module": "tools/apf_logo_patch.py",
         "operation": "write"
@@ -1780,7 +1924,8 @@
       "evidence": [
         "docs/mod_editor/apf2k8_logo_surface_ownership.md",
         "tests/mod_editor/test_apf_textlogo_writer.py",
-        "tests/mod_editor/test_apf_textlogo_gui.py"
+        "tests/mod_editor/test_apf_textlogo_gui.py",
+        "tests/mod_editor/test_apf_wordmark_regions.py"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
@@ -1794,7 +1939,8 @@
         "The typed target is exactly one source-resolved uniform_textlogo_00.iff through uniform_textlogo_205.iff package selected by asset index 0..205; every package owns one inner-0 TXTR named textlogo_color.",
         "The native authoring payload is an opaque 512x128 RGBA PNG. The GUI may high-quality Contain-fit or Cover-fit ordinary source art and composites transparent pixels over black before staging; the writer rejects other sizes, modes, and residual alpha.",
         "Every target is tiled Xenos DXT1/BC1 with a 0x8000 base, 0x8000 packed mip span, and levels 0..5. All six levels are regenerated and decoded back, while inactive packed-tail bytes and the 224-byte descriptor part stay exact.",
-        "The retail source is opened read-only. The selected H7A/IFF must fit its original 6,144..14,336-byte allocation or the operation fails before publication, and the independent verifier requires every byte outside that one fixed package range to match the source."
+        "The retail source is opened read-only. The selected H7A/IFF must fit its original 6,144..14,336-byte allocation or the operation fails before publication, and the independent verifier requires every byte outside that one fixed package range to match the source.",
+        "Beta 66 (Aszemple): the single textlogo_color mask has three region channels; the authoring helper may permute those three channels (identity default). Six regions and arbitrary team palette-slot assignments are unproved and not offered."
       ],
       "portme": [
         "Capture a changed wordmark on each runtime menu/uniform surface before describing visual consumption as runtime-proved.",
@@ -2728,7 +2874,9 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "ASTRA_B64_PS3_ROSTER_REPORT.md",
-        "reports/ps3_import/roster_convert_receipt.json"
+        "reports/ps3_import/roster_convert_receipt.json",
+        "tests/mod_editor/test_apf_b66_appearance.py",
+        "reports/apf_b66_gameplay_witness.json"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
@@ -2742,7 +2890,8 @@
         "Exactly one 2,715,908-byte PS3 roster USERDATA (raw or the one BLUS30049-ROS/USERDATA member of its ZIP); STFS containers and Xbox-layout rosters are refused, so the action is idempotent.",
         "Platform is decided by the palette alpha position (2,660 colours vote); mixed or ambiguous files are refused rather than guessed.",
         "Editor-damaged text is repaired structurally only: misaligned runs shift or relocate, stale/garbage/below-pool references become the shared empty string; intended text is never invented.",
-        "Output is a raw payload plus receipt next to it; no container is written and the source is never modified."
+        "Output is a raw payload plus receipt next to it; no container is written and the source is never modified.",
+        "Beta 66 (Aszemple): team appearance (both uniform banks and team palettes) is reviewed with 'Also apply team appearance (N teams)', unchecked until reviewed; leaving it off requires a raw Xbox roster whose appearance is retained while players come from PS3. Every team's selector changes are receipted per bank and reparsed. The default conversion already transported the PS3 selectors; this adds verification and review."
       ],
       "portme": [
         "Witness the converted 1993 roster in Xenia (load, names, positions, teams, colours), then move runtime.status.",
@@ -4088,6 +4237,70 @@
       "surface": "audio",
       "title": "NFL 2K5 fixed menu-back WAV writer",
       "validation_command": "bash tools/validate_nfl_menu_back_audio_modding.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_patch_cli camera source.xbe output.xbe",
+        "module": "mod_editor/core/nfl2k5_patch_cli.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_presentation_v6.py",
+        "docs/presentation/camera_survey_v6.json",
+        "ASTRA_B66_PRESENTATION_REPORT.md"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Uses the existing Build Camera option and in-game Broadcast row; Standard remains the default."
+      },
+      "id": "nfl2k5.camera.broadcast_v6",
+      "input_constraints": [
+        "Reserve the complete allocator union before applying.",
+        "Exact v5.4 installations are recognized and must rebuild from retail; foreign or mixed code refuses."
+      ],
+      "portme": [
+        "Witness Chicago near-sideline run, Lambeau corners, PAT to kickoff and a deep pass as specified in ASTRA_REPORT.md."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute source and measurements; never a generated XBE or retail stadium geometry.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/presentation/camera_native_v6.json",
+          "docs/presentation/camera_survey_v6.json"
+        ],
+        "scope": "Bounded native final-eye solver, lens projection, kickoff selection and 53-model static occlusion survey. No console, emulator or GPU witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "existing boolean; enabled in ADVANCED/EXPERIMENTAL",
+            "name": "camera",
+            "required": true
+          }
+        ],
+        "notes": "Broadcast is a session selection, engine row 7. No new preset default."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Camera table, pinned native hooks, owned 512 RX and 320 RO bytes",
+        "retail_file": "user-owned NFL 2K5 USA default.xbe"
+      },
+      "summary": "Broadcast follows gameplay with a final-eye boundary, corner pull-in, run/pass lenses and a wide kickoff transition. ADVANCED choice; gameplay appearance unwitnessed.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Broadcast camera v6",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_presentation_v6"
     },
     {
       "backend": {
@@ -5779,11 +5992,8 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "ASTRA_PLAYBOOK_PAIR_REPORT.md",
-        "tests/mod_editor/test_nfl2k5_playbook_pair.py",
-        "tests/mod_editor/test_nfl2k5_playbook_pair_unicorn.py",
-        "tools/nfl2k5_playbook_pair.c",
-        "tools/nfl2k5_playbook_pair.S"
+        "docs/mod_editor/nfl2k5_playbook_pair_capability.json",
+        "docs/mod_editor/nfl2k5_beta66_d2_validation.json"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -5798,7 +6008,7 @@
         "Stock club, Generic or West Coast books only. Refuses native User A/B sources. Special teams remain with the offensive book.",
         "Pairs must fit 50 formations, 270 plays, 26 categories, 3500 nodes, 36 links per formation and the fixed name pool. Failure keeps the original book and shows a notice.",
         "Choice lasts one game and is not saved to Franchise. VIP learning and replay are bypassed for paired sides.",
-        "Authored read-option and QB-spy identity tables target the original two buffers. Their custom controls are not supported on a paired side."
+        "Authored read-option and QB-spy controls use the paired-root publication and original-source identity map. Exact script pins remain required; unpaired sides retain native fallback."
       ],
       "portme": [
         "Apply the protected dispatcher, BuildPlan, GUI and packaging handoff in WIRING.md.",
@@ -5812,7 +6022,7 @@
       },
       "runtime": {
         "evidence": [
-          "ASTRA_PLAYBOOK_PAIR_REPORT.md"
+          "docs/mod_editor/nfl2k5_beta66_d2_validation.json"
         ],
         "scope": "Bounded emitted x86 merges retail books and exercises load callbacks, failures, cleanup and retail accessors. Retail User A/B serialization roundtrips in memory. No game, drawing, device I/O or signed save was run.",
         "status": "not-tested"
@@ -6713,7 +6923,14 @@
         "ASTRA_B65_SETTINGS_REPORT.md",
         "tests/mod_editor/test_nfl2k5_my_career_settings.py",
         "tools/mycareer_mode/settings_budget.json",
-        "tools/mycareer_mode/settings_validation.json"
+        "tools/mycareer_mode/settings_validation.json",
+        "tests/mod_editor/test_nfl2k5_myplayer_hud.py",
+        "ASTRA_B66_PRESENTATION_REPORT.md",
+        "ASTRA_B66_SUPERSIM_REPORT.md",
+        "tests/nfl2k5_supersim_series.py",
+        "tests/nfl2k5_supersim_audio.py",
+        "tests/nfl2k5_supersim_scheduler.py",
+        "tools/mycareer_mode/supersim_b66_receipt.json"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -6727,15 +6944,15 @@
         "Pinned USA executable; reserve the complete owner union before installation.",
         "No setup file, prepared franchise, player name or executable seed. Create MyPlayer in the game.",
         "Mutually exclusive with the previous journal/prepared-save MyCareer install; rebuild from an original XBE.",
-        "M3 requires 16384 RX and two named 4096-byte RW blocks. Old reservations must rebuild from base; every other owner keeps its address.",
+        "M3 requires 20480 RX and two named 4096-byte RW blocks. Rebuild old reservations from base; every other owner keeps its address.",
         "Career footer follows the complete native Franchise container. Sizes 720172 or 724268; ordinary saves are unchanged.",
-        "Senior Bowl preparation only: the default seed-1 squads include MyPlayer. Native event transport and stat isolation are unresolved. Requests, trades and accelerated Supersim stay out.",
+        "Senior Bowl preparation only: the default seed-1 squads include MyPlayer. Native event transport and stat isolation are unresolved. Requests and trades stay out.",
         "All 17 retail positions have three native Create Player templates; the pools profile offers 16 live positions and merges EDGE ratings. Position-specific input decode and switch guards are bounded-native proofs; mesh movement, manual routes, catches and block animations remain unwitnessed outside Noah's reported QB play.",
-        "Apartment > Settings offers First Person Football Off/On (default Off), Off-field play Spectate/Skip presentation (default Skip presentation), and MyPlayer star On/Off (default On). First person calls the original Franchise Settings toggle at 0x147E60 and shares native word 0xE5FFE4. All three choices persist in the signed 128-byte career footer; old zero-filled footers load the defaults. B on Settings returns to Apartment. B during an eligible off-field presentation changes the saved choice to Spectate. Stage 1 remains at 1x; uninterrupted drives, headless fast forward and full-play-clock return remain unproved."
+        "Apartment > Settings offers First Person Football Off/On (default Off), Supersim Off/Skip presentation/Fast forward (new-career default Fast forward), MyPlayer star On/Off (default On) and MyPlayer stat line On/Off (default On). All choices persist in the signed 128-byte career footer (byte 82: bit 0 first person, bit 1 Supersim Off, bit 2 star Off, bit 3 Fast forward, bit 4 stat line Off). Old zero-filled footers keep Skip presentation. The Apartment action Sim to next appearance launches the scheduled game and arms the settled-appearance wait. Fast forward runs up to eight native updates per presented frame with one input poll. Initial/OT toss, challenge, tips, pause and disconnected controllers use native prompts at normal speed. B cancels to Off. Hardware speed, audio and visual behavior remain unwitnessed."
       ],
       "portme": [
         "Complete the Noah witness list in ASTRA_MYCAREER_DRAFT_REPORT.md.",
-        "Complete the Stage 1 QB, CB, kick, halftime, two-minute and save/load witnesses in ASTRA_B65_SUPERSIM_REPORT.md."
+        "Complete the full Supersim witness script in ASTRA_B66_SUPERSIM_REPORT.md."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -6752,9 +6969,17 @@
           "ASTRA_B65_SETTINGS_REPORT.md",
           "tests/mod_editor/test_nfl2k5_my_career_settings.py",
           "tools/mycareer_mode/settings_budget.json",
-          "tools/mycareer_mode/settings_validation.json"
+          "tools/mycareer_mode/settings_validation.json",
+          "tests/mod_editor/test_nfl2k5_myplayer_hud.py",
+          "ASTRA_B66_PRESENTATION_REPORT.md",
+          "ASTRA_B66_SUPERSIM_REPORT.md",
+          "tests/nfl2k5_supersim_series.py",
+          "tests/nfl2k5_supersim_audio.py",
+          "tests/nfl2k5_supersim_scheduler.py",
+          "tools/mycareer_mode/supersim_budget.json",
+          "tools/mycareer_mode/supersim_b66_receipt.json"
         ],
-        "scope": "Bounded native creation, class placement, seven-round AI draft, signing, played-XP purchase, signed container and cold-load routes. Explicit fixture preconditions and hardware seams are documented; no game boot or played witness. Bounded native skip readiness/cleanup, replay input consumers, presence guards and Apartment row dispatch are also proved. No headless scheduler, audio gating, uninterrupted drive or pre-snap return is proved. Settings menu dispatch, native row labels and yellow selection, the shared retail first-person word, all eight saved setting combinations, cold relocation/migration and bit-0-only MyPlayer star writes are proved in bounded native execution. A first-person snap and displayed in-game star still need Noah's witness.",
+        "scope": "Existing bounded native creation, draft, signing, played-XP, settings and signed-save proofs remain. The installed Supersim scheduler additionally executes uninterrupted native CPU plays, checks every outer football phase, counts hardware polls/presents, keeps the match RNG cadence, drains muted native audio sources, guards modal prompts, holds CPU snap requests, restores the full play clock, and submits native ticker glyphs. Native chosen personnel cover all 17 positions, actual K/P membership and an injury replacement. Declared clip/model inputs and empty optional overlays bound the renderer proof; no console, rasterizer, display or audio device is run. MyPlayer stat line defaults On in an enabled career; Apartment Settings offers On/Off. Bounded native proof executes one HUD call per presented gameplay frame, excludes menus and both replay channels, checks MyPlayer identity, reads live bank-0 game stats and submits real font4 glyphs. Actual game appearance remains UNWITNESSED.",
         "status": "not-tested"
       },
       "selectors": {
@@ -6772,10 +6997,10 @@
         "hash_pins": [
           "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
         ],
-        "resource": "Game Modes row, pinned native hooks, owned 16384 RX/8192 RW and an appended 128-byte career save footer.",
+        "resource": "Game Modes and Apartment rows, pinned native hooks, owned 20480 RX/8192 RW and an appended 128-byte career save footer.",
         "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
       },
-      "summary": "Native draft or undrafted entry, Senior Bowl preparation, played-XP upgrades, next-fixture calendar and optional native off-field presentation skips at 1x in the Apartment loop. Accelerated sim to next appearance is unavailable. EXPERIMENTAL / UNWITNESSED. Apartment Settings saves first person, off-field presentation and MyPlayer star choices.",
+      "summary": "Native draft or undrafted entry, played-XP upgrades and the Apartment loop, with live CPU Supersim at up to eight complete updates per presented frame. Off, Skip presentation and Fast forward persist in MyCareer Settings. Sim to next appearance waits for settled native personnel and a full play clock. A score/clock/last-play ticker runs while fast forwarding; B cancels. MyPlayer stat line defaults On in an enabled career; Apartment Settings offers On/Off. EXPERIMENTAL / UNWITNESSED.",
       "surface": "mode_state_routing",
       "title": "In-game MyCareer (experimental, unwitnessed)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_my_career_draft"
@@ -7244,7 +7469,9 @@
         "ASTRA_MUSIC_BANKS_REPORT.md",
         "tests/mod_editor/test_nfl2k5_music_banks.py",
         "tests/mod_editor/test_nfl2k5_music_metadata.py",
-        "tests/mod_editor/test_nfl2k5_music_acceptance.py"
+        "tests/mod_editor/test_nfl2k5_music_acceptance.py",
+        "tests/mod_editor/test_nfl2k5_jukebox_list.py",
+        "docs/mod_editor/nfl2k5_beta66_d2_validation.json"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -7303,7 +7530,7 @@
         "resource": "Policy fields and seven fixed-slot music banks; full-library rebuild validates all 17 descriptor owners.",
         "retail_file": "default.xbe and vc_53450030/0..F"
       },
-      "summary": "Rebuild a personal menu or jukebox bank with authored WAVs and retained source tracks. Jukebox mono twins and titles are one transaction. Experimental, not yet tested in game.",
+      "summary": "Rebuild a personal menu or jukebox bank with authored WAVs and retained source tracks. Jukebox mono twins and titles are one transaction. Experimental, not yet tested in game. Beta 66 (Mud): the Crib collection-list builder is bounded by the label block (nfl2k5_jukebox_list) so an added-song collection no longer walks past its four disc rows; entering it in game is UNWITNESSED.",
       "surface": "audio",
       "title": "Music library (experimental)",
       "validation_command": "python3 tools/validate_beta61_integrated_features.py"
@@ -9973,6 +10200,70 @@
       "surface": "uniforms",
       "title": "NFL 2K5 Detroit away runtime proof",
       "validation_command": "bash tools/validate_nfl_actual_jersey_binding_away_loader_safe_xemu_runtime.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_helmet_finish source.xbe matte.xbe --finish matte",
+        "module": "mod_editor/core/nfl2k5_helmet_finish.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/nfl2k5_helmet_finish_capability.json",
+        "docs/mod_editor/nfl2k5_beta66_d2_validation.json"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "ADVANCED / UNWITNESSED. Default Glossy (retail) in every preset. Protected Gameplay/Uniforms integration is in WIRING.md."
+      },
+      "id": "nfl2k5.uniforms.helmet_finish",
+      "input_constraints": [
+        "Pinned USA XBE or exactly recognized composition, including Guardian overlay.",
+        "Only three native A/B/C helmet branches change; no scene, texture or archive resizing.",
+        "Matte sets reflection weight to zero; Glossy restores retail branch bytes. Game appearance remains unwitnessed."
+      ],
+      "portme": [
+        "Apply protected BuildPlan, Gameplay/Uniforms, registry and release allowlist handoff in WIRING.md.",
+        "Run Noah's helmet comparison witness in ASTRA_REPORT.md."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute source and patch recipes. Never distribute the generated executable or retail disc bytes.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/mod_editor/nfl2k5_beta66_d2_validation.json"
+        ],
+        "scope": "Bounded native full material-refresh execution for both LODs; no GPU rendering or console witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "glossy or matte; glossy in all presets",
+            "name": "helmet_finish",
+            "required": true
+          }
+        ],
+        "notes": "Global helmet shell finish; no per-team selector."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Three two-byte conditional branches at 0x8FB43, 0x8FB4E and 0x8FB59; no allocated space",
+        "retail_file": "user-owned NFL 2K5 USA default.xbe"
+      },
+      "summary": "Choose Glossy (retail) or Matte for helmet shell materials in both LODs.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Helmet finish",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_helmet_finish"
     },
     {
       "backend": {

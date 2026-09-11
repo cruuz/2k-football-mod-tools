@@ -25,6 +25,11 @@ class CollegeCheckError(ValueError):
     """The layout or proposed repair cannot be established without guessing."""
 
 
+def warning(count: int) -> str:
+    return (f"{count} players have a missing/invalid college; use Check my rosters to repair"
+            if count else "")
+
+
 def _require(ok: bool, message: str) -> None:
     if not ok:
         raise CollegeCheckError(message)

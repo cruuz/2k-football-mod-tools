@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import unittest
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -26,3 +27,12 @@ def test_retail_crest_blue_contract_is_persisted() -> None:
     }
     assert report["contract"]["retail_compatibility_migration_preserves_arbitrary_rgba"]
     assert report["contract"]["globally_zeroing_retail_blue_is_forbidden"]
+
+
+class RetailCrestChannelAuditTests(unittest.TestCase):
+    def test_persisted_retail_blue_contract(self) -> None:
+        test_retail_crest_blue_contract_is_persisted()
+
+
+if __name__ == "__main__":
+    unittest.main()

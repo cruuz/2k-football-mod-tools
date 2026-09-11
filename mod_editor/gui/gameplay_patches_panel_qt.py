@@ -215,6 +215,12 @@ PATCHES = (
      "Retail: the extra patch space is unused. Patch: moves the dynamic kickoff "
      "there with the same settings. Check that both teams still line up, hold "
      "until contact and return normally. Unwitnessed in game."),
+    ("helmet_finish", "Helmet finish",
+     "Retail: every helmet shell takes one shared reflection weight from the native material refresh (xevan: "
+     "all helmets share the same reflection texture), so every helmet is glossy. Patch: Matte redirects the "
+     "three shell branches of that refresh to its zero-reflection store in both LODs; no cave, texture or "
+     "package refit, and Glossy on a Matte input restores the retail bytes. ADVANCED / UNWITNESSED: rebuild "
+     "and compare at noon, night, rain and snow."),
     ("screen_timing", "Screen pass timing (EXPERIMENTAL / UNWITNESSED)",
      "Retail: some screens already tell linemen to hold, release and block. "
      "Patch: A changes half-second holds to 0.8 seconds; B changes nominal "
@@ -281,6 +287,7 @@ if not mod_build.SEVEN_ON_SEVEN_RELEASED:
 # What each toggle is called on screen (the same words as the Build tab), a one-line helper, and
 # the qualifier badge that must stay visible outside Details (E4 / M12).
 LABELS: dict[str, tuple[str, str, str]] = {
+    "helmet_finish": ("Helmet finish", "Both helmet LODs; game appearance needs a witness.", "ADVANCED / UNWITNESSED"),
     "screen_timing": ("Screen pass timing (experimental)",
                       "A: longer holds; B: shorter QB drops; C: explicit pass delay; D: all three. UNWITNESSED.", NOT_TESTED),
     "guardian_cap": ("Guardian caps on helmet C (experimental)",
@@ -435,6 +442,7 @@ class GameplayPatchesPanel(QWidget):
             "QCheckBox:disabled { color: #6b7385; }"
             "QLabel#optionBadge { color: #f3d27a; background: #2a2a1c; border: 1px solid #6a5a2a; border-radius: 6px; padding: 1px 6px; }")
         self.badges: dict[str, QLabel] = {}
+        self._helpers: dict[str, QLabel] = {}
         self._static_badges: dict[str, str] = {}
         list_box = QGroupBox("Changes")
         lb = QVBoxLayout(list_box)
@@ -518,6 +526,16 @@ class GameplayPatchesPanel(QWidget):
                 self.momentum_level.currentIndexChanged.connect(self._momentum_changed)
                 check.toggled.connect(self._momentum_toggled)
                 head.addWidget(self.momentum_level)
+            if key == "helmet_finish":
+                self.helmet_finish_combo = QComboBox()
+                self.helmet_finish_combo.setAccessibleName("Helmet finish")
+                self.helmet_finish_combo.addItem("Glossy (retail)", "glossy")
+                self.helmet_finish_combo.addItem("Matte", "matte")
+                self.helmet_finish_combo.currentIndexChanged.connect(
+                    lambda index, box=check: box.setChecked(index == 1))
+                check.toggled.connect(
+                    lambda on, combo=self.helmet_finish_combo: combo.setCurrentIndex(1 if on else 0))
+                head.addWidget(self.helmet_finish_combo)
             if key == "screen_timing":
                 self.screen_timing_combo = QComboBox()
                 self.screen_timing_combo.setAccessibleName("Screen timing experiment")
@@ -531,12 +549,13 @@ class GameplayPatchesPanel(QWidget):
             head.addWidget(badge_label)
             head.addStretch(1)
             rl.addLayout(head)
-            if helper:
-                helper_label = QLabel(helper)
-                helper_label.setObjectName("throwMuted")
-                helper_label.setWordWrap(True)
-                helper_label.setIndent(30)
-                rl.addWidget(helper_label)
+            helper_label = QLabel(helper)
+            helper_label.setObjectName("throwMuted")
+            helper_label.setWordWrap(True)
+            helper_label.setIndent(30)
+            helper_label.setVisible(bool(helper))
+            rl.addWidget(helper_label)
+            self._helpers[key] = helper_label
             more = Details("Details")
             more.add_text(explanation)
             more.setContentsMargins(30, 0, 0, 0)
@@ -599,6 +618,17 @@ class GameplayPatchesPanel(QWidget):
                 self.badges[key].setVisible(bool(badge))
                 continue
             check = self.checks[key]
+            if key == "helmet_finish":
+                enabled = value in ("retail", "applied")
+                check.setEnabled(enabled)
+                self.helmet_finish_combo.setEnabled(enabled)
+                check.setChecked(value == "applied")
+                self.helmet_finish_combo.setCurrentIndex(1 if value == "applied" else 0)
+                check.setToolTip("" if enabled else "Not recognised: the bytes at this change's sites are neither retail nor this patch "
+                                 "(changed by another tool), so it can't be added here.")
+                self.badges[key].setText("ADVANCED / UNWITNESSED" if enabled else "Unrecognized source data")
+                self.badges[key].setVisible(True)
+                continue
             check.setEnabled(value == "retail" and not needs_image and key not in r62_ui.UNAVAILABLE)
             check.setChecked(False)
             tip = {"applied": "Already installed on this source.",
@@ -652,7 +682,9 @@ class GameplayPatchesPanel(QWidget):
         )
         for key, check in self.checks.items():
             on = check.isChecked()
-            if key == "screen_timing":
+            if key == "helmet_finish":
+                plan.helmet_finish = "matte" if on else "glossy"
+            elif key == "screen_timing":
                 plan.screen_timing = self.screen_timing_combo.currentText() if on else None
             elif key == "created_teams_extra":
                 plan.created_teams_extra = 2 if on else 0
@@ -829,10 +861,15 @@ class GameplayPatchesPanel(QWidget):
             self.guardian_everyone_practice_check.setEnabled(on and self.checks["guardian_overlay"].isEnabled())
             if on and "guardian_cap" in self.checks:
                 self.checks["guardian_cap"].setChecked(False)
-        any_on = any(c.isChecked() for c in self.checks.values())
+        from mod_editor.studio.plan_controls import refresh_playbook_controls
+        self._playbook_blockers = refresh_playbook_controls(
+            self.checks, self._helpers, self._state)
+        any_on = any(c.isChecked() for key, c in self.checks.items() if key != "helmet_finish") or self._helmet_finish_changed()
         configured = True   # MyCareer no longer needs a setup file: an empty field selects in-game creation
         self.write_button.setEnabled(configured and any_on and bool(self.source_field.text()) and bool(self.target_field.text())
-                                     and self._task is None and not self._reading)
+                                     and self._task is None and not self._reading
+                                     and not self._playbook_blockers)
+        self.write_button.setToolTip(" ".join(self._playbook_blockers))
 
     def _choose_source(self) -> None:
         chosen, _f = QFileDialog.getOpenFileName(self, "Choose your game disc (.iso) or default.xbe", str(Path.home()), SOURCE_FILTER)
@@ -852,12 +889,24 @@ class GameplayPatchesPanel(QWidget):
             self._target_generated = False
             self._refresh()
 
+    def _helmet_finish_changed(self) -> bool:
+        """True when the chosen finish differs from what the source carries (Glossy restoration counts)."""
+        combo = getattr(self, "helmet_finish_combo", None)
+        state = (self._state or {}).get("helmet_finish")
+        return bool(combo is not None and combo.isEnabled() and state in ("retail", "applied")
+                    and combo.currentData() != ("matte" if state == "applied" else "glossy"))
+
     def _write(self) -> None:
+        self._refresh()
+        if self._playbook_blockers:
+            return
         plan = self.plan()
-        if not any(check.isChecked() for check in self.checks.values()):
+        if not (any(check.isChecked() for key, check in self.checks.items() if key != "helmet_finish") or self._helmet_finish_changed()):
             return
         is_image = tt.is_disc_image(plan.source)
-        chosen = [LABELS.get(key, (label, "", ""))[0] for key, label, _e in self._patches if self.checks[key].isChecked()]
+        chosen = [LABELS.get(key, (label, "", ""))[0] for key, label, _e in self._patches if key != "helmet_finish" and self.checks[key].isChecked()]
+        if self._helmet_finish_changed():
+            chosen.append("Helmet finish: " + self.helmet_finish_combo.currentText())
         answer = QMessageBox.question(self, "Make disc with these changes?" if is_image else "Save a patched executable?",
                                       f"Source (unchanged): {plan.source}\n"
                                       + (f"Replace existing copy: {plan.target}" if plan.overwrite

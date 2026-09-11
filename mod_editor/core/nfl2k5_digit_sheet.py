@@ -12,10 +12,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from io import BytesIO
 from pathlib import Path
+import math
 import stat
 from typing import Iterable, Literal
 
-from PIL import Image, ImageOps, UnidentifiedImageError
+from PIL import Image, ImageOps, UnidentifiedImageError, PngImagePlugin
 
 from .errors import ValidationError
 from .nfl2k5_digit_texture import resize_cell
@@ -31,10 +32,11 @@ SHEET_LAYOUTS = (
     ("Two columns, five rows: 0 1, then 2 3", "grid_2x5"),
 )
 SHEET_HELP = (
-    "Use ten equal cells in digit order, with no gaps, labels or outside border. "
-    "Choose one row, one column, five columns by two rows, or two columns by five rows. "
-    "PNG with transparency is recommended. Keep each digit's padding inside its cell. "
-    "Each complete cell is resized to the selected jersey, helmet or arm slot. "
+    "Use a 640x64 transparent PNG with ten 64x64 cells in digit order. "
+    "A 64x640 column, 320x128 grid or 128x320 grid also works. "
+    "Use one flat fill colour and one outline colour. Keep a margin inside each cell. "
+    "Leave out noise, gradients, labels and guides. AI output needs the cleanup the tool applies. "
+    "Match retail size fits each glyph into its original game box. As authored keeps your placement. "
     "See docs/mod_editor/number_sheets.md for examples."
 )
 
@@ -99,10 +101,14 @@ def split_digit_sheet(
     assets: Iterable[object],
     *,
     orientation: Orientation = "auto",
+    registration: str = "retail",
 ) -> tuple[DigitSheetPng, ...]:
     """Return ten exact target-sized PNGs without modifying *source*."""
 
     targets = _targets(assets)
+    from .nfl2k5_digit_art import REGISTRATION_KEY, REGISTRATION_CHOICES
+    if registration not in dict(REGISTRATION_CHOICES).values():
+        raise ValidationError("Choose Match retail size or As authored.")
     if orientation not in {"auto", *(key for _label, key in SHEET_LAYOUTS)}:
         raise ValidationError("Choose a supported digit sheet layout. " + SHEET_HELP)
     requested = Path(source).expanduser()
@@ -160,7 +166,7 @@ def split_digit_sheet(
                 f"{width}x{height} for digit {digit}, including its padding."
             )
             if cell_width * height != cell_height * width:
-                notes.append("The cell and slot have different shapes; the digit will stretch.")
+                notes.append("As authored will stretch different cell and slot shapes; Match retail size preserves the glyph's aspect.")
             if cell_width < width or cell_height < height:
                 notes.append("Enlarging the cell cannot restore missing edge detail.")
         alpha = cell.getchannel("A")
@@ -168,9 +174,18 @@ def split_digit_sheet(
         if bounds and (bounds[0] == 0 or bounds[1] == 0
                        or bounds[2] == cell_width or bounds[3] == cell_height):
             notes.append(f"Digit {digit} touches a cell edge; check for clipping, gaps or a background.")
-        cell = resize_cell(cell, (width, height))
+        if registration == "retail" and cell_width * height != cell_height * width:
+            scale = min(width / cell_width, height / cell_height)
+            size = (max(1, math.floor(cell_width*scale)), max(1, math.floor(cell_height*scale)))
+            glyph = resize_cell(cell, size)
+            cell = Image.new("RGBA", (width, height))
+            cell.paste(glyph, ((width-size[0])//2, (height-size[1])//2))
+        else:
+            cell = resize_cell(cell, (width, height))
         stream = BytesIO()
-        cell.save(stream, format="PNG", optimize=False, compress_level=9)
+        metadata = PngImagePlugin.PngInfo()
+        metadata.add_text(REGISTRATION_KEY, registration)
+        cell.save(stream, format="PNG", optimize=False, compress_level=9, pnginfo=metadata)
         outputs.append(DigitSheetPng(
             digit=digit,
             asset_id=str(getattr(target, "asset_id")),
