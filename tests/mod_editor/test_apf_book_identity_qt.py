@@ -62,23 +62,48 @@ class PanelTests(unittest.TestCase):
         self.panel.action.setCurrentIndex(1)
         self.assertFalse(self.panel.build.isEnabled())
         self.assertIsNone(self.panel.reviewed)
-        self.assertFalse(self.panel.team.isEnabled())
+        self.assertTrue(self.panel.team.isEnabled())
 
-    def test_preset_publication_is_bound_to_the_reviewed_reports(self):
+    def test_preset_fills_donor_and_keeps_team_label_and_donor_editable(self):
         self.load()
         self.panel.action.setCurrentIndex(1)
-        report = {"book_identity": self.report, "source_sha256": "synthetic"}
-        class Preset:
-            pass
-        result = Preset()
-        result.report = report
-        with patch("mod_editor.apf_studio.book_identity_qt.presets.compile_preset", return_value=result):
+        self.assertEqual(self.panel.donor.currentData(), "O-ZoneBlock")
+        self.assertTrue(all(w.isEnabled() for w in (self.panel.team, self.panel.label, self.panel.donor)))
+        self.assertIn("play membership and audible slots", self.panel.recipe_note.text())
+        self.panel.donor.setCurrentIndex(self.panel.donor.findData("O-ManBlock"))
+        self.assertEqual(self.panel.action.currentData(), "clone")
+        self.assertEqual(self.panel.donor.currentData(), "O-ManBlock")
+
+    def test_preset_build_clones_selected_team_and_opens_that_output_for_editing(self):
+        self.load()
+        self.panel.action.setCurrentIndex(1)
+        class Plan:
+            report = {"book_identity": self.report,
+                      "roster_binding": {"changes": [{"after_type": "Independent"}]}}
+        plan = Plan()
+        with patch("mod_editor.apf_studio.book_identity_qt.clone.compile_unlock", return_value=plan) as compile_mock:
             self.panel.review_selection()
-        with patch("mod_editor.apf_studio.book_identity_qt.presets.build_presets_folder",
+        self.assertEqual(compile_mock.call_args.kwargs["preset_ids"], ("wide-zone",))
+        request = compile_mock.call_args.args[1][0]
+        self.assertEqual((request.team_index, request.label_id, request.donor_type), (0, 1, "O-ZoneBlock"))
+        with patch("mod_editor.apf_studio.book_identity_qt.clone.build_new_folder",
                    return_value={"runtime_status": "UNWITNESSED"}) as build_mock:
             self.panel.build_to(Path("synthetic-output"))
-        self.assertEqual(build_mock.call_args.kwargs["expected_reports"], [report])
+        self.assertIs(build_mock.call_args.args[0], plan)
+        self.assertEqual(self.panel._edit_index, Path("synthetic-output/0A"))
+        self.assertEqual(self.panel._edit_name, "Independent")
+        self.assertTrue(self.panel.edit.isEnabled())
         self.assertIn("UNWITNESSED", self.panel.status.text())
+        self.assertFalse(self.panel.build.isEnabled())
+
+    def test_busy_does_not_allow_another_clone_review_or_build(self):
+        self.load()
+        self.panel.set_busy(True)
+        self.assertFalse(self.panel.review.isEnabled())
+        self.assertFalse(self.panel.edit.isEnabled())
+        self.assertFalse(self.panel.donor.isEnabled())
+        self.panel.set_busy(False)
+        self.assertTrue(self.panel.review.isEnabled())
         self.assertFalse(self.panel.build.isEnabled())
 
 

@@ -25,7 +25,7 @@ sys.dont_write_bytecode = True
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / "tools"
-EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.86"
+EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.87"
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 if str(TOOLS) not in sys.path:
@@ -94,12 +94,15 @@ PRODUCT_MODULES = (
     'mod_editor.apf_studio.ps3_texture_probe',
     'mod_editor.apf_studio.ps3_texture_probe_fast',
     'mod_editor.apf_studio.book_identity_qt',
+    'mod_editor.apf_studio.book_content',
     'mod_editor.core.apf2k8_book_clone',
     'mod_editor.core.apf2k8_book_identity',
     'mod_editor.core.apf2k8_scheme_presets',
     'mod_editor.apf_studio.playbook_playcall_qt',
     'mod_editor.core.apf2k8_audibles',
     'mod_editor.core.apf2k8_playcall_patch',
+    'mod_editor.core.apf2k8_xex',
+    'mod_editor.core.xex_codec',
     "capstone",
     "mod_editor.apf_studio",
     "mod_editor.apf_studio.__main__",
@@ -490,6 +493,38 @@ def _check_install_contract() -> None:
             )),
             "uninstall left an unchanged installer-owned program path behind",
         )
+
+
+def _check_xex_image_contract(modules: dict[str, object]) -> None:
+    import hashlib
+    import struct
+    from mod_editor.core.errors import ValidationError
+
+    codec = modules["mod_editor.core.xex_codec"]
+    xex = modules["mod_editor.core.apf2k8_xex"]
+    patch = modules["mod_editor.core.apf2k8_playcall_patch"]
+    key = bytes.fromhex("000102030405060708090a0b0c0d0e0f")
+    ciphertext = bytes.fromhex("69c4e0d86a7b0430d8cdb78070b4c55a")
+    if codec.aes_cbc_decrypt(key, ciphertext) != bytes.fromhex("00112233445566778899aabbccddeeff"):
+        raise RuntimeError("Python XEX AES decoder failed its standard vector")
+    # Entirely synthetic uncompressed XEX, never game bytes.
+    header = bytearray(0x400)
+    struct.pack_into(">6I", header, 0, 0x58455832, 1, len(header), 0, 0x80, 1)
+    struct.pack_into(">II", header, 24, 0x3FF, 0x300)
+    struct.pack_into(">I", header, 0x84, 2)
+    struct.pack_into(">IHH", header, 0x300, 8, 0, 0)
+    image, receipt = xex.decode_xex(bytes(header) + b"MZ")
+    if image != b"MZ" or receipt["image_sha256"] != hashlib.sha256(image).hexdigest():
+        raise RuntimeError("Python XEX image derivation failed")
+    try:
+        patch.check_image(image)
+    except ValidationError as exc:
+        if not all(value in str(exc) for value in (
+            hashlib.sha256(image).hexdigest(), *(p.sha256 for p in patch.PROFILES)
+        )):
+            raise RuntimeError("Pass-fetch refusal omits an image hash") from exc
+    else:
+        raise RuntimeError("Pass-fetch export accepted an unpinned image")
 
 
 def _check_apf_wave_contract(modules: dict[str, object]) -> None:
@@ -2593,6 +2628,7 @@ def main(argv: list[str] | None = None) -> int:
             importlib.import_module(name)
         _check_book_unlock_contract(modules)
         _check_apf_wave_contract(modules)
+        _check_xex_image_contract(modules)
         _check_namespace_isolation()
         _check_audo_authoring_doc()
         _check_ausb_feasibility_doc()

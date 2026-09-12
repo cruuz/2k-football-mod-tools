@@ -2,9 +2,44 @@
 
 The importer reads APFe exports and prepares the Xbox 360 studio's existing
 Team Logo and Field Art edits. It transfers decoded pixels, never PS3 archive
-offsets, GTF containers, or PS3 compression. The core API and receipt CLI are
-available. This beta-64 writer extension needs the Field Art label/preview
-handoff in `WIRING.md` before the protected GUI is integrated.
+offsets, GTF containers, or PS3 compression. The mapping dialog is available through the studio's Import PS3 bundle action;
+the core API and receipt CLI are also available.
+
+## Beta 66.1 crest budgets
+
+Equal DDS dimensions do not imply equal compressed size. Each crest package
+has its own fixed budget for both mask layers and their regenerated mips.
+PS3 bundle review measures the art in a worker, with progress, using the crest
+writer's encoder and each destination's H7A shift and preserved layout.
+Repeated pixel hashes reuse measured sizes. The row shows whether the art fits
+unchanged, needs fewer shades per region, or still exceeds the budget. Hover
+for packages with room, or use **Choose packages with room** to explicitly
+change checked rows. Review the slot numbers: the roster's crest index must
+point to the slot you choose. The importer never moves a package automatically.
+
+Crests first try greedy H7A and then the reviewed optimal encoder. If needed,
+changed layers try 8, 4 and 2 RGB shades per region, stopping at the first fit;
+alpha is preserved and mips regenerate from each simplified layer. The six
+masks stay independent. The package allocation and texture dimensions stay
+fixed. The build reparses the resulting IFF and uses the fitted masks in the
+linked logo cache. Its receipt and completion message report the chosen
+shades, compression method, budget and bytes used. If even two shades do not
+fit, the error names the required bytes and recommends choosing a package
+with room or flattening the art. The art on the helmet still needs an in-game
+witness after building.
+
+**Allow crest shade reduction to fit** defaults on in PS3 mapping and Team
+Art replacement; clear it to refuse shade reduction, with the choice saved
+for each crest in the project. Original staged PNGs remain available for
+rebuilding with a different policy. The direct writer APIs accept
+`allow_simplification=True`; their default remains strict for existing callers,
+including full-shell atlas migration.
+
+Python callers can run `measure_bundle_logos(bundle, slots, index_0a, progress)`
+in their worker and pass its result as `build_plan(..., measurements=result,
+allow_simplification=True)`. Plan receipts include each row's `fit` and
+`packages_with_room`. Staging rechecks the chosen destinations and sizes;
+complete-project Build remains the final package and linked-cache verifier.
 
 ## Export and arrange the files
 

@@ -707,7 +707,10 @@ def apply_equipment_span(current: bytes, replacement: bytes,
 def _project_palette(
     indices: list[bytes], levels: list[Any], maximum: int
 ) -> tuple[bytes, int]:
-    from .equipment_palette import representatives, distance
+    try:
+        from .equipment_palette import representatives, distance
+    except ImportError:  # loaded by file path (the unified provider's sealed bundle has no package)
+        from mod_editor.core.equipment_palette import representatives, distance
 
     buckets = [Counter() for _ in range(256)]
     base_indices = set(indices[0])
@@ -958,7 +961,10 @@ def _compile_group(
             rebuilt_decoded, replace(chunk, video_bytes=video_end), texture,
         )
         after = after_levels[0]
-        from .equipment_palette import quality as palette_quality
+        try:
+            from .equipment_palette import quality as palette_quality
+        except ImportError:  # loaded by file path (no package)
+            from mod_editor.core.equipment_palette import quality as palette_quality
         measured = palette_quality(levels[0].rgba if reference in independent else authored_rgba, after)
         overflow = any(attempt["result"] == "vc_lz_overflow" for attempt in attempts)
         measured["merge_reason"] = (

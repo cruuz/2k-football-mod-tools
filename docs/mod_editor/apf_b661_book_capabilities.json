@@ -1,0 +1,197 @@
+{
+  "capabilities": [
+    {
+      "backend": {
+        "command": "python3 tools/apf_book_unlock.py clone --source <0A> --requests <clones.json> --output <new-game>",
+        "module": "tools/apf_book_unlock.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf_wave_2026_09_09.md",
+        "docs/mod_editor/apf_b661_cpu_book_control.md"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Integrated in the APF Studio with offline validation; gameplay UNWITNESSED."
+      },
+      "id": "apf2k8.playbooks.clone",
+      "input_constraints": [
+        "Use a separate new destination; source game files remain read-only.",
+        "Reject malformed ownership, hash collisions, shared clone labels, occupied directory slack, IFF overflow, and H7A length greater than distance.",
+        "Only existing plays/formations are used; no CPU situational frequency, WR depth flip, true RPO, or TU compatibility is established."
+      ],
+      "portme": [
+        "Witness base-XEX loading and per-team cloned-book consumption; reconstruct TU resolver before claiming TU compatibility."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute JSON selectors and tooling; each user builds from their own game. Never bundle copied game outputs.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Gameplay UNWITNESSED. BASE bounded personnel picker/record lookup is proved for the documented Queens retirement; expanded archive loading and TU compatibility remain unproved.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "unused offensive label 0..68",
+            "name": "label_id",
+            "required": true
+          },
+          {
+            "allowed": "team slot 0..39",
+            "name": "team_index",
+            "required": true
+          },
+          {
+            "allowed": "one of the seven stock O- types",
+            "name": "donor_type",
+            "required": true
+          }
+        ],
+        "notes": "Append a name-only SPLB clone, insert its sorted filename hash, reuse an existing label name as type, and bind one team. Finish other Studio edits first."
+      },
+      "source_container": {
+        "format": "APF AA00B3BF four-volume archive, IFF/H7A, SPLB and ROST",
+        "hash_pins": [
+          "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf"
+        ],
+        "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
+        "retail_file": "user-owned extracted APF Xbox 360 game folder"
+      },
+      "summary": "Create a team-specific offensive copy, then edit its formations, play membership and same-record audibles through Book Identity > Edit books in Fine-tune. Named recipes and copied-folder builds verify the independent resource and preserve its shared donor.",
+      "surface": "scripts_config",
+      "title": "Independent offensive CPU books",
+      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+    },
+    {
+      "backend": {
+        "command": "python3 tools/apf_book_unlock.py identity --source <0A>",
+        "module": "tools/apf_book_unlock.py",
+        "operation": "inspect"
+      },
+      "classification": "read-only-mapped",
+      "evidence": [
+        "docs/mod_editor/apf_wave_2026_09_09.md",
+        "docs/mod_editor/apf_b661_cpu_book_control.md"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "view",
+        "reason": "Integrated in the APF Studio with offline validation; gameplay UNWITNESSED."
+      },
+      "id": "apf2k8.playbooks.identity",
+      "input_constraints": [
+        "Use a separate new destination; source game files remain read-only.",
+        "Reject malformed ownership, hash collisions, shared clone labels, occupied directory slack, IFF overflow, and H7A length greater than distance.",
+        "Only existing plays/formations are used; no CPU situational frequency, WR depth flip, true RPO, or TU compatibility is established."
+      ],
+      "portme": [
+        "Witness base-XEX loading and per-team cloned-book consumption; reconstruct TU resolver before claiming TU compatibility."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute JSON selectors and tooling; each user builds from their own game. Never bundle copied game outputs.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Gameplay UNWITNESSED. BASE bounded personnel picker/record lookup is proved for the documented Queens retirement; expanded archive loading and TU compatibility remain unproved.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "user-owned APF game index",
+            "name": "source",
+            "required": true
+          }
+        ],
+        "notes": "Reparse each team label and resolved resource; report shared real books and unresolved types."
+      },
+      "source_container": {
+        "format": "APF AA00B3BF four-volume archive, IFF/H7A, SPLB and ROST",
+        "hash_pins": [
+          "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf"
+        ],
+        "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
+        "retail_file": "user-owned extracted APF Xbox 360 game folder"
+      },
+      "summary": "Explain each team label and name-resolved book, then open the chosen or newly cloned game folder in Fine-tune. Finish the original Studio project before cloning because directory entry indices shift.",
+      "surface": "scripts_config",
+      "title": "Book Identity",
+      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+    },
+    {
+      "backend": {
+        "command": "python3 tools/apf_book_unlock.py preset --source <0A> --preset <wide-zone|spread-to-run|pro-power> --output <new-game>",
+        "module": "tools/apf_book_unlock.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf_wave_2026_09_09.md",
+        "docs/mod_editor/apf_b661_cpu_book_control.md"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Integrated in the APF Studio with offline validation; gameplay UNWITNESSED."
+      },
+      "id": "apf2k8.playbooks.scheme_presets",
+      "input_constraints": [
+        "Use a separate new destination; source game files remain read-only.",
+        "Reject malformed ownership, hash collisions, shared clone labels, occupied directory slack, IFF overflow, and H7A length greater than distance.",
+        "Only existing plays/formations are used; no CPU situational frequency, WR depth flip, true RPO, or TU compatibility is established."
+      ],
+      "portme": [
+        "Witness base-XEX loading and per-team cloned-book consumption; reconstruct TU resolver before claiming TU compatibility."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute JSON selectors and tooling; each user builds from their own game. Never bundle copied game outputs.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Gameplay UNWITNESSED. BASE bounded personnel picker/record lookup is proved for the documented Queens retirement; expanded archive loading and TU compatibility remain unproved.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "wide-zone, spread-to-run, pro-power",
+            "name": "preset",
+            "required": true
+          }
+        ],
+        "notes": "Select existing plays and retarget tagged slots through the SPLB writer; preserve formations, personnel fields, fallback records, and all other bytes."
+      },
+      "source_container": {
+        "format": "APF AA00B3BF four-volume archive, IFF/H7A, SPLB and ROST",
+        "hash_pins": [
+          "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf"
+        ],
+        "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
+        "retail_file": "user-owned extracted APF Xbox 360 game folder"
+      },
+      "summary": "Fill one independent copy from Wide Zone, Spread-to-Run or Pro Power while keeping team, label and donor editable. Content remains editable in Fine-tune after building; the separate shared-book staging and CLI paths remain available.",
+      "surface": "scripts_config",
+      "title": "Wide Zone, Spread-to-Run, Pro Power",
+      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+    }
+  ]
+}

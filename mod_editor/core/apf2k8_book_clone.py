@@ -223,10 +223,28 @@ class CompiledUnlock:
     roster_body: bytes
     clones: tuple[CompiledClone, ...]
     report: dict
+    preset_ids: tuple[str, ...] = ()
 
 
-def compile_unlock(index_path: Path, requests: Iterable[CloneRequest]) -> CompiledUnlock:
+def _prepared_donor(index_path, donor, preset_ids):
+    from . import apf2k8_scheme_presets as presets
+    for slug in preset_ids:
+        recipe = presets.load_preset(slug)
+        if recipe["book_type"] == splb.parse_book(donor[3], donor[1].table_index).name:
+            return presets.compile_preset(index_path, recipe).replacement
+    return donor[3]
+
+
+def compile_unlock(index_path: Path, requests: Iterable[CloneRequest], *,
+                   preset_ids: tuple[str, ...] = ()) -> CompiledUnlock:
     requests = _requests(requests)
+    from . import apf2k8_scheme_presets as presets
+    preset_ids = tuple(preset_ids)
+    if len(set(preset_ids)) != len(preset_ids):
+        raise ValidationError("Duplicate clone content recipe")
+    for slug in preset_ids:
+        if presets.load_preset(slug)["book_type"] not in {r.donor_type for r in requests}:
+            raise ValidationError("Content recipe does not match the selected donor book")
     index_path = Path(index_path).resolve()
     roster_source = read_resource(index_path, apf_roster.OUTER_NAME_ID, "roster", "ROST")
     archive, roster_entry, _record, roster_before, _decoded, _original = roster_source
@@ -261,20 +279,21 @@ def compile_unlock(index_path: Path, requests: Iterable[CloneRequest]) -> Compil
         donor = read_resource(index_path, filename_id(request.donor_type), "spb", "SPLB")
         if splb.parse_book(donor[3], donor[1].table_index).name != request.donor_type:
             raise ValidationError("Donor filename and SPLB header disagree")
-        replacement = clone_body(donor[3], label.name)
+        prepared = _prepared_donor(index_path, donor, preset_ids)
+        replacement = clone_body(prepared, label.name)
         name_id = filename_id(label.name)
         if name_id in ids:
             if label.kind != label.name:
                 raise ValidationError(f"Clone filename hash collides with an existing resource: {label.name}")
             existing = read_resource(index_path, name_id, "spb", "SPLB")
-            verify_clone_body(donor[3], existing[3], label.name)
+            verify_clone_body(prepared, existing[3], label.name)
             proofs.append({"name": label.name, "already_applied": True})
             continue
         packed, transport = rebuild_resource(donor, replacement)
         clones.append(CompiledClone(label.name, request.donor_type, name_id, position, packed, replacement))
         ids.add(name_id)
         proofs.append({"name": label.name, "donor": request.donor_type, "name_id": f"0x{name_id:08X}",
-                       "virtual_offset": position, **verify_clone_body(donor[3], replacement, label.name),
+                       "virtual_offset": position, **verify_clone_body(prepared, replacement, label.name),
                        "transport": transport})
         position += len(packed)
     table = [(x.name_id, x.offset_blocks, x.size_blocks) for x in archive.entries]
@@ -309,7 +328,7 @@ def compile_unlock(index_path: Path, requests: Iterable[CloneRequest]) -> Compil
             books[label.kind] = new_indices[key]
     report = {"schema": REPORT_SCHEMA, "status": STATUS, "base_executable_patch_required": False,
               "title_update_compatibility": "UNKNOWN: TU executable not reconstructed or witnessed",
-              "clones": proofs, "roster_binding": binding, "roster_transport": roster_transport,
+              "preset_ids": list(preset_ids), "clones": proofs, "roster_binding": binding, "roster_transport": roster_transport,
               "directory": {"entries_before": len(archive.entries), "entries_after": len(table),
                             "table_end_before": archive.table_end, "table_end_after": end,
                             "first_payload_offset": first, "zero_directory_bytes_consumed": end - archive.table_end,
@@ -321,7 +340,7 @@ def compile_unlock(index_path: Path, requests: Iterable[CloneRequest]) -> Compil
               "book_identity": book_identity_report(parse_roster_identity(roster_after), books),
               "follow_up": "Finalize after other Studio edits; numeric outer indices change. Test base XEX in game."}
     return CompiledUnlock(index_path, requests, directory_before, bytes(directory),
-                          _sha(roster_source[5]), roster_packed, roster_after, tuple(clones), report)
+                          _sha(roster_source[5]), roster_packed, roster_after, tuple(clones), report, preset_ids)
 
 
 def verify_unlock(plan: CompiledUnlock, output_index: Path) -> dict:
@@ -354,7 +373,8 @@ def verify_unlock(plan: CompiledUnlock, output_index: Path) -> dict:
     for clone in plan.clones:
         resource = read_resource(output_index, clone.name_id, "spb", "SPLB")
         donor = read_resource(plan.source_index, filename_id(clone.donor_type), "spb", "SPLB")
-        verify_clone_body(donor[3], resource[3], clone.name)
+        prepared = _prepared_donor(plan.source_index, donor, plan.preset_ids)
+        verify_clone_body(prepared, resource[3], clone.name)
         if resource[1].virtual_offset != clone.virtual_offset or resource[5] != clone.entry_bytes:
             raise ValidationError("Clone allocation/transport does not match the compiled result")
     # Compare the whole copied archive, excluding only the two authorized spans.
@@ -366,7 +386,7 @@ def verify_unlock(plan: CompiledUnlock, output_index: Path) -> dict:
         if stream.read(len(plan.directory_after)) != plan.directory_after:
             raise ValidationError("Directory bytes differ from the compiled allocation")
     # Reapplying the recipe must not append duplicate resources or flip pointers.
-    repeated = compile_unlock(output_index, plan.requests)
+    repeated = compile_unlock(output_index, plan.requests, preset_ids=plan.preset_ids)
     if repeated.clones or repeated.roster_body != roster[3] or repeated.directory_after != plan.directory_after:
         raise ValidationError("Book clone apply is not idempotent")
     executable = compare_executable(plan.source_index.parent, Path(output_index).parent)

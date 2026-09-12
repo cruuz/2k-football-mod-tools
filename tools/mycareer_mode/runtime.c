@@ -324,6 +324,48 @@ static NI u32 player_bounds(u8 *p) {
     u32 off=(u32)p-W(ROOT,4);
     return p && W(ROOT,0)<=4096 && !(off%84) && off/84<W(ROOT,0);
 }
+/* Version 2 is owned only by the installed arena bridge. The ordinary
+ * Practice Squad ps_limit rejects it; the grown bridge validates ordinal,
+ * metadata, overflow indices and the block CRC before returning capacity.
+ * Return 0 absent, 1 active, 2 reserve, or -1 invalid/duplicate ownership. */
+u32 FC mode_grown_member(u8 *t,u32 player) {
+    u32 i,p,id,found=0;
+    const u16 *overflow;
+    if(G(0xB72808)!=0x92000 || B((u8 *)0xc3ee0,0)!=0xe9 ||
+       !CALL1(0x3ee10c,(u32)t)) return -1;
+    overflow=(const u16 *)(ROOT+0x91c20+10*(((u32)t-W(ROOT,0x1c))/500));
+    for(i=0;i<70;i++) {
+        if(i<65) p=W(t,4*i);
+        else { id=overflow[i-65]; p=id==0xffff?0:W(ROOT,4)+84*id; }
+        if(p==player) {
+            if(found) return -1;
+            found=1+(i>=t[0x11c]);
+        }
+    }
+    return found;
+}
+/* The arena owner stages player copies without calling C3C60. Bind after
+ * the shared staging call, using the copied creation identity and bounded
+ * native arrays, never a name/position guess or a source slot ordinal. */
+void mode_match_copy(void) {
+    u8 *p=(u8 *)primary(),*t,*q; u32 side,i,found=0;
+    S(2564)=S(2568)=0;
+    if(!p) return;
+    for(side=0;side<2;side++) {
+        t=(u8 *)(0xb30864+500*side); q=(u8 *)(0xb30c4c+5460*side);
+        if(t[0x11c]>65) return;
+        for(i=0;i<t[0x11c];i++,q+=84) {
+            if(W(t,4*i)!=(u32)q) return;
+            if(W(q,0)==W(p,0) && W(q,4)==W(p,4) &&
+               W(q,16)==W(p,16) && W(q,20)==W(p,20) &&
+               !((W(q,24)^W(p,24))&0x0ffff000) && q[0x35]==p[0x35]) {
+                if(found) return;
+                found=(u32)q;
+            }
+        }
+    }
+    S(2564)=found;
+}
 static NI void rollback(void) {
     u8 *p=(u8 *)S(2676);
     if(p && ROOT && player_bounds(p)) {
@@ -372,8 +414,12 @@ void FC mode_create(u32 manager) {
     /* Reject contradictory free/owned slots before the native initializer. */
     for(i=0;i<W(ROOT,0x18);i++) {
         t=(u8 *)(W(ROOT,0x1c)+i*500);
-        if(t[0x19b]>1) goto refuse; /* Foreign/grown squad metadata needs its owner. */
-        for(j=0;j<65;j++) if(W(t,j*4)==(u32)p) goto refuse;
+        if(t[0x19b]==2) {
+            if(mode_grown_member(t,(u32)p)) goto refuse;
+        } else {
+            if(t[0x19b]>1) goto refuse;
+            for(j=0;j<65;j++) if(W(t,j*4)==(u32)p) goto refuse;
+        }
     }
     for(i=0;i<W(ROOT,0x38);i++) if(W((u8 *)W(ROOT,0x3c),4*i)==(u32)p) goto refuse;
     n=W(ROOT,0); t=(u8 *)W(ROOT,4);
@@ -574,36 +620,26 @@ static NI void capture(u8 *p) {
 }
 extern const u16 m3_sign_text[],m3_sign_cut_text[];
 static NI u32 m3_sign_limit(u8 *t) {
-    u32 n;
     if(B((u8 *)0xc3ee0,0)==0xe9) {
         /* The complete Practice Squad installation is validated offline.
          * Its stable ps_limit entry also dispatches arena-grown reserves. */
-        n=CALL1(0x3ee10c,(u32)t);
-        return n<54?n:54;
+        return CALL1(0x3ee10c,(u32)t);
     }
-    if(t[0x11c]>64 || t[0x19b] || t[0x1f2] || t[0x1f3] || W(t,4*t[0x11c])) return 0;
-    return 54;
+    if(t[0x11c]>65 || t[0x19b] || t[0x1f2] || t[0x1f3] ||
+       (t[0x11c]<65 && W(t,4*t[0x11c]))) return 0;
+    return 65; /* Retail C3EE6: cmp al,0x41. */
 }
 void FC mode_sign(u32 manager) {
     u32 continuing=inline_active() && S(24)==4;
     u8 *p=continuing?(u8 *)primary():(u8 *)S(2676),*t=team(S(2684)); u32 i,count=0,limit,old;
+    u8 saved[84];
     if(!owner(manager) || S(2680)!=2 || !t || !p || !player_bounds(p) || p[0x35]>=17) return;
-    /* Native preseason cuts leave all clubs at 54. An undrafted career can
-     * ask the chosen club to make room using its native cut policy. Fresh
-     * free-agent entry retains the existing 54-player admission rule. */
-    limit=continuing?m3_sign_limit(t):54;
-    if(!limit || (!continuing && (t[0x11c]>=54 || t[0x19b] || W(t,4*t[0x11c])))) {
-        notice(manager,refusal_notice); return;
-    }
+    limit=m3_sign_limit(t);
+    if(!limit) { notice(manager,refusal_notice); return; }
     for(i=0;i<W(ROOT,0x38);i++) if(W((u8 *)W(ROOT,0x3c),4*i)==(u32)p) count++;
     if(count!=1 || !(p[8]&4)) { notice(manager,refusal_notice); return; }
     if(continuing) {
         if(!CALL2(0x14e540,manager,(u32)(t[0x11c]>=limit?m3_sign_cut_text:m3_sign_text))) return;
-        while(t[0x11c]>=limit) {
-            old=t[0x11c]; CALL2(0x2bf9a0,(u32)t,limit-1);
-            limit=m3_sign_limit(t);
-            if(!limit || t[0x11c]>=old) { notice(manager,refusal_notice); return; }
-        }
     } else if(!CALL1(0x148ab0,manager)) return;
     if(!continuing) {
         CALL0(0x148c60);
@@ -611,10 +647,24 @@ void FC mode_sign(u32 manager) {
         CALL0(0x10ea10);
         CALL0(0x13ee10);
     }
-    CALL2(0x2425c0,(u32)ROOT+0x38,(u32)p);
+    /* Initialization changes season capacity. Ask the installed append's
+     * limit again, then make room with the same native cut policy on either
+     * entry path. A failed cut or append never captures this free agent. */
+    limit=m3_sign_limit(t);
+    if(!limit) { notice(manager,refusal_notice); return; }
+    while(t[0x11c]>=limit) {
+        old=t[0x11c]; CALL2(0x2bf9a0,(u32)t,limit-1);
+        limit=m3_sign_limit(t);
+        if(!limit || t[0x11c]>=old) { notice(manager,refusal_notice); return; }
+    }
+    move_bytes(saved,p,84);
     ((void (FC *)(u32,u32,u32,u32))0x3228a0)((u32)p,1,1,0);
     ((void (FC *)(u32,u32,u32))0x2bd260)((u32)p,(u32)t,1);
-    CALL2(0xc3ee0,(u32)t,(u32)p); CALL1(0x243790,(u32)t); CALL1(0xc3f00,(u32)t);
+    if(!CALL2(0xc3ee0,(u32)t,(u32)p)) {
+        move_bytes(p,saved,84); notice(manager,refusal_notice); return;
+    }
+    CALL2(0x2425c0,(u32)ROOT+0x38,(u32)p);
+    CALL1(0x243790,(u32)t); CALL1(0xc3f00,(u32)t);
     CALL1(0x13ec90,(u32)t);
     if(continuing) { S(2680)=0; player_star(p); resolve_team(); }
     else capture(p);

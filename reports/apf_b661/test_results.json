@@ -1,0 +1,92 @@
+{
+  "environment": {
+    "PYTHONPATH": "/home/noah/2k-worktrees/astra-b66-apf-gameplay",
+    "QT_QPA_PLATFORM": "offscreen",
+    "APF_BOOK_RETAIL_INDEX": "/media/noah/Storage/for codex 1.0/extracted/All-Pro Football 2K8 (USA)/0A",
+    "APF_BOOK_FLAT_PE": "/home/noah/.codex-tmp/franchise-2026-08-28/apf.pe",
+    "APF_BOOK_RAW_SAVE": "/home/noah/Downloads/apfe/Roster.ROS"
+  },
+  "results": [
+    {
+      "command": "python3 tests/mod_editor/test_apf_b661_book_content.py",
+      "exit_code": 0,
+      "test_count": 5,
+      "output_tail": "....\n----------------------------------------------------------------------\nRan 5 tests in 25.682s\n\nOK"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_apf_b661_ladder.py",
+      "exit_code": 0,
+      "test_count": 6,
+      "output_tail": "......\n----------------------------------------------------------------------\nRan 6 tests in 1.217s\n\nOK"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_apf_b66_personnel.py",
+      "exit_code": 0,
+      "test_count": 3,
+      "output_tail": "...\n----------------------------------------------------------------------\nRan 3 tests in 5.029s\n\nOK"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_apf_book_identity_qt.py",
+      "exit_code": 0,
+      "test_count": 5,
+      "output_tail": ".....\n----------------------------------------------------------------------\nRan 5 tests in 0.035s\n\nOK"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_apf_book_unlock.py",
+      "exit_code": 0,
+      "test_count": 19,
+      "output_tail": "...................\n----------------------------------------------------------------------\nRan 19 tests in 22.010s\n\nOK"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_apf_book_unlock_retail.py",
+      "exit_code": 0,
+      "test_count": 6,
+      "output_tail": "......\n----------------------------------------------------------------------\nRan 6 tests in 18.168s\n\nOK"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_apf_capability_action_parity.py",
+      "exit_code": 0,
+      "test_count": 11,
+      "output_tail": "...........\n----------------------------------------------------------------------\nRan 11 tests in 0.098s\n\nOK"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_apf_cpu_audibles.py",
+      "exit_code": 0,
+      "test_count": 18,
+      "output_tail": "..................\n----------------------------------------------------------------------\nRan 18 tests in 2.947s\n\nOK"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_apf_splb_add_multiple_formations.py",
+      "exit_code": 0,
+      "test_count": 14,
+      "output_tail": "..............\n----------------------------------------------------------------------\nRan 14 tests in 0.436s\n\nOK"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_apf_splb_formation_personnel.py",
+      "exit_code": 0,
+      "test_count": 11,
+      "output_tail": ".....\n----------------------------------------------------------------------\nRan 11 tests in 1.015s\n\nOK"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_apf_splb_tag_reassignment.py",
+      "exit_code": 0,
+      "test_count": 86,
+      "output_tail": "................................................................s.....................\n----------------------------------------------------------------------\nRan 86 tests in 1.939s\n\nOK (skipped=1)"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_apf_splb_writer.py",
+      "exit_code": 0,
+      "test_count": 22,
+      "output_tail": "......................\n----------------------------------------------------------------------\nRan 22 tests in 0.215s\n\nOK"
+    },
+    {
+      "command": "python3 tests/mod_editor/test_apf_wave_integration.py",
+      "exit_code": 0,
+      "test_count": 8,
+      "output_tail": "........\n----------------------------------------------------------------------\nRan 8 tests in 14.138s\n\nOK"
+    }
+  ],
+  "total_tests": 214,
+  "passed_tests": 213,
+  "skipped_tests": 1
+}

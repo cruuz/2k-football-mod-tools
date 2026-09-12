@@ -1627,6 +1627,7 @@ class ApfSession:
         crest_outer_entry_index: int,
         fit_visible_mask: bool = False,
         detail_png: Path | None = None,
+        allow_simplification: bool = True,
     ) -> Modification:
         """Stage one selected-team crest plus its fixed helmet coverage profile.
 
@@ -1721,6 +1722,7 @@ class ApfSession:
                 source_horizontal_coverage=source_coverage,
                 output_horizontal_coverage=output_coverage,
                 detail_sha256=detail_digest,
+                allow_simplification=allow_simplification,
             )
         except HelmetCrestDesignError as exc:
             raise SessionError(str(exc)) from exc

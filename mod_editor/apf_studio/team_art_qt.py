@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout, QWidget,
 )
 
+from .helmet_crest_design import CREST_SIMPLIFICATION_HELP
 from .team_art import FAMILIES, STATUS, package_modifications, thumbnail
 
 
@@ -107,6 +108,11 @@ class TeamArtReplaceDialog(QDialog):
         note.setWordWrap(True)
         note.setToolTip(STATUS)
         layout.addWidget(note)
+        self.allow_simplification = QCheckBox("Allow crest shade reduction to fit (project setting)")
+        self.allow_simplification.setChecked(True)
+        self.allow_simplification.setToolTip(CREST_SIMPLIFICATION_HELP)
+        self.allow_simplification.setVisible(package.family == "logo")
+        layout.addWidget(self.allow_simplification)
         self.buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.buttons.button(QDialogButtonBox.Ok).setText("Stage replacement")
         self.buttons.button(QDialogButtonBox.Ok).setObjectName("primaryButton")
@@ -380,10 +386,15 @@ class TeamArtBrowser(QWidget):
             return
         self._queue = []
         dialog = TeamArtReplaceDialog(package, self)
+        if package.family == "logo" and self._session is not None:
+            existing = package_modifications(package, self._session.modifications)
+            if existing:
+                dialog.allow_simplification.setChecked(existing[0].metadata.get("allow_simplification", True))
         if dialog.exec_() != QDialog.Accepted:
             dialog.deleteLater()
             return
         paths, session = dialog.paths(), self._session
+        allow_simplification = dialog.allow_simplification.isChecked()
         dialog.deleteLater()
         def stage():
             def staged(_result):
@@ -391,7 +402,7 @@ class TeamArtBrowser(QWidget):
                 self.refresh()
                 self.status.setText("Replacement staged. Build Game Folder verifies the final package allocation.")
             self.run_task("Staging Team Art", lambda progress: self.facade.replace_team_art(package, paths, progress,
-                          expected_session=session), staged, True)
+                          expected_session=session, allow_simplification=allow_simplification), staged, True)
         window = self.window()
         if hasattr(window, "_run_when_idle"):
             window._run_when_idle(stage)

@@ -22,6 +22,8 @@ import json
 from pathlib import Path
 import sys
 import tempfile
+import threading
+from concurrent.futures import ThreadPoolExecutor
 import unittest
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -199,6 +201,7 @@ def _uniform_io(root: Path, source_sha: str, decoder) -> uniform_io.Nfl2k5AssetI
     """Build the uniform cache lane without requiring a retail archive fixture."""
 
     result = uniform_io.Nfl2k5AssetIO.__new__(uniform_io.Nfl2k5AssetIO)
+    result._original_lock = threading.RLock()
     result.cache = _Cache(root, source_sha)
     result._decode_original = decoder
     return result
@@ -206,6 +209,36 @@ def _uniform_io(root: Path, source_sha: str, decoder) -> uniform_io.Nfl2k5AssetI
 
 class TeamKitUniformCacheTests(unittest.TestCase):
     """Team Kit export calls Nfl2k5AssetIO through session.current_path."""
+
+    def test_concurrent_preview_and_export_publish_one_valid_pair(self):
+        for extended in (False, True):
+            with self.subTest(extended=extended), tempfile.TemporaryDirectory() as folder:
+                root, asset = Path(folder), _Asset()
+                entered, release, second_started = (threading.Event() for _ in range(3))
+                decodes = []
+                rgba = bytes((1, 2, 3, 255)) * (asset.width * asset.height)
+                def decode(_asset):
+                    decodes.append(_asset.asset_id)
+                    entered.set()
+                    if not release.wait(3):
+                        raise RuntimeError("test decoder was not released")
+                    return _encode(asset.width, asset.height, rgba), rgba
+                io = (vio.Nfl2k5ExtendedVisualIO(_Cache(root, "a" * 64), original_decoder=decode)
+                      if extended else _uniform_io(root, "a" * 64, decode))
+                def export():
+                    second_started.set()
+                    return io.ensure_original(asset)
+                with ThreadPoolExecutor(max_workers=2) as pool:
+                    first = pool.submit(io.ensure_original, asset)
+                    try:
+                        self.assertTrue(entered.wait(1))
+                        second = pool.submit(export)
+                        self.assertTrue(second_started.wait(1))
+                    finally:
+                        release.set()
+                    self.assertEqual(first.result(), second.result())
+                self.assertEqual(decodes, [asset.asset_id])
+                self.assertEqual(io.ensure_original(asset), first.result())
 
     def test_team_kit_lane_refreshes_an_intact_old_dimension(self) -> None:
         asset = _Asset()

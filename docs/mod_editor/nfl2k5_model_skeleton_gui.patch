@@ -1,0 +1,134 @@
+--- a/mod_editor/gui/models_panel_qt.py
++++ b/mod_editor/gui/models_panel_qt.py
+@@ -39,6 +39,7 @@
+ from mod_editor.gui.task_delivery import bound
+ 
+ from mod_editor.core import nfl2k5_models as models
++from mod_editor.core.nfl2k5_model_skeleton import HELP as SKELETON_HELP
+ 
+ IMAGE_FILTER = "Disc images (*.iso *.xiso);;All files (*)"
+ MODEL_FILTER = "glTF models (*.gltf *.glb);;All files (*)"
+@@ -51,7 +52,7 @@
+     "hands and every other animated model, a skin with the game's joints. Units are metres (the game "
+     "authors in centimetres; the root node carries the 0.01 scale). Images carry their nfl2k5_texture_id, so a "
+     "stadium export edited in Blender feeds the Stadiums page's texture write-back.\n\n"
+-    "IMPORT (same-topology): move vertices freely -- sculpt, proportional edit, reshape -- and bring the file "
++    "IMPORT, GEOMETRY ONLY (same-topology): move vertices freely -- sculpt, proportional edit, reshape -- and bring the file "
+     "back. The game's vertex count, triangles, bones, weights and materials are kept exactly; positions "
+     "(and normals / UVs / vertex colours when the file carries them for exactly matched vertices) are re-encoded "
+     "into the game's fixed-point lanes. If an edit leaves the model's retail range the range is widened for you. If "
+@@ -199,7 +200,7 @@
+         row = QHBoxLayout()
+         self.edited_field = QLineEdit()
+         self.edited_field.setPlaceholderText("The edited .gltf or .glb exported from Blender")
+-        self.edited_field.textChanged.connect(self._refresh)
++        self.edited_field.textChanged.connect(self._invalidate_import)
+         row.addWidget(self.edited_field, 1)
+         choose_edited = QPushButton("Choose…")
+         choose_edited.clicked.connect(self._choose_edited)
+@@ -209,6 +210,12 @@
+         self.check_button.clicked.connect(self._check)
+         row.addWidget(self.check_button)
+         import_layout.addLayout(row)
++        self.skeleton_mode = QComboBox()
++        self.skeleton_mode.addItem("Geometry only", "geometry")
++        self.skeleton_mode.addItem("Geometry and skeleton", "skeleton")
++        self.skeleton_mode.setToolTip(SKELETON_HELP)
++        self.skeleton_mode.currentIndexChanged.connect(self._invalidate_import)
++        import_layout.addWidget(self.skeleton_mode)
+         self.import_options_summary = QLabel("")
+         self.import_options_summary.setObjectName("throwMuted")
+         import_layout.addWidget(self.import_options_summary)
+@@ -281,7 +288,7 @@
+         row.addWidget(QLabel("Edited folder"))
+         self.set_folder_field = QLineEdit()
+         self.set_folder_field.setPlaceholderText("The folder holding the three edited .gltf / .glb files")
+-        self.set_folder_field.textChanged.connect(self._refresh)
++        self.set_folder_field.textChanged.connect(self._invalidate_import)
+         row.addWidget(self.set_folder_field, 1)
+         choose_set_folder = QPushButton("Choose…")
+         choose_set_folder.clicked.connect(self._choose_set_folder)
+@@ -318,7 +325,12 @@
+             return None
+         return models.body_set_for_key(self._entries, key)
+ 
++    def _invalidate_import(self, *_args) -> None:
++        self._compiled = self._compiled_set = None
++        self._refresh()
++
+     def _refresh(self) -> None:
++        self.skeleton_mode.setEnabled(not self._busy)
+         loaded = self._source is not None
+         key = self.current_key()
+         self.reload_button.setEnabled(not self._busy and (self._source_paths is not None or self._facade_paths() is not None))
+@@ -535,6 +547,12 @@
+             self.compile_edited(Path(edited))
+ 
+     def compile_edited(self, edited: Path) -> None:
++        if self.skeleton_mode.currentData() == "skeleton":
++            if self.current_body_set() is None:
++                self._failed("non-player skeleton: select lo_body, hi_body or hi_head from outer 3")
++                return
++            self.compile_body_set(edited.parent)
++            return
+         key = self.current_key()
+         if key is None or self._source is None:
+             return
+@@ -560,6 +578,9 @@
+     def _write(self) -> None:
+         source = Path(self.source_field.text().strip())
+         target = Path(self.target_field.text().strip())
++        if target.exists() and self._compiled_set is not None and self._compiled_set.skeleton_plan is not None:
++            self._failed("Choose a new output file distinct from the source for the coordinated skeleton copy")
++            return
+         if target.exists():
+             answer = QMessageBox.question(self, "Replace the existing copy?",
+                                           f"{target} already exists and will be replaced.",
+@@ -602,6 +623,7 @@
+             self.compile_body_set(Path(folder))
+ 
+     def compile_body_set(self, folder: Path) -> None:
++        import_skeleton = self.skeleton_mode.currentData() == "skeleton"
+         body_set, source = self.current_body_set(), self._source
+         if body_set is None or source is None:
+             return
+@@ -612,7 +634,8 @@
+ 
+         def operation() -> object:
+             return models.compile_body_set_import(source, body_set, folder, write_normals=normals, write_uvs=uvs,
+-                                                  allow_rescale=rescale, write_colours=colours)
++                                                  allow_rescale=rescale, write_colours=colours,
++                                                  import_skeleton=import_skeleton)
+ 
+         def done(result: object) -> None:
+             assert isinstance(result, models.CompiledModelSet)
+@@ -649,7 +672,7 @@
+         self._run(operation, done)
+ 
+     def _show_feasibility(self) -> None:
+-        QMessageBox.information(self, "What can I change?", FEASIBILITY)
++        QMessageBox.information(self, "What can I change?", FEASIBILITY + "\n\nGEOMETRY AND SKELETON: " + SKELETON_HELP)
+ 
+ 
+ # ---------------------------------------------------------------------- text helpers
+@@ -702,6 +725,20 @@
+ 
+ 
+ def set_report_text(compiled: models.CompiledModelSet) -> str:
++    if compiled.skeleton_plan is not None:
++        receipt = compiled.skeleton_plan.receipt
++        lines = [compiled.summary(), "", "Requested bone lengths (cm):"]
++        for row in receipt["changed_bones"]:
++            lines.append(f"{row['bone']}: {row['before_cm']:.5f} -> {row['after_cm']:.5f}")
++        if not receipt["changed_bones"]:
++            lines.append("No skeleton change; an untouched export is byte-identical.")
++        lines += ["", "Every changed bind length, including regenerated high pivots (cm):"]
++        for row in receipt["changed_bind_lengths"]:
++            lines.append(f"{row['member']} / {row['bone']}: {row['before_cm']:.5f} -> {row['after_cm']:.5f}")
++        lines += ["", "SKEL directions recomputed and checked against the retained canonical axes.",
++                  "All four resources, including head and SKEL, are preflighted as one transaction.",
++                  "Choose a new output disc path, then Make disc with this model.", "", SKELETON_HELP]
++        return "\n".join(lines)
+     lines = [f"Body set check: {compiled.summary()}", ""]
+     for member in compiled.members:
+         lines.append(f"{member.name}  ({Path(compiled.files.get(member.key, '')).name})")

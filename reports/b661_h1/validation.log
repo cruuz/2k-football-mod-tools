@@ -1,0 +1,519 @@
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_b661_workspace_qt.py
+.......
+----------------------------------------------------------------------
+Ran 7 tests in 2.239s
+
+OK
+uniforms_first cached=False max_ui_gap=0.094s
+uniforms_first cached=True max_ui_gap=0.068s
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_b661_kit_build.py
+..
+----------------------------------------------------------------------
+Ran 2 tests in 10.255s
+
+OK
+NFL2K5_VISUAL_MOD_BUILD_PASS edits=2 changed=2701 kept_retail=0 sha256=fd59d6db8539da7c1cadb66586635c4064f9eebf0859bdff0cb8bd50077d719f runtime=false
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_responsive_json.py
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.149s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_studio_inspection.py
+..
+----------------------------------------------------------------------
+Ran 2 tests in 0.298s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_self_update_manual_layout.py
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.002s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_2k5_stale_original_cache.py
+..........
+----------------------------------------------------------------------
+Ran 10 tests in 0.020s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_2k5_build_parse_caches.py
+..............
+----------------------------------------------------------------------
+Ran 14 tests in 0.365s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_studio_session.py
+..................
+----------------------------------------------------------------------
+Ran 18 tests in 0.508s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_studio_facade.py
+...........
+----------------------------------------------------------------------
+Ran 11 tests in 0.017s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_team_kit_bundle.py
+.......
+----------------------------------------------------------------------
+Ran 7 tests in 8.516s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_uniform_bundle_cross_project.py
+........
+----------------------------------------------------------------------
+Ran 8 tests in 3.093s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_team_kit_product_integration.py
+.......
+----------------------------------------------------------------------
+Ran 7 tests in 17.063s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_equipment_texture_chain.py
+................
+----------------------------------------------------------------------
+Ran 16 tests in 3.924s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_equipment_texture_native.py
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.245s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_equipment_import.py
+...........
+----------------------------------------------------------------------
+Ran 11 tests in 0.723s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_equipment_import_wiring.py
+......
+----------------------------------------------------------------------
+Ran 6 tests in 0.594s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_equipment_consumers.py
+.................
+----------------------------------------------------------------------
+Ran 17 tests in 19.629s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_uniform_catalog.py
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 1.290s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_text_catalog.py
+.........
+----------------------------------------------------------------------
+Ran 9 tests in 2.400s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_visual_decode_cache.py
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.002s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_2k5_visual_io_routing.py
+....
+----------------------------------------------------------------------
+Ran 4 tests in 0.115s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_startup_performance.py
+........
+----------------------------------------------------------------------
+Ran 8 tests in 1.463s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_mod_build_performance.py
+......
+----------------------------------------------------------------------
+Ran 6 tests in 6.695s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_studio_shell_layout_qt.py
+..................
+----------------------------------------------------------------------
+Ran 18 tests in 34.322s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_beta66_1_adapter_imports.py
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.345s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_self_update.py
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+.This plugin does not support propagateSizeHints()
+.This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+.This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+.......................
+----------------------------------------------------------------------
+Ran 26 tests in 1.376s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_update_check.py
+.....................
+----------------------------------------------------------------------
+Ran 21 tests in 0.005s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_provider_integrity.py
+.......
+----------------------------------------------------------------------
+Ran 7 tests in 8.391s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_providers.py
+.................................
+----------------------------------------------------------------------
+Ran 33 tests in 3.696s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_extended_visuals.py
+.........
+----------------------------------------------------------------------
+Ran 9 tests in 0.145s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_studio_visual_asset_routing.py
+..............
+----------------------------------------------------------------------
+Ran 14 tests in 7.896s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_studio_qt_models.py
+.........
+----------------------------------------------------------------------
+Ran 9 tests in 1.344s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_product_shell_accessibility_qt.py
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+.This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+.This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+.This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+.This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+.This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+.
+----------------------------------------------------------------------
+Ran 6 tests in 60.605s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_scorebug_studio_panel_qt.py
+...........
+----------------------------------------------------------------------
+Ran 11 tests in 7.111s
+
+OK
+
+$ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_2k5_uniform_equipment_export.py -v
+test_catalog_identity_count_and_contract_are_pinned (__main__.CompactCatalogTests.test_catalog_identity_count_and_contract_are_pinned) ... ok
+test_every_package_has_the_exact_45_reference_shape (__main__.CompactCatalogTests.test_every_package_has_the_exact_45_reference_shape) ... ok
+test_shipped_catalog_exactly_rebuilds_from_the_reviewed_inventory (__main__.CompactCatalogTests.test_shipped_catalog_exactly_rebuilds_from_the_reviewed_inventory) ... skipped 'Reviewed equipment source table absent: /home/noah/2k-worktrees/astra-b66-2k5-tool/reports/assets/nfl2k5_uniform_tset_textures.tsv; compact catalog tests still run'
+test_drag_drop_resizes_equipment_before_session_replace (__main__.EquipmentResizeOffscreenTests.test_drag_drop_resizes_equipment_before_session_replace) ... ok
+test_file_dialog_resizes_equipment_before_session_replace (__main__.EquipmentResizeOffscreenTests.test_file_dialog_resizes_equipment_before_session_replace) ... ok
+test_all_six_missing_equipment_families_are_findable (__main__.ProductInventoryTests.test_all_six_missing_equipment_families_are_findable) ... ok
+test_every_equipment_id_and_physical_selector_is_unique (__main__.ProductInventoryTests.test_every_equipment_id_and_physical_selector_is_unique) ... ok
+test_titans_socks_are_editable_through_the_typed_project_route (__main__.ProductInventoryTests.test_titans_socks_are_editable_through_the_typed_project_route) ... ok
+test_two_socks_palettes_compose_as_one_span_and_reopen (__main__.RealComposedEquipmentProjectTests.test_two_socks_palettes_compose_as_one_span_and_reopen)
+The public logical route groups overlapping clean/mud palette edits. ... skipped 'private retail NFL 2K5 composer fixtures absent'
+test_every_equipment_family_round_trips_inside_one_fixed_tset_span (__main__.RealSourceDecodeTests.test_every_equipment_family_round_trips_inside_one_fixed_tset_span)
+One real target per physical layout, including both shoe TSETs. ... ok
+test_source_hash_drift_is_refused (__main__.RealSourceDecodeTests.test_source_hash_drift_is_refused) ... ok
+test_titans_socks_preview_and_export_from_reviewed_source_hashes (__main__.RealSourceDecodeTests.test_titans_socks_preview_and_export_from_reviewed_source_hashes) ... ok
+test_all_textures_includes_package_local_equipment (__main__.StudioTruthfulEquipmentBoundaryTests.test_all_textures_includes_package_local_equipment) ... ok
+test_team_kit_name_and_equipment_scope_note_are_exact_and_honest (__main__.StudioTruthfulEquipmentBoundaryTests.test_team_kit_name_and_equipment_scope_note_are_exact_and_honest) ... ok
+test_unsupported_formats_still_have_an_explicit_export_only_state (__main__.StudioTruthfulEquipmentBoundaryTests.test_unsupported_formats_still_have_an_explicit_export_only_state) ... ok
+test_visual_dialog_and_drop_still_share_the_proved_resize_path (__main__.StudioTruthfulEquipmentBoundaryTests.test_visual_dialog_and_drop_still_share_the_proved_resize_path) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 29.616s
+
+OK (skipped=2)

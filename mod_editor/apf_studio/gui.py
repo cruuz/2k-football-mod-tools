@@ -253,7 +253,7 @@ CATEGORY_BLURBS: dict[ApfCategory, str] = {
     ApfCategory.MENUS: "Search menu, layout, font, and localized text structures across the complete archive.",
     ApfCategory.AUDIO: "Browse soundtrack, commentary, stadium, presentation, and standalone XMA1 audio; play verified WAV previews, export original XMA, import ordinary audio through exact-slot conversion with your own XMA1 encoder, or batch-stage a retail-free XMA1 or PCM16 WAV folder or ZIP.",
     ApfCategory.GAMEPLAY: "Inspect mapped sliders and follow gameplay research; nothing is offered as an edit until it is proven safe.",
-    ApfCategory.PLAYBOOKS: "Inspect PLAY and DRCT, edit stock assignment routes and shared coverage geometry, design bounded plays and formations with CPU-book calls, balance CPU audibles, and apply scheme presets. Book Identity finalizes independent books after Build. New gameplay is UNWITNESSED; freehand node graphs, five-step timing and DRCT authoring remain unproved.",
+    ApfCategory.PLAYBOOKS: "Edit CPU book formations, plays and same-formation audibles. Book Identity gives one team an independent offensive copy and opens it in Fine-tune. Build the original Studio project before cloning, then use the named book-edit recipe to continue. Content recipes remain editable. Expanded-book gameplay is UNWITNESSED.",
     ApfCategory.FRANCHISE: "Browse season, schedule, save, and franchise structures while deeper franchise editing is researched.",
     ApfCategory.ALL_ASSETS: "Every record the live indexer sees appears here, including opaque and export-only resources.",
 }
@@ -21808,6 +21808,7 @@ class ApfStudioMainWindow(QMainWindow):
         for row in rows:
             if not isinstance(row, dict):
                 continue
+            lines.extend(status for status in row.get("fit_status", ()) if isinstance(status, str))
             maps += len(row.get("package_maps") or ())
             regions += len(row.get("changed_ranges") or ())
             try:
@@ -21828,13 +21829,14 @@ class ApfStudioMainWindow(QMainWindow):
 
     def _build_complete(self, receipt: object) -> None:
         output = Path(receipt.output_game)  # type: ignore[attr-defined]
-        self._last_detail = f"Build complete: {output.name}"
+        detail = self._build_edit_detail(receipt)
+        self._last_detail = f"Build complete: {output.name}. {detail}"
         self._update_product_state()
         QMessageBox.information(
             self,
             "Modded game folder built",
             f"Wrote:\n{output}\n\n"
-            f"{self._build_edit_detail(receipt)} The complete output was verified and your source stayed untouched.\n\n"
+            f"{detail} The complete output was verified and your source stayed untouched.\n\n"
             "Point Xenia at this folder. Rebuild into the same folder to keep that path.\n\n"
             "This folder contains your retail game data. Do not redistribute it; share the .apf2k8mod project instead.",
         )

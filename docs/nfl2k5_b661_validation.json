@@ -1,0 +1,519 @@
+{
+  "scope": "bounded offline native harnesses and writer gates; gameplay UNWITNESSED",
+  "continued_from": "d1bfbed2",
+  "production_writers_changed": false,
+  "reservation_manifest_changed": false,
+  "repin_updates": 0,
+  "fixture_sha256": {
+    "tests/nfl2k5_b661_transition.py": "533af4598f98991aaa59d129954b591f482b86c8525a80c5710c2f23bd5c76ff",
+    "tests/nfl2k5_b661_series.py": "61827091cbb037ae83fafabcf6f26b2a36739d6dffdc2ae452b40d1b4a0a0036",
+    "docs/nfl2k5_b661_transition_receipts.json": "8776aaf8c218eae0d62ee13f349a1f64b6d5c031f47ce6eb85ee5c71ae75f449",
+    "data/nfl2k5_cave_reservations.json": "b61c7c69c5f0659cdf5a758b01d153b554ba40d671d21a84e17186311e6198de"
+  },
+  "suites": [
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_b661_transition.py --record",
+      "tests": 11,
+      "seconds": 364.306,
+      "result": "OK",
+      "output_summary": "Ran 11 tests in 364.306s\n\nOK",
+      "log_sha256": "c77ca1f7cfbf4151cd6b4a6f9f63618d51cbe57d0e6568ff1753e164ae3ab374",
+      "source_sha256_at_delivery": "585202f53de0e860e6b80c6b5cf8af29bd88bb263a47f17a0f4ee987f4bebe0b",
+      "session": "resumed H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_xbe_patch_memory_writes.py",
+      "tests": 115,
+      "seconds": 1482.404,
+      "result": "OK",
+      "output_summary": "Ran 115 tests in 1482.404s\n\nOK",
+      "log_sha256": "3c9f946586f57b81a259ba70068e95df021b1c2517491384c2e1d44c6e2089f7",
+      "source_sha256_at_delivery": "d335ca879f5ae4ad2a25e9615d387852a6cdec4c615693b7cabf8efef5571145",
+      "session": "resumed H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_xbe_patch_cave_references.py",
+      "tests": 127,
+      "seconds": 1673.915,
+      "result": "OK",
+      "output_summary": "Ran 127 tests in 1673.915s\n\nOK",
+      "log_sha256": "4baf7f86fe0bd8702030d25d14594edf21a5e079ff98924303cd5102ee1630e6",
+      "source_sha256_at_delivery": "e435c211614fb390589e5222f211d2e993c6ab66707ca2bc8b0037d809acd555",
+      "session": "resumed H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_cave_oracle.py",
+      "tests": 29,
+      "seconds": 348.632,
+      "result": "OK",
+      "output_summary": "Ran 29 tests in 348.632s\n\nOK",
+      "log_sha256": "1a30b39a2168ae86e4944942f67d785da62db36b168d56cba2cee1082da4b30f",
+      "source_sha256_at_delivery": "3dcd4d3ca172d6b0968afe4094d99e0fd0f41d6d540379863ad96663135bd378",
+      "session": "resumed H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py",
+      "tests": 388,
+      "seconds": 2098.059,
+      "result": "OK",
+      "output_summary": "Ran 388 tests in 2098.059s\n\nOK",
+      "log_sha256": "90d882a9ce96aa77ed9f64982948eed5c1586b3a8d065e52adedae37fcccd594",
+      "source_sha256_at_delivery": "57a979f9bc5796681c74e244be6181a0bbe61a96737f81f172ac778bd82c6190",
+      "session": "resumed H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_screen_timing.py",
+      "tests": 13,
+      "seconds": 89.544,
+      "result": "OK",
+      "output_summary": "Ran 13 tests in 89.544s\n\nOK",
+      "log_sha256": "b22869926c5c318b29739adafbb8f4174fe2aa26abe2b1b6591dada1988799f2",
+      "source_sha256_at_delivery": "a25e3f6c88aa8a5038cda5bcb16c98cf610e54ff5b7c4e7a78f3ba9da2e1eca8",
+      "session": "resumed H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py",
+      "tests": 7,
+      "seconds": 286.768,
+      "result": "OK",
+      "output_summary": "Ran 7 tests in 286.768s\n\nOK",
+      "log_sha256": "7004b81a2f1c02fd612a01ff551de6850e9aae573e0d53104ce23b27a0f6003b",
+      "source_sha256_at_delivery": "1913e0e1fcf435a78b2b021fd7acbb068d0e184f692d30bdd52c9173b7b9c007",
+      "session": "resumed H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+      "tests": 12,
+      "seconds": 96.88,
+      "result": "OK",
+      "output_summary": "Ran 12 tests in 96.880s\n\nOK",
+      "log_sha256": "ed64e31d02b131490ae913bb2f9ac1ea75526a5e86f5e6645ed3d7d8a5305024",
+      "source_sha256_at_delivery": "66d58aae0dffbdc15bafe3ac203d32f38bdb8bd9089e13bc355c273a39466fae",
+      "session": "resumed H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_music_playlist_library.py",
+      "tests": 7,
+      "seconds": 19.367,
+      "result": "OK",
+      "output_summary": "Ran 7 tests in 19.367s\n\nOK",
+      "log_sha256": "2f0b6152cd9186b7dedff86f397356483dcab7f371536c33c79ee29a9b8380bb",
+      "source_sha256_at_delivery": "1b7cbcad534059d78aaa0014a0b0837368c19340de9044a32fc9951fed39b767",
+      "session": "resumed H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_supersim_live.py",
+      "tests": 29,
+      "seconds": 3412.958,
+      "result": "OK",
+      "output_summary": "Ran 29 tests in 3412.958s\n\nOK",
+      "log_sha256": "1a2de486fa5e6a0173b953902243cdde10d537fccacffaa1701a293cd41437b8",
+      "source_sha256_at_delivery": "fb605ce1f83a8e158509b6a6eaff05397dc9c1a76d75337764b15182c8f68d04",
+      "session": "resumed H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_my_career_m3_budget.py",
+      "tests": 5,
+      "seconds": 4.173,
+      "result": "OK",
+      "output_summary": "Ran 5 tests in 4.173s\n\nOK",
+      "log_sha256": "b798609099262f5aee444b4f4b5a9aea8be441023caa25294e1a3e9a88ad4138",
+      "source_sha256_at_delivery": "a0a2ee6c7e35e3489c2514439af8d9cb526ac9dfb4dda35b8f73dbd39c334b63",
+      "session": "resumed H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_dynamic_kickoff.py",
+      "tests": 23,
+      "seconds": 42.961,
+      "result": "OK",
+      "output_summary": "Ran 23 tests in 42.961s\n\nOK",
+      "log_sha256": "99c23fba9f4ffd27bbdf49ed859c38b391fa843b4cc3fd4d1fc9b3eb49fbfee5",
+      "source_sha256_at_delivery": "4a6f230b0e52b6d5b19b9b2eb4cf0ea1899dc9b216c67768bac8efd1d29ec36b",
+      "session": "preceding H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_kickoff_v6.py",
+      "tests": 9,
+      "seconds": 127.723,
+      "result": "OK",
+      "output_summary": "Ran 9 tests in 127.723s\n\nOK",
+      "log_sha256": "e27c463f4b31bea334b3b9158eea881b0f953a8fec9c0bfe08bb1167d2f404f0",
+      "source_sha256_at_delivery": "515f063eb1116a2b6d7ac7e16ed8a471d5900576b598580500f4fe36bbf34860",
+      "session": "preceding H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_abilities_unicorn.py",
+      "tests": 12,
+      "seconds": 7.658,
+      "result": "OK",
+      "output_summary": "Ran 12 tests in 7.658s\n\nOK",
+      "log_sha256": "8e6716a80ab6c72e1f54c0f5cf58430165cc361d1200cfb4c76ba5c998758c58",
+      "source_sha256_at_delivery": "aa742fda9d107419e4206a3a855b060a61b69e49b0687027e57d56f65d17e48a",
+      "session": "preceding H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_accelerated_clock.py",
+      "tests": 40,
+      "seconds": 37.596,
+      "result": "OK",
+      "output_summary": "Ran 40 tests in 37.596s\n\nOK",
+      "log_sha256": "9ba2e25b6b43c09d52d6fb10980faff3cd27b54e81aa0ea6398b914826d395ae",
+      "source_sha256_at_delivery": "7c7f996b9d43df31b5f2bc526541af01a4f8aa697e89e472b0add13f9a8fba5a",
+      "session": "preceding H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_boot_logo.py",
+      "tests": 7,
+      "seconds": 1.594,
+      "result": "OK",
+      "output_summary": "Ran 7 tests in 1.594s\n\nOK",
+      "log_sha256": "ccebbcdde947c492bfb9245ff0fba176914dcdd3f47999f1edbe90066b1c24b4",
+      "source_sha256_at_delivery": "d489fa25ed8718fb5302b6aac39a5528e0738f01d2c73562ace1ce972f87e052",
+      "session": "preceding H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_deep_zone_frames.py",
+      "tests": 12,
+      "seconds": 269.855,
+      "result": "OK",
+      "output_summary": "Ran 12 tests in 269.855s\n\nOK",
+      "log_sha256": "74eebee9f6c63c16b246a6728df36aefd075771c688c6e9d410a40b270981729",
+      "source_sha256_at_delivery": "7611ce4c2fa12fc3f99ce00888269bc7710c5336d942a5f3c581b247ca11ce03",
+      "session": "preceding H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_franchise_2026_runtime.py",
+      "tests": 10,
+      "seconds": 61.083,
+      "result": "OK",
+      "output_summary": "Ran 10 tests in 61.083s\n\nOK",
+      "log_sha256": "e283d5053c1065e1ab4bd3e79386563bbe0fc8166f2f76c9038899c04016871a",
+      "source_sha256_at_delivery": "2c16fa20bd9f31c0a20104004a48ebd9a990dcc8c2e59830bd046c83c093bfe7",
+      "session": "preceding H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_guardian_unicorn.py",
+      "tests": 7,
+      "seconds": 218.226,
+      "result": "OK",
+      "output_summary": "Ran 7 tests in 218.226s\n\nOK",
+      "log_sha256": "7ef2a3219358c4ff7f40502b5c2450ad27e44740ebd0c699437b037ae8a54085",
+      "source_sha256_at_delivery": "d9667fc3c1b2323fecea65702c8dc684c086fc0bb918abc7a5a209c3b0d15e70",
+      "session": "preceding H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_jukebox_list.py",
+      "tests": 6,
+      "seconds": 28.814,
+      "result": "OK",
+      "output_summary": "Ran 6 tests in 28.814s\n\nOK",
+      "log_sha256": "bf5d6250058c5716eb475ec7be570e7888ab6f4d00dc278e37533f0ddd8c59cd",
+      "source_sha256_at_delivery": "37b93975d8bf0a8c7d945825465dc69fb0e5bf1827b02e31085cd6853253b73e",
+      "session": "preceding H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_momentum.py",
+      "tests": 23,
+      "seconds": 25.161,
+      "result": "OK",
+      "output_summary": "Ran 23 tests in 25.161s\n\nOK",
+      "log_sha256": "ad7ff8990d2af76203c47a0167a12448544417f5c15cdc6fbbad6af0cdb85bb9",
+      "source_sha256_at_delivery": "516389fd2026e8f40e150ce99ae59fa283454a26c206fdc8c97ac284eaa97087",
+      "session": "preceding H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_momentum_collisions.py",
+      "tests": 16,
+      "seconds": 33.164,
+      "result": "OK",
+      "output_summary": "Ran 16 tests in 33.164s\n\nOK",
+      "log_sha256": "03f88e8efd88d392b975413e28bce9c9cf3c4fbfdc1bdee48a679a35b91d17f2",
+      "source_sha256_at_delivery": "5b96f04f906c96b2cfe23f422135e4f53b0660022f79fcb57410bfebf398d848",
+      "session": "preceding H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_music_metadata.py",
+      "tests": 7,
+      "seconds": 23.491,
+      "result": "OK",
+      "output_summary": "Ran 7 tests in 23.491s\n\nOK",
+      "log_sha256": "05548a712934483f18133e223f337ced618d7cd29517700c1a2e0c98367a0b4f",
+      "source_sha256_at_delivery": "47885935c6863d9925b0837f90fbc72baa2c56587e886b4bad06c16966767447",
+      "session": "preceding H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_music_playlist.py",
+      "tests": 15,
+      "seconds": 12.897,
+      "result": "OK",
+      "output_summary": "Ran 15 tests in 12.897s\n\nOK",
+      "log_sha256": "7120f22ad59dbe934ef1e742e1b7f159fc6a6b697fba40a1214a68e495225a5c",
+      "source_sha256_at_delivery": "4bc364b40324c9220edd8815db6f709bcb0f187efc0ede34f0f804bfde09e062",
+      "session": "preceding H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_music_playlist_contexts.py",
+      "tests": 7,
+      "seconds": 10.896,
+      "result": "OK",
+      "output_summary": "Ran 7 tests in 10.896s\n\nOK",
+      "log_sha256": "ced3e0e7b31ccc91d5999aa7153e9a35aa5418cb4b8cec0b8a72eb8095b91f0b",
+      "source_sha256_at_delivery": "3f4ba8dbab61fe015c6e0cb2cf62041cc394870bf3662e5237fcdfdf1e3ab427",
+      "session": "preceding H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_my_career_settings.py",
+      "tests": 9,
+      "seconds": 28.517,
+      "result": "OK",
+      "output_summary": "Ran 9 tests in 28.517s\n\nOK",
+      "log_sha256": "ca7e759885d05421c94bf2dc21663fe59d159281da1493136ead77e95b845c77",
+      "source_sha256_at_delivery": "1dd7fef68f76a77ec93bc2b0b30916d4b309bf471ba620113beb253b7efc75c7",
+      "session": "preceding H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_playbook_pair_unicorn.py",
+      "tests": 20,
+      "seconds": 7.381,
+      "result": "OK",
+      "output_summary": "Ran 20 tests in 7.381s\n\nOK",
+      "log_sha256": "cf8b555ec7cf9f5012926decd0b9230cb74131b14107ab637b478617e7fb9864",
+      "source_sha256_at_delivery": "d1a9bbef82fba757a16ddcd0a66449498e3fe14bd415a90d5dabfe3f5c452fd0",
+      "session": "preceding H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_presentation_v6.py",
+      "tests": 5,
+      "seconds": 8.397,
+      "result": "OK",
+      "output_summary": "Ran 5 tests in 8.397s\n\nOK",
+      "log_sha256": "68b54f46d54239205fe7ce4cd3374f98ced71237eb800dcf46bfb698b30dd459",
+      "source_sha256_at_delivery": "4e8d54c2923e81f3541f3e618269328a19384e1366b701b4eb45928a823eddf6",
+      "session": "preceding H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_qb_spy_unicorn.py",
+      "tests": 16,
+      "seconds": 6.154,
+      "result": "OK",
+      "output_summary": "Ran 16 tests in 6.154s\n\nOK",
+      "log_sha256": "b9ea79bd06d48d55d3962cc842c2f69d9df412a289afdefdd8776c83ecdbad12",
+      "source_sha256_at_delivery": "ef7d202deaa7c96832cee938b60c14fcf34766322977fbee2b8e0e1f8f4eb92a",
+      "session": "preceding H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_read_option_unicorn.py",
+      "tests": 6,
+      "seconds": 2.783,
+      "result": "OK",
+      "output_summary": "Ran 6 tests in 2.783s\n\nOK",
+      "log_sha256": "7a41d958014d6dca65d3d0092323750a53fbc7c081fc3696e48fb755b0755185",
+      "source_sha256_at_delivery": "f39175a3e75537da65cff8fb02284160b7947b419ba33e332589f100725eaf7b",
+      "session": "preceding H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_screen_hooks_unicorn.py",
+      "tests": 10,
+      "seconds": 22.582,
+      "result": "OK",
+      "output_summary": "Ran 10 tests in 22.582s\n\nOK",
+      "log_sha256": "edee9a1ed68f7c019e2616f689f4fc113be1e7eb5b12246e5c31c395daba4c9f",
+      "source_sha256_at_delivery": "7e6b6e71d7c700ada35d35c082b14ea85b0934f2429aa87c98b91b3eb0c2c2ca",
+      "session": "preceding H2"
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_weekly_prep_unicorn.py",
+      "tests": 17,
+      "seconds": 14.184,
+      "result": "OK",
+      "output_summary": "Ran 17 tests in 14.184s\n\nOK",
+      "log_sha256": "6dca5d18c12bd6d216d0f70206daa76122971de3b8c7ffeff1b6b4684475ed3d",
+      "source_sha256_at_delivery": "87401226831308de74df4e47212c13a3d0256d071e2203b61e8190863ea64761",
+      "session": "preceding H2"
+    }
+  ],
+  "total_tests": 1020,
+  "baseline_supersim_receipt": {
+    "cadence": [
+      {
+        "complete_updates": 8,
+        "group": 1,
+        "match_rng_draws": 21,
+        "polls": 8,
+        "presents": 8,
+        "state_sha256": "5befa5e20f9f0101dd975882fc32d1495fc82d05bebd0411deed65787726e1a5",
+        "updates": 8
+      },
+      {
+        "complete_updates": 8,
+        "group": 2,
+        "match_rng_draws": 21,
+        "polls": 4,
+        "presents": 4,
+        "state_sha256": "5befa5e20f9f0101dd975882fc32d1495fc82d05bebd0411deed65787726e1a5",
+        "updates": 8
+      },
+      {
+        "complete_updates": 8,
+        "group": 4,
+        "match_rng_draws": 21,
+        "polls": 2,
+        "presents": 2,
+        "state_sha256": "5befa5e20f9f0101dd975882fc32d1495fc82d05bebd0411deed65787726e1a5",
+        "updates": 8
+      },
+      {
+        "complete_updates": 8,
+        "group": 8,
+        "match_rng_draws": 21,
+        "polls": 1,
+        "presents": 1,
+        "state_sha256": "5befa5e20f9f0101dd975882fc32d1495fc82d05bebd0411deed65787726e1a5",
+        "updates": 8
+      }
+    ],
+    "complete_updates": 3376,
+    "handoffs": [
+      {
+        "clock": 40.0,
+        "frames": 53,
+        "phase": 13,
+        "position": 4,
+        "scenario": "scrimmage CB",
+        "updates": 418
+      },
+      {
+        "clock": 40.0,
+        "frames": 48,
+        "phase": 13,
+        "position": 0,
+        "scenario": "native injury replacement QB",
+        "updates": 379
+      },
+      {
+        "clock": 40.0,
+        "frames": 1,
+        "phase": 13,
+        "position": 1,
+        "scenario": "native kickoff K",
+        "updates": 4
+      },
+      {
+        "clock": 40.0,
+        "frames": 1,
+        "phase": 13,
+        "position": 2,
+        "scenario": "native punt P",
+        "updates": 5
+      }
+    ],
+    "match_rng_draws": 23223,
+    "plays": 3,
+    "polls": 422,
+    "positions": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16
+    ],
+    "presented_frames": 422,
+    "renders": [
+      {
+        "empty_caption": 71,
+        "gpu_commands": 1,
+        "player_pass": 1,
+        "player_registration": 22,
+        "player_visit": 22,
+        "scenario": "replacement scrimmage"
+      },
+      {
+        "empty_caption": 71,
+        "gpu_commands": 1,
+        "player_pass": 1,
+        "player_registration": 22,
+        "player_visit": 22,
+        "scenario": "punt"
+      }
+    ],
+    "substitution": {
+      "injured_position": 0,
+      "native_record_changed": true,
+      "replacement_position": 0
+    },
+    "transitions": [
+      [
+        304,
+        13
+      ],
+      [
+        308,
+        14
+      ],
+      [
+        523,
+        18
+      ],
+      [
+        599,
+        11
+      ],
+      [
+        1053,
+        12
+      ],
+      [
+        1378,
+        13
+      ],
+      [
+        1500,
+        14
+      ],
+      [
+        1989,
+        18
+      ],
+      [
+        2065,
+        11
+      ],
+      [
+        2493,
+        12
+      ],
+      [
+        2807,
+        13
+      ],
+      [
+        3208,
+        14
+      ],
+      [
+        3376,
+        18
+      ]
+    ],
+    "updates": 3376
+  },
+  "baseline_supersim_scope": "retail with the MyCareer writer only; composed-preset evidence is in nfl2k5_b661_transition_receipts.json",
+  "limits": [
+    "No console/emulator witness, movie/audio/device execution, full disc build or imported user assets.",
+    "Current release writers and reservation manifest are unchanged.",
+    "The final transition matrix uses the explicit animation-completion and existing-career inputs described in ASTRA_REPORT.md."
+  ],
+  "baseline_matches_shipped_receipt": true
+}

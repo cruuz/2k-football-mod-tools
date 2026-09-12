@@ -1,0 +1,356 @@
+[
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_b661_workspace_qt.py"
+    ],
+    "returncode": 0,
+    "seconds": null,
+    "tests": 7,
+    "output": ".......\n----------------------------------------------------------------------\nRan 7 tests in 2.239s\n\nOK\nuniforms_first cached=False max_ui_gap=0.094s\nuniforms_first cached=True max_ui_gap=0.068s\n",
+    "rerun_reason": "Final opt-in log and timer-firing assertions."
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_b661_kit_build.py"
+    ],
+    "returncode": 0,
+    "seconds": 10.936,
+    "tests": 2,
+    "output": "..\n----------------------------------------------------------------------\nRan 2 tests in 10.255s\n\nOK\nNFL2K5_VISUAL_MOD_BUILD_PASS edits=2 changed=2701 kept_retail=0 sha256=fd59d6db8539da7c1cadb66586635c4064f9eebf0859bdff0cb8bd50077d719f runtime=false\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_responsive_json.py"
+    ],
+    "returncode": 0,
+    "seconds": 0.266,
+    "tests": 3,
+    "output": "...\n----------------------------------------------------------------------\nRan 3 tests in 0.149s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_studio_inspection.py"
+    ],
+    "returncode": 0,
+    "seconds": 0.565,
+    "tests": 2,
+    "output": "..\n----------------------------------------------------------------------\nRan 2 tests in 0.298s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_self_update_manual_layout.py"
+    ],
+    "returncode": 0,
+    "seconds": 0.165,
+    "tests": 1,
+    "output": ".\n----------------------------------------------------------------------\nRan 1 test in 0.002s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_2k5_stale_original_cache.py"
+    ],
+    "returncode": 0,
+    "seconds": 0.215,
+    "tests": 10,
+    "output": "..........\n----------------------------------------------------------------------\nRan 10 tests in 0.020s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_2k5_build_parse_caches.py"
+    ],
+    "returncode": 0,
+    "seconds": 0.465,
+    "tests": 14,
+    "output": "..............\n----------------------------------------------------------------------\nRan 14 tests in 0.365s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_studio_session.py"
+    ],
+    "returncode": 0,
+    "seconds": 0.916,
+    "tests": 18,
+    "output": "..................\n----------------------------------------------------------------------\nRan 18 tests in 0.508s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_studio_facade.py"
+    ],
+    "returncode": 0,
+    "seconds": 0.415,
+    "tests": 11,
+    "output": "...........\n----------------------------------------------------------------------\nRan 11 tests in 0.017s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_team_kit_bundle.py"
+    ],
+    "returncode": 0,
+    "seconds": 9.081,
+    "tests": 7,
+    "output": ".......\n----------------------------------------------------------------------\nRan 7 tests in 8.516s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_uniform_bundle_cross_project.py"
+    ],
+    "returncode": 0,
+    "seconds": 3.572,
+    "tests": 8,
+    "output": "........\n----------------------------------------------------------------------\nRan 8 tests in 3.093s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_team_kit_product_integration.py"
+    ],
+    "returncode": 0,
+    "seconds": 18.752,
+    "tests": 7,
+    "output": ".......\n----------------------------------------------------------------------\nRan 7 tests in 17.063s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_equipment_texture_chain.py"
+    ],
+    "returncode": 0,
+    "seconds": 4.123,
+    "tests": 16,
+    "output": "................\n----------------------------------------------------------------------\nRan 16 tests in 3.924s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_equipment_texture_native.py"
+    ],
+    "returncode": 0,
+    "seconds": 0.365,
+    "tests": 5,
+    "output": ".....\n----------------------------------------------------------------------\nRan 5 tests in 0.245s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_equipment_import.py"
+    ],
+    "returncode": 0,
+    "seconds": 1.167,
+    "tests": 11,
+    "output": "...........\n----------------------------------------------------------------------\nRan 11 tests in 0.723s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_equipment_import_wiring.py"
+    ],
+    "returncode": 0,
+    "seconds": 0.816,
+    "tests": 6,
+    "output": "......\n----------------------------------------------------------------------\nRan 6 tests in 0.594s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_equipment_consumers.py"
+    ],
+    "returncode": 0,
+    "seconds": 20.104,
+    "tests": 17,
+    "output": ".................\n----------------------------------------------------------------------\nRan 17 tests in 19.629s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_uniform_catalog.py"
+    ],
+    "returncode": 0,
+    "seconds": 1.467,
+    "tests": 5,
+    "output": ".....\n----------------------------------------------------------------------\nRan 5 tests in 1.290s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_text_catalog.py"
+    ],
+    "returncode": 0,
+    "seconds": 2.72,
+    "tests": 9,
+    "output": ".........\n----------------------------------------------------------------------\nRan 9 tests in 2.400s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_visual_decode_cache.py"
+    ],
+    "returncode": 0,
+    "seconds": 0.165,
+    "tests": 3,
+    "output": "...\n----------------------------------------------------------------------\nRan 3 tests in 0.002s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_2k5_visual_io_routing.py"
+    ],
+    "returncode": 0,
+    "seconds": 0.215,
+    "tests": 4,
+    "output": "....\n----------------------------------------------------------------------\nRan 4 tests in 0.115s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_startup_performance.py"
+    ],
+    "returncode": 0,
+    "seconds": 2.269,
+    "tests": 8,
+    "output": "........\n----------------------------------------------------------------------\nRan 8 tests in 1.463s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_mod_build_performance.py"
+    ],
+    "returncode": 0,
+    "seconds": 6.979,
+    "tests": 6,
+    "output": "......\n----------------------------------------------------------------------\nRan 6 tests in 6.695s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_studio_shell_layout_qt.py"
+    ],
+    "returncode": 0,
+    "seconds": 36.133,
+    "tests": 18,
+    "output": "..................\n----------------------------------------------------------------------\nRan 18 tests in 34.322s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_beta66_1_adapter_imports.py"
+    ],
+    "returncode": 0,
+    "seconds": 0.415,
+    "tests": 3,
+    "output": "...\n----------------------------------------------------------------------\nRan 3 tests in 0.345s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_self_update.py"
+    ],
+    "returncode": 0,
+    "seconds": 1.568,
+    "tests": 26,
+    "output": "This plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\n.This plugin does not support propagateSizeHints()\n.This plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\n.This plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\n.......................\n----------------------------------------------------------------------\nRan 26 tests in 1.376s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_update_check.py"
+    ],
+    "returncode": 0,
+    "seconds": 0.215,
+    "tests": 21,
+    "output": ".....................\n----------------------------------------------------------------------\nRan 21 tests in 0.005s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_provider_integrity.py"
+    ],
+    "returncode": 0,
+    "seconds": null,
+    "rerun_reason": "Added responsive_json to the two exact dependency closure counts (269 / 10); exact closure and hashes still checked.",
+    "tests": 7,
+    "output": ".......\n----------------------------------------------------------------------\nRan 7 tests in 8.391s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_providers.py"
+    ],
+    "returncode": 0,
+    "seconds": 3.872,
+    "tests": 33,
+    "output": ".................................\n----------------------------------------------------------------------\nRan 33 tests in 3.696s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_extended_visuals.py"
+    ],
+    "returncode": 0,
+    "seconds": 0.315,
+    "tests": 9,
+    "output": ".........\n----------------------------------------------------------------------\nRan 9 tests in 0.145s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_studio_visual_asset_routing.py"
+    ],
+    "returncode": 0,
+    "seconds": 8.482,
+    "tests": 14,
+    "output": "..............\n----------------------------------------------------------------------\nRan 14 tests in 7.896s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_studio_qt_models.py"
+    ],
+    "returncode": 0,
+    "seconds": 2.019,
+    "tests": 9,
+    "output": ".........\n----------------------------------------------------------------------\nRan 9 tests in 1.344s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_product_shell_accessibility_qt.py"
+    ],
+    "returncode": 0,
+    "seconds": 63.841,
+    "tests": 6,
+    "output": "This plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\n.This plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\n.This plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\n.This plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\n.This plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\n.This plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\n.\n----------------------------------------------------------------------\nRan 6 tests in 60.605s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_scorebug_studio_panel_qt.py"
+    ],
+    "returncode": 0,
+    "seconds": 7.277,
+    "tests": 11,
+    "output": "...........\n----------------------------------------------------------------------\nRan 11 tests in 7.111s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_2k5_uniform_equipment_export.py",
+      "-v"
+    ],
+    "returncode": 0,
+    "seconds": null,
+    "tests": 16,
+    "skipped": 2,
+    "output": "test_catalog_identity_count_and_contract_are_pinned (__main__.CompactCatalogTests.test_catalog_identity_count_and_contract_are_pinned) ... ok\ntest_every_package_has_the_exact_45_reference_shape (__main__.CompactCatalogTests.test_every_package_has_the_exact_45_reference_shape) ... ok\ntest_shipped_catalog_exactly_rebuilds_from_the_reviewed_inventory (__main__.CompactCatalogTests.test_shipped_catalog_exactly_rebuilds_from_the_reviewed_inventory) ... skipped 'Reviewed equipment source table absent: /home/noah/2k-worktrees/astra-b66-2k5-tool/reports/assets/nfl2k5_uniform_tset_textures.tsv; compact catalog tests still run'\ntest_drag_drop_resizes_equipment_before_session_replace (__main__.EquipmentResizeOffscreenTests.test_drag_drop_resizes_equipment_before_session_replace) ... ok\ntest_file_dialog_resizes_equipment_before_session_replace (__main__.EquipmentResizeOffscreenTests.test_file_dialog_resizes_equipment_before_session_replace) ... ok\ntest_all_six_missing_equipment_families_are_findable (__main__.ProductInventoryTests.test_all_six_missing_equipment_families_are_findable) ... ok\ntest_every_equipment_id_and_physical_selector_is_unique (__main__.ProductInventoryTests.test_every_equipment_id_and_physical_selector_is_unique) ... ok\ntest_titans_socks_are_editable_through_the_typed_project_route (__main__.ProductInventoryTests.test_titans_socks_are_editable_through_the_typed_project_route) ... ok\ntest_two_socks_palettes_compose_as_one_span_and_reopen (__main__.RealComposedEquipmentProjectTests.test_two_socks_palettes_compose_as_one_span_and_reopen)\nThe public logical route groups overlapping clean/mud palette edits. ... skipped 'private retail NFL 2K5 composer fixtures absent'\ntest_every_equipment_family_round_trips_inside_one_fixed_tset_span (__main__.RealSourceDecodeTests.test_every_equipment_family_round_trips_inside_one_fixed_tset_span)\nOne real target per physical layout, including both shoe TSETs. ... ok\ntest_source_hash_drift_is_refused (__main__.RealSourceDecodeTests.test_source_hash_drift_is_refused) ... ok\ntest_titans_socks_preview_and_export_from_reviewed_source_hashes (__main__.RealSourceDecodeTests.test_titans_socks_preview_and_export_from_reviewed_source_hashes) ... ok\ntest_all_textures_includes_package_local_equipment (__main__.StudioTruthfulEquipmentBoundaryTests.test_all_textures_includes_package_local_equipment) ... ok\ntest_team_kit_name_and_equipment_scope_note_are_exact_and_honest (__main__.StudioTruthfulEquipmentBoundaryTests.test_team_kit_name_and_equipment_scope_note_are_exact_and_honest) ... ok\ntest_unsupported_formats_still_have_an_explicit_export_only_state (__main__.StudioTruthfulEquipmentBoundaryTests.test_unsupported_formats_still_have_an_explicit_export_only_state) ... ok\ntest_visual_dialog_and_drop_still_share_the_proved_resize_path (__main__.StudioTruthfulEquipmentBoundaryTests.test_visual_dialog_and_drop_still_share_the_proved_resize_path) ... ok\n\n----------------------------------------------------------------------\nRan 16 tests in 29.616s\n\nOK (skipped=2)\n"
+  }
+]

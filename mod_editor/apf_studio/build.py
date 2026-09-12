@@ -2290,6 +2290,24 @@ class ApfBuildService:
             }))
         return results
 
+    @staticmethod
+    def _fitted_crest_cache_paths(modification, detail, package, directory):
+        fit = package.manifest.get("fit", {})
+        shades = fit.get("shades_per_region", 16)
+        paths = [modification.replacement_path, detail]
+        if shades < 16:
+            from PIL import Image
+            for index, path in enumerate(paths):
+                if path is None or f"logo_l{index}" not in fit["changed_layers"]:
+                    continue
+                with Image.open(path) as image:
+                    rgba = apf_logo_patch.simplify_regions(image.convert("RGBA").tobytes(), shades)
+                target = Path(directory) / f"{modification.metadata['crest_asset_index']}-l{index}.png"
+                Image.frombytes("RGBA", (512, 512), rgba).save(target, "PNG")
+                paths[index] = target
+        return paths
+
+
     def _compile_helmet_crests(self, modifications, progress=_noop):
         try:
             validate_crest_set(modifications)
@@ -2301,26 +2319,30 @@ class ApfBuildService:
             return entries, row
         entries, specs, components = {}, [], []
         try:
-            slots = {s.asset_index: s.outer_entry_index for s in apf_team_crests.crest_slots(self.source.index_0a)}
-            for modification in modifications:
-                meta = modification.metadata
-                slot, outer = meta["crest_asset_index"], meta["crest_outer_entry_index"]
-                if slots.get(slot) != outer or outer in entries:
-                    raise BuildError(f"The crest package for slot {slot} changed or is selected twice")
-                detail = self._crest_detail_path(modification)
-                try:
-                    package = apf_logo_patch.build_patch(self.source.index_0a, modification.replacement_path,
-                        entry_index=outer, png_path_l1=detail, clear_l1=detail is None)
-                except (OSError, apf_logo_patch.PatchError) as exc:
-                    raise BuildError(f"Could not compile crest slot {slot}, outer {outer} "
-                                     f"({modification.asset_id}): {exc}") from exc
-                entries[outer] = package.entry_bytes
-                components.append(package.manifest)
-                specs.append(apf_logocache_patch.CacheLayerSpec(slot, modification.replacement_path,
-                                                               detail, detail is None))
-            cache = apf_logocache_patch.build_cache_patch_many(self.source.index_0a, tuple(specs))
-            for modification in modifications:
-                self._crest_detail_path(modification)
+            with tempfile.TemporaryDirectory(prefix="apf-crest-cache-") as cache_dir:
+                slots = {s.asset_index: s.outer_entry_index for s in apf_team_crests.crest_slots(self.source.index_0a)}
+                for modification in modifications:
+                    meta = modification.metadata
+                    slot, outer = meta["crest_asset_index"], meta["crest_outer_entry_index"]
+                    if slots.get(slot) != outer or outer in entries:
+                        raise BuildError(f"The crest package for slot {slot} changed or is selected twice")
+                    detail = self._crest_detail_path(modification)
+                    try:
+                        package = apf_logo_patch.build_patch(self.source.index_0a, modification.replacement_path,
+                            entry_index=outer, png_path_l1=detail, clear_l1=detail is None,
+                            allow_simplification=meta.get("allow_simplification", True))
+                    except (OSError, apf_logo_patch.PatchError) as exc:
+                        raise BuildError(f"Could not compile crest slot {slot}, outer {outer} "
+                                         f"({modification.asset_id}): {exc}") from exc
+                    entries[outer] = package.entry_bytes
+                    components.append(package.manifest)
+                    if "fit" in package.manifest:
+                        progress(package.manifest["fit"]["status"], len(components), len(modifications))
+                    cache_l0, cache_l1 = self._fitted_crest_cache_paths(modification, detail, package, cache_dir)
+                    specs.append(apf_logocache_patch.CacheLayerSpec(slot, cache_l0, cache_l1, detail is None))
+                cache = apf_logocache_patch.build_cache_patch_many(self.source.index_0a, tuple(specs))
+                for modification in modifications:
+                    self._crest_detail_path(modification)
         except (OSError, apf_logo_patch.PatchError, apf_logocache_patch.PatchError) as exc:
             raise BuildError(f"Could not compile the team crests together: {exc}") from exc
         entries[apf_logocache_patch.DIR_TABLE_INDEX] = cache.directory_bytes
@@ -2331,6 +2353,7 @@ class ApfBuildService:
             "replacement_png_sha256s": {m.asset_id: m.replacement_sha256 for m in modifications},
             "crest_asset_indices": tuple(m.metadata["crest_asset_index"] for m in modifications),
             "component_receipts": components, "cache_receipt": cache.manifest,
+            "fit_status": [component["fit"]["status"] for component in components if "fit" in component],
         }
 
     @staticmethod
@@ -2437,14 +2460,16 @@ class ApfBuildService:
                 entry_index=outer_index,
                 png_path_l1=detail_path,
                 clear_l1=detail_path is None,
+                allow_simplification=metadata.get("allow_simplification", True),
             )
-            cache = apf_logocache_patch.build_cache_patch(
-                self.source.index_0a,
-                asset_index,
-                modification.replacement_path,
-                png_l1=detail_path,
-                clear_l1=detail_path is None,
-            )
+            if "fit" in package.manifest:
+                progress(package.manifest["fit"]["status"], 1, 1)
+            with tempfile.TemporaryDirectory(prefix="apf-crest-cache-") as cache_dir:
+                cache_l0, cache_l1 = self._fitted_crest_cache_paths(modification, detail_path, package, cache_dir)
+                cache = apf_logocache_patch.build_cache_patch(
+                    self.source.index_0a, asset_index, cache_l0,
+                    png_l1=cache_l1, clear_l1=detail_path is None,
+                )
         except (
             OSError,
             apf_logo_patch.PatchError,
@@ -2478,6 +2503,8 @@ class ApfBuildService:
             ],
             "writer_schema": HELMET_CREST_COMPOSITE_SCHEMA,
             "component_writer_schemas": tuple(schemas),
+            "component_receipts": [package.manifest], "cache_receipt": cache.manifest,
+            "fit_status": [package.manifest["fit"]["status"]] if "fit" in package.manifest else [],
             "mirrored_sides": True,
             "creates_xenia_patch": False,
             "edits_default_xex": False,

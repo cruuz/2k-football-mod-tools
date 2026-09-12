@@ -189,7 +189,8 @@ def index_for(pointer: int | None, table: dict[str, object]) -> int | None:
 
 
 def parse_inventory(path: Path) -> list[InventoryRecord]:
-    raw = json.loads(path.read_text(encoding="utf-8"))
+    from nfl_uniform_inventory import load_inventory_document as load
+    raw = load(path)
     if raw.get("schema") != INVENTORY_SCHEMA:
         raise RosterError(f"unsupported inventory schema in {path}")
     records: list[InventoryRecord] = []

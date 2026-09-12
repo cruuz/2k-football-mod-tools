@@ -25,9 +25,9 @@ class FormationMoveTests(unittest.TestCase):
         self.assertEqual((receipt['word_b_before'], receipt['word_b_after']), (1, 256))
         w.verify_book(book.body, compiled.replacement, [change])
 
-    def test_last_required_package_guard_survives_normalization(self):
+    def test_unsafe_retirement_explains_the_bounded_fallback(self):
         book = forged_book(130, ((9, 0),))
-        with self.assertRaisesRegex(ValidationError, 'loses every reachable record'):
+        with self.assertRaisesRegex(ValidationError, 'bounded ladder would have no formation'):
             w.compile_book(book, [w.TrailerReplace(130, 0, 69, 0)])
 
     @unittest.skipUnless(INDEX.is_file(), f'Retail APF 0A absent: {INDEX}')
@@ -48,7 +48,7 @@ class FormationMoveTests(unittest.TestCase):
                 change = w.TrailerReplace(outer, original.record_index, destination, original.category_index)
                 try: compiled = w.compile_book(book, [change])
                 except ValidationError as exc:
-                    self.assertIn('loses every reachable record', str(exc)); refused += 1; continue
+                    self.assertIn('bounded ladder would have no formation', str(exc)); refused += 1; continue
                 after = w.parse_book(compiled.replacement, outer)
                 for record in after.records:
                     if record.populated:

@@ -66,9 +66,9 @@ def personnel(index):
             try:
                 result = splb.compile_book(book, [change])
             except ValidationError as exc:
-                if 'loses every reachable record' not in str(exc):
+                if 'bounded ladder would have no formation' not in str(exc):
                     raise
-                counts['last_supply_guard_refusals'] += 1
+                counts['unsafe_ladder_refusals'] += 1
                 continue
             splb.verify_book(book.body, result.replacement, [change])
             after = splb.parse_book(result.replacement, outer).records[row.record_index]

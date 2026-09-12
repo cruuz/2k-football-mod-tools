@@ -81,6 +81,7 @@ mod_editor/core/nfl2k5_crib.py
 mod_editor/core/nfl2k5_crib_electronics_targets.py
 mod_editor/core/nfl2k5_crib_geometry_writer.py
 mod_editor/core/nfl2k5_models.py
+mod_editor/core/nfl2k5_model_skeleton.py
 mod_editor/core/nfl2k5_crib_scene_texture_writer.py
 mod_editor/core/nfl2k5_crib_standalone_texture_writer.py
 mod_editor/core/nfl2k5_digit_preview.py
@@ -834,3 +835,7 @@ docs/mod_editor/nfl2k5_helmet_finish_capability.json
 ASTRA_DEEP_ZONE_TIERS_V2_REPORT.md
 mod_editor/core/nfl2k5_my_career_progression.py
 ASTRA_MYCAREER_DRAFT_REPORT.md
+mod_editor/core/responsive_json.py
+mod_editor/core/studio_inspection.py
+mod_editor/gui/stall_watchdog.py
+mod_editor/gui/workspace_runtime.py

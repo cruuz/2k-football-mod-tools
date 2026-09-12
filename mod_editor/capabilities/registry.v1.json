@@ -2428,7 +2428,8 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/mod_editor/apf_wave_2026_09_09.md"
+        "docs/mod_editor/apf_wave_2026_09_09.md",
+        "docs/mod_editor/apf_b661_cpu_book_control.md"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
@@ -2454,7 +2455,7 @@
       },
       "runtime": {
         "evidence": [],
-        "scope": "UNWITNESSED: base-XEX static resolver and offline data proofs only; TU compatibility UNKNOWN.",
+        "scope": "Gameplay UNWITNESSED. BASE bounded personnel picker/record lookup is proved for the documented Queens retirement; expanded archive loading and TU compatibility remain unproved.",
         "status": "not-tested"
       },
       "selectors": {
@@ -2485,7 +2486,7 @@
         "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
         "retail_file": "user-owned extracted APF Xbox 360 game folder"
       },
-      "summary": "Append a name-only SPLB clone, insert its sorted filename hash, reuse an existing label name as type, and bind one team. Finish other Studio edits first.",
+      "summary": "Create a team-specific offensive copy, then edit its formations, play membership and same-record audibles through Book Identity > Edit books in Fine-tune. Named recipes and copied-folder builds verify the independent resource and preserve its shared donor.",
       "surface": "scripts_config",
       "title": "Independent offensive CPU books",
       "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
@@ -2556,7 +2557,8 @@
       },
       "classification": "read-only-mapped",
       "evidence": [
-        "docs/mod_editor/apf_wave_2026_09_09.md"
+        "docs/mod_editor/apf_wave_2026_09_09.md",
+        "docs/mod_editor/apf_b661_cpu_book_control.md"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
@@ -2582,7 +2584,7 @@
       },
       "runtime": {
         "evidence": [],
-        "scope": "UNWITNESSED: base-XEX static resolver and offline data proofs only; TU compatibility UNKNOWN.",
+        "scope": "Gameplay UNWITNESSED. BASE bounded personnel picker/record lookup is proved for the documented Queens retirement; expanded archive loading and TU compatibility remain unproved.",
         "status": "not-tested"
       },
       "selectors": {
@@ -2603,31 +2605,37 @@
         "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
         "retail_file": "user-owned extracted APF Xbox 360 game folder"
       },
-      "summary": "Reparse each team label and resolved resource; report shared real books and unresolved types.",
+      "summary": "Explain each team label and name-resolved book, then open the chosen or newly cloned game folder in Fine-tune. Finish the original Studio project before cloning because directory entry indices shift.",
       "surface": "scripts_config",
       "title": "Book Identity",
       "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
     },
     {
       "backend": {
-        "command": "python3 -m mod_editor.core.apf2k8_playcall_patch --image <flat-image.pe> --output <new.patch.toml>",
+        "command": "python3 -m mod_editor.core.apf2k8_playcall_patch --game-folder <game-folder> --output <new.patch.toml> [--title-update <installed-content>]",
         "module": "mod_editor/core/apf2k8_playcall_patch.py",
         "operation": "write"
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/mod_editor/apf_wave_2026_09_09.md"
+        "ASTRA_B661_APF2_REPORT.md",
+        "docs/research/apf_playcall_receipt.json",
+        "tests/mod_editor/test_apf_playcall_patch.py",
+        "tools/apf_playcall_audit.py",
+        "tests/mod_editor/test_apf_xex_image.py",
+        "tests/mod_editor/test_apf_xex_image_retail.py",
+        "tests/mod_editor/test_apf_pass_fetch_export_qt.py"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "Integrated in the APF Studio with offline validation; gameplay UNWITNESSED."
+        "reason": "CPU Audibles & Personnel workspace: Export TE bias for pass fetches. The export is a verified one-shot authored TOML file; removing or disabling that file reverses deployment."
       },
       "id": "apf2k8.playbooks.pass_fetch_te_bias",
       "input_constraints": [
-        "Only the pinned flat BASE or reconstructed TU 1.1 image; full SHA, fetch hash, original hook and entire zero cave reservation are checked.",
+        "Choose the Xbox 360 game folder with default.xex and optional installed Title Update 1.1; expert flat images are also accepted. Python derives the image in memory. Full SHA, fetch hash, original hook and entire zero cave reservation are checked.",
         "Pass subtypes 2/3/4 on any down, including user calls. Main CPU weighted picker and untyped emergency fetch use different paths.",
         "Reserve 0x84D0E000..0x84D0EFFF exclusively; Capstone is required. Shared plays, later formation resolution and Subs can still produce a lineup without a TE."
       ],
@@ -2648,7 +2656,7 @@
       "selectors": {
         "fields": [
           {
-            "allowed": "Pinned BASE or TU 1.1 flat image",
+            "allowed": "Xbox 360 game folder / default.xex, or expert pinned BASE or TU 1.1 flat image",
             "name": "image",
             "required": true
           },
@@ -2658,21 +2666,21 @@
             "required": true
           }
         ],
-        "notes": "Module hash selects the Xenia image; no game or executable is modified by export."
+        "notes": "Optional --title-update selects installed TU 1.1 content. Nearby Xenia content is detected. Module hash selects the Xenia image; no game or executable is modified by export."
       },
       "source_container": {
-        "format": "Flat decompressed Xbox 360 XEX image; authored Xenia patch TOML output",
+        "format": "Xbox 360 XEX2 plus optional LIVE STFS Title Update / XEXP delta, or expert flat PE; authored Xenia patch TOML output",
         "hash_pins": [
           "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf",
           "65f522ce1cdda42cf19c112e9ec07302e89c81e4148c9f22e6db5e03952f9457"
         ],
         "resource": "BASE fetch 0x84869B20 or TU fetch 0x8486A820 and cave 0x84D0E000",
-        "retail_file": "Private BASE apf.pe or reconstructed TU 1.1 image"
+        "retail_file": "User-owned Xbox 360 game folder / default.xex and optional installed Title Update 1.1 content"
       },
       "summary": "Export an assembled, SHA-pinned BASE or TU 1.1 Xenia patch that prefers TE-compatible records for offensive pass fetches at every down, with zero-match fallback.",
       "surface": "scripts_config",
       "title": "TE bias for pass fetches (unwitnessed)",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 -m tests.mod_editor.test_apf_playcall_patch"
     },
     {
       "backend": {
@@ -2682,7 +2690,8 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/mod_editor/apf_wave_2026_09_09.md"
+        "docs/mod_editor/apf_wave_2026_09_09.md",
+        "docs/mod_editor/apf_b661_cpu_book_control.md"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
@@ -2708,7 +2717,7 @@
       },
       "runtime": {
         "evidence": [],
-        "scope": "UNWITNESSED: base-XEX static resolver and offline data proofs only; TU compatibility UNKNOWN.",
+        "scope": "Gameplay UNWITNESSED. BASE bounded personnel picker/record lookup is proved for the documented Queens retirement; expanded archive loading and TU compatibility remain unproved.",
         "status": "not-tested"
       },
       "selectors": {
@@ -2729,7 +2738,7 @@
         "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
         "retail_file": "user-owned extracted APF Xbox 360 game folder"
       },
-      "summary": "Select existing plays and retarget tagged slots through the SPLB writer; preserve formations, personnel fields, fallback records, and all other bytes.",
+      "summary": "Fill one independent copy from Wide Zone, Spread-to-Run or Pro Power while keeping team, label and donor editable. Content remains editable in Fine-tune after building; the separate shared-book staging and CLI paths remain available.",
       "surface": "scripts_config",
       "title": "Wide Zone, Spread-to-Run, Pro Power",
       "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
@@ -7164,24 +7173,33 @@
         "mod_editor/gui/models_panel_qt.py",
         "tests/mod_editor/test_nfl2k5_crib_geometry_writer.py",
         "tests/mod_editor/test_nfl2k5_models.py",
-        "reports/specs/nfl2k5_xbox_static_scne.v1.json"
+        "reports/specs/nfl2k5_xbox_static_scne.v1.json",
+        "mod_editor/core/nfl2k5_model_skeleton.py",
+        "tools/nfl2k5_model_skeleton_validate.py",
+        "tools/nfl2k5_model_skeleton_blender_witness.py",
+        "tests/mod_editor/test_nfl2k5_model_skeleton.py",
+        "tests/mod_editor/test_models_skeleton_wiring.py",
+        "docs/mod_editor/nfl2k5_model_skeleton.md",
+        "docs/mod_editor/nfl2k5_model_skeleton_proof.json"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "The Models page lists every scene on the loaded disc, exports any of them as Blender-ready glTF, and imports an edited glTF/GLB by fitting it onto the game's own vertices (vertex-index lane, order, or nearest vertex), re-encoding positions (range widened when needed), normals and UVs for exact matches, and rebuilding the resource into its retail span before writing a copy of the disc. Vertex count, topology, bones, weights and every other byte stay as shipped. The pinned Stadium/Crib position staging remains."
+        "reason": "Models > Import edited .gltf/.glb defaults to Geometry only. Geometry and skeleton checks the complete sibling lo_body/hi_body/hi_head export set, reports every changed bind length in centimetres, and writes a new disc copy after all four native resources pass preflight. The GUI is exposed only after applying the complete H4 WIRING blocks."
       },
       "id": "nfl2k5.models.scne_gltf",
       "input_constraints": [
-        "Every SCNE exports; an edited glTF/GLB imports onto the same vertices only: the vertex count and triangle topology of the game's shape are kept, and a file with a different count is fitted by nearest vertex with a warning.",
-        "Imports may move existing positions only. Vertex count and triangle topology must remain identical; UVs, materials, collision, indices, normals, all other vertex registers, commands, transforms, and opaque tails remain source bytes.",
-        "Every recipe is checked against the user's exact source and must recompress into the original fixed SCNE allocation before it can be staged. Arbitrary topology replacement remains unsupported."
+        "Geometry only retains the existing fitted vertex import: native vertex count, triangles, skeleton and weights stay authored; matched position, normal, UV and colour lanes can be re-encoded within a fixed compressed span.",
+        "Geometry and skeleton requires pinned player SCNE 3/113 and 3/114, the pinned head 3/115, SKEL 3/116, all three model files and their manifest from one export, unchanged joint names/parents, and translations only. A missing or unedited second LOD refuses with edit both LOD files from one export.",
+        "One axial length per import, 95%-105%: left/right forearm (both elbow-wrist and wrist-hand segments together), thigh, shin or foot. Distal primary positions must agree across LODs. High derived pivots are regenerated. Upper arms are disabled because the tested refits exceed their allocations. Hand tips, spine/neck/head, direction changes, rotations/scales, animation, topology/name changes, and multiple lengths are refused.",
+        "Blender unit conversions are accepted within 0.001 cm; serialized canonical binds reparse within 0.0001 cm. Recomputed normalized directions must match canonical SKEL within 2e-6 per component. Head bind, weights, morph records, counts and angular muscle constants stay authored. Every resource must fit its original compressed span and scratch wrapper; the whole set is published together."
       ],
       "portme": [
-        "Complete SCNE attributes, material/texture graph, transforms, skinning, SHAP, skeletons, animation, collision, and LODs.",
-        "Build a catalog-aware edited-glTF conformer only after proving coordinate conversion, complete active attributes, bounds/semantic ownership, topology serialization beyond group36, catalog-wide XISO integration, and per-target runtime behavior."
+        "Direction edits need a proved update of the fixed angular muscle graph. Hand terminal lengths and spine/neck/head need a proved endpoint/frame and attachment mapping.",
+        "Upper-arm axial refits at +1%/+5% exceed the fixed compressed allocation. Multiple simultaneous lengths, arbitrary topology, animation and morph authoring remain unsupported.",
+        "No claim for idle/run/pass/catch/tackle, body profiles, collision, ball/helmet attachment appearance or original hardware until witnessed."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -7194,7 +7212,7 @@
           "docs/research/nfl_group36_xemu_runtime_result_v2.md",
           "reports/assets/nfl2k5_group36_s42_xemu_runtime_positive.v2.json"
         ],
-        "scope": "Exported models open in Blender 4 (verified headless: meshes, UV layers, armatures with the game's joint counts, textures; the referee's shirt, shoes and cap only line up under the u=(n+1)/2, v=(1-n)/2 texture-coordinate mapping). Same-topology imports rebuild into the retail span with the wrapper byte-identical and decode back exactly; in-game witnessing of an imported model and original-hardware acceptance remain untested.",
+        "scope": "The H4 gate executes retail 0x92140/0x92252 and 0x233C0 on edited SCNE/SKEL inputs, compares authored rest joint positions, and compares recovered C and Python matrices at identity and six player celebration samples. Headless Blender 4.0.2 +5% forearm/thigh GLB edits are checked separately. Synthetic/direct-export no-op bytes, fixed spans, four-resource compact-copy transport, replay and refusals are tested. Idle/run/pass/catch/tackle, ball and helmet attachments, body sizes and played appearance remain UNWITNESSED.",
         "status": "not-tested"
       },
       "selectors": {
@@ -7205,7 +7223,7 @@
             "required": true
           }
         ],
-        "notes": "Every scene is exportable and importable for same-topology vertex edits; adding or removing vertices/triangles, bones, animations and morph deltas are not implied (morph channels are exported as names only)."
+        "notes": "Every scene retains geometry export/import. The optional paired skeleton path is limited to player outer 3 and the eight named axial limb segments; arbitrary skeletons, directions, animation or body morph authoring are not implied."
       },
       "source_container": {
         "format": "NFL SCNE resources in VC archive",
@@ -7215,10 +7233,10 @@
         "resource": "4,616 SCNE resources",
         "retail_file": "ESPN NFL 2K5 (USA).xiso.iso"
       },
-      "summary": "Export every NFL 2K5 SCNE model (4,616 scenes) as glTF with positions, normals, UVs, vertex colours, embedded textures and skins, and import same-topology vertex edits for any of them into a copy of the disc, plus the earlier bounded Stadium/Crib position staging.",
+      "summary": "Export every NFL 2K5 SCNE as glTF and import fitted geometry into a disc copy. Player outer 3 additionally accepts one paired axial forearm, thigh, shin or foot bind-length edit within +/-5%, with regenerated high pivots, coordinated mesh/normals, recomputed and checked canonical SKEL directions, and a guarded low/high/head/SKEL transaction. EXPERIMENTAL / UNWITNESSED.",
       "surface": "models_shap_scne",
       "title": "NFL 2K5 bounded SCNE glTF editing",
-      "validation_command": "bash tools/validate_nfl_static_gltf.sh"
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_model_skeleton"
     },
     {
       "backend": {

@@ -254,7 +254,8 @@ def _canonical_json(value: object) -> bytes:
 
 def _inventory_document(path: Path) -> dict[str, Any]:
     try:
-        value = json.loads(path.read_text(encoding="utf-8"))
+        from nfl_uniform_inventory import load_inventory_document as load
+        value = load(path)
     except (OSError, json.JSONDecodeError) as exc:
         raise ValidationError(f"Could not read the private game index: {exc}") from exc
     if value.get("schema") != "nfl2k5_resource_chunk_inventory/v1":

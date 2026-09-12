@@ -316,6 +316,9 @@ class DialogPersonnelTests(unittest.TestCase):
     def test_facade_without_optional_readers_keeps_safe_defaults(self):
         del self.facade.master_categories
         del self.facade.retail_formation_packages
+        # Beta 66.1: the panel keeps a loaded book (staged edits survive switching), so force a fresh load.
+        self.panel._book = None
+        self.panel._loaded_index = None
         with patch.object(splb, "read_book", return_value=self.book), patch(
             "playbook_inventory.parse_apf", return_value=[{
                 "plays": [], "formations": [{"index": 133, "name": "Gun: Straight"}]

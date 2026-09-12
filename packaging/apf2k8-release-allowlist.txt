@@ -14,6 +14,7 @@ LICENSE
 NOTICE.md
 docs/mod_editor/APF2K8_STATUS.md
 docs/mod_editor/apf2k8_full_shell_all_team_gate.json
+docs/mod_editor/apf_b661_cpu_book_control.md
 docs/mod_editor/apf2k8_full_shell_visual_gate.json
 docs/mod_editor/apf2k8_logo_surface_ownership.md
 docs/mod_editor/apf2k8_retail_crest_channel_audit.json
@@ -222,6 +223,7 @@ data/apf2k8/scheme_presets/wide-zone.json
 docs/mod_editor/apf_wave_2026_09_09.md
 docs/mod_editor/ps3_bundle_import.md
 mod_editor/apf_studio/book_identity_qt.py
+mod_editor/apf_studio/book_content.py
 mod_editor/apf_studio/coverage_qt.py
 mod_editor/apf_studio/coverage_service.py
 mod_editor/apf_studio/field_material_qt.py
@@ -248,6 +250,8 @@ mod_editor/core/apf2k8_play_concepts.py
 mod_editor/core/apf2k8_play_design_build.py
 mod_editor/core/apf2k8_play_designer.py
 mod_editor/core/apf2k8_playcall_patch.py
+mod_editor/core/apf2k8_xex.py
+mod_editor/core/xex_codec.py
 mod_editor/core/apf2k8_scheme_presets.py
 mod_editor/core/apf_field_material_writer.py
 mod_editor/core/nfl2k5_play_codec.py

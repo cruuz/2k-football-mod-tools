@@ -832,7 +832,7 @@ class TrailerReplace:
     category_index: int
 
     def __post_init__(self) -> None:
-        _bounded_int(self.outer_index, "Playbook entry", minimum=0, maximum=1_542)
+        _bounded_int(self.outer_index, "Playbook entry", minimum=0, maximum=65_535)
         _bounded_int(
             self.record_index, "Formation record", minimum=0,
             maximum=RECORD_COUNT - 1,
@@ -939,13 +939,75 @@ def personnel_availability(book: SplbBook) -> dict[str, Any]:
     }
 
 
-def validate_personnel_edit(before: SplbBook, after: SplbBook) -> None:
+def personnel_row_candidates(row: int) -> tuple[int, ...]:
+    """Pinned 0x84860730 ladder: same row, then +1,-1,+2,-2,+3,-3."""
+    bounds = (0, 10) if row <= 10 else (11, 16) if row <= 16 else None
+    if bounds is None:
+        return (row,)
+    low, high = bounds
+    return (row, *(max(low, min(high, row + delta)) for delta in (1, -1, 2, -2, 3, -3)))
+
+
+def personnel_category_for_row(book: SplbBook, row: int) -> int | None:
+    """Model the pinned row picker only to validate edited data, never patch it.
+
+    Exact-row lookup advances to the last matching advertised category.
+    Fallback uses the first match at the first successful ladder step.
+    """
+    advertised = book_category_rows(book.body)
+    direct = [c for c in advertised if PERSONNEL_ROWS[c] == row]
+    if direct:
+        return direct[-1]
+    for candidate in personnel_row_candidates(row)[1:]:
+        for category in advertised:
+            if PERSONNEL_ROWS[category] == candidate:
+                return category
+    return None
+
+
+def _carried_category_mask(before: SplbBook, after: SplbBook, added: int) -> int:
+    mask = struct.unpack_from(">I", before.body, BOOK_CATEGORY_MASK_OFFSET)[0] | added
+    old, new = _validate_record_supply(before, after)
+    # Retire only supply this edit emptied. Existing retail defects are not
+    # silently rewritten, nor are unrequested categories newly advertised.
+    for previous, following in zip(old["categories"], new["categories"]):
+        if previous["can_select_formation"] and not following["record_indices"]:
+            if following["advertised_after_normalization"]:
+                raise ValidationError(
+                    f"Cannot safely retire {following['name']}: a hidden or duplicate "
+                    "formation still carries it and the game can restore its ladder bit. "
+                    "Change that formation too, or keep a reachable record."
+                )
+            mask &= ~(1 << following["category_index"])
+    return mask
+
+
+def personnel_ladder_receipt(before: SplbBook, after: SplbBook) -> dict[str, Any]:
+    retired = sorted(set(book_category_rows(before.body)) - set(book_category_rows(after.body)))
+    return {
+        "retired_category_indices": retired,
+        "messages": [f"{PERSONNEL_NAMES[c]} retired from this book's ladder" for c in retired],
+        "before": list(book_category_rows(before.body)),
+        "after": list(book_category_rows(after.body)),
+        "policy": "Retire emptied supply; preserve the game's existing personnel fallback order.",
+        "runtime_status": "UNWITNESSED",
+    }
+
+
+def _validate_record_supply(before: SplbBook, after: SplbBook):
     """Refuse newly introduced empty/hidden supply; tolerate existing defects.
 
     Retail has legitimate short records containing only tags. Do not reject
     those on a tag move or when a short record gains a play. The dangerous
     transition is removing ALL ordinary plays from a previously longer record.
     """
+    if any(r.populated for r in before.records) and not any(r.populated for r in after.records):
+        raise ValidationError(
+            f"This request empties every populated formation in book {before.outer_index} "
+            f"({before.name}). A book with no stored plays anywhere leaves the CPU director "
+            "nothing to select, and emptied records are reported in-game to produce "
+            "out-of-book plays and personnel packages. Keep at least one formation populated."
+        )
     for first, second, label in RETAIL_FLIP_PAIRS:
         was = [r for r in before.records if r.formation_index in (first, second)]
         if ({r.formation_index for r in was} == {first, second}
@@ -977,19 +1039,35 @@ def validate_personnel_edit(before: SplbBook, after: SplbBook) -> None:
             f"hide later records {sorted(hidden)}. The game's formation lookup "
             "stops at the first empty record; keep the populated prefix contiguous."
         )
+    return previous, following
+
+
+def validate_personnel_edit(before: SplbBook, after: SplbBook) -> None:
+    """Refuse stranded requests; retired categories need no reachable record."""
+    previous, following = _validate_record_supply(before, after)
     old_supply = {c["category_index"] for c in previous["categories"]
                   if c["can_select_formation"]}
     new_supply = {c["category_index"] for c in following["categories"]
                   if c["can_select_formation"]}
     lost = old_supply - new_supply
-    if lost:
-        names = ", ".join(f"{PERSONNEL_NAMES[c]} (category {c}, row {PERSONNEL_ROWS[c]})"
-                          for c in sorted(lost))
+    unsafe = (lost | (set(following["advertised_category_indices"]) -
+                      set(previous["advertised_category_indices"]))) & set(following["advertised_category_indices"]) - new_supply
+    if unsafe:
+        names = ", ".join(PERSONNEL_NAMES[c] for c in sorted(unsafe))
         raise ValidationError(
-            f"Book {before.name or before.outer_index} loses every reachable record "
-            f"for {names}. The personnel ladder/category picker can still request "
-            "these packages. Keep a reachable record for each advertised category."
+            f"Book {before.name or before.outer_index} still advertises {names} "
+            "without a reachable formation. Its ladder cannot safely serve that package."
         )
+    if lost:
+        stranded = [row for row in range(28)
+                    if personnel_category_for_row(before, row) in old_supply
+                    and personnel_category_for_row(after, row) not in new_supply]
+        if stranded:
+            raise ValidationError(
+                f"Cannot safely retire personnel in {before.name or before.outer_index}: "
+                f"the game's bounded ladder would have no formation for rows {stranded}. "
+                "Keep a package within the existing three-row fallback, or swap to a nearer package."
+            )
 
 
 
@@ -1102,7 +1180,7 @@ def change_from_mapping(value: Mapping[str, object]) -> MembershipChange | TagMo
             heir = _bounded_int(heir, "Tagged-slot heir play", minimum=0, maximum=PLAY_MASK)
         return MembershipChange(
             outer_index=_bounded_int(
-                value.get("outer_index"), "Playbook entry", minimum=0, maximum=1_542
+                value.get("outer_index"), "Playbook entry", minimum=0, maximum=65_535
             ),
             record_index=_bounded_int(
                 value.get("record_index"),
@@ -1129,7 +1207,7 @@ def change_from_mapping(value: Mapping[str, object]) -> MembershipChange | TagMo
             )
         return TagMove(
             outer_index=_bounded_int(
-                value.get("outer_index"), "Playbook entry", minimum=0, maximum=1_542
+                value.get("outer_index"), "Playbook entry", minimum=0, maximum=65_535
             ),
             record_index=_bounded_int(
                 value.get("record_index"),
@@ -1160,7 +1238,7 @@ def change_from_mapping(value: Mapping[str, object]) -> MembershipChange | TagMo
             )
         return TrailerReplace(
             outer_index=_bounded_int(
-                value.get("outer_index"), "Playbook entry", minimum=0, maximum=1_542
+                value.get("outer_index"), "Playbook entry", minimum=0, maximum=65_535
             ),
             record_index=_bounded_int(
                 value.get("record_index"),
@@ -1303,8 +1381,7 @@ def parse_book(body: bytes, outer_index: int) -> SplbBook:
 def read_book(index_path: Path, outer_index: int) -> SplbBook:
     """Read and validate one stock playbook out of the user's own game."""
 
-    if outer_index not in STOCK_BOOKS:
-        raise ValidationError(f"Outer entry {outer_index} is not a stock playbook")
+    _bounded_int(outer_index, "Playbook entry", minimum=0, maximum=65_535)
     try:
         archive = apf_outer.parse_archive(Path(index_path))
         entry = archive.entries[outer_index]
@@ -1322,7 +1399,11 @@ def read_book(index_path: Path, outer_index: int) -> SplbBook:
         raise
     except (OSError, IndexError, apf_inner.FormatError, apf_outer.FormatError) as exc:
         raise ValidationError(f"Could not open the APF stock playbook: {exc}") from exc
-    return parse_book(body, outer_index)
+    book = parse_book(body, outer_index)
+    from .apf2k8_book_identity import filename_id
+    if not book.name or filename_id(book.name) != entry.name_id:
+        raise ValidationError("Playbook filename and decoded book name disagree")
+    return book
 
 
 def retail_formation_packages(
@@ -1752,11 +1833,9 @@ def compile_book(
             }
         )
         trailer_replaced.append(applied[-1])
-    if request.trailers:
-        mask_at = BOOK_CATEGORY_MASK_OFFSET
-        before_mask = struct.unpack_from(">I", book.body, mask_at)[0]
-        after_mask = before_mask | category_bits_added
-        struct.pack_into(">I", replacement, mask_at, after_mask)
+    carried_mask = _carried_category_mask(
+        book, parse_book(bytes(replacement), book.outer_index), category_bits_added)
+    struct.pack_into(">I", replacement, BOOK_CATEGORY_MASK_OFFSET, carried_mask)
 
     # The lineup resolver reaches a record through the personnel rows the book
     # promises (book-row search 0x84A8B438 over the +0x7E04 mask), and a play
@@ -1806,8 +1885,10 @@ def compile_book(
     verification = verify_book(book.body, bytes(replacement), (
         *request.memberships, *request.moves, *request.trailers,
     ), master_play_count=master_play_count)
+    mask_unchanged = book.body[BOOK_CATEGORY_MASK_OFFSET:BOOK_CATEGORY_MASK_OFFSET + 4] == bytes(replacement)[BOOK_CATEGORY_MASK_OFFSET:BOOK_CATEGORY_MASK_OFFSET + 4]
     claims: dict[str, Any] = {
-        "entry_prefix_only": not bool(request.trailers),
+        "entry_prefix_only": not bool(request.trailers) and mask_unchanged,
+        "book_category_mask_untouched": mask_unchanged,
         "trailers_untouched": not bool(request.trailers),
         "unmapped_tail_untouched": True,
         "resource_length_unchanged": True,
@@ -1833,10 +1914,9 @@ def compile_book(
         claims.update(
             {
                 "trailer_replace_whitelisted_only": True,
-                "book_category_mask_untouched": False,
                 "trailer_cde_fields_preserved": True,
                 "trailer_low_byte_preserved": True,
-                "book_category_mask_only_gained_bits": True,
+                "book_category_mask_only_gained_bits": not bool(personnel_ladder_receipt(book, parsed_after)["retired_category_indices"]),
                 "formation_index_in_master": True,
                 "category_index_in_table": True,
                 "cpu_trailer_consumption_static_proved": True,
@@ -1863,6 +1943,7 @@ def compile_book(
         "records_emptied": emptied,
         "records_trailer_replaced": trailer_replaced,
         "trailer_record_play_sharing": trailer_play_sharing,
+        "personnel_ladder": personnel_ladder_receipt(book, parsed_after),
         "book_category_rows_before": list(book_category_rows(book.body)),
         "book_category_rows_after": list(book_category_rows(bytes(replacement))),
         "personnel_availability": {
@@ -1904,7 +1985,7 @@ def verify_book(
     for record_index in trailer_records:
         base = RECORD_BASE + record_index * RECORD_STRIDE + TRAILER_OFFSET
         allowed.update(range(base, base + 8))
-    if trailer_records:
+    if touched:
         allowed.update(
             range(BOOK_CATEGORY_MASK_OFFSET, BOOK_CATEGORY_MASK_OFFSET + 4)
         )
@@ -2015,6 +2096,7 @@ def verify_book(
     expected_mask = struct.unpack_from(">I", before, BOOK_CATEGORY_MASK_OFFSET)[0]
     for trailer in request.trailers:
         expected_mask |= 1 << _replacement_category(parsed_before.records[trailer.record_index], trailer)
+    expected_mask = _carried_category_mask(parsed_before, parsed_after, expected_mask)
     after_mask = struct.unpack_from(">I", after, BOOK_CATEGORY_MASK_OFFSET)[0]
     if after_mask != expected_mask:
         raise ValidationError(
@@ -2086,6 +2168,9 @@ def build_book_patch(
             new_block,
             descriptor.wrapper.shift,
         )
+        tokens, _used = apf_inner._parse_h7a_tokens(compressed, len(new_block), descriptor.wrapper.shift)
+        if any(token.distance is not None and token.length > token.distance for token in tokens):
+            raise ValidationError("Stock-playbook H7A contains a match longer than its distance")
         stored = struct.pack(
             ">5I",
             apf_inner.H7A_MAGIC,
@@ -2148,7 +2233,7 @@ def build_book_patch(
         "output_entry_size": len(rebuilt),
         "output_entry_sha256": _sha256(rebuilt),
         "verification": dict(verification),
-        "h7a_transport": {"strategy": "retail-token-preserving", **preservation},
+        "h7a_transport": {"strategy": "retail-token-preserving", **preservation, "overlapping_matches": 0},
         "claims": {
             **dict(compiled.report["claims"]),
             "fixed_outer_allocation_preserved": True,

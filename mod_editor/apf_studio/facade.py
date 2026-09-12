@@ -610,14 +610,14 @@ class ApfStudioFacade:
             self._team_art_inventory = (session, values)
         return self._team_art_inventory[1]
 
-    def replace_team_art(self, package, paths, progress: Progress = _noop, *, expected_session=None):
+    def replace_team_art(self, package, paths, progress: Progress = _noop, *, expected_session=None, allow_simplification=True):
         from .team_art import stage_package
         with self._session_lock:
             session = self.require_session()
             if expected_session is not None and session is not expected_session:
                 raise ValueError("Game source changed. Select your Team Art package again.")
             progress("Checking Team Art layers", 0, 1)
-            result = stage_package(session, package, paths)
+            result = stage_package(session, package, paths, allow_simplification=allow_simplification)
             self.last_build = None
             progress("Team Art staged", 1, 1)
             return result

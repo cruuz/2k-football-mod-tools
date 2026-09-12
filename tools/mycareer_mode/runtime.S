@@ -1,6 +1,15 @@
 .intel_syntax noprefix
 .code32
 .text
+.global mode_stage
+mode_stage:
+ call 0x61730
+ pushfd
+ pushad
+ call mode_match_copy
+ popad
+ popfd
+ ret
 .global inline_size, inline_save, inline_load_begin, inline_admission
 .global inline_read, inline_load_end, inline_roster_size
 .global inline_active
@@ -354,7 +363,7 @@ row_done:
  popfd
  ret
 start_player:
- /* resolve_team validates identity, membership, uniqueness and <=65 slots.
+ /* resolve_team validates identity, membership and native/grown reserves.
   * Insert the created record before the old starter in both native chains.
   * Ranks below its former rank move down once; overflow row 7 stays 7. */
  pushad

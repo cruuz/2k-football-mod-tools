@@ -126,6 +126,26 @@ resolve_club:
  mov ebx, DWORD PTR [0xe5786c+edi*4]
  test ebx, ebx
  jz resolve_next
+.ifdef MYCAREER_INLINE
+ /* Grown reserves include five index slots outside the team record. The
+  * shared validator requires the installed owner and its sealed arena. */
+ cmp BYTE PTR [ebx+0x19b], 2
+ jne resolve_inline_slots
+ mov ecx, ebx
+ mov edx, ebp
+ call mode_grown_member
+ cmp eax, 2
+ ja resolve_bad
+ test eax, eax
+ jz resolve_next
+ movzx esi, BYTE PTR [ebx+0x11c]
+ xor edx, edx
+ cmp eax, 1
+ je resolve_found
+ mov edx, esi
+ jmp resolve_found
+resolve_inline_slots:
+.endif
  movzx ecx, BYTE PTR [ebx+0x11c]
  cmp ecx, 65
  ja resolve_bad

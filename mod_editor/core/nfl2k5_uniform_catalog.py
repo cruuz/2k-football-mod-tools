@@ -316,8 +316,8 @@ def _authored_digit_dimensions() -> dict[tuple[str, str, int, str, int], tuple[i
     except Exception:  # pragma: no cover - report/tooling absent
         return {}
     try:
-        report = json.loads(
-            Path(live_targets.DEFAULT_REPORT).read_text(encoding="utf-8"))
+        from .responsive_json import load
+        report = load(Path(live_targets.DEFAULT_REPORT))
         resources = report["resources"]
     except (OSError, ValueError, KeyError):  # pragma: no cover - absent or changed
         return {}

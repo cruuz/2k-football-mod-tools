@@ -206,14 +206,17 @@ class DraftTests(unittest.TestCase):
             self.assertEqual(bytes(m.uc.mem_read(m.state+40,16)),token)
             self.assertEqual([c for c,_ in self.members(m,p)],[club])
             self.assertEqual(m.get(m.state+64),0)
+            # Without Practice Squad, native C3EE0 has 65 slots. Signing
+            # at 54 must preserve the existing club instead of cutting it.
+            counts[club] += 1
             self.assertEqual([m.uc.mem_read(teams+500*c+0x11C,1)[0] for c in range(32)],counts)
-            new_members={m.get(t+4*i) for i in range(54)}
+            new_members={m.get(t+4*i) for i in range(55)}
             self.assertEqual(new_members-old_members,{p})
             released=old_members-new_members
-            self.assertEqual(len(released),1)
+            self.assertEqual(released,set())
             fa=[m.get(m.get(m.root+0x3C)+4*i) for i in range(m.get(m.root+0x38))]
             self.assertNotIn(p,fa)
-            self.assertEqual(sum(q in released for q in fa),1)
+            self.assertEqual(sum(q in released for q in fa),0)
             self.assertEqual({c:bytes(m.uc.mem_read(teams+500*c,260)) for c in other_rosters},other_rosters)
             saved=m.native_save(budget=500000000)
         with Machine(self.payload) as cold:
