@@ -1,6 +1,6 @@
 """Offline, data-only CPU book clones in a new APF game folder.
 
-An unused offensive label's existing name becomes its type. Only its type
+An unused same-side label's existing name becomes its type. Only its type
 pointer and the selected team's assignment pointer change; no string pool or
 save capacity is guessed. A cloned IFF is appended to the LAST volume, and a
 sorted directory row uses verified zero space before the first payload.
@@ -53,9 +53,8 @@ class CloneRequest:
             raise ValidationError("Clone label ID must be 0..68")
         if type(self.team_index) is not int or not 0 <= self.team_index < 40:
             raise ValidationError("Clone team index must be 0..39")
-        if not isinstance(self.donor_type, str) or self.donor_type not in {
-                x for x in splb.STOCK_BOOKS.values() if x.startswith("O-")}:
-            raise ValidationError("Choose one of the seven existing offensive CPU book donors")
+        if not isinstance(self.donor_type, str) or self.donor_type not in splb.BOOK_SIDES:
+            raise ValidationError("Choose a stock, USER or global book donor")
 
 
 def requests_from_json(data: bytes) -> tuple[CloneRequest, ...]:
@@ -104,13 +103,14 @@ def bind_roster(body: bytes, requests: Iterable[CloneRequest], *, raw_save: bool
     for request in rows:
         label = before.labels[request.label_id]
         team = before.teams[request.team_index]
-        if label.side != "offense":
-            raise ValidationError("Independent book clones currently require an offensive label")
+        if label.side != splb.BOOK_SIDES[request.donor_type]:
+            raise ValidationError("Choose a label on the same side as the donor book")
+        assignment_field = getattr(team, label.side + "_field")
         if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9 -]{0,26}", label.name):
             raise ValidationError("Clone label names must be 1..27 ASCII letters, digits, spaces or hyphens")
         if label.name in splb.STOCK_BOOKS.values() or label.name in ("UA", "UB"):
             raise ValidationError("Clone label name collides with a built-in or runtime book")
-        peers = [x.index for x in before.teams if x.offense == label.index and x.index != team.index]
+        peers = [x.index for x in before.teams if getattr(x, label.side) == label.index and x.index != team.index]
         if peers:
             raise ValidationError(f"Label {label.index} is already assigned to other teams: {peers}")
         if any(x.index != label.index and x.kind == label.name for x in before.labels):
@@ -118,13 +118,13 @@ def bind_roster(body: bytes, requests: Iterable[CloneRequest], *, raw_save: bool
         # A field-local relative pointer is one-based; the target string itself
         # is immutable and may safely have other readers (e.g. a defensive label).
         name_target = apf_roster.resolve_relative(body, label.offset, "clone label name")
-        for field, target in ((label.offset + 4, name_target), (team.offense_field, label.offset)):
+        for field, target in ((label.offset + 4, name_target), (assignment_field, label.offset)):
             struct.pack_into(">I", output, field, (target - field + 1) & 0xFFFFFFFF)
             fields.update(range(field, field + 4))
         changes.append({"team_index": team.index, "label_id": label.index, "label": label.name,
                         "before_type": label.kind, "after_type": label.name,
                         "type_pointer_offset": label.offset + 4,
-                        "assignment_pointer_offset": team.offense_field})
+                        "side": label.side, "assignment_pointer_offset": assignment_field})
     result = bytes(output)
     after = parse_roster_identity(result, raw_save=raw_save)
     changed = [i for i, (a, b) in enumerate(zip(body, result)) if a != b]
@@ -132,7 +132,7 @@ def bind_roster(body: bytes, requests: Iterable[CloneRequest], *, raw_save: bool
         raise ValidationError("Clone assignment escaped its two pointer fields")
     for request in rows:
         label = after.labels[request.label_id]
-        if label.kind != label.name or after.teams[request.team_index].offense != label.index:
+        if label.kind != label.name or getattr(after.teams[request.team_index], label.side) != label.index:
             raise ValidationError("Clone assignment did not survive reparse")
     return result, {"changes": changes, "changed_byte_count": len(changed),
                     "changed_offsets": changed, "all_string_bytes_preserved": True,

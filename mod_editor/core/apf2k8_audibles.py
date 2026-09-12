@@ -95,8 +95,8 @@ def plan_audibles(book: splb.SplbBook, catalog: Iterable[PlayMetadata]) -> Audib
     Re-planning the output produces no moves. Never add a play to manufacture a
     guarantee: a pass-only Hail Mary record cannot acquire a run from itself.
     """
-    if book.outer_index not in CPU_OFFENSE_BOOKS:
-        raise ValidationError("CPU audible balancing applies to the seven offensive CPU books")
+    if splb.BOOK_SIDES.get(book.name) != "offense":
+        raise ValidationError("Run/pass audible balancing needs an offensive stock, USER or global book")
     catalog = tuple(catalog)
     metadata = {p.index: p for p in catalog}
     before = audible_census(book, catalog)

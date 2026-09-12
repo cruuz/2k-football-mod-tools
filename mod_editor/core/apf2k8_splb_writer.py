@@ -681,6 +681,13 @@ STOCK_BOOKS: Mapping[int, str] = {
 }
 
 
+# Names, never retail outer ordinals, define donor side after archive insertion.
+BOOK_SIDES: Mapping[str, str] = {
+    name: ("offense" if name.startswith("O-") or name.endswith("-o") else "defense")
+    for name in STOCK_BOOKS.values()
+}
+
+
 def _sha256(payload: bytes) -> str:
     return hashlib.sha256(payload).hexdigest()
 
