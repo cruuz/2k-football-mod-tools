@@ -14,9 +14,10 @@ SCOREBUG_HELP = (
 SCOREBUG_RUNTIME_HELP = (
     "Reported game freeze: andrethealchemist says the game freezes after Berman "
     "when this option is selected: 'Unselecting that option fixed the issue for me.' "
-    "Leave this off for normal play. Diagnostic only; off in every preset. "
-    "Adds team gradients, logos, live timeout marks, resized text, a white "
-    "possession marker and three-digit scores to the experimental scorebar. "
+    "Leave this off for normal play. Retail: the game keeps its own scorebar effects. "
+    "Patch (diagnostic only; off in every preset): adds team gradients, logos, live "
+    "timeout marks, resized text, a white possession marker and three-digit scores "
+    "to the experimental scorebar. "
     "Bounded native checks do not reproduce the player's freeze. "
     "EXPERIMENTAL / UNWITNESSED. Rebuild from the original source for comparisons.")
 PRACTICE_HELP = (

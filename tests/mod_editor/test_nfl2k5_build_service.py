@@ -331,8 +331,8 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
             runner = ReceiptRunner()
             Nfl2k5BuildService(runner=runner).build(fixture.cache, fixture.project, fixture.output)
             self.assertEqual(str(runner._argument(runner.calls[1], "--receipt-sha256")), "b" * 64)
-            self.assertEqual(runner._argument(runner.calls[0], "--compile-cache-root"),
-                             fixture.project.parent / ".nfl2k5-compile-cache")
+            self.assertEqual(Path(runner._argument(runner.calls[0], "--compile-cache-root")).resolve(),
+                             (fixture.project.parent / ".nfl2k5-compile-cache").resolve())
 
     def test_low_space_is_refused_before_staging_or_backend_work(self) -> None:
         with tempfile.TemporaryDirectory(prefix="2k5-build-service-test-") as temporary:
