@@ -45,6 +45,7 @@ _encode = png_codec.encode_rgba_png
 
 class _Asset:
     asset_id = "visual.demo.0001"
+    kind = "p8_texture"
     label = "Demo asset"
     width = 4
     height = 4

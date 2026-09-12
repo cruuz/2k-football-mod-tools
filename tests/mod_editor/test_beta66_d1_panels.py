@@ -87,9 +87,17 @@ class PanelTests(unittest.TestCase):
 
     def test_equipment_default_and_explicit_recolour(self):
         from types import SimpleNamespace
-        cls = wired_module('mod_editor.gui.equipment_texture_import_dialog').EquipmentTextureImportDialog
-        for identifier, own in (('tset:0:9:0:shoes02', True), ('tset:0:4:0:socks01', False)):
-            dialog = cls(SimpleNamespace(asset_id=identifier, label='Synthetic', width=32, height=32))
+        # The beta-66 handoff has shipped and beta 68 adds catalog-backed scope
+        # and own socks. Exercise the live dialog with complete reviewed rows.
+        from mod_editor.gui.equipment_texture_import_dialog import EquipmentTextureImportDialog
+        from mod_editor.core.nfl2k5_uniform_equipment_writer import load_targets
+        targets = load_targets()[0]
+        for identifier, own in (('tset:3613:8:0:shoes01', True),
+                                ('tset:3613:4:0:socks00', True),
+                                ('tset:3613:5:0:elbowpad01', False)):
+            target = targets[identifier]
+            dialog = EquipmentTextureImportDialog(SimpleNamespace(
+                asset_id=identifier, label=target.name, width=target.width, height=target.height))
             self.assertEqual(dialog.independent, own)
             self.assertEqual(dialog.game_size.isEnabled(), own)
             if own:

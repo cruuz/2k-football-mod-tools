@@ -68,6 +68,8 @@ class CompileCache:
                 if len(raw) > MAX_ENTRY_BYTES:
                     raise ValueError("oversized cache entry")
                 envelope = json.loads(raw)
+                if not isinstance(envelope, dict) or not isinstance(envelope.get("payload"), str):
+                    raise ValueError("invalid cache envelope")
                 payload = envelope["payload"].encode("ascii")
                 if envelope["key"] != key or hashlib.sha256(payload).hexdigest() != envelope["sha256"]:
                     raise ValueError("cache digest mismatch")

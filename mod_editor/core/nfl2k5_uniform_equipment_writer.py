@@ -1198,6 +1198,11 @@ def build_unified_uniform_equipment_imports(
         retail = {}
         source_textures = None
         for reference, (target, payload, rgba, _levels) in authored.items():
+            # A portable export hint cannot override a palette-only choice.
+            # Preserving a donor chain can append private indices and change
+            # the descriptor; that requires the explicit own-texture mode.
+            if reference not in independent:
+                continue
             origin = retail_source(payload, rgba)
             # Older exports have only the base PNG. Recognize an exact local
             # retail match, without projecting arbitrary art onto the indices.
