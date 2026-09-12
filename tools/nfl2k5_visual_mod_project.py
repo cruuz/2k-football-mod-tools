@@ -3351,9 +3351,16 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                     if name != "recipe":
                         from PIL import Image
                         import io
-                        with Image.open(io.BytesIO(pin.payload)) as image:
-                            inputs[path]["pixels"] = digest(
-                                struct.pack("<II", *image.size) + image.convert("RGBA").tobytes())
+                        # A payload PIL cannot decode keeps its raw hash only; the
+                        # compile step still refuses it with the project's own
+                        # error (digit=N ...), so a corrupt file never hits a
+                        # cached compile and never hides behind a PIL exception.
+                        try:
+                            with Image.open(io.BytesIO(pin.payload)) as image:
+                                inputs[path]["pixels"] = digest(
+                                    struct.pack("<II", *image.size) + image.convert("RGBA").tobytes())
+                        except Exception:  # noqa: BLE001 - decode failures are reported downstream
+                            inputs[path]["pixels"] = None
         return digest(canonical_json({**cache_context, "order": order,
             "edits": [project.value["edits"][n] for n in dependencies], "inputs": inputs}))
     cached_handled = set()
