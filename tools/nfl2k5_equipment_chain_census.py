@@ -21,7 +21,7 @@ from nfl_txtr import decode_chunk, parse_chunks
 def census(index: Path) -> dict:
     archive = parse_archive(index)
     _by_id, groups = writer.load_targets()
-    outers = sorted({outer for outer, chunk in groups if chunk in (6, 8, 9)})
+    outers = sorted({outer for outer, chunk in groups if chunk in (4, 6, 8, 9)})
     pins, layouts = [], Counter()
     for outer in outers:
         entry = archive.entries[outer]
@@ -29,7 +29,7 @@ def census(index: Path) -> dict:
             raise ValueError("Equipment package exceeds the bounded read size")
         package = read_entry_bytes(archive, entry)
         for chunk in parse_chunks(package, allow_trailing=True):
-            if chunk.index not in (6, 8, 9):
+            if chunk.index not in (4, 6, 8, 9):
                 continue
             if chunk.output_size > writer.MAX_DECODED_BYTES:
                 raise ValueError("Equipment decoded allocation exceeds the bounded read size")
