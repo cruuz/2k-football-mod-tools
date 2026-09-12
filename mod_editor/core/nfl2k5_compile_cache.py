@@ -74,7 +74,11 @@ class CompileCache:
                 if envelope["key"] != key or hashlib.sha256(payload).hexdigest() != envelope["sha256"]:
                     raise ValueError("cache digest mismatch")
                 result = _decode(json.loads(payload))
-                os.utime(path, None, follow_symlinks=False)
+                if os.utime in os.supports_follow_symlinks:
+                    os.utime(path, None, follow_symlinks=False)
+                elif not os.path.islink(path):
+                    # Windows: os.utime cannot skip symlinks; touch only a real file
+                    os.utime(path, None)
                 self.hits += 1
                 return result
         except (OSError, ValueError, KeyError, TypeError, RecursionError):
