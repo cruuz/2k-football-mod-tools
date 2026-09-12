@@ -141,6 +141,36 @@ def _actions(*values: ApfProductAction) -> frozenset[ApfProductAction]:
 # with safe research backends but no desktop handler are intentionally absent.
 CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
 **{
+    "apf2k8.playbooks." + feature: CapabilityActionBinding(
+        "apf2k8.playbooks." + feature,
+        "playbooks.cpu_playcalling",
+        _actions(ApfProductAction.PREVIEW, ApfProductAction.REPLACE,
+                 ApfProductAction.REVERT, ApfProductAction.BUILD_COPY),
+        replace_method="stage_playcalling",
+        revert_method="revert",
+        product_note=(
+            "CPU Play Calling reviews named team books and stages an authored "
+            "recipe with Undo, Save Project and copied-game Build. The tab "
+            "predicts calls in a worker. Gameplay UNWITNESSED."
+        ),
+    )
+    for feature in ("cpu_playcalling", "own_team_books", "master_personnel")
+},
+"apf2k8.playbooks.personnel_curve_patch": CapabilityActionBinding(
+    "apf2k8.playbooks.personnel_curve_patch",
+    "playbooks.personnel_curves",
+    _actions(ApfProductAction.PREVIEW, ApfProductAction.EXPORT,
+             ApfProductAction.BUILD_COPY),
+    one_shot_target="mod_editor.apf_studio.playcalling_patches:prepare",
+    output_kind="authored-xenia-patch-toml",
+    product_note=(
+        "Experimental personnel curves prepare a canonical patch for the "
+        "selected game version. The tab obtains consent before installation "
+        "and enabling Xenia patches, and offers status and removal. "
+        "Changes every book; gameplay UNWITNESSED."
+    ),
+),
+**{
     "apf2k8.cpu_ai_draft.play_design." + feature: CapabilityActionBinding(
         "apf2k8.cpu_ai_draft.play_design." + feature,
         "playbook.play_designer",
@@ -1031,3 +1061,4 @@ class BuildReceipt:
     changed_outer_entries: tuple[int, ...]
     output_0a_sha256: str
     source_unchanged: bool
+    teams_now_own_books: tuple[str, ...] = ()

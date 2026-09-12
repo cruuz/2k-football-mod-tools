@@ -195,7 +195,7 @@ from .playbook_route_qt import PlayAssignmentRoutePanel
 from .playbook_membership_qt import ApfPlaybookMembershipPanel
 from .play_designer_qt import PlayDesignerPanel
 from .book_identity_qt import BookIdentityPanel
-from .playbook_playcall_qt import ApfPlaycallPanel
+from .playcalling_editor_qt import ApfPlayCallingEditor as ApfPlaycallPanel
 from .coverage_qt import CoverageGeometryPanel
 from .ps3_texture_bundle_qt import import_button as ps3_import_button
 from .playbook_package_map_qt import ApfPackageMapPanel
@@ -19494,7 +19494,9 @@ class InspectorCategoryPage(QWidget):
             target = self.workspace_tabs.indexOf(self.coverage_geometry)
         elif normalized in {"book-identity", "book-clones", "scheme-presets"} and self.category is ApfCategory.PLAYBOOKS:
             target = self.workspace_tabs.indexOf(self.book_identity)
-        elif normalized in {"cpu-audibles", "cpu-playcall", "te-bias"} and self.category is ApfCategory.PLAYBOOKS:
+        elif normalized in {"cpu-audibles", "cpu-playcall", "cpu-playcalling", "te-bias",
+                            "own-team-books", "master-personnel", "personnel-curves"} \
+                and self.category is ApfCategory.PLAYBOOKS:
             target = self.workspace_tabs.indexOf(self.playbook_playcall)
         elif normalized == "soundtrack" and self.category is ApfCategory.AUDIO:
             target = 0
@@ -21830,13 +21832,19 @@ class ApfStudioMainWindow(QMainWindow):
     def _build_complete(self, receipt: object) -> None:
         output = Path(receipt.output_game)  # type: ignore[attr-defined]
         detail = self._build_edit_detail(receipt)
-        self._last_detail = f"Build complete: {output.name}. {detail}"
+        owners = tuple(getattr(receipt, "teams_now_own_books", ()))
+        ownership = (
+            "Teams now owning a book: " + ", ".join(owners) + ". "
+            if owners else ""
+        )
+        self._last_detail = f"Build complete: {output.name}. {ownership}{detail}"
         self._update_product_state()
         QMessageBox.information(
             self,
             "Modded game folder built",
             f"Wrote:\n{output}\n\n"
-            f"{detail} The complete output was verified and your source stayed untouched.\n\n"
+            f"{ownership}{detail} The complete output was verified and your source stayed untouched.\n\n"
+            "CPU Play Calling changes are recorded in book-content-receipt.json. Gameplay remains UNWITNESSED.\n\n"
             "Point Xenia at this folder. Rebuild into the same folder to keep that path.\n\n"
             "This folder contains your retail game data. Do not redistribute it; share the .apf2k8mod project instead.",
         )

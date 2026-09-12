@@ -54,7 +54,7 @@ from mod_editor.core.apf2k8_splb_writer import (
 )
 from mod_editor.core.errors import ValidationError
 from . import play_design_service as play_design
-from . import coverage_service, scheme_service, field_material_service
+from . import coverage_service, scheme_service, field_material_service, playcalling_service
 from mod_editor.core import apf2k8_coverage_tuning as coverage
 
 from .asset_io import ApfAssetIO, AssetIoError, AudioPreviewCancelled
@@ -3485,8 +3485,8 @@ class ApfSession:
                             f"{modification.asset_id}"
                         )
                     suffix = ".json"
-                elif modification.kind in {coverage.PROVIDER_KIND, scheme_service.PROVIDER_KIND, field_material_service.PROVIDER_KIND}:
-                    service = {coverage.PROVIDER_KIND: coverage_service, scheme_service.PROVIDER_KIND: scheme_service, field_material_service.PROVIDER_KIND: field_material_service}[modification.kind]
+                elif modification.kind in {coverage.PROVIDER_KIND, scheme_service.PROVIDER_KIND, field_material_service.PROVIDER_KIND, playcalling_service.PROVIDER_KIND}:
+                    service = {coverage.PROVIDER_KIND: coverage_service, scheme_service.PROVIDER_KIND: scheme_service, field_material_service.PROVIDER_KIND: field_material_service, playcalling_service.PROVIDER_KIND: playcalling_service}[modification.kind]
                     try:
                         data = modification.replacement_path.read_bytes()
                         service.validate_payload(data, modification.asset_id, dict(modification.metadata))
