@@ -797,8 +797,10 @@ class BuildPanel(QWidget):
         self.scorebug_folder_button.clicked.connect(self._choose_scorebug_folder)
         scorebar_row.addWidget(self.scorebug_folder_button)
         pl.addLayout(scorebar_row)
-        self.scorebug_runtime_check = self._option(pl, "scorebug_runtime", 'Scorebug effects (diagnostic only)',
-            r62_ui.SCOREBUG_RUNTIME_HELP, needs_image=True, badge=NOT_TESTED)
+        self.scorebug_runtime_check = self._option(
+            pl, "scorebug_runtime", "Scorebug effects (reported Berman freeze)",
+            r62_ui.SCOREBUG_RUNTIME_HELP, needs_image=True, badge=NOT_TESTED,
+            details=r62_ui.SCOREBUG_RUNTIME_HELP)
         self.music_policy_check = self._option(pl, "music_policy", "Use jukebox songs in menus", "Retail: menus use the menu bank. Patch: menus use the 59 jukebox recordings in the game's random order. The 7 menu tracks are not included yet. Twelve jukebox tracks are spoken outtakes.", badge=NOT_TESTED)
         self.music_unlock_check = self._option(pl, "music_unlock", "Make every music collection available",
             "Every collection is available without spending credits. Experimental, not yet tested in game.", badge=NOT_TESTED)
