@@ -123,6 +123,12 @@ class NativePlaycallTests(unittest.TestCase):
             self.assertGreater(dict(weights)[0], 0)
             self.assertGreater(dict(weights)[1], 0)
         print('PROVED compiled/normalized heavy GL candidates:', weights, flush=True)
+        stock_category, _ = category_candidates(self.machine(767), 0)
+        self.assertEqual(stock_category, 2)
+        native_category, native_weights = category_candidates(self.machine(1411), 0)
+        self.assertEqual(native_category, 1)
+        self.assertAlmostEqual(dict(native_weights)[0], 0.91, places=6)
+        self.assertAlmostEqual(dict(native_weights)[1], 0.91, places=6)
 
     def test_whole_offensive_call_selects_added_heavy_without_fetch_or_ladder(self):
         m = self.machine(self.added, run_share=0, fraction=0.5)
@@ -135,6 +141,7 @@ class NativePlaycallTests(unittest.TestCase):
         self.assertIn(m.va(0x8486B2D0), m.visited)
         self.assertNotIn(m.va(0x848699D8), m.visited)
         self.assertNotIn(m.va(0x84860730), m.visited)
+        self.assertNotIn(m.va(0x84A8AA80), m.visited)
         print('PROVED complete GL call:', (category - MASTER - 0x44) // 16,
               (formation - MASTER - 0x244) // 184, (play - MASTER - 0x80C4) // 100, flush=True)
 
@@ -165,6 +172,22 @@ class NativePlaycallTests(unittest.TestCase):
             self.assertEqual(got, expected)
             observed.append(got)
         self.assertEqual(observed[8:11], [6, 6, 6])
+
+    def test_third_down_full_call_tuples_and_te_counts(self):
+        expected = {
+            130: ((1, 27, 42), (6, 14, 114), (6, 14, 114)),
+            767: ((2, 91, 78), (8, 92, 78), (8, 92, 78)),
+            1411: ((3, 119, 114), (7, 133, 216), (7, 133, 216)),
+        }
+        for outer, triples in expected.items():
+            for yards, triple in zip((3, 8, 15), triples):
+                m = self.machine(outer, down=3, yards=yards, goal_yards=50, run_share=0)
+                m.call(0x8486CE88, MANAGER, OUTPUT, stop=0x8486D0CC, bound=2000000)
+                actual = tuple((m.get(OUTPUT + d) - MASTER - offset) // stride
+                               for d, offset, stride in ((0, 0x44, 16), (4, 0x244, 184), (12, 0x80C4, 100)))
+                self.assertEqual(actual, triple)
+                self.assertNotIn(0x84860730, m.visited)
+        print('PROVED third-down category/formation/play tuples:', expected, flush=True)
 
     def test_removed_record_hides_suffix_then_normalizer_compacts_it(self):
         body = bytearray(self.books[767].body)
@@ -206,6 +229,21 @@ class NativePlaycallTests(unittest.TestCase):
                 self.assertEqual(m.get(OUTPUT + 4), 0)
                 self.assertEqual(m.get(OUTPUT + 12), 0)
                 self.assertIn(m.va(0x848699D8), m.visited)
+                m.normalize()
+                m.call(m.va(0x8486CE88), MANAGER, OUTPUT, stop=m.va(0x8486D0CC), bound=2000000)
+                self.assertEqual((m.get(OUTPUT + 4), m.get(OUTPUT + 12)), (0, 0))
+
+    def test_user_global_and_cpu_labels_take_common_filename_branch(self):
+        for name in ('O-ManBlock', 'USER-o', 'global-o'):
+            m = self.machine()
+            m.cpu.mem_write(0x3B0000, name.encode('utf-16-be') + bytes(2))
+            m.put(0x3A0004, 0x3B0000)
+            m.setreg(30, 0x3A0000)
+            # Enter with the already resolved label; stop at formatter inputs.
+            m.call(0x849D6270, stop=0x849D64B8)
+            self.assertEqual(m.reg(11), 0x3B0000)
+            self.assertEqual(m.reg(5), 0x845F1764)  # {0}-spb.iff
+            self.assertIn(0x849D6490, m.visited)
 
     def test_dispatch_tables_are_family_and_match_phase_switches(self):
         expected13 = [0x8486C9DC] * 4 + [0x8486CAC4] * 4 + [0x8486C9BC, 0x8486CAC4, 0x8486C9B4, 0x8486CAC4, 0x8486CA70]
@@ -263,6 +301,9 @@ class NativePlaycallTests(unittest.TestCase):
             target = pointer + struct.unpack_from('>i', roster, pointer)[0] - 1
             self.assertEqual((target - tendency.offset) % tendency.stride, 0)
             self.assertTrue(tendency.offset <= target < tendency.offset + tendency.count * tendency.stride)
+        self.assertTrue(all(not any(roster[tendency.offset + i * 180 + 0x8E:
+                                                 tendency.offset + i * 180 + 0xA4])
+                            for i in range(tendency.count)))
         m = self.machine(goal_yards=50)
         source = bytearray(roster[tendency.offset:tendency.offset + tendency.stride])
         m.put(TEAM, 0x3A0000)
@@ -284,6 +325,22 @@ class NativePlaycallTests(unittest.TestCase):
         self.assertEqual(adjusted[1:], [0.0, 0.0])
         print('PROVED slider 0.5 adjusted on neutral third downs:', adjusted, flush=True)
 
+        # Run the real tendency preparation through its Bernoulli choice.
+        # These retail records have zero explicit row arrays, so the optional
+        # category/formation cache remains invalid, but its run/pass draw lives.
+        for slider, expected in ((0, 0.0), (50, 1.0), (100, 1.0)):
+            m.configure(down=1, yards=10, goal_yards=50)
+            source[0x5A] = slider
+            m.cpu.mem_write(0x3B0000, bytes(source))
+            m.call(0x8492A440, 0x3A0000, 0x3B0000)
+            intermediate = []
+            m.observers[0x84929B28] = lambda z: intermediate.append(z.fpr(1))
+            m.call(0x84929A48, bound=500000)
+            m.call(0x8492A2A8)
+            self.assertEqual(intermediate, [slider / 100])
+            self.assertEqual(m.fpr(1), expected)
+            self.assertFalse(m.get(0x8519A71C) & 0x80000000)
+
     def test_x_rating_is_independent_of_y_audible_slot(self):
         m = self.machine(767)
         record = self.books[767].records[0]
@@ -299,7 +356,16 @@ class NativePlaycallTests(unittest.TestCase):
         for category, row in enumerate(splb.PERSONNEL_ROWS):
             self.assertEqual(self.runtime_master[0x44 + category * 16 + 4] & 63, row)
         roles = lambda c: [b & 31 for b in self.runtime_master[0x49 + c * 16:0x54 + c * 16]]
-        self.assertEqual([roles(c).count(8) for c in (0, 1, 2, 3, 6, 7, 8, 9)], [3, 2, 2, 1, 0, 1, 0, 0])
+        self.assertEqual([roles(c).count(8) for c in (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 26)], [3, 2, 2, 1, 2, 1, 0, 1, 0, 0, 2])
+        expected = {130: (0, 1, 3, 6, 26), 259: (0, 1, 3, 6, 26),
+                    369: (0, 1, 2, 8), 767: (2, 5, 8), 891: (0, 1, 3, 6, 26),
+                    943: (0, 2, 3, 5, 8), 1411: (0, 1, 2, 3, 5, 6, 7, 8, 9),
+                    1037: (0, 1, 2, 3, 5, 6, 7, 8), 1439: (1, 7, 15, 17, 19, 20)}
+        self.assertEqual({o: splb.book_category_rows(self.books[o].body) for o in OFFENSE}, expected)
+        global_forms = [r.formation_index for r in self.books[1439].records if r.populated]
+        self.assertEqual(global_forms, list(range(151, 158)))
+        self.assertEqual([struct.unpack_from('>I', self.runtime_master, 0x244 + i * 184 + 8)[0] & 1
+                          for i in global_forms], [1, 1, 0, 0, 0, 0, 1])
 
     def test_four_retries_keep_the_formation_and_do_not_advance_a_row(self):
         m = self.machine(self.added, run_share=0)
@@ -328,6 +394,37 @@ class NativePlaycallTests(unittest.TestCase):
         for yards, expected in ((3, 4), (8, 10), (15, 10)):
             m.configure(down=3, yards=yards, goal_yards=50)
             self.assertEqual(m.call(m.va(0x84867600)), expected)
+
+    def test_complete_static_difference_receipt(self):
+        if self.tu is None:
+            self.skipTest('Owned TU absent; two-image disassembly requires both images')
+        import json
+        from tools.apf_playcall_research_evidence import evidence
+        path = Path(__file__).resolve().parents[2] / 'docs/research/apf_playcall_b67_evidence.json'
+        self.assertEqual(evidence(self.base, self.tu), json.loads(path.read_text()))
+        # The family-zero cutoff uses another literal pool cell, same value.
+        self.assertEqual(self.base[0xB4544:0xB4548], self.tu[0x17DB8:0x17DBC])
+
+    def test_tu_prefers_valid_primary_category_in_nearby_resolver(self):
+        for updated, pc, expected in ((False, 0x84864AB8, 2), (True, 0x84865758, 5)):
+            m = self.machine(767, updated=updated)
+            result = m.call(pc, BOOK, MASTER + 0x244 + 72 * 184)
+            self.assertEqual(result, MASTER + 0x44 + expected * 16)
+        for updated, pc, stop, expected in ((False, 0x84867938, 0x84867A3C, 2),
+                                            (True, 0x84868608, 0x8486873C, 5)):
+            m = self.machine(767, updated=updated)
+            record = next(r for r in self.books[767].records if r.populated and r.formation_index == 72)
+            play = MASTER + 0x80C4 + record.entries[0].play_index * 100
+            m.call(pc, MANAGER, 0, MASTER + 0x244 + 72 * 184, play, play, 0, stop=stop)
+            self.assertEqual(m.reg(31), MASTER + 0x44 + expected * 16)
+
+    def test_audible_y_lookup_is_separate_from_initial_x_weight(self):
+        m = self.machine(767)
+        record = self.books[767].records[0]
+        formation = MASTER + 0x244 + record.formation_index * 184
+        for slot in range(4):
+            expected = next(e.play_index for e in record.entries if e.y == slot)
+            self.assertEqual(m.call(0x84A8AA80, BOOK, formation, slot), MASTER + 0x80C4 + expected * 100)
 
 
 if __name__ == '__main__':
