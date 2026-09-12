@@ -128,6 +128,7 @@ class ApfPlayCallingEditor(QWidget):
         team_root.addLayout(row)
         self.plan_table = table(("Team", "Label", "Donor", "Clone name"), "Own-book plan to review before staging")
         self.plan_table.setMaximumHeight(260)
+        self.plan_table.setVisible(False)
         team_root.addWidget(self.plan_table)
         root.addWidget(self.team_controls)
 
@@ -337,6 +338,7 @@ class ApfPlayCallingEditor(QWidget):
         self._custom_timer.stop()
         self.grid.setRowCount(0)
         self.plan_table.setRowCount(0)
+        self.plan_table.setVisible(False)
         self.coverage_table.setRowCount(0)
         self._enable()
         if getattr(self.facade, "source_ready", False):
@@ -346,6 +348,7 @@ class ApfPlayCallingEditor(QWidget):
         if not self._updating:
             self._review = None
             self.plan_table.setRowCount(0)
+            self.plan_table.setVisible(False)
             self.refresh()
 
     def _custom_changed(self, *_):
@@ -512,6 +515,7 @@ class ApfPlayCallingEditor(QWidget):
         donor = None if every else self.donor_picker.currentText()
         def done(request):
             fill(self.plan_table, [(r["team_name"], r["label_id"], r["donor_name"], r["clone_name"]) for r in request["assignments"]])
+            self.plan_table.setVisible(True)
             self.review_request(request, True)
         self._task("Plan independent team books", lambda p: self.facade.playcalling_plan(side, team, donor, p), done)
 

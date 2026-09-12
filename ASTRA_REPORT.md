@@ -136,3 +136,63 @@ remaining absent, 5-2 in ordinary defense after the experimental MASTER edit,
 team tendency differences, retained audibles, and both Xenia experiments with
 status matching the selected launch config. Record those separately from the
 bounded offline tests.
+
+## Final standalone regression results
+
+Implementation commit: `8ff0e514`. Before that explicit-path commit,
+`python3 packaging/repin.py --apply` was the last command and reported
+`applied 0 pin update(s)`.
+
+Final coverage: **152 of 153 standalone modules passed**, with **1570 tests reported (27 skipped)** across the final attempts. The sole non-green module is the pre-existing installer closure blocker described above (16 tests, 3 missing-file errors). No timeout remained. All four new modules pass, totaling 19 tests.
+
+The complete list of exact commands and final unittest output summaries is in
+[the test receipt](reports/apf_b67_p4_test_receipt.json). The initial broad run
+used `python3 -m tests.mod_editor.<module>` in independent processes. Four
+older suites import siblings as top-level modules and were rerun successfully
+with their supported direct-script invocation:
+
+```sh
+python3 tests/mod_editor/test_apf_pass_fetch_export_qt.py
+python3 tests/mod_editor/test_apf_play_designer_project.py
+python3 tests/mod_editor/test_apf_play_designer_qt.py
+python3 tests/mod_editor/test_apf_team_crest_selection.py
+```
+
+Their final outputs are respectively `Ran 7 tests ... OK`, `Ran 5 tests ...
+OK`, `Ran 5 tests ... OK`, and `Ran 9 tests ... OK`. The existing ROST build
+fixture exposed a P4 regression while remapping receipt indices; normal
+builds now keep their ordinal mapping without requiring a `table_index`
+attribute on that old synthetic fixture. Its complete 18-test suite and both
+raw-span/overlaid-audio build suites were rerun and pass. The three-test P2
+Xenia installer suite was also rerun and passes.
+
+Final P4 outputs: facade 7 tests OK; Qt 8 tests OK; build 2 tests OK; patches
+2 tests OK. The final replay again passed six steps in 11 QThread workers.
+An offscreen 1280×900 synthetic render was visually inspected; the empty
+own-book plan table is now hidden until there is a plan to review, and the
+MASTER controls are collapsed until their experimental group is opened.
+The Qt suite and worker replay were rerun after that layout adjustment.
+
+The proposed registry merge passes structural validation in memory and P4's
+new-file/command closure checks. Full canonical file checking still fails
+on the missing pre-existing audio research document; that is not described
+as a passing release gate. `git diff --check` passes.
+
+## Delivery
+
+The implementation is committed on the requested branch as `8ff0e514`. A
+subsequent attempt to stage the final layout/report/test receipt failed with
+`index.lock: Read-only file system` in the shared Git metadata. The authorized
+fallback is `astra-b67-p4-studio.bundle`, containing the implementation and
+final verification commits above prerequisite `653cb708`. Only temporary Git
+metadata was used for that final commit; the working files stay in this
+worktree and no other checkout was edited. The final commit also runs
+`python3 packaging/repin.py --apply` immediately beforehand.
+
+Import the complete branch with:
+
+```sh
+git fetch /path/to/astra-b67-p4-studio.bundle astra/b67-p4-studio
+```
+
+`FETCH_HEAD` is the complete delivery. The bundle is verified before handoff.
