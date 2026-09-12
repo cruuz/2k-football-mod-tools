@@ -20,20 +20,35 @@ from .models import Modification
 PROVIDER_KIND = "apf_playcalling"
 SCHEMA = "apf_playcalling/v1"
 SELECTOR = "apf:playbooks:cpu-playcalling"
-# Integration must change this only on the evidence in P3's caller report.
+# P3's pinned aligned-word scan found exactly two direct callsites of the lineup
+# resolver, both inside a routine that supplies both team managers, and no direct
+# caller of that routine: "This cannot support a human-only classification or a CPU
+# exclusion claim. Keep the 66.1 refusal." See docs/research/apf_b67_static_audit.json.
+# Change this only on new caller evidence, never as a user-facing toggle.
 LINEUP_CALLERS = "unclassified"
+# P3's corrected semantics, from docs/mod_editor/apf_b67_play_calling.md.
 RATING_EXPLANATION = (
-    "Higher rating makes the game pick this formation more often in this kind of "
-    "situation: the first for short yardage, the second for medium, the third for long."
+    "The raw formation numbers are not a conventional higher is better scale: a lower "
+    "number makes the game weigh this formation more. The three fields are the short, "
+    "medium and long yardage settings, and the situation interpolates between them."
 )
 RATING_MAPPING = (
-    "The game blends short to medium to long across 0–20 yards on first and second "
-    "down, 2–7 on third down, and 2–5 on fourth down; urgency can use an end rating."
+    "For equal ratings the game weighs 0/0/0 as category 3 and formation 0.5; 1/1/1 as 2 "
+    "and 2; 2/2/2 as 1 and 1; 3/3/3 as 0.5 and 0.5; and 4/4/4 through 7/7/7 as 0.1 and "
+    "0.1, before distance and cubing. Urgency changes that calculation. A zero rating "
+    "does not disable a formation; remove it to exclude it from this book. A category "
+    "averages its formations' weights before the category lottery, so edit every record "
+    "of that personnel when changing its category weight."
 )
+# Authored experiment values, not a native witness. P3's core accepts exactly five
+# offensive weights and three defensive ones, starting at one and never increasing.
+# Retail is (1, 1, 0.85, 0.5, 0.05) on offense and (1, 0.01, 0) on defense, so each
+# preset weighs personnel farther from the request less than the game does.
 CURVE_PRESETS = {
-    "offense": (1.0, 0.35, 0.10, 0.02, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
-    "defense": (1.0, 0.35, 0.10, 0.02, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+    "offense": (1.0, 0.35, 0.10, 0.02, 0.0),
+    "defense": (1.0, 0.002, 0.0),
 }
+RETAIL_CURVES = {"offense": (1.0, 1.0, 0.85, 0.5, 0.05), "defense": (1.0, 0.01, 0.0)}
 
 
 def digest(data):
@@ -104,7 +119,8 @@ def validate_request(request):
         raise ValidationError("Unknown CPU Play Calling control or fields")
     if "book" in request and (not isinstance(request["book"], str) or not 1 <= len(request["book"]) <= 27):
         raise ValidationError("Choose a named book")
-    for key, high in (("formation", 255), ("play", 1022), ("category", 27), ("primary", 27), ("team", 39), ("row", 63)):
+    # "row" stops at 27 because apf2k8_master_writer.set_category_row refuses more.
+    for key, high in (("formation", 255), ("play", 1022), ("category", 27), ("primary", 27), ("team", 39), ("row", 27)):
         if key in request:
             _integer(request[key], 0, high)
     if kind in {"ratings", "master_roles", "categories"}:
@@ -290,7 +306,9 @@ class PlayCallingService:
                     raise ValidationError("This clone name already exists")
                 state.books[row["clone_name"]] = b.clone.clone_body(state.books[row["donor_name"]], row["clone_name"])
                 state.sides[row["clone_name"]] = side
-            requests = tuple(b.clone.CloneRequest(r["label_id"], r["team_index"], r["donor_name"])
+            # The fourth field is P3's clone name; without it the writer falls back to
+            # the label's own name and the reviewed table stops matching the archive.
+            requests = tuple(b.clone.CloneRequest(r["label_id"], r["team_index"], r["donor_name"], r["clone_name"])
                              for r in request["assignments"])
             state.rost = b.clone.bind_roster(state.rost, requests)[0]
             assignments = {r["team_index"]: r["clone_name"] for r in request["assignments"]}

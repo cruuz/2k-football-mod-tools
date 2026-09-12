@@ -94,6 +94,20 @@ class CapabilityActionParityTests(unittest.TestCase):
                         self.assertIn(ApfProductAction.EXPORT, binding.actions)
                         self.assertIsNone(binding.replace_method)
                         self.assertIn("UNWITNESSED", importlib.import_module(module_name).status().upper())
+                    elif capability_id == "apf2k8.playbooks.personnel_curve_patch":
+                        # The beta 67 curve preset is the second authored-emulator
+                        # export: a canonical TOML for a pinned image, never a game.
+                        self.assertEqual(binding.output_kind, "authored-xenia-patch-toml")
+                        self.assertEqual(binding.one_shot_target,
+                                         "mod_editor.apf_studio.playcalling_patches:prepare")
+                        self.assertIn(ApfProductAction.EXPORT, binding.actions)
+                        self.assertIsNone(binding.replace_method)
+                        curves = importlib.import_module(
+                            "mod_editor.core.apf2k8_playcall_curves_patch"
+                        )
+                        self.assertEqual(curves.CLASSIFICATION, "EXPERIMENTAL")
+                        self.assertFalse(curves.DEFAULT_ENABLED)
+                        self.assertIn("UNWITNESSED", curves.DESCRIPTION.upper())
                     else:
                         self.assertIn("copied", binding.output_kind)
                 else:

@@ -198,7 +198,13 @@ class FacadeTests(FacadeFixture):
         root = Path(__file__).resolve().parents[2]
         rows = json.loads((root / "docs/mod_editor/apf_b67_playcalling_capabilities.json").read_text())
         document = json.loads((root / "mod_editor/capabilities/registry.v1.json").read_text())
-        document["capabilities"] = sorted(document["capabilities"] + rows, key=lambda r: r["id"])
+        # The JSON file is a merge input: a row replaces the canonical row of the same
+        # id rather than joining it, which is how the integration merged these four.
+        merged = {row["id"]: row for row in document["capabilities"]}
+        for row in rows:
+            self.assertIn(row["id"], merged, "each proposed row must be merged into the registry")
+            merged[row["id"]] = {**row, "evidence": sorted(set(merged[row["id"]]["evidence"]) | set(row["evidence"]))}
+        document["capabilities"] = sorted(merged.values(), key=lambda r: r["id"])
         registry.validate_data(document, check_files=False)
         for row in rows:
             self.assertTrue(row["validation_command"].startswith("python3 -m tests.mod_editor.test_apf_playcalling_editor_"))

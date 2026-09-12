@@ -37,6 +37,32 @@ class PatchTests(FacadeFixture):
             self.assertEqual(unrelated.read_bytes(), b"leave alone")
             self.assertTrue(tomllib.loads(config.read_text())["Memory"]["apply_patches"])
 
+    def test_presets_match_the_real_core_curve_shapes(self):
+        # No retail bytes: build_curve_patch only needs the pinned profile records.
+        from mod_editor.apf_studio import playcalling_patches, playcalling_service as service
+        from mod_editor.core import apf2k8_playcall_curves_patch as curves
+        self.assertEqual(len(service.CURVE_PRESETS["offense"]), 5)
+        self.assertEqual(len(service.CURVE_PRESETS["defense"]), 3)
+        for side, retail in service.RETAIL_CURVES.items():
+            values = service.CURVE_PRESETS[side]
+            self.assertEqual(len(values), len(retail))
+            self.assertEqual(values[0], 1.0)
+            for near, far in zip(values, values[1:]):
+                self.assertGreaterEqual(near, far)
+            for preset, stock in zip(values[1:], retail[1:]):
+                self.assertLessEqual(preset, stock)
+        for profile in ("base", "tu1"):
+            for side in ("offense", "defense"):
+                payload = playcalling_patches.prepare(profile, side, curves=curves)
+                document = tomllib.loads(payload.decode())
+                self.assertEqual(len(document["patch"][0]["be32"]),
+                                 len(service.CURVE_PRESETS[side]))
+                self.assertTrue(document["patch"][0]["is_enabled"])
+                image, enabled = curves.canonical_curve_payload(payload)
+                self.assertTrue(enabled)
+                self.assertEqual(image.name, "base" if profile == "base" else "tu_1_1")
+                playcalling_patches.validate(payload, curves=curves)
+
     def test_tampered_curve_and_target_change_refuse_without_writing(self):
         prepared = self.facade.prepare_playcalling_curve("base", "offense")
         broken = dict(prepared, payload=prepared["payload"].replace(b"value = 0", b"value = 1"))

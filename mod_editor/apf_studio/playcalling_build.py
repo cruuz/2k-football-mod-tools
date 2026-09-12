@@ -52,7 +52,8 @@ def finalize(index, modification, progress=lambda *_: None, *, backend=None):
     clone_receipt = None
     if assignments:
         progress("Inserting all team books in one archive pass", 0, len(assignments))
-        requests = tuple(engine.backend.clone.CloneRequest(r["label_id"], r["team_index"], r["donor_name"])
+        requests = tuple(engine.backend.clone.CloneRequest(r["label_id"], r["team_index"],
+                                                           r["donor_name"], r["clone_name"])
                          for r in assignments)
         plan = engine.backend.clone.compile_unlock(index, requests)
         if {c.name for c in plan.clones} != {r["clone_name"] for r in assignments}:

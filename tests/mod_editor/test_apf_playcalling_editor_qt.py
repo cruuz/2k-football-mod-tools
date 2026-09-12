@@ -123,6 +123,32 @@ class QtTests(FacadeFixture):
             self.assertIn("every book", consent.call_args.args[2])
             install.assert_not_called()
 
+    def test_rating_wording_matches_the_measured_direction(self):
+        from mod_editor.apf_studio import playcalling_service as service
+        sentences = [service.RATING_EXPLANATION, service.RATING_MAPPING] + [
+            slider.accessibleDescription() for slider in self.panel.ratings
+        ]
+        for sentence in sentences:
+            self.assertNotIn("higher rating", sentence.casefold())
+            self.assertNotIn("a higher short", sentence.casefold())
+        self.assertIn("lower", service.RATING_EXPLANATION.casefold())
+        self.assertIn("0/0/0", service.RATING_MAPPING)
+        self.assertIn("0.1", service.RATING_MAPPING)
+        for slider in self.panel.ratings:
+            self.assertIn("lower", slider.accessibleDescription().casefold())
+        self.assertIn("0 is called most", self.panel.play_rating.accessibleDescription())
+        self.assertEqual(self.panel.master_row.maximum(), 27)
+
+    def test_a_failing_contract_call_shows_a_message_instead_of_crashing(self):
+        def broken(*_args, **_kwargs):
+            raise TypeError("synthetic contract mismatch")
+        with patch.object(self.facade, "playcalling_context", broken):
+            self.panel.refresh()
+        self.assertIn("synthetic contract mismatch", self.panel.notice.text())
+        with patch.object(self.facade, "playcalling_predict", lambda *a, **k: "not a distribution"):
+            self.panel.refresh()
+        self.assertIn("could not show", self.panel.notice.text())
+
     def test_stale_worker_result_cannot_replace_new_selection(self):
         queued = []
         self.panel.run_task = lambda *args: queued.append(args)

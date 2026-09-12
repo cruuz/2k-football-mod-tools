@@ -57,7 +57,7 @@ accessible description, with the main rules printed beside the controls.
 
 | Control | What the game does with it |
 |---|---|
-| Short, medium and long ratings, 0–7 | Higher rating makes the game pick this formation more often in this kind of situation: the first for short yardage, the second for medium, the third for long. |
+| Short, medium and long ratings, 0–7 | A **lower** raw number makes the game weigh this formation more: the first field for short yardage, the second for medium, the third for long. 0 is the strongest setting and 4 through 7 all share the weakest. |
 | Stage formation ratings | Uses those three ratings for this formation in the built book. |
 | Play X rating, 0–7 | Weighs lower X ratings more heavily; **0 = called most**. |
 | Stage play rating | Uses that X rating for this play in this formation. |
@@ -70,17 +70,27 @@ accessible description, with the main rules printed beside the controls.
 | Stage team run/pass tendency | Saves that starting run share for this team in the built roster. |
 | Stage balanced CPU audibles | Uses existing run and pass plays for the formation's audible slots; formations lacking either kind cannot be balanced. |
 
-The displayed rating mapping blends short to medium to long across 0–20 yards
-on first and second down, 2–7 on third down, and 2–5 on fourth down. Urgency can
-use an end rating. This wording comes from the merged P1 report; the P3
-integration must reconcile it with P3's final mapping before release.
+The raw formation numbers are **not** a conventional “higher is better” scale.
+For equal ratings the game weighs 0/0/0 as category 3 and formation 0.5, 1/1/1 as
+2 and 2, 2/2/2 as 1 and 1, 3/3/3 as 0.5 and 0.5, and 4/4/4 through 7/7/7 as 0.1 and
+0.1, before distance and cubing. The situation interpolates between the three
+ratings and urgency changes that calculation. A zero raw rating does not disable a
+formation; remove it to exclude it from this book. A category averages its
+applicable formations' weights before the category lottery, so edit all relevant
+records of one personnel when trying to change that category's weight. The
+brief's heavy 7/7/7 goal-line recipe therefore favours the *other* formations: use
+raw 0/0/0 on the heavy set and 7/7/7 on the sets you want called less.
+These are P3's measured values from `docs/mod_editor/apf_b67_play_calling.md`.
 
 For removals and personnel changes, **Review before staging** names retired
 categories and lists every requested row with its remaining candidates.
 When the research classifies the lineup resolver's callers as non-CPU, an
 uncovered row is a warning that you can confirm. If a CPU caller reaches it,
 or classification is still unknown, the page refuses the unsafe change and
-keeps the coverage visible so you can retain a nearby category. A writer that
+keeps the coverage visible so you can retain a nearby category. Beta 67's
+static audit found exactly two direct callers, both inside a routine that
+supplies both team managers, and no direct caller of that routine, so the
+classification stays unknown and the page still refuses. A writer that
 refuses before producing replacement bytes shows coverage explicitly labeled
 as the current book, before the refused edit.
 
@@ -125,8 +135,12 @@ resolved again. The completed-build message names the teams now owning books.
 Both personnel curve presets start off. Choose **Retail BASE** or **Title
 Update 1.1**, matching the game you run, then either:
 
-- **Offense: stick closer to the situation's personnel** reduces the weight of more distant personnel in offensive calls.
-- **Defense: stick closer to the situation's personnel** reduces the weight of more distant personnel in defensive responses.
+- **Offense: stick closer to the situation's personnel** reduces the weight of more distant personnel in offensive calls. Retail weighs the five offensive distance steps 1, 1, 0.85, 0.5 and 0.05; the preset uses 1, 0.35, 0.10, 0.02 and 0.
+- **Defense: stick closer to the situation's personnel** reduces the weight of more distant personnel in defensive responses. Retail weighs the three defensive steps 1, 0.01 and 0; the preset uses 1, 0.002 and 0.
+
+Both preset tuples are authored experiment values, not measured in the game. The
+core accepts exactly five offensive and three defensive weights, each starting at
+one and never increasing with distance.
 
 **Review and install personnel curve patch…** prepares the patch before asking
 for consent. The dialog names the destination in Xenia's patches folder and

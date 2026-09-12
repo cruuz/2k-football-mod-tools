@@ -173,11 +173,12 @@ class ApfPlayCallingEditor(QWidget):
         for label in ("Short yardage", "Medium yardage", "Long yardage"):
             slider = QSlider(Qt.Horizontal); slider.setRange(0, 7)
             slider.setAccessibleName(label + " formation rating")
-            explain(slider, f"A higher {label.lower()} rating makes this formation more likely in that kind of situation.")
+            explain(slider, f"A lower {label.lower()} rating makes this formation more likely in that kind of "
+                            "situation; 0 is the strongest setting and 4 through 7 all share the weakest.")
             value = QLabel("0")
             slider.valueChanged.connect(lambda v, target=value: target.setText(str(v)))
             row = QHBoxLayout(); row.addWidget(slider); row.addWidget(value)
-            rating_form.addRow(label + " (0 to 7)", row)
+            rating_form.addRow(label + " (0 strongest to 7 weakest)", row)
             self.ratings.append(slider)
         lever_root.addLayout(rating_form)
         self.ratings_button = button(lever_root, "Stage formation ratings", "The game will use these three ratings for this formation in the built book.", self.stage_ratings)
@@ -238,7 +239,7 @@ class ApfPlayCallingEditor(QWidget):
         self.master_table = table(("Category", "Name", "Row") + tuple(f"Player {i+1}" for i in range(11)), "All 28 MASTER personnel categories and eleven roles")
         self.master_table.setMinimumHeight(200)
         master_root.addWidget(self.master_table)
-        self.master_row = QSpinBox(); self.master_row.setRange(0, 63)
+        self.master_row = QSpinBox(); self.master_row.setRange(0, 27)
         self.master_row.setAccessibleName("Personnel category row")
         explain(self.master_row, "The game compares this row with the requested personnel row when weighing this category in every book.")
         master_root.addWidget(self.master_row)
@@ -265,6 +266,10 @@ class ApfPlayCallingEditor(QWidget):
         experiment_root = QVBoxLayout(self.experiments)
         note(experiment_root, "These patches change every CPU book while installed in Xenia. Both presets start off; installation requires consent and gameplay is UNWITNESSED.")
         note(experiment_root, "Installing a personnel curve preset replaces the previously installed personnel curve preset; the pass-fetch experiment has its own file.")
+        note(experiment_root, "Retail weighs personnel one row from the request at "
+             f"{service.RETAIL_CURVES['offense'][1]:g} on offense and {service.RETAIL_CURVES['defense'][1]:g} on defense; "
+             f"the presets use {service.CURVE_PRESETS['offense'][1]:g} and {service.CURVE_PRESETS['defense'][1]:g}, so the game stays "
+             "closer to the requested personnel. These preset numbers are authored, not measured in the game.")
         self.curve_profile = explain(QComboBox(), "Xenia applies the curve patch only to this executable profile; choose retail BASE or Title Update 1.1 to match your game.")
         self.curve_profile.addItem("Retail BASE", "base"); self.curve_profile.addItem("Title Update 1.1", "tu1")
         experiment_root.addWidget(self.curve_profile)
@@ -299,8 +304,10 @@ class ApfPlayCallingEditor(QWidget):
         def work(progress):
             try:
                 return operation(progress), None
-            except (ValueError, RuntimeError, OSError, ImportError, AttributeError, KeyError, ValidationError) as exc:
+            except ValidationError as exc:
                 return None, str(exc)
+            except Exception as exc:  # A contract call must never take the window down.
+                return None, f"{label} could not finish: {type(exc).__name__}: {exc}"
         def complete(result):
             if generation != self._generation or source != self._source():
                 return
@@ -309,7 +316,11 @@ class ApfPlayCallingEditor(QWidget):
             if error:
                 self.notice.setText(error)
             else:
-                done(value)
+                try:
+                    done(value)
+                except Exception as exc:  # Show a broken result instead of crashing.
+                    self.notice.setText(f"{label} returned something this page could not show: "
+                                        f"{type(exc).__name__}: {exc}")
             self._enable()
         self.run_task(label, work, complete, blocking)
 
@@ -377,7 +388,11 @@ class ApfPlayCallingEditor(QWidget):
         # Copy Qt values before entering a worker.
         custom = {key: control.value() for key, control in self.custom.items()}
         custom["phase"] = "scrimmage"
-        snapshot = self.facade.playcalling_snapshot()
+        try:
+            snapshot = self.facade.playcalling_snapshot()
+        except Exception as exc:  # No project state is worth losing the window over.
+            self.notice.setText(f"CPU Play Calling could not read this project: {type(exc).__name__}: {exc}")
+            return
         def operation(progress):
             context = self.facade.playcalling_context(team, side, progress)
             if side == "offense":

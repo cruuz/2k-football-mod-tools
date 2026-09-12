@@ -22,10 +22,14 @@ class BuildTests(FacadeFixture):
         self.backend.clone.compile_unlock = Mock(wraps=clone.compile_unlock)
         self.backend.clone.build_new_folder = clone.build_new_folder
         def plan(index, rost, side):
+            # Mirrors apf2k8_book_clone.own_book_plan: an offensive clone reuses the
+            # team-name string and a defensive clone reuses a distinct label name, so
+            # the two sides of one team never share a resource name.
             parsed = identity.parse_roster_identity(rost)
             used = {getattr(t, side) for t in parsed.teams}
             free = [r for r in parsed.labels if r.side == side and r.index not in used]
-            return tuple(Assignment(t.index, t.name, label.index, parsed.labels[getattr(t, side)].kind, label.name)
+            return tuple(Assignment(t.index, t.name, label.index, parsed.labels[getattr(t, side)].kind,
+                                    t.name if side == "offense" else label.name)
                          for t, label in zip(parsed.teams[:24], free))
         self.backend.clone.own_book_plan = plan
         def load(session):
@@ -58,6 +62,26 @@ class BuildTests(FacadeFixture):
         disk = json.loads((self.index.parent / "book-content-receipt.json").read_text())
         self.assertTrue(disk["verification"]["content_reparsed"])
         self.assertEqual(disk["runtime_status"], "UNWITNESSED")
+
+    def test_one_team_can_own_both_an_offensive_and_a_defensive_book(self):
+        offense = self.facade.playcalling_plan("offense", 0)
+        defense = self.facade.playcalling_plan("defense", 0)
+        self.assertEqual([r["team_index"] for r in offense["assignments"]], [0])
+        self.assertEqual([r["team_index"] for r in defense["assignments"]], [0])
+        names = [offense["assignments"][0]["clone_name"], defense["assignments"][0]["clone_name"]]
+        self.assertEqual(len(set(names)), 2)
+        self.stage(offense)
+        self.stage(defense)
+        context = self.facade.playcalling_context(0, "defense")
+        self.assertEqual(context["book"], names[1])
+        receipt = playcalling_build.finalize(self.index, self.facade.session.modifications[0],
+                                             backend=self.facade._playcalling.backend)
+        # One archive transaction carries both sides of the same team.
+        self.assertEqual(self.backend.clone.compile_unlock.call_count, 1)
+        self.assertEqual(receipt["teams_now_own_books"], ["Synthetic Team 0"])
+        for name in names:
+            body = identity.read_resource(self.index, identity.filename_id(name), "spb", "SPLB")[3]
+            self.assertEqual(self.backend.splb.parse_book(body, 0).name, name)
 
     def test_changed_review_inputs_refuse_before_archive_writes(self):
         self.stage(dict(kind="ratings", book="O-ManBlock", formation=0, ratings=[7, 4, 2]))
