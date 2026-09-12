@@ -1,5 +1,9 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.88 — beta 67: CPU play calling under user control — 2026-09-12
+
+Beta 67 is APF 2K8 only; bullets are added as each change lands.
+
 ## 0.1.0-alpha.87 — beta 66.1: fixes for the reports after beta 66 — 2026-09-11
 
 Beta 66.1 is the hotfix for what came in after beta 66; bullets are added as each change lands.

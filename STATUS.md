@@ -1,4 +1,4 @@
-# 2K5 Mod Studio — v1.0 RC91 Release Status
+# 2K5 Mod Studio — v1.0 RC92 Release Status
 
 ## Beta 63 (RC87, 2026-09-08) — the last 2K5 beta before APF 2K8
 

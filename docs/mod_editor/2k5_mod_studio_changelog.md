@@ -1,5 +1,9 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC92, beta 67
+
+No 2K5 changes in beta 67; the version marker moves with the release tag.
+
 ## v1.0 RC91, beta 66.1: fixes for the reports after beta 66 (2026-09-11)
 
 Beta 66.1 is the hotfix for what came in after beta 66 (Coach Edwards, maumau78, TheWildJeffrey, Ju3tin, GoldenTiger, Urianus); bullets are added as each change lands.
