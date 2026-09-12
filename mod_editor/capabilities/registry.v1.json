@@ -2422,6 +2422,60 @@
     },
     {
       "backend": {
+        "command": "Python API: mod_editor/core/apf2k8_playcall_curves_patch.py build_curve_patch(profile, offense_category_curve=5-tuple, defense_category_curve=3-tuple).as_toml() then install_xenia_patch(source, patches_folder, config_path, consent=True)",
+        "module": "mod_editor/core/apf2k8_playcall_curves_patch.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf_b67_play_calling.md",
+        "tests/mod_editor/test_apf_b67_writers_native.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "edit",
+        "reason": "P3 core implementation; P4 integration is pending. Registered does not mean rendered or usable."
+      },
+      "id": "apf2k8.playbooks.category_curves",
+      "input_constraints": [
+        "Owned decoded SPLB/MASTER/ROST or a separate owned game folder. Never modify retail in place.",
+        "Opt-in pinned BASE/TU curve export; install separately from pass-fetch. Affects every team on that executable."
+      ],
+      "portme": [
+        "Complete P4 wiring and collect the documented gameplay witness."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute JSON selectors and tooling; each user builds from their own game. Never bundle copied game outputs.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Bounded native or synthetic proof only. On-field gameplay is UNWITNESSED.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [],
+        "notes": "Use the signatures in BETA67_API_CONTRACT.md; notes travel with every preview."
+      },
+      "source_container": {
+        "format": "APF AA00B3BF four-volume archive, IFF/H7A, SPLB and ROST",
+        "hash_pins": [
+          "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf"
+        ],
+        "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
+        "retail_file": "user-owned extracted APF Xbox 360 game folder"
+      },
+      "summary": "Opt-in pinned BASE/TU curve export; install separately from pass-fetch. Affects every team on that executable.",
+      "surface": "scripts_config",
+      "title": "Experimental category distance curves",
+      "validation_command": "python3 -m tests.mod_editor.test_apf_b67_writers_native"
+    },
+    {
+      "backend": {
         "command": "python3 tools/apf_book_unlock.py clone --source <0A> --requests <clones.json> --output <new-game>",
         "module": "tools/apf_book_unlock.py",
         "operation": "write"
@@ -2553,6 +2607,114 @@
     },
     {
       "backend": {
+        "command": "Python API: mod_editor/core/apf2k8_splb_writer.py set_formation_categories(book, formation_id, primary, secondary)",
+        "module": "mod_editor/core/apf2k8_splb_writer.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf_b67_play_calling.md",
+        "tests/mod_editor/test_apf_b67_writers.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "edit",
+        "reason": "P3 core implementation; P4 integration is pending. Registered does not mean rendered or usable."
+      },
+      "id": "apf2k8.playbooks.formation_categories",
+      "input_constraints": [
+        "Owned decoded SPLB/MASTER/ROST or a separate owned game folder. Never modify retail in place.",
+        "Edit primary and secondary membership and retire a category from all surviving records."
+      ],
+      "portme": [
+        "Complete P4 wiring and collect the documented gameplay witness."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute JSON selectors and tooling; each user builds from their own game. Never bundle copied game outputs.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Bounded native or synthetic proof only. On-field gameplay is UNWITNESSED.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [],
+        "notes": "Use the signatures in BETA67_API_CONTRACT.md; notes travel with every preview."
+      },
+      "source_container": {
+        "format": "APF AA00B3BF four-volume archive, IFF/H7A, SPLB and ROST",
+        "hash_pins": [
+          "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf"
+        ],
+        "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
+        "retail_file": "user-owned extracted APF Xbox 360 game folder"
+      },
+      "summary": "Edit primary and secondary membership and retire a category from all surviving records.",
+      "surface": "scripts_config",
+      "title": "Formation categories and retirement",
+      "validation_command": "python3 -m tests.mod_editor.test_apf_b67_writers"
+    },
+    {
+      "backend": {
+        "command": "Python API: mod_editor/core/apf2k8_splb_writer.py formation_ratings(book, formation_id) and set_formation_ratings(book, formation_id, (short, medium, long))",
+        "module": "mod_editor/core/apf2k8_splb_writer.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf_b67_play_calling.md",
+        "tests/mod_editor/test_apf_b67_writers_native.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "edit",
+        "reason": "P3 core implementation; P4 integration is pending. Registered does not mean rendered or usable."
+      },
+      "id": "apf2k8.playbooks.formation_ratings",
+      "input_constraints": [
+        "Owned decoded SPLB/MASTER/ROST or a separate owned game folder. Never modify retail in place.",
+        "Write the three raw trailer ratings. Lower numbers increase category weight; 7 is not strongest."
+      ],
+      "portme": [
+        "Complete P4 wiring and collect the documented gameplay witness."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute JSON selectors and tooling; each user builds from their own game. Never bundle copied game outputs.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Bounded native or synthetic proof only. On-field gameplay is UNWITNESSED.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [],
+        "notes": "Use the signatures in BETA67_API_CONTRACT.md; notes travel with every preview."
+      },
+      "source_container": {
+        "format": "APF AA00B3BF four-volume archive, IFF/H7A, SPLB and ROST",
+        "hash_pins": [
+          "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf"
+        ],
+        "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
+        "retail_file": "user-owned extracted APF Xbox 360 game folder"
+      },
+      "summary": "Write the three raw trailer ratings. Lower numbers increase category weight; 7 is not strongest.",
+      "surface": "scripts_config",
+      "title": "Raw formation ratings",
+      "validation_command": "python3 -m tests.mod_editor.test_apf_b67_writers_native"
+    },
+    {
+      "backend": {
         "command": "python3 tools/apf_book_unlock.py identity --source <0A>",
         "module": "tools/apf_book_unlock.py",
         "operation": "inspect"
@@ -2611,6 +2773,114 @@
       "surface": "scripts_config",
       "title": "Book Identity",
       "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+    },
+    {
+      "backend": {
+        "command": "Python API: mod_editor/core/apf2k8_master_writer.py set_category_row(master, category_id, row), set_category_roles(master, category_id, roles), verify_master(master)",
+        "module": "mod_editor/core/apf2k8_master_writer.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf_b67_play_calling.md",
+        "tests/mod_editor/test_apf_b67_writers_native.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "edit",
+        "reason": "P3 core implementation; P4 integration is pending. Registered does not mean rendered or usable."
+      },
+      "id": "apf2k8.playbooks.master_personnel",
+      "input_constraints": [
+        "Owned decoded SPLB/MASTER/ROST or a separate owned game folder. Never modify retail in place.",
+        "Edit the shared category role bytes or personnel row. Every book on the disc is affected."
+      ],
+      "portme": [
+        "Complete P4 wiring and collect the documented gameplay witness."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute JSON selectors and tooling; each user builds from their own game. Never bundle copied game outputs.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Bounded native or synthetic proof only. On-field gameplay is UNWITNESSED.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [],
+        "notes": "Use the signatures in BETA67_API_CONTRACT.md; notes travel with every preview."
+      },
+      "source_container": {
+        "format": "APF AA00B3BF four-volume archive, IFF/H7A, SPLB and ROST",
+        "hash_pins": [
+          "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf"
+        ],
+        "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
+        "retail_file": "user-owned extracted APF Xbox 360 game folder"
+      },
+      "summary": "Edit the shared category role bytes or personnel row. Every book on the disc is affected.",
+      "surface": "scripts_config",
+      "title": "Shared MASTER personnel roles and rows",
+      "validation_command": "python3 -m tests.mod_editor.test_apf_b67_writers_native"
+    },
+    {
+      "backend": {
+        "command": "Python API: mod_editor/core/apf2k8_book_clone.py own_book_plan(index_0a, rost, side) then compile_unlock(index_0a, requests, asset_replacements=by_name) and build_new_folder(plan, destination, progress)",
+        "module": "mod_editor/core/apf2k8_book_clone.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf_b67_play_calling.md",
+        "tests/mod_editor/test_apf_b67_clone.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "edit",
+        "reason": "P3 core implementation; P4 integration is pending. Registered does not mean rendered or usable."
+      },
+      "id": "apf2k8.playbooks.own_books",
+      "input_constraints": [
+        "Owned decoded SPLB/MASTER/ROST or a separate owned game folder. Never modify retail in place.",
+        "Compile 48 distinct clones plus filename-addressed asset allocations in one archive transaction. Synthetic archive proof only."
+      ],
+      "portme": [
+        "Complete P4 wiring and collect the documented gameplay witness."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute JSON selectors and tooling; each user builds from their own game. Never bundle copied game outputs.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Bounded native or synthetic proof only. On-field gameplay is UNWITNESSED.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [],
+        "notes": "Use the signatures in BETA67_API_CONTRACT.md; notes travel with every preview."
+      },
+      "source_container": {
+        "format": "APF AA00B3BF four-volume archive, IFF/H7A, SPLB and ROST",
+        "hash_pins": [
+          "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf"
+        ],
+        "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
+        "retail_file": "user-owned extracted APF Xbox 360 game folder"
+      },
+      "summary": "Compile 48 distinct clones plus filename-addressed asset allocations in one archive transaction. Synthetic archive proof only.",
+      "surface": "scripts_config",
+      "title": "Own offensive and defensive books for 24 teams",
+      "validation_command": "python3 -m tests.mod_editor.test_apf_b67_clone"
     },
     {
       "backend": {
@@ -2690,6 +2960,222 @@
     },
     {
       "backend": {
+        "command": "Python API: mod_editor/core/apf2k8_splb_writer.py play_rating(book, formation_id, play_id) and set_play_rating(book, formation_id, play_id, x)",
+        "module": "mod_editor/core/apf2k8_splb_writer.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf_b67_play_calling.md",
+        "tests/mod_editor/test_apf_b67_writers.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "edit",
+        "reason": "P3 core implementation; P4 integration is pending. Registered does not mean rendered or usable."
+      },
+      "id": "apf2k8.playbooks.play_ratings",
+      "input_constraints": [
+        "Owned decoded SPLB/MASTER/ROST or a separate owned game folder. Never modify retail in place.",
+        "Write X bits without changing Y audible tags; 0 has greatest initial weight."
+      ],
+      "portme": [
+        "Complete P4 wiring and collect the documented gameplay witness."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute JSON selectors and tooling; each user builds from their own game. Never bundle copied game outputs.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Bounded native or synthetic proof only. On-field gameplay is UNWITNESSED.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [],
+        "notes": "Use the signatures in BETA67_API_CONTRACT.md; notes travel with every preview."
+      },
+      "source_container": {
+        "format": "APF AA00B3BF four-volume archive, IFF/H7A, SPLB and ROST",
+        "hash_pins": [
+          "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf"
+        ],
+        "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
+        "retail_file": "user-owned extracted APF Xbox 360 game folder"
+      },
+      "summary": "Write X bits without changing Y audible tags; 0 has greatest initial weight.",
+      "surface": "scripts_config",
+      "title": "X play ratings",
+      "validation_command": "python3 -m tests.mod_editor.test_apf_b67_writers"
+    },
+    {
+      "backend": {
+        "command": "Python API: mod_editor/core/apf2k8_splb_writer.py remove_formation(book, formation_id)",
+        "module": "mod_editor/core/apf2k8_splb_writer.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf_b67_play_calling.md",
+        "tests/mod_editor/test_apf_b67_writers_native.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "edit",
+        "reason": "P3 core implementation; P4 integration is pending. Registered does not mean rendered or usable."
+      },
+      "id": "apf2k8.playbooks.remove_formation",
+      "input_constraints": [
+        "Owned decoded SPLB/MASTER/ROST or a separate owned game folder. Never modify retail in place.",
+        "Remove every duplicate ordinary record, compact and reach the native stable normal form. Special removal is refused."
+      ],
+      "portme": [
+        "Complete P4 wiring and collect the documented gameplay witness."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute JSON selectors and tooling; each user builds from their own game. Never bundle copied game outputs.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Bounded native or synthetic proof only. On-field gameplay is UNWITNESSED.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [],
+        "notes": "Use the signatures in BETA67_API_CONTRACT.md; notes travel with every preview."
+      },
+      "source_container": {
+        "format": "APF AA00B3BF four-volume archive, IFF/H7A, SPLB and ROST",
+        "hash_pins": [
+          "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf"
+        ],
+        "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
+        "retail_file": "user-owned extracted APF Xbox 360 game folder"
+      },
+      "summary": "Remove every duplicate ordinary record, compact and reach the native stable normal form. Special removal is refused.",
+      "surface": "scripts_config",
+      "title": "Remove an ordinary formation",
+      "validation_command": "python3 -m tests.mod_editor.test_apf_b67_writers_native"
+    },
+    {
+      "backend": {
+        "command": "Python API: mod_editor/core/apf2k8_splb_writer.py retire_category(book, category_id)",
+        "module": "mod_editor/core/apf2k8_splb_writer.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf_b67_play_calling.md",
+        "tests/mod_editor/test_apf_b67_writers.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "edit",
+        "reason": "P3 core implementation; P4 integration is pending. Registered does not mean rendered or usable."
+      },
+      "id": "apf2k8.playbooks.retire_category",
+      "input_constraints": [
+        "Owned decoded SPLB/MASTER/ROST or a separate owned game folder. Never modify retail in place.",
+        "Remove primary and secondary references, promoting a surviving secondary; refuse to leave a formation with no category."
+      ],
+      "portme": [
+        "Complete P4 wiring and collect the documented gameplay witness."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute JSON selectors and tooling; each user builds from their own game. Never bundle copied game outputs.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Bounded native or synthetic proof only. On-field gameplay is UNWITNESSED.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [],
+        "notes": "Use the signatures in BETA67_API_CONTRACT.md; notes travel with every preview."
+      },
+      "source_container": {
+        "format": "APF AA00B3BF four-volume archive, IFF/H7A, SPLB and ROST",
+        "hash_pins": [
+          "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf"
+        ],
+        "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
+        "retail_file": "user-owned extracted APF Xbox 360 game folder"
+      },
+      "summary": "Remove primary and secondary references, promoting a surviving secondary; refuse to leave a formation with no category.",
+      "surface": "scripts_config",
+      "title": "Retire a personnel category",
+      "validation_command": "python3 -m tests.mod_editor.test_apf_b67_writers"
+    },
+    {
+      "backend": {
+        "command": "Python API: mod_editor/core/apf2k8_splb_writer.py row_coverage(book, master)",
+        "module": "mod_editor/core/apf2k8_splb_writer.py",
+        "operation": "inspect"
+      },
+      "classification": "read-only-mapped",
+      "evidence": [
+        "docs/mod_editor/apf_b67_play_calling.md",
+        "tests/mod_editor/test_apf_b67_writers_native.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "view",
+        "reason": "P3 core implementation; P4 integration is pending. Registered does not mean rendered or usable."
+      },
+      "id": "apf2k8.playbooks.row_coverage",
+      "input_constraints": [
+        "Owned decoded SPLB/MASTER/ROST or a separate owned game folder. Never modify retail in place.",
+        "Report categories reachable by the separate lineup ladder. CPU-only safety has not been proved."
+      ],
+      "portme": [
+        "Complete P4 wiring and collect the documented gameplay witness."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute JSON selectors and tooling; each user builds from their own game. Never bundle copied game outputs.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Bounded native or synthetic proof only. On-field gameplay is UNWITNESSED.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [],
+        "notes": "Use the signatures in BETA67_API_CONTRACT.md; notes travel with every preview."
+      },
+      "source_container": {
+        "format": "APF AA00B3BF four-volume archive, IFF/H7A, SPLB and ROST",
+        "hash_pins": [
+          "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf"
+        ],
+        "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
+        "retail_file": "user-owned extracted APF Xbox 360 game folder"
+      },
+      "summary": "Report categories reachable by the separate lineup ladder. CPU-only safety has not been proved.",
+      "surface": "scripts_config",
+      "title": "Lineup row coverage",
+      "validation_command": "python3 -m tests.mod_editor.test_apf_b67_writers_native"
+    },
+    {
+      "backend": {
         "command": "python3 tools/apf_book_unlock.py preset --source <0A> --preset <wide-zone|spread-to-run|pro-power> --output <new-game>",
         "module": "tools/apf_book_unlock.py",
         "operation": "write"
@@ -2748,6 +3234,115 @@
       "surface": "scripts_config",
       "title": "Wide Zone, Spread-to-Run, Pro Power",
       "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+    },
+    {
+      "backend": {
+        "command": "Python API: mod_editor/core/apf2k8_playcall_model.py predict_offense(book, master, tendency_run_share, Situation(...)) and predict_defense(book, master, offense_category_row, yards_to_goal)",
+        "module": "mod_editor/core/apf2k8_playcall_model.py",
+        "operation": "inspect"
+      },
+      "classification": "read-only-mapped",
+      "evidence": [
+        "docs/mod_editor/apf_b67_play_calling.md",
+        "tests/mod_editor/test_apf_b67_model_native.py",
+        "tests/mod_editor/test_apf_b67_model_edges_native.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "view",
+        "reason": "P3 core implementation; P4 integration is pending. Registered does not mean rendered or usable."
+      },
+      "id": "apf2k8.playbooks.selector_preview",
+      "input_constraints": [
+        "Owned decoded SPLB/MASTER/ROST or a separate owned game folder. Never modify retail in place.",
+        "Cold scrimmage preview; empty history and neutral skill. Defensive lineup feature 4 is a hypothesis."
+      ],
+      "portme": [
+        "Complete P4 wiring and collect the documented gameplay witness."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute JSON selectors and tooling; each user builds from their own game. Never bundle copied game outputs.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Bounded native or synthetic proof only. On-field gameplay is UNWITNESSED.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [],
+        "notes": "Use the signatures in BETA67_API_CONTRACT.md; notes travel with every preview."
+      },
+      "source_container": {
+        "format": "APF AA00B3BF four-volume archive, IFF/H7A, SPLB and ROST",
+        "hash_pins": [
+          "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf"
+        ],
+        "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
+        "retail_file": "user-owned extracted APF Xbox 360 game folder"
+      },
+      "summary": "Cold scrimmage preview; empty history and neutral skill. Defensive lineup feature 4 is a hypothesis.",
+      "surface": "scripts_config",
+      "title": "Offline call preview",
+      "validation_command": "python3 -m tests.mod_editor.test_apf_b67_model_native"
+    },
+    {
+      "backend": {
+        "command": "Python API: mod_editor/core/apf2k8_team_tendency.py team_tendency(rost, team_index) and set_team_tendency(rost, team_index, value)",
+        "module": "mod_editor/core/apf2k8_team_tendency.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf_b67_play_calling.md",
+        "tests/mod_editor/test_apf_b67_writers_native.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "edit",
+        "reason": "P3 core implementation; P4 integration is pending. Registered does not mean rendered or usable."
+      },
+      "id": "apf2k8.playbooks.team_tendency",
+      "input_constraints": [
+        "Owned decoded SPLB/MASTER/ROST or a separate owned game folder. Never modify retail in place.",
+        "Follow the team tendency pointer; write +5A and the optional row arrays, whose cache is separate from the ordinary CPU lottery."
+      ],
+      "portme": [
+        "Complete P4 wiring and collect the documented gameplay witness."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute JSON selectors and tooling; each user builds from their own game. Never bundle copied game outputs.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Bounded native or synthetic proof only. On-field gameplay is UNWITNESSED.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [],
+        "notes": "Use the signatures in BETA67_API_CONTRACT.md; notes travel with every preview."
+      },
+      "source_container": {
+        "format": "APF AA00B3BF four-volume archive, IFF/H7A, SPLB and ROST",
+        "hash_pins": [
+          "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf"
+        ],
+        "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
+        "retail_file": "user-owned extracted APF Xbox 360 game folder"
+      },
+      "summary": "Follow the team tendency pointer; write +5A and the optional row arrays, whose cache is separate from the ordinary CPU lottery.",
+      "surface": "scripts_config",
+      "title": "Team run tendency and optional row cache",
+      "validation_command": "python3 -m tests.mod_editor.test_apf_b67_writers_native"
     },
     {
       "backend": {
