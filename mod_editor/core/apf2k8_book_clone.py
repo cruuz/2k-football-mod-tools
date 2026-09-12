@@ -5,8 +5,9 @@ pointer and the selected team's assignment pointer change; no string pool or
 save capacity is guessed. A cloned IFF is appended to the LAST volume, and a
 sorted directory row uses verified zero space before the first payload.
 
-This finalization changes outer indices. Apply other Studio edits first, then
-clone. Runtime loading of the expanded archive is UNWITNESSED. No XEX patch is
+This finalization changes outer indices. Compile other Studio edits as named
+IFF overlays in the same transaction, and persist their filename bindings.
+Runtime loading of the expanded archive is UNWITNESSED. No XEX patch is
 needed by the traced name-based resolver, and no executable bytes are changed.
 """
 from __future__ import annotations
@@ -19,6 +20,7 @@ from pathlib import Path
 import re
 import shutil
 import struct
+import zlib
 from typing import Callable, Iterable
 
 from .errors import ValidationError
@@ -47,14 +49,17 @@ class CloneRequest:
     label_id: int
     team_index: int
     donor_type: str
+    clone_name: str | None = None
 
     def __post_init__(self):
         if type(self.label_id) is not int or not 0 <= self.label_id < 69:
             raise ValidationError("Clone label ID must be 0..68")
         if type(self.team_index) is not int or not 0 <= self.team_index < 40:
             raise ValidationError("Clone team index must be 0..39")
-        if not isinstance(self.donor_type, str) or self.donor_type not in splb.BOOK_SIDES:
-            raise ValidationError("Choose a stock, USER or global book donor")
+        if not isinstance(self.donor_type, str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9 -]{0,26}', self.donor_type):
+            raise ValidationError("Choose a named stock, USER, global or cloned book donor")
+        if self.clone_name is not None and (not isinstance(self.clone_name, str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9 -]{0,26}', self.clone_name)):
+            raise ValidationError('Clone names must contain 1..27 ASCII letters, digits, spaces or hyphens')
 
 
 def requests_from_json(data: bytes) -> tuple[CloneRequest, ...]:
@@ -70,11 +75,11 @@ def requests_from_json(data: bytes) -> tuple[CloneRequest, ...]:
         if not isinstance(value, dict) or set(value) != {"schema", "clones"} or value["schema"] != REQUEST_SCHEMA:
             raise ValidationError("Unknown book-clone recipe schema")
         rows = value["clones"]
-        if not isinstance(rows, list) or not 1 <= len(rows) <= 36:
-            raise ValidationError("Supply 1..36 book clone requests")
+        if not isinstance(rows, list) or not 1 <= len(rows) <= 69:
+            raise ValidationError("Supply 1..69 book clone requests")
         result = []
         for row in rows:
-            if not isinstance(row, dict) or set(row) != {"label_id", "team_index", "donor_type"}:
+            if not isinstance(row, dict) or set(row) not in ({"label_id", "team_index", "donor_type"}, {"label_id", "team_index", "donor_type", "clone_name"}):
                 raise ValidationError("A clone request has unsupported fields")
             result.append(CloneRequest(**row))
         return tuple(result)
@@ -88,8 +93,8 @@ def _requests(requests: Iterable[CloneRequest]) -> tuple[CloneRequest, ...]:
     rows = tuple(requests)
     if not rows or any(not isinstance(x, CloneRequest) for x in rows):
         raise ValidationError("Supply at least one CloneRequest")
-    if len({x.label_id for x in rows}) != len(rows) or len({x.team_index for x in rows}) != len(rows):
-        raise ValidationError("Clone requests must use distinct labels and teams")
+    if len({x.label_id for x in rows}) != len(rows):
+        raise ValidationError("Clone requests must use distinct labels")
     return tuple(sorted(rows, key=lambda x: x.label_id))
 
 
@@ -100,29 +105,54 @@ def bind_roster(body: bytes, requests: Iterable[CloneRequest], *, raw_save: bool
     output = bytearray(body)
     fields = set()
     changes = []
+    assignments = {(r.team_index, before.labels[r.label_id].side) for r in rows}
+    if len(assignments) != len(rows):
+        raise ValidationError('Clone requests must use distinct team and side assignments')
+    names = [r.clone_name or before.labels[r.label_id].name for r in rows]
+    if len(set(names)) != len(names):
+        raise ValidationError('Offensive and defensive clones must have distinct resource names')
+    pool = None
     for request in rows:
         label = before.labels[request.label_id]
         team = before.teams[request.team_index]
-        if label.side != splb.BOOK_SIDES[request.donor_type]:
+        donor_side = splb.BOOK_SIDES.get(request.donor_type)
+        if donor_side is None:
+            sides = {l.side for l in before.labels if l.kind == request.donor_type}
+            if len(sides) != 1:
+                raise ValidationError('Cloned donor has no unambiguous roster side')
+            donor_side = sides.pop()
+        if label.side != donor_side:
             raise ValidationError("Choose a label on the same side as the donor book")
         assignment_field = getattr(team, label.side + "_field")
-        if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9 -]{0,26}", label.name):
+        name = request.clone_name or label.name
+        if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9 -]{0,26}", name):
             raise ValidationError("Clone label names must be 1..27 ASCII letters, digits, spaces or hyphens")
-        if label.name in splb.STOCK_BOOKS.values() or label.name in ("UA", "UB"):
+        if name in splb.STOCK_BOOKS.values() or name in ("UA", "UB"):
             raise ValidationError("Clone label name collides with a built-in or runtime book")
-        peers = [x.index for x in before.teams if getattr(x, label.side) == label.index and x.index != team.index]
+        peers = [x.index for x in before.teams if getattr(x, label.side) == label.index and x.index != team.index
+                 and (x.index, label.side) not in assignments]
         if peers:
             raise ValidationError(f"Label {label.index} is already assigned to other teams: {peers}")
-        if any(x.index != label.index and x.kind == label.name for x in before.labels):
+        if any(x.index != label.index and x.kind == name for x in before.labels):
             raise ValidationError("Another label already uses the proposed clone type")
         # A field-local relative pointer is one-based; the target string itself
         # is immutable and may safely have other readers (e.g. a defensive label).
         name_target = apf_roster.resolve_relative(body, label.offset, "clone label name")
+        if name != label.name:
+            if raw_save:
+                raise ValidationError('Named batch clones require a disc ROST string pool')
+            if pool is None:
+                _, root = apf_roster.parse_root(body)
+                pool, _ = apf_roster.parse_string_pool(body, root['string_pool_offset'])
+            matches = [offset for offset, text in pool.items() if text == name]
+            if not matches:
+                raise ValidationError('Clone name must already exist in the ROST string pool')
+            name_target = matches[0]
         for field, target in ((label.offset + 4, name_target), (assignment_field, label.offset)):
             struct.pack_into(">I", output, field, (target - field + 1) & 0xFFFFFFFF)
             fields.update(range(field, field + 4))
         changes.append({"team_index": team.index, "label_id": label.index, "label": label.name,
-                        "before_type": label.kind, "after_type": label.name,
+                        "before_type": label.kind, "after_type": name,
                         "type_pointer_offset": label.offset + 4,
                         "side": label.side, "assignment_pointer_offset": assignment_field})
     result = bytes(output)
@@ -132,11 +162,89 @@ def bind_roster(body: bytes, requests: Iterable[CloneRequest], *, raw_save: bool
         raise ValidationError("Clone assignment escaped its two pointer fields")
     for request in rows:
         label = after.labels[request.label_id]
-        if label.kind != label.name or getattr(after.teams[request.team_index], label.side) != label.index:
+        if label.kind != (request.clone_name or label.name) or getattr(after.teams[request.team_index], label.side) != label.index:
             raise ValidationError("Clone assignment did not survive reparse")
     return result, {"changes": changes, "changed_byte_count": len(changed),
                     "changed_offsets": changed, "all_string_bytes_preserved": True,
                     "resource_length_preserved": len(result) == len(body)}
+
+
+@dataclass(frozen=True)
+class OwnBookAssignment:
+    team_index: int
+    team_name: str
+    label_id: int
+    donor_name: str
+    clone_name: str
+
+    def request(self) -> CloneRequest:
+        return CloneRequest(self.label_id, self.team_index, self.donor_name, self.clone_name)
+
+
+def _own_book_plan(index_0a, rost: bytes, side: str) -> tuple[OwnBookAssignment, ...]:
+    """Own books for the 24 disc teams; the sixteen saved-team slots are separate.
+
+    Offense reuses each team-name string; defense reuses a distinct label-name
+    string. This supplies 48 distinct filenames without inventing ROST capacity
+    or changing any existing string. The displayed label and resource type may
+    have different names, as they do in retail.
+    """
+    if side not in ('offense', 'defense'):
+        raise ValidationError('Choose offense or defense')
+    identity = parse_roster_identity(rost)
+    teams = identity.teams[:24]
+    labels = [l for l in identity.labels if l.side == side and not any(
+        getattr(t, side) == l.index for t in identity.teams[24:])]
+    if len(labels) < len(teams):
+        raise ValidationError('There are not enough disc labels for every team on this side')
+    archive = apf_outer.parse_archive(Path(index_0a))
+    ids = {e.name_id for e in archive.entries}
+    result = []
+    for team, label in zip(teams, labels):
+        donor = identity.labels[getattr(team, side)].kind
+        name = team.name if side == 'offense' else label.name
+        resource = read_resource(Path(index_0a), filename_id(donor), 'spb', 'SPLB')
+        if splb.parse_book(resource[3], resource[1].table_index).name != donor:
+            raise ValidationError('Assigned donor name and resource header disagree')
+        if filename_id(name) in ids and label.kind != name:
+            raise ValidationError(f'Own-book filename already belongs to another resource: {name}')
+        result.append(OwnBookAssignment(team.index, team.name, label.index, donor, name))
+    # Validate all pointer changes together; shared old labels are legal only
+    # when every old reader is rebound by the same transaction.
+    bind_roster(rost, (r.request() for r in result))
+    return tuple(result)
+
+
+def own_book_plan(index_0a, rost: bytes, side: str) -> tuple[OwnBookAssignment, ...]:
+    from .apf2k8_playcall_model import PlaycallError
+    if not isinstance(rost, bytes):
+        raise PlaycallError('ROST must be immutable decoded bytes')
+    try:
+        return _own_book_plan(index_0a, rost, side)
+    except (ValidationError, ValueError, OSError) as exc:
+        raise PlaycallError(str(exc)) from exc
+
+
+def asset_name_bindings(index_0a, outer_indices: Iterable[int]) -> dict[int, int]:
+    """Persist this original-ordinal -> filename-hash map with the project."""
+    archive = apf_outer.parse_archive(Path(index_0a))
+    result = {}
+    for outer in outer_indices:
+        if type(outer) is not int or not 0 <= outer < len(archive.entries):
+            raise ValidationError('Project asset outer index is outside the archive')
+        result[outer] = archive.entries[outer].name_id
+    return result
+
+
+def resolve_asset_bindings(index_0a, bindings: dict[int, int]) -> dict[int, int]:
+    """Resolve every project asset after insertion; never reuse old ordinals."""
+    archive = apf_outer.parse_archive(Path(index_0a))
+    by_name = {e.name_id: e.table_index for e in archive.entries}
+    if len(by_name) != len(archive.entries):
+        raise ValidationError('Archive contains duplicate filename hashes')
+    if any(name not in by_name for name in bindings.values()):
+        raise ValidationError('A project asset filename is absent from this game folder')
+    return {outer: by_name[name] for outer, name in bindings.items()}
 
 
 def clone_body(donor: bytes, name: str) -> bytes:
@@ -224,19 +332,51 @@ class CompiledUnlock:
     clones: tuple[CompiledClone, ...]
     report: dict
     preset_ids: tuple[str, ...] = ()
+    asset_replacements: tuple[tuple[int, bytes], ...] = ()
 
 
-def _prepared_donor(index_path, donor, preset_ids):
+def _prepared_donor(index_path, donor, preset_ids, replacements=None):
     from . import apf2k8_scheme_presets as presets
+    import playbook_inventory
     for slug in preset_ids:
         recipe = presets.load_preset(slug)
         if recipe["book_type"] == splb.parse_book(donor[3], donor[1].table_index).name:
-            return presets.compile_preset(index_path, recipe).replacement
+            # Apply to the authored donor, preserving its ratings and other
+            # edits; recompiling from index_path would silently discard them.
+            master_source = read_resource(index_path, zlib.crc32(b'PLAYBOOK_MASTER.IFF'), 'mpb', 'PLAY')
+            master_source = _overlay_resource(master_source, replacements or {})
+            master = playbook_inventory.parse_apf_body(master_source[3], master_source[1].table_index, 0)
+            return presets.apply_preset(splb.parse_book(donor[3], donor[1].table_index), recipe, master)[0]
     return donor[3]
 
 
+def _overlay_resource(source, replacements):
+    archive, entry, record, body, decoded, original = source
+    replacement = replacements.get(entry.name_id)
+    if replacement is None:
+        return source
+    reader = apf_texture_patch.BytesReader(replacement)
+    record = apf_inner.parse_iff(reader, entry)
+    old_item = source[2].files[0]
+    if (record.warnings or record.file_count != 1 or record.block_count != 1
+            or len(record.files[0].parts) != 1
+            or (record.files[0].name, record.files[0].type_name) != (old_item.name, old_item.type_name)):
+        raise ValidationError('Project resource replacement failed IFF reparse')
+    part = record.files[0].parts[0]
+    decoded = apf_inner.decode_block(reader, record, part.block_index, 16 * 1024 * 1024)
+    body = decoded[part.offset:part.offset + part.length]
+    return archive, entry, record, body, decoded, replacement
+
+
 def compile_unlock(index_path: Path, requests: Iterable[CloneRequest], *,
-                   preset_ids: tuple[str, ...] = ()) -> CompiledUnlock:
+                   preset_ids: tuple[str, ...] = (),
+                   asset_replacements: dict[int, bytes] | None = None) -> CompiledUnlock:
+    """Compile all clones and already-authored assets in one archive transaction.
+
+    asset_replacements keys are filename hashes, never outer ordinals. Values
+    are complete verified IFF allocations from the existing asset writers.
+    ROST and donor overlays compose before cloning and assignment.
+    """
     requests = _requests(requests)
     from . import apf2k8_scheme_presets as presets
     preset_ids = tuple(preset_ids)
@@ -246,7 +386,25 @@ def compile_unlock(index_path: Path, requests: Iterable[CloneRequest], *,
         if presets.load_preset(slug)["book_type"] not in {r.donor_type for r in requests}:
             raise ValidationError("Content recipe does not match the selected donor book")
     index_path = Path(index_path).resolve()
-    roster_source = read_resource(index_path, apf_roster.OUTER_NAME_ID, "roster", "ROST")
+    original_roster = read_resource(index_path, apf_roster.OUTER_NAME_ID, "roster", "ROST")
+    replacements = dict(asset_replacements or {})
+    archive = original_roster[0]
+    entries_by_name = {e.name_id: e for e in archive.entries}
+    for name_id, payload in replacements.items():
+        entry = entries_by_name.get(name_id)
+        if type(name_id) is not int or entry is None or not isinstance(payload, bytes) or len(payload) != entry.size:
+            raise ValidationError('Project replacement must name an existing filename hash and preserve its allocation')
+        reader = apf_texture_patch.BytesReader(payload)
+        record = apf_inner.parse_iff(reader, entry)
+        if record.warnings:
+            raise ValidationError('Project replacement has IFF parse warnings')
+        for block in record.blocks:
+            decoded = apf_inner.decode_block(reader, record, block.descriptor_index, 64 * 1024 * 1024)
+            if block.is_compressed:
+                tokens, _ = apf_inner._parse_h7a_tokens(payload[block.start_offset + 20:block.start_offset + block.stored_length], len(decoded), block.wrapper.shift)
+                if any(t.distance is not None and t.length > t.distance for t in tokens):
+                    raise ValidationError('Project replacement contains an overlapping H7A match')
+    roster_source = _overlay_resource(original_roster, replacements)
     archive, roster_entry, _record, roster_before, _decoded, _original = roster_source
     identity = parse_roster_identity(roster_before)
     roster_after, binding = bind_roster(roster_before, requests)
@@ -276,24 +434,25 @@ def compile_unlock(index_path: Path, requests: Iterable[CloneRequest], *,
     ids = set(original_ids)
     for request in requests:
         label = identity.labels[request.label_id]
-        donor = read_resource(index_path, filename_id(request.donor_type), "spb", "SPLB")
+        donor = _overlay_resource(read_resource(index_path, filename_id(request.donor_type), "spb", "SPLB"), replacements)
         if splb.parse_book(donor[3], donor[1].table_index).name != request.donor_type:
             raise ValidationError("Donor filename and SPLB header disagree")
-        prepared = _prepared_donor(index_path, donor, preset_ids)
-        replacement = clone_body(prepared, label.name)
-        name_id = filename_id(label.name)
+        prepared = _prepared_donor(index_path, donor, preset_ids, replacements)
+        clone_name = request.clone_name or label.name
+        replacement = clone_body(prepared, clone_name)
+        name_id = filename_id(clone_name)
         if name_id in ids:
-            if label.kind != label.name:
-                raise ValidationError(f"Clone filename hash collides with an existing resource: {label.name}")
+            if label.kind != clone_name:
+                raise ValidationError(f"Clone filename hash collides with an existing resource: {clone_name}")
             existing = read_resource(index_path, name_id, "spb", "SPLB")
-            verify_clone_body(prepared, existing[3], label.name)
-            proofs.append({"name": label.name, "already_applied": True})
+            verify_clone_body(prepared, existing[3], clone_name)
+            proofs.append({"name": clone_name, "already_applied": True})
             continue
         packed, transport = rebuild_resource(donor, replacement)
-        clones.append(CompiledClone(label.name, request.donor_type, name_id, position, packed, replacement))
+        clones.append(CompiledClone(clone_name, request.donor_type, name_id, position, packed, replacement))
         ids.add(name_id)
-        proofs.append({"name": label.name, "donor": request.donor_type, "name_id": f"0x{name_id:08X}",
-                       "virtual_offset": position, **verify_clone_body(prepared, replacement, label.name),
+        proofs.append({"name": clone_name, "donor": request.donor_type, "name_id": f"0x{name_id:08X}",
+                       "virtual_offset": position, **verify_clone_body(prepared, replacement, clone_name),
                        "transport": transport})
         position += len(packed)
     table = [(x.name_id, x.offset_blocks, x.size_blocks) for x in archive.entries]
@@ -338,9 +497,11 @@ def compile_unlock(index_path: Path, requests: Iterable[CloneRequest], *,
                             "old_to_new_outer_indices": {str(x.table_index): new_indices[x.name_id]
                                                           for x in archive.entries}},
               "book_identity": book_identity_report(parse_roster_identity(roster_after), books),
-              "follow_up": "Finalize after other Studio edits; numeric outer indices change. Test base XEX in game."}
+              "project_asset_name_bindings": {str(e.table_index): e.name_id for e in archive.entries},
+              "follow_up": "Persist project filename bindings and resolve them when reopening; numeric outer indices change. Gameplay remains UNWITNESSED."}
     return CompiledUnlock(index_path, requests, directory_before, bytes(directory),
-                          _sha(roster_source[5]), roster_packed, roster_after, tuple(clones), report, preset_ids)
+                          _sha(original_roster[5]), roster_packed, roster_after, tuple(clones), report, preset_ids,
+                          tuple(sorted(replacements.items())))
 
 
 def verify_unlock(plan: CompiledUnlock, output_index: Path) -> dict:
@@ -367,26 +528,36 @@ def verify_unlock(plan: CompiledUnlock, output_index: Path) -> dict:
     source_roster = read_resource(plan.source_index, apf_roster.OUTER_NAME_ID, "roster", "ROST")
     if _sha(source_roster[5]) != plan.roster_source_sha256:
         raise ValidationError("Source roster allocation changed since compilation")
-    expected_roster, _receipt = bind_roster(source_roster[3], plan.requests)
+    overlays = dict(plan.asset_replacements)
+    expected_roster, _receipt = bind_roster(_overlay_resource(source_roster, overlays)[3], plan.requests)
     if roster[3] != expected_roster or roster[5] != plan.roster_entry:
         raise ValidationError("Expanded archive has the wrong roster binding")
     for clone in plan.clones:
         resource = read_resource(output_index, clone.name_id, "spb", "SPLB")
-        donor = read_resource(plan.source_index, filename_id(clone.donor_type), "spb", "SPLB")
-        prepared = _prepared_donor(plan.source_index, donor, plan.preset_ids)
+        donor = _overlay_resource(read_resource(plan.source_index, filename_id(clone.donor_type), "spb", "SPLB"), overlays)
+        prepared = _prepared_donor(plan.source_index, donor, plan.preset_ids, overlays)
         verify_clone_body(prepared, resource[3], clone.name)
         if resource[1].virtual_offset != clone.virtual_offset or resource[5] != clone.entry_bytes:
             raise ValidationError("Clone allocation/transport does not match the compiled result")
-    # Compare the whole copied archive, excluding only the two authorized spans.
+    # Compare the whole copied archive outside the explicitly authored spans.
     allowed = [(0, len(plan.directory_after))]
     re = old[apf_roster.OUTER_NAME_ID]
     allowed.append((re.virtual_offset, re.virtual_end))
+    for name_id, payload in plan.asset_replacements:
+        if name_id == apf_roster.OUTER_NAME_ID:
+            continue
+        entry = new[name_id]
+        with apf_inner.ArchiveReader(after) as reader:
+            actual = reader.read(entry, 0, entry.size)
+        if actual != payload:
+            raise ValidationError('A project asset differs after clone insertion')
+        allowed.append((entry.virtual_offset, entry.virtual_end))
     compared = compare_untouched_packs(before, after, allowed)
     with Path(output_index).open("rb") as stream:
         if stream.read(len(plan.directory_after)) != plan.directory_after:
             raise ValidationError("Directory bytes differ from the compiled allocation")
     # Reapplying the recipe must not append duplicate resources or flip pointers.
-    repeated = compile_unlock(output_index, plan.requests, preset_ids=plan.preset_ids)
+    repeated = compile_unlock(output_index, plan.requests, preset_ids=plan.preset_ids, asset_replacements=overlays)
     if repeated.clones or repeated.roster_body != roster[3] or repeated.directory_after != plan.directory_after:
         raise ValidationError("Book clone apply is not idempotent")
     executable = compare_executable(plan.source_index.parent, Path(output_index).parent)
@@ -470,6 +641,15 @@ def build_new_folder(plan: CompiledUnlock, destination: Path,
         for pack in archive.packs:
             progress(f"Copying {pack.name}")
             shutil.copyfile(pack.path, destination / pack.name)
+        by_name = {e.name_id: e for e in archive.entries}
+        for name_id, payload in plan.asset_replacements:
+            entry = by_name[name_id]
+            cursor = 0
+            for segment in entry.segments:
+                with (destination / segment.pack_name).open('r+b') as stream:
+                    stream.seek(segment.pack_offset)
+                    stream.write(payload[cursor:cursor + segment.size])
+                cursor += segment.size
         xex = source_root / "default.xex"
         if xex.is_file():
             shutil.copyfile(xex, destination / xex.name)
