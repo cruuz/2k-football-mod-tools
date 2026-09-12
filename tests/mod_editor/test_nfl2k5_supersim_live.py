@@ -684,6 +684,28 @@ class NativeSeriesTests(unittest.TestCase):
             raise unittest.SkipTest('Capstone is absent; native series requires it')
         cls.payload = mode.apply(retail_bytes())[0]
 
+    def test_cancel_multi_possession_and_postgame_settings(self):
+        from tests.nfl2k5_b68_series import possession_probe
+        result = possession_probe(self.payload)
+        self.assertEqual(len(result['drives']), 3)
+        self.assertTrue(all(r['saved_supersim'] == 2 for r in result['drives']))
+        self.assertEqual(result['postgame_word'], 2)
+        self.assertEqual(result['save_supersim_bits'], 8)
+        import json
+        print('\nB68_SUPERSIM_RECEIPT ' + json.dumps(result, sort_keys=True), flush=True)
+
+    def test_pat_kick_two_point_choice_and_following_cpu_kickoff(self):
+        from tests.nfl2k5_b68_series import pat_probe
+        from mod_editor.core import nfl2k5_throw_tuning as tuning
+        import json
+        for modern in (False, True):
+            with self.subTest(modern=modern):
+                payload = (tuning._apply_all(retail_bytes(), None, False, my_career=True,
+                    kick_rules=True, accelerated_clock=True)[0] if modern else self.payload)
+                result = pat_probe(payload, modern=modern)
+                self.assertEqual(len(result['choices']), 2)
+                print('\nB68_PAT_RECEIPT ' + json.dumps(result, sort_keys=True), flush=True)
+
     def test_three_native_plays_grouped_cadence_and_animated_handoffs(self):
         from tools.nfl2k5_supersim_live_probe import series_probe
         result = series_probe(self.payload)
