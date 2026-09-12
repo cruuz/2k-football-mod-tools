@@ -1,0 +1,63 @@
+FFFFFFF
+======================================================================
+FAIL: test_new_core_modules_are_in_all_release_closures (__main__.IntegrationTests.test_new_core_modules_are_in_all_release_closures)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_b68_a1_audit.py", line 61, in test_new_core_modules_are_in_all_release_closures
+    self.assertIn(name, gate.REQUIRED_UNIFIED_PROVIDER_CLOSURE)
+AssertionError: 'mod_editor/core/nfl2k5_compile_cache.py' not found in frozenset({'mod_editor/core/nfl2k5_equipment_import_intent.py', 'mod_editor/core/nfl2k5_ausb_build_adapter.py', 'mod_editor/core/nfl2k5_audo_fixed_slots.py', 'tools/nfl_scne_gltf.py', 'mod_editor/core/nfl2k5_audo_family_labels.py', 'mod_editor/core/nfl2k5_crib.py', 'mod_editor/core/responsive_json.py', 'mod_editor/core/nfl2k5_audio_origin_authorization.py', 'mod_editor/core/nfl2k5_crib_electronics_targets.py', 'mod_editor/core/nfl2k5_audio_source_scan.py', 'tools/nfl_crib_bar_monitor_png_xiso.py', 'mod_editor/core/nfl2k5_ausb_fixed_slots.py', 'mod_editor/core/nfl2k5_crib_standalone_texture_writer.py', 'mod_editor/core/nfl2k5_crib_scene_texture_writer.py', 'tools/nfl_static_gltf.py', 'mod_editor/core/nfl2k5_equipment_lz.py', 'mod_editor/core/nfl2k5_audio_source_containment.py', 'mod_editor/core/nfl2k5_crib_geometry_writer.py', 'tools/apf_inner.py', 'mod_editor/core/nfl2k5_audio_containment_fingerprints.py', 'tools/string_table_inventory.py', 'mod_editor/core/nfl2k5_playbook_inspector.py', 'mod_editor/core/nfl2k5_audio_source_fingerprints.py', 'mod_editor/core/nfl2k5_digit_texture.py', 'mod_editor/core/nfl2k5_uniform_equipment_writer.py', 'mod_editor/core/nfl2k5_stadium_texture_writer.py', 'mod_editor/core/nfl2k5_formation_play_writer.py', 'mod_editor/core/nfl2k5_playbook_route_writer.py', 'mod_editor/core/nfl2k5_safe_text_banks.py', 'tools/apf_outer.py'})
+
+======================================================================
+FAIL: test_posix_helper_permission_test_skips_the_windows_contract (__main__.IntegrationTests.test_posix_helper_permission_test_skips_the_windows_contract)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_b68_a1_audit.py", line 77, in test_posix_helper_permission_test_skips_the_windows_contract
+    self.assertTrue(result.wasSuccessful(), result.failures + result.errors)
+AssertionError: False is not true : [(<test_phase1_packaging.ModStudioPackagingTests testMethod=test_refuses_equipment_helper_that_is_group_writable>, 'Traceback (most recent call last):\n  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_phase1_packaging.py", line 223, in test_refuses_equipment_helper_that_is_group_writable\n    with self.assertRaisesRegex(\nAssertionError: ReleaseCheckError not raised\n')]
+
+======================================================================
+FAIL: test_runtime_counts_match_the_canonical_registry (__main__.IntegrationTests.test_runtime_counts_match_the_canonical_registry) (expression='require(len(registry.capabilities) == 160,\n            "canonical capability registry row count changed")')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_b68_a1_audit.py", line 52, in test_runtime_counts_match_the_canonical_registry
+    exec(expression, dict(require=self.assertTrue, registry=registry, product_catalog=catalog))
+  File "<string>", line 1, in <module>
+AssertionError: False is not true : canonical capability registry row count changed
+
+======================================================================
+FAIL: test_runtime_counts_match_the_canonical_registry (__main__.IntegrationTests.test_runtime_counts_match_the_canonical_registry) (expression='require(len(product_catalog.capabilities) == 90,\n            "NFL 2K5 product capability count changed")')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_b68_a1_audit.py", line 52, in test_runtime_counts_match_the_canonical_registry
+    exec(expression, dict(require=self.assertTrue, registry=registry, product_catalog=catalog))
+  File "<string>", line 1, in <module>
+AssertionError: False is not true : NFL 2K5 product capability count changed
+
+======================================================================
+FAIL: test_runtime_counts_match_the_canonical_registry (__main__.IntegrationTests.test_runtime_counts_match_the_canonical_registry)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_b68_a1_audit.py", line 53, in test_runtime_counts_match_the_canonical_registry
+    self.assertTrue('registry=161 sections=12 nfl2k5_capabilities=91' in source)
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_palette_only_sock_and_shoe_ignore_retail_chain_hint (__main__.PaletteIntentTests.test_palette_only_sock_and_shoe_ignore_retail_chain_hint) (family=4)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_b68_a1_audit.py", line 101, in test_palette_only_sock_and_shoe_ignore_retail_chain_hint
+    self.assertEqual(actual, expected, 'palette-only must keep the existing shared index chain')
+AssertionError: b'TSE[27 chars]x00\x00\x17\x00\x00\xef\xbe\xed\xfep\x14\x00\x[19117 chars]\x00' != b'TSE[27 chars]x00\x80\x11\x00\x00\xef\xbe\xed\xfep\x14\x00\x[18926 chars]\x00' : palette-only must keep the existing shared index chain
+
+======================================================================
+FAIL: test_palette_only_sock_and_shoe_ignore_retail_chain_hint (__main__.PaletteIntentTests.test_palette_only_sock_and_shoe_ignore_retail_chain_hint) (family=8)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_b68_a1_audit.py", line 101, in test_palette_only_sock_and_shoe_ignore_retail_chain_hint
+    self.assertEqual(actual, expected, 'palette-only must keep the existing shared index chain')
+AssertionError: b'TSE[27 chars]x00\x00\x17\x00\x00\xef\xbe\xed\xfeP\x14\x00\x[18830 chars]\x00' != b'TSE[27 chars]x00\x80\x11\x00\x00\xef\xbe\xed\xfeP\x14\x00\x[19018 chars]\x00' : palette-only must keep the existing shared index chain
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.587s
+
+FAILED (failures=7)

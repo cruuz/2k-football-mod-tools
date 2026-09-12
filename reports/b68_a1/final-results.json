@@ -1,0 +1,974 @@
+{
+  "standalone_files": 120,
+  "test_cases": 1288,
+  "skipped_tests": 15,
+  "passing_files": 118,
+  "failing_files": [
+    "tests/mod_editor/test_all_textures_workspace.py",
+    "tests/mod_editor/test_no_capability_is_invisible.py"
+  ],
+  "results": [
+    {
+      "file": "tests/mod_editor/test_2k5_audio_operation_integration.py",
+      "exit_code": 0,
+      "seconds": 27.824,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_2k5_audio_operation_integration.py.rerun.log",
+      "tests": 17,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_2k5_bounded_vclz_palette.py",
+      "exit_code": 0,
+      "seconds": 3.12,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_2k5_bounded_vclz_palette.py.log",
+      "tests": 7,
+      "skips": 2
+    },
+    {
+      "file": "tests/mod_editor/test_2k5_build_is_explainable.py",
+      "exit_code": 0,
+      "seconds": 0.616,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_2k5_build_is_explainable.py.log",
+      "tests": 16,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_2k5_bump_retail_probe.py",
+      "exit_code": 0,
+      "seconds": 0.215,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_2k5_bump_retail_probe.py.log",
+      "tests": 7,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_2k5_check_my_images.py",
+      "exit_code": 0,
+      "seconds": 19.658,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_2k5_check_my_images.py.rerun.log",
+      "tests": 21,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_2k5_import_offers_resize.py",
+      "exit_code": 0,
+      "seconds": 15.199,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_2k5_import_offers_resize.py.rerun.log",
+      "tests": 11,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_2k5_stale_original_cache.py",
+      "exit_code": 0,
+      "seconds": 0.215,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_2k5_stale_original_cache.py.intent-final.log",
+      "tests": 10,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_2k5_uniform_equipment_export.py",
+      "exit_code": 0,
+      "seconds": 25.011,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_2k5_uniform_equipment_export.py.final.log",
+      "tests": 16,
+      "skips": 2
+    },
+    {
+      "file": "tests/mod_editor/test_2k5_vclz_bounded_importers.py",
+      "exit_code": 0,
+      "seconds": 0.866,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_2k5_vclz_bounded_importers.py.log",
+      "tests": 16,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_2k5_visual_io_routing.py",
+      "exit_code": 0,
+      "seconds": 0.165,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_2k5_visual_io_routing.py.log",
+      "tests": 4,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_all_textures_workspace.py",
+      "exit_code": 1,
+      "seconds": 8.883,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_all_textures_workspace.py.rerun.log",
+      "tests": 23,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_audio_annotations_product.py",
+      "exit_code": 0,
+      "seconds": 1.216,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_audio_annotations_product.py.log",
+      "tests": 5,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_audio_panel_qt.py",
+      "exit_code": 0,
+      "seconds": 3.821,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_audio_panel_qt.py.log",
+      "tests": 50,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_audio_replacement_pack.py",
+      "exit_code": 0,
+      "seconds": 8.382,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_audio_replacement_pack.py.rerun.log",
+      "tests": 41,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_b661_kit_build.py",
+      "exit_code": 0,
+      "seconds": 7.731,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_b661_kit_build.py.final.log",
+      "tests": 2,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_b661_workspace_qt.py",
+      "exit_code": 0,
+      "seconds": 3.22,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_b661_workspace_qt.py.log",
+      "tests": 7,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_b66_coach_digits.py",
+      "exit_code": 0,
+      "seconds": 6.076,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_b66_coach_digits.py.log",
+      "tests": 12,
+      "skips": 1
+    },
+    {
+      "file": "tests/mod_editor/test_b66_coach_wiring.py",
+      "exit_code": 0,
+      "seconds": 0.966,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_b66_coach_wiring.py.log",
+      "tests": 5,
+      "skips": 2
+    },
+    {
+      "file": "tests/mod_editor/test_b68_a1_audit.py",
+      "exit_code": 0,
+      "seconds": 7.181,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_b68_a1_audit.py.intent-final.log",
+      "tests": 10,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_b68_t1_build.py",
+      "exit_code": 0,
+      "seconds": 6.277,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_b68_t1_build.py.final.log",
+      "tests": 6,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_b68_t1_ui.py",
+      "exit_code": 0,
+      "seconds": 6.18,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_b68_t1_ui.py.rerun.log",
+      "tests": 2,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_beta62_integration3_qt.py",
+      "exit_code": 0,
+      "seconds": 1.817,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_beta62_integration3_qt.py.log",
+      "tests": 8,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_beta66_1_adapter_imports.py",
+      "exit_code": 0,
+      "seconds": 0.465,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_beta66_1_adapter_imports.py.final.log",
+      "tests": 3,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_beta66_d1_images.py",
+      "exit_code": 0,
+      "seconds": 1.818,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_beta66_d1_images.py.intent-final.log",
+      "tests": 6,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_beta66_d1_panels.py",
+      "exit_code": 0,
+      "seconds": 2.069,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_beta66_d1_panels.py.final.log",
+      "tests": 4,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_beta66_helmet_finish_wiring.py",
+      "exit_code": 0,
+      "seconds": 16.35,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_beta66_helmet_finish_wiring.py.rerun.log",
+      "tests": 8,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_build_panel_qt.py",
+      "exit_code": 0,
+      "seconds": 2.168,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_build_panel_qt.py.log",
+      "tests": 13,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_caller_windows_pins.py",
+      "exit_code": 0,
+      "seconds": 0.565,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_caller_windows_pins.py.log",
+      "tests": 19,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_commentary_panel_qt.py",
+      "exit_code": 0,
+      "seconds": 7.931,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_commentary_panel_qt.py.rerun.log",
+      "tests": 3,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_directory_publishes_are_portable.py",
+      "exit_code": 0,
+      "seconds": 0.264,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_directory_publishes_are_portable.py.log",
+      "tests": 5,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_disc_memory_budget.py",
+      "exit_code": 0,
+      "seconds": 134.908,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_disc_memory_budget.py.log",
+      "tests": 2,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_discord_bugs_1.py",
+      "exit_code": 0,
+      "seconds": 1.418,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_discord_bugs_1.py.log",
+      "tests": 17,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_discord_bugs_1_wiring.py",
+      "exit_code": 0,
+      "seconds": 2.62,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_discord_bugs_1_wiring.py.log",
+      "tests": 10,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_discord_bugs_2.py",
+      "exit_code": 0,
+      "seconds": 1.668,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_discord_bugs_2.py.log",
+      "tests": 11,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_discord_bugs_2_wiring.py",
+      "exit_code": 0,
+      "seconds": 1.818,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_discord_bugs_2_wiring.py.log",
+      "tests": 6,
+      "skips": 2
+    },
+    {
+      "file": "tests/mod_editor/test_emulator_launch_polish.py",
+      "exit_code": 0,
+      "seconds": 0.565,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_emulator_launch_polish.py.log",
+      "tests": 11,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_facade_external_build.py",
+      "exit_code": 0,
+      "seconds": 0.365,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_facade_external_build.py.log",
+      "tests": 2,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_gui_drop_parity.py",
+      "exit_code": 0,
+      "seconds": 1.016,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_gui_drop_parity.py.log",
+      "tests": 7,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_gui_refusal_wording.py",
+      "exit_code": 0,
+      "seconds": 1.117,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_gui_refusal_wording.py.log",
+      "tests": 23,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_hotfix63_digit_budget.py",
+      "exit_code": 0,
+      "seconds": 20.005,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_hotfix63_digit_budget.py.log",
+      "tests": 10,
+      "skips": 1
+    },
+    {
+      "file": "tests/mod_editor/test_image_fit.py",
+      "exit_code": 0,
+      "seconds": 3.221,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_image_fit.py.log",
+      "tests": 21,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_keyboard_search_polish.py",
+      "exit_code": 0,
+      "seconds": 1.468,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_keyboard_search_polish.py.log",
+      "tests": 4,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_mod_build_performance.py",
+      "exit_code": 0,
+      "seconds": 7.129,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_mod_build_performance.py.log",
+      "tests": 6,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_model_import_disable_reason.py",
+      "exit_code": 0,
+      "seconds": 0.565,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_model_import_disable_reason.py.log",
+      "tests": 7,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_models_panel_qt.py",
+      "exit_code": 0,
+      "seconds": 7.13,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_models_panel_qt.py.log",
+      "tests": 8,
+      "skips": 1
+    },
+    {
+      "file": "tests/mod_editor/test_music_all_modes_wiring.py",
+      "exit_code": 0,
+      "seconds": 1.568,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_music_all_modes_wiring.py.log",
+      "tests": 4,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_music_simple_wiring.py",
+      "exit_code": 0,
+      "seconds": 1.017,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_music_simple_wiring.py.log",
+      "tests": 3,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_never_silent_gray_boot.py",
+      "exit_code": 0,
+      "seconds": 0.916,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_never_silent_gray_boot.py.log",
+      "tests": 4,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k3_2k4_compatibility_boundary.py",
+      "exit_code": 0,
+      "seconds": 0.114,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k3_2k4_compatibility_boundary.py.log",
+      "tests": 4,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_audio_backend_origin.py",
+      "exit_code": 0,
+      "seconds": 0.415,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_audio_backend_origin.py.log",
+      "tests": 5,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_audio_catalog.py",
+      "exit_code": 0,
+      "seconds": 0.716,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_audio_catalog.py.log",
+      "tests": 13,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_audo_fixed_slots.py",
+      "exit_code": 0,
+      "seconds": 0.816,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_audo_fixed_slots.py.log",
+      "tests": 4,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_build_service.py",
+      "exit_code": 0,
+      "seconds": 0.315,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_build_service.py.final.log",
+      "tests": 28,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_bump_texture_writer.py",
+      "exit_code": 0,
+      "seconds": 6.929,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_bump_texture_writer.py.log",
+      "tests": 25,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_create_play_wizard_qt.py",
+      "exit_code": 0,
+      "seconds": 28.428,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_create_play_wizard_qt.py.log",
+      "tests": 2,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_crib_standalone_texture_writer.py",
+      "exit_code": 0,
+      "seconds": 2.87,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_crib_standalone_texture_writer.py.log",
+      "tests": 3,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_digit_sheet_quality.py",
+      "exit_code": 0,
+      "seconds": 7.179,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_digit_sheet_quality.py.log",
+      "tests": 13,
+      "skips": 1
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_equipment_consumers.py",
+      "exit_code": 0,
+      "seconds": 31.124,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_equipment_consumers.py.intent-final.log",
+      "tests": 19,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_equipment_import.py",
+      "exit_code": 0,
+      "seconds": 2.269,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_equipment_import.py.intent-final.log",
+      "tests": 13,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_equipment_import_wiring.py",
+      "exit_code": 0,
+      "seconds": 0.916,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_equipment_import_wiring.py.log",
+      "tests": 6,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_equipment_retail_roundtrip.py",
+      "exit_code": 0,
+      "seconds": 17.246,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_equipment_retail_roundtrip.py.intent-final.log",
+      "tests": 2,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_equipment_scope_wiring.py",
+      "exit_code": 0,
+      "seconds": 2.269,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_equipment_scope_wiring.py.log",
+      "tests": 3,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_equipment_texture_chain.py",
+      "exit_code": 0,
+      "seconds": 4.473,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_equipment_texture_chain.py.intent-final.log",
+      "tests": 19,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_equipment_texture_native.py",
+      "exit_code": 0,
+      "seconds": 0.365,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_equipment_texture_native.py.final.log",
+      "tests": 7,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_extended_visuals.py",
+      "exit_code": 0,
+      "seconds": 0.365,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_extended_visuals.py.intent-final.log",
+      "tests": 9,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_music_fresh_rip.py",
+      "exit_code": 0,
+      "seconds": 1.016,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_music_fresh_rip.py.log",
+      "tests": 2,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_music_fresh_rip_gui.py",
+      "exit_code": 0,
+      "seconds": 0.115,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_music_fresh_rip_gui.py.log",
+      "tests": 1,
+      "skips": 1
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_my_career_completion.py",
+      "exit_code": 0,
+      "seconds": 32.538,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_my_career_completion.py.log",
+      "tests": 6,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_myplayer_hud.py",
+      "exit_code": 0,
+      "seconds": 35.897,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_myplayer_hud.py.log",
+      "tests": 5,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_playbook_pack.py",
+      "exit_code": 0,
+      "seconds": 49.931,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_playbook_pack.py.log",
+      "tests": 39,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_playbook_pack_ui.py",
+      "exit_code": 0,
+      "seconds": 0.868,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_playbook_pack_ui.py.log",
+      "tests": 13,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_read_option_qt.py",
+      "exit_code": 0,
+      "seconds": 1.718,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_read_option_qt.py.log",
+      "tests": 7,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_screen_preset_qt.py",
+      "exit_code": 0,
+      "seconds": 0.616,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_screen_preset_qt.py.log",
+      "tests": 4,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_shoe_relief.py",
+      "exit_code": 0,
+      "seconds": 5.88,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_shoe_relief.py.log",
+      "tests": 5,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_streaming_audio_ui.py",
+      "exit_code": 0,
+      "seconds": 1.117,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_streaming_audio_ui.py.log",
+      "tests": 9,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl_audio.py",
+      "exit_code": 0,
+      "seconds": 0.967,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl_audio.py.log",
+      "tests": 18,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_no_capability_is_invisible.py",
+      "exit_code": 1,
+      "seconds": 0.165,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_no_capability_is_invisible.py.rerun.log",
+      "tests": 2,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_number_sheet_quality_wiring.py",
+      "exit_code": 0,
+      "seconds": 1.417,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_number_sheet_quality_wiring.py.log",
+      "tests": 6,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_phase1_packaging.py",
+      "exit_code": 0,
+      "seconds": 2.268,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_phase1_packaging.py.final.log",
+      "tests": 23,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_platform_compat_ownership.py",
+      "exit_code": 0,
+      "seconds": 0.365,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_platform_compat_ownership.py.log",
+      "tests": 19,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_playbooks_link_table_export_ui.py",
+      "exit_code": 0,
+      "seconds": 0.565,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_playbooks_link_table_export_ui.py.log",
+      "tests": 3,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_player_assets.py",
+      "exit_code": 0,
+      "seconds": 0.165,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_player_assets.py.log",
+      "tests": 15,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_presentation_panel_qt.py",
+      "exit_code": 0,
+      "seconds": 7.63,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_presentation_panel_qt.py.log",
+      "tests": 2,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_product_catalog.py",
+      "exit_code": 0,
+      "seconds": 0.165,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_product_catalog.py.log",
+      "tests": 9,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_product_inspection_panels_qt.py",
+      "exit_code": 0,
+      "seconds": 7.279,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_product_inspection_panels_qt.py.log",
+      "tests": 7,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_product_shell_accessibility_qt.py",
+      "exit_code": 0,
+      "seconds": 67.611,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_product_shell_accessibility_qt.py.log",
+      "tests": 6,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_project_document_workflow.py",
+      "exit_code": 0,
+      "seconds": 15.347,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_project_document_workflow.py.log",
+      "tests": 13,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_provider_integrity.py",
+      "exit_code": 0,
+      "seconds": 9.231,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_provider_integrity.py.intent-final.log",
+      "tests": 7,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_providers.py",
+      "exit_code": 0,
+      "seconds": 3.791,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_providers.py.intent-final.log",
+      "tests": 33,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_reviewed_helper_setup.py",
+      "exit_code": 0,
+      "seconds": 0.215,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_reviewed_helper_setup.py.log",
+      "tests": 9,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_roster_editor_panel_qt.py",
+      "exit_code": 0,
+      "seconds": 11.287,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_roster_editor_panel_qt.py.log",
+      "tests": 50,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_roster_save_to_disc_wiring.py",
+      "exit_code": 0,
+      "seconds": 1.918,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_roster_save_to_disc_wiring.py.log",
+      "tests": 6,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_save_roster_import.py",
+      "exit_code": 0,
+      "seconds": 0.114,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_save_roster_import.py.log",
+      "tests": 12,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_security_blockers_remediation.py",
+      "exit_code": 0,
+      "seconds": 0.215,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_security_blockers_remediation.py.log",
+      "tests": 11,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_share_panel_qt.py",
+      "exit_code": 0,
+      "seconds": 7.781,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_share_panel_qt.py.log",
+      "tests": 7,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_sounds_panel_qt.py",
+      "exit_code": 0,
+      "seconds": 9.084,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_sounds_panel_qt.py.log",
+      "tests": 10,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_stadium_editable_discovery.py",
+      "exit_code": 0,
+      "seconds": 13.193,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_stadium_editable_discovery.py.log",
+      "tests": 6,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_startup_performance.py",
+      "exit_code": 0,
+      "seconds": 2.469,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_startup_performance.py.log",
+      "tests": 8,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_studio_facade.py",
+      "exit_code": 0,
+      "seconds": 0.466,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_studio_facade.py.log",
+      "tests": 11,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_studio_qt_models.py",
+      "exit_code": 0,
+      "seconds": 1.017,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_studio_qt_models.py.log",
+      "tests": 9,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_studio_session.py",
+      "exit_code": 0,
+      "seconds": 0.916,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_studio_session.py.intent-final.log",
+      "tests": 18,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_studio_shell_layout_qt.py",
+      "exit_code": 0,
+      "seconds": 35.792,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_studio_shell_layout_qt.py.log",
+      "tests": 18,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_studio_visual_asset_routing.py",
+      "exit_code": 0,
+      "seconds": 5.677,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_studio_visual_asset_routing.py.log",
+      "tests": 14,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_team_kit_bundle.py",
+      "exit_code": 0,
+      "seconds": 6.328,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_team_kit_bundle.py.log",
+      "tests": 8,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_team_kit_product_integration.py",
+      "exit_code": 0,
+      "seconds": 16.097,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_team_kit_product_integration.py.log",
+      "tests": 7,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_teamkit_import_wiring.py",
+      "exit_code": 0,
+      "seconds": 0.766,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_teamkit_import_wiring.py.log",
+      "tests": 3,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_texture_editor.py",
+      "exit_code": 0,
+      "seconds": 0.966,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_texture_editor.py.log",
+      "tests": 21,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_texture_master_facades.py",
+      "exit_code": 0,
+      "seconds": 0.565,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_texture_master_facades.py.log",
+      "tests": 2,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_unif_color_argb_parse.py",
+      "exit_code": 0,
+      "seconds": 0.666,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_unif_color_argb_parse.py.log",
+      "tests": 2,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_unif_color_control.py",
+      "exit_code": 0,
+      "seconds": 10.237,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_unif_color_control.py.private-inventory.log",
+      "fixture": "/home/noah/.cache/2k5-mod-studio/7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9/indexes/nfl2k5_resource_chunks_v2.json",
+      "method": "Temporary read-only inventory symlink; no payload copied; removed in finally",
+      "tests": 15,
+      "skips": 2
+    },
+    {
+      "file": "tests/mod_editor/test_unified_audio_composition.py",
+      "exit_code": 0,
+      "seconds": 1.017,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_unified_audio_composition.py.log",
+      "tests": 3,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_unified_stadium_texture_composition.py",
+      "exit_code": 0,
+      "seconds": 0.415,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_unified_stadium_texture_composition.py.log",
+      "tests": 5,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_uniform_bundle_cross_project.py",
+      "exit_code": 0,
+      "seconds": 3.422,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_uniform_bundle_cross_project.py.log",
+      "tests": 8,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_ux_open_disc_hook_qt.py",
+      "exit_code": 0,
+      "seconds": 14.194,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_ux_open_disc_hook_qt.py.log",
+      "tests": 7,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_visual_export_and_preview.py",
+      "exit_code": 0,
+      "seconds": 6.429,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_visual_export_and_preview.py.log",
+      "tests": 11,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_workspace_recovery.py",
+      "exit_code": 0,
+      "seconds": 0.766,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_workspace_recovery.py.log",
+      "tests": 7,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_xemu_settings.py",
+      "exit_code": 0,
+      "seconds": 0.417,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_xemu_settings.py.log",
+      "tests": 5,
+      "skips": 0
+    },
+    {
+      "file": "tests/mod_editor/test_xiso_layout_tolerance.py",
+      "exit_code": 0,
+      "seconds": 0.866,
+      "log": "reports/b68_a1/tests/tests__mod_editor__test_xiso_layout_tolerance.py.log",
+      "tests": 9,
+      "skips": 0
+    },
+    {
+      "file": "tests/nfl2k5_bump_texture_writer_test.py",
+      "exit_code": 0,
+      "seconds": 7.33,
+      "log": "reports/b68_a1/tests/tests__nfl2k5_bump_texture_writer_test.py.log",
+      "tests": 25,
+      "skips": 0
+    },
+    {
+      "file": "tests/test_nfl_player_roster_general_workflow.py",
+      "exit_code": 0,
+      "seconds": 0.365,
+      "log": "reports/b68_a1/tests/tests__test_nfl_player_roster_general_workflow.py.log",
+      "tests": 19,
+      "skips": 0
+    }
+  ]
+}

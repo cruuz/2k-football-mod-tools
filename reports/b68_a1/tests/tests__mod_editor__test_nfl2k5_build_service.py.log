@@ -1,0 +1,69 @@
+test_alternate_container_layout_build_reports_its_actual_size (__main__.Nfl2k5BuildServiceTests.test_alternate_container_layout_build_reports_its_actual_size) ... ok
+test_atomic_publish_preserves_a_racing_destination (__main__.Nfl2k5BuildServiceTests.test_atomic_publish_preserves_a_racing_destination) ... ok
+test_audio_inventory_failure_precedes_backend_and_publication (__main__.Nfl2k5BuildServiceTests.test_audio_inventory_failure_precedes_backend_and_publication) ... ok
+test_audio_inventory_rejects_unsafe_modes_links_and_sizes (__main__.Nfl2k5BuildServiceTests.test_audio_inventory_rejects_unsafe_modes_links_and_sizes) ...   [case] derived_symlink
+    [phase] fixture
+    [phase] build
+    [phase] teardown
+  [case] derived_public_mode
+    [phase] fixture
+    [phase] build
+    [phase] teardown
+  [case] file_symlink
+    [phase] fixture
+    [phase] build
+    [phase] teardown
+  [case] containment_symlink
+    [phase] fixture
+    [phase] build
+    [phase] teardown
+  [case] file_hardlink
+    [phase] fixture
+    [phase] build
+    [phase] teardown
+  [case] public_mode
+    [phase] fixture
+    [phase] build
+    [phase] teardown
+  [case] empty_file
+    [phase] fixture
+    [phase] build
+    [phase] teardown
+  [case] fingerprints_too_large
+    [phase] fixture
+    [phase] build
+    [phase] teardown
+  [case] containment_too_large
+    [phase] fixture
+    [phase] build
+    [phase] teardown
+ok
+test_audio_inventory_rejects_unsafe_source_cache_root (__main__.Nfl2k5BuildServiceTests.test_audio_inventory_rejects_unsafe_source_cache_root) ... ok
+test_build_failure_removes_partial_stage_and_never_calls_verify (__main__.Nfl2k5BuildServiceTests.test_build_failure_removes_partial_stage_and_never_calls_verify) ... ok
+test_build_receipt_hash_selects_span_verifier_and_cache_survives_staging (__main__.Nfl2k5BuildServiceTests.test_build_receipt_hash_selects_span_verifier_and_cache_survives_staging) ... ok
+test_crib_compression_failures_remain_concise_and_actionable (__main__.Nfl2k5BuildServiceTests.test_crib_compression_failures_remain_concise_and_actionable) ... ok
+test_each_audio_kind_passes_exact_private_inputs_to_build_and_verify (__main__.Nfl2k5BuildServiceTests.test_each_audio_kind_passes_exact_private_inputs_to_build_and_verify) ... ok
+test_existing_destination_is_refused_before_backend_runs (__main__.Nfl2k5BuildServiceTests.test_existing_destination_is_refused_before_backend_runs) ... ok
+test_external_project_is_one_private_snapshot_for_both_backend_passes (__main__.Nfl2k5BuildServiceTests.test_external_project_is_one_private_snapshot_for_both_backend_passes) ... ok
+test_failed_or_unconfirmed_verify_never_publishes (__main__.Nfl2k5BuildServiceTests.test_failed_or_unconfirmed_verify_never_publishes) ... ok
+test_interruption_cleans_staging_without_publishing (__main__.Nfl2k5BuildServiceTests.test_interruption_cleans_staging_without_publishing) ... ok
+test_low_space_is_refused_before_staging_or_backend_work (__main__.Nfl2k5BuildServiceTests.test_low_space_is_refused_before_staging_or_backend_work) ... ok
+test_project_fields_cannot_select_private_audio_control_paths (__main__.Nfl2k5BuildServiceTests.test_project_fields_cannot_select_private_audio_control_paths) ... ok
+test_session_recipe_is_private_and_removed_after_build (__main__.Nfl2k5BuildServiceTests.test_session_recipe_is_private_and_removed_after_build) ... ok
+test_staged_project_preserves_relative_media_origin (__main__.Nfl2k5BuildServiceTests.test_staged_project_preserves_relative_media_origin) ... ok
+test_success_runs_build_and_one_verify_then_publishes_only_iso (__main__.Nfl2k5BuildServiceTests.test_success_runs_build_and_one_verify_then_publishes_only_iso) ... ok
+test_posix_open_keeps_the_exact_flags_it_always_used (__main__.PublishPinOpenTests.test_posix_open_keeps_the_exact_flags_it_always_used) ... ok
+test_windows_failure_is_translated_not_swallowed (__main__.PublishPinOpenTests.test_windows_failure_is_translated_not_swallowed) ... ok
+test_windows_opens_the_existing_file_with_share_delete (__main__.PublishPinOpenTests.test_windows_opens_the_existing_file_with_share_delete) ... ok
+test_windows_without_the_primitives_fails_closed_on_windows (__main__.PublishPinOpenTests.test_windows_without_the_primitives_fails_closed_on_windows) ... ok
+test_drained_job_is_not_reported_as_a_survivor (__main__.WindowsBackendTeardownTests.test_drained_job_is_not_reported_as_a_survivor) ... ok
+test_observed_survivor_is_reported_and_never_silently_ignored (__main__.WindowsBackendTeardownTests.test_observed_survivor_is_reported_and_never_silently_ignored) ... ok
+test_posix_launch_and_teardown_keep_their_exact_behaviour (__main__.WindowsBackendTeardownTests.test_posix_launch_and_teardown_keep_their_exact_behaviour) ... ok
+test_unreadable_accounting_alone_is_not_a_survivor (__main__.WindowsBackendTeardownTests.test_unreadable_accounting_alone_is_not_a_survivor) ... ok
+test_unreadable_accounting_with_a_live_child_is_a_survivor (__main__.WindowsBackendTeardownTests.test_unreadable_accounting_with_a_live_child_is_a_survivor) ... ok
+test_without_a_job_the_direct_child_still_decides_the_outcome (__main__.WindowsBackendTeardownTests.test_without_a_job_the_direct_child_still_decides_the_outcome) ... ok
+
+----------------------------------------------------------------------
+Ran 28 tests in 0.153s
+
+OK

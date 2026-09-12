@@ -1,0 +1,14 @@
+...QItemSelectionModel: Selecting when no model has been set will result in a no-op.
+QItemSelectionModel: Selecting when no model has been set will result in a no-op.
+QItemSelectionModel: Selecting when no model has been set will result in a no-op.
+QItemSelectionModel: Selecting when no model has been set will result in a no-op.
+QItemSelectionModel: Selecting when no model has been set will result in a no-op.
+QItemSelectionModel: Selecting when no model has been set will result in a no-op.
+QItemSelectionModel: Selecting when no model has been set will result in a no-op.
+QItemSelectionModel: Selecting when no model has been set will result in a no-op.
+QItemSelectionModel: Selecting when no model has been set will result in a no-op.
+.
+----------------------------------------------------------------------
+Ran 4 tests in 0.735s
+
+OK

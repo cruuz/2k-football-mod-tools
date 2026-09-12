@@ -1,0 +1,36 @@
+...............................This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+[layout-metrics/toolbar-reflow] style=fusion font='DejaVu LGC Sans' pt=12 dpr=1.0 avgchar=9 height=21
+[layout-metrics/toolbar-reflow] panel.min=929 detail_card.min=358 filters=628 shortlist=881
+[layout-metrics/toolbar-reflow]   scope_filter: min=250 hint=228
+[layout-metrics/toolbar-reflow]   family_filter: min=210 hint=332
+[layout-metrics/toolbar-reflow]   status_filter: min=150 hint=139
+[layout-metrics/toolbar-reflow]   meaning_filter: min=205 hint=263
+[layout-metrics/toolbar-reflow]   shortlist_toggle_button: min=0 hint=256
+[layout-metrics/toolbar-reflow]   shortlist_page_button: min=0 hint=218
+[layout-metrics/toolbar-reflow]   shortlist_matching_button: min=0 hint=247
+[layout-metrics/toolbar-reflow]   shortlist_review_button: min=0 hint=241
+[layout-metrics/toolbar-reflow]   shortlist_count_label: min=0 hint=211
+[layout-metrics/toolbar-reflow]   shortlist_clear_button: min=0 hint=78
+[layout-metrics/toolbar-reflow]   export_shortlist_button: min=0 hint=311
+.[layout-metrics/detail-card] style=fusion font='DejaVu LGC Sans' pt=12 dpr=1.0 avgchar=9 height=21
+[layout-metrics/detail-card] panel.min=810 detail_card.min=358 filters=628 shortlist=762
+[layout-metrics/detail-card]   scope_filter: min=250 hint=228
+[layout-metrics/detail-card]   family_filter: min=210 hint=312
+[layout-metrics/detail-card]   status_filter: min=150 hint=139
+[layout-metrics/detail-card]   meaning_filter: min=205 hint=263
+[layout-metrics/detail-card]   shortlist_toggle_button: min=0 hint=217
+[layout-metrics/detail-card]   shortlist_page_button: min=0 hint=194
+[layout-metrics/detail-card]   shortlist_matching_button: min=0 hint=224
+[layout-metrics/detail-card]   shortlist_review_button: min=0 hint=184
+[layout-metrics/detail-card]   shortlist_count_label: min=0 hint=188
+[layout-metrics/detail-card]   shortlist_clear_button: min=0 hint=79
+[layout-metrics/detail-card]   export_shortlist_button: min=0 hint=254
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+..................
+----------------------------------------------------------------------
+Ran 50 tests in 3.380s
+
+OK

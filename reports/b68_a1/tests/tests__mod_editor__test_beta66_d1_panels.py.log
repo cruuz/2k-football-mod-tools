@@ -1,0 +1,16 @@
+F...
+======================================================================
+FAIL: test_equipment_default_and_explicit_recolour (__main__.PanelTests.test_equipment_default_and_explicit_recolour)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_beta66_d1_panels.py", line 90, in test_equipment_default_and_explicit_recolour
+    cls = wired_module('mod_editor.gui.equipment_texture_import_dialog').EquipmentTextureImportDialog
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_beta66_d1_panels.py", line 28, in wired_module
+    raise AssertionError('wiring context drifted')
+AssertionError: wiring context drifted
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.580s
+
+FAILED (failures=1)

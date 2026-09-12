@@ -1,0 +1,8 @@
+{
+  "file": "tests/mod_editor/test_unif_color_control.py",
+  "exit_code": 0,
+  "seconds": 10.237,
+  "log": "reports/b68_a1/tests/tests__mod_editor__test_unif_color_control.py.private-inventory.log",
+  "fixture": "/home/noah/.cache/2k5-mod-studio/7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9/indexes/nfl2k5_resource_chunks_v2.json",
+  "method": "Temporary read-only inventory symlink; no payload copied; removed in finally"
+}

@@ -1,0 +1,14 @@
+..
+----------------------------------------------------------------------
+Ran 2 tests in 7.033s
+
+OK
+NFL2K5_BUILD_PHASE source_validation seconds=0.001028
+NFL2K5_COMPILE_CACHE hits=0 misses=2
+NFL2K5_BUILD_PHASE compile seconds=1.207033
+NFL2K5_BUILD_PHASE bind_source seconds=0.002662
+NFL2K5_BUILD_PHASE copy seconds=0.000241
+NFL2K5_BUILD_PHASE write_spans seconds=0.000895
+NFL2K5_BUILD_PHASE artifacts_and_directory seconds=0.013037
+NFL2K5_BUILD_PHASE full_identity_check seconds=0.003067
+NFL2K5_VISUAL_MOD_BUILD_PASS edits=2 changed=2701 kept_retail=0 sha256=fd59d6db8539da7c1cadb66586635c4064f9eebf0859bdff0cb8bd50077d719f receipt_sha256=f5c5a44b0e910fd4510a135ba0addd1146121935e8be447431159efd1cb13de6 runtime=false

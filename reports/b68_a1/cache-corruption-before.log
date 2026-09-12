@@ -1,0 +1,49 @@
+EEEF
+======================================================================
+ERROR: test_compile_cache_discards_structurally_corrupt_envelopes (__main__.CacheKeyTests.test_compile_cache_discards_structurally_corrupt_envelopes) (envelope={'payload': 123})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_b68_a1_audit.py", line 105, in test_compile_cache_discards_structurally_corrupt_envelopes
+    self.assertIsNone(cache.get(key))
+                      ^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_compile_cache.py", line 71, in get
+    payload = envelope["payload"].encode("ascii")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'encode'
+
+======================================================================
+ERROR: test_compile_cache_discards_structurally_corrupt_envelopes (__main__.CacheKeyTests.test_compile_cache_discards_structurally_corrupt_envelopes) (envelope={'payload': []})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_b68_a1_audit.py", line 105, in test_compile_cache_discards_structurally_corrupt_envelopes
+    self.assertIsNone(cache.get(key))
+                      ^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_compile_cache.py", line 71, in get
+    payload = envelope["payload"].encode("ascii")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'encode'
+
+======================================================================
+ERROR: test_compile_cache_discards_structurally_corrupt_envelopes (__main__.CacheKeyTests.test_compile_cache_discards_structurally_corrupt_envelopes) (envelope={'payload': {}})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_b68_a1_audit.py", line 105, in test_compile_cache_discards_structurally_corrupt_envelopes
+    self.assertIsNone(cache.get(key))
+                      ^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_compile_cache.py", line 71, in get
+    payload = envelope["payload"].encode("ascii")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'encode'
+
+======================================================================
+FAIL: test_compile_cache_discards_structurally_corrupt_envelopes (__main__.CacheKeyTests.test_compile_cache_discards_structurally_corrupt_envelopes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_b68_a1_audit.py", line 106, in test_compile_cache_discards_structurally_corrupt_envelopes
+    self.assertEqual(cache.misses, 6)
+AssertionError: 3 != 6
+
+----------------------------------------------------------------------
+Ran 1 test in 0.004s
+
+FAILED (failures=1, errors=3)

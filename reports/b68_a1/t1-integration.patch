@@ -1,0 +1,291 @@
+diff --git a/ASTRA_REPORT.md b/ASTRA_B68_T1_REPORT.md
+similarity index 100%
+rename from ASTRA_REPORT.md
+rename to ASTRA_B68_T1_REPORT.md
+diff --git a/WIRING.md b/WIRING_B68_T1.md
+similarity index 100%
+rename from WIRING.md
+rename to WIRING_B68_T1.md
+diff --git a/mod_editor/core/providers.py b/mod_editor/core/providers.py
+index b2e621b5..c9669248 100644
+--- a/mod_editor/core/providers.py
++++ b/mod_editor/core/providers.py
+@@ -557,6 +557,7 @@ class Nfl2k5UnifiedVisualProvider:
+         "mod_editor/core/nfl2k5_catch_slider.py": "0ea12e1f558463538a154f50c38036389a8c0432c7ba55ac2862cd706b85498f",
+         "mod_editor/core/nfl2k5_cave_oracle.py": "8be24dd71d7503dba209061747bb74c439833970978a045a96f740cedafb940e",
+         "mod_editor/core/nfl2k5_college_check.py": "b4752a4a015c2b39a19e9887ef67ffdcc2b2b9ac044642a45201a2fae500709d",
++        "mod_editor/core/nfl2k5_compile_cache.py": "4b9e9fc695b8e096cfc4e93e7dd511d43b9ea2455b004411fa1a66d615daca98",
+         "mod_editor/core/nfl2k5_coverage_slider.py": "e63025985e5e2a1f9e18fbc8f7375b16689f2b81bdb61766d86f8d8ee515fc0b",
+         "mod_editor/core/nfl2k5_coverage_trail.py": "68b6548fc60cf8cbed4a912403b6323c44818eeba358cdc28fa8090642a3e969",
+         "mod_editor/core/nfl2k5_coverage_trail_code.py": "746874dbef2fbf16355affd2b373840fb96e235fc0f2592c9c2858c826080e66",
+diff --git a/packaging/check_2k5_mod_studio_release.py b/packaging/check_2k5_mod_studio_release.py
+index db686caa..74bf412d 100755
+--- a/packaging/check_2k5_mod_studio_release.py
++++ b/packaging/check_2k5_mod_studio_release.py
+@@ -604,6 +604,27 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
+             seen_files.add(relative)
+             total_bytes += info.st_size
+             continue
++        equipment_contracts = {
++            "tools/nfl2k5_equipment_optimal": (16504, "949aad6a251de3f039f83bff15d4aa033183c250dbeadd1029e7c79dee4817c4"),
++            "tools/nfl2k5_equipment_optimal.c": (4648, "6c9c7470d40ce3b99ac000fe75bd51c7d2fbeb44f783e313eb7b7dee0f0b8390"),
++        }
++        if relative in equipment_contracts:
++            expected_size, expected_sha256 = equipment_contracts[relative]
++            if info.st_size != expected_size:
++                raise ReleaseCheckError(f"reviewed equipment helper size changed: {relative}")
++            payload = path.read_bytes()
++            if hashlib.sha256(payload).hexdigest() != expected_sha256:
++                raise ReleaseCheckError(f"reviewed equipment helper hash changed: {relative}")
++            if relative == "tools/nfl2k5_equipment_optimal":
++                if payload[:4] != b"\x7fELF":
++                    raise ReleaseCheckError("reviewed equipment helper is not ELF")
++                if os.name != "nt" and (info.st_mode & 0o777) != 0o755:
++                    raise ReleaseCheckError("reviewed equipment helper must be mode 0755")
++            else:
++                payload.decode("utf-8")
++            seen_files.add(relative)
++            total_bytes += info.st_size
++            continue
+         suffix = path.suffix.casefold()
+         if relative in scorebug_pngs:
+             _validate_scorebug_template_png(path, relative, info, scorebug_pngs[relative])
+diff --git a/packaging/release-allowlist.txt b/packaging/release-allowlist.txt
+index a737e1ba..6c8fb50e 100644
+--- a/packaging/release-allowlist.txt
++++ b/packaging/release-allowlist.txt
+@@ -839,3 +839,6 @@ mod_editor/core/responsive_json.py
+ mod_editor/core/studio_inspection.py
+ mod_editor/gui/stall_watchdog.py
+ mod_editor/gui/workspace_runtime.py
++mod_editor/core/nfl2k5_compile_cache.py
++tools/nfl2k5_equipment_optimal
++tools/nfl2k5_equipment_optimal.c
+diff --git a/tests/mod_editor/test_phase1_packaging.py b/tests/mod_editor/test_phase1_packaging.py
+index e205c624..dcd5e1de 100644
+--- a/tests/mod_editor/test_phase1_packaging.py
++++ b/tests/mod_editor/test_phase1_packaging.py
+@@ -160,6 +160,120 @@ class ModStudioPackagingTests(unittest.TestCase):
+             with self.assertRaisesRegex(release_gate.ReleaseCheckError, "symlinks are forbidden"):
+                 release_gate.audit_release(root, allowlist)
+ 
++    def _equipment_helper_fixture(self):
++        """Stage the two reviewed equipment-helper paths at their exact names."""
++        temporary = tempfile.TemporaryDirectory(prefix="2k5-equipment-helper-test-")
++        root = Path(temporary.name) / "release"
++        (root / "tools").mkdir(parents=True)
++        binary = root / "tools/nfl2k5_equipment_optimal"
++        source = root / "tools/nfl2k5_equipment_optimal.c"
++        binary.write_bytes((ROOT / "tools/nfl2k5_equipment_optimal").read_bytes())
++        binary.chmod(0o755)
++        source.write_bytes((ROOT / "tools/nfl2k5_equipment_optimal.c").read_bytes())
++        source.chmod(0o644)
++        allowlist = Path(temporary.name) / "allowlist.txt"
++        allowlist.write_text(
++            "tools/\n"
++            "tools/nfl2k5_equipment_optimal\n"
++            "tools/nfl2k5_equipment_optimal.c\n",
++            encoding="utf-8",
++        )
++        return temporary, root, allowlist, binary, source
++
++    def test_accepts_the_reviewed_equipment_helper_pair(self) -> None:
++        temporary, root, allowlist, _binary, _source = self._equipment_helper_fixture()
++        with temporary:
++            report = release_gate.audit_release(root, allowlist)
++        self.assertEqual(report["file_count"], 2)
++
++    def test_refuses_equipment_helper_with_a_changed_size(self) -> None:
++        temporary, root, allowlist, binary, _source = self._equipment_helper_fixture()
++        with temporary:
++            binary.write_bytes(binary.read_bytes() + b"\0")
++            binary.chmod(0o755)
++            with self.assertRaisesRegex(
++                release_gate.ReleaseCheckError, "equipment helper size changed"
++            ):
++                release_gate.audit_release(root, allowlist)
++
++    def test_refuses_equipment_helper_with_a_changed_hash(self) -> None:
++        temporary, root, allowlist, binary, source = self._equipment_helper_fixture()
++        with temporary:
++            payload = bytearray(binary.read_bytes())
++            payload[-1] ^= 0xFF
++            binary.write_bytes(bytes(payload))
++            binary.chmod(0o755)
++            with self.assertRaisesRegex(
++                release_gate.ReleaseCheckError, "equipment helper hash changed"
++            ):
++                release_gate.audit_release(root, allowlist)
++        temporary, root, allowlist, _binary, source = self._equipment_helper_fixture()
++        with temporary:
++            text = source.read_text(encoding="utf-8")
++            source.write_text(text.replace("/*", "/* ", 1), encoding="utf-8")
++            with self.assertRaisesRegex(
++                release_gate.ReleaseCheckError, "equipment helper"
++            ):
++                release_gate.audit_release(root, allowlist)
++
++    def test_refuses_equipment_helper_that_is_group_writable(self) -> None:
++        temporary, root, allowlist, binary, _source = self._equipment_helper_fixture()
++        with temporary:
++            binary.chmod(0o775)
++            with self.assertRaisesRegex(
++                release_gate.ReleaseCheckError, "must be mode 0755"
++            ):
++                release_gate.audit_release(root, allowlist)
++
++    def test_refuses_the_same_bytes_under_a_renamed_path(self) -> None:
++        for renamed in (
++            "tools/nfl2k5_equipment_optimal_v2",
++            "tools/nfl2k5_equipment_optimal_v2.c",
++        ):
++            with self.subTest(renamed=renamed):
++                temporary, root, allowlist, binary, source = (
++                    self._equipment_helper_fixture()
++                )
++                with temporary:
++                    original = binary if not renamed.endswith(".c") else source
++                    copy = root / renamed
++                    copy.write_bytes(original.read_bytes())
++                    copy.chmod(0o755 if not renamed.endswith(".c") else 0o644)
++                    allowlist.write_text(
++                        allowlist.read_text(encoding="utf-8") + renamed + "\n",
++                        encoding="utf-8",
++                    )
++                    with self.assertRaisesRegex(
++                        release_gate.ReleaseCheckError, "unapproved release file type"
++                    ):
++                        release_gate.audit_release(root, allowlist)
++
++    def test_reviewed_equipment_helper_pins_agree_across_the_repository(self) -> None:
++        import sys as _sys
++
++        _sys.path.insert(0, str(ROOT))
++        from mod_editor.core import nfl2k5_equipment_lz as equipment_lz
++        from tools import setup_reviewed_helpers
++
++        binary = ROOT / "tools/nfl2k5_equipment_optimal"
++        payload = binary.read_bytes()
++        digest = hashlib.sha256(payload).hexdigest()
++        self.assertEqual(len(payload), equipment_lz._NATIVE_SIZE)
++        self.assertEqual(digest, equipment_lz._NATIVE_SHA256)
++        self.assertEqual(
++            setup_reviewed_helpers.REVIEWED_HELPERS["tools/nfl2k5_equipment_optimal"],
++            (equipment_lz._NATIVE_SIZE, equipment_lz._NATIVE_SHA256),
++        )
++        checker = CHECKER.read_text(encoding="utf-8")
++        self.assertIn(f'"tools/nfl2k5_equipment_optimal": ({len(payload)}, "{digest}")', checker)
++        allowlist = (ROOT / "packaging/release-allowlist.txt").read_text(encoding="utf-8")
++        for declared in (
++            "mod_editor/core/nfl2k5_compile_cache.py",
++            "tools/nfl2k5_equipment_optimal",
++            "tools/nfl2k5_equipment_optimal.c",
++        ):
++            self.assertIn(declared + "\n", allowlist)
++
+     def test_launcher_and_packaging_docs_require_pyqt5_not_tk(self) -> None:
+         launcher = (ROOT / "tools/launch_2k5_mod_studio.sh").read_text(encoding="utf-8")
+         readme = (ROOT / "packaging/README.md").read_text(encoding="utf-8")
+diff --git a/tools/setup_reviewed_helpers.py b/tools/setup_reviewed_helpers.py
+index b54fb63a..b5a0bd26 100644
+--- a/tools/setup_reviewed_helpers.py
++++ b/tools/setup_reviewed_helpers.py
+@@ -1,8 +1,10 @@
+ #!/usr/bin/env python3
+-"""Verify and normalize the one reviewed Linux H7A helper in a source worktree.
++"""Verify and normalize the reviewed Linux helpers in a source worktree.
+ 
+ Run explicitly after checkout: python3 tools/setup_reviewed_helpers.py
+-Only the pinned tools/apf_h7a_optimal regular, single-link file is eligible.
++Only the pinned tools/apf_h7a_optimal (APF H7A encoder) and
++tools/nfl2k5_equipment_optimal (2K5 equipment VC-LZ optimal parser) regular,
++single-link files are eligible.
+ Wrong contents, symlinks, foreign ownership and swapped files are refused.
+ The runtime security predicate is neither changed nor bypassed. No execution.
+ """
+@@ -20,6 +22,15 @@ import sys
+ SIZE = 14472
+ SHA256 = '9061866e31f1a2930eceaa4fb8652ef1b7aa9b04cbce0174cc0eae125f8e49ab'
+ 
++# Every reviewed helper, keyed by its repository-relative path. Each runtime
++# gate pins the same size/SHA-256 independently; this table only decides which
++# files this tool is allowed to chmod.
++REVIEWED_HELPERS: dict[str, tuple[int, str]] = {
++    'tools/apf_h7a_optimal': (SIZE, SHA256),
++    'tools/nfl2k5_equipment_optimal': (
++        16504, '949aad6a251de3f039f83bff15d4aa033183c250dbeadd1029e7c79dee4817c4'),
++}
++
+ 
+ class SetupError(ValueError):
+     pass
+@@ -30,10 +41,12 @@ def _require(condition, message):
+         raise SetupError(message)
+ 
+ 
+-def normalize(root: Path) -> dict[str, object]:
++def normalize(root: Path, relative: str = 'tools/apf_h7a_optimal') -> dict[str, object]:
+     """Hash first, chmod the same descriptor, then reverify identity and bytes."""
+     _require(os.name == 'posix' and hasattr(os, 'fchmod'), 'Unix permission setup requires POSIX')
+-    path = Path(os.path.abspath(root)) / 'tools' / 'apf_h7a_optimal'
++    _require(relative in REVIEWED_HELPERS, f'not a reviewed helper: {relative}')
++    size, sha256 = REVIEWED_HELPERS[relative]
++    path = Path(os.path.abspath(root)).joinpath(*relative.split('/'))
+     for parent in reversed(path.parents):
+         info = parent.lstat()
+         _require(stat.S_ISDIR(info.st_mode) and not stat.S_ISLNK(info.st_mode),
+@@ -59,14 +72,14 @@ def normalize(root: Path) -> dict[str, object]:
+     try:
+         opened = os.fstat(fd)
+         _require((opened.st_dev, opened.st_ino) == (before.st_dev, before.st_ino), 'helper changed while opening')
+-        _require(opened.st_size == SIZE and opened.st_nlink == 1, 'helper size/link count is not reviewed')
++        _require(opened.st_size == size and opened.st_nlink == 1, 'helper size/link count is not reviewed')
+         data = bytearray()
+-        while len(data) <= SIZE:
+-            block = os.read(fd, SIZE + 1 - len(data))
++        while len(data) <= size:
++            block = os.read(fd, size + 1 - len(data))
+             if not block:
+                 break
+             data.extend(block)
+-        _require(len(data) == SIZE and hashlib.sha256(data).hexdigest() == SHA256, 'reviewed helper SHA-256 mismatch; no permissions changed')
++        _require(len(data) == size and hashlib.sha256(data).hexdigest() == sha256, 'reviewed helper SHA-256 mismatch; no permissions changed')
+         os.fchmod(fd, 0o755)
+         final = os.fstat(fd)
+         named = os.stat(path.name, dir_fd=parent_fd, follow_symlinks=False)
+@@ -77,8 +90,8 @@ def normalize(root: Path) -> dict[str, object]:
+         _require(stat.S_IMODE(final.st_mode) == 0o755, 'filesystem did not enforce mode 0755')
+         os.lseek(fd, 0, os.SEEK_SET)
+         verified = bytearray()
+-        while len(verified) <= SIZE:
+-            block = os.read(fd, SIZE + 1 - len(verified))
++        while len(verified) <= size:
++            block = os.read(fd, size + 1 - len(verified))
+             if not block:
+                 break
+             verified.extend(block)
+@@ -86,16 +99,22 @@ def normalize(root: Path) -> dict[str, object]:
+     finally:
+         os.close(fd)
+         os.close(parent_fd)
+-    return {'path': str(path), 'sha256': SHA256, 'before_mode': f'{stat.S_IMODE(before.st_mode):04o}',
++    return {'path': str(path), 'relative': relative, 'sha256': sha256,
++            'before_mode': f'{stat.S_IMODE(before.st_mode):04o}',
+             'after_mode': '0755', 'changed': stat.S_IMODE(before.st_mode) != 0o755}
+ 
+ 
++def normalize_all(root: Path) -> list[dict[str, object]]:
++    """Normalize every reviewed helper this checkout carries, in a fixed order."""
++    return [normalize(root, relative) for relative in sorted(REVIEWED_HELPERS)]
++
++
+ def main(argv=None) -> int:
+     parser = argparse.ArgumentParser(description=__doc__)
+     parser.add_argument('--root', type=Path, default=Path(__file__).resolve().parents[1])
+     args = parser.parse_args(argv)
+     try:
+-        print(json.dumps(normalize(args.root), indent=2))
++        print(json.dumps(normalize_all(args.root), indent=2))
+     except (SetupError, OSError) as exc:
+         print(f'REVIEWED_HELPER_SETUP_REFUSED: {exc}', file=sys.stderr)
+         return 1

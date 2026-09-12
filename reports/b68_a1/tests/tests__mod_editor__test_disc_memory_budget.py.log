@@ -1,0 +1,15 @@
+.MEMORY test_nfl2k5_music_acceptance.py: 37486592 bytes
+MEMORY test_nfl2k5_music_banks.py: 59781120 bytes
+MEMORY test_nfl2k5_music_build.py: 113184768 bytes
+MEMORY test_nfl2k5_scorebug_resources.py: 172634112 bytes
+MEMORY test_xiso_layout_tolerance.py: 50454528 bytes
+MEMORY test_pack_extent_resolver.py: 54280192 bytes
+MEMORY test_nfl2k5_build_service.py: 33030144 bytes
+MEMORY test_modpack.py: 173047808 bytes
+MEMORY test_modpack_growth.py: 130400256 bytes
+MEMORY test_modpack_growth_acceptance.py: 45350912 bytes
+.
+----------------------------------------------------------------------
+Ran 2 tests in 134.827s
+
+OK

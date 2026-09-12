@@ -1,0 +1,13 @@
+998226154c97ea8987b36128e94c9c526ceec73d
+100644 412cf08b82da0980c9365a31a3d33aa814b01619 1	docs/mod_editor/2k5_mod_studio_changelog.md
+100644 be6cd0cdabe79a7ed21732d6a3da88107516c113 2	docs/mod_editor/2k5_mod_studio_changelog.md
+100644 346d869e3daf4937817c84f12550aafbc068fa72 3	docs/mod_editor/2k5_mod_studio_changelog.md
+100644 2912eab4c69f2f2db4a823e80f241d9e1858be0f 1	mod_editor/core/providers.py
+100644 c9669248ab3bbad7c0332cd180945a6cfa5691b4 2	mod_editor/core/providers.py
+100644 eae554592df554fff0c36b8ac3c4286e07c9f78b 3	mod_editor/core/providers.py
+
+Auto-merging docs/mod_editor/2k5_mod_studio_changelog.md
+CONFLICT (content): Merge conflict in docs/mod_editor/2k5_mod_studio_changelog.md
+Auto-merging mod_editor/core/providers.py
+CONFLICT (content): Merge conflict in mod_editor/core/providers.py
+Auto-merging packaging/check_2k5_mod_studio_runtime.py

@@ -1,0 +1,36 @@
+........ss....E
+======================================================================
+ERROR: test_session_save_load_and_undo_preserve_the_selected_set (__main__.RealSessionRoundTripTests.test_session_save_load_and_undo_preserve_the_selected_set)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_asset_io.py", line 149, in __init__
+    self.inventory = load(cache.inventory)
+                     ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/tools/nfl_uniform_inventory.py", line 296, in load_inventory_document
+    info = path.stat()
+           ^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 842, in stat
+    return os.stat(self, follow_symlinks=follow_symlinks)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b68-a1/reports/assets/nfl2k5_resource_chunks_v2.json'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_unif_color_control.py", line 281, in test_session_save_load_and_undo_preserve_the_selected_set
+    first = StudioSession(
+            ^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/studio/session.py", line 406, in __init__
+    self.asset_io = Nfl2k5ProductVisualIO(cache)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_extended_visual_io.py", line 550, in __init__
+    self.uniforms = Nfl2k5AssetIO(cache)
+                    ^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_asset_io.py", line 151, in __init__
+    raise ValidationError(f"Could not open the private game index: {exc}") from exc
+mod_editor.core.errors.ValidationError: Could not open the private game index: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b68-a1/reports/assets/nfl2k5_resource_chunks_v2.json'
+
+----------------------------------------------------------------------
+Ran 15 tests in 6.501s
+
+FAILED (errors=1, skipped=2)

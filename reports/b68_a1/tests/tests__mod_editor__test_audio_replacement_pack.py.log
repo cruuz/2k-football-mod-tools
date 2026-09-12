@@ -1,0 +1,20 @@
+..................E......................
+======================================================================
+ERROR: test_legacy_v1_ordered_id_set_stays_rc14_compatible (__main__.AudioReplacementPackTests.test_legacy_v1_ordered_id_set_stays_rc14_compatible)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_audio_replacement_pack.py", line 182, in test_legacy_v1_ordered_id_set_stays_rc14_compatible
+    report = json.loads(CAPACITY_REPORT.read_bytes())
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1021, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1015, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b68-a1/reports/assets/nfl2k5_audo_import_capacity.json'
+
+----------------------------------------------------------------------
+Ran 41 tests in 7.346s
+
+FAILED (errors=1)
