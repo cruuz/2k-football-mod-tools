@@ -669,12 +669,36 @@ def _rebuild_fixed_span(template_span: bytes, candidate: bytes, *, independent: 
     remains part of the compile interface; decoded growth is read from bytes.
     """
 
-    original, _info = decode_chunk(template_span, parse_chunks(template_span)[0])
+    chunk = parse_chunks(template_span)[0]
+    original, transport = decode_chunk(template_span, chunk)
     if candidate == original:
-        _span, info = rebuild_compressed_chunk_fixed_span(template_span, candidate)
-        return template_span, replace(info, rebuilt_span_sha256=_digest(template_span),
-                                      complete_span_matches_template=True,
-                                      zero_padding_bytes=0)
+        # No encoder is needed for an unchanged span. A fresh greedy stream
+        # can overflow even though the retained transport already fits, and
+        # its statistics would not describe the bytes we actually return.
+        from nfl_txtr import FixedSpanRebuildInfo
+
+        _require(transport is not None, "Unchanged equipment TSET is not compressed")
+        consumed = transport.consumed_bytes
+        unused = chunk.stored_size - consumed
+        minimum = minimum_vc_lz_overlap_scratch(
+            template_span[HEADER.size:HEADER.size + consumed], chunk.stored_size, len(original))
+        scratch = chunk.overlap_scratch_bytes
+        _require(scratch >= max(unused, minimum),
+                 "Unchanged equipment exceeds its retail loader scratch allowance")
+        return template_span, FixedSpanRebuildInfo(
+            kind=chunk.kind, stored_size=chunk.stored_size, system_bytes=chunk.system_bytes,
+            video_bytes=chunk.video_bytes, stream_tag=transport.stream_tag,
+            offset_bits=transport.offset_bits, original_consumed_bytes=consumed,
+            original_unused_bytes=unused, recompressed_bytes=consumed,
+            zero_padding_bytes=0, original_overlap_scratch_bytes=scratch,
+            exact_minimum_overlap_scratch_bytes=minimum,
+            required_overlap_scratch_bytes=(max(unused, minimum) + 15) & ~15,
+            rebuilt_overlap_scratch_bytes=scratch, overlap_scratch_changed=False,
+            loader_in_place_end_guard=True, loader_in_place_alias_guard=True,
+            template_decoded_matches_input=True, compressed_stream_matches_template=True,
+            complete_span_matches_template=True, decoded_sha256=_digest(original),
+            rebuilt_span_sha256=_digest(template_span),
+        )
     return _rebuild_grown_video(template_span, candidate)
 
 

@@ -69,6 +69,37 @@ class IntegrationTests(unittest.TestCase):
         self.assertIn('mod_editor.core.nfl2k5_compile_cache', ast.literal_eval(assignment.value))
 
 class PaletteIntentTests(unittest.TestCase):
+    def test_unchanged_span_keeps_its_original_stream_and_reports_actual_transport(self):
+        from mod_editor.core.nfl2k5_equipment_lz import compress_equipment_optimal
+        from nfl_txtr import HEADER, minimum_vc_lz_overlap_scratch
+        from nfl_vc_lz_fill import fill_stream
+        with tempfile.TemporaryDirectory() as folder:
+            f = Fixture(Path(folder).resolve())
+            optimal = compress_equipment_optimal(f.decoded, stream_tag=1, offset_bits=12,
+                                                max_encoded_size=len(f.span))
+            # A valid tight transport can fit the original optimal stream while
+            # a gratuitous greedy re-encode overflows, despite unchanged pixels.
+            tight = HEADER.pack(b'TSET', len(optimal), f.chunk.system_bytes,
+                                f.chunk.video_bytes, 0xFEEDBEEF, len(optimal), 0, 0) + optimal
+            filled, _ = fill_stream(optimal, f.decoded, f.chunk.stored_size, slack=16)
+            expanded = f.span[:32] + filled + bytes(f.chunk.stored_size-len(filled))
+            for original in (tight, expanded):
+                with self.subTest(stored=len(original)-32):
+                    chunk = parse_chunks(original)[0]
+                    decoded, transport = decode_chunk(original, chunk)
+                    self.assertEqual(decoded, f.decoded)
+                    actual, receipt = writer._rebuild_fixed_span(original, decoded, independent=True)
+                    self.assertEqual(actual, original)
+                    self.assertEqual(receipt.recompressed_bytes, transport.consumed_bytes)
+                    self.assertEqual(receipt.rebuilt_overlap_scratch_bytes, chunk.overlap_scratch_bytes)
+                    self.assertFalse(receipt.overlap_scratch_changed)
+                    self.assertTrue(receipt.compressed_stream_matches_template)
+                    self.assertTrue(receipt.complete_span_matches_template)
+                    self.assertEqual(receipt.exact_minimum_overlap_scratch_bytes,
+                        minimum_vc_lz_overlap_scratch(original[32:32+transport.consumed_bytes],
+                                                     chunk.stored_size, len(decoded)))
+
+
     def test_palette_only_sock_and_shoe_ignore_retail_chain_hint(self):
         # A donor with different shared indices must never override an explicit
         # palette-only choice. The origin lookup alone is substituted; the
@@ -201,6 +232,22 @@ class CacheKeyTests(unittest.TestCase):
             (root/'recipe.json').write_bytes(b'{"positions":[0,1,4]}')
             changed,value = lookup(recipe_edit)
             self.assertNotEqual(changed,key); self.assertIsNone(value)
+            compiler = root / 'compiler'
+            for relative in ('tools/codec.py', 'mod_editor/core/writer.py',
+                             'tools/nfl2k5_equipment_optimal', 'tools/nfl2k5_equipment_optimal.c'):
+                path = compiler / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(b'original')
+            with patch.object(tool, 'ROOT', compiler):
+                key, _ = lookup(base); cache.put(key, {'cached': True})
+                for relative in ('tools/codec.py', 'mod_editor/core/writer.py',
+                                 'tools/nfl2k5_equipment_optimal', 'tools/nfl2k5_equipment_optimal.c'):
+                    with self.subTest(compiler=relative):
+                        path = compiler / relative
+                        path.write_bytes(b'changed')
+                        changed, value = lookup(base)
+                        self.assertNotEqual(changed, key); self.assertIsNone(value)
+                        path.write_bytes(b'original')
 
     def test_equipment_cache_misses_for_mode_scale_pixels_target_and_origin(self):
         with tempfile.TemporaryDirectory() as folder:
