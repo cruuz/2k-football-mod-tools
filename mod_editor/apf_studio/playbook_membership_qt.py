@@ -881,6 +881,16 @@ class ApfPlaybookMembershipPanel(QFrame):
             self.status.setText("Not loaded")
             self._refresh_actions()
             return
+        if self._loaded_index != self._index_0a():
+            choices = getattr(self.facade, "book_choices", splb.STOCK_BOOKS)
+            selected = self.book_picker.currentText()
+            self.book_picker.blockSignals(True)
+            self.book_picker.clear()
+            for outer, name in choices.items():
+                self.book_picker.addItem(name, outer)
+            if self.book_picker.findText(selected) >= 0:
+                self.book_picker.setCurrentIndex(self.book_picker.findText(selected))
+            self.book_picker.blockSignals(False)
         # An opened project may already carry Fine-tune Plays edits. Show the
         # book they belong to rather than the first one in the list, so the user
         # sees their own work instead of an apparently untouched playbook.
@@ -983,7 +993,7 @@ class ApfPlaybookMembershipPanel(QFrame):
         self.run_task("Opening the stock playbook", operation, done, False)
 
     def _book_label(self, outer: int) -> str:
-        name = splb.STOCK_BOOKS.get(outer)
+        name = getattr(self.facade, "book_choices", splb.STOCK_BOOKS).get(outer)
         return name or f"the unnamed book at entry {outer}"
 
     # ------------------------------------------------------------------- view

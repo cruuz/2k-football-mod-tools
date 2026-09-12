@@ -4,6 +4,11 @@
 
 Beta 67 is APF 2K8 only; bullets are added as each change lands.
 
+- Urianus: “Could you add it to this list?” Fine-tune, Book Identity and CPU Play Calling now include USER-o, USER-d, global-o and global-d alongside the stock books. Clone donors accept all 15 named books, with a label on the same side. Lists resolve names after archive entries move. PROVED offline checks cover the lists, four donor clones and a USER Fine-tune edit that reparses. In-game use is UNWITNESSED.
+- Urianus: “And the patch doesn't work either afaict.” The Studio installs its chosen pass-fetch patch into Xenia's patches folder. A consent dialog names that folder and the launch config before enabling apply_patches, explains that other enabled patches can also become active, and offers removal and status. PROVED offscreen checks use a fake Xenia folder. This EXPERIMENTAL patch changes the last-resort fetch only; it is not a CPU play-calling fix, and no preset enables it. Gameplay is UNWITNESSED.
+- Urianus: “Except 5-2, which is never selected if added.” PROVED bounded BASE research reproduces the ordinary matchup: added 3-4 and 4-3 receive equal main-category weights, while 5-2 receives zero because its personnel row is below the requested row. A constructed near-goal draw does select 5-2. HYPOTHESIS: its ordinary zero weight and very small near-goal weight explain the report; this does not ship a defensive selector patch.
+- Urianus: “The main limitation now, besides playcalling, is REMOVING formations”. PROVED bounded BASE research keeps a removed formation absent by compacting whole surviving records before normalisation. Leaving a record hole can alter a surviving secondary-category trailer during native compaction. Saved USER banks and global merges are separate sources. This is research, with the exact edit and limits documented; a new removal feature is not shipped here.
+
 ## 0.1.0-alpha.87 — beta 66.1: fixes for the reports after beta 66 — 2026-09-11
 
 Beta 66.1 is the hotfix for what came in after beta 66; bullets are added as each change lands.

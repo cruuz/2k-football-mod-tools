@@ -2429,7 +2429,9 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/mod_editor/apf_wave_2026_09_09.md",
-        "docs/mod_editor/apf_b661_cpu_book_control.md"
+        "docs/mod_editor/apf_b661_cpu_book_control.md",
+        "tests/mod_editor/test_apf_b67_books_qt.py",
+        "docs/research/apf_defense_playcall_model.md"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
@@ -2461,7 +2463,7 @@
       "selectors": {
         "fields": [
           {
-            "allowed": "unused offensive label 0..68",
+            "allowed": "unused label 0..68 on the same side as the donor",
             "name": "label_id",
             "required": true
           },
@@ -2471,7 +2473,7 @@
             "required": true
           },
           {
-            "allowed": "one of the seven stock O- types",
+            "allowed": "one of the 15 named stock, USER or global offensive/defensive books",
             "name": "donor_type",
             "required": true
           }
@@ -2624,20 +2626,24 @@
         "tools/apf_playcall_audit.py",
         "tests/mod_editor/test_apf_xex_image.py",
         "tests/mod_editor/test_apf_xex_image_retail.py",
-        "tests/mod_editor/test_apf_pass_fetch_export_qt.py"
+        "tests/mod_editor/test_apf_pass_fetch_export_qt.py",
+        "tests/mod_editor/test_apf_b67_xenia_patch.py",
+        "docs/research/apf_defense_playcall_model.md"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "CPU Audibles & Personnel workspace: Export TE bias for pass fetches. The export is a verified one-shot authored TOML file; removing or disabling that file reverses deployment."
+        "reason": "CPU Play Calling: install a chosen Studio BASE or TU 1.1 pass-fetch patch in Xenia's patches folder after consent. Enable apply_patches in the selected launch config, reparse and report installed/enabled state, and offer removal. Last-resort fetch only; not a CPU play-calling fix. Gameplay UNWITNESSED."
       },
       "id": "apf2k8.playbooks.pass_fetch_te_bias",
       "input_constraints": [
         "Choose the Xbox 360 game folder with default.xex and optional installed Title Update 1.1; expert flat images are also accepted. Python derives the image in memory. Full SHA, fetch hash, original hook and entire zero cave reservation are checked.",
         "Pass subtypes 2/3/4 on any down, including user calls. Main CPU weighted picker and untyped emergency fetch use different paths.",
-        "Reserve 0x84D0E000..0x84D0EFFF exclusively; Capstone is required. Shared plays, later formation resolution and Subs can still produce a lineup without a TE."
+        "Reserve 0x84D0E000..0x84D0EFFF exclusively; Capstone is required. Shared plays, later formation resolution and Subs can still produce a lineup without a TE.",
+        "Studio installation accepts only the canonical BASE or TU 1.1 pass-fetch payload. Explicit consent enables Memory.apply_patches; other enabled Xenia patches can also become active. Restart Xenia after changing installation.",
+        "Removal deletes only the Studio-managed pass-fetch file and leaves unrelated patches and the shared apply_patches setting alone."
       ],
       "portme": [
         "Obtain an in-game witness before changing the unwitnessed runtime status."

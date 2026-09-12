@@ -204,6 +204,14 @@ class ApfStudioFacade:
             self.last_build = None
             return result
 
+    @property
+    def book_choices(self):
+        from mod_editor.core.apf2k8_splb_writer import STOCK_BOOKS
+        if not self.source_ready:
+            return STOCK_BOOKS
+        from .book_content import book_catalog
+        return {outer: book.name for outer, book in book_catalog(self.source.index_0a).items()}
+
     def play_design_context(self, progress: Progress = _noop):
         from mod_editor.core.apf2k8_splb_writer import STOCK_BOOKS, read_book
         with self._session_lock:
@@ -2247,8 +2255,21 @@ class ApfStudioFacade:
             self.last_build = receipt
             return receipt
 
-    def configure_xenia(self, executable: Path, wine: Path | None = None) -> None:
-        self.launcher.settings.configure(executable, wine)
+    def configure_xenia(self, executable: Path, wine: Path | None = None, *,
+                        xenia_config: Path | None = None) -> None:
+        self.launcher.settings.configure(executable, wine, xenia_config=xenia_config)
+
+    def configure_xenia_patch_config(self, path: Path) -> None:
+        self.launcher.settings.configure_patch_config(path)
+
+    def install_xenia_patch(self, path: Path, *, consent: bool = False) -> dict:
+        return self.launcher.install_pass_fetch_patch(path, consent=consent)
+
+    def remove_xenia_patch(self) -> dict:
+        return self.launcher.remove_pass_fetch_patch()
+
+    def xenia_patch_status(self) -> dict:
+        return self.launcher.pass_fetch_status()
 
     def configure_title_update(self, path: Path) -> None:
         self.launcher.settings.configure_title_update(path)

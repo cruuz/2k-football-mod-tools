@@ -21948,11 +21948,13 @@ class ApfStudioMainWindow(QMainWindow):
     def _launch_complete(self, receipt: object) -> None:
         pid = int(receipt.pid)  # type: ignore[attr-defined]
         log = Path(receipt.log_path)  # type: ignore[attr-defined]
-        self._last_detail = f"Xenia started as process {pid}. Log: {log}"
+        patch_status = str(getattr(receipt, "patch_status", "Patch status unavailable."))
+        self._last_detail = f"Xenia started as process {pid}. Log: {log}\n{patch_status}"
         QMessageBox.information(
             self,
             "Xenia started",
-            f"Xenia Canary started the verified modded default.xex.\n\nProcess: {pid}\nLog: {log}",
+            f"Xenia Canary started the verified modded default.xex.\n\n"
+            f"Process: {pid}\nLog: {log}\n\n{patch_status}",
         )
 
     def _finish_close_after_save(self) -> None:

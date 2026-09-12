@@ -33,6 +33,7 @@ class BookIdentityPanel(QWidget):
         self.facade = facade
         self._busy = False
         self.source_index = None
+        self._identity = None
         self.reviewed = None
         self._generation = 0
         layout = QVBoxLayout(self)
@@ -40,7 +41,7 @@ class BookIdentityPanel(QWidget):
         title.setObjectName("panelTitle")
         layout.addWidget(title)
         note = QLabel(
-            "Give one team its own offensive book, then edit its formations, plays and audibles in Fine-tune. "
+            "Give one team its own book, then edit its formations, plays and audibles in Fine-tune. "
             "Team chooses who uses the copy. Unused label names that copy; the game resolves the label's "
             "book name to its contents. Copy this book chooses the starting formations and plays. "
             "Other teams keep their shared book. A loaded roster save can override these disc assignments.\n\n"
@@ -68,10 +69,10 @@ class BookIdentityPanel(QWidget):
         self.team = QComboBox()
         self.label = QComboBox()
         self.donor = QComboBox()
-        for name in sorted(x for x in splb.STOCK_BOOKS.values() if x.startswith("O-")):
+        for name in sorted(splb.BOOK_SIDES):
             self.donor.addItem(name, name)
         for caption, widget in (("Starting content recipe", self.action), ("Team using this copy", self.team),
-                                ("Unused offensive label", self.label), ("Copy this book", self.donor)):
+                                ("Unused label on this side", self.label), ("Copy this book", self.donor)):
             form.addRow(caption, widget)
         layout.addLayout(form)
         self.recipe_note = QLabel("No recipe: copies the selected book's current content. You can edit the copy in Fine-tune.")
@@ -145,6 +146,7 @@ class BookIdentityPanel(QWidget):
         self.donor.blockSignals(True)
         self.donor.setCurrentIndex(self.donor.findData(recipe["book_type"]))
         self.donor.blockSignals(False)
+        self._fill_labels()
         self.recipe_note.setText(
             f"{recipe['name']}: {recipe['intent']} Starts from {recipe['book_type']}; "
             "fills the copy's play membership and audible slots. Team and label remain editable. "
@@ -153,9 +155,23 @@ class BookIdentityPanel(QWidget):
             + recipe['limitations'])
 
     def _donor_changed(self, *_args):
+        self._fill_labels()
         slug = self.action.currentData()
         if slug != "clone" and presets.load_preset(slug)["book_type"] != self.donor.currentData():
             self.action.setCurrentIndex(0)
+
+    def _fill_labels(self):
+        selected = self.label.currentData()
+        self.label.clear()
+        if self._identity is None:
+            return
+        side = splb.BOOK_SIDES[self.donor.currentData()]
+        used = {getattr(team, side) for team in self._identity.teams}
+        for label in self._identity.labels:
+            if label.side == side and label.index not in used:
+                self.label.addItem(f"{label.name} (currently {label.kind})", label.index)
+        if self.label.findData(selected) >= 0:
+            self.label.setCurrentIndex(self.label.findData(selected))
 
     def set_context(self):
         ready = self.facade is not None and self.facade.source_ready and not self._busy
@@ -223,10 +239,8 @@ class BookIdentityPanel(QWidget):
             self.label.clear()
             for team in parsed.teams:
                 self.team.addItem(f"{team.index}: {team.name}", team.index)
-            used = {team.offense for team in parsed.teams}
-            for label in parsed.labels:
-                if label.side == "offense" and label.index not in used:
-                    self.label.addItem(f"{label.name} (currently {label.kind})", label.index)
+            self._identity = parsed
+            self._fill_labels()
             self._show_identity(report)
             self.receipt.setPlainText(json.dumps(report, indent=2))
             self.status.setText("Assignments reparsed. Select an action and review its result.")

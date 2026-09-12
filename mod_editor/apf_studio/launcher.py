@@ -7,6 +7,8 @@ import errno
 import hashlib
 import json
 import os
+import re
+import tomllib
 from pathlib import Path
 import shutil
 import stat
@@ -117,6 +119,7 @@ class LaunchReceipt:
     log_path: Path
     emulator: Path
     game: Path
+    patch_status: str = "Pass-fetch patch not installed."
 
 
 class XeniaSettings:
@@ -128,6 +131,7 @@ class XeniaSettings:
         )
         self.xenia_path: Path | None = None
         self.wine_path: Path | None = None
+        self.xenia_config_path: Path | None = None
         self.title_update_path: Path | None = None
         self._load()
 
@@ -149,7 +153,8 @@ class XeniaSettings:
             )
         return os.access(self.xenia_path, os.X_OK)
 
-    def configure(self, xenia_path: Path, wine_path: Path | None = None) -> None:
+    def configure(self, xenia_path: Path, wine_path: Path | None = None, *,
+                  xenia_config: Path | None = None) -> None:
         xenia = self._regular(xenia_path, "Xenia Canary")
         wine: Path | None = None
         if xenia.suffix.casefold() == ".exe" and not platform_compat.IS_WINDOWS:
@@ -168,8 +173,32 @@ class XeniaSettings:
             # Windows has no executable permission bit to check; CreateProcess
             # reports an unloadable image at launch time instead.
             raise LaunchError("The selected Xenia file is not executable")
+        selected_config = self._regular(xenia_config, "Xenia config") if xenia_config else None
         self.xenia_path = xenia
+        self.xenia_config_path = selected_config
         self.wine_path = wine
+        self._save()
+
+    @property
+    def patches_folder(self) -> Path:
+        if self.xenia_path is None:
+            raise LaunchError("Configure Xenia first")
+        return self.xenia_path.parent / "patches"
+
+    @property
+    def emulator_config(self) -> Path:
+        if self.xenia_config_path is not None:
+            return self.xenia_config_path
+        if self.xenia_path is None:
+            raise LaunchError("Configure Xenia first")
+        # Launch passes this path explicitly, including for non-portable installs.
+        name = "xenia-canary.config.toml" if "canary" in self.xenia_path.stem.casefold() else "xenia.config.toml"
+        return self.xenia_path.parent / name
+
+    def configure_patch_config(self, path: Path) -> None:
+        candidate = self._regular(path, "Xenia config")
+        _enabled_config(candidate.read_bytes())
+        self.xenia_config_path = candidate
         self._save()
 
     def configure_title_update(self, path: Path) -> None:
@@ -203,6 +232,9 @@ class XeniaSettings:
             elif not os.access(xenia_candidate, os.X_OK):
                 return
             self.xenia_path = xenia_candidate
+            config = value.get("xenia_config_path")
+            if isinstance(config, str) and config:
+                self.xenia_config_path = Path(config).expanduser().resolve()
             update = value.get("title_update_path")
             if isinstance(update, str) and update:
                 try:
@@ -231,6 +263,7 @@ class XeniaSettings:
                         json.dumps(
                             {
                                 "schema": self.SCHEMA,
+                                "xenia_config_path": str(self.xenia_config_path) if self.xenia_config_path else None,
                                 "xenia_path": str(self.xenia_path)
                                 if self.xenia_path
                                 else None,
@@ -269,6 +302,75 @@ class XeniaSettings:
         return path.resolve(strict=True)
 
 
+PASS_FETCH_FILENAME = "54540807-studio-pass-fetch.patch.toml"
+
+
+def _atomic_bytes(path: Path, payload: bytes) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    descriptor, name = tempfile.mkstemp(prefix="." + path.name, dir=path.parent)
+    temporary = Path(name)
+    try:
+        with os.fdopen(descriptor, "wb") as stream:
+            stream.write(payload)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def _enabled_config(payload: bytes) -> bytes:
+    """Preserve comments/settings; reparse the exact config launch will use."""
+    text = payload.decode("utf-8-sig")
+    parsed = tomllib.loads(text)
+    memory = parsed.get("Memory", {})
+    if not isinstance(memory, dict):
+        raise LaunchError("Xenia config has an invalid Memory section")
+    lines = text.splitlines(keepends=True)
+    section = None
+    insertion = None
+    replaced = False
+    for i, line in enumerate(lines):
+        match = re.match(r"^\s*\[([^]\n]+)\]\s*(?:#.*)?$", line.strip())
+        if match:
+            section = match.group(1)
+            if section == "Memory":
+                insertion = i + 1
+        if section == "Memory" and re.match(r"^\s*apply_patches\s*=", line):
+            comment = (" #" + line.split("#", 1)[1].rstrip()) if "#" in line else ""
+            lines[i] = "apply_patches = true" + comment + "\n"
+            replaced = True
+    if not replaced:
+        if insertion is None:
+            lines.append("\n[Memory]\napply_patches = true\n")
+        else:
+            if not lines[insertion - 1].endswith("\n"):
+                lines[insertion - 1] += "\n"
+            lines.insert(insertion, "apply_patches = true\n")
+    result = "".join(lines).encode("utf-8")
+    after = tomllib.loads(result.decode())
+    expected = dict(parsed)
+    expected["Memory"] = {**memory, "apply_patches": True}
+    if after != expected:
+        raise LaunchError("Could not change only Memory.apply_patches in the Xenia config")
+    return result
+
+
+def _pass_fetch_profile(payload: bytes):
+    from mod_editor.core import apf2k8_playcall_patch as patch
+    parsed = tomllib.loads(payload.decode("utf-8"))
+    rows = parsed.get("patch")
+    if not isinstance(rows, list) or len(rows) != 1 or not isinstance(rows[0], dict):
+        raise LaunchError("Choose a Studio pass-fetch patch with one patch entry")
+    for profile in patch.PROFILES:
+        expected = tomllib.loads(patch.PlaycallPatch(
+            profile, patch.assemble_cave(profile.hook), {}).as_toml())
+        expected["patch"][0]["is_enabled"] = rows[0].get("is_enabled")
+        if parsed == expected and type(expected["patch"][0]["is_enabled"]) is bool:
+            return profile, expected["patch"][0]["is_enabled"]
+    raise LaunchError("Choose the Studio's BASE or TU 1.1 pass-fetch patch; the selected file differs")
+
+
 class XeniaLauncher:
     def __init__(
         self,
@@ -279,6 +381,80 @@ class XeniaLauncher:
         self.data_root = data_root or (
             Path.home() / ".local" / "share" / "apf2k8-mod-studio" / "xenia"
         )
+
+    def pass_fetch_status(self) -> dict:
+        if self.settings.xenia_path is None:
+            return {"installed": False, "enabled": False, "message": "Configure Xenia to install the pass-fetch patch."}
+        destination = self.settings.patches_folder / PASS_FETCH_FILENAME
+        config = self.settings.emulator_config
+        installed, enabled, detail = False, False, ""
+        try:
+            if destination.exists():
+                self.settings._regular(destination, "Installed patch")
+                profile, patch_enabled = _pass_fetch_profile(destination.read_bytes())
+                installed = True
+                detail = f" ({profile.name})"
+                if config.exists():
+                    self.settings._regular(config, "Xenia config")
+                    enabled = patch_enabled and tomllib.loads(config.read_text(encoding="utf-8-sig")).get("Memory", {}).get("apply_patches") is True
+        except (OSError, ValueError, IndexError, TypeError, AttributeError) as exc:
+            return {"installed": installed, "enabled": False,
+                    "message": f"Cannot verify the pass-fetch patch: {exc}",
+                    "patch_path": str(destination), "config_path": str(config)}
+        message = (f"Pass-fetch patch installed{detail} and {'enabled in the selected config' if enabled else 'disabled'}: {destination}."
+                   if installed else f"Pass-fetch patch not installed: {destination}.")
+        return {"installed": installed, "enabled": enabled, "patch_path": str(destination),
+                "config_path": str(config), "message": message + " Last-resort fetch only; not a CPU play-calling fix. In-game result unwitnessed."}
+
+    def install_pass_fetch_patch(self, source: Path, *, consent: bool = False) -> dict:
+        if not consent:
+            raise LaunchError("Installing a patch and enabling Xenia patches needs consent in the dialog")
+        source = self.settings._regular(source, "Pass-fetch patch")
+        payload = source.read_bytes()
+        _profile, enabled = _pass_fetch_profile(payload)
+        if not enabled:
+            raise LaunchError("The chosen patch is disabled; export an enabled Studio pass-fetch patch")
+        destination = self.settings.patches_folder / PASS_FETCH_FILENAME
+        config = self.settings.emulator_config
+        old_patch = None
+        if destination.exists() or destination.is_symlink():
+            self.settings._regular(destination, "Installed patch")
+            old_patch = destination.read_bytes()
+            _pass_fetch_profile(old_patch)
+        old_config = b""
+        config_existed = config.exists()
+        if config.exists() or config.is_symlink():
+            self.settings._regular(config, "Xenia config")
+            old_config = config.read_bytes()
+        new_config = _enabled_config(old_config)
+        _atomic_bytes(destination, payload)
+        try:
+            _atomic_bytes(config, new_config)
+            if destination.read_bytes() != payload or config.read_bytes() != new_config:
+                raise LaunchError("Patch installation readback failed")
+        except BaseException:
+            try:
+                if config.exists() and config.read_bytes() != old_config:
+                    if config_existed:
+                        _atomic_bytes(config, old_config)
+                    else:
+                        config.unlink(missing_ok=True)
+            finally:
+                if old_patch is None:
+                    destination.unlink(missing_ok=True)
+                else:
+                    _atomic_bytes(destination, old_patch)
+            raise
+        return self.pass_fetch_status()
+
+    def remove_pass_fetch_patch(self) -> dict:
+        destination = self.settings.patches_folder / PASS_FETCH_FILENAME
+        if destination.exists() or destination.is_symlink():
+            self.settings._regular(destination, "Installed patch")
+            _pass_fetch_profile(destination.read_bytes())
+            destination.unlink()
+        # Other Xenia patches may need apply_patches; leave that global setting alone.
+        return self.pass_fetch_status()
 
     def launch(self, game_root: Path, *, extra_env: Mapping[str, str] | None = None) -> LaunchReceipt:
         if not self.settings.configured or self.settings.xenia_path is None:
@@ -353,6 +529,11 @@ class XeniaLauncher:
                 f"--cache_root={cache}",
                 str(game),
             ]
+        config = self.settings.emulator_config
+        if config.is_file():
+            config_arg = (self._winepath(wine, config, environment)
+                          if xenia.suffix.casefold() == ".exe" and not platform_compat.IS_WINDOWS else str(config))
+            command.insert(-1, f"--config={config_arg}")
         try:
             # A real non-following open on both platforms.  The previous
             # attempt here -- lstat, then os.open, then inspect the fstat --
@@ -389,12 +570,13 @@ class XeniaLauncher:
                     stdout=log,
                     stderr=subprocess.STDOUT,
                     env=environment,
+                    cwd=str(xenia.parent),
                     start_new_session=True,
                     close_fds=True,
                 )
         except OSError as exc:
             raise LaunchError(f"Xenia could not be started: {exc}") from exc
-        return LaunchReceipt(process.pid, log_path, xenia, game)
+        return LaunchReceipt(process.pid, log_path, xenia, game, self.pass_fetch_status()["message"])
 
     @staticmethod
     def _winepath(wine: Path, path: Path, environment: Mapping[str, str]) -> str:
