@@ -139,11 +139,12 @@ class ApfStudioFacade:
         cache_root: Path | None = None,
         source_manager: SourceManager | None = None,
         launcher: XeniaLauncher | None = None,
+        playcalling_backend=None,
     ):
         self.cache_root = cache_root
         self.source_manager = source_manager or SourceManager(cache_root=cache_root)
         self.catalog_builder = CatalogBuilder(cache_root=cache_root)
-        self.launcher = launcher or XeniaLauncher()
+        self.launcher = launcher or XeniaLauncher(curve_module=getattr(playcalling_backend, "curves", None))
         self.source: ApfSource | None = None
         self.catalog: ApfCatalog | None = None
         self.session: ApfSession | None = None
@@ -159,6 +160,8 @@ class ApfStudioFacade:
         # session swap participates in this same boundary so an autosave can
         # never be published from one source and labeled as another.
         self._session_lock = RLock()
+        from .playcalling_service import PlayCallingService
+        self._playcalling = PlayCallingService(playcalling_backend)
         # The team-logo and field-art editors build a single-edit copied 0A
         # through their own offline-proved writers instead of the shared session
         # build (mirroring their dedicated GUI panels), so their staged PNGs live
@@ -172,6 +175,59 @@ class ApfStudioFacade:
     @property
     def source_ready(self) -> bool:
         return self.source is not None and self.catalog is not None and self.session is not None
+
+    def playcalling_context(self, team=0, side="offense", progress: Progress = _noop):
+        with self._session_lock:
+            progress("Reading team books and staged play-calling edits", 0, 1)
+            return self._playcalling.context(self.require_session(), team, side)
+
+    def playcalling_predict(self, context, side, rows, progress: Progress = _noop):
+        with self._session_lock:
+            progress("Predicting CPU calls", 0, len(rows))
+            return self._playcalling.predict(context, side, rows)
+
+    def playcalling_plan(self, side, team=None, donor=None, progress: Progress = _noop):
+        with self._session_lock:
+            return self._playcalling.plan(self.require_session(), side, team, donor)
+
+    def playcalling_review(self, request, progress: Progress = _noop):
+        with self._session_lock:
+            return self._playcalling.review(self.require_session(), request)
+
+    def stage_playcalling(self, review, progress: Progress = _noop):
+        with self._session_lock:
+            result = self._playcalling.stage(self.require_session(), review)
+            self.last_build = None
+            return result
+
+    def playcalling_snapshot(self):
+        with self._session_lock:
+            return (id(self.session), self._playcalling.snapshot(self.require_session()))
+
+    def prepare_playcalling_curve(self, profile, side):
+        from . import playcalling_patches
+        payload = playcalling_patches.prepare(profile, side, curves=self._playcalling.backend.curves)
+        status = self.playcalling_curve_status()
+        if "patch_path" not in status:
+            raise FacadeError(status["message"])
+        return {**status, "payload": payload, "profile": profile, "side": side}
+
+    def install_playcalling_curve(self, prepared, *, consent=False):
+        if not consent:
+            raise FacadeError("Installing a personnel curve patch requires consent")
+        current = self.playcalling_curve_status()
+        if any(prepared[key] != current.get(key) for key in ("patch_path", "config_path")):
+            raise FacadeError("Xenia's installation target changed; review the patch again")
+        with tempfile.TemporaryDirectory(prefix="apf-personnel-curves-") as directory:
+            path = Path(directory) / "personnel-curves.patch.toml"
+            path.write_bytes(prepared["payload"])
+            return self.install_xenia_patch(path, consent=True, kind="curves")
+
+    def playcalling_curve_status(self):
+        return self.launcher.pass_fetch_status(kind="curves")
+
+    def remove_playcalling_curve(self):
+        return self.launcher.remove_pass_fetch_patch(kind="curves")
 
     def field_material_context(self, outer, progress: Progress = _noop):
         with self._session_lock:
@@ -203,6 +259,14 @@ class ApfStudioFacade:
             result = self.require_session().apply_scheme_presets(preset_ids)
             self.last_build = None
             return result
+
+    @property
+    def book_choices(self):
+        from mod_editor.core.apf2k8_splb_writer import STOCK_BOOKS
+        if not self.source_ready:
+            return STOCK_BOOKS
+        from .book_content import book_catalog
+        return {outer: book.name for outer, book in book_catalog(self.source.index_0a).items()}
 
     def play_design_context(self, progress: Progress = _noop):
         from mod_editor.core.apf2k8_splb_writer import STOCK_BOOKS, read_book
@@ -2247,8 +2311,23 @@ class ApfStudioFacade:
             self.last_build = receipt
             return receipt
 
-    def configure_xenia(self, executable: Path, wine: Path | None = None) -> None:
-        self.launcher.settings.configure(executable, wine)
+    def configure_xenia(self, executable: Path, wine: Path | None = None, *,
+                        xenia_config: Path | None = None) -> None:
+        self.launcher.settings.configure(executable, wine, xenia_config=xenia_config)
+
+    def configure_xenia_patch_config(self, path: Path) -> None:
+        self.launcher.settings.configure_patch_config(path)
+
+    def install_xenia_patch(self, path: Path, *, consent: bool = False, kind="pass_fetch") -> dict:
+        if kind == "pass_fetch":
+            return self.launcher.install_pass_fetch_patch(path, consent=consent)
+        return self.launcher.install_pass_fetch_patch(path, consent=consent, kind=kind)
+
+    def remove_xenia_patch(self) -> dict:
+        return self.launcher.remove_pass_fetch_patch()
+
+    def xenia_patch_status(self) -> dict:
+        return self.launcher.pass_fetch_status()
 
     def configure_title_update(self, path: Path) -> None:
         self.launcher.settings.configure_title_update(path)

@@ -73,8 +73,10 @@ class AudibleTests(unittest.TestCase):
         self.assertEqual(plan.changes,());self.assertEqual(plan.replacement,body)
 
     def test_wrong_book_and_unknown_catalog_fail(self):
-        with self.assertRaisesRegex(ValidationError,'seven offensive'):
-            a.plan_audibles(s.parse_book(book_bytes(),134),metadata())
+        with self.assertRaisesRegex(ValidationError,'offensive stock'):
+            body = bytearray(book_bytes())
+            body[0x30:0x68] = ('USER-d'.encode('utf-16-be') + b'\0\0').ljust(56, b'\0')
+            a.plan_audibles(s.parse_book(bytes(body),134),metadata())
         with self.assertRaisesRegex(ValidationError,'outside this MASTER'):
             a.plan_audibles(s.parse_book(book_bytes(),130),())
 

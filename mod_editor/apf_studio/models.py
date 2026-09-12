@@ -141,6 +141,36 @@ def _actions(*values: ApfProductAction) -> frozenset[ApfProductAction]:
 # with safe research backends but no desktop handler are intentionally absent.
 CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
 **{
+    "apf2k8.playbooks." + feature: CapabilityActionBinding(
+        "apf2k8.playbooks." + feature,
+        "playbooks.cpu_playcalling",
+        _actions(ApfProductAction.PREVIEW, ApfProductAction.REPLACE,
+                 ApfProductAction.REVERT, ApfProductAction.BUILD_COPY),
+        replace_method="stage_playcalling",
+        revert_method="revert",
+        product_note=(
+            "CPU Play Calling reviews named team books and stages an authored "
+            "recipe with Undo, Save Project and copied-game Build. The tab "
+            "predicts calls in a worker. Gameplay UNWITNESSED."
+        ),
+    )
+    for feature in ("cpu_playcalling", "own_team_books", "master_personnel")
+},
+"apf2k8.playbooks.personnel_curve_patch": CapabilityActionBinding(
+    "apf2k8.playbooks.personnel_curve_patch",
+    "playbooks.personnel_curves",
+    _actions(ApfProductAction.PREVIEW, ApfProductAction.EXPORT,
+             ApfProductAction.BUILD_COPY),
+    one_shot_target="mod_editor.apf_studio.playcalling_patches:prepare",
+    output_kind="authored-xenia-patch-toml",
+    product_note=(
+        "Experimental personnel curves prepare a canonical patch for the "
+        "selected game version. The tab obtains consent before installation "
+        "and enabling Xenia patches, and offers status and removal. "
+        "Changes every book; gameplay UNWITNESSED."
+    ),
+),
+**{
     "apf2k8.cpu_ai_draft.play_design." + feature: CapabilityActionBinding(
         "apf2k8.cpu_ai_draft.play_design." + feature,
         "playbook.play_designer",
@@ -203,7 +233,7 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
         output_kind="copied_extracted_game_directory",
         product_note=(
             "BookIdentityPanel.review_selection and build_to create a verified "
-            "independent offensive book in a new folder. Finish existing Studio "
+            "independent book from stock, USER or global content in a new folder. Finish existing Studio "
             "edits first, then use Edit books in Fine-tune to change the copy and "
             "save a named book-edit recipe. CPU consumption and TU compatibility are UNWITNESSED."
         ),
@@ -247,10 +277,10 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
     output_kind="authored-xenia-patch-toml",
     product_note=(
         "Choose game folder to read and check your retail BASE or Title Update 1.1 "
-        "executable, then export a Xenia patch file next to your build. "
+        "executable, then install a chosen patch in Xenia’s patches folder with consent. "
         "Choose flat image is an expert option. Applies "
         "at every down; main CPU weighted picker unchanged; unwitnessed. "
-        "Remove or disable the exported file to reverse its installation."
+        "The dialog enables apply_patches in the config used at launch and offers removal and status. Last-resort fetch only, not a CPU play-calling fix."
     ),
 ),
 "apf2k8.gameplay_tuning_sliders.coverage_geometry": CapabilityActionBinding(
@@ -1031,3 +1061,4 @@ class BuildReceipt:
     changed_outer_entries: tuple[int, ...]
     output_0a_sha256: str
     source_unchanged: bool
+    teams_now_own_books: tuple[str, ...] = ()

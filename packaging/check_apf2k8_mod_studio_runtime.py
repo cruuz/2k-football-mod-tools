@@ -25,7 +25,7 @@ sys.dont_write_bytecode = True
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / "tools"
-EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.87"
+EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.88"
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 if str(TOOLS) not in sys.path:
@@ -101,6 +101,14 @@ PRODUCT_MODULES = (
     'mod_editor.apf_studio.playbook_playcall_qt',
     'mod_editor.core.apf2k8_audibles',
     'mod_editor.core.apf2k8_playcall_patch',
+    'mod_editor.apf_studio.playcalling_service',
+    'mod_editor.apf_studio.playcalling_editor_qt',
+    'mod_editor.apf_studio.playcalling_build',
+    'mod_editor.apf_studio.playcalling_patches',
+    'mod_editor.core.apf2k8_playcall_model',
+    'mod_editor.core.apf2k8_master_writer',
+    'mod_editor.core.apf2k8_team_tendency',
+    'mod_editor.core.apf2k8_playcall_curves_patch',
     'mod_editor.core.apf2k8_xex',
     'mod_editor.core.xex_codec',
     "capstone",
@@ -1321,13 +1329,13 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         check_files=False,
     )
     require(
-        len(registry.capabilities) == 146
-        and len(registry.for_game(core_model.GameId.APF2K8)) == 55,
+        len(registry.capabilities) == 160
+        and len(registry.for_game(core_model.GameId.APF2K8)) == 69,
         "shared/APF capability registry counts changed",
     )
     cards = catalog.build_capability_cards()
-    require(len(cards) == 55 and len({item.capability_id for item in cards}) == 55,
-            "APF capability surface is not exactly 52 unique rows")
+    require(len(cards) == 69 and len({item.capability_id for item in cards}) == 69,
+            "APF capability surface is not exactly 69 unique rows")
     require(len(models.APF_CATEGORY_ORDER) == 14,
             "APF complete sidebar category count changed")
     editable = {item.capability_id for item in cards if item.status is models.ApfStatus.EDITABLE}
@@ -1342,7 +1350,11 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         'apf2k8.logos_cards.ps3_texture_bundle',
         'apf2k8.playbooks.clone',
         'apf2k8.playbooks.cpu_audibles',
+        'apf2k8.playbooks.cpu_playcalling',
+        'apf2k8.playbooks.master_personnel',
+        'apf2k8.playbooks.own_team_books',
         'apf2k8.playbooks.pass_fetch_te_bias',
+        'apf2k8.playbooks.personnel_curve_patch',
         'apf2k8.playbooks.scheme_presets',
 
         "apf2k8.audio.ausb_xma_export",

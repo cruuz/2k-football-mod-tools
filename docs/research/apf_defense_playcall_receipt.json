@@ -1,0 +1,795 @@
+{
+  "grade": "PROVED bounded native BASE; gameplay UNWITNESSED",
+  "image_sha256": "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf",
+  "master_sha256": "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891",
+  "bounds": "4000000 instructions per call; driver stops before play scoring at 8486D38C",
+  "synthetic_state": "55-word LCG fixture; retail RNG initialization not modeled; donor entries from X-34Base for both added records",
+  "experiments": [
+    {
+      "added_formation": 147,
+      "added_category": 23,
+      "compiled_body_sha256": "54aaab1f2ca42465e0bef0a24ec2cfb24dd5fe484937ef781dfbd52be773269c",
+      "offense_row": 3,
+      "requested_defense_row": 13,
+      "category_lottery": {
+        "power": 3,
+        "weights": [
+          0.0,
+          1.0,
+          0.009999990463256836,
+          0.0,
+          1.0
+        ]
+      },
+      "seeds": 128,
+      "results": [
+        {
+          "category": 11,
+          "formation": 141,
+          "count": 65
+        },
+        {
+          "category": 23,
+          "formation": 147,
+          "count": 63
+        }
+      ]
+    },
+    {
+      "added_formation": 150,
+      "added_category": 27,
+      "compiled_body_sha256": "5b94e97dfbadd418e9b905008c0cbfe3c08d19298eedcf4b7df7642ee05ba5b6",
+      "offense_row": 3,
+      "requested_defense_row": 13,
+      "category_lottery": {
+        "power": 3,
+        "weights": [
+          0.0,
+          1.0,
+          0.009999990463256836,
+          0.0,
+          0.0
+        ]
+      },
+      "seeds": 128,
+      "results": [
+        {
+          "category": 11,
+          "formation": 141,
+          "count": 128
+        }
+      ]
+    }
+  ],
+  "near_goal_high_draw": {
+    "category": 27,
+    "formation": 150
+  },
+  "removal": [
+    {
+      "book": "X-43Cover2",
+      "retired_formation": 141,
+      "hole_hides_later_before_normalization": true,
+      "hole_mask": "0x37ff",
+      "compact_mask": "0x3400",
+      "remaining_formations": [
+        142,
+        143,
+        146
+      ],
+      "compact_surviving_trailers_unchanged": true,
+      "normalized_twice_identical": true
+    },
+    {
+      "book": "USER-o",
+      "retired_formation": 0,
+      "hole_hides_later_before_normalization": true,
+      "hole_mask": "0x13ff",
+      "compact_mask": "0x1ef",
+      "remaining_formations": [
+        5,
+        14,
+        16,
+        22,
+        31,
+        32,
+        34,
+        68,
+        62,
+        78,
+        79,
+        69,
+        72,
+        71,
+        77,
+        115,
+        126,
+        133,
+        120
+      ],
+      "compact_surviving_trailers_unchanged": true,
+      "normalized_twice_identical": true
+    }
+  ],
+  "native_defensive_component_candidates": [
+    {
+      "first_play": 277,
+      "compatible_second_plays": [
+        278,
+        283,
+        286,
+        290,
+        293,
+        294,
+        295,
+        296,
+        301,
+        304,
+        305,
+        306,
+        307,
+        308,
+        309,
+        319
+      ]
+    },
+    {
+      "first_play": 279,
+      "compatible_second_plays": [
+        278,
+        283,
+        286,
+        290,
+        293,
+        294,
+        295,
+        296,
+        301,
+        304,
+        305,
+        306,
+        307,
+        308,
+        309,
+        319
+      ]
+    },
+    {
+      "first_play": 280,
+      "compatible_second_plays": [
+        278,
+        283,
+        286,
+        290,
+        293,
+        294,
+        295,
+        296,
+        301,
+        304,
+        305,
+        306,
+        307,
+        308,
+        309,
+        319
+      ]
+    },
+    {
+      "first_play": 281,
+      "compatible_second_plays": [
+        278,
+        283,
+        286,
+        290,
+        293,
+        294,
+        295,
+        296,
+        301,
+        304,
+        305,
+        306,
+        307,
+        308,
+        309,
+        319
+      ]
+    },
+    {
+      "first_play": 282,
+      "compatible_second_plays": [
+        278,
+        283,
+        286,
+        290,
+        293,
+        294,
+        295,
+        296,
+        301,
+        304,
+        305,
+        306,
+        307,
+        308,
+        309,
+        319
+      ]
+    },
+    {
+      "first_play": 284,
+      "compatible_second_plays": [
+        278,
+        283,
+        286,
+        290,
+        293,
+        294,
+        295,
+        296,
+        301,
+        304,
+        305,
+        306,
+        307,
+        308,
+        309,
+        319
+      ]
+    },
+    {
+      "first_play": 285,
+      "compatible_second_plays": [
+        278,
+        283,
+        286,
+        290,
+        293,
+        294,
+        295,
+        296,
+        301,
+        304,
+        305,
+        306,
+        307,
+        308,
+        309,
+        319
+      ]
+    },
+    {
+      "first_play": 287,
+      "compatible_second_plays": [
+        278,
+        283,
+        286,
+        290,
+        293,
+        294,
+        295,
+        296,
+        301,
+        304,
+        305,
+        306,
+        307,
+        308,
+        309,
+        319
+      ]
+    },
+    {
+      "first_play": 288,
+      "compatible_second_plays": [
+        278,
+        283,
+        286,
+        290,
+        293,
+        294,
+        295,
+        296,
+        301,
+        304,
+        305,
+        306,
+        307,
+        308,
+        309,
+        319
+      ]
+    },
+    {
+      "first_play": 289,
+      "compatible_second_plays": [
+        278,
+        283,
+        286,
+        290,
+        293,
+        294,
+        295,
+        296,
+        301,
+        304,
+        305,
+        306,
+        307,
+        308,
+        309,
+        319
+      ]
+    },
+    {
+      "first_play": 291,
+      "compatible_second_plays": [
+        278,
+        283,
+        286,
+        290,
+        293,
+        294,
+        295,
+        296,
+        301,
+        304,
+        305,
+        306,
+        307,
+        308,
+        309,
+        319
+      ]
+    },
+    {
+      "first_play": 292,
+      "compatible_second_plays": [
+        278,
+        283,
+        286,
+        290,
+        293,
+        294,
+        295,
+        296,
+        301,
+        304,
+        305,
+        306,
+        307,
+        308,
+        309,
+        319
+      ]
+    }
+  ],
+  "play_scoring": "A860 lineup evaluator and C448/C6C8 final play lotteries not executed",
+  "adapted_instruction_addresses": [
+    "84863488",
+    "8486348C",
+    "84869200",
+    "84869204",
+    "84869238",
+    "8486B1E0",
+    "8486B1E8",
+    "8486B1F0",
+    "8486B1F4",
+    "8486B200",
+    "8486B204",
+    "84A88E98",
+    "84A88EC8",
+    "84A89C38",
+    "84A89CA0",
+    "84A89CC0",
+    "84A8A1F0",
+    "84A8A1F4",
+    "84A8A248",
+    "84A8A24C",
+    "84A8B800",
+    "84A8B85C",
+    "84A8BFE0",
+    "84A8BFE4",
+    "84A8C038",
+    "84A8C03C",
+    "84A8C0C0",
+    "84A8C0C4",
+    "84A8C170",
+    "84A8C174",
+    "84A909B8",
+    "84A909C0",
+    "84A909C8",
+    "84A909D0",
+    "84A909D8",
+    "84A909E0",
+    "84A909E4",
+    "84A90A08",
+    "84A90A14",
+    "84A90A18",
+    "84A90A20",
+    "84A90A70",
+    "84A90A74",
+    "84A90A94",
+    "84A90AA0",
+    "84A90AA4",
+    "84A90AB4",
+    "84A91F58",
+    "84A91F60",
+    "84A91F7C",
+    "84A91F80",
+    "84A91F88",
+    "84A91FC4",
+    "84A91FD0",
+    "84A93810",
+    "84A93818",
+    "84A93820",
+    "84A9382C",
+    "84A93840",
+    "84A9386C",
+    "84A93870",
+    "84A93890",
+    "84A938A0",
+    "84A938A8",
+    "84A938B8",
+    "84A938BC",
+    "84A938C4",
+    "84A938CC",
+    "84A938D8",
+    "84A938E4",
+    "84A938F0",
+    "84A938F4",
+    "84A938FC",
+    "84B3E874",
+    "84B3E878",
+    "84B3E87C",
+    "84B3E884",
+    "84B3E8DC",
+    "84B3E8E0",
+    "84B3E8E4",
+    "84B3E8EC",
+    "84BD6DC8",
+    "84BD6DCC",
+    "84BD6DD0",
+    "84BD6DD4",
+    "84BD6DD8",
+    "84BD6DDC",
+    "84BD6DE0",
+    "84BD6DE4",
+    "84BD6DE8",
+    "84BD6DEC",
+    "84BD6DF0",
+    "84BD6DF4",
+    "84BD6E04",
+    "84BD6E08",
+    "84BD6E0C",
+    "84BD6E10",
+    "84BD6E14",
+    "84BD6E18",
+    "84BD6E1C",
+    "84BD6E20",
+    "84BD6E24",
+    "84BD6E28",
+    "84BD6E2C",
+    "84BD6E30",
+    "84BD6E34",
+    "84BD6E38",
+    "84BD6E3C",
+    "84BD6E40",
+    "84BD6E44"
+  ],
+  "tu_functions": [
+    {
+      "base": "0x84863388",
+      "tu": "0x84864028",
+      "base_size": 444,
+      "tu_size": 444,
+      "comparison": "normalized_equal"
+    },
+    {
+      "base": "0x84869058",
+      "tu": "0x84869d58",
+      "base_size": 700,
+      "tu_size": 700,
+      "comparison": "normalized_equal"
+    },
+    {
+      "base": "0x848693f8",
+      "tu": "0x8486a0f8",
+      "base_size": 748,
+      "tu_size": 748,
+      "comparison": "normalized_equal"
+    },
+    {
+      "base": "0x848696e8",
+      "tu": "0x8486a3e8",
+      "base_size": 160,
+      "tu_size": 160,
+      "comparison": "normalized_equal"
+    },
+    {
+      "base": "0x84869b60",
+      "tu": "0x8486a860",
+      "base_size": 428,
+      "tu_size": 428,
+      "comparison": "normalized_equal"
+    },
+    {
+      "base": "0x8486a860",
+      "tu": "0x8486b560",
+      "base_size": 1616,
+      "tu_size": 1616,
+      "comparison": "normalized_equal"
+    },
+    {
+      "base": "0x8486aeb0",
+      "tu": "0x8486bbb0",
+      "base_size": 1052,
+      "tu_size": 1052,
+      "comparison": "normalized_equal"
+    },
+    {
+      "base": "0x8486bc08",
+      "tu": "0x8486c908",
+      "base_size": 388,
+      "tu_size": 388,
+      "comparison": "normalized_equal"
+    },
+    {
+      "base": "0x8486c448",
+      "tu": "0x8486d148",
+      "base_size": 636,
+      "tu_size": 636,
+      "comparison": "normalized_equal"
+    },
+    {
+      "base": "0x8486c6c8",
+      "tu": "0x8486d3c8",
+      "base_size": 616,
+      "tu_size": 616,
+      "comparison": "normalized_equal"
+    },
+    {
+      "base": "0x8486cad0",
+      "tu": "0x8486d7d0",
+      "base_size": 508,
+      "tu_size": 508,
+      "comparison": "normalized_equal"
+    },
+    {
+      "base": "0x8486d0f8",
+      "tu": "0x8486ddf8",
+      "base_size": 988,
+      "tu_size": 988,
+      "comparison": "normalized_equal"
+    },
+    {
+      "base": "0x849d6208",
+      "tu": "0x849d70d0",
+      "base_size": 748,
+      "tu_size": 748,
+      "comparison": "normalized_different"
+    },
+    {
+      "base": "0x84a8c790",
+      "tu": "0x84a8d760",
+      "base_size": 2660,
+      "tu_size": 2660,
+      "comparison": "normalized_equal"
+    },
+    {
+      "base": "0x84a8d740",
+      "tu": "0x84a8e710",
+      "base_size": 328,
+      "tu_size": 328,
+      "comparison": "identical"
+    },
+    {
+      "base": "0x84ae8948",
+      "tu": "0x84ae9918",
+      "base_size": 688,
+      "tu_size": 688,
+      "comparison": "normalized_equal"
+    }
+  ],
+  "identified_books": [
+    {
+      "outer_index": 293,
+      "stock_outer_index": 293,
+      "header_name": "USER-d",
+      "name_id": "0x2F551CF1",
+      "filename": "USER-d-spb.iff",
+      "decoded_bytes": 32288,
+      "populated_records": 6,
+      "memberships": 180,
+      "file_length": 1049,
+      "allocation_bytes": 2048,
+      "h7a_overlaps": 0,
+      "sha256": "83b3da4aa3fd412f50e242c130c6613d59aa27e0c7ddcf3943689dedb00d92e1"
+    },
+    {
+      "outer_index": 656,
+      "stock_outer_index": 656,
+      "header_name": "global-d",
+      "name_id": "0x6C4EBF6F",
+      "filename": "global-d-spb.iff",
+      "decoded_bytes": 32288,
+      "populated_records": 5,
+      "memberships": 24,
+      "file_length": 779,
+      "allocation_bytes": 2048,
+      "h7a_overlaps": 0,
+      "sha256": "2740c33db3378ec9ffb8be222aed7cbd17c99f376c46b2ef240b28ca7e4e1408"
+    },
+    {
+      "outer_index": 1037,
+      "stock_outer_index": 1037,
+      "header_name": "USER-o",
+      "name_id": "0xAD00822C",
+      "filename": "USER-o-spb.iff",
+      "decoded_bytes": 32288,
+      "populated_records": 20,
+      "memberships": 258,
+      "file_length": 1405,
+      "allocation_bytes": 2048,
+      "h7a_overlaps": 0,
+      "sha256": "e973cc4933d6678f3ff2493adf9a227a43d14c4ab89f8d50ae4d97fedbcd75a2"
+    },
+    {
+      "outer_index": 1439,
+      "stock_outer_index": 1439,
+      "header_name": "global-o",
+      "name_id": "0xEE1B21B2",
+      "filename": "global-o-spb.iff",
+      "decoded_bytes": 32288,
+      "populated_records": 7,
+      "memberships": 23,
+      "file_length": 745,
+      "allocation_bytes": 2048,
+      "h7a_overlaps": 0,
+      "sha256": "e5ca4ff34db2eb19fd71869104ab8148f3bc34ea3a1a8f68d9156e851d9812f1"
+    }
+  ],
+  "user_labels": [
+    {
+      "index": 25,
+      "offset": 1913604,
+      "name": "Redskins",
+      "kind": "USER-o",
+      "side": "offense"
+    },
+    {
+      "index": 26,
+      "offset": 1913616,
+      "name": "Saints",
+      "kind": "USER-o",
+      "side": "offense"
+    },
+    {
+      "index": 27,
+      "offset": 1913628,
+      "name": "Seahawks",
+      "kind": "USER-o",
+      "side": "offense"
+    },
+    {
+      "index": 28,
+      "offset": 1913640,
+      "name": "Steelers",
+      "kind": "USER-o",
+      "side": "offense"
+    },
+    {
+      "index": 29,
+      "offset": 1913652,
+      "name": "Texans",
+      "kind": "USER-o",
+      "side": "offense"
+    },
+    {
+      "index": 30,
+      "offset": 1913664,
+      "name": "Titans",
+      "kind": "USER-o",
+      "side": "offense"
+    },
+    {
+      "index": 31,
+      "offset": 1913676,
+      "name": "Vikings",
+      "kind": "USER-o",
+      "side": "offense"
+    },
+    {
+      "index": 56,
+      "offset": 1913976,
+      "name": "Ravens",
+      "kind": "USER-d",
+      "side": "defense"
+    },
+    {
+      "index": 57,
+      "offset": 1913988,
+      "name": "Redskins",
+      "kind": "USER-d",
+      "side": "defense"
+    },
+    {
+      "index": 58,
+      "offset": 1914000,
+      "name": "Saints",
+      "kind": "USER-d",
+      "side": "defense"
+    },
+    {
+      "index": 59,
+      "offset": 1914012,
+      "name": "Seahawks",
+      "kind": "USER-d",
+      "side": "defense"
+    },
+    {
+      "index": 60,
+      "offset": 1914024,
+      "name": "Steelers",
+      "kind": "USER-d",
+      "side": "defense"
+    },
+    {
+      "index": 61,
+      "offset": 1914036,
+      "name": "Texans",
+      "kind": "USER-d",
+      "side": "defense"
+    },
+    {
+      "index": 62,
+      "offset": 1914048,
+      "name": "Titans",
+      "kind": "USER-d",
+      "side": "defense"
+    },
+    {
+      "index": 63,
+      "offset": 1914060,
+      "name": "Vikings",
+      "kind": "USER-d",
+      "side": "defense"
+    },
+    {
+      "index": 64,
+      "offset": 1914072,
+      "name": "West Coast",
+      "kind": "USER-o",
+      "side": "offense"
+    },
+    {
+      "index": 65,
+      "offset": 1914084,
+      "name": "General",
+      "kind": "USER-o",
+      "side": "offense"
+    },
+    {
+      "index": 66,
+      "offset": 1914096,
+      "name": "User A",
+      "kind": "USER-o",
+      "side": "offense"
+    },
+    {
+      "index": 67,
+      "offset": 1914108,
+      "name": "User B",
+      "kind": "USER-o",
+      "side": "offense"
+    },
+    {
+      "index": 68,
+      "offset": 1914120,
+      "name": "General",
+      "kind": "USER-d",
+      "side": "defense"
+    }
+  ]
+}

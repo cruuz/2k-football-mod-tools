@@ -40,6 +40,7 @@ from mod_editor.core.errors import ValidationError
 from mod_editor.core import apf2k8_coverage_tuning as coverage
 from mod_editor.core.apf2k8_book_identity import disc_book_identity_report
 from . import play_design_service as play_design, coverage_service, scheme_service, field_material_service
+from . import playcalling_service, playcalling_build
 
 from .backend import ensure_tools_importable
 from .models import (
@@ -876,6 +877,7 @@ class ApfBuildService:
         coverage_group: list[Modification] = []
         play_design_group: list[Modification] = []
         scheme_group: list[Modification] = []
+        playcalling_group: list[Modification] = []
         splb_membership_group: list[Modification] = []
         helmet_crest_design_group: list[Modification] = []
         audo_overlay_group: list[Modification] = []
@@ -930,6 +932,9 @@ class ApfBuildService:
                 play_design_group.append(modification)
             elif modification.kind == scheme_service.PROVIDER_KIND:
                 scheme_group.append(modification)
+            elif modification.kind == playcalling_service.PROVIDER_KIND:
+                playcalling_service.read_profile(modification)
+                playcalling_group.append(modification)
             elif modification.kind == SPLB_MEMBERSHIP_KIND:
                 splb_membership_group.append(modification)
             elif modification.kind == HELMET_CREST_DESIGN_KIND:
@@ -1505,9 +1510,22 @@ class ApfBuildService:
             output_0a = staging / "0A"
             self._apply_compiled_spans(staging, spans, progress)
             output_sha = self._verify_composed(staging, spans, progress)
-            # Book cloning is a LAST-step copy finalizer in BookIdentityPanel.
-            # It must consume this finished output, never alter retail-index spans
-            # mid-build: sorted filename insertion changes all outer ordinals.
+            playcalling_receipt = None
+            if playcalling_group:
+                if len(playcalling_group) != 1:
+                    raise BuildError("Only one CPU Play Calling recipe may be built")
+                playcalling_receipt = playcalling_build.finalize(output_0a, playcalling_group[0], progress)
+                output_sha = sha256_file(output_0a, progress, stage="Hashing completed team books")
+            final_outer_indices = {i: i for i, _entry in enumerate(source_archive.entries)}
+            if playcalling_receipt:
+                final_by_name = {entry.name_id: entry.table_index for entry in apf_outer.parse_archive(output_0a).entries}
+                final_outer_indices = {entry.table_index: final_by_name[entry.name_id] for entry in source_archive.entries}
+                for row in edit_rows:
+                    if isinstance(row.get("outer_index"), int):
+                        old_outer = row["outer_index"]
+                        row["source_outer_index"] = old_outer
+                        row["name_id"] = source_archive.entries[old_outer].name_id
+                        row["outer_index"] = final_outer_indices[old_outer]
             try:
                 book_identity = disc_book_identity_report(output_0a)
             except (OSError, ValueError, RuntimeError, ValidationError) as exc:
@@ -1562,12 +1580,14 @@ class ApfBuildService:
                 },
                 "edit_count": len(edits),
                 "book_identity": book_identity,
+                "playcalling": playcalling_receipt,
                 "compiled_entry_count": len(compiled),
                 "compiled_span_count": len(spans),
                 "compiled_raw_overlay_count": len(raw_overlays),
                 "compiled_span_packs": changed_pack_names,
                 "edits": edit_rows,
                 "verification": {
+                    "scope": "before_cpu_playcalling_finalizer" if playcalling_receipt else "completed_build",
                     "all_bytes_outside_changed_outer_entries_identical": True,
                     "all_bytes_outside_compiled_spans_identical": True,
                     "all_changed_pack_bytes_outside_compiled_spans_identical": True,
@@ -1608,14 +1628,16 @@ class ApfBuildService:
                 changed_outer_entries=tuple(
                     sorted(
                         {
-                            item.outer_index
+                            final_outer_indices[item.outer_index]
                             for item in spans
                             if item.reparse_owner
                         }
+                        | {row["outer_index"] for row in (playcalling_receipt or {}).get("resources", ())}
                     )
                 ),
                 output_0a_sha256=output_sha,
                 source_unchanged=True,
+                teams_now_own_books=tuple(playcalling_receipt["teams_now_own_books"]) if playcalling_receipt else (),
             )
         except BaseException:
             shutil.rmtree(staging, ignore_errors=True)

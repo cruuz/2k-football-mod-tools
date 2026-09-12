@@ -1,0 +1,1114 @@
+{
+  "schema": "apf_b67_p4_test_receipt/v1",
+  "base": "653cb708",
+  "environment": {
+    "QT_QPA_PLATFORM": "offscreen",
+    "MOD_STUDIO_NO_UPDATE_CHECK": "1",
+    "PYTHONPATH": "repository root"
+  },
+  "module_count": 153,
+  "passed_modules": 152,
+  "failed_modules": 1,
+  "tests_run": 1570,
+  "baseline_blocker": {
+    "module": "test_apf_studio_installer",
+    "missing": "tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md",
+    "site": "tests/mod_editor/test_apf_studio_installer.py:41",
+    "present_at_base": false
+  },
+  "invocation_corrections": [
+    "test_apf_pass_fetch_export_qt",
+    "test_apf_play_designer_project",
+    "test_apf_play_designer_qt",
+    "test_apf_team_crest_selection"
+  ],
+  "fixed_regression": "test_apf_roster_identity: normal builds retain ordinal mapping without requiring table_index on a legacy synthetic archive entry",
+  "replay": {
+    "steps": [
+      "team books and situation grid loaded in worker",
+      "formation rating staged and calls recomputed",
+      "own-book table reviewed",
+      "independent team book staged",
+      "project reopened and preview replayed",
+      "session undo and preview recomputed"
+    ],
+    "rows": 13,
+    "teams": 24,
+    "worker_threads": 11,
+    "evidence": "PROVED synthetic contract replay; P3 integration and gameplay UNWITNESSED"
+  },
+  "results": [
+    {
+      "module": "test_apf_all_crest_slots",
+      "command": "python3 -m tests.mod_editor.test_apf_all_crest_slots",
+      "exit_code": 0,
+      "tests_run": 15,
+      "unittest_output": "Ran 15 tests in 0.867s\n\nOK"
+    },
+    {
+      "module": "test_apf_audio_annotation_facade",
+      "command": "python3 -m tests.mod_editor.test_apf_audio_annotation_facade",
+      "exit_code": 0,
+      "tests_run": 4,
+      "unittest_output": "Ran 4 tests in 0.010s\n\nOK"
+    },
+    {
+      "module": "test_apf_audio_annotations",
+      "command": "python3 -m tests.mod_editor.test_apf_audio_annotations",
+      "exit_code": 0,
+      "tests_run": 11,
+      "unittest_output": "Ran 11 tests in 0.011s\n\nOK"
+    },
+    {
+      "module": "test_apf_audio_batch_export",
+      "command": "python3 -m tests.mod_editor.test_apf_audio_batch_export",
+      "exit_code": 0,
+      "tests_run": 15,
+      "unittest_output": "Ran 15 tests in 0.026s\n\nOK"
+    },
+    {
+      "module": "test_apf_audio_batch_facade",
+      "command": "python3 -m tests.mod_editor.test_apf_audio_batch_facade",
+      "exit_code": 0,
+      "tests_run": 3,
+      "unittest_output": "Ran 3 tests in 0.007s\n\nOK"
+    },
+    {
+      "module": "test_apf_audio_batch_gui",
+      "command": "python3 -m tests.mod_editor.test_apf_audio_batch_gui",
+      "exit_code": 0,
+      "tests_run": 7,
+      "unittest_output": "Ran 7 tests in 0.344s\n\nOK"
+    },
+    {
+      "module": "test_apf_audio_decode_cancellation",
+      "command": "python3 -m tests.mod_editor.test_apf_audio_decode_cancellation",
+      "exit_code": 0,
+      "tests_run": 7,
+      "unittest_output": "Ran 7 tests in 1.863s\n\nOK"
+    },
+    {
+      "module": "test_apf_audio_drop_zone_gui",
+      "command": "python3 -m tests.mod_editor.test_apf_audio_drop_zone_gui",
+      "exit_code": 0,
+      "tests_run": 9,
+      "unittest_output": "Ran 9 tests in 0.179s\n\nOK"
+    },
+    {
+      "module": "test_apf_audio_encoder_gui",
+      "command": "python3 -m tests.mod_editor.test_apf_audio_encoder_gui",
+      "exit_code": 0,
+      "tests_run": 8,
+      "unittest_output": "Ran 8 tests in 0.153s\n\nOK"
+    },
+    {
+      "module": "test_apf_audio_encoding",
+      "command": "python3 -m tests.mod_editor.test_apf_audio_encoding",
+      "exit_code": 0,
+      "tests_run": 21,
+      "unittest_output": "Ran 21 tests in 11.081s\n\nOK"
+    },
+    {
+      "module": "test_apf_audio_import_idle_barrier",
+      "command": "python3 -m tests.mod_editor.test_apf_audio_import_idle_barrier",
+      "exit_code": 0,
+      "tests_run": 1,
+      "unittest_output": "Ran 1 test in 2.399s\n\nOK"
+    },
+    {
+      "module": "test_apf_audio_pcm_product_backend",
+      "command": "python3 -m tests.mod_editor.test_apf_audio_pcm_product_backend",
+      "exit_code": 0,
+      "tests_run": 11,
+      "unittest_output": "Ran 11 tests in 0.654s\n\nOK"
+    },
+    {
+      "module": "test_apf_audio_replacement_pack",
+      "command": "python3 -m tests.mod_editor.test_apf_audio_replacement_pack",
+      "exit_code": 0,
+      "tests_run": 57,
+      "unittest_output": "Ran 57 tests in 0.274s\n\nOK"
+    },
+    {
+      "module": "test_apf_audio_waveform_qt",
+      "command": "python3 -m tests.mod_editor.test_apf_audio_waveform_qt",
+      "exit_code": 0,
+      "tests_run": 9,
+      "unittest_output": "Ran 9 tests in 0.128s\n\nOK"
+    },
+    {
+      "module": "test_apf_audo_exact_slot",
+      "command": "python3 -m tests.mod_editor.test_apf_audo_exact_slot",
+      "exit_code": 0,
+      "tests_run": 17,
+      "unittest_output": "Ran 17 tests in 0.111s\n\nOK"
+    },
+    {
+      "module": "test_apf_audo_product_backend",
+      "command": "python3 -m tests.mod_editor.test_apf_audo_product_backend",
+      "exit_code": 0,
+      "tests_run": 3,
+      "unittest_output": "Ran 3 tests in 0.015s\n\nOK"
+    },
+    {
+      "module": "test_apf_audo_project",
+      "command": "python3 -m tests.mod_editor.test_apf_audo_project",
+      "exit_code": 0,
+      "tests_run": 3,
+      "unittest_output": "Ran 3 tests in 0.004s\n\nOK"
+    },
+    {
+      "module": "test_apf_ausb_exact_slot",
+      "command": "python3 -m tests.mod_editor.test_apf_ausb_exact_slot",
+      "exit_code": 0,
+      "tests_run": 10,
+      "unittest_output": "Ran 10 tests in 12.432s\n\nOK"
+    },
+    {
+      "module": "test_apf_ausb_product_backend",
+      "command": "python3 -m tests.mod_editor.test_apf_ausb_product_backend",
+      "exit_code": 0,
+      "tests_run": 7,
+      "unittest_output": "Ran 7 tests in 0.035s\n\nOK"
+    },
+    {
+      "module": "test_apf_b661_book_content",
+      "command": "python3 -m tests.mod_editor.test_apf_b661_book_content",
+      "exit_code": 0,
+      "tests_run": 5,
+      "unittest_output": "Ran 5 tests in 26.318s\n\nOK"
+    },
+    {
+      "module": "test_apf_b661_ladder",
+      "command": "python3 -m tests.mod_editor.test_apf_b661_ladder",
+      "exit_code": 0,
+      "tests_run": 6,
+      "unittest_output": "Ran 6 tests in 1.288s\n\nOK"
+    },
+    {
+      "module": "test_apf_b66_appearance",
+      "command": "python3 -m tests.mod_editor.test_apf_b66_appearance",
+      "exit_code": 0,
+      "tests_run": 3,
+      "unittest_output": "Ran 3 tests in 2.200s\n\nOK"
+    },
+    {
+      "module": "test_apf_b66_personnel",
+      "command": "python3 -m tests.mod_editor.test_apf_b66_personnel",
+      "exit_code": 0,
+      "tests_run": 3,
+      "unittest_output": "Ran 3 tests in 5.173s\n\nOK"
+    },
+    {
+      "module": "test_apf_b67_books_qt",
+      "command": "python3 -m tests.mod_editor.test_apf_b67_books_qt",
+      "exit_code": 0,
+      "tests_run": 3,
+      "unittest_output": "Ran 3 tests in 66.441s\n\nOK"
+    },
+    {
+      "module": "test_apf_b67_xenia_patch",
+      "command": "python3 -m tests.mod_editor.test_apf_b67_xenia_patch",
+      "exit_code": 0,
+      "tests_run": 3,
+      "unittest_output": "Ran 3 tests in 0.105s\n\nOK"
+    },
+    {
+      "module": "test_apf_book_identity_qt",
+      "command": "python3 -m tests.mod_editor.test_apf_book_identity_qt",
+      "exit_code": 0,
+      "tests_run": 5,
+      "unittest_output": "Ran 5 tests in 0.035s\n\nOK"
+    },
+    {
+      "module": "test_apf_book_unlock",
+      "command": "python3 -m tests.mod_editor.test_apf_book_unlock",
+      "exit_code": 0,
+      "tests_run": 19,
+      "unittest_output": "Ran 19 tests in 23.670s\n\nOK"
+    },
+    {
+      "module": "test_apf_book_unlock_retail",
+      "command": "python3 -m tests.mod_editor.test_apf_book_unlock_retail",
+      "exit_code": 0,
+      "tests_run": 0,
+      "unittest_output": "Ran 0 tests in 0.000s\n\nOK (skipped=1)"
+    },
+    {
+      "module": "test_apf_browser_workspace_handoff",
+      "command": "python3 -m tests.mod_editor.test_apf_browser_workspace_handoff",
+      "exit_code": 0,
+      "tests_run": 20,
+      "unittest_output": "Ran 20 tests in 0.382s\n\nOK"
+    },
+    {
+      "module": "test_apf_build_ausb_overlays",
+      "command": "python3 -m tests.mod_editor.test_apf_build_ausb_overlays",
+      "exit_code": 0,
+      "tests_run": 5,
+      "unittest_output": "Ran 5 tests in 0.037s\n\nOK"
+    },
+    {
+      "module": "test_apf_build_raw_span_overlays",
+      "command": "python3 -m tests.mod_editor.test_apf_build_raw_span_overlays",
+      "exit_code": 0,
+      "tests_run": 7,
+      "unittest_output": "Ran 7 tests in 0.044s\n\nOK"
+    },
+    {
+      "module": "test_apf_capability_action_parity",
+      "command": "python3 -m tests.mod_editor.test_apf_capability_action_parity",
+      "exit_code": 0,
+      "tests_run": 11,
+      "unittest_output": "Ran 11 tests in 0.100s\n\nOK"
+    },
+    {
+      "module": "test_apf_copied_volume_metadata",
+      "command": "python3 -m tests.mod_editor.test_apf_copied_volume_metadata",
+      "exit_code": 0,
+      "tests_run": 17,
+      "unittest_output": "Ran 17 tests in 0.129s\n\nOK"
+    },
+    {
+      "module": "test_apf_coverage_research_tools",
+      "command": "python3 -m tests.mod_editor.test_apf_coverage_research_tools",
+      "exit_code": 0,
+      "tests_run": 7,
+      "unittest_output": "Ran 7 tests in 0.012s\n\nOK"
+    },
+    {
+      "module": "test_apf_cpu_audibles",
+      "command": "python3 -m tests.mod_editor.test_apf_cpu_audibles",
+      "exit_code": 0,
+      "tests_run": 18,
+      "unittest_output": "Ran 18 tests in 2.959s\n\nOK"
+    },
+    {
+      "module": "test_apf_crest_budget_import",
+      "command": "python3 -m tests.mod_editor.test_apf_crest_budget_import",
+      "exit_code": 0,
+      "tests_run": 12,
+      "unittest_output": "Ran 12 tests in 0.435s\n\nOK"
+    },
+    {
+      "module": "test_apf_crest_fit",
+      "command": "python3 -m tests.mod_editor.test_apf_crest_fit",
+      "exit_code": 0,
+      "tests_run": 10,
+      "unittest_output": "Ran 10 tests in 176.961s\n\nOK"
+    },
+    {
+      "module": "test_apf_cross_domain_audio_safety",
+      "command": "python3 -m tests.mod_editor.test_apf_cross_domain_audio_safety",
+      "exit_code": 0,
+      "tests_run": 4,
+      "unittest_output": "Ran 4 tests in 0.001s\n\nOK"
+    },
+    {
+      "module": "test_apf_cubemap_face0_preview",
+      "command": "python3 -m tests.mod_editor.test_apf_cubemap_face0_preview",
+      "exit_code": 0,
+      "tests_run": 4,
+      "unittest_output": "Ran 4 tests in 19.674s\n\nOK"
+    },
+    {
+      "module": "test_apf_custom_team_appearance_gui",
+      "command": "python3 -m tests.mod_editor.test_apf_custom_team_appearance_gui",
+      "exit_code": 0,
+      "tests_run": 5,
+      "unittest_output": "Ran 5 tests in 0.116s\n\nOK"
+    },
+    {
+      "module": "test_apf_custom_team_appearance_patch",
+      "command": "python3 -m tests.mod_editor.test_apf_custom_team_appearance_patch",
+      "exit_code": 0,
+      "tests_run": 8,
+      "unittest_output": "Ran 8 tests in 6.932s\n\nOK"
+    },
+    {
+      "module": "test_apf_defense_research_identity",
+      "command": "python3 -m tests.mod_editor.test_apf_defense_research_identity",
+      "exit_code": 0,
+      "tests_run": 1,
+      "unittest_output": "Ran 1 test in 0.418s\n\nOK"
+    },
+    {
+      "module": "test_apf_defense_research_native",
+      "command": "python3 -m tests.mod_editor.test_apf_defense_research_native",
+      "exit_code": 0,
+      "tests_run": 3,
+      "unittest_output": "Ran 3 tests in 139.879s\n\nOK (skipped=1)"
+    },
+    {
+      "module": "test_apf_digital_font",
+      "command": "python3 -m tests.mod_editor.test_apf_digital_font",
+      "exit_code": 0,
+      "tests_run": 14,
+      "unittest_output": "Ran 14 tests in 0.189s\n\nOK"
+    },
+    {
+      "module": "test_apf_dxn_base_only_namefont",
+      "command": "python3 -m tests.mod_editor.test_apf_dxn_base_only_namefont",
+      "exit_code": 0,
+      "tests_run": 4,
+      "unittest_output": "Ran 4 tests in 12.877s\n\nOK"
+    },
+    {
+      "module": "test_apf_dxt5a_general_preview",
+      "command": "python3 -m tests.mod_editor.test_apf_dxt5a_general_preview",
+      "exit_code": 0,
+      "tests_run": 3,
+      "unittest_output": "Ran 3 tests in 22.255s\n\nOK"
+    },
+    {
+      "module": "test_apf_endzone_dxt5a",
+      "command": "python3 -m tests.mod_editor.test_apf_endzone_dxt5a",
+      "exit_code": 0,
+      "tests_run": 10,
+      "unittest_output": "Ran 10 tests in 39.186s\n\nOK (skipped=1)"
+    },
+    {
+      "module": "test_apf_export",
+      "command": "python3 -m tests.mod_editor.test_apf_export",
+      "exit_code": 0,
+      "tests_run": 2,
+      "unittest_output": "Ran 2 tests in 0.005s\n\nOK"
+    },
+    {
+      "module": "test_apf_external_audio_bank_bundle",
+      "command": "python3 -m tests.mod_editor.test_apf_external_audio_bank_bundle",
+      "exit_code": 0,
+      "tests_run": 8,
+      "unittest_output": "Ran 8 tests in 0.015s\n\nOK"
+    },
+    {
+      "module": "test_apf_field_art",
+      "command": "python3 -m tests.mod_editor.test_apf_field_art",
+      "exit_code": 0,
+      "tests_run": 6,
+      "unittest_output": "Ran 6 tests in 0.013s\n\nOK"
+    },
+    {
+      "module": "test_apf_field_art_gui",
+      "command": "python3 -m tests.mod_editor.test_apf_field_art_gui",
+      "exit_code": 0,
+      "tests_run": 17,
+      "unittest_output": "Ran 17 tests in 0.348s\n\nOK"
+    },
+    {
+      "module": "test_apf_field_art_patch",
+      "command": "python3 -m tests.mod_editor.test_apf_field_art_patch",
+      "exit_code": 0,
+      "tests_run": 26,
+      "unittest_output": "Ran 26 tests in 301.266s\n\nOK (skipped=2)\nAPF_FIELD_ART_PATCH_PASS mode=patched entry=6 files=1 sha256=ffd24d220c2a28447ab23222751113be3c622e4df549ec71984ded9ae90d8837\nAPF_FIELD_ART_PATCH_PASS mode=no_op entry=6 files=0 sha256=d8fb70d2bdb180306f49aa2b268d287b35eb33289c69959a74fd6c7dcac9af26"
+    },
+    {
+      "module": "test_apf_field_art_stock_label",
+      "command": "python3 -m tests.mod_editor.test_apf_field_art_stock_label",
+      "exit_code": 0,
+      "tests_run": 13,
+      "unittest_output": "Ran 13 tests in 0.004s\n\nOK"
+    },
+    {
+      "module": "test_apf_field_extra_roundtrip",
+      "command": "python3 -m tests.mod_editor.test_apf_field_extra_roundtrip",
+      "exit_code": 0,
+      "tests_run": 5,
+      "unittest_output": "Ran 5 tests in 202.582s\n\nOK"
+    },
+    {
+      "module": "test_apf_field_material_project",
+      "command": "python3 -m tests.mod_editor.test_apf_field_material_project",
+      "exit_code": 0,
+      "tests_run": 4,
+      "unittest_output": "Ran 4 tests in 0.233s\n\nOK"
+    },
+    {
+      "module": "test_apf_field_material_writer",
+      "command": "python3 -m tests.mod_editor.test_apf_field_material_writer",
+      "exit_code": 0,
+      "tests_run": 5,
+      "unittest_output": "Ran 5 tests in 0.146s\n\nOK"
+    },
+    {
+      "module": "test_apf_formation_alignment_writer",
+      "command": "python3 -m tests.mod_editor.test_apf_formation_alignment_writer",
+      "exit_code": 0,
+      "tests_run": 44,
+      "unittest_output": "Ran 44 tests in 0.203s\n\nOK"
+    },
+    {
+      "module": "test_apf_full_shell_visual_gate",
+      "command": "python3 -m tests.mod_editor.test_apf_full_shell_visual_gate",
+      "exit_code": 0,
+      "tests_run": 3,
+      "unittest_output": "Ran 3 tests in 0.000s\n\nOK"
+    },
+    {
+      "module": "test_apf_g12_surfaces",
+      "command": "python3 -m tests.mod_editor.test_apf_g12_surfaces",
+      "exit_code": 0,
+      "tests_run": 12,
+      "unittest_output": "Ran 12 tests in 0.347s\n\nOK"
+    },
+    {
+      "module": "test_apf_helmet_crest_design_product",
+      "command": "python3 -m tests.mod_editor.test_apf_helmet_crest_design_product",
+      "exit_code": 0,
+      "tests_run": 13,
+      "unittest_output": "Ran 13 tests in 1.148s\n\nOK"
+    },
+    {
+      "module": "test_apf_helmet_logo_placement",
+      "command": "python3 -m tests.mod_editor.test_apf_helmet_logo_placement",
+      "exit_code": 0,
+      "tests_run": 15,
+      "unittest_output": "Ran 15 tests in 6.799s\n\nOK"
+    },
+    {
+      "module": "test_apf_helmet_logo_regions",
+      "command": "python3 -m tests.mod_editor.test_apf_helmet_logo_regions",
+      "exit_code": 0,
+      "tests_run": 12,
+      "unittest_output": "Ran 12 tests in 4.103s\n\nOK"
+    },
+    {
+      "module": "test_apf_helmet_logo_regions_qt",
+      "command": "python3 -m tests.mod_editor.test_apf_helmet_logo_regions_qt",
+      "exit_code": 0,
+      "tests_run": 2,
+      "unittest_output": "Ran 2 tests in 1.089s\n\nOK"
+    },
+    {
+      "module": "test_apf_import_offers_resize",
+      "command": "python3 -m tests.mod_editor.test_apf_import_offers_resize",
+      "exit_code": 0,
+      "tests_run": 5,
+      "unittest_output": "Ran 5 tests in 0.498s\n\nOK"
+    },
+    {
+      "module": "test_apf_iso_extraction_is_layout_tolerant",
+      "command": "python3 -m tests.mod_editor.test_apf_iso_extraction_is_layout_tolerant",
+      "exit_code": 0,
+      "tests_run": 10,
+      "unittest_output": "Ran 10 tests in 0.074s\n\nOK"
+    },
+    {
+      "module": "test_apf_linear_txtr_png",
+      "command": "python3 -m tests.mod_editor.test_apf_linear_txtr_png",
+      "exit_code": 0,
+      "tests_run": 3,
+      "unittest_output": "Ran 3 tests in 0.000s\n\nOK"
+    },
+    {
+      "module": "test_apf_logo_patch",
+      "command": "python3 -m tests.mod_editor.test_apf_logo_patch",
+      "exit_code": 0,
+      "tests_run": 18,
+      "unittest_output": "Ran 18 tests in 93.081s\n\nOK"
+    },
+    {
+      "module": "test_apf_logo_surface_ownership",
+      "command": "python3 -m tests.mod_editor.test_apf_logo_surface_ownership",
+      "exit_code": 0,
+      "tests_run": 4,
+      "unittest_output": "Ran 4 tests in 64.398s\n\nOK"
+    },
+    {
+      "module": "test_apf_logocache_patch",
+      "command": "python3 -m tests.mod_editor.test_apf_logocache_patch",
+      "exit_code": 0,
+      "tests_run": 14,
+      "unittest_output": "Ran 14 tests in 121.361s\n\nOK"
+    },
+    {
+      "module": "test_apf_mask_preview_alpha",
+      "command": "python3 -m tests.mod_editor.test_apf_mask_preview_alpha",
+      "exit_code": 0,
+      "tests_run": 7,
+      "unittest_output": "Ran 7 tests in 0.005s\n\nOK"
+    },
+    {
+      "module": "test_apf_model_export_gui",
+      "command": "python3 -m tests.mod_editor.test_apf_model_export_gui",
+      "exit_code": 0,
+      "tests_run": 5,
+      "unittest_output": "Ran 5 tests in 2.445s\n\nOK"
+    },
+    {
+      "module": "test_apf_model_import",
+      "command": "python3 -m tests.mod_editor.test_apf_model_import",
+      "exit_code": 0,
+      "tests_run": 6,
+      "unittest_output": "Ran 6 tests in 55.518s\n\nOK"
+    },
+    {
+      "module": "test_apf_number_encode_defaults",
+      "command": "python3 -m tests.mod_editor.test_apf_number_encode_defaults",
+      "exit_code": 0,
+      "tests_run": 1,
+      "unittest_output": "Ran 1 test in 2.065s\n\nOK"
+    },
+    {
+      "module": "test_apf_number_texture_writer",
+      "command": "python3 -m tests.mod_editor.test_apf_number_texture_writer",
+      "exit_code": 0,
+      "tests_run": 25,
+      "unittest_output": "Ran 25 tests in 264.402s\n\nOK"
+    },
+    {
+      "module": "test_apf_package_map_writer",
+      "command": "python3 -m tests.mod_editor.test_apf_package_map_writer",
+      "exit_code": 0,
+      "tests_run": 40,
+      "unittest_output": "Ran 40 tests in 1.171s\n\nOK"
+    },
+    {
+      "module": "test_apf_pass_fetch_export_qt",
+      "command": "python3 tests/mod_editor/test_apf_pass_fetch_export_qt.py",
+      "exit_code": 0,
+      "tests_run": 7,
+      "unittest_output": "Ran 7 tests in 0.293s\n\nOK"
+    },
+    {
+      "module": "test_apf_play_designer",
+      "command": "python3 -m tests.mod_editor.test_apf_play_designer",
+      "exit_code": 0,
+      "tests_run": 28,
+      "unittest_output": "Ran 28 tests in 14.454s\n\nOK\nSIX_PLAY_FORMATION_PORTABLE [{\"active_bytes\": 57026, \"allocation_bytes\": 57344, \"entry_sha256\": \"a429736eaff359191205b93a828b8df2a4ea49f362f88d9c27b8e57c95f65896\", \"free_bytes\": 318, \"h7a_round_trip_exact\": true, \"original_active_bytes\": 56356, \"outer\": 180, \"overlapping_matches\": 0, \"payload_bytes\": 56832, \"reparsed\": true, \"strategy\": \"greedy\"}, {\"active_bytes\": 1653, \"allocation_bytes\": 2048, \"already_applied\": false, \"cpu_only\": true, \"entry_sha256\": \"d378116d26cbe11e4a43881caa21a276f29ac4989c9d1f98a52469ea1a27add5\", \"free_bytes\": 395, \"h7a_round_trip_exact\": true, \"original_active_bytes\": 1633, \"outer\": 259, \"overlapping_matches\": 0, \"payload_bytes\": 1459, \"personnel\": [{\"category_after\": 3, \"category_before\": 3, \"donor_category_before\": null, \"donor_record_index\": null, \"donor_word_b_before\": null, \"formation_after\": 0, \"record_index\": 0, \"word_b_after\": 8, \"word_b_before\": 8}, {\"category_after\": 3, \"category_before\": 0, \"donor_category_before\": 3, \"donor_record_index\": 0, \"donor_word_b_before\": 8, \"formation_after\": 163, \"record_index\": 25, \"word_b_after\": 8, \"word_b_before\": 0}], \"records\": [0, 25], \"reparsed\": true, \"replacement_sha256\": \"5e9e46b3b88a15b39e205251b234170131ea5c85cbf0f0fe7447b84a76599f87\", \"source_sha256\": \"2fd2b7587127120f90cb5fb536abe6c2691303fda08ca544b1aeaa271e1b9016\", \"strategy\": \"greedy\", \"user_save_written\": false}, {\"active_bytes\": 1031, \"allocation_bytes\": 2048, \"already_applied\": false, \"cpu_only\": true, \"entry_sha256\": \"faef55322acfde39a964a6144ca4bbd145085e286eb37812fdc034c90dd5cb63\", \"free_bytes\": 1017, \"h7a_round_trip_exact\": true, \"original_active_bytes\": 1026, \"outer\": 618, \"overlapping_matches\": 0, \"payload_bytes\": 837, \"personnel\": [{\"category_after\": 23, \"category_before\": 23, \"donor_category_before\": null, \"donor_record_index\": null, \"donor_word_b_before\": null, \"formation_after\": 147, \"record_index\": 0, \"word_b_after\": 8388608, \"word_b_before\": 8388608}], \"records\": [0], \"reparsed\": true, \"replacement_sha256\": \"9ab75c25bbae27bfdf0416ecfcfb583b2a39950f689159f5fa2082a47ac2bcc1\", \"source_sha256\": \"67ef383cc1fcde7a44639fa761fbb4efbd82aa3d4560035d27abd704d30ae218\", \"strategy\": \"greedy\", \"user_save_written\": false}]\nSIX_PLAY_FORMATION_BUILD {\"design\": {\"already_applied\": false, \"changed_byte_count\": 863, \"contains_retail_bytes\": false, \"counts_after\": [164, 592, 5010], \"counts_before\": [163, 586, 4948], \"independent_reparse\": true, \"opaque_relation_policy\": \"preserved; new formation copies donor row; meaning unresolved\", \"operations\": [{\"donor\": 0, \"kind\": \"formations\", \"mode\": \"append\", \"target\": 163}, {\"donor\": 10, \"kind\": \"plays\", \"mode\": \"append\", \"target\": 586}, {\"donor\": 10, \"kind\": \"plays\", \"mode\": \"append\", \"target\": 587}, {\"donor\": 10, \"kind\": \"plays\", \"mode\": \"append\", \"target\": 588}, {\"donor\": 10, \"kind\": \"plays\", \"mode\": \"append\", \"target\": 589}, {\"donor\": 10, \"kind\": \"plays\", \"mode\": \"append\", \"target\": 590}, {\"donor\": 439, \"kind\": \"plays\", \"mode\": \"append\", \"target\": 591}, {\"kind\": \"assignment\", \"node_count\": 3, \"play\": 586, \"slot\": 6, \"strategy\": \"private chain\"}, {\"kind\": \"assignment\", \"node_count\": 3, \"play\": 586, \"slot\": 7, \"strategy\": \"private chain\"}, {\"kind\": \"assignment\", \"node_count\": 3, \"play\": 586, \"slot\": 8, \"strategy\": \"private chain\"}, {\"kind\": \"assignment\", \"node_count\": 3, \"play\": 586, \"slot\": 9, \"strategy\": \"private chain\"}, {\"kind\": \"assignment\", \"node_count\": 3, \"play\": 587, \"slot\": 6, \"strategy\": \"private chain\"}, {\"kind\": \"assignment\", \"node_count\": 3, \"play\": 587, \"slot\": 7, \"strategy\": \"private chain\"}, {\"kind\": \"assignment\", \"node_count\": 3, \"play\": 587, \"slot\": 8, \"strategy\": \"private chain\"}, {\"kind\": \"assignment\", \"node_count\": 3, \"play\": 587, \"slot\": 9, \"strategy\": \"private chain\"}, {\"kind\": \"assignment\", \"node_count\": 3, \"play\": 588, \"slot\": 6, \"strategy\": \"private chain\"}, {\"kind\": \"assignment\", \"node_count\": 3, \"play\": 588, \"slot\": 7, \"strategy\": \"private chain\"}, {\"kind\": \"assignment\", \"node_count\": 3, \"play\": 588, \"slot\": 8, \"strategy\": \"private chain\"}, {\"kind\": \"assignment\", \"node_count\": 3, \"play\": 588, \"slot\": 9, \"strategy\": \"private chain\"}, {\"kind\": \"assignment\", \"node_count\": 3, \"play\": 589, \"slot\": 6, \"strategy\": \"private chain\"}, {\"kind\": \"assignment\", \"node_count\": 3, \"play\": 589, \"slot\": 7, \"strategy\": \"private chain\"}, {\"kind\": \"assignment\", \"node_count\": 3, \"play\": 589, \"slot\": 8, \"strategy\": \"private chain\"}, {\"kind\": \"assignment\", \"node_count\": 3, \"play\": 589, \"slot\": 9, \"strategy\": \"private chain\"}, {\"kind\": \"assignment\", \"node_count\": 3, \"play\": 590, \"slot\": 6, \"strategy\": \"private chain\"}, {\"kind\": \"assignment\", \"node_count\": 3, \"play\": 590, \"slot\": 7, \"strategy\": \"private chain\"}, {\"kind\": \"assignment\", \"node_count\": 3, \"play\": 590, \"slot\": 8, \"strategy\": \"private chain\"}, {\"kind\": \"assignment\", \"node_count\": 3, \"play\": 590, \"slot\": 9, \"strategy\": \"private chain\"}, {\"kind\": \"assignment\", \"node_count\": 2, \"play\": 591, \"slot\": 4, \"strategy\": \"private chain\"}], \"replacement_sha256\": \"e13f57801d90579450996354485bad919ea0122634d20b7597f8530e046287a4\", \"runtime_status\": \"Offline verified; experimental / UNWITNESSED in-game; CPU books only\", \"schema\": \"apf2k8_play_design/v1\", \"source_sha256\": \"2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891\"}, \"resources\": [{\"active_bytes\": 55290, \"allocation_bytes\": 57344, \"entry_sha256\": \"19d52595212f0f90861ddbcdbe04f405ad73b0d2818aacfafb81a32f96acb88d\", \"free_bytes\": 2054, \"h7a_round_trip_exact\": true, \"original_active_bytes\": 56356, \"outer\": 180, \"overlapping_matches\": 0, \"payload_bytes\": 55096, \"reparsed\": true, \"strategy\": \"optimal\"}, {\"active_bytes\": 1652, \"allocation_bytes\": 2048, \"already_applied\": false, \"cpu_only\": true, \"entry_sha256\": \"89cb7a5b94cdaa0937e32b9f0e894a60008aad3493c8db787ca27b70dda7e8b1\", \"free_bytes\": 396, \"h7a_round_trip_exact\": true, \"original_active_bytes\": 1633, \"outer\": 259, \"overlapping_matches\": 0, \"payload_bytes\": 1458, \"personnel\": [{\"category_after\": 3, \"category_before\": 3, \"donor_category_before\": null, \"donor_record_index\": null, \"donor_word_b_before\": null, \"formation_after\": 0, \"record_index\": 0, \"word_b_after\": 8, \"word_b_before\": 8}, {\"category_after\": 3, \"category_before\": 0, \"donor_category_before\": 3, \"donor_record_index\": 0, \"donor_word_b_before\": 8, \"formation_after\": 163, \"record_index\": 25, \"word_b_after\": 8, \"word_b_before\": 0}], \"records\": [0, 25], \"reparsed\": true, \"replacement_sha256\": \"5e9e46b3b88a15b39e205251b234170131ea5c85cbf0f0fe7447b84a76599f87\", \"source_sha256\": \"2fd2b7587127120f90cb5fb536abe6c2691303fda08ca544b1aeaa271e1b9016\", \"strategy\": \"optimal\", \"user_save_written\": false}, {\"active_bytes\": 1030, \"allocation_bytes\": 2048, \"already_applied\": false, \"cpu_only\": true, \"entry_sha256\": \"9cec2f833d342fafe30d9971942bfc67c74f98170ae2f847f4405197d667f2a8\", \"free_bytes\": 1018, \"h7a_round_trip_exact\": true, \"original_active_bytes\": 1026, \"outer\": 618, \"overlapping_matches\": 0, \"payload_bytes\": 836, \"personnel\": [{\"category_after\": 23, \"category_before\": 23, \"donor_category_before\": null, \"donor_record_index\": null, \"donor_word_b_before\": null, \"formation_after\": 147, \"record_index\": 0, \"word_b_after\": 8388608, \"word_b_before\": 8388608}], \"records\": [0], \"reparsed\": true, \"replacement_sha256\": \"9ab75c25bbae27bfdf0416ecfcfb583b2a39950f689159f5fa2082a47ac2bcc1\", \"source_sha256\": \"67ef383cc1fcde7a44639fa761fbb4efbd82aa3d4560035d27abd704d30ae218\", \"strategy\": \"optimal\", \"user_save_written\": false}], \"runtime_status\": \"UNWITNESSED\", \"user_saves_written\": false}"
+    },
+    {
+      "module": "test_apf_play_designer_project",
+      "command": "python3 tests/mod_editor/test_apf_play_designer_project.py",
+      "exit_code": 0,
+      "tests_run": 5,
+      "unittest_output": "Ran 5 tests in 0.152s\n\nOK"
+    },
+    {
+      "module": "test_apf_play_designer_qt",
+      "command": "python3 tests/mod_editor/test_apf_play_designer_qt.py",
+      "exit_code": 0,
+      "tests_run": 5,
+      "unittest_output": "Ran 5 tests in 0.127s\n\nOK"
+    },
+    {
+      "module": "test_apf_playbook_route_gui",
+      "command": "python3 -m tests.mod_editor.test_apf_playbook_route_gui",
+      "exit_code": 0,
+      "tests_run": 7,
+      "unittest_output": "Ran 7 tests in 0.060s\n\nOK"
+    },
+    {
+      "module": "test_apf_playcall_patch",
+      "command": "python3 -m tests.mod_editor.test_apf_playcall_patch",
+      "exit_code": 0,
+      "tests_run": 11,
+      "unittest_output": "Ran 11 tests in 1.890s\n\nOK"
+    },
+    {
+      "module": "test_apf_playcall_research_native",
+      "command": "python3 -m tests.mod_editor.test_apf_playcall_research_native",
+      "exit_code": 0,
+      "tests_run": 22,
+      "unittest_output": "Ran 22 tests in 116.262s\n\nOK"
+    },
+    {
+      "module": "test_apf_playcalling_editor_build",
+      "command": "python3 -m tests.mod_editor.test_apf_playcalling_editor_build",
+      "exit_code": 0,
+      "tests_run": 2,
+      "unittest_output": "Ran 2 tests in 44.316s\n\nOK"
+    },
+    {
+      "module": "test_apf_playcalling_editor_facade",
+      "command": "python3 -m tests.mod_editor.test_apf_playcalling_editor_facade",
+      "exit_code": 0,
+      "tests_run": 7,
+      "unittest_output": "Ran 7 tests in 2.646s\n\nOK"
+    },
+    {
+      "module": "test_apf_playcalling_editor_patches",
+      "command": "python3 -m tests.mod_editor.test_apf_playcalling_editor_patches",
+      "exit_code": 0,
+      "tests_run": 2,
+      "unittest_output": "Ran 2 tests in 0.126s\n\nOK"
+    },
+    {
+      "module": "test_apf_playcalling_editor_qt",
+      "command": "python3 -m tests.mod_editor.test_apf_playcalling_editor_qt",
+      "exit_code": 0,
+      "tests_run": 8,
+      "unittest_output": "Ran 8 tests in 3.428s\n\nOK"
+    },
+    {
+      "module": "test_apf_player_position_patch",
+      "command": "python3 -m tests.mod_editor.test_apf_player_position_patch",
+      "exit_code": 0,
+      "tests_run": 4,
+      "unittest_output": "Ran 4 tests in 6.785s\n\nOK"
+    },
+    {
+      "module": "test_apf_player_position_product_backend",
+      "command": "python3 -m tests.mod_editor.test_apf_player_position_product_backend",
+      "exit_code": 0,
+      "tests_run": 7,
+      "unittest_output": "Ran 7 tests in 20.814s\n\nOK"
+    },
+    {
+      "module": "test_apf_player_positions",
+      "command": "python3 -m tests.mod_editor.test_apf_player_positions",
+      "exit_code": 0,
+      "tests_run": 5,
+      "unittest_output": "Ran 5 tests in 0.002s\n\nOK"
+    },
+    {
+      "module": "test_apf_player_rating_patch",
+      "command": "python3 -m tests.mod_editor.test_apf_player_rating_patch",
+      "exit_code": 0,
+      "tests_run": 12,
+      "unittest_output": "Ran 12 tests in 3.996s\n\nOK"
+    },
+    {
+      "module": "test_apf_player_rating_product_backend",
+      "command": "python3 -m tests.mod_editor.test_apf_player_rating_product_backend",
+      "exit_code": 0,
+      "tests_run": 5,
+      "unittest_output": "Ran 5 tests in 9.007s\n\nOK"
+    },
+    {
+      "module": "test_apf_player_rating_sheet_import",
+      "command": "python3 -m tests.mod_editor.test_apf_player_rating_sheet_import",
+      "exit_code": 0,
+      "tests_run": 7,
+      "unittest_output": "Ran 7 tests in 14.942s\n\nOK"
+    },
+    {
+      "module": "test_apf_player_ratings",
+      "command": "python3 -m tests.mod_editor.test_apf_player_ratings",
+      "exit_code": 0,
+      "tests_run": 11,
+      "unittest_output": "Ran 11 tests in 0.666s\n\nOK"
+    },
+    {
+      "module": "test_apf_product_findings",
+      "command": "python3 -m tests.mod_editor.test_apf_product_findings",
+      "exit_code": 0,
+      "tests_run": 7,
+      "unittest_output": "Ran 7 tests in 0.007s\n\nOK (skipped=1)"
+    },
+    {
+      "module": "test_apf_product_findings_gui",
+      "command": "python3 -m tests.mod_editor.test_apf_product_findings_gui",
+      "exit_code": 0,
+      "tests_run": 2,
+      "unittest_output": "Ran 2 tests in 0.061s\n\nOK"
+    },
+    {
+      "module": "test_apf_product_validation_wrappers",
+      "command": "python3 -m tests.mod_editor.test_apf_product_validation_wrappers",
+      "exit_code": 0,
+      "tests_run": 5,
+      "unittest_output": "Ran 5 tests in 0.077s\n\nOK"
+    },
+    {
+      "module": "test_apf_project_document_workflow",
+      "command": "python3 -m tests.mod_editor.test_apf_project_document_workflow",
+      "exit_code": 0,
+      "tests_run": 13,
+      "unittest_output": "Ran 13 tests in 21.674s\n\nOK"
+    },
+    {
+      "module": "test_apf_project_streaming",
+      "command": "python3 -m tests.mod_editor.test_apf_project_streaming",
+      "exit_code": 0,
+      "tests_run": 6,
+      "unittest_output": "Ran 6 tests in 0.008s\n\nOK"
+    },
+    {
+      "module": "test_apf_ps3_probes",
+      "command": "python3 -m tests.mod_editor.test_apf_ps3_probes",
+      "exit_code": 0,
+      "tests_run": 9,
+      "unittest_output": "Ran 9 tests in 0.980s\n\nOK"
+    },
+    {
+      "module": "test_apf_ps3_roster_convert",
+      "command": "python3 -m tests.mod_editor.test_apf_ps3_roster_convert",
+      "exit_code": 0,
+      "tests_run": 11,
+      "unittest_output": "Ran 11 tests in 11.807s\n\nOK"
+    },
+    {
+      "module": "test_apf_ps3_roster_import_qt",
+      "command": "python3 -m tests.mod_editor.test_apf_ps3_roster_import_qt",
+      "exit_code": 0,
+      "tests_run": 2,
+      "unittest_output": "Ran 2 tests in 1.012s\n\nOK"
+    },
+    {
+      "module": "test_apf_ps3_texture_bundle",
+      "command": "python3 -m tests.mod_editor.test_apf_ps3_texture_bundle",
+      "exit_code": 0,
+      "tests_run": 28,
+      "unittest_output": "Ran 28 tests in 66.580s\n\nOK"
+    },
+    {
+      "module": "test_apf_ps3_texture_bundle_qt",
+      "command": "python3 -m tests.mod_editor.test_apf_ps3_texture_bundle_qt",
+      "exit_code": 0,
+      "tests_run": 4,
+      "unittest_output": "Ran 4 tests in 0.217s\n\nOK"
+    },
+    {
+      "module": "test_apf_public_docs_registry_current",
+      "command": "python3 -m tests.mod_editor.test_apf_public_docs_registry_current",
+      "exit_code": 0,
+      "tests_run": 5,
+      "unittest_output": "Ran 5 tests in 0.115s\n\nOK"
+    },
+    {
+      "module": "test_apf_rating_value_domains",
+      "command": "python3 -m tests.mod_editor.test_apf_rating_value_domains",
+      "exit_code": 0,
+      "tests_run": 8,
+      "unittest_output": "Ran 8 tests in 0.001s\n\nOK"
+    },
+    {
+      "module": "test_apf_retail_crest_channel_audit",
+      "command": "python3 -m tests.mod_editor.test_apf_retail_crest_channel_audit",
+      "exit_code": 0,
+      "tests_run": 1,
+      "unittest_output": "Ran 1 test in 0.001s\n\nOK"
+    },
+    {
+      "module": "test_apf_roster_identity",
+      "command": "python3 -m tests.mod_editor.test_apf_roster_identity",
+      "exit_code": 0,
+      "tests_run": 18,
+      "unittest_output": "Ran 18 tests in 11.458s\n\nOK"
+    },
+    {
+      "module": "test_apf_roster_identity_gui",
+      "command": "python3 -m tests.mod_editor.test_apf_roster_identity_gui",
+      "exit_code": 0,
+      "tests_run": 17,
+      "unittest_output": "Ran 17 tests in 0.815s\n\nOK"
+    },
+    {
+      "module": "test_apf_roster_workspace",
+      "command": "python3 -m tests.mod_editor.test_apf_roster_workspace",
+      "exit_code": 0,
+      "tests_run": 9,
+      "unittest_output": "Ran 9 tests in 0.036s\n\nOK"
+    },
+    {
+      "module": "test_apf_roster_workspace_gui",
+      "command": "python3 -m tests.mod_editor.test_apf_roster_workspace_gui",
+      "exit_code": 0,
+      "tests_run": 1,
+      "unittest_output": "Ran 1 test in 0.022s\n\nOK"
+    },
+    {
+      "module": "test_apf_save_playbook_assignments_gui",
+      "command": "python3 -m tests.mod_editor.test_apf_save_playbook_assignments_gui",
+      "exit_code": 0,
+      "tests_run": 8,
+      "unittest_output": "Ran 8 tests in 0.974s\n\nOK"
+    },
+    {
+      "module": "test_apf_save_roster_players",
+      "command": "python3 -m tests.mod_editor.test_apf_save_roster_players",
+      "exit_code": 0,
+      "tests_run": 7,
+      "unittest_output": "Ran 7 tests in 4.183s\n\nOK"
+    },
+    {
+      "module": "test_apf_save_roster_players_gui",
+      "command": "python3 -m tests.mod_editor.test_apf_save_roster_players_gui",
+      "exit_code": 0,
+      "tests_run": 4,
+      "unittest_output": "Ran 4 tests in 0.508s\n\nOK"
+    },
+    {
+      "module": "test_apf_scorebug_workspace_qt",
+      "command": "python3 -m tests.mod_editor.test_apf_scorebug_workspace_qt",
+      "exit_code": 0,
+      "tests_run": 11,
+      "unittest_output": "Ran 11 tests in 0.096s\n\nOK"
+    },
+    {
+      "module": "test_apf_shell_search_accessibility_qt",
+      "command": "python3 -m tests.mod_editor.test_apf_shell_search_accessibility_qt",
+      "exit_code": 0,
+      "tests_run": 3,
+      "unittest_output": "Ran 3 tests in 7.102s\n\nOK"
+    },
+    {
+      "module": "test_apf_splb_add_multiple_formations",
+      "command": "python3 -m tests.mod_editor.test_apf_splb_add_multiple_formations",
+      "exit_code": 0,
+      "tests_run": 14,
+      "unittest_output": "Ran 14 tests in 0.440s\n\nOK"
+    },
+    {
+      "module": "test_apf_splb_formation_personnel",
+      "command": "python3 -m tests.mod_editor.test_apf_splb_formation_personnel",
+      "exit_code": 0,
+      "tests_run": 11,
+      "unittest_output": "Ran 11 tests in 1.018s\n\nOK"
+    },
+    {
+      "module": "test_apf_splb_tag_reassignment",
+      "command": "python3 -m tests.mod_editor.test_apf_splb_tag_reassignment",
+      "exit_code": 0,
+      "tests_run": 86,
+      "unittest_output": "Ran 86 tests in 1.978s\n\nOK (skipped=1)"
+    },
+    {
+      "module": "test_apf_splb_writer",
+      "command": "python3 -m tests.mod_editor.test_apf_splb_writer",
+      "exit_code": 0,
+      "tests_run": 22,
+      "unittest_output": "Ran 22 tests in 0.210s\n\nOK"
+    },
+    {
+      "module": "test_apf_stadium_material_findings",
+      "command": "python3 -m tests.mod_editor.test_apf_stadium_material_findings",
+      "exit_code": 0,
+      "tests_run": 6,
+      "unittest_output": "Ran 6 tests in 0.002s\n\nOK"
+    },
+    {
+      "module": "test_apf_stadium_model_import",
+      "command": "python3 -m tests.mod_editor.test_apf_stadium_model_import",
+      "exit_code": 0,
+      "tests_run": 4,
+      "unittest_output": "Ran 4 tests in 0.136s\n\nOK"
+    },
+    {
+      "module": "test_apf_stadium_studio",
+      "command": "python3 -m tests.mod_editor.test_apf_stadium_studio",
+      "exit_code": 0,
+      "tests_run": 4,
+      "unittest_output": "Ran 4 tests in 0.010s\n\nOK"
+    },
+    {
+      "module": "test_apf_stadium_studio_gui",
+      "command": "python3 -m tests.mod_editor.test_apf_stadium_studio_gui",
+      "exit_code": 0,
+      "tests_run": 2,
+      "unittest_output": "Ran 2 tests in 0.076s\n\nOK"
+    },
+    {
+      "module": "test_apf_stadium_texture",
+      "command": "python3 -m tests.mod_editor.test_apf_stadium_texture",
+      "exit_code": 0,
+      "tests_run": 5,
+      "unittest_output": "Ran 5 tests in 76.247s\n\nOK"
+    },
+    {
+      "module": "test_apf_studio_audio_gui",
+      "command": "python3 -m tests.mod_editor.test_apf_studio_audio_gui",
+      "exit_code": 0,
+      "tests_run": 32,
+      "unittest_output": "Ran 32 tests in 0.640s\n\nOK"
+    },
+    {
+      "module": "test_apf_studio_core",
+      "command": "python3 -m tests.mod_editor.test_apf_studio_core",
+      "exit_code": 0,
+      "tests_run": 9,
+      "unittest_output": "Ran 9 tests in 0.022s\n\nOK (skipped=1)"
+    },
+    {
+      "module": "test_apf_studio_draft_logo",
+      "command": "python3 -m tests.mod_editor.test_apf_studio_draft_logo",
+      "exit_code": 0,
+      "tests_run": 7,
+      "unittest_output": "Ran 7 tests in 0.199s\n\nOK"
+    },
+    {
+      "module": "test_apf_studio_inspectors",
+      "command": "python3 -m tests.mod_editor.test_apf_studio_inspectors",
+      "exit_code": 0,
+      "tests_run": 11,
+      "unittest_output": "Ran 11 tests in 2.143s\n\nOK"
+    },
+    {
+      "module": "test_apf_studio_installer",
+      "command": "python3 -m tests.mod_editor.test_apf_studio_installer",
+      "exit_code": 1,
+      "tests_run": 16,
+      "unittest_output": "Ran 16 tests in 0.129s\n\nFAILED (errors=3)"
+    },
+    {
+      "module": "test_apf_studio_safety",
+      "command": "python3 -m tests.mod_editor.test_apf_studio_safety",
+      "exit_code": 0,
+      "tests_run": 27,
+      "unittest_output": "Ran 27 tests in 0.119s\n\nOK"
+    },
+    {
+      "module": "test_apf_studio_text_edit",
+      "command": "python3 -m tests.mod_editor.test_apf_studio_text_edit",
+      "exit_code": 0,
+      "tests_run": 7,
+      "unittest_output": "Ran 7 tests in 0.039s\n\nOK"
+    },
+    {
+      "module": "test_apf_team_art",
+      "command": "python3 -m tests.mod_editor.test_apf_team_art",
+      "exit_code": 0,
+      "tests_run": 10,
+      "unittest_output": "Ran 10 tests in 50.263s\n\nOK"
+    },
+    {
+      "module": "test_apf_team_art_qt",
+      "command": "python3 -m tests.mod_editor.test_apf_team_art_qt",
+      "exit_code": 0,
+      "tests_run": 6,
+      "unittest_output": "Ran 6 tests in 0.167s\n\nOK"
+    },
+    {
+      "module": "test_apf_team_crest_selection",
+      "command": "python3 tests/mod_editor/test_apf_team_crest_selection.py",
+      "exit_code": 0,
+      "tests_run": 9,
+      "unittest_output": "Ran 9 tests in 0.098s\n\nOK"
+    },
+    {
+      "module": "test_apf_team_logo_gui",
+      "command": "python3 -m tests.mod_editor.test_apf_team_logo_gui",
+      "exit_code": 0,
+      "tests_run": 23,
+      "unittest_output": "Ran 23 tests in 1.553s\n\nOK"
+    },
+    {
+      "module": "test_apf_text_sheet_gui",
+      "command": "python3 -m tests.mod_editor.test_apf_text_sheet_gui",
+      "exit_code": 0,
+      "tests_run": 3,
+      "unittest_output": "Ran 3 tests in 0.069s\n\nOK"
+    },
+    {
+      "module": "test_apf_textlogo_gui",
+      "command": "python3 -m tests.mod_editor.test_apf_textlogo_gui",
+      "exit_code": 0,
+      "tests_run": 5,
+      "unittest_output": "Ran 5 tests in 0.235s\n\nOK"
+    },
+    {
+      "module": "test_apf_textlogo_writer",
+      "command": "python3 -m tests.mod_editor.test_apf_textlogo_writer",
+      "exit_code": 0,
+      "tests_run": 8,
+      "unittest_output": "Ran 8 tests in 63.369s\n\nOK"
+    },
+    {
+      "module": "test_apf_theme_layout_qt",
+      "command": "python3 -m tests.mod_editor.test_apf_theme_layout_qt",
+      "exit_code": 0,
+      "tests_run": 8,
+      "unittest_output": "Ran 8 tests in 13.812s\n\nOK"
+    },
+    {
+      "module": "test_apf_uniform_allocation_capacity",
+      "command": "python3 -m tests.mod_editor.test_apf_uniform_allocation_capacity",
+      "exit_code": 0,
+      "tests_run": 21,
+      "unittest_output": "Ran 21 tests in 1.673s\n\nOK"
+    },
+    {
+      "module": "test_apf_uniform_equipment_colors",
+      "command": "python3 -m tests.mod_editor.test_apf_uniform_equipment_colors",
+      "exit_code": 0,
+      "tests_run": 7,
+      "unittest_output": "Ran 7 tests in 7.736s\n\nOK"
+    },
+    {
+      "module": "test_apf_uniform_equipment_colors_gui",
+      "command": "python3 -m tests.mod_editor.test_apf_uniform_equipment_colors_gui",
+      "exit_code": 0,
+      "tests_run": 3,
+      "unittest_output": "Ran 3 tests in 0.036s\n\nOK"
+    },
+    {
+      "module": "test_apf_uniform_independence",
+      "command": "python3 -m tests.mod_editor.test_apf_uniform_independence",
+      "exit_code": 0,
+      "tests_run": 22,
+      "unittest_output": "Ran 22 tests in 0.001s\n\nOK (skipped=19)"
+    },
+    {
+      "module": "test_apf_uniform_inventory_gui",
+      "command": "python3 -m tests.mod_editor.test_apf_uniform_inventory_gui",
+      "exit_code": 0,
+      "tests_run": 6,
+      "unittest_output": "Ran 6 tests in 0.190s\n\nOK"
+    },
+    {
+      "module": "test_apf_wave_integration",
+      "command": "python3 -m tests.mod_editor.test_apf_wave_integration",
+      "exit_code": 0,
+      "tests_run": 8,
+      "unittest_output": "Ran 8 tests in 14.568s\n\nOK"
+    },
+    {
+      "module": "test_apf_wordmark_regions",
+      "command": "python3 -m tests.mod_editor.test_apf_wordmark_regions",
+      "exit_code": 0,
+      "tests_run": 2,
+      "unittest_output": "Ran 2 tests in 0.035s\n\nOK"
+    },
+    {
+      "module": "test_apf_workspace_recovery",
+      "command": "python3 -m tests.mod_editor.test_apf_workspace_recovery",
+      "exit_code": 0,
+      "tests_run": 20,
+      "unittest_output": "Ran 20 tests in 46.594s\n\nOK"
+    },
+    {
+      "module": "test_apf_xenos_4444_mip_layout",
+      "command": "python3 -m tests.mod_editor.test_apf_xenos_4444_mip_layout",
+      "exit_code": 0,
+      "tests_run": 14,
+      "unittest_output": "Ran 14 tests in 2.117s\n\nOK"
+    },
+    {
+      "module": "test_apf_xenos_4444_png",
+      "command": "python3 -m tests.mod_editor.test_apf_xenos_4444_png",
+      "exit_code": 0,
+      "tests_run": 3,
+      "unittest_output": "Ran 3 tests in 0.007s\n\nOK"
+    },
+    {
+      "module": "test_apf_xenos_extra_formats_png",
+      "command": "python3 -m tests.mod_editor.test_apf_xenos_extra_formats_png",
+      "exit_code": 0,
+      "tests_run": 6,
+      "unittest_output": "Ran 6 tests in 0.007s\n\nOK"
+    },
+    {
+      "module": "test_apf_xex_image",
+      "command": "python3 -m tests.mod_editor.test_apf_xex_image",
+      "exit_code": 0,
+      "tests_run": 17,
+      "unittest_output": "Ran 17 tests in 0.934s\n\nOK"
+    },
+    {
+      "module": "test_apf_xex_image_retail",
+      "command": "python3 -m tests.mod_editor.test_apf_xex_image_retail",
+      "exit_code": 0,
+      "tests_run": 2,
+      "unittest_output": "Ran 2 tests in 72.196s\n\nOK"
+    },
+    {
+      "module": "test_apf_xma1_wizard_gui",
+      "command": "python3 -m tests.mod_editor.test_apf_xma1_wizard_gui",
+      "exit_code": 0,
+      "tests_run": 17,
+      "unittest_output": "Ran 17 tests in 1.342s\n\nOK"
+    }
+  ],
+  "tests_skipped": 27
+}

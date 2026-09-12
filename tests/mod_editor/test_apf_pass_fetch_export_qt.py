@@ -14,7 +14,8 @@ from unittest.mock import patch
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QMessageBox
+from mod_editor.apf_studio.launcher import XeniaSettings, XeniaLauncher, PASS_FETCH_FILENAME
 from mod_editor.apf_studio import playbook_playcall_qt as ui
 from mod_editor.core import apf2k8_playcall_patch as p
 from mod_editor.core.errors import ValidationError
@@ -38,10 +39,18 @@ class ExportPanelTests(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.game = self.root / "game"; self.game.mkdir()
         self.source = self.game / "default.xex"; self.source.write_bytes(synthetic_xex(encrypted=True))
-        self.settings = SimpleNamespace(title_update_path=None, xenia_path=None)
+        executable = self.root / "xenia"
+        executable.write_bytes(b"fake xenia")
+        executable.chmod(0o755)
+        self.settings = XeniaSettings(self.root / "settings.json")
+        self.settings.configure(executable)
+        self.launcher = XeniaLauncher(self.settings, self.root / "data")
         self.facade = SimpleNamespace(source=SimpleNamespace(game_root=self.game, index_0a=self.game / "0A"),
                                       source_ready=False, last_build=SimpleNamespace(output_game=self.root / "build"),
-                                      launcher=SimpleNamespace(settings=self.settings))
+                                      launcher=self.launcher,
+                                      xenia_patch_status=self.launcher.pass_fetch_status,
+                                      install_xenia_patch=self.launcher.install_pass_fetch_patch,
+                                      remove_xenia_patch=self.launcher.remove_pass_fetch_patch)
         self.tasks = []
         self.panel = ui.ApfPlaycallPanel(self.facade, lambda *args: self.tasks.append(args))
 
@@ -64,7 +73,7 @@ class ExportPanelTests(unittest.TestCase):
         self.assertIn("retail BASE or Title Update 1.1", self.panel.patch_note.text())
         self.assertIn("every down", self.panel.patch_note.text())
         self.assertIn("weighted picker", self.panel.patch_note.text())
-        self.assertIn("next to your build", self.panel.patch_notice.text())
+        self.assertIn("Xenia patch installation", self.panel.patch_notice.text())
 
     def test_cancelled_folder_opens_no_worker_or_output_dialog(self):
         with patch.object(ui.QFileDialog, "getExistingDirectory", return_value="") as folder, \
@@ -89,19 +98,19 @@ class ExportPanelTests(unittest.TestCase):
                 self.assertIn(digest, self.panel.patch_notice.text())
             self.assertTrue(self.panel.patch_button.isEnabled())
 
-    def test_success_suggests_build_neighbor_and_reparses_export(self):
+    def test_success_installs_in_xenia_and_reparses_config(self):
         source_receipt = {"input_paths": [str(self.source)], "source_kind": "game_folder"}
-        output = self.root / "chosen.patch.toml"
+        output = self.settings.patches_folder / PASS_FETCH_FILENAME
         with patch.object(ui.QFileDialog, "getExistingDirectory", return_value=str(self.game)), \
-                patch.object(ui.QFileDialog, "getSaveFileName", return_value=(str(output), "")) as save, \
+                patch.object(ui.QMessageBox, "question", return_value=QMessageBox.Yes) as consent, \
                 patch.object(ui.game_image, "derive_image", return_value=(self.image, source_receipt)), \
                 patch.object(p, "PROFILES", (self.profile,)):
             self.panel.export_patch()
             self.complete_task()
-            self.assertEqual(Path(save.call_args.args[2]).parent, self.root)
+            self.assertIn(str(self.settings.emulator_config), consent.call_args.args[2])
             self.assertFalse(output.exists())  # publication has its own worker
             self.complete_task()
-        self.assertIn("Read and checked retail BASE", self.panel.patch_notice.text())
+        self.assertIn("installed (base) and enabled", self.panel.patch_notice.text())
         self.assertIn(str(output.resolve()), self.panel.patch_notice.text())
         self.assertIn("unwitnessed", self.panel.patch_notice.text())
         self.assertIn(self.profile.module_hash, output.read_text())
@@ -109,11 +118,11 @@ class ExportPanelTests(unittest.TestCase):
 
     def test_cancel_after_check_writes_nothing(self):
         with patch.object(ui.QFileDialog, "getExistingDirectory", return_value=str(self.game)), \
-                patch.object(ui.QFileDialog, "getSaveFileName", return_value=("", "")), \
+                patch.object(ui.QMessageBox, "question", return_value=QMessageBox.No), \
                 patch.object(ui.game_image, "derive_image", return_value=(self.image, {"input_paths": [str(self.source)]})), \
                 patch.object(p, "PROFILES", (self.profile,)):
             self.panel.export_patch(); self.complete_task()
-        self.assertIn("export cancelled", self.panel.patch_notice.text())
+        self.assertIn("installation cancelled", self.panel.patch_notice.text())
         self.assertEqual(self.tasks, [])
         self.assertEqual(list(self.root.glob("*.toml")), [])
 

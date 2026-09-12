@@ -21,7 +21,16 @@ def main(argv=None):
     parser.add_argument("--source", type=Path, default=Path(
         "/media/noah/Storage/for codex 1.0/extracted/All-Pro Football 2K8 (USA)"))
     parser.add_argument("--receipt", type=Path)
+    parser.add_argument("--playcalling-contract-only", action="store_true",
+                        help="Replay the beta-67 tab using the test-only contract modules through its facade")
     args = parser.parse_args(argv)
+    if args.playcalling_contract_only:
+        from tests.mod_editor.test_apf_playcalling_editor_qt import replay_contract
+        captured = replay_contract()
+        if args.receipt:
+            args.receipt.write_bytes((json.dumps(captured, indent=2) + "\n").encode())
+        print(json.dumps(captured, indent=2))
+        return 0
     from PyQt5.QtWidgets import QApplication, QMessageBox, QPushButton
     from PyQt5.QtCore import QCoreApplication, QEvent
     from mod_editor.apf_studio.facade import ApfStudioFacade

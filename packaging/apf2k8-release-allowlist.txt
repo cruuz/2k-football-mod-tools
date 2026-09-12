@@ -262,3 +262,17 @@ mod_editor/apf_studio/team_art.py
 mod_editor/apf_studio/team_art_qt.py
 mod_editor/data/apf2k8_logo_labels.v1.json
 mod_editor/data/apf2k8_textlogo_labels.v1.json
+
+# Beta 67 P3: CPU play-calling model, writers and experimental curve export.
+docs/mod_editor/apf_b67_play_calling.md
+mod_editor/core/apf2k8_master_writer.py
+mod_editor/core/apf2k8_playcall_curves_patch.py
+mod_editor/core/apf2k8_playcall_model.py
+mod_editor/core/apf2k8_team_tendency.py
+
+# Beta 67 P4: CPU Play Calling editor.
+docs/mod_editor/apf_b67_play_calling_editor.md
+mod_editor/apf_studio/playcalling_build.py
+mod_editor/apf_studio/playcalling_editor_qt.py
+mod_editor/apf_studio/playcalling_patches.py
+mod_editor/apf_studio/playcalling_service.py

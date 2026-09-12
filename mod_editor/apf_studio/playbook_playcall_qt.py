@@ -6,10 +6,11 @@ in WIRING.md. All book changes use the existing facade and project payload.
 from __future__ import annotations
 
 from pathlib import Path
+import tempfile
 
 from PyQt5.QtCore import QStandardPaths, pyqtSignal
 from PyQt5.QtWidgets import (QComboBox, QFileDialog, QHBoxLayout, QLabel,
-                             QPushButton, QTableWidget, QTableWidgetItem,
+                             QPushButton, QTableWidget, QTableWidgetItem, QMessageBox,
                              QVBoxLayout, QWidget)
 
 from mod_editor.core import apf2k8_audibles as audibles
@@ -30,15 +31,22 @@ def prepare_book(index: Path, outer: int, existing=()) -> dict:
         current = splb.parse_book(compiled.replacement, outer)
         census = audibles.audible_census(current, catalog)
         balanced = all(row["balanced"] for row in census if row["possible"])
-        return {"outer": outer, "changes": (), "existing": existing,
+        return {"outer": outer, "book_name": original.name, "changes": (), "existing": existing,
                 "before": audibles.audible_census(original, catalog), "after": census,
                 "personnel": compiled.report["personnel_availability"],
                 "stageable": False, "transport": compiled.report,
                 "message": ("Current project already balances every eligible record." if balanced else
                             "Build or revert this book's current edits before balancing audibles.")}
+    if splb.BOOK_SIDES.get(original.name) == "defense":
+        census = audibles.audible_census(original, catalog)
+        personnel = splb.personnel_availability(original)
+        return {"outer": outer, "book_name": original.name, "changes": (), "existing": (), "before": census,
+                "after": census, "stageable": False, "transport": {},
+                "personnel": {"before": personnel, "after": personnel},
+                "message": "Defensive book: review personnel here; edit plays and audibles in Fine-tune."}
     plan = audibles.plan_audibles(original, catalog)
     compiled = splb.build_book_patch(index, plan.changes) if plan.changes else None
-    return {"outer": outer, "changes": plan.changes, "existing": (),
+    return {"outer": outer, "book_name": original.name, "changes": plan.changes, "existing": (),
             "before": plan.report["before"], "after": plan.report["after"],
             "stageable": bool(plan.changes), "transport": compiled.report if compiled else {},
             "personnel": (compiled.report["personnel_availability"] if compiled else
@@ -50,23 +58,30 @@ def prepare_book(index: Path, outer: int, existing=()) -> dict:
 class ApfPlaycallPanel(QWidget):
     modifiedChanged = pyqtSignal()
 
-    def __init__(self, facade, run_task):
+    def __init__(self, facade, run_task, *, patch_only=False):
         super().__init__()
         self.facade, self.run_task = facade, run_task
+        self._patch_only = patch_only
         self._preview = None
+        self._catalog_index = None
         self._generation = 0
         self._busy = False
         self._title_update = None
-        root = QVBoxLayout(self)
+        layout = QVBoxLayout(self)
+        self.audible_controls = QWidget(self)
+        self.patch_controls = QWidget(self)
+        layout.addWidget(self.audible_controls)
+        layout.addWidget(self.patch_controls)
+        root = QVBoxLayout(self.audible_controls)
         intro = QLabel("Balance CPU audibles using plays already in each formation. "
                        "Records without both a run and a pass are listed below. "
                        "Personnel and CPU behavior remain unwitnessed in game.")
         intro.setWordWrap(True); root.addWidget(intro)
         row = QHBoxLayout()
         self.book_picker = QComboBox()
-        for outer in audibles.CPU_OFFENSE_BOOKS:
-            self.book_picker.addItem(splb.STOCK_BOOKS[outer], outer)
-        self.book_picker.setAccessibleName("CPU offensive book")
+        for outer, name in (splb.STOCK_BOOKS if patch_only else getattr(facade, "book_choices", splb.STOCK_BOOKS)).items():
+            self.book_picker.addItem(name, outer)
+        self.book_picker.setAccessibleName("CPU playbook")
         self.preview_button = QPushButton("Preview CPU audibles and personnel")
         self.stage_button = QPushButton("Stage balanced CPU audibles")
         self.preview_button.clicked.connect(self.preview)
@@ -86,6 +101,7 @@ class ApfPlaycallPanel(QWidget):
                                                         "Advertised before / after", "TE in stock MASTER"))
         self.personnel_table.setAccessibleName("Personnel availability before and after")
         root.addWidget(self.personnel_table)
+        root = QVBoxLayout(self.patch_controls)
         patch_row = QHBoxLayout()
         self.image_picker = QComboBox()
         self.image_picker.addItem("Choose game folder", "folder")
@@ -102,19 +118,43 @@ class ApfPlaycallPanel(QWidget):
         self.update_notice = QLabel("Title Update: detect the studio's configured update or installed Xenia content.")
         self.update_notice.setWordWrap(True)
         root.addWidget(self.update_notice)
-        self.patch_button = QPushButton("Export TE bias for pass fetches…")
+        self.patch_button = QPushButton("Install TE bias for last-resort fetch…")
         self.patch_button.clicked.connect(self.export_patch)
         root.addWidget(self.patch_button)
         self.patch_note = QLabel(
             "The studio reads your game's executable, checks it is the retail BASE or Title Update 1.1, "
-            "and writes a Xenia patch file next to your build. If your update is installed elsewhere, "
+            "and installs the chosen patch in Xenia’s patches folder after your consent. If your update is installed elsewhere, "
             "choose its content file above. Your game files are only read. "
-            "Patch experiment: applies to pass fetches at every down, including user calls. "
+            "Last-resort fetch only, at every down including user calls. This is not a CPU play-calling fix. "
             "The main CPU weighted picker uses another path. Personnel selection and Subs can still "
             "choose a lineup without a TE. In-game behavior is unwitnessed.")
         self.patch_note.setWordWrap(True); root.addWidget(self.patch_note)
-        self.patch_notice = QLabel("Choose game folder to read and check your executable, then save a Xenia patch next to your build.")
+        self.patch_notice = QLabel("Choose game folder to check your executable, then review Xenia patch installation.")
         self.patch_notice.setWordWrap(True); root.addWidget(self.patch_notice)
+        row = QHBoxLayout()
+        self.install_existing_button = QPushButton("Install an exported pass-fetch patch…")
+        self.remove_patch_button = QPushButton("Remove Studio pass-fetch patch")
+        self.config_button = QPushButton("Choose Xenia config…")
+        self.patch_status_button = QPushButton("Check patch status")
+        for widget in (self.install_existing_button, self.remove_patch_button, self.config_button, self.patch_status_button):
+            row.addWidget(widget)
+        self.install_existing_button.clicked.connect(self.install_existing_patch)
+        self.remove_patch_button.clicked.connect(self.remove_patch)
+        self.config_button.clicked.connect(self.choose_xenia_config)
+        self.patch_status_button.clicked.connect(self.refresh_patch_status)
+        root.addLayout(row)
+        for widget, sentence in (
+            (self.image_picker, "The studio reads this executable source to choose the patch matching the game Xenia will run."),
+            (self.update_button, "The studio reads this update so the installed patch matches Title Update 1.1."),
+            (self.auto_update_button, "The studio looks for the installed update to match the patch to the game Xenia will run."),
+            (self.patch_button, "Xenia will bias only last-resort pass fetches toward tight-end personnel after you consent to installation."),
+            (self.install_existing_button, "Xenia will load this verified exported pass-fetch experiment after you consent to installation."),
+            (self.remove_patch_button, "Xenia stops applying this Studio pass-fetch patch after you remove it and restart."),
+            (self.config_button, "Xenia launches with this config, whose apply_patches setting controls whether installed patches take effect."),
+            (self.patch_status_button, "The studio reads whether the pass-fetch patch is installed and enabled for Xenia's selected launch config."),
+        ):
+            widget.setToolTip(sentence)
+            widget.setAccessibleDescription(sentence)
         self.set_context()
 
     def _source(self):
@@ -122,6 +162,18 @@ class ApfPlaycallPanel(QWidget):
         return getattr(source, "index_0a", None)
 
     def set_context(self, *args):
+        if self._patch_only:
+            return
+        if self._catalog_index != self._source():
+            self._catalog_index = self._source()
+            selected = self.book_picker.currentText()
+            self.book_picker.blockSignals(True)
+            self.book_picker.clear()
+            for outer, name in getattr(self.facade, "book_choices", splb.STOCK_BOOKS).items():
+                self.book_picker.addItem(name, outer)
+            if self.book_picker.findText(selected) >= 0:
+                self.book_picker.setCurrentIndex(self.book_picker.findText(selected))
+            self.book_picker.blockSignals(False)
         self._generation += 1
         self._preview = None
         self.stage_button.setEnabled(False)
@@ -136,6 +188,8 @@ class ApfPlaycallPanel(QWidget):
         self.stage_button.setEnabled(not busy and bool(self._preview and self._preview["stageable"]))
         self.patch_button.setEnabled(not busy)
         self.image_picker.setEnabled(not busy)
+        for widget in (self.install_existing_button, self.remove_patch_button, self.config_button, self.patch_status_button):
+            widget.setEnabled(not busy)
         self._update_input_controls()
 
     def _update_input_controls(self, *args):
@@ -181,7 +235,7 @@ class ApfPlaycallPanel(QWidget):
             if scheme_snapshot is not None:
                 from . import scheme_service
                 recipes = scheme_service.read_profile(scheme_snapshot)
-                if any(recipe["book_type"] == splb.STOCK_BOOKS[outer] for recipe in recipes):
+                if any(recipe["book_type"] == result["book_name"] for recipe in recipes):
                     result["stageable"] = False
                     result["message"] = "Build or revert this book's staged Scheme Presets before balancing audibles."
             return result
@@ -220,7 +274,7 @@ class ApfPlaycallPanel(QWidget):
             profile = self._scheme_snapshot()
             if profile is not None:
                 from . import scheme_service
-                if any(r["book_type"] == splb.STOCK_BOOKS[preview["outer"]]
+                if any(r["book_type"] == preview["book_name"]
                        for r in scheme_service.read_profile(profile)):
                     raise ValidationError("Build or revert this book's Scheme Presets before balancing audibles")
             # Rebuild from the source immediately before staging; no stale plan.
@@ -242,6 +296,56 @@ class ApfPlaycallPanel(QWidget):
         session = getattr(self.facade, "session", None)
         return next((m for m in getattr(session, "modifications", ())
                      if m.kind == "apf_scheme_presets"), None)
+
+    def refresh_patch_status(self):
+        try:
+            self.patch_notice.setText(self.facade.xenia_patch_status()["message"])
+        except (AttributeError, ValueError, OSError) as exc:
+            self.patch_notice.setText(f"Configure Xenia in the launcher first. {exc}")
+
+    def choose_xenia_config(self):
+        source, _ = QFileDialog.getOpenFileName(self, "Choose the Xenia config to use at launch", "", "Xenia config (*.toml)")
+        if source:
+            try:
+                self.facade.configure_xenia_patch_config(Path(source))
+                self.refresh_patch_status()
+            except (ValueError, OSError) as exc:
+                self.patch_notice.setText(str(exc))
+
+    def _install_consent(self):
+        try:
+            status = self.facade.xenia_patch_status()
+            if "patch_path" not in status:
+                self.patch_notice.setText(status["message"])
+                return False
+            answer = QMessageBox.question(
+                self, "Install and enable the pass-fetch experiment?",
+                f"Install the selected patch at:\n{status['patch_path']}\n\n"
+                f"Set apply_patches = true in:\n{status['config_path']}\n\n"
+                "This also enables any other patches marked enabled in Xenia’s patches folder. "
+                "The Studio will use this config when launching Xenia. Restart Xenia after changing patches. "
+                "You can remove this patch here. Last-resort fetch only; not a CPU play-calling fix. "
+                "In-game result unwitnessed.", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            return answer == QMessageBox.Yes
+        except (AttributeError, ValueError, OSError) as exc:
+            self.patch_notice.setText(f"Configure Xenia first. {exc}")
+            return False
+
+    def install_existing_patch(self):
+        source, _ = QFileDialog.getOpenFileName(self, "Choose a Studio pass-fetch patch", "", "Xenia patch (*.patch.toml)")
+        if not source or not self._install_consent():
+            return
+        try:
+            self.patch_notice.setText(self.facade.install_xenia_patch(Path(source), consent=True)["message"])
+        except (ValueError, OSError) as exc:
+            self.patch_notice.setText(str(exc))
+
+    def remove_patch(self):
+        try:
+            result = self.facade.remove_xenia_patch()
+            self.patch_notice.setText(result["message"] + " Restart Xenia. Other patches and the global setting are unchanged.")
+        except (AttributeError, ValueError, OSError) as exc:
+            self.patch_notice.setText(str(exc))
 
     def export_patch(self):
         folder_mode = self.image_picker.currentData() == "folder"
@@ -279,31 +383,24 @@ class ApfPlaycallPanel(QWidget):
                 self.patch_notice.setText(error)
                 return
             name = "retail BASE" if patch.profile.name == "base" else "Title Update 1.1"
-            self.patch_notice.setText(f"Checked {name}. Choose where to write the Xenia patch file next to your build.")
-            parent = Path(built or source).parent
-            suggested = parent / f"54540807-{patch.profile.name}-pass-fetch-te.patch.toml"
-            output, _ = QFileDialog.getSaveFileName(
-                self, "Export TE bias for pass fetches", str(suggested), "Xenia patch (*.patch.toml)")
-            if not output:
-                self.patch_notice.setText(f"Checked {name}; export cancelled. No patch file written.")
+            if not self._install_consent():
+                self.patch_notice.setText(f"Checked {name}; installation cancelled. No patch or config written.")
                 return
             self.set_busy(True)
 
             def write(progress):
                 try:
-                    return code_patch.export_patch(patch, Path(output), receipt), None
-                except (ValidationError, OSError) as exc:
+                    with tempfile.TemporaryDirectory(prefix="apf-pass-fetch-") as temporary:
+                        output = Path(temporary) / "pass-fetch.patch.toml"
+                        code_patch.export_patch(patch, output, receipt)
+                        return self.facade.install_xenia_patch(output, consent=True), None
+                except (ValidationError, ValueError, OSError) as exc:
                     return None, str(exc)
 
             def done(result):
                 self.set_busy(False)
-                exported, error = result
-                if error:
-                    self.patch_notice.setText(error)
-                    return
-                self.patch_notice.setText(
-                    f"Read and checked {name}; wrote the Xenia patch file to {exported['output_path']}. "
-                    "Status: unwitnessed in game. Disable it by removing the exported patch or setting is_enabled = false.")
+                installed, error = result
+                self.patch_notice.setText(error if error else installed["message"] + " Restart Xenia to load the patch.")
             self.run_task("Write pass-fetch Xenia patch", write, done, False)
 
         self.run_task("Read game executable for pass-fetch patch", prepare, prepared, False)
