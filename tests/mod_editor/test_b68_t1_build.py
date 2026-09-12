@@ -78,6 +78,17 @@ class WrittenBuildTests(unittest.TestCase):
             self.assertEqual(outputs[0], outputs[1])
             self.assertEqual(outputs[0], outputs[2])
             self.assertNotEqual(outputs[0], outputs[3])
+            original_union = tool.verify_union
+            def mutate_after_scan(source_fd, output_fd, size, edits):
+                result = original_union(source_fd, output_fd, size, edits)
+                tool.write_all(output_fd, 128, b"late mutation")
+                return result
+            with patch.object(tool, "verify_union", side_effect=mutate_after_scan), \
+                 contextlib.redirect_stdout(io.StringIO()), \
+                 self.assertRaisesRegex(tool.ProjectError, "source or output changed"):
+                tool.build(project, root / "source.iso", root / "raced.iso", root / "raced.json", root / "raced",
+                           root / "0", root / "inventory.json")
+            self.assertFalse((root / "raced.iso").exists())
 
     def test_402_units_one_edit_invalidates_one_and_grouped_inputs_invalidate_together(self):
         tool = backend()

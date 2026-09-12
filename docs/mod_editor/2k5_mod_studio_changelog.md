@@ -4,6 +4,10 @@
 
 Beta 68 answers the ESPN NFL 2K5 reports in Discord after beta 66.1; bullets are added as each change lands.
 
+- **Builds reuse compiled artwork and check the written receipt.** maumau78 reported "it finally build without errors but it takes 1h" and "even change one texture take forever to build"; Coach Edwards reported "my build took over 90 minutes". The publication check now reads the recorded spans and directory without compiling the project again. A private project cache reuses unchanged texture and shared equipment compiles. One full source/output comparison remains to prove that bytes outside the edits match. The reviewed Linux equipment compressor preserves the Python encoder's exact bytes and decode gate. PROVED in bounded synthetic builds; the reported 402-edit retail workload and Windows build times remain UNWITNESSED.
+- **The Equipment button opens All Textures on the first visit.** maumau78 reported "if open uniform editor and select socks / equipment the first time you got this error" and that visiting "All Texture" first worked around it. The button now constructs the lazy browser before filtering the selected uniform set. PROVED from a fresh offscreen window with 45 synthetic equipment records; reporter retest remains UNWITNESSED.
+- **Team Kit import names changed files and files identical to the project.** Coach Edwards' photo showed "Imported: 0. Skipped unchanged: 78" and "No project pixels changed". Import now compares incoming pixels with the current project before deciding what changed, distinguishes untouched export files that preserve a later project edit, and reports this import's counts instead of replaying an earlier receipt. PROVED: export a staged kit, edit one PNG on disk, import exactly one component, then import again with zero changes. The number-sheet and cross-project merge safeguards remain in place; in-game appearance remains UNWITNESSED.
+
 ## v1.0 RC92, beta 67
 
 No 2K5 changes in beta 67; the version marker moves with the release tag.

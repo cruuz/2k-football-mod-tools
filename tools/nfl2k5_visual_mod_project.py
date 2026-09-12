@@ -5350,10 +5350,12 @@ def build(project_path: Path, source_path: Path, output_path: Path,
         # One full pair scan is retained: the manifest's byte-identity claim
         # includes every gap, including padding outside filesystem entries.
         # Compile, copy and artifact checks are finished before this pass.
+        output_snapshot = file_snapshot(output_owned.descriptor)
         union = verify_union(source_fd, output_owned.descriptor, source_size, prepared.edits)
         source_sha = union["source_sha256"]
         require(common.path_identity(source) == source_identity and
                 file_snapshot(source_fd) == source_snapshot and
+                file_snapshot(output_owned.descriptor) == output_snapshot and
                 common.owned_path_matches(output_owned),
                 "source or output changed before final manifest commit")
         phase("full_identity_check")
@@ -5363,7 +5365,7 @@ def build(project_path: Path, source_path: Path, output_path: Path,
             "written_receipt": {
                 "version": 1,
                 "source_stat": source_snapshot,
-                "output_stat": file_snapshot(output_owned.descriptor),
+                "output_stat": output_snapshot,
                 "inputs": {str(path): pin.sha256 for path, pin in prepared.input_pins.items()},
             },
             "project": {

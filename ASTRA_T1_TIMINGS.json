@@ -1,0 +1,133 @@
+{
+  "baseline_cold_warm_byte_identical": true,
+  "edit_count": 2,
+  "kinds": [
+    "torso",
+    "uniform_equipment_texture"
+  ],
+  "lz_microbenchmarks": [
+    {
+      "after_s": 0.018567108898423612,
+      "before_s": 0.532865084009245,
+      "case": "repeated",
+      "encoded_bytes": 10884,
+      "identical": true,
+      "input_bytes": 92000
+    },
+    {
+      "after_s": 0.02096786897163838,
+      "before_s": 0.13700652099214494,
+      "case": "palette",
+      "encoded_bytes": 49531,
+      "identical": true,
+      "input_bytes": 65536
+    },
+    {
+      "after_s": 0.017706118058413267,
+      "before_s": 0.6238755789818242,
+      "case": "flat",
+      "encoded_bytes": 7754,
+      "identical": true,
+      "input_bytes": 65536
+    }
+  ],
+  "retail_402_edit_benchmark": "UNWITNESSED: Storage is read-only in this sandbox; not run",
+  "runs": [
+    {
+      "backend_log": [],
+      "build_s": 1.190861408947967,
+      "output_sha256": "fd59d6db8539da7c1cadb66586635c4064f9eebf0859bdff0cb8bd50077d719f",
+      "phases": {
+        "bind_prepared_to_source": 0.004331445088610053,
+        "copy_artifacts": 0.013144772965461016,
+        "prepare_project": 2.200100447051227,
+        "validate_source": 0.000754081062041223,
+        "verify_artifacts": 0.0019809219520539045,
+        "verify_prepared_pins": 0.00040969112887978554,
+        "verify_union": 0.0058957599103450775
+      },
+      "run": "before",
+      "total_s": 2.2366285109892488,
+      "verify_s": 1.0457671020412818
+    },
+    {
+      "backend_log": [
+        "NFL2K5_BUILD_PHASE source_validation seconds=0.000713",
+        "NFL2K5_COMPILE_CACHE hits=0 misses=2",
+        "NFL2K5_BUILD_PHASE compile seconds=1.099004",
+        "NFL2K5_BUILD_PHASE bind_source seconds=0.002442",
+        "NFL2K5_BUILD_PHASE copy seconds=0.000205",
+        "NFL2K5_BUILD_PHASE write_spans seconds=0.000935",
+        "NFL2K5_BUILD_PHASE artifacts_and_directory seconds=0.013281",
+        "NFL2K5_BUILD_PHASE full_identity_check seconds=0.002934"
+      ],
+      "build_s": 1.1224040240049362,
+      "output_sha256": "fd59d6db8539da7c1cadb66586635c4064f9eebf0859bdff0cb8bd50077d719f",
+      "phases": {
+        "bind_prepared_to_source": 0.0021204649237915874,
+        "copy_artifacts": 0.012243955046869814,
+        "prepare_project": 1.0989747060230002,
+        "validate_source": 0.00021574099082499743,
+        "verify_artifacts": 0.0009710789890959859,
+        "verify_prepared_pins": 0.00026239606086164713,
+        "verify_union": 0.002910166047513485
+      },
+      "run": "cold",
+      "total_s": 1.1279765559593216,
+      "verify_s": 0.00557253195438534
+    },
+    {
+      "backend_log": [
+        "NFL2K5_BUILD_PHASE source_validation seconds=0.000653",
+        "NFL2K5_COMPILE_CACHE hits=2 misses=0",
+        "NFL2K5_BUILD_PHASE compile seconds=0.053929",
+        "NFL2K5_BUILD_PHASE bind_source seconds=0.002402",
+        "NFL2K5_BUILD_PHASE copy seconds=0.000205",
+        "NFL2K5_BUILD_PHASE write_spans seconds=0.000883",
+        "NFL2K5_BUILD_PHASE artifacts_and_directory seconds=0.012912",
+        "NFL2K5_BUILD_PHASE full_identity_check seconds=0.002933"
+      ],
+      "build_s": 0.07678051094990224,
+      "output_sha256": "fd59d6db8539da7c1cadb66586635c4064f9eebf0859bdff0cb8bd50077d719f",
+      "phases": {
+        "bind_prepared_to_source": 0.0021101279417052865,
+        "copy_artifacts": 0.011905711027793586,
+        "prepare_project": 0.053904548985883594,
+        "validate_source": 0.00021057191770523787,
+        "verify_artifacts": 0.0009457269916310906,
+        "verify_prepared_pins": 0.000249404925853014,
+        "verify_union": 0.0029098859522491693
+      },
+      "run": "warm",
+      "total_s": 0.08229032601229846,
+      "verify_s": 0.005509815062396228
+    },
+    {
+      "backend_log": [
+        "NFL2K5_BUILD_PHASE source_validation seconds=0.000649",
+        "NFL2K5_COMPILE_CACHE hits=1 misses=1",
+        "NFL2K5_BUILD_PHASE compile seconds=1.178051",
+        "NFL2K5_BUILD_PHASE bind_source seconds=0.003970",
+        "NFL2K5_BUILD_PHASE copy seconds=0.000210",
+        "NFL2K5_BUILD_PHASE write_spans seconds=0.000973",
+        "NFL2K5_BUILD_PHASE artifacts_and_directory seconds=0.013142",
+        "NFL2K5_BUILD_PHASE full_identity_check seconds=0.007505"
+      ],
+      "build_s": 1.2121648400789127,
+      "output_sha256": "930da2fcf60859a9dcf85ef8806f573d06f213f1c70da9edd2454f7d0305d09e",
+      "phases": {
+        "bind_prepared_to_source": 0.003647274919785559,
+        "copy_artifacts": 0.012136397999711335,
+        "prepare_project": 1.178028226015158,
+        "validate_source": 0.00020945502910763025,
+        "verify_artifacts": 0.0009601149940863252,
+        "verify_prepared_pins": 0.0002561799483373761,
+        "verify_union": 0.007483122986741364
+      },
+      "run": "one_change",
+      "total_s": 1.2248006770387292,
+      "verify_s": 0.012635836959816515
+    }
+  ],
+  "scope": "synthetic two-edit real-codec workflow"
+}
