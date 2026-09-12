@@ -17,7 +17,9 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 from test_nfl2k5_equipment_texture_chain import Fixture, artwork
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.nfl2k5_equipment_import import stage_equipment_import
-from mod_editor.core.nfl2k5_equipment_import_intent import OWN_TEXTURE, PALETTE_ONLY, import_mode, with_import_mode
+from mod_editor.core.nfl2k5_equipment_import_intent import (
+    OWN_TEXTURE, PALETTE_ONLY, import_mode, with_import_mode, retail_source, with_retail_source,
+)
 from mod_editor.core import nfl2k5_uniform_equipment_writer as writer
 from mod_editor.studio.session import StudioSession
 from nfl_tset_png_import import decode_rgba_png
@@ -188,6 +190,31 @@ class EquipmentSessionTests(unittest.TestCase):
             self.a.replace_batch(((other, path),))
         self.assertEqual(tuple(self.a.iter_edits()), ())
 
+    def test_export_copy_save_reopen_and_build_keep_the_retail_origin(self):
+        from nfl_txtr import decode_chunk, parse_chunks
+
+        original = self.a.asset_io.ensure_original(self.asset)
+        payload, rgba = self.a.asset_io.validate_replacement(self.asset, original)
+        original.write_bytes(with_retail_source(payload, self.asset.asset_id, rgba))
+        exported = self.a.export_asset(self.asset, self.root / "exported.png")
+        self.assertEqual(retail_source(exported.read_bytes(), rgba), self.asset.asset_id)
+        other = self.assets[self.f.rows[1].asset_id]
+        with self.f.context():
+            result = stage_equipment_import(self.a, other, exported, independent=True)
+        self.assertIn("preserved exactly", result.message)
+        saved = self.root / "portable.2k5mod"
+        self.a.save_shareable_project(saved)
+        reopened = self.session("portable")
+        reopened.load_shareable_project(saved)
+        path = reopened.current_path(other)
+        self.assertEqual(retail_source(path.read_bytes(), rgba), self.asset.asset_id)
+        span, _, receipt, _, _ = self.f.build([(other.asset_id, path)])
+        chunk = parse_chunks(span)[0]
+        decoded, _ = decode_chunk(span, chunk)
+        textures, _ = writer._validate_layout(self.f.decoded, self.f.chunk, self.f.rows)
+        self.assertEqual(writer.decode_equipment_levels(decoded, chunk, textures[1]),
+                         writer.decode_equipment_levels(self.f.decoded, self.f.chunk, textures[0]))
+
 
 try:
     from PyQt5.QtWidgets import QApplication
@@ -204,14 +231,16 @@ class EquipmentDialogTests(unittest.TestCase):
 
     def test_shoes_and_gloves_default_to_their_own_texture(self):
         """Beta 66 (maumau78): a copied shoe style defaults to its own artwork, not a palette-only recolour."""
-        asset = SimpleNamespace(asset_id="tset:0:8:0:shoes01", label="Shoe 01", width=256, height=256)
+        # Beta 68: the dialog resolves its team scope from the reviewed catalog, so the
+        # selector must be a real catalog row rather than an invented outer index.
+        asset = SimpleNamespace(asset_id="tset:3613:8:0:shoes01", label="Shoe 01", width=256, height=256)
         dialog = EquipmentTextureImportDialog(asset)
         try:
             self.assertTrue(dialog.independent)
             self.assertTrue(dialog.game_size.isEnabled())
             dialog.own_texture.setChecked(False)
             self.assertFalse(dialog.independent)
-            self.assertEqual(dialog.own_texture.text(), "Give this glove or shoe its own texture")
+            self.assertEqual(dialog.own_texture.text(), "Give this sock, glove or shoe its own texture")
             self.assertIn("Experimental / unwitnessed", dialog.own_texture.toolTip())
             dialog.own_texture.setChecked(True)
             self.assertTrue(dialog.independent)
@@ -222,13 +251,23 @@ class EquipmentDialogTests(unittest.TestCase):
             dialog.close()
 
     def test_unreviewed_equipment_cannot_enable_a_private_chain(self):
-        asset = SimpleNamespace(asset_id="tset:0:4:0:socks00", label="Sock 00", width=64, height=64)
+        asset = SimpleNamespace(asset_id="tset:3613:5:0:elbowpad01", label="Elbow pad 01", width=128, height=64)
         dialog = EquipmentTextureImportDialog(asset)
         try:
             dialog.own_texture.setChecked(True)
             self.assertFalse(dialog.independent)
         finally:
             dialog.close()
+
+    def test_designed_socks_default_to_their_own_texture_and_full_size(self):
+        for name, reference in (("socks00", 0), ("socks00_mud", 1)):
+            asset = SimpleNamespace(asset_id=f"tset:3850:4:{reference}:{name}", label=name, width=64, height=64)
+            dialog = EquipmentTextureImportDialog(asset)
+            try:
+                self.assertTrue(dialog.independent)
+                self.assertEqual(dialog.scale, 1)
+            finally:
+                dialog.close()
 
 
 if __name__ == "__main__":

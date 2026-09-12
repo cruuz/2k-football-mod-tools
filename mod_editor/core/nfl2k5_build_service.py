@@ -1254,7 +1254,7 @@ def _private_audio_inputs(cache: SourceCache) -> _AudioSafetyInputs:
 
 
 class Nfl2k5BuildService:
-    """Build, independently verify once, and atomically publish a modded XISO."""
+    """Build with one identity scan, check written spans, and atomically publish."""
 
     def __init__(self, runner: BuildCommandRunner | None = None,
                  backend: Path = BACKEND,
@@ -1300,6 +1300,14 @@ class Nfl2k5BuildService:
             build_command = self._command(
                 "build", backend, project_path, source, staged_xiso,
                 manifest, artifacts, cache, audio_safety)
+            # The canonical recipe itself lives in disposable staging. Keep the
+            # compile cache with the actual project/session so it survives builds.
+            project_root = (Path(project).expanduser().resolve().parent
+                            if isinstance(project, (str, os.PathLike))
+                            else getattr(project, "root", None))
+            if project_root is not None:
+                build_command = (*build_command, "--compile-cache-root",
+                                 str(Path(project_root) / ".nfl2k5-compile-cache"))
             _emit(progress, BuildStage.BUILDING, 1, 4, "Building the modded XISO")
             timings["materialization"] = time.monotonic() - started
             started = time.monotonic()
@@ -1313,10 +1321,18 @@ class Nfl2k5BuildService:
             verify_command = self._command(
                 "verify", backend, project_path, source, staged_xiso,
                 manifest, artifacts, cache, audio_safety)
-            _emit(
-                progress, BuildStage.VERIFYING, 2, 4,
-                "Checking the finished XISO before it is published",
-            )
+            receipt_hashes = [token.split("=", 1)[1]
+                              for line in built.stdout.splitlines()
+                              if line.startswith("NFL2K5_VISUAL_MOD_BUILD_PASS ")
+                              for token in line.split() if token.startswith("receipt_sha256=")]
+            if (len(receipt_hashes) == 1 and len(receipt_hashes[0]) == 64
+                    and all(c in "0123456789abcdef" for c in receipt_hashes[0])):
+                verify_command = (*verify_command, "--receipt-sha256", receipt_hashes[0])
+                check_message = "Checking written changes and the XISO directory (gameplay unwitnessed)"
+            else:
+                # Older independently supplied backends retain their full verifier.
+                check_message = "Checking the finished XISO before it is published"
+            _emit(progress, BuildStage.VERIFYING, 2, 4, check_message)
             started = time.monotonic()
             verified = self.runner.run(verify_command, ROOT)
             timings["verify"] = time.monotonic() - started
@@ -1429,7 +1445,7 @@ class Nfl2k5BuildService:
                     copied = staged.stat().st_size if staged.exists() else 0
                     copying = 0 < copied < size
                     message = ("Copying disc image" if copying
-                               else "Preparing project changes" if copied == 0
+                               else "Preparing project changes (reusing cached compiles where available)" if copied == 0
                                else "Checking project changes")
                     _emit(progress, BuildStage.BUILDING, copied if copying else 1,
                           size if copying else 4,
@@ -1525,7 +1541,7 @@ class Nfl2k5BuildService:
         for edit in value["edits"]:
             if not isinstance(edit, dict):
                 continue
-            for field in ("clean_png", "mud_png", "png", "wav"):
+            for field in ("clean_png", "mud_png", "png", "wav", "recipe"):
                 supplied_text = edit.get(field)
                 if not isinstance(supplied_text, str) or not supplied_text:
                     continue

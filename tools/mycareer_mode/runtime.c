@@ -96,7 +96,7 @@ void inline_decode(void) {
     u8 *b=STAGED; u32 i;
     zero(state,200);
     S(2696)=b[82]&8?2:(b[82]>>1)&1; S(2700)=(b[82]>>2)&1; S(2704)=b[82]&1;
-    S(2712)=(b[82]>>4)&1; S(2708)=S(2716)=0;
+    S(2712)=(b[82]>>4)&1; S(2708)=S(2716)=S(2732)=0;
     zero(m3,256); zero(m3+3600,496); init_menus();
     S(4)=0x31303030; S(8)=1280;
     move_bytes(state+40,b+16,16);
@@ -150,17 +150,29 @@ u32 FC inline_admit(u32 size) {
 
 /* Consumer-only play-call eligibility. The field unit and identity are
  * revalidated by the bounded binder, independently of menu/navigation club
- * ownership. Special teams, linemen and an absent MyPlayer use native CPU
- * calls. Supersim can query the same presence through mode_unit_present. */
+ * ownership. PAT choice belongs to the signed player's match side even
+ * when the kicker replaces him. Other absent/special units use CPU calls. */
 u32 mode_unit_present(void) {
     if(!inline_active()) return 0;
     rebind();
     return S(24)==3?S(2568):0;
 }
+static NI u32 mode_pat_choice(void) {
+    u8 *p=(u8 *)S(2564),*id; u32 off,side;
+    if(G(0xE602B4)!=3 || S(24)!=3 || !(id=(u8 *)primary())) return 0;
+    side=(u32)p>=0xb321a0;
+    off=(u32)p-(side?0xb321a0:0xb30c4c);
+    if(off>=65*84 || off%84 || W(p,4)!=W(id,4) ||
+       W(p,16)!=W(id,16) || W(p,20)!=W(id,20) ||
+       ((W(p,24)^W(id,24))&0x0ffff000) || p[53]!=id[53]) return 0;
+    side=side?0xe5fc60:0xe5fc20;
+    return G(0xE60280)==side?side:0;
+}
 u32 FC mode_human(u8 *t) {
     u8 *p; u32 mask;
     if(!inline_active()) return t?W(t,0x30):0;
     p=(u8 *)mode_unit_present();
+    if(mode_pat_choice()==(u32)t && t) return 1;
     if(!p || S(2708) || W(p,0x38)!=(u32)t || G(0xE602B4)!=4) return 0;
     mask=(u32)t==G(0xE60280)?0x389:((u32)t==G(0xE60284)?0x18c70:0);
     return (mask>>state[149])&1;
@@ -180,6 +192,21 @@ u32 FC mode_human(u8 *t) {
 #define CALL1(a,x) ({ u32 cx_=(u32)(x),ax_; __asm__ volatile("call %c2" : "=a"(ax_), "+c"(cx_) : "i"(a) : "edx", "memory", "cc", "st", "st(1)", "st(2)", "st(3)", "st(4)", "st(5)", "st(6)", "st(7)"); ax_; })
 #define CALL0(a) ({ u32 ax_; __asm__ volatile("call %c1" : "=a"(ax_) : "i"(a) : "ecx", "edx", "memory", "cc", "st", "st(1)", "st(2)", "st(3)", "st(4)", "st(5)", "st(6)", "st(7)"); ax_; })
 
+/* +2732 is transient cancellation, never the saved +2696 preference.
+ * 1 waits for this live play to end; 2 waits for the next native snap.
+ * Call only for a CPU unit. A human receiver's B is gameplay input. */
+static NI u32 mode_cancelled(void) {
+    u32 live=G(0xE602B8)==14;
+    if(CALL2(0x70a10,S(32),0)&0x200) {
+        if(!S(2732)) S(2732)=live?1:2;
+        S(2716)=0;
+        return 1;
+    }
+    if(S(2732)==1 && !live) S(2732)=2;
+    else if(S(2732)==2 && live) S(2732)=0;
+    return S(2732)!=0;
+}
+
 /* Stage 1: repeat the native presentation-skip request. Stage 2 uses the
  * same guarded path during accelerated updates. +2696 stores 0 skip,
  * 1 off, 2 fast (the new-career default).
@@ -189,9 +216,8 @@ u32 FC mode_human(u8 *t) {
 static NI u32 mode_skip_ready(void) {
     if(S(2696)==1 || G(0xA83A18)!=3 || G(0xA83A14) ||
        !G(0xE60268) || !S(2564) || !inline_active()) return 0;
-    if(mode_unit_present() || S(24)!=3) return 0;
-    if(CALL2(0x70a10,S(32),0)&0x200) { S(2696)=1; S(2708)=S(2716)=0; return 0; }
-    return 1;
+    if(mode_unit_present() || S(24)!=3 || mode_pat_choice()) return 0;
+    return !mode_cancelled();
 }
 void mode_skip_tick(void) {
     u32 phase=G(0xB616C0);
@@ -239,20 +265,26 @@ u32 mode_ff_hold_snap(void) {
      * the very frame the personnel becomes ready. No task is rewritten. */
     return S(2716) && S(2708) && G(0xE602B8)==13 && mode_unit_present();
 }
-static NI u32 mode_ff_ready(u32 manager) {
+/* Stable ECX ABI is also used by the bounded cadence probe. */
+u32 FC mode_ff_ready(u32 manager) {
     u32 depth,body,phase=G(0xE602B8),camera=G(0xB616C0);
     if(S(2696)!=2 || !inline_active() || G(0xA83A18)!=3 ||
        G(0xA83A14) || !S(2564) || !G(0xE60268) ||
        !manager || (depth=W((u8 *)manager,0x100))>=32 ||
        W((u8 *)manager,8*depth)!=0x4e7ec0) return 0;
-    if(!CALL2(0x709b0,S(32),0) || (CALL2(0x70a10,S(32),0)&0x200)) {
-        S(2696)=1; S(2708)=0; return 0;
-    }
+    if(!CALL2(0x709b0,S(32),0)) return 0;
     /* Installed modal guards: initial/OT toss, challenge, tips and every
      * non-game manager descriptor run at 1x with native prompts intact. */
     if(!G(0xE602B4) || camera==26 || G(0xBB6CB4) ||
        phase<11 || phase>21) return 0;
     body=mode_unit_present();
+    if(S(24)!=3) return 0;
+    if(mode_pat_choice()) {
+        /* Let A11F0 keep the native PAT play-call screen. The saved choice
+         * survives; absent CPU units automatically rearm after this phase. */
+        S(2708)=0;
+        return 0;
+    }
     if(body) {
         if(!S(2708)) return 0;
         if(mode_ff_settled()) {
@@ -266,7 +298,10 @@ static NI u32 mode_ff_ready(u32 manager) {
         /* Unexpected mid-play membership never gives away a snap. Keep
          * normal speed until the native next pre-snap appearance settles. */
         if(phase!=11 && phase!=12 && phase!=13) return 0;
-    } else S(2708)=1;
+    } else {
+        S(2708)=1;
+        if(mode_cancelled()) return 0;
+    }
     return 1;
 }
 u32 FC mode_ff_frame(u32 manager,u32 unused,u32 delta) {
@@ -590,7 +625,7 @@ void FC mode_settings_toggle(u32 manager) {
     if(hub(manager) && W((u8 *)manager,8*W((u8 *)manager,0x100))==(u32)m3_settings_menu) {
         row=W((u8 *)manager,8*W((u8 *)manager,0x100)+4);
         if(row==0) CALL0(0x147e60); /* Retail Franchise Settings toggle. */
-        if(row==1) { S(2696)=S(2696)==2?1:S(2696)==1?0:2; S(2708)=S(2716)=0; }
+        if(row==1) { S(2696)=S(2696)==2?1:S(2696)==1?0:2; S(2708)=S(2716)=S(2732)=0; }
         if(row==2 && (p=(u8 *)primary())) { S(2700)=!S(2700); player_star(p); }
         if(row==3) S(2712)=!S(2712);
         settings_labels();
@@ -606,7 +641,7 @@ void FC mode_start(u32 manager) {
 static NI void capture(u8 *p) {
     u32 i;
     zero(state,200); S(2696)=2;
-    S(2708)=S(2716)=S(2700)=S(2704)=S(2712)=G(0xE5FFE4)=0;
+    S(2708)=S(2716)=S(2732)=S(2700)=S(2704)=S(2712)=G(0xE5FFE4)=0;
     player_star(p); S(4)=0x31303030; S(8)=1280;
     S(24)=3; S(28)=((u32)p-W(ROOT,4))/84; S(56)=S(2684);
     /* Native RNG supplies a new per-career token. It is data, never identity
@@ -736,6 +771,7 @@ void FC mode_save_menu(u32 manager) {
 void FC mode_postgame(u32 manager) {
     /* Preserve the native postgame parent and its complete week processing.
      * It pops itself before committing; only then may Schedule return home. */
+    S(2708)=S(2716)=S(2732)=0;
     CALL1(0xc74e0,manager);
     if(hub(manager) && W((u8 *)manager,8*W((u8 *)manager,0x100))==0x522828)
         CALL2(0x6e450,manager,(u32)apartment);

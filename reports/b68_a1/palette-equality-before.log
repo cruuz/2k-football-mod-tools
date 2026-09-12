@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_palette_only_equality_ignores_origin_but_own_texture_keeps_it (__main__.PaletteIntentTests.test_palette_only_equality_ignores_origin_but_own_texture_keeps_it)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_b68_a1_audit.py", line 80, in test_palette_only_equality_ignores_origin_but_own_texture_keeps_it
+    self.assertTrue(same_visual_import(asset, plain, rgba, hinted, rgba))
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (failures=1)

@@ -63,6 +63,7 @@ inline_load_begin:
  mov DWORD PTR [state+2664],eax
  mov DWORD PTR [state+2708],eax
  mov DWORD PTR [state+2716],eax
+ mov DWORD PTR [state+2732],eax
  pop eax
  popfd
  jmp 0x16ab70

@@ -1,0 +1,62 @@
+[
+  {
+    "file": "tests/mod_editor/test_beta66_d1_images.py",
+    "exit_code": 0,
+    "seconds": 1.818,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_beta66_d1_images.py.intent-final.log"
+  },
+  {
+    "file": "tests/mod_editor/test_b68_a1_audit.py",
+    "exit_code": 0,
+    "seconds": 7.181,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_b68_a1_audit.py.intent-final.log"
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_equipment_retail_roundtrip.py",
+    "exit_code": 0,
+    "seconds": 17.246,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_equipment_retail_roundtrip.py.intent-final.log"
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_equipment_texture_chain.py",
+    "exit_code": 0,
+    "seconds": 4.473,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_equipment_texture_chain.py.intent-final.log"
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_equipment_consumers.py",
+    "exit_code": 0,
+    "seconds": 31.124,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_equipment_consumers.py.intent-final.log"
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_equipment_import.py",
+    "exit_code": 0,
+    "seconds": 2.269,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_equipment_import.py.intent-final.log"
+  },
+  {
+    "file": "tests/mod_editor/test_studio_session.py",
+    "exit_code": 0,
+    "seconds": 0.916,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_studio_session.py.intent-final.log"
+  },
+  {
+    "file": "tests/mod_editor/test_2k5_stale_original_cache.py",
+    "exit_code": 0,
+    "seconds": 0.215,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_2k5_stale_original_cache.py.intent-final.log"
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_extended_visuals.py",
+    "exit_code": 0,
+    "seconds": 0.365,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_extended_visuals.py.intent-final.log"
+  },
+  {
+    "file": "tests/mod_editor/test_provider_integrity.py",
+    "exit_code": 0,
+    "seconds": 9.231,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_provider_integrity.py.intent-final.log"
+  }
+]

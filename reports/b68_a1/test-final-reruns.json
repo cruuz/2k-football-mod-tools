@@ -1,0 +1,92 @@
+[
+  {
+    "file": "tests/mod_editor/test_2k5_uniform_equipment_export.py",
+    "exit_code": 0,
+    "seconds": 25.011,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_2k5_uniform_equipment_export.py.final.log"
+  },
+  {
+    "file": "tests/mod_editor/test_b661_kit_build.py",
+    "exit_code": 0,
+    "seconds": 7.731,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_b661_kit_build.py.final.log"
+  },
+  {
+    "file": "tests/mod_editor/test_b68_a1_audit.py",
+    "exit_code": 0,
+    "seconds": 7.079,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_b68_a1_audit.py.final.log"
+  },
+  {
+    "file": "tests/mod_editor/test_b68_t1_build.py",
+    "exit_code": 0,
+    "seconds": 6.277,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_b68_t1_build.py.final.log"
+  },
+  {
+    "file": "tests/mod_editor/test_beta66_1_adapter_imports.py",
+    "exit_code": 0,
+    "seconds": 0.465,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_beta66_1_adapter_imports.py.final.log"
+  },
+  {
+    "file": "tests/mod_editor/test_beta66_d1_images.py",
+    "exit_code": 0,
+    "seconds": 1.718,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_beta66_d1_images.py.final.log"
+  },
+  {
+    "file": "tests/mod_editor/test_beta66_d1_panels.py",
+    "exit_code": 0,
+    "seconds": 2.069,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_beta66_d1_panels.py.final.log"
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_build_service.py",
+    "exit_code": 0,
+    "seconds": 0.315,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_build_service.py.final.log"
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_equipment_consumers.py",
+    "exit_code": 0,
+    "seconds": 28.973,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_equipment_consumers.py.final.log"
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_equipment_import.py",
+    "exit_code": 0,
+    "seconds": 2.47,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_equipment_import.py.final.log"
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_equipment_retail_roundtrip.py",
+    "exit_code": 0,
+    "seconds": 16.448,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_equipment_retail_roundtrip.py.final.log"
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_equipment_texture_chain.py",
+    "exit_code": 0,
+    "seconds": 4.422,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_equipment_texture_chain.py.final.log"
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_equipment_texture_native.py",
+    "exit_code": 0,
+    "seconds": 0.365,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_nfl2k5_equipment_texture_native.py.final.log"
+  },
+  {
+    "file": "tests/mod_editor/test_phase1_packaging.py",
+    "exit_code": 0,
+    "seconds": 2.268,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_phase1_packaging.py.final.log"
+  },
+  {
+    "file": "tests/mod_editor/test_provider_integrity.py",
+    "exit_code": 0,
+    "seconds": 9.331,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_provider_integrity.py.final.log"
+  }
+]

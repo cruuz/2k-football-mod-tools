@@ -1,4 +1,9 @@
-"""Same-footprint jersey bump-map writer for NFL 2K5 uniform packages.
+"""Fixed-span uniform and global shoe bump-map writer for NFL 2K5.
+
+GLOBAL.IFF also carries seven swizzled P8 shoe relief maps. They are shared
+across teams, discovered by the entry-table name hash, and compiled without
+lossy normal-colour reduction. The retail style table binds 1/4/7/2/3/7 to
+Styles 1..6. Byte/CPU proofs do not witness their in-game appearance.
 
 Every uniform package carries four A8R8G8B8 swizzled tangent-space bump maps
 (``bump_jersey``, ``bump_pants``, ``bump_sleeve``, ``bump_sock``) as VC-LZ
@@ -29,8 +34,8 @@ discovery:
 Safety is fail-closed throughout: the source image is opened read-only; a
 target that IS the source (same path or same file) is refused; the PNG must
 carry the slot's exact dimensions; the recompressed stream must fit inside the
-retail stored size; the wrapper is preserved except for the loader scratch
-word, which may only grow; and only the exact span is written, at the offset
+retail stored size; the wrapper, including its loader scratch word, is
+preserved; and only the exact span is written, at the offset
 re-derived from the target's own entry table.
 
 Bump strength is data-driven (per-material detail-scale floats in the XBE
@@ -41,7 +46,7 @@ from __future__ import annotations
 
 from collections import OrderedDict
 from collections.abc import Callable, Iterable
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 import argparse
 import bisect
 import hashlib
@@ -71,6 +76,7 @@ from nfl_txtr import (  # noqa: E402
     parse_chunks,
     parse_texture,
     rebuild_compressed_chunk_fixed_span,
+    minimum_vc_lz_overlap_scratch,
     swizzle_2d,
     texture_to_rgba,
 )
@@ -122,12 +128,19 @@ INDEX_PACK_PATH = "vc_53450030/0"
 
 BUMP_FORMAT_CODE = 0x06
 BUMP_BYTES_PER_PIXEL = 4
-BUMP_CHUNK_NAMES = ("bump_jersey", "bump_pants", "bump_sleeve", "bump_sock")
+SHOE_BUMP_NAMES = tuple(f"bump_shoes{i}" for i in range(1, 8))
+BUMP_CHUNK_NAMES = ("bump_jersey", "bump_pants", "bump_sleeve", "bump_sock", *SHOE_BUMP_NAMES)
+# Retail 0x4EF7C0 pairs colour-binding row with relief-table index.
+SHOE_STYLE_BUMPS = ("bump_shoes1", "bump_shoes4", "bump_shoes7",
+                   "bump_shoes2", "bump_shoes3", "bump_shoes7")
+SHOE_BUMP_SCOPE = "Shoe relief maps are shared by all teams; Styles 3 and 6 also share bump_shoes7."
+GLOBAL_PACKAGE_NAME_ID = 0x8EE9EEED  # CRC32 of UTF-16LE GLOBAL.IFF
 BUMP_SLOT_DIMENSIONS = {
     "bump_jersey": (512, 256),
     "bump_pants": (512, 256),
     "bump_sleeve": (128, 128),
     "bump_sock": (128, 128),
+    **{name: (128, 128) for name in SHOE_BUMP_NAMES},
 }
 RETAIL_XISO_SHA256 = xiso.EXPECTED_XISO_SHA256
 RETAIL_XISO_SIZE = xiso.EXPECTED_XISO_SIZE
@@ -312,6 +325,8 @@ def logical_name_for(name_id: int) -> str | None:
     """The XBE 0x38650 name space: CRC32 of uppercased UTF-16LE ``NN[HA]NN.IFF``."""
 
     global _LOGICAL_NAME_CACHE
+    if name_id == GLOBAL_PACKAGE_NAME_ID:
+        return "GLOBAL.IFF"
     if _LOGICAL_NAME_CACHE is None:
         names: dict[int, str] = {}
         for code in range(100):
@@ -811,21 +826,25 @@ def _validate_bump_descriptor(
         _require(name == slot_name, f"chunk is {name!r}; expected {slot_name!r}")
     expected_dimensions = BUMP_SLOT_DIMENSIONS[name]
     _require(
-        texture.format_code == BUMP_FORMAT_CODE
+        texture.format_code == (0x0B if name in SHOE_BUMP_NAMES else BUMP_FORMAT_CODE)
         and texture.dimensions == 2
         and texture.depth == 1
         and texture.packed_size == 0
         and texture.pixel_offset == 0,
-        f"{name} is not the proved swizzled A8R8G8B8 bump descriptor",
+        f"{name} is not the proved swizzled bump descriptor",
     )
     _require(
         (texture.width, texture.height) == expected_dimensions,
         f"{name} is {texture.width}x{texture.height}; the slot requires "
         f"{expected_dimensions[0]}x{expected_dimensions[1]}",
     )
+    chain_bytes = _mip_chain_bytes(texture.width, texture.height, texture.mip_levels)
+    if name in SHOE_BUMP_NAMES:
+        chain_bytes //= 4
+        _require(texture.palette_offset == chain_bytes, "Shoe relief palette moved")
+        chain_bytes += 1024
     _require(
-        _mip_chain_bytes(texture.width, texture.height, texture.mip_levels)
-        == chunk.video_bytes,
+        chain_bytes == chunk.video_bytes,
         f"{name} mip chain disagrees with the wrapper's video bytes",
     )
 
@@ -864,14 +883,18 @@ def _find_bump_chunks(
     return found
 
 
+def _validate_package_kind(package: bytes, entry: _IndexEntry) -> None:
+    expected = b"FONT" if entry.name_id == GLOBAL_PACKAGE_NAME_ID else b"Unif"
+    _require(package[:4] == expected, f"entry {entry.table_index} has the wrong package kind")
+
+
 def _package_detail(
     image: _Image, index: _IndexPack, entry: _IndexEntry, ordinal: int
 ) -> BumpPackageRecord:
     extents = index.entry_extents(entry)
     pack_offset = entry.virtual_offset - index.pack_starts[ordinal]
     package = image.read_segments(extents)
-    _require(package[:4] == b"Unif",
-             f"entry {entry.table_index} is not a Unif package")
+    _validate_package_kind(package, entry)
     found = _find_bump_chunks(package, strict=True)
     chunks = tuple(
         sorted(
@@ -1002,8 +1025,7 @@ def _resolve_bump(
     extents = index.entry_extents(entry)
     pack_offset = entry.virtual_offset - index.pack_starts[ordinal]
     package_bytes = image.read_segments(extents)
-    _require(package_bytes[:4] == b"Unif",
-             f"entry {entry.table_index} is not a Unif package")
+    _validate_package_kind(package_bytes, entry)
     found = _find_bump_chunks(package_bytes, strict=True)
     match = [
         (chunk, decoded, texture)
@@ -1012,6 +1034,8 @@ def _resolve_bump(
     ]
     _require(len(match) == 1, f"entry {outer_index} has no {chunk_name!r} chunk")
     chunk, decoded, texture = match[0]
+    _require((chunk_name in SHOE_BUMP_NAMES) == (entry.name_id == GLOBAL_PACKAGE_NAME_ID),
+             "Bump map is in the wrong package family")
     record = BumpPackageRecord(
         outer_index=entry.table_index,
         name_id=entry.name_id,
@@ -1164,16 +1188,32 @@ def _build_replacement_span(
 
     chunk = resolved.chunk
     texture = resolved.texture
+    if authored_rgba == resolved.rgba:
+        return resolved.span, resolved.decoded, {"unchanged_retail": True}
     try:
         levels = generate_mips(
             authored_rgba, texture.width, texture.height, texture.mip_levels
         )
     except ValueError as exc:
         raise BumpTextureWriterError(str(exc)) from exc
-    chain = b"".join(
-        swizzle_2d(level.rgba, level.width, level.height, BUMP_BYTES_PER_PIXEL)
-        for level in levels
-    )
+    levels[0] = replace(levels[0], rgba=authored_rgba)
+    if texture.name in SHOE_BUMP_NAMES:
+        from nfl_tset_png_import import palette_bytes
+
+        colours = sorted({tuple(level.rgba[i:i + 4]) for level in levels
+                          for i in range(0, len(level.rgba), 4)})
+        _require(len(colours) <= 256,
+                 "Shoe relief and its distance images need more than 256 colours; simplify the map before importing.")
+        lookup = {colour: i for i, colour in enumerate(colours)}
+        chain = b"".join(swizzle_2d(bytes(lookup[tuple(level.rgba[i:i + 4])]
+                                         for i in range(0, len(level.rgba), 4)),
+                                    level.width, level.height, 1) for level in levels)
+        chain += palette_bytes(colours)
+    else:
+        chain = b"".join(
+            swizzle_2d(level.rgba, level.width, level.height, BUMP_BYTES_PER_PIXEL)
+            for level in levels
+        )
     _require(
         len(chain) == chunk.video_bytes,
         "authored mip chain does not fill the retail video allocation",
@@ -1192,14 +1232,25 @@ def _build_replacement_span(
         ) from exc
     _require(len(rebuilt_span) == len(resolved.span), "span size changed")
     original_header = HEADER.unpack_from(resolved.span)
+    # The retail in-place loader's scratch word must stay exact. Expand the
+    # lossless transport to its stored span instead of growing wrapper +0x14.
+    encoded = rebuilt_span[HEADER.size:HEADER.size + rebuild_info.recompressed_bytes]
+    scratch = original_header[5]
+    if (chunk.stored_size - len(encoded) > scratch
+            or minimum_vc_lz_overlap_scratch(encoded, chunk.stored_size, len(rebuilt_decoded)) > scratch):
+        from nfl_vc_lz_fill import fill_stream
+        encoded, _expanded = fill_stream(encoded, rebuilt_decoded, chunk.stored_size, slack=min(scratch, 16))
+    _require(chunk.stored_size - len(encoded) <= scratch
+             and minimum_vc_lz_overlap_scratch(encoded, chunk.stored_size, len(rebuilt_decoded)) <= scratch,
+             "Bump map cannot fit with the retail loader scratch allowance")
+    rebuilt_span = resolved.span[:HEADER.size] + encoded + bytes(chunk.stored_size - len(encoded))
     rebuilt_header = HEADER.unpack_from(rebuilt_span)
     _require(
         original_header[:5] == rebuilt_header[:5]
         and original_header[6:] == rebuilt_header[6:],
         "wrapper words changed outside the scratch field",
     )
-    _require(rebuilt_header[5] >= original_header[5],
-             "overlap scratch word decreased")
+    _require(rebuilt_header[5] == original_header[5], "overlap scratch word changed")
     rebuilt_chunk = Chunk(
         index=chunk.index,
         offset=0,
@@ -1230,9 +1281,15 @@ def _build_replacement_span(
         texture_to_rgba(redecoded, rebuilt_chunk, retexture) == authored_rgba,
         "rebuilt pixels differ from the authored pattern",
     )
+    cursor = retexture.pixel_offset
+    for level in levels:
+        actual = texture_to_rgba(redecoded, rebuilt_chunk, replace(
+            retexture, pixel_offset=cursor, width=level.width, height=level.height, mip_levels=1))
+        _require(actual == level.rgba, f"Bump distance image {level.level} differs from the authored pixels")
+        cursor += level.width * level.height * (1 if texture.name in SHOE_BUMP_NAMES else 4)
     statistics = {
-        "recompressed_bytes": rebuild_info.recompressed_bytes,
-        "zero_padding_bytes": rebuild_info.zero_padding_bytes,
+        "recompressed_bytes": len(encoded),
+        "zero_padding_bytes": chunk.stored_size - len(encoded),
         "overlap_scratch_bytes_before": original_header[5],
         "overlap_scratch_bytes_after": rebuilt_header[5],
     }
@@ -1417,6 +1474,7 @@ def preview_import(
         authored_rgba = _read_authored_png(
             Path(png_path), resolved.texture.width, resolved.texture.height
         )
+        _span, _decoded, statistics = _build_replacement_span(resolved, authored_rgba)
     return {
         "outer_index": outer_index,
         "chunk_name": chunk_name,
@@ -1432,6 +1490,9 @@ def preview_import(
         "authored_rgba": authored_rgba,
         "retail_rgba_sha256": _digest(resolved.rgba),
         "authored_rgba_sha256": _digest(authored_rgba),
+        "compile_statistics": statistics,
+        "scope": SHOE_BUMP_SCOPE if chunk_name in SHOE_BUMP_NAMES else "Selected uniform package",
+        "experimental_unwitnessed": True,
     }
 
 
@@ -1441,17 +1502,27 @@ def verify_write(
     chunk_name: str,
     expected_top_rgba: bytes,
 ) -> dict[str, object]:
-    """Independently re-decode the span from the target and compare pixels."""
+    """Re-decode a written span and compare every generated authored mip."""
 
     with _Image.open(Path(target_path), writable=False) as image:
         resolved, _index, _entry = _resolve_bump(image, outer_index, chunk_name)
     texture = resolved.texture
+    levels = generate_mips(expected_top_rgba, texture.width, texture.height, texture.mip_levels)
+    levels[0] = replace(levels[0], rgba=expected_top_rgba)
+    cursor = texture.pixel_offset
+    all_levels_equal = True
+    for level in levels:
+        pixels = texture_to_rgba(resolved.decoded, resolved.chunk, replace(
+            texture, pixel_offset=cursor, width=level.width, height=level.height, mip_levels=1))
+        all_levels_equal = all_levels_equal and pixels == level.rgba
+        cursor += level.width * level.height * (1 if chunk_name in SHOE_BUMP_NAMES else 4)
     checks = {
         "chunk_name": texture.name == chunk_name,
-        "format_code": texture.format_code == BUMP_FORMAT_CODE,
+        "format_code": texture.format_code == (0x0B if chunk_name in SHOE_BUMP_NAMES else BUMP_FORMAT_CODE),
         "dimensions": (texture.width, texture.height)
         == BUMP_SLOT_DIMENSIONS.get(chunk_name, (-1, -1)),
         "pixels_equal": resolved.rgba == expected_top_rgba,
+        "distance_images_equal": all_levels_equal,
     }
     return {
         "schema": VERIFY_SCHEMA,

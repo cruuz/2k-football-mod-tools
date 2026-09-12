@@ -3947,12 +3947,12 @@
     "runtime_witnessed": false,
     "version": 3
   },
-  "content_bytes": 18457,
+  "content_bytes": 18781,
   "experimental": true,
   "format_tag_bytes": 17,
   "historical_measurement": "docs/nfl2k5_my_career_m3_budget.json",
-  "immutable_code_sha256_at_budget_address": "875b846d8dbc9876d54c9ec0b25b487330c59ea234909a4f850f1e2bce8aa65c",
-  "machine_code_bytes": 14588,
+  "immutable_code_sha256_at_budget_address": "07a46ec27800f2c957db23a74121b65e29b8959b548b2dc0fb7c8fb6ed58508d",
+  "machine_code_bytes": 14908,
   "requests": [
     [
       "nfl2k5_my_career",
@@ -3977,7 +3977,7 @@
   "same_file_size": true,
   "schema": "nfl2k5.mycareer.m3-installed-budget.v1",
   "senior_bowl_playable": false,
-  "spare_rx_bytes": 2006,
+  "spare_rx_bytes": 1682,
   "unchanged_peer_allocations": [
     {
       "align": 16,

@@ -1,0 +1,59 @@
+EE..
+======================================================================
+ERROR: setUpClass (__main__.CardsTellTheTruthTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/capabilities.py", line 184, in load
+    document = load_and_validate(
+               ^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/capabilities/validate_registry.py", line 311, in load_and_validate
+    validate_data(data, check_files=check_files)
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/capabilities/validate_registry.py", line 216, in validate_data
+    _local_path(evidence_path, f"{where}.evidence[{evidence_index}]")
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/capabilities/validate_registry.py", line 129, in _local_path
+    _require(path.is_file(), f"{where}: missing local file {path_text}")
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/capabilities/validate_registry.py", line 107, in _require
+    raise RegistryError(message)
+mod_editor.capabilities.validate_registry.RegistryError: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_no_capability_is_invisible.py", line 165, in setUpClass
+    cls.catalog = build_nfl2k5_product_catalog(CapabilityRegistryLoader().load())
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/capabilities.py", line 188, in load
+    raise RegistryError(f"Cannot read capability registry: {exc}") from exc
+mod_editor.core.errors.RegistryError: Cannot read capability registry: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md
+
+======================================================================
+ERROR: setUpClass (__main__.EveryCapabilityIsReachableTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/capabilities.py", line 184, in load
+    document = load_and_validate(
+               ^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/capabilities/validate_registry.py", line 311, in load_and_validate
+    validate_data(data, check_files=check_files)
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/capabilities/validate_registry.py", line 216, in validate_data
+    _local_path(evidence_path, f"{where}.evidence[{evidence_index}]")
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/capabilities/validate_registry.py", line 129, in _local_path
+    _require(path.is_file(), f"{where}: missing local file {path_text}")
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/capabilities/validate_registry.py", line 107, in _require
+    raise RegistryError(message)
+mod_editor.capabilities.validate_registry.RegistryError: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_no_capability_is_invisible.py", line 74, in setUpClass
+    cls.catalog = build_nfl2k5_product_catalog(CapabilityRegistryLoader().load())
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/capabilities.py", line 188, in load
+    raise RegistryError(f"Cannot read capability registry: {exc}") from exc
+mod_editor.core.errors.RegistryError: Cannot read capability registry: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.012s
+
+FAILED (errors=2)

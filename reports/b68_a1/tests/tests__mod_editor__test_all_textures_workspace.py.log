@@ -1,0 +1,300 @@
+EEEEEE.....EEEEEEEEEEE.
+======================================================================
+ERROR: test_an_asset_produces_the_edit_the_build_accepts (__main__.CatalogTests.test_an_asset_produces_the_edit_the_build_accepts)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_all_textures_workspace.py", line 147, in test_an_asset_produces_the_edit_the_build_accepts
+    catalog = load_nfl2k5_extended_visual_catalog()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_extended_visual_catalog.py", line 1113, in load_nfl2k5_extended_visual_catalog
+    key = metadata_cache.source_key(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/metadata_cache.py", line 17, in source_key
+    with path.open("rb") as stream:
+         ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1015, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b68-a1/reports/assets/nfl2k5_player_portrait_compatibility.json'
+
+======================================================================
+ERROR: test_eagles_presentation_logo_is_named_and_searchable (__main__.CatalogTests.test_eagles_presentation_logo_is_named_and_searchable)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_all_textures_workspace.py", line 174, in test_eagles_presentation_logo_is_named_and_searchable
+    catalog = load_nfl2k5_extended_visual_catalog()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_extended_visual_catalog.py", line 1113, in load_nfl2k5_extended_visual_catalog
+    key = metadata_cache.source_key(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/metadata_cache.py", line 17, in source_key
+    with path.open("rb") as stream:
+         ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1015, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b68-a1/reports/assets/nfl2k5_player_portrait_compatibility.json'
+
+======================================================================
+ERROR: test_every_asset_declares_the_capability_it_belongs_to (__main__.CatalogTests.test_every_asset_declares_the_capability_it_belongs_to)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_all_textures_workspace.py", line 167, in test_every_asset_declares_the_capability_it_belongs_to
+    catalog = load_nfl2k5_extended_visual_catalog()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_extended_visual_catalog.py", line 1113, in load_nfl2k5_extended_visual_catalog
+    key = metadata_cache.source_key(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/metadata_cache.py", line 17, in source_key
+    with path.open("rb") as stream:
+         ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1015, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b68-a1/reports/assets/nfl2k5_player_portrait_compatibility.json'
+
+======================================================================
+ERROR: test_p011_and_the_cross_pack_strip_are_editable (__main__.CatalogTests.test_p011_and_the_cross_pack_strip_are_editable)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_all_textures_workspace.py", line 155, in test_p011_and_the_cross_pack_strip_are_editable
+    catalog = load_nfl2k5_extended_visual_catalog()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_extended_visual_catalog.py", line 1113, in load_nfl2k5_extended_visual_catalog
+    key = metadata_cache.source_key(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/metadata_cache.py", line 17, in source_key
+    with path.open("rb") as stream:
+         ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1015, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b68-a1/reports/assets/nfl2k5_player_portrait_compatibility.json'
+
+======================================================================
+ERROR: test_separate_eagles_menu_and_franchise_logos_are_typed (__main__.CatalogTests.test_separate_eagles_menu_and_franchise_logos_are_typed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_all_textures_workspace.py", line 183, in test_separate_eagles_menu_and_franchise_logos_are_typed
+    catalog = load_nfl2k5_extended_visual_catalog()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_extended_visual_catalog.py", line 1113, in load_nfl2k5_extended_visual_catalog
+    key = metadata_cache.source_key(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/metadata_cache.py", line 17, in source_key
+    with path.open("rb") as stream:
+         ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1015, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b68-a1/reports/assets/nfl2k5_player_portrait_compatibility.json'
+
+======================================================================
+ERROR: test_the_browser_has_assets_to_list (__main__.CatalogTests.test_the_browser_has_assets_to_list)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_all_textures_workspace.py", line 141, in test_the_browser_has_assets_to_list
+    catalog = load_nfl2k5_extended_visual_catalog()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_extended_visual_catalog.py", line 1113, in load_nfl2k5_extended_visual_catalog
+    key = metadata_cache.source_key(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/metadata_cache.py", line 17, in source_key
+    with path.open("rb") as stream:
+         ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1015, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b68-a1/reports/assets/nfl2k5_player_portrait_compatibility.json'
+
+======================================================================
+ERROR: test_p005_stages_two_complete_composed_build_edits (__main__.CrossPackProviderTests.test_p005_stages_two_complete_composed_build_edits)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_all_textures_workspace.py", line 296, in test_p005_stages_two_complete_composed_build_edits
+    edits = build_unified_p8_texture_imports(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_p8_texture_writer.py", line 338, in build_unified_p8_texture_imports
+    targets = load_inventory(inventory_path)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_p8_texture_writer.py", line 120, in load_inventory
+    _require(resolved.is_file(), f"P8 texture inventory is missing: {path}")
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_p8_texture_writer.py", line 67, in _require
+    raise P8TextureWriterError(message)
+mod_editor.core.nfl2k5_p8_texture_writer.P8TextureWriterError: P8 texture inventory is missing: /home/noah/2k-worktrees/astra-b68-a1/reports/assets/nfl2k5_p8_texture_inventory.json
+
+======================================================================
+ERROR: test_raw_eagles_menu_logo_previews_and_exports (__main__.CrossPackProviderTests.test_raw_eagles_menu_logo_previews_and_exports)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_all_textures_workspace.py", line 219, in test_raw_eagles_menu_logo_previews_and_exports
+    asset = load_nfl2k5_extended_visual_catalog().get_asset(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_extended_visual_catalog.py", line 1113, in load_nfl2k5_extended_visual_catalog
+    key = metadata_cache.source_key(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/metadata_cache.py", line 17, in source_key
+    with path.open("rb") as stream:
+         ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1015, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b68-a1/reports/assets/nfl2k5_player_portrait_compatibility.json'
+
+======================================================================
+ERROR: test_raw_menu_logo_uses_fixed_span_without_vc_lz (__main__.CrossPackProviderTests.test_raw_menu_logo_uses_fixed_span_without_vc_lz)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_all_textures_workspace.py", line 260, in test_raw_menu_logo_uses_fixed_span_without_vc_lz
+    edits = build_unified_p8_texture_imports(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_p8_texture_writer.py", line 338, in build_unified_p8_texture_imports
+    targets = load_inventory(inventory_path)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_p8_texture_writer.py", line 120, in load_inventory
+    _require(resolved.is_file(), f"P8 texture inventory is missing: {path}")
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_p8_texture_writer.py", line 67, in _require
+    raise P8TextureWriterError(message)
+mod_editor.core.nfl2k5_p8_texture_writer.P8TextureWriterError: P8 texture inventory is missing: /home/noah/2k-worktrees/astra-b68-a1/reports/assets/nfl2k5_p8_texture_inventory.json
+
+======================================================================
+ERROR: test_all_player_strips_are_editable_including_the_cross_pack_one (__main__.InventoryTests.test_all_player_strips_are_editable_including_the_cross_pack_one)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_all_textures_workspace.py", line 105, in test_all_player_strips_are_editable_including_the_cross_pack_one
+    targets = load_inventory()
+              ^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_p8_texture_writer.py", line 120, in load_inventory
+    _require(resolved.is_file(), f"P8 texture inventory is missing: {path}")
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_p8_texture_writer.py", line 67, in _require
+    raise P8TextureWriterError(message)
+mod_editor.core.nfl2k5_p8_texture_writer.P8TextureWriterError: P8 texture inventory is missing: /home/noah/2k-worktrees/astra-b68-a1/reports/assets/nfl2k5_p8_texture_inventory.json
+
+======================================================================
+ERROR: test_every_reviewed_texture_group_is_present (__main__.InventoryTests.test_every_reviewed_texture_group_is_present)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_all_textures_workspace.py", line 66, in test_every_reviewed_texture_group_is_present
+    groups = {target.group for target in load_inventory().values()}
+                                         ^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_p8_texture_writer.py", line 120, in load_inventory
+    _require(resolved.is_file(), f"P8 texture inventory is missing: {path}")
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_p8_texture_writer.py", line 67, in _require
+    raise P8TextureWriterError(message)
+mod_editor.core.nfl2k5_p8_texture_writer.P8TextureWriterError: P8 texture inventory is missing: /home/noah/2k-worktrees/astra-b68-a1/reports/assets/nfl2k5_p8_texture_inventory.json
+
+======================================================================
+ERROR: test_every_target_loads (__main__.InventoryTests.test_every_target_loads)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_all_textures_workspace.py", line 55, in test_every_target_loads
+    targets = load_inventory()
+              ^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_p8_texture_writer.py", line 120, in load_inventory
+    _require(resolved.is_file(), f"P8 texture inventory is missing: {path}")
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_p8_texture_writer.py", line 67, in _require
+    raise P8TextureWriterError(message)
+mod_editor.core.nfl2k5_p8_texture_writer.P8TextureWriterError: P8 texture inventory is missing: /home/noah/2k-worktrees/astra-b68-a1/reports/assets/nfl2k5_p8_texture_inventory.json
+
+======================================================================
+ERROR: test_every_uniform_has_four_distinct_presentation_textures (__main__.InventoryTests.test_every_uniform_has_four_distinct_presentation_textures)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_all_textures_workspace.py", line 122, in test_every_uniform_has_four_distinct_presentation_textures
+    targets = load_inventory().values()
+              ^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_p8_texture_writer.py", line 120, in load_inventory
+    _require(resolved.is_file(), f"P8 texture inventory is missing: {path}")
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_p8_texture_writer.py", line 67, in _require
+    raise P8TextureWriterError(message)
+mod_editor.core.nfl2k5_p8_texture_writer.P8TextureWriterError: P8 texture inventory is missing: /home/noah/2k-worktrees/astra-b68-a1/reports/assets/nfl2k5_p8_texture_inventory.json
+
+======================================================================
+ERROR: test_menu_presentation_closure_has_exact_bounded_counts (__main__.InventoryTests.test_menu_presentation_closure_has_exact_bounded_counts)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_all_textures_workspace.py", line 83, in test_menu_presentation_closure_has_exact_bounded_counts
+    catalog = load_nfl2k5_extended_visual_catalog()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_extended_visual_catalog.py", line 1113, in load_nfl2k5_extended_visual_catalog
+    key = metadata_cache.source_key(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/metadata_cache.py", line 17, in source_key
+    with path.open("rb") as stream:
+         ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1015, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b68-a1/reports/assets/nfl2k5_player_portrait_compatibility.json'
+
+======================================================================
+ERROR: test_targets_carry_the_identity_the_build_binds_against (__main__.InventoryTests.test_targets_carry_the_identity_the_build_binds_against)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_all_textures_workspace.py", line 59, in test_targets_carry_the_identity_the_build_binds_against
+    target = load_inventory()["p8:3136:pad_north"]
+             ^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_p8_texture_writer.py", line 120, in load_inventory
+    _require(resolved.is_file(), f"P8 texture inventory is missing: {path}")
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_p8_texture_writer.py", line 67, in _require
+    raise P8TextureWriterError(message)
+mod_editor.core.nfl2k5_p8_texture_writer.P8TextureWriterError: P8 texture inventory is missing: /home/noah/2k-worktrees/astra-b68-a1/reports/assets/nfl2k5_p8_texture_inventory.json
+
+======================================================================
+ERROR: test_the_capability_is_exposed_and_enabled (__main__.WorkspaceMountTests.test_the_capability_is_exposed_and_enabled)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/capabilities.py", line 184, in load
+    document = load_and_validate(
+               ^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/capabilities/validate_registry.py", line 311, in load_and_validate
+    validate_data(data, check_files=check_files)
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/capabilities/validate_registry.py", line 216, in validate_data
+    _local_path(evidence_path, f"{where}.evidence[{evidence_index}]")
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/capabilities/validate_registry.py", line 129, in _local_path
+    _require(path.is_file(), f"{where}: missing local file {path_text}")
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/capabilities/validate_registry.py", line 107, in _require
+    raise RegistryError(message)
+mod_editor.capabilities.validate_registry.RegistryError: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_all_textures_workspace.py", line 356, in test_the_capability_is_exposed_and_enabled
+    catalog = build_nfl2k5_product_catalog(CapabilityRegistryLoader().load())
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/capabilities.py", line 188, in load
+    raise RegistryError(f"Cannot read capability registry: {exc}") from exc
+mod_editor.core.errors.RegistryError: Cannot read capability registry: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md
+
+======================================================================
+ERROR: test_the_category_holds_the_capability (__main__.WorkspaceMountTests.test_the_category_holds_the_capability)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/capabilities.py", line 184, in load
+    document = load_and_validate(
+               ^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/capabilities/validate_registry.py", line 311, in load_and_validate
+    validate_data(data, check_files=check_files)
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/capabilities/validate_registry.py", line 216, in validate_data
+    _local_path(evidence_path, f"{where}.evidence[{evidence_index}]")
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/capabilities/validate_registry.py", line 129, in _local_path
+    _require(path.is_file(), f"{where}: missing local file {path_text}")
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/capabilities/validate_registry.py", line 107, in _require
+    raise RegistryError(message)
+mod_editor.capabilities.validate_registry.RegistryError: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_all_textures_workspace.py", line 363, in test_the_category_holds_the_capability
+    catalog = build_nfl2k5_product_catalog(CapabilityRegistryLoader().load())
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/capabilities.py", line 188, in load
+    raise RegistryError(f"Cannot read capability registry: {exc}") from exc
+mod_editor.core.errors.RegistryError: Cannot read capability registry: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md
+
+----------------------------------------------------------------------
+Ran 23 tests in 0.057s
+
+FAILED (errors=17)

@@ -69,7 +69,9 @@ def prove(index, *, set_selector="28H0", texture_name="shoes01", scale=4):
             width=report["encoded_dimensions"][0], height=report["encoded_dimensions"][1],
             mip_levels=report["mip_levels"],
         ))
-        expected = make_digit_mips(rgba, target.width, target.height, target.mip_levels)[scale.bit_length() - 1:]
+        expected = make_digit_mips(rgba, target.width, target.height, target.mip_levels)
+        expected[0] = replace(expected[0], rgba=rgba)
+        expected = expected[scale.bit_length() - 1:]
         assert actual == [level.rgba for level in expected], "This proof requires exact colours and coverage"
         changed_base = sum(a != b for a, b in zip(
             writer.decode_equipment_levels(before, chunk, textures[target.reference_index])[scale.bit_length() - 1], actual[0]))

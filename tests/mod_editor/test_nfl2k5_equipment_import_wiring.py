@@ -20,8 +20,15 @@ from mod_editor.core.errors import ValidationError
 def proposed_source():
     path = "mod_editor/gui/studio_qt.py"
     text = (ROOT / path).read_text(encoding="utf-8")
-    if "equipment_choice: tuple[bool, int] | None" in text:
+    if "equipment_choice: tuple[bool, int, str] | None" in text:
         return text  # After integration, exercise the shipped method itself.
+    if "equipment_choice: tuple[bool, int] | None" in text:
+        return (text.replace("equipment_choice: tuple[bool, int]", "equipment_choice: tuple[bool, int, str]")
+                .replace("equipment_choice = (dialog.independent, dialog.scale)",
+                         "equipment_choice = (dialog.independent, dialog.scale, dialog.scope)")
+                .replace("independent, scale = equipment_choice", "independent, scale, scope = equipment_choice")
+                .replace("asset, path, progress, independent=independent, scale=scale,",
+                         "asset, path, progress, independent=independent, scale=scale, scope=scope,"))
     source = text.splitlines(True)
     lines = (ROOT / "tests/fixtures/equipment_texture_chain_wiring.patch").read_text(
         encoding="utf-8").splitlines(True)
@@ -98,7 +105,7 @@ class EquipmentWiringTests(unittest.TestCase):
         self.host._start_task = Mock(side_effect=start)
         self.dialog = SimpleNamespace(exec_=Mock(return_value=self.dialog_module.QDialog.Accepted),
                                       Accepted=self.dialog_module.QDialog.Accepted,
-                                      independent=True, scale=4)
+                                      independent=True, scale=4, scope="all-teams")
         replacement = patch.object(self.dialog_module, "EquipmentTextureImportDialog", return_value=self.dialog)
         self.constructor = replacement.start()
         self.addCleanup(replacement.stop)
@@ -109,7 +116,7 @@ class EquipmentWiringTests(unittest.TestCase):
     def test_accepted_explicit_choice_and_fitted_png_reach_preflight(self):
         self.invoke()
         self.facade.replace_equipment_texture.assert_called_once_with(
-            self.asset, Path("fitted.png"), self.progress, independent=True, scale=4)
+            self.asset, Path("fitted.png"), self.progress, independent=True, scale=4, scope="all-teams")
         self.facade.replace_asset.assert_not_called()
         self.host._mark_workspace_changed.assert_called_once()
         self.assertIs(self.host._texture_master_drafts[self.asset.asset_id], self.draft)
@@ -118,7 +125,7 @@ class EquipmentWiringTests(unittest.TestCase):
         self.dialog.independent, self.dialog.scale = False, 1
         self.invoke()
         self.facade.replace_equipment_texture.assert_called_once_with(
-            self.asset, Path("fitted.png"), self.progress, independent=False, scale=1)
+            self.asset, Path("fitted.png"), self.progress, independent=False, scale=1, scope="all-teams")
 
     def test_cancel_leaves_session_and_authoring_source_untouched(self):
         self.dialog.exec_.return_value = self.dialog_module.QDialog.Rejected

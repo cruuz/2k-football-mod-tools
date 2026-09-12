@@ -604,6 +604,27 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
             seen_files.add(relative)
             total_bytes += info.st_size
             continue
+        equipment_contracts = {
+            "tools/nfl2k5_equipment_optimal": (16504, "949aad6a251de3f039f83bff15d4aa033183c250dbeadd1029e7c79dee4817c4"),
+            "tools/nfl2k5_equipment_optimal.c": (4648, "6c9c7470d40ce3b99ac000fe75bd51c7d2fbeb44f783e313eb7b7dee0f0b8390"),
+        }
+        if relative in equipment_contracts:
+            expected_size, expected_sha256 = equipment_contracts[relative]
+            if info.st_size != expected_size:
+                raise ReleaseCheckError(f"reviewed equipment helper size changed: {relative}")
+            payload = path.read_bytes()
+            if hashlib.sha256(payload).hexdigest() != expected_sha256:
+                raise ReleaseCheckError(f"reviewed equipment helper hash changed: {relative}")
+            if relative == "tools/nfl2k5_equipment_optimal":
+                if payload[:4] != b"\x7fELF":
+                    raise ReleaseCheckError("reviewed equipment helper is not ELF")
+                if os.name != "nt" and (info.st_mode & 0o777) != 0o755:
+                    raise ReleaseCheckError("reviewed equipment helper must be mode 0755")
+            else:
+                payload.decode("utf-8")
+            seen_files.add(relative)
+            total_bytes += info.st_size
+            continue
         suffix = path.suffix.casefold()
         if relative in scorebug_pngs:
             _validate_scorebug_template_png(path, relative, info, scorebug_pngs[relative])

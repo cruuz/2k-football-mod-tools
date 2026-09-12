@@ -23,6 +23,7 @@ try:
     from unicorn.x86_const import (
         UC_X86_REG_EAX, UC_X86_REG_ECX, UC_X86_REG_EDX, UC_X86_REG_ESP,
         UC_X86_REG_EIP,
+        UC_X86_REG_EBX, UC_X86_REG_ESI,
     )
 except ImportError:
     Uc = None
@@ -145,6 +146,76 @@ class NativeEquipmentTests(unittest.TestCase):
                 self.assertEqual(bytes(self.uc.mem_read(destination, len(expected))), expected)
                 self.assertEqual(bytes(self.uc.mem_read(destination - 32, 32)), b"P" * 32)
                 self.assertEqual(bytes(self.uc.mem_read(end, 32)), b"S" * 32)
+
+    def test_player_shoe_bits_select_local_styles_and_keep_other_equipment_bits(self):
+        from mod_editor.core.nfl2k5_roster_records import PlayerRecord
+
+        # Execute the actual selector, not a reimplementation of its masks.
+        record = 0x2008000
+        original = bytearray(0x54)
+        original[0xC] = 0xC0
+        player = PlayerRecord.decode(bytes(original))
+        player.set("left_shoe", 2)
+        player.set("right_shoe", 5)
+        edited = player.encode()
+        self.assertEqual([i for i, (a, b) in enumerate(zip(original, edited)) if a != b], [0xC])
+        self.uc.mem_write(record, edited)
+        self.uc.reg_write(UC_X86_REG_EBX, record)
+        self.uc.reg_write(UC_X86_REG_EAX, 0)
+        self.uc.emu_start(0x8F752, 0x8F768, timeout=1_000_000, count=16)
+        self.assertEqual(self.uc.reg_read(UC_X86_REG_EIP), 0x8F768)
+        self.assertEqual(self.uc.reg_read(UC_X86_REG_EBX), 2)
+        self.assertEqual(self.uc.reg_read(UC_X86_REG_ECX), 5)
+        self.assertEqual(bytes(self.uc.mem_read(record + 0xC, 1)), bytes((0xEA,)))
+
+    def test_local_shoe_contexts_reach_material_colour_and_global_relief_slots(self):
+        from mod_editor.core.nfl2k5_bump_texture_writer import SHOE_STYLE_BUMPS
+
+        obj, materials = 0x2004000, 0x2005000
+        self.put(obj + 0x1C, 2, materials)
+        self.uc.mem_write(0xB6531C, bytes((0, 1)))
+        self.put(0xBA2F18, 1)
+        self.put(0xBA2F24, 0x2220000)  # separate global specular-map sentinel
+        lookups = []
+        bump_pointers = {self.words(0x4EEDF8 + i * 4)[0]: i for i in range(16, 23)}
+
+        def external(uc, address, _size, _data):
+            if address != 0x449E0:
+                return
+            esp = uc.reg_read(UC_X86_REG_ESP)
+            context = uc.reg_read(UC_X86_REG_ECX)
+            name = self.words(esp + 4)[0]
+            lookups.append(context)
+            if name in bump_pointers:
+                value = 0 if context else 0x2230000 + bump_pointers[name] * 128
+            else:
+                value = 0x2210000 + (0 if context == 0 else context & 0xFFFF)
+            uc.reg_write(UC_X86_REG_EAX, value)
+            uc.reg_write(UC_X86_REG_EIP, self.words(esp)[0])
+            uc.reg_write(UC_X86_REG_ESP, esp + 8)
+
+        self.uc.hook_add(UC_HOOK_CODE, external)
+        for team in (0, 1):
+            for style in range(6):
+                row, bump_index = self.words(0x4EF7C0 + style * 8, 2)
+                name, local = self.words(0x4EEAF8 + row * 8, 2)
+                self.uc.reg_write(UC_X86_REG_ESI, name)
+                colour = self.run_native(0x8E580, eax=local, args=(team,))
+                self.assertEqual(lookups[-1], self.words(0x4EEACC + team * 4)[0] if local else 0)
+                bump_name_ptr = self.words(0x4EEDF8 + bump_index * 4)[0]
+                raw = bytes(self.uc.mem_read(bump_name_ptr, 32))
+                self.assertEqual(raw.decode("utf-16le").split("\0")[0], SHOE_STYLE_BUMPS[style])
+                self.put(0xB65428 + (team * 192 + row) * 4, colour)
+                self.uc.reg_write(UC_X86_REG_ESI, bump_name_ptr)
+                relief = self.run_native(0x8E580, eax=1, args=(team,))
+                self.assertEqual(lookups[-2:], [self.words(0x4EEACC + team * 4)[0], 0])
+                self.put(0xB65A28 + bump_index * 4, relief)
+                self.uc.reg_write(UC_X86_REG_ESI, obj)
+                self.run_native(0x8EF20, eax=team, args=(0, 0, 1, style, 0))
+                self.assertEqual(self.words(materials + 0x30)[0], colour)
+                self.assertEqual(self.words(materials + 128 + 0x30)[0], colour)
+                self.assertEqual(self.words(materials + 0x38)[0], relief)
+                self.assertEqual(self.words(materials + 0x34)[0], 0x2220000)
 
 
 if __name__ == "__main__":

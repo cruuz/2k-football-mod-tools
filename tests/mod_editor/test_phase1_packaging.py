@@ -34,7 +34,7 @@ class ModStudioPackagingTests(unittest.TestCase):
             line for line in package_source.splitlines()
             if line.startswith("__version__ = ")
         ]
-        self.assertEqual(version_assignments, ['__version__ = "1.0.0rc92"'])
+        self.assertEqual(version_assignments, ['__version__ = "1.0.0rc93"'])
         self.assertIn(
             'release_candidate = __version__.rsplit("rc", 1)[-1]',
             studio_source,
@@ -54,7 +54,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         )
         status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
         self.assertTrue(getting_started.startswith(
-            "# 2K5 Mod Studio v1.0 RC92 — Getting Started"
+            "# 2K5 Mod Studio v1.0 RC93 — Getting Started"
         ))
         self.assertIn(
             "## v1.0 RC48 Audio Converter, Stadium Model Export, Update Check", changelog
@@ -70,7 +70,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertIn("complete 19-page sidebar", getting_started)
         self.assertIn("twelve-section desktop launch signature", packaging_readme)
         self.assertTrue(status.startswith(
-            "# 2K5 Mod Studio — v1.0 RC92 Release Status"
+            "# 2K5 Mod Studio — v1.0 RC93 Release Status"
         ))
 
     def _fixture(self) -> tuple[tempfile.TemporaryDirectory[str], Path, Path]:
@@ -159,6 +159,120 @@ class ModStudioPackagingTests(unittest.TestCase):
             (root / "app/link.py").symlink_to(root / "app/main.py")
             with self.assertRaisesRegex(release_gate.ReleaseCheckError, "symlinks are forbidden"):
                 release_gate.audit_release(root, allowlist)
+
+    def _equipment_helper_fixture(self):
+        """Stage the two reviewed equipment-helper paths at their exact names."""
+        temporary = tempfile.TemporaryDirectory(prefix="2k5-equipment-helper-test-")
+        root = Path(temporary.name) / "release"
+        (root / "tools").mkdir(parents=True)
+        binary = root / "tools/nfl2k5_equipment_optimal"
+        source = root / "tools/nfl2k5_equipment_optimal.c"
+        binary.write_bytes((ROOT / "tools/nfl2k5_equipment_optimal").read_bytes())
+        binary.chmod(0o755)
+        source.write_bytes((ROOT / "tools/nfl2k5_equipment_optimal.c").read_bytes())
+        source.chmod(0o644)
+        allowlist = Path(temporary.name) / "allowlist.txt"
+        allowlist.write_text(
+            "tools/\n"
+            "tools/nfl2k5_equipment_optimal\n"
+            "tools/nfl2k5_equipment_optimal.c\n",
+            encoding="utf-8",
+        )
+        return temporary, root, allowlist, binary, source
+
+    def test_accepts_the_reviewed_equipment_helper_pair(self) -> None:
+        temporary, root, allowlist, _binary, _source = self._equipment_helper_fixture()
+        with temporary:
+            report = release_gate.audit_release(root, allowlist)
+        self.assertEqual(report["file_count"], 2)
+
+    def test_refuses_equipment_helper_with_a_changed_size(self) -> None:
+        temporary, root, allowlist, binary, _source = self._equipment_helper_fixture()
+        with temporary:
+            binary.write_bytes(binary.read_bytes() + b"\0")
+            binary.chmod(0o755)
+            with self.assertRaisesRegex(
+                release_gate.ReleaseCheckError, "equipment helper size changed"
+            ):
+                release_gate.audit_release(root, allowlist)
+
+    def test_refuses_equipment_helper_with_a_changed_hash(self) -> None:
+        temporary, root, allowlist, binary, source = self._equipment_helper_fixture()
+        with temporary:
+            payload = bytearray(binary.read_bytes())
+            payload[-1] ^= 0xFF
+            binary.write_bytes(bytes(payload))
+            binary.chmod(0o755)
+            with self.assertRaisesRegex(
+                release_gate.ReleaseCheckError, "equipment helper hash changed"
+            ):
+                release_gate.audit_release(root, allowlist)
+        temporary, root, allowlist, _binary, source = self._equipment_helper_fixture()
+        with temporary:
+            text = source.read_text(encoding="utf-8")
+            source.write_text(text.replace("/*", "/* ", 1), encoding="utf-8")
+            with self.assertRaisesRegex(
+                release_gate.ReleaseCheckError, "equipment helper"
+            ):
+                release_gate.audit_release(root, allowlist)
+
+    def test_refuses_equipment_helper_that_is_group_writable(self) -> None:
+        temporary, root, allowlist, binary, _source = self._equipment_helper_fixture()
+        with temporary:
+            binary.chmod(0o775)
+            with self.assertRaisesRegex(
+                release_gate.ReleaseCheckError, "must be mode 0755"
+            ):
+                release_gate.audit_release(root, allowlist)
+
+    def test_refuses_the_same_bytes_under_a_renamed_path(self) -> None:
+        for renamed in (
+            "tools/nfl2k5_equipment_optimal_v2",
+            "tools/nfl2k5_equipment_optimal_v2.c",
+        ):
+            with self.subTest(renamed=renamed):
+                temporary, root, allowlist, binary, source = (
+                    self._equipment_helper_fixture()
+                )
+                with temporary:
+                    original = binary if not renamed.endswith(".c") else source
+                    copy = root / renamed
+                    copy.write_bytes(original.read_bytes())
+                    copy.chmod(0o755 if not renamed.endswith(".c") else 0o644)
+                    allowlist.write_text(
+                        allowlist.read_text(encoding="utf-8") + renamed + "\n",
+                        encoding="utf-8",
+                    )
+                    with self.assertRaisesRegex(
+                        release_gate.ReleaseCheckError, "unapproved release file type"
+                    ):
+                        release_gate.audit_release(root, allowlist)
+
+    def test_reviewed_equipment_helper_pins_agree_across_the_repository(self) -> None:
+        import sys as _sys
+
+        _sys.path.insert(0, str(ROOT))
+        from mod_editor.core import nfl2k5_equipment_lz as equipment_lz
+        from tools import setup_reviewed_helpers
+
+        binary = ROOT / "tools/nfl2k5_equipment_optimal"
+        payload = binary.read_bytes()
+        digest = hashlib.sha256(payload).hexdigest()
+        self.assertEqual(len(payload), equipment_lz._NATIVE_SIZE)
+        self.assertEqual(digest, equipment_lz._NATIVE_SHA256)
+        self.assertEqual(
+            setup_reviewed_helpers.REVIEWED_HELPERS["tools/nfl2k5_equipment_optimal"],
+            (equipment_lz._NATIVE_SIZE, equipment_lz._NATIVE_SHA256),
+        )
+        checker = CHECKER.read_text(encoding="utf-8")
+        self.assertIn(f'"tools/nfl2k5_equipment_optimal": ({len(payload)}, "{digest}")', checker)
+        allowlist = (ROOT / "packaging/release-allowlist.txt").read_text(encoding="utf-8")
+        for declared in (
+            "mod_editor/core/nfl2k5_compile_cache.py",
+            "tools/nfl2k5_equipment_optimal",
+            "tools/nfl2k5_equipment_optimal.c",
+        ):
+            self.assertIn(declared + "\n", allowlist)
 
     def test_launcher_and_packaging_docs_require_pyqt5_not_tk(self) -> None:
         launcher = (ROOT / "tools/launch_2k5_mod_studio.sh").read_text(encoding="utf-8")
@@ -454,7 +568,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertIn('"mod_editor.studio.uniform_bundle"', runtime_probe)
         self.assertIn("_exercise_team_kit", runtime_probe)
         self.assertIn("_exercise_workspace_recovery", runtime_probe)
-        self.assertIn("registry=160 sections=12 nfl2k5_capabilities=90", runtime_probe)
+        self.assertIn("registry=161 sections=12 nfl2k5_capabilities=91", runtime_probe)
         self.assertIn("stadium_textures_editable=23838", runtime_probe)
         self.assertIn("audio=850 audio_editable=850 audio_export_only=0", runtime_probe)
         self.assertIn("audio_streaming_ranges=53571", runtime_probe)

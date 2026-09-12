@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/capabilities/validate_registry.py", line 337, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/capabilities/validate_registry.py", line 327, in main
+    data = load_and_validate(args.registry, check_files=not args.skip_file_checks)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/capabilities/validate_registry.py", line 311, in load_and_validate
+    validate_data(data, check_files=check_files)
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/capabilities/validate_registry.py", line 216, in validate_data
+    _local_path(evidence_path, f"{where}.evidence[{evidence_index}]")
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/capabilities/validate_registry.py", line 129, in _local_path
+    _require(path.is_file(), f"{where}: missing local file {path_text}")
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/capabilities/validate_registry.py", line 107, in _require
+    raise RegistryError(message)
+RegistryError: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md

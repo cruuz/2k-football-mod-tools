@@ -386,7 +386,7 @@ class StudioFacade(Protocol):
 
     def replace_equipment_texture(
         self, asset: object, supplied_png: Path, progress: ProgressSink, *,
-        independent: bool = False, scale: int = 1,
+        independent: bool | None = None, scale: int = 1, scope: str | None = None,
     ) -> object: ...
 
     def save_texture_authoring_master(
@@ -5587,14 +5587,14 @@ class StudioMainWindow(QMainWindow):
         fitted = self._fit_for_slot(path, asset.width, asset.height, asset.label)
         if fitted is None:
             return
-        equipment_choice: tuple[bool, int] | None = None
+        equipment_choice: tuple[bool, int, str] | None = None
         if asset.kind == "uniform_equipment_texture":
             from mod_editor.gui.equipment_texture_import_dialog import EquipmentTextureImportDialog
 
             dialog = EquipmentTextureImportDialog(asset, self)
             if dialog.exec_() != dialog.Accepted:
                 return
-            equipment_choice = (dialog.independent, dialog.scale)
+            equipment_choice = (dialog.independent, dialog.scale, dialog.scope)
         existing_master = self._texture_master_drafts.get(asset.asset_id)
         pending_master: _TextureMasterDraft | None = None
         if native_canvas_edit is None:
@@ -5665,9 +5665,9 @@ class StudioMainWindow(QMainWindow):
 
         def replace_texture(progress: ProgressSink) -> object:
             if equipment_choice is not None:
-                independent, scale = equipment_choice
+                independent, scale, scope = equipment_choice
                 return self.facade.replace_equipment_texture(
-                    asset, path, progress, independent=independent, scale=scale,
+                    asset, path, progress, independent=independent, scale=scale, scope=scope,
                 )
             return self.facade.replace_asset(asset, path, progress)
 
@@ -6830,6 +6830,8 @@ class StudioMainWindow(QMainWindow):
                 "Choose a physical uniform set before browsing its equipment."
             )
             return
+        row = PRODUCT_CATEGORY_ORDER.index(ProductCategory.TEXTURES) + 1
+        self._ensure_workspace(row)
         state = self._visual_browsers.get(ProductCategory.TEXTURES)
         if state is None:
             self._show_error("The All Textures browser is unavailable.")
@@ -6845,7 +6847,6 @@ class StudioMainWindow(QMainWindow):
             )
             return
 
-        row = PRODUCT_CATEGORY_ORDER.index(ProductCategory.TEXTURES) + 1
         self.navigation.setCurrentRow(row)
         self._set_status(
             f"Showing all 45 package-local equipment textures for "

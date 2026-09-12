@@ -20,11 +20,12 @@ from .errors import ValidationError
 PALETTE_ONLY = "palette-only"
 OWN_TEXTURE = "independent-mip-chain"
 INTENT_CHUNK = b"npTC"
+RETAIL_SOURCE_CHUNK = b"npRS"
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 SCHEMA = "nfl2k5_equipment_import_intent/v1"
-CHOICE_CAPTION = "Give this glove or shoe its own texture"
+CHOICE_CAPTION = "Give this sock, glove or shoe its own texture"
 CHOICE_HELP = (
-    "Import a new design for this selected glove or shoe. Other variants keep "
+    "Import a new design for this selected sock, glove or shoe. Other variants keep "
     "their artwork, including the separate dirty version. Smaller copies are "
     "made for distance. The original image size often cannot fit. Choose a "
     "smaller game image below, or use fewer colours and simpler shapes. "
@@ -62,7 +63,7 @@ def supports_own_texture(asset_id: str) -> bool:
     import re
 
     return re.fullmatch(
-        r"tset:\d+:(?:6:\d+:glove\d{2}|[89]:\d+:shoes\d{2}(?:_mud)?)",
+        r"tset:\d+:(?:4:[01]:socks00(?:_mud)?|6:\d+:glove\d{2}|[89]:\d+:shoes\d{2}(?:_mud)?)",
         asset_id, re.ASCII,
     ) is not None
 
@@ -100,7 +101,7 @@ def with_import_mode(payload: bytes, asset_id: str, rgba: bytes, *, independent:
     if type(independent) is not bool:
         raise ValidationError("Choose whether this equipment uses its own texture.")
     if independent and not supports_own_texture(asset_id):
-        raise ValidationError("Only the reviewed gloves and shoes can own a texture.")
+        raise ValidationError("Only the reviewed socks, gloves and shoes can own a texture.")
     if type(scale) is not int or scale not in (1, 2, 4):
         raise ValidationError("Equipment image size must be original, half or quarter width and height.")
     result = bytearray(PNG_SIGNATURE)
@@ -118,6 +119,42 @@ def with_import_mode(payload: bytes, asset_id: str, rgba: bytes, *, independent:
     return bytes(result)
 
 
+def retail_source(payload: bytes, rgba: bytes) -> str | None:
+    """Portable origin hint, never authority for pixels or executable writes.
+
+    Editors may discard this unsafe-to-copy chunk. Stale hints are ignored;
+    the writer independently reopens the catalog-pinned retail source and
+    compares its base pixels before preserving its original distance images.
+    """
+    records = [data for kind, data, *_ in _chunks(payload) if kind == RETAIL_SOURCE_CHUNK]
+    if len(records) != 1 or len(records[0]) > 1024:
+        return None
+    try:
+        record = json.loads(records[0])
+    except (ValueError, UnicodeDecodeError):
+        return None
+    if (not isinstance(record, dict) or set(record) != {"asset_id", "rgba_sha256"}
+            or not isinstance(record["asset_id"], str)
+            or record["rgba_sha256"] != hashlib.sha256(rgba).hexdigest()):
+        return None
+    return record["asset_id"]
+
+
+def with_retail_source(payload: bytes, asset_id: str | None, rgba: bytes) -> bytes:
+    """Attach only a source selector and pixel digest, never retail mip bytes."""
+    result = bytearray(PNG_SIGNATURE)
+    for kind, _data, start, end in _chunks(payload):
+        if kind == RETAIL_SOURCE_CHUNK:
+            continue
+        if kind == b"IEND" and asset_id is not None:
+            data = json.dumps({"asset_id": asset_id, "rgba_sha256": hashlib.sha256(rgba).hexdigest()},
+                              sort_keys=True, separators=(",", ":")).encode("utf-8")
+            result.extend(struct.pack(">I4s", len(data), RETAIL_SOURCE_CHUNK) + data
+                          + struct.pack(">I", zlib.crc32(RETAIL_SOURCE_CHUNK + data) & 0xFFFFFFFF))
+        result.extend(payload[start:end])
+    return bytes(result)
+
+
 def same_visual_import(asset, left: bytes, left_rgba: bytes,
                        right: bytes, right_rgba: bytes) -> bool:
     """Pixel equality plus explicit intent, only for equipment replacements."""
@@ -125,6 +162,10 @@ def same_visual_import(asset, left: bytes, left_rgba: bytes,
         return False
     if getattr(asset, "kind", None) != "uniform_equipment_texture":
         return True
-    return import_settings(left, asset.asset_id, left_rgba) == import_settings(
-        right, asset.asset_id, right_rgba,
-    )
+    settings = import_settings(left, asset.asset_id, left_rgba)
+    if settings != import_settings(right, asset.asset_id, right_rgba):
+        return False
+    # Only own-texture imports can preserve a donor's private distance images.
+    # An export hint must not turn an identical palette-only import into an edit
+    # or prevent the ordinary restore-to-original path.
+    return settings[0] == PALETTE_ONLY or retail_source(left, left_rgba) == retail_source(right, right_rgba)

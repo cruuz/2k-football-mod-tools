@@ -24,7 +24,6 @@ import shutil
 import stat
 import tempfile
 from typing import Any, Callable, Iterable, Iterator, Sequence
-from weakref import WeakKeyDictionary
 import zipfile
 
 from mod_editor.core.errors import ValidationError
@@ -87,6 +86,7 @@ class TeamKitComponentImport:
     decision: str
     replaced: str | None = None
     overwritten: bool = False
+    file_name: str = ""
 
     @property
     def display_label(self) -> str:
@@ -106,7 +106,7 @@ class TeamKitBundleImportResult:
 
     @property
     def imported_count(self) -> int:
-        """Edits accepted from the bundle, including an identical repeat import."""
+        """Components whose pixels changed in this import."""
         return sum(row.decision == "imported" for row in self.components)
 
     @property
@@ -129,8 +129,11 @@ class TeamKitBundleImportResult:
     def details(self) -> str:
         groups = (
             ("Imported", tuple(row for row in self.components if row.decision == "imported")),
-            ("Skipped unchanged in the bundle", tuple(
+            ("Identical to the current project", tuple(
                 row for row in self.components if row.decision == "skipped_unchanged"
+            )),
+            ("Untouched since export; preserved the current project", tuple(
+                row for row in self.components if row.decision == "skipped_baseline"
             )),
             ("Skipped, re-encoded but visually unchanged (treated as unchanged)", tuple(
                 row for row in self.components if row.decision == "skipped_reencoded"
@@ -139,19 +142,12 @@ class TeamKitBundleImportResult:
         )
         return "\n\n".join(
             f"{heading} ({len(rows)}):\n" + ("\n".join(
-                row.display_label + (f" (replaced {row.replaced})" if row.replaced else "")
+                row.display_label + (f" [{row.file_name}]" if row.file_name else "")
+                + (f" (replaced {row.replaced})" if row.replaced else "")
                 for row in rows
             ) or "None")
             for heading, rows in groups
         )
-
-
-# Retain only one small receipt per live session. A repeat still validates the
-# entire bundle and staged edits. Reuse just the original attribution, after
-# the batch proves a no-op and the session revision/content signature match.
-_last_import_receipts: WeakKeyDictionary[
-    StudioSession, tuple[int, str, tuple[TeamKitComponentImport, ...]]
-] = WeakKeyDictionary()
 
 
 def _staged_summary(components: Sequence[TeamKitComponentImport]) -> str:
@@ -958,7 +954,6 @@ class TeamKitBundleService:
             expected_paths = {TEAM_KIT_MANIFEST, TEAM_KIT_GUIDE}
             replacements: list[tuple[UniformAsset, Path]] = []
             components: list[TeamKitComponentImport] = []
-            signature = hashlib.sha256(manifest_payload)
             seen_ids: set[str] = set()
             progress("Validating every Team Kit component", 0, expected_count + 1)
             for number, (row, asset) in enumerate(zip(asset_rows, expected_assets), 1):
@@ -994,19 +989,21 @@ class TeamKitBundleService:
                     asset, supplied
                 )
                 supplied_digest = _sha256(supplied_rgba)
-                signature.update(supplied_digest.encode("ascii"))
-                current_rgba: bytes | None = None
-                if supplied_digest != baseline_rgba:
-                    current = self.session.current_path(asset)
-                    _current_payload, current_rgba = self.session.asset_io.validate_replacement(
-                        asset, current
-                    )
-                if supplied_digest == baseline_rgba:
-                    # An untouched export never restores or even reads a
-                    # destination edit. PNG encoding/metadata is irrelevant.
+                current = self.session.current_path(asset)
+                _current_payload, current_rgba = self.session.asset_io.validate_replacement(
+                    asset, current
+                )
+                if supplied_digest == _sha256(current_rgba):
                     components.append(TeamKitComponentImport(
                         asset.asset_id, asset.set_selector, asset.label,
-                        asset.group, "skipped_unchanged",
+                        asset.group, "skipped_unchanged", file_name=relative,
+                    ))
+                elif supplied_digest == baseline_rgba:
+                    # This is a merge: an untouched export must not erase an
+                    # edit made in the destination since the export.
+                    components.append(TeamKitComponentImport(
+                        asset.asset_id, asset.set_selector, asset.label,
+                        asset.group, "skipped_baseline", file_name=relative,
                     ))
                 elif _is_live_digit(asset) and self._digit_is_reencoded_baseline(
                     asset, supplied_rgba, current_rgba or b"", baseline_rgba, str(origin),
@@ -1016,7 +1013,7 @@ class TeamKitBundleService:
                     # 64x64 digit that could not fit its retail slot at build.
                     components.append(TeamKitComponentImport(
                         asset.asset_id, asset.set_selector, asset.label,
-                        asset.group, "skipped_reencoded",
+                        asset.group, "skipped_reencoded", file_name=relative,
                     ))
                 else:
                     assert current_rgba is not None
@@ -1026,6 +1023,7 @@ class TeamKitBundleService:
                         asset.group, "imported",
                         "your earlier edit" if earlier_edit else "source",
                         earlier_edit or _sha256(current_rgba) != baseline_rgba,
+                        file_name=relative,
                     ))
                     # Freeze the bytes used for this decision. An external
                     # editor can still be saving the public bundle on disk.
@@ -1061,12 +1059,6 @@ class TeamKitBundleService:
                 changed_count = 0
             progress("Team Kit import complete", expected_count + 1, expected_count + 1)
             receipt = tuple(components)
-            content_signature = signature.hexdigest()
-            previous = _last_import_receipts.get(self.session)
-            if not changed_count and previous is not None and previous[:2] == (
-                self.session.mutation_revision, content_signature,
-            ):
-                receipt = previous[2]
             imported_count = len(replacements)
             unchanged_count = expected_count - imported_count
             overwritten_count = sum(row.overwritten for row in receipt)
@@ -1088,9 +1080,6 @@ class TeamKitBundleService:
                 batch,
                 message,
                 receipt,
-            )
-            _last_import_receipts[self.session] = (
-                self.session.mutation_revision, content_signature, receipt,
             )
             return result
 

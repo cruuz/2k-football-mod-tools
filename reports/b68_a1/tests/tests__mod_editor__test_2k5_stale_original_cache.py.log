@@ -1,0 +1,74 @@
+.EE.EE....
+======================================================================
+ERROR: test_an_intact_legacy_binding_is_refreshed_not_refused (__main__.StaleOriginalTests.test_an_intact_legacy_binding_is_refreshed_not_refused)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_2k5_stale_original_cache.py", line 118, in test_an_intact_legacy_binding_is_refreshed_not_refused
+    path = io.ensure_original(asset)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_extended_visual_io.py", line 127, in ensure_original
+    return self._ensure_original(asset)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_extended_visual_io.py", line 197, in _ensure_original
+    if asset.kind == "uniform_equipment_texture":
+       ^^^^^^^^^^
+AttributeError: '_Asset' object has no attribute 'kind'
+
+======================================================================
+ERROR: test_an_old_dimension_is_redecoded_instead_of_called_tampering (__main__.StaleOriginalTests.test_an_old_dimension_is_redecoded_instead_of_called_tampering)
+The Titans fix changes 64x64 cache records to their real 32x32.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_2k5_stale_original_cache.py", line 170, in test_an_old_dimension_is_redecoded_instead_of_called_tampering
+    path = io.ensure_original(asset)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_extended_visual_io.py", line 127, in ensure_original
+    return self._ensure_original(asset)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_extended_visual_io.py", line 197, in _ensure_original
+    if asset.kind == "uniform_equipment_texture":
+       ^^^^^^^^^^
+AttributeError: '_Asset' object has no attribute 'kind'
+
+======================================================================
+ERROR: test_canonical_entry_is_reused_across_legal_container_hashes (__main__.StaleOriginalTests.test_canonical_entry_is_reused_across_legal_container_hashes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_2k5_stale_original_cache.py", line 139, in test_canonical_entry_is_reused_across_legal_container_hashes
+    self.assertEqual(repack.ensure_original(asset), path)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_extended_visual_io.py", line 127, in ensure_original
+    return self._ensure_original(asset)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_extended_visual_io.py", line 179, in _ensure_original
+    if (asset.kind != "uniform_equipment_texture" or not supports_own_texture(asset.asset_id)
+        ^^^^^^^^^^
+AttributeError: '_Asset' object has no attribute 'kind'
+
+======================================================================
+ERROR: test_concurrent_preview_and_export_publish_one_valid_pair (__main__.TeamKitUniformCacheTests.test_concurrent_preview_and_export_publish_one_valid_pair) (extended=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_2k5_stale_original_cache.py", line 239, in test_concurrent_preview_and_export_publish_one_valid_pair
+    self.assertEqual(first.result(), second.result())
+                     ^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/usr/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_extended_visual_io.py", line 127, in ensure_original
+    return self._ensure_original(asset)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_extended_visual_io.py", line 197, in _ensure_original
+    if asset.kind == "uniform_equipment_texture":
+       ^^^^^^^^^^
+AttributeError: '_Asset' object has no attribute 'kind'
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.017s
+
+FAILED (errors=4)

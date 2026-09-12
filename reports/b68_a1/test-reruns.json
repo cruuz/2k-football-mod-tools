@@ -1,0 +1,92 @@
+[
+  {
+    "file": "tests/mod_editor/test_2k5_audio_operation_integration.py",
+    "exit_code": 0,
+    "seconds": 27.824,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_2k5_audio_operation_integration.py.rerun.log"
+  },
+  {
+    "file": "tests/mod_editor/test_2k5_check_my_images.py",
+    "exit_code": 0,
+    "seconds": 19.658,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_2k5_check_my_images.py.rerun.log"
+  },
+  {
+    "file": "tests/mod_editor/test_2k5_import_offers_resize.py",
+    "exit_code": 0,
+    "seconds": 15.199,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_2k5_import_offers_resize.py.rerun.log"
+  },
+  {
+    "file": "tests/mod_editor/test_2k5_stale_original_cache.py",
+    "exit_code": 0,
+    "seconds": 0.215,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_2k5_stale_original_cache.py.rerun.log"
+  },
+  {
+    "file": "tests/mod_editor/test_2k5_uniform_equipment_export.py",
+    "exit_code": 0,
+    "seconds": 26.42,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_2k5_uniform_equipment_export.py.rerun.log"
+  },
+  {
+    "file": "tests/mod_editor/test_all_textures_workspace.py",
+    "exit_code": 1,
+    "seconds": 8.883,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_all_textures_workspace.py.rerun.log"
+  },
+  {
+    "file": "tests/mod_editor/test_audio_replacement_pack.py",
+    "exit_code": 0,
+    "seconds": 8.382,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_audio_replacement_pack.py.rerun.log"
+  },
+  {
+    "file": "tests/mod_editor/test_b68_a1_audit.py",
+    "exit_code": 0,
+    "seconds": 6.879,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_b68_a1_audit.py.rerun.log"
+  },
+  {
+    "file": "tests/mod_editor/test_b68_t1_build.py",
+    "exit_code": 0,
+    "seconds": 6.379,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_b68_t1_build.py.rerun.log"
+  },
+  {
+    "file": "tests/mod_editor/test_b68_t1_ui.py",
+    "exit_code": 0,
+    "seconds": 6.18,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_b68_t1_ui.py.rerun.log"
+  },
+  {
+    "file": "tests/mod_editor/test_beta66_d1_panels.py",
+    "exit_code": 0,
+    "seconds": 2.32,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_beta66_d1_panels.py.rerun.log"
+  },
+  {
+    "file": "tests/mod_editor/test_beta66_helmet_finish_wiring.py",
+    "exit_code": 0,
+    "seconds": 16.35,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_beta66_helmet_finish_wiring.py.rerun.log"
+  },
+  {
+    "file": "tests/mod_editor/test_commentary_panel_qt.py",
+    "exit_code": 0,
+    "seconds": 7.931,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_commentary_panel_qt.py.rerun.log"
+  },
+  {
+    "file": "tests/mod_editor/test_no_capability_is_invisible.py",
+    "exit_code": 1,
+    "seconds": 0.165,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_no_capability_is_invisible.py.rerun.log"
+  },
+  {
+    "file": "tests/mod_editor/test_studio_session.py",
+    "exit_code": 0,
+    "seconds": 0.966,
+    "log": "reports/b68_a1/tests/tests__mod_editor__test_studio_session.py.rerun.log"
+  }
+]

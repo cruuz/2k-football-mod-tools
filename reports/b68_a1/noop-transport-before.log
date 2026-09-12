@@ -1,0 +1,32 @@
+EF
+======================================================================
+ERROR: test_unchanged_span_keeps_its_original_stream_and_reports_actual_transport (__main__.PaletteIntentTests.test_unchanged_span_keeps_its_original_stream_and_reports_actual_transport) (stored=3149)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_b68_a1_audit.py", line 91, in test_unchanged_span_keeps_its_original_stream_and_reports_actual_transport
+    actual, receipt = writer._rebuild_fixed_span(original, decoded, independent=True)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/mod_editor/core/nfl2k5_uniform_equipment_writer.py", line 674, in _rebuild_fixed_span
+    _span, info = rebuild_compressed_chunk_fixed_span(template_span, candidate)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/tools/nfl_txtr.py", line 598, in rebuild_compressed_chunk_fixed_span
+    recompressed, _ = compress_vc_lz(
+                      ^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b68-a1/tools/nfl_txtr.py", line 497, in compress_vc_lz
+    flush_tokens()
+  File "/home/noah/2k-worktrees/astra-b68-a1/tools/nfl_txtr.py", line 437, in flush_tokens
+    raise TxtrError(
+nfl_txtr.TxtrError: VC-LZ stream needs more than the 3149-byte bound
+
+======================================================================
+FAIL: test_unchanged_span_keeps_its_original_stream_and_reports_actual_transport (__main__.PaletteIntentTests.test_unchanged_span_keeps_its_original_stream_and_reports_actual_transport) (stored=5200)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b68-a1/tests/mod_editor/test_b68_a1_audit.py", line 93, in test_unchanged_span_keeps_its_original_stream_and_reports_actual_transport
+    self.assertEqual(receipt.recompressed_bytes, transport.consumed_bytes)
+AssertionError: 3152 != 5184
+
+----------------------------------------------------------------------
+Ran 1 test in 0.298s
+
+FAILED (failures=1, errors=1)

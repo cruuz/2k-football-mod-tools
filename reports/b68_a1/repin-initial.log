@@ -1,0 +1,8 @@
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_compile_cache.py
+    4b9e9fc695b8e096cfc4e93e7dd511d43b9ea2455b004411fa1a66d615daca98
+ -> 5723ba83951081e8642cda56e2f06c85959a35c4e8863e74806d8eba509a6d2e
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_uniform_equipment_writer.py
+    b877f4ddcaab34cebc3a2ba9cc69e07ef293f43babb1c20b5f1507e6b9a5a676
+ -> ec44ff6fd232fd4f51f062a6e41da990ebb313871733a8d7d366e46538c0f7c1
+
+applied 2 pin update(s)

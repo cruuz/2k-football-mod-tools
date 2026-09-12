@@ -444,7 +444,7 @@ class AuthoringTemplateTests(unittest.TestCase):
 
     def test_unknown_slot_is_refused(self) -> None:
         with self.assertRaisesRegex(writer.BumpTextureWriterError, "not one of"):
-            writer.authoring_template("bump_shoes1")
+            writer.authoring_template("bump_shoes8")
 
 
 class _CountingIndexReader:

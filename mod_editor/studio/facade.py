@@ -3355,7 +3355,7 @@ class Nfl2k5StudioFacade:
 
     def replace_equipment_texture(
         self, asset: object, supplied_png: Path, progress: ProgressSink, *,
-        independent: bool | None = None, scale: int = 1,
+        independent: bool | None = None, scale: int = 1, scope: str | None = None,
     ) -> object:
         """Compile the selected equipment choice before changing the project."""
         from mod_editor.core.nfl2k5_equipment_import import stage_equipment_import
@@ -3364,6 +3364,7 @@ class Nfl2k5StudioFacade:
         with self._lock:
             result = stage_equipment_import(
                 self._require_session(), asset, supplied_png, independent=independent, scale=scale,
+                scope=scope,
             )
         progress("Equipment import checked", 1, 1)
         return result

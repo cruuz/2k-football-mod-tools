@@ -1,0 +1,508 @@
+diff --git a/ASTRA_REPORT.md b/ASTRA_B68_T2_REPORT.md
+similarity index 100%
+rename from ASTRA_REPORT.md
+rename to ASTRA_B68_T2_REPORT.md
+diff --git a/WIRING.md b/WIRING_B68_T2.md
+similarity index 100%
+rename from WIRING.md
+rename to WIRING_B68_T2.md
+diff --git a/docs/mod_editor/2k5_mod_studio_changelog.md b/docs/mod_editor/2k5_mod_studio_changelog.md
+index b5a1d9e3..12791c35 100644
+--- a/docs/mod_editor/2k5_mod_studio_changelog.md
++++ b/docs/mod_editor/2k5_mod_studio_changelog.md
+@@ -4,16 +4,13 @@
+ 
+ Beta 68 answers the ESPN NFL 2K5 reports in Discord after beta 66.1; bullets are added as each change lands.
+ 
+-<<<<<<< a8676133
+ - **Builds reuse compiled artwork and check the written receipt.** maumau78 reported "it finally build without errors but it takes 1h" and "even change one texture take forever to build"; Coach Edwards reported "my build took over 90 minutes". The publication check now reads the recorded spans and directory without compiling the project again. A private project cache reuses unchanged texture and shared equipment compiles. One full source/output comparison remains to prove that bytes outside the edits match. The reviewed Linux equipment compressor preserves the Python encoder's exact bytes and decode gate. PROVED in bounded synthetic builds; the reported 402-edit retail workload and Windows build times remain UNWITNESSED.
+ - **The Equipment button opens All Textures on the first visit.** maumau78 reported "if open uniform editor and select socks / equipment the first time you got this error" and that visiting "All Texture" first worked around it. The button now constructs the lazy browser before filtering the selected uniform set. PROVED from a fresh offscreen window with 45 synthetic equipment records; reporter retest remains UNWITNESSED.
+ - **Team Kit import names changed files and files identical to the project.** Coach Edwards' photo showed "Imported: 0. Skipped unchanged: 78" and "No project pixels changed". Import now compares incoming pixels with the current project before deciding what changed, distinguishes untouched export files that preserve a later project edit, and reports this import's counts instead of replaying an earlier receipt. PROVED: export a staged kit, edit one PNG on disk, import exactly one component, then import again with zero changes. The number-sheet and cross-project merge safeguards remain in place; in-game appearance remains UNWITNESSED.
+-=======
+ - **Designed socks can keep their own artwork (Coach Edwards).** "Only thing is that the designer socks (no the solids) are still coming through blurry in game." Socks and their separate dirty version now support their own texture instead of forcing a new design onto the retail shared image. The full-size 64x64 sock and every distance image decode back to the imported pixels in the retail package proof. The separate sock fabric map stays unchanged. Experimental; in-game sharpness still needs Coach Edwards' retest.
+ - **Shoe imports state their actual team scope (maumau78).** "even If i select to import to specific team will be replaced as shared one for all the teams" describes the game's global shoe styles. Those rows offer All teams only and refuse an explicit per-team request with the same explanation. For team-specific colour artwork, shoes09 and shoes10 use each team's selected uniform package; choose Style 3 or Style 6 for the player's left and right shoe. Native lookup and material binding are proved; both teams still need a played comparison.
+ - **Unchanged retail shoe exports preserve their palette and distance images (maumau78).** "this texture was just exported then imported into another slot but still glitched in-game" now has a regression test through Export PNG and the package compiler. Original-size copies preserve the retail palette and all mip bytes; the same-slot result is the original span, and a compatible other slot reuses its shared image without growing memory. An incompatible slot must fit the exact artwork or refuse. Half or quarter size deliberately removes detail, new art can merge colours to fit P8 or the compressed slot, and palette-only mode keeps the retail shape; the import summary explains these losses. The reported in-game smear remains unwitnessed after this change.
+ - **The shoe relief maps are now mapped and editable (maumau78).** "there's be a shoe normal texture to edit too" was correct: GLOBAL.IFF carries seven shoe relief maps outside the four uniform fabric maps. Bump Maps exposes them with their shared scope; Styles 3 and 6 share relief map 7 even though their colour artwork is local. The writer preserves the fixed span and loader scratch word, refuses lossy normal-colour reduction, and verifies every authored distance image. The raised swoosh and stitching still need an in-game retest. Experimental / unwitnessed.
+->>>>>>> refs/audit/t2
+ 
+ ## v1.0 RC92, beta 67
+ 
+diff --git a/mod_editor/capabilities/registry.v1.json b/mod_editor/capabilities/registry.v1.json
+index 975e9b32..6306e04e 100644
+--- a/mod_editor/capabilities/registry.v1.json
++++ b/mod_editor/capabilities/registry.v1.json
+@@ -10681,7 +10681,10 @@
+         "ASTRA_EQUIPMENT_TEXTURE_CHAIN_REPORT.md",
+         "mod_editor/data/nfl2k5_equipment_chain_pins.v1.json",
+         "tests/mod_editor/test_nfl2k5_equipment_texture_chain.py",
+-        "tests/mod_editor/test_nfl2k5_equipment_texture_native.py"
++        "tests/mod_editor/test_nfl2k5_equipment_texture_native.py",
++        "tests/mod_editor/test_nfl2k5_equipment_retail_roundtrip.py",
++        "tests/mod_editor/test_nfl2k5_equipment_consumers.py",
++        "ASTRA_B68_T2_REPORT.md"
+       ],
+       "game": "nfl2k5_xbox",
+       "gui": {
+@@ -10696,7 +10699,7 @@
+         "The catalog keeps all 11,395 standalone targets editable: 7,315 reviewed P8 targets and all 4,080 reviewed explicit-size A1R5G5B5 p001..p006/p011..p016 player strips. Outer 581 p005 is a proved transactional two-piece span across physical packs 0 and 1. A8R8G8B8, DXT1, VC_P8_LINEAR, crowdbase, seat, and unreviewed A1R5G5B5 layouts remain refused.",
+         "The 1,585 team-linked slots in logos.cdf, mini.cdf, and flipchip.cdf are raw P8 fixed-slot resources: imports preserve their wrapper, descriptor/system bytes, exact resource span, and 96-byte slot padding, regenerate only swizzled indices plus palette, and never invoke VC-LZ. The 170 franchise-office and draft/PDA logo resources retain their exact compressed P8 spans.",
+         "All Textures also edits 28,530 reviewed package-local socks, elbow-pad, glove, long-sleeve, shoe, and wristband P8 palettes. Each import preserves that TSET's shared retail index/mip chain and every unselected sibling palette and decoded image.",
+-        "Package-local equipment defaults to recolouring the shared retail shape. An explicit experimental, unwitnessed glove or shoe import can append a private coverage mip chain, preserving all sibling bytes. Original, half or quarter width and height are explicit choices; smaller images lose detail and all private chains use more game memory. Deterministic colour tiers and lossless compression must fit the complete TSET inside its original file span before staging.",
++        "Socks, gloves and shoes can own a selected independent mip chain; new imports default to that choice. Global equipment rows offer All teams only, and explicit per-team requests are refused. shoes09/Style 3 and shoes10/Style 6 read each team's selected uniform package; players must select the corresponding shoe style. Unchanged retail exports at original size preserve the pinned palette and all distance images, reusing an identical shared chain when possible; otherwise exact allocation must fit or the import is refused. Half/quarter images explicitly discard detail; new art can also merge colours to fit P8 or the fixed span, with measured errors in the receipt. Siblings and retail wrapper scratch stay exact. All new in-game appearance remains unwitnessed.",
+         "Compressed replacements are recompressed into the original byte span, while reviewed raw replacements retain the complete fixed-slot structure; an image that cannot satisfy its owning transport is refused rather than moving anything on the disc.",
+         "Targets are addressed by outer package index and texture name. Uniform and menu-presentation targets also carry typed team names, abbreviations, asset code, style, physical-set selectors, archive name, and consumer scope; unresolved stadium targets still use package indices and preview identification.",
+         "Franchise-office team logos are presentation assets, not midfield art. Stock midfield center_logo exists only in the create-team packages."
+@@ -10867,7 +10870,10 @@
+         "ASTRA_EQUIPMENT_TEXTURE_CHAIN_REPORT.md",
+         "mod_editor/data/nfl2k5_equipment_chain_pins.v1.json",
+         "tests/mod_editor/test_nfl2k5_equipment_texture_chain.py",
+-        "tests/mod_editor/test_nfl2k5_equipment_texture_native.py"
++        "tests/mod_editor/test_nfl2k5_equipment_texture_native.py",
++        "tests/mod_editor/test_nfl2k5_equipment_retail_roundtrip.py",
++        "tests/mod_editor/test_nfl2k5_equipment_consumers.py",
++        "ASTRA_B68_T2_REPORT.md"
+       ],
+       "game": "nfl2k5_xbox",
+       "gui": {
+@@ -10884,7 +10890,7 @@
+         "Player portraits are exact 128x128 RGBA8 PNGs selected by a proved four-digit numeric portrait ID; cross-pack slots are reconstructed as bounded physical spans.",
+         "Crib Team Photos are exact 128x128 RGBA8 PNGs selected by a canonical crib_team_photo:##_photo_0# selector; all five fixed P8 mips are regenerated.",
+         "The Stadium texture route accepts an exact 64x64 RGBA8 PNG only for nfl2k5.stadium.o3280.c0005.scene2648.texture0002 (cement01); all 33 linked surfaces change together, and fixed-allocation compression overflow is refused.",
+-        "Package-local uniform equipment accepts 28,530 reviewed swizzled P8 selectors with palette-only import by default. The explicit experimental, unwitnessed glove/shoe choice appends an independent coverage mip chain and changes only selected descriptors and palettes; original shared indices and every unselected sibling remain exact. Image size is explicitly original, half or quarter width and height. Grouped TSET overflow is refused before staging; the decoded game-memory allocation grows.",
++        "Socks, gloves and shoes can own a selected independent mip chain; new imports default to that choice. Global equipment rows offer All teams only, and explicit per-team requests are refused. shoes09/Style 3 and shoes10/Style 6 read each team's selected uniform package; players must select the corresponding shoe style. Unchanged retail exports at original size preserve the pinned palette and all distance images, reusing an identical shared chain when possible; otherwise exact allocation must fit or the import is refused. Half/quarter images explicitly discard detail; new art can also merge colours to fit P8 or the fixed span, with measured errors in the receipt. Siblings and retail wrapper scratch stay exact. All new in-game appearance remains unwitnessed.",
+         "Menu Back accepts only mono PCM16LE at exactly 16,000 Hz and 5,696 frames; it is encoded into the one proved fixed AUDO payload while preserving its wrapper and metadata.",
+         "Additional standalone audio accepts any of 849 non-Menu-Back catalog asset IDs plus a strict PCM16LE WAV matching that row's exact channel count, rate, and frame count; 697 alias-related rows carry a prominent warning because their runtime cue meaning remains unproved.",
+         "Equal decoded uniform content across selectors is not shared storage: all 3,170 audited torso, pants, sleeve, and live-helmet targets have distinct non-overlapping XISO spans.",
+@@ -10933,6 +10939,75 @@
+       "title": "NFL 2K5 unified visual/data/audio mod project",
+       "validation_command": "bash tools/validate_nfl2k5_visual_mod_project.sh"
+     },
++    {
++      "backend": {
++        "command": "python3 -m mod_editor.core.nfl2k5_bump_texture_writer import <source> <working-copy> <outer> --chunk <name> --png <authored.png>",
++        "module": "mod_editor/core/nfl2k5_bump_texture_writer.py",
++        "operation": "write"
++      },
++      "classification": "offline-writer-proved",
++      "evidence": [
++        "ASTRA_B68_T2_REPORT.md",
++        "tests/mod_editor/test_nfl2k5_shoe_relief.py",
++        "tests/mod_editor/test_nfl2k5_equipment_texture_native.py",
++        "tests/mod_editor/test_nfl2k5_bump_texture_writer.py"
++      ],
++      "game": "nfl2k5_xbox",
++      "gui": {
++        "default_enabled": false,
++        "expose": true,
++        "mode": "edit",
++        "reason": "Advanced Bump Maps tab; source read-only, explicit working-copy write. Shoe relief is shared across teams. EXPERIMENTAL / UNWITNESSED."
++      },
++      "id": "nfl2k5.uniforms.bump_textures",
++      "input_constraints": [
++        "Uniform jersey, pants, sleeve and sock maps retain their A8R8G8B8 layout; GLOBAL.IFF contains seven separate 128x128 P8 shoe relief maps.",
++        "Exact dimensions and every mip must decode to the authored pixels; P8 imports needing more than 256 colours or exceeding the fixed compressed span are refused.",
++        "Wrapper, including the retail in-place loader scratch word, and all unselected spans stay exact. Sources cannot be write targets.",
++        "Styles 1, 2, 3, 4, 5 and 6 use bump_shoes1, 4, 7, 2, 3 and 7 respectively. Maps 5 and 6 are present but not selected by those styles."
++      ],
++      "portme": [
++        "Witness shoes close up and at distance, both teams and swapped home/away, with changed colour and relief maps. Do not claim new per-team relief."
++      ],
++      "public_distribution": {
++        "game_data": "never-bundle-retail-data",
++        "mod_payload": "user-authored-inputs-and-recipes",
++        "rule": "Only source selectors, code, authored inputs and hash evidence are distributable.",
++        "tooling": "source-and-schemas-only"
++      },
++      "runtime": {
++        "evidence": [],
++        "scope": "Pinned resource and bounded CPU binding proofs only; no game or GPU witness.",
++        "status": "not-tested"
++      },
++      "selectors": {
++        "fields": [
++          {
++            "allowed": "entry-table-discovered uniform package or GLOBAL.IFF",
++            "name": "outer_index",
++            "required": true
++          },
++          {
++            "allowed": "bump_jersey, bump_pants, bump_sleeve, bump_sock, bump_shoes1..7",
++            "name": "chunk",
++            "required": true
++          }
++        ],
++        "notes": "GLOBAL.IFF is discovered by its name hash 0x8EE9EEED; its shoe relief maps are league-wide."
++      },
++      "source_container": {
++        "format": "VC-LZ TXTR in Xbox VC archive packs",
++        "hash_pins": [
++          "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9"
++        ],
++        "resource": "Four maps per uniform package plus seven global P8 shoe relief maps.",
++        "retail_file": "User-owned ESPN NFL 2K5 USA XISO"
++      },
++      "summary": "Edit uniform fabric maps and shared shoe relief maps inside fixed spans of a working disc copy; reparse every authored mip before writing.",
++      "surface": "uniforms",
++      "title": "Uniform and shoe bump maps (experimental, unwitnessed)",
++      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_shoe_relief"
++    },
+     {
+       "backend": {
+         "command": "python3 tools/nfl2k5_uniform_jersey_png_workflow.py --source-xiso <retail.xiso.iso> --target-code 09 --target-side A --target-variant 0 --clean-png <512x256.png> --output-xiso <new.xiso.iso> --manifest <manifest.json> --preview-dir <preview-dir>",
+diff --git a/mod_editor/core/providers.py b/mod_editor/core/providers.py
+index 2c6b16fc..29105147 100644
+--- a/mod_editor/core/providers.py
++++ b/mod_editor/core/providers.py
+@@ -576,13 +576,8 @@ class Nfl2k5UnifiedVisualProvider:
+         "mod_editor/core/nfl2k5_depth_chart_storage.py": "acb37c1fbb13e327880574df1142d6cb1262e97b307bfd182a167647d0892a1e",
+         "mod_editor/core/nfl2k5_depth_locks.py": "39a0948c3fc26721f15495acd66a3a48c8db1cb6bcda6e4911b07d353bffd61c",
+         "mod_editor/core/nfl2k5_depth_roles.py": "92a11e038973a1c421fe7f3162064bb62a9fd8cefd6bfb4bd9cc5765d3f3a19d",
+-<<<<<<< a8676133
+-        "mod_editor/core/nfl2k5_equipment_import_intent.py": "ef50b20ff389b0067046c53eb62fc254a3c1319eedd7eb1a8d1aaba8f2cfb8c4",
+-        "mod_editor/core/nfl2k5_equipment_lz.py": "3a0a3594115c227bafa2890153522c4d7be5377e013a15d56d57d4b71353b5a9",
+-=======
+         "mod_editor/core/nfl2k5_equipment_import_intent.py": "c2f4cc8f9577eb5bb9bd8e892e689b00e62712ac8f23bdd89dfb62830a15ea66",
+-        "mod_editor/core/nfl2k5_equipment_lz.py": "c09e5a518177c4b473f71ca0f14a2562d8c0ca1e322f2bab0c32a5cf46350571",
+->>>>>>> refs/audit/t2
++        "mod_editor/core/nfl2k5_equipment_lz.py": "3a0a3594115c227bafa2890153522c4d7be5377e013a15d56d57d4b71353b5a9",
+         "mod_editor/core/nfl2k5_digit_art.py": "607220b6b173e25bd69e0d625828aa21a9c60f246de2ae00738513b52600d4cc",
+         "mod_editor/core/nfl2k5_digit_texture.py": "38112506a194aae7b0e229cdb0d40d0fbbba52bf7ac5e3e81c7a67743352e79c",
+         "mod_editor/core/nfl2k5_disc_identity.py": "000ec3164d1da4a9e0fb4a4bd48deb55e4241cff90d7ee4762dd1caa446eff3e",
+diff --git a/mod_editor/gui/bump_panel_qt.py b/mod_editor/gui/bump_panel_qt.py
+index cf4b344f..e6c52f6b 100644
+--- a/mod_editor/gui/bump_panel_qt.py
++++ b/mod_editor/gui/bump_panel_qt.py
+@@ -46,6 +46,7 @@ from mod_editor.core.nfl2k5_bump_strength import (
+     read_strengths,
+     write_strengths,
+ )
++from mod_editor.core.nfl2k5_bump_texture_writer import SHOE_BUMP_NAMES, SHOE_BUMP_SCOPE
+ from mod_editor.core.nfl2k5_bump_texture_writer import (
+     RETAIL_XISO_SHA256,
+     RETAIL_XISO_SIZE,
+@@ -174,12 +175,13 @@ class BumpPanel(QWidget):
+         root.setSpacing(14)
+ 
+         header = QVBoxLayout()
+-        title = QLabel("Jersey bump maps (advanced)")
++        title = QLabel("Uniform and shoe bump maps (advanced)")
+         title.setObjectName("bumpTitle")
+         subtitle = QLabel(
+-            "Export a bump map, edit its PNG, then update an existing working disc copy. "
+-            "Bump maps give jerseys, pants, sleeves and socks their fabric texture; this page "
+-            "never creates a disc, it writes into a copy you choose."
++            "Edit jersey, pants, sleeve and sock fabric maps in a selected uniform package. "
++            "Select GLOBAL.IFF for shoe relief maps. " + SHOE_BUMP_SCOPE + " "
++            "Import checks every distance image and available space before Write is enabled. "
++            "Writes update the working disc copy you choose. Experimental / unwitnessed."
+         )
+         subtitle.setObjectName("bumpMuted")
+         subtitle.setWordWrap(True)
+@@ -226,7 +228,7 @@ class BumpPanel(QWidget):
+         package_layout = QVBoxLayout(package_card)
+         package_layout.setContentsMargins(0, 0, 0, 0)
+         self.package_table = QTableWidget(0, 3)
+-        self.package_table.setHorizontalHeaderLabels(("Outer", "Uniform", "Size"))
++        self.package_table.setHorizontalHeaderLabels(("Outer", "Package", "Size"))
+         self._configure_table(self.package_table, stretch=1)
+         package_layout.addWidget(self.package_table, 1)
+         splitter.addWidget(package_card)
+@@ -622,9 +624,10 @@ class BumpPanel(QWidget):
+                     Qt.SmoothTransformation,
+                 )
+             )
++            scope = SHOE_BUMP_SCOPE if name in SHOE_BUMP_NAMES else "Selected uniform package."
+             self._set_status(
+                 f"{name}: {metadata['width']}x{metadata['height']}, "
+-                f"{metadata['mip_levels']} mips — export it or import a PNG"
++                f"{metadata['mip_levels']} distance images. {scope} Experimental / unwitnessed."
+             )
+ 
+         self._run(lambda progress: export_bump(source, outer_index, name), done)
+@@ -685,7 +688,8 @@ class BumpPanel(QWidget):
+                     )
+                 )
+             self._set_status(
+-                f"{name}: preview ready — write it into your copy when ready"
++                f"{name}: every distance image and the fixed span checked. "
++                f"{result['scope']} Experimental / unwitnessed."
+             )
+ 
+         self._run(
+@@ -713,11 +717,12 @@ class BumpPanel(QWidget):
+         label = str(package.get("logical_name") or outer_index)
+         authored_rgba = bytes(self._preview["authored_rgba"])  # type: ignore[arg-type]
+         png_path = self._preview_png_path
++        scope = SHOE_BUMP_SCOPE if name in SHOE_BUMP_NAMES else "Selected uniform package."
+         confirmation = QMessageBox.question(
+             self,
+             "Update the working copy?",
+-            f"Replace {name} in uniform {label} inside:\n{target}\n\n"
+-            "This updates that copy in place. The source disc is not touched.",
++            f"Replace {name} in {label} inside:\n{target}\n\n"
++            f"{scope} This updates that copy in place. The source disc is not touched.",
+             QMessageBox.Ok | QMessageBox.Cancel,
+             QMessageBox.Cancel,
+         )
+diff --git a/mod_editor/gui/equipment_texture_import_dialog.py b/mod_editor/gui/equipment_texture_import_dialog.py
+index 09cb26db..1a93deb5 100644
+--- a/mod_editor/gui/equipment_texture_import_dialog.py
++++ b/mod_editor/gui/equipment_texture_import_dialog.py
+@@ -10,6 +10,11 @@ from mod_editor.core.nfl2k5_equipment_import_intent import (
+ )
+ 
+ 
++from mod_editor.core.nfl2k5_equipment_import import (
++    equipment_import_scope, PACKAGE_LOCAL_SHOE_HELP,
++)
++
++
+ class EquipmentTextureImportDialog(QDialog):
+     def __init__(self, asset, parent=None):
+         super().__init__(parent)
+@@ -19,8 +24,23 @@ class EquipmentTextureImportDialog(QDialog):
+         target = QLabel(f"{asset.label}\nPNG size: {asset.width} x {asset.height}")
+         target.setWordWrap(True)
+         layout.addWidget(target)
++        choices, rule = equipment_import_scope(asset.asset_id)
++        layout.addWidget(QLabel("Import applies to:"))
++        self.import_scope = QComboBox()
++        self.import_scope.setObjectName("equipmentImportScope")
++        for value, caption in choices:
++            self.import_scope.addItem(caption, value)
++        layout.addWidget(self.import_scope)
++        scope_note = QLabel(rule)
++        scope_note.setObjectName("equipmentScopeExplanation")
++        scope_note.setWordWrap(True)
++        layout.addWidget(scope_note)
++        if ":shoes" in asset.asset_id:
++            local_note = QLabel(PACKAGE_LOCAL_SHOE_HELP)
++            local_note.setWordWrap(True)
++            layout.addWidget(local_note)
+         default = QLabel(
+-            "Gloves and shoes default to their own artwork, including when you copy an exported style. "
++            "Socks, gloves and shoes default to their own artwork, including when you copy an exported style. "
+             "Untick below only for a recolour of the existing shared design. " + PALETTE_HELP)
+         default.setWordWrap(True)
+         layout.addWidget(default)
+@@ -56,3 +76,7 @@ class EquipmentTextureImportDialog(QDialog):
+     @property
+     def scale(self) -> int:
+         return int(self.game_size.currentData()) if self.independent else 1
++
++    @property
++    def scope(self) -> str:
++        return str(self.import_scope.currentData())
+diff --git a/mod_editor/gui/studio_qt.py b/mod_editor/gui/studio_qt.py
+index 0c74a8f8..f7cfd3a7 100644
+--- a/mod_editor/gui/studio_qt.py
++++ b/mod_editor/gui/studio_qt.py
+@@ -386,7 +386,7 @@ class StudioFacade(Protocol):
+ 
+     def replace_equipment_texture(
+         self, asset: object, supplied_png: Path, progress: ProgressSink, *,
+-        independent: bool = False, scale: int = 1,
++        independent: bool | None = None, scale: int = 1, scope: str | None = None,
+     ) -> object: ...
+ 
+     def save_texture_authoring_master(
+@@ -5587,14 +5587,14 @@ class StudioMainWindow(QMainWindow):
+         fitted = self._fit_for_slot(path, asset.width, asset.height, asset.label)
+         if fitted is None:
+             return
+-        equipment_choice: tuple[bool, int] | None = None
++        equipment_choice: tuple[bool, int, str] | None = None
+         if asset.kind == "uniform_equipment_texture":
+             from mod_editor.gui.equipment_texture_import_dialog import EquipmentTextureImportDialog
+ 
+             dialog = EquipmentTextureImportDialog(asset, self)
+             if dialog.exec_() != dialog.Accepted:
+                 return
+-            equipment_choice = (dialog.independent, dialog.scale)
++            equipment_choice = (dialog.independent, dialog.scale, dialog.scope)
+         existing_master = self._texture_master_drafts.get(asset.asset_id)
+         pending_master: _TextureMasterDraft | None = None
+         if native_canvas_edit is None:
+@@ -5665,9 +5665,9 @@ class StudioMainWindow(QMainWindow):
+ 
+         def replace_texture(progress: ProgressSink) -> object:
+             if equipment_choice is not None:
+-                independent, scale = equipment_choice
++                independent, scale, scope = equipment_choice
+                 return self.facade.replace_equipment_texture(
+-                    asset, path, progress, independent=independent, scale=scale,
++                    asset, path, progress, independent=independent, scale=scale, scope=scope,
+                 )
+             return self.facade.replace_asset(asset, path, progress)
+ 
+diff --git a/packaging/check_2k5_mod_studio_runtime.py b/packaging/check_2k5_mod_studio_runtime.py
+index 38e57768..6df61582 100644
+--- a/packaging/check_2k5_mod_studio_runtime.py
++++ b/packaging/check_2k5_mod_studio_runtime.py
+@@ -99,7 +99,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
+     "mod_editor/gui/audio_panel_qt.py":
+         "64ac47e2f3d28c374d4b0b8d44e5eba16b69ce5d70bbbeb6288ddadeb2be10ed",
+     "mod_editor/gui/studio_qt.py":
+-        "ca573f468edfa39c3a118a22f23d8381593d52e17180465fa69a44c0869952ef",
++        "d098a2cdfe3d968efd3fdad6ddc155c3cbe149a13f858add76db13431c38e1a2",
+     "mod_editor/studio/audio_annotations.py":
+         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
+     "mod_editor/studio/audio_replacement_pack.py":
+diff --git a/tests/mod_editor/test_2k5_uniform_equipment_export.py b/tests/mod_editor/test_2k5_uniform_equipment_export.py
+index 3c6fc474..0d5e8ae9 100644
+--- a/tests/mod_editor/test_2k5_uniform_equipment_export.py
++++ b/tests/mod_editor/test_2k5_uniform_equipment_export.py
+@@ -255,7 +255,8 @@ class _EquipmentResizeFacade(BrowseOnlyFacade):
+         return SimpleNamespace(message="Equipment palette is ready to build.")
+ 
+     def replace_equipment_texture(self, asset: object, path: Path, progress: object, *,
+-                                  independent: bool = False, scale: int = 1) -> object:
++                                  independent: bool = False, scale: int = 1,
++                                  scope: str | None = None) -> object:
+         # the glove/shoe route: the default dialog answer is palette-only, which reaches this same writer
+         assert independent is False and scale == 1
+         return self.replace_asset(asset, path, progress)
+@@ -267,7 +268,8 @@ class EquipmentResizeOffscreenTests(unittest.TestCase):
+ 
+     def _auto_accept_equipment_dialog(self):
+         from PyQt5.QtWidgets import QDialog
+-        stub = SimpleNamespace(exec_=lambda: QDialog.Accepted, Accepted=QDialog.Accepted, independent=False, scale=1)
++        stub = SimpleNamespace(exec_=lambda: QDialog.Accepted, Accepted=QDialog.Accepted, independent=False, scale=1,
++                               scope="all-teams")
+         patcher = patch("mod_editor.gui.equipment_texture_import_dialog.EquipmentTextureImportDialog", return_value=stub)
+         patcher.start(); self.addCleanup(patcher.stop)
+ 
+diff --git a/tests/mod_editor/test_nfl2k5_equipment_import.py b/tests/mod_editor/test_nfl2k5_equipment_import.py
+index 86bdc714..b9478cc0 100644
+--- a/tests/mod_editor/test_nfl2k5_equipment_import.py
++++ b/tests/mod_editor/test_nfl2k5_equipment_import.py
+@@ -231,7 +231,9 @@ class EquipmentDialogTests(unittest.TestCase):
+ 
+     def test_shoes_and_gloves_default_to_their_own_texture(self):
+         """Beta 66 (maumau78): a copied shoe style defaults to its own artwork, not a palette-only recolour."""
+-        asset = SimpleNamespace(asset_id="tset:0:8:0:shoes01", label="Shoe 01", width=256, height=256)
++        # Beta 68: the dialog resolves its team scope from the reviewed catalog, so the
++        # selector must be a real catalog row rather than an invented outer index.
++        asset = SimpleNamespace(asset_id="tset:3613:8:0:shoes01", label="Shoe 01", width=256, height=256)
+         dialog = EquipmentTextureImportDialog(asset)
+         try:
+             self.assertTrue(dialog.independent)
+@@ -249,7 +251,7 @@ class EquipmentDialogTests(unittest.TestCase):
+             dialog.close()
+ 
+     def test_unreviewed_equipment_cannot_enable_a_private_chain(self):
+-        asset = SimpleNamespace(asset_id="tset:0:5:0:elbowpad01", label="Elbow pad 01", width=64, height=64)
++        asset = SimpleNamespace(asset_id="tset:3613:5:0:elbowpad01", label="Elbow pad 01", width=128, height=64)
+         dialog = EquipmentTextureImportDialog(asset)
+         try:
+             dialog.own_texture.setChecked(True)
+diff --git a/tests/mod_editor/test_nfl2k5_equipment_scope_wiring.py b/tests/mod_editor/test_nfl2k5_equipment_scope_wiring.py
+index 141a4bd9..164cdda9 100644
+--- a/tests/mod_editor/test_nfl2k5_equipment_scope_wiring.py
++++ b/tests/mod_editor/test_nfl2k5_equipment_scope_wiring.py
+@@ -17,17 +17,17 @@ except ImportError:
+     QApplication = None
+ 
+ 
+-@unittest.skipUnless(QApplication is not None and (ROOT / "WIRING.md").is_file(),
+-                     "Protected-dialog handoff or offscreen PyQt5 is absent")
++# Integration: the WIRING.md handoff has been applied to the protected GUI file and the
++# capability registry, so these now exercise the shipped dialog and the shipped row instead
++# of the proposal document. WIRING.md itself was renamed to WIRING_B68_T2.md on merge.
++@unittest.skipUnless(QApplication is not None, "offscreen PyQt5 is absent")
+ class ScopeWiringTests(unittest.TestCase):
+     @classmethod
+     def setUpClass(cls):
+         cls.app = QApplication.instance() or QApplication([])
+-        cls.document = (ROOT / "WIRING.md").read_text()
+-        code = re.search(r"```python\n(.*?)\n```", cls.document, re.S).group(1)
+-        namespace = {"__name__": "equipment_scope_handoff"}
+-        exec(compile(code, "WIRING.md:equipment-dialog", "exec"), namespace)
+-        cls.dialog_type = namespace["EquipmentTextureImportDialog"]
++        from mod_editor.gui.equipment_texture_import_dialog import EquipmentTextureImportDialog
++
++        cls.dialog_type = EquipmentTextureImportDialog
+ 
+     def test_global_shoes_offer_only_all_teams_and_the_refusal_sentence(self):
+         from mod_editor.core.nfl2k5_equipment_import import GLOBAL_RULE
+@@ -54,14 +54,16 @@ class ScopeWiringTests(unittest.TestCase):
+             finally:
+                 dialog.close()
+ 
+-    def test_proposed_capability_matches_the_registry_row_schema(self):
++    def test_integrated_capability_matches_the_registry_row_schema(self):
+         try:
+             from jsonschema import Draft202012Validator
+         except ImportError:
+             self.skipTest("jsonschema is absent")
+-        row = json.loads(re.search(r"```json\n(.*?)\n```", self.document, re.S).group(1))
++        registry = json.loads((ROOT / "mod_editor/capabilities/registry.v1.json").read_text())
++        rows = [row for row in registry["capabilities"] if row["id"] == "nfl2k5.uniforms.bump_textures"]
++        self.assertEqual(len(rows), 1, "the integrated bump/shoe-relief capability row is absent")
+         schema = json.loads((ROOT / "mod_editor/capabilities/registry.schema.json").read_text())
+-        Draft202012Validator({"$ref": "#/$defs/capability", "$defs": schema["$defs"]}).validate(row)
++        Draft202012Validator({"$ref": "#/$defs/capability", "$defs": schema["$defs"]}).validate(rows[0])
+ 
+ 
+ if __name__ == "__main__":
+diff --git a/tests/mod_editor/test_product_catalog.py b/tests/mod_editor/test_product_catalog.py
+index 12f7fb8f..7cecc65c 100644
+--- a/tests/mod_editor/test_product_catalog.py
++++ b/tests/mod_editor/test_product_catalog.py
+@@ -74,6 +74,7 @@ class ProductCatalogTests(unittest.TestCase):
+             'nfl2k5.colors.unif_words',
+             'nfl2k5.logos.team_select_cards',
+             'nfl2k5.uniforms.all_visual',
++            'nfl2k5.uniforms.bump_textures',   # beta 68: uniform + shoe relief bump maps
+             'nfl2k5.uniforms.detroit_away_runtime',
+             'nfl2k5.players.team_names_2026',
+             'nfl2k5.equipment.guardian_overlay',
+@@ -155,7 +156,7 @@ class ProductCatalogTests(unittest.TestCase):
+         first_ids = [binding.capability_id for binding in first.capabilities]
+         second_ids = [binding.capability_id for binding in second.capabilities]
+ 
+-        self.assertEqual(len(first_ids), 90)  # beta 66: + Broadcast camera v6 (beta 65: filled star + accelerated clock)
++        self.assertEqual(len(first_ids), 91)  # beta 68: + uniform/shoe bump maps; beta 66: + Broadcast camera v6 (beta 65: filled star + accelerated clock)
+         self.assertEqual(len(first_ids), len(set(first_ids)))
+         self.assertEqual(set(first_ids), expected)
+         self.assertEqual(first_ids, second_ids)
+@@ -189,7 +190,7 @@ class ProductCatalogTests(unittest.TestCase):
+     def test_category_and_global_counts_match_the_registry(self) -> None:
+         catalog = build_nfl2k5_product_catalog(self.registry)
+         expected = {
+-            ProductCategory.UNIFORMS_EQUIPMENT: (5, 4, 0, 0, 0, 1, 0),
++            ProductCategory.UNIFORMS_EQUIPMENT: (6, 5, 0, 0, 0, 1, 0),  # beta 68: + uniform/shoe bump maps
+             ProductCategory.ROSTERS_PLAYERS: (13, 13, 0, 0, 0, 0, 0),
+             ProductCategory.TEAM_IDENTITY: (0, 0, 0, 0, 0, 0, 0),
+             ProductCategory.FIELD_ART_CREATE_TEAM: (1, 1, 0, 0, 0, 0, 0),
+@@ -227,7 +228,7 @@ class ProductCatalogTests(unittest.TestCase):
+                 catalog.counts.evidence,
+                 catalog.counts.research,
+             ),
+-            (90, 70, 8, 1, 0, 8, 3),
++            (91, 71, 8, 1, 0, 8, 3),  # beta 68: + uniform/shoe bump maps
+         )
+ 
+     def test_ambiguous_stadium_surface_and_team_identity_are_explicit(self) -> None:
+@@ -280,7 +281,7 @@ class ProductCatalogTests(unittest.TestCase):
+         )
+         binding = catalog.binding("nfl2k5.audio.audo_wav")
+ 
+-        self.assertEqual(len(seen), 90)
++        self.assertEqual(len(seen), 91)
+         self.assertEqual(
+             binding.findings_notes,
+             ("850 AUDO records mapped", "Export stays local"),
+diff --git a/tests/mod_editor/test_provider_integrity.py b/tests/mod_editor/test_provider_integrity.py
+index 387b09d5..4f7a8c0d 100644
+--- a/tests/mod_editor/test_provider_integrity.py
++++ b/tests/mod_editor/test_provider_integrity.py
+@@ -201,7 +201,7 @@ class ProviderIntegrityTests(unittest.TestCase):
+             # formation/play clone writer, fixed-slot audio, the fail-closed
+             # AUDO family-label loader, package-local equipment, and every
+             # local module in those exact import closures.
+-            [270, 10, 8, 9, 8, 9]  # beta 66.1: + responsive_json (H1, unified + scorebug), nfl2k5_model_skeleton (H4); beta 66: + nfl2k5_digit_art (G), build_io, metadata_cache (B), jukebox_list, helmet_finish (D2)
++            [271, 10, 8, 9, 8, 9]  # beta 68: + nfl2k5_compile_cache (T1 build reuse); beta 66.1: + responsive_json (H1, unified + scorebug), nfl2k5_model_skeleton (H4); beta 66: + nfl2k5_digit_art (G), build_io, metadata_cache (B), jukebox_list, helmet_finish (D2)
+         )
+         for provider in providers:
+             entries = [provider.backend_module]
