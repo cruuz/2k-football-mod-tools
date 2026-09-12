@@ -13,6 +13,11 @@ from array import array
 from collections import defaultdict, deque
 from pathlib import Path
 import struct
+import os
+import hashlib
+import platform
+import stat
+import subprocess
 import sys
 
 TOOLS = Path(__file__).resolve().parents[2] / "tools"
@@ -22,6 +27,29 @@ if str(TOOLS) not in sys.path:
 from nfl_txtr import TxtrError, decompress_vc_lz
 
 
+# Reviewed Linux x86-64 build of tools/nfl2k5_equipment_optimal.c. Other
+# platforms keep the Python fallback until their helper is built and reviewed.
+_NATIVE_SIZE = 16504
+_NATIVE_SHA256 = "949aad6a251de3f039f83bff15d4aa033183c250dbeadd1029e7c79dee4817c4"
+
+
+def _optimal_helper() -> Path | None:
+    if not sys.platform.startswith("linux") or platform.machine().lower() not in {"x86_64", "amd64"}:
+        return None
+    path = TOOLS / "nfl2k5_equipment_optimal"
+    try:
+        info = path.lstat()
+        if (not stat.S_ISREG(info.st_mode) or info.st_nlink != 1
+                or info.st_size != _NATIVE_SIZE or info.st_mode & 0o022
+                or not info.st_mode & stat.S_IXUSR):
+            return None
+        if hashlib.sha256(path.read_bytes()).hexdigest() == _NATIVE_SHA256:
+            return path
+    except OSError:
+        pass
+    return None
+
+
 def compress_equipment_optimal(source: bytes, *, stream_tag: int, offset_bits: int,
                                max_encoded_size: int,
                                max_candidate_comparisons: int = 50_000_000) -> bytes:
@@ -29,6 +57,27 @@ def compress_equipment_optimal(source: bytes, *, stream_tag: int, offset_bits: i
         raise TxtrError("Equipment optimal compression exceeds its size/geometry bounds")
     if not 0 <= stream_tag <= 0xFFFFFFFF or max_encoded_size < 10 or max_candidate_comparisons < 1:
         raise TxtrError("Equipment optimal compression has invalid bounds")
+    # Optional reviewed native implementation of this exact parse. Never build
+    # a compiler command at runtime. Other platforms and missing/broken helpers
+    # retain the Python implementation and its same errors and safety gates.
+    helper = _optimal_helper()
+    if (os.environ.get("NFL2K5_DISABLE_NATIVE_LZ") != "1"
+            and helper is not None and max_encoded_size <= 4 * 1024 * 1024):
+        try:
+            completed = subprocess.run(
+                [str(helper), str(len(source)), str(stream_tag), str(offset_bits),
+                 str(max_encoded_size), str(max_candidate_comparisons)],
+                input=source, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                timeout=30, check=False,
+                **({"creationflags": subprocess.CREATE_NO_WINDOW} if os.name == "nt" else {}))
+            result = completed.stdout
+            if completed.returncode == 0 and 9 <= len(result) <= max_encoded_size:
+                decoded, info = decompress_vc_lz(result, len(source))
+                if (decoded == source and info.consumed_bytes == len(result)
+                        and result[:9] == struct.pack("<IIB", len(source), stream_tag, offset_bits)):
+                    return result
+        except (OSError, subprocess.SubprocessError, ValueError):
+            pass
     count = len(source)
     maximum_distance = (1 << offset_bits) - 1
     maximum_length = (1 << (16 - offset_bits)) + 2

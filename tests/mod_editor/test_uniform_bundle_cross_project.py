@@ -117,9 +117,10 @@ class CrossProjectTests(unittest.TestCase):
         # A new service models the facade creating one for every import.
         repeat = TeamKitBundleService(self.catalog, destination).import_edited(bundle)
         self.assertEqual(repeat.changed_count, 0)
-        self.assertEqual(repeat.components, result.components)
-        self.assertEqual(repeat.summary, result.summary)
-        self.assertEqual(repeat.details, result.details)
+        self.assertEqual(repeat.imported_count, 0)
+        self.assertEqual(repeat.overwritten_count, 0)
+        self.assertIn("Identical to the current project", repeat.details)
+        self.assertIn("Untouched since export", repeat.details)
         self.assertEqual(destination.mutation_revision, revision)
         self.assertEqual((destination.root / "session.json").read_bytes(), state)
         self.assertEqual(destination.undo(), "Import Team Kit 02H3, 02A3")
@@ -160,7 +161,8 @@ class CrossProjectTests(unittest.TestCase):
         self.assertEqual(next(r.replaced for r in result.components if r.overwritten), "source")
         again = self.service_b.import_edited(kit)
         self.assertEqual(again.changed_count, 0)
-        self.assertEqual(again.details, result.details)
+        self.assertEqual(again.imported_count, 0)
+        self.assertIn("Identical to the current project", again.details)
         # Undo invalidates the attribution cache even though the file is unchanged.
         self.b.undo()
         self.edit(self.b, self.torso, (3, 4, 5, 255))
@@ -180,8 +182,9 @@ class CrossProjectTests(unittest.TestCase):
         self.assertNotEqual(path.read_bytes(), old_bytes)
         self.edit(self.b, self.torso, (4, 5, 6, 255))
         state = (self.b.root / "session.json").read_bytes()
-        with mock.patch.object(self.b, "current_path", side_effect=AssertionError("untouched read")):
-            result = self.service_b.import_edited(kit)
+        result = self.service_b.import_edited(kit)
+        self.assertEqual(next(row.decision for row in result.components
+                              if row.asset_id == self.torso.asset_id), "skipped_baseline")
         self.assertEqual((result.changed_count, result.imported_count, result.unchanged_count), (0, 0, 39))
         self.assertEqual((self.b.root / "session.json").read_bytes(), state)
 

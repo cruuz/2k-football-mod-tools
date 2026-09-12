@@ -6830,6 +6830,8 @@ class StudioMainWindow(QMainWindow):
                 "Choose a physical uniform set before browsing its equipment."
             )
             return
+        row = PRODUCT_CATEGORY_ORDER.index(ProductCategory.TEXTURES) + 1
+        self._ensure_workspace(row)
         state = self._visual_browsers.get(ProductCategory.TEXTURES)
         if state is None:
             self._show_error("The All Textures browser is unavailable.")
@@ -6845,7 +6847,6 @@ class StudioMainWindow(QMainWindow):
             )
             return
 
-        row = PRODUCT_CATEGORY_ORDER.index(ProductCategory.TEXTURES) + 1
         self.navigation.setCurrentRow(row)
         self._set_status(
             f"Showing all 45 package-local equipment textures for "

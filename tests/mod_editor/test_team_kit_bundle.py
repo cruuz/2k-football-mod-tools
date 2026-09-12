@@ -14,6 +14,7 @@ import zipfile
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.nfl2k5_uniform_catalog import (
     ASSETS_PER_SET,
+    DEFAULT_REPORT,
     load_nfl2k5_uniform_catalog,
 )
 from mod_editor.studio.session import StudioSession
@@ -83,6 +84,8 @@ class _PngAssetIO:
 class TeamKitBundleTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        if not DEFAULT_REPORT.is_file():
+            raise unittest.SkipTest(f"Private Team Select catalog evidence absent: {DEFAULT_REPORT}")
         cls.catalog = load_nfl2k5_uniform_catalog()
 
     def setUp(self) -> None:
@@ -187,6 +190,20 @@ class TeamKitBundleTests(unittest.TestCase):
             )
             self.assertTrue(all(row.date_time == (1980, 1, 1, 0, 0, 0)
                                 for row in archive.infolist()))
+
+    def test_export_edit_one_png_imports_exactly_one_and_repeat_is_identical(self):
+        bundle = self.root / "one-edited-file"
+        self.service.export(("18H0",), bundle)
+        asset = self.catalog.assets_for_set("18H0")[0]
+        changed = self._replace_file(bundle, asset.asset_id, (17, 29, 43, 255))
+        result = self.service.import_edited(bundle)
+        self.assertEqual(result.imported_count, 1)
+        self.assertEqual(result.changed_count, 1)
+        self.assertIn(changed.name, result.details)
+        self.assertIn("Identical to the current project", result.details)
+        repeat = self.service.import_edited(bundle)
+        self.assertEqual(repeat.imported_count, 0)
+        self.assertEqual(repeat.unchanged_count, ASSETS_PER_SET)
 
     def test_import_stages_only_pixel_changes_as_one_undo_and_project_is_authored_only(self) -> None:
         bundle = self.root / "working-kit"
