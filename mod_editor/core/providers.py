@@ -632,7 +632,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_my_career.py": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
         "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
         "mod_editor/core/nfl2k5_my_career_mode.py": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
-        "mod_editor/core/nfl2k5_my_career_mode_code.py": "fa38741ebc3f7c0b2abc351ea7ec04fadcb164096b125ba084c77d8fb39f33c4",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "7746fa17bf59be6eafef5605cddf9c5ce4ab0e6199d0421644ab598a0a7ebc74",
         "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
         "mod_editor/core/nfl2k5_my_career_save.py": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
         "mod_editor/core/nfl2k5_overtime.py": "9621106101e1ce6d0bccb35ab5a2051cc8d68e9ed2fcdf2af87a13342855bbd5",
