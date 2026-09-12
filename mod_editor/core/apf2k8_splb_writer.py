@@ -2132,6 +2132,197 @@ def verify_book(
     }
 
 
+def _playcall_error(message):
+    from .apf2k8_playcall_model import PlaycallError
+    return PlaycallError(message)
+
+
+def _playcall_int(*args, **kwargs):
+    try:
+        return _bounded_int(*args, **kwargs)
+    except ValidationError as exc:
+        raise _playcall_error(str(exc)) from exc
+
+
+def _parse_playcall_book(*args):
+    if not args or not isinstance(args[0], bytes):
+        raise _playcall_error('Book must be immutable decoded SPLB bytes')
+    try:
+        return parse_book(*args)
+    except ValidationError as exc:
+        raise _playcall_error(str(exc)) from exc
+
+
+@dataclass(frozen=True)
+class RemovalResult:
+    book: bytes
+    retired_categories: tuple[int, ...]
+    row_coverage: dict[int, tuple[int, ...]]
+
+
+def _formation_records(book: bytes, formation_id: int) -> tuple[SplbRecord, ...]:
+    _playcall_int(formation_id, 'Formation', minimum=0, maximum=162)
+    records = tuple(r for r in _parse_playcall_book(book, 0).records
+                    if r.populated and r.formation_index == formation_id)
+    if not records:
+        raise _playcall_error(f'Formation {formation_id} is not in this book')
+    return records
+
+
+def formation_ratings(book: bytes, formation_id: int) -> tuple[int, int, int]:
+    record = _formation_records(book, formation_id)[0]
+    word = int.from_bytes(record.trailer[:4], 'big')
+    return tuple((word >> shift) & 7 for shift in (14, 11, 8))
+
+
+def set_formation_ratings(book: bytes, formation_id: int, ratings: tuple[int, int, int]) -> bytes:
+    if not isinstance(ratings, tuple) or len(ratings) != 3:
+        raise _playcall_error('Supply three raw formation ratings')
+    for value in ratings:
+        _playcall_int(value, 'Formation rating', minimum=0, maximum=7)
+    records = _formation_records(book, formation_id)
+    output = bytearray(book)
+    for record in records:
+        at = RECORD_BASE + record.record_index * RECORD_STRIDE + TRAILER_OFFSET
+        word = int.from_bytes(record.trailer[:4], 'big')
+        struct.pack_into('>I', output, at, (word & ~0x1FF00) | sum(v << s for v, s in zip(ratings, (14, 11, 8))))
+    result = bytes(output)
+    if formation_ratings(result, formation_id) != ratings:
+        raise _playcall_error('Formation rating reparse failed')
+    return result
+
+
+def play_rating(book: bytes, formation_id: int, play_id: int) -> int:
+    _playcall_int(play_id, 'Play', minimum=0, maximum=585)
+    for record in _formation_records(book, formation_id):
+        for entry in record.entries:
+            if entry.play_index == play_id:
+                return entry.x
+    raise _playcall_error(f'Play {play_id} is not in formation {formation_id}')
+
+
+def set_play_rating(book: bytes, formation_id: int, play_id: int, x: int) -> bytes:
+    _playcall_int(x, 'X rating', minimum=0, maximum=7)
+    play_rating(book, formation_id, play_id)
+    output = bytearray(book)
+    for record in _formation_records(book, formation_id):
+        for slot, entry in enumerate(record.entries):
+            if entry.play_index == play_id:
+                struct.pack_into('>H', output, RECORD_BASE + record.record_index * RECORD_STRIDE + slot * 2,
+                                 (entry.encode() & 0x1FFF) | (x << 13))
+    result = bytes(output)
+    if play_rating(result, formation_id, play_id) != x:
+        raise _playcall_error('Play rating reparse failed')
+    return result
+
+
+def _compact_normalize(book: bytes) -> bytes:
+    """P2 whole-record compaction; avoid C790's trailer-clobbering hole arm.
+
+    This is the data normal form, verified against the native normalizer in
+    test_apf_b67_writers_native. The optional special-tail repair is separate.
+    """
+    parsed = _parse_playcall_book(book, 0)
+    records = [r for r in parsed.records if r.populated]
+    output = bytearray(book)
+    empty = struct.pack('>H', FILLER) * ENTRY_CAPACITY + bytes.fromhex('0000920000000000')
+    for i in range(RECORD_COUNT):
+        at = RECORD_BASE + i * RECORD_STRIDE
+        if i < len(records):
+            source = RECORD_BASE + records[i].record_index * RECORD_STRIDE
+            output[at:at + RECORD_STRIDE] = book[source:source + RECORD_STRIDE]
+        else:
+            output[at:at + RECORD_STRIDE] = empty
+    for at, size in ((0x7D98, 24), (0x7DB0, 84), (0x7E04, 8)):
+        output[at:at + size] = bytes(size)
+    def bit(at, value):
+        offset = at + 4 * (value // 32)
+        struct.pack_into('>I', output, offset, struct.unpack_from('>I', output, offset)[0] | (1 << (value % 32)))
+    for record in records:
+        if record.formation_index >= 163 or record.category_index >= CATEGORY_COUNT:
+            raise _playcall_error('Book contains a formation or category outside MASTER')
+        bit(0x7D98, record.formation_index)
+        bit(0x7E04, record.category_index)
+        mask = int.from_bytes(record.trailer[4:], 'big')
+        if mask >> CATEGORY_COUNT:
+            raise _playcall_error('Book contains a category outside MASTER')
+        for category in range(CATEGORY_COUNT):
+            if mask & (1 << category):
+                bit(0x7E04, category)
+        for entry in record.entries:
+            if entry.play_index >= 586:
+                raise _playcall_error('Book contains a play outside MASTER')
+            bit(0x7DB0, entry.play_index)
+    return bytes(output)
+
+
+def set_formation_categories(book: bytes, formation_id: int, primary: int, secondary: tuple[int, ...]) -> bytes:
+    _playcall_int(primary, 'Primary category', minimum=0, maximum=CATEGORY_COUNT - 1)
+    if not isinstance(secondary, tuple):
+        raise _playcall_error('Supply distinct secondary category ids')
+    for category in secondary:
+        _playcall_int(category, 'Secondary category', minimum=0, maximum=CATEGORY_COUNT - 1)
+    if len(set(secondary)) != len(secondary):
+        raise _playcall_error('Supply distinct secondary category ids')
+    records = _formation_records(book, formation_id)
+    output = bytearray(book)
+    for record in records:
+        at = RECORD_BASE + record.record_index * RECORD_STRIDE + TRAILER_OFFSET
+        word = int.from_bytes(record.trailer[:4], 'big')
+        struct.pack_into('>II', output, at, (word & ~(127 << 17)) | (primary << 17),
+                         sum(1 << c for c in set(secondary) | {primary}))
+    return _compact_normalize(bytes(output))
+
+
+def retire_category(book: bytes, category_id: int) -> bytes:
+    _playcall_int(category_id, 'Category', minimum=0, maximum=CATEGORY_COUNT - 1)
+    parsed = _parse_playcall_book(book, 0)
+    output = bytearray(book)
+    for record in parsed.records:
+        if not record.populated:
+            continue
+        a, b = struct.unpack('>II', record.trailer)
+        b &= ~(1 << category_id)
+        if record.category_index == category_id:
+            alternatives = tuple(c for c in range(CATEGORY_COUNT) if b & (1 << c))
+            if not alternatives:
+                raise _playcall_error(f'Formation {record.formation_index} would have no primary category; remove it or add another category first')
+            a = (a & ~(127 << 17)) | (alternatives[0] << 17)
+        struct.pack_into('>II', output, RECORD_BASE + record.record_index * RECORD_STRIDE + TRAILER_OFFSET, a, b)
+    return _compact_normalize(bytes(output))
+
+
+def _coverage(book, rows):
+    _parse_playcall_book(book, 0)
+    categories = book_category_rows(book)
+    side_rows = range(0, 11) if any(rows[c] <= 10 for c in categories) else range(11, 17)
+    return {row: tuple(dict.fromkeys(c for requested in personnel_row_candidates(row) for c in categories if rows[c] == requested))
+            for row in side_rows}
+
+
+def row_coverage(book: bytes, master: bytes) -> dict[int, tuple[int, ...]]:
+    from .apf2k8_playcall_model import category_table
+    return _coverage(book, tuple(c.row for c in category_table(master)))
+
+
+def remove_formation(book: bytes, formation_id: int) -> RemovalResult:
+    removed = _formation_records(book, formation_id)
+    if formation_id >= 151:
+        raise _playcall_error('Special-play formation removal needs separate special-tail and cache repair; only ordinary formations are supported')
+    output = bytearray(book)
+    for record in removed:
+        at = RECORD_BASE + record.record_index * RECORD_STRIDE
+        output[at:at + ENTRY_BYTES] = struct.pack('>H', FILLER) * ENTRY_CAPACITY
+    result = _compact_normalize(bytes(output))
+    if not any(r.populated for r in _parse_playcall_book(result, 0).records):
+        raise _playcall_error('Keep at least one formation in the book')
+    second = _compact_normalize(result)
+    if result != second:
+        raise _playcall_error('Formation removal did not reach a stable normal form')
+    retired = tuple(sorted(set(book_category_rows(book)) - set(book_category_rows(result))))
+    return RemovalResult(result, retired, _coverage(result, PERSONNEL_ROWS))
+
+
 def build_book_patch(
     index_path: Path, changes: Iterable[MembershipChange | TagMove | TrailerReplace]
 ) -> CompiledBook:
@@ -2297,4 +2488,13 @@ __all__ = [
     "tag_selector",
     "tags_of",
     "verify_book",
+    "RemovalResult",
+    "formation_ratings",
+    "set_formation_ratings",
+    "play_rating",
+    "set_play_rating",
+    "set_formation_categories",
+    "remove_formation",
+    "retire_category",
+    "row_coverage",
 ]
