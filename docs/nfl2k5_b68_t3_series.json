@@ -1,6 +1,6 @@
 {
   "runtime_witnessed": false,
-  "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_supersim_live.py NativeSeriesTests.test_cancel_multi_possession_and_postgame_settings NativeSeriesTests.test_pat_kick_two_point_choice_and_following_cpu_kickoff",
+  "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_supersim_live.py",
   "source_sha256": {
     "tools/mycareer_mode/runtime.c": "2c236ab4dcd760e70b3ec5aee3f117506df809bf70ac965b6d96708d3e1970c6",
     "tools/mycareer_mode/runtime.S": "dc3e5fd52aee0c2e34ecf5fa25f70ab9aaf0543dcdba8e42181b000fbe25eeb8",
@@ -120,6 +120,185 @@
           }
         ],
         "modern_kick_rules_and_clock": true
+      }
+    },
+    {
+      "kind": "NATIVE_SUPERSIM_RECEIPT",
+      "result": {
+        "cadence": [
+          {
+            "complete_updates": 8,
+            "group": 1,
+            "match_rng_draws": 21,
+            "polls": 8,
+            "presents": 8,
+            "state_sha256": "5befa5e20f9f0101dd975882fc32d1495fc82d05bebd0411deed65787726e1a5",
+            "updates": 8
+          },
+          {
+            "complete_updates": 8,
+            "group": 2,
+            "match_rng_draws": 21,
+            "polls": 4,
+            "presents": 4,
+            "state_sha256": "5befa5e20f9f0101dd975882fc32d1495fc82d05bebd0411deed65787726e1a5",
+            "updates": 8
+          },
+          {
+            "complete_updates": 8,
+            "group": 4,
+            "match_rng_draws": 21,
+            "polls": 2,
+            "presents": 2,
+            "state_sha256": "5befa5e20f9f0101dd975882fc32d1495fc82d05bebd0411deed65787726e1a5",
+            "updates": 8
+          },
+          {
+            "complete_updates": 8,
+            "group": 8,
+            "match_rng_draws": 21,
+            "polls": 1,
+            "presents": 1,
+            "state_sha256": "5befa5e20f9f0101dd975882fc32d1495fc82d05bebd0411deed65787726e1a5",
+            "updates": 8
+          }
+        ],
+        "complete_updates": 3376,
+        "handoffs": [
+          {
+            "clock": 40.0,
+            "frames": 53,
+            "phase": 13,
+            "position": 4,
+            "scenario": "scrimmage CB",
+            "updates": 418
+          },
+          {
+            "clock": 40.0,
+            "frames": 48,
+            "phase": 13,
+            "position": 0,
+            "scenario": "native injury replacement QB",
+            "updates": 379
+          },
+          {
+            "clock": 40.0,
+            "frames": 1,
+            "phase": 13,
+            "position": 1,
+            "scenario": "native kickoff K",
+            "updates": 4
+          },
+          {
+            "clock": 40.0,
+            "frames": 1,
+            "phase": 13,
+            "position": 2,
+            "scenario": "native punt P",
+            "updates": 5
+          }
+        ],
+        "match_rng_draws": 23223,
+        "plays": 3,
+        "polls": 422,
+        "positions": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ],
+        "presented_frames": 422,
+        "renders": [
+          {
+            "empty_caption": 71,
+            "gpu_commands": 1,
+            "player_pass": 1,
+            "player_registration": 22,
+            "player_visit": 22,
+            "scenario": "replacement scrimmage"
+          },
+          {
+            "empty_caption": 71,
+            "gpu_commands": 1,
+            "player_pass": 1,
+            "player_registration": 22,
+            "player_visit": 22,
+            "scenario": "punt"
+          }
+        ],
+        "substitution": {
+          "injured_position": 0,
+          "native_record_changed": true,
+          "replacement_position": 0
+        },
+        "transitions": [
+          [
+            304,
+            13
+          ],
+          [
+            308,
+            14
+          ],
+          [
+            523,
+            18
+          ],
+          [
+            599,
+            11
+          ],
+          [
+            1053,
+            12
+          ],
+          [
+            1378,
+            13
+          ],
+          [
+            1500,
+            14
+          ],
+          [
+            1989,
+            18
+          ],
+          [
+            2065,
+            11
+          ],
+          [
+            2493,
+            12
+          ],
+          [
+            2807,
+            13
+          ],
+          [
+            3208,
+            14
+          ],
+          [
+            3376,
+            18
+          ]
+        ],
+        "updates": 3376
       }
     }
   ]
