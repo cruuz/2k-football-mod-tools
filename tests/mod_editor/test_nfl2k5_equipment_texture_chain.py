@@ -23,6 +23,7 @@ from mod_editor.core.errors import ValidationError
 from mod_editor.core.nfl2k5_digit_texture import make_digit_mips
 from mod_editor.core.nfl2k5_equipment_import_intent import (
     INTENT_CHUNK, OWN_TEXTURE, PALETTE_ONLY, import_mode, with_import_mode,
+    retail_source, with_retail_source,
 )
 from nfl_txtr import HEADER, compress_vc_lz, decode_chunk, encode_rgba_png, parse_chunks, swizzle_2d
 
@@ -132,9 +133,9 @@ class EquipmentChainTests(unittest.TestCase):
         self.root = Path(temp.name).resolve()
 
     def test_every_family_has_exact_new_shape_all_levels_and_unchanged_siblings(self):
-        for family in (6, 8, 9):
+        for family in (4, 6, 8, 9):
             with self.subTest(family=family):
-                f = Fixture(self.root, family=family)
+                f = Fixture(self.root, family=family, names=("socks00", "socks00_mud", "untouched") if family == 4 else None)
                 result, _previews, receipt, _selector, _target = f.build([f.png()])
                 chunk = parse_chunks(result)[0]
                 actual, _ = decode_chunk(result, chunk)
@@ -172,6 +173,42 @@ class EquipmentChainTests(unittest.TestCase):
         self.assertEqual(f.decoded[start + 1024:], actual[start + 1024:])
         self.assertEqual(report["allocation"]["added_video_bytes"], 0)
         self.assertTrue(report["claims"]["selected_palette_allocations_only"])
+
+    def test_forged_retail_origin_cannot_override_pinned_pixels(self):
+        f = Fixture(self.root)
+        asset_id, path = f.png()
+        path.write_bytes(with_retail_source(path.read_bytes(), asset_id, artwork(f.width, f.height)))
+        with self.assertRaisesRegex(writer.UniformEquipmentWriterError, "pinned source pixels"):
+            f.build([(asset_id, path)])
+
+    def test_incompatible_retail_chain_copies_exact_bytes_or_refuses(self):
+        f = Fixture(self.root)
+        target = f.rows[0]
+        rgba = b"".join(bytes((25, 50, 75, 255) if x < 16 else (225, 200, 175, 255))
+                        for y in range(32) for x in range(32))
+        path = f.png(rgba=rgba)[1]
+        payload, pixels, levels = writer._read_png(path, target)
+        textures, _ = writer._validate_layout(f.decoded, f.chunk, f.rows)
+        colours = [(25, 50, 75, 255), (225, 200, 175, 255)]
+        chain = b"".join(swizzle_2d(bytes(int(x >= level.width // 2)
+                                         for y in range(level.height) for x in range(level.width)),
+                                    level.width, level.height, 1) for level in levels)
+        palette = writer.palette_tools.palette_bytes(colours)
+        retail = {0: (textures[0], chain, palette, levels)}
+        _, info = decode_chunk(f.span, parse_chunks(f.span)[0])
+        authored = {0: (target, payload, pixels, levels)}
+        result = writer._compile_group(f.span, f.chunk, f.decoded, info, f.rows, authored, {0}, retail)
+        chunk = parse_chunks(result.rebuilt_span)[0]
+        decoded, _ = decode_chunk(result.rebuilt_span, chunk)
+        pointer = result.edit_templates[0]["pixel_offset"]
+        self.assertGreaterEqual(pointer, f.chunk.video_bytes)
+        self.assertEqual(decoded[chunk.system_bytes + pointer:][:len(chain)], chain)
+        self.assertEqual(decoded[chunk.system_bytes + target.palette_offset:][:1024], palette)
+        with patch.object(writer, "_rebuild_fixed_span", side_effect=writer.TxtrError(
+                "VC-LZ stream needs more than the 1-byte bound")) as build:
+            with self.assertRaisesRegex(writer.UniformEquipmentWriterError, "cannot fit"):
+                writer._compile_group(f.span, f.chunk, f.decoded, info, f.rows, authored, {0}, retail)
+        self.assertEqual(build.call_count, 1, "Exact retail art must not fall through to palette reduction")
 
     def test_final_build_receipt_distinguishes_chain_and_palette_edits(self):
         from types import SimpleNamespace
@@ -298,8 +335,8 @@ class EquipmentChainTests(unittest.TestCase):
     def test_pin_catalog_covers_every_reviewed_glove_and_shoe_chunk(self):
         _by_id, groups = writer.load_targets()
         pins = writer._chain_pins()
-        self.assertEqual(set(pins), {key for key in groups if key[1] in (6, 8, 9)})
-        self.assertEqual(len(pins), 1902)
+        self.assertEqual(set(pins), {key for key in groups if key[1] in (4, 6, 8, 9)})
+        self.assertEqual(len(pins), 2536)
 
 
 class IntentTests(unittest.TestCase):
@@ -324,7 +361,7 @@ class IntentTests(unittest.TestCase):
         with self.assertRaisesRegex(ValidationError, "checksum"):
             import_mode(damaged, self.asset_id, self.rgba)
         with self.assertRaisesRegex(ValidationError, "Only.*gloves and shoes"):
-            with_import_mode(self.png, "tset:0:4:0:socks00", self.rgba, independent=True)
+            with_import_mode(self.png, "tset:0:5:0:elbowpad01", self.rgba, independent=True)
 
     def test_duplicate_mode_chunks_refuse(self):
         tagged = with_import_mode(self.png, self.asset_id, self.rgba, independent=True)
@@ -333,6 +370,15 @@ class IntentTests(unittest.TestCase):
         doubled = tagged[:end] + tagged[start:end] + tagged[end:]
         with self.assertRaisesRegex(ValidationError, "repeats"):
             import_mode(doubled, self.asset_id, self.rgba)
+
+    def test_retail_origin_is_portable_and_stale_pixels_invalidate_it(self):
+        exported = with_retail_source(self.png, self.asset_id, self.rgba)
+        other_id = "tset:0:8:4:shoes09"
+        imported = with_import_mode(exported, other_id, self.rgba, independent=True)
+        self.assertEqual(retail_source(imported, self.rgba), self.asset_id)
+        self.assertEqual(import_mode(imported, other_id, self.rgba), OWN_TEXTURE)
+        self.assertIsNone(retail_source(imported, bytes(len(self.rgba))))
+        self.assertEqual(with_retail_source(exported, None, self.rgba), self.png)
 
 
 if __name__ == "__main__":

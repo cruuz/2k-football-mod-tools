@@ -74,6 +74,7 @@ class ProductCatalogTests(unittest.TestCase):
             'nfl2k5.colors.unif_words',
             'nfl2k5.logos.team_select_cards',
             'nfl2k5.uniforms.all_visual',
+            'nfl2k5.uniforms.bump_textures',   # beta 68: uniform + shoe relief bump maps
             'nfl2k5.uniforms.detroit_away_runtime',
             'nfl2k5.players.team_names_2026',
             'nfl2k5.equipment.guardian_overlay',
@@ -155,7 +156,7 @@ class ProductCatalogTests(unittest.TestCase):
         first_ids = [binding.capability_id for binding in first.capabilities]
         second_ids = [binding.capability_id for binding in second.capabilities]
 
-        self.assertEqual(len(first_ids), 90)  # beta 66: + Broadcast camera v6 (beta 65: filled star + accelerated clock)
+        self.assertEqual(len(first_ids), 91)  # beta 68: + uniform/shoe bump maps; beta 66: + Broadcast camera v6 (beta 65: filled star + accelerated clock)
         self.assertEqual(len(first_ids), len(set(first_ids)))
         self.assertEqual(set(first_ids), expected)
         self.assertEqual(first_ids, second_ids)
@@ -189,7 +190,7 @@ class ProductCatalogTests(unittest.TestCase):
     def test_category_and_global_counts_match_the_registry(self) -> None:
         catalog = build_nfl2k5_product_catalog(self.registry)
         expected = {
-            ProductCategory.UNIFORMS_EQUIPMENT: (5, 4, 0, 0, 0, 1, 0),
+            ProductCategory.UNIFORMS_EQUIPMENT: (6, 5, 0, 0, 0, 1, 0),  # beta 68: + uniform/shoe bump maps
             ProductCategory.ROSTERS_PLAYERS: (13, 13, 0, 0, 0, 0, 0),
             ProductCategory.TEAM_IDENTITY: (0, 0, 0, 0, 0, 0, 0),
             ProductCategory.FIELD_ART_CREATE_TEAM: (1, 1, 0, 0, 0, 0, 0),
@@ -227,7 +228,7 @@ class ProductCatalogTests(unittest.TestCase):
                 catalog.counts.evidence,
                 catalog.counts.research,
             ),
-            (90, 70, 8, 1, 0, 8, 3),
+            (91, 71, 8, 1, 0, 8, 3),  # beta 68: + uniform/shoe bump maps
         )
 
     def test_ambiguous_stadium_surface_and_team_identity_are_explicit(self) -> None:
@@ -280,7 +281,7 @@ class ProductCatalogTests(unittest.TestCase):
         )
         binding = catalog.binding("nfl2k5.audio.audo_wav")
 
-        self.assertEqual(len(seen), 90)
+        self.assertEqual(len(seen), 91)
         self.assertEqual(
             binding.findings_notes,
             ("850 AUDO records mapped", "Export stays local"),

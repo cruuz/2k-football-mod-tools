@@ -10681,7 +10681,10 @@
         "ASTRA_EQUIPMENT_TEXTURE_CHAIN_REPORT.md",
         "mod_editor/data/nfl2k5_equipment_chain_pins.v1.json",
         "tests/mod_editor/test_nfl2k5_equipment_texture_chain.py",
-        "tests/mod_editor/test_nfl2k5_equipment_texture_native.py"
+        "tests/mod_editor/test_nfl2k5_equipment_texture_native.py",
+        "tests/mod_editor/test_nfl2k5_equipment_retail_roundtrip.py",
+        "tests/mod_editor/test_nfl2k5_equipment_consumers.py",
+        "ASTRA_B68_T2_REPORT.md"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -10696,7 +10699,7 @@
         "The catalog keeps all 11,395 standalone targets editable: 7,315 reviewed P8 targets and all 4,080 reviewed explicit-size A1R5G5B5 p001..p006/p011..p016 player strips. Outer 581 p005 is a proved transactional two-piece span across physical packs 0 and 1. A8R8G8B8, DXT1, VC_P8_LINEAR, crowdbase, seat, and unreviewed A1R5G5B5 layouts remain refused.",
         "The 1,585 team-linked slots in logos.cdf, mini.cdf, and flipchip.cdf are raw P8 fixed-slot resources: imports preserve their wrapper, descriptor/system bytes, exact resource span, and 96-byte slot padding, regenerate only swizzled indices plus palette, and never invoke VC-LZ. The 170 franchise-office and draft/PDA logo resources retain their exact compressed P8 spans.",
         "All Textures also edits 28,530 reviewed package-local socks, elbow-pad, glove, long-sleeve, shoe, and wristband P8 palettes. Each import preserves that TSET's shared retail index/mip chain and every unselected sibling palette and decoded image.",
-        "Package-local equipment defaults to recolouring the shared retail shape. An explicit experimental, unwitnessed glove or shoe import can append a private coverage mip chain, preserving all sibling bytes. Original, half or quarter width and height are explicit choices; smaller images lose detail and all private chains use more game memory. Deterministic colour tiers and lossless compression must fit the complete TSET inside its original file span before staging.",
+        "Socks, gloves and shoes can own a selected independent mip chain; new imports default to that choice. Global equipment rows offer All teams only, and explicit per-team requests are refused. shoes09/Style 3 and shoes10/Style 6 read each team's selected uniform package; players must select the corresponding shoe style. Unchanged retail exports at original size preserve the pinned palette and all distance images, reusing an identical shared chain when possible; otherwise exact allocation must fit or the import is refused. Half/quarter images explicitly discard detail; new art can also merge colours to fit P8 or the fixed span, with measured errors in the receipt. Siblings and retail wrapper scratch stay exact. All new in-game appearance remains unwitnessed.",
         "Compressed replacements are recompressed into the original byte span, while reviewed raw replacements retain the complete fixed-slot structure; an image that cannot satisfy its owning transport is refused rather than moving anything on the disc.",
         "Targets are addressed by outer package index and texture name. Uniform and menu-presentation targets also carry typed team names, abbreviations, asset code, style, physical-set selectors, archive name, and consumer scope; unresolved stadium targets still use package indices and preview identification.",
         "Franchise-office team logos are presentation assets, not midfield art. Stock midfield center_logo exists only in the create-team packages."
@@ -10867,7 +10870,10 @@
         "ASTRA_EQUIPMENT_TEXTURE_CHAIN_REPORT.md",
         "mod_editor/data/nfl2k5_equipment_chain_pins.v1.json",
         "tests/mod_editor/test_nfl2k5_equipment_texture_chain.py",
-        "tests/mod_editor/test_nfl2k5_equipment_texture_native.py"
+        "tests/mod_editor/test_nfl2k5_equipment_texture_native.py",
+        "tests/mod_editor/test_nfl2k5_equipment_retail_roundtrip.py",
+        "tests/mod_editor/test_nfl2k5_equipment_consumers.py",
+        "ASTRA_B68_T2_REPORT.md"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -10884,7 +10890,7 @@
         "Player portraits are exact 128x128 RGBA8 PNGs selected by a proved four-digit numeric portrait ID; cross-pack slots are reconstructed as bounded physical spans.",
         "Crib Team Photos are exact 128x128 RGBA8 PNGs selected by a canonical crib_team_photo:##_photo_0# selector; all five fixed P8 mips are regenerated.",
         "The Stadium texture route accepts an exact 64x64 RGBA8 PNG only for nfl2k5.stadium.o3280.c0005.scene2648.texture0002 (cement01); all 33 linked surfaces change together, and fixed-allocation compression overflow is refused.",
-        "Package-local uniform equipment accepts 28,530 reviewed swizzled P8 selectors with palette-only import by default. The explicit experimental, unwitnessed glove/shoe choice appends an independent coverage mip chain and changes only selected descriptors and palettes; original shared indices and every unselected sibling remain exact. Image size is explicitly original, half or quarter width and height. Grouped TSET overflow is refused before staging; the decoded game-memory allocation grows.",
+        "Socks, gloves and shoes can own a selected independent mip chain; new imports default to that choice. Global equipment rows offer All teams only, and explicit per-team requests are refused. shoes09/Style 3 and shoes10/Style 6 read each team's selected uniform package; players must select the corresponding shoe style. Unchanged retail exports at original size preserve the pinned palette and all distance images, reusing an identical shared chain when possible; otherwise exact allocation must fit or the import is refused. Half/quarter images explicitly discard detail; new art can also merge colours to fit P8 or the fixed span, with measured errors in the receipt. Siblings and retail wrapper scratch stay exact. All new in-game appearance remains unwitnessed.",
         "Menu Back accepts only mono PCM16LE at exactly 16,000 Hz and 5,696 frames; it is encoded into the one proved fixed AUDO payload while preserving its wrapper and metadata.",
         "Additional standalone audio accepts any of 849 non-Menu-Back catalog asset IDs plus a strict PCM16LE WAV matching that row's exact channel count, rate, and frame count; 697 alias-related rows carry a prominent warning because their runtime cue meaning remains unproved.",
         "Equal decoded uniform content across selectors is not shared storage: all 3,170 audited torso, pants, sleeve, and live-helmet targets have distinct non-overlapping XISO spans.",
@@ -10932,6 +10938,75 @@
       "surface": "uniforms",
       "title": "NFL 2K5 unified visual/data/audio mod project",
       "validation_command": "bash tools/validate_nfl2k5_visual_mod_project.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_bump_texture_writer import <source> <working-copy> <outer> --chunk <name> --png <authored.png>",
+        "module": "mod_editor/core/nfl2k5_bump_texture_writer.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_B68_T2_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_shoe_relief.py",
+        "tests/mod_editor/test_nfl2k5_equipment_texture_native.py",
+        "tests/mod_editor/test_nfl2k5_bump_texture_writer.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Advanced Bump Maps tab; source read-only, explicit working-copy write. Shoe relief is shared across teams. EXPERIMENTAL / UNWITNESSED."
+      },
+      "id": "nfl2k5.uniforms.bump_textures",
+      "input_constraints": [
+        "Uniform jersey, pants, sleeve and sock maps retain their A8R8G8B8 layout; GLOBAL.IFF contains seven separate 128x128 P8 shoe relief maps.",
+        "Exact dimensions and every mip must decode to the authored pixels; P8 imports needing more than 256 colours or exceeding the fixed compressed span are refused.",
+        "Wrapper, including the retail in-place loader scratch word, and all unselected spans stay exact. Sources cannot be write targets.",
+        "Styles 1, 2, 3, 4, 5 and 6 use bump_shoes1, 4, 7, 2, 3 and 7 respectively. Maps 5 and 6 are present but not selected by those styles."
+      ],
+      "portme": [
+        "Witness shoes close up and at distance, both teams and swapped home/away, with changed colour and relief maps. Do not claim new per-team relief."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Only source selectors, code, authored inputs and hash evidence are distributable.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Pinned resource and bounded CPU binding proofs only; no game or GPU witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "entry-table-discovered uniform package or GLOBAL.IFF",
+            "name": "outer_index",
+            "required": true
+          },
+          {
+            "allowed": "bump_jersey, bump_pants, bump_sleeve, bump_sock, bump_shoes1..7",
+            "name": "chunk",
+            "required": true
+          }
+        ],
+        "notes": "GLOBAL.IFF is discovered by its name hash 0x8EE9EEED; its shoe relief maps are league-wide."
+      },
+      "source_container": {
+        "format": "VC-LZ TXTR in Xbox VC archive packs",
+        "hash_pins": [
+          "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9"
+        ],
+        "resource": "Four maps per uniform package plus seven global P8 shoe relief maps.",
+        "retail_file": "User-owned ESPN NFL 2K5 USA XISO"
+      },
+      "summary": "Edit uniform fabric maps and shared shoe relief maps inside fixed spans of a working disc copy; reparse every authored mip before writing.",
+      "surface": "uniforms",
+      "title": "Uniform and shoe bump maps (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_shoe_relief"
     },
     {
       "backend": {

@@ -20,16 +20,34 @@ import tempfile
 from typing import Any
 
 from .errors import ValidationError
-from .nfl2k5_equipment_import_intent import same_visual_import, with_import_mode
+from .nfl2k5_equipment_import_intent import (
+    retail_source, same_visual_import, with_import_mode, with_retail_source,
+)
 
 
 CONSUMER_SCHEMA = "nfl2k5_equipment_consumer_fanout/v1"
 GLOBAL_RULE = (
-    "The game reads this variant from the most recently loaded uniform package "
-    "(away team in a game; the viewed team's Current Uniform on the Edit Player "
-    "screen), not from each team's own package."
+    "All teams share this style because the game reads its texture from the most recently loaded uniform package."
 )
 CONTEXT_FIRST_RULE = "The game reads this variant from each team's own uniform package."
+PACKAGE_LOCAL_SHOE_HELP = (
+    "For team-specific shoe artwork, import shoes09 (Style 3) or shoes10 (Style 6) "
+    "in each uniform package you use, and select that style for each player's left and right shoe."
+)
+ALL_TEAMS = "all-teams"
+SELECTED_PACKAGE = "selected-package"
+
+
+def equipment_import_scope(asset_id: str) -> tuple[tuple[tuple[str, str], ...], str]:
+    """The dialog and non-GUI callers use the same reviewed scope contract."""
+    from .nfl2k5_uniform_equipment_writer import in_game_lookup, load_targets
+
+    target = load_targets()[0].get(asset_id)
+    if target is None:
+        raise ValidationError("Choose a reviewed equipment texture.")
+    if in_game_lookup(target.name) == "global":
+        return ((ALL_TEAMS, "All teams"),), GLOBAL_RULE
+    return ((SELECTED_PACKAGE, "Selected uniform package"),), CONTEXT_FIRST_RULE
 
 
 @dataclass(frozen=True)
@@ -99,7 +117,8 @@ def _message(target: Any, consumers: Any, *, independent: bool,
 
 
 def stage_equipment_import(session: Any, asset: Any, path: Path, *,
-                           independent: bool | None = None, scale: int = 1) -> EquipmentImportResult:
+                           independent: bool | None = None, scale: int = 1,
+                           scope: str | None = None) -> EquipmentImportResult:
     from .nfl2k5_uniform_equipment_writer import (
         build_unified_uniform_equipment_imports, consumer_targets, encode_rgba_png, load_targets,
     )
@@ -108,6 +127,9 @@ def stage_equipment_import(session: Any, asset: Any, path: Path, *,
     target = by_id.get(asset.asset_id)
     if target is None or getattr(asset, "kind", None) != "uniform_equipment_texture":
         raise ValidationError("Choose a reviewed equipment texture.")
+    choices, rule = equipment_import_scope(asset.asset_id)
+    if scope is not None and scope not in {value for value, _label in choices}:
+        raise ValidationError(rule)
     payload, rgba = session.asset_io.validate_replacement(asset, path)
     original, original_rgba = session.asset_io.validate_replacement(
         asset, session.asset_io.ensure_original(asset),
@@ -148,7 +170,8 @@ def stage_equipment_import(session: Any, asset: Any, path: Path, *,
         # large file) carrying its own explicit texture choice. Restoring the
         # original restores every copy that is currently staged.
         rows: list[tuple[Any, Path]] = []
-        canonical = encode_rgba_png(target.width, target.height, rgba)
+        canonical = with_retail_source(encode_rgba_png(target.width, target.height, rgba),
+                                       retail_source(frozen, rgba), rgba)
         for copy in consumers:
             if copy.asset_id == asset.asset_id:
                 rows.append((asset, staged))
@@ -179,6 +202,13 @@ def stage_equipment_import(session: Any, asset: Any, path: Path, *,
     quality = selected["palette_quality"] or {}
     from .equipment_palette import merge_message
     approximation = merge_message(quality)
+    if selected["size_reduction"] != 1:
+        approximation += (f" Detail was reduced from {target.width} x {target.height} to {encoded} "
+                          "because a smaller game image was selected.")
+    if selected["mip_filter"] == "preserved_retail_chain":
+        approximation += " The unchanged retail palette and all distance images were preserved exactly."
+    elif independent:
+        approximation += " Distance images were regenerated from the imported base image."
     return EquipmentImportResult(
         _message(target, consumers, independent=independent, encoded=encoded,
                  approximation=approximation, changed=bool(result.changed_asset_ids)),

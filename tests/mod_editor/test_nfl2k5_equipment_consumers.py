@@ -36,6 +36,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 from test_nfl2k5_equipment_texture_chain import Fixture, artwork, digest
 from mod_editor.core import nfl2k5_uniform_equipment_writer as writer
 from mod_editor.core.nfl2k5_equipment_import import (
+    ALL_TEAMS, SELECTED_PACKAGE, GLOBAL_RULE, equipment_import_scope,
     revert_equipment_import, stage_equipment_import,
 )
 from mod_editor.core.nfl2k5_equipment_import_intent import OWN_TEXTURE, PALETTE_ONLY, import_mode
@@ -202,6 +203,17 @@ class ConsumerResolutionTests(unittest.TestCase):
                 self.assertEqual(writer.in_game_lookup(target.name), "context_first")
                 self.assertEqual(writer.consumer_targets(target, self.by_id), (target,))
 
+    def test_scope_offers_only_all_teams_for_global_rows_including_mud(self):
+        for target in self.by_id.values():
+            if target.outer_index != 3850:
+                continue
+            choices, rule = equipment_import_scope(target.asset_id)
+            if writer.in_game_lookup(target.name) == "global":
+                self.assertEqual(choices, ((ALL_TEAMS, "All teams"),))
+                self.assertEqual(rule, GLOBAL_RULE)
+            else:
+                self.assertEqual(choices, ((SELECTED_PACKAGE, "Selected uniform package"),))
+
 
 class _MultiPackageArchive:
     """Four synthetic uniform packages sharing one retail-shaped TSET span."""
@@ -320,6 +332,17 @@ class ConsumerFanoutSessionTests(unittest.TestCase):
             self.assertEqual(import_mode(payload, asset_id, rgba), PALETTE_ONLY)
         self.session.undo()
         self.assertEqual(self.staged(), ())
+
+    def test_per_team_global_import_refuses_before_reading_or_mutating(self):
+        from mod_editor.core.errors import ValidationError
+
+        asset = self.assets["tset:0:8:0:shoes01"]
+        for scope in (SELECTED_PACKAGE, "per-team", "Giants"):
+            with self.archive.context(), self.assertRaises(ValidationError) as caught:
+                stage_equipment_import(self.session, asset, self.root / "absent.png", scope=scope)
+            self.assertEqual(str(caught.exception), GLOBAL_RULE)
+        self.assertEqual(self.staged(), ())
+        self.assertEqual(len(self.session._undo), 0)
 
     def test_selected_alternate_home_package_is_kept_with_the_sampled_copies(self):
         self.stage("tset:3:8:0:shoes01")

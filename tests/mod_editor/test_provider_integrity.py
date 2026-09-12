@@ -201,7 +201,7 @@ class ProviderIntegrityTests(unittest.TestCase):
             # formation/play clone writer, fixed-slot audio, the fail-closed
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
-            [270, 10, 8, 9, 8, 9]  # beta 66.1: + responsive_json (H1, unified + scorebug), nfl2k5_model_skeleton (H4); beta 66: + nfl2k5_digit_art (G), build_io, metadata_cache (B), jukebox_list, helmet_finish (D2)
+            [271, 10, 8, 9, 8, 9]  # beta 68: + nfl2k5_compile_cache (T1 build reuse); beta 66.1: + responsive_json (H1, unified + scorebug), nfl2k5_model_skeleton (H4); beta 66: + nfl2k5_digit_art (G), build_io, metadata_cache (B), jukebox_list, helmet_finish (D2)
         )
         for provider in providers:
             entries = [provider.backend_module]
@@ -275,7 +275,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "mod_editor/data/nfl2k5_crib_catalog.v1.json":
                     "c78801144df2f070e003ba458c5affa15a52cc00221cc1a3d9983f1fbf172cd8",
                 "mod_editor/data/nfl2k5_equipment_chain_pins.v1.json":
-                    "32ab51a7a70aea4e5bec1cff6b3f6542fb7a3f198b494939b8864313bc099628",
+                    "1057ef17a6680edf64d83ce563f168e5c6850c63c7b212423d70486838591295",
                 "mod_editor/data/nfl2k5_uniform_equipment_export_catalog.v1.json":
                     "fa2c9ca9bcc267b6981735347bf6daf6243d6ab8b83fba268804c280cfd94173",
                 "reports/specs/nfl2k5_stadium_static_target_catalog.v1.json":

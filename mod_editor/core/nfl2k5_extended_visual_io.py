@@ -175,7 +175,10 @@ class Nfl2k5ExtendedVisualIO:
                 and record.get("source_sha256") == SOURCE_SHA256
                 and recorded_dimensions == [asset.width, asset.height]
             ):
-                return path
+                from .nfl2k5_equipment_import_intent import retail_source, supports_own_texture
+                if (asset.kind != "uniform_equipment_texture" or not supports_own_texture(asset.asset_id)
+                        or retail_source(payload, rgba) is not None):
+                    return path
             stale = True
         elif os.path.lexists(path) or os.path.lexists(metadata):
             # Recover a regular half-written generated pair, but never replace
@@ -191,6 +194,10 @@ class Nfl2k5ExtendedVisualIO:
                 self._decoder(asset) if self._decoder is not None
                 else self._decode_original(asset)
             )
+            if asset.kind == "uniform_equipment_texture":
+                from .nfl2k5_equipment_import_intent import supports_own_texture, with_retail_source
+                if supports_own_texture(asset.asset_id):
+                    png = with_retail_source(png, asset.asset_id, rgba)
             width, height, reparsed = _decode_png(
                 png, asset.dimensions
             )

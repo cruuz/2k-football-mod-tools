@@ -6,7 +6,7 @@ similar variant in a chunk shares one swizzled mip/index chain and owns only an
 independent 256-entry BGRA palette.  Replacing that shared chain for one name
 would silently reshape every sibling.
 
-Legacy project PNGs retain palette projection. New glove/shoe imports append
+Legacy project PNGs retain palette projection. New sock/glove/shoe imports append
 an aligned, coverage-filtered index chain and repoints only its descriptor.
 Sibling descriptors, palettes and every shared mip remain exact. The decoded
 video allocation grows, but the recompressed TSET stays inside its original
@@ -29,7 +29,8 @@ from typing import Any, Iterable
 
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.nfl2k5_equipment_import_intent import (
-    INTENT_CHUNK, OWN_TEXTURE, PALETTE_ONLY, import_mode, import_settings,
+    INTENT_CHUNK, OWN_TEXTURE, PALETTE_ONLY, import_mode, import_settings, retail_source,
+    supports_own_texture,
 )
 
 
@@ -73,7 +74,7 @@ MAX_PACKAGE_BYTES = 32 * 1024 * 1024
 MAX_DECODED_BYTES = 2 * 1024 * 1024
 CHAIN_PINS = ROOT / "mod_editor/data/nfl2k5_equipment_chain_pins.v1.json"
 # Filled by the streaming retail census tool; contains hashes, never retail art.
-CHAIN_PINS_SHA256 = "32ab51a7a70aea4e5bec1cff6b3f6542fb7a3f198b494939b8864313bc099628"
+CHAIN_PINS_SHA256 = "1057ef17a6680edf64d83ce563f168e5c6850c63c7b212423d70486838591295"
 CATALOG_COLUMNS = (
     "outer_index",
     "set_selector",
@@ -668,6 +669,12 @@ def _rebuild_fixed_span(template_span: bytes, candidate: bytes, *, independent: 
     remains part of the compile interface; decoded growth is read from bytes.
     """
 
+    original, _info = decode_chunk(template_span, parse_chunks(template_span)[0])
+    if candidate == original:
+        _span, info = rebuild_compressed_chunk_fixed_span(template_span, candidate)
+        return template_span, replace(info, rebuilt_span_sha256=_digest(template_span),
+                                      complete_span_matches_template=True,
+                                      zero_padding_bytes=0)
     return _rebuild_grown_video(template_span, candidate)
 
 
@@ -806,8 +813,23 @@ def _compile_group(
     rows: tuple[EquipmentTarget, ...],
     authored: dict[int, tuple[EquipmentTarget, bytes, bytes, list[Any]]],
     independent: set[int],
+    retail: dict[int, tuple[TextureInfo, bytes, bytes, list[Any]]] | None = None,
 ) -> _CompiledGroup:
     textures, indices = _validate_layout(decoded, chunk, rows)
+    retail = retail or {}
+    requested_independent = set(independent)
+    independent = set(independent)
+    for reference, (source, chain, _palette, levels) in retail.items():
+        target, payload, rgba, _old_levels = authored[reference]
+        authored[reference] = (target, payload, rgba, levels)
+        texture = textures[reference]
+        start = chunk.system_bytes + texture.pixel_offset
+        if ((source.width, source.height, source.mip_levels)
+                == (texture.width, texture.height, texture.mip_levels)
+                and decoded[start:start + len(chain)] == chain):
+            independent.discard(reference)
+        else:
+            independent.add(reference)
 
     # Allocate after ALL original bytes, including palette alignment gaps. Only
     # these selected descriptors move; no sibling ever references the append.
@@ -844,7 +866,16 @@ def _compile_group(
         qualities: dict[int, Any] = {}
         try:
             for reference, (target, _payload, _rgba, levels) in sorted(authored.items()):
-                if reference in independent:
+                if reference in retail:
+                    _source, chain, palette, _levels = retail[reference]
+                    actual_entries = 256
+                    if reference in independent:
+                        texture = updated_textures[reference]
+                        struct.pack_into("<I", candidate, texture.descriptor_offset + 4, texture.pixel_offset)
+                        struct.pack_into("<I", candidate, texture.descriptor_offset + 12, texture.packed_format)
+                        start = chunk.system_bytes + texture.pixel_offset
+                        candidate[start:start + len(chain)] = chain
+                elif reference in independent:
                     from mod_editor.core.equipment_palette import quantize
 
                     colors, index_levels, quality = quantize(levels, maximum)
@@ -968,12 +999,13 @@ def _compile_group(
         measured = palette_quality(levels[0].rgba if reference in independent else authored_rgba, after)
         overflow = any(attempt["result"] == "vc_lz_overflow" for attempt in attempts)
         measured["merge_reason"] = (
+            "unchanged retail palette and mip chain preserved" if reference in retail else
             f"to fit the fixed {chunk.stored_size:,}-byte compressed TSET budget"
             if overflow else "to fit the shared retail index artwork; choose its own texture for a new design"
             if reference not in independent else "to fit the 256-colour P8 palette"
         )
         selected_quality[reference] = measured
-        _require(before != after or reference in independent,
+        _require(before != after or reference in independent or reference in retail,
                  f"Replacement equals retail for {target.asset_id}")
         preview = encode_rgba_png(texture.width, texture.height, after)
         previews[reference] = preview
@@ -986,14 +1018,14 @@ def _compile_group(
                 levels[0].rgba if reference in independent else authored_rgba, after,
             ),
             "reference_index": reference,
-            "import_mode": OWN_TEXTURE if reference in independent else PALETTE_ONLY,
+            "import_mode": OWN_TEXTURE if reference in requested_independent else PALETTE_ONLY,
             "descriptor_offset": texture.descriptor_offset,
             "pixel_offset": texture.pixel_offset,
             "requested_dimensions": [target.width, target.height],
             "encoded_dimensions": [texture.width, texture.height],
             "mip_levels": texture.mip_levels,
             "size_reduction": target.width // texture.width,
-            "mip_filter": ("premultiplied_rgba_area_from_base"
+            "mip_filter": ("preserved_retail_chain" if reference in retail else "premultiplied_rgba_area_from_base"
                            if reference in independent else "retail_index_projection"),
             "palette_quality": selected_quality[reference],
             "levels": [
@@ -1028,6 +1060,38 @@ def _compile_group(
         edit_templates=edit_templates,
         previews=previews,
     )
+
+
+def _retail_artwork(
+    archive: Any, source: EquipmentTarget, groups: Any, rgba: bytes,
+) -> tuple[TextureInfo, bytes, bytes, list[Any]]:
+    """Reopen a bounded, pinned source; a PNG hint alone cannot supply bytes."""
+    from mod_editor.core.nfl2k5_digit_texture import make_digit_mips
+
+    _require(0 <= source.outer_index < len(archive.entries), "Retail equipment export source is absent")
+    entry = archive.entries[source.outer_index]
+    _require(entry.size <= MAX_PACKAGE_BYTES, "Retail equipment source package exceeds its bound")
+    package = read_entry_bytes(archive, entry)
+    matches = [c for c in parse_chunks(package, allow_trailing=True)
+               if c.index == source.chunk_index and c.kind == "TSET"]
+    _require(len(matches) == 1, "Retail equipment export source TSET is absent or ambiguous")
+    chunk = matches[0]
+    span = package[chunk.offset:chunk.end_offset]
+    _require(chunk.output_size <= MAX_DECODED_BYTES
+             and _chain_pins().get((source.outer_index, source.chunk_index)) == _digest(span),
+             "Retail equipment export source no longer matches its complete source pin")
+    decoded, _info = decode_chunk(package, chunk)
+    textures, _indices = _validate_layout(decoded, chunk, groups[source.outer_index, source.chunk_index])
+    texture = textures[source.reference_index]
+    actual = decode_equipment_levels(decoded, chunk, texture)
+    _require(actual[0] == rgba, "Retail equipment export hint does not match the pinned source pixels")
+    # The level records describe the original distance images, never filtered replacements.
+    levels = make_digit_mips(rgba, source.width, source.height, source.mip_levels)
+    levels = [replace(level, rgba=pixels) for level, pixels in zip(levels, actual)]
+    start = chunk.system_bytes + texture.pixel_offset
+    chain = decoded[start:start + sum(level.width * level.height for level in levels)]
+    start = chunk.system_bytes + texture.palette_offset
+    return texture, chain, decoded[start:start + PALETTE_BYTES], levels
 
 
 def build_unified_uniform_equipment_imports(
@@ -1102,14 +1166,14 @@ def build_unified_uniform_equipment_imports(
     authored: dict[int, tuple[EquipmentTarget, bytes, bytes, list[Any]]] = {}
     independent: set[int] = set()
     input_rows: list[dict[str, Any]] = []
-    signature: list[tuple[int, str, str, int]] = []
+    signature: list[tuple[Any, ...]] = []
     for target, path in selected:
         payload, rgba, levels = _read_png(path, target, compile_cache)
         authored[target.reference_index] = (target, payload, rgba, levels)
         mode, scale = import_settings(payload, target.asset_id, rgba)
         if mode == OWN_TEXTURE:
             independent.add(target.reference_index)
-        signature.append((target.reference_index, _digest(rgba), mode, scale))
+        signature.append((target.reference_index, _digest(rgba), mode, scale, retail_source(payload, rgba)))
         input_rows.append({
             "target": target.asset_id,
             "path": str(path.resolve(strict=True)),
@@ -1131,7 +1195,32 @@ def build_unified_uniform_equipment_imports(
     if compiled is None:
         decoded, decode_info = decode_chunk(package, chunk)
         _require(decode_info is not None, "Uniform-equipment TSET is not compressed")
-        compiled = _compile_group(template_span, chunk, decoded, decode_info, rows, authored, independent)
+        retail = {}
+        source_textures = None
+        for reference, (target, payload, rgba, _levels) in authored.items():
+            origin = retail_source(payload, rgba)
+            # Older exports have only the base PNG. Recognize an exact local
+            # retail match, without projecting arbitrary art onto the indices.
+            # Prefer the selected row for a no-op; ambiguous donor palettes
+            # require the portable origin hint from a fresh export.
+            if (origin is None and supports_own_texture(target.asset_id)
+                    and import_settings(payload, target.asset_id, rgba)[1] == 1):
+                if source_textures is None:
+                    source_textures, _indices = _validate_layout(decoded, chunk, rows)
+                matches = [row for row in rows if texture_to_rgba(
+                    decoded, chunk, source_textures[row.reference_index]) == rgba]
+                if target in matches:
+                    origin = target.asset_id
+                elif matches and len({row.palette_bgra_sha256 for row in matches}) == 1:
+                    origin = matches[0].asset_id
+            if (origin is not None and supports_own_texture(target.asset_id)
+                    and import_settings(payload, target.asset_id, rgba)[1] == 1):
+                source = by_id.get(origin)
+                _require(source is not None and supports_own_texture(origin)
+                         and (source.width, source.height) == (target.width, target.height),
+                         "Retail equipment export selector or dimensions are not reviewed")
+                retail[reference] = _retail_artwork(archive, source, groups, rgba)
+        compiled = _compile_group(template_span, chunk, decoded, decode_info, rows, authored, independent, retail)
         if compile_cache is not None:
             compile_cache.compiled[key] = compiled
             compile_cache.misses += 1
@@ -1142,6 +1231,7 @@ def build_unified_uniform_equipment_imports(
         compile_cache.hits += 1
     rebuilt_span = compiled.rebuilt_span
     rebuild_info = compiled.rebuild_info
+    independent = set(compiled.independent)
 
     previews: list[tuple[str, bytes]] = []
     edit_reports: list[dict[str, Any]] = []

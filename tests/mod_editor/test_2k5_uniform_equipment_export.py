@@ -255,7 +255,8 @@ class _EquipmentResizeFacade(BrowseOnlyFacade):
         return SimpleNamespace(message="Equipment palette is ready to build.")
 
     def replace_equipment_texture(self, asset: object, path: Path, progress: object, *,
-                                  independent: bool = False, scale: int = 1) -> object:
+                                  independent: bool = False, scale: int = 1,
+                                  scope: str | None = None) -> object:
         # the glove/shoe route: the default dialog answer is palette-only, which reaches this same writer
         assert independent is False and scale == 1
         return self.replace_asset(asset, path, progress)
@@ -267,7 +268,8 @@ class EquipmentResizeOffscreenTests(unittest.TestCase):
 
     def _auto_accept_equipment_dialog(self):
         from PyQt5.QtWidgets import QDialog
-        stub = SimpleNamespace(exec_=lambda: QDialog.Accepted, Accepted=QDialog.Accepted, independent=False, scale=1)
+        stub = SimpleNamespace(exec_=lambda: QDialog.Accepted, Accepted=QDialog.Accepted, independent=False, scale=1,
+                               scope="all-teams")
         patcher = patch("mod_editor.gui.equipment_texture_import_dialog.EquipmentTextureImportDialog", return_value=stub)
         patcher.start(); self.addCleanup(patcher.stop)
 

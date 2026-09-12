@@ -10,6 +10,11 @@ from mod_editor.core.nfl2k5_equipment_import_intent import (
 )
 
 
+from mod_editor.core.nfl2k5_equipment_import import (
+    equipment_import_scope, PACKAGE_LOCAL_SHOE_HELP,
+)
+
+
 class EquipmentTextureImportDialog(QDialog):
     def __init__(self, asset, parent=None):
         super().__init__(parent)
@@ -19,8 +24,23 @@ class EquipmentTextureImportDialog(QDialog):
         target = QLabel(f"{asset.label}\nPNG size: {asset.width} x {asset.height}")
         target.setWordWrap(True)
         layout.addWidget(target)
+        choices, rule = equipment_import_scope(asset.asset_id)
+        layout.addWidget(QLabel("Import applies to:"))
+        self.import_scope = QComboBox()
+        self.import_scope.setObjectName("equipmentImportScope")
+        for value, caption in choices:
+            self.import_scope.addItem(caption, value)
+        layout.addWidget(self.import_scope)
+        scope_note = QLabel(rule)
+        scope_note.setObjectName("equipmentScopeExplanation")
+        scope_note.setWordWrap(True)
+        layout.addWidget(scope_note)
+        if ":shoes" in asset.asset_id:
+            local_note = QLabel(PACKAGE_LOCAL_SHOE_HELP)
+            local_note.setWordWrap(True)
+            layout.addWidget(local_note)
         default = QLabel(
-            "Gloves and shoes default to their own artwork, including when you copy an exported style. "
+            "Socks, gloves and shoes default to their own artwork, including when you copy an exported style. "
             "Untick below only for a recolour of the existing shared design. " + PALETTE_HELP)
         default.setWordWrap(True)
         layout.addWidget(default)
@@ -56,3 +76,7 @@ class EquipmentTextureImportDialog(QDialog):
     @property
     def scale(self) -> int:
         return int(self.game_size.currentData()) if self.independent else 1
+
+    @property
+    def scope(self) -> str:
+        return str(self.import_scope.currentData())

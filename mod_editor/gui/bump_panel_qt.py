@@ -46,6 +46,7 @@ from mod_editor.core.nfl2k5_bump_strength import (
     read_strengths,
     write_strengths,
 )
+from mod_editor.core.nfl2k5_bump_texture_writer import SHOE_BUMP_NAMES, SHOE_BUMP_SCOPE
 from mod_editor.core.nfl2k5_bump_texture_writer import (
     RETAIL_XISO_SHA256,
     RETAIL_XISO_SIZE,
@@ -174,12 +175,13 @@ class BumpPanel(QWidget):
         root.setSpacing(14)
 
         header = QVBoxLayout()
-        title = QLabel("Jersey bump maps (advanced)")
+        title = QLabel("Uniform and shoe bump maps (advanced)")
         title.setObjectName("bumpTitle")
         subtitle = QLabel(
-            "Export a bump map, edit its PNG, then update an existing working disc copy. "
-            "Bump maps give jerseys, pants, sleeves and socks their fabric texture; this page "
-            "never creates a disc, it writes into a copy you choose."
+            "Edit jersey, pants, sleeve and sock fabric maps in a selected uniform package. "
+            "Select GLOBAL.IFF for shoe relief maps. " + SHOE_BUMP_SCOPE + " "
+            "Import checks every distance image and available space before Write is enabled. "
+            "Writes update the working disc copy you choose. Experimental / unwitnessed."
         )
         subtitle.setObjectName("bumpMuted")
         subtitle.setWordWrap(True)
@@ -226,7 +228,7 @@ class BumpPanel(QWidget):
         package_layout = QVBoxLayout(package_card)
         package_layout.setContentsMargins(0, 0, 0, 0)
         self.package_table = QTableWidget(0, 3)
-        self.package_table.setHorizontalHeaderLabels(("Outer", "Uniform", "Size"))
+        self.package_table.setHorizontalHeaderLabels(("Outer", "Package", "Size"))
         self._configure_table(self.package_table, stretch=1)
         package_layout.addWidget(self.package_table, 1)
         splitter.addWidget(package_card)
@@ -622,9 +624,10 @@ class BumpPanel(QWidget):
                     Qt.SmoothTransformation,
                 )
             )
+            scope = SHOE_BUMP_SCOPE if name in SHOE_BUMP_NAMES else "Selected uniform package."
             self._set_status(
                 f"{name}: {metadata['width']}x{metadata['height']}, "
-                f"{metadata['mip_levels']} mips — export it or import a PNG"
+                f"{metadata['mip_levels']} distance images. {scope} Experimental / unwitnessed."
             )
 
         self._run(lambda progress: export_bump(source, outer_index, name), done)
@@ -685,7 +688,8 @@ class BumpPanel(QWidget):
                     )
                 )
             self._set_status(
-                f"{name}: preview ready — write it into your copy when ready"
+                f"{name}: every distance image and the fixed span checked. "
+                f"{result['scope']} Experimental / unwitnessed."
             )
 
         self._run(
@@ -713,11 +717,12 @@ class BumpPanel(QWidget):
         label = str(package.get("logical_name") or outer_index)
         authored_rgba = bytes(self._preview["authored_rgba"])  # type: ignore[arg-type]
         png_path = self._preview_png_path
+        scope = SHOE_BUMP_SCOPE if name in SHOE_BUMP_NAMES else "Selected uniform package."
         confirmation = QMessageBox.question(
             self,
             "Update the working copy?",
-            f"Replace {name} in uniform {label} inside:\n{target}\n\n"
-            "This updates that copy in place. The source disc is not touched.",
+            f"Replace {name} in {label} inside:\n{target}\n\n"
+            f"{scope} This updates that copy in place. The source disc is not touched.",
             QMessageBox.Ok | QMessageBox.Cancel,
             QMessageBox.Cancel,
         )
