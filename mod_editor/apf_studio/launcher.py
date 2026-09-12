@@ -18,6 +18,7 @@ import tempfile
 from typing import Mapping
 
 from mod_editor.core import platform_compat
+from mod_editor.core.errors import ValidationError
 
 
 class LaunchError(ValueError):
@@ -376,51 +377,65 @@ class XeniaLauncher:
         self,
         settings: XeniaSettings | None = None,
         data_root: Path | None = None,
+        curve_module=None,
     ):
         self.settings = settings or XeniaSettings()
+        self._curve_module = curve_module
         self.data_root = data_root or (
             Path.home() / ".local" / "share" / "apf2k8-mod-studio" / "xenia"
         )
 
-    def pass_fetch_status(self) -> dict:
+    def _patch_contract(self, kind):
+        if kind == "curves":
+            from . import playcalling_patches
+            return (playcalling_patches.FILENAME, lambda data: playcalling_patches.validate(data, curves=self._curve_module),
+                    "Personnel curve patch", " Changes every book on the disc; EXPERIMENTAL. In-game result UNWITNESSED.")
+        if kind != "pass_fetch":
+            raise LaunchError("Unknown Studio patch")
+        return (PASS_FETCH_FILENAME, _pass_fetch_profile, "Pass-fetch patch",
+                " Last-resort fetch only; not a CPU play-calling fix. In-game result unwitnessed.")
+
+    def pass_fetch_status(self, *, kind="pass_fetch") -> dict:
+        filename, validator, title, note = self._patch_contract(kind)
         if self.settings.xenia_path is None:
-            return {"installed": False, "enabled": False, "message": "Configure Xenia to install the pass-fetch patch."}
-        destination = self.settings.patches_folder / PASS_FETCH_FILENAME
+            return {"installed": False, "enabled": False, "message": f"Configure Xenia to install the {title.lower()}."}
+        destination = self.settings.patches_folder / filename
         config = self.settings.emulator_config
         installed, enabled, detail = False, False, ""
         try:
             if destination.exists():
                 self.settings._regular(destination, "Installed patch")
-                profile, patch_enabled = _pass_fetch_profile(destination.read_bytes())
+                profile, patch_enabled = validator(destination.read_bytes())
                 installed = True
                 detail = f" ({profile.name})"
                 if config.exists():
                     self.settings._regular(config, "Xenia config")
                     enabled = patch_enabled and tomllib.loads(config.read_text(encoding="utf-8-sig")).get("Memory", {}).get("apply_patches") is True
-        except (OSError, ValueError, IndexError, TypeError, AttributeError) as exc:
+        except (OSError, ValueError, IndexError, TypeError, AttributeError, ImportError, ValidationError) as exc:
             return {"installed": installed, "enabled": False,
-                    "message": f"Cannot verify the pass-fetch patch: {exc}",
+                    "message": f"Cannot verify the {title.lower()}: {exc}",
                     "patch_path": str(destination), "config_path": str(config)}
-        message = (f"Pass-fetch patch installed{detail} and {'enabled in the selected config' if enabled else 'disabled'}: {destination}."
-                   if installed else f"Pass-fetch patch not installed: {destination}.")
+        message = (f"{title} installed{detail} and {'enabled in the selected config' if enabled else 'disabled'}: {destination}."
+                   if installed else f"{title} not installed: {destination}.")
         return {"installed": installed, "enabled": enabled, "patch_path": str(destination),
-                "config_path": str(config), "message": message + " Last-resort fetch only; not a CPU play-calling fix. In-game result unwitnessed."}
+                "config_path": str(config), "message": message + note}
 
-    def install_pass_fetch_patch(self, source: Path, *, consent: bool = False) -> dict:
+    def install_pass_fetch_patch(self, source: Path, *, consent: bool = False, kind="pass_fetch") -> dict:
+        filename, validator, _title, _note = self._patch_contract(kind)
         if not consent:
             raise LaunchError("Installing a patch and enabling Xenia patches needs consent in the dialog")
         source = self.settings._regular(source, "Pass-fetch patch")
         payload = source.read_bytes()
-        _profile, enabled = _pass_fetch_profile(payload)
+        _profile, enabled = validator(payload)
         if not enabled:
             raise LaunchError("The chosen patch is disabled; export an enabled Studio pass-fetch patch")
-        destination = self.settings.patches_folder / PASS_FETCH_FILENAME
+        destination = self.settings.patches_folder / filename
         config = self.settings.emulator_config
         old_patch = None
         if destination.exists() or destination.is_symlink():
             self.settings._regular(destination, "Installed patch")
             old_patch = destination.read_bytes()
-            _pass_fetch_profile(old_patch)
+            validator(old_patch)
         old_config = b""
         config_existed = config.exists()
         if config.exists() or config.is_symlink():
@@ -445,16 +460,17 @@ class XeniaLauncher:
                 else:
                     _atomic_bytes(destination, old_patch)
             raise
-        return self.pass_fetch_status()
+        return self.pass_fetch_status(kind=kind)
 
-    def remove_pass_fetch_patch(self) -> dict:
-        destination = self.settings.patches_folder / PASS_FETCH_FILENAME
+    def remove_pass_fetch_patch(self, *, kind="pass_fetch") -> dict:
+        filename, validator, _title, _note = self._patch_contract(kind)
+        destination = self.settings.patches_folder / filename
         if destination.exists() or destination.is_symlink():
             self.settings._regular(destination, "Installed patch")
-            _pass_fetch_profile(destination.read_bytes())
+            validator(destination.read_bytes())
             destination.unlink()
         # Other Xenia patches may need apply_patches; leave that global setting alone.
-        return self.pass_fetch_status()
+        return self.pass_fetch_status(kind=kind)
 
     def launch(self, game_root: Path, *, extra_env: Mapping[str, str] | None = None) -> LaunchReceipt:
         if not self.settings.configured or self.settings.xenia_path is None:

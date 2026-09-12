@@ -58,22 +58,28 @@ def prepare_book(index: Path, outer: int, existing=()) -> dict:
 class ApfPlaycallPanel(QWidget):
     modifiedChanged = pyqtSignal()
 
-    def __init__(self, facade, run_task):
+    def __init__(self, facade, run_task, *, patch_only=False):
         super().__init__()
         self.facade, self.run_task = facade, run_task
+        self._patch_only = patch_only
         self._preview = None
         self._catalog_index = None
         self._generation = 0
         self._busy = False
         self._title_update = None
-        root = QVBoxLayout(self)
+        layout = QVBoxLayout(self)
+        self.audible_controls = QWidget(self)
+        self.patch_controls = QWidget(self)
+        layout.addWidget(self.audible_controls)
+        layout.addWidget(self.patch_controls)
+        root = QVBoxLayout(self.audible_controls)
         intro = QLabel("Balance CPU audibles using plays already in each formation. "
                        "Records without both a run and a pass are listed below. "
                        "Personnel and CPU behavior remain unwitnessed in game.")
         intro.setWordWrap(True); root.addWidget(intro)
         row = QHBoxLayout()
         self.book_picker = QComboBox()
-        for outer, name in getattr(facade, "book_choices", splb.STOCK_BOOKS).items():
+        for outer, name in (splb.STOCK_BOOKS if patch_only else getattr(facade, "book_choices", splb.STOCK_BOOKS)).items():
             self.book_picker.addItem(name, outer)
         self.book_picker.setAccessibleName("CPU playbook")
         self.preview_button = QPushButton("Preview CPU audibles and personnel")
@@ -95,6 +101,7 @@ class ApfPlaycallPanel(QWidget):
                                                         "Advertised before / after", "TE in stock MASTER"))
         self.personnel_table.setAccessibleName("Personnel availability before and after")
         root.addWidget(self.personnel_table)
+        root = QVBoxLayout(self.patch_controls)
         patch_row = QHBoxLayout()
         self.image_picker = QComboBox()
         self.image_picker.addItem("Choose game folder", "folder")
@@ -136,6 +143,18 @@ class ApfPlaycallPanel(QWidget):
         self.config_button.clicked.connect(self.choose_xenia_config)
         self.patch_status_button.clicked.connect(self.refresh_patch_status)
         root.addLayout(row)
+        for widget, sentence in (
+            (self.image_picker, "The studio reads this executable source to choose the patch matching the game Xenia will run."),
+            (self.update_button, "The studio reads this update so the installed patch matches Title Update 1.1."),
+            (self.auto_update_button, "The studio looks for the installed update to match the patch to the game Xenia will run."),
+            (self.patch_button, "Xenia will bias only last-resort pass fetches toward tight-end personnel after you consent to installation."),
+            (self.install_existing_button, "Xenia will load this verified exported pass-fetch experiment after you consent to installation."),
+            (self.remove_patch_button, "Xenia stops applying this Studio pass-fetch patch after you remove it and restart."),
+            (self.config_button, "Xenia launches with this config, whose apply_patches setting controls whether installed patches take effect."),
+            (self.patch_status_button, "The studio reads whether the pass-fetch patch is installed and enabled for Xenia's selected launch config."),
+        ):
+            widget.setToolTip(sentence)
+            widget.setAccessibleDescription(sentence)
         self.set_context()
 
     def _source(self):
@@ -143,6 +162,8 @@ class ApfPlaycallPanel(QWidget):
         return getattr(source, "index_0a", None)
 
     def set_context(self, *args):
+        if self._patch_only:
+            return
         if self._catalog_index != self._source():
             self._catalog_index = self._source()
             selected = self.book_picker.currentText()

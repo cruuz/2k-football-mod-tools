@@ -1031,3 +1031,4 @@ class BuildReceipt:
     changed_outer_entries: tuple[int, ...]
     output_0a_sha256: str
     source_unchanged: bool
+    teams_now_own_books: tuple[str, ...] = ()

@@ -1,0 +1,242 @@
+[
+  {
+    "backend": {
+      "module": "mod_editor/apf_studio/playcalling_service.py",
+      "command": "python3 -m mod_editor.apf_studio.playcalling_service --game-folder <folder> --project <project.apf2k8mod> --output <new-folder>",
+      "operation": "write"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "tests/mod_editor/test_apf_playcalling_editor_facade.py",
+      "docs/mod_editor/apf_b67_play_calling_editor.md"
+    ],
+    "game": "apf2k8_xbox360",
+    "gui": {
+      "default_enabled": false,
+      "expose": true,
+      "mode": "edit",
+      "reason": "CPU Play Calling tab with worker previews, reviewed edits and explicit staging. No option or patch is enabled by a preset. Merge only with the accepted P3 core writers."
+    },
+    "id": "apf2k8.playbooks.cpu_playcalling",
+    "input_constraints": [
+      "A loaded APF source and the integrated beta-67 P3 model/writers are required. No production substitutes are supplied.",
+      "Book choices resolve by name; project replay checks reviewed before/after facts and refuses conflicts.",
+      "MASTER and curve changes affect every book; personnel retirement with uncovered rows is refused until P3 classifies the lineup callers as non-CPU."
+    ],
+    "portme": [
+      "Integrate and run P3 writer/model proofs before merging this proposed offline-writer-proved row; P4 synthetic contract tests alone do not prove those writers.",
+      "Keep gameplay UNWITNESSED until Noah observes edited calls in the game."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship authored code and logical selectors only. Retail books, executable images and reconstructed title updates remain private.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "status": "not-tested",
+      "scope": "UNWITNESSED. P4 proves UI, project/undo, synthetic archive composition and installer plumbing using injected test contract modules. Real P3 integration and gameplay require separate acceptance.",
+      "evidence": []
+    },
+    "selectors": {
+      "fields": [
+        {
+          "name": "team_and_book",
+          "allowed": "24 retail teams; named offense/defense books, including stock, USER and global donors",
+          "required": true
+        }
+      ],
+      "notes": "The facade stages one authored recipe containing ordered, undoable edit receipts; the copied-game builder applies it after existing asset edits."
+    },
+    "source_container": {
+      "format": "APF SPLB, MASTER PLAY and ROST; authored Xenia TOML for patches",
+      "hash_pins": [],
+      "resource": "Team book assignments, named books and MASTER personnel",
+      "retail_file": "User-owned All-Pro Football 2K8 (USA) extracted game folder"
+    },
+    "summary": "Per-team call preview and staged formation ratings, play ratings, personnel, removals, tendency and audibles. Gameplay UNWITNESSED.",
+    "surface": "scripts_config",
+    "title": "CPU Play Calling editor",
+    "validation_command": "python3 -m tests.mod_editor.test_apf_playcalling_editor_facade"
+  },
+  {
+    "backend": {
+      "module": "mod_editor/apf_studio/playcalling_service.py",
+      "command": "python3 -m mod_editor.apf_studio.playcalling_service --game-folder <folder> --project <project.apf2k8mod> --output <new-folder>",
+      "operation": "write"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "tests/mod_editor/test_apf_playcalling_editor_build.py",
+      "docs/mod_editor/apf_b67_play_calling_editor.md"
+    ],
+    "game": "apf2k8_xbox360",
+    "gui": {
+      "default_enabled": false,
+      "expose": true,
+      "mode": "edit",
+      "reason": "CPU Play Calling tab with worker previews, reviewed edits and explicit staging. No option or patch is enabled by a preset. Merge only with the accepted P3 core writers."
+    },
+    "id": "apf2k8.playbooks.own_team_books",
+    "input_constraints": [
+      "A loaded APF source and the integrated beta-67 P3 model/writers are required. No production substitutes are supplied.",
+      "Book choices resolve by name; project replay checks reviewed before/after facts and refuses conflicts.",
+      "MASTER and curve changes affect every book; personnel retirement with uncovered rows is refused until P3 classifies the lineup callers as non-CPU."
+    ],
+    "portme": [
+      "Integrate and run P3 writer/model proofs before merging this proposed offline-writer-proved row; P4 synthetic contract tests alone do not prove those writers.",
+      "Keep gameplay UNWITNESSED until Noah observes edited calls in the game."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship authored code and logical selectors only. Retail books, executable images and reconstructed title updates remain private.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "status": "not-tested",
+      "scope": "UNWITNESSED. P4 proves UI, project/undo, synthetic archive composition and installer plumbing using injected test contract modules. Real P3 integration and gameplay require separate acceptance.",
+      "evidence": []
+    },
+    "selectors": {
+      "fields": [
+        {
+          "name": "team_and_book",
+          "allowed": "24 retail teams; named offense/defense books, including stock, USER and global donors",
+          "required": true
+        }
+      ],
+      "notes": "The facade stages one authored recipe containing ordered, undoable edit receipts; the copied-game builder applies it after existing asset edits."
+    },
+    "source_container": {
+      "format": "APF SPLB, MASTER PLAY and ROST; authored Xenia TOML for patches",
+      "hash_pins": [],
+      "resource": "Team book assignments, named books and MASTER personnel",
+      "retail_file": "User-owned All-Pro Football 2K8 (USA) extracted game folder"
+    },
+    "summary": "Review per-team clone assignments and insert the batch before resolving final book content by name. Gameplay UNWITNESSED.",
+    "surface": "scripts_config",
+    "title": "Give teams their own books",
+    "validation_command": "python3 -m tests.mod_editor.test_apf_playcalling_editor_build"
+  },
+  {
+    "backend": {
+      "module": "mod_editor/apf_studio/playcalling_service.py",
+      "command": "python3 -m mod_editor.apf_studio.playcalling_service --game-folder <folder> --project <project.apf2k8mod> --output <new-folder>",
+      "operation": "write"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "tests/mod_editor/test_apf_playcalling_editor_qt.py",
+      "docs/mod_editor/apf_b67_play_calling_editor.md"
+    ],
+    "game": "apf2k8_xbox360",
+    "gui": {
+      "default_enabled": false,
+      "expose": true,
+      "mode": "edit",
+      "reason": "CPU Play Calling tab with worker previews, reviewed edits and explicit staging. No option or patch is enabled by a preset. Merge only with the accepted P3 core writers."
+    },
+    "id": "apf2k8.playbooks.master_personnel",
+    "input_constraints": [
+      "A loaded APF source and the integrated beta-67 P3 model/writers are required. No production substitutes are supplied.",
+      "Book choices resolve by name; project replay checks reviewed before/after facts and refuses conflicts.",
+      "MASTER and curve changes affect every book; personnel retirement with uncovered rows is refused until P3 classifies the lineup callers as non-CPU."
+    ],
+    "portme": [
+      "Integrate and run P3 writer/model proofs before merging this proposed offline-writer-proved row; P4 synthetic contract tests alone do not prove those writers.",
+      "Keep gameplay UNWITNESSED until Noah observes edited calls in the game."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship authored code and logical selectors only. Retail books, executable images and reconstructed title updates remain private.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "status": "not-tested",
+      "scope": "UNWITNESSED. P4 proves UI, project/undo, synthetic archive composition and installer plumbing using injected test contract modules. Real P3 integration and gameplay require separate acceptance.",
+      "evidence": []
+    },
+    "selectors": {
+      "fields": [
+        {
+          "name": "team_and_book",
+          "allowed": "24 retail teams; named offense/defense books, including stock, USER and global donors",
+          "required": true
+        }
+      ],
+      "notes": "The facade stages one authored recipe containing ordered, undoable edit receipts; the copied-game builder applies it after existing asset edits."
+    },
+    "source_container": {
+      "format": "APF SPLB, MASTER PLAY and ROST; authored Xenia TOML for patches",
+      "hash_pins": [],
+      "resource": "Team book assignments, named books and MASTER personnel",
+      "retail_file": "User-owned All-Pro Football 2K8 (USA) extracted game folder"
+    },
+    "summary": "Edit category rows and eleven personnel roles across every book, including the defensive 5-2 row-13 fix. Gameplay UNWITNESSED.",
+    "surface": "scripts_config",
+    "title": "MASTER personnel (EXPERIMENTAL)",
+    "validation_command": "python3 -m tests.mod_editor.test_apf_playcalling_editor_qt"
+  },
+  {
+    "backend": {
+      "module": "mod_editor/apf_studio/playcalling_patches.py",
+      "command": "python3 -m mod_editor.apf_studio.playcalling_patches --profile <base|tu1> --side <offense|defense> --output <new.patch.toml>",
+      "operation": "write"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "tests/mod_editor/test_apf_playcalling_editor_patches.py",
+      "docs/mod_editor/apf_b67_play_calling_editor.md"
+    ],
+    "game": "apf2k8_xbox360",
+    "gui": {
+      "default_enabled": false,
+      "expose": true,
+      "mode": "edit",
+      "reason": "CPU Play Calling tab with worker previews, reviewed edits and explicit staging. No option or patch is enabled by a preset. Merge only with the accepted P3 core writers."
+    },
+    "id": "apf2k8.playbooks.personnel_curve_patch",
+    "input_constraints": [
+      "A loaded APF source and the integrated beta-67 P3 model/writers are required. No production substitutes are supplied.",
+      "Book choices resolve by name; project replay checks reviewed before/after facts and refuses conflicts.",
+      "MASTER and curve changes affect every book; personnel retirement with uncovered rows is refused until P3 classifies the lineup callers as non-CPU."
+    ],
+    "portme": [
+      "Integrate and run P3 writer/model proofs before merging this proposed offline-writer-proved row; P4 synthetic contract tests alone do not prove those writers.",
+      "Keep gameplay UNWITNESSED until Noah observes edited calls in the game."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship authored code and logical selectors only. Retail books, executable images and reconstructed title updates remain private.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "status": "not-tested",
+      "scope": "UNWITNESSED. P4 proves UI, project/undo, synthetic archive composition and installer plumbing using injected test contract modules. Real P3 integration and gameplay require separate acceptance.",
+      "evidence": []
+    },
+    "selectors": {
+      "fields": [
+        {
+          "name": "team_and_book",
+          "allowed": "24 retail teams; named offense/defense books, including stock, USER and global donors",
+          "required": true
+        }
+      ],
+      "notes": "The facade stages one authored recipe containing ordered, undoable edit receipts; the copied-game builder applies it after existing asset edits."
+    },
+    "source_container": {
+      "format": "APF SPLB, MASTER PLAY and ROST; authored Xenia TOML for patches",
+      "hash_pins": [],
+      "resource": "Team book assignments, named books and MASTER personnel",
+      "retail_file": "User-owned All-Pro Football 2K8 (USA) extracted game folder"
+    },
+    "summary": "Prepare, consent to, install, check and remove offense or defense personnel curve presets through the Xenia installer. Gameplay UNWITNESSED.",
+    "surface": "scripts_config",
+    "title": "Personnel curve presets (EXPERIMENTAL)",
+    "validation_command": "python3 -m tests.mod_editor.test_apf_playcalling_editor_patches"
+  }
+]
