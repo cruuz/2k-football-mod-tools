@@ -124,13 +124,25 @@ class ContentTests(unittest.TestCase):
             dialog.close()
 
     def test_recipe_content_clone_is_verified_and_idempotent_without_editing_donor(self):
+        import playbook_inventory
+        import zlib
         from mod_editor.core import apf2k8_scheme_presets as presets
-        def prepared(index, recipe):
-            source = identity.read_resource(index, identity.filename_id(recipe['book_type']), 'spb', 'SPLB')
-            book = splb.parse_book(source[3], source[1].table_index)
+        # Beta 67 applies the preset to the already-authored donor book instead of
+        # recompiling it from the archive, so it now composes with MASTER directly.
+        # This synthetic archive carries no MASTER resource; supply it here.
+        master_id = zlib.crc32(b'PLAYBOOK_MASTER.IFF')
+        fake_master = (None, SimpleNamespace(table_index=0, name_id=master_id), None, b'', None, b'')
+        real_read = clone.read_resource
+        def read(index, name_id, inner, type_name):
+            if name_id == master_id:
+                return fake_master
+            return real_read(index, name_id, inner, type_name)
+        def applied(book, recipe, _master):
             changed = splb.compile_book(book, [splb.MembershipChange(book.outer_index, 0, 5, False)])
-            return SimpleNamespace(replacement=changed.replacement)
-        with patch.object(presets, 'compile_preset', side_effect=prepared):
+            return changed.replacement, {}
+        with patch.object(presets, 'apply_preset', side_effect=applied), \
+             patch.object(clone, 'read_resource', side_effect=read), \
+             patch.object(playbook_inventory, 'parse_apf_body', return_value={}):
             plan = clone.compile_unlock(self.source, [clone.CloneRequest(6, 4, 'O-ZoneBlock')],
                                         preset_ids=('wide-zone',))
             output = self.root / 'preset-copy'
