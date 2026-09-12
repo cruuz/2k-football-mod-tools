@@ -232,7 +232,8 @@ PATCHES = (
     ('music_unlock', 'Make every music collection available (experimental)', 'Retail: collections need Crib purchases. Patch: every collection is available without spending credits or setting purchase bits.'),
     ('music_userlist', 'Use jukebox songs instead of user playlists (experimental)', "Retail: UserList follows the user's disc or HDD playlist. Patch: UserList uses the 59-song jukebox bank instead. Requires jukebox menus."),
     ("scorebug", "Experimental ESPN scorebar", r62_ui.SCOREBUG_HELP),
-    ("scorebug_runtime", "Scorebug effects (diagnostic only)", r62_ui.SCOREBUG_RUNTIME_HELP),
+    ("scorebug_runtime", "Scorebug effects (reported Berman freeze)",
+     r62_ui.SCOREBUG_RUNTIME_HELP),
     ("guardian_cap", "Guardian caps on helmet C (experimental)",
      "Retail: Helmet C has its normal hard-shell look. Patch: Every player wearing "
      "helmet C shows a guardian cap. Helmet C's normal look is replaced while this is on. "

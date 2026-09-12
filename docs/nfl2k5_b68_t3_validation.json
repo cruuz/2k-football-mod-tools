@@ -1,0 +1,618 @@
+{
+  "schema": "nfl2k5.beta68.t3-validation.v1",
+  "runtime_witnessed": false,
+  "base_revision": "c8783a64406ce6b062a7b287173ecbe778f43df2",
+  "environment": {
+    "python": "3.12.3",
+    "QT_QPA_PLATFORM": "offscreen",
+    "PYTHONPATH": ".",
+    "PYTHONHASHSEED": "0",
+    "packages": {
+      "unicorn": "2.1.4",
+      "capstone": "5.0.9",
+      "Pillow": "10.2.0"
+    }
+  },
+  "manifest": {
+    "path": ".scratch/t3/gate-manifest.json",
+    "sha256": "001f3bc128a0250150ab6f677b68a45de1826916cdaac3828a9c6eb1b9464ea1",
+    "kind": "incremental gate projection; protected release manifest still requires regeneration"
+  },
+  "source_sha256": {
+    "tools/mycareer_mode/runtime.c": "2c236ab4dcd760e70b3ec5aee3f117506df809bf70ac965b6d96708d3e1970c6",
+    "tools/mycareer_mode/runtime.S": "dc3e5fd52aee0c2e34ecf5fa25f70ab9aaf0543dcdba8e42181b000fbe25eeb8",
+    "tools/mycareer_mode/m3_budget.json": "a7dd37109eaa5fb47268edd2f451368b90c7ddb6ca767115ca6ceb3798ec2674",
+    "mod_editor/core/nfl2k5_my_career_mode_code.py": "7746fa17bf59be6eafef5605cddf9c5ce4ab0e6199d0421644ab598a0a7ebc74",
+    "mod_editor/core/providers.py": "51fcf2f49e488d960ed5bb709833d153e297bdcf97d6e13fa0df2fc604a6238f",
+    "tests/mod_editor/test_nfl2k5_supersim_live.py": "fc03d55db69a6935ea04fd586d9797fa0c8ca2df65e3bece731f6b0cdbe0e22b",
+    "tests/mod_editor/test_nfl2k5_b68_game_composition.py": "21fbaeaaac1c15107b768c856ae92cc797e1405b059f7e97b9d2235fb7343f0c",
+    "tests/nfl2k5_b68_series.py": "3b4ad8acd758008f4110e98411241bf6c7afcf5be05bdab64c0c2ea558b042bd"
+  },
+  "groups": {
+    "gates/memory": [
+      {
+        "command": "python3 tests/mod_editor/test_xbe_patch_memory_writes.py",
+        "tests": 115,
+        "seconds": 1511.059,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 115 tests in 1511.059s\nOK",
+        "log_sha256": "50affeb704fd0600e52b5e4de94d1f2fd22f68cdb648d62b23025d79d2917f8f",
+        "max_rss_kib": 329500
+      }
+    ],
+    "gates/references": [
+      {
+        "command": "python3 tests/mod_editor/test_xbe_patch_cave_references.py",
+        "tests": 127,
+        "seconds": 1703.991,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 127 tests in 1703.991s\nOK",
+        "log_sha256": "36a7642b770039eb17bdd9296b02edfe9d0ce364b338413eab596aa3dfa74c50",
+        "max_rss_kib": 554576
+      }
+    ],
+    "gates/pairwise": [
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py",
+        "tests": 388,
+        "seconds": 2135.79,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 388 tests in 2135.790s\nOK",
+        "log_sha256": "f1a0f85e53d9e280191c807df543c6ed006972e589ba8f880dd9222b3e1de3b2",
+        "max_rss_kib": 195484
+      }
+    ],
+    "gates/oracle": [
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_cave_oracle.py",
+        "tests": 29,
+        "seconds": 357.243,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 29 tests in 357.243s\nOK",
+        "log_sha256": "5224a4c603298f27f77f8f7c74f447c4cea8569a08382145f056544cda9e9f95",
+        "max_rss_kib": 925712
+      }
+    ],
+    "career-a": [
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career.py",
+        "tests": 13,
+        "seconds": 20.346,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 13 tests in 20.346s\nOK",
+        "log_sha256": "ae8ae07f088c11818d399a3a9524ba524e925482bfb36b4d6c196ba730180882",
+        "max_rss_kib": 131840
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_control.py",
+        "tests": 2,
+        "seconds": 14.706,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 2 tests in 14.706s\nOK",
+        "log_sha256": "81af1b7c14a716c044b22ceeca9812d252e6078f24f34db803799d21291670f9",
+        "max_rss_kib": 237200
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_frontend.py",
+        "tests": 7,
+        "seconds": 56.659,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 7 tests in 56.659s\nOK",
+        "log_sha256": "c93a04a32ede497af12c9fde83f121df069df310e054551cb3d8ed9fc2c47c84",
+        "max_rss_kib": 227880
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_creation_boundary.py",
+        "tests": 4,
+        "seconds": 2.111,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 4 tests in 2.111s\nOK",
+        "log_sha256": "961a66bd571ba7c7e8b9f2db9eba7ea1da32c59c85662f79d52ae2390fca438c",
+        "max_rss_kib": 168740
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_signing.py",
+        "tests": 6,
+        "seconds": 48.159,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 6 tests in 48.159s\nOK",
+        "log_sha256": "62aef687b7a22c6b81596d6962bb0f4e1e73d7ab9ce3368bf5e6b3721d8d62c0",
+        "max_rss_kib": 380476
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_inline.py",
+        "tests": 8,
+        "seconds": 12.754,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 8 tests in 12.754s\nOK",
+        "log_sha256": "46142ed8a4163e74541697227003967b4776c005ed51f08b23ef600eeeb8ecd9",
+        "max_rss_kib": 299768
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_settings.py",
+        "tests": 9,
+        "seconds": 29.243,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 9 tests in 29.243s\nOK",
+        "log_sha256": "67ca461be24929b9822ba31bfb90a4845e676f7dd4b53cae0fa2be6b45afa0c7",
+        "max_rss_kib": 282768
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_unicorn.py",
+        "tests": 18,
+        "seconds": 12.082,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 18 tests in 12.082s\nOK",
+        "log_sha256": "cd48482a47b8aca78cf344ec2fabcc5041edd28aac1fb84a986e1786867de444",
+        "max_rss_kib": 308652
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_m3_menus.py",
+        "tests": 4,
+        "seconds": 35.527,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 4 tests in 35.527s\nOK",
+        "log_sha256": "37682bfcf791b13dc3a575109a7ded4048b4d558f62bb9e67cdd153dcb5bb2f9",
+        "max_rss_kib": 185640
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_m3_budget.py",
+        "tests": 5,
+        "seconds": 4.357,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 5 tests in 4.357s\nOK",
+        "log_sha256": "c1789794b69263de2431b7b5d3e521c3acfe0bbc81648357eb3dbb41bc237893",
+        "max_rss_kib": 126764
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_mode_audit.py",
+        "tests": 6,
+        "seconds": 0.064,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 6 tests in 0.064s\nOK",
+        "log_sha256": "d9a6fbb5efd7e356e75945c2ad1ca1efd2c318f3a81684652a70cd3195ac8a6e",
+        "max_rss_kib": 65832
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_mode_routes.py",
+        "tests": 7,
+        "seconds": 2.761,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 7 tests in 2.761s\nOK",
+        "log_sha256": "c7622241421e1f53db528e4963ef386e2fed67ffc96339b01eeb56a1066a8933",
+        "max_rss_kib": 325808
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_manifest.py",
+        "tests": 3,
+        "seconds": 7.626,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 3 tests in 7.626s\nOK",
+        "log_sha256": "c078b75ae5d534a0707a3cf8c1804422c93b388159681aea4bdd2a90b36eecb5",
+        "max_rss_kib": 140100
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_generic_build.py",
+        "tests": 5,
+        "seconds": 10.41,
+        "skipped": 1,
+        "exit_code": 0,
+        "output": "Ran 5 tests in 10.410s\nOK (skipped=1)",
+        "log_sha256": "dd2c63e92033c59c610e4fa08dc19c3dc1af866d4388d8e49127477f6bdf564f",
+        "max_rss_kib": 162516
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_supersim.py",
+        "tests": 12,
+        "seconds": 8.745,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 12 tests in 8.745s\nOK",
+        "log_sha256": "2e2b7a47a4235b78c36b912aa6f897b9d4394adb205a3363266603604343c564",
+        "max_rss_kib": 264644
+      },
+      {
+        "command": "python3 tests/mod_editor/test_beta66_supersim_wiring.py",
+        "tests": 3,
+        "seconds": 0.283,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 3 tests in 0.283s\nOK",
+        "log_sha256": "624ed73f7a60e80a4bfc77986b7aecd1b1ad5f8e17de3f3975ac734de1e0ec20",
+        "max_rss_kib": 78152
+      }
+    ],
+    "career-b": [
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_played.py",
+        "tests": 4,
+        "seconds": 58.421,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 4 tests in 58.421s\nOK",
+        "log_sha256": "155b5c8349d40dbd8e7712bbfe2500d89b144227e11c6a750795dfc6d453f80e",
+        "max_rss_kib": 199232
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_completion.py",
+        "tests": 6,
+        "seconds": 31.286,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 6 tests in 31.286s\nOK",
+        "log_sha256": "3baa0b02a95c0c3797b44edbbb5281cdbacc5a08a06c17ed12ebe77ca2ee2ff4",
+        "max_rss_kib": 302972
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_mode4.py",
+        "tests": 8,
+        "seconds": 442.986,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 8 tests in 442.986s\nOK",
+        "log_sha256": "b4a75d4aa52de248c21b43fd6771facc07bcf9dd741225436e5584deed006454",
+        "max_rss_kib": 327284
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_mode5.py",
+        "tests": 4,
+        "seconds": 283.514,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 4 tests in 283.514s\nOK",
+        "log_sha256": "362e256680223c41616ecbf337dd7173dbccdd2d38a6ea737d90b25c96a7db22",
+        "max_rss_kib": 432692
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_position_inputs.py",
+        "tests": 9,
+        "seconds": 16.933,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 9 tests in 16.933s\nOK",
+        "log_sha256": "05772919007f724befe934452e5d6cfd3e154774ba67a13a629ff5ac4ee4ef58",
+        "max_rss_kib": 319120
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_choice.py",
+        "tests": 1,
+        "seconds": 17.631,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 1 test in 17.631s\nOK",
+        "log_sha256": "42e940c8a7ac0ac7774f0033013d57fc117b13fc4140173db9920718f3deaff0",
+        "max_rss_kib": 146752
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_turnover.py",
+        "tests": 3,
+        "seconds": 66.289,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 3 tests in 66.289s\nOK",
+        "log_sha256": "a6d42231f321f57a0910e8a3f39cc1ebe6ba83c6e421f024fb3274820b5e2bfc",
+        "max_rss_kib": 169520
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_frame.py",
+        "tests": 1,
+        "seconds": 63.983,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 1 test in 63.983s\nOK",
+        "log_sha256": "e4f58dfcf6fd8611b057bb1244f62e90cc6ca83e75816af99c13acbb5fa8feac",
+        "max_rss_kib": 135324
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_period.py",
+        "tests": 2,
+        "seconds": 36.407,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 2 tests in 36.407s\nOK",
+        "log_sha256": "ff324756016b04c447f65dc8ebf89b2bf87404d0b021f149607684911db57772",
+        "max_rss_kib": 168872
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_injury.py",
+        "tests": 1,
+        "seconds": 22.518,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 1 test in 22.518s\nOK",
+        "log_sha256": "8c019532f673995d4c3be50e48ad56450ba23b6cc80b8d7cd83b29ac817b8a90",
+        "max_rss_kib": 134828
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_timeout.py",
+        "tests": 1,
+        "seconds": 19.969,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 1 test in 19.969s\nOK",
+        "log_sha256": "db266a45efcbec180c6036bd448ad2985cff3572fffe57dae60464d0274792b3",
+        "max_rss_kib": 133520
+      }
+    ],
+    "career-c": [
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_draft.py",
+        "tests": 6,
+        "seconds": 1128.336,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 6 tests in 1128.336s\nOK",
+        "log_sha256": "b69b58559d7d395089fb543498a88f7406c9e58a3fed2f68efcfbbf62499167f",
+        "max_rss_kib": 286640
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_upgrades.py",
+        "tests": 4,
+        "seconds": 254.47,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 4 tests in 254.470s\nOK",
+        "log_sha256": "47698d456fe45b4de35b6105357003aa09c71dc759afdf3d38a6e0b5349d0e66",
+        "max_rss_kib": 358848
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_week.py",
+        "tests": 1,
+        "seconds": 328.194,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 1 test in 328.194s\nOK",
+        "log_sha256": "da959f3d78f65f112a94ef848019996cdf0c922d83ff373596dcec6b67a39d05",
+        "max_rss_kib": 171508
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_my_career_season.py",
+        "tests": 1,
+        "seconds": 148.11,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 1 test in 148.110s\nOK",
+        "log_sha256": "5b8f629b248fa363547c23d0bd5fbea13034d39b5521542604cfc825aa2b845e",
+        "max_rss_kib": 197296
+      }
+    ],
+    "live-final": [
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_supersim_live.py",
+        "tests": 34,
+        "seconds": 2350.15,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 34 tests in 2350.150s\nOK",
+        "log_sha256": "197c3c0f318610265fe51f4d7a56b89725867f95655355a10627417baa0758d0",
+        "max_rss_kib": 409584
+      }
+    ],
+    "read-option": [
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_read_option.py",
+        "tests": 15,
+        "seconds": 9.382,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 15 tests in 9.382s\nOK",
+        "log_sha256": "8ca1b9c3a4da804acfdc4ebffe5ccd1d3470a3c4d8b82940e8a1560778ef0c4d"
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_read_option_runtime.py",
+        "tests": 13,
+        "seconds": 46.557,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 13 tests in 46.557s\nOK",
+        "log_sha256": "e95b4456e077ec7c5f9087adc9c31b60e72971a41fd6a2f65b69fcc701acf700"
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_read_option_unicorn.py",
+        "tests": 6,
+        "seconds": 2.849,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 6 tests in 2.849s\nOK",
+        "log_sha256": "2f3971018ce5950b420e078817e825519156c90f15f04a81876ae4b8d12c5192"
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_read_option_controls.py",
+        "tests": 9,
+        "seconds": 17.227,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 9 tests in 17.227s\nOK",
+        "log_sha256": "95ae92662be0c2986eecbe5b09746234ac34278335bcda3d7f2c69e6ea00d3be"
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_read_option_frames.py",
+        "tests": 10,
+        "seconds": 37.202,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 10 tests in 37.202s\nOK",
+        "log_sha256": "6696fc26e8a8a043a502d06792e3aede224d44f8cfd3eb1d57acac6e0e9a64c5"
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_read_option_screen_hooks_compose.py",
+        "tests": 9,
+        "seconds": 88.316,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 9 tests in 88.316s\nOK",
+        "log_sha256": "b310e5aa06a85b0de4e8c8188be72d3aeb8e689136d4f81ecb2263aa951e8337"
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_read_option_diagnostic.py",
+        "tests": 17,
+        "seconds": 26.649,
+        "skipped": 4,
+        "exit_code": 0,
+        "output": "Ran 17 tests in 26.649s\nOK (skipped=4)",
+        "log_sha256": "665c7e83d41ab8f61bb270ea6e5ab36437d7c56da4c322ae2cae351def63b5e9"
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_play_intents.py",
+        "tests": 20,
+        "seconds": 33.531,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 20 tests in 33.531s\nOK",
+        "log_sha256": "e670ecc5225ed17cb9c3dc4e6ae0fea7a089d0e90eeb2bff4bbe73b9eae5c148"
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_playbook_pair.py",
+        "tests": 7,
+        "seconds": 7.56,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 7 tests in 7.560s\nOK",
+        "log_sha256": "c957e88cddf4a041778f3824d95b26f44b380fae16870dbcf7ef45d942e110bf"
+      }
+    ],
+    "transitions": [
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_b661_transition.py",
+        "tests": 11,
+        "seconds": 460.123,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 11 tests in 460.123s\nOK",
+        "log_sha256": "5ac91dea7dade485d101da77745c458698d73ef5c1e4995ef6e0c1fa08dadca4"
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_presentation_v6.py",
+        "tests": 5,
+        "seconds": 8.922,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 5 tests in 8.922s\nOK",
+        "log_sha256": "e20a7400430199e7f014653747dccc645808b90d24eabcbdb852683cea6ebe9e"
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+        "tests": 12,
+        "seconds": 98.724,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 12 tests in 98.724s\nOK",
+        "log_sha256": "bed8cc35d8771a01f446a015063b98d508765834079ecd3a30ec6c6328d62dd7"
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_freeze.py",
+        "tests": 7,
+        "seconds": 206.98,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 7 tests in 206.980s\nOK",
+        "log_sha256": "4b4a4e1c718c013fdb829b7bf38d8d9d7cac0a3c662cfba403eabc255d26f250"
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_native.py",
+        "tests": 4,
+        "seconds": 96.821,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 4 tests in 96.821s\nOK",
+        "log_sha256": "6274cadddb4addf4a9ad6eef8a403854e13a928e51a205b51c5899618d97d84e"
+      },
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+        "tests": 6,
+        "seconds": 102.874,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 6 tests in 102.874s\nOK",
+        "log_sha256": "76aa94d5b0f64e29ea403498d896c732ba25ef5c7eedc49638aab69e081f70e5"
+      }
+    ],
+    "clock": [
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_accelerated_clock.py",
+        "tests": 40,
+        "seconds": 36.907,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 40 tests in 36.907s\nOK",
+        "log_sha256": "494dc9840d66a28fce5d0aa57e2207481acea7a533821249bacdda610c57cc21"
+      }
+    ],
+    "additional": [
+      {
+        "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py",
+        "tests": 7,
+        "seconds": 283.819,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 7 tests in 283.819s\nOK",
+        "log_sha256": "5482fef23e25930f8570fb4662235b4a98ee8eb10fa5a7c9102b091de1a44a03",
+        "source_phase": "Before MyCareer edits; scorebug owner source unchanged"
+      },
+      {
+        "command": "NFL2K5_B68_COMPOSITION_TRACE=.scratch/t3/composition.json python3 tests/mod_editor/test_nfl2k5_b68_game_composition.py",
+        "tests": 3,
+        "seconds": 418.482,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 3 tests in 418.482s\nOK",
+        "log_sha256": "860eca0016404d30d2f872adb99855669938dd81eeb9d55665cf9ce25bf0bbfb"
+      },
+      {
+        "command": "python3 tests/nfl2k5_kick_rules_test.py",
+        "tests": 34,
+        "seconds": 3.703,
+        "skipped": 0,
+        "exit_code": 0,
+        "output": "Ran 34 tests in 3.703s\nOK",
+        "log_sha256": "c83d05e91aef6c967e7088f1e11013010eac140ea7a221baed56e46f621f6061"
+      }
+    ]
+  },
+  "checks": [
+    {
+      "command": "python3 tools/mycareer_mode/build_runtime.py --check",
+      "exit_code": 0,
+      "output": "MyCareer mode runtime verified"
+    },
+    {
+      "command": "python3 tools/nfl2k5_my_career_assemble.py --check",
+      "exit_code": 0,
+      "output": "MyCareer template verified"
+    }
+  ],
+  "negative_control": {
+    "base_revision": "c8783a64406ce6b062a7b287173ecbe778f43df2",
+    "command": "python3 tests/mod_editor/test_nfl2k5_supersim_live.py RuntimeTests.test_b_cancel_preserves_choice_and_rearms_only_at_next_cpu_snap RuntimeTests.test_human_receiver_b_and_reconnect_do_not_change_saved_supersim RuntimeTests.test_pat_choice_survives_off_field_personnel_and_wait_latch",
+    "output": "Ran 3 tests in 3.275s; FAILED (failures=4)",
+    "failures": [
+      "B cancel: saved word 1 != 2",
+      "Human receiver B: saved word 1 != 2",
+      "Home PAT human predicate: 0 != 1",
+      "Away PAT human predicate: 0 != 1"
+    ],
+    "log_sha256": "1f514587beba08df77e3259e0500616c594963e210eabce9f14ab8dbfe14aaf0"
+  },
+  "skip_reasons": [
+    "Four read-option diagnostic tests need Noah's absent private bo disc (NFL2K5_READ_OPTION_BO_XISO).",
+    "One generic MyCareer build test requires the 100 GiB free-space floor; root was below that floor."
+  ],
+  "acceptance": "Bounded native execution only. Berman unreproduced; played Supersim, PAT, kickoff and read/RPO behavior UNWITNESSED."
+}

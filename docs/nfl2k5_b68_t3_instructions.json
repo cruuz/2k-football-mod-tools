@@ -1,0 +1,217 @@
+{
+  "runtime_witnessed": false,
+  "recipe": "MyCareer mode.apply(retail_bytes())",
+  "base_revision": "c8783a64406ce6b062a7b287173ecbe778f43df2",
+  "code_va": "0x14dc000",
+  "state_va": "0x14f2000",
+  "cases": {
+    "before": {
+      "content_sha256": "b9a781322fbe9eec58017561adb0c2f102fc4a42c52115498cfd458911d92630",
+      "labels": {
+        "inline_encode": "0x14dd08e",
+        "mode_ff_frame": "0x14dd747",
+        "mode_ff_ready": "0x14dd53d",
+        "mode_human": "0x14dd660",
+        "mode_postgame": "0x14de467",
+        "mode_skip_ready": "0x14dd4c4"
+      },
+      "instructions": [
+        {
+          "pc": "0x14dc88e",
+          "owner_offset": "0x88e",
+          "instruction": "mov edx, dword ptr [0x14f2a88]"
+        },
+        {
+          "pc": "0x14dccae",
+          "owner_offset": "0xcae",
+          "instruction": "mov dword ptr [0x14f2a88], 2"
+        },
+        {
+          "pc": "0x14dd130",
+          "owner_offset": "0x1130",
+          "instruction": "mov eax, dword ptr [0x14f2a88]"
+        },
+        {
+          "pc": "0x14dd185",
+          "owner_offset": "0x1185",
+          "instruction": "mov dword ptr [0x14f2a88], edx"
+        },
+        {
+          "pc": "0x14dd4c4",
+          "owner_offset": "0x14c4",
+          "instruction": "cmp dword ptr [0x14f2a88], 1"
+        },
+        {
+          "pc": "0x14dd521",
+          "owner_offset": "0x1521",
+          "instruction": "mov dword ptr [0x14f2a88], 1"
+        },
+        {
+          "pc": "0x14dd53d",
+          "owner_offset": "0x153d",
+          "instruction": "cmp dword ptr [0x14f2a88], 2"
+        },
+        {
+          "pc": "0x14dd5ac",
+          "owner_offset": "0x15ac",
+          "instruction": "mov dword ptr [0x14f2a88], 1"
+        },
+        {
+          "pc": "0x14dd5d7",
+          "owner_offset": "0x15d7",
+          "instruction": "cmp dword ptr [0xe602b4], 0"
+        },
+        {
+          "pc": "0x14dd691",
+          "owner_offset": "0x1691",
+          "instruction": "cmp dword ptr [0xe602b4], 4"
+        },
+        {
+          "pc": "0x14ddf38",
+          "owner_offset": "0x1f38",
+          "instruction": "mov edx, dword ptr [0x14f2a88]"
+        },
+        {
+          "pc": "0x14ddf4b",
+          "owner_offset": "0x1f4b",
+          "instruction": "mov dword ptr [0x14f2a88], eax"
+        },
+        {
+          "pc": "0x14de35d",
+          "owner_offset": "0x235d",
+          "instruction": "mov dword ptr [0x14f2a88], 2"
+        }
+      ]
+    },
+    "after": {
+      "content_sha256": "26a6f3f554da453e9a5e9430356a0dd10327c7e07990447cd068a2307d7de4ea",
+      "labels": {
+        "inline_encode": "0x14dd1a6",
+        "mode_cancelled": "0x14dc9b6",
+        "mode_ff_frame": "0x14dd866",
+        "mode_ff_ready": "0x14dd73e",
+        "mode_human": "0x14dd645",
+        "mode_pat_choice": "0x14dcd04",
+        "mode_postgame": "0x14de58c",
+        "mode_skip_ready": "0x14dd5e3"
+      },
+      "instructions": [
+        {
+          "pc": "0x14dc88e",
+          "owner_offset": "0x88e",
+          "instruction": "mov edx, dword ptr [0x14f2a88]"
+        },
+        {
+          "pc": "0x14dc9d0",
+          "owner_offset": "0x9d0",
+          "instruction": "cmp dword ptr [0x14f2aac], 0"
+        },
+        {
+          "pc": "0x14dc9e2",
+          "owner_offset": "0x9e2",
+          "instruction": "mov dword ptr [0x14f2aac], eax"
+        },
+        {
+          "pc": "0x14dc9f3",
+          "owner_offset": "0x9f3",
+          "instruction": "mov eax, dword ptr [0x14f2aac]"
+        },
+        {
+          "pc": "0x14dca02",
+          "owner_offset": "0xa02",
+          "instruction": "mov dword ptr [0x14f2aac], 2"
+        },
+        {
+          "pc": "0x14dca18",
+          "owner_offset": "0xa18",
+          "instruction": "and dword ptr [0x14f2aac], 0"
+        },
+        {
+          "pc": "0x14dca21",
+          "owner_offset": "0xa21",
+          "instruction": "cmp dword ptr [0x14f2aac], 0"
+        },
+        {
+          "pc": "0x14dcd06",
+          "owner_offset": "0xd06",
+          "instruction": "cmp dword ptr [0xe602b4], 3"
+        },
+        {
+          "pc": "0x14dcdbf",
+          "owner_offset": "0xdbf",
+          "instruction": "mov dword ptr [0x14f2a88], 2"
+        },
+        {
+          "pc": "0x14dcdde",
+          "owner_offset": "0xdde",
+          "instruction": "and dword ptr [0x14f2aac], 0"
+        },
+        {
+          "pc": "0x14dd248",
+          "owner_offset": "0x1248",
+          "instruction": "mov eax, dword ptr [0x14f2a88]"
+        },
+        {
+          "pc": "0x14dd29d",
+          "owner_offset": "0x129d",
+          "instruction": "mov dword ptr [0x14f2a88], edx"
+        },
+        {
+          "pc": "0x14dd2a8",
+          "owner_offset": "0x12a8",
+          "instruction": "and dword ptr [0x14f2aac], 0"
+        },
+        {
+          "pc": "0x14dd5e3",
+          "owner_offset": "0x15e3",
+          "instruction": "cmp dword ptr [0x14f2a88], 1"
+        },
+        {
+          "pc": "0x14dd688",
+          "owner_offset": "0x1688",
+          "instruction": "cmp dword ptr [0xe602b4], 4"
+        },
+        {
+          "pc": "0x14dd73e",
+          "owner_offset": "0x173e",
+          "instruction": "cmp dword ptr [0x14f2a88], 2"
+        },
+        {
+          "pc": "0x14dd7ba",
+          "owner_offset": "0x17ba",
+          "instruction": "cmp dword ptr [0xe602b4], 0"
+        },
+        {
+          "pc": "0x14de056",
+          "owner_offset": "0x2056",
+          "instruction": "mov edx, dword ptr [0x14f2a88]"
+        },
+        {
+          "pc": "0x14de069",
+          "owner_offset": "0x2069",
+          "instruction": "mov dword ptr [0x14f2a88], eax"
+        },
+        {
+          "pc": "0x14de06e",
+          "owner_offset": "0x206e",
+          "instruction": "and dword ptr [0x14f2aac], 0"
+        },
+        {
+          "pc": "0x14de482",
+          "owner_offset": "0x2482",
+          "instruction": "mov dword ptr [0x14f2a88], 2"
+        },
+        {
+          "pc": "0x14de58f",
+          "owner_offset": "0x258f",
+          "instruction": "and dword ptr [0x14f2aac], 0"
+        },
+        {
+          "pc": "0x14df5a6",
+          "owner_offset": "0x35a6",
+          "instruction": "mov dword ptr [0x14f2aac], eax"
+        }
+      ]
+    }
+  }
+}

@@ -315,7 +315,7 @@ class RuntimeTests(unittest.TestCase):
                     m.presented_frame()
                     self.assertEqual(m.counts['updates'], 1)
                 self.assertEqual(m.get(m.state+2716), 0)
-                if case in ('disconnect','cancel'): self.assertEqual(m.get(m.state+2696), 1)
+                if case in ('disconnect','cancel'): self.assertEqual(m.get(m.state+2696), 2)
 
     def test_installed_handoff_waits_for_readiness_all_positions_and_full_clock(self):
         from tests.nfl2k5_supersim_scheduler import Machine as SchedulerMachine
@@ -337,6 +337,59 @@ class RuntimeTests(unittest.TestCase):
                     self.assertEqual(m.get(m.get(0xE60294)+16),0x42200000)
                     self.assertEqual(m.get(0xBD8210),0)
                     self.assertEqual(m.get(0xE602B8),13)
+
+    def test_b_cancel_preserves_choice_and_rearms_only_at_next_cpu_snap(self):
+        from tests.nfl2k5_supersim_scheduler import Machine as SchedulerMachine
+        with SchedulerMachine(self.payload) as m:
+            m.setup(); m.absent(); m.put(0xE602B8, 14)
+            m.presented_frame()
+            self.assertEqual(m.counts['updates'], 8)
+            m.put(0xB37A78, 0x200)
+            m.presented_frame()
+            self.assertEqual(m.counts['updates'], 9)
+            self.assertEqual(m.get(m.state + 2696), 2)
+            m.put(0xB37A78, 0)
+            for phase in (14, 18, 11, 12, 13):
+                m.put(0xE602B8, phase)
+                before = m.counts['updates']
+                m.presented_frame()
+                self.assertEqual(m.counts['updates'] - before, 1)
+            m.put(0xE602B8, 14)
+            before = m.counts['updates']
+            m.presented_frame()
+            self.assertEqual(m.counts['updates'] - before, 8)
+            self.assertEqual(m.get(m.state + 2696), 2)
+
+    def test_human_receiver_b_and_reconnect_do_not_change_saved_supersim(self):
+        from tests.nfl2k5_supersim_scheduler import Machine as SchedulerMachine
+        with SchedulerMachine(self.payload) as m:
+            m.setup(); m.put(0xE602B8, 14); m.put(0xB37A78, 0x200)
+            m.presented_frame()
+            self.assertEqual(m.get(m.state + 2696), 2)
+            self.assertEqual(m.get(m.state + 2732), 0)
+            m.put(0xB37A78, 0); m.absent(); m.put(0xB37A70, 0)
+            m.presented_frame()
+            self.assertEqual(m.get(m.state + 2696), 2)
+            m.put(0xB37A70, 1)
+            before = m.counts['updates']
+            m.presented_frame()
+            self.assertEqual(m.counts['updates'] - before, 8)
+
+    def test_pat_choice_survives_off_field_personnel_and_wait_latch(self):
+        from tests.nfl2k5_supersim_scheduler import Machine as SchedulerMachine
+        for away in (False, True):
+            with self.subTest(away=away), SchedulerMachine(self.payload) as m:
+                m.setup(0, away)
+                m.put(0xE60280, m.side)
+                m.put(0xE60284, 0xE5FC20 if away else 0xE5FC60)
+                m.put(0xE602B4, 3); m.put(0xE602B8, 11)
+                m.absent(); m.put(m.state + 2708, 1)
+                self.assertEqual(m.call(0x1891B0, ecx=m.side), 1)
+                self.assertEqual(m.call('mode_ff_ready', ecx=m.manager), 0)
+                self.assertEqual(m.get(m.state + 2696), 2)
+                self.assertEqual(m.get(m.state + 2708), 0)
+                m.put(0xE602B4, 2)
+                self.assertEqual(m.call('mode_ff_ready', ecx=m.manager), 1)
 
     def test_installed_snap_guards_and_pending_native_event_reject_handoff(self):
         from tests.nfl2k5_supersim_scheduler import Machine as SchedulerMachine
@@ -537,7 +590,7 @@ class RuntimeTests(unittest.TestCase):
                 m.replace_stub(0xA2120, lambda: (calls.append(1), m.ret()))
                 m.call("mode_skip_tick")
                 self.assertEqual(calls, [1] if case == "absent" else [])
-                if case == "cancel": self.assertEqual(m.get(m.state + 2696), 1)
+                if case == "cancel": self.assertEqual(m.get(m.state + 2696), 0)
                 m.put(0xB616C0, 20)
                 self.assertEqual(m.call("mode_skip_buttons", ecx=0),
                                  0x100 if case in ("absent", "challenge") else 0x200 if case == "cancel" else 0)
@@ -630,6 +683,28 @@ class NativeSeriesTests(unittest.TestCase):
         if importlib.util.find_spec('capstone') is None:
             raise unittest.SkipTest('Capstone is absent; native series requires it')
         cls.payload = mode.apply(retail_bytes())[0]
+
+    def test_cancel_multi_possession_and_postgame_settings(self):
+        from tests.nfl2k5_b68_series import possession_probe
+        result = possession_probe(self.payload)
+        self.assertEqual(len(result['drives']), 3)
+        self.assertTrue(all(r['saved_supersim'] == 2 for r in result['drives']))
+        self.assertEqual(result['postgame_word'], 2)
+        self.assertEqual(result['save_supersim_bits'], 8)
+        import json
+        print('\nB68_SUPERSIM_RECEIPT ' + json.dumps(result, sort_keys=True), flush=True)
+
+    def test_pat_kick_two_point_choice_and_following_cpu_kickoff(self):
+        from tests.nfl2k5_b68_series import pat_probe
+        from mod_editor.core import nfl2k5_throw_tuning as tuning
+        import json
+        for modern in (False, True):
+            with self.subTest(modern=modern):
+                payload = (tuning._apply_all(retail_bytes(), None, False, my_career=True,
+                    kick_rules=True, accelerated_clock=True)[0] if modern else self.payload)
+                result = pat_probe(payload, modern=modern)
+                self.assertEqual(len(result['choices']), 2)
+                print('\nB68_PAT_RECEIPT ' + json.dumps(result, sort_keys=True), flush=True)
 
     def test_three_native_plays_grouped_cadence_and_animated_handoffs(self):
         from tools.nfl2k5_supersim_live_probe import series_probe

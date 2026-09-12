@@ -7728,7 +7728,10 @@
         "tests/nfl2k5_supersim_series.py",
         "tests/nfl2k5_supersim_audio.py",
         "tests/nfl2k5_supersim_scheduler.py",
-        "tools/mycareer_mode/supersim_b66_receipt.json"
+        "tools/mycareer_mode/supersim_b66_receipt.json",
+        "ASTRA_B68_T3_REPORT.md",
+        "tests/nfl2k5_b68_series.py",
+        "docs/nfl2k5_b68_t3_validation.json"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -7746,7 +7749,7 @@
         "Career footer follows the complete native Franchise container. Sizes 720172 or 724268; ordinary saves are unchanged.",
         "Senior Bowl preparation only: the default seed-1 squads include MyPlayer. Native event transport and stat isolation are unresolved. Requests and trades stay out.",
         "All 17 retail positions have three native Create Player templates; the pools profile offers 16 live positions and merges EDGE ratings. Position-specific input decode and switch guards are bounded-native proofs; mesh movement, manual routes, catches and block animations remain unwitnessed outside Noah's reported QB play.",
-        "Apartment > Settings offers First Person Football Off/On (default Off), Supersim Off/Skip presentation/Fast forward (new-career default Fast forward), MyPlayer star On/Off (default On) and MyPlayer stat line On/Off (default On). All choices persist in the signed 128-byte career footer (byte 82: bit 0 first person, bit 1 Supersim Off, bit 2 star Off, bit 3 Fast forward, bit 4 stat line Off). Old zero-filled footers keep Skip presentation. The Apartment action Sim to next appearance launches the scheduled game and arms the settled-appearance wait. Fast forward runs up to eight native updates per presented frame with one input poll. Initial/OT toss, challenge, tips, pause and disconnected controllers use native prompts at normal speed. B cancels to Off. Hardware speed, audio and visual behavior remain unwitnessed."
+        "Apartment > Settings offers First Person Football Off/On (default Off), Supersim Off/Skip presentation/Fast forward (new-career default Fast forward), MyPlayer star On/Off (default On) and MyPlayer stat line On/Off (default On). All choices persist in the signed 128-byte career footer (byte 82: bit 0 first person, bit 1 Supersim Off, bit 2 star Off, bit 3 Fast forward, bit 4 stat line Off). Old zero-filled footers keep Skip presentation. The Apartment action Sim to next appearance launches the scheduled game and arms the settled-appearance wait. Fast forward runs up to eight native updates per presented frame with one input poll. Initial/OT toss, challenge, tips, pause and disconnected controllers use native prompts at normal speed. B cancels the current CPU sequence until the next native snap without changing the saved Supersim choice. Hardware speed, audio and visual behavior remain unwitnessed."
       ],
       "portme": [
         "Complete the Noah witness list in ASTRA_MYCAREER_DRAFT_REPORT.md.",
@@ -7775,7 +7778,10 @@
           "tests/nfl2k5_supersim_audio.py",
           "tests/nfl2k5_supersim_scheduler.py",
           "tools/mycareer_mode/supersim_budget.json",
-          "tools/mycareer_mode/supersim_b66_receipt.json"
+          "tools/mycareer_mode/supersim_b66_receipt.json",
+          "ASTRA_B68_T3_REPORT.md",
+          "tests/nfl2k5_b68_series.py",
+          "docs/nfl2k5_b68_t3_validation.json"
         ],
         "scope": "Existing bounded native creation, draft, signing, played-XP, settings and signed-save proofs remain. The installed Supersim scheduler additionally executes uninterrupted native CPU plays, checks every outer football phase, counts hardware polls/presents, keeps the match RNG cadence, drains muted native audio sources, guards modal prompts, holds CPU snap requests, restores the full play clock, and submits native ticker glyphs. Native chosen personnel cover all 17 positions, actual K/P membership and an injury replacement. Declared clip/model inputs and empty optional overlays bound the renderer proof; no console, rasterizer, display or audio device is run. MyPlayer stat line defaults On in an enabled career; Apartment Settings offers On/Off. Bounded native proof executes one HUD call per presented gameplay frame, excludes menus and both replay channels, checks MyPlayer identity, reads live bank-0 game stats and submits real font4 glyphs. Actual game appearance remains UNWITNESSED.",
         "status": "not-tested"
@@ -7798,7 +7804,7 @@
         "resource": "Game Modes and Apartment rows, pinned native hooks, owned 20480 RX/8192 RW and an appended 128-byte career save footer.",
         "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
       },
-      "summary": "Native draft or undrafted entry, played-XP upgrades and the Apartment loop, with live CPU Supersim at up to eight complete updates per presented frame. Off, Skip presentation and Fast forward persist in MyCareer Settings. Sim to next appearance waits for settled native personnel and a full play clock. A score/clock/last-play ticker runs while fast forwarding; B cancels. MyPlayer stat line defaults On in an enabled career; Apartment Settings offers On/Off. EXPERIMENTAL / UNWITNESSED.",
+      "summary": "Native draft or undrafted entry, played-XP upgrades and the Apartment loop. Fast forward runs up to eight native CPU updates per presented frame and returns at a settled MyPlayer appearance. B cancels the current CPU sequence until the next native snap without changing the saved Supersim choice; human receiver B and controller disconnect do not set it to Off. The career's scoring side retains native PAT play choice even when MyPlayer leaves the field. Native boundary/series tests cover these paths; played games remain EXPERIMENTAL / UNWITNESSED.",
       "surface": "mode_state_routing",
       "title": "In-game MyCareer (experimental, unwitnessed)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_my_career_draft"
@@ -9680,14 +9686,17 @@
         "tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py",
         "tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
         "tests/mod_editor/test_nfl2k5_scorebug_resources.py",
-        "tests/mod_editor/test_nfl2k5_scorebug_native.py"
+        "tests/mod_editor/test_nfl2k5_scorebug_native.py",
+        "ASTRA_B68_T3_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_b68_game_composition.py",
+        "docs/nfl2k5_b68_t3_composition.json"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "EXPERIMENTAL / UNWITNESSED. The HUD-scoped binding repair passes native entry and draw controls. The reported tester freeze still needs a played comparison; runtime stays off in every preset."
+        "reason": "EXPERIMENTAL / UNWITNESSED. andrethealchemist reports the Berman freeze with this option selected and recovery when unselected. Leave off for normal play. Native entry, resource and draw checks are bounded proofs, not a played fix confirmation."
       },
       "id": "nfl2k5.scorebug_presentation.runtime",
       "input_constraints": [
@@ -9696,7 +9705,7 @@
         "An XBE alone cannot install the required 264 native panel textures. Rebuild from a supported base for the new hooks or a changed owner set; old hook code is refused."
       ],
       "portme": [
-        "Apply the R65 scorebug freeze v2 section of WIRING.md, keep runtime off in every preset and regenerate the protected reservation manifest.",
+        "Apply the beta 68 T3 section of WIRING_B68_T3.md; keep the reported Berman-freeze option off in every preset.",
         "Run the six-profile and static 4:3/widescreen witness list in ASTRA_SCOREBUG_FREEZE_V2_REPORT.md."
       ],
       "public_distribution": {
@@ -9709,9 +9718,12 @@
         "evidence": [
           "ASTRA_SCOREBUG_FREEZE_V2_REPORT.md",
           "docs/scorebug_ingame/freeze_v2/trace.json",
-          "docs/scorebug_ingame/witness_r61b.md"
+          "docs/scorebug_ingame/witness_r61b.md",
+          "ASTRA_B68_T3_REPORT.md",
+          "tests/mod_editor/test_nfl2k5_b68_game_composition.py",
+          "docs/nfl2k5_b68_t3_composition.json"
         ],
-        "scope": "With a synthetic unrelated cache and withheld GPU completion, the old binding enters a native texture-eviction fence wait before HUD initialization returns; the HUD-scoped repair and disabled-hook control return with the same fence pending. Native frames and glyph draws pass for all six profiles. The actual tester heap, healthy GPU completion, asynchronous lifetime and gameplay remain unproved; this is not a played fix confirmation.",
+        "scope": "The previous GPU-fence repair passes its historical control. Beta 68 exercises scorebug-enabled composed BuildPlans, native collection loading, setup at FCE56, update at FCFA2, font glyph draws, re-entry and the separate presentation/kickoff fixtures. andrethealchemist's selected/unselected comparison identifies this option as a reported trigger, but the stopped instruction, real asynchronous loader/GPU state and full scene lifetime are unavailable. No Berman fix is claimed. In-game behavior remains UNWITNESSED.",
         "status": "not-tested"
       },
       "selectors": {
@@ -9734,10 +9746,10 @@
         "resource": "owned RX/RW hook allocations plus HUD outer 346 and its archive index",
         "retail_file": "user-owned default.xbe and vc_53450030/0 in an NFL 2K5 USA disc"
       },
-      "summary": "Native team panels and scorebug events with HUD-scoped resource binding and six diagnostic profiles for the reported entry freeze.",
+      "summary": "Diagnostic team-panel and scorebug effects. andrethealchemist reports a freeze after Berman when selected and says: 'Unselecting that option fixed the issue for me.' Leave off for normal play; off in every preset. The player's failing state remains unreproduced in bounded native execution.",
       "surface": "scorebug_presentation",
-      "title": "Scorebug effects (diagnostic only)",
-      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_scorebug_freeze_v2"
+      "title": "Scorebug effects (reported Berman freeze)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_b68_game_composition"
     },
     {
       "backend": {
