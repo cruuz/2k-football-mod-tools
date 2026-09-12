@@ -69,6 +69,21 @@ class IntegrationTests(unittest.TestCase):
         self.assertIn('mod_editor.core.nfl2k5_compile_cache', ast.literal_eval(assignment.value))
 
 class PaletteIntentTests(unittest.TestCase):
+    def test_palette_only_equality_ignores_origin_but_own_texture_keeps_it(self):
+        from mod_editor.core.nfl2k5_equipment_import_intent import same_visual_import
+        asset = SimpleNamespace(asset_id='tset:3613:4:0:socks00', kind='uniform_equipment_texture')
+        rgba = bytes((20, 40, 60, 255)) * 64
+        plain = encode_rgba_png(8, 8, rgba)
+        hinted = with_retail_source(plain, asset.asset_id, rgba)
+        # Export metadata has no effect when only projecting a palette. This
+        # comparison controls restore/no-op staging as well as repeated imports.
+        self.assertTrue(same_visual_import(asset, plain, rgba, hinted, rgba))
+        own = with_import_mode(plain, asset.asset_id, rgba, independent=True)
+        own_hinted = with_import_mode(hinted, asset.asset_id, rgba, independent=True)
+        self.assertFalse(same_visual_import(asset, own, rgba, own_hinted, rgba))
+        self.assertFalse(same_visual_import(asset, own, rgba, hinted, rgba))
+
+
     def test_unchanged_span_keeps_its_original_stream_and_reports_actual_transport(self):
         from mod_editor.core.nfl2k5_equipment_lz import compress_equipment_optimal
         from nfl_txtr import HEADER, minimum_vc_lz_overlap_scratch

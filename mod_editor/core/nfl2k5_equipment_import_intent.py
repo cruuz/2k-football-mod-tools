@@ -162,6 +162,10 @@ def same_visual_import(asset, left: bytes, left_rgba: bytes,
         return False
     if getattr(asset, "kind", None) != "uniform_equipment_texture":
         return True
-    return retail_source(left, left_rgba) == retail_source(right, right_rgba) and import_settings(left, asset.asset_id, left_rgba) == import_settings(
-        right, asset.asset_id, right_rgba,
-    )
+    settings = import_settings(left, asset.asset_id, left_rgba)
+    if settings != import_settings(right, asset.asset_id, right_rgba):
+        return False
+    # Only own-texture imports can preserve a donor's private distance images.
+    # An export hint must not turn an identical palette-only import into an edit
+    # or prevent the ordinary restore-to-original path.
+    return settings[0] == PALETTE_ONLY or retail_source(left, left_rgba) == retail_source(right, right_rgba)

@@ -576,7 +576,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_depth_chart_storage.py": "acb37c1fbb13e327880574df1142d6cb1262e97b307bfd182a167647d0892a1e",
         "mod_editor/core/nfl2k5_depth_locks.py": "39a0948c3fc26721f15495acd66a3a48c8db1cb6bcda6e4911b07d353bffd61c",
         "mod_editor/core/nfl2k5_depth_roles.py": "92a11e038973a1c421fe7f3162064bb62a9fd8cefd6bfb4bd9cc5765d3f3a19d",
-        "mod_editor/core/nfl2k5_equipment_import_intent.py": "c2f4cc8f9577eb5bb9bd8e892e689b00e62712ac8f23bdd89dfb62830a15ea66",
+        "mod_editor/core/nfl2k5_equipment_import_intent.py": "23e0fad4aabf6d0f5db883ae371ceb5cc2f5ecd25f0f6f9053850d1b3deac389",
         "mod_editor/core/nfl2k5_equipment_lz.py": "3a0a3594115c227bafa2890153522c4d7be5377e013a15d56d57d4b71353b5a9",
         "mod_editor/core/nfl2k5_digit_art.py": "607220b6b173e25bd69e0d625828aa21a9c60f246de2ae00738513b52600d4cc",
         "mod_editor/core/nfl2k5_digit_texture.py": "38112506a194aae7b0e229cdb0d40d0fbbba52bf7ac5e3e81c7a67743352e79c",
