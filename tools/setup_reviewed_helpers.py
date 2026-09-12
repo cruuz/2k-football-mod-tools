@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Verify and normalize the one reviewed Linux H7A helper in a source worktree.
+"""Verify and normalize the reviewed Linux helpers in a source worktree.
 
 Run explicitly after checkout: python3 tools/setup_reviewed_helpers.py
-Only the pinned tools/apf_h7a_optimal regular, single-link file is eligible.
+Only the pinned tools/apf_h7a_optimal (APF H7A encoder) and
+tools/nfl2k5_equipment_optimal (2K5 equipment VC-LZ optimal parser) regular,
+single-link files are eligible.
 Wrong contents, symlinks, foreign ownership and swapped files are refused.
 The runtime security predicate is neither changed nor bypassed. No execution.
 """
@@ -20,6 +22,15 @@ import sys
 SIZE = 14472
 SHA256 = '9061866e31f1a2930eceaa4fb8652ef1b7aa9b04cbce0174cc0eae125f8e49ab'
 
+# Every reviewed helper, keyed by its repository-relative path. Each runtime
+# gate pins the same size/SHA-256 independently; this table only decides which
+# files this tool is allowed to chmod.
+REVIEWED_HELPERS: dict[str, tuple[int, str]] = {
+    'tools/apf_h7a_optimal': (SIZE, SHA256),
+    'tools/nfl2k5_equipment_optimal': (
+        16504, '949aad6a251de3f039f83bff15d4aa033183c250dbeadd1029e7c79dee4817c4'),
+}
+
 
 class SetupError(ValueError):
     pass
@@ -30,10 +41,12 @@ def _require(condition, message):
         raise SetupError(message)
 
 
-def normalize(root: Path) -> dict[str, object]:
+def normalize(root: Path, relative: str = 'tools/apf_h7a_optimal') -> dict[str, object]:
     """Hash first, chmod the same descriptor, then reverify identity and bytes."""
     _require(os.name == 'posix' and hasattr(os, 'fchmod'), 'Unix permission setup requires POSIX')
-    path = Path(os.path.abspath(root)) / 'tools' / 'apf_h7a_optimal'
+    _require(relative in REVIEWED_HELPERS, f'not a reviewed helper: {relative}')
+    size, sha256 = REVIEWED_HELPERS[relative]
+    path = Path(os.path.abspath(root)).joinpath(*relative.split('/'))
     for parent in reversed(path.parents):
         info = parent.lstat()
         _require(stat.S_ISDIR(info.st_mode) and not stat.S_ISLNK(info.st_mode),
@@ -59,14 +72,14 @@ def normalize(root: Path) -> dict[str, object]:
     try:
         opened = os.fstat(fd)
         _require((opened.st_dev, opened.st_ino) == (before.st_dev, before.st_ino), 'helper changed while opening')
-        _require(opened.st_size == SIZE and opened.st_nlink == 1, 'helper size/link count is not reviewed')
+        _require(opened.st_size == size and opened.st_nlink == 1, 'helper size/link count is not reviewed')
         data = bytearray()
-        while len(data) <= SIZE:
-            block = os.read(fd, SIZE + 1 - len(data))
+        while len(data) <= size:
+            block = os.read(fd, size + 1 - len(data))
             if not block:
                 break
             data.extend(block)
-        _require(len(data) == SIZE and hashlib.sha256(data).hexdigest() == SHA256, 'reviewed helper SHA-256 mismatch; no permissions changed')
+        _require(len(data) == size and hashlib.sha256(data).hexdigest() == sha256, 'reviewed helper SHA-256 mismatch; no permissions changed')
         os.fchmod(fd, 0o755)
         final = os.fstat(fd)
         named = os.stat(path.name, dir_fd=parent_fd, follow_symlinks=False)
@@ -77,8 +90,8 @@ def normalize(root: Path) -> dict[str, object]:
         _require(stat.S_IMODE(final.st_mode) == 0o755, 'filesystem did not enforce mode 0755')
         os.lseek(fd, 0, os.SEEK_SET)
         verified = bytearray()
-        while len(verified) <= SIZE:
-            block = os.read(fd, SIZE + 1 - len(verified))
+        while len(verified) <= size:
+            block = os.read(fd, size + 1 - len(verified))
             if not block:
                 break
             verified.extend(block)
@@ -86,8 +99,14 @@ def normalize(root: Path) -> dict[str, object]:
     finally:
         os.close(fd)
         os.close(parent_fd)
-    return {'path': str(path), 'sha256': SHA256, 'before_mode': f'{stat.S_IMODE(before.st_mode):04o}',
+    return {'path': str(path), 'relative': relative, 'sha256': sha256,
+            'before_mode': f'{stat.S_IMODE(before.st_mode):04o}',
             'after_mode': '0755', 'changed': stat.S_IMODE(before.st_mode) != 0o755}
+
+
+def normalize_all(root: Path) -> list[dict[str, object]]:
+    """Normalize every reviewed helper this checkout carries, in a fixed order."""
+    return [normalize(root, relative) for relative in sorted(REVIEWED_HELPERS)]
 
 
 def main(argv=None) -> int:
@@ -95,7 +114,7 @@ def main(argv=None) -> int:
     parser.add_argument('--root', type=Path, default=Path(__file__).resolve().parents[1])
     args = parser.parse_args(argv)
     try:
-        print(json.dumps(normalize(args.root), indent=2))
+        print(json.dumps(normalize_all(args.root), indent=2))
     except (SetupError, OSError) as exc:
         print(f'REVIEWED_HELPER_SETUP_REFUSED: {exc}', file=sys.stderr)
         return 1
