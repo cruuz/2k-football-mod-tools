@@ -1,5 +1,9 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.89 — beta 68: no APF changes — 2026-09-12
+
+No APF 2K8 changes in beta 68; the version marker moves with the release tag.
+
 ## 0.1.0-alpha.88 — beta 67: CPU play calling under user control — 2026-09-12
 
 Beta 67 is APF 2K8 only; bullets are added as each change lands.

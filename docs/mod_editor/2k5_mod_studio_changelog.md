@@ -1,5 +1,9 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC93, beta 68: fixes for the reports after beta 66.1 (2026-09-12)
+
+Beta 68 answers the ESPN NFL 2K5 reports in Discord after beta 66.1; bullets are added as each change lands.
+
 ## v1.0 RC92, beta 67
 
 No 2K5 changes in beta 67; the version marker moves with the release tag.
