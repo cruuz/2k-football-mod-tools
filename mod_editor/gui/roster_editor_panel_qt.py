@@ -55,6 +55,8 @@ Field credit: Flying Finn (Glen Leskinen) and Bad_AL, re-verified against the re
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import plain_error
+
 import json
 import shutil
 import struct
@@ -861,7 +863,7 @@ class _Espn25CatalogTask(QRunnable):
             catalog = espn.Catalog.load(self.source)
             identity = RosterEditorPanel.espn25_identity(self.source, catalog)
         except Exception as exc:  # noqa: BLE001 - one message for the status line
-            self.signals.failed.emit(self.generation, f"{type(exc).__name__}: {exc}")
+            self.signals.failed.emit(self.generation, plain_error(exc))
         else:
             self.signals.loaded.emit(self.generation, catalog, identity)
 
@@ -1959,7 +1961,7 @@ class RosterEditorPanel(QWidget):
             return rr.detect_scheme(document, source=source)
         except Exception as exc:                                   # noqa: BLE001 - never fatal
             return {"scheme": "retail", "confidence": "low", "source": "fallback", "census": {},
-                    "note": "", "why": f"detection failed ({type(exc).__name__}: {exc})"}
+                    "note": "", "why": f"detection failed ({plain_error(exc)})"}
 
     # ------------------------------------------------------------------ loading
     def load_document(self, document: rr.RosterDocument, *, label: str = "",
@@ -2210,7 +2212,7 @@ class RosterEditorPanel(QWidget):
         try:
             document = rr.load_image(path)
         except Exception as exc:  # noqa: BLE001 - one message for the status line
-            self._set_status(f"Could not read the roster: {type(exc).__name__}: {exc}")
+            self._set_status(f"Could not read the roster: {plain_error(exc)}")
             return False
         state = "retail" if rr.resource_status(
             document.resource_header + bytes(document.body)) == "retail" else "already edited"
@@ -2224,14 +2226,14 @@ class RosterEditorPanel(QWidget):
         try:
             container = rr.SaveContainer.load(path)
         except Exception as exc:  # noqa: BLE001
-            self._set_status(f"Could not read the save: {type(exc).__name__}: {exc}")
+            self._set_status(f"Could not read the save: {plain_error(exc)}")
             return False
         try:
             document = container.document()
         except Exception as exc:  # noqa: BLE001
             # the signature verified: keep the container so Check my rosters… can still scan it read-only
             self._college_check_container = (Path(path), container)
-            self._set_status(f"Could not read the save: {type(exc).__name__}: {exc} "
+            self._set_status(f"Could not read the save: {plain_error(exc)} "
                              "(Check my rosters… on the Checks tab can still list its college references, read-only)")
             return False
         # a save carries no executable, so the scheme can only come from the records
@@ -3364,7 +3366,7 @@ class RosterEditorPanel(QWidget):
                 container = rr.SaveContainer.load(path)
             except Exception as exc:  # noqa: BLE001 - one message, the refusal is the point
                 return {"kind": "save", "source": path.name, "path": path, "scan": None, "sha256": "",
-                        "error": f"{type(exc).__name__}: {exc}", "repairable": False,
+                        "error": plain_error(exc), "repairable": False,
                         "guidance": "Nothing was read past the container check; the signature policy is unchanged."}
             return self._college_scan("save", path, container.savegame)
         try:
@@ -3373,7 +3375,7 @@ class RosterEditorPanel(QWidget):
                 resource = archive.read(entry.virtual_offset, entry.size)
         except Exception as exc:  # noqa: BLE001
             return {"kind": "disc", "source": path.name, "path": path, "scan": None, "sha256": "",
-                    "error": f"{type(exc).__name__}: {exc}", "repairable": False,
+                    "error": plain_error(exc), "repairable": False,
                     "guidance": "The main roster resource (pack 0, outer entry 5) could not be read."}
         return self._college_scan("disc", path, resource)
 
@@ -3853,7 +3855,7 @@ class RosterEditorPanel(QWidget):
         try:
             receipt = self.write_copy_to(chosen)
         except Exception as exc:  # noqa: BLE001
-            show_operation_error(self, "write the copy", f"{type(exc).__name__}: {exc}")
+            show_operation_error(self, "write the copy", plain_error(exc))
             return
         written = str(receipt.get("target", chosen))
         if self._source_kind == "save":

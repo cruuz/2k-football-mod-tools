@@ -12,6 +12,8 @@ Everything heavy runs on one background thread; the widget stays live.
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import plain_error
+
 from pathlib import Path
 from typing import Callable
 
@@ -88,7 +90,7 @@ class _Task(QRunnable):
         try:
             self.signals.finished.emit(self._operation())
         except Exception as exc:  # noqa: BLE001 - one message for the status line
-            self.signals.failed.emit(f"{type(exc).__name__}: {exc}")
+            self.signals.failed.emit(plain_error(exc))
 
 
 class ModelsPanel(QWidget):

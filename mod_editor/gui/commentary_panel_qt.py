@@ -11,6 +11,8 @@ tool does is the same as ``tools/nfl2k5_commentary_swap.py``.
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import plain_error
+
 import importlib
 import shutil
 import sys
@@ -111,7 +113,7 @@ class _Task(QRunnable):
         try:
             self.signals.finished.emit(self._operation())
         except Exception as exc:  # noqa: BLE001
-            self.signals.failed.emit(f"{type(exc).__name__}: {exc}")
+            self.signals.failed.emit(plain_error(exc))
 
 
 class CommentaryPanel(QWidget):
