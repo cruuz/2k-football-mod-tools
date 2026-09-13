@@ -18,6 +18,7 @@ audit was repeated; its report is absent from this head.
 | D6 | J3/J4/A2b | Beta-69 changelog and weather research still pointed to generic ASTRA_REPORT.md / WIRING.md after the handoffs were renamed. | PROVED documentation defect; new registry evidence paths themselves are correct. | Added a failing handoff-path regression and retargeted the current beta-69 references to ASTRA_B69_J3_REPORT.md / WIRING_B69_J4.md. Historical release notes are preserved. |
 | D7 | J3/A2b | Franchise-2026's save-ownership description still declared prospect byte 83 reserved zero, and older native/host tests rejected now-valid caller/tier values. | PROVED ownership-description defect; the J3 codecs were already correct. | Added a failing contract/codec consistency test; describe byte 83 as tier-owned, keep reusable bytes zero and 88..127 reserved. Test all 15 valid caller/tier pairs and reject policy 3, bit 7, conflicting Supersim bits, tier 5 and reserved-byte writes. No native instruction or allocation changed. |
 | D8 | J4/J5/A2b | ESPN panel test still asserted that its row was the only informational row. | PROVED test-contract defect. | Expect the climate action and scramble enum too; preserve the ESPN image gate, navigation and non-boolean plan assertions. Full 13-test suite passes. |
+| D9 | J4 | A large integer in climate-plan JSON raised uncaught `OverflowError` before the field's range validator, escaping `status()` and Build's `ValueError` handling. | PROVED input-validation defect in the job's own writer. | Add a failing test covering all three draft fields and JSON before/after values, positive and negative. Check numeric bounds before float conversion. Ten failing subcases before; full 12-test file passes after. |
 
 ## Reconstruction
 
@@ -62,6 +63,27 @@ J5 adds 7 requests: 896 RX + 4 RW + 140 RO bytes. The complete union has 64 allo
 12,300,288-byte extent. J3 retains 20,480 RX and two 4,096-byte RW blocks. J4 climate and haze have
 empty REQUESTS; haze owns the full four-byte coefficient at `0xA867F4` in `.data`. Its reader/table
 guards and complete ownership reservation were reviewed. No runtime data was moved into `.text`.
+
+J5's shared writer validates each owner's exact allocation geometry, zero-initialized runtime state,
+compiled instructions and padding, option bytes, every hook, and normalized retail prerequisite
+digests. It refuses mixed installation and changed installed settings before mutation. CPU scrambles
+accepts the excluded defensive-try neighbor only after verifying that entire owner. The standalone
+rules suite exercises both application orders, resealed corruption, wrong settings, idempotence,
+exclusive CLI output, and RX/RW/RO permissions. Its 16 tests pass on this tree.
+
+The native coin proof covers both human sides, both toss outcomes, kick/receive choices, second-half
+possession, all 17 RNG buckets, and overtime reset. Human-winner results match retail. The clock proof
+covers leading/trailing possession, the margin/time boundary, live-play exclusion, quarters 3/5/6,
+non-scrimmage phases, paused/count-up clocks and invalid floating-point times. The native series also
+enters through the real dead-ball path. The scramble proof preserves human/non-QB/non-live behavior
+and the timer/attempt gates; identical eligible inputs produce 21 versus 41 branch hits in 100 trials.
+That is not a measured per-game scramble rate.
+
+J3's save contract assigns caller policy to bits 5..6 of byte 82 and tier to byte 83. Policy zero keeps
+the previous retail-position eligibility. The hand-back latch is transient: it is reset on load and
+postgame and is never encoded as a preference. The fix reopens the native call screen only at the
+guarded, unsnapped hand-back, retaining the binder's body control. The test ledger separately records
+host/native setting round trips, the new hand-back series and the beta-68 Supersim live suite.
 
 ## Clock wording conflict
 

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import copy
+import json
 import os
 from pathlib import Path
 import struct
@@ -87,6 +88,22 @@ class ClimateTests(unittest.TestCase):
         bad = copy.deepcopy(plan)
         bad["changes"][0]["asset_code"] = "s99"
         self.assertEqual(w.status(self.data, bad), "foreign")
+
+    def test_large_json_integers_refuse_with_climate_validation_error(self):
+        for field in w.FIELDS:
+            for value in (10**1000, -(10**1000)):
+                with self.subTest(field=field, sign=value > 0):
+                    with self.assertRaisesRegex(w.WeatherError, "finite value"):
+                        self.draft.set_value(5, 12, field, value)
+        for member in ("before", "after"):
+            for value in (10**1000, -(10**1000)):
+                with self.subTest(member=member, sign=value > 0):
+                    plan = self.plan()
+                    plan["changes"][0][member] = value
+                    plan = json.loads(json.dumps(plan))
+                    self.assertEqual(w.status(self.data, plan), "foreign")
+                    with self.assertRaisesRegex(w.WeatherError, "finite value"):
+                        w.apply(self.data, plan)
 
     def test_validation_and_month_alias(self):
         for value in (True, float("nan"), float("inf"), -1, 101, "20"):

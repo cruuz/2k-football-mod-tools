@@ -113,7 +113,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 }
 
 B69_GAME_RUNTIME_PINS = {
-    "mod_editor/core/nfl2k5_weather.py": "89526a7912340968cbe554aedf434d5a2c60a112f21a3d2d0564082b74ecd1ad",
+    "mod_editor/core/nfl2k5_weather.py": "6540d7ffc8d441898f5a89988752efd6aa0238c87b4a0941c1962b7b3feba380",
     "mod_editor/core/nfl2k5_weather_haze.py": "3d045e099f1585658b899ab6e7d3560e92edb24529ca8d6f224e901dc7712ff9",
     "mod_editor/gui/build_panel_qt.py": "86fa528e1d4ba4a4458badbb24b17a419c78e9253868859e02117cc333699629",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "cf9ce1e9d40902df978f8c54f1e02dbf3c137ec2e3f2c722c7a3f9cbd876322e",

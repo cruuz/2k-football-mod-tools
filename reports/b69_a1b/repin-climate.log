@@ -1,0 +1,5 @@
+[1] packaging/check_2k5_mod_studio_runtime.py: mod_editor/core/nfl2k5_weather.py
+    89526a7912340968cbe554aedf434d5a2c60a112f21a3d2d0564082b74ecd1ad
+ -> 6540d7ffc8d441898f5a89988752efd6aa0238c87b4a0941c1962b7b3feba380
+
+applied 1 pin update(s)
