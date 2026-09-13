@@ -1,0 +1,74 @@
+[
+  {
+    "path": "tests/mod_editor/test_gameplay_patches_panel_qt.py",
+    "command": "python3 tests/mod_editor/test_gameplay_patches_panel_qt.py",
+    "exit": 1,
+    "status": "FAILED (failures=1)",
+    "ran": "Ran 1 test in 0.012s",
+    "final_line": "FAILED (failures=1)",
+    "seconds": 0.646,
+    "log": "reports/b69_a2b/final-dispatcher/test_gameplay_patches_panel_qt.log",
+    "log_sha256": "fee75c38ae4af41aadd65389433ebc0baa8fc222def26da8303e18040432ae53",
+    "source_fingerprint": "ea86dd9fcd0b3d510cef356e34faf130e50142ea758ef0648f1a98bd504cd5ce"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_accelerated_clock.py",
+    "command": "python3 tests/mod_editor/test_nfl2k5_accelerated_clock.py",
+    "exit": 0,
+    "status": "OK",
+    "ran": "Ran 40 tests in 63.424s",
+    "final_line": "OK",
+    "seconds": 64.1,
+    "log": "reports/b69_a2b/final-dispatcher/test_nfl2k5_accelerated_clock.log",
+    "log_sha256": "974356127d04b0d2296e0c46f490d2275ca2e8cd3a22641b06c0d5c89465d5d5",
+    "source_fingerprint": "ea86dd9fcd0b3d510cef356e34faf130e50142ea758ef0648f1a98bd504cd5ce"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_b69_rules.py",
+    "command": "python3 tests/mod_editor/test_nfl2k5_b69_rules.py",
+    "exit": 0,
+    "status": "OK",
+    "ran": "Ran 16 tests in 160.889s",
+    "final_line": "OK",
+    "seconds": 161.484,
+    "log": "reports/b69_a2b/final-dispatcher/test_nfl2k5_b69_rules.log",
+    "log_sha256": "8650f8e3db63bfc29504a4f86982bdf74226112ce4a3496932ea87b83b482e9f",
+    "source_fingerprint": "ea86dd9fcd0b3d510cef356e34faf130e50142ea758ef0648f1a98bd504cd5ce"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_build_service.py",
+    "command": "python3 tests/mod_editor/test_nfl2k5_build_service.py",
+    "exit": 0,
+    "status": "OK",
+    "ran": "Ran 28 tests in 0.201s",
+    "final_line": "OK",
+    "seconds": 0.507,
+    "log": "reports/b69_a2b/final-dispatcher/test_nfl2k5_build_service.log",
+    "log_sha256": "2e6db82e0bed31e3181b0fb6209b132b89ef19f805ff30caa4562947923c27dc",
+    "source_fingerprint": "ea86dd9fcd0b3d510cef356e34faf130e50142ea758ef0648f1a98bd504cd5ce"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_throw_tuning.py",
+    "command": "python3 tests/mod_editor/test_nfl2k5_throw_tuning.py",
+    "exit": 0,
+    "status": "OK (skipped=1)",
+    "ran": "Ran 45 tests in 19.808s",
+    "final_line": "OK (skipped=1)",
+    "seconds": 20.305,
+    "log": "reports/b69_a2b/final-dispatcher/test_nfl2k5_throw_tuning.log",
+    "log_sha256": "9dfd23bf1f8a54eab05777d327d3cce6b6d30301f274280132f65b9da8d9705c",
+    "source_fingerprint": "ea86dd9fcd0b3d510cef356e34faf130e50142ea758ef0648f1a98bd504cd5ce"
+  },
+  {
+    "path": "tests/mod_editor/test_throw_tuning_panel_qt.py",
+    "command": "python3 tests/mod_editor/test_throw_tuning_panel_qt.py",
+    "exit": 0,
+    "status": "OK",
+    "ran": "Ran 13 tests in 2.580s",
+    "final_line": "OK",
+    "seconds": 3.137,
+    "log": "reports/b69_a2b/final-dispatcher/test_throw_tuning_panel_qt.log",
+    "log_sha256": "b5fcc53b836d80edc2edfe1dd2d3cdeb9b3383783a98f05785cd064810c2e79b",
+    "source_fingerprint": "ea86dd9fcd0b3d510cef356e34faf130e50142ea758ef0648f1a98bd504cd5ce"
+  }
+]

@@ -1,0 +1,6 @@
+.
+----------------------------------------------------------------------
+Ran 1 test in 269.393s
+
+OK
+Experimental XBE passes: POSIX/non-POSIX identical; J3/J4/J5 verified; no full disc built

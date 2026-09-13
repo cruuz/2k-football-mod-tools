@@ -1,0 +1,14 @@
+[
+  {
+    "path": "tests/mod_editor/test_nfl2k5_simulated_windows_build.py",
+    "command": "python3 tests/mod_editor/test_nfl2k5_simulated_windows_build.py",
+    "exit": 0,
+    "status": "OK",
+    "ran": "Ran 1 test in 231.451s",
+    "final_line": "Experimental XBE passes: POSIX/non-POSIX identical; J3/J4/J5 verified; no full disc built",
+    "seconds": 231.835,
+    "log": "reports/b69_a2b/simwin/test_nfl2k5_simulated_windows_build.log",
+    "log_sha256": "4bb7346e39bc51db858f498f68c0a3f0f18aa21aa1f54bb1ed39bdc307fecc6a",
+    "source_fingerprint": "a4567a886a1f724c131a26b7a0bba54d471e1e15400e8ae73e8117c6c8504c96"
+  }
+]

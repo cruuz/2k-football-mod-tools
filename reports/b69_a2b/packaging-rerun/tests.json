@@ -1,0 +1,38 @@
+[
+  {
+    "path": "tests/mod_editor/test_apf_studio_installer.py",
+    "command": "python3 tests/mod_editor/test_apf_studio_installer.py",
+    "exit": 1,
+    "status": "FAILED (failures=2)",
+    "ran": "Ran 16 tests in 10.625s",
+    "final_line": "FAILED (failures=2)",
+    "seconds": 10.777,
+    "log": "reports/b69_a2b/packaging-rerun/test_apf_studio_installer.log",
+    "log_sha256": "eec185eb062e9fd7331323a07b9ce73c21f0b22f99347732387a6e110e9c2b17",
+    "source_fingerprint": "a4567a886a1f724c131a26b7a0bba54d471e1e15400e8ae73e8117c6c8504c96"
+  },
+  {
+    "path": "tests/mod_editor/test_phase1_packaging.py",
+    "command": "python3 tests/mod_editor/test_phase1_packaging.py",
+    "exit": 0,
+    "status": "OK",
+    "ran": "Ran 23 tests in 2.240s",
+    "final_line": "OK",
+    "seconds": 2.338,
+    "log": "reports/b69_a2b/packaging-rerun/test_phase1_packaging.log",
+    "log_sha256": "6ef9b15c3d70bbc824bfa21b310281e3494482377d5ae28757b51473ce3a3570",
+    "source_fingerprint": "a4567a886a1f724c131a26b7a0bba54d471e1e15400e8ae73e8117c6c8504c96"
+  },
+  {
+    "path": "tests/mod_editor/test_product_catalog.py",
+    "command": "python3 tests/mod_editor/test_product_catalog.py",
+    "exit": 0,
+    "status": "OK",
+    "ran": "Ran 9 tests in 0.076s",
+    "final_line": "OK",
+    "seconds": 0.233,
+    "log": "reports/b69_a2b/packaging-rerun/test_product_catalog.log",
+    "log_sha256": "094229866179a6a511b6844fae01fda535cc06f3daa769f2228ca882f6eca658",
+    "source_fingerprint": "a4567a886a1f724c131a26b7a0bba54d471e1e15400e8ae73e8117c6c8504c96"
+  }
+]

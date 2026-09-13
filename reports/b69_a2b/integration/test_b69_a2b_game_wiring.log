@@ -1,0 +1,120 @@
+FE.EEEE.E
+======================================================================
+ERROR: test_union_and_enum_deferral (__main__.ChoiceTests.test_union_and_enum_deferral)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a2b/tests/mod_editor/test_b69_a2b_game_wiring.py", line 80, in test_union_and_enum_deferral
+    deferred = tt._deferred_r62_options({k:defaults[k] for k in tt.R62_RUNTIME_KEYS})
+                                           ~~~~~~~~^^^
+KeyError: 'read_option_intent_table'
+
+======================================================================
+ERROR: test_haze_off_restores_and_climate_failure_preserves_destination (__main__.CompactBuildTests.test_haze_off_restores_and_climate_failure_preserves_destination)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a2b/tests/mod_editor/test_b69_a2b_game_wiring.py", line 212, in test_haze_off_restores_and_climate_failure_preserves_destination
+    receipt=build.build(build.BuildPlan(str(self.source),str(target)))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2b/mod_editor/core/mod_build.py", line 990, in build
+    receipt = _build(replace(plan, source=str(effective_source), target=str(directory / target.name), overwrite=False), progress,
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2b/mod_editor/core/mod_build.py", line 1938, in _build
+    inspection = inspect(target, screen_timing=plan.screen_timing)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2b/mod_editor/core/mod_build.py", line 629, in inspect
+    out["modern_naming_details"] = tt.modern_naming_patch.image_preview(source)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2b/mod_editor/core/nfl2k5_modern_naming.py", line 344, in image_preview
+    payloads, _ = _read_image(archive, data, True)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2b/mod_editor/core/nfl2k5_modern_naming.py", line 306, in _read_image
+    entry = archive.entries[pin["outer_index"]]
+            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+IndexError: list index out of range
+
+======================================================================
+ERROR: test_new_options_compose_with_career_and_relocated_climate_then_replay (__main__.CompactBuildTests.test_new_options_compose_with_career_and_relocated_climate_then_replay)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a2b/tests/mod_editor/test_b69_a2b_game_wiring.py", line 179, in test_new_options_compose_with_career_and_relocated_climate_then_replay
+    with simulated_non_posix(): receipt=build.build(plan,_project_builder=project_copy)
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2b/mod_editor/core/mod_build.py", line 990, in build
+    receipt = _build(replace(plan, source=str(effective_source), target=str(directory / target.name), overwrite=False), progress,
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2b/mod_editor/core/mod_build.py", line 1938, in _build
+    inspection = inspect(target, screen_timing=plan.screen_timing)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2b/mod_editor/core/mod_build.py", line 629, in inspect
+    out["modern_naming_details"] = tt.modern_naming_patch.image_preview(source)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2b/mod_editor/core/nfl2k5_modern_naming.py", line 344, in image_preview
+    payloads, _ = _read_image(archive, data, True)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2b/mod_editor/core/nfl2k5_modern_naming.py", line 306, in _read_image
+    entry = archive.entries[pin["outer_index"]]
+            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+IndexError: list index out of range
+
+======================================================================
+ERROR: test_off_build_is_byte_identical_and_new_choices_each_build (__main__.CompactBuildTests.test_off_build_is_byte_identical_and_new_choices_each_build) (key='weather_plan')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a2b/tests/mod_editor/test_b69_a2b_game_wiring.py", line 163, in test_off_build_is_byte_identical_and_new_choices_each_build
+    receipt=build.build(build.BuildPlan(str(self.source),str(target),**{key:selected}))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2b/mod_editor/core/mod_build.py", line 990, in build
+    receipt = _build(replace(plan, source=str(effective_source), target=str(directory / target.name), overwrite=False), progress,
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2b/mod_editor/core/mod_build.py", line 1938, in _build
+    inspection = inspect(target, screen_timing=plan.screen_timing)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2b/mod_editor/core/mod_build.py", line 629, in inspect
+    out["modern_naming_details"] = tt.modern_naming_patch.image_preview(source)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2b/mod_editor/core/nfl2k5_modern_naming.py", line 344, in image_preview
+    payloads, _ = _read_image(archive, data, True)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2b/mod_editor/core/nfl2k5_modern_naming.py", line 306, in _read_image
+    entry = archive.entries[pin["outer_index"]]
+            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+IndexError: list index out of range
+
+======================================================================
+ERROR: test_off_build_is_byte_identical_and_new_choices_each_build (__main__.CompactBuildTests.test_off_build_is_byte_identical_and_new_choices_each_build)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a2b/tests/mod_editor/test_b69_a2b_game_wiring.py", line 165, in test_off_build_is_byte_identical_and_new_choices_each_build
+    self.assertEqual(weather.status(weather.load_resource(target),self.document),'applied')
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2b/mod_editor/core/nfl2k5_weather.py", line 256, in load_resource
+    with rr._outer_image()(source) as archive:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2b/tools/nfl2k5_playbook_position_recode.py", line 257, in __init__
+    self._open_image()
+  File "/home/noah/2k-worktrees/astra-b69-a2b/tools/nfl2k5_playbook_position_recode.py", line 291, in _open_image
+    self._fd = os.open(self.path, flags | getattr(os, "O_BINARY", 0) | getattr(os, "O_CLOEXEC", 0))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/a2b-compact-pdohb5pz/weather_plan.iso'
+
+======================================================================
+ERROR: test_live_controls_roundtrip_project_and_both_views (__main__.PanelTests.test_live_controls_roundtrip_project_and_both_views)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a2b/tests/mod_editor/test_b69_a2b_game_wiring.py", line 118, in test_live_controls_roundtrip_project_and_both_views
+    self.assertIn('Climate plan: climate.json',self.build.confirmation_text())
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: BuildPanel.confirmation_text() missing 1 required positional argument: 'plan'
+
+======================================================================
+FAIL: test_all_defaults_and_recipe_identity_roundtrip (__main__.ChoiceTests.test_all_defaults_and_recipe_identity_roundtrip)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a2b/tests/mod_editor/test_b69_a2b_game_wiring.py", line 69, in test_all_defaults_and_recipe_identity_roundtrip
+    self.assertEqual(saved.to_plan(json.loads(json.dumps(recipe)), 's','t'),plan)
+AssertionError: Build[1024 chars]alls=[], playbook_pair=False, cpu_money_downs=[1912 chars]s='') != Build[1024 chars]alls=(), playbook_pair=False, cpu_money_downs=[1912 chars]s='')
+
+----------------------------------------------------------------------
+Ran 8 tests in 28.436s
+
+FAILED (failures=1, errors=6)

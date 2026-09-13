@@ -1,0 +1,8 @@
+[1] mod_editor/core/providers.py: mod_editor/core/mod_build.py
+    d9a8f64d252044acd777456d5747a74e6b8d35ffc30ca80affee771f86150102
+ -> 1e17ada1933cfa2668086ed0c8eb7b1975d0b18b8fa7fefc321cb4a885686d09
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_throw_tuning.py
+    ffdc3859c0b9892ade179679d9b943a46d86b1bf284cfebbeedf54b05b2153cd
+ -> 5b290389b912eb77aee61da68dccc97b29461b1f993deae805021279b30345b8
+
+applied 2 pin update(s)

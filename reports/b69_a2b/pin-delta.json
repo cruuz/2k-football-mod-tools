@@ -1,0 +1,176 @@
+[
+  {
+    "pin_file": "mod_editor/core/nfl2k5_weather.py",
+    "key": "SHAPE_SHA256",
+    "before": null,
+    "after": "ab4df547810a558fd3563b6bf4187b88a03b02111437b35a1f37e726a68cf85f"
+  },
+  {
+    "pin_file": "mod_editor/core/nfl2k5_weather_haze.py",
+    "key": "TABLE_SHA256",
+    "before": null,
+    "after": "311636b9459867b8fb1fb57be66e6bee17660119754995f678f8f9e1f6642520"
+  },
+  {
+    "pin_file": "mod_editor/core/providers.py",
+    "key": "mod_editor/core/mod_build.py",
+    "before": "d9a8f64d252044acd777456d5747a74e6b8d35ffc30ca80affee771f86150102",
+    "after": "6955b82aa7f95fda834a8673efa3f31a0961473c9635f9ed308e3dc464fd60c0"
+  },
+  {
+    "pin_file": "mod_editor/core/providers.py",
+    "key": "mod_editor/core/nfl2k5_build_settings.py",
+    "before": "aa50ce8b583ad074f689033cfc4b7b68e5a68455f805950289bd110de484abcc",
+    "after": "f6f81f7146e65cfb409025b0162d7b21ad52add1434d279c8bb85ced16aa78c9"
+  },
+  {
+    "pin_file": "mod_editor/core/providers.py",
+    "key": "mod_editor/core/nfl2k5_coin_defer.py",
+    "before": null,
+    "after": "403dddd1c40718d1284f008ac52222a0e2cbf0b9109941d8f16949739f6be5e0"
+  },
+  {
+    "pin_file": "mod_editor/core/providers.py",
+    "key": "mod_editor/core/nfl2k5_coin_defer_code.py",
+    "before": null,
+    "after": "9eefd8074b0fec01375cd266339ca0810e660af91dffbe275acaf0e5b927b0a2"
+  },
+  {
+    "pin_file": "mod_editor/core/providers.py",
+    "key": "mod_editor/core/nfl2k5_cpu_scrambles.py",
+    "before": null,
+    "after": "6a5b913f4c6407b64548e979ff59e1f66b2688f9ddccc20c4ed887e3209d5576"
+  },
+  {
+    "pin_file": "mod_editor/core/providers.py",
+    "key": "mod_editor/core/nfl2k5_cpu_scrambles_code.py",
+    "before": null,
+    "after": "6519b049d4f570dc92c58ede831a521ebface07ce23fb8406eb42318bbf52a92"
+  },
+  {
+    "pin_file": "mod_editor/core/providers.py",
+    "key": "mod_editor/core/nfl2k5_decided_clock.py",
+    "before": null,
+    "after": "cf27be38419bf9443c50fbed9de5c5deb08c620613af84869e60683f1b135a5b"
+  },
+  {
+    "pin_file": "mod_editor/core/providers.py",
+    "key": "mod_editor/core/nfl2k5_decided_clock_code.py",
+    "before": null,
+    "after": "83d7961b291a0fe08d3ac1518ec7b97ab4489f830c20c04bdd99626344d53c58"
+  },
+  {
+    "pin_file": "mod_editor/core/providers.py",
+    "key": "mod_editor/core/nfl2k5_my_career.py",
+    "before": "f625215f21b280e68ecc3e5e9c6dbb53470389b00639e6bec601a46d304102a9",
+    "after": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696"
+  },
+  {
+    "pin_file": "mod_editor/core/providers.py",
+    "key": "mod_editor/core/nfl2k5_my_career_mode.py",
+    "before": "522edea4626b6e58d9c28ddabfdad52c33dc148341a4c992d17f8c1336a539b0",
+    "after": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d"
+  },
+  {
+    "pin_file": "mod_editor/core/providers.py",
+    "key": "mod_editor/core/nfl2k5_my_career_mode_code.py",
+    "before": "7746fa17bf59be6eafef5605cddf9c5ce4ab0e6199d0421644ab598a0a7ebc74",
+    "after": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3"
+  },
+  {
+    "pin_file": "mod_editor/core/providers.py",
+    "key": "mod_editor/core/nfl2k5_my_career_prospects.py",
+    "before": null,
+    "after": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a"
+  },
+  {
+    "pin_file": "mod_editor/core/providers.py",
+    "key": "mod_editor/core/nfl2k5_my_career_save.py",
+    "before": "f229b968fc4bea9d9cf1e5c858684056b66deeccb3f3944450fad836f053b812",
+    "after": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea"
+  },
+  {
+    "pin_file": "mod_editor/core/providers.py",
+    "key": "mod_editor/core/nfl2k5_rules_patch.py",
+    "before": null,
+    "after": "fa055e93835ad7c49196d361c7e0c9cfdec6fb620067ab7a0524e8a3cddcd15a"
+  },
+  {
+    "pin_file": "mod_editor/core/providers.py",
+    "key": "mod_editor/core/nfl2k5_throw_tuning.py",
+    "before": "ffdc3859c0b9892ade179679d9b943a46d86b1bf284cfebbeedf54b05b2153cd",
+    "after": "4f951f25922bb9e61349d29ebaffa7009d7fadbdfe0b98b44aa0b8fef0b0d121"
+  },
+  {
+    "pin_file": "packaging/check_2k5_mod_studio_runtime.py",
+    "key": "mod_editor/core/nfl2k5_weather.py",
+    "before": null,
+    "after": "89526a7912340968cbe554aedf434d5a2c60a112f21a3d2d0564082b74ecd1ad"
+  },
+  {
+    "pin_file": "packaging/check_2k5_mod_studio_runtime.py",
+    "key": "mod_editor/core/nfl2k5_weather_haze.py",
+    "before": null,
+    "after": "3d045e099f1585658b899ab6e7d3560e92edb24529ca8d6f224e901dc7712ff9"
+  },
+  {
+    "pin_file": "packaging/check_2k5_mod_studio_runtime.py",
+    "key": "mod_editor/gui/beta62_options.py",
+    "before": null,
+    "after": "d861f5656f98b0ee67cf4fe86a98bb95e5a79882e1a1066641f6b979ca835f84"
+  },
+  {
+    "pin_file": "packaging/check_2k5_mod_studio_runtime.py",
+    "key": "mod_editor/gui/build_panel_qt.py",
+    "before": null,
+    "after": "234030c6a8034cd2a02329c948e3b069073bc3f1f7b8e04c371fb73c9377f4f5"
+  },
+  {
+    "pin_file": "packaging/check_2k5_mod_studio_runtime.py",
+    "key": "mod_editor/gui/gameplay_patches_panel_qt.py",
+    "before": null,
+    "after": "2a7a24f9ec4ae2dcb1632d492ac42e7726548932e1eab409fc48c58cd45b8953"
+  },
+  {
+    "pin_file": "packaging/check_2k5_mod_studio_runtime.py",
+    "key": "mod_editor/gui/gameplay_project_ui.py",
+    "before": null,
+    "after": "7222713aaaa0efbcc8851eb4ad3efa4ef31e8ad5352919e95b1ff9b39634c905"
+  },
+  {
+    "pin_file": "packaging/check_2k5_mod_studio_runtime.py",
+    "key": "mod_editor/gui/my_career_panel_qt.py",
+    "before": null,
+    "after": "8a27ccdc2a649d122d6c21f9a646e47539b55c00653afc789e9b018fb581c823"
+  },
+  {
+    "pin_file": "packaging/check_2k5_mod_studio_runtime.py",
+    "key": "mod_editor/gui/studio_qt.py",
+    "before": "919f494c9be1fa8e0cefa1f552b4950b1bb3d5a34d03f3a156ee6d316afe0393",
+    "after": "aa57c10348b6f148b03f21279f15366ab40c4221860f55d99d90a33d428c8862"
+  },
+  {
+    "pin_file": "packaging/check_2k5_mod_studio_runtime.py",
+    "key": "tools/nfl2k5_modern_rules.py",
+    "before": null,
+    "after": "59f798d8d7996c206461de914234f1f0b987881366ba2055a18beba3d31178f9"
+  },
+  {
+    "pin_file": "packaging/check_2k5_mod_studio_runtime.py",
+    "key": "tools/nfl2k5_weather_editor.py",
+    "before": null,
+    "after": "65b45c3b25d47dc9cc672bd46a4719264ce4033aeca76632aaf44e9023b6cbfd"
+  },
+  {
+    "pin_file": "packaging/check_2k5_mod_studio_runtime.py",
+    "key": "tools/nfl2k5_weather_native_probe.py",
+    "before": null,
+    "after": "cd2776060c41a0831b1a15342a4486e739bbda5c633af5f4427217333885fde2"
+  },
+  {
+    "pin_file": "packaging/check_2k5_mod_studio_runtime.py",
+    "key": "tools/nfl2k5_weather_time_of_day.py",
+    "before": null,
+    "after": "37b2bd10f686db9fa99ba9034f9a7f68daa00bff516250ac0f67678880b98b47"
+  }
+]
