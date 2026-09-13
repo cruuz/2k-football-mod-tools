@@ -149,6 +149,8 @@ PRODUCT_MODULES = (
     "mod_editor.apf_studio.roster_workspace",
     "mod_editor.apf_studio.roster_workspace_qt",
     "mod_editor.apf_studio.save_appearance",
+    "mod_editor.apf_studio.roster_appearance_transfer",
+    "mod_editor.apf_studio.roster_appearance_transfer_qt",
     "mod_editor.apf_studio.save_playbooks",
     "mod_editor.apf_studio.save_playbooks_qt",
     "mod_editor.apf_studio.session",
@@ -200,6 +202,7 @@ TOOL_MODULES = (
     "apf_roster_identity_patch",
     "apf_save_custom_team_appearance",
     "apf_stfs_roster_extract",
+    "apf_stfs_roster_rehash",
     "apf_scene",
     "apf_stadium_catalog_position_patch",
     "apf_stadium_catalog_position_verify",
@@ -1985,6 +1988,21 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         ].default
         is False,
         "raw/STFS custom-team appearance safety/runtime boundary changed",
+    )
+    transfer = modules["mod_editor.apf_studio.roster_appearance_transfer"]
+    transfer_qt = modules["mod_editor.apf_studio.roster_appearance_transfer_qt"]
+    rehash = importlib.import_module("apf_stfs_roster_rehash")
+    require(
+        transfer.SCHEMA == "apf2k8_roster_appearance_transfer/v1"
+        and callable(transfer.inspect_transfer_source)
+        and callable(transfer.write_transfer)
+        and callable(transfer.verify_transfer)
+        and hasattr(transfer_qt, "RosterAppearanceTransferDialog")
+        and rehash.SCHEMA == "apf2k8_stfs_roster_rehash/v1"
+        and callable(rehash.rehash_roster)
+        and callable(rehash.verify_rehash)
+        and rehash.XENIA_ONLY == "Xenia only; a real console will reject this package",
+        "Roster appearance transfer/Xenia-only rehash contract changed",
     )
     for refused_slot in (31, 40, True):
         try:

@@ -72,6 +72,8 @@ mod_editor/apf_studio/playbook_membership_qt.py
 mod_editor/apf_studio/playbook_package_map_qt.py
 mod_editor/apf_studio/product_findings.py
 mod_editor/apf_studio/project.py
+mod_editor/apf_studio/roster_appearance_transfer.py
+mod_editor/apf_studio/roster_appearance_transfer_qt.py
 mod_editor/apf_studio/roster_workspace.py
 mod_editor/apf_studio/roster_workspace_qt.py
 mod_editor/apf_studio/save_appearance.py
@@ -167,6 +169,7 @@ tools/apf_roster_identity_patch.py
 tools/apf_save_custom_team_appearance.py
 tools/apf_save_playbook_assignments.py
 tools/apf_stfs_roster_extract.py
+tools/apf_stfs_roster_rehash.py
 tools/apf_scene.py
 tools/apf_stadium_catalog_position_patch.py
 tools/apf_stadium_catalog_position_verify.py
