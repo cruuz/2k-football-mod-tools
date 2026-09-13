@@ -866,18 +866,16 @@ def _valid_kept_retail_rows(rows: object) -> bool:
 
 
 def _last_message(result: CommandResult) -> str:
-    lines = [
-        line.strip() for line in (result.stderr + "\n" + result.stdout).splitlines()
-        if line.strip()
-    ]
-    if not lines:
-        return "The internal tool did not provide an error message."
-    message = lines[-1]
-    if message.lower().startswith("error:"):
-        message = message.split(":", 1)[1].strip()
-    if len(message) > 600:
-        message = message[:597] + "..."
-    return message
+    # stdout contains progress, not the refusal. Prefer stderr and retain the
+    # complete cause (a 600-character cut could remove the required next step).
+    for stream in (result.stderr, result.stdout):
+        lines = [line.strip() for line in stream.splitlines()
+                 if line.strip() and not line.strip().startswith("NFL2K5_")]
+        if lines:
+            errors = [line for line in lines if line.lower().startswith("error:")]
+            message = errors[-1] if errors else lines[-1]
+            return message.split(":", 1)[1].strip() if message.lower().startswith("error:") else message
+    return "The internal tool did not provide a refusal reason. Save the build log and report this failure."
 
 
 def _fsync_directory(path: Path) -> bool:

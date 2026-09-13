@@ -6,12 +6,12 @@ from PyQt5.QtWidgets import (
     QCheckBox, QComboBox, QDialog, QDialogButtonBox, QLabel, QVBoxLayout,
 )
 from mod_editor.core.nfl2k5_equipment_import_intent import (
-    CHOICE_CAPTION, CHOICE_HELP, PALETTE_HELP, supports_own_texture,
+    CHOICE_CAPTION, CHOICE_HELP, PALETTE_HELP, SHOE_ROUTE_HELP, LARGER_ART_HELP, supports_own_texture,
 )
 
 
 from mod_editor.core.nfl2k5_equipment_import import (
-    equipment_import_scope, PACKAGE_LOCAL_SHOE_HELP,
+    equipment_import_scope,
 )
 
 
@@ -36,7 +36,7 @@ class EquipmentTextureImportDialog(QDialog):
         scope_note.setWordWrap(True)
         layout.addWidget(scope_note)
         if ":shoes" in asset.asset_id:
-            local_note = QLabel(PACKAGE_LOCAL_SHOE_HELP)
+            local_note = QLabel(SHOE_ROUTE_HELP)
             local_note.setWordWrap(True)
             layout.addWidget(local_note)
         default = QLabel(
@@ -80,3 +80,32 @@ class EquipmentTextureImportDialog(QDialog):
     @property
     def scope(self) -> str:
         return str(self.import_scope.currentData())
+
+
+class EquipmentFitRetryDialog(QDialog):
+    """Offer only the writer's checked retry; the Studio re-runs the import."""
+
+    def __init__(self, asset, failure, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Equipment artwork needs less space")
+        self.setMinimumWidth(460)
+        layout = QVBoxLayout(self)
+        detail = QLabel(str(failure))
+        detail.setWordWrap(True)
+        detail.setObjectName("equipmentFitArithmetic")
+        layout.addWidget(detail)
+        growth = QLabel(LARGER_ART_HELP)
+        growth.setWordWrap(True)
+        layout.addWidget(growth)
+        suggestion = getattr(failure, "suggestion", None)
+        self.scale = None
+        if (isinstance(suggestion, dict) and suggestion.get("asset_id") == asset.asset_id
+                and suggestion.get("scale") in (2, 4)):
+            self.scale = suggestion["scale"]
+        buttons = QDialogButtonBox(QDialogButtonBox.Cancel)
+        self.try_that = buttons.addButton("Try that", QDialogButtonBox.AcceptRole)
+        self.try_that.setObjectName("equipmentTryThat")
+        self.try_that.setEnabled(self.scale is not None)
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        layout.addWidget(buttons)
