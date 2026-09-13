@@ -1,0 +1,449 @@
+[
+  {
+    "path": "tests/mod_editor/test_2k5_import_offers_resize.py",
+    "returncode": 0,
+    "seconds": 23.54,
+    "summary": [
+      "Ran 11 tests in 21.369s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_2k5_import_offers_resize.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_2k5_check_my_images.py",
+    "returncode": 0,
+    "seconds": 28.805,
+    "summary": [
+      "Ran 21 tests in 23.353s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_2k5_check_my_images.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_all_textures_workspace.py",
+    "returncode": 1,
+    "seconds": 12.092,
+    "summary": [
+      "mod_editor.core.errors.RegistryError: Cannot read capability registry: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md",
+      "mod_editor.capabilities.validate_registry.RegistryError: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md",
+      "mod_editor.core.errors.RegistryError: Cannot read capability registry: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md",
+      "Ran 23 tests in 11.603s",
+      "FAILED (errors=2)"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_all_textures_workspace.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_2k5_audio_operation_integration.py",
+    "returncode": 0,
+    "seconds": 45.295,
+    "summary": [
+      "Ran 17 tests in 43.661s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_2k5_audio_operation_integration.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_2k5_uniform_equipment_export.py",
+    "returncode": 0,
+    "seconds": 33.693,
+    "summary": [
+      "Ran 16 tests in 31.750s",
+      "OK (skipped=2)"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_2k5_uniform_equipment_export.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_wiring.py",
+    "returncode": 0,
+    "seconds": 0.616,
+    "summary": [
+      "Ran 2 tests in 0.082s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_apf_b69_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_field_material_writer.py",
+    "returncode": 0,
+    "seconds": 0.365,
+    "summary": [
+      "Ran 5 tests in 0.153s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_apf_field_material_writer.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_helmet_crest_design_product.py",
+    "returncode": 0,
+    "seconds": 1.669,
+    "summary": [
+      "Ran 13 tests in 1.236s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_apf_helmet_crest_design_product.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_build.py",
+    "returncode": 0,
+    "seconds": 37.543,
+    "summary": [
+      "Ran 1 test in 36.930s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_apf_b69_build.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_schemes.py",
+    "returncode": 0,
+    "seconds": 42.717,
+    "summary": [
+      "Ran 5 tests in 42.127s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_apf_b69_schemes.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_playcalling_editor_facade.py",
+    "returncode": 0,
+    "seconds": 3.772,
+    "summary": [
+      "Ran 7 tests in 3.344s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_apf_playcalling_editor_facade.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_playcalling_editor_patches.py",
+    "returncode": 0,
+    "seconds": 0.616,
+    "summary": [
+      "Ran 3 tests in 0.204s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_apf_playcalling_editor_patches.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_playcalling_editor_qt.py",
+    "returncode": 0,
+    "seconds": 6.683,
+    "summary": [
+      "Ran 10 tests in 6.131s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_apf_playcalling_editor_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_public_docs_registry_current.py",
+    "returncode": 0,
+    "seconds": 0.266,
+    "summary": [
+      "Ran 5 tests in 0.132s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_apf_public_docs_registry_current.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_stfs_roster_rehash.py",
+    "returncode": 0,
+    "seconds": 0.767,
+    "summary": [
+      "Ran 7 tests in 0.559s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_apf_stfs_roster_rehash.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_studio_installer.py",
+    "returncode": 1,
+    "seconds": 15.018,
+    "summary": [
+      "AssertionError: 1 != 0 : Traceback (most recent call last):",
+      "ModuleNotFoundError: No module named 'capstone'",
+      "AssertionError: 1 != 0 : APF2K8_MOD_STUDIO_RUNTIME_REFUSED: No module named 'capstone'",
+      "Ran 16 tests in 14.826s",
+      "FAILED (failures=2)"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_apf_studio_installer.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_audio_replacement_pack.py",
+    "returncode": 0,
+    "seconds": 10.846,
+    "summary": [
+      "Ran 41 tests in 10.050s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_audio_replacement_pack.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b66_coach_wiring.py",
+    "returncode": 0,
+    "seconds": 1.77,
+    "summary": [
+      "Ran 5 tests in 1.406s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_b66_coach_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_logo_surface_ownership.py",
+    "returncode": 0,
+    "seconds": 72.945,
+    "summary": [
+      "Ran 4 tests in 72.832s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_apf_logo_surface_ownership.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b69_a1_model_session.py",
+    "returncode": 0,
+    "seconds": 0.717,
+    "summary": [
+      "Ran 3 tests in 0.194s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_b69_a1_model_session.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b68_a1_audit.py",
+    "returncode": 0,
+    "seconds": 9.487,
+    "summary": [
+      "Ran 10 tests in 9.237s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_b68_a1_audit.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b69_a1_registry.py",
+    "returncode": 0,
+    "seconds": 0.215,
+    "summary": [
+      "Ran 6 tests in 0.105s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_b69_a1_registry.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b69_a1_runtime_imports.py",
+    "returncode": 0,
+    "seconds": 0.215,
+    "summary": [
+      "Ran 4 tests in 0.135s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_b69_a1_runtime_imports.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b69_a2_wiring.py",
+    "returncode": 0,
+    "seconds": 0.867,
+    "summary": [
+      "Ran 4 tests in 0.136s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_b69_a2_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_beta66_helmet_finish_wiring.py",
+    "returncode": 0,
+    "seconds": 16.8,
+    "summary": [
+      "Ran 8 tests in 15.971s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_beta66_helmet_finish_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_commentary_panel_qt.py",
+    "returncode": 0,
+    "seconds": 9.389,
+    "summary": [
+      "Ran 3 tests in 8.691s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_commentary_panel_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_playcalling_editor_build.py",
+    "returncode": 0,
+    "seconds": 87.206,
+    "summary": [
+      "Ran 3 tests in 86.687s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_apf_playcalling_editor_build.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_college_check_page_qt.py",
+    "returncode": 0,
+    "seconds": 2.17,
+    "summary": [
+      "Ran 11 tests in 1.843s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_nfl2k5_college_check_page_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_equipment_scope_wiring.py",
+    "returncode": 0,
+    "seconds": 2.12,
+    "summary": [
+      "Ran 3 tests in 1.961s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_nfl2k5_equipment_scope_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_calendar_engine_delivery.py",
+    "returncode": 0,
+    "seconds": 6.828,
+    "summary": [
+      "Ran 6 tests in 6.635s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_nfl2k5_calendar_engine_delivery.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_face_shield_registry.py",
+    "returncode": 1,
+    "seconds": 0.115,
+    "summary": [
+      "mod_editor.capabilities.validate_registry.RegistryError: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md",
+      "Ran 2 tests in 0.006s",
+      "FAILED (errors=1)"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_nfl2k5_face_shield_registry.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b69_a1_playcalling.py",
+    "returncode": 0,
+    "seconds": 45.715,
+    "summary": [
+      "Ran 2 tests in 45.251s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_b69_a1_playcalling.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_espn25_scenarios.py",
+    "returncode": 0,
+    "seconds": 35.946,
+    "summary": [
+      "Ran 17 tests in 35.667s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_nfl2k5_espn25_scenarios.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_model_project.py",
+    "returncode": 0,
+    "seconds": 45.725,
+    "summary": [
+      "Ran 10 tests in 44.842s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_nfl2k5_model_project.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_screen_hooks.py",
+    "returncode": 0,
+    "seconds": 12.898,
+    "summary": [
+      "Ran 10 tests in 12.715s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_nfl2k5_screen_hooks.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_number_sheet_quality_wiring.py",
+    "returncode": 0,
+    "seconds": 1.369,
+    "summary": [
+      "Ran 6 tests in 1.076s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_number_sheet_quality_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_senior_bowl.py",
+    "returncode": 0,
+    "seconds": 4.925,
+    "summary": [
+      "Ran 26 tests in 4.717s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_nfl2k5_senior_bowl.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_phase1_packaging.py",
+    "returncode": 0,
+    "seconds": 2.369,
+    "summary": [
+      "Ran 23 tests in 2.282s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_phase1_packaging.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_product_catalog.py",
+    "returncode": 0,
+    "seconds": 0.215,
+    "summary": [
+      "Ran 9 tests in 0.046s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_product_catalog.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_provider_integrity.py",
+    "returncode": 0,
+    "seconds": 10.587,
+    "summary": [
+      "Ran 7 tests in 10.400s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_provider_integrity.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_roster_save_to_disc.py",
+    "returncode": 0,
+    "seconds": 19.556,
+    "summary": [
+      "Ran 21 tests in 19.368s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_roster_save_to_disc.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_validate_all_capabilities.py",
+    "returncode": 0,
+    "seconds": 0.967,
+    "summary": [
+      "Ran 36 tests in 0.785s",
+      "OK (skipped=1)"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_validate_all_capabilities.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_shipped_tools_are_self_sufficient.py",
+    "returncode": 0,
+    "seconds": 12.842,
+    "summary": [
+      "Ran 3 tests in 12.782s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_shipped_tools_are_self_sufficient.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_practice_squad_screen.py",
+    "returncode": 0,
+    "seconds": 475.398,
+    "summary": [
+      "Ran 10 tests in 475.146s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_nfl2k5_practice_squad_screen.py.log"
+  }
+]

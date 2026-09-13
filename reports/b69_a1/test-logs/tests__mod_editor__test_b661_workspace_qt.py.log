@@ -1,0 +1,7 @@
+.......
+----------------------------------------------------------------------
+Ran 7 tests in 3.067s
+
+OK
+uniforms_first cached=False max_ui_gap=0.090s
+uniforms_first cached=True max_ui_gap=0.094s

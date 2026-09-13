@@ -1,0 +1,2705 @@
+diff --git a/ASTRA_REPORT.md b/ASTRA_REPORT.md
+new file mode 100644
+index 00000000..4caa56a5
+--- /dev/null
++++ b/ASTRA_REPORT.md
+@@ -0,0 +1,353 @@
++# Beta 69 J2: checked Models edits in projects
++
++Branch: `astra/b69-j2-models`. Baseline: `922c009d`. Read `ASTRA_CONTEXT.md`,
++triage rows 3/7/8 and the reinforcing row 9 DM, and
++`ASTRA_B661_MODELS_REPORT.md`. **All in-game outcomes are UNWITNESSED.**
++
++## Delivered
++
++Models has **Add model edit to project** after a passing geometry or paired
++geometry/skeleton check. It records one replaceable edit per model set and keeps
++the quick **Make disc with this model** path, labelled as using the same model
++writer. The displayed disc byte count now measures the packed resource changes;
++the old `CompiledModelImport.changed_bytes` counts decoded geometry bytes and
++was incorrectly labelled as on-disc bytes. The original check remains in the
++record alongside the actual packed count.
++
++The default facade creates `ModelProjectSession`, a small extension of the
++existing session in the granted Models module namespace. Existing explicitly
++supplied session factories keep their previous behavior. This avoids editing
++the ungranted session/archive owners while reusing their archive validation,
++atomic publication, texture staging and Undo transactions.
++
++A `.2k5mod` stores one hashed `model-edits.json` member. Each record contains the
++glTF/GLB paths and SHA-256s, every external buffer and export-manifest hash,
++import options, check metadata, actual changed-byte count, and sparse compiled
++changes for each resource. Only changed byte runs are stored; original packed
++resources and exported glTF/buffer payloads are not archived. Skeleton check
++metadata strips the old receipt's `before_hex`/`after_hex` dumps. The base
++archive still uses its established reader/writer and all legacy projects take
++the original loading path.
++
++Opening rechecks source-file hashes and reconstructs/reparses the saved compiled
++changes against the user's source resources. A missing or changed file explicitly
++**refuses re-checking with its full path**, while the project opens with an inline
++warning and keeps the last checked compiled bytes buildable. Adding a stale check
++refuses. This resolves the requested distinction between authoring-input validity
++and a portable already-compiled project: reopening does not discard a usable
++compiled edit just because its Blender folder moved. No file is silently relinked
++and changed files are never silently adopted. An unchanged SHA-256 identifies the
++same previously checked glTF and buffers, so reopening does not rerun Blender or
++recompress an unchanged authoring snapshot.
++
++Reconstruction validates source and replacement hashes, wrapper identity,
++decoded changes, vertex/attribute bounds, finite positions and the permitted
++geometry lanes. Skeleton binds are reparsed against the checked axial target;
++parent/name/rotation/weight/morph/topology bytes remain outside writable lanes.
++SKEL must remain identical. Consistently rehashed edits outside the permitted
++lanes are also refused. Both ordinary Undo and Undo of Revert All include model
++edits in the same ordered history as texture edits.
++
++The visual backend accepts `model_edit` recipes, pins the compiled recipe rather
++than the glTF files, prepares the saved model spans, and includes model check and
++source provenance in its build artifacts/receipts. `nfl2k5_build_service.py`
++requires **no changes**: it already handles the canonical `recipe` field and
++its existing publication/receipt-verification path accepts these prepared edits.
++
++The exact protected shell/build patch is in `WIRING.md` and
++`docs/mod_editor/nfl2k5_model_project_wiring.patch`. It updates the actual bottom
++bar/recovery dirty state, lists model summaries in Build & Share, puts model rows
++in the combined gameplay receipt and adds early resource-conflict feedback.
++The patch was replayed in memory; Claude must apply it and the two-file release
++allowlist update. Registry: extend the existing Models row, **0 added rows**.
++
++## Pair rule and next steps
++
++The refusal now names the missing, unedited or mismatched file and gives:
++**Blender: File > Export > glTF 2.0 > Include > Data > Custom Properties**.
++It explains that both LODs must come from one export and that **Geometry only >
++Check model** accepts a single LOD mesh edit while preserving the other LOD and
++both skeletons. An unedited head is expected and explicitly retained; it is not
++mistaken for the missing body LOD. Models user text drops the exception-class
++prefix.
++
++No new safe single-LOD *bone-length* case was found. The low and high models have
++separate 112-byte bind records and high derived pivots. Their shared SKEL stores
++directions, not lengths; changing one bind set cannot update the other at an LOD
++transition. The native paired gate remains intact, including the 95%-105% axial
++bound, admitted limbs, source pins and native pose comparisons. Single-LOD
++geometry with unchanged skeletons is accepted and exercised by the project replay.
++
++## Writer order and shared spans
++
++PROVED by the current writer code and read-only resource inventory:
++
++| Resource | Pack-relative span, wrapper included | Project ownership |
++| --- | --- | --- |
++| lo_body SCNE 3/113 | `0:0x1a0850`, 135,840 bytes | geometry; paired bind change |
++| hi_body SCNE 3/114 | `0:0x1c1af0`, 202,272 bytes | geometry; paired bind/derived-pivot change |
++| hi_head SCNE 3/115 | `0:0x1f3110`, 270,368 bytes | geometry; retained head bind guard |
++| SKEL 3/116 | `0:0x235130`, 512 bytes | retained canonical-direction guard |
++
++- Uniform torso/sleeve/pants and equipment artwork own TSET resources; live
++  helmet/number/face artwork owns TXTR resources. These are separate from the
++  four player resources above. Uniform equipment uses its existing grouped
++  TSET compiler, preserving neighboring edits. Body SCNE 3/113 has no embedded
++  textures; the player body check does not pretend to import separate artwork.
++- Bump maps own uniform/global TXTR spans, including the seven shared shoe maps.
++  Bump strength owns executable material values. They do not overwrite the
++  player SCNE/SKEL spans.
++- Both Guardian C cap and Guardian B overlay require their pinned original
++  **3/113 and 3/115** spans. C additionally writes TXTR 4002/12. B rebuilds outer
++  3 and appends its texture while preserving other chunks. A staged model owning
++  either shared scene is refused **before the project disc is built**, with the
++  names and the instruction to deselect Guardian or remove the model edit.
++  Neither order would safely compose their fixed-retail geometry writers.
++- The current hi-res catalog has **zero outer-3 targets**. Its TXTR/TSET and
++  midfield SCNE resources therefore do not collide with the player set. For
++  arbitrary Models scenes, selected hi-res `(outer, chunk)` identities are
++  checked before building; a shared retail-only hi-res target is refused.
++- Other project writers sharing an exact SCNE span (for example scene geometry
++  or embedded artwork) are prepared first. The model change is merged in decoded
++  space: disjoint changes and identical overlapping values survive; different
++  values at the same decoded byte refuse with both selectors. The resulting
++  scene is refit once with `nfl_vc_lz_fill`, wrapper/scratch retained, and decoded
++  again. Partial-resource overlaps refuse rather than guessing layout ownership.
++- The project service writes and verifies those resources, then the central
++  `build_with_project` runs gameplay/archive-growth passes against its private
++  project copy. Later writers use that copy's directory/entry mappings. Final
++  publication remains owned by the existing central build path. Ordinary XBE
++  gameplay edits are disjoint; Guardian is the explicit exception above.
++
++## PROVED and limits
++
++- Materialized **854,016-byte compact XISO** round trips use the real low/high
++  body, head and SKEL resources read from the user's retail archive at test time.
++  Tests pin the compact pack/inventory and synthetic XBE identities; no model
++  compiler, XDVDFS parser, span writer, whole-disc union verifier, receipt verifier
++  or service publisher is mocked. Project-only geometry and +1% paired forearm
++  skeleton builds are each byte-identical to their quick paths. The geometry
++  build works after deleting the external glTF buffer. The full historical
++  skeleton receipt reconstruction also passes. Exact hashes are in
++  `docs/mod_editor/nfl2k5_model_project_proof.json`.
++- Facade tests save/reopen the actual archive, name stale paths, reject stale
++  staging and tampered compiled bytes, count the set, and exercise mixed
++  texture/model Undo including Undo of Revert All.
++- Offscreen tests execute the real Models page and the exact shell handoff,
++  observe the actual **1 project edit** bottom bar, Undo, re-add and build through
++  `Nfl2k5BuildService`. The Build & Share confirmation names the model.
++- The combined-plan handoff test runs the real project service before a
++  **synthetic gameplay XBE-byte writer**, preserving all model spans and recording
++  model rows in the combined receipt. This proves the orchestration order; it
++  is not an actual retail gameplay-patch witness. Existing visual union and
++  build-service suites also pass.
++- The existing native skeleton suite passes all seven tests, including direct
++  paired imports and actual Blender GLB forearm/thigh witnesses. No native
++  tolerance or pair requirement was relaxed.
++
++HYPOTHESIS / not measured here: full-size retail disc performance, every possible
++mixed artwork/equipment/gameplay selection, compression fit for arbitrary user
++models, and final packaged Windows behavior. Root free space was **79 GiB**, below
++the mandated 80 GiB large-write floor; no full-size retail disc was copied and no
++large scratch disc was created. Compact fixtures and temporary exports were
++removed by their test cleanups. The 854,016-byte materialized proof must not be
++reported as a full-size retail image build.
++
++Every in-game outcome remains **UNWITNESSED**: idle/running/passing/catching/
++tackling, both camera LODs, varied body profiles, ball/helmet attachment placement,
++texture appearance, collision and original hardware. Noah/maumau78 should reopen
++and build a real combined gameplay + texture + model project, then witness these
++behaviors and retain the build receipts.
++
++## Witness and changelog
++
++The RC94/beta-69 bullets quote maumau78's row 8 project complaint and row 9 private
++question, row 7 skeleton refusal, and row 3: "gameplay mods and 3D model edit" in
++"just few minutes compared to 50 minutes of the previuos build". Row 3 is the
++second beta-68 build-speed witness alongside Coach Edwards, and is recorded as a
++build-time witness only. Noah's public/private commitment is addressed by the
++project path, not by telling the reporter to keep using the isolated quick disc.
++
++## Functions touched
++
++- `mod_editor/gui/models_panel_qt.py`: `_Task.run`, `ModelsPanel.__init__`, `ModelsPanel._build`, `ModelsPanel._invalidate_import`, `ModelsPanel._refresh`, `ModelsPanel._selected`, `ModelsPanel.compile_edited`, `ModelsPanel.compile_edited.operation`, `ModelsPanel.compile_edited.done`, `ModelsPanel.compile_body_set`, `ModelsPanel.compile_body_set.operation`, `ModelsPanel.compile_body_set.done`, `ModelsPanel._add_to_project`, `ModelsPanel._add_to_project.operation`, `ModelsPanel._add_to_project.done`, `import_report_text`, `set_report_text`
++- `mod_editor/core/nfl2k5_model_skeleton.py`: `pair_error`, `compile_set`
++- `tools/nfl2k5_visual_mod_project.py`: `validate_edit_shape`, `read_project`, `project_asset_paths`, `prepare_project`
++- `mod_editor/core/nfl2k5_build_service.py`: `NONE`
++- `mod_editor/studio/facade.py`: `Nfl2k5StudioFacade.__init__`, `Nfl2k5StudioFacade.stage_model_edit`, `Nfl2k5StudioFacade.model_project_plan`, `Nfl2k5StudioFacade._load_project_candidate`
++- `mod_editor/core/nfl2k5_model_project.py`: `sha`, `canonical`, `require`, `changed_runs`, `apply_runs`, `source_files`, `recheck_files`, `_resource`, `checked_disc_summary`, `make_record`, `make_record.check_metadata`, `validate_record`, `_validate_model_lanes`, `_validate_model_lanes.allow`, `restore_member`, `merge_decoded`, `prepare_project_models`, `plan_rows`, `validate_build_plan`
++- `mod_editor/core/nfl2k5_model_project_session.py`: `_copy_archive`, `_read_models`, `ModelProjectSession.__init__`, `ModelProjectSession.model_records`, `ModelProjectSession.modified_count`, `ModelProjectSession._manifest_document`, `ModelProjectSession.stage_model`, `ModelProjectSession.undo`, `ModelProjectSession.revert_all`, `ModelProjectSession.canonical_document`, `ModelProjectSession.save_shareable_project`, `ModelProjectSession.load_shareable_project`
++
++The shared J1 file `tools/nfl2k5_visual_mod_project.py` changes only
++`validate_edit_shape`, `read_project`, `project_asset_paths`, `prepare_project`,
++plus the model import and report-free-kind constant. No phase/error-surfacing,
++`build`, receipt reader, `verify_written` or J1 migration code was changed.
++`mod_editor/core/nfl2k5_build_service.py`: **no functions touched**.
++Provider/runtime changes are source pins, including the one new backend module;
++the exact backend closure grows from 271 to 272. No XBE writer/cave was changed.
++Production source/cave manifest regeneration is still required after integration.
++
++## Standalone verification
++
++All commands below ran from the worktree root with plain `python3`. The complete
++logs are retained under `reports/b69_j2/tests/`. The generated private inventory
++is local metadata, not a committed retail fixture:
++
++```sh
++PYTHONPATH=. python3 tools/nfl_resource_scan.py 'extracted/ESPN NFL 2K5 (USA)/vc_53450030/0' --json reports/assets/nfl2k5_resource_chunks_v2.json
++```
++
++Inventory result: 4,323 outer entries; 86,882 resource chunks; 4,616 SCNE and one
++SKEL. Native tests receive that path through `NFL2K5_ANIMATION_INVENTORY`.
++
++```sh
++QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_model_project.py
++```
++
++```text
++Ran 10 tests in 45.652s
++OK
++```
++
++```sh
++QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_models_project_wiring.py
++```
++
++```text
++Ran 2 tests in 11.770s
++OK
++```
++
++```sh
++QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_models_panel_qt.py
++```
++
++```text
++Ran 8 tests in 4.311s
++OK
++```
++
++```sh
++QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_models_skeleton_wiring.py
++```
++
++```text
++Ran 2 tests in 0.053s
++OK
++```
++
++```sh
++NFL2K5_ANIMATION_INVENTORY=reports/assets/nfl2k5_resource_chunks_v2.json PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_model_skeleton.py
++```
++
++```text
++Ran 7 tests in 169.514s
++OK
++```
++
++```sh
++PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_models.py
++```
++
++```text
++Ran 37 tests in 54.194s
++OK
++```
++
++```sh
++PYTHONPATH=. python3 tools/test_nfl2k5_visual_mod_project.py
++```
++
++```text
++Ran 46 tests in 2.360s
++OK (skipped=10)
++```
++
++```sh
++QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_studio_qt_models.py
++```
++
++```text
++Ran 0 tests in 0.000s
++OK (skipped=1)
++```
++
++```sh
++PYTHONPATH=. python3 tests/mod_editor/test_studio_facade.py
++```
++
++```text
++Ran 11 tests in 0.022s
++OK
++```
++
++```sh
++PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_build_service.py
++```
++
++```text
++Ran 28 tests in 0.169s
++OK
++```
++
++```sh
++PYTHONPATH=. python3 tests/mod_editor/test_provider_integrity.py
++```
++
++```text
++Ran 7 tests in 13.180s
++OK
++```
++
++```sh
++PYTHONPATH=. python3 tests/mod_editor/test_providers.py
++```
++
++```text
++Ran 33 tests in 4.448s
++OK
++```
++
++The ten visual-project skips name absent private team-identity, roster,
++portrait and scorebug audits. The Studio view-model class skips because its
++private uniform catalog report is absent; the actual shell/Models/footer replay
++runs and passes in the new wiring suite. Initial failures exposed those missing
++fixtures, an outdated synthetic skeleton GUI file lookup, and the backend closure
++count. The tests now use precise private-input skips, a bounded mocked lookup for
++the old synthetic GUI case, and the actual 272-file closure count. No writer
++failure or native tolerance was waived.
++
++`git apply --check docs/mod_editor/nfl2k5_model_project_wiring.patch` and
++`git diff --check` pass. `python3 packaging/repin.py --apply` updates actual source
++hashes, then is run once more immediately before the explicit-path commit. No
++push, emulator, GUI display, audio or network operation was performed.
++
++## Integration and reporter follow-up
++
++Apply WIRING's protected shell/build patch, existing registry-row extension and
++two release-allowlist paths. Regenerate source/cave metadata and run final release
++and installer gates. These protected changes are pending integration, not silently
++claimed as installed. The facade/project writer and Models button are directly
++implemented. Ask maumau78 to stage his player set, see the project count, save and
++reopen it, combine it with his real texture/gameplay edits, and build via Make disc
++from project. Also check the named pair error using his reported one-LOD folder,
++then test a properly paired skeleton export. Every played result still needs a
++separate witness.
++
++## Explicit-path commits
++
++- `d6f8cfba`: Models project staging core, facade/button integration and actionable
++  paired-skeleton error.
++- `9fa0b137`: compiled-change validation, shared Undo/Revert All, source pins,
++  standalone tests, compact-disc proof, changelog and protected wiring handoff.
++
++Final proof source-hash audit: `MODEL_PROJECT_PROOF_PINS_PASS 7`.
++Final equality audit: geometry 98,644 changed bytes; paired skeleton 328,771
++changed bytes; both project SHA-256s equal their quick-path SHA-256s.
++Final pre-commit repin: `applied 0 pin update(s)`. Working source diffs and the
++protected wiring patch pass whitespace/applicability checks. Shared Git metadata became read-only when committing the final report addendum
++(`index.lock: Read-only file system`). The two implementation commits above are
++already on the requested branch. `ASTRA_J2.bundle` carries those commits plus the
++report-only follow-up, committed with an explicit path using isolated writable
++Git metadata under the system temporary directory. The shared Git metadata was
++not changed by that fallback. No push was performed.
+diff --git a/WIRING.md b/WIRING.md
+new file mode 100644
+index 00000000..e2851ad3
+--- /dev/null
++++ b/WIRING.md
+@@ -0,0 +1,102 @@
++# Beta 69 J2 integration
++
++Branch `astra/b69-j2-models`. Direct owners are complete. Apply the exact patch
++[docs/mod_editor/nfl2k5_model_project_wiring.patch](docs/mod_editor/nfl2k5_model_project_wiring.patch)
++to the protected files below. The patch was executed in memory by
++`tests/mod_editor/test_models_project_wiring.py`; it is not applied to these
++protected files in this worktree.
++
++## Protected shell and build functions
++
++- `mod_editor/gui/studio_qt.py`, `StudioMainWindow._build_ui`: immediately
++  after constructing `self._models_panel`, connect its `project_changed` signal
++  to `_models_project_changed`. (The complete diff provides the exact containing
++  method/context.) Add `_models_project_changed` immediately before
++  `_mark_workspace_changed`. This marks dirty, refreshes the actual bottom bar,
++  queues recovery saving and refreshes an already constructed Build panel.
++- `mod_editor/gui/build_panel_qt.py`, `BuildPanel.confirmation_text`: after the
++  existing shared-project Files entry, list `facade.model_project_plan` summaries
++  and saved checked bytes. `BuildPanel.blocker`: after the reading-state check,
++  use `validate_build_plan` for cheap Guardian conflict feedback. Hi-res file
++  preflight stays in the worker, not the UI refresh loop.
++- `mod_editor/core/mod_build.py`, `build_with_project`: validate model conflicts
++  before calling `build` or the project service, capture `plan_rows(session)`, and
++  add `project_models` to the combined receipt. Keep the existing order: project
++  resources first, then gameplay/archive-growth writers, then publication.
++
++The patch has complete code blocks, context and insertion points. No J1
++error-surfacing or receipt-parser changes are included. Do not overwrite J1's
++parallel changes when applying this branch.
++
++## Registry: update one existing row, add zero rows
++
++In `mod_editor/capabilities/registry.v1.json`, update the existing
++`nfl2k5.models.scne_gltf` row. Preserve its current native-pose evidence and
++constraints. Apply these field changes:
++
++```python
++row["summary"] = (
++    "Export and check model geometry or bounded paired skeleton changes, then add "
++    "one checked set to the project. Sparse compiled changes build with other "
++    "project resources; all in-game outcomes remain UNWITNESSED."
++)
++row["gui"]["reason"] = (
++    "Models > Check model / Check all three > Add model edit to project. The set "
++    "is counted, saved, undoable and listed in Build & Share. Make disc with this "
++    "model remains the quick path using the same fixed-span model writer."
++)
++row["input_constraints"].extend([
++    "The project stores glTF/GLB and external-buffer paths, hashes and a checked "
++    "sparse compiled change. Reopening rechecks those files; missing or changed "
++    "files refuse rechecking with the path, while saved compiled bytes remain buildable.",
++    "One staged edit per model set; adding another check for that set replaces "
++    "its previous checked set and Undo restores it. Geometry only accepts a "
++    "single LOD and retains the other LOD and both skeletons.",
++    "Both skeleton LODs must come from one export with Custom Properties kept: "
++    "Blender: File > Export > glTF 2.0 > Include > Data > Custom Properties. "
++    "Separate native bind records make a single-LOD bone-length import unsafe.",
++    "Project writers sharing an exact SCNE span compose disjoint decoded byte "
++    "changes, refit once and reparse; conflicting or partial overlaps refuse. "
++    "Guardian cap/overlay and selected hi-res resources that require the same "
++    "retail model resources must be deselected before building."
++])
++row["evidence"].extend([
++    "docs/mod_editor/nfl2k5_model_project_proof.json",
++    "tests/mod_editor/test_nfl2k5_model_project.py",
++    "tests/mod_editor/test_models_project_wiring.py"
++])
++row["validation_command"] = (
++    "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 "
++    "tests/mod_editor/test_nfl2k5_model_project.py"
++)
++```
++
++Classification remains `offline-writer-proved`; skeleton import stays manual,
++EXPERIMENTAL and off by default. Do not add it to a preset. BASIC/ADVANCED/
++EXPERIMENTAL build preset defaults are unchanged. This extends the existing
++Models capability, so registry count pins change by **0**.
++
++## Packaging and pins
++
++Add these two source paths to `packaging/release-allowlist.txt` beside the Models
++modules:
++
++```text
++mod_editor/core/nfl2k5_model_project.py
++mod_editor/core/nfl2k5_model_project_session.py
++```
++
++The new backend import is pinned in `Nfl2k5UnifiedVisualProvider.module_pins`.
++The exact backend closure is 272 files (was 271). The session extension belongs
++to the app and is not part of the external backend closure. Repin after applying
++the protected shell/build patch; the facade/runtime digest and provider source
++pins in this branch were regenerated from actual bytes. The changed
++`packaging/check_2k5_mod_studio_runtime.py` digest is solely repin output, not a
++runtime-check logic change.
++
++Regenerate the protected production source/cave manifest after integration.
++These changes allocate no XBE cave and patch no executable bytes. Run packaging
++and runtime gates after the allowlist and protected wiring land. Registered,
++rendered and usable remain distinct: direct Models + facade + project build
++code is installed here; the shell refresh and combined-plan receipt wiring are
++proved by the exact in-memory handoff and still need application by Claude.
+diff --git a/docs/mod_editor/2k5_mod_studio_changelog.md b/docs/mod_editor/2k5_mod_studio_changelog.md
+index fe6e2a9a..9ca411b6 100644
+--- a/docs/mod_editor/2k5_mod_studio_changelog.md
++++ b/docs/mod_editor/2k5_mod_studio_changelog.md
+@@ -4,6 +4,10 @@
+ 
+ Beta 69 adds planned features, answers every ESPN NFL 2K5 report in Discord after beta 68 and polishes both studios; bullets are added as each change lands.
+ 
++- **Checked model edits belong to the project.** maumau78 reported "there is no way to save into project and make a disc if I edit 3d models" and privately asked "so \"make my disc\" is the correct way to apply all the edits right?" Models now offers Add model edit to project. One checked set counts as one project edit, saves its source paths, hashes, check and compiled byte changes in the .2k5mod, and participates in Undo and Revert All. Make disc from project includes the saved model changes with the other project edits and gameplay passes. The quick Make disc with this model path uses the same model writer. Missing or changed authoring files are named when re-checking; the saved checked bytes remain buildable. Overlapping Guardian cap choices are refused before building. PROVED with compact disc round trips and an offscreen replay of the shell/build handoff; all in-game outcomes remain UNWITNESSED.
++- **Skeleton pair refusals name the file and the next step.** maumau78 reported "Try also re-import skeleton but keep getting this error...." The message now names the missing, unedited or mismatched LOD file, gives Blender's File > Export > glTF 2.0 > Include > Data > Custom Properties path, and explains when Geometry only accepts a single LOD. Low and high bind records are separate, so a bone-length edit still requires the coordinated pair; the shared SKEL direction table cannot update the other LOD's length. The ModelsError class prefix is removed. The paired native pose gate still passes; in-game outcomes remain UNWITNESSED.
++- **A second player witnessed beta 68's faster builds.** maumau78 built "gameplay mods and 3D model edit" in "just few minutes compared to 50 minutes of the previuos build". This is a build-time witness alongside Coach Edwards' "5 minutes or less", not an in-game model witness. Every in-game outcome from these changes remains UNWITNESSED.
++
+ ## v1.0 RC93, beta 68: fixes for the reports after beta 66.1 (2026-09-12)
+ 
+ Beta 68 answers the ESPN NFL 2K5 reports in Discord after beta 66.1; bullets are added as each change lands.
+diff --git a/docs/mod_editor/nfl2k5_model_project_proof.json b/docs/mod_editor/nfl2k5_model_project_proof.json
+new file mode 100644
+index 00000000..7e85f3a1
+--- /dev/null
++++ b/docs/mod_editor/nfl2k5_model_project_proof.json
+@@ -0,0 +1,138 @@
++{
++  "in_game": "UNWITNESSED",
++  "protected_handoff": "docs/mod_editor/nfl2k5_model_project_wiring.patch",
++  "protected_handoff_sha256": "091c61a9794fc8743c78ff24ef234ef461cdbc4dc2b63d21618020f711b647e2",
++  "roundtrips": [
++    {
++      "changed_bytes": 98644,
++      "disc_size": 854016,
++      "external_buffer_missing_at_build": true,
++      "mode": "geometry",
++      "project_sha256": "7101364eaa209005f2976d71dfca8e8684aea7bf303a5513eece9ebc4f8a354c",
++      "quick_sha256": "7101364eaa209005f2976d71dfca8e8684aea7bf303a5513eece9ebc4f8a354c",
++      "source_sha256": "3395ecbe02db68835b6dbc14602eba3e3e01d595fe800375534feeee26cdaa56",
++      "source_unchanged": true,
++      "witnessed": false
++    },
++    {
++      "changed_bytes": 328771,
++      "disc_size": 854016,
++      "guarded_resources": 4,
++      "historical_receipt_replay": true,
++      "mode": "skeleton",
++      "project_sha256": "61e3fe2c5c95928c807b31ca2e5e0d80a4b7e0cd798e4084b1fda1bb178c1242",
++      "quick_sha256": "61e3fe2c5c95928c807b31ca2e5e0d80a4b7e0cd798e4084b1fda1bb178c1242",
++      "source_sha256": "3395ecbe02db68835b6dbc14602eba3e3e01d595fe800375534feeee26cdaa56",
++      "witnessed": false
++    }
++  ],
++  "schema": "nfl2k5_model_project_proof/v1",
++  "scope": "materialized compact XISO with retail resources; not a full-size retail disc build",
++  "source_sha256": {
++    "mod_editor/core/nfl2k5_build_service.py": "dccceaf45020ba3d2647c23e62004264898b03f7138912d2363254c7cba60da7",
++    "mod_editor/core/nfl2k5_model_project.py": "04371be3e1e86a9a6b3d2499dc0db203d6d5d9241c104c78879a2a414aa05488",
++    "mod_editor/core/nfl2k5_model_project_session.py": "e8a6ddcd824a2fcec0269b2b06f152a8c57c133299f8a29dce6c206a7da195f7",
++    "mod_editor/core/nfl2k5_model_skeleton.py": "feaff8bb682d51d6b62c23cb955ccaf5b9a149f9e2948d7ee4f219200cd7f0ee",
++    "mod_editor/gui/models_panel_qt.py": "88bc198c240eaa4e7d560e60c547ebdcc64574f67b11e701a50b1806d41e1b3e",
++    "mod_editor/studio/facade.py": "2579f275b464874b93822bd6f04c391252814e8e589c77bba7b33930ab3c6af0",
++    "tools/nfl2k5_visual_mod_project.py": "9c09105da648acaa209ed0386e81307d7ffa97bec4c0439fb5f4cd5035f85436"
++  },
++  "tests": [
++    {
++      "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_model_project.py",
++      "log": "reports/b69_j2/tests/model-project.log",
++      "result": [
++        "Ran 10 tests in 45.652s",
++        "OK"
++      ]
++    },
++    {
++      "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_models_project_wiring.py",
++      "log": "reports/b69_j2/tests/model-wiring.log",
++      "result": [
++        "Ran 2 tests in 11.770s",
++        "OK"
++      ]
++    },
++    {
++      "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_models_panel_qt.py",
++      "log": "reports/b69_j2/tests/models-panel.log",
++      "result": [
++        "Ran 8 tests in 4.311s",
++        "OK"
++      ]
++    },
++    {
++      "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_models_skeleton_wiring.py",
++      "log": "reports/b69_j2/tests/skeleton-wiring.log",
++      "result": [
++        "Ran 2 tests in 0.053s",
++        "OK"
++      ]
++    },
++    {
++      "command": "NFL2K5_ANIMATION_INVENTORY=reports/assets/nfl2k5_resource_chunks_v2.json PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_model_skeleton.py",
++      "log": "reports/b69_j2/tests/model-skeleton.log",
++      "result": [
++        "Ran 7 tests in 169.514s",
++        "OK"
++      ]
++    },
++    {
++      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_models.py",
++      "log": "reports/b69_j2/tests/models-core.log",
++      "result": [
++        "Ran 37 tests in 54.194s",
++        "OK"
++      ]
++    },
++    {
++      "command": "PYTHONPATH=. python3 tools/test_nfl2k5_visual_mod_project.py",
++      "log": "reports/b69_j2/tests/visual-project.log",
++      "result": [
++        "Ran 46 tests in 2.360s",
++        "OK (skipped=10)"
++      ]
++    },
++    {
++      "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_studio_qt_models.py",
++      "log": "reports/b69_j2/tests/studio-models.log",
++      "result": [
++        "Ran 0 tests in 0.000s",
++        "OK (skipped=1)"
++      ]
++    },
++    {
++      "command": "PYTHONPATH=. python3 tests/mod_editor/test_studio_facade.py",
++      "log": "reports/b69_j2/tests/facade.log",
++      "result": [
++        "Ran 11 tests in 0.022s",
++        "OK"
++      ]
++    },
++    {
++      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_build_service.py",
++      "log": "reports/b69_j2/tests/build-service.log",
++      "result": [
++        "Ran 28 tests in 0.169s",
++        "OK"
++      ]
++    },
++    {
++      "command": "PYTHONPATH=. python3 tests/mod_editor/test_provider_integrity.py",
++      "log": "reports/b69_j2/tests/provider-integrity.log",
++      "result": [
++        "Ran 7 tests in 13.180s",
++        "OK"
++      ]
++    },
++    {
++      "command": "PYTHONPATH=. python3 tests/mod_editor/test_providers.py",
++      "log": "reports/b69_j2/tests/providers.log",
++      "result": [
++        "Ran 33 tests in 4.448s",
++        "OK"
++      ]
++    }
++  ]
++}
+diff --git a/docs/mod_editor/nfl2k5_model_project_wiring.patch b/docs/mod_editor/nfl2k5_model_project_wiring.patch
+new file mode 100644
+index 00000000..22f17d52
+--- /dev/null
++++ b/docs/mod_editor/nfl2k5_model_project_wiring.patch
+@@ -0,0 +1,66 @@
++--- a/mod_editor/gui/studio_qt.py
+++++ b/mod_editor/gui/studio_qt.py
++@@ -2739,6 +2739,7 @@
++         self._roster_editor_panel = _BuildContextRosterPanel(self.facade)
++         self.pages.addWidget(self._page_scroll_host(self._roster_editor_panel))
++         self._models_panel = ModelsPanel(self.facade)
+++        self._models_panel.project_changed.connect(self._models_project_changed)
++         self.pages.addWidget(self._page_scroll_host(self._models_panel))
++         self._animations_panel = AnimationsPanel(self.facade)
++         self.pages.addWidget(self._page_scroll_host(self._animations_panel))
++@@ -8379,6 +8380,11 @@
++             self._crib_panel.refresh(keep_selection=not reset)
++         if reset and self._playbooks_panel is not None:
++             self._playbooks_panel.reset_for_source()
+++
+++    def _models_project_changed(self) -> None:
+++        self._mark_workspace_changed()
+++        if self._build_panel is not None:
+++            self._build_panel._refresh()
++ 
++     def _mark_workspace_changed(self, *, rebuild_components: bool = False) -> None:
++         """Mark an authored change and immediately queue a safe autosave."""
++--- a/mod_editor/core/mod_build.py
+++++ b/mod_editor/core/mod_build.py
++@@ -988,9 +988,15 @@
++ 
++ def build_with_project(plan, service, cache, session, progress=None):
++     """One private project copy, then gameplay, then one final publication."""
+++    from .nfl2k5_model_project import plan_rows, validate_build_plan
+++    validate_build_plan(plan, session)
+++    models = plan_rows(session)
++     report = progress or (lambda *_: None)
++-    return build(plan, progress, _project_builder=lambda output: service.build(
+++    receipt = build(plan, progress, _project_builder=lambda output: service.build(
++         cache, session, output, lambda event: report(event.message, event.completed, event.total)))
+++    if models:
+++        receipt["project_models"] = models
+++    return receipt
++ 
++ 
++ def _preview_play_intents(source, paths):
++--- a/mod_editor/gui/build_panel_qt.py
+++++ b/mod_editor/gui/build_panel_qt.py
++@@ -1555,6 +1555,13 @@
++             return denial
++         if self._reading:
++             return "Reading disc…"
+++        if self._include_session_project():
+++            from mod_editor.core.nfl2k5_model_project import validate_build_plan
+++            from mod_editor.core.errors import ValidationError
+++            try:
+++                validate_build_plan(replace(self.plan(), hires_pack=False), self._facade._session)
+++            except (ValueError, ValidationError) as exc:
+++                return str(exc)
++         conflicts = getattr(self, "_playbook_blockers", ())
++         if conflicts:
++             return " ".join(conflicts)
++@@ -2154,6 +2161,8 @@
++             files.append(f"playbook packs: {len(plan.playbook_packs)}")
++         if self._include_session_project():
++             files.append("shared project: all current edits, including Music replacements")
+++            for model in getattr(self._facade, "model_project_plan", ()):
+++                lines.append("Model: " + model["summary"] + " (saved checked bytes; in-game UNWITNESSED)")
++         if plan.commentary:
++             files.append(f"commentary lines: {len(plan.commentary)}")
++         if plan.player_tags:
+diff --git a/mod_editor/core/nfl2k5_model_project.py b/mod_editor/core/nfl2k5_model_project.py
+new file mode 100644
+index 00000000..843d108c
+--- /dev/null
++++ b/mod_editor/core/nfl2k5_model_project.py
+@@ -0,0 +1,424 @@
++"""Checked Models edits: sparse compiled bytes, source provenance and SCNE composition.
++
++No glTF is consumed by the disc builder. Only changed bytes are archived; original
++resources always come from the user's source. The quick path's exact packed bytes
++are reconstructed, including its fixed wrapper and compression padding.
++"""
++from __future__ import annotations
++
++import base64
++import copy
++import hashlib
++import json
++import math
++import os
++import re
++from pathlib import Path
++from urllib.parse import unquote
++
++from . import nfl2k5_models as M
++from .errors import ValidationError
++
++KIND = "model_edit"
++SCHEMA = "nfl2k5_model_project/v1"
++MAX_BYTES = 64 * 1024 * 1024
++
++
++def sha(data):
++    return hashlib.sha256(data).hexdigest()
++
++
++def canonical(value):
++    return (json.dumps(value, indent=2, sort_keys=True) + "\n").encode("utf-8")
++
++
++def require(condition, message):
++    if not condition:
++        raise ValidationError(message)
++
++
++def changed_runs(before, after):
++    require(len(before) == len(after), "Model resource size changed; check the model again.")
++    rows, start = [], None
++    for i, (a, b) in enumerate(zip(before, after)):
++        if a != b and start is None:
++            start = i
++        elif a == b and start is not None:
++            rows.append([start, base64.b64encode(after[start:i]).decode("ascii")])
++            start = None
++    if start is not None:
++        rows.append([start, base64.b64encode(after[start:]).decode("ascii")])
++    return rows
++
++
++def apply_runs(before, rows):
++    require(isinstance(rows, list), "Malformed compiled model change.")
++    after, end = bytearray(before), 0
++    for row in rows:
++        require(isinstance(row, list) and len(row) == 2 and type(row[0]) is int
++                and isinstance(row[1], str), "Malformed compiled model byte range.")
++        try:
++            data = base64.b64decode(row[1], validate=True)
++        except ValueError as exc:
++            raise ValidationError("Malformed compiled model bytes.") from exc
++        offset = row[0]
++        require(data and offset >= end and offset + len(data) <= len(before),
++                "Compiled model byte range is outside its resource or overlaps another range.")
++        require(all(a != b for a, b in zip(before[offset:offset+len(data)], data)),
++                "Compiled model change includes unchanged source bytes.")
++        after[offset:offset+len(data)] = data
++        end = offset + len(data)
++    return bytes(after)
++
++
++def source_files(paths):
++    """Pin glTF/GLB and external buffers, including the export identity manifest."""
++    names = set()
++    for supplied in paths:
++        path = Path(supplied).expanduser().resolve()
++        names.add(path)
++        if path.suffix.lower() == ".gltf":
++            try:
++                require(path.stat().st_size <= MAX_BYTES, f"Model input is too large: {path}")
++                doc = json.loads(path.read_bytes())
++                require(isinstance(doc, dict) and isinstance(doc.get("buffers", []), list),
++                        f"Invalid glTF document: {path}. Export it again from Blender.")
++            except (OSError, ValueError) as exc:
++                raise ValidationError(f"Cannot check glTF: {path}. Restore it or export it again from Blender.") from exc
++            for buffer in doc.get("buffers", []):
++                uri = buffer.get("uri", "")
++                if uri and not uri.startswith("data:"):
++                    names.add((path.parent / unquote(uri)).resolve())
++        manifest = path.parent / "player-body-set.skeleton.json"
++        if manifest.is_file():
++            names.add(manifest)
++    result = []
++    for path in sorted(names):
++        try:
++            require(path.stat().st_size <= MAX_BYTES, f"Model input is too large: {path}")
++            payload = path.read_bytes()
++        except OSError as exc:
++            raise ValidationError(f"Cannot check model input: {path}. Restore it and check the model again.") from exc
++        result.append({"path": str(path), "sha256": sha(payload), "size": len(payload)})
++    return result
++
++
++def recheck_files(record):
++    """Refuse stale authoring inputs without discarding the compiled project edit."""
++    problems = []
++    for row in record["sources"]:
++        path = Path(row["path"])
++        try:
++            matches = path.stat().st_size == row["size"] and sha(path.read_bytes()) == row["sha256"]
++        except OSError:
++            matches = False
++        if not matches:
++            problems.append(f"Re-check refused: {path} is missing or changed. Restore the checked file, "
++                            "or check and add its replacement in Models. The saved compiled change can still build.")
++    return problems
++
++
++def _resource(source, key):
++    outer, chunk = M.parse_model_key(key)
++    if (outer, chunk) in source.resources:
++        return source.resources[outer, chunk]
++    # SKEL is a guard in a coordinated body set, not a catalogued SCNE.
++    _, resources = source._probe.parse_inventory(source.inventory_path)
++    resource = next((r for r in resources if (r.outer_index, r.chunk_index) == (outer, chunk)), None)
++    require(resource is not None and key == "o3c116", f"Missing model resource {key}.")
++    return resource
++
++
++def checked_disc_summary(source, compiled):
++    if isinstance(compiled, M.CompiledModelSet) and compiled.skeleton_plan is not None:
++        count = compiled.changed_bytes
++    else:
++        members = compiled.members if isinstance(compiled, M.CompiledModelSet) else [compiled]
++        count = sum(sum(a != b for a,b in zip(source.span(source.resource(m.key)),m.rebuilt_span)) for m in members)
++    return re.sub(r"[\d,]+ bytes change on disc", f"{count:,} bytes change on disc", compiled.summary())
++
++
++def make_record(source, compiled, files, options=None, pinned_sources=None):
++    pins = source_files(files) if pinned_sources is None else copy.deepcopy(pinned_sources)
++    skeleton = isinstance(compiled, M.CompiledModelSet) and compiled.skeleton_plan is not None
++    members = compiled.skeleton_plan.members if skeleton else (
++        compiled.members if isinstance(compiled, M.CompiledModelSet) else [compiled])
++    rows = []
++    for member in members:
++        resource = _resource(source, member.key)
++        before = source.span(resource)
++        after = member.after if skeleton else member.rebuilt_span
++        require(sha(before) == (sha(member.before) if skeleton else member.template_span_sha256),
++                f"{member.key}: model source changed after checking.")
++        decoded, _ = source._probe.decode_resource(before, resource)
++        rebuilt, _ = source._probe.decode_resource(after, resource)
++        require(before[:32] == after[:32], f"{member.key}: model wrapper changed.")
++        rows.append({"key": member.key, "size": len(before), "before_sha256": sha(before),
++                     "after_sha256": sha(after), "decoded_sha256": sha(rebuilt),
++                     "changes": changed_runs(before, after),
++                     "decoded_changes": changed_runs(decoded, rebuilt)})
++    keys = {row["key"] for row in rows}
++    # All single-LOD imports of a player belong to one replaceable project set.
++    body = any(key in {"o3c113", "o3c114", "o3c115"} for key in keys)
++    target = "player-body-o3" if body else "models-" + "-".join(sorted(keys))
++    def check_metadata(value):
++        if isinstance(value, dict):
++            return {key: check_metadata(item) for key, item in value.items()
++                    if key not in {"before_hex", "after_hex"}}
++        if isinstance(value, list):
++            return [check_metadata(item) for item in value]
++        return value
++
++    record = {"schema": SCHEMA, "target": target, "mode": "skeleton" if skeleton else "geometry",
++              "summary": compiled.summary(), "sources": pins, "options": options or {},
++              "check": check_metadata(compiled.report()), "members": rows,
++              "changed_bytes": sum(sum(len(base64.b64decode(data)) for _, data in row["changes"]) for row in rows),
++              "witnessed": False}
++    record["summary"] = re.sub(r"[\d,]+ bytes change on disc", f"{record['changed_bytes']:,} bytes change on disc", record["summary"])
++    require(record["changed_bytes"] > 0, "The checked model does not change any disc bytes.")
++    problems = recheck_files(record)
++    require(not problems, "\n".join(problems))
++    validate_record(record)
++    for row in record["members"]:
++        restore_member(source, row, record)
++    return record
++
++
++def validate_record(record):
++    require(isinstance(record, dict) and record.get("schema") == SCHEMA,
++            "Unsupported compiled model project record; check and add the model again.")
++    require(set(record) == {"schema", "target", "mode", "summary", "sources", "options", "check",
++                            "members", "changed_bytes", "witnessed"}, "Malformed compiled model record fields.")
++    require(record["mode"] in {"geometry", "skeleton"} and record["witnessed"] is False
++            and isinstance(record["target"], str) and isinstance(record["summary"], str)
++            and isinstance(record["check"], dict) and isinstance(record["options"], dict)
++            and type(record["changed_bytes"]) is int and record["changed_bytes"] > 0,
++            "Malformed model check result.")
++    require(isinstance(record["sources"], list) and 1 <= len(record["sources"]) <= 64,
++            "Missing checked model source paths and hashes.")
++    for row in record["sources"]:
++        require(isinstance(row, dict) and set(row) == {"path", "sha256", "size"}
++                and isinstance(row["path"], str) and len(row["sha256"]) == 64
++                and type(row["size"]) is int and 0 <= row["size"] <= MAX_BYTES,
++                "Malformed checked model source path/hash.")
++    require(isinstance(record["members"], list) and 1 <= len(record["members"]) <= 4,
++            "Malformed compiled model set.")
++    keys = []
++    for row in record["members"]:
++        require(isinstance(row, dict) and set(row) == {"key", "size", "before_sha256", "after_sha256",
++                "decoded_sha256", "changes", "decoded_changes"}, "Malformed compiled model member.")
++        M.parse_model_key(row["key"])
++        require(type(row["size"]) is int and 32 <= row["size"] <= MAX_BYTES
++                and all(isinstance(row[n], str) and len(row[n]) == 64 for n in
++                        ("before_sha256", "after_sha256", "decoded_sha256")), "Malformed model member hashes/size.")
++        keys.append(row["key"])
++    require(len(set(keys)) == len(keys), "The project repeats a model resource.")
++    if record["mode"] == "skeleton":
++        require(set(keys) == {"o3c113", "o3c114", "o3c115", "o3c116"}
++                and record["check"].get("preflight_passed") is True,
++                "Coordinated skeleton project is missing its paired check or resource guards.")
++    require(len(canonical(record)) <= MAX_BYTES, "Compiled model project exceeds 64 MiB.")
++    return record
++
++
++def _validate_model_lanes(source, resource, original, rebuilt, record):
++    """Reparse compiled changes and restrict them to the Models writer's lanes."""
++    key = M.model_key(resource.outer_index, resource.chunk_index)
++    if resource.kind == "SKEL":
++        require(key == "o3c116" and original == rebuilt, "The Models axial gate retains canonical SKEL directions.")
++        return
++    require(resource.kind == "SCNE" and len(original) == len(rebuilt), f"{key}: model resource layout changed.")
++    _, _, scene = source.parse(key)
++    allowed = bytearray(len(original))
++
++    def allow(at, size):
++        require(0 <= at <= at + size <= len(original), f"{key}: model lane exceeds its scene.")
++        allowed[at:at+size] = b'\1' * size
++
++    skeleton = record is not None and record["mode"] == "skeleton" and key in {"o3c113", "o3c114"}
++    for shape in scene["shapes"]:
++        if not int(shape["vertex_count"]):
++            continue
++        lanes = M._shape_lanes(scene, shape, original)
++        if lanes.position_format not in {"NORMSHORT3", "FLOAT3"}:
++            continue
++        base = M._stream_base(scene, shape, lanes.position_stream)
++        for i in range(lanes.vertex_count):
++            allow(base + i*lanes.position_stride + lanes.position_offset,
++                  6 if lanes.position_format == "NORMSHORT3" else 12)
++        if lanes.position_format == "NORMSHORT3":
++            allow(lanes.record_offset + 0x10, 4)
++            allow(lanes.record_offset + 0x20, 12)
++        allow(lanes.record_offset + M.UV_CONSTANT_OFFSET, 16)
++        for lane in (lanes.normal, lanes.texcoord, lanes.colour):
++            if lane is not None:
++                base = M._stream_base(scene, shape, lane[0])
++                for i in range(lanes.vertex_count):
++                    allow(base + i*lane[2] + lane[1], 4)
++        if skeleton:
++            from . import nfl2k5_model_skeleton as S
++            skin = M.decode_skin(original, shape, lanes, scene["submeshes"])
++            changed = record["check"].get("changed_bones", [])
++            require(isinstance(changed, list) and len(changed) <= 1, "A skeleton project supports one checked axial bone length.")
++            bone, scale = None, 1.0
++            if changed:
++                bone = next((b for b in S.BONES if b.name == changed[0].get("bone") and b.kind != "upper_arm"), None)
++                scale = changed[0].get("scale")
++                require(bone is not None and type(scale) in (float,int) and math.isfinite(scale)
++                        and .95 <= scale <= 1.05, "Skeleton project exceeds the checked axial bone gate.")
++            targets = S.target_positions(skin.transforms, bone, scale) if bone else {t['name']:t['absolute'] for t in skin.transforms}
++            bind = M._tools_module("nfl_scne_inventory").resolve_relative(
++                original, lanes.record_offset + 0x64, len(original), "bind transforms")
++            for i in range(lanes.transform_count):
++                allow(bind + i*112 + 0x40, 12)
++                allow(bind + i*112 + 0x50, 12)
++            edited = M.decode_skin(rebuilt, shape, lanes, scene["submeshes"])
++            for transform in edited.transforms:
++                parent = transform['parent']
++                expected = targets[transform['name']]
++                parent_position = targets[edited.transforms[parent]['name']] if parent >= 0 else (0.,0.,0.)
++                require(math.dist(transform['absolute'], expected) <= S.TOLERANCE_CM
++                        and math.dist(transform['local'], tuple(a-b for a,b in zip(expected,parent_position))) <= S.TOLERANCE_CM,
++                        f"{key}: compiled bind does not match the checked paired skeleton.")
++        positions = M.read_positions(rebuilt, shape, M._shape_lanes(scene,shape,rebuilt))
++        require(all(math.isfinite(v) for point in positions for v in point), f"{key}: compiled positions are not finite.")
++    require(all(a == b or allowed[i] for i,(a,b) in enumerate(zip(original, rebuilt))),
++            f"{key}: compiled model changes bytes outside the checked geometry/bind lanes.")
++
++
++def restore_member(source, row, record=None):
++    resource = _resource(source, row["key"])
++    before = source.span(resource)
++    require(len(before) == row["size"] and sha(before) == row["before_sha256"],
++            f"{row['key']}: the project's checked model does not match this source disc.")
++    after = apply_runs(before, row["changes"])
++    require(before[:32] == after[:32] and sha(after) == row["after_sha256"],
++            f"{row['key']}: stored compiled model bytes changed. Check and add the model again.")
++    decoded, _ = source._probe.decode_resource(before, resource)
++    rebuilt, _ = source._probe.decode_resource(after, resource)
++    require(sha(rebuilt) == row["decoded_sha256"] and apply_runs(decoded, row["decoded_changes"]) == rebuilt,
++            f"{row['key']}: compiled model reparse differs from the checked change.")
++    _validate_model_lanes(source, resource, decoded, rebuilt, record)
++    return resource, before, after
++
++
++def merge_decoded(source, resource, before, model_after, other_after, label):
++    original, _ = source._probe.decode_resource(before, resource)
++    model, _ = source._probe.decode_resource(model_after, resource)
++    other, _ = source._probe.decode_resource(other_after, resource)
++    require(len(original) == len(model) == len(other),
++            f"{label}: model and texture edits change the same resource layout; remove one edit.")
++    combined = bytearray(other)
++    for offset, (a, b, c) in enumerate(zip(original, model, other)):
++        if b != a:
++            require(c in (a, b), f"{label}: conflicting model and other edit at decoded byte {offset:#x}; "
++                    "remove one edit or re-export a compatible model.")
++            combined[offset] = b
++    if bytes(combined) == model:
++        return model_after
++    if bytes(combined) == other:
++        return other_after
++    result, _ = M._tools_module("nfl_vc_lz_fill").rebuild_fixed_span_filled(before, bytes(combined), encoder="auto")
++    checked, _ = source._probe.decode_resource(result, resource)
++    require(result[:32] == before[:32] and checked == bytes(combined), f"{label}: composed model reparse failed.")
++    return result
++
++
++def prepare_project_models(backend, prepared, edits, project, pins, index, inventory,
++                           temp_root, temp_files, source_fd):
++    """Compose checked model resources after artwork, before binding/copying the disc."""
++    if not edits:
++        return
++    source = M.ModelSource(index, inventory)
++    packs = M._xdvdfs_pack_entries(source_fd, os.fstat(source_fd).st_size)
++    pack_hashes = {}
++    claimed = set()
++    for edit in edits:
++        pin = backend.resolve_asset(project, edit["recipe"], pins)
++        record = validate_record(json.loads(pin.payload))
++        require(record["target"] == edit["target"], "Model recipe target differs from its project row.")
++        total = 0
++        for row in record["members"]:
++            key = row["key"]
++            require(key not in claimed, f"Two project model edits claim {key}; remove one set.")
++            claimed.add(key)
++            resource, before, after = restore_member(source, row, record)
++            total += sum(a != b for a, b in zip(before, after))
++            segments = tuple(source.archive_segments(resource))
++            consumed = 0
++            for segment in segments:
++                pack_name = str(segment.pack_name)
++                pack = packs.get(pack_name)
++                require(pack is not None, f"{key}: source disc is missing pack {pack_name}.")
++                size, offset = int(segment.size), int(segment.pack_offset)
++                original = before[consumed:consumed+size]
++                replacement = after[consumed:consumed+size]
++                absolute = int(pack.byte_offset) + offset
++                current = M.platform_compat.pread(source_fd, size, absolute)
++                require(current == original, f"{key}: source disc resource differs from the checked model.")
++                if replacement == original:
++                    consumed += size
++                    continue
++                overlaps = [p for p in prepared if p.pack_path.casefold() == f"vc_53450030/{pack_name}".casefold()
++                            and p.pack_offset < offset + size and offset < p.pack_offset + p.replacement_size]
++                reports, previews, inputs = [], [], {"recipe": pin.sha256}
++                if overlaps:
++                    require(len(segments) == 1 and len(overlaps) == 1
++                            and overlaps[0].pack_offset == offset and overlaps[0].replacement_size == size,
++                            f"{key}: another project writer overlaps part of this resource; remove the conflicting edit.")
++                    previous = overlaps[0]
++                    label = f"{key} and {previous.kind}:{previous.selector}"
++                    replacement = merge_decoded(source, resource, before, after,
++                                                previous.replacement_path.read_bytes(), label)
++                    reports.append({"kind": previous.kind, "selector": previous.selector,
++                                    "project_edit": previous.project_edit,
++                                    "check": json.loads(previous.import_report_path.read_bytes())})
++                    previews.extend(previous.preview_paths)
++                    inputs.update({f"composed_{k}": v for k, v in previous.input_sha256.items()})
++                    prepared.remove(previous)
++                number = len(temp_files)
++                replacement_path = temp_root.path / f"model_{number:05d}.bin"
++                temp_files.append(backend.exclusive_payload(replacement_path, replacement, temp_root))
++                report = {"schema": SCHEMA, "target": record["target"], "member": key,
++                          "check": record["check"], "source_files": record["sources"],
++                          "compiled_changed_bytes": record["changed_bytes"], "composed_edits": reports,
++                          "writer": "Models fixed-span writer", "witnessed": False,
++                          "reparsed": True}
++                report_path = temp_root.path / f"model_{number:05d}_import.json"
++                payload = canonical(report)
++                temp_files.append(backend.exclusive_payload(report_path, payload, temp_root))
++                if pack_name not in pack_hashes:
++                    pack_hashes[pack_name] = backend.common.sha256_fd(source_fd, int(pack.byte_offset), int(pack.size))
++                pack_path = f"vc_53450030/{pack_name}"
++                target = {"model_key": key}
++                prepared.append(backend.PreparedEdit(
++                    len(prepared), KIND, f"{record['target']}:{key}:{consumed}", copy.deepcopy(edit), inputs, target,
++                    pack_path, int(pack.byte_offset)//2048, int(pack.size), pack_hashes[pack_name], offset,
++                    absolute, sha(original), replacement_path, size, sha(replacement), [], report_path,
++                    sha(payload), previews))
++                consumed += size
++            require(consumed == len(before), f"{key}: model resource pack arithmetic changed.")
++        require(total == record["changed_bytes"], "Model project's computed byte change differs from its check.")
++    for number, edit in enumerate(prepared):
++        edit.order = number
++
++
++def plan_rows(session):
++    return [{"target": r["target"], "summary": r["summary"], "mode": r["mode"],
++             "changed_bytes": r["changed_bytes"], "resources": [m["key"] for m in r["members"]],
++             "witnessed": False} for r in getattr(session, "model_records", ())]
++
++
++def validate_build_plan(plan, session):
++    """Early refusal for later fixed-retail writers; called by protected wiring."""
++    keys = {key for row in plan_rows(session) for key in row["resources"]}
++    if (getattr(plan, "guardian_cap", False) or getattr(plan, "guardian_overlay", False)) and keys & {"o3c113", "o3c115"}:
++        raise ValidationError("Guardian cap/overlay and the project model both own " + ", ".join(sorted(keys & {"o3c113", "o3c115"}))
++                              + ". Turn off Guardian cap/overlay or remove the model edit before building; "
++                              "Both Guardian writers require their original low body and head resources.")
++    if getattr(plan, "hires_pack", False) and keys:
++        from . import nfl2k5_hires_pack as hires
++        selected = hires._selection(hires.load_folder(plan.hires_folder, families=plan.hires_families))
++        shared = keys & {f"o{a.outer}c{a.chunk}" for a in selected}
++        require(not shared, "Hi-res artwork and project Models share " + ", ".join(sorted(shared))
++                + ". Remove the overlapping hi-res selection or model edit; the hi-res writer requires retail resources.")
+diff --git a/mod_editor/core/nfl2k5_model_project_session.py b/mod_editor/core/nfl2k5_model_project_session.py
+new file mode 100644
+index 00000000..c8c42a0c
+--- /dev/null
++++ b/mod_editor/core/nfl2k5_model_project_session.py
+@@ -0,0 +1,215 @@
++"""Model edit extension of StudioSession, kept in the Models owner boundary.
++
++The base archive is validated by its existing reader. This extension adds one
++bounded, hashed member containing sparse changes and the Models check receipts.
++"""
++from __future__ import annotations
++
++import copy
++import json
++import os
++from pathlib import Path
++import shutil
++import tempfile
++import zipfile
++
++from . import nfl2k5_model_project as P
++from . import nfl2k5_models as M
++from mod_editor.studio.session import StudioSession, _SessionUndo, _replace_atomic, BACKEND_SCHEMA
++from mod_editor.studio import project_archive as archive
++
++MEMBER = "model-edits.json"
++
++
++def _copy_archive(source, target, document, model_payload=None):
++    with zipfile.ZipFile(source) as old, zipfile.ZipFile(target, "w", compression=zipfile.ZIP_DEFLATED) as new:
++        for info in old.infolist():
++            if info.filename in {"project.json", MEMBER}:
++                continue
++            with old.open(info) as src, new.open(archive._zip_info(info.filename), "w", force_zip64=True) as dst:
++                shutil.copyfileobj(src, dst, 1024 * 1024)
++        new.writestr(archive._zip_info("project.json"), P.canonical(document))
++        if model_payload is not None:
++            new.writestr(archive._zip_info(MEMBER), model_payload)
++    with open(target, "rb") as stream:
++        os.fsync(stream.fileno())
++
++
++def _read_models(path):
++    with zipfile.ZipFile(path) as zipped:
++        infos = zipped.infolist()
++        P.require(len(infos) <= archive.MAX_PROJECT_MEMBERS + 1
++                  and len({i.filename for i in infos}) == len(infos), "Invalid project archive member count or duplicates.")
++        P.require(sum(i.file_size for i in infos) <= archive.MAX_PROJECT_EXPANDED_BYTES + P.MAX_BYTES,
++                  "Project archive exceeds the expanded size limit.")
++        info = zipped.getinfo("project.json")
++        P.require(info.file_size <= archive.MAX_MANIFEST_BYTES, "Project manifest is too large.")
++        document = json.loads(zipped.read(info), object_pairs_hook=archive._reject_duplicate_json_pairs)
++        metadata = document.pop("model_edits", None)
++        if metadata is None:
++            return document, []
++        P.require(isinstance(metadata, dict) and set(metadata) == {"file", "size", "sha256", "count"}
++                  and metadata["file"] == MEMBER and type(metadata["count"]) is int
++                  and 1 <= metadata["count"] <= 1000, "Malformed model project metadata.")
++        info = zipped.getinfo(MEMBER)
++        P.require(info.file_size == metadata["size"] and 0 < info.file_size <= P.MAX_BYTES,
++                  "Model project payload is too large or its size changed.")
++        payload = zipped.read(info)
++        P.require(P.sha(payload) == metadata["sha256"], "Saved compiled model changes failed their hash check.")
++        rows = json.loads(payload, object_pairs_hook=archive._reject_duplicate_json_pairs)
++        P.require(isinstance(rows, list) and len(rows) == metadata["count"], "Model project count changed.")
++        for row in rows:
++            P.validate_record(row)
++        P.require(len({r["target"] for r in rows}) == len(rows), "Project repeats a model set.")
++        # An intentional model-only archive becomes a valid empty base archive.
++        if not any(value for key, value in document.items() if key not in
++                   {"schema", "game", "payload_policy", "empty_project"}):
++            document["empty_project"] = True
++        return document, rows
++
++
++class ModelProjectSession(StudioSession):
++    def __init__(self, *args, **kwargs):
++        self._model_records = {}
++        self._model_restore_pending = None
++        self.model_source_warnings = ()
++        super().__init__(*args, **kwargs)
++
++    @property
++    def model_records(self):
++        return tuple(copy.deepcopy(self._model_records[k]) for k in sorted(self._model_records))
++
++    @property
++    def modified_count(self):
++        return super().modified_count + len(self._model_records)
++
++    def _manifest_document(self):
++        document = super()._manifest_document()
++        records = self._model_restore_pending if self._model_restore_pending is not None else self._model_records
++        if records:
++            document["model_edits"] = [copy.deepcopy(records[k]) for k in sorted(records)]
++        return document
++
++    def stage_model(self, record):
++        record = copy.deepcopy(P.validate_record(record))
++        warnings = P.recheck_files(record)
++        P.require(not warnings, "\n".join(warnings))
++        target = record["target"]
++        previous = self._model_records.get(target)
++        if previous == record:
++            return False
++        self._model_records[target] = record
++        try:
++            self._write_manifest()
++        except BaseException:
++            if previous is None:
++                self._model_records.pop(target)
++            else:
++                self._model_records[target] = previous
++            raise
++        self._undo_order.append(_SessionUndo("models", "Model: " + record["summary"], (target, previous)))
++        return True
++
++    def undo(self):
++        if self._undo_order and self._undo_order[-1].source == "models_revert_all":
++            action = self._undo_order[-1]
++            previous, base_action = action.payload
++            P.require(not self.modified_count, "Revert-All undo conflicts with current model changes.")
++            self._model_restore_pending = previous
++            try:
++                if base_action is not None:
++                    self._undo_revert_all_transaction(base_action)
++                else:
++                    self._write_manifest()
++            finally:
++                self._model_restore_pending = None
++            self._model_records = previous
++            self._undo_order.pop()
++            return action.label
++        if not self._undo_order or self._undo_order[-1].source != "models":
++            return super().undo()
++        action = self._undo_order[-1]
++        target, previous = action.payload
++        current = self._model_records.get(target)
++        if previous is None:
++            self._model_records.pop(target, None)
++        else:
++            self._model_records[target] = previous
++        try:
++            self._write_manifest()
++        except BaseException:
++            self._model_records[target] = current
++            raise
++        self._undo_order.pop()
++        return action.label
++
++    def revert_all(self):
++        previous = self._model_records
++        if not previous:
++            return super().revert_all()
++        self._model_records = {}
++        try:
++            count = super().revert_all()
++            if not count:
++                self._write_manifest()
++        except BaseException:
++            self._model_records = previous
++            raise
++        base_action = self._undo_order.pop() if count else None
++        self._undo_order.append(_SessionUndo("models_revert_all", "Revert all assets", (previous, base_action)))
++        self.model_source_warnings = ()
++        return count + len(previous)
++
++    def canonical_document(self):
++        if super().modified_count:
++            document = super().canonical_document()
++        else:
++            P.require(bool(self._model_records), "Replace at least one asset before building a modded XISO.")
++            document = {"schema": BACKEND_SCHEMA, "purpose": "Built with 2K5 Mod Studio from checked model changes.", "edits": []}
++        for number, record in enumerate(self.model_records):
++            path = self.replacements / f"model-{number:04d}.json"
++            _replace_atomic(path, P.canonical(record))
++            document["edits"].append({"kind": P.KIND, "target": record["target"], "recipe": str(path)})
++        return document
++
++    def save_shareable_project(self, destination, *, replace=False, expected_target=None, allow_empty=False):
++        if not self._model_records:
++            return super().save_shareable_project(destination, replace=replace,
++                                                  expected_target=expected_target, allow_empty=allow_empty)
++        destination = archive._destination(Path(destination))
++        payload = P.canonical(list(self.model_records))
++        P.require(len(payload) <= P.MAX_BYTES, "Model project changes exceed 64 MiB.")
++        with tempfile.TemporaryDirectory(prefix=".model-project-", dir=destination.parent) as folder:
++            base, staged = Path(folder)/"base.2k5mod", Path(folder)/"complete.2k5mod"
++            super().save_shareable_project(base, allow_empty=True)
++            with zipfile.ZipFile(base) as zipped:
++                document = json.loads(zipped.read("project.json"))
++            document.pop("empty_project", None)
++            document["model_edits"] = {"file": MEMBER, "size": len(payload), "sha256": P.sha(payload),
++                                       "count": len(self._model_records)}
++            _copy_archive(base, staged, document, payload)
++            archive._publish_archive(staged, destination, replace=replace, expected_target=expected_target)
++        return destination
++
++    def load_shareable_project(self, source):
++        P.require(not self.modified_count, "Load model edits into a fresh project session.")
++        try:
++            document, records = _read_models(source)
++        except (OSError, ValueError, KeyError, zipfile.BadZipFile) as exc:
++            raise P.ValidationError(f"Cannot read compiled model project {source}: {exc}") from exc
++        if not records:
++            return super().load_shareable_project(source)
++        model_source = M.ModelSource(self.cache.pack0, self.cache.inventory)
++        warnings = []
++        for record in records:
++            for member in record["members"]:
++                P.restore_member(model_source, member, record)
++            warnings.extend(P.recheck_files(record))
++        with tempfile.TemporaryDirectory(prefix=".model-open-", dir=self.root) as folder:
++            base = Path(folder)/"base.2k5mod"
++            _copy_archive(source, base, document)
++            count = super().load_shareable_project(base)
++        self._model_records = {r["target"]: copy.deepcopy(r) for r in records}
++        self.model_source_warnings = tuple(warnings)
++        self._write_manifest()
++        return count + len(records)
+diff --git a/mod_editor/core/nfl2k5_model_skeleton.py b/mod_editor/core/nfl2k5_model_skeleton.py
+index f6c3e280..cc7d649f 100644
+--- a/mod_editor/core/nfl2k5_model_skeleton.py
++++ b/mod_editor/core/nfl2k5_model_skeleton.py
+@@ -353,17 +353,29 @@ def axis_receipt(raw, transforms, targets):
+             'reason':'Recomputed axial directions match the canonical SKEL float32 vectors; axis and angular constants retained'}
+ 
+ 
++def pair_error(detail):
++    return (detail + '. To import a skeleton, edit both LOD files from one export: '
++            'lo_body and hi_body must come from the same Blender export with Custom Properties kept '
++            '(Blender: File > Export > glTF 2.0 > Include > Data > Custom Properties). '
++            'The two LODs have separate bind records and high-detail derived pivots; changing just one '
++            'would leave different limb lengths when the game changes detail. The shared SKEL stores '
++            'directions, not those lengths. Keep hi_head unchanged alongside the pair. '
++            'For a single LOD mesh edit, choose Geometry only and Check model; it keeps both skeletons '
++            'and the other LOD unchanged. Geometry only does not import bone-length edits.')
++
++
+ def compile_set(source, body_set, folder, *, write_normals=True, write_uvs=False, allow_rescale=True, write_colours=True, progress=None):
+     require(set(body_set.keys) == {'o3c113','o3c114','o3c115'}, 'non-player skeleton: only outer 3 player body is proved')
+     folder = Path(folder)
+     files = M.find_body_set_files(body_set,folder)
+-    require({'o3c113','o3c114'} <= files.keys(), PAIR_REASON)
++    missing = [M.body_set_file_name(e) for e in body_set.entries if e.key not in files]
++    require(not missing, pair_error('Missing file: ' + ', '.join(str(folder / name) for name in missing)))
+     require('o3c115' in files, 'keep hi_head with both LOD files from one export')
+     try:
+         manifest = json.loads((folder/MANIFEST).read_text(encoding='utf-8'))
+     except (OSError,ValueError) as exc:
+-        raise M.ModelsError(PAIR_REASON + ': missing skeleton export manifest; export the body set again') from exc
+-    require(manifest.get('schema') == SCHEMA and set(manifest.get('members',{})) == set(body_set.keys), PAIR_REASON)
++        raise M.ModelsError(pair_error(f'Missing skeleton export manifest: {folder / MANIFEST}; export the body set again')) from exc
++    require(manifest.get('schema') == SCHEMA and set(manifest.get('members',{})) == set(body_set.keys), pair_error(f'{folder / MANIFEST}: export identity or members differ'))
+     parsed, requested, gltfs = {}, {}, {}
+     for key in body_set.keys:
+         parsed[key] = _skin(source,key)
+@@ -374,13 +386,19 @@ def compile_set(source, body_set, folder, *, write_normals=True, write_uvs=False
+         gltf = M.GltfFile(files[key])
+         gltfs[key] = gltf
+         tags = [n.get('extras',{}).get(EXPORT_TAG) for n in gltf.document.get('nodes',[]) if EXPORT_TAG in n.get('extras',{})]
+-        require(tags and all(tag == manifest.get('export_id') for tag in tags), PAIR_REASON + ': retain Blender Custom Properties')
++        require(tags and all(tag == manifest.get('export_id') for tag in tags), pair_error(f'{files[key]}: missing or mismatched export Custom Properties'))
+         requested[key] = read_bind(gltf,skin.transforms,lanes.name)
+     low = parsed['o3c113'][-1].transforms
+     high = parsed['o3c114'][-1].transforms
+     # A present but untouched second LOD is still a one-LOD edit.
+     common = set(requested['o3c113']) & set(requested['o3c114'])
+-    require(all(math.dist(requested['o3c113'][n],requested['o3c114'][n]) <= INPUT_TOLERANCE_CM for n in common), PAIR_REASON)
++    if not all(math.dist(requested['o3c113'][n], requested['o3c114'][n]) <= INPUT_TOLERANCE_CM for n in common):
++        unedited = [str(files[key]) for key, transforms in (('o3c113', low), ('o3c114', high))
++                    if all(math.dist(requested[key][t['name']], t['absolute']) <= INPUT_TOLERANCE_CM
++                           for t in transforms)]
++        detail = ('Unedited skeleton in ' + ', '.join(unedited) if unedited else
++                  f'{files["o3c113"]} and {files["o3c114"]}: the LOD skeleton edits disagree')
++        raise M.ModelsError(pair_error(detail))
+     bone, scale = infer_edit(low,requested['o3c113'])
+     require(bone is None or bone.kind != 'upper_arm',
+             f'{bone.name if bone else "upper_arm"}: compressed span cannot fit at the +1%/+5% witnesses; upper-arm import is not enabled')
+diff --git a/mod_editor/core/providers.py b/mod_editor/core/providers.py
+index 74ce24f5..102eaffb 100644
+--- a/mod_editor/core/providers.py
++++ b/mod_editor/core/providers.py
+@@ -511,7 +511,7 @@ class Nfl2k5UnifiedVisualProvider:
+         "--source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> "
+         "--manifest <manifest.json> --artifact-dir <artifact-dir>"
+     )
+-    backend_module_sha256 = "46e7bce175f22d181b231191296cd3558845ee37052e0f083706345994149ea8"
++    backend_module_sha256 = "9c09105da648acaa209ed0386e81307d7ffa97bec4c0439fb5f4cd5035f85436"
+     module_pins: Mapping[str, str] = {
+         "mod_editor/core/audio_conform.py": "db40b6f28dedf1deea7fad6306fe0afebf842a5ee113d5067f6b5b7721686c0f",
+         "mod_editor/core/build_feedback.py": "56c078f5cecf5a2d37349b15b964a6f5350341db3f55f6808a60fc3b205abf76",
+@@ -612,7 +612,8 @@ class Nfl2k5UnifiedVisualProvider:
+         "mod_editor/core/nfl2k5_kick_laces.py": "a495864f35b60f335855b17f8a12ec304f78ecf3c363a597bb0e519e64790754",
+         "mod_editor/core/nfl2k5_kick_rules.py": "09023a7bf09146877c2bc7ba3ea7c7f9e5037e0090a70394262537192519c8d5",
+         "mod_editor/core/nfl2k5_match_coverage.py": "d9c1a93508a25a17d389b1dfa628ab8d0ac2da25d99bcc64a347b98f4447cfa2",
+-        "mod_editor/core/nfl2k5_model_skeleton.py": "4c868c8e15742f15cb7f9d725f70d525d57e3d9d2a614cdc90e46bbc9d95ac95",
++        "mod_editor/core/nfl2k5_model_project.py": "04371be3e1e86a9a6b3d2499dc0db203d6d5d9241c104c78879a2a414aa05488",
++        "mod_editor/core/nfl2k5_model_skeleton.py": "feaff8bb682d51d6b62c23cb955ccaf5b9a149f9e2948d7ee4f219200cd7f0ee",
+         "mod_editor/core/nfl2k5_models.py": "8b2e86bd0e6f2ba8d192bcdb452bc8e45fc38a4a0af8a95350a0e2f816bc6176",
+         "mod_editor/core/nfl2k5_modern_naming.py": "517f44b88799817d5c036605cbd3cf1a4baa06cbfa50ed4ee706c0a38b80701f",
+         "mod_editor/core/nfl2k5_modern_positions.py": "f2bbb8ca3dcc78c6a16e1f70b3cb4858e95383daf817333dc2d37ac3d624c8e5",
+@@ -739,7 +740,7 @@ class Nfl2k5UnifiedVisualProvider:
+         "tools/nfl2k5_scorebug_layout.py": "63ee159943a6494de331339e7460cb674955698c1d0d6a3aa8057e024967dcc5",
+         "tools/nfl2k5_scorebug_position_patch.py": "eb2b913bd4d0620dcefc4f280db1f6d73e4a5c348b0483a246bbf587506cdbff",
+         "tools/nfl2k5_scorebug_reference.py": "32ef741eb84bdf022de8cae357895eea891e6265c025e57afd4d49a37a6f4444",
+-        "tools/nfl2k5_visual_mod_project.py": "46e7bce175f22d181b231191296cd3558845ee37052e0f083706345994149ea8",
++        "tools/nfl2k5_visual_mod_project.py": "9c09105da648acaa209ed0386e81307d7ffa97bec4c0439fb5f4cd5035f85436",
+         "tools/nfl_all_texture_xiso_workflow.py": "61d0574ae5320cb7b12b96f1be0b34dcf1fdef363091b00de0fd0fac7130bd91",
+         "tools/nfl_audo_wav_xiso_workflow.py": "d684cbe7b30f77caf808bcef3d0219777b333336ae5bee4837d10f69cc1d13c6",
+         "tools/nfl_create_team_field_art_inventory.py": "da59018f1417871516b75769ea53a351a1d2b03ed855f985c1f88ac333b42489",
+diff --git a/mod_editor/gui/models_panel_qt.py b/mod_editor/gui/models_panel_qt.py
+index 95e817b1..baee4f07 100644
+--- a/mod_editor/gui/models_panel_qt.py
++++ b/mod_editor/gui/models_panel_qt.py
+@@ -39,6 +39,7 @@ from mod_editor.gui.ux_text import Details, suggest_copy_name
+ from mod_editor.gui.task_delivery import bound
+ 
+ from mod_editor.core import nfl2k5_models as models
++from mod_editor.core import nfl2k5_model_project as model_project
+ from mod_editor.core.nfl2k5_model_skeleton import HELP as SKELETON_HELP
+ 
+ IMAGE_FILTER = "Disc images (*.iso *.xiso);;All files (*)"
+@@ -88,10 +89,11 @@ class _Task(QRunnable):
+         try:
+             self.signals.finished.emit(self._operation())
+         except Exception as exc:  # noqa: BLE001 - one message for the status line
+-            self.signals.failed.emit(f"{type(exc).__name__}: {exc}")
++            self.signals.failed.emit(str(exc))
+ 
+ 
+ class ModelsPanel(QWidget):
++    project_changed = pyqtSignal()
+     disc_written = pyqtSignal(str)   # a disc copy this page wrote and verified (Play latest can start it)
+ 
+     """Export & Import Models."""
+@@ -108,6 +110,10 @@ class ModelsPanel(QWidget):
+         self._compiled: models.CompiledModelImport | None = None
+         self._compiled_set: models.CompiledModelSet | None = None
+         self._last_export: models.ExportResult | None = None
++        self._checked_sources = []
++        self._checked_files = []
++        self._checked_options = {}
++        self._check_generation = 0
+         self._busy = False
+         self._build()
+ 
+@@ -124,7 +130,7 @@ class ModelsPanel(QWidget):
+         layout = QVBoxLayout(self)
+         intro = QLabel(
+             "Export a model for Blender, then check whether your edited model can be imported. "
+-            "Same vertices and faces only; a passing check writes into a copy of your disc."
++            "Same vertices and faces only. Add a passing check to your project, then build it with your other edits."
+         )
+         intro.setWordWrap(True)
+         layout.addWidget(intro)
+@@ -247,9 +253,14 @@ class ModelsPanel(QWidget):
+         import_layout.addWidget(self.import_options_details)
+         for box in (self.normals_check, self.uvs_check, self.colours_check, self.rescale_check):
+             box.toggled.connect(lambda _c: self._refresh_import_summary())
++            box.toggled.connect(self._invalidate_import)
+         self._refresh_import_summary()
++        self.add_project_button = QPushButton("Add model edit to project")
++        self.add_project_button.setToolTip("Save the checked model bytes with textures, equipment and gameplay edits. Undo removes this set.")
++        self.add_project_button.clicked.connect(self._add_to_project)
++        import_layout.addWidget(self.add_project_button)
+         row = QHBoxLayout()
+-        row.addWidget(QLabel("3. Game disc (.iso)"))
++        row.addWidget(QLabel("3. Quick disc copy (.iso)"))
+         self.source_field = QLineEdit()
+         self.source_field.setPlaceholderText("The game disc to copy (never written); filled in when you open a disc")
+         self.source_field.textChanged.connect(self._refresh)
+@@ -268,9 +279,11 @@ class ModelsPanel(QWidget):
+         choose_target.clicked.connect(self._choose_target)
+         row.addWidget(choose_target)
+         self.write_button = QPushButton("Make disc with this model")
++        self.write_button.setToolTip("Quick path: the same Models fixed-span writer used by project builds, for this checked model only.")
+         self.write_button.clicked.connect(self._write)
+         row.addWidget(self.write_button)
+         import_layout.addLayout(row)
++        import_layout.addWidget(QLabel("Quick path uses the same model writer as Make disc from project."))
+         right_layout.addWidget(import_box)
+ 
+         set_box = QGroupBox("Whole player (3 models)")
+@@ -326,6 +339,8 @@ class ModelsPanel(QWidget):
+         return models.body_set_for_key(self._entries, key)
+ 
+     def _invalidate_import(self, *_args) -> None:
++        self._check_generation += 1
++        self._checked_sources = []
+         self._compiled = self._compiled_set = None
+         self._refresh()
+ 
+@@ -351,6 +366,8 @@ class ModelsPanel(QWidget):
+         source = self.source_field.text().strip()
+         target = self.target_field.text().strip()
+         ready = self._compiled is not None or self._compiled_set is not None
++        self.add_project_button.setEnabled(not self._busy and ready
++            and callable(getattr(self._facade, "stage_model_edit", None)))
+         self.write_button.setEnabled(not self._busy and ready and bool(source) and bool(target)
+                                      and Path(source) != Path(target))
+ 
+@@ -466,8 +483,7 @@ class ModelsPanel(QWidget):
+         return [str(self.model_list.item(i).data(Qt.UserRole)) for i in range(self.model_list.count())]
+ 
+     def _selected(self) -> None:
+-        self._compiled = None
+-        self._compiled_set = None
++        self._invalidate_import()
+         key = self.current_key()
+         self._refresh()
+         if key is None or self._source is None:
+@@ -559,18 +575,27 @@ class ModelsPanel(QWidget):
+         source = self._source
+         normals, uvs, rescale = self.normals_check.isChecked(), self.uvs_check.isChecked(), self.rescale_check.isChecked()
+         colours = self.colours_check.isChecked()
+-        self._compiled = self._compiled_set = None
++        self._invalidate_import()
++        generation = self._check_generation
+         self.status_label.setText(f"Fitting {edited.name} onto the game's vertices…")
+ 
+         def operation() -> object:
+-            return models.compile_import(source, key, edited, write_normals=normals, write_uvs=uvs, allow_rescale=rescale,
+-                                         write_colours=colours)
++            pins = model_project.source_files([edited])
++            compiled = models.compile_import(source, key, edited, write_normals=normals, write_uvs=uvs, allow_rescale=rescale,
++                                             write_colours=colours)
++            model_project.require(pins == model_project.source_files([edited]), f"{edited}: file changed during the model check. Check it again.")
++            return compiled, pins, model_project.checked_disc_summary(source, compiled)
+ 
+         def done(result: object) -> None:
++            result, pins, summary = result
++            if generation != self._check_generation:
++                return
+             assert isinstance(result, models.CompiledModelImport)
++            self._checked_sources, self._checked_files = pins, [str(edited)]
++            self._checked_options = dict(write_normals=normals, write_uvs=uvs, allow_rescale=rescale, write_colours=colours)
+             self._compiled = result
+-            self.details.setPlainText(import_report_text(result))
+-            self.status_label.setText(f"Ready to write: {result.summary()}")
++            self.details.setPlainText(import_report_text(result).replace(result.summary(), summary, 1))
++            self.status_label.setText(f"Ready to write: {summary}")
+             self._refresh()
+ 
+         self._run(operation, done)
+@@ -629,23 +654,49 @@ class ModelsPanel(QWidget):
+             return
+         normals, uvs, rescale = self.normals_check.isChecked(), self.uvs_check.isChecked(), self.rescale_check.isChecked()
+         colours = self.colours_check.isChecked()
+-        self._compiled = self._compiled_set = None
++        self._invalidate_import()
++        generation = self._check_generation
+         self.status_label.setText(f"Fitting the body set in {folder}…")
+ 
+         def operation() -> object:
+-            return models.compile_body_set_import(source, body_set, folder, write_normals=normals, write_uvs=uvs,
+-                                                  allow_rescale=rescale, write_colours=colours,
+-                                                  import_skeleton=import_skeleton)
++            files = list(models.find_body_set_files(body_set, folder).values())
++            pins = model_project.source_files(files)
++            compiled = models.compile_body_set_import(source, body_set, folder, write_normals=normals, write_uvs=uvs,
++                                                      allow_rescale=rescale, write_colours=colours,
++                                                      import_skeleton=import_skeleton)
++            model_project.require(pins == model_project.source_files(files), f"{folder}: files changed during the model check. Check them again.")
++            return compiled, pins, files, model_project.checked_disc_summary(source, compiled)
+ 
+         def done(result: object) -> None:
++            result, pins, files, summary = result
++            if generation != self._check_generation:
++                return
+             assert isinstance(result, models.CompiledModelSet)
++            self._checked_sources, self._checked_files = pins, [str(path) for path in files]
++            self._checked_options = dict(write_normals=normals, write_uvs=uvs, allow_rescale=rescale,
++                                         write_colours=colours, import_skeleton=import_skeleton)
+             self._compiled_set = result
+-            self.details.setPlainText(set_report_text(result))
+-            self.status_label.setText(f"Ready to write: {result.summary()}")
++            self.details.setPlainText(set_report_text(result).replace(result.summary(), summary, 1))
++            self.status_label.setText(f"Ready to write: {summary}")
+             self._refresh()
+ 
+         self._run(operation, done)
+ 
++    def _add_to_project(self) -> None:
++        source, compiled = self._source, self._compiled_set or self._compiled
++        if source is None or compiled is None:
++            return
++        files, pins, options = list(self._checked_files), list(self._checked_sources), dict(self._checked_options)
++
++        def operation():
++            return self._facade.stage_model_edit(source, compiled, files, options=options, pinned_sources=pins)
++
++        def done(result):
++            self.status_label.setText(getattr(result, "message", str(result)))
++            self.project_changed.emit()
++
++        self._run(operation, done)
++
+     def write_copy(self, source_image: Path, target_image: Path) -> None:
+         source = self._source
+         compiled, compiled_set = self._compiled, self._compiled_set
+@@ -720,7 +771,7 @@ def import_report_text(compiled: models.CompiledModelImport) -> str:
+     if compiled.notes:
+         lines.append("")
+         lines.extend(f"- {note}" for note in compiled.notes)
+-    lines += ["", "Nothing has been written yet. Choose the source image and where to write the copy, then Write the copy."]
++    lines += ["", "Nothing has been written yet. Add model edit to project to save it with your other edits, or use the quick disc path."]
+     return "\n".join(lines)
+ 
+ 
+@@ -737,7 +788,7 @@ def set_report_text(compiled: models.CompiledModelSet) -> str:
+             lines.append(f"{row['member']} / {row['bone']}: {row['before_cm']:.5f} -> {row['after_cm']:.5f}")
+         lines += ["", "SKEL directions recomputed and checked against the retained canonical axes.",
+                   "All four resources, including head and SKEL, are preflighted as one transaction.",
+-                  "Choose a new output disc path, then Make disc with this model.", "", SKELETON_HELP]
++                  "Add model edit to project, or choose a new output disc path and Make disc with this model.", "", SKELETON_HELP]
+         return "\n".join(lines)
+     lines = [f"Body set check: {compiled.summary()}", ""]
+     for member in compiled.members:
+@@ -752,7 +803,7 @@ def set_report_text(compiled: models.CompiledModelSet) -> str:
+     if compiled.notes:
+         lines.extend(f"- {note}" for note in compiled.notes)
+         lines.append("")
+-    lines += ["Nothing has been written yet. All three go into ONE copy of the disc: choose the source image and",
++    lines += ["Nothing has been written yet. Add model edit to project to save this checked set. All three go into ONE copy of the disc: choose the source image and",
+               "where to write the copy, then Write the copy. If any member could not fit, this check would have",
+               "refused the whole set instead."]
+     return "\n".join(lines)
+diff --git a/mod_editor/studio/facade.py b/mod_editor/studio/facade.py
+index cde375d2..6aeb45c0 100644
+--- a/mod_editor/studio/facade.py
++++ b/mod_editor/studio/facade.py
+@@ -769,8 +769,8 @@ class Nfl2k5StudioFacade:
+         visual_catalog: Nfl2k5ProductVisualCatalog | None = None,
+         source_cache: Nfl2k5SourceCache | None = None,
+         build_service: Nfl2k5BuildService | None = None,
+-        session_factory: Callable[[SourceCache, Nfl2k5UniformCatalog], StudioSession]
+-        = StudioSession,
++        session_factory: Callable[[SourceCache, Nfl2k5UniformCatalog], StudioSession] | None
++        = None,
+         xemu_command: Sequence[str] | None = None,
+         process_launcher: Callable[..., object] = subprocess.Popen,
+         universal_index_factory: Callable[[SourceCache], Nfl2k5UniversalAssetIndex]
+@@ -801,7 +801,8 @@ class Nfl2k5StudioFacade:
+         self._visual_catalog = visual_catalog or supplied_uniform_catalog
+         self.source_cache = source_cache or Nfl2k5SourceCache()
+         self.build_service = build_service or Nfl2k5BuildService()
+-        self.session_factory = session_factory
++        from mod_editor.core.nfl2k5_model_project_session import ModelProjectSession
++        self.session_factory = session_factory or ModelProjectSession
+         # A caller-supplied command wins (tests, packaging). Otherwise the
+         # user's own choice comes first and auto-detection is the fallback.
+         self._xemu_command_pinned = xemu_command is not None
+@@ -892,6 +893,26 @@ class Nfl2k5StudioFacade:
+                 return None
+             return (Path(cache.pack0), Path(cache.inventory))
+ 
++    def stage_model_edit(self, source, compiled, files, *, options=None, pinned_sources=None):
++        """Add a checked Models result as one project edit and one Undo action."""
++        from mod_editor.core import nfl2k5_model_project as model_project
++        record = model_project.make_record(source, compiled, files, options, pinned_sources)
++        with self._lock:
++            session = self._require_session()
++            paths = self.models_source_paths
++            if paths is None or tuple(Path(p).resolve() for p in paths) != (
++                    Path(source.index_path).resolve(), Path(source.inventory_path).resolve()):
++                raise ValidationError("The loaded game changed after the model check. Check the model again.")
++            session.stage_model(record)
++            self._last_build = None
++        return StudioOperationResult("Added model edit to project: " + record["summary"])
++
++    @property
++    def model_project_plan(self):
++        from mod_editor.core.nfl2k5_model_project import plan_rows
++        with self._lock:
++            return plan_rows(self._session)
++
+     @property
+     def source_sha256(self) -> str | None:
+         """Return the active source identity without exposing any game bytes."""
+@@ -3636,7 +3657,9 @@ class Nfl2k5StudioFacade:
+                 f"{'s' if annotation_count != 1 else ''}"
+             )
+         return StudioOperationResult(
+-            f"Loaded {' and '.join(parts)} from {source.name}. "
++            "\n".join(getattr(candidate, "model_source_warnings", ()))
++            + ("\n" if getattr(candidate, "model_source_warnings", ()) else "")
++            + f"Loaded {' and '.join(parts)} from {source.name}. "
+             + (
+                 "Build when you are ready."
+                 if replacement_count else
+diff --git a/packaging/check_2k5_mod_studio_runtime.py b/packaging/check_2k5_mod_studio_runtime.py
+index 8ce329e7..a17f34c1 100644
+--- a/packaging/check_2k5_mod_studio_runtime.py
++++ b/packaging/check_2k5_mod_studio_runtime.py
+@@ -105,7 +105,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
+     "mod_editor/studio/audio_replacement_pack.py":
+         "68b6887e0778391916a6465a722b062d1c09afe3a376c318026e9db8bd7ed23a",
+     "mod_editor/studio/facade.py":
+-        "85146f862edce14622a0270a6a0fc2f47762685f2aa4d44868a6b1f9ff5d2622",
++        "2579f275b464874b93822bd6f04c391252814e8e589c77bba7b33930ab3c6af0",
+     "mod_editor/studio/project_archive.py":
+         "3556062a7cf178ef416706543e71270783d04439494420810fb7a10ca7f01479",
+     "mod_editor/studio/session.py":
+diff --git a/reports/b69_j2/tests/build-service.log b/reports/b69_j2/tests/build-service.log
+new file mode 100644
+index 00000000..73dc5ab2
+--- /dev/null
++++ b/reports/b69_j2/tests/build-service.log
+@@ -0,0 +1,69 @@
++test_alternate_container_layout_build_reports_its_actual_size (__main__.Nfl2k5BuildServiceTests.test_alternate_container_layout_build_reports_its_actual_size) ... ok
++test_atomic_publish_preserves_a_racing_destination (__main__.Nfl2k5BuildServiceTests.test_atomic_publish_preserves_a_racing_destination) ... ok
++test_audio_inventory_failure_precedes_backend_and_publication (__main__.Nfl2k5BuildServiceTests.test_audio_inventory_failure_precedes_backend_and_publication) ... ok
++test_audio_inventory_rejects_unsafe_modes_links_and_sizes (__main__.Nfl2k5BuildServiceTests.test_audio_inventory_rejects_unsafe_modes_links_and_sizes) ...   [case] derived_symlink
++    [phase] fixture
++    [phase] build
++    [phase] teardown
++  [case] derived_public_mode
++    [phase] fixture
++    [phase] build
++    [phase] teardown
++  [case] file_symlink
++    [phase] fixture
++    [phase] build
++    [phase] teardown
++  [case] containment_symlink
++    [phase] fixture
++    [phase] build
++    [phase] teardown
++  [case] file_hardlink
++    [phase] fixture
++    [phase] build
++    [phase] teardown
++  [case] public_mode
++    [phase] fixture
++    [phase] build
++    [phase] teardown
++  [case] empty_file
++    [phase] fixture
++    [phase] build
++    [phase] teardown
++  [case] fingerprints_too_large
++    [phase] fixture
++    [phase] build
++    [phase] teardown
++  [case] containment_too_large
++    [phase] fixture
++    [phase] build
++    [phase] teardown
++ok
++test_audio_inventory_rejects_unsafe_source_cache_root (__main__.Nfl2k5BuildServiceTests.test_audio_inventory_rejects_unsafe_source_cache_root) ... ok
++test_build_failure_removes_partial_stage_and_never_calls_verify (__main__.Nfl2k5BuildServiceTests.test_build_failure_removes_partial_stage_and_never_calls_verify) ... ok
++test_build_receipt_hash_selects_span_verifier_and_cache_survives_staging (__main__.Nfl2k5BuildServiceTests.test_build_receipt_hash_selects_span_verifier_and_cache_survives_staging) ... ok
++test_crib_compression_failures_remain_concise_and_actionable (__main__.Nfl2k5BuildServiceTests.test_crib_compression_failures_remain_concise_and_actionable) ... ok
++test_each_audio_kind_passes_exact_private_inputs_to_build_and_verify (__main__.Nfl2k5BuildServiceTests.test_each_audio_kind_passes_exact_private_inputs_to_build_and_verify) ... ok
++test_existing_destination_is_refused_before_backend_runs (__main__.Nfl2k5BuildServiceTests.test_existing_destination_is_refused_before_backend_runs) ... ok
++test_external_project_is_one_private_snapshot_for_both_backend_passes (__main__.Nfl2k5BuildServiceTests.test_external_project_is_one_private_snapshot_for_both_backend_passes) ... ok
++test_failed_or_unconfirmed_verify_never_publishes (__main__.Nfl2k5BuildServiceTests.test_failed_or_unconfirmed_verify_never_publishes) ... ok
++test_interruption_cleans_staging_without_publishing (__main__.Nfl2k5BuildServiceTests.test_interruption_cleans_staging_without_publishing) ... ok
++test_low_space_is_refused_before_staging_or_backend_work (__main__.Nfl2k5BuildServiceTests.test_low_space_is_refused_before_staging_or_backend_work) ... ok
++test_project_fields_cannot_select_private_audio_control_paths (__main__.Nfl2k5BuildServiceTests.test_project_fields_cannot_select_private_audio_control_paths) ... ok
++test_session_recipe_is_private_and_removed_after_build (__main__.Nfl2k5BuildServiceTests.test_session_recipe_is_private_and_removed_after_build) ... ok
++test_staged_project_preserves_relative_media_origin (__main__.Nfl2k5BuildServiceTests.test_staged_project_preserves_relative_media_origin) ... ok
++test_success_runs_build_and_one_verify_then_publishes_only_iso (__main__.Nfl2k5BuildServiceTests.test_success_runs_build_and_one_verify_then_publishes_only_iso) ... ok
++test_posix_open_keeps_the_exact_flags_it_always_used (__main__.PublishPinOpenTests.test_posix_open_keeps_the_exact_flags_it_always_used) ... ok
++test_windows_failure_is_translated_not_swallowed (__main__.PublishPinOpenTests.test_windows_failure_is_translated_not_swallowed) ... ok
++test_windows_opens_the_existing_file_with_share_delete (__main__.PublishPinOpenTests.test_windows_opens_the_existing_file_with_share_delete) ... ok
++test_windows_without_the_primitives_fails_closed_on_windows (__main__.PublishPinOpenTests.test_windows_without_the_primitives_fails_closed_on_windows) ... ok
++test_drained_job_is_not_reported_as_a_survivor (__main__.WindowsBackendTeardownTests.test_drained_job_is_not_reported_as_a_survivor) ... ok
++test_observed_survivor_is_reported_and_never_silently_ignored (__main__.WindowsBackendTeardownTests.test_observed_survivor_is_reported_and_never_silently_ignored) ... ok
++test_posix_launch_and_teardown_keep_their_exact_behaviour (__main__.WindowsBackendTeardownTests.test_posix_launch_and_teardown_keep_their_exact_behaviour) ... ok
++test_unreadable_accounting_alone_is_not_a_survivor (__main__.WindowsBackendTeardownTests.test_unreadable_accounting_alone_is_not_a_survivor) ... ok
++test_unreadable_accounting_with_a_live_child_is_a_survivor (__main__.WindowsBackendTeardownTests.test_unreadable_accounting_with_a_live_child_is_a_survivor) ... ok
++test_without_a_job_the_direct_child_still_decides_the_outcome (__main__.WindowsBackendTeardownTests.test_without_a_job_the_direct_child_still_decides_the_outcome) ... ok
++
++----------------------------------------------------------------------
++Ran 28 tests in 0.169s
++
++OK
+diff --git a/reports/b69_j2/tests/facade.log b/reports/b69_j2/tests/facade.log
+new file mode 100644
+index 00000000..ee00090c
+--- /dev/null
++++ b/reports/b69_j2/tests/facade.log
+@@ -0,0 +1,5 @@
++...........
++----------------------------------------------------------------------
++Ran 11 tests in 0.022s
++
++OK
+diff --git a/reports/b69_j2/tests/model-project.log b/reports/b69_j2/tests/model-project.log
+new file mode 100644
+index 00000000..d6fbfb94
+--- /dev/null
++++ b/reports/b69_j2/tests/model-project.log
+@@ -0,0 +1,16 @@
++.........MODEL_PROJECT_PROOF {"changed_bytes": 98644, "disc_size": 854016, "external_buffer_missing_at_build": true, "mode": "geometry", "project_sha256": "7101364eaa209005f2976d71dfca8e8684aea7bf303a5513eece9ebc4f8a354c", "quick_sha256": "7101364eaa209005f2976d71dfca8e8684aea7bf303a5513eece9ebc4f8a354c", "source_sha256": "3395ecbe02db68835b6dbc14602eba3e3e01d595fe800375534feeee26cdaa56", "source_unchanged": true, "witnessed": false}
++NFL2K5_BUILD_PHASE source_validation seconds=0.002082
++NFL2K5_COMPILE_CACHE hits=0 misses=0
++NFL2K5_BUILD_PHASE compile seconds=1.155441
++NFL2K5_BUILD_PHASE bind_source seconds=0.048249
++NFL2K5_BUILD_PHASE copy seconds=0.000978
++NFL2K5_BUILD_PHASE write_spans seconds=0.002526
++NFL2K5_BUILD_PHASE artifacts_and_directory seconds=0.016723
++NFL2K5_BUILD_PHASE full_identity_check seconds=0.152460
++NFL2K5_COMPILE_CACHE hits=0 misses=0
++.
++----------------------------------------------------------------------
++Ran 10 tests in 45.652s
++
++OK
++MODEL_PROJECT_PROOF {"changed_bytes": 328771, "disc_size": 854016, "guarded_resources": 4, "historical_receipt_replay": true, "mode": "skeleton", "project_sha256": "61e3fe2c5c95928c807b31ca2e5e0d80a4b7e0cd798e4084b1fda1bb178c1242", "quick_sha256": "61e3fe2c5c95928c807b31ca2e5e0d80a4b7e0cd798e4084b1fda1bb178c1242", "source_sha256": "3395ecbe02db68835b6dbc14602eba3e3e01d595fe800375534feeee26cdaa56", "witnessed": false}
+diff --git a/reports/b69_j2/tests/model-skeleton.log b/reports/b69_j2/tests/model-skeleton.log
+new file mode 100644
+index 00000000..b4da1370
+--- /dev/null
++++ b/reports/b69_j2/tests/model-skeleton.log
+@@ -0,0 +1,17 @@
++BLENDER_GLB forearm {"axis_call_0x92252": {"pointer": 34603056, "vector": [0.05911945551633835, -0.9797630310058594, -0.19123110175132751, 0.0]}, "bone": "left_forearm", "derived_constants_sha256": "e8c9a58a80d9531ecfb446d0c5350d5579fea1c1eea6fc47a2f802cdaa06129b", "matrix_tolerance": "2.5e-4 + abs(expected)*2.5e-5", "maximum_hierarchy_component_error": 0.0, "maximum_lod_error_cm": 3.814697265625e-06, "maximum_native_c_error": 0.00023456488270312548, "maximum_native_python_error": 0.00013944720558356494, "maximum_rest_skin_displacement_cm": 2.016201980313131, "maximum_rest_target_error_cm": 0.00037870380438047654, "native_matrix_components": 992, "poses": 1, "rest_target_joints": 48, "runtime_witnessed": false, "skinned_vertex_comparisons": 12461, "world_tolerance_cm": 0.001, "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"}
++BLENDER_GLB thigh {"axis_call_0x92252": {"pointer": 34603056, "vector": [0.05911945551633835, -0.9797630310058594, -0.19123110175132751, 0.0]}, "bone": "left_thigh", "derived_constants_sha256": "e8c9a58a80d9531ecfb446d0c5350d5579fea1c1eea6fc47a2f802cdaa06129b", "matrix_tolerance": "2.5e-4 + abs(expected)*2.5e-5", "maximum_hierarchy_component_error": 0.0, "maximum_lod_error_cm": 3.814697265625e-06, "maximum_native_c_error": 0.00023456488270312548, "maximum_native_python_error": 0.00013944720558356494, "maximum_rest_skin_displacement_cm": 2.016201980313131, "maximum_rest_target_error_cm": 0.00037480401640162193, "native_matrix_components": 992, "poses": 1, "rest_target_joints": 48, "runtime_witnessed": false, "skinned_vertex_comparisons": 12461, "world_tolerance_cm": 0.001, "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"}
++.left_upper_arm REFUSED: left_upper_arm: compressed span cannot fit at the +1%/+5% witnesses; upper-arm import is not enabled
++left_forearm {"axis_call_0x92252": {"pointer": 34603056, "vector": [0.05911945551633835, -0.9797630310058594, -0.19123110175132751, 0.0]}, "derived_constants_sha256": "e8c9a58a80d9531ecfb446d0c5350d5579fea1c1eea6fc47a2f802cdaa06129b", "matrix_tolerance": "2.5e-4 + abs(expected)*2.5e-5", "maximum_hierarchy_component_error": 0.0, "maximum_lod_error_cm": 3.814697265625e-06, "maximum_native_c_error": 0.00023456488270312548, "maximum_native_python_error": 0.00013944720558356494, "maximum_rest_skin_displacement_cm": 2.016201980313131, "maximum_rest_target_error_cm": 4.015637068421404e-06, "native_matrix_components": 6944, "poses": 7, "rest_target_joints": 87, "runtime_witnessed": false, "skinned_vertex_comparisons": 87227, "world_tolerance_cm": 0.0001, "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"}
++left_thigh {"axis_call_0x92252": {"pointer": 34603056, "vector": [0.05911945551633835, -0.9797630310058594, -0.19123110175132751, 0.0]}, "derived_constants_sha256": "e8c9a58a80d9531ecfb446d0c5350d5579fea1c1eea6fc47a2f802cdaa06129b", "matrix_tolerance": "2.5e-4 + abs(expected)*2.5e-5", "maximum_hierarchy_component_error": 0.0, "maximum_lod_error_cm": 3.814697265625e-06, "maximum_native_c_error": 0.00023456488270312548, "maximum_native_python_error": 0.00013944720558356494, "maximum_rest_skin_displacement_cm": 2.016201980313131, "maximum_rest_target_error_cm": 1.6186584798809629e-06, "native_matrix_components": 6944, "poses": 7, "rest_target_joints": 87, "runtime_witnessed": false, "skinned_vertex_comparisons": 87227, "world_tolerance_cm": 0.0001, "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"}
++left_shin {"axis_call_0x92252": {"pointer": 34603056, "vector": [0.05911945551633835, -0.9797630310058594, -0.19123110175132751, 0.0]}, "derived_constants_sha256": "e8c9a58a80d9531ecfb446d0c5350d5579fea1c1eea6fc47a2f802cdaa06129b", "matrix_tolerance": "2.5e-4 + abs(expected)*2.5e-5", "maximum_hierarchy_component_error": 0.0, "maximum_lod_error_cm": 3.814697265625e-06, "maximum_native_c_error": 0.00023456488270312548, "maximum_native_python_error": 0.00013944720558356494, "maximum_rest_skin_displacement_cm": 2.016201980313131, "maximum_rest_target_error_cm": 4.76837158203125e-07, "native_matrix_components": 6944, "poses": 7, "rest_target_joints": 87, "runtime_witnessed": false, "skinned_vertex_comparisons": 87227, "world_tolerance_cm": 0.0001, "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"}
++left_foot {"axis_call_0x92252": {"pointer": 34603056, "vector": [0.05911945551633835, -0.9797630310058594, -0.19123110175132751, 0.0]}, "derived_constants_sha256": "e8c9a58a80d9531ecfb446d0c5350d5579fea1c1eea6fc47a2f802cdaa06129b", "matrix_tolerance": "2.5e-4 + abs(expected)*2.5e-5", "maximum_hierarchy_component_error": 0.0, "maximum_lod_error_cm": 3.814697265625e-06, "maximum_native_c_error": 0.00023456488270312548, "maximum_native_python_error": 0.00013944720558356494, "maximum_rest_skin_displacement_cm": 2.016201980313131, "maximum_rest_target_error_cm": 0.0, "native_matrix_components": 6944, "poses": 7, "rest_target_joints": 87, "runtime_witnessed": false, "skinned_vertex_comparisons": 87227, "world_tolerance_cm": 0.0001, "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"}
++right_upper_arm REFUSED: right_upper_arm: compressed span cannot fit at the +1%/+5% witnesses; upper-arm import is not enabled
++right_forearm {"axis_call_0x92252": {"pointer": 34603056, "vector": [0.05911945551633835, -0.9797630310058594, -0.19123110175132751, 0.0]}, "derived_constants_sha256": "e8c9a58a80d9531ecfb446d0c5350d5579fea1c1eea6fc47a2f802cdaa06129b", "matrix_tolerance": "2.5e-4 + abs(expected)*2.5e-5", "maximum_hierarchy_component_error": 0.0, "maximum_lod_error_cm": 3.814697265625e-06, "maximum_native_c_error": 0.00023456488270312548, "maximum_native_python_error": 0.00013944720558356494, "maximum_rest_skin_displacement_cm": 2.016201980313131, "maximum_rest_target_error_cm": 4.227478077923623e-06, "native_matrix_components": 6944, "poses": 7, "rest_target_joints": 87, "runtime_witnessed": false, "skinned_vertex_comparisons": 87227, "world_tolerance_cm": 0.0001, "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"}
++right_thigh {"axis_call_0x92252": {"pointer": 34603056, "vector": [0.05911945551633835, -0.9797630310058594, -0.19123110175132751, 0.0]}, "derived_constants_sha256": "e8c9a58a80d9531ecfb446d0c5350d5579fea1c1eea6fc47a2f802cdaa06129b", "matrix_tolerance": "2.5e-4 + abs(expected)*2.5e-5", "maximum_hierarchy_component_error": 0.0, "maximum_lod_error_cm": 3.814697265625e-06, "maximum_native_c_error": 0.00023456488270312548, "maximum_native_python_error": 0.00013944720558356494, "maximum_rest_skin_displacement_cm": 2.016201980313131, "maximum_rest_target_error_cm": 1.0994354624040355e-05, "native_matrix_components": 6944, "poses": 7, "rest_target_joints": 87, "runtime_witnessed": false, "skinned_vertex_comparisons": 87227, "world_tolerance_cm": 0.0001, "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"}
++right_shin {"axis_call_0x92252": {"pointer": 34603056, "vector": [0.05911945551633835, -0.9797630310058594, -0.19123110175132751, 0.0]}, "derived_constants_sha256": "e8c9a58a80d9531ecfb446d0c5350d5579fea1c1eea6fc47a2f802cdaa06129b", "matrix_tolerance": "2.5e-4 + abs(expected)*2.5e-5", "maximum_hierarchy_component_error": 0.0, "maximum_lod_error_cm": 3.814697265625e-06, "maximum_native_c_error": 0.00023456488270312548, "maximum_native_python_error": 0.00013944720558356494, "maximum_rest_skin_displacement_cm": 2.016201980313131, "maximum_rest_target_error_cm": 4.76837158203125e-07, "native_matrix_components": 6944, "poses": 7, "rest_target_joints": 87, "runtime_witnessed": false, "skinned_vertex_comparisons": 87227, "world_tolerance_cm": 0.0001, "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"}
++right_foot {"axis_call_0x92252": {"pointer": 34603056, "vector": [0.05911945551633835, -0.9797630310058594, -0.19123110175132751, 0.0]}, "derived_constants_sha256": "e8c9a58a80d9531ecfb446d0c5350d5579fea1c1eea6fc47a2f802cdaa06129b", "matrix_tolerance": "2.5e-4 + abs(expected)*2.5e-5", "maximum_hierarchy_component_error": 0.0, "maximum_lod_error_cm": 3.814697265625e-06, "maximum_native_c_error": 0.00023456488270312548, "maximum_native_python_error": 0.00013944720558356494, "maximum_rest_skin_displacement_cm": 2.016201980313131, "maximum_rest_target_error_cm": 0.0, "native_matrix_components": 6944, "poses": 7, "rest_target_joints": 87, "runtime_witnessed": false, "skinned_vertex_comparisons": 87227, "world_tolerance_cm": 0.0001, "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"}
++......
++----------------------------------------------------------------------
++Ran 7 tests in 169.514s
++
++OK
+diff --git a/reports/b69_j2/tests/model-wiring.log b/reports/b69_j2/tests/model-wiring.log
+new file mode 100644
+index 00000000..19a11ccc
+--- /dev/null
++++ b/reports/b69_j2/tests/model-wiring.log
+@@ -0,0 +1,5 @@
++..
++----------------------------------------------------------------------
++Ran 2 tests in 11.770s
++
++OK
+diff --git a/reports/b69_j2/tests/models-core.log b/reports/b69_j2/tests/models-core.log
+new file mode 100644
+index 00000000..a49ce4e9
+--- /dev/null
++++ b/reports/b69_j2/tests/models-core.log
+@@ -0,0 +1,5 @@
++.....................................
++----------------------------------------------------------------------
++Ran 37 tests in 54.194s
++
++OK
+diff --git a/reports/b69_j2/tests/models-panel.log b/reports/b69_j2/tests/models-panel.log
+new file mode 100644
+index 00000000..3ff09205
+--- /dev/null
++++ b/reports/b69_j2/tests/models-panel.log
+@@ -0,0 +1,5 @@
++........
++----------------------------------------------------------------------
++Ran 8 tests in 4.311s
++
++OK
+diff --git a/reports/b69_j2/tests/provider-integrity.log b/reports/b69_j2/tests/provider-integrity.log
+new file mode 100644
+index 00000000..8f0b01f0
+--- /dev/null
++++ b/reports/b69_j2/tests/provider-integrity.log
+@@ -0,0 +1,5 @@
++.......
++----------------------------------------------------------------------
++Ran 7 tests in 13.180s
++
++OK
+diff --git a/reports/b69_j2/tests/providers.log b/reports/b69_j2/tests/providers.log
+new file mode 100644
+index 00000000..f97215c5
+--- /dev/null
++++ b/reports/b69_j2/tests/providers.log
+@@ -0,0 +1,5 @@
++.................................
++----------------------------------------------------------------------
++Ran 33 tests in 4.448s
++
++OK
+diff --git a/reports/b69_j2/tests/skeleton-wiring.log b/reports/b69_j2/tests/skeleton-wiring.log
+new file mode 100644
+index 00000000..83f2d93f
+--- /dev/null
++++ b/reports/b69_j2/tests/skeleton-wiring.log
+@@ -0,0 +1,5 @@
++..
++----------------------------------------------------------------------
++Ran 2 tests in 0.053s
++
++OK
+diff --git a/reports/b69_j2/tests/studio-models.log b/reports/b69_j2/tests/studio-models.log
+new file mode 100644
+index 00000000..19de261c
+--- /dev/null
++++ b/reports/b69_j2/tests/studio-models.log
+@@ -0,0 +1,5 @@
++s
++----------------------------------------------------------------------
++Ran 0 tests in 0.000s
++
++OK (skipped=1)
+diff --git a/reports/b69_j2/tests/visual-project.log b/reports/b69_j2/tests/visual-project.log
+new file mode 100644
+index 00000000..af7be270
+--- /dev/null
++++ b/reports/b69_j2/tests/visual-project.log
+@@ -0,0 +1,5 @@
++........s......ss..s..sss.s........ss.........
++----------------------------------------------------------------------
++Ran 46 tests in 2.360s
++
++OK (skipped=10)
+diff --git a/tests/mod_editor/test_models_panel_qt.py b/tests/mod_editor/test_models_panel_qt.py
+index a5e7be0d..12a2fc46 100644
+--- a/tests/mod_editor/test_models_panel_qt.py
++++ b/tests/mod_editor/test_models_panel_qt.py
+@@ -162,7 +162,7 @@ class ModelsPanelTests(unittest.TestCase):
+         from PyQt5.QtCore import Qt
+         from mod_editor.gui.studio_qt import StudioMainWindow
+ 
+-        window = StudioMainWindow(eager_pages=True, )
++        window = StudioMainWindow(eager_pages=False)
+         try:
+             rows = [window.navigation.item(i).text().strip() for i in range(window.navigation.count())]
+             self.assertIn("★ Models", rows)
+diff --git a/tests/mod_editor/test_models_project_wiring.py b/tests/mod_editor/test_models_project_wiring.py
+new file mode 100644
+index 00000000..abf9102f
+--- /dev/null
++++ b/tests/mod_editor/test_models_project_wiring.py
+@@ -0,0 +1,115 @@
++"""Execute the exact protected J2 handoff in memory, or use it after integration."""
++from __future__ import annotations
++import os
++os.environ.setdefault('QT_QPA_PLATFORM','offscreen')
++from pathlib import Path
++import re
++import sys
++from types import ModuleType, SimpleNamespace
++import unittest
++from unittest.mock import patch
++
++ROOT = Path(__file__).resolve().parents[2]
++sys.path[:0] = [str(ROOT),str(Path(__file__).parent)]
++import test_nfl2k5_model_project as fixtures
++from mod_editor.core import nfl2k5_model_project as P
++from mod_editor.core import nfl2k5_build_service as BS
++from PyQt5.QtWidgets import QApplication
++
++
++def wired(relative, marker):
++    path = ROOT/relative; original = path.read_text()
++    name = str(relative).replace('/','.').removesuffix('.py') + '_j2'
++    if marker not in original:
++        lines = original.splitlines(True); output = []; cursor = 0; active = False; hunk = False
++        for line in (ROOT/'docs/mod_editor/nfl2k5_model_project_wiring.patch').read_text().splitlines(True):
++            if line.startswith('--- a/'):
++                active = line[6:].strip() == str(relative); hunk = False
++            elif active and line.startswith('@@ '):
++                start = int(re.match(r'@@ -(\d+)',line)[1])-1
++                output.extend(lines[cursor:start]); cursor = start; hunk = True
++            elif active and hunk and line[:1] in (' ','-','+'):
++                if line[0] in (' ','-'):
++                    assert lines[cursor] == line[1:], (relative,cursor,line)
++                    cursor += 1
++                if line[0] in (' ','+'):
++                    output.append(line[1:])
++        output.extend(lines[cursor:]); original = ''.join(output)
++    module = ModuleType(name); module.__file__ = str(path); module.__package__ = name.rsplit('.',1)[0]
++    sys.modules[name] = module
++    exec(compile(original,str(path),'exec'),module.__dict__)
++    return module
++
++
++class WiringTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        fixtures.RetailProjectTests.setUpClass.__func__(cls)
++        cls.app = QApplication.instance() or QApplication([])
++        cls.studio = wired('mod_editor/gui/studio_qt.py','def _models_project_changed(')
++        cls.builder = wired('mod_editor/core/mod_build.py','receipt["project_models"]')
++        cls.build_panel_module = wired('mod_editor/gui/build_panel_qt.py','saved checked bytes; in-game UNWITNESSED')
++
++    def setUp(self):
++        fixtures.RetailProjectTests.setUp(self)
++
++    build_context = fixtures.RetailProjectTests.build_context
++
++    def test_real_bottom_bar_and_build_plan_add_undo_readd(self):
++        window = self.studio.StudioMainWindow(self.facade,uniform_catalog=self.catalog,eager_pages=False)
++        panel = window._models_panel
++        try:
++            panel.apply_catalog(self.source,self.source.catalog()); panel.select_key('o3c113')
++            panel.wait_idle(); self.app.processEvents()
++            panel.compile_edited(self.export.gltf_path); panel.wait_idle(); self.app.processEvents()
++            panel.add_project_button.click(); panel.wait_idle(); self.app.processEvents()
++            self.assertEqual(window.edit_count.text(),'1 project edit')
++            self.assertTrue(window._workspace_dirty)
++            self.facade.undo(lambda *a:None); window._refresh_edit_state()
++            self.assertIn('No project edits',window.edit_count.text())
++            panel.add_project_button.click(); panel.wait_idle(); self.app.processEvents()
++            self.assertEqual(window.edit_count.text(),'1 project edit')
++            build_panel = self.build_panel_module.BuildPanel(self.facade,available={})
++            try:
++                text = build_panel.confirmation_text(build_panel.plan())
++                self.assertIn('Model: ',text)
++                self.assertIn('saved checked bytes',text)
++            finally:
++                build_panel.deleteLater()
++            self.facade.build_service = BS.Nfl2k5BuildService(runner=fixtures.InlineBackend())
++            with self.build_context():
++                result = self.facade.build_iso(self.root/'wired-project.iso',lambda *a:None)
++            self.assertGreater(result.changed_byte_count,0)
++        finally:
++            panel.wait_idle(); window.deleteLater(); self.app.processEvents()
++
++    def test_project_writer_precedes_gameplay_and_models_are_in_combined_receipt(self):
++        self.session.stage_model(self.record)
++        service = BS.Nfl2k5BuildService(runner=fixtures.InlineBackend())
++        plan = self.builder.BuildPlan(source=str(self.fixture.path),target=str(self.root/'combined.iso'))
++        def gameplay(plan, progress, *, _project_builder):
++            # The actual project service runs first. This artificial XBE write
++            # represents the next writer; no retail gameplay claim is made.
++            result = _project_builder(Path(plan.target))
++            payload = bytearray(result.output_xiso.read_bytes())
++            payload[35*2048+4] = 123
++            result.output_xiso.write_bytes(payload)
++            return {'target':plan.target,'steps':[{'step':'synthetic_gameplay'}]}
++        with self.build_context(), patch.object(self.builder,'build',side_effect=gameplay):
++            receipt = self.builder.build_with_project(plan,service,self.cache,self.session)
++        self.assertEqual(receipt['project_models'],P.plan_rows(self.session))
++        with open(plan.target,'rb') as stream:
++            spans = fixtures.M.image_spans(self.source,self.compiled,stream.fileno(),Path(plan.target).stat().st_size)
++            for absolute,inner,size in spans:
++                stream.seek(absolute)
++                self.assertEqual(stream.read(size),self.compiled.rebuilt_span[inner:inner+size])
++        self.assertEqual(Path(plan.target).read_bytes()[35*2048+4],123)
++        plan = fixtures.SimpleNamespace(guardian_cap=True)
++        with patch.object(service,'build') as build:
++            with self.assertRaisesRegex(P.ValidationError,'Guardian cap/overlay'):
++                self.builder.build_with_project(plan,service,self.cache,self.session)
++            build.assert_not_called()
++
++
++if __name__ == '__main__':
++    unittest.main()
+diff --git a/tests/mod_editor/test_models_skeleton_wiring.py b/tests/mod_editor/test_models_skeleton_wiring.py
+index be5fcc2f..781c013a 100644
+--- a/tests/mod_editor/test_models_skeleton_wiring.py
++++ b/tests/mod_editor/test_models_skeleton_wiring.py
+@@ -75,7 +75,8 @@ class WiringTests(unittest.TestCase):
+         receipt={'changed_bones':[{'bone':'left_forearm','before_cm':20.,'after_cm':21.}],
+                  'changed_bind_lengths':[{'member':'o3c114','bone':'lhand','before_cm':20.,'after_cm':21.}]}
+         result=M.CompiledModelSet(3,skeleton_plan=B.BonePlan((),receipt))
+-        with patch.object(M,'compile_body_set_import',return_value=result) as compile_set:
++        with patch.object(M,'compile_body_set_import',return_value=result) as compile_set, \
++             patch.object(M,'find_body_set_files',return_value={}):
+             p.compile_edited(Path('export/lo_body_o3c113.gltf'))
+         self.assertEqual(compile_set.call_args.args[2],Path('export'))
+         self.assertTrue(compile_set.call_args.kwargs['import_skeleton'])
+diff --git a/tests/mod_editor/test_nfl2k5_model_project.py b/tests/mod_editor/test_nfl2k5_model_project.py
+new file mode 100644
+index 00000000..f9849a69
+--- /dev/null
++++ b/tests/mod_editor/test_nfl2k5_model_project.py
+@@ -0,0 +1,333 @@
++"""Model project records, the real project builder and offscreen Models replay.
++
++Compact transport fixtures use temporary resources read from the user's retail
++archive. No retail bytes are embedded here or retained after the tests.
++"""
++from __future__ import annotations
++
++from contextlib import ExitStack, redirect_stdout
++from dataclasses import asdict
++import io
++import json
++import os
++from pathlib import Path
++import struct
++import sys
++import tempfile
++from types import SimpleNamespace
++import unittest
++from unittest.mock import patch
++import zipfile
++
++ROOT = Path(__file__).resolve().parents[2]
++sys.path[:0] = [str(ROOT), str(ROOT/'tools'), str(ROOT/'tests'), str(Path(__file__).parent)]
++os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
++from mod_editor.core import nfl2k5_models as M, nfl2k5_model_project as P
++from mod_editor.core.nfl2k5_model_project_session import ModelProjectSession
++from mod_editor.core.nfl2k5_source_cache import SourceCache
++from mod_editor.core.model import SourceRecord
++from mod_editor.core import nfl2k5_build_service as BS
++from mod_editor.studio.facade import Nfl2k5StudioFacade
++import nfl2k5_visual_mod_project as V
++from nfl2k5_xiso_fixture import SyntheticXiso
++
++PACK = Path(os.environ.get('NFL2K5_RETAIL_EXTRACTION', '/media/noah/Storage/for codex 1.0/extracted'))/'ESPN NFL 2K5 (USA)/vc_53450030/0'
++INVENTORY = ROOT/'reports/assets/nfl2k5_resource_chunks_v2.json'
++
++
++class RecordTests(unittest.TestCase):
++    def test_sparse_changes_round_trip_and_refuse_unchanged_or_overlapping_bytes(self):
++        before, after = b'abcd0123', b'aBCd0Z23'
++        rows = P.changed_runs(before, after)
++        self.assertEqual(P.apply_runs(before, rows), after)
++        self.assertEqual(sum(len(__import__('base64').b64decode(r[1])) for r in rows), 3)
++        with self.assertRaisesRegex(P.ValidationError, 'overlaps'):
++            P.apply_runs(before, rows + rows)
++        with self.assertRaisesRegex(P.ValidationError, 'unchanged'):
++            P.apply_runs(before, [[0, 'YQ==']])
++
++    def test_pair_refusal_names_missing_file_and_ui_omits_class_prefix(self):
++        from test_nfl2k5_model_skeleton import body_set
++        from mod_editor.core import nfl2k5_model_skeleton as S
++        from mod_editor.gui.models_panel_qt import _Task
++        with tempfile.TemporaryDirectory() as tmp:
++            folder = Path(tmp)
++            with self.assertRaises(M.ModelsError) as error:
++                S.compile_set(object(),body_set(),folder)
++            message = str(error.exception)
++            self.assertIn(str(folder/'lo_body_o3c113.gltf'),message)
++            self.assertIn('Geometry only and Check model',message)
++            self.assertIn('File > Export > glTF 2.0 > Include > Data > Custom Properties',message)
++            emitted = []
++            def fail():
++                raise M.ModelsError(message)
++            task = _Task(fail); task.signals.failed.connect(emitted.append); task.run()
++            self.assertEqual(emitted,[message])
++            self.assertNotIn('ModelsError:',emitted[0])
++
++    def test_external_buffer_change_and_missing_file_name_the_path(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            root = Path(tmp); path = root/'lo.gltf'; binary = root/'lo.bin'
++            path.write_text('{"buffers":[{"uri":"lo.bin","byteLength":1}]}')
++            binary.write_bytes(b'x')
++            record = {'sources': P.source_files([path])}
++            self.assertFalse(P.recheck_files(record))
++            binary.write_bytes(b'y')
++            self.assertIn(str(binary), '\n'.join(P.recheck_files(record)))
++            path.unlink()
++            self.assertIn(str(path), '\n'.join(P.recheck_files(record)))
++
++    def test_guardian_conflict_is_early_and_names_the_shared_resources(self):
++        session = SimpleNamespace(model_records=({'target':'body', 'summary':'body', 'mode':'geometry',
++            'changed_bytes':1, 'members':[{'key':'o3c113'}]},))
++        with self.assertRaisesRegex(P.ValidationError, 'Guardian cap.*o3c113'):
++            P.validate_build_plan(SimpleNamespace(guardian_cap=True), session)
++        P.validate_build_plan(SimpleNamespace(guardian_cap=False), session)
++        with self.assertRaisesRegex(P.ValidationError, 'Guardian cap/overlay'):
++            P.validate_build_plan(SimpleNamespace(guardian_overlay=True), session)
++
++
++class InlineBackend:
++    """Run the actual build and receipt verifier against a compact test identity."""
++    def __init__(self):
++        self.commands = []
++
++    def run(self, argv, cwd):
++        argv = list(argv); self.commands.append(argv)
++        command = argv[2]
++        fields = dict(zip(argv[3::2], argv[4::2]))
++        args = [Path(fields[n]) for n in ('--project','--source-xiso','--output-xiso','--manifest','--artifact-dir')]
++        stream = io.StringIO()
++        with redirect_stdout(stream):
++            if command == 'build':
++                result = V.build(*args, Path(fields['--index']), Path(fields['--inventory']))
++                print('NFL2K5_VISUAL_MOD_BUILD_PASS receipt_sha256=' + V.file_digest(args[3]))
++            else:
++                result = V.verify_written(*args, fields['--receipt-sha256'])
++                print('NFL2K5_VISUAL_MOD_VERIFY_PASS runtime=false')
++        return BS.CommandResult(tuple(argv), 0, stream.getvalue(), '')
++
++
++class RetailProjectTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        for path in (PACK, INVENTORY):
++            if not path.is_file():
++                raise unittest.SkipTest(f'Private model round-trip input absent: {path}')
++        cls.retail = M.ModelSource(PACK, INVENTORY)
++
++    def setUp(self):
++        self.temp = tempfile.TemporaryDirectory(); self.addCleanup(self.temp.cleanup)
++        self.root = Path(self.temp.name)
++        originals = [P._resource(self.retail, key) for key in ('o3c113','o3c114','o3c115','o3c116')]
++        spans = [self.retail.span(resource) for resource in originals]
++        body = b''.join(spans)
++        pack_size = ((len(body)+0x10000-1)//0x10000+1)*0x10000
++        self.fixture = SyntheticXiso(self.root, [(0,b'x'),(1,b'x'),(2,b'x'),(3,body),(4,b'tail')],
++                                     pack_sizes=(pack_size,), pack_sectors=(64,))
++        rows, offset = [], 0
++        for resource, span in zip(originals,spans):
++            row = asdict(resource); row.update(chunk_offset=offset, outer_size=len(body), outer_id='0x00000003')
++            rows.append(row); offset += len(span)
++        self.inventory = self.root/'inventory.json'
++        self.inventory.write_bytes(P.canonical({'schema':'nfl2k5_resource_chunk_inventory/v1','chunks':rows}))
++        self.pack = self.fixture.retail_packs/'0'
++        self.source = M.ModelSource(self.pack, self.inventory)
++        self.export = M.export_model(self.source, 'o3c113', self.root/'lo_body_o3c113.gltf')
++        doc = json.loads(self.export.gltf_path.read_bytes())
++        a = doc['accessors'][doc['meshes'][0]['primitives'][0]['attributes']['POSITION']]
++        view = doc['bufferViews'][a['bufferView']]
++        blob = bytearray(self.export.bin_path.read_bytes())
++        at = view.get('byteOffset',0)+a.get('byteOffset',0)
++        xyz = struct.unpack_from('<3f',blob,at)
++        struct.pack_into('<3f',blob,at,xyz[0]+.1,*xyz[1:])
++        self.export.bin_path.write_bytes(blob)
++        self.compiled = M.compile_import(self.source,'o3c113',self.export.gltf_path)
++        self.record = P.make_record(self.source,self.compiled,[self.export.gltf_path])
++        source = SourceRecord(selected_path=str(self.fixture.path), inspected_path=str(self.fixture.path),
++            kind='xiso',sha256=P.sha(self.fixture.image),size=len(self.fixture.image),recognized=True,
++            fingerprint_id=BS.EXPECTED_FINGERPRINT,detected_game='nfl2k5',note='compact model transport test')
++        self.cache = SourceCache(source,self.root,self.pack,self.inventory,self.root,1,5,{'SCNE':1})
++        self.catalog = SimpleNamespace(uniform_sets=())
++        self.session = ModelProjectSession(self.cache,self.catalog,root=self.root/'sessions')
++        self.facade = Nfl2k5StudioFacade(uniform_catalog=self.catalog, xemu_command=(),
++            session_factory=lambda c,u: ModelProjectSession(c,u,root=self.root/'sessions'))
++        self.facade._cache,self.facade._session = self.cache,self.session
++        self.facade._playbook_inspector = SimpleNamespace()
++
++    def build_context(self):
++        stack = ExitStack()
++        def validate(path, *, hash_image=True):
++            fd = os.open(path,os.O_RDONLY|getattr(os,'O_BINARY',0))
++            entries, directory = V.common.parse_xdvdfs(fd,path.stat().st_size)
++            return path.resolve(),fd,V.common.fd_identity(fd),V.common.sha256_fd(fd) if hash_image else '',entries,directory,entries['default.xbe']
++        stack.enter_context(patch.object(V,'validate_source',side_effect=validate))
++        for module, name, value in ((V,'INDEX_SIZE',self.pack.stat().st_size),(V,'INDEX_SHA256',P.sha(self.pack.read_bytes())),
++                (V,'INVENTORY_SIZE',self.inventory.stat().st_size),(V,'INVENTORY_SHA256',P.sha(self.inventory.read_bytes())),
++                (BS,'PACK0_SIZE',self.pack.stat().st_size),(BS,'INVENTORY_SIZE',self.inventory.stat().st_size),
++                (V.common,'EXPECTED_XBE_SHA256',P.sha(b'XBEH'+bytes(12)))):
++            stack.enter_context(patch.object(module,name,value))
++        return stack
++
++    def test_facade_save_reopen_stale_sources_build_compiled_bytes_and_revert(self):
++        result = self.facade.stage_model_edit(self.source,self.compiled,[self.export.gltf_path])
++        self.assertIn('Added model edit',result.message)
++        self.assertEqual(self.facade.modified_count,1)
++        self.assertEqual(self.facade.model_project_plan[0]['changed_bytes'],self.record['changed_bytes'])
++        project = self.root/'models.2k5mod'
++        self.facade.save_project(project,lambda *a:None)
++        with zipfile.ZipFile(project) as archive:
++            rows = json.loads(archive.read('model-edits.json'))
++            self.assertEqual(rows[0],self.record)
++            self.assertNotIn(self.source.span(self.source.resource('o3c113')),archive.read('model-edits.json'))
++        self.export.bin_path.unlink()
++        opened = self.facade.load_project(project,lambda *a:None)
++        self.assertIn(str(self.export.bin_path),opened.message)
++        self.assertIn('Re-check refused',opened.message)
++        with self.assertRaisesRegex(P.ValidationError,'Re-check refused'):
++            self.facade._session.stage_model(self.record)
++        runner = InlineBackend(); self.facade.build_service = BS.Nfl2k5BuildService(runner=runner)
++        with self.build_context():
++            built = self.facade.build_iso(self.root/'project.xiso.iso',lambda *a:None)
++        quick = self.root/'quick.xiso.iso'
++        M.write_import_copy(self.source,self.compiled,self.fixture.path,quick)
++        self.assertEqual(built.output_xiso.read_bytes(),quick.read_bytes())
++        self.assertEqual(self.fixture.path.read_bytes(),self.fixture.image)
++        self.assertEqual(built.changed_byte_count,self.record['changed_bytes'])
++        self.assertEqual(len(runner.commands),2)
++        print('MODEL_PROJECT_PROOF ' + json.dumps({'mode':'geometry','source_sha256':P.sha(self.fixture.image),
++              'quick_sha256':P.sha(quick.read_bytes()),'project_sha256':built.output_sha256,
++              'disc_size':len(self.fixture.image),'changed_bytes':built.changed_byte_count,
++              'external_buffer_missing_at_build':True,'source_unchanged':True,'witnessed':False},sort_keys=True))
++        self.facade.revert_all(lambda *a:None)
++        self.assertEqual(self.facade.modified_count,0)
++
++    def test_offscreen_add_undo_readd_project_build(self):
++        from PyQt5.QtWidgets import QApplication, QLabel
++        from mod_editor.gui.models_panel_qt import ModelsPanel
++        app = QApplication.instance() or QApplication([])
++        panel = ModelsPanel(self.facade); bottom = QLabel()
++        panel.project_changed.connect(lambda:bottom.setText(f'{self.facade.modified_count} project edits'))
++        try:
++            panel.apply_catalog(self.source,self.source.catalog())
++            panel.select_key('o3c113'); panel.wait_idle(); app.processEvents()
++            panel.compile_edited(self.export.gltf_path); panel.wait_idle(); app.processEvents()
++            self.assertTrue(panel.add_project_button.isEnabled())
++            self.assertIn(f"{self.record['changed_bytes']:,} bytes change on disc", panel.status_label.text())
++            panel.add_project_button.click(); panel.wait_idle(); app.processEvents()
++            self.assertEqual(bottom.text(),'1 project edits')
++            self.facade.undo(lambda *a:None)
++            self.assertEqual(self.facade.modified_count,0)
++            panel.add_project_button.click(); panel.wait_idle(); app.processEvents()
++            self.assertEqual(self.facade.modified_count,1)
++            self.facade.build_service = BS.Nfl2k5BuildService(runner=InlineBackend())
++            with self.build_context():
++                result = self.facade.build_iso(self.root/'offscreen.xiso.iso',lambda *a:None)
++            self.assertGreater(result.changed_byte_count,0)
++            self.assertIn('same',panel.write_button.toolTip())
++        finally:
++            panel.wait_idle(); panel.deleteLater(); bottom.deleteLater(); app.processEvents()
++
++    def test_paired_skeleton_project_is_identical_to_quick_path_and_historical_replay(self):
++        from mod_editor.core import nfl2k5_model_skeleton as S
++        from test_nfl2k5_model_skeleton import body_set, author
++        folder = self.root/'paired'; folder.mkdir()
++        bs = body_set()
++        exports = M.export_body_set(self.source,bs,folder)
++        bone = next(b for b in S.BONES if b.name == 'left_forearm')
++        for key in ('o3c113','o3c114'):
++            path = folder/M.body_set_file_name(next(e for e in bs.entries if e.key == key))
++            doc = json.loads(path.read_bytes())
++            transforms = S._skin(self.source,key)[-1].transforms
++            author(doc,transforms,S.target_positions(transforms,bone,1.01))
++            path.write_bytes(P.canonical(doc))
++        compiled = M.compile_body_set_import(self.source,bs,folder,import_skeleton=True)
++        record = P.make_record(self.source,compiled,[e.gltf_path for e in exports])
++        self.session.stage_model(record)
++        project = self.session.write_canonical_project(self.root/'paired.json')
++        quick, built = self.root/'paired-quick.iso', self.root/'paired-project.iso'
++        M.write_import_set_copy(self.source,compiled,self.fixture.path,quick)
++        manifest, artifacts = self.root/'paired-receipt.json',self.root/'paired-artifacts'
++        with self.build_context():
++            V.build(project,self.fixture.path,built,manifest,artifacts,self.pack,self.inventory)
++            checked = V.verify(project,self.fixture.path,built,manifest,artifacts,self.pack,self.inventory)
++        self.assertEqual(quick.read_bytes(),built.read_bytes())
++        self.assertEqual(checked['changed_byte_count'],record['changed_bytes'])
++        receipt = json.loads(manifest.read_bytes())
++        self.assertEqual({row['kind'] for row in receipt['edits']},{P.KIND})
++        self.assertEqual(len(record['members']),4)
++        self.assertNotIn('before_hex',json.dumps(record))
++        print('MODEL_PROJECT_PROOF ' + json.dumps({'mode':'skeleton','source_sha256':P.sha(self.fixture.image),
++              'quick_sha256':P.sha(quick.read_bytes()),'project_sha256':P.sha(built.read_bytes()),
++              'disc_size':len(self.fixture.image),'changed_bytes':record['changed_bytes'],
++              'guarded_resources':4,'historical_receipt_replay':True,'witnessed':False},sort_keys=True))
++
++    def test_decoded_composition_keeps_disjoint_changes_and_names_conflict(self):
++        resource, before, after = P.restore_member(self.source,self.record['members'][0])
++        decoded, _ = self.source._probe.decode_resource(before,resource)
++        model, _ = self.source._probe.decode_resource(after,resource)
++        # A second checked model supplies a real disjoint position lane change.
++        second = M.export_model(self.source,'o3c113',self.root/'second.gltf')
++        doc = json.loads(second.gltf_path.read_bytes()); blob = bytearray(second.bin_path.read_bytes())
++        a = doc['accessors'][doc['meshes'][0]['primitives'][0]['attributes']['POSITION']]
++        view = doc['bufferViews'][a['bufferView']]
++        at = view.get('byteOffset',0)+a.get('byteOffset',0)+12
++        xyz = struct.unpack_from('<3f',blob,at)
++        struct.pack_into('<3f',blob,at,xyz[0]+.1,*xyz[1:]); second.bin_path.write_bytes(blob)
++        other = M.compile_import(self.source,'o3c113',second.gltf_path).rebuilt_span
++        merged = P.merge_decoded(self.source,resource,before,after,other,'lo_body and artwork')
++        composed, _ = self.source._probe.decode_resource(merged,resource)
++        other_decoded, _ = self.source._probe.decode_resource(other,resource)
++        self.assertEqual(composed,bytes(b if b != a else c for a,b,c in zip(decoded,model,other_decoded)))
++        conflicting = bytearray(model)
++        offset = next(i for i,(a,b) in enumerate(zip(decoded,model)) if a != b)
++        conflicting[offset] = next(v for v in range(256) if v not in (decoded[offset],model[offset]))
++        replacement, _ = M._tools_module('nfl_vc_lz_fill').rebuild_fixed_span_filled(before,bytes(conflicting),encoder='auto')
++        with self.assertRaisesRegex(P.ValidationError,'lo_body and artwork.*conflicting'):
++            P.merge_decoded(self.source,resource,before,after,replacement,'lo_body and artwork')
++
++    def test_mixed_texture_model_undo_and_revert_all_are_one_history(self):
++        from test_studio_session import _Asset, _Catalog, _AssetIO
++        asset = _Asset(); self.session.catalog = _Catalog(asset)
++        artwork = _AssetIO(self.cache)
++        artwork.original = self.root/'original.png'; artwork.original.write_bytes(b'ORIGINAL-CONTAINER')
++        self.session.asset_io = artwork
++        first = self.root/'first.png'; first.write_bytes(b'USER-A-CONTAINER')
++        second = self.root/'second.png'; second.write_bytes(b'USER-B-CONTAINER')
++        self.session.replace(asset,first)
++        self.session.stage_model(self.record)
++        self.session.replace(asset,second)
++        self.assertEqual(self.session.modified_count,2)
++        self.session.undo()
++        self.assertEqual(self.session.modified_count,2)
++        self.assertEqual({r['kind'] for r in self.session.canonical_document()['edits']},{'torso','model_edit'})
++        self.session.undo()
++        self.assertEqual(self.session.modified_count,1)
++        self.session.stage_model(self.record)
++        self.assertEqual(self.session.revert_all(),2)
++        self.assertEqual(self.session.modified_count,0)
++        self.session.undo()
++        self.assertEqual(self.session.modified_count,2)
++        document = json.loads((self.session.root/'session.json').read_bytes())
++        self.assertEqual(len(document['model_edits']),1)
++        self.session.undo()
++        self.assertEqual(self.session.modified_count,1)
++
++    def test_model_recipe_tamper_and_source_foreign_refuse(self):
++        row = self.record['members'][0]
++        changed = json.loads(json.dumps(row)); changed['after_sha256'] = '0'*64
++        with self.assertRaisesRegex(P.ValidationError,'stored compiled model bytes changed'):
++            P.restore_member(self.source,changed)
++        self.assertEqual(P.restore_member(self.source,row)[2],self.compiled.rebuilt_span)
++        resource, before, _ = P.restore_member(self.source,row)
++        decoded, _ = self.source._probe.decode_resource(before,resource)
++        bad = bytearray(decoded); bad[0x20] ^= 1
++        packed, _ = M._tools_module('nfl_vc_lz_fill').rebuild_fixed_span_filled(before,bytes(bad),encoder='auto')
++        forged = {**row,'after_sha256':P.sha(packed),'decoded_sha256':P.sha(bad),
++                  'changes':P.changed_runs(before,packed),'decoded_changes':P.changed_runs(decoded,bad)}
++        with self.assertRaisesRegex(P.ValidationError,'outside the checked geometry/bind lanes'):
++            P.restore_member(self.source,forged)
++
++
++if __name__ == '__main__':
++    unittest.main()
+diff --git a/tests/mod_editor/test_nfl2k5_model_skeleton.py b/tests/mod_editor/test_nfl2k5_model_skeleton.py
+index ef2d4c28..0537cf85 100644
+--- a/tests/mod_editor/test_nfl2k5_model_skeleton.py
++++ b/tests/mod_editor/test_nfl2k5_model_skeleton.py
+@@ -237,15 +237,21 @@ class RetailTests(unittest.TestCase):
+         hi = self.folder/M.body_set_file_name(self.bs.entry_for('hi_body'))
+         for missing in (lo,hi):
+             missing.unlink()
+-            with self.assertRaisesRegex(M.ModelsError,S.PAIR_REASON):
++            with self.assertRaisesRegex(M.ModelsError,S.PAIR_REASON) as error:
+                 M.compile_body_set_import(self.source,self.bs,self.folder,import_skeleton=True)
++            self.assertIn(str(missing), str(error.exception))
++            self.assertIn('File > Export > glTF 2.0 > Include > Data > Custom Properties', str(error.exception))
++            self.assertIn('Geometry only', str(error.exception))
+             self.reset_files()
+         bone = next(b for b in S.BONES if b.name=='left_forearm')
+         doc = copy.deepcopy(self.docs['o3c113'])
+         author(doc,self.transforms['o3c113'],S.target_positions(self.transforms['o3c113'],bone,1.05))
+         S._json(lo,doc)
+-        with self.assertRaisesRegex(M.ModelsError,S.PAIR_REASON):
++        with self.assertRaisesRegex(M.ModelsError,S.PAIR_REASON) as error:
+             M.compile_body_set_import(self.source,self.bs,self.folder,import_skeleton=True)
++        self.assertIn('Unedited skeleton in ' + str(hi), str(error.exception))
++        self.assertIn('separate bind records', str(error.exception))
++        self.assertIn('Geometry only does not import bone-length edits', str(error.exception))
+ 
+     def test_high_derived_pivots_can_be_regenerated_and_edited_head_refuses(self):
+         bone = next(b for b in S.BONES if b.name=='left_forearm')
+diff --git a/tests/mod_editor/test_provider_integrity.py b/tests/mod_editor/test_provider_integrity.py
+index 4f7a8c0d..38780e57 100644
+--- a/tests/mod_editor/test_provider_integrity.py
++++ b/tests/mod_editor/test_provider_integrity.py
+@@ -201,7 +201,7 @@ class ProviderIntegrityTests(unittest.TestCase):
+             # formation/play clone writer, fixed-slot audio, the fail-closed
+             # AUDO family-label loader, package-local equipment, and every
+             # local module in those exact import closures.
+-            [271, 10, 8, 9, 8, 9]  # beta 68: + nfl2k5_compile_cache (T1 build reuse); beta 66.1: + responsive_json (H1, unified + scorebug), nfl2k5_model_skeleton (H4); beta 66: + nfl2k5_digit_art (G), build_io, metadata_cache (B), jukebox_list, helmet_finish (D2)
++            [272, 10, 8, 9, 8, 9]  # beta 69: + nfl2k5_model_project (J2); beta 68: + nfl2k5_compile_cache (T1 build reuse); beta 66.1: + responsive_json (H1, unified + scorebug), nfl2k5_model_skeleton (H4); beta 66: + nfl2k5_digit_art (G), build_io, metadata_cache (B), jukebox_list, helmet_finish (D2)
+         )
+         for provider in providers:
+             entries = [provider.backend_module]
+diff --git a/tests/mod_editor/test_studio_qt_models.py b/tests/mod_editor/test_studio_qt_models.py
+index be4398e0..4848d724 100644
+--- a/tests/mod_editor/test_studio_qt_models.py
++++ b/tests/mod_editor/test_studio_qt_models.py
+@@ -30,6 +30,10 @@ from mod_editor.gui.text_rosters_panel import TextRosterPanelHost
+ class StudioQtViewModelTests(unittest.TestCase):
+     @classmethod
+     def setUpClass(cls) -> None:
++        from pathlib import Path
++        report = Path(__file__).resolve().parents[2] / "reports/assets/nfl2k5_team_select_card_inventory.json"
++        if not report.is_file():
++            raise unittest.SkipTest(f"Private uniform catalog audit absent: {report}")
+         cls.uniforms = load_nfl2k5_uniform_catalog()
+         cls.product = build_nfl2k5_product_catalog(
+             CapabilityRegistryLoader().load(
+diff --git a/tools/nfl2k5_visual_mod_project.py b/tools/nfl2k5_visual_mod_project.py
+index 4f100f95..ec680f38 100755
+--- a/tools/nfl2k5_visual_mod_project.py
++++ b/tools/nfl2k5_visual_mod_project.py
+@@ -32,6 +32,7 @@ if str(ROOT) not in sys.path:
+     sys.path.insert(0, str(ROOT))
+ 
+ from mod_editor.core.nfl2k5_compile_cache import CompileCache
++from mod_editor.core import nfl2k5_model_project as model_project
+ from mod_editor.core import platform_compat  # noqa: E402
+ from mod_editor.core.model import SourceRecord  # noqa: E402
+ from mod_editor.core.errors import ModEditorError  # noqa: E402
+@@ -367,6 +368,7 @@ ROSTER_REPORT_FREE_KINDS = frozenset({
+     ROSTER_PLAYER_PROVIDER_KIND,
+ })
+ REPORT_FREE_KINDS = ROSTER_REPORT_FREE_KINDS | {
++    model_project.KIND,
+     MENU_BACK_AUDIO_KIND,
+     AUSB_AUDIO_KIND,
+     STADIUM_TEXTURE_KIND,
+@@ -731,7 +733,10 @@ def validate_edit_shape(record: object, order: int) -> dict[str, Any]:
+     require(isinstance(record, dict) and type(record.get("kind")) is str,
+             f"edit {order} must be an object with a string kind")
+     kind = record["kind"]
+-    if kind in {"torso", "sleeve", "pants"}:
++    if kind == model_project.KIND:
++        require(set(record) == {"kind", "target", "recipe"} and _string(record, "target")
++                and _string(record, "recipe"), f"edit {order} has invalid model fields/types")
++    elif kind in {"torso", "sleeve", "pants"}:
+         require(set(record) == TSET_FIELDS and
+                 _string(record, "asset_code") and _string(record, "side") and
+                 _integer(record, "variant") and _string(record, "clean_png") and
+@@ -1120,6 +1125,8 @@ def read_project(path: Path) -> ProjectFile:
+             "visual-mod project schema/canonical encoding mismatch")
+     edits = [validate_edit_shape(record, order)
+              for order, record in enumerate(value["edits"])]
++    model_targets = [edit["target"] for edit in edits if edit["kind"] == model_project.KIND]
++    require(len(model_targets) == len(set(model_targets)), "project repeats a model set; keep one checked edit per set")
+     identity_teams = [edit["team_index"] for edit in edits
+                       if edit["kind"] == "team_identity"]
+     require(len(identity_teams) == len(set(identity_teams)),
+@@ -1284,7 +1291,7 @@ def project_asset_paths(project: ProjectFile) -> list[Path]:
+             names = []
+         elif edit["kind"] in AUDIO_KINDS:
+             names = ["wav"]
+-        elif edit["kind"] in {STADIUM_GEOMETRY_KIND, CRIB_SCENE_GEOMETRY_KIND}:
++        elif edit["kind"] in {STADIUM_GEOMETRY_KIND, CRIB_SCENE_GEOMETRY_KIND, model_project.KIND}:
+             names = ["recipe"]
+         else:
+             names = ["png"]
+@@ -3525,8 +3532,11 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
+                 and all(row["kind"] in independent_kinds for row in project.value["edits"])):
+             parallel_imports = _parallel_uniform_imports(project.value["edits"], project,
+                 input_pins, report_paths, index_pin.path, inventory_pin.path, output_parent, workers, cache, key_for)
++        model_edits = [e for e in project.value["edits"] if e["kind"] == model_project.KIND]
+         for edit_index, edit in enumerate(project.value["edits"]):
+             kind = edit["kind"]
++            if kind == model_project.KIND:
++                continue
+             if edit_index in deduplicated_ausb_edits:
+                 continue
+             effective_edit = edit
+@@ -3916,7 +3926,7 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
+                 else:
+                     historical_import = (
+                         historical_import_reports.get(len(prepared))
+-                        if historical_import_reports is not None else None
++                        if historical_import_reports is not None and not model_edits else None
+                     )
+                     # Whatever an importer refuses, the user has to be told which
+                     # of their edits it was. A build carrying dozens of them once
+@@ -3972,7 +3982,7 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
+                 temp_files.append(exclusive_payload(
+                     span_path, replacement, temp_root))
+                 normalized = normalized_import_report(report, effective_edit, kind)
+-                if historical_import_reports is not None:
++                if historical_import_reports is not None and not model_edits:
+                     historical_import = historical_import_reports.get(order)
+                     require(historical_import is not None,
+                             f"historical import receipt missing for span {order}")
+@@ -4018,6 +4028,12 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
+                     absolute, retail_sha, span_path,
+                     len(replacement), digest(replacement), runs, import_path,
+                     digest(import_payload), preview_records))
++        model_project.prepare_project_models(sys.modules[__name__], prepared, model_edits,
++            project, input_pins, index_pin.path, inventory_pin.path, temp_root, temp_files, source_fd)
++        if model_edits and historical_import_reports is not None:
++            for item in prepared:
++                require(historical_import_reports.get(item.order) == json.loads(item.import_report_path.read_bytes()),
++                        f"model composition receipt changed for {item.selector}")
+         if historical_import_reports is not None:
+             require(set(historical_import_reports) == set(range(len(prepared))),
+                     "historical import receipt orders differ from reconstructed spans")
+diff --git a/tools/test_nfl2k5_visual_mod_project.py b/tools/test_nfl2k5_visual_mod_project.py
+index fccabbe5..5682c795 100755
+--- a/tools/test_nfl2k5_visual_mod_project.py
++++ b/tools/test_nfl2k5_visual_mod_project.py
+@@ -72,6 +72,20 @@ class VisualModProjectTests(unittest.TestCase):
+             ],
+         }
+ 
++    def test_compiled_model_row_pins_only_the_recipe(self) -> None:
++        with tempfile.TemporaryDirectory() as tmp:
++            root = Path(tmp)
++            recipe = root / "compiled.json"
++            recipe.write_bytes(b'{}')
++            value = {"schema": project.SCHEMA, "purpose": "checked Models edit",
++                     "edits": [{"kind": "model_edit", "target": "player-body-o3", "recipe": "compiled.json"}]}
++            opened = project.read_project(self.write_project(root, value))
++            self.assertEqual(project.project_asset_paths(opened), [recipe])
++            self.assertEqual(project.pin_reports({"model_edit"}), {})
++            self.assertEqual(set(project.pin_project_inputs(opened)), {recipe.resolve()})
++            with self.assertRaisesRegex(project.ProjectError, "invalid model"):
++                project.validate_edit_shape({**value["edits"][0], "offset": 0}, 0)
++
+     def test_all_edit_shapes_and_relative_png_pin(self) -> None:
+         with tempfile.TemporaryDirectory() as temporary:
+             root = Path(temporary)
+@@ -292,6 +306,8 @@ class VisualModProjectTests(unittest.TestCase):
+                 "abbreviation": "CDX", "city_abbreviation": "CDX"}
+ 
+     def test_team_identity_expands_to_four_fixed_spans(self) -> None:
++        if not project.REPORTS['team_identity'].is_file():
++            self.skipTest(f"Private team_identity audit absent: {project.REPORTS['team_identity']}")
+         results = project.build_team_identity_imports(
+             self.team_identity_edit(), project.REPORTS["team_identity"])
+         self.assertEqual(len(results), 4)
+@@ -303,6 +319,8 @@ class VisualModProjectTests(unittest.TestCase):
+         self.assertTrue(all(item[4]["asset_code"] == "09" for item in results))
+ 
+     def test_team_identity_overlength_is_refused(self) -> None:
++        if not project.REPORTS['team_identity'].is_file():
++            self.skipTest(f"Private team_identity audit absent: {project.REPORTS['team_identity']}")
+         edit = self.team_identity_edit()
+         edit["city"] = "FarTooLongForDetroit"
+         with self.assertRaisesRegex(project.ProjectError, "allocation"):
+@@ -320,6 +338,8 @@ class VisualModProjectTests(unittest.TestCase):
+                 project.read_project(path)
+ 
+     def test_forged_team_identity_report_is_refused(self) -> None:
++        if not project.REPORTS['team_identity'].is_file():
++            self.skipTest(f"Private team_identity audit absent: {project.REPORTS['team_identity']}")
+         with tempfile.TemporaryDirectory() as temporary:
+             root = Path(temporary)
+             value = json.loads(project.REPORTS["team_identity"].read_bytes())
+@@ -353,6 +373,8 @@ class VisualModProjectTests(unittest.TestCase):
+                 "jersey_number": 42}
+ 
+     def test_player_roster_expands_to_three_fixed_spans(self) -> None:
++        if not project.REPORTS['player_roster'].is_file():
++            self.skipTest(f"Private player_roster audit absent: {project.REPORTS['player_roster']}")
+         results = project.build_player_roster_imports(
+             self.player_roster_edit(), project.REPORTS["player_roster"])
+         self.assertEqual(len(results), 3)
+@@ -365,6 +387,8 @@ class VisualModProjectTests(unittest.TestCase):
+         self.assertEqual(results[-1][4]["replacement_jersey_word"], "0x00080950")
+ 
+     def test_player_roster_overlength_is_refused(self) -> None:
++        if not project.REPORTS['player_roster'].is_file():
++            self.skipTest(f"Private player_roster audit absent: {project.REPORTS['player_roster']}")
+         edit = self.player_roster_edit()
+         edit["first_name"] = "FarTooLong"
+         with self.assertRaisesRegex(project.ProjectError, "allocation"):
+@@ -469,6 +493,8 @@ class VisualModProjectTests(unittest.TestCase):
+                 project.read_project(path)
+ 
+     def test_scorebug_report_is_hash_pinned(self) -> None:
++        if not project.REPORTS['scorebug_texture'].is_file():
++            self.skipTest(f"Private scorebug_texture audit absent: {project.REPORTS['scorebug_texture']}")
+         pins = project.pin_reports({"scorebug_texture"})
+         self.assertEqual(set(pins), {"scorebug_texture"})
+         self.assertEqual(
+@@ -477,6 +503,8 @@ class VisualModProjectTests(unittest.TestCase):
+         )
+ 
+     def test_portrait_and_crib_use_distinct_pinned_metadata(self) -> None:
++        if not project.REPORTS['player_portrait'].is_file():
++            self.skipTest(f"Private player_portrait audit absent: {project.REPORTS['player_portrait']}")
+         pins = project.pin_reports({"player_portrait", "crib_team_photo"})
+         self.assertEqual(set(pins), {"player_portrait", "crib_team_photo"})
+         self.assertNotEqual(pins["player_portrait"].path,
+@@ -512,6 +540,10 @@ class VisualModProjectTests(unittest.TestCase):
+         )
+ 
+     def test_forged_player_reports_are_refused(self) -> None:
++        if not project.REPORTS['player_roster'].is_file():
++            self.skipTest(f"Private player_roster audit absent: {project.REPORTS['player_roster']}")
++        if not project.REPORTS['player_portrait'].is_file():
++            self.skipTest(f"Private player_portrait audit absent: {project.REPORTS['player_portrait']}")
+         for kind in ("player_roster", "player_portrait"):
+             with self.subTest(kind=kind), tempfile.TemporaryDirectory() as temporary:
+                 root = Path(temporary)
+@@ -542,6 +574,8 @@ class VisualModProjectTests(unittest.TestCase):
+                     project.REPORTS[kind] = original
+ 
+     def test_cross_pack_portrait_target_is_retained(self) -> None:
++        if not project.REPORTS['player_portrait'].is_file():
++            self.skipTest(f"Private player_portrait audit absent: {project.REPORTS['player_portrait']}")
+         _, _, target = project.portrait_targets.select_target(
+             "4070", project.REPORTS["player_portrait"])
+         self.assertEqual(len(target.span_segments), 2)
+@@ -664,6 +698,8 @@ class VisualModProjectTests(unittest.TestCase):
+                 edit, self.sparse_roster_view(shared_names=True))
+ 
+     def test_legacy_identity_writer_now_accepts_shorter_bounded_values(self) -> None:
++        if not project.REPORTS['team_identity'].is_file():
++            self.skipTest(f"Private team_identity audit absent: {project.REPORTS['team_identity']}")
+         edit = self.team_identity_edit()
+         edit.update({"city": "D", "nickname": "L", "abbreviation": "D",
+                      "city_abbreviation": "D"})

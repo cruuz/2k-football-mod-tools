@@ -1,0 +1,27 @@
+a9bfc7710b4003f170ada1af6d0e07dee2830349
+100644 fe6e2a9ae7446a8a8a878eab0480e25f09e49803 1	docs/mod_editor/2k5_mod_studio_changelog.md
+100644 070aae751add617b063ce66b97797d530e4145e2 2	docs/mod_editor/2k5_mod_studio_changelog.md
+100644 f1c0f49b15bfe0a65f8f5f74ef7e7a96568bad82 3	docs/mod_editor/2k5_mod_studio_changelog.md
+100644 6e178bd1668e032a2559e12a9743a6b89f596ce6 1	docs/mod_editor/apf2k8_mod_studio_changelog.md
+100644 3f4af7935a5e69ccc71439db489d49f5f423ec19 2	docs/mod_editor/apf2k8_mod_studio_changelog.md
+100644 d17e6dd24d2cd38311f4c9c046755272a8a79142 3	docs/mod_editor/apf2k8_mod_studio_changelog.md
+100644 757498b3d06ad7363ca9897b225dea08b5e4fd1b 1	mod_editor/apf_studio/playcalling_editor_qt.py
+100644 aef9e2222a3a7be91962d2827621ebfea3f0339d 2	mod_editor/apf_studio/playcalling_editor_qt.py
+100644 58273b10f087f2db35972af5f637f907625c4c94 3	mod_editor/apf_studio/playcalling_editor_qt.py
+100644 95e817b1f6b8aa8d7bc3ef31e03156b521dae042 1	mod_editor/gui/models_panel_qt.py
+100644 baee4f0701f7aed099fa039dd236b08fd9d84d6f 2	mod_editor/gui/models_panel_qt.py
+100644 7c58441b185defa57c470c786279a30a077da992 3	mod_editor/gui/models_panel_qt.py
+
+Auto-merging docs/mod_editor/2k5_mod_studio_changelog.md
+CONFLICT (content): Merge conflict in docs/mod_editor/2k5_mod_studio_changelog.md
+Auto-merging docs/mod_editor/apf2k8_mod_studio_changelog.md
+CONFLICT (content): Merge conflict in docs/mod_editor/apf2k8_mod_studio_changelog.md
+Auto-merging docs/mod_editor/apf2k8_mod_studio_getting_started.md
+Auto-merging mod_editor/apf_studio/playcalling_editor_qt.py
+CONFLICT (content): Merge conflict in mod_editor/apf_studio/playcalling_editor_qt.py
+Auto-merging mod_editor/gui/build_panel_qt.py
+Auto-merging mod_editor/gui/models_panel_qt.py
+CONFLICT (content): Merge conflict in mod_editor/gui/models_panel_qt.py
+Auto-merging mod_editor/gui/roster_editor_panel_qt.py
+Auto-merging mod_editor/gui/studio_qt.py
+

@@ -1,0 +1,23 @@
+{
+  "free_bytes_before": 81588318208,
+  "copied_metadata_bytes": 106760608,
+  "free_bytes_after": 81481515008,
+  "files": [
+    "reports/assets/nfl2k5_sleeve_tset_compatibility.json",
+    "reports/assets/nfl2k5_live_face_texture_compatibility.json",
+    "reports/assets/nfl2k5_player_portrait_compatibility.json",
+    "reports/assets/menu_state_trace.json",
+    "reports/assets/scorebug_presentation_audit.json",
+    "reports/assets/nfl2k5_p8_texture_inventory.json",
+    "reports/assets/nfl2k5_jersey_tset_compatibility.json",
+    "reports/assets/nfl2k5_audo_import_capacity.json",
+    "reports/assets/nfl2k5_team_select_card_inventory.json",
+    "reports/assets/nfl2k5_live_helmet_txtr_compatibility.json",
+    "reports/assets/nfl2k5_pants_tset_compatibility.json",
+    "reports/assets/nfl2k5_live_numbers_nameplate_compatibility.json",
+    "reports/assets/uniform_texture_sharing.v2.json",
+    "reports/assets/nfl_main_menu_live_state.json",
+    "reports/assets/nfl2k5_create_team_field_art_inventory.json",
+    "reports/assets/nfl2k5_audo_family_labels.json"
+  ]
+}

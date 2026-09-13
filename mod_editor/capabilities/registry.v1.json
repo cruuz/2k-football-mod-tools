@@ -711,7 +711,7 @@
       "summary": "Compile Smash, Levels / Drive, Dagger, Curl-Flat and Mesh with explicit route landmarks and a -21-foot QB movement; five-step timing is unproved.",
       "surface": "cpu_ai_draft",
       "title": "APF concept recipes",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -784,7 +784,7 @@
       "summary": "Add plays to pinned named SPLB books, including explicit empty-record creation for a donor-compatible new formation; CPU books only.",
       "surface": "cpu_ai_draft",
       "title": "Add authored APF CPU calls",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -846,7 +846,7 @@
       "summary": "Append at indices 163..175; clone donor personnel/slot ordering and opaque row, author all three X/Y coordinate variants.",
       "surface": "cpu_ai_draft",
       "title": "Create APF formation",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -908,7 +908,7 @@
       "summary": "Append at indices 586..591 or explicitly replace a same-side chosen play; preserve donor descriptors and opaque relation.",
       "surface": "cpu_ai_draft",
       "title": "Create APF play",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -970,7 +970,7 @@
       "summary": "Clone defensive plays, copy coverage chains or change proved zone landmarks, man cushion and rush/dual-lane numeric fields.",
       "surface": "cpu_ai_draft",
       "title": "Design APF defensive assignments",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -1032,7 +1032,7 @@
       "summary": "Edit the existing play index; copy same-slot stock assignments, detach shared chains, change supported route, movement, read and coverage fields.",
       "surface": "cpu_ai_draft",
       "title": "Edit APF play assignments",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -1094,7 +1094,7 @@
       "summary": "Movement Y has proved feet encoding; Pass operand 1 is a receiver selector, not a step-count switch.",
       "surface": "cpu_ai_draft",
       "title": "APF five-step drop cadence",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -1156,7 +1156,7 @@
       "summary": "No mapped APF opcode/runtime owner proves QB tracking; native 1C is not advertised as spy.",
       "surface": "cpu_ai_draft",
       "title": "APF dedicated QB spy",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -1359,7 +1359,7 @@
       "summary": "Stage alpha values for eleven named field materials in four scenes; reparse and refit H7A within the original allocation, composing with staged field textures.",
       "surface": "stadiums_fields",
       "title": "Field overlay opacity",
-      "validation_command": "python3 -m mod_editor.core.apf_field_material_writer --index <0A> --entry 53 --alpha graphic_overlay_4=0.25 --manifest <report.json>"
+      "validation_command": "python3 -m tests.mod_editor.test_apf_field_material_writer"
     },
     {
       "backend": {
@@ -1478,7 +1478,7 @@
       "summary": "Edit shared zone-node landmarks and extents; gameplay UNWITNESSED.",
       "surface": "gameplay_tuning_sliders",
       "title": "Coverage Geometry (experimental)",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -1691,7 +1691,7 @@
       "summary": "Map paired APFe logo/endzone pixels to existing Xbox 360 writers with source and destination receipts.",
       "surface": "logos_cards",
       "title": "Import PS3 APFe texture bundle",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -2553,7 +2553,7 @@
       "summary": "Create a team-specific offensive copy, then edit its formations, play membership and same-record audibles through Book Identity > Edit books in Fine-tune. Named recipes and copied-folder builds verify the independent resource and preserve its shared donor.",
       "surface": "scripts_config",
       "title": "Independent offensive CPU books",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -2611,7 +2611,7 @@
       "summary": "Balance tags 0/1/2 with a same-record run and pass where possible; inspect category availability and enforce empty-formation compile guards. Runtime unwitnessed.",
       "surface": "scripts_config",
       "title": "CPU audibles and personnel availability",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -2840,7 +2840,7 @@
       "summary": "Explain each team label and name-resolved book, then open the chosen or newly cloned game folder in Fine-tune. Finish the original Studio project before cloning because directory entry indices shift.",
       "surface": "scripts_config",
       "title": "Book Identity",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -3573,7 +3573,7 @@
       "summary": "Fill one independent copy from Wide Zone, Spread-to-Run or Pro Power while keeping team, label and donor editable. Content remains editable in Fine-tune after building; the separate shared-book staging and CLI paths remain available.",
       "surface": "scripts_config",
       "title": "Wide Zone, Spread-to-Run, Pro Power",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -3948,7 +3948,7 @@
       "summary": "Convert a PS3 APF 2K8 roster USERDATA into the raw Xbox 360 Roster.ROS layout with a counted receipt; strict readers re-parse the output.",
       "surface": "players_rosters",
       "title": "Import PS3 roster",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -5880,7 +5880,7 @@
       "summary": "Edit fixed-25 setup and shared historic rosters; validate additional moments for research only.",
       "surface": "players_rosters",
       "title": "ESPN Anniversary scenarios and historic rosters (experimental)",
-      "validation_command": "python3 -m mod_editor.core.nfl2k5_espn25_scenarios status source.iso espn25-plan.json"
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_espn25_scenarios"
     },
     {
       "backend": {

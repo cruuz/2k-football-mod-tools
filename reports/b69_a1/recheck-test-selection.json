@@ -1,0 +1,5 @@
+[
+  "tests/mod_editor/test_nfl2k5_abilities_v2_manifest.py",
+  "tests/mod_editor/test_nfl2k5_audo_fixed_slots.py",
+  "tests/mod_editor/test_nfl2k5_crib_geometry_writer.py"
+]

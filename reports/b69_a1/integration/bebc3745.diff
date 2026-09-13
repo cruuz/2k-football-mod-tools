@@ -1,0 +1,132 @@
+diff --git a/docs/mod_editor/apf2k8_mod_studio_getting_started.md b/docs/mod_editor/apf2k8_mod_studio_getting_started.md
+index fe68c8d1..1cf2f589 100644
+--- a/docs/mod_editor/apf2k8_mod_studio_getting_started.md
++++ b/docs/mod_editor/apf2k8_mod_studio_getting_started.md
+@@ -764,7 +764,7 @@ design into the project, then Build. These tools have offline validation;
+ every in-game outcome is **UNWITNESSED**. The [wave guide](apf_wave_2026_09_09.md)
+ lists capacity and build-composition limits.
+ 
+-The beta-67 **CPU Play Calling** editor controls which existing plays get
++The **CPU Play Calling** editor controls which existing plays get
+ called and their weights. Play authoring is on **Design Plays / Formations**.
+ 
+ Playbooks now includes Design Plays / Formations, Coverage Geometry, Book Identity
+diff --git a/tests/mod_editor/test_audio_annotations.py b/tests/mod_editor/test_audio_annotations.py
+index ec54a846..cc6ae3f1 100644
+--- a/tests/mod_editor/test_audio_annotations.py
++++ b/tests/mod_editor/test_audio_annotations.py
+@@ -168,6 +168,7 @@ class AudioAnnotationSessionTests(unittest.TestCase):
+         self.root = Path(self.temporary.name)
+         cache = SimpleNamespace(
+             source=SimpleNamespace(sha256="a" * 64),
++            pack0=self.root / "private-cache" / "0",
+             root=self.root / "private-cache",
+         )
+         self.patcher = mock.patch(
+@@ -349,6 +350,7 @@ class AudioAnnotationSessionTests(unittest.TestCase):
+ 
+         cache = SimpleNamespace(
+             source=SimpleNamespace(sha256="a" * 64),
++            pack0=self.root / "private-cache" / "0",
+             root=self.root / "private-cache",
+         )
+         target = StudioSession(
+@@ -391,6 +393,7 @@ class AudioAnnotationSessionTests(unittest.TestCase):
+     def test_disposable_uuid_session_removes_only_its_exact_private_root(self) -> None:
+         cache = SimpleNamespace(
+             source=SimpleNamespace(sha256="a" * 64),
++            pack0=self.root / "private-cache" / "0",
+             root=self.root / "private-cache",
+         )
+         candidate = StudioSession(
+@@ -452,6 +455,7 @@ class AudioAnnotationSessionTests(unittest.TestCase):
+ 
+         cache = SimpleNamespace(
+             source=SimpleNamespace(sha256="a" * 64),
++            pack0=self.root / "private-cache" / "0",
+             root=self.root / "private-cache",
+         )
+         loaded = StudioSession(
+diff --git a/tests/mod_editor/test_b68_a1_audit.py b/tests/mod_editor/test_b68_a1_audit.py
+index 6652a90d..6a88e97d 100644
+--- a/tests/mod_editor/test_b68_a1_audit.py
++++ b/tests/mod_editor/test_b68_a1_audit.py
+@@ -38,8 +38,8 @@ class IntegrationTests(unittest.TestCase):
+         from mod_editor.core.product_catalog import build_nfl2k5_product_catalog
+         registry = CapabilityRegistryLoader().load(allow_sample_fallback=False, check_files=False)
+         catalog = build_nfl2k5_product_catalog(registry)
+-        self.assertEqual(len(registry.capabilities), 161)
+-        self.assertEqual(len(catalog.capabilities), 91)
++        self.assertEqual(len(registry.capabilities), 165)
++        self.assertEqual(len(catalog.capabilities), 92)
+         path = ROOT / 'packaging/check_2k5_mod_studio_runtime.py'
+         source = path.read_text()
+         # Execute the production assertions against the actual registry, without
+@@ -51,8 +51,8 @@ class IntegrationTests(unittest.TestCase):
+                                           'require(len(product_catalog.capabilities)')):
+                     with self.subTest(expression=expression):
+                         exec(expression, dict(require=self.assertTrue, registry=registry, product_catalog=catalog))
+-        self.assertTrue('registry=161 sections=12 nfl2k5_capabilities=91' in source)
+-        self.assertIn('registry=161 sections=12 nfl2k5_capabilities=91',
++        self.assertTrue('registry=165 sections=12 nfl2k5_capabilities=92' in source)
++        self.assertIn('registry=165 sections=12 nfl2k5_capabilities=92',
+                       (ROOT / 'tests/mod_editor/test_phase1_packaging.py').read_text())
+ 
+     def test_new_core_modules_are_in_all_release_closures(self):
+diff --git a/tests/mod_editor/test_beta66_d1_panels.py b/tests/mod_editor/test_beta66_d1_panels.py
+index 0c0243a6..cb0e18be 100644
+--- a/tests/mod_editor/test_beta66_d1_panels.py
++++ b/tests/mod_editor/test_beta66_d1_panels.py
+@@ -1,9 +1,8 @@
+-"""Execute the exact protected-panel handoff in memory, offscreen."""
+-import json
++"""Exercise the integrated protected panels offscreen, including later wording."""
++import importlib
+ import os
+ from pathlib import Path
+ import sys
+-import types
+ import unittest
+ from unittest.mock import patch
+ 
+@@ -15,23 +14,9 @@ from mod_editor.core import mod_build
+ 
+ 
+ def wired_module(name):
+-    filename = name.replace('.', '/') + '.py'
+-    source = (ROOT / filename).read_text(encoding='utf-8')
+-    edits = json.loads((ROOT / 'reports/beta66_d1/panel_edits.json').read_text(encoding='utf-8'))[filename]
+-    # Work before and after integration, with no on-disk GUI mutation.
+-    for edit in edits:
+-        if edit['old'] in source:
+-            if source.count(edit['old']) != 1:
+-                raise AssertionError('ambiguous wiring insertion')
+-            source = source.replace(edit['old'], edit['new'])
+-        elif edit['new'] not in source:
+-            raise AssertionError('wiring context drifted')
+-    module = types.ModuleType(name)
+-    module.__file__ = str(ROOT / filename)
+-    module.__package__ = name.rpartition('.')[0]
+-    with patch.dict(sys.modules, {name: module}):
+-        exec(compile(source, module.__file__, 'exec'), module.__dict__)
+-    return module
++    # The handoff is installed. Exercise its real behavior without replaying
++    # obsolete source-text hunks over later model, equipment and polish changes.
++    return importlib.import_module(name)
+ 
+ 
+ class PlanTests(unittest.TestCase):
+diff --git a/tests/mod_editor/test_music_all_modes_wiring.py b/tests/mod_editor/test_music_all_modes_wiring.py
+index e3632484..9a3ea710 100644
+--- a/tests/mod_editor/test_music_all_modes_wiring.py
++++ b/tests/mod_editor/test_music_all_modes_wiring.py
+@@ -97,7 +97,8 @@ class WidgetHandoffTests(unittest.TestCase):
+         exec(compile(sources['mod_editor/gui/build_panel_qt.py'], module.__file__, 'exec'), vars(module))
+         cls.BuildPanel = module.BuildPanel
+         methods = {'_music_playlist_changed', '_capture_music_build_settings', '_restore_music_build_settings',
+-                   '_build_music_shuffle_changed', '_music_library_preview_ready', '_music_changed'}
++                   '_build_music_shuffle_changed', '_music_library_preview_ready', '_music_changed',
++                   '_refresh_build_includes'}
+         namespace = {}
+         exec(functions(sources['mod_editor/gui/studio_qt.py'], methods), namespace)
+         cls.Host = type('Host', (), {name:namespace[name] for name in methods})

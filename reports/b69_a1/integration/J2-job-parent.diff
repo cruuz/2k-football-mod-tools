@@ -1,0 +1,2612 @@
+diff --git a/ASTRA_B69_J8_REPORT.md b/ASTRA_B69_J8_REPORT.md
+new file mode 100644
+index 00000000..23933419
+--- /dev/null
++++ b/ASTRA_B69_J8_REPORT.md
+@@ -0,0 +1,246 @@
++# Beta 69 J8: APF appearance to roster saves
++
++Branch: `astra/b69-j8-apf-save`. Job context: `ASTRA_CONTEXT.md`, beta-69 triage
++row 20, hub beta-68 APF reactions rows 10–12. No emulator, GUI display, audio,
++network, push, or real-console signing was used. All newly added fixtures are
++synthetic and generated in temporary directories. Private inputs used by
++pre-existing gated regression tests were read-only; no save or retail payload
++was added to the repository.
++
++## Delivered behavior
++
++Custom Team Appearance has **Apply my custom team appearance to this roster
++save…** in both game/project and raw-save modes. It captures the current
++HOME/AWAY controls before inspecting the destination, so choosing a roster
++does not replace the appearance the user wants to apply. The dialog shows
++destination team names, occupied/empty state and slot mapping; optionally
++includes other staged user-team appearances; defaults to a new raw Xbox
++`Roster.ROS`; and offers an explicitly labeled Xenia-only STFS copy when that
++package passes the narrower writer checks.
++
++The service uses the existing disc-writer appearance value/schema and existing
++raw-save writer. It resolves the destination's pointer graph and writes only
++ten ARGB dwords and two eight-byte helmet/crest selectors in each HOME/AWAY
++bank: **112 authorized bytes per selected slot, slots 32–39 only**. Palette
++metadata, other uniform selector records, players and other slots remain
++unchanged. The source hash is checked before writing and again on readback.
++Output and receipt are exclusively created at separate paths; existing files
++are refused, and a failed write/verification removes only files this operation
++created. The verifier reparses the actual output, checks the full allowed-byte
++set and reports **the slots that actually changed**.
++
++PS3 raw `USERDATA`, PS3-layout `.ROS`, and the bounded selected member of a
++roster ZIP pass through the existing converter before the overlay. Its full
++conversion receipt is nested beside the appearance-patch receipt. For STFS,
++the package receipt additionally verifies allocation, hashes and unchanged
++signature bytes. These are private output receipts, never project payloads.
++
++The APF capability/action binding now names the actual one-shot service
++alongside the existing Stage/Revert methods. **Two existing capability rows
++are updated in WIRING; zero rows are added.** The live GUI needs no additional
++wiring. Registry metadata and release allowlists remain the integrator's
++protected edits, with exact code and paths in `WIRING.md`. Counts remain 161
++total / 69 APF for J8 alone. Classification: EXPERIMENTAL explicit transfer
++actions, off in every preset; additional staged slots and package output both
++start off. Existing PS3 appearance-review checkbox still starts off.
++
++## Format findings and proof boundary
++
++**PROVED offline:** raw-save appearance bytes match the disc writer's bounded
++contract, every written raw output reparses, PS3 conversion carries exact
++uniform selector banks with RGBA→ARGB colour rotation, and synthetic STFS
++replacement repairs the complete affected active SHA-1 chain. See
++`docs/research/apf_stfs_rehash.md` for the offset table, equations, source pins
++and tests.
++
++STFS metadata/header: magic at 0, signature/certificate storage at
++`0x004..0x22B`, licenses at `0x22C..0x32B`, metadata digest at `0x32C..0x33F`,
++header size at `0x340`, and metadata beginning at `0x344`. The metadata SHA-1
++covers `[0x344, round_up(header_size, 4096))`. The volume descriptor starts at
++`0x379`; its top-table digest is at `0x381`. The writer preserves signature,
++license, ownership and other metadata bytes. It requires APF title `54540807`,
++saved-game content type 1, and single-file STFS metadata.
++
++STFS data and tables: 4096-byte blocks; 170 entries per table, 24 bytes per
++entry (20-byte SHA-1 and state/next pointer). Changed data-block digests update
++their active leaf table; changed leaf tables update active parent digests;
++the top-table digest updates the descriptor; the metadata digest is last.
++Inactive copies, data-block tail padding, unselected data, file sizes and
++chains are preserved. The independent verifier checks all allocated active
++data entries and every active leaf table, and rejects any extra mutation even
++outside hashed regions. Two-copy geometry previously doubled accumulated
++data offsets after block 170; the single-copy higher-level calculation also
++used the wrong intermediate value near its boundary. Both are corrected.
++
++The package writer refuses shared file/directory blocks, corrupt hashes,
++sparse or out-of-order directories, incompatible next-pointer chains,
++changed roster length, multi-file containers, non-APF save metadata and
++unsupported hash-tree bounds. Exactly 170/28900 allocated blocks are refused
++for package output because the audited Xenia level-selection boundary differs.
++Extractable packages retain the raw route. No scans for embedded roster magic
++or packed resources were introduced.
++
++**PROVED from pinned local source:** Xenia revision
++`d09cae8d8374324048ef603d48a9c1696b39d552`,
++`xcontent_container_device.cc::ReadHeaderAndVerify` at line 182, checks length,
++successful header read and magic, with **no RSA or metadata digest check**.
++`stfs_container_device.cc::Read/ReadEntry` consumes directory and next-pointer
++entries without comparing SHA-1. Its traversal follows next pointers even for
++contiguous files. The existing repository `synthetic_stfs` fixture originally
++marked every block end-of-chain; it now generates real chains and saved-game
++metadata. That known synthetic package round-trips through the writer,
++production extractor and a separate Python translation of the pinned Xenia
++block/chain algorithm, for single/duplicate tables, both active copies, and
++fragmented files. The optional source-pin test ran successfully here.
++
++**HYPOTHESIS:** discovery and full loading of the modified package by a user's
++Xenia build. The Python traversal model is not native Xenia execution. There
++was no actual emulator or game load, and no console RSA signature was produced.
++The caption therefore explicitly says **“Xenia only; a real console will reject
++this package”**, and calls full loading HYPOTHESIS/UNWITNESSED. Signature-check
++absence is proved only for the pinned source, not every Xenia version.
++
++**Every in-game outcome is UNWITNESSED:** roster load/save/reload, correct team
++selection, HOME/AWAY rendering, jersey/shoulder appearance, and helmet close-up.
++An offline receipt is not a runtime witness.
++
++## PS3 appearance findings
++
++The prior converter already carried the PS3 selector bytes by preserving the
++table and already rotated palette colours. This job does not pretend that
++transport was missing. The new check compares **all 40 teams' 1120 referenced
++eight-byte selector records, 800 referenced colour values, and palette
++metadata** after conversion. All 2660 colours in the palette table continue
++to receive the converter's existing rotation. Receipts include exact full
++selector before/after bytes, named carried fields, and refusals with reasons.
++
++Carried: both 14-record banks, including helmet/crest/jersey/shoulder/pants
++codes and opaque tails; colour values in Xbox byte order; palette metadata.
++Refused: custom texture payload import (use PS3 bundle/Team Art), and new
++semantic labels for opaque selector bytes (the bytes still survive exactly).
++If the user selects an Xbox appearance baseline, the receipt explicitly says
++PS3 appearance values were declined because the user chose that baseline.
++Choosing another PS3 source clears the previous baseline and requires review
++again, preventing accidental retention of an unrelated roster's uniforms.
++
++The editor overlay still copies only the bounded colours and helmet/crest
++selectors. It does not copy jersey/shoulder/pants choices from the project.
++Those existing destination codes, including PS3 codes just converted, stay
++exact. This scope matters for davidhbui's workaround.
++
++## Aszemple's steps and requested witnesses
++
++Aszemple: “Next is how do I get the uniforms codes applied that I've already
++done from in the APF editor and on my rosters.” His earlier ask: “could the
++editor take a .Ros file or PS3 roster file and update the uniforms and players”.
++
++1. Open the project with your appearance, go to **Uniforms & Equipment → Custom
++   Team Appearance**, select the slot and review both banks. Existing staged
++   values load normally; current un-staged controls can also be transferred.
++2. Click **Apply my custom team appearance to this roster save…** and choose
++   your raw roster, STFS package or decrypted PS3 roster/ZIP. Review the listed
++   destination names: slot 32 means user team 24, through slot 39/user team 31.
++   The match is by slot number, never an inferred name match.
++3. Tick **Also apply other staged user-team appearances** only if wanted.
++   Leave raw output selected, or explicitly choose the **Xenia only; a real
++   console will reject this package** option for a supported STFS source.
++4. Write to a new filename and retain its `.appearance.json`. The status and
++   receipt list changed slots. For PS3, the receipt also lists converted fields
++   and the final editor override. Existing source/project data is preserved.
++5. For raw output, back up a game-created roster save and place the new output
++   as `Roster.ROS` in that save's folder under the configured Xenia content
++   root. Find the existing `54540807/00000001/<save name>/` path; some builds
++   include a profile folder above the title ID. For STFS, use the existing
++   package-save workflow with the new copy. This workflow's full load is still
++   a requested witness, not a claim that discovery is proved.
++6. Witness load, accepted team identity, HOME and AWAY, jersey/shoulder
++   colours, helmet and crest close-up, then save/reload persistence. Include
++   Xenia build/version, raw versus STFS route, slot/team and receipt with any
++   failure. For STFS also report whether the package was discovered at all.
++
++For a PS3 import without an editor override: choose the decrypted roster in
++**Import PS3 roster**, tick **Also apply team appearance (40 teams)**, then
++import to a new raw file. Leaving the option off intentionally uses the chosen
++Xbox roster's appearance. Artwork uses its separate import.
++
++davidhbui: “pick an in-game asset that fit my art, switch to that one in game,
++save, and then copy that uniform into my roster in the editor”. The destination's
++saved jersey/shoulder selectors survive this bounded overlay, and PS3 carry
++tests give both banks distinct codes/tails to verify they are not discarded.
++
++Aszemple's September 13 witness: “Was able import both the logos and roster
++files from my rpcs3 files”. That confirms import usability only. The helmet
++close-up, uniform rendering and in-game roster loading are still owed.
++
++## 7ET's answer
++
++7ET: “Read the release notes, but unclear whether we can create play in the
++2k8 editor?” The getting-started guide now explicitly answers yes: **Playbooks
++→ Design Plays / Formations → Design Formation… / Design Play…** provides
++Create formation and Create play. Off by default, CPU books only, offline
++validated, every in-game result UNWITNESSED. Beta-67 CPU Play Calling controls
++which existing plays get called; it is not the authoring page. No J7 FAQ exists
++on this branch, so the guide has the requested short question/answer section.
++
++## Validation
++
++Every command below ran standalone with
++`QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 <path>`. Complete output is in
++`reports/b69_j8/<test filename stem>.log`; `test-results.json` lists counts and
++exit codes. Final result: **16 files, 117 tests, all suites OK, one pre-existing
++skip** for missing gitignored extract-xiso release binaries in Studio core.
++The optional private-input regression and local Xenia-source pin checks ran;
++new tests use synthetic inputs only.
++
++| Test path | Tests | Result |
++|---|---:|---|
++| `tests/test_apf_save_custom_team_appearance.py` | 12 | OK |
++| `tests/test_apf_save_playbook_assignments.py` | 10 | OK |
++| `tests/mod_editor/test_apf_stfs_roster_rehash.py` | 7 | OK |
++| `tests/mod_editor/test_apf_roster_appearance_transfer.py` | 5 | OK |
++| `tests/mod_editor/test_apf_roster_appearance_transfer_qt.py` | 3 | OK |
++| `tests/mod_editor/test_apf_ps3_roster_convert.py` | 13 | OK |
++| `tests/mod_editor/test_apf_ps3_roster_import_qt.py` | 3 | OK |
++| `tests/mod_editor/test_apf_b66_appearance.py` | 3 | OK |
++| `tests/mod_editor/test_apf_custom_team_appearance_patch.py` | 8 | OK |
++| `tests/mod_editor/test_apf_custom_team_appearance_gui.py` | 5 | OK |
++| `tests/mod_editor/test_apf_save_roster_players.py` | 7 | OK |
++| `tests/mod_editor/test_apf_save_roster_players_gui.py` | 4 | OK |
++| `tests/mod_editor/test_apf_save_playbook_assignments_gui.py` | 8 | OK |
++| `tests/mod_editor/test_apf_capability_action_parity.py` | 11 | OK |
++| `tests/mod_editor/test_apf_studio_core.py` | 9 | OK, skipped=1 |
++| `tests/mod_editor/test_apf_ps3_probes.py` | 9 | OK |
++
++The WIRING registry-update code was applied to a temporary registry and passed
++`validate_data(check_files=False)`: `WIRING_REGISTRY_SCHEMA_PASS total=161 APF=69
++updated_rows=2 added_rows=0`. No protected file was mutated for that check.
++`git diff --check` passed. `python3 packaging/repin.py --apply` reported
++`applied 0 pin update(s)` before commits. Full staged release gates remain for
++the integrator after the protected allowlist/registry edits.
++
++## Commits and integration
++
++- `5a9a2e14`: bounded STFS rehash, extractor geometry repair, source/format audit,
++  synthetic fixture and round-trip tests.
++- `a9d2879e`: studio transfer, PS3 carry verification, final STFS guards and
++  the getting-started/changelog updates.
++- The final report commit contains this report, `WIRING.md` and the test logs.
++
++**Git metadata restriction:** the first commit landed normally. At the next
++commit, two attempts to stage files failed with `Unable to create
++/home/noah/2k-football-mod-tools/.git/worktrees/astra-b69-j8/index.lock:
++Read-only file system`. The workspace files stayed writable. No permissions
++were escalated and no other checkout was edited. The remaining explicit-path
++commits were created under the same branch name in a temporary writable Git
++metadata store, reusing the existing objects read-only and this same worktree.
++They are delivered in `reports/b69_j8/astra-b69-j8-apf-save.bundle`, including
++all three J8 commits above base `922c009d65e35f8195762c31106789bb353fb43c`.
++The normal worktree branch ref consequently remains at `5a9a2e14`; it must not
++be mistaken for the full delivery. Fetch/cherry-pick the bundle using the
++instructions in WIRING. The bundle is a separate local deliverable, not a
++self-containing file in its own commit.
++
++Follow `WIRING.md` for the two existing registry-row updates, four new release
++paths and runtime imports/checks. There is no gameplay/runtime proof upgrade,
++no console resigning, and no preset enabled by this job. No source disc was
++built or copied; no cleanup of private inputs is required.
+diff --git a/WIRING_B69_J8.md b/WIRING_B69_J8.md
+new file mode 100644
+index 00000000..74a1ab11
+--- /dev/null
++++ b/WIRING_B69_J8.md
+@@ -0,0 +1,176 @@
++# Beta 69 J8 integration
++
++The live APF page, transfer dialog, services, capability/action binding, docs
++and tests are implemented. No GUI wiring is deferred. Protected registry and
++release files remain unchanged, as requested. No commit here contains a save,
++retail payload, private roster, or console signing material.
++
++## Registry rows and counts
++
++**Update two existing rows; add zero rows.** These are extensions of the
++existing custom-team appearance and PS3 roster import capabilities, not new
++capability IDs. Counts remain **161 total, 69 APF, 91 NFL2K5 Xbox, 1 NFL2K5 PS2**
++before other jobs' additions. J8's delta is **+0** for every count. Do not
++increment any pinned counts for this job. Integrator must include the other
++jobs' deltas in `packaging/check_2k5_mod_studio_runtime.py` (both count sites),
++`packaging/check_apf2k8_mod_studio_runtime.py` (registry/APF/card sites),
++`tests/mod_editor/test_phase1_packaging.py` and
++`tests/mod_editor/test_apf_studio_installer.py`.
++
++Apply this exact by-ID update to `mod_editor/capabilities/registry.v1.json`.
++The existing disc writer/backend and all earlier appearance constraints remain.
++The new one-shot service is already bound in `mod_editor/apf_studio/models.py`
++to `mod_editor.apf_studio.roster_appearance_transfer:write_transfer` alongside
++the existing Stage/Revert facade routes. Both capabilities retain their
++existing IDs and rendering routes. The transfer and Xenia-package choices are
++EXPERIMENTAL, explicit actions, off in every preset; no automatic build/save
++patch is introduced. The existing appearance editor remains available.
++
++```python
++import json
++from pathlib import Path
++
++path = Path("mod_editor/capabilities/registry.v1.json")
++registry = json.loads(path.read_text(encoding="utf-8"))
++rows = {row["id"]: row for row in registry["capabilities"]}
++appearance = rows["apf2k8.colors.uniform_selector_appearance_custom_team"]
++appearance["input_constraints"] = [
++    value for value in appearance["input_constraints"]
++    if not value.startswith("CON, LIVE, and PIRS STFS packages are inspect-only")
++]
++appearance["input_constraints"].extend([
++    "Apply my custom team appearance to this roster save transfers current controls and optional other staged appearances by matching slots 32..39. The destination team names are reviewed; each slot authorizes only 112 bytes. Outputs and receipts are new files, and source hashes must still match at write time.",
++    "Raw Roster.ROS output is supported. Decrypted PS3 USERDATA or one bounded roster ZIP member passes through the existing converter with all team uniform codes and palette colours carried first; only selected slots then receive the bounded editor appearance. The receipt includes conversion and override verification.",
++    "Supported fixed-size, single-file CON/LIVE/PIRS packages can produce a separate rehashed STFS copy only through the explicit Xenia-only output choice. Caption: Xenia only; a real console will reject this package. Changed data blocks, active hash-table blocks and the metadata hash are rehashed; signature bytes are preserved, never renewed. The pinned local Xenia source does not check RSA signatures, but package discovery and full loading remain HYPOTHESIS and UNWITNESSED.",
++    "STFS output refuses invalid hashes, shared file/directory blocks, file chains incompatible with Xenia traversal, multi-file packages, changed payload sizes and unsupported hash-tree bounds. The raw handoff route remains available for otherwise extractable packages.",
++    "The editor overlay does not copy jersey/shoulder/pants selectors or artwork from the project; destination values remain exact. PS3 conversion independently carries all 14 selectors in both banks and rotates RGBA to ARGB. Texture artwork needs its separate import.",
++])
++appearance["gui"]["reason"] += (
++    " Beta 69: Custom Team Appearance now exposes Apply my custom team appearance to this roster save. "
++    "It reviews destination slots, defaults to a new raw output, and optionally creates a Xenia-only "
++    "rehashed package. Current controls remain intact and output is reopened with a changed-slot receipt."
++)
++appearance["summary"] += (
++    " Apply current/staged custom-team appearance to a new raw roster, converted PS3 roster, or "
++    "explicit Xenia-only rehashed STFS copy; offline verified, in-game UNWITNESSED."
++)
++appearance["evidence"].extend([
++    "docs/research/apf_stfs_rehash.md",
++    "tests/mod_editor/test_apf_stfs_roster_rehash.py",
++    "tests/mod_editor/test_apf_roster_appearance_transfer.py",
++    "tests/mod_editor/test_apf_roster_appearance_transfer_qt.py",
++])
++ps3 = rows["apf2k8.players_rosters.ps3_roster_import"]
++ps3["gui"]["reason"] = (
++    "PS3 import reviews uniform carry or Xbox appearance retention. Exact 14-record HOME/AWAY "
++    "selector banks, ten colours per bank and palette metadata are compared after conversion. "
++    "Receipts name carried/refused fields. Aszemple witnessed RPCS3 logo and roster imports on "
++    "2026-09-13; uniform rendering and in-game loading remain UNWITNESSED."
++)
++ps3["runtime"]["scope"] = (
++    "Aszemple: Was able import both the logos and roster files from my rpcs3 files (2026-09-13). "
++    "This witnesses import usability only. In-game roster loading, HOME/AWAY uniform rendering "
++    "and the helmet close-up remain UNWITNESSED."
++)
++ps3["runtime"]["status"] = "not-tested"
++ps3["input_constraints"].append(
++    "All 40 teams' 1120 referenced eight-byte selectors and 800 referenced colours are compared "
++    "after conversion, including jersey, shoulder, pants, helmet and crest. Opaque tails remain "
++    "exact; custom texture payloads and new meanings for opaque bytes are refused with reasons. "
++    "Choosing a new source clears the previous Xbox appearance baseline."
++)
++ps3["evidence"].extend([
++    "tests/mod_editor/test_apf_ps3_roster_convert.py",
++    "tests/mod_editor/test_apf_ps3_roster_import_qt.py",
++])
++for row in (appearance, ps3):
++    row["evidence"] = sorted(set(row["evidence"]))
++path.write_bytes((json.dumps(registry, indent=2, sort_keys=True) + "\n").encode("utf-8"))
++```
++
++## Packaging
++
++Add these exact paths beside the save-appearance modules/tool in
++`packaging/apf2k8-release-allowlist.txt` and in the combined
++`packaging/release-allowlist.txt` when it includes the APF studio:
++
++```text
++mod_editor/apf_studio/roster_appearance_transfer.py
++mod_editor/apf_studio/roster_appearance_transfer_qt.py
++tools/apf_stfs_roster_rehash.py
++docs/research/apf_stfs_rehash.md
++```
++
++In `packaging/check_apf2k8_mod_studio_runtime.py`, `PRODUCT_MODULES`, insert
++after `"mod_editor.apf_studio.save_appearance",`:
++
++```python
++    "mod_editor.apf_studio.roster_appearance_transfer",
++    "mod_editor.apf_studio.roster_appearance_transfer_qt",
++```
++
++In its `TOOL_MODULES`, next to the existing save/STFS tools, insert:
++
++```python
++    "apf_stfs_roster_rehash",
++```
++
++In `_check_static_product_contract` (the function containing the existing save
++appearance checks), directly after those checks, add:
++
++```python
++    transfer = modules["mod_editor.apf_studio.roster_appearance_transfer"]
++    transfer_qt = modules["mod_editor.apf_studio.roster_appearance_transfer_qt"]
++    rehash = importlib.import_module("apf_stfs_roster_rehash")
++    require(
++        transfer.SCHEMA == "apf2k8_roster_appearance_transfer/v1"
++        and callable(transfer.inspect_transfer_source)
++        and callable(transfer.write_transfer)
++        and callable(transfer.verify_transfer)
++        and hasattr(transfer_qt, "RosterAppearanceTransferDialog")
++        and rehash.SCHEMA == "apf2k8_stfs_roster_rehash/v1"
++        and callable(rehash.rehash_roster)
++        and callable(rehash.verify_rehash)
++        and rehash.XENIA_ONLY == "Xenia only; a real console will reject this package",
++        "Roster appearance transfer/Xenia-only rehash contract changed",
++    )
++```
++
++Run the staged runtime/allowlist gates after merging. `repin.py --apply` is
++required after integration if any pins change. It reports zero changed pins
++for the J8 changes on this branch; the command was run before commits.
++
++## J7 FAQ coordination
++
++No J7 FAQ exists on this branch. The getting-started guide contains a short
++“Can I create a formation or play?” section under APF wave authoring, with 7ET's
++question and the complete answer. J7 can reuse that section in its FAQ.
++
++## Commit bundle required for this handoff
++
++The shared worktree metadata became read-only after commit `5a9a2e14`:
++`/home/noah/2k-football-mod-tools/.git/worktrees/astra-b69-j8/index.lock`
++cannot be created. Both staging attempts failed before changing any source
++file. The later commits were created with explicit paths in a writable
++temporary Git store using this same worktree. No protected metadata permissions
++were changed. The original branch ref still points at `5a9a2e14`.
++
++The complete three-commit series is in this bundle, based on `922c009d`:
++
++```text
++reports/b69_j8/astra-b69-j8-apf-save.bundle
++```
++
++From the writable integration checkout, import it without any network:
++
++```sh
++git fetch /home/noah/2k-worktrees/astra-b69-j8/reports/b69_j8/astra-b69-j8-apf-save.bundle refs/heads/astra/b69-j8-apf-save:refs/remotes/handoff/b69-j8
++git cherry-pick 922c009d65e35f8195762c31106789bb353fb43c..refs/remotes/handoff/b69-j8
++```
++
++If `5a9a2e14` is already integrated, cherry-pick the range starting at
++`5a9a2e14035c9e431ded855ea78e632f5b4fcfa2` instead of `922c009d`. The next
++implementation commit is `a9d2879e`; the final commit adds the report and
++validation logs. The bundle is exported after that final commit, so it is
++delivered beside the logs and is not committed into itself. Its contents are
++code/docs/synthetic-test receipts, with the existing base as a prerequisite.
+diff --git a/docs/mod_editor/apf2k8_mod_studio_changelog.md b/docs/mod_editor/apf2k8_mod_studio_changelog.md
+index 6e178bd1..2a5d17f5 100644
+--- a/docs/mod_editor/apf2k8_mod_studio_changelog.md
++++ b/docs/mod_editor/apf2k8_mod_studio_changelog.md
+@@ -4,6 +4,12 @@
+ 
+ Beta 69 carries the APF 2K8 changes made after beta 67; bullets are added as each change lands.
+ 
++- Aszemple: “Next is how do I get the uniforms codes applied that I've already done from in the APF editor and on my rosters.” Custom Team Appearance now offers Apply my custom team appearance to this roster save. Choose raw Roster.ROS, a supported STFS package, or a decrypted PS3 roster/ZIP; review matching slots 32–39 and write a new file plus a receipt. Current controls and optional other staged slots use the disc writer's same 112-byte appearance bound per slot. The verifier reparses the output and names the slots changed. Sources are preserved; in-game appearance is UNWITNESSED.
++- Aszemple asked whether the editor could take “a .Ros file or PS3 roster file and update the uniforms and players”. The appearance transfer now has an explicit “Xenia only; a real console will reject this package” output for supported STFS saves. PROVED offline: changed data-block and active hash-table SHA-1 repair, metadata/header hash repair, unchanged signature bytes, and synthetic extraction round trips. The pinned local Xenia reader does not check the console signature. Full package loading remains HYPOTHESIS and UNWITNESSED; no console signing key is supplied. Fixed STFS data offsets for duplicate hash tables and higher-level boundaries. Raw output remains available when package output is refused.
++- davidhbui: “pick an in-game asset that fit my art, switch to that one in game, save, and then copy that uniform into my roster in the editor”. PS3 import now verifies all 40 teams' HOME/AWAY uniform selector records and converted colours, with exact selector before/after values and named carried/refused fields in the receipt. Jersey and shoulder codes survive conversion; custom artwork still needs its separate import. Editor-to-save overlays preserve those destination codes while changing only colours and helmet/crest selectors. Choosing a new PS3 source clears the previous Xbox appearance baseline.
++- Aszemple: “Was able import both the logos and roster files from my rpcs3 files”. This September 13 witness confirms the import workflow. It does not establish uniform rendering, roster loading in game, or the still-needed helmet close-up; those outcomes remain UNWITNESSED.
++- 7ET: “Read the release notes, but unclear whether we can create play in the 2k8 editor?” The getting-started guide now answers yes: Playbooks → Design Plays / Formations provides Create formation and Create play, off by default, CPU books only, offline validated and UNWITNESSED in game. Beta 67's CPU Play Calling editor controls which plays get called; authoring uses the design page.
++
+ ## 0.1.0-alpha.89 — beta 68: no APF changes — 2026-09-12
+ 
+ No APF 2K8 changes in beta 68; the version marker moves with the release tag.
+diff --git a/docs/mod_editor/apf2k8_mod_studio_getting_started.md b/docs/mod_editor/apf2k8_mod_studio_getting_started.md
+index f5b2db00..c34bae56 100644
+--- a/docs/mod_editor/apf2k8_mod_studio_getting_started.md
++++ b/docs/mod_editor/apf2k8_mod_studio_getting_started.md
+@@ -361,6 +361,77 @@ its RSA signature. Reinject, rehash, and resign with an external save manager.
+ LIVE/PIRS retail signatures require Microsoft's unavailable private keys; CON
+ signing requires the owning console's private keyvault.
+ 
++### Apply editor uniform codes to a roster save
++
++Aszemple asked, “Next is how do I get the uniforms codes applied that I've
++already done from in the APF editor and on my rosters.” Open **Uniforms &
++Equipment → Custom Team Appearance** and use **Apply my custom team appearance
++to this roster save…**. This action uses the values currently shown, including
++edits you have not staged yet.
++
++1. Load the project containing your appearance, select its custom-team slot,
++   and check HOME and AWAY. You can also start from an appearance opened in
++   **Raw Roster Save**.
++2. Open the new action and choose the destination raw `Roster.ROS`, Xbox 360
++   STFS package, or decrypted PS3 `USERDATA` / roster ZIP. Check the destination
++   team names: user teams 24–31 correspond to ROST slots 32–39. Slots match by
++   number, not by name. **Also apply other staged user-team appearances** is
++   optional and off initially.
++3. Leave **New raw Xbox Roster.ROS** selected for a raw output. A supported STFS
++   source also offers **Xenia only; a real console will reject this package**.
++   That option repairs changed data hashes, active hash-table hashes, and the
++   metadata/header hash. It preserves the old signature bytes and does not
++   create a valid console signature. The pinned Xenia source does not verify
++   RSA signatures (PROVED from source); full package loading remains
++   HYPOTHESIS and UNWITNESSED. Unsupported packages show the reason and retain
++   the raw output option. See the [format audit](../research/apf_stfs_rehash.md).
++4. Choose **Write new roster save and receipt…** and a new filename. Existing
++   files are refused. The result lists the slots changed after reopening the
++   output, and saves `<output>.appearance.json` beside it. Keep the original.
++5. For the raw route, back up a game-created roster save and place the output
++   as `Roster.ROS` in that save's folder under your Xenia content root
++   (`content/.../54540807/00000001/<save name>/`; some builds include a profile
++   folder). Use the folder containing the game's existing `Roster.ROS`.
++   For a rehashed package, use your
++   existing STFS save-loading workflow with the new package. Discovering and
++   loading this output still needs a witness; do not treat a receipt as a
++   game-load result. Load the roster and check the accepted team's HOME and
++   AWAY in team selection and on the field, including the helmet close-up.
++
++The editor-to-save overlay writes exactly the disc writer's bounded fields:
++ten colours per bank and an eight-byte helmet plus eight-byte crest selector
++per bank, at most 112 bytes per selected slot. It preserves palette metadata,
++other teams, players, and the destination's other uniform selectors. It does
++not transfer jersey, shoulder or pants asset choices or artwork from the
++project. davidhbui's saved jersey/shoulder asset choices therefore remain in
++the destination; this action does not claim to replace his whole uniform.
++
++### Keep PS3 roster uniform work during import
++
++Aszemple's September 13 report, “Was able import both the logos and roster files
++from my rpcs3 files”, witnesses the imports. Uniform rendering and in-game
++loading remain UNWITNESSED.
++
++In **Import PS3 roster**, choose the decrypted roster and tick **Also apply team
++appearance (40 teams)** to retain its uniform work. The checkbox starts off;
++leaving it off requires **Keep appearance from Xbox roster…**, which intentionally
++replaces the PS3 appearance with that baseline. Choosing a new source clears
++the previous baseline so it cannot silently supply the wrong uniforms.
++
++The converter carries all 14 eight-byte selector records in each HOME/AWAY
++bank for all 40 teams, including jersey, shoulder, pants, helmet and crest
++codes. It rotates PS3 RGBA palette colours to Xbox ARGB and preserves palette
++metadata. Verification compares every team's selector bytes and colour values
++after conversion. The receipt names carried fields and refusals: texture files
++need a separate PS3 bundle/Team Art import, and opaque selector bytes retain
++their exact values without claiming new meanings. If Xbox appearance was
++chosen, the receipt explicitly says the PS3 values were declined for that reason.
++
++When choosing PS3 directly in **Apply my custom team appearance to this roster
++save**, the converter first carries the PS3 appearance for every team; the
++selected slots then receive the editor's bounded colours and helmet/crest
++codes. One receipt contains both the conversion and the final override.
++
+ The raw-save handoff and its receipt prove only the bounded file edit. They do
+ not establish emulator consumption, gameplay visibility, or Xbox 360 hardware
+ behavior, and the editor does not need to launch an emulator to build or verify
+@@ -746,6 +817,19 @@ product capabilities, not the number of logos or editable team slots.
+ 
+ ## APF wave authoring
+ 
++### Can I create a formation or play?
++
++7ET asked, “Read the release notes, but unclear whether we can create play in
++the 2k8 editor?” **Yes.** Under **Playbooks → Design Plays / Formations**,
++**Design Formation…** and **Design Play…** provide Create formation and Create
++play. They are opt-in, off by default, and target **CPU books only**. Stage the
++design into the project, then Build. These tools have offline validation;
++every in-game outcome is **UNWITNESSED**. The [wave guide](apf_wave_2026_09_09.md)
++lists capacity and build-composition limits.
++
++The beta-67 **CPU Play Calling** editor controls which existing plays get
++called and their weights. Play authoring is on **Design Plays / Formations**.
++
+ Playbooks now includes Design Plays / Formations, Coverage Geometry, Book Identity
+ and CPU Play Calling. See the [wave guide](apf_wave_2026_09_09.md) for project staging,
+ composition boundaries and the final book-clone step. Team Logo and Field Art
+diff --git a/docs/research/apf_stfs_rehash.md b/docs/research/apf_stfs_rehash.md
+new file mode 100644
+index 00000000..b4e302f9
+--- /dev/null
++++ b/docs/research/apf_stfs_rehash.md
+@@ -0,0 +1,83 @@
++# APF roster STFS rehash boundary, beta 69 J8
++
++**Xenia only; a real console will reject this package.** The writer preserves
++the original signature bytes. It neither verifies nor replaces the RSA
++signature. Hash repair does not provide a valid signature for modified content.
++
++PROVED offline: fixed-size replacement of the existing Roster.ROS allocation,
++active SHA-1 tree repair, metadata hash repair, unchanged signature/license
++bytes, and independent extraction of the replacement. HYPOTHESIS: discovery
++and loading of that output by a user's Xenia build. Every emulator/game outcome
++is UNWITNESSED. No emulator, network, console, or private save was used here.
++
++## Format and bounds
++
++The existing `tests/test_apf_save_custom_team_appearance.py::synthetic_stfs`
++fixture is the known package used for the round trip. It is generated entirely
++from synthetic bytes with an intentionally invalid signature. Its former
++contiguous file had end-of-chain in every hash entry; the fixture now also
++populates next pointers because the audited Xenia reader follows those pointers.
++
++| Region | Meaning and write policy |
++|---|---|
++| `0x000..0x003` | CON, LIVE, or PIRS magic, preserved |
++| `0x004..0x22B` | signature/certificate storage, preserved and never certified |
++| `0x22C..0x32B` | sixteen licenses, preserved |
++| `0x32C..0x33F` | SHA-1 over metadata from `0x344` to the rounded header end |
++| `0x340..0x343` | big-endian header size, preserved; round up to 4096 for first table |
++| `0x344`, `0x360` | require saved-game content type 1 and APF title ID `54540807`, preserved |
++| `0x379..0x39C` | STFS descriptor; only top hash `0x381..0x394` changes |
++| `0x37B` | bit 0: single table copy; bit 1: active root copy |
++| `0x37C..0x380` | little-endian file-table count and 24-bit start block |
++| `0x395..0x39C` | big-endian allocated/free block counts, preserved |
++| `0x39D`, `0x3A9` | data-file count and filesystem type; require single-file STFS |
++| hash block | 170 entries, each 20-byte SHA-1 plus four bytes of state/next pointer; total block 4096 bytes |
++| leaf entry | SHA-1 of the complete 4096-byte data block, including unchanged file-tail padding |
++| parent entry | SHA-1 of the complete active child table; bit `0x40` in state selects secondary copy |
++
++For logical block `b`, copies `c` (1 or 2), physical data block is
++`b + (floor(b/170)+1)*c`, plus `(floor(b/28900)+1)*c` when `b >= 170`.
++The extractor previously shifted the accumulated physical address on two-copy
++packages and used a physical value in the higher-level calculation. Both are
++fixed. The writer handles at most two hash levels and 128 MiB packages, refuses
++multi-file containers, overlapping file/directory allocations, bad hashes,
++invalid chains, sparse/out-of-order directories, changed lengths, and ambiguous Xenia level boundaries at
++exactly 170 or 28900 allocated blocks. The raw output route remains available.
++
++Only changed roster blocks have their leaf digest rewritten, then their active
++parent table digests, then the descriptor top hash, then the metadata hash.
++Inactive table copies, pointers, file sizes, other files, and every other header
++byte stay identical. Verification reparses hashes and allocations and compares
++the entire package to the allowed replacement to catch mutations even in the
++unhashed signature area.
++
++## Local Xenia source audit
++
++Read-only tree: `/home/noah/.codex-tmp/xenia-slot43-build`, git revision
++`d09cae8d8374324048ef603d48a9c1696b39d552`. Exact file bytes, rather than a claim
++about every Xenia version, pin this finding:
++
++| File under `src/xenia/vfs/devices/` | SHA-256 |
++|---|---|
++| `xcontent_container_device.cc` | `21ca059098c8c93fa7e0a26016ca24196d3ba3e45f29f97675887524ddde6c14` |
++| `xcontent_devices/stfs_container_device.cc` | `0dad581748c15cc0db9d9b5c399077a1f49c6bb461729c01523579a0b6ff5202` |
++| `stfs_xbox.h` | `47ed398b7267615542ea0f9036a6cf79fd6ed66db367caf39f4f64b6e0aeda4c` |
++
++PROVED from these pinned source bytes: `ReadContainerHeader` at line 131 reads
++the header, and `ReadHeaderAndVerify` at line 182 checks length, successful read,
++and `is_magic_valid()`. It performs no cryptographic signature or metadata hash
++verification. The misleading comment “check signature” means no RSA check in
++the executable statements. `StfsContainerDevice::Read/ReadEntry` (lines 55/111)
++use hash entries for chain traversal, without comparing stored SHA-1 values.
++`BlockToOffset` at line 179 supplies the independently modeled geometry.
++`GetBlockHash` at line 283 selects active copies. `stfs_xbox.h` defines the
++0x344-byte header, 0x93D6-byte metadata, 0x24-byte volume descriptor, and
++0x18-byte hash entry. Rehashing still keeps format integrity even though this
++reader does not enforce the digests.
++
++`tests/mod_editor/test_apf_stfs_roster_rehash.py` checks the file pins when the
++local tree exists, round-trips the known synthetic roster package across both
++table-copy layouts and fragmented chains, and compares payloads using a
++separate Python translation of Xenia traversal. That translation is an offline
++model, not native Xenia execution or a game-load witness. Shipping captions
++therefore retain HYPOTHESIS/UNWITNESSED for full loading.
+diff --git a/mod_editor/apf_studio/custom_team_appearance_qt.py b/mod_editor/apf_studio/custom_team_appearance_qt.py
+index 67bd8ce3..83e109a5 100644
+--- a/mod_editor/apf_studio/custom_team_appearance_qt.py
++++ b/mod_editor/apf_studio/custom_team_appearance_qt.py
+@@ -301,6 +301,10 @@ class CustomTeamAppearancePanel(QFrame):
+         actions.addWidget(self.write_raw_button)
+         actions.addStretch(1)
+         outer.addLayout(actions)
++        self.apply_roster_button = QPushButton("Apply my custom team appearance to this roster save…")
++        self.apply_roster_button.setObjectName("secondaryButton")
++        self.apply_roster_button.clicked.connect(self._apply_to_roster)
++        outer.addWidget(self.apply_roster_button)
+         self.status = QLabel("Load your game to read the safe custom-team records.")
+         self.status.setObjectName("metadataText")
+         self.status.setWordWrap(True)
+@@ -710,5 +714,23 @@ class CustomTeamAppearancePanel(QFrame):
+         self.set_context()
+         self.modifiedChanged.emit()
+ 
++    def _apply_to_roster(self) -> None:
++        if (self._raw_mode() and self.raw_document is None) or (
++                not self._raw_mode() and not self.facade.source_ready):
++            self.status.setText("Load your game or a raw roster appearance first, then choose the roster save to receive it.")
++            return
++        try:
++            current = self._appearance_from_controls()
++            staged = () if self._raw_mode() else tuple(
++                self.facade.custom_team_appearance_value(slot)
++                for slot in apf_custom_team_appearance_patch.USER_SLOTS
++                if apf_custom_team_appearance_patch.asset_id(slot) in self.facade.modified_asset_ids)
++        except Exception as exc:
++            self.status.setText(f"Could not read the appearance to apply: {exc}")
++            return
++        from .roster_appearance_transfer_qt import RosterAppearanceTransferDialog
++        dialog = RosterAppearanceTransferDialog(current, staged, self.run_task, self)
++        dialog.exec_()
++
+ 
+ __all__ = ["CustomTeamAppearancePanel"]
+diff --git a/mod_editor/apf_studio/models.py b/mod_editor/apf_studio/models.py
+index 8a0db0a9..1cfce873 100644
+--- a/mod_editor/apf_studio/models.py
++++ b/mod_editor/apf_studio/models.py
+@@ -213,7 +213,9 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
+             "Rosters > Import PS3 Roster converts a PS3 APF 2K8 roster USERDATA "
+             "into the raw Xbox 360 Roster.ROS layout as a new file with a counted "
+             "receipt; the source is never modified and strict readers re-parse the "
+-            "output. Loading it in Xenia is UNWITNESSED."
++            "output. Both uniform banks' selector bytes, colours and palette metadata "
++            "are compared after conversion, with carried/refused fields in the receipt. "
++            "Aszemple witnessed imports on September 13; in-game rendering is UNWITNESSED."
+         ),
+     ),
+     "apf2k8.playbooks.identity": CapabilityActionBinding(
+@@ -348,9 +350,12 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
+             ApfProductAction.PREVIEW,
+             ApfProductAction.REPLACE,
+             ApfProductAction.REVERT,
++            ApfProductAction.BUILD_COPY,
+         ),
+         replace_method="replace_custom_team_appearance",
+         revert_method="revert",
++        one_shot_target="mod_editor.apf_studio.roster_appearance_transfer:write_transfer",
++        output_kind="copied_roster_payload_or_xenia_stfs_with_receipt",
+         product_note=(
+             "Equipment Colors independently selects each HOME/AWAY facemask-bar "
+             "and Team-turtleneck palette index for all 40 teams; it changes only "
+@@ -363,7 +368,12 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
+             "the helmet model and helmet tail, selects crest 30 with its complete "
+             "Xenia-proved routing tail, and composes through the common "
+             "ROST transaction. Team Logo builds can include the staged slot in "
+-            "the same copied 0A as the crest package and logo cache."
++            "the same copied 0A as the crest package and logo cache. Apply my custom "
++            "team appearance to this roster save copies current controls and optional "
++            "other staged slots into a new raw roster, converted PS3 roster, or rehashed "
++            "STFS package with a receipt. Xenia only; a real console will reject this "
++            "package. Signature checks are absent in the pinned Xenia reader; full "
++            "loading is HYPOTHESIS and in-game appearance is UNWITNESSED."
+         ),
+     ),
+     "apf2k8.cross_title_model_conversion.nfl_to_apf": CapabilityActionBinding(
+diff --git a/mod_editor/apf_studio/ps3_roster_convert.py b/mod_editor/apf_studio/ps3_roster_convert.py
+index b4125bd5..4e381ecf 100644
+--- a/mod_editor/apf_studio/ps3_roster_convert.py
++++ b/mod_editor/apf_studio/ps3_roster_convert.py
+@@ -63,7 +63,7 @@ RECEIPT_SCHEMA = "apf2k8_ps3_roster_convert_receipt/v1"
+ PLATFORM_PS3 = "ps3"
+ PLATFORM_XBOX360 = "xbox360"
+ PLATFORM_UNKNOWN = "unknown"
+-RUNTIME_STATUS = "UNWITNESSED: nobody has loaded a converted roster in Xenia or on a console"
++RUNTIME_STATUS = "UNWITNESSED in game: Aszemple witnessed RPCS3 logo and roster imports on 2026-09-13; uniform rendering still needs a witness"
+ 
+ MAX_SOURCE_BYTES = players_reader.MAX_SOURCE_BYTES
+ ROSTER_SIZE = 2_715_908
+@@ -515,7 +515,9 @@ def team_appearance(data: bytes, structure: RosterStructure | None = None) -> li
+                               "record_hex": data[offset:offset + 8].hex()})
+             palette = resolve(config + 0x70 + bank * 4, palettes)
+             banks.append({"bank": bank, "selectors": slots, "palette_offset": palette,
+-                          "palette_sha256": _sha256(data[palette:palette + palettes.stride])})
++                          "palette_sha256": _sha256(data[palette:palette + palettes.stride]),
++                          "colour_words": [data[palette + i * 4:palette + i * 4 + 4].hex() for i in range(10)],
++                          "metadata_hex": data[palette + 40:palette + 48].hex()})
+         result.append({"team_index": team, "config_offset": config, "banks": banks})
+     return result
+ 
+@@ -560,6 +562,7 @@ def _appearance_receipt(before: bytes, after: bytes) -> list[dict]:
+             for a, b in zip(ob["selectors"], nb["selectors"]):
+                 changes.append({"bank": ob["bank"], "slot": a["slot"], "family": a["family"],
+                                 "before": a["asset_index"], "after": b["asset_index"],
++                                "before_record_hex": a["record_hex"], "after_record_hex": b["record_hex"],
+                                 "record_changed": a["record_hex"] != b["record_hex"]})
+         result.append({"team_index": old["team_index"], "selectors": changes,
+                        "selector_changes": sum(x["record_changed"] for x in changes),
+@@ -568,6 +571,24 @@ def _appearance_receipt(before: bytes, after: bytes) -> list[dict]:
+     return result
+ 
+ 
++def verify_appearance_carry(source: bytes, output: bytes, *, from_ps3: bool = True) -> dict:
++    """Compare both complete banks through independently resolved source/output graphs."""
++    before, after = team_appearance(source), team_appearance(output)
++    _require(len(before) == len(after), "appearance team count changed")
++    for old, new in zip(before, after):
++        for ob, nb in zip(old["banks"], new["banks"]):
++            label = f"team {old['team_index']} {'HOME' if ob['bank'] == 0 else 'AWAY'}"
++            _require([s["record_hex"] for s in ob["selectors"]] == [s["record_hex"] for s in nb["selectors"]],
++                     f"{label} uniform selector codes changed during conversion")
++            expected = [word[6:8] + word[:6] if from_ps3 else word for word in ob["colour_words"]]
++            _require(expected == nb["colour_words"], f"{label} uniform palette carry differs")
++            _require(ob["metadata_hex"] == nb["metadata_hex"], f"{label} palette metadata changed")
++    return {"verified": True, "teams": len(after), "banks": len(after) * 2,
++            "selector_records": len(after) * 28, "colours": len(after) * 20,
++            "palette_order": "RGBA to ARGB" if from_ps3 else "ARGB retained",
++            "palette_metadata_preserved": True, "runtime_in_game_proved": False}
++
++
+ def convert(data: bytes, *, apply_team_appearance: bool = True,
+             xbox_appearance: bytes | None = None) -> tuple[bytes, dict[str, Any]]:
+     """Convert one PS3 roster payload; returns the Xbox-layout payload and its receipt."""
+@@ -696,6 +717,8 @@ def convert(data: bytes, *, apply_team_appearance: bool = True,
+     if not apply_team_appearance:
+         _retain_appearance(edits, data, xbox_appearance)
+     output = bytes(edits.output)
++    appearance_verification = verify_appearance_carry(
++        data if apply_team_appearance else xbox_appearance, output, from_ps3=apply_team_appearance)
+     expected_appearance = source_appearance if apply_team_appearance else team_appearance(xbox_appearance)
+     actual_appearance = team_appearance(output)
+     for expected, actual in zip(expected_appearance, actual_appearance):
+@@ -752,6 +775,22 @@ def convert(data: bytes, *, apply_team_appearance: bool = True,
+             "teams": _appearance_receipt(xbox_appearance if xbox_appearance is not None else data, output),
+             "same_selector_layout": True, "selectors_reparsed": True,
+             "texture_payloads_imported": False,
++            "verification": appearance_verification,
++            "carried": [
++                {"field": "HOME/AWAY uniform selector codes", "records": len(actual_appearance) * 28,
++                 "bytes_per_record": 8, "policy": "exact bytes; includes opaque selector tails"},
++                {"field": "HOME/AWAY palette colours", "values": len(actual_appearance) * 20,
++                 "policy": "RGBA to ARGB" if apply_team_appearance else "retained Xbox ARGB"},
++                {"field": "palette metadata", "bytes_per_bank": 8, "policy": "preserved"},
++            ],
++            "refused": [
++                {"field": "custom uniform/logo texture payloads",
++                 "reason": "Roster selector codes reference game assets; import artwork separately with PS3 bundle/Team Art"},
++                {"field": "new meanings for opaque selector bytes",
++                 "reason": "bytes are preserved exactly, but their rendering meaning is unproved"},
++                *([] if apply_team_appearance else [{"field": "PS3 appearance values",
++                    "reason": "user chose to retain appearance from the selected Xbox roster"}]),
++            ],
+         },
+         "repointed_by_kind": repointed,
+         "canonical_empty_offset": empty,
+@@ -949,6 +988,7 @@ __all__ = [
+     "PS3RosterConvertError", "Reference", "RosterStructure", "RUNTIME_STATUS", "SCHEMA",
+     "TableSpan", "XBOX_ROOT_RUNTIME_BASE", "convert", "detect_platform", "find_roster_member",
+     "inspect_structure", "read_source", "receipt_path_for", "verify_converted", "write_conversion",
++    "team_appearance", "verify_appearance_carry",
+ ]
+ 
+ 
+diff --git a/mod_editor/apf_studio/ps3_roster_import_qt.py b/mod_editor/apf_studio/ps3_roster_import_qt.py
+index cf60703d..735ff620 100644
+--- a/mod_editor/apf_studio/ps3_roster_import_qt.py
++++ b/mod_editor/apf_studio/ps3_roster_import_qt.py
+@@ -35,10 +35,10 @@ TaskRunner = Callable[
+ ]
+ 
+ XENIA_PLACEMENT = (
+-    "Xenia keeps game-created saves as folders under its content root "
+-    "(content/54540807/00000001/<save name>/Roster.ROS). Drop this raw Roster.ROS "
+-    "over the Roster.ROS of a save the game itself created, then load that roster "
+-    "in-game. Loading a converted roster is UNWITNESSED so far."
++    "Find a game-created Roster.ROS under your configured Xenia content root, "
++    "inside 54540807/00000001/<save name>/ (some builds include a profile folder "
++    "before 54540807). Back up that save, then place the new raw output there as "
++    "Roster.ROS and load it in-game. Loading a converted roster is UNWITNESSED."
+ )
+ 
+ 
+@@ -67,8 +67,9 @@ class Ps3RosterImportPanel(QWidget):
+             "rotated to the Xbox byte order, serialised runtime words are rewritten "
+             "the way Xbox saves carry them, and editor-damaged text (misaligned "
+             "strings, stale references) is realigned or blanked. The output is a raw "
+-            "payload plus a JSON receipt; the source is never modified. Nobody has "
+-            "loaded a converted roster in Xenia yet: UNWITNESSED."
++            "payload plus a JSON receipt; the source is never modified. Aszemple "
++            "witnessed RPCS3 logo and roster imports on September 13. Uniform "
++            "rendering and in-game loading remain UNWITNESSED."
+         )
+         note.setObjectName("mutedLabel")
+         note.setWordWrap(True)
+@@ -124,6 +125,12 @@ class Ps3RosterImportPanel(QWidget):
+             self.load_path(Path(selected))
+ 
+     def load_path(self, path: Path) -> None:
++        self.source = None
++        self.summary = None
++        self.member = None
++        self.appearance_baseline = None
++        self.last_receipt = None
++        self.convert_button.setEnabled(False)
+         self.run_task(
+             "Inspecting PS3 roster",
+             lambda progress: self._inspect_operation(path, progress),
+@@ -156,6 +163,8 @@ class Ps3RosterImportPanel(QWidget):
+         if not isinstance(result, dict):
+             raise PS3RosterConvertError("PS3 roster inspection returned an invalid summary")
+         self.summary = result
++        self.appearance_baseline = None
++        self.appearance_note.setText("Tick Also apply team appearance to carry the PS3 uniform codes and colours, or choose an Xbox roster to retain its appearance. Artwork files need a separate import.")
+         self.source = Path(str(result["path"]))
+         self.member = result["member"] if isinstance(result["member"], str) else None
+         member = f" · {self.member}" if self.member else ""
+@@ -181,7 +190,10 @@ class Ps3RosterImportPanel(QWidget):
+         selected, _ = QFileDialog.getOpenFileName(self, "Xbox roster appearance to retain", str(Path.home()),
+                                                  "Raw Xbox roster (*.ROS *.ros);;All files (*)")
+         if selected:
+-            self.set_appearance_baseline(Path(selected))
++            try:
++                self.set_appearance_baseline(Path(selected))
++            except (OSError, ValueError) as exc:
++                self.appearance_note.setText(f"Cannot retain appearance: {exc}. Choose a raw Xbox roster or tick Also apply team appearance.")
+ 
+     def set_appearance_baseline(self, path: Path) -> None:
+         # Validate at review time and again in the worker before any output write.
+@@ -258,8 +270,10 @@ class Ps3RosterImportPanel(QWidget):
+             f"runtime words rewritten; {result.changed_byte_count:,} bytes changed. Source unchanged.\n\n"
+             f"Team appearance: {counts.get('appearance_teams', counts['teams'])} teams, "
+             f"{'applied from PS3' if counts.get('appearance_applied_from_ps3', True) else 'retained from Xbox roster'}. "
+-            "Both selector banks reparsed; each team's before/after selectors are in the receipt. "
+-            "Custom texture payloads require a separate texture import.\n\n"
++            "Both banks' 14 eight-byte uniform selectors and ten colours were compared after reparse; "
++            "each team's exact before/after selector records are in the receipt. "
++            "Refused: custom texture payloads (use a separate texture import) and new meanings "
++            "for opaque selector bytes (preserved exactly).\n\n"
+             f"{XENIA_PLACEMENT}\n\nStatus: {RUNTIME_STATUS}"
+         )
+ 
+diff --git a/mod_editor/apf_studio/roster_appearance_transfer.py b/mod_editor/apf_studio/roster_appearance_transfer.py
+new file mode 100644
+index 00000000..5dcdf150
+--- /dev/null
++++ b/mod_editor/apf_studio/roster_appearance_transfer.py
+@@ -0,0 +1,177 @@
++"""Apply editor appearances to a separate raw, converted PS3, or Xenia STFS save."""
++from __future__ import annotations
++
++from dataclasses import dataclass
++import hashlib
++import os
++from pathlib import Path
++import zipfile
++
++from . import ps3_roster_convert as ps3
++from .save_appearance import SaveAppearanceServiceError, appearance_writer, writer
++import apf_stfs_roster_extract as stfs
++import apf_stfs_roster_rehash as rehash
++
++SCHEMA = "apf2k8_roster_appearance_transfer/v1"
++
++
++@dataclass(frozen=True)
++class TransferSource:
++    source: Path
++    member: str | None
++    source_sha256: str
++    kind: str
++    slots: tuple
++    xenia_package_supported: bool
++    package_reason: str
++
++
++@dataclass(frozen=True)
++class TransferReceipt:
++    output: Path
++    manifest: Path
++    changed_slots: tuple[int, ...]
++    changed_byte_count: int
++    output_is_package: bool
++    converted_ps3: bool
++    verification_passed: bool = True
++
++
++def _sha(data: bytes) -> str:
++    return hashlib.sha256(data).hexdigest()
++
++
++def _read(path: Path, member: str | None) -> bytes:
++    return ps3.read_source(path, member) if member is not None else writer.read_source(path)
++
++
++def _prepare(data: bytes) -> tuple[bytes, str, dict | None]:
++    if data[:4] in stfs.STFS_MAGICS:
++        return stfs.extract_roster_payload(data).payload, "stfs", None
++    # The proved PS3 converter has one precise size/layout. Detect byte order
++    # before the ARGB appearance reader can mistakenly accept RGBA words.
++    if len(data) == ps3.ROSTER_SIZE:
++        platform = ps3.detect_platform(data)
++        if platform == ps3.PLATFORM_PS3:
++            raw, conversion = ps3.convert(data, apply_team_appearance=True)
++            return raw, "ps3", conversion
++        if platform != ps3.PLATFORM_XBOX360:
++            raise SaveAppearanceServiceError("Cannot determine roster palette byte order; choose a supported raw Xbox roster or decrypted PS3 USERDATA")
++    writer.parse_save(data)
++    return data, "raw", None
++
++
++def inspect_transfer_source(path: Path) -> TransferSource:
++    path = Path(path)
++    try:
++        member = ps3.find_roster_member(path) if zipfile.is_zipfile(path) else None
++        data = _read(path, member)
++        raw, kind, _conversion = _prepare(data)
++        reason, supported = "Choose an STFS source for package output", False
++        if kind == "stfs":
++            try:
++                rehash._inventory(data)
++                supported, reason = True, rehash.XENIA_ONLY
++            except stfs.StfsRosterError as exc:
++                reason = f"Package output refused: {exc}. Choose raw Roster.ROS output."
++        return TransferSource(path, member, _sha(data), kind, writer.parse_save(raw).slots, supported, reason)
++    except (OSError, ValueError, writer.SaveAppearanceError, zipfile.BadZipFile) as exc:
++        raise SaveAppearanceServiceError(
++            f"{exc}. Choose a supported raw Xbox roster, STFS save, or decrypted PS3 USERDATA/roster ZIP."
++        ) from exc
++
++
++def verify_transfer(source: bytes, output: bytes, receipt: dict) -> dict:
++    """Reparse the written file, the conversion, the package and the bounded patch."""
++    writer.require(receipt.get("schema") == SCHEMA, "transfer receipt schema differs")
++    writer.require(receipt.get("source_sha256") == _sha(source), "transfer source hash differs")
++    writer.require(receipt.get("output_sha256") == _sha(output), "transfer output hash differs")
++    raw, kind, conversion = _prepare(source)
++    writer.require(receipt.get("source_kind") == kind, "transfer source kind differs")
++    writer.require(receipt.get("ps3_conversion") == conversion, "PS3 conversion receipt differs")
++    package = receipt.get("stfs_rehash")
++    if package is not None:
++        writer.require(kind == "stfs", "package output needs an STFS source")
++        rehash.verify_rehash(source, output, package)
++        patched = stfs.extract_roster_payload(output).payload
++    else:
++        writer.require(output[:4] not in stfs.STFS_MAGICS, "expected raw roster output")
++        patched = output
++    verified = writer.verify_patch(raw, patched, receipt["appearance_patch"])
++    before = {row.target.slot: row.appearance for row in writer.parse_save(raw).slots}
++    after = {row.target.slot: row.appearance for row in writer.parse_save(patched).slots}
++    changed_slots = sorted(slot for slot in before if before[slot] != after[slot])
++    writer.require(receipt.get("changed_slots") == changed_slots, "changed slot list differs from output reparse")
++    return {**verified, "changed_slots": changed_slots, "output_reparsed": True,
++            "ps3_conversion_reverified": conversion is not None,
++            "stfs_rehash_reverified": package is not None,
++            "runtime_in_game_proved": False}
++
++
++def write_transfer(document: TransferSource, replacements, output: Path, *,
++                   xenia_package: bool = False, manifest: Path | None = None) -> TransferReceipt:
++    """Reserve two NEW paths; verify readback before keeping either file."""
++    output = Path(output)
++    manifest = Path(manifest) if manifest is not None else writer.default_manifest_path(output)
++    created = []
++    descriptors = []
++    try:
++        writer.require(len({p.resolve() for p in (document.source, output, manifest)}) == 3,
++                       "Source, output and receipt must be separate files; choose a new filename")
++        source = _read(document.source, document.member)
++        writer.require(_sha(source) == document.source_sha256,
++                       "Source roster changed after inspection; choose it again before writing")
++        raw, kind, conversion = _prepare(source)
++        patched, patch_receipt = writer.make_patch(raw, replacements)
++        package_receipt = None
++        if xenia_package:
++            writer.require(kind == "stfs" and document.xenia_package_supported,
++                           document.package_reason)
++            payload, package_receipt = rehash.rehash_roster(source, patched)
++        else:
++            payload = patched
++        receipt = {
++            "schema": SCHEMA, "source_sha256": _sha(source), "output_sha256": _sha(payload),
++            "source_kind": kind, "source_member": document.member,
++            "source_path": str(document.source), "output_path": str(output),
++            "appearance_patch": patch_receipt, "ps3_conversion": conversion,
++            "stfs_rehash": package_receipt,
++            "changed_slots": [row["slot"] for row in patch_receipt["edits"] if row["before"] != row["after"]],
++            "carried": "Selected slots: ten HOME/AWAY ARGB values and eight-byte helmet/crest selectors (112 bytes per slot)",
++            "refused": [{"field": "jersey/shoulder/pants selectors and artwork",
++                         "reason": "outside the bounded disc appearance writer; existing destination values remain"}],
++            "boundary": rehash.XENIA_ONLY if xenia_package else "New raw Xbox Roster.ROS; external save placement required",
++            "runtime": rehash.RUNTIME,
++        }
++        verify_transfer(source, payload, receipt)
++        for path in (output, manifest):
++            descriptors.append(writer._reserve(path))
++            created.append(path)
++        writer._write_all(descriptors[0], payload)
++        os.fsync(descriptors[0])
++        # Close before reopening, including on Windows.
++        os.close(descriptors[0])
++        descriptors[0] = -1
++        source_now = _read(document.source, document.member)
++        receipt["verification"] = verify_transfer(source_now, writer.read_source(output), receipt)
++        writer._write_all(descriptors[1], writer._json_bytes(receipt))
++        os.fsync(descriptors[1])
++        return TransferReceipt(output, manifest, tuple(receipt["changed_slots"]),
++                               patch_receipt["changed_byte_count"], xenia_package, kind == "ps3")
++    except (OSError, ValueError, writer.SaveAppearanceError, zipfile.BadZipFile) as exc:
++        raise SaveAppearanceServiceError(
++            f"{exc}. Review the selected slots, reload a changed source, and choose new output and receipt filenames."
++        ) from exc
++    finally:
++        import sys
++        failed = sys.exc_info()[0] is not None
++        for descriptor in descriptors:
++            if descriptor >= 0:
++                os.close(descriptor)
++        if failed:
++            for path in created:
++                path.unlink(missing_ok=True)
++
++
++__all__ = ["SCHEMA", "TransferSource", "TransferReceipt", "inspect_transfer_source",
++           "write_transfer", "verify_transfer"]
+diff --git a/mod_editor/apf_studio/roster_appearance_transfer_qt.py b/mod_editor/apf_studio/roster_appearance_transfer_qt.py
+new file mode 100644
+index 00000000..c30cad86
+--- /dev/null
++++ b/mod_editor/apf_studio/roster_appearance_transfer_qt.py
+@@ -0,0 +1,159 @@
++"""Review and apply current/staged custom-team appearances to a new roster save."""
++from __future__ import annotations
++
++from pathlib import Path
++
++from PyQt5.QtWidgets import (QCheckBox, QComboBox, QDialog, QDialogButtonBox,
++                            QFileDialog, QLabel, QPushButton, QVBoxLayout)
++
++from .roster_appearance_transfer import (TransferReceipt, TransferSource,
++    inspect_transfer_source, write_transfer)
++from .save_appearance import SaveAppearanceServiceError
++import apf_stfs_roster_rehash as rehash
++
++
++class RosterAppearanceTransferDialog(QDialog):
++    def __init__(self, current, staged, run_task, parent=None):
++        super().__init__(parent)
++        self.setWindowTitle("Apply my custom team appearance to this roster save")
++        self.resize(660, 480)
++        self.current = current
++        self.staged = {row.slot: row for row in staged}
++        self.run_task = run_task
++        self.document: TransferSource | None = None
++        self.last_receipt: TransferReceipt | None = None
++        layout = QVBoxLayout(self)
++        note = QLabel("Apply the HOME/AWAY colours and helmet/crest codes currently shown in the editor. "
++                      "Match by ROST slot 32–39, then review the destination team names below. "
++                      "Each slot changes at most 112 bytes. Jersey/shoulder/pants codes and artwork "
++                      "already in the destination remain; import artwork separately.")
++        note.setWordWrap(True)
++        layout.addWidget(note)
++        self.include_staged = QCheckBox("Also apply other staged user-team appearances")
++        self.include_staged.setChecked(False)
++        self.include_staged.setEnabled(any(slot != current.slot for slot in self.staged))
++        self.include_staged.toggled.connect(self._review)
++        layout.addWidget(self.include_staged)
++        self.choose_button = QPushButton("Choose roster save…")
++        self.choose_button.clicked.connect(self._choose_source)
++        layout.addWidget(self.choose_button)
++        self.source_label = QLabel("Choose raw Roster.ROS, an Xbox STFS package, or decrypted PS3 USERDATA / roster ZIP.")
++        self.source_label.setWordWrap(True)
++        layout.addWidget(self.source_label)
++        self.targets = QLabel("")
++        self.targets.setWordWrap(True)
++        layout.addWidget(self.targets)
++        self.output_kind = QComboBox()
++        self.output_kind.addItem("New raw Xbox Roster.ROS", False)
++        self.output_kind.currentIndexChanged.connect(self._review)
++        layout.addWidget(self.output_kind)
++        self.boundary = QLabel("")
++        self.boundary.setWordWrap(True)
++        layout.addWidget(self.boundary)
++        self.write_button = QPushButton("Write new roster save and receipt…")
++        self.write_button.clicked.connect(self._choose_output)
++        self.write_button.setEnabled(False)
++        layout.addWidget(self.write_button)
++        self.status = QLabel("")
++        self.status.setWordWrap(True)
++        layout.addWidget(self.status)
++        layout.addStretch(1)
++        buttons = QDialogButtonBox(QDialogButtonBox.Close)
++        buttons.rejected.connect(self.reject)
++        layout.addWidget(buttons)
++
++    def replacements(self):
++        values = dict(self.staged) if self.include_staged.isChecked() else {}
++        values[self.current.slot] = self.current
++        return tuple(values[slot] for slot in sorted(values))
++
++    def _choose_source(self):
++        chosen, _ = QFileDialog.getOpenFileName(self, "Choose destination roster save", str(Path.home()),
++            "APF roster (USERDATA *.ROS *.ros *.zip *.sav *.dat);;All files (*)")
++        if chosen:
++            self.load_path(Path(chosen))
++
++    def load_path(self, path: Path):
++        # Failed loads must not leave a previous destination writable.
++        self.document = None
++        self.last_receipt = None
++        self.write_button.setEnabled(False)
++        self.targets.clear()
++        self.status.clear()
++        self.source_label.setText(f"Inspecting {path.name}…")
++        self.run_task("Inspecting destination roster appearance",
++                      lambda progress: inspect_transfer_source(path), self._loaded, True)
++
++    def _loaded(self, result):
++        if not isinstance(result, TransferSource):
++            raise SaveAppearanceServiceError("Roster inspection did not return a valid destination")
++        self.document = result
++        self.source_label.setText(f"{result.source.name} · {result.kind.upper()} · {result.source_sha256[:12]}…")
++        self.output_kind.blockSignals(True)
++        self.output_kind.clear()
++        self.output_kind.addItem("New raw Xbox Roster.ROS", False)
++        if result.xenia_package_supported:
++            self.output_kind.addItem(rehash.XENIA_ONLY, True)
++        self.output_kind.blockSignals(False)
++        self._review()
++
++    def _review(self):
++        document = self.document
++        if document is None:
++            return
++        selected = {row.slot for row in self.replacements()}
++        lines = []
++        for row in document.slots:
++            target = row.target
++            if target.slot in selected:
++                state = "occupied" if target.occupied else "empty"
++                lines.append(f"Slot {target.slot} → user team {target.user_team_id}: {target.display_name} ({state})")
++        self.targets.setText("Destination teams:\n" + "\n".join(lines))
++        self.write_button.setEnabled(len(lines) == len(selected))
++        if self.output_kind.currentData():
++            text = (rehash.XENIA_ONLY + ". Active data/table hashes and metadata hash are rebuilt. "
++                    "The original console signature is preserved, not renewed. The pinned Xenia reader "
++                    "does not check it (PROVED from source); full loading is HYPOTHESIS and UNWITNESSED.")
++        else:
++            text = "Writes a new raw Xbox Roster.ROS and verified receipt. In-game appearance is UNWITNESSED."
++            if document.kind == "stfs":
++                text += " " + document.package_reason
++            if document.kind == "ps3":
++                text += (" Converts PS3 first, carrying all 40 teams' uniform selectors and palette colours. "
++                         "The selected slots then receive your editor colours and helmet/crest codes. "
++                         "Custom texture files require a separate import.")
++        self.boundary.setText(text)
++
++    def _choose_output(self):
++        if self.document is None:
++            return
++        package = bool(self.output_kind.currentData())
++        suffix = "-appearance-xenia.stfs" if package else "-appearance.Roster.ROS"
++        chosen, _ = QFileDialog.getSaveFileName(self, "Write a new roster save", str(
++            self.document.source.with_name(self.document.source.stem + suffix)),
++            "STFS package (*.stfs);;All files (*)" if package else "Raw Xbox roster (*.ROS);;All files (*)")
++        if chosen:
++            self.write_to(Path(chosen))
++
++    def write_to(self, output: Path):
++        document = self.document
++        if document is None:
++            raise SaveAppearanceServiceError("Choose a roster save before writing")
++        replacements = self.replacements()
++        package = bool(self.output_kind.currentData())
++        self.run_task("Applying custom-team appearance to a new roster save",
++                      lambda progress: write_transfer(document, replacements, output, xenia_package=package),
++                      self._written, True)
++
++    def _written(self, result):
++        if not isinstance(result, TransferReceipt):
++            raise SaveAppearanceServiceError("Roster transfer returned an invalid receipt")
++        self.last_receipt = result
++        self.status.setText(f"Verified slots changed: {', '.join(map(str, result.changed_slots))}. "
++                           f"{result.changed_byte_count} appearance bytes changed.\n"
++                           f"Saved: {result.output}\nReceipt: {result.manifest}\n"
++                           + (rehash.XENIA_ONLY + ". " if result.output_is_package else "")
++                           + "Output reparsed successfully; in-game appearance remains UNWITNESSED.")
++
++
++__all__ = ["RosterAppearanceTransferDialog"]
+diff --git a/mod_editor/apf_studio/save_appearance.py b/mod_editor/apf_studio/save_appearance.py
+index 50ceed42..8ec758ff 100644
+--- a/mod_editor/apf_studio/save_appearance.py
++++ b/mod_editor/apf_studio/save_appearance.py
+@@ -17,7 +17,9 @@ import apf_save_custom_team_appearance as writer  # type: ignore  # noqa: E402
+ SIGNED_SAVE_BOUNDARY = (
+     "Xbox 360 STFS package (CON, LIVE, or PIRS) detected. Mod Studio verifies and "
+     "reads its Roster.ROS payload, and can write either an exact extracted payload "
+-    "or a patched raw handoff. It does not write the signed container. Reinject the "
++    "or a patched raw handoff. This raw-save action does not write the signed container. "
++    "Use Apply my custom team appearance to this roster save for a separate Xenia-only "
++    "rehashed package, with no renewed console signature. For console use, reinject the "
+     "new raw file, then rehash/resign with the same external save manager. LIVE/PIRS "
+     "retail signatures require Microsoft's unavailable private keys; CON signing "
+     "requires the owning console's private keyvault."
+diff --git a/mod_editor/capabilities/registry.v1.json b/mod_editor/capabilities/registry.v1.json
+index 6abf8786..d77b1059 100644
+--- a/mod_editor/capabilities/registry.v1.json
++++ b/mod_editor/capabilities/registry.v1.json
+@@ -314,10 +314,14 @@
+       },
+       "classification": "offline-writer-proved",
+       "evidence": [
+-        "docs/research/apf_custom_team_appearance.md",
+         "docs/product/APF_UNIFORM_EQUIPMENT_COLORS.md",
+-        "tests/mod_editor/test_apf_custom_team_appearance_patch.py",
++        "docs/research/apf_custom_team_appearance.md",
++        "docs/research/apf_stfs_rehash.md",
+         "tests/mod_editor/test_apf_custom_team_appearance_gui.py",
++        "tests/mod_editor/test_apf_custom_team_appearance_patch.py",
++        "tests/mod_editor/test_apf_roster_appearance_transfer.py",
++        "tests/mod_editor/test_apf_roster_appearance_transfer_qt.py",
++        "tests/mod_editor/test_apf_stfs_roster_rehash.py",
+         "tests/mod_editor/test_apf_uniform_equipment_colors.py",
+         "tests/mod_editor/test_apf_uniform_equipment_colors_gui.py",
+         "tests/test_apf_save_custom_team_appearance.py"
+@@ -327,7 +331,7 @@
+         "default_enabled": true,
+         "expose": true,
+         "mode": "edit",
+-        "reason": "The Uniforms & Equipment tab exposes independent HOME/AWAY facemask-bar and Team-turtleneck palette selectors for all 40 teams, with exact swatches and selector-only writes. Its neighboring Custom Team Appearance editor exposes the larger palette/helmet/crest record only for user slots 32 through 39 after re-resolving unique ROST pointer ownership. Both stage canonical replacement-only JSON through the same fixed-allocation ROST build. Raw Roster Save remains restricted to user-facing IDs 24 through 31 / save-local slots 32 through 39 and writes only a new payload plus independently verified receipt. When appearance is staged with the fixed full-shell Team Logo profile, the headless composite build owns outer 1126 alongside the crest package, cache pair, and outer-1310 carrier."
++        "reason": "The Uniforms & Equipment tab exposes independent HOME/AWAY facemask-bar and Team-turtleneck palette selectors for all 40 teams, with exact swatches and selector-only writes. Its neighboring Custom Team Appearance editor exposes the larger palette/helmet/crest record only for user slots 32 through 39 after re-resolving unique ROST pointer ownership. Both stage canonical replacement-only JSON through the same fixed-allocation ROST build. Raw Roster Save remains restricted to user-facing IDs 24 through 31 / save-local slots 32 through 39 and writes only a new payload plus independently verified receipt. When appearance is staged with the fixed full-shell Team Logo profile, the headless composite build owns outer 1126 alongside the crest package, cache pair, and outer-1310 carrier. Beta 69: Custom Team Appearance now exposes Apply my custom team appearance to this roster save. It reviews destination slots, defaults to a new raw output, and optionally creates a Xenia-only rehashed package. Current controls remain intact and output is reopened with a changed-slot receipt."
+       },
+       "id": "apf2k8.colors.uniform_selector_appearance_custom_team",
+       "input_constraints": [
+@@ -341,7 +345,11 @@
+         "A Team Logo build with a staged appearance composes crest package, custom-team ROST, and logo cache into one new copied 0A through one exclusively owned private intermediate.",
+         "A raw Roster.ROS must retain the root at +4, exact table counts, independently resolved tables 4/16/17/19, aligned bounds, unique selected-record ownership, and user-team category 2 for slots 32 through 39.",
+         "Raw-save edits authorize only ten HOME and ten AWAY ARGB dwords plus four exact eight-byte selectors: a 112-byte union per selected team. The inspected source SHA must still match, output and receipt must be new/non-aliasing, and an independent reopen must verify every changed byte.",
+-        "CON, LIVE, and PIRS STFS packages are inspect-only because safe writeback also requires payload reinjection, STFS rehashing, and resigning."
++        "Apply my custom team appearance to this roster save transfers current controls and optional other staged appearances by matching slots 32..39. The destination team names are reviewed; each slot authorizes only 112 bytes. Outputs and receipts are new files, and source hashes must still match at write time.",
++        "Raw Roster.ROS output is supported. Decrypted PS3 USERDATA or one bounded roster ZIP member passes through the existing converter with all team uniform codes and palette colours carried first; only selected slots then receive the bounded editor appearance. The receipt includes conversion and override verification.",
++        "Supported fixed-size, single-file CON/LIVE/PIRS packages can produce a separate rehashed STFS copy only through the explicit Xenia-only output choice. Caption: Xenia only; a real console will reject this package. Changed data blocks, active hash-table blocks and the metadata hash are rehashed; signature bytes are preserved, never renewed. The pinned local Xenia source does not check RSA signatures, but package discovery and full loading remain HYPOTHESIS and UNWITNESSED.",
++        "STFS output refuses invalid hashes, shared file/directory blocks, file chains incompatible with Xenia traversal, multi-file packages, changed payload sizes and unsupported hash-tree bounds. The raw handoff route remains available for otherwise extractable packages.",
++        "The editor overlay does not copy jersey/shoulder/pants selectors or artwork from the project; destination values remain exact. PS3 conversion independently carries all 14 selectors in both banks and rotates RGBA to ARGB. Texture artwork needs its separate import."
+       ],
+       "portme": [
+         "Establish emulator consumption and gameplay visibility separately from the exact headless file build, then repeat on user-owned Xbox 360 hardware before claiming hardware parity.",
+@@ -407,7 +415,7 @@
+         "resource": "ROST root tables 4, 16, 17, and 19 for all 40 game teams; larger custom-team and raw-save authoring remains restricted to slots 32..39, with raw-save user IDs 24..31 mapped to that range",
+         "retail_file": "All-Pro Football 2K8 (USA)/0A or a user-owned raw APF Roster.ROS"
+       },
+-      "summary": "Edit independent HOME/AWAY facemask and Team-turtleneck colors for all 40 teams, plus the larger safe custom-team palette/helmet/crest records for slots 32..39, through the common verified 0A ROST build or the bounded raw Roster.ROS path.",
++      "summary": "Edit independent HOME/AWAY facemask and Team-turtleneck colors for all 40 teams, plus the larger safe custom-team palette/helmet/crest records for slots 32..39, through the common verified 0A ROST build or the bounded raw Roster.ROS path. Apply current/staged custom-team appearance to a new raw roster, converted PS3 roster, or explicit Xenia-only rehashed STFS copy; offline verified, in-game UNWITNESSED.",
+       "surface": "uniforms",
+       "title": "APF uniform equipment colors and custom-team appearance",
+       "validation_command": "python3 tools/validate_apf_custom_team_appearance.py"
+@@ -3672,16 +3680,18 @@
+       "classification": "offline-writer-proved",
+       "evidence": [
+         "ASTRA_B64_PS3_ROSTER_REPORT.md",
++        "reports/apf_b66_gameplay_witness.json",
+         "reports/ps3_import/roster_convert_receipt.json",
+         "tests/mod_editor/test_apf_b66_appearance.py",
+-        "reports/apf_b66_gameplay_witness.json"
++        "tests/mod_editor/test_apf_ps3_roster_convert.py",
++        "tests/mod_editor/test_apf_ps3_roster_import_qt.py"
+       ],
+       "game": "apf2k8_xbox360",
+       "gui": {
+         "default_enabled": true,
+         "expose": true,
+         "mode": "edit",
+-        "reason": "Pointer rule, palette byte order and runtime words proved from all 42,825 string references and both Xbox fixtures; output re-parsed by save_roster_players, apf_save_playbook_assignments and the team graph; loading in Xenia UNWITNESSED."
++        "reason": "PS3 import reviews uniform carry or Xbox appearance retention. Exact 14-record HOME/AWAY selector banks, ten colours per bank and palette metadata are compared after conversion. Receipts name carried/refused fields. Aszemple witnessed RPCS3 logo and roster imports on 2026-09-13; uniform rendering and in-game loading remain UNWITNESSED."
+       },
+       "id": "apf2k8.players_rosters.ps3_roster_import",
+       "input_constraints": [
+@@ -3689,7 +3699,8 @@
+         "Platform is decided by the palette alpha position (2,660 colours vote); mixed or ambiguous files are refused rather than guessed.",
+         "Editor-damaged text is repaired structurally only: misaligned runs shift or relocate, stale/garbage/below-pool references become the shared empty string; intended text is never invented.",
+         "Output is a raw payload plus receipt next to it; no container is written and the source is never modified.",
+-        "Beta 66 (Aszemple): team appearance (both uniform banks and team palettes) is reviewed with 'Also apply team appearance (N teams)', unchecked until reviewed; leaving it off requires a raw Xbox roster whose appearance is retained while players come from PS3. Every team's selector changes are receipted per bank and reparsed. The default conversion already transported the PS3 selectors; this adds verification and review."
++        "Beta 66 (Aszemple): team appearance (both uniform banks and team palettes) is reviewed with 'Also apply team appearance (N teams)', unchecked until reviewed; leaving it off requires a raw Xbox roster whose appearance is retained while players come from PS3. Every team's selector changes are receipted per bank and reparsed. The default conversion already transported the PS3 selectors; this adds verification and review.",
++        "All 40 teams' 1120 referenced eight-byte selectors and 800 referenced colours are compared after conversion, including jersey, shoulder, pants, helmet and crest. Opaque tails remain exact; custom texture payloads and new meanings for opaque bytes are refused with reasons. Choosing a new source clears the previous Xbox appearance baseline."
+       ],
+       "portme": [
+         "Witness the converted 1993 roster in Xenia (load, names, positions, teams, colours), then move runtime.status.",
+@@ -3704,7 +3715,7 @@
+       },
+       "runtime": {
+         "evidence": [],
+-        "scope": "UNWITNESSED. Nobody has loaded a converted roster in Xenia; names, positions, teams and palette colours need an in-game witness.",
++        "scope": "Aszemple: Was able import both the logos and roster files from my rpcs3 files (2026-09-13). This witnesses import usability only. In-game roster loading, HOME/AWAY uniform rendering and the helmet close-up remain UNWITNESSED.",
+         "status": "not-tested"
+       },
+       "selectors": {
+diff --git a/packaging/apf2k8-release-allowlist.txt b/packaging/apf2k8-release-allowlist.txt
+index bed31cef..909079e6 100644
+--- a/packaging/apf2k8-release-allowlist.txt
++++ b/packaging/apf2k8-release-allowlist.txt
+@@ -72,6 +72,8 @@ mod_editor/apf_studio/playbook_membership_qt.py
+ mod_editor/apf_studio/playbook_package_map_qt.py
+ mod_editor/apf_studio/product_findings.py
+ mod_editor/apf_studio/project.py
++mod_editor/apf_studio/roster_appearance_transfer.py
++mod_editor/apf_studio/roster_appearance_transfer_qt.py
+ mod_editor/apf_studio/roster_workspace.py
+ mod_editor/apf_studio/roster_workspace_qt.py
+ mod_editor/apf_studio/save_appearance.py
+@@ -167,6 +169,7 @@ tools/apf_roster_identity_patch.py
+ tools/apf_save_custom_team_appearance.py
+ tools/apf_save_playbook_assignments.py
+ tools/apf_stfs_roster_extract.py
++tools/apf_stfs_roster_rehash.py
+ tools/apf_scene.py
+ tools/apf_stadium_catalog_position_patch.py
+ tools/apf_stadium_catalog_position_verify.py
+diff --git a/packaging/check_apf2k8_mod_studio_runtime.py b/packaging/check_apf2k8_mod_studio_runtime.py
+index 0ed23fc6..5a6aacdf 100644
+--- a/packaging/check_apf2k8_mod_studio_runtime.py
++++ b/packaging/check_apf2k8_mod_studio_runtime.py
+@@ -149,6 +149,8 @@ PRODUCT_MODULES = (
+     "mod_editor.apf_studio.roster_workspace",
+     "mod_editor.apf_studio.roster_workspace_qt",
+     "mod_editor.apf_studio.save_appearance",
++    "mod_editor.apf_studio.roster_appearance_transfer",
++    "mod_editor.apf_studio.roster_appearance_transfer_qt",
+     "mod_editor.apf_studio.save_playbooks",
+     "mod_editor.apf_studio.save_playbooks_qt",
+     "mod_editor.apf_studio.session",
+@@ -200,6 +202,7 @@ TOOL_MODULES = (
+     "apf_roster_identity_patch",
+     "apf_save_custom_team_appearance",
+     "apf_stfs_roster_extract",
++    "apf_stfs_roster_rehash",
+     "apf_scene",
+     "apf_stadium_catalog_position_patch",
+     "apf_stadium_catalog_position_verify",
+@@ -1986,6 +1989,21 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
+         is False,
+         "raw/STFS custom-team appearance safety/runtime boundary changed",
+     )
++    transfer = modules["mod_editor.apf_studio.roster_appearance_transfer"]
++    transfer_qt = modules["mod_editor.apf_studio.roster_appearance_transfer_qt"]
++    rehash = importlib.import_module("apf_stfs_roster_rehash")
++    require(
++        transfer.SCHEMA == "apf2k8_roster_appearance_transfer/v1"
++        and callable(transfer.inspect_transfer_source)
++        and callable(transfer.write_transfer)
++        and callable(transfer.verify_transfer)
++        and hasattr(transfer_qt, "RosterAppearanceTransferDialog")
++        and rehash.SCHEMA == "apf2k8_stfs_roster_rehash/v1"
++        and callable(rehash.rehash_roster)
++        and callable(rehash.verify_rehash)
++        and rehash.XENIA_ONLY == "Xenia only; a real console will reject this package",
++        "Roster appearance transfer/Xenia-only rehash contract changed",
++    )
+     for refused_slot in (31, 40, True):
+         try:
+             appearance_patch.asset_id(refused_slot)
+diff --git a/reports/b69_j8/integration-checks.log b/reports/b69_j8/integration-checks.log
+new file mode 100644
+index 00000000..a37fff0d
+--- /dev/null
++++ b/reports/b69_j8/integration-checks.log
+@@ -0,0 +1,6 @@
++WIRING_REGISTRY_SCHEMA_PASS total=161 APF=69 updated_rows=2 added_rows=0
++Registry code applied only to a temporary copy; validate_data(check_files=False) passed.
++git diff --check: passed
++python3 packaging/repin.py --apply: applied 0 pin update(s)
++Worktree Git staging blocked after 5a9a2e14: index.lock cannot be created because shared metadata is read-only.
++Remaining explicit-path commits are exported in astra-b69-j8-apf-save.bundle.
+diff --git a/reports/b69_j8/test-results.json b/reports/b69_j8/test-results.json
+new file mode 100644
+index 00000000..ca9c72fb
+--- /dev/null
++++ b/reports/b69_j8/test-results.json
+@@ -0,0 +1,98 @@
++[
++  {
++    "file": "tests/test_apf_save_custom_team_appearance.py",
++    "exit_code": 0,
++    "tests": 12,
++    "log": "reports/b69_j8/test_apf_save_custom_team_appearance.log"
++  },
++  {
++    "file": "tests/test_apf_save_playbook_assignments.py",
++    "exit_code": 0,
++    "tests": 10,
++    "log": "reports/b69_j8/test_apf_save_playbook_assignments.log"
++  },
++  {
++    "file": "tests/mod_editor/test_apf_stfs_roster_rehash.py",
++    "exit_code": 0,
++    "tests": 7,
++    "log": "reports/b69_j8/test_apf_stfs_roster_rehash.log"
++  },
++  {
++    "file": "tests/mod_editor/test_apf_roster_appearance_transfer.py",
++    "exit_code": 0,
++    "tests": 5,
++    "log": "reports/b69_j8/test_apf_roster_appearance_transfer.log"
++  },
++  {
++    "file": "tests/mod_editor/test_apf_roster_appearance_transfer_qt.py",
++    "exit_code": 0,
++    "tests": 3,
++    "log": "reports/b69_j8/test_apf_roster_appearance_transfer_qt.log"
++  },
++  {
++    "file": "tests/mod_editor/test_apf_ps3_roster_convert.py",
++    "exit_code": 0,
++    "tests": 13,
++    "log": "reports/b69_j8/test_apf_ps3_roster_convert.log"
++  },
++  {
++    "file": "tests/mod_editor/test_apf_ps3_roster_import_qt.py",
++    "exit_code": 0,
++    "tests": 3,
++    "log": "reports/b69_j8/test_apf_ps3_roster_import_qt.log"
++  },
++  {
++    "file": "tests/mod_editor/test_apf_b66_appearance.py",
++    "exit_code": 0,
++    "tests": 3,
++    "log": "reports/b69_j8/test_apf_b66_appearance.log"
++  },
++  {
++    "file": "tests/mod_editor/test_apf_custom_team_appearance_patch.py",
++    "exit_code": 0,
++    "tests": 8,
++    "log": "reports/b69_j8/test_apf_custom_team_appearance_patch.log"
++  },
++  {
++    "file": "tests/mod_editor/test_apf_custom_team_appearance_gui.py",
++    "exit_code": 0,
++    "tests": 5,
++    "log": "reports/b69_j8/test_apf_custom_team_appearance_gui.log"
++  },
++  {
++    "file": "tests/mod_editor/test_apf_save_roster_players.py",
++    "exit_code": 0,
++    "tests": 7,
++    "log": "reports/b69_j8/test_apf_save_roster_players.log"
++  },
++  {
++    "file": "tests/mod_editor/test_apf_save_roster_players_gui.py",
++    "exit_code": 0,
++    "tests": 4,
++    "log": "reports/b69_j8/test_apf_save_roster_players_gui.log"
++  },
++  {
++    "file": "tests/mod_editor/test_apf_save_playbook_assignments_gui.py",
++    "exit_code": 0,
++    "tests": 8,
++    "log": "reports/b69_j8/test_apf_save_playbook_assignments_gui.log"
++  },
++  {
++    "file": "tests/mod_editor/test_apf_capability_action_parity.py",
++    "exit_code": 0,
++    "tests": 11,
++    "log": "reports/b69_j8/test_apf_capability_action_parity.log"
++  },
++  {
++    "file": "tests/mod_editor/test_apf_studio_core.py",
++    "exit_code": 0,
++    "tests": 9,
++    "log": "reports/b69_j8/test_apf_studio_core.log"
++  },
++  {
++    "file": "tests/mod_editor/test_apf_ps3_probes.py",
++    "exit_code": 0,
++    "tests": 9,
++    "log": "reports/b69_j8/test_apf_ps3_probes.log"
++  }
++]
+diff --git a/reports/b69_j8/test_apf_b66_appearance.log b/reports/b69_j8/test_apf_b66_appearance.log
+new file mode 100644
+index 00000000..875d6d9c
+--- /dev/null
++++ b/reports/b69_j8/test_apf_b66_appearance.log
+@@ -0,0 +1,6 @@
++QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_b66_appearance.py
++...
++----------------------------------------------------------------------
++Ran 3 tests in 2.675s
++
++OK
+diff --git a/reports/b69_j8/test_apf_capability_action_parity.log b/reports/b69_j8/test_apf_capability_action_parity.log
+new file mode 100644
+index 00000000..6d1c2a52
+--- /dev/null
++++ b/reports/b69_j8/test_apf_capability_action_parity.log
+@@ -0,0 +1,6 @@
++QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_capability_action_parity.py
++...........
++----------------------------------------------------------------------
++Ran 11 tests in 0.129s
++
++OK
+diff --git a/reports/b69_j8/test_apf_custom_team_appearance_gui.log b/reports/b69_j8/test_apf_custom_team_appearance_gui.log
+new file mode 100644
+index 00000000..1ebfc661
+--- /dev/null
++++ b/reports/b69_j8/test_apf_custom_team_appearance_gui.log
+@@ -0,0 +1,6 @@
++QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_custom_team_appearance_gui.py
++.....
++----------------------------------------------------------------------
++Ran 5 tests in 0.128s
++
++OK
+diff --git a/reports/b69_j8/test_apf_custom_team_appearance_patch.log b/reports/b69_j8/test_apf_custom_team_appearance_patch.log
+new file mode 100644
+index 00000000..d02827d2
+--- /dev/null
++++ b/reports/b69_j8/test_apf_custom_team_appearance_patch.log
+@@ -0,0 +1,6 @@
++QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_custom_team_appearance_patch.py
++........
++----------------------------------------------------------------------
++Ran 8 tests in 7.291s
++
++OK
+diff --git a/reports/b69_j8/test_apf_ps3_probes.log b/reports/b69_j8/test_apf_ps3_probes.log
+new file mode 100644
+index 00000000..5ecb18f7
+--- /dev/null
++++ b/reports/b69_j8/test_apf_ps3_probes.log
+@@ -0,0 +1,6 @@
++QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_ps3_probes.py
++.........
++----------------------------------------------------------------------
++Ran 9 tests in 0.980s
++
++OK
+diff --git a/reports/b69_j8/test_apf_ps3_roster_convert.log b/reports/b69_j8/test_apf_ps3_roster_convert.log
+new file mode 100644
+index 00000000..c5f90537
+--- /dev/null
++++ b/reports/b69_j8/test_apf_ps3_roster_convert.log
+@@ -0,0 +1,6 @@
++QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_ps3_roster_convert.py
++.............
++----------------------------------------------------------------------
++Ran 13 tests in 17.567s
++
++OK
+diff --git a/reports/b69_j8/test_apf_ps3_roster_import_qt.log b/reports/b69_j8/test_apf_ps3_roster_import_qt.log
+new file mode 100644
+index 00000000..86a71fd3
+--- /dev/null
++++ b/reports/b69_j8/test_apf_ps3_roster_import_qt.log
+@@ -0,0 +1,6 @@
++QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_ps3_roster_import_qt.py
++...
++----------------------------------------------------------------------
++Ran 3 tests in 1.559s
++
++OK
+diff --git a/reports/b69_j8/test_apf_roster_appearance_transfer.log b/reports/b69_j8/test_apf_roster_appearance_transfer.log
+new file mode 100644
+index 00000000..6c6ddc4b
+--- /dev/null
++++ b/reports/b69_j8/test_apf_roster_appearance_transfer.log
+@@ -0,0 +1,6 @@
++QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_roster_appearance_transfer.py
++.....
++----------------------------------------------------------------------
++Ran 5 tests in 9.107s
++
++OK
+diff --git a/reports/b69_j8/test_apf_roster_appearance_transfer_qt.log b/reports/b69_j8/test_apf_roster_appearance_transfer_qt.log
+new file mode 100644
+index 00000000..fb27df53
+--- /dev/null
++++ b/reports/b69_j8/test_apf_roster_appearance_transfer_qt.log
+@@ -0,0 +1,6 @@
++QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_roster_appearance_transfer_qt.py
++...
++----------------------------------------------------------------------
++Ran 3 tests in 5.324s
++
++OK
+diff --git a/reports/b69_j8/test_apf_save_custom_team_appearance.log b/reports/b69_j8/test_apf_save_custom_team_appearance.log
+new file mode 100644
+index 00000000..72653168
+--- /dev/null
++++ b/reports/b69_j8/test_apf_save_custom_team_appearance.log
+@@ -0,0 +1,6 @@
++QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/test_apf_save_custom_team_appearance.py
++............
++----------------------------------------------------------------------
++Ran 12 tests in 2.037s
++
++OK
+diff --git a/reports/b69_j8/test_apf_save_playbook_assignments.log b/reports/b69_j8/test_apf_save_playbook_assignments.log
+new file mode 100644
+index 00000000..46a5ab51
+--- /dev/null
++++ b/reports/b69_j8/test_apf_save_playbook_assignments.log
+@@ -0,0 +1,6 @@
++QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/test_apf_save_playbook_assignments.py
++..........
++----------------------------------------------------------------------
++Ran 10 tests in 0.819s
++
++OK
+diff --git a/reports/b69_j8/test_apf_save_playbook_assignments_gui.log b/reports/b69_j8/test_apf_save_playbook_assignments_gui.log
+new file mode 100644
+index 00000000..adec3975
+--- /dev/null
++++ b/reports/b69_j8/test_apf_save_playbook_assignments_gui.log
+@@ -0,0 +1,6 @@
++QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_save_playbook_assignments_gui.py
++........
++----------------------------------------------------------------------
++Ran 8 tests in 1.160s
++
++OK
+diff --git a/reports/b69_j8/test_apf_save_roster_players.log b/reports/b69_j8/test_apf_save_roster_players.log
+new file mode 100644
+index 00000000..512c94c5
+--- /dev/null
++++ b/reports/b69_j8/test_apf_save_roster_players.log
+@@ -0,0 +1,6 @@
++QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_save_roster_players.py
++.......
++----------------------------------------------------------------------
++Ran 7 tests in 4.675s
++
++OK
+diff --git a/reports/b69_j8/test_apf_save_roster_players_gui.log b/reports/b69_j8/test_apf_save_roster_players_gui.log
+new file mode 100644
+index 00000000..45e25ddd
+--- /dev/null
++++ b/reports/b69_j8/test_apf_save_roster_players_gui.log
+@@ -0,0 +1,6 @@
++QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_save_roster_players_gui.py
++....
++----------------------------------------------------------------------
++Ran 4 tests in 0.617s
++
++OK
+diff --git a/reports/b69_j8/test_apf_stfs_roster_rehash.log b/reports/b69_j8/test_apf_stfs_roster_rehash.log
+new file mode 100644
+index 00000000..314c4e4d
+--- /dev/null
++++ b/reports/b69_j8/test_apf_stfs_roster_rehash.log
+@@ -0,0 +1,6 @@
++QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_stfs_roster_rehash.py
++.......
++----------------------------------------------------------------------
++Ran 7 tests in 0.588s
++
++OK
+diff --git a/reports/b69_j8/test_apf_studio_core.log b/reports/b69_j8/test_apf_studio_core.log
+new file mode 100644
+index 00000000..c7c5b192
+--- /dev/null
++++ b/reports/b69_j8/test_apf_studio_core.log
+@@ -0,0 +1,6 @@
++QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_studio_core.py
++s........
++----------------------------------------------------------------------
++Ran 9 tests in 0.036s
++
++OK (skipped=1)
+diff --git a/tests/mod_editor/test_apf_ps3_roster_convert.py b/tests/mod_editor/test_apf_ps3_roster_convert.py
+index 3e530af9..74fcc2ac 100644
+--- a/tests/mod_editor/test_apf_ps3_roster_convert.py
++++ b/tests/mod_editor/test_apf_ps3_roster_convert.py
+@@ -216,6 +216,42 @@ class SyntheticConversionTests(unittest.TestCase):
+         with self.assertRaisesRegex(subject.PS3RosterConvertError, "expected 2715908"):
+             subject.convert(self.source[:-1])
+ 
++    def test_uniform_codes_colour_order_and_metadata_are_verified(self) -> None:
++        raw = bytearray(self.source)
++        banks = subject.team_appearance(self.source)[32]["banks"]
++        for bank in banks:
++            for slot in (3, 4, 5, 9, 11):
++                offset = bank["selectors"][slot]["offset"]
++                raw[offset:offset + 8] = bytes((slot + 2, 7, 93, 84, 75, 66, 57, 48))
++            palette = bank["palette_offset"]
++            raw[palette:palette + 4] = b"\x12\x34\x56\xff"
++        output, receipt = subject.convert(bytes(raw))
++        appearance = receipt["team_appearance"]
++        self.assertEqual(appearance["verification"]["selector_records"], 1120)
++        self.assertEqual(appearance["verification"]["colours"], 800)
++        self.assertEqual(len(appearance["carried"]), 3)
++        self.assertIn("texture", appearance["refused"][0]["field"])
++        for bank in banks:
++            self.assertEqual(output[bank["palette_offset"]:bank["palette_offset"] + 4], b"\xff\x12\x34\x56")
++            for slot in (3, 4, 5, 9, 11):
++                offset = bank["selectors"][slot]["offset"]
++                self.assertEqual(output[offset:offset + 8], raw[offset:offset + 8])
++        for offset in (banks[0]["palette_offset"], banks[1]["palette_offset"] + 40,
++                       banks[1]["selectors"][4]["offset"] + 7):
++            tampered = bytearray(output)
++            tampered[offset] ^= 1
++            with self.assertRaises(subject.PS3RosterConvertError):
++                subject.verify_appearance_carry(bytes(raw), bytes(tampered))
++
++    def test_retaining_xbox_uniforms_is_explicitly_receipted(self) -> None:
++        baseline = bytearray(self.output)
++        bank = subject.team_appearance(self.output)[32]["banks"][0]
++        baseline[bank["selectors"][4]["offset"]] = 71
++        baseline[bank["palette_offset"]:bank["palette_offset"] + 4] = b"\xff\xab\xcd\xef"
++        output, receipt = subject.convert(self.source, apply_team_appearance=False, xbox_appearance=bytes(baseline))
++        self.assertTrue(subject.verify_appearance_carry(bytes(baseline), output, from_ps3=False)["verified"])
++        self.assertIn("PS3 appearance values", [row["field"] for row in receipt["team_appearance"]["refused"]])
++
+     def test_round_trip_edit_through_the_roster_writer(self) -> None:
+         document = players.inspect_bytes(self.output)
+         patched, manifest = players.make_patch(
+diff --git a/tests/mod_editor/test_apf_ps3_roster_import_qt.py b/tests/mod_editor/test_apf_ps3_roster_import_qt.py
+index 7d00cac0..88671eea 100644
+--- a/tests/mod_editor/test_apf_ps3_roster_import_qt.py
++++ b/tests/mod_editor/test_apf_ps3_roster_import_qt.py
+@@ -3,6 +3,7 @@
+ from __future__ import annotations
+ 
+ import os
++import json
+ from pathlib import Path
+ import sys
+ import tempfile
+@@ -63,6 +64,22 @@ class PanelTests(unittest.TestCase):
+         self.assertEqual(receipt.output, destination)
+         self.assertEqual(destination.read_bytes(), self.fixture.expected())
+         self.assertTrue(receipt.receipt_path.is_file())
++        report = json.loads(receipt.receipt_path.read_text())
++        self.assertTrue(report["team_appearance"]["verification"]["verified"])
++        self.assertEqual(report["team_appearance"]["verification"]["selector_records"], 1120)
++        self.assertIn("Refused: custom texture", text)
++
++    def test_new_source_clears_previous_appearance_retention_choice(self) -> None:
++        source = self.root / "USERDATA"
++        source.write_bytes(self.fixture.ps3())
++        baseline = self.root / "Xbox.ROS"
++        baseline.write_bytes(self.fixture.expected())
++        self.panel.load_path(source)
++        self.panel.set_appearance_baseline(baseline)
++        self.assertTrue(self.panel.convert_button.isEnabled())
++        self.panel.load_path(source)
++        self.assertIsNone(self.panel.appearance_baseline)
++        self.assertFalse(self.panel.convert_button.isEnabled())
+ 
+     def test_xbox_layout_file_is_refused_without_writing(self) -> None:
+         source = self.root / "Roster.ROS"
+diff --git a/tests/mod_editor/test_apf_roster_appearance_transfer.py b/tests/mod_editor/test_apf_roster_appearance_transfer.py
+new file mode 100644
+index 00000000..f844e787
+--- /dev/null
++++ b/tests/mod_editor/test_apf_roster_appearance_transfer.py
+@@ -0,0 +1,131 @@
++"""Synthetic roster transfer receipts, preservation, and refusal contract."""
++from __future__ import annotations
++
++import json
++import hashlib
++from pathlib import Path
++import sys
++import tempfile
++import unittest
++import zipfile
++
++sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
++from mod_editor.apf_studio import roster_appearance_transfer as subject
++from mod_editor.apf_studio import ps3_roster_convert as ps3
++from mod_editor.apf_studio.save_appearance import SaveAppearanceServiceError
++from tests.test_apf_save_custom_team_appearance import synthetic_save, synthetic_stfs, writer, appearance_writer
++from tests.mod_editor.test_apf_ps3_roster_convert import Fixture
++import apf_stfs_roster_extract as stfs
++
++
++class TransferTests(unittest.TestCase):
++    def setUp(self):
++        self.temporary = tempfile.TemporaryDirectory()
++        self.addCleanup(self.temporary.cleanup)
++        self.root = Path(self.temporary.name)
++        self.raw = synthetic_save()
++        self.source = self.root / "Roster.ROS"
++        self.source.write_bytes(self.raw)
++        self.edits = tuple(appearance_writer.eagles_2017_preset(row.appearance)
++                           for row in writer.parse_save(self.raw).slots[:2])
++
++    def test_multiple_slots_raw_and_stfs_output_reparse(self):
++        for package in (False, True):
++            with self.subTest(package=package):
++                original = synthetic_stfs(self.raw, copies=2, active=1) if package else self.raw
++                self.source.write_bytes(original)
++                doc = subject.inspect_transfer_source(self.source)
++                output = self.root / ("new.stfs" if package else "new.ROS")
++                result = subject.write_transfer(doc, self.edits, output, xenia_package=package)
++                receipt = json.loads(result.manifest.read_text())
++                self.assertEqual(self.source.read_bytes(), original)
++                self.assertEqual(result.changed_slots, (32, 33))
++                self.assertEqual(receipt["appearance_patch"]["authorized_byte_count"], 224)
++                self.assertEqual(subject.verify_transfer(original, output.read_bytes(), receipt)["changed_slots"], [32, 33])
++                raw_output = stfs.extract_roster_payload(output.read_bytes()).payload if package else output.read_bytes()
++                parsed = writer.parse_save(raw_output)
++                self.assertEqual([r.appearance for r in parsed.slots[:2]], list(self.edits))
++                self.assertFalse(receipt["verification"]["runtime_in_game_proved"])
++
++    def test_ps3_zip_carries_other_uniform_selectors_and_receipts_override(self):
++        raw = bytearray(Fixture().ps3())
++        appearance = ps3.team_appearance(bytes(raw))
++        # Distinct jersey/shoulder codes and opaque tails for both banks.
++        for bank in appearance[32]["banks"]:
++            for slot in (4, 11):
++                offset = bank["selectors"][slot]["offset"]
++                raw[offset:offset + 8] = bytes((29 + slot, 91, 82, 73, 64, 55, 46, 37))
++        appearance = ps3.team_appearance(bytes(raw))
++        archive = self.root / "ps3.zip"
++        member = "BLUS30049-ROS/USERDATA"
++        with zipfile.ZipFile(archive, "w") as z:
++            z.writestr(member, raw)
++        original = archive.read_bytes()
++        doc = subject.inspect_transfer_source(archive)
++        self.assertEqual(doc.kind, "ps3")
++        self.assertFalse(doc.xenia_package_supported)
++        output = self.root / "converted.ROS"
++        result = subject.write_transfer(doc, self.edits[:1], output)
++        receipt = json.loads(result.manifest.read_text())
++        converted, _ = ps3.convert(bytes(raw))
++        after = ps3.team_appearance(output.read_bytes())
++        for before_bank, after_bank in zip(appearance[32]["banks"], after[32]["banks"]):
++            for slot in (4, 11):
++                self.assertEqual(before_bank["selectors"][slot]["record_hex"], after_bank["selectors"][slot]["record_hex"])
++        self.assertEqual(archive.read_bytes(), original)
++        self.assertEqual(receipt["ps3_conversion"]["team_appearance"]["verification"]["selector_records"], 1120)
++        self.assertTrue(receipt["ps3_conversion"]["team_appearance"]["refused"])
++        self.assertTrue(subject.verify_transfer(bytes(raw), output.read_bytes(), receipt)["ps3_conversion_reverified"])
++        self.assertEqual(writer.parse_save(output.read_bytes()).slots[1:], writer.parse_save(converted).slots[1:])
++
++    def test_refuses_source_overwrite_existing_output_receipt_and_stale_source(self):
++        doc = subject.inspect_transfer_source(self.source)
++        with self.assertRaisesRegex(SaveAppearanceServiceError, "separate"):
++            subject.write_transfer(doc, self.edits, self.source)
++        output = self.root / "new.ROS"
++        output.write_bytes(b"keep")
++        with self.assertRaisesRegex(SaveAppearanceServiceError, "overwrite"):
++            subject.write_transfer(doc, self.edits, output)
++        self.assertEqual(output.read_bytes(), b"keep")
++        output.unlink()
++        manifest = writer.default_manifest_path(output)
++        manifest.write_bytes(b"keep receipt")
++        with self.assertRaisesRegex(SaveAppearanceServiceError, "overwrite"):
++            subject.write_transfer(doc, self.edits, output)
++        self.assertFalse(output.exists())
++        self.assertEqual(manifest.read_bytes(), b"keep receipt")
++        self.source.write_bytes(self.raw + b"changed")
++        with self.assertRaisesRegex(SaveAppearanceServiceError, "changed after inspection"):
++            subject.write_transfer(doc, self.edits, output)
++        self.assertFalse(output.exists())
++
++    def test_receipt_slots_cannot_lie_and_raw_cannot_be_packaged(self):
++        doc = subject.inspect_transfer_source(self.source)
++        output = self.root / "new.ROS"
++        with self.assertRaises(SaveAppearanceServiceError):
++            subject.write_transfer(doc, self.edits, output, xenia_package=True)
++        self.assertFalse(output.exists())
++        result = subject.write_transfer(doc, self.edits, output)
++        receipt = json.loads(result.manifest.read_text())
++        receipt["changed_slots"] = [39]
++        with self.assertRaisesRegex(writer.SaveAppearanceError, "slot list"):
++            subject.verify_transfer(self.raw, output.read_bytes(), receipt)
++
++    def test_extractable_xenia_incompatible_package_keeps_raw_route(self):
++        package = bytearray(synthetic_stfs(self.raw))
++        package[0xA000 + 24 + 21:0xA000 + 24 + 24] = b"\xff\xff\xff"
++        top = 0xA000 + 0xAB * 4096
++        package[top:top + 20] = hashlib.sha1(package[0xA000:0xB000]).digest()
++        package[0x381:0x395] = hashlib.sha1(package[top:top + 4096]).digest()
++        package[0x32C:0x340] = hashlib.sha1(package[0x344:0xA000]).digest()
++        self.source.write_bytes(package)
++        doc = subject.inspect_transfer_source(self.source)
++        self.assertFalse(doc.xenia_package_supported)
++        self.assertIn("Xenia traversal", doc.package_reason)
++        result = subject.write_transfer(doc, self.edits, self.root / "fallback.ROS")
++        self.assertTrue(result.verification_passed)
++        self.assertFalse(result.output_is_package)
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/tests/mod_editor/test_apf_roster_appearance_transfer_qt.py b/tests/mod_editor/test_apf_roster_appearance_transfer_qt.py
+new file mode 100644
+index 00000000..b1598e14
+--- /dev/null
++++ b/tests/mod_editor/test_apf_roster_appearance_transfer_qt.py
+@@ -0,0 +1,96 @@
++"""Offscreen, synthetic end-to-end Custom Team Appearance transfer action."""
++from __future__ import annotations
++
++import json
++import os
++from pathlib import Path
++import sys
++import tempfile
++import unittest
++from unittest import mock
++
++os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
++sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
++from PyQt5.QtWidgets import QApplication, QFileDialog
++from mod_editor.apf_studio.custom_team_appearance_qt import CustomTeamAppearancePanel
++from mod_editor.apf_studio.roster_appearance_transfer_qt import RosterAppearanceTransferDialog
++from tests.mod_editor.test_apf_custom_team_appearance_gui import _Facade, _run_task
++from tests.test_apf_save_custom_team_appearance import synthetic_save, synthetic_stfs, writer
++from tests.mod_editor.test_apf_ps3_roster_convert import Fixture
++
++
++class TransferGuiTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        cls.app = QApplication.instance() or QApplication([])
++
++    def setUp(self):
++        self.tmp = tempfile.TemporaryDirectory()
++        self.addCleanup(self.tmp.cleanup)
++        self.root = Path(self.tmp.name)
++        self.facade = _Facade()
++        self.panel = CustomTeamAppearancePanel(self.facade, _run_task)
++        self.addCleanup(self.panel.close)
++
++    def test_page_button_transfers_controls_and_other_staged_slots(self):
++        self.facade.replace_custom_team_appearance(self.facade.values[33], lambda *_: None)
++        self.panel.home.palette[0].setText("FF123456")
++        source = self.root / "Roster.ROS"
++        raw = synthetic_save()
++        source.write_bytes(raw)
++        destination = self.root / "new.ROS"
++
++        def drive(dialog):
++            self.assertFalse(dialog.include_staged.isChecked())
++            self.assertFalse(dialog.write_button.isEnabled())
++            with mock.patch.object(QFileDialog, "getOpenFileName", return_value=(str(source), "")):
++                dialog.choose_button.click()
++            self.assertIn("Slot 32", dialog.targets.text())
++            dialog.include_staged.setChecked(True)
++            self.assertIn("Slot 33", dialog.targets.text())
++            with mock.patch.object(QFileDialog, "getSaveFileName", return_value=(str(destination), "")):
++                dialog.write_button.click()
++            self.assertEqual(dialog.last_receipt.changed_slots, (32, 33))
++            self.assertIn("UNWITNESSED", dialog.status.text())
++            return 0
++
++        with mock.patch.object(RosterAppearanceTransferDialog, "exec_", drive):
++            self.panel.apply_roster_button.click()
++        self.assertEqual(source.read_bytes(), raw)
++        self.assertEqual(writer.parse_save(destination.read_bytes()).slots[0].appearance.home.palette[0], 0xFF123456)
++        self.assertEqual(self.panel.home.palette[0].text(), "FF123456")
++        self.assertEqual(self.facade.modified_asset_ids, frozenset({"apf:custom-team-appearance:33"}))
++
++    def test_xenia_output_is_explicit_off_by_default_and_reparsed(self):
++        source = self.root / "source.stfs"
++        source.write_bytes(synthetic_stfs(synthetic_save(), copies=2, active=1))
++        dialog = RosterAppearanceTransferDialog(self.facade.values[32], (), _run_task)
++        self.addCleanup(dialog.close)
++        dialog.load_path(source)
++        self.assertFalse(dialog.output_kind.currentData())
++        self.assertEqual(dialog.output_kind.count(), 2)
++        dialog.output_kind.setCurrentIndex(1)
++        self.assertIn("Xenia only; a real console will reject this package", dialog.boundary.text())
++        self.assertIn("HYPOTHESIS", dialog.boundary.text())
++        output = self.root / "new.stfs"
++        dialog.write_to(output)
++        receipt = json.loads(dialog.last_receipt.manifest.read_text())
++        self.assertTrue(receipt["verification"]["stfs_rehash_reverified"])
++        self.assertFalse(receipt["stfs_rehash"]["console_resigned"])
++
++    def test_ps3_conversion_then_editor_appearance(self):
++        source = self.root / "USERDATA"
++        source.write_bytes(Fixture().ps3())
++        dialog = RosterAppearanceTransferDialog(self.facade.values[32], (), _run_task)
++        self.addCleanup(dialog.close)
++        dialog.load_path(source)
++        self.assertEqual(dialog.output_kind.count(), 1)
++        self.assertIn("Converts PS3 first", dialog.boundary.text())
++        output = self.root / "new.ROS"
++        dialog.write_to(output)
++        self.assertTrue(dialog.last_receipt.converted_ps3)
++        self.assertEqual(writer.parse_save(output.read_bytes()).slots[0].appearance, self.facade.values[32])
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/tests/mod_editor/test_apf_stfs_roster_rehash.py b/tests/mod_editor/test_apf_stfs_roster_rehash.py
+new file mode 100644
+index 00000000..42d059c3
+--- /dev/null
++++ b/tests/mod_editor/test_apf_stfs_roster_rehash.py
+@@ -0,0 +1,189 @@
++"""Synthetic-only STFS writer contract and optional pinned Xenia source audit."""
++from __future__ import annotations
++
++import hashlib
++from pathlib import Path
++import struct
++import sys
++import unittest
++
++sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
++from tests.test_apf_save_custom_team_appearance import synthetic_save, synthetic_stfs
++import apf_stfs_roster_extract as reader
++import apf_stfs_roster_rehash as subject
++
++
++def xenia_chain_payload(data: bytes) -> bytes:
++    """Independent translation of pinned BlockToOffset / ReadEntry traversal.
++
++    No production reader geometry calls. This is a model, not emulator execution.
++    """
++    base = (int.from_bytes(data[0x340:0x344], "big") + 4095) & ~4095
++    copies = 1 if data[0x37B] & 1 else 2
++    active = (data[0x37B] >> 1) & 1
++    total = int.from_bytes(data[0x395:0x399], "big")
++
++    def offset(block):
++        physical = block
++        for level in (170, 28900, 4913000):
++            physical += ((block + level) // level) * copies
++            if block < level:
++                break
++        return base + physical * 4096
++
++    directory = offset(int.from_bytes(data[0x37E:0x381], "little"))
++    length = int.from_bytes(data[directory + 0x34:directory + 0x38], "big")
++    block = int.from_bytes(data[directory + 0x2F:directory + 0x32], "little")
++    result = bytearray()
++    while len(result) < length:
++        if block >= total:
++            raise ValueError("Xenia chain ended early")
++        result.extend(data[offset(block):offset(block) + min(4096, length - len(result))])
++        group = block // 170
++        table = base + (0 if group == 0 else group * (170 + copies) + copies) * 4096
++        if copies == 2:
++            leaf_active = active
++            if total > 170:
++                top_entry = base + (170 + copies + active) * 4096 + group * 24
++                leaf_active = (data[top_entry + 20] >> 6) & 1
++            table += leaf_active * 4096
++        entry = table + (block % 170) * 24
++        block = int.from_bytes(data[entry + 21:entry + 24], "big")
++    return bytes(result)
++
++
++class RehashTests(unittest.TestCase):
++    @staticmethod
++    def repair_single_table_fixture(data):
++        count = int.from_bytes(data[0x395:0x399], "big")
++        for block in range(count):
++            start = 0xB000 + block * 4096
++            entry = 0xA000 + block * 24
++            data[entry:entry + 20] = hashlib.sha1(data[start:start + 4096]).digest()
++        data[0x381:0x395] = hashlib.sha1(data[0xA000:0xB000]).digest()
++        data[0x32C:0x340] = hashlib.sha1(data[0x344:0xA000]).digest()
++        return bytes(data)
++
++    def test_companion_file_preserved_and_sparse_directory_refused(self):
++        package = bytearray(synthetic_stfs(b"a" * 3 * 4096))
++        # Split the generated three-block file into roster (2) and companion (1).
++        package[0xB029:0xB02C] = (2).to_bytes(3, "little")
++        package[0xB02C:0xB02F] = (2).to_bytes(3, "little")
++        struct.pack_into(">I", package, 0xB034, 8192)
++        package[0xA000 + 2 * 24 + 21:0xA000 + 3 * 24] = b"\xff\xff\xff"
++        other = 0xB040
++        package[other:other + 9] = b"Other.bin"
++        package[other + 0x28] = 9 | 0x40
++        package[other + 0x29:other + 0x2C] = (1).to_bytes(3, "little")
++        package[other + 0x2C:other + 0x2F] = (1).to_bytes(3, "little")
++        package[other + 0x2F:other + 0x32] = (3).to_bytes(3, "little")
++        package[other + 0x32:other + 0x34] = b"\xff\xff"
++        struct.pack_into(">I", package, other + 0x34, 4096)
++        source = self.repair_single_table_fixture(package)
++        output, _ = subject.rehash_roster(source, b"b" * 8192)
++        parsed = reader._StfsReader(output)
++        companion = next(e for e in parsed.directory_entries() if e.path == "Other.bin")
++        self.assertEqual(parsed.extract(companion), b"a" * 4096)
++        self.assertEqual(output[0xA048:0xA060], source[0xA048:0xA060])
++        package[0xB0C0:0xB100] = package[other:other + 64]
++        package[other:other + 64] = bytes(64)
++        sparse = self.repair_single_table_fixture(package)
++        self.assertEqual(reader.extract_roster_payload(sparse).payload, b"a" * 8192)
++        with self.assertRaisesRegex(reader.StfsRosterError, "directory order"):
++            subject.rehash_roster(sparse, b"b" * 8192)
++
++    def test_known_synthetic_roster_round_trip_all_copies_and_chains(self):
++        raw = synthetic_save()
++        for copies, active in ((1, 0), (2, 0), (2, 1)):
++            for fragmented in (False, True):
++                with self.subTest(copies=copies, active=active, fragmented=fragmented):
++                    package = synthetic_stfs(raw, copies=copies, active=active, fragmented=fragmented)
++                    self.assertEqual(xenia_chain_payload(package), raw)
++                    replacement = bytearray(raw)
++                    replacement[0x1DD04C + 64 * 48:0x1DD04C + 64 * 48 + 4] = b"\xff\x12\x34\x56"
++                    output, receipt = subject.rehash_roster(package, bytes(replacement))
++                    self.assertEqual(reader.extract_roster_payload(output).payload, replacement)
++                    self.assertEqual(xenia_chain_payload(output), replacement)
++                    self.assertEqual(output[4:0x32C], package[4:0x32C])
++                    self.assertTrue(subject.verify_rehash(package, output, receipt)["verified"])
++                    self.assertEqual(len(receipt["hash_table_addresses_rehashed"]), 2)
++                    self.assertFalse(receipt["console_resigned"])
++                    self.assertIn("real console will reject", receipt["label"])
++
++    def test_one_level_and_all_magics(self):
++        for magic in reader.STFS_MAGICS:
++            package = synthetic_stfs(b"a" * 6000, magic)
++            output, receipt = subject.rehash_roster(package, b"b" * 6000)
++            self.assertEqual(xenia_chain_payload(output), b"b" * 6000)
++            self.assertEqual(len(receipt["hash_table_addresses_rehashed"]), 1)
++            self.assertEqual(receipt["data_blocks_rehashed"], [1, 2])
++
++    def test_metadata_payload_and_receipt_tampering_are_rejected(self):
++        source = synthetic_stfs(b"a" * 6000)
++        output, receipt = subject.rehash_roster(source, b"b" * 6000)
++        for offset in (0x344, 0xA000, 0xB000, 0xC000):
++            tampered = bytearray(output)
++            tampered[offset] ^= 1
++            with self.subTest(offset=offset), self.assertRaises(reader.StfsRosterError):
++                subject.verify_rehash(source, bytes(tampered), receipt)
++        tampered = bytearray(output)
++        tampered[4] ^= 1  # RSA signature lies outside the hash tree, but must be preserved.
++        with self.assertRaisesRegex(reader.StfsRosterError, "outside roster"):
++            subject.verify_rehash(source, bytes(tampered), receipt)
++        with self.assertRaisesRegex(reader.StfsRosterError, "data_blocks_rehashed"):
++            subject.verify_rehash(source, output, dict(receipt, data_blocks_rehashed=[]))
++        with self.assertRaisesRegex(reader.StfsRosterError, "length"):
++            subject.rehash_roster(source, b"short")
++        wrong_title = bytearray(source)
++        wrong_title[0x360:0x364] = b"TEST"
++        wrong_title = self.repair_single_table_fixture(wrong_title)
++        with self.assertRaisesRegex(reader.StfsRosterError, "not an APF saved game"):
++            subject.rehash_roster(wrong_title, b"b" * 6000)
++
++    def test_chain_incompatibility_and_shared_directory_are_refused(self):
++        source = bytearray(synthetic_stfs(b"a" * 6000))
++        source[0xA000 + 24 + 21:0xA000 + 24 + 24] = b"\xff\xff\xff"
++        source[0x381:0x395] = hashlib.sha1(source[0xA000:0xB000]).digest()
++        source[0x32C:0x340] = hashlib.sha1(source[0x344:0xA000]).digest()
++        with self.assertRaisesRegex(reader.StfsRosterError, "Xenia traversal"):
++            subject.rehash_roster(bytes(source), b"b" * 6000)
++        source = bytearray(synthetic_stfs(b"a" * 6000))
++        source[0xB02F:0xB032] = b"\0\0\0"
++        source[0xA000:0xA014] = hashlib.sha1(source[0xB000:0xC000]).digest()
++        source[0x381:0x395] = hashlib.sha1(source[0xA000:0xB000]).digest()
++        source[0x32C:0x340] = hashlib.sha1(source[0x344:0xA000]).digest()
++        with self.assertRaisesRegex(reader.StfsRosterError, "share data blocks"):
++            subject.rehash_roster(bytes(source), b"b" * 6000)
++
++    def test_boundary_offsets_match_xenia_equation(self):
++        # Exercise the original single-copy end-of-level bug and two-copy bug.
++        for copies in (1, 2):
++            r = object.__new__(reader._StfsReader)
++            r.sex = copies - 1
++            r.allocated_blocks = 28900
++            for block in (0, 169, 170, 171, 28729, 28730, 28899):
++                expected = block + (block // 170 + 1) * copies + (copies if block >= 170 else 0)
++                self.assertEqual(r._data_backing_block(block), expected)
++
++
++class LocalXeniaAuditTests(unittest.TestCase):
++    def test_pinned_source_has_no_signature_verification(self):
++        root = Path("/home/noah/.codex-tmp/xenia-slot43-build/src/xenia/vfs/devices")
++        if not root.is_dir():
++            self.skipTest("optional local Xenia source revision d09cae8d is unavailable")
++        pins = {
++            "xcontent_container_device.cc": "21ca059098c8c93fa7e0a26016ca24196d3ba3e45f29f97675887524ddde6c14",
++            "xcontent_devices/stfs_container_device.cc": "0dad581748c15cc0db9d9b5c399077a1f49c6bb461729c01523579a0b6ff5202",
++            "stfs_xbox.h": "47ed398b7267615542ea0f9036a6cf79fd6ed66db367caf39f4f64b6e0aeda4c",
++        }
++        for name, sha in pins.items():
++            self.assertEqual(hashlib.sha256((root / name).read_bytes()).hexdigest(), sha)
++        text = (root / "xcontent_container_device.cc").read_text()
++        body = text[text.index("XContentContainerDevice::Result XContentContainerDevice::ReadHeaderAndVerify("):]
++        self.assertIn("is_magic_valid()", body)
++        self.assertNotIn("signature", body)
++        self.assertNotIn("sha1", body)
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/tests/test_apf_save_custom_team_appearance.py b/tests/test_apf_save_custom_team_appearance.py
+index cf934b78..c9955481 100644
+--- a/tests/test_apf_save_custom_team_appearance.py
++++ b/tests/test_apf_save_custom_team_appearance.py
+@@ -103,12 +103,15 @@ def synthetic_save() -> bytes:
+     return bytes(data)
+ 
+ 
+-def synthetic_stfs(payload: bytes, magic: bytes = b"CON ") -> bytes:
++def synthetic_stfs(payload: bytes, magic: bytes = b"CON ", *, copies: int = 1,
++                   active: int = 0, fragmented: bool = False) -> bytes:
+     """Wrap one raw roster in a hash-valid, deliberately unsigned STFS fixture."""
+ 
+     if magic not in writer.STFS_MAGICS:
+         raise ValueError("unsupported synthetic STFS magic")
+     first_table = 0xA000
++    if copies not in (1, 2) or active not in range(copies):
++        raise ValueError("invalid table-copy configuration")
+     block_count = (len(payload) + stfs_reader.BLOCK_SIZE - 1) // stfs_reader.BLOCK_SIZE
+     allocated = block_count + 1  # block 0 is the one-block directory table
+     if allocated > stfs_reader.MAX_ALLOCATED_BLOCKS:
+@@ -117,17 +120,12 @@ def synthetic_stfs(payload: bytes, magic: bytes = b"CON ") -> bytes:
+     def first_level_backing(block: int) -> int:
+         if block < stfs_reader.HASHES_PER_TABLE:
+             return 0
+-        value = (block // stfs_reader.HASHES_PER_TABLE) * 0xAB
+-        value += 1
++        value = (block // stfs_reader.HASHES_PER_TABLE) * (170 + copies)
++        value += copies
+         return value
+ 
+     def data_backing(block: int) -> int:
+-        value = ((block + stfs_reader.HASHES_PER_TABLE) // stfs_reader.HASHES_PER_TABLE) + block
+-        if block < stfs_reader.HASHES_PER_TABLE:
+-            return value
+-        return value + (value + stfs_reader.HASHES_PER_TABLE**2) // (
+-            stfs_reader.HASHES_PER_TABLE**2
+-        )
++        return block + (block // 170 + 1) * copies + (copies if block >= 170 else 0)
+ 
+     data_addresses = [
+         first_table + data_backing(block) * stfs_reader.BLOCK_SIZE
+@@ -137,33 +135,39 @@ def synthetic_stfs(payload: bytes, magic: bytes = b"CON ") -> bytes:
+         first_table
+         + first_level_backing(index * stfs_reader.HASHES_PER_TABLE)
+         * stfs_reader.BLOCK_SIZE
++        + active * stfs_reader.BLOCK_SIZE
+         for index in range(
+             (allocated + stfs_reader.HASHES_PER_TABLE - 1)
+             // stfs_reader.HASHES_PER_TABLE
+         )
+     ]
+     top_level = 0 if allocated <= stfs_reader.HASHES_PER_TABLE else 1
+-    top_address = first_table + (0 if top_level == 0 else 0xAB) * stfs_reader.BLOCK_SIZE
+-    size = max(data_addresses + level_zero_addresses + [top_address]) + stfs_reader.BLOCK_SIZE
++    top_address = first_table + ((0 if top_level == 0 else 170 + copies) + active) * stfs_reader.BLOCK_SIZE
++    size = max(data_addresses + level_zero_addresses + [top_address]) + copies * stfs_reader.BLOCK_SIZE
+     data = bytearray(size)
+ 
+     data[:4] = magic
++    struct.pack_into(">IIQ", data, 0x344, 1, 2, len(payload))  # saved game, metadata v2, content size
+     struct.pack_into(">I", data, 0x340, first_table)
+     data[0x379] = 0x24
+-    data[0x37B] = 1  # female / single active hash-table copy
++    data[0x37B] = (1 if copies == 1 else 0) | active * 2
+     struct.pack_into("<H", data, 0x37C, 1)
+     data[0x37E:0x381] = (0).to_bytes(3, "little")
+     struct.pack_into(">I", data, 0x395, allocated)
+     struct.pack_into(">I", data, 0x399, 0)
+     struct.pack_into(">I", data, 0x3A9, 0)
++    struct.pack_into(">I", data, 0x360, 0x54540807)
++    chain = list(range(1, allocated))
++    if fragmented:
++        chain.reverse()
+ 
+     directory = bytearray(stfs_reader.BLOCK_SIZE)
+     name = b"Roster.ROS"
+     directory[: len(name)] = name
+-    directory[0x28] = len(name) | 0x40  # file + consecutive logical blocks
++    directory[0x28] = len(name) | (0 if fragmented else 0x40)
+     directory[0x29:0x2C] = block_count.to_bytes(3, "little")
+     directory[0x2C:0x2F] = block_count.to_bytes(3, "little")
+-    directory[0x2F:0x32] = (1).to_bytes(3, "little")
++    directory[0x2F:0x32] = (chain[0] if chain else 1).to_bytes(3, "little")
+     directory[0x32:0x34] = b"\xFF\xFF"
+     struct.pack_into(">I", directory, 0x34, len(payload))
+     data[data_addresses[0] : data_addresses[0] + stfs_reader.BLOCK_SIZE] = directory
+@@ -172,10 +176,11 @@ def synthetic_stfs(payload: bytes, magic: bytes = b"CON ") -> bytes:
+             index * stfs_reader.BLOCK_SIZE : (index + 1) * stfs_reader.BLOCK_SIZE
+         ]
+         padded = chunk.ljust(stfs_reader.BLOCK_SIZE, b"\0")
+-        address = data_addresses[index + 1]
++        address = data_addresses[chain[index]]
+         data[address : address + stfs_reader.BLOCK_SIZE] = padded
+ 
+     level_zero_tables: list[bytes] = []
++    links = dict(zip(chain, chain[1:] + [0xFFFFFF]))
+     table_count = len(level_zero_addresses)
+     for table_index in range(table_count):
+         table = bytearray(stfs_reader.BLOCK_SIZE)
+@@ -188,7 +193,7 @@ def synthetic_stfs(payload: bytes, magic: bytes = b"CON ") -> bytes:
+                 data[address : address + stfs_reader.BLOCK_SIZE]
+             ).digest()
+             table[entry + 0x14] = 0x80
+-            table[entry + 0x15 : entry + 0x18] = b"\xFF\xFF\xFF"
++            table[entry + 0x15 : entry + 0x18] = links.get(block, 0xFFFFFF).to_bytes(3, "big")
+         frozen = bytes(table)
+         level_zero_tables.append(frozen)
+         if top_level == 1:
+@@ -202,7 +207,7 @@ def synthetic_stfs(payload: bytes, magic: bytes = b"CON ") -> bytes:
+         for index, table in enumerate(level_zero_tables):
+             entry = index * 0x18
+             top[entry : entry + 0x14] = hashlib.sha1(table).digest()
+-            top[entry + 0x14] = 0x80
++            top[entry + 0x14] = 0x80 | active * 0x40
+             top[entry + 0x15 : entry + 0x18] = b"\xFF\xFF\xFF"
+         top_table = bytes(top)
+     data[top_address : top_address + stfs_reader.BLOCK_SIZE] = top_table
+diff --git a/tools/apf_save_custom_team_appearance.py b/tools/apf_save_custom_team_appearance.py
+index 1ae72d1b..4e138850 100644
+--- a/tools/apf_save_custom_team_appearance.py
++++ b/tools/apf_save_custom_team_appearance.py
+@@ -9,8 +9,10 @@ writer: ten HOME/AWAY ARGB values and exact eight-byte helmet/crest selectors.
+ 
+ Raw payloads are written to a new file and independently verifiable receipt.
+ For Xbox 360 STFS packages the verified inner ``Roster.ROS`` can be extracted
+-or patched into a new raw handoff file.  The signed container is never written:
+-reinjection, rehashing, and resigning still require an external save manager.
++or patched into a new raw handoff file by this CLI. The studio's separate
++roster_appearance_transfer service also offers a bounded Xenia-only STFS
++rehash through apf_stfs_roster_rehash. No route renews a console signature;
++real-console signing still requires an external save manager and owning keys.
+ """
+ 
+ from __future__ import annotations
+@@ -618,6 +620,8 @@ def verify_patch(
+         "schema": VERIFY_SCHEMA,
+         "verified": True,
+         "edit_count": len(rows),
++        "changed_slots": sorted(slot for slot in seen
++                                if source_slots[slot].appearance != output_slots[slot].appearance),
+         "changed_byte_count": len(changed),
+         "authorized_byte_count": len(allowed),
+         "claims": {
+diff --git a/tools/apf_stfs_roster_extract.py b/tools/apf_stfs_roster_extract.py
+index 6f8c20c5..e60b409a 100644
+--- a/tools/apf_stfs_roster_extract.py
++++ b/tools/apf_stfs_roster_extract.py
+@@ -198,17 +198,23 @@ class _StfsReader:
+     def _data_backing_block(self, block: int) -> int:
+         require(0 <= block < self.allocated_blocks,
+                 f"STFS data block {block} is unallocated")
+-        address = (
+-            ((block + HASHES_PER_TABLE) // HASHES_PER_TABLE) << self.sex
+-        ) + block
+-        if block < HASHES_PER_TABLE:
+-            return address
+-        if block < HASHES_PER_TABLE**2:
+-            return (
+-                address
+-                + (address + HASHES_PER_TABLE**2) // (HASHES_PER_TABLE**2)
+-            ) << self.sex
+-        raise StfsRosterError("STFS block requires an unsupported third-level hash tree")
++        # Count interleaved tables from the LOGICAL block number. Shifting
++        # the accumulated physical address doubles data offsets on writable
++        # (two-copy) packages after the first 170 blocks.
++        address = block
++        for level_base in (HASHES_PER_TABLE, HASHES_PER_TABLE**2):
++            address += ((block + level_base) // level_base) * (1 << self.sex)
++            if block < level_base:
++                break
++        return address
++
++    def level_zero_address(self, block: int) -> int:
++        if self.top_level == 0:
++            return self.top_table_address
++        parent = self.top_entries[block // HASHES_PER_TABLE]
++        return (self.first_table_address
++                + self._first_level_backing_block(block) * BLOCK_SIZE
++                + ((parent.status & 0x40) << 6))
+ 
+     def block_address(self, block: int) -> int:
+         address = self.first_table_address + self._data_backing_block(block) * BLOCK_SIZE
+@@ -228,11 +234,7 @@ class _StfsReader:
+             parent = self.top_entries[table_index]
+             require(parent.status & 0x80,
+                     "STFS level-zero hash table is not allocated")
+-            base = (
+-                self.first_table_address
+-                + self._first_level_backing_block(block) * BLOCK_SIZE
+-                + ((parent.status & 0x40) << 6)
+-            )
++            base = self.level_zero_address(block)
+             table = _slice(
+                 self.data, base, BLOCK_SIZE,
+                 f"active level-zero hash table {table_index}",
+@@ -380,7 +382,15 @@ class _StfsReader:
+                 "Roster.ROS payload exceeds the bounded extraction size")
+         if entry.file_size == 0:
+             return b""
++        blocks = self.file_blocks(entry)
++        output = b"".join(self.read_verified_block(block) for block in blocks)
++        return output[: entry.file_size]
++
++    def file_blocks(self, entry: StfsFileEntry) -> tuple[int, ...]:
++        """Resolve the declared allocation without scanning for payload bytes."""
+         blocks: list[int] = []
++        if not entry.block_count:
++            return ()
+         if entry.consecutive:
+             blocks = [entry.starting_block + index for index in range(entry.block_count)]
+             require(blocks[-1] < self.allocated_blocks,
+@@ -400,8 +410,7 @@ class _StfsReader:
+                     require(following != END_OF_CHAIN,
+                             "STFS file block chain ended early")
+                     block = following
+-        output = b"".join(self.read_verified_block(block) for block in blocks)
+-        return output[: entry.file_size]
++        return tuple(blocks)
+ 
+ 
+ def list_files(data: bytes) -> tuple[str, tuple[StfsFileEntry, ...]]:
+diff --git a/tools/apf_stfs_roster_rehash.py b/tools/apf_stfs_roster_rehash.py
+new file mode 100644
+index 00000000..5683c533
+--- /dev/null
++++ b/tools/apf_stfs_roster_rehash.py
+@@ -0,0 +1,143 @@
++"""Fixed-size Roster.ROS replacement with an active STFS SHA-1 tree rebuild.
++
++Xenia only; a real console will reject this package. No RSA signature is made
++or validated. See docs/research/apf_stfs_rehash.md for the pinned Xenia reader
++audit and the precise offline proof boundary. Emulator/game loading is
++UNWITNESSED. This module never opens a file for writing.
++"""
++from __future__ import annotations
++
++import hashlib
++from pathlib import PurePosixPath
++
++import apf_stfs_roster_extract as stfs
++
++SCHEMA = "apf2k8_stfs_roster_rehash/v1"
++XENIA_ONLY = "Xenia only; a real console will reject this package"
++RUNTIME = "UNWITNESSED: package discovery and in-game loading have not been tested"
++
++
++def _sha(data: bytes) -> str:
++    return hashlib.sha256(data).hexdigest()
++
++
++def _inventory(source: bytes):
++    reader = stfs._StfsReader(source)
++    stfs.require(stfs._u32be(source, 0x344, "content type") == 1
++                 and stfs._u32be(source, 0x360, "title ID") == 0x54540807,
++                 "Package metadata is not an APF saved game; use raw Roster.ROS")
++    stfs.require(stfs._u32be(source, 0x39D, "data file count") == 0,
++                 "Multi-file STFS packages are unsupported; use an extracted Roster.ROS")
++    # This pinned Xenia revision selects the next level at exact thresholds.
++    stfs.require(reader.allocated_blocks not in (170, 28900),
++                 "Xenia hash-level boundary is ambiguous for this allocation; use raw Roster.ROS")
++    stfs.require(reader.sex or not reader.block_separation & 2,
++                 "Single-copy STFS package selects a nonexistent secondary table")
++    entries = reader.directory_entries()
++    for index, entry in enumerate(entries):
++        # Xenia stops at the first empty row and indexes parents in its packed
++        # vector. Sparse rows or a child preceding its parent are not equivalent.
++        stfs.require(entry.index == index and (
++            entry.parent_index == 0xFFFF or entry.parent_index < index),
++            "STFS directory order disagrees with Xenia traversal; use raw Roster.ROS")
++    rosters = [e for e in entries if not e.is_directory
++               and PurePosixPath(e.path).name.casefold() == "roster.ros"]
++    stfs.require(len(rosters) == 1, "Choose a package containing exactly one Roster.ROS")
++    roster = rosters[0]
++    stfs.require(0 < roster.file_size <= stfs.MAX_ROSTER_BYTES, "Roster.ROS size is unsupported")
++    # Account for ALL directory and file allocations. A malformed package must
++    # not let a roster write silently change another file or its directory.
++    owners: set[int] = set()
++    block = reader.file_table_start
++    for _ in range(reader.file_table_block_count):
++        owners.add(block)
++        block = reader.hash_entry(block).next_block
++    for entry in entries:
++        if entry.is_directory:
++            continue
++        blocks = reader.file_blocks(entry)
++        stfs.require(not owners.intersection(blocks), "STFS files or directory share data blocks")
++        owners.update(blocks)
++        for index, block in enumerate(blocks):
++            reader.read_verified_block(block)
++            # Xenia ReadEntry follows next pointers even on contiguous files.
++            expected = blocks[index + 1] if index + 1 < len(blocks) else stfs.END_OF_CHAIN
++            stfs.require(reader.hash_entry(block).next_block == expected,
++                         "STFS file chain disagrees with Xenia traversal; use raw Roster.ROS")
++    # Verify every active leaf table and every allocated data entry, including
++    # allocations not referenced by a directory entry. Preserve unused entries.
++    for block in range(reader.allocated_blocks):
++        table = reader._level_zero_table(block)
++        entry = reader._parse_hash_entry(table, block % 170 * 24, "allocation")
++        if entry.status & 0x80:
++            reader.read_verified_block(block)
++    return reader, roster
++
++
++def _replace(source: bytes, payload: bytes) -> tuple[bytes, dict]:
++    reader, roster = _inventory(source)
++    stfs.require(len(payload) == roster.file_size,
++                 "STFS replacement must retain Roster.ROS length; use a raw roster output")
++    output = bytearray(source)
++    changed_blocks = []
++    changed_tables: set[int] = set()
++    for index, block in enumerate(reader.file_blocks(roster)):
++        start = index * stfs.BLOCK_SIZE
++        chunk = payload[start:start + stfs.BLOCK_SIZE]
++        address = reader.block_address(block)
++        if source[address:address + len(chunk)] == chunk:
++            continue
++        output[address:address + len(chunk)] = chunk  # retain last-block padding
++        leaf = reader.level_zero_address(block)
++        entry = leaf + block % 170 * 24
++        output[entry:entry + 20] = hashlib.sha1(output[address:address + 4096]).digest()
++        changed_blocks.append(block)
++        changed_tables.add(leaf)
++    stfs.require(bool(changed_blocks), "Roster.ROS already matches; no rehashed package is needed")
++    if reader.top_level == 1:
++        for table_index in sorted({block // 170 for block in changed_blocks}):
++            leaf = reader.level_zero_address(table_index * 170)
++            entry = reader.top_table_address + table_index * 24
++            output[entry:entry + 20] = hashlib.sha1(output[leaf:leaf + 4096]).digest()
++        if changed_tables:
++            changed_tables.add(reader.top_table_address)
++    top = reader.top_table_address
++    output[0x381:0x395] = hashlib.sha1(output[top:top + 4096]).digest()
++    output[0x32C:0x340] = hashlib.sha1(output[0x344:reader.first_table_address]).digest()
++    result = bytes(output)
++    return result, {
++        "schema": SCHEMA, "label": XENIA_ONLY,
++        "source_sha256": _sha(source), "output_sha256": _sha(result),
++        "payload_sha256": _sha(payload), "member": roster.path,
++        "package_kind": reader.package_kind, "size": len(result),
++        "data_blocks_rehashed": changed_blocks,
++        "hash_table_addresses_rehashed": sorted(changed_tables),
++        "header_hash_range": [0x344, reader.first_table_address],
++        "signature_bytes_preserved": source[4:0x22C] == result[4:0x22C],
++        "rsa_signature_verified": False, "console_resigned": False,
++        "xenia_signature_check": "PROVED absent in the pinned local reader; see apf_stfs_rehash.md",
++        "runtime": RUNTIME,
++    }
++
++
++def rehash_roster(source: bytes, payload: bytes) -> tuple[bytes, dict]:
++    output, receipt = _replace(source, payload)
++    receipt["verification"] = verify_rehash(source, output, receipt)
++    return output, receipt
++
++
++def verify_rehash(source: bytes, output: bytes, receipt: dict) -> dict:
++    """Reparse the output, verify active hashes, and reject every extra mutation."""
++    parsed = stfs.extract_roster_payload(output)
++    expected, expected_receipt = _replace(source, parsed.payload)
++    stfs.require(output == expected, "STFS output changed outside roster bytes and their hash chain")
++    for key, value in expected_receipt.items():
++        stfs.require(receipt.get(key) == value, f"STFS receipt {key} differs from reparse")
++    reader, _ = _inventory(output)
++    return {"verified": True, "metadata_hash_verified": True,
++            "active_hash_tables_verified": len(reader._level_zero_tables),
++            "data_blocks_verified": len(reader._verified_data_blocks),
++            "signature_verified": False, "runtime_in_game_proved": False}
++
++
++__all__ = ["SCHEMA", "XENIA_ONLY", "RUNTIME", "rehash_roster", "verify_rehash"]

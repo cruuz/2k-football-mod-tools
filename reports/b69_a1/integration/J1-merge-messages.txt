@@ -1,0 +1,14 @@
+b62268f11d9840ced810265f552c4771611647f0
+100644 74ce24f55b3777da98c40808d6e6d0f1046b964a 1	mod_editor/core/providers.py
+100644 a3d4e58e7fe3efdea12cd1e4c0423b0b02ce17d8 2	mod_editor/core/providers.py
+100644 737706fea985abc966f433c7c9cbbbfdcec6698e 3	mod_editor/core/providers.py
+100755 4f100f95ca9c2805edb093c612719a5b2555b40f 1	tools/nfl2k5_visual_mod_project.py
+100755 ec680f38e27dc36c23c6bb700e5f433f50cd7626 2	tools/nfl2k5_visual_mod_project.py
+100755 752cc810dad886c3d772039083f32a1dd16fcab9 3	tools/nfl2k5_visual_mod_project.py
+
+Auto-merging docs/mod_editor/2k5_mod_studio_changelog.md
+Auto-merging mod_editor/core/providers.py
+CONFLICT (content): Merge conflict in mod_editor/core/providers.py
+Auto-merging tools/nfl2k5_visual_mod_project.py
+CONFLICT (content): Merge conflict in tools/nfl2k5_visual_mod_project.py
+

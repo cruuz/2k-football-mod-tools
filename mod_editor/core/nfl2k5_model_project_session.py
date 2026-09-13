@@ -168,7 +168,15 @@ class ModelProjectSession(StudioSession):
             document = {"schema": BACKEND_SCHEMA, "purpose": "Built with 2K5 Mod Studio from checked model changes.", "edits": []}
         for number, record in enumerate(self.model_records):
             path = self.replacements / f"model-{number:04d}.json"
-            _replace_atomic(path, P.canonical(record))
+            payload = P.canonical(record)
+            # The Build timeline observes recipe file revisions. Publishing an
+            # unchanged recipe would make a refresh look like a new model edit.
+            try:
+                unchanged = not path.is_symlink() and path.is_file() and path.read_bytes() == payload
+            except OSError:
+                unchanged = False
+            if not unchanged:
+                _replace_atomic(path, payload)
             document["edits"].append({"kind": P.KIND, "target": record["target"], "recipe": str(path)})
         return document
 
@@ -208,8 +216,15 @@ class ModelProjectSession(StudioSession):
         with tempfile.TemporaryDirectory(prefix=".model-open-", dir=self.root) as folder:
             base = Path(folder)/"base.2k5mod"
             _copy_archive(source, base, document)
-            count = super().load_shareable_project(base)
-        self._model_records = {r["target"]: copy.deepcopy(r) for r in records}
+            pending = {r["target"]: copy.deepcopy(r) for r in records}
+            # Include models in the base loader's headroom check and atomic
+            # manifest publication. A second write after it commits would leave
+            # artwork loaded and models absent from the manifest on failure.
+            self._model_restore_pending = pending
+            try:
+                count = super().load_shareable_project(base)
+            finally:
+                self._model_restore_pending = None
+        self._model_records = pending
         self.model_source_warnings = tuple(warnings)
-        self._write_manifest()
         return count + len(records)

@@ -1,0 +1,37 @@
+diff --git a/tests/mod_editor/test_nfl2k5_equipment_import.py b/tests/mod_editor/test_nfl2k5_equipment_import.py
+index b9478cc0..22e2abda 100644
+--- a/tests/mod_editor/test_nfl2k5_equipment_import.py
++++ b/tests/mod_editor/test_nfl2k5_equipment_import.py
+@@ -98,7 +98,9 @@ class EquipmentSessionTests(unittest.TestCase):
+         path = self.root / "equipment.2k5mod"
+         self.a.save_shareable_project(path)
+         b = self.session("b")
+-        b.load_shareable_project(path)
++        # Reopening now compiles equipment; keep the real synthetic catalog active.
++        with self.f.context():
++            b.load_shareable_project(path)
+         self.assertEqual(self.mode(b), OWN_TEXTURE)
+         edit = b.canonical_document()["edits"][0]
+         self.assertEqual(edit["asset_id"], self.asset.asset_id)
+@@ -146,7 +148,9 @@ class EquipmentSessionTests(unittest.TestCase):
+         saved = self.root / "same-base.2k5mod"
+         self.a.save_shareable_project(saved)
+         b = self.session("same-base")
+-        b.load_shareable_project(saved)
++        # Reopening now compiles equipment; keep the real synthetic catalog active.
++        with self.f.context():
++            b.load_shareable_project(saved)
+         self.assertEqual(self.mode(b), OWN_TEXTURE)
+ 
+     def test_revert_all_and_undo_keep_authored_mode_and_bytes(self):
+@@ -205,7 +209,9 @@ class EquipmentSessionTests(unittest.TestCase):
+         saved = self.root / "portable.2k5mod"
+         self.a.save_shareable_project(saved)
+         reopened = self.session("portable")
+-        reopened.load_shareable_project(saved)
++        # Reopening now compiles equipment; keep the real synthetic catalog active.
++        with self.f.context():
++            reopened.load_shareable_project(saved)
+         path = reopened.current_path(other)
+         self.assertEqual(retail_source(path.read_bytes(), rgba), self.asset.asset_id)
+         span, _, receipt, _, _ = self.f.build([(other.asset_id, path)])

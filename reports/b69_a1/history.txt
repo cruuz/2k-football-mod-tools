@@ -1,0 +1,59 @@
+05d3f0b5 Beta 69: A2 report renamed per job
+7926feb2 Beta 69 A2: deliver integration report, complete standalone ledger and verified handoff evidence
+bf190455 Beta 69 A2: align teardown copy and cross-project fixtures with integrated behavior
+4f9f156e Beta 69 A2: let the historical diagnostic use the selected gate manifest
+8c2c306c Beta 69 A2: identify the CSV API writer in registry command ownership
+bebc3745 Beta 69 A2: align legacy panel/load fixtures and audit pins with applied wiring
+8293f7de Beta 69 A2: exclude read-only Build summaries from project-setting change signals
+9870f456 Beta 69 A2: verify applied historic hold and APF capability action bindings
+3f2c998a Beta 69 A2: keep synthetic equipment catalogs active through integrated load preflight
+cae4080d Merge beta 69 J7 polish last: preserve model/roster/playcalling logic and wire shared feedback
+1da5942e Merge beta 69 J9 play calling: wire schemes, spreadsheet and Never call with canonical capability pins
+d3e0b229 Merge beta 69 J6 rosters: preserve changelog, rename handoff, wire CSV and held-build preflight
+89c51e2b Beta 69 A2: apply J1 equipment and Build project wiring with live-method contracts
+7678df20 Beta 69: J1 wiring test reads the renamed WIRING_B69_J1.md
+35062ca8 Merge astra/b69-j1-equipment into local/stack-beta-69 (J1 report and wiring renamed per job; conflicts with J2 resolved by keeping both: named edits with the model-set check, the naming context with the model-kind skip, J2's model composition after J1's labelled prepare; repin)
+c43a12b5 Document J6 CSV validation and unresolved Wide Right witness requirements
+8e77c863 Prove APF scheme and formation controls; document native limits and beta-69 wiring
+b4b188a9 docs: hand off beta 69 polish and protected integration wiring
+b7ffa59d docs: record final offscreen audit and standalone validation
+5d63ee07 Complete legacy equipment receipts, native fit proofs, and protected UI handoff
+e0572e85 docs(2k5): record the negative Style 6 played report
+4acb4522 Beta 69: J2 wiring (model edits reach the shell, Build & Share and the combined build receipt; scne_gltf registry row; release allowlist; repin)
+b1da8293 fix(apf): give art and encoder dialogs a next step
+b2afa609 fix(apf): explain roster and save failures
+caf9594d fix(apf): explain playbook editor failures
+8319f75e fix(2k5): explain save and roster dialog failures
+369154b6 fix(2k5): explain playbook dialog failures
+f081bbfc fix(2k5): add next steps to asset editor failures
+118da4a0 fix(gui): normalize remaining exception dialog causes
+29ba9093 Beta 69: J2 report and wiring renamed per job
+027a87c9 Merge commit 'refs/astra/b69-j2' into local/stack-beta-69
+829eb8e5 Beta 69: J8 wiring (custom-team appearance and PS3 roster import registry rows, release allowlist, APF runtime contract for the roster appearance transfer and the Xenia-only STFS rehash)
+b6411b41 Docs: record J2 delivery commits and final model proof audit
+9fa0b137 Models: verify project round trips, shared history and protected build wiring
+5f110502 docs: keep the APF FAQ cross-product link portable
+2be6988b test: audit both studios and current guides offline
+5f06037a Beta 69: J8 report and wiring renamed per job
+313d58f1 fix: recover the cause from tracebacks and embedded build markers
+bd3394cc fix: bring APF shell errors and hover help into the shared voice
+5e30560c fix: describe APF artwork and Play Calling build results
+08357579 fix: wrap APF Stadium actions and headings at laptop widths
+d2b66126 Document J8 proof boundaries, witnesses, integration and regression results
+82416933 fix: expose control help and full captions in the studio shell
+a9d2879e Apply studio appearance to new roster saves and verify PS3 uniform carry
+2bfe709c Preserve CSV snapshot semantics and trace native completion dispatch efficiently
+e4f4547f fix: retain Game Fixes hover help without old beta captions
+169d6ec3 fix: wrap franchise check guidance and simplify its error
+8e69772e fix: keep Music actions readable in narrow windows
+49975a57 fix: describe disc contents and retain a copyable Build summary
+ab07a4e7 Add reviewed team schemes, reversible CPU exclusion, and Xenia launch patch delivery
+a186680e docs: refresh APF beta 69 first steps and community FAQ
+f5f257d2 docs: refresh 2K5 beta 69 first steps and community FAQ
+b25bb4a0 fix: explain update failures and failed browser handoffs
+c50edfcb Add exact player CSV previews and bound the historic roster archive wait
+9e9f1341 fix: show plain causes instead of exception class names
+cc61e59d Name refused project edits, validate restored equipment, and measure fit retries
+d6f8cfba Models: stage checked sparse changes in project sessions and explain paired skeleton imports
+5a9a2e14 Add bounded Xenia-only STFS roster rehash with format audit
+f445ad36 docs: record beta 69 studio polish audit before fixes

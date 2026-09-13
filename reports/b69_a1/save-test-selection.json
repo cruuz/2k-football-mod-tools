@@ -1,0 +1,8 @@
+[
+  "tests/mod_editor/test_apf_b66_appearance.py",
+  "tests/mod_editor/test_apf_ps3_roster_convert.py",
+  "tests/mod_editor/test_apf_ps3_roster_import_qt.py",
+  "tests/mod_editor/test_apf_roster_appearance_transfer.py",
+  "tests/mod_editor/test_apf_roster_appearance_transfer_qt.py",
+  "tests/mod_editor/test_b69_a1_save_boundaries.py"
+]

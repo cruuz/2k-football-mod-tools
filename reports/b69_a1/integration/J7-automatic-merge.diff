@@ -1,0 +1,220 @@
+diff --git a/ASTRA_REPORT.md b/ASTRA_B69_J7_REPORT.md
+similarity index 100%
+rename from ASTRA_REPORT.md
+rename to ASTRA_B69_J7_REPORT.md
+diff --git a/WIRING.md b/WIRING_B69_J7.md
+similarity index 100%
+rename from WIRING.md
+rename to WIRING_B69_J7.md
+diff --git a/docs/mod_editor/2k5_mod_studio_changelog.md b/docs/mod_editor/2k5_mod_studio_changelog.md
+index 67a79d6b..8b39a55d 100644
+--- a/docs/mod_editor/2k5_mod_studio_changelog.md
++++ b/docs/mod_editor/2k5_mod_studio_changelog.md
+@@ -11,17 +11,14 @@
+ 
+ Beta 69 adds planned features, answers every ESPN NFL 2K5 report in Discord after beta 68 and polishes both studios; bullets are added as each change lands.
+ 
+-<<<<<<< 1da5942e14313dd5390a14547bac14ba9887b6b1
+ - **Checked model edits belong to the project.** maumau78 reported "there is no way to save into project and make a disc if I edit 3d models" and privately asked "so \"make my disc\" is the correct way to apply all the edits right?" Models now offers Add model edit to project. One checked set counts as one project edit, saves its source paths, hashes, check and compiled byte changes in the .2k5mod, and participates in Undo and Revert All. Make disc from project includes the saved model changes with the other project edits and gameplay passes. The quick Make disc with this model path uses the same model writer. Missing or changed authoring files are named when re-checking; the saved checked bytes remain buildable. Overlapping Guardian cap choices are refused before building. PROVED with compact disc round trips and an offscreen replay of the shell/build handoff; all in-game outcomes remain UNWITNESSED.
+ - **Skeleton pair refusals name the file and the next step.** maumau78 reported "Try also re-import skeleton but keep getting this error...." The message now names the missing, unedited or mismatched LOD file, gives Blender's File > Export > glTF 2.0 > Include > Data > Custom Properties path, and explains when Geometry only accepts a single LOD. Low and high bind records are separate, so a bone-length edit still requires the coordinated pair; the shared SKEL direction table cannot update the other LOD's length. The ModelsError class prefix is removed. The paired native pose gate still passes; in-game outcomes remain UNWITNESSED.
+ - **A second player witnessed beta 68's faster builds.** maumau78 built "gameplay mods and 3D model edit" in "just few minutes compared to 50 minutes of the previuos build". This is a build-time witness alongside Coach Edwards' "5 minutes or less", not an in-game model witness. Every in-game outcome from these changes remains UNWITNESSED.
+-=======
+ - Coach Edwards: “there is no way to tell specifically what needs to change”. Error dialogs keep the cause, remove exception class names and internal progress records, and give a next step. Build & Share adds Copy Build summary for the selection, result and first error. Disc ready describes the selected contents and preserves warnings about artwork left original. This is an interface change; it does not claim to fix the equipment writer.
+ - Long Music actions stay readable on a 1366-pixel window. Options keep their explanations on hover, tabs expose their full captions, and outdated release captions are removed from current help. Both studios' pages are checked offscreen; gameplay is unchanged by this polish pass.
+ - MacDog850: “i also had to have chat gpt fix it”. The new FAQ explains reinstalling from the official Setup.exe, rebuilding, and posting the Build summary and first error. It also answers CER's dropped interceptions, Mud's menu radio request and emulator questions. Getting Started follows the current sidebar and button names.
+ 
+ - maumau78: “shoe slot 10 / style 6 is not show in-game”. The FAQ records the negative Bears result: Edit Player showed the imported design, while the played shoe stayed dark. The previous package-local colour proof was offline and did not establish that played binding. This documentation correction does not claim an equipment fix.
+->>>>>>> b4b188a9b30ab24cdfd3c88ea0b552310030384a
+ 
+ ## v1.0 RC93, beta 68: fixes for the reports after beta 66.1 (2026-09-12)
+ 
+diff --git a/docs/mod_editor/apf2k8_mod_studio_changelog.md b/docs/mod_editor/apf2k8_mod_studio_changelog.md
+index 7bb1c84d..36e9906d 100644
+--- a/docs/mod_editor/apf2k8_mod_studio_changelog.md
++++ b/docs/mod_editor/apf2k8_mod_studio_changelog.md
+@@ -4,7 +4,6 @@
+ 
+ Beta 69 carries the APF 2K8 changes made after beta 67; bullets are added as each change lands.
+ 
+-<<<<<<< 1da5942e14313dd5390a14547bac14ba9887b6b1
+ - Aszemple: “Next is how do I get the uniforms codes applied that I've already done from in the APF editor and on my rosters.” Custom Team Appearance now offers Apply my custom team appearance to this roster save. Choose raw Roster.ROS, a supported STFS package, or a decrypted PS3 roster/ZIP; review matching slots 32–39 and write a new file plus a receipt. Current controls and optional other staged slots use the disc writer's same 112-byte appearance bound per slot. The verifier reparses the output and names the slots changed. Sources are preserved; in-game appearance is UNWITNESSED.
+ - Aszemple asked whether the editor could take “a .Ros file or PS3 roster file and update the uniforms and players”. The appearance transfer now has an explicit “Xenia only; a real console will reject this package” output for supported STFS saves. PROVED offline: changed data-block and active hash-table SHA-1 repair, metadata/header hash repair, unchanged signature bytes, and synthetic extraction round trips. The pinned local Xenia reader does not check the console signature. Full package loading remains HYPOTHESIS and UNWITNESSED; no console signing key is supplied. Fixed STFS data offsets for duplicate hash tables and higher-level boundaries. Raw output remains available when package output is refused.
+ - davidhbui: “pick an in-game asset that fit my art, switch to that one in game, save, and then copy that uniform into my roster in the editor”. PS3 import now verifies all 40 teams' HOME/AWAY uniform selector records and converted colours, with exact selector before/after values and named carried/refused fields in the receipt. Jersey and shoulder codes survive conversion; custom artwork still needs its separate import. Editor-to-save overlays preserve those destination codes while changing only colours and helmet/crest selectors. Choosing a new PS3 source clears the previous Xbox appearance baseline.
+@@ -15,10 +14,8 @@ Beta 69 carries the APF 2K8 changes made after beta 67; bullets are added as eac
+ - Urianus: “Except 5-2, which is never selected if added.” The existing row-13 button now recognizes the actual `5-2:Big` category name. Bounded native matchups select added 5-2 zero times in 128 draws at row 12 and 63 times after moving it to row 13. MASTER changes affect every book; the on-field result is UNWITNESSED.
+ - Urianus: “The main limitation now, besides playcalling, is REMOVING formations”. Never call excludes an ordinary formation from the CPU lottery without deleting its plays or compacting records, with reversible project membership receipts. A bounded native sweep selects the retired record zero times over 10,240 tuples; gameplay is UNWITNESSED. It requires another formation for the affected personnel. Special formations 151–162 remain protected because a cached Hail Mary path bypasses this gate. Saved books, merges and gameplay remain separate witness requirements.
+ - Urianus: “the patch doesn't work either afaict” and “TEs are still not on 3rd”. The beta-67 installer still wrote beside Xenia while the Studio launched with a different storage root. Launch now copies both managed patches into that storage root's patches folder, removes stale managed copies on the next launch, and forwards the reviewed apply-patches switch explicitly. Fake-process tests verify the actual launch directory and arguments. This corrects patch delivery; the pass-fetch experiment still does not replace the ordinary third-down CPU selector, and gameplay is UNWITNESSED.
+-=======
+ - Urianus: “I don't understand this menu”. Error messages now keep the cause without exception class prefixes, and options carry hover help. Stadium actions keep their complete captions at laptop widths. A completed build names its authored contents and distinguishes CPU Play Calling edits from an unchanged copy. The checks are offscreen interface and receipt tests; they do not establish a new in-game result.
+ - 7ET asked for an “Offensive Scheme Install Package”. The new FAQ explains that Play Calling decides which plays get called, while Create formation and Create play already exist in the design workspace. Both authoring experiments are off by default, limited to CPU books and UNWITNESSED in-game. Getting Started now lists every current sidebar page in order and links the installation, import and emulator answers.
+->>>>>>> b4b188a9b30ab24cdfd3c88ea0b552310030384a
+ 
+ ## 0.1.0-alpha.89 — beta 68: no APF changes — 2026-09-12
+ 
+diff --git a/mod_editor/apf_studio/playcalling_editor_qt.py b/mod_editor/apf_studio/playcalling_editor_qt.py
+index 85f1154b..1aca6410 100644
+--- a/mod_editor/apf_studio/playcalling_editor_qt.py
++++ b/mod_editor/apf_studio/playcalling_editor_qt.py
+@@ -1,11 +1,8 @@
+ """Team-first CPU Play Calling workspace; all model calls run in shell workers."""
+ from __future__ import annotations
+ 
+-<<<<<<< 1da5942e14313dd5390a14547bac14ba9887b6b1
+ from pathlib import Path
+-=======
+ from mod_editor.gui.ux_text import plain_error
+->>>>>>> b4b188a9b30ab24cdfd3c88ea0b552310030384a
+ 
+ from PyQt5.QtCore import Qt, QTimer, pyqtSignal
+ from PyQt5.QtWidgets import (QAbstractItemView, QCheckBox, QComboBox, QDoubleSpinBox, QFileDialog, QFormLayout,
+diff --git a/mod_editor/capabilities/registry.v1.json b/mod_editor/capabilities/registry.v1.json
+index c53d348b..4fdabcc8 100644
+--- a/mod_editor/capabilities/registry.v1.json
++++ b/mod_editor/capabilities/registry.v1.json
+@@ -8000,8 +8000,8 @@
+           "tests/nfl2k5_b68_series.py",
+           "docs/nfl2k5_b68_t3_validation.json"
+         ],
+-        "scope": "Existing bounded native creation, draft, signing, played-XP, settings and signed-save proofs remain. The installed Supersim scheduler additionally executes uninterrupted native CPU plays, checks every outer football phase, counts hardware polls/presents, keeps the match RNG cadence, drains muted native audio sources, guards modal prompts, holds CPU snap requests, restores the full play clock, and submits native ticker glyphs. Native chosen personnel cover all 17 positions, actual K/P membership and an injury replacement. Declared clip/model inputs and empty optional overlays bound the renderer proof; no console, rasterizer, display or audio device is run. MyPlayer stat line defaults On in an enabled career; Apartment Settings offers On/Off. Bounded native proof executes one HUD call per presented gameplay frame, excludes menus and both replay channels, checks MyPlayer identity, reads live bank-0 game stats and submits real font4 glyphs. Actual game appearance remains UNWITNESSED.",
+-        "status": "not-tested"
++        "scope": "Existing bounded native creation, draft, signing, played-XP, settings and signed-save proofs remain. The installed Supersim scheduler additionally executes uninterrupted native CPU plays, checks every outer football phase, counts hardware polls/presents, keeps the match RNG cadence, drains muted native audio sources, guards modal prompts, holds CPU snap requests, restores the full play clock, and submits native ticker glyphs. Native chosen personnel cover all 17 positions, actual K/P membership and an injury replacement. Declared clip/model inputs and empty optional overlays bound the renderer proof; no console, rasterizer, display or audio device is run. MyPlayer stat line defaults On in an enabled career; Apartment Settings offers On/Off. Bounded native proof executes one HUD call per presented gameplay frame, excludes menus and both replay channels, checks MyPlayer identity, reads live bank-0 game stats and submits real font4 glyphs. Actual game appearance remains UNWITNESSED. andrethealchemist reported on 2026-09-12/13 that the previous Fast forward cancellation, possession, Apartment-setting and PAT fixes work in-game. He separately reported a preselected first play after returning to the field. These reports cover those sequences only; new beta 69 play-calling changes and other positions, saves and mode combinations remain UNWITNESSED.",
++        "status": "partial"
+       },
+       "selectors": {
+         "fields": [
+@@ -11029,7 +11029,7 @@
+       },
+       "runtime": {
+         "evidence": [],
+-        "scope": "Byte-exact transport is proved on three differently packed dumps of the same game; modified visibility is untested.",
++        "scope": "Byte-exact transport is proved on three differently packed dumps of the same game; modified visibility is untested. maumau78 reported Style 6/shoes10 visible in the Bears Edit Player preview but absent in-game on 2026-09-13. The earlier package-local colour proof is offline evidence and does not establish that played binding; preview visibility is not an in-game success.",
+         "status": "not-tested"
+       },
+       "selectors": {
+@@ -11225,7 +11225,7 @@
+       },
+       "runtime": {
+         "evidence": [],
+-        "scope": "All supported spans have offline writer proof; only a Detroit away torso target has exact positive runtime proof.",
++        "scope": "All supported spans have offline writer proof; only a Detroit away torso target has exact positive runtime proof. maumau78 reported Style 6/shoes10 visible in the Bears Edit Player preview but absent in-game on 2026-09-13. The earlier package-local colour proof is offline evidence and does not establish that played binding; preview visibility is not an in-game success.",
+         "status": "partial"
+       },
+       "selectors": {
+diff --git a/mod_editor/core/build_feedback.py b/mod_editor/core/build_feedback.py
+index 74ecbe82..eeee28d1 100644
+--- a/mod_editor/core/build_feedback.py
++++ b/mod_editor/core/build_feedback.py
+@@ -25,9 +25,9 @@ def compare(before, after):
+     """Compare freshly measured or independently verified manifest digests."""
+     changed = before != after
+     return {"status": "changed" if changed else "unchanged", "source": before, "output": after,
+-            "message": ("The output differs from the source. Review the build receipt for the selected changes."
+-                        if changed else "No changes were written. The output is an unchanged copy of the source. "
+-                        "The selected patches may already be installed; review the source and your selections.")}
++            "message": ("The copy differs from your source. Review the Build summary for its selected contents and any edits kept original."
++                        if changed else "No changes were written. This is an unchanged copy of your source. "
++                        "The selected changes may already be installed; review the source and your selections before rebuilding.")}
+ 
+ 
+ def kept_retail_notes(receipt):
+@@ -56,7 +56,7 @@ def completion(receipt):
+     elif outcome.get("status") == "changed":
+         title, message = "Disc ready", outcome["message"]
+     else:
+-        title, message = "Copy ready; changes not measured", "This receipt does not establish whether the output differs from the source."
++        title, message = "Copy ready; changes not measured", "The copy was written, but this receipt does not say whether it differs from the source. Review the Build summary before using the copy."
+     notes = kept_retail_notes(receipt)
+     if notes:
+         message += (
+diff --git a/mod_editor/core/nfl2k5_build_service.py b/mod_editor/core/nfl2k5_build_service.py
+index 44c8c09f..9219b117 100644
+--- a/mod_editor/core/nfl2k5_build_service.py
++++ b/mod_editor/core/nfl2k5_build_service.py
+@@ -1313,7 +1313,7 @@ class Nfl2k5BuildService:
+             timings["builder"] = time.monotonic() - started
+             if built.returncode != 0:
+                 raise Nfl2k5BuildError(
+-                    "The modded XISO could not be built. " + _last_message(built)
++                    "Could not make the disc copy. " + _last_message(built)
+                 )
+ 
+             verify_command = self._command(
+diff --git a/mod_editor/core/providers.py b/mod_editor/core/providers.py
+index 90106f9a..a9080b99 100644
+--- a/mod_editor/core/providers.py
++++ b/mod_editor/core/providers.py
+@@ -514,7 +514,7 @@ class Nfl2k5UnifiedVisualProvider:
+     backend_module_sha256 = "9ab6a1a04ebc05b292086f8eb18cdd42fe5089077f1f1c0e26f7ab3b8c7537ba"
+     module_pins: Mapping[str, str] = {
+         "mod_editor/core/audio_conform.py": "db40b6f28dedf1deea7fad6306fe0afebf842a5ee113d5067f6b5b7721686c0f",
+-        "mod_editor/core/build_feedback.py": "56c078f5cecf5a2d37349b15b964a6f5350341db3f55f6808a60fc3b205abf76",
++        "mod_editor/core/build_feedback.py": "2bcd6e65809444c593f66edac20a9e0d3fff43bf969da2454b8d088571e71535",
+         "mod_editor/core/build_io.py": "bb5bf2cf27bea644fa7f7ef694ff5a9368a076a04d59379fcdb568ace6167744",
+         "mod_editor/core/equipment_palette.py": "0272af0ed054919fd21624a4a2adbeec97959f78036dd5932de3ef5211b8f844",
+         "mod_editor/core/errors.py": "4624e80f063f1e7db69ec6c20d2703f01eec49728b02c88792ccb309bd742de0",
+@@ -548,7 +548,7 @@ class Nfl2k5UnifiedVisualProvider:
+         "mod_editor/core/nfl2k5_ausb_build_adapter.py": "138eccfa097da8005dca74d43c0a10808558c4a4f1702c31e8f009cc49a7ecc7",
+         "mod_editor/core/nfl2k5_ausb_fixed_slots.py": "56a39ad842d3552dd26e2089d3c859cba8b59fd61701e63f2f9265db20422d4a",
+         "mod_editor/core/nfl2k5_boot_logo.py": "c767db7cdcc7dcf363a3a78547bcc251004980bc696300b3a8a3d283482fbdaa",
+-        "mod_editor/core/nfl2k5_build_service.py": "9cc6af709a961ee731a90f329f1012b13d40ca16bbee7b21429f1fb2947213b7",
++        "mod_editor/core/nfl2k5_build_service.py": "8185c350ebd2ebb97160b1709f2f7f960c57c5ea9344bf1b57e4a6c2c662eb50",
+         "mod_editor/core/nfl2k5_build_settings.py": "aa50ce8b583ad074f689033cfc4b7b68e5a68455f805950289bd110de484abcc",
+         "mod_editor/core/nfl2k5_bump_strength.py": "79f9264fbe0813db9be66f22e35f8944e35b92ae415132d819eda50920e41bb0",
+         "mod_editor/core/nfl2k5_calendar_engine.py": "796246b2248eddda3a0e57ed791b53cc1446fe3a3128ad39397ababe873ab841",
+diff --git a/mod_editor/gui/models_panel_qt.py b/mod_editor/gui/models_panel_qt.py
+index 9370d8f2..a974321a 100644
+--- a/mod_editor/gui/models_panel_qt.py
++++ b/mod_editor/gui/models_panel_qt.py
+@@ -91,11 +91,7 @@ class _Task(QRunnable):
+         try:
+             self.signals.finished.emit(self._operation())
+         except Exception as exc:  # noqa: BLE001 - one message for the status line
+-<<<<<<< 1da5942e14313dd5390a14547bac14ba9887b6b1
+-            self.signals.failed.emit(str(exc))
+-=======
+             self.signals.failed.emit(plain_error(exc))
+->>>>>>> b4b188a9b30ab24cdfd3c88ea0b552310030384a
+ 
+ 
+ class ModelsPanel(QWidget):
+diff --git a/packaging/apf2k8-release-allowlist.txt b/packaging/apf2k8-release-allowlist.txt
+index 7b77fbf7..65587514 100644
+--- a/packaging/apf2k8-release-allowlist.txt
++++ b/packaging/apf2k8-release-allowlist.txt
+@@ -282,3 +282,8 @@ mod_editor/apf_studio/playcalling_build.py
+ mod_editor/apf_studio/playcalling_editor_qt.py
+ mod_editor/apf_studio/playcalling_patches.py
+ mod_editor/apf_studio/playcalling_service.py
++
++# Beta 69 shared UI help and product FAQ
++mod_editor/gui/ux_text.py
++mod_editor/gui/polish_qt.py
++docs/mod_editor/apf2k8_mod_studio_faq.md
+diff --git a/packaging/check_2k5_mod_studio_runtime.py b/packaging/check_2k5_mod_studio_runtime.py
+index 5bac6d94..ea247f4d 100644
+--- a/packaging/check_2k5_mod_studio_runtime.py
++++ b/packaging/check_2k5_mod_studio_runtime.py
+@@ -97,9 +97,9 @@ EXPECTED_PRIVATE_STADIUM_TEXTURES = 23_838
+ # widening Nfl2k5UnifiedVisualProvider.module_pins would misstate ownership.
+ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
+     "mod_editor/gui/audio_panel_qt.py":
+-        "64ac47e2f3d28c374d4b0b8d44e5eba16b69ce5d70bbbeb6288ddadeb2be10ed",
++        "dd3529836c4ebdc5ddf344de19edca38191f918ca341248953cb289b56c5e42e",
+     "mod_editor/gui/studio_qt.py":
+-        "3b60f0e4b991686561c60a7586289c325a10a3e5aa8f79055584dd51477904f2",
++        "919f494c9be1fa8e0cefa1f552b4950b1bb3d5a34d03f3a156ee6d316afe0393",
+     "mod_editor/studio/audio_annotations.py":
+         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
+     "mod_editor/studio/audio_replacement_pack.py":
+diff --git a/packaging/release-allowlist.txt b/packaging/release-allowlist.txt
+index 5f634a1f..8e3de2ea 100644
+--- a/packaging/release-allowlist.txt
++++ b/packaging/release-allowlist.txt
+@@ -844,3 +844,7 @@ mod_editor/gui/workspace_runtime.py
+ mod_editor/core/nfl2k5_compile_cache.py
+ tools/nfl2k5_equipment_optimal
+ tools/nfl2k5_equipment_optimal.c
++
++# Beta 69 shared UI help and product FAQ
++mod_editor/gui/polish_qt.py
++docs/mod_editor/2k5_mod_studio_faq.md

@@ -1,0 +1,12 @@
+[
+  {
+    "path": "tests/mod_editor/test_unif_color_control.py",
+    "returncode": 0,
+    "seconds": 10.514,
+    "summary": [
+      "Ran 15 tests in 9.123s",
+      "OK (skipped=2)"
+    ],
+    "log": "reports/b69_a1/uniform-session-with-inputs.log"
+  }
+]

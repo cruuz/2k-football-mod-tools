@@ -1,0 +1,9 @@
+2efa550c6aa6d97476209dd1e732f02a5409074b
+100644 fe6e2a9ae7446a8a8a878eab0480e25f09e49803 1	docs/mod_editor/2k5_mod_studio_changelog.md
+100644 5fd7ce9ac1d6a311082b6d0fdd9a791e52eb0625 2	docs/mod_editor/2k5_mod_studio_changelog.md
+100644 17f3c61b11bc476ef6d3e1f2ef1d5cbeb1af5345 3	docs/mod_editor/2k5_mod_studio_changelog.md
+
+Auto-merging docs/mod_editor/2k5_mod_studio_changelog.md
+CONFLICT (content): Merge conflict in docs/mod_editor/2k5_mod_studio_changelog.md
+Auto-merging mod_editor/core/providers.py
+

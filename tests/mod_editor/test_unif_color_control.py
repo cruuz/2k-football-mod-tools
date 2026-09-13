@@ -40,7 +40,8 @@ import nfl_uniform_color_xiso_direct_patch as xiso  # noqa: E402
 
 EXTRACTED = _REPO_ROOT / "extracted" / "ESPN NFL 2K5 (USA)" / "vc_53450030"
 SOURCE_XISO = _REPO_ROOT / "ESPN NFL 2K5 (USA).xiso.iso"
-INVENTORY = _REPO_ROOT / "reports" / "assets" / "nfl2k5_resource_chunks_v2.json"
+INVENTORY = Path(os.environ.get("NFL2K5_MODEL_INVENTORY",
+                              _REPO_ROOT / "reports/assets/nfl2k5_resource_chunks_v2.json"))
 REAL_DATA = (EXTRACTED / "0").is_file()
 
 _SESSION = (_REPO_ROOT / "mod_editor" / "studio" / "session.py").read_text(

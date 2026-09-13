@@ -1,0 +1,81 @@
+.....2K5 Mod Studio
+time: 2026-09-13 18:43:03
+python: 3.12.3 on linux
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/test_crash_report.py", line 26, in _raise
+    raise ValueError(message)
+ValueError: routed through the hook
+.Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/test_crash_report.py", line 104, in test_keyboard_interrupt_is_not_reported_as_a_crash
+    raise KeyboardInterrupt
+KeyboardInterrupt
+.2K5 Mod Studio
+time: 2026-09-13 18:43:03
+python: 3.12.3 on linux
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/test_crash_report.py", line 26, in _raise
+    raise ValueError(message)
+ValueError: boom
+...2K5 Mod Studio
+time: 2026-09-13 18:43:03
+python: 3.12.3 on linux
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/test_crash_report.py", line 26, in _raise
+    raise ValueError(message)
+ValueError: boom
+2K5 Mod Studio
+time: 2026-09-13 18:43:03
+python: 3.12.3 on linux
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/test_crash_report.py", line 159, in other
+    raise KeyError("a different place entirely")
+KeyError: 'a different place entirely'
+.2K5 Mod Studio
+time: 2026-09-13 18:43:03
+python: 3.12.3 on linux
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/test_crash_report.py", line 26, in _raise
+    raise ValueError(message)
+ValueError: repeating fault
+2K5 Mod Studio
+time: 2026-09-13 18:43:03
+python: 3.12.3 on linux
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/test_crash_report.py", line 26, in _raise
+    raise ValueError(message)
+ValueError: repeating fault
+2K5 Mod Studio
+time: 2026-09-13 18:43:03
+python: 3.12.3 on linux
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/test_crash_report.py", line 26, in _raise
+    raise ValueError(message)
+ValueError: repeating fault
+2K5 Mod Studio
+time: 2026-09-13 18:43:03
+python: 3.12.3 on linux
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/test_crash_report.py", line 26, in _raise
+    raise ValueError(message)
+ValueError: repeating fault
+2K5 Mod Studio
+time: 2026-09-13 18:43:03
+python: 3.12.3 on linux
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/test_crash_report.py", line 26, in _raise
+    raise ValueError(message)
+ValueError: repeating fault
+.......
+----------------------------------------------------------------------
+Ran 18 tests in 0.044s
+
+OK

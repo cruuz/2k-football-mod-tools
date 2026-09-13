@@ -1,0 +1,44 @@
+diff --git a/mod_editor/gui/gameplay_project_ui.py b/mod_editor/gui/gameplay_project_ui.py
+index 62c0a866..72542b75 100644
+--- a/mod_editor/gui/gameplay_project_ui.py
++++ b/mod_editor/gui/gameplay_project_ui.py
+@@ -157,5 +157,6 @@ def observe_build_choices(panel, changed):
+             widget.valueChanged.connect(changed)
+         elif isinstance(widget, QLineEdit) and widget not in (panel.source_field, panel.target_field):
+             widget.textChanged.connect(changed)
+-        elif isinstance(widget, QPlainTextEdit):
++        elif isinstance(widget, QPlainTextEdit) and not widget.isReadOnly():
++            # Build summaries are refreshed by the shell, not authored project choices.
+             widget.textChanged.connect(changed)
+diff --git a/tests/mod_editor/test_b69_a2_wiring.py b/tests/mod_editor/test_b69_a2_wiring.py
+index bdc0af2c..1fafaf66 100644
+--- a/tests/mod_editor/test_b69_a2_wiring.py
++++ b/tests/mod_editor/test_b69_a2_wiring.py
+@@ -13,6 +13,27 @@ from mod_editor.core import mod_build, nfl2k5_espn25_rosters as historic
+ 
+ 
+ class AppliedIntegrationTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        from PyQt5.QtWidgets import QApplication
++        cls.app = QApplication.instance() or QApplication([])
++
++    def test_build_summary_refresh_does_not_publish_a_build_choice(self):
++        from PyQt5.QtWidgets import QWidget, QPlainTextEdit
++        from mod_editor.gui.gameplay_project_ui import observe_build_choices
++        panel = QWidget()
++        summary = QPlainTextEdit(panel)
++        summary.setReadOnly(True)
++        notes = QPlainTextEdit(panel)
++        changes = []
++        observe_build_choices(panel, lambda: changes.append(notes.toPlainText()))
++        summary.setPlainText('Project edit index 0: Equipment / shoes01')
++        summary.setPlainText('Project edit index 0: Equipment / shoes01')
++        self.assertEqual(changes, [])
++        notes.setPlainText('Authored build notes')
++        self.assertEqual(changes, ['Authored build notes'])
++        panel.deleteLater()
++
+     def test_historic_hold_refuses_before_reading_resources_or_creating_output(self):
+         with tempfile.TemporaryDirectory() as folder:
+             target = Path(folder) / 'copy.iso'

@@ -170,6 +170,7 @@ tools/apf_save_custom_team_appearance.py
 tools/apf_save_playbook_assignments.py
 tools/apf_stfs_roster_extract.py
 tools/apf_stfs_roster_rehash.py
+docs/research/apf_stfs_rehash.md
 tools/apf_scene.py
 tools/apf_stadium_catalog_position_patch.py
 tools/apf_stadium_catalog_position_verify.py

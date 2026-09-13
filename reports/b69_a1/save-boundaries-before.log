@@ -1,0 +1,20 @@
+E.
+======================================================================
+ERROR: test_root_userdata_zip_matches_the_raw_conversion_and_preserves_source (__main__.SaveInputBoundaryTests.test_root_userdata_zip_matches_the_raw_conversion_and_preserves_source)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_save_boundaries.py", line 23, in test_root_userdata_zip_matches_the_raw_conversion_and_preserves_source
+    receipt = ps3.write_conversion(source, output)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/apf_studio/ps3_roster_convert.py", line 928, in write_conversion
+    member = find_roster_member(source)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/apf_studio/ps3_roster_convert.py", line 173, in find_roster_member
+    if name.split("/")[-1] == "USERDATA" and "-ROS" in name.split("/")[-2:-1][0] if len(name.split("/")) >= 2
+                                                       ~~~~~~~~~~~~~~~~~~~~~~^^^
+IndexError: list index out of range
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.053s
+
+FAILED (errors=1)

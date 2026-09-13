@@ -1,0 +1,102 @@
+{
+  "free_before": 81352818688,
+  "free_after": 81246027776,
+  "files": [
+    {
+      "path": "reports/assets/nfl2k5_sleeve_tset_compatibility.json",
+      "bytes": 2244430,
+      "sha256": "72a25d908135322a6c15c1f19f2f575224ab224c8b8c4c6969f5b4ba2359ae2b",
+      "source": "/tmp/astra-b69-a1-stage-2k5/reports/assets/nfl2k5_sleeve_tset_compatibility.json"
+    },
+    {
+      "path": "reports/assets/nfl2k5_live_face_texture_compatibility.json",
+      "bytes": 5188081,
+      "sha256": "812db90df6b50b4491d8701a0ceb13b54a26ea7afadc2fbd86c4715b15aa9e09",
+      "source": "/tmp/astra-b69-a1-stage-2k5/reports/assets/nfl2k5_live_face_texture_compatibility.json"
+    },
+    {
+      "path": "reports/assets/nfl2k5_player_portrait_compatibility.json",
+      "bytes": 9446076,
+      "sha256": "c0f792df4aa03a9a0c4e670c7b214da53a97f19526c84fd52765137120713481",
+      "source": "/tmp/astra-b69-a1-stage-2k5/reports/assets/nfl2k5_player_portrait_compatibility.json"
+    },
+    {
+      "path": "reports/assets/menu_state_trace.json",
+      "bytes": 39938,
+      "sha256": "ecd93117a3a808a16697c23ae10e3225953bcb4dabda30afabdc5c02911974f1",
+      "source": "/tmp/astra-b69-a1-stage-2k5/reports/assets/menu_state_trace.json"
+    },
+    {
+      "path": "reports/assets/scorebug_presentation_audit.json",
+      "bytes": 46512,
+      "sha256": "57bcbb1c0ff8e6c2376565365aba523e4c2fe8cdb66d3a7058daa84993c2ccd1",
+      "source": "/tmp/astra-b69-a1-stage-2k5/reports/assets/scorebug_presentation_audit.json"
+    },
+    {
+      "path": "reports/assets/nfl2k5_p8_texture_inventory.json",
+      "bytes": 8338553,
+      "sha256": "01b030e9f7b58786a76ba23a66d59a485024e7001656b03d595991aec0c8cf3f",
+      "source": "/tmp/astra-b69-a1-stage-2k5/reports/assets/nfl2k5_p8_texture_inventory.json"
+    },
+    {
+      "path": "reports/assets/nfl2k5_jersey_tset_compatibility.json",
+      "bytes": 2155779,
+      "sha256": "046d03546242c11478d39b48d7f6f80b5f2009c85641b5c81abdaa6f8171cacd",
+      "source": "/tmp/astra-b69-a1-stage-2k5/reports/assets/nfl2k5_jersey_tset_compatibility.json"
+    },
+    {
+      "path": "reports/assets/nfl2k5_audo_import_capacity.json",
+      "bytes": 3759183,
+      "sha256": "1d9ebb31a8822d113ae0fc8ec028e4ff652ccb7cbcf9d6d1d870aa58ef65f556",
+      "source": "/tmp/astra-b69-a1-stage-2k5/reports/assets/nfl2k5_audo_import_capacity.json"
+    },
+    {
+      "path": "reports/assets/nfl2k5_team_select_card_inventory.json",
+      "bytes": 4855883,
+      "sha256": "3a1d3543afbf851331389228bc910ba453d749c04f7cf12f6471ba0cde64bf13",
+      "source": "/tmp/astra-b69-a1-stage-2k5/reports/assets/nfl2k5_team_select_card_inventory.json"
+    },
+    {
+      "path": "reports/assets/nfl2k5_live_helmet_txtr_compatibility.json",
+      "bytes": 2572552,
+      "sha256": "1b7bdbb67a28b9d70531c3af80ff67574a7d60ef421bcf42ba9422f0f278e6ff",
+      "source": "/tmp/astra-b69-a1-stage-2k5/reports/assets/nfl2k5_live_helmet_txtr_compatibility.json"
+    },
+    {
+      "path": "reports/assets/nfl2k5_pants_tset_compatibility.json",
+      "bytes": 2329500,
+      "sha256": "cab15d4f03c69f5143edd40f567ec038d2425bba80bf9dd1a85b642e144ac1ac",
+      "source": "/tmp/astra-b69-a1-stage-2k5/reports/assets/nfl2k5_pants_tset_compatibility.json"
+    },
+    {
+      "path": "reports/assets/nfl2k5_live_numbers_nameplate_compatibility.json",
+      "bytes": 63407409,
+      "sha256": "d122c1e7de4fbad42c725969dce3473fc16a100e75d68ae5fb5d64077f536cd4",
+      "source": "/tmp/astra-b69-a1-stage-2k5/reports/assets/nfl2k5_live_numbers_nameplate_compatibility.json"
+    },
+    {
+      "path": "reports/assets/uniform_texture_sharing.v2.json",
+      "bytes": 415528,
+      "sha256": "9e137a17d0a5faaf6c12f35b7503193f583f4a97e7370deced28fefadf7c26cf",
+      "source": "/tmp/astra-b69-a1-stage-2k5/reports/assets/uniform_texture_sharing.v2.json"
+    },
+    {
+      "path": "reports/assets/nfl_main_menu_live_state.json",
+      "bytes": 18483,
+      "sha256": "a5d4b64962fefb2e5dbee4768d120172c0642405df2a0137759e2bce3737b89a",
+      "source": "/tmp/astra-b69-a1-stage-2k5/reports/assets/nfl_main_menu_live_state.json"
+    },
+    {
+      "path": "reports/assets/nfl2k5_create_team_field_art_inventory.json",
+      "bytes": 1870444,
+      "sha256": "6014d0ca882c76f0bba68a14338e357d7f33a745e9818856c57da7979ed1a4f5",
+      "source": "/tmp/astra-b69-a1-stage-2k5/reports/assets/nfl2k5_create_team_field_art_inventory.json"
+    },
+    {
+      "path": "reports/assets/nfl2k5_audo_family_labels.json",
+      "bytes": 72257,
+      "sha256": "ea66da8ea539114563de5694599a6046bde78661556846a34f8addeb31d544dd",
+      "source": "/tmp/astra-b69-a1-stage-2k5/reports/assets/nfl2k5_audo_family_labels.json"
+    }
+  ]
+}

@@ -108,6 +108,8 @@ PRODUCT_MODULES = (
     'mod_editor.core.apf2k8_playcall_model',
     'mod_editor.core.apf2k8_master_writer',
     'mod_editor.core.apf2k8_team_tendency',
+    'mod_editor.core.apf2k8_offensive_schemes',
+    'mod_editor.core.apf2k8_formation_calling',
     'mod_editor.core.apf2k8_playcall_curves_patch',
     'mod_editor.core.apf2k8_xex',
     'mod_editor.core.xex_codec',

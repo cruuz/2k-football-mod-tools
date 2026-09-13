@@ -1,0 +1,6 @@
+................
+----------------------------------------------------------------------
+Ran 16 tests in 0.102s
+
+OK
+NFL2K5_PS2_SAVE_VERIFY_SELFTEST_PASS decoder=independent ecc=independent accepts=sealed-declared rejects=stale-crc,undeclared-edit,sidecar

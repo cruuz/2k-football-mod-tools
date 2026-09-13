@@ -32,7 +32,8 @@ import nfl2k5_visual_mod_project as V
 from nfl2k5_xiso_fixture import SyntheticXiso
 
 PACK = Path(os.environ.get('NFL2K5_RETAIL_EXTRACTION', '/media/noah/Storage/for codex 1.0/extracted'))/'ESPN NFL 2K5 (USA)/vc_53450030/0'
-INVENTORY = ROOT/'reports/assets/nfl2k5_resource_chunks_v2.json'
+INVENTORY = Path(os.environ.get('NFL2K5_MODEL_INVENTORY',
+                               ROOT/'reports/assets/nfl2k5_resource_chunks_v2.json'))
 
 
 class RecordTests(unittest.TestCase):
