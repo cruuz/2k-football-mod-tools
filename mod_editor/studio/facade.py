@@ -769,8 +769,8 @@ class Nfl2k5StudioFacade:
         visual_catalog: Nfl2k5ProductVisualCatalog | None = None,
         source_cache: Nfl2k5SourceCache | None = None,
         build_service: Nfl2k5BuildService | None = None,
-        session_factory: Callable[[SourceCache, Nfl2k5UniformCatalog], StudioSession]
-        = StudioSession,
+        session_factory: Callable[[SourceCache, Nfl2k5UniformCatalog], StudioSession] | None
+        = None,
         xemu_command: Sequence[str] | None = None,
         process_launcher: Callable[..., object] = subprocess.Popen,
         universal_index_factory: Callable[[SourceCache], Nfl2k5UniversalAssetIndex]
@@ -801,7 +801,8 @@ class Nfl2k5StudioFacade:
         self._visual_catalog = visual_catalog or supplied_uniform_catalog
         self.source_cache = source_cache or Nfl2k5SourceCache()
         self.build_service = build_service or Nfl2k5BuildService()
-        self.session_factory = session_factory
+        from mod_editor.core.nfl2k5_model_project_session import ModelProjectSession
+        self.session_factory = session_factory or ModelProjectSession
         # A caller-supplied command wins (tests, packaging). Otherwise the
         # user's own choice comes first and auto-detection is the fallback.
         self._xemu_command_pinned = xemu_command is not None
@@ -891,6 +892,26 @@ class Nfl2k5StudioFacade:
             if cache is None:
                 return None
             return (Path(cache.pack0), Path(cache.inventory))
+
+    def stage_model_edit(self, source, compiled, files, *, options=None, pinned_sources=None):
+        """Add a checked Models result as one project edit and one Undo action."""
+        from mod_editor.core import nfl2k5_model_project as model_project
+        record = model_project.make_record(source, compiled, files, options, pinned_sources)
+        with self._lock:
+            session = self._require_session()
+            paths = self.models_source_paths
+            if paths is None or tuple(Path(p).resolve() for p in paths) != (
+                    Path(source.index_path).resolve(), Path(source.inventory_path).resolve()):
+                raise ValidationError("The loaded game changed after the model check. Check the model again.")
+            session.stage_model(record)
+            self._last_build = None
+        return StudioOperationResult("Added model edit to project: " + record["summary"])
+
+    @property
+    def model_project_plan(self):
+        from mod_editor.core.nfl2k5_model_project import plan_rows
+        with self._lock:
+            return plan_rows(self._session)
 
     @property
     def source_sha256(self) -> str | None:
@@ -3636,7 +3657,9 @@ class Nfl2k5StudioFacade:
                 f"{'s' if annotation_count != 1 else ''}"
             )
         return StudioOperationResult(
-            f"Loaded {' and '.join(parts)} from {source.name}. "
+            "\n".join(getattr(candidate, "model_source_warnings", ()))
+            + ("\n" if getattr(candidate, "model_source_warnings", ()) else "")
+            + f"Loaded {' and '.join(parts)} from {source.name}. "
             + (
                 "Build when you are ready."
                 if replacement_count else

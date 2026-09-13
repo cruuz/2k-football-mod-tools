@@ -237,15 +237,21 @@ class RetailTests(unittest.TestCase):
         hi = self.folder/M.body_set_file_name(self.bs.entry_for('hi_body'))
         for missing in (lo,hi):
             missing.unlink()
-            with self.assertRaisesRegex(M.ModelsError,S.PAIR_REASON):
+            with self.assertRaisesRegex(M.ModelsError,S.PAIR_REASON) as error:
                 M.compile_body_set_import(self.source,self.bs,self.folder,import_skeleton=True)
+            self.assertIn(str(missing), str(error.exception))
+            self.assertIn('File > Export > glTF 2.0 > Include > Data > Custom Properties', str(error.exception))
+            self.assertIn('Geometry only', str(error.exception))
             self.reset_files()
         bone = next(b for b in S.BONES if b.name=='left_forearm')
         doc = copy.deepcopy(self.docs['o3c113'])
         author(doc,self.transforms['o3c113'],S.target_positions(self.transforms['o3c113'],bone,1.05))
         S._json(lo,doc)
-        with self.assertRaisesRegex(M.ModelsError,S.PAIR_REASON):
+        with self.assertRaisesRegex(M.ModelsError,S.PAIR_REASON) as error:
             M.compile_body_set_import(self.source,self.bs,self.folder,import_skeleton=True)
+        self.assertIn('Unedited skeleton in ' + str(hi), str(error.exception))
+        self.assertIn('separate bind records', str(error.exception))
+        self.assertIn('Geometry only does not import bone-length edits', str(error.exception))
 
     def test_high_derived_pivots_can_be_regenerated_and_edited_head_refuses(self):
         bone = next(b for b in S.BONES if b.name=='left_forearm')

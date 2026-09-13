@@ -72,6 +72,20 @@ class VisualModProjectTests(unittest.TestCase):
             ],
         }
 
+    def test_compiled_model_row_pins_only_the_recipe(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            recipe = root / "compiled.json"
+            recipe.write_bytes(b'{}')
+            value = {"schema": project.SCHEMA, "purpose": "checked Models edit",
+                     "edits": [{"kind": "model_edit", "target": "player-body-o3", "recipe": "compiled.json"}]}
+            opened = project.read_project(self.write_project(root, value))
+            self.assertEqual(project.project_asset_paths(opened), [recipe])
+            self.assertEqual(project.pin_reports({"model_edit"}), {})
+            self.assertEqual(set(project.pin_project_inputs(opened)), {recipe.resolve()})
+            with self.assertRaisesRegex(project.ProjectError, "invalid model"):
+                project.validate_edit_shape({**value["edits"][0], "offset": 0}, 0)
+
     def test_all_edit_shapes_and_relative_png_pin(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -292,6 +306,8 @@ class VisualModProjectTests(unittest.TestCase):
                 "abbreviation": "CDX", "city_abbreviation": "CDX"}
 
     def test_team_identity_expands_to_four_fixed_spans(self) -> None:
+        if not project.REPORTS['team_identity'].is_file():
+            self.skipTest(f"Private team_identity audit absent: {project.REPORTS['team_identity']}")
         results = project.build_team_identity_imports(
             self.team_identity_edit(), project.REPORTS["team_identity"])
         self.assertEqual(len(results), 4)
@@ -303,6 +319,8 @@ class VisualModProjectTests(unittest.TestCase):
         self.assertTrue(all(item[4]["asset_code"] == "09" for item in results))
 
     def test_team_identity_overlength_is_refused(self) -> None:
+        if not project.REPORTS['team_identity'].is_file():
+            self.skipTest(f"Private team_identity audit absent: {project.REPORTS['team_identity']}")
         edit = self.team_identity_edit()
         edit["city"] = "FarTooLongForDetroit"
         with self.assertRaisesRegex(project.ProjectError, "allocation"):
@@ -320,6 +338,8 @@ class VisualModProjectTests(unittest.TestCase):
                 project.read_project(path)
 
     def test_forged_team_identity_report_is_refused(self) -> None:
+        if not project.REPORTS['team_identity'].is_file():
+            self.skipTest(f"Private team_identity audit absent: {project.REPORTS['team_identity']}")
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             value = json.loads(project.REPORTS["team_identity"].read_bytes())
@@ -353,6 +373,8 @@ class VisualModProjectTests(unittest.TestCase):
                 "jersey_number": 42}
 
     def test_player_roster_expands_to_three_fixed_spans(self) -> None:
+        if not project.REPORTS['player_roster'].is_file():
+            self.skipTest(f"Private player_roster audit absent: {project.REPORTS['player_roster']}")
         results = project.build_player_roster_imports(
             self.player_roster_edit(), project.REPORTS["player_roster"])
         self.assertEqual(len(results), 3)
@@ -365,6 +387,8 @@ class VisualModProjectTests(unittest.TestCase):
         self.assertEqual(results[-1][4]["replacement_jersey_word"], "0x00080950")
 
     def test_player_roster_overlength_is_refused(self) -> None:
+        if not project.REPORTS['player_roster'].is_file():
+            self.skipTest(f"Private player_roster audit absent: {project.REPORTS['player_roster']}")
         edit = self.player_roster_edit()
         edit["first_name"] = "FarTooLong"
         with self.assertRaisesRegex(project.ProjectError, "allocation"):
@@ -469,6 +493,8 @@ class VisualModProjectTests(unittest.TestCase):
                 project.read_project(path)
 
     def test_scorebug_report_is_hash_pinned(self) -> None:
+        if not project.REPORTS['scorebug_texture'].is_file():
+            self.skipTest(f"Private scorebug_texture audit absent: {project.REPORTS['scorebug_texture']}")
         pins = project.pin_reports({"scorebug_texture"})
         self.assertEqual(set(pins), {"scorebug_texture"})
         self.assertEqual(
@@ -477,6 +503,8 @@ class VisualModProjectTests(unittest.TestCase):
         )
 
     def test_portrait_and_crib_use_distinct_pinned_metadata(self) -> None:
+        if not project.REPORTS['player_portrait'].is_file():
+            self.skipTest(f"Private player_portrait audit absent: {project.REPORTS['player_portrait']}")
         pins = project.pin_reports({"player_portrait", "crib_team_photo"})
         self.assertEqual(set(pins), {"player_portrait", "crib_team_photo"})
         self.assertNotEqual(pins["player_portrait"].path,
@@ -512,6 +540,10 @@ class VisualModProjectTests(unittest.TestCase):
         )
 
     def test_forged_player_reports_are_refused(self) -> None:
+        if not project.REPORTS['player_roster'].is_file():
+            self.skipTest(f"Private player_roster audit absent: {project.REPORTS['player_roster']}")
+        if not project.REPORTS['player_portrait'].is_file():
+            self.skipTest(f"Private player_portrait audit absent: {project.REPORTS['player_portrait']}")
         for kind in ("player_roster", "player_portrait"):
             with self.subTest(kind=kind), tempfile.TemporaryDirectory() as temporary:
                 root = Path(temporary)
@@ -542,6 +574,8 @@ class VisualModProjectTests(unittest.TestCase):
                     project.REPORTS[kind] = original
 
     def test_cross_pack_portrait_target_is_retained(self) -> None:
+        if not project.REPORTS['player_portrait'].is_file():
+            self.skipTest(f"Private player_portrait audit absent: {project.REPORTS['player_portrait']}")
         _, _, target = project.portrait_targets.select_target(
             "4070", project.REPORTS["player_portrait"])
         self.assertEqual(len(target.span_segments), 2)
@@ -664,6 +698,8 @@ class VisualModProjectTests(unittest.TestCase):
                 edit, self.sparse_roster_view(shared_names=True))
 
     def test_legacy_identity_writer_now_accepts_shorter_bounded_values(self) -> None:
+        if not project.REPORTS['team_identity'].is_file():
+            self.skipTest(f"Private team_identity audit absent: {project.REPORTS['team_identity']}")
         edit = self.team_identity_edit()
         edit.update({"city": "D", "nickname": "L", "abbreviation": "D",
                      "city_abbreviation": "D"})

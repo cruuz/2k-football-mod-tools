@@ -75,7 +75,8 @@ class WiringTests(unittest.TestCase):
         receipt={'changed_bones':[{'bone':'left_forearm','before_cm':20.,'after_cm':21.}],
                  'changed_bind_lengths':[{'member':'o3c114','bone':'lhand','before_cm':20.,'after_cm':21.}]}
         result=M.CompiledModelSet(3,skeleton_plan=B.BonePlan((),receipt))
-        with patch.object(M,'compile_body_set_import',return_value=result) as compile_set:
+        with patch.object(M,'compile_body_set_import',return_value=result) as compile_set, \
+             patch.object(M,'find_body_set_files',return_value={}):
             p.compile_edited(Path('export/lo_body_o3c113.gltf'))
         self.assertEqual(compile_set.call_args.args[2],Path('export'))
         self.assertTrue(compile_set.call_args.kwargs['import_skeleton'])
