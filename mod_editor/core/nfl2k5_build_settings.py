@@ -26,6 +26,8 @@ FEATURE_KEYS += (
     "scorebug_runtime", "scorebug_folder", "music_policy", "music_unlock", "music_userlist",
     "music_project", "music_library", "commentary", "name", "author", "notes",
 )
+FEATURE_KEYS += ("weather_plan", "weather_haze", "coin_defer", "decided_clock",
+                 "decided_clock_margin", "decided_clock_seconds", "cpu_scrambles")
 MUSIC_KEYS = ("music_shuffle", "music_shuffle_selection")
 
 

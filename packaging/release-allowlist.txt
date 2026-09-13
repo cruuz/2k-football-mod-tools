@@ -848,3 +848,21 @@ tools/nfl2k5_equipment_optimal.c
 # Beta 69 shared UI help and product FAQ
 mod_editor/gui/polish_qt.py
 docs/mod_editor/2k5_mod_studio_faq.md
+
+# Beta 69: MyCareer, weather and modern game rules
+mod_editor/core/nfl2k5_my_career_prospects.py
+mod_editor/core/nfl2k5_weather.py
+mod_editor/core/nfl2k5_weather_haze.py
+mod_editor/core/nfl2k5_rules_patch.py
+mod_editor/core/nfl2k5_coin_defer.py
+mod_editor/core/nfl2k5_coin_defer_code.py
+mod_editor/core/nfl2k5_decided_clock.py
+mod_editor/core/nfl2k5_decided_clock_code.py
+mod_editor/core/nfl2k5_cpu_scrambles.py
+mod_editor/core/nfl2k5_cpu_scrambles_code.py
+tools/nfl2k5_weather_editor.py
+tools/nfl2k5_weather_time_of_day.py
+tools/nfl2k5_weather_native_probe.py
+tools/nfl2k5_modern_rules.py
+docs/research/nfl2k5_weather_time_of_day.md
+docs/research/nfl2k5_b69_rules.md

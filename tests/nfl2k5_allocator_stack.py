@@ -36,6 +36,7 @@ from mod_editor.core import nfl2k5_cpu_money_downs as money_downs
 from mod_editor.core import nfl2k5_franchise_edit_player as edit_player
 from mod_editor.core import nfl2k5_accelerated_clock as accelerated_clock
 from mod_editor.core import nfl2k5_helmet_finish as helmet_finish
+from mod_editor.core import nfl2k5_weather_haze as weather_haze
 from mod_editor.core import nfl2k5_coin_defer as coin_defer
 from mod_editor.core import nfl2k5_decided_clock as decided_clock
 from mod_editor.core import nfl2k5_cpu_scrambles as cpu_scrambles
@@ -101,7 +102,7 @@ def owner_calls(*, read_option_diagnostic=False):
               (practice_screen, {}), (abilities, dict(abilities_off_week=7)), (qb_spy, {}), (calendar, {}),
               (read_option, dict(diagnostic=read_option_diagnostic)), (franchise_2026, {}), (senior_bowl, {}), (animation_xbe, {}), (guardian, {}),
               (my_career, {}), (crib_reclaim, {}), (autosave, {}), (coverage_trail, {}), (seven, {}), (deep_zone, {}), (playbook_pair, {}), (weekly_prep, {}), (money_downs, {}), (edit_player, {}),
-              (screen_hooks, {}), (AcceleratedClockOn, {}), (helmet_finish, {}),
+              (screen_hooks, {}), (AcceleratedClockOn, {}), (helmet_finish, {}), (weather_haze, {}),
               (coin_defer, {}), (decided_clock, {}), (cpu_scrambles, {}),
               (arena_growth, dict(created_teams_extra=2)))
 
@@ -229,6 +230,13 @@ def manifest_for_allocated_union(manifest, retail, allocated):
             if manifest.overlaps(va, va+len(before), exclude_owner=jukebox_list.OWNER):
                 raise AssertionError('Crib collection loop overlaps another owner')
         spans += jukebox_list.reservations(allocated)
+    if weather_haze.status(allocated) == "applied":
+        weather_haze.verify(allocated)
+        for reservation in weather_haze.reservations(allocated):
+            start, end = int(reservation["start"], 0), int(reservation["end"], 0)
+            if manifest.overlaps(start, end, exclude_owner=weather_haze.OWNER):
+                raise AssertionError("Weather haze overlaps another owner")
+            spans.append(reservation)
     if helmet_finish.status(allocated) == 'applied':
         for va, before, after in helmet_finish.SITES:
             if image.read(va, len(before)) != before or installed_image.read(va, len(after)) != after:

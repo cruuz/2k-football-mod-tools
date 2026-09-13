@@ -65,7 +65,7 @@ class PanelTests(unittest.TestCase):
         self.assertEqual(self.page.position.count(), career.POSITION_COUNT)
         self.assertEqual(self.page.position.currentData(), 0)
         self.assertEqual([self.page.template.itemText(i) for i in range(self.page.template.count())],
-                         ["Pocket QB", "Scrambling QB", "Balanced QB"])
+                         ["Scrambling QB", "Gunslinger QB", "Balanced QB", "Pocket QB"])
         self.assertTrue(self.page.contract.text().startswith("QB: proved"))
         self.page.position.setCurrentIndex(16)
         self.assertEqual(self.page.position.currentText(), "DE (Defensive End)")
@@ -90,7 +90,7 @@ class PanelTests(unittest.TestCase):
             self.finish()
         self.assertEqual(prepare.call_args.args, ("source.zip", "new-folder"))
         self.assertEqual(prepare.call_args.kwargs, dict(first="My", last="Player", position=3, template=1,
-                                                        port=2, camera=1, starter_lock=False, scheme="retail"))
+                                                        port=2, camera=1, starter_lock=False, scheme="retail", prospect_tier=0))
         self.assertIn("(WR)", self.page.result.text())
         self.assertIn("Game Modes", self.page.result.text())
 

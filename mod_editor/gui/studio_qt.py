@@ -3099,6 +3099,7 @@ class StudioMainWindow(QMainWindow):
             # explanations, written through mod_build.
             self._gameplay_patches_panel = GameplayPatchesPanel(self.facade)
             self._gameplay_patches_panel.open_anniversary.connect(self._open_rosters_anniversary)
+            self._gameplay_patches_panel.open_weather.connect(self._open_weather_editor)
             self._connect_gameplay_build()
             # The Xbox save editor (sliders + franchise year) is a gameplay tool, not a
             # uniform tool: one instance, moved here from Uniforms & Equipment (GP-02).
@@ -9131,6 +9132,10 @@ class StudioMainWindow(QMainWindow):
         self._gameplay_build_link = GameplayBuildLink(
             build, gameplay, self._gameplay_build_changed,
             suspended=lambda: self._restoring_music_playlist)
+
+    def _open_weather_editor(self) -> None:
+        self.open_workspace("build_share")
+        self._build_panel._open_weather_editor()
 
     def _espn25_plan_saved(self, path: str) -> None:
         """A saved Anniversary plan is a project choice: tick it on Build and mark the project dirty."""

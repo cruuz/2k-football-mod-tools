@@ -1,4 +1,4 @@
-"""Execute the proposed protected panel in memory; do not edit protected files."""
+"""Exercise the integrated MyCareer page, signed exports and Build dependencies."""
 from pathlib import Path
 import importlib.util
 import os
@@ -11,7 +11,14 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
-from tools.mycareer_mode.b69_wiring import panel_source, build_source
+def panel_source():
+    source = (ROOT / 'mod_editor/gui/my_career_panel_qt.py').read_text()
+    return source, source
+
+
+def build_source():
+    source = (ROOT / 'mod_editor/core/mod_build.py').read_text()
+    return source, source
 
 
 @unittest.skipUnless(importlib.util.find_spec('PyQt5'), 'PyQt5 required for the proposed panel')
