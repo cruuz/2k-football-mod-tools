@@ -38,6 +38,10 @@ class EditorTests(previous.SchemeSessionTests):
         with patch('mod_editor.apf_studio.playcalling_editor_qt.QFileDialog.getSaveFileName',return_value=(str(target),'CSV')):
             self.panel.scheme_export.click()
         self.assertIn(b'Air Coryell',target.read_bytes())
+        with patch('mod_editor.apf_studio.playcalling_editor_qt.QFileDialog.getSaveFileName',return_value=(str(target),'CSV')), patch('mod_editor.apf_studio.launcher._atomic_bytes',side_effect=PermissionError('folder is read-only')):
+            self.panel.scheme_export.click()
+        self.assertIn('Choose a writable folder and export again',self.panel.notice.text())
+        self.assertIn(b'Air Coryell',target.read_bytes())
         self.panel.undo_button.click()
         self.assertFalse(self.facade.session.modifications)
         self.panel.master_group.setChecked(True)

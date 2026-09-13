@@ -604,7 +604,11 @@ class ApfPlayCallingEditor(QWidget):
             path, _ = QFileDialog.getSaveFileName(self, "Export play call spreadsheet", "apf-play-calls.csv", "CSV spreadsheet (*.csv)")
             if path:
                 from .launcher import _atomic_bytes
-                _atomic_bytes(Path(path), payload)
+                try:
+                    _atomic_bytes(Path(path), payload)
+                except OSError as exc:
+                    self.notice.setText(f"Could not save the spreadsheet: {exc}. Choose a writable folder and export again.")
+                    return
                 self.notice.setText("Exported current staged play calls to " + path + ". Gameplay is UNWITNESSED.")
         self._task("Make play call spreadsheet", lambda p: self.facade.playcalling_scheme_csv(team, p), ready)
 

@@ -1,0 +1,108 @@
+{
+  "grade": "PROVED pinned bytes; string presence is not an editable policy lever",
+  "image_sha256": "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf",
+  "limits": "No proved tempo, snap-count, weather-dependent run/pass ratio or coin-toss policy field in the inspected selector/book surface. Executable-wide absence is NOT proved.",
+  "personnel_storage": "Category records and eleven role bytes are MASTER+44, stride16, reached through book+7E0C. The six fallback offsets are XEX-resident.",
+  "schema": "apf_b69_control_audit/v1",
+  "spans": [
+    {
+      "end_va_exclusive": "848608B0",
+      "purpose": "independent lineup row search",
+      "sha256": "a1a08362f8e78470ac016acc46aa07500f16068c0bf5689161b9ceb113eb4e73",
+      "start_va": "84860730"
+    },
+    {
+      "end_va_exclusive": "84867938",
+      "purpose": "ordinary requested row",
+      "sha256": "aac613335914bead61d36112ba85f02b3986aa3ea287abd18d3b496049e5881e",
+      "start_va": "84867600"
+    },
+    {
+      "end_va_exclusive": "8486A720",
+      "purpose": "situation adjustment",
+      "sha256": "547b4f15b8f2593f8223eaabc255a9edcb2c78368169061b1df92c91003eccdf",
+      "start_va": "8486A1F8"
+    },
+    {
+      "end_va_exclusive": "8486B2D0",
+      "purpose": "category lottery",
+      "sha256": "d77e8b03d85bb2a18dd1568c70b9e8ff605d93b83c57c97c7d5b3652c4137812",
+      "start_va": "8486AEB0"
+    },
+    {
+      "end_va_exclusive": "84A89BC8",
+      "purpose": "MASTER category pointers from book mask",
+      "sha256": "76e509e31b88db74dacbd11b56ffbfc7938655c162281e16c5385f5bf6731ae6",
+      "start_va": "84A89B40"
+    },
+    {
+      "end_va_exclusive": "84A8A3FC",
+      "purpose": "record B membership",
+      "sha256": "5aa3916144fb8cd0bbadff2cb5a62df7e67aa0cb66ab8102affa3f31a3416dc4",
+      "start_va": "84A8A330"
+    },
+    {
+      "end_va_exclusive": "84A8B4DC",
+      "purpose": "category row read from MASTER",
+      "sha256": "b5226626dbe58f01d2490d12da509f00fc8bcafdf37b8aef6eac594481ea95e2",
+      "start_va": "84A8B438"
+    },
+    {
+      "end_va_exclusive": "8486BD90",
+      "purpose": "supplied-play formation resolution",
+      "sha256": "85a1e1f6a5547107b3681eb3d1f238bc79214f9e74e89a28e1cd6d27cba464cf",
+      "start_va": "8486BC08"
+    },
+    {
+      "end_va_exclusive": "84864EBC",
+      "purpose": "Hail Mary constructor cache",
+      "sha256": "fb2833fc44711d911a87e18536549b589b8680b1929608bc03844ee460cf8ba7",
+      "start_va": "84864E90"
+    },
+    {
+      "end_va_exclusive": "8486BE48",
+      "purpose": "cached Hail Mary special branch after predicate",
+      "sha256": "f4f8f3fc555a289cc46a0e7e5c30f0fd368224d30edb3c1169278b5b9a01dab7",
+      "start_va": "8486BE14"
+    }
+  ],
+  "strings": {
+    "Coin Toss": [
+      "84615C80"
+    ],
+    "Huddle": [
+      "84507EAC",
+      "8452A3D8",
+      "8452C6E0",
+      "845ECE3C",
+      "845ECFFE",
+      "845ED046",
+      "845ED08E",
+      "845ED0D6",
+      "845ED100",
+      "845F984C",
+      "845F9A5A",
+      "845F9D42",
+      "845F9D92",
+      "845F9DEA",
+      "8460BDC6",
+      "8461F42A"
+    ],
+    "Snap Count": [],
+    "Tempo": [],
+    "Weather": [
+      "84604EF8",
+      "84604F08",
+      "84604F44",
+      "846116CC"
+    ]
+  },
+  "xex_lineup_offsets": [
+    1,
+    -1,
+    2,
+    -2,
+    3,
+    -3
+  ]
+}
