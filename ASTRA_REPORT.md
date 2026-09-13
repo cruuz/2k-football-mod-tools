@@ -333,3 +333,21 @@ reopen it, combine it with his real texture/gameplay edits, and build via Make d
 from project. Also check the named pair error using his reported one-LOD folder,
 then test a properly paired skeleton export. Every played result still needs a
 separate witness.
+
+## Explicit-path commits
+
+- `d6f8cfba`: Models project staging core, facade/button integration and actionable
+  paired-skeleton error.
+- `9fa0b137`: compiled-change validation, shared Undo/Revert All, source pins,
+  standalone tests, compact-disc proof, changelog and protected wiring handoff.
+
+Final proof source-hash audit: `MODEL_PROJECT_PROOF_PINS_PASS 7`.
+Final equality audit: geometry 98,644 changed bytes; paired skeleton 328,771
+changed bytes; both project SHA-256s equal their quick-path SHA-256s.
+Final pre-commit repin: `applied 0 pin update(s)`. Working source diffs and the
+protected wiring patch pass whitespace/applicability checks. Shared Git metadata became read-only when committing the final report addendum
+(`index.lock: Read-only file system`). The two implementation commits above are
+already on the requested branch. `ASTRA_J2.bundle` carries those commits plus the
+report-only follow-up, committed with an explicit path using isolated writable
+Git metadata under the system temporary directory. The shared Git metadata was
+not changed by that fallback. No push was performed.
