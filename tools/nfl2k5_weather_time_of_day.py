@@ -58,6 +58,8 @@ PINS = (
     (0x17A6D0, 452, "effective-attribute loop through precipitation block"),
     (0x1DB968, 124, "weather-dependent rating table blend"),
     (0xE610A0, 46, "stadium and created-field filename formats"),
+    (0x1C7659, 123, "contact value through hold-onto-ball and Fumble slider tables to random test"),
+    (0x1C5550, 34, "native probability random comparison"),
 )
 
 
@@ -203,9 +205,17 @@ def native_receipt(source, xbe_path):
         penalty_cases.append(dict(temperature=temperature, precipitation=precipitation,
                                   descriptor_flags=flags, base=.8,
                                   result=machine.readf(machine.STACK+0x10)))
+    contact_cases = []
+    for temperature, precipitation in ((70, 0), (70, .5), (20, .5)):
+        machine.conditions(temperature=temperature, precipitation=precipitation)
+        machine.f32(machine.STACK+0x18, .05)
+        machine.run(0x1C75B7, stop=0x1C7659)
+        contact_cases.append(dict(temperature=temperature, precipitation=precipitation,
+                                  base=.05, intermediate=machine.readf(machine.STACK+0x18)))
     return dict(schema="nfl2k5.weather.native.v1", label=weather.LABEL, runtime_witnessed=False, schedule=schedule,
                 climate_samples=cases, edited_climate=dict(values=selected, suffixes=suffixes, verifier=receipt),
                 haze_cases=haze_cases, haze_verifier=haze_receipt, rating_penalty_cases=penalty_cases,
+                contact_weather_cases=contact_cases,
                 limits="Retail RNG with synthetic seeds and stadium rows; native selector and camera field copies. "
                        "No frontend/controller lifecycle, save reload, GPU submission, rendering or gameplay witness.")
 

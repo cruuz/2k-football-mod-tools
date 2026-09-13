@@ -122,6 +122,14 @@ class NativeWeatherTests(unittest.TestCase):
             machine.run(0x17A84B, ebx=flag, stop=0x17A894)
             self.assertAlmostEqual(machine.readf(machine.STACK+0x10), expected, places=6)
 
+    def test_weather_interpolates_contact_probability_before_rating_and_fumble_slider(self):
+        machine = Machine(self.payload, self.row)
+        for temperature, precip, expected in ((70, 0, .05), (70, .5, .065), (20, .5, .075)):
+            machine.conditions(temperature=temperature, precipitation=precip)
+            machine.f32(machine.STACK+0x18, .05)
+            machine.run(0x1C75B7, stop=0x1C7659)
+            self.assertAlmostEqual(machine.readf(machine.STACK+0x18), expected, places=6)
+
     def test_haze_writer_reparse_undo_foreign_and_no_code_changes(self):
         after, _ = h.apply(self.payload)
         self.assertEqual(h.status(after), "applied")
