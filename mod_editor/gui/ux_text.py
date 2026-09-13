@@ -142,7 +142,7 @@ def fix_hint(message: str) -> str | None:
 
 
 # These patterns recognize diagnostics coming from workers, never product copy.
-_CLASS_PREFIX = re.compile(r"\b[A-Za-z_][A-Za-z0-9_.]*(?:Error|Exception):\s*")
+_CLASS_PREFIX = re.compile(r"\b(?:[A-Za-z_][A-Za-z0-9_.]*)?(?:Error|Exception):\s*")
 _PHASE_LINE = re.compile(r"(?:NFL2K5_)?BUILD" r"_PHASE\b[^\n]*")
 
 
@@ -167,7 +167,7 @@ def failure_body(message: object, *, hint: str | None = None,
     if not step:
         step = "Review the selected file and options, then try again. If it still fails, copy this message and share it on the Discord."
     lines = [cause, step]
-    if source_unchanged:
+    if source_unchanged and "Your original game disc was not changed." not in cause:
         lines.append("Your original game disc was not changed.")
     return "\n\n".join(lines)
 

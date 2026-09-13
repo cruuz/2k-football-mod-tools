@@ -41,9 +41,21 @@ class StringHygieneTests(unittest.TestCase):
                     failures.append(f'{path.relative_to(ROOT)}:{node.lineno}: {node.value[:100]}')
         self.assertEqual(failures, [])
 
+    def test_dialogs_do_not_display_exception_objects_directly(self):
+        failures = []
+        for path in gui_paths():
+            for node in ast.walk(ast.parse(path.read_text(encoding='utf-8'))):
+                if (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+                        and isinstance(node.func.value, ast.Name)
+                        and node.func.value.id == 'QMessageBox' and len(node.args) > 2
+                        and ast.unparse(node.args[2]) in ('str(exc)', 'str(error)', 'str(e)')):
+                    failures.append(f'{path.relative_to(ROOT)}:{node.lineno}')
+        self.assertEqual(failures, [], 'Use the shared cause and next-step formatter.')
+
     def test_worker_causes_survive_without_progress_or_class_names(self):
         cases = {
             'Nfl2k5BuildError: The disc could not be built. NFL2K5_BUILD_PHASE validate_source seconds=0.3': 'The disc could not be built.',
+            'Error: Pick a source.': 'Pick a source.',
             'ModelsError: Edit both exported files.': 'Edit both exported files.',
             'Nfl2k5BuildError: PermissionError: Choose a writable folder.': 'Choose a writable folder.',
             'NFL2K5_BUILD_PHASE validate_source seconds=0.423\nValueError: Shoe art is too large.': 'Shoe art is too large.',
