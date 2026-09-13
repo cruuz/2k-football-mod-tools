@@ -1,0 +1,187 @@
+[
+  {
+    "backend": {
+      "command": "python3 tools/nfl_all_texture_xiso_workflow.py --source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> --manifest <manifest.json> --plan <plan.json> --index <extracted vc_53450030/0>",
+      "module": "tools/nfl_all_texture_xiso_workflow.py",
+      "operation": "write"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "docs/research/nfl2k5_all_texture_replacement.md",
+      "reports/assets/nfl2k5_all_txtr_inventory_v2.json",
+      "reports/assets/nfl2k5_p8_texture_inventory.json",
+      "mod_editor/data/nfl2k5_uniform_equipment_export_catalog.v1.json",
+      "mod_editor/core/nfl2k5_uniform_equipment_writer.py",
+      "ASTRA_EQUIPMENT_TEXTURE_CHAIN_REPORT.md",
+      "mod_editor/data/nfl2k5_equipment_chain_pins.v1.json",
+      "tests/mod_editor/test_nfl2k5_equipment_texture_chain.py",
+      "tests/mod_editor/test_nfl2k5_equipment_texture_native.py",
+      "tests/mod_editor/test_nfl2k5_equipment_retail_roundtrip.py",
+      "tests/mod_editor/test_nfl2k5_equipment_consumers.py",
+      "ASTRA_B68_T2_REPORT.md",
+      "tests/mod_editor/test_b69_j1_build.py",
+      "tests/mod_editor/test_b69_j1_fit.py",
+      "tests/mod_editor/test_b69_j1_native.py",
+      "ASTRA_REPORT.md"
+    ],
+    "game": "nfl2k5_xbox",
+    "gui": {
+      "default_enabled": true,
+      "expose": true,
+      "mode": "edit",
+      "reason": "All 11,395 standalone textures have fixed-span composed-XISO writers: 7,315 P8 targets plus 4,080 explicit-size A1R5G5B5 player strips. The P8 set includes all 1,585 raw aggregate menu-logo/mini-card slots and all 170 franchise/draft logo surfaces. The retail p005 span crossing packs 0/1 is staged as one transactional two-piece logical edit. The separate 28,530 package-local socks, pads, gloves, long-sleeve, shoe, and wristband P8 palettes remain writable."
+    },
+    "id": "nfl2k5.textures.all_p8",
+    "input_constraints": [
+      "The PNG must match the retail texture's exact width and height.",
+      "The catalog keeps all 11,395 standalone targets editable: 7,315 reviewed P8 targets and all 4,080 reviewed explicit-size A1R5G5B5 p001..p006/p011..p016 player strips. Outer 581 p005 is a proved transactional two-piece span across physical packs 0 and 1. A8R8G8B8, DXT1, VC_P8_LINEAR, crowdbase, seat, and unreviewed A1R5G5B5 layouts remain refused.",
+      "The 1,585 team-linked slots in logos.cdf, mini.cdf, and flipchip.cdf are raw P8 fixed-slot resources: imports preserve their wrapper, descriptor/system bytes, exact resource span, and 96-byte slot padding, regenerate only swizzled indices plus palette, and never invoke VC-LZ. The 170 franchise-office and draft/PDA logo resources retain their exact compressed P8 spans.",
+      "All Textures also edits 28,530 reviewed package-local socks, elbow-pad, glove, long-sleeve, shoe, and wristband P8 palettes. Each import preserves that TSET's shared retail index/mip chain and every unselected sibling palette and decoded image.",
+      "Socks, gloves and shoes can own a selected independent mip chain; new imports default to that choice. Global equipment rows offer All teams only. The beta-69 bounded native cache fill, HOME/AWAY lookup and field selector bind shoes10/Style 6 through separate clean and _mud rows; the earlier Style 3/shoes09 selector proof remains narrower; missing local names fall back to the newest loaded package. maumau78 reported a Style 6 Edit Player success and Bears in-game failure on beta 68; that report remains unresolved. Package, clean/mud state, roster transport and GPU visibility need a played retest. Original-size recognized retail artwork preserves its palette and complete mip chain, including legacy imports now compiled as an exact no-op. Unhonourable restored equipment groups are refused before publishing a loaded session. Fit refusals report measured byte shortfalls and offer a checked smaller-size retry when available. A smaller size and fewer shades lose detail. No larger-allocation option is shipped: chunk-loader growth alone does not prove archive relocation. Wrapper +0x14 and unselected sibling images remain exact. All current in-game outcomes are UNWITNESSED.",
+      "Compressed replacements are recompressed into the original byte span, while reviewed raw replacements retain the complete fixed-slot structure; an image that cannot satisfy its owning transport is refused rather than moving anything on the disc.",
+      "Targets are addressed by outer package index and texture name. Uniform and menu-presentation targets also carry typed team names, abbreviations, asset code, style, physical-set selectors, archive name, and consumer scope; unresolved stadium targets still use package indices and preview identification.",
+      "Franchise-office team logos are presentation assets, not midfield art. Stock midfield center_logo exists only in the create-team packages."
+    ],
+    "portme": [
+      "Capture a changed texture in an emulator; transport is proved, on-screen visibility is not.",
+      "Extend beyond P8 and the reviewed A1 player-strip layout once fixed-span rebuilds exist for other Xbox formats.",
+      "Recover the remaining stadium package filenames so non-uniform standalone targets can be named rather than indexed."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Distribute user-authored PNGs and plans; users patch a copy of their own retail image.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "evidence": [],
+      "scope": "Byte-exact transport is proved on three differently packed dumps of the same game; modified visibility is untested.",
+      "status": "not-tested"
+    },
+    "selectors": {
+      "fields": [
+        {
+          "allowed": "0..4322",
+          "name": "outer_index",
+          "required": true
+        },
+        {
+          "allowed": "one catalogued P8 name or reviewed A1 player-strip name",
+          "name": "texture",
+          "required": true
+        },
+        {
+          "allowed": "a PNG matching the retail dimensions",
+          "name": "png",
+          "required": true
+        }
+      ],
+      "notes": "Standalone targets use one named TXTR inside one outer package. Raw menu aggregates additionally resolve through their exact fixed slot and preserve its 96-byte post-resource padding. Package-local equipment uses tset:<outer>:<chunk>:<reference>:<name>; edits sharing a TSET are grouped into one non-overlapping physical span. The one TXTR crossing packs 0/1 is staged as two ordered pieces and verified again as one complete logical span; unproved formats remain refused."
+    },
+    "source_container": {
+      "format": "raw or VC-LZ standalone P8 TXTR, reviewed explicit-size linear A1R5G5B5 player-strip TXTR, plus compressed package-local shared-index P8 TSET resources inside XISO",
+      "hash_pins": [
+        "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9"
+      ],
+      "resource": "11,395 editable reviewed standalone TXTR targets, including 2,536 uniform-presentation variants, 1,585 raw aggregate menu-logo/mini-card slots, 170 franchise/draft logo surfaces, and 4,080 player strips with one transactional cross-pack span, plus 28,530 reviewed package-local uniform-equipment P8 palette references",
+      "retail_file": "ESPN NFL 2K5 (USA).xiso.iso"
+    },
+    "summary": "Replace all 11,395 standalone textures, including every uniform package's four P8 presentation variants, all raw aggregate menu-logo/mini-card slots, every franchise/draft logo surface, and all 4,080 explicit-size A1 player strips through a transactional cross-pack route where needed; also replace 28,530 package-local uniform-equipment palettes while preserving fixed spans and all unselected siblings.",
+    "surface": "textures",
+    "title": "NFL 2K5 All Textures \u2014 standalone and uniform-equipment editing",
+    "validation_command": "bash tools/validate_nfl_all_texture_lane.sh"
+  },
+  {
+    "backend": {
+      "command": "python3 tools/nfl2k5_visual_mod_project.py build --project <project.json> --source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> --manifest <manifest.json> --artifact-dir <artifact-dir>",
+      "module": "tools/nfl2k5_visual_mod_project.py",
+      "operation": "write"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "docs/research/nfl2k5_unified_visual_mod_project.md",
+      "docs/research/nfl_player_portrait_pipeline.md",
+      "docs/research/nfl_player_roster_modding.md",
+      "docs/research/nfl2k5_ps2_fixture_protocol.md",
+      "docs/research/uniform_texture_sharing.md",
+      "reports/assets/nfl2k5_uniform_inventory.json",
+      "reports/assets/uniform_texture_sharing.v2.json",
+      "reports/gameplay_tuning/nfl2k5_ps2_fixture_availability.json",
+      "ASTRA_EQUIPMENT_TEXTURE_CHAIN_REPORT.md",
+      "mod_editor/data/nfl2k5_equipment_chain_pins.v1.json",
+      "tests/mod_editor/test_nfl2k5_equipment_texture_chain.py",
+      "tests/mod_editor/test_nfl2k5_equipment_texture_native.py",
+      "tests/mod_editor/test_nfl2k5_equipment_retail_roundtrip.py",
+      "tests/mod_editor/test_nfl2k5_equipment_consumers.py",
+      "ASTRA_B68_T2_REPORT.md",
+      "tests/mod_editor/test_b69_j1_build.py",
+      "tests/mod_editor/test_b69_j1_fit.py",
+      "tests/mod_editor/test_b69_j1_native.py",
+      "ASTRA_REPORT.md"
+    ],
+    "game": "nfl2k5_xbox",
+    "gui": {
+      "default_enabled": true,
+      "expose": true,
+      "mode": "edit",
+      "reason": "The unified writer composes proved visual, identity, roster, portrait, Crib, Stadium, package-local equipment palette, fixed Menu Back, and 849 additional exact standalone-audio spans into one copied XISO."
+    },
+    "id": "nfl2k5.uniforms.all_visual",
+    "input_constraints": [
+      "Torso and pants are exact 512x256 RGBA8 PNG; sleeves are 128x128; live helmets are 256x256.",
+      "Digits use each selected target's authored 32x32 or 64x64 layout; the nameplate atlas is the real horizontal 1024x32 strip. Dimensions, mips, format, and fixed allocations cannot change.",
+      "Player-roster edits expose only same-allocation first/last names, masked jersey number, and per-player None/Clear/Dark face-shield type. Face shield is not a HOME/AWAY tint; reserved value 3 is refused, loaded saves may override the disc seed, and membership, position, face/head ID, ratings, and pointers remain unchanged.",
+      "Player portraits are exact 128x128 RGBA8 PNGs selected by a proved four-digit numeric portrait ID; cross-pack slots are reconstructed as bounded physical spans.",
+      "Crib Team Photos are exact 128x128 RGBA8 PNGs selected by a canonical crib_team_photo:##_photo_0# selector; all five fixed P8 mips are regenerated.",
+      "The Stadium texture route accepts an exact 64x64 RGBA8 PNG only for nfl2k5.stadium.o3280.c0005.scene2648.texture0002 (cement01); all 33 linked surfaces change together, and fixed-allocation compression overflow is refused.",
+      "Socks, gloves and shoes can own a selected independent mip chain; new imports default to that choice. Global equipment rows offer All teams only. The beta-69 bounded native cache fill, HOME/AWAY lookup and field selector bind shoes10/Style 6 through separate clean and _mud rows; the earlier Style 3/shoes09 selector proof remains narrower; missing local names fall back to the newest loaded package. maumau78 reported a Style 6 Edit Player success and Bears in-game failure on beta 68; that report remains unresolved. Package, clean/mud state, roster transport and GPU visibility need a played retest. Original-size recognized retail artwork preserves its palette and complete mip chain, including legacy imports now compiled as an exact no-op. Unhonourable restored equipment groups are refused before publishing a loaded session. Fit refusals report measured byte shortfalls and offer a checked smaller-size retry when available. A smaller size and fewer shades lose detail. No larger-allocation option is shipped: chunk-loader growth alone does not prove archive relocation. Wrapper +0x14 and unselected sibling images remain exact. All current in-game outcomes are UNWITNESSED.",
+      "Menu Back accepts only mono PCM16LE at exactly 16,000 Hz and 5,696 frames; it is encoded into the one proved fixed AUDO payload while preserving its wrapper and metadata.",
+      "Additional standalone audio accepts any of 849 non-Menu-Back catalog asset IDs plus a strict PCM16LE WAV matching that row's exact channel count, rate, and frame count; 697 alias-related rows carry a prominent warning because their runtime cue meaning remains unproved.",
+      "Equal decoded uniform content across selectors is not shared storage: all 3,170 audited torso, pants, sleeve, and live-helmet targets have distinct non-overlapping XISO spans.",
+      "Every target must exist in the canonical compatibility inventory; compressed artwork that does not fit is refused.",
+      "Build failures name the active phase, original project edit index, page, part, uniform set and texture. The Build list enumerates all canonical project edits and ranks changes observed in the current session newest first; old archives have no historical edit times, which the list explicitly discloses."
+    ],
+    "portme": [
+      "Runtime-capture every supported family and selector class.",
+      "Add unsupported uniform accessories, metrics, models, UVs, selector colors, and arbitrary resource growth only after separate proofs."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "A public mod contains canonical project JSON and user-created PNGs; every user supplies the pinned retail XISO and builds locally.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "evidence": [],
+      "scope": "All supported spans have offline writer proof; only a Detroit away torso target has exact positive runtime proof.",
+      "status": "partial"
+    },
+    "selectors": {
+      "fields": [
+        {
+          "allowed": "torso, sleeve, pants, live_helmet, live_number_nameplate, team_select, live_face, create_team_field_art, team_identity, player_roster, player_portrait, crib_team_photo, crib_standalone_texture, crib_scene_texture, crib_scene_geometry, play_assignment_route, play_formation_create, play_create, play_formation_link, scorebug_texture, stadium_texture, stadium_geometry, p8_texture, uniform_equipment_texture, unif_color, roster_team_text, roster_player_text, universal_fixed_text, menu_back_audio, audo_audio, ausb_audio",
+          "name": "kind",
+          "required": true
+        },
+        {
+          "allowed": "kind-specific canonical selector fields",
+          "name": "target",
+          "required": true
+        }
+      ],
+      "notes": "The project schema rejects duplicate targets, overlaps, unknown fields, symlinks, changed reports, and unsupported SHAP geometry."
+    },
+    "source_container": {
+      "format": "layout-identical copied XISO with fixed-span resource edits",
+      "hash_pins": [
+        "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9"
+      ],
+      "resource": "audited visual/data edit classes, bounded Stadium SCNE textures, 28,530 package-local equipment P8 palettes, one legacy fixed AUDO payload, and 849 additional standalone AUDO fixed allocations across VC archive packs",
+      "retail_file": "ESPN NFL 2K5 (USA).xiso.iso"
+    },
+    "summary": "Build one verified copied NFL 2K5 XISO containing a composed set of supported visual, text, roster, portrait, Crib, Stadium, package-local equipment, Menu Back, and exact standalone-audio physical-slot edits.",
+    "surface": "uniforms",
+    "title": "NFL 2K5 unified visual/data/audio mod project",
+    "validation_command": "bash tools/validate_nfl2k5_visual_mod_project.sh"
+  }
+]

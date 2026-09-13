@@ -171,6 +171,25 @@ class UniformEquipmentWriterError(ValueError):
     """A logical selector, private source, PNG, or fixed span is unsafe."""
 
 
+class EquipmentFitError(UniformEquipmentWriterError):
+    """Measured compressed overflow, with a separately checked retry choice."""
+
+    def __init__(self, budget, required, attempts, suggestion=None):
+        self.budget = budget
+        self.required = required
+        self.attempts = attempts
+        self.suggestion = suggestion
+        message = (f"Equipment art cannot fit: it missed the {budget:,}-byte span by {required - budget:,} bytes "
+                   f"({required:,} bytes required at the smallest measured encoding). ")
+        if suggestion:
+            message += (f"{suggestion['width']} x {suggestion['height']} at "
+                        f"{suggestion['colours']} colours would fit for {suggestion['asset_id']}. "
+                        "Choose Try that to check and import that size. Fine detail and shades will change.")
+        else:
+            message += "No checked smaller size fits. Simplify the artwork and import it again."
+        super().__init__(message)
+
+
 def _require(condition: bool, message: str) -> None:
     if not condition:
         raise UniformEquipmentWriterError(message)
@@ -581,6 +600,7 @@ def _rebuild_grown_video(template_span: bytes, candidate: bytes):
     # chain need a different distance/length split than detailed shared art.
     # This changes only the lossless transport, never a sibling's decoded data.
     bit_candidates = tuple(dict.fromkeys((original.offset_bits, 10, 11, 12)))
+    smallest_required = None
     for offset_bits in bit_candidates:
         try:
             encoded, _info = compress_vc_lz(
@@ -595,19 +615,19 @@ def _rebuild_grown_video(template_span: bytes, candidate: bytes):
                 raise
             from mod_editor.core.nfl2k5_equipment_lz import compress_equipment_optimal
 
-            try:
-                encoded = compress_equipment_optimal(
-                    candidate, stream_tag=original.stream_tag, offset_bits=offset_bits,
-                    max_encoded_size=chunk.stored_size,
-                )
+            # Give the helper enough room to return the optimal stream even
+            # on a miss. A bounded rejection used to rerun the same search in
+            # Python and discarded the exact required size.
+            encoded = compress_equipment_optimal(
+                candidate, stream_tag=original.stream_tag, offset_bits=offset_bits,
+                max_encoded_size=4 * 1024 * 1024,
+            )
+            smallest_required = min(smallest_required or len(encoded), len(encoded))
+            if len(encoded) <= chunk.stored_size:
                 strategy = "optimal_token_parse"
                 break
-            except TxtrError as optimal_error:
-                if not (str(optimal_error).startswith("VC-LZ stream is ")
-                        and " exceeds " in str(optimal_error)):
-                    raise
-                if offset_bits == bit_candidates[-1]:
-                    raise
+    else:
+        raise TxtrError(f"VC-LZ stream is {smallest_required} bytes, exceeds {chunk.stored_size}-byte bound")
     padding = chunk.stored_size - len(encoded)
     minimum = minimum_vc_lz_overlap_scratch(encoded, chunk.stored_size, len(candidate))
     scratch = chunk.overlap_scratch_bytes
@@ -838,6 +858,7 @@ def _compile_group(
     authored: dict[int, tuple[EquipmentTarget, bytes, bytes, list[Any]]],
     independent: set[int],
     retail: dict[int, tuple[TextureInfo, bytes, bytes, list[Any]]] | None = None,
+    *, suggest_fit: bool = True, fit_reference: int | None = None,
 ) -> _CompiledGroup:
     textures, indices = _validate_layout(decoded, chunk, rows)
     retail = retail or {}
@@ -941,6 +962,7 @@ def _compile_group(
                 "maximum_palette_entries": maximum,
                 "palette_entries": entries,
                 "result": "vc_lz_overflow",
+                "required_bytes": int(message.split()[3]) if message.startswith("VC-LZ stream is ") else None,
             })
             continue
         rebuilt_decoded = bytes(candidate)
@@ -955,13 +977,48 @@ def _compile_group(
             "result": "fit",
         })
         break
-    _require(
-        rebuilt_decoded is not None and rebuilt_span is not None,
-        f"This equipment art cannot fit inside the retail {chunk.stored_size:,}-byte TSET "
-        + ("while keeping its complete smaller images and edge coverage. " if independent
-           else "even with a two-colour palette. ")
-        + "Choose a smaller game image, fewer colours or simpler shapes and try again.",
-    )
+    if rebuilt_decoded is None or rebuilt_span is None:
+        suggestion = None
+        # Retry the complete group, retaining every other edit. A suggestion
+        # must actually pass the codec, scratch, mip and sibling checks.
+        if suggest_fit:
+            from mod_editor.core.nfl2k5_digit_texture import make_digit_mips
+            from mod_editor.core.nfl2k5_equipment_import_intent import with_import_mode
+
+            references = requested_independent - set(retail)
+            if fit_reference is not None:
+                references &= {fit_reference}
+            for reference in sorted(references, reverse=True):
+                target, payload, rgba, _levels = authored[reference]
+                current_scale = import_settings(payload, target.asset_id, rgba)[1]
+                all_levels = make_digit_mips(rgba, target.width, target.height, target.mip_levels)
+                all_levels[0] = replace(all_levels[0], rgba=rgba)
+                for scale in (2, 4):
+                    if scale <= current_scale:
+                        continue
+                    levels = [replace(level, level=n) for n, level in enumerate(all_levels[scale.bit_length() - 1:])]
+                    if not levels:
+                        continue
+                    alternative = dict(authored)
+                    alternative[reference] = (target, with_import_mode(payload, target.asset_id, rgba,
+                        independent=True, scale=scale), rgba, levels)
+                    donor = {key: value for key, value in retail.items() if key != reference}
+                    try:
+                        checked = _compile_group(template_span, chunk, decoded, decode_info, rows,
+                            alternative, requested_independent, donor, suggest_fit=False)
+                    except EquipmentFitError:
+                        continue
+                    suggestion = {"asset_id": target.asset_id, "scale": scale,
+                        "width": levels[0].width, "height": levels[0].height,
+                        "colours": checked.attempts[-1]["maximum_palette_entries"],
+                        "encoded_bytes": checked.rebuild_info.recompressed_bytes}
+                    break
+                if suggestion:
+                    break
+        sizes = [attempt["required_bytes"] for attempt in attempts if attempt.get("required_bytes") is not None]
+        if not sizes:
+            raise UniformEquipmentWriterError("Equipment artwork cannot fit while retaining the complete mip chain and edge coverage. Simplify the artwork or explicitly choose a smaller game image and import it again.")
+        raise EquipmentFitError(chunk.stored_size, min(sizes), tuple(attempts), suggestion)
     assert rebuild_info is not None
 
     decoded_roundtrip, roundtrip_info = decode_chunk(
@@ -1125,7 +1182,9 @@ def build_unified_uniform_equipment_imports(
     pack_hashes: dict[str, str] | None = None,
     catalog_path: Path = DEFAULT_CATALOG,
     compile_cache: EquipmentCompileCache | None = None,
-) -> tuple[bytes, list[tuple[str, bytes]], dict[str, Any], str, dict[str, Any]]:
+    preflight_only: bool = False,
+    fit_asset_id: str | None = None,
+) -> _CompiledGroup | tuple[bytes, list[tuple[str, bytes]], dict[str, Any], str, dict[str, Any]]:
     """Compile logical edits sharing one TSET into one fixed physical span.
 
     ``compile_cache`` lets one build reuse the compiled bytes of a retail span
@@ -1249,7 +1308,9 @@ def build_unified_uniform_equipment_imports(
                          and (source.width, source.height) == (target.width, target.height),
                          "Retail equipment export selector or dimensions are not reviewed")
                 retail[reference] = _retail_artwork(archive, source, groups, rgba)
-        compiled = _compile_group(template_span, chunk, decoded, decode_info, rows, authored, independent, retail)
+        preferred = by_id.get(fit_asset_id) if fit_asset_id is not None else None
+        compiled = _compile_group(template_span, chunk, decoded, decode_info, rows, authored, independent, retail,
+                                  fit_reference=preferred.reference_index if preferred is not None else None)
         if compile_cache is not None:
             compile_cache.compiled[key] = compiled
             compile_cache.misses += 1
@@ -1258,6 +1319,8 @@ def build_unified_uniform_equipment_imports(
     else:
         compile_cache.compiled.move_to_end(key)
         compile_cache.hits += 1
+    if preflight_only:
+        return compiled
     rebuilt_span = compiled.rebuilt_span
     rebuild_info = compiled.rebuild_info
     independent = set(compiled.independent)
@@ -1379,3 +1442,33 @@ __all__ = [
     "load_targets",
     "sampled_package",
 ]
+
+
+def preflight_project_equipment(index_path: Path, edits: Iterable[tuple[int | None, str, Path]],
+                                *, compile_cache: EquipmentCompileCache | None = None) -> None:
+    """Validate ALL restored equipment groups before publishing a loaded session.
+
+    Old PNG-only recolours and npTC/v1 private chains keep their original intent.
+    No migration invents mip bytes, silently downsizes art, or drops an edit.
+    """
+    groups: dict[tuple[str, str], list[tuple[int | None, str, Path]]] = {}
+    for number, asset_id, path in edits:
+        parts = asset_id.split(":")
+        prefix = f"Project edit index {number}: " if number is not None else ""
+        _require(len(parts) == 5, f"{prefix}Invalid equipment target {asset_id}. Import it again.")
+        groups.setdefault((parts[1], parts[2]), []).append((number, asset_id, path))
+    cache = compile_cache or EquipmentCompileCache()
+    hashes: dict[str, str] = {}
+    by_id, _ = load_targets() if groups else ({}, {})
+    for group in groups.values():
+        labels = [(f"Project edit index {number}: " if number is not None else "")
+                  + f"Equipment / {asset_id.rsplit(':', 1)[-1]} / "
+                  f"uniform set {by_id[asset_id].set_selector if asset_id in by_id else 'unknown'} / {asset_id}"
+                  for number, asset_id, _ in group]
+        try:
+            build_unified_uniform_equipment_imports(index_path,
+                [(asset_id, path) for _, asset_id, path in group],
+                pack_hashes=hashes, compile_cache=cache, preflight_only=True)
+        except (OSError, ValueError, ValidationError) as exc:
+            raise UniformEquipmentWriterError("Cannot load equipment edits: " + "; ".join(labels)
+                + f": {exc} Reimport the named part using the checked size, or remove that edit in the older studio and save the project again.") from exc

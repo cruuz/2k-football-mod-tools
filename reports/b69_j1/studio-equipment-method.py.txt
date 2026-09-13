@@ -1,0 +1,126 @@
+def _replace_visual_asset(
+    self,
+    state: _VisualBrowserState,
+    asset: ExtendedVisualAsset,
+    path: Path,
+    *,
+    native_canvas_edit: Mapping[str, object] | None = None,
+) -> None:
+    if not asset.editable:
+        self._show_error(
+            "This texture is preview/export-only because its format has no "
+            "proved fixed-span importer."
+        )
+        return
+    fitted = self._fit_for_slot(path, asset.width, asset.height, asset.label)
+    if fitted is None:
+        return
+    equipment_choice: tuple[bool, int, str] | None = None
+    if asset.kind == "uniform_equipment_texture":
+        from mod_editor.gui.equipment_texture_import_dialog import EquipmentTextureImportDialog
+
+        dialog = EquipmentTextureImportDialog(asset, self)
+        if dialog.exec_() != dialog.Accepted:
+            return
+        equipment_choice = (dialog.independent, dialog.scale, dialog.scope)
+    existing_master = self._texture_master_drafts.get(asset.asset_id)
+    pending_master: _TextureMasterDraft | None = None
+    if native_canvas_edit is None:
+        try:
+            pending_master = self._prepare_texture_master_draft(
+                asset, path, fitted
+            )
+        except ValidationError as exc:
+            self._show_error(
+                "The native import was not started because its full-resolution "
+                f"authoring source could not be preserved safely. {exc}"
+            )
+            return
+    path = fitted
+
+    def success(result: object) -> None:
+        nonlocal equipment_choice
+        from mod_editor.core.nfl2k5_uniform_equipment_writer import EquipmentFitError
+        from mod_editor.gui.equipment_texture_import_dialog import EquipmentFitRetryDialog
+        if isinstance(result, EquipmentFitError):
+            retry = EquipmentFitRetryDialog(asset, result, self)
+            if retry.exec_() == retry.Accepted and retry.scale is not None:
+                independent, _old_scale, scope = equipment_choice
+                equipment_choice = (independent, retry.scale, scope)
+                self._defer_until_blocking_task_finished(lambda: self._start_task(
+                    replace_texture, success, label=f"Checking and replacing {asset.label}",
+                    blocking=True, on_error=failed))
+            else:
+                failed(str(result))
+            return
+        if getattr(result, "changed_asset_ids", None) == ():
+            if pending_master is not None:
+                pending_master.source_image.unlink(missing_ok=True)
+                pending_master.native_baseline_png.unlink(missing_ok=True)
+            self._set_status(_result_message(result, "Equipment artwork already matches."))
+            return
+        modified = bool(getattr(result, "modified", True))
+        if native_canvas_edit is not None:
+            if modified and existing_master is not None:
+                revision = int(
+                    existing_master.editor_transform.get(
+                        "native_canvas_edit_revision", 0
+                    )
+                ) + 1
+                updated_editor_transform = dict(
+                    existing_master.editor_transform
+                )
+                updated_editor_transform.update({
+                    "native_canvas_edit": dict(native_canvas_edit),
+                    "native_canvas_edit_revision": revision,
+                })
+                self._texture_master_drafts[asset.asset_id] = (
+                    _TextureMasterDraft(
+                        existing_master.source_image,
+                        existing_master.source_sha256,
+                        existing_master.native_baseline_png,
+                        existing_master.transform,
+                        updated_editor_transform,
+                        True,
+                    )
+                )
+            elif not modified:
+                self._discard_texture_master_draft(asset.asset_id)
+        elif modified and pending_master is not None:
+            self._discard_texture_master_draft(asset.asset_id)
+            self._texture_master_drafts[asset.asset_id] = pending_master
+        else:
+            if pending_master is not None:
+                pending_master.source_image.unlink(missing_ok=True)
+                pending_master.native_baseline_png.unlink(missing_ok=True)
+            self._discard_texture_master_draft(asset.asset_id)
+        self._set_status(_result_message(result, f"{asset.label} is ready to build."))
+        state.selected_asset_id = asset.asset_id
+        self._filter_visual_assets(state.category)
+        self._mark_workspace_changed()
+        self._load_visual_preview(asset, state.preview)
+
+    def failed(_message: str) -> None:
+        if pending_master is not None:
+            pending_master.source_image.unlink(missing_ok=True)
+            pending_master.native_baseline_png.unlink(missing_ok=True)
+
+    def replace_texture(progress: ProgressSink) -> object:
+        if equipment_choice is not None:
+            independent, scale, scope = equipment_choice
+            from mod_editor.core.nfl2k5_uniform_equipment_writer import EquipmentFitError
+            try:
+                return self.facade.replace_equipment_texture(
+                    asset, path, progress, independent=independent, scale=scale, scope=scope,
+                )
+            except EquipmentFitError as exc:
+                return exc
+        return self.facade.replace_asset(asset, path, progress)
+
+    self._start_task(
+        replace_texture,
+        success,
+        label=f"Checking and replacing {asset.label}",
+        blocking=True,
+        on_error=failed if pending_master is not None else None,
+    )

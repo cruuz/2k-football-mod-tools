@@ -1,0 +1,737 @@
+{
+  "art_sha256": "c9b845b09f70a9bb60ae2462dbceddf975f6b303109894565307b05019c7f7ae",
+  "target": "tset:3734:9:4:shoes10",
+  "set_selector": "15H0",
+  "fit": [
+    {
+      "size": 256,
+      "colors": 256,
+      "compressed_bytes": 128885,
+      "by_offset_bits": {
+        "12": 128885,
+        "10": 134870,
+        "11": 131421
+      },
+      "budget": 58432,
+      "miss_bytes": 70453
+    },
+    {
+      "size": 256,
+      "colors": 64,
+      "compressed_bytes": 97441,
+      "by_offset_bits": {
+        "12": 97441,
+        "10": 104355,
+        "11": 100197
+      },
+      "budget": 58432,
+      "miss_bytes": 39009
+    },
+    {
+      "size": 256,
+      "colors": 16,
+      "compressed_bytes": 81017,
+      "by_offset_bits": {
+        "12": 81017,
+        "10": 84942,
+        "11": 81875
+      },
+      "budget": 58432,
+      "miss_bytes": 22585
+    },
+    {
+      "size": 128,
+      "colors": 256,
+      "compressed_bytes": 75521,
+      "by_offset_bits": {
+        "12": 75521,
+        "10": 78924,
+        "11": 76812
+      },
+      "budget": 58432,
+      "miss_bytes": 17089
+    },
+    {
+      "size": 128,
+      "colors": 64,
+      "compressed_bytes": 69064,
+      "by_offset_bits": {
+        "12": 69064,
+        "10": 72581,
+        "11": 70405
+      },
+      "budget": 58432,
+      "miss_bytes": 10632
+    },
+    {
+      "size": 128,
+      "colors": 16,
+      "compressed_bytes": 63947,
+      "by_offset_bits": {
+        "12": 63947,
+        "10": 66942,
+        "11": 64946
+      },
+      "budget": 58432,
+      "miss_bytes": 5515
+    },
+    {
+      "size": 64,
+      "colors": 256,
+      "compressed_bytes": 62948,
+      "by_offset_bits": {
+        "12": 62948,
+        "10": 65548,
+        "11": 63862
+      },
+      "budget": 58432,
+      "miss_bytes": 4516
+    },
+    {
+      "size": 64,
+      "colors": 64,
+      "compressed_bytes": 61127,
+      "by_offset_bits": {
+        "12": 61127,
+        "10": 63785,
+        "11": 62046
+      },
+      "budget": 58432,
+      "miss_bytes": 2695
+    },
+    {
+      "size": 64,
+      "colors": 16,
+      "compressed_bytes": 59521,
+      "by_offset_bits": {
+        "12": 59521,
+        "10": 62171,
+        "11": 60406
+      },
+      "budget": 58432,
+      "miss_bytes": 1089
+    }
+  ],
+  "package_bytes": 1513424,
+  "package_tail_bytes": 0,
+  "alignment_gap_after_package": 48,
+  "chunks": [
+    {
+      "index": 0,
+      "kind": "Unif",
+      "offset": 0,
+      "stored": 80,
+      "system": 0,
+      "video": 0,
+      "scratch": 0
+    },
+    {
+      "index": 1,
+      "kind": "TSET",
+      "offset": 112,
+      "stored": 63824,
+      "system": 256,
+      "video": 176768,
+      "scratch": 16
+    },
+    {
+      "index": 2,
+      "kind": "TSET",
+      "offset": 63968,
+      "stored": 87472,
+      "system": 256,
+      "video": 176768,
+      "scratch": 32
+    },
+    {
+      "index": 3,
+      "kind": "TSET",
+      "offset": 151472,
+      "stored": 10336,
+      "system": 256,
+      "video": 23936,
+      "scratch": 32
+    },
+    {
+      "index": 4,
+      "kind": "TSET",
+      "offset": 161840,
+      "stored": 6736,
+      "system": 256,
+      "video": 7552,
+      "scratch": 16
+    },
+    {
+      "index": 5,
+      "kind": "TSET",
+      "offset": 168608,
+      "stored": 20192,
+      "system": 1408,
+      "video": 25216,
+      "scratch": 16
+    },
+    {
+      "index": 6,
+      "kind": "TSET",
+      "offset": 188832,
+      "stored": 28912,
+      "system": 768,
+      "video": 51840,
+      "scratch": 16
+    },
+    {
+      "index": 7,
+      "kind": "TSET",
+      "offset": 217776,
+      "stored": 19824,
+      "system": 640,
+      "video": 28032,
+      "scratch": 16
+    },
+    {
+      "index": 8,
+      "kind": "TSET",
+      "offset": 237632,
+      "stored": 54768,
+      "system": 640,
+      "video": 93568,
+      "scratch": 32
+    },
+    {
+      "index": 9,
+      "kind": "TSET",
+      "offset": 292432,
+      "stored": 58432,
+      "system": 640,
+      "video": 93568,
+      "scratch": 32
+    },
+    {
+      "index": 10,
+      "kind": "TSET",
+      "offset": 350896,
+      "stored": 11424,
+      "system": 384,
+      "video": 13952,
+      "scratch": 16
+    },
+    {
+      "index": 11,
+      "kind": "TXTR",
+      "offset": 362352,
+      "stored": 34416,
+      "system": 128,
+      "video": 88384,
+      "scratch": 128
+    },
+    {
+      "index": 12,
+      "kind": "TXTR",
+      "offset": 396800,
+      "stored": 33088,
+      "system": 128,
+      "video": 88384,
+      "scratch": 160
+    },
+    {
+      "index": 13,
+      "kind": "TXTR",
+      "offset": 429920,
+      "stored": 1536,
+      "system": 128,
+      "video": 6464,
+      "scratch": 16
+    },
+    {
+      "index": 14,
+      "kind": "TXTR",
+      "offset": 431488,
+      "stored": 1040,
+      "system": 128,
+      "video": 6464,
+      "scratch": 16
+    },
+    {
+      "index": 15,
+      "kind": "TXTR",
+      "offset": 432560,
+      "stored": 1968,
+      "system": 128,
+      "video": 6464,
+      "scratch": 16
+    },
+    {
+      "index": 16,
+      "kind": "TXTR",
+      "offset": 434560,
+      "stored": 2096,
+      "system": 128,
+      "video": 6464,
+      "scratch": 16
+    },
+    {
+      "index": 17,
+      "kind": "TXTR",
+      "offset": 436688,
+      "stored": 1920,
+      "system": 128,
+      "video": 6464,
+      "scratch": 16
+    },
+    {
+      "index": 18,
+      "kind": "TXTR",
+      "offset": 438640,
+      "stored": 1664,
+      "system": 128,
+      "video": 6464,
+      "scratch": 16
+    },
+    {
+      "index": 19,
+      "kind": "TXTR",
+      "offset": 440336,
+      "stored": 1952,
+      "system": 128,
+      "video": 6464,
+      "scratch": 16
+    },
+    {
+      "index": 20,
+      "kind": "TXTR",
+      "offset": 442320,
+      "stored": 1936,
+      "system": 128,
+      "video": 6464,
+      "scratch": 16
+    },
+    {
+      "index": 21,
+      "kind": "TXTR",
+      "offset": 444288,
+      "stored": 2080,
+      "system": 128,
+      "video": 6464,
+      "scratch": 16
+    },
+    {
+      "index": 22,
+      "kind": "TXTR",
+      "offset": 446400,
+      "stored": 1872,
+      "system": 128,
+      "video": 6464,
+      "scratch": 16
+    },
+    {
+      "index": 23,
+      "kind": "TXTR",
+      "offset": 448304,
+      "stored": 752,
+      "system": 128,
+      "video": 2368,
+      "scratch": 16
+    },
+    {
+      "index": 24,
+      "kind": "TXTR",
+      "offset": 449088,
+      "stored": 592,
+      "system": 128,
+      "video": 2368,
+      "scratch": 16
+    },
+    {
+      "index": 25,
+      "kind": "TXTR",
+      "offset": 449712,
+      "stored": 992,
+      "system": 128,
+      "video": 2368,
+      "scratch": 16
+    },
+    {
+      "index": 26,
+      "kind": "TXTR",
+      "offset": 450736,
+      "stored": 1024,
+      "system": 128,
+      "video": 2368,
+      "scratch": 16
+    },
+    {
+      "index": 27,
+      "kind": "TXTR",
+      "offset": 451792,
+      "stored": 1008,
+      "system": 128,
+      "video": 2368,
+      "scratch": 16
+    },
+    {
+      "index": 28,
+      "kind": "TXTR",
+      "offset": 452832,
+      "stored": 944,
+      "system": 128,
+      "video": 2368,
+      "scratch": 16
+    },
+    {
+      "index": 29,
+      "kind": "TXTR",
+      "offset": 453808,
+      "stored": 912,
+      "system": 128,
+      "video": 2368,
+      "scratch": 16
+    },
+    {
+      "index": 30,
+      "kind": "TXTR",
+      "offset": 454752,
+      "stored": 864,
+      "system": 128,
+      "video": 2368,
+      "scratch": 16
+    },
+    {
+      "index": 31,
+      "kind": "TXTR",
+      "offset": 455648,
+      "stored": 976,
+      "system": 128,
+      "video": 2368,
+      "scratch": 16
+    },
+    {
+      "index": 32,
+      "kind": "TXTR",
+      "offset": 456656,
+      "stored": 912,
+      "system": 128,
+      "video": 2368,
+      "scratch": 16
+    },
+    {
+      "index": 33,
+      "kind": "TXTR",
+      "offset": 457600,
+      "stored": 1536,
+      "system": 128,
+      "video": 6464,
+      "scratch": 16
+    },
+    {
+      "index": 34,
+      "kind": "TXTR",
+      "offset": 459168,
+      "stored": 1040,
+      "system": 128,
+      "video": 6464,
+      "scratch": 16
+    },
+    {
+      "index": 35,
+      "kind": "TXTR",
+      "offset": 460240,
+      "stored": 1968,
+      "system": 128,
+      "video": 6464,
+      "scratch": 16
+    },
+    {
+      "index": 36,
+      "kind": "TXTR",
+      "offset": 462240,
+      "stored": 2112,
+      "system": 128,
+      "video": 6464,
+      "scratch": 16
+    },
+    {
+      "index": 37,
+      "kind": "TXTR",
+      "offset": 464384,
+      "stored": 1920,
+      "system": 128,
+      "video": 6464,
+      "scratch": 16
+    },
+    {
+      "index": 38,
+      "kind": "TXTR",
+      "offset": 466336,
+      "stored": 1664,
+      "system": 128,
+      "video": 6464,
+      "scratch": 16
+    },
+    {
+      "index": 39,
+      "kind": "TXTR",
+      "offset": 468032,
+      "stored": 1952,
+      "system": 128,
+      "video": 6464,
+      "scratch": 16
+    },
+    {
+      "index": 40,
+      "kind": "TXTR",
+      "offset": 470016,
+      "stored": 1952,
+      "system": 128,
+      "video": 6464,
+      "scratch": 16
+    },
+    {
+      "index": 41,
+      "kind": "TXTR",
+      "offset": 472000,
+      "stored": 2080,
+      "system": 128,
+      "video": 6464,
+      "scratch": 16
+    },
+    {
+      "index": 42,
+      "kind": "TXTR",
+      "offset": 474112,
+      "stored": 1888,
+      "system": 128,
+      "video": 6464,
+      "scratch": 16
+    },
+    {
+      "index": 43,
+      "kind": "TXTR",
+      "offset": 476032,
+      "stored": 9072,
+      "system": 128,
+      "video": 44736,
+      "scratch": 112
+    },
+    {
+      "index": 44,
+      "kind": "NAME",
+      "offset": 485136,
+      "stored": 160,
+      "system": 0,
+      "video": 0,
+      "scratch": 0
+    },
+    {
+      "index": 45,
+      "kind": "TXTR",
+      "offset": 485328,
+      "stored": 469072,
+      "system": 128,
+      "video": 698880,
+      "scratch": 16
+    },
+    {
+      "index": 46,
+      "kind": "TXTR",
+      "offset": 954432,
+      "stored": 61424,
+      "system": 128,
+      "video": 87296,
+      "scratch": 16
+    },
+    {
+      "index": 47,
+      "kind": "TXTR",
+      "offset": 1015888,
+      "stored": 398240,
+      "system": 128,
+      "video": 698880,
+      "scratch": 16
+    },
+    {
+      "index": 48,
+      "kind": "TXTR",
+      "offset": 1414160,
+      "stored": 56704,
+      "system": 128,
+      "video": 87296,
+      "scratch": 16
+    },
+    {
+      "index": 49,
+      "kind": "TXTR",
+      "offset": 1470896,
+      "stored": 7120,
+      "system": 128,
+      "video": 17408,
+      "scratch": 112
+    },
+    {
+      "index": 50,
+      "kind": "TXTR",
+      "offset": 1478048,
+      "stored": 2448,
+      "system": 128,
+      "video": 5120,
+      "scratch": 16
+    },
+    {
+      "index": 51,
+      "kind": "TXTR",
+      "offset": 1480528,
+      "stored": 30848,
+      "system": 128,
+      "video": 44672,
+      "scratch": 144
+    },
+    {
+      "index": 52,
+      "kind": "TXTR",
+      "offset": 1511408,
+      "stored": 1984,
+      "system": 128,
+      "video": 5120,
+      "scratch": 16
+    }
+  ],
+  "largest_archive_gaps": [
+    {
+      "after": 50,
+      "before": 51,
+      "start": 18647056,
+      "size": 2032
+    },
+    {
+      "after": 623,
+      "before": 624,
+      "start": 220553232,
+      "size": 2032
+    },
+    {
+      "after": 735,
+      "before": 736,
+      "start": 311836688,
+      "size": 2032
+    },
+    {
+      "after": 958,
+      "before": 959,
+      "start": 489166864,
+      "size": 2032
+    },
+    {
+      "after": 1134,
+      "before": 1135,
+      "start": 538499088,
+      "size": 2032
+    },
+    {
+      "after": 1198,
+      "before": 1199,
+      "start": 546750480,
+      "size": 2032
+    },
+    {
+      "after": 1436,
+      "before": 1437,
+      "start": 560179216,
+      "size": 2032
+    },
+    {
+      "after": 1450,
+      "before": 1451,
+      "start": 560961552,
+      "size": 2032
+    },
+    {
+      "after": 1498,
+      "before": 1499,
+      "start": 563660816,
+      "size": 2032
+    },
+    {
+      "after": 1627,
+      "before": 1628,
+      "start": 570929168,
+      "size": 2032
+    }
+  ],
+  "requested_full_size": {
+    "result": "refused",
+    "message": "Equipment art cannot fit: it missed the 58,432-byte span by 6,110 bytes (64,542 bytes required at the smallest measured encoding). 64 x 64 at 4 colours would fit for tset:3734:9:4:shoes10. Choose Try that to check and import that size. Fine detail and shades will change.",
+    "suggestion": {
+      "asset_id": "tset:3734:9:4:shoes10",
+      "scale": 4,
+      "width": 64,
+      "height": 64,
+      "colours": 4,
+      "encoded_bytes": 58423
+    },
+    "attempts": [
+      {
+        "maximum_palette_entries": 256,
+        "palette_entries": {
+          "4": 256
+        },
+        "result": "vc_lz_overflow",
+        "required_bytes": 128885
+      },
+      {
+        "maximum_palette_entries": 128,
+        "palette_entries": {
+          "4": 128
+        },
+        "result": "vc_lz_overflow",
+        "required_bytes": 108545
+      },
+      {
+        "maximum_palette_entries": 64,
+        "palette_entries": {
+          "4": 63
+        },
+        "result": "vc_lz_overflow",
+        "required_bytes": 97441
+      },
+      {
+        "maximum_palette_entries": 32,
+        "palette_entries": {
+          "4": 32
+        },
+        "result": "vc_lz_overflow",
+        "required_bytes": 88886
+      },
+      {
+        "maximum_palette_entries": 16,
+        "palette_entries": {
+          "4": 16
+        },
+        "result": "vc_lz_overflow",
+        "required_bytes": 81017
+      },
+      {
+        "maximum_palette_entries": 8,
+        "palette_entries": {
+          "4": 8
+        },
+        "result": "vc_lz_overflow",
+        "required_bytes": 71301
+      },
+      {
+        "maximum_palette_entries": 4,
+        "palette_entries": {
+          "4": 4
+        },
+        "result": "vc_lz_overflow",
+        "required_bytes": 66828
+      },
+      {
+        "maximum_palette_entries": 2,
+        "palette_entries": {
+          "4": 2
+        },
+        "result": "vc_lz_overflow",
+        "required_bytes": 64542
+      }
+    ]
+  }
+}

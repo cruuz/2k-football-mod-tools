@@ -1,0 +1,17 @@
+{
+  "target": "tset:3734:9:4:shoes10",
+  "old_stored_bytes": 58432,
+  "grown_stored_bytes": 128896,
+  "system_bytes": 640,
+  "video_bytes": 180992,
+  "scratch_bytes": 32,
+  "wrapper_14_unchanged": true,
+  "native_allocator_bytes": 181664,
+  "native_read_bytes": 128896,
+  "native_descriptors": 6,
+  "native_decode_and_video_exact": true,
+  "native_guards_exact": true,
+  "instruction_cap": 8000000,
+  "timeout_microseconds": 1000000,
+  "note": "Only allocator, I/O, resource-registration shell and context-state query are stubbed; native 451D0/45280/45100/4DC00/450B0 execute. No package relocation or disc growth is proved."
+}

@@ -1,0 +1,35 @@
+NFL2K5_BUILD_PHASE source_validation seconds=0.000929
+NFL2K5_COMPILE_CACHE hits=0 misses=1
+NFL2K5_BUILD_PHASE compile seconds=0.146300
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-j1/tools/nfl2k5_visual_mod_project.py", line 2645, in _naming_prepared_edit
+    yield
+  File "/home/noah/2k-worktrees/astra-b69-j1/tools/nfl2k5_visual_mod_project.py", line 4835, in bind_prepared_to_source
+    require(edit.kind in {"team_identity", "player_roster"} or edit.relative_runs,
+  File "/home/noah/2k-worktrees/astra-b69-j1/tools/nfl2k5_visual_mod_project.py", line 467, in require
+    raise ProjectError(message)
+_b68_build.ProjectError: replacement equals retail for uniform_equipment_texture:uniform-equipment-tset:0:8
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-j1/tools/nfl2k5_visual_mod_project.py", line 2633, in checked
+    return function(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-j1/tools/nfl2k5_visual_mod_project.py", line 5459, in build
+    bind_prepared_to_source(prepared, source_fd, entries)
+  File "/home/noah/2k-worktrees/astra-b69-j1/tools/nfl2k5_visual_mod_project.py", line 4779, in bind_prepared_to_source
+    with _naming_prepared_edit(edit):
+  File "/usr/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/home/noah/2k-worktrees/astra-b69-j1/tools/nfl2k5_visual_mod_project.py", line 2648, in _naming_prepared_edit
+    raise ProjectError("; ".join(labels) + ": " + str(exc)) from exc
+_b68_build.ProjectError: Project edit index 0: Equipment / Shoes / team or uniform set SYNTHETIC / texture tset:0:8:0:shoes01: replacement equals retail for uniform_equipment_texture:uniform-equipment-tset:0:8
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<stdin>", line 13, in <module>
+  File "/home/noah/2k-worktrees/astra-b69-j1/tools/nfl2k5_visual_mod_project.py", line 2635, in checked
+    raise ProjectError(f"While {_BUILD_PHASE.get()}: {exc}") from exc
+_b68_build.ProjectError: While checking edits against the source disc: Project edit index 0: Equipment / Shoes / team or uniform set SYNTHETIC / texture tset:0:8:0:shoes01: replacement equals retail for uniform_equipment_texture:uniform-equipment-tset:0:8

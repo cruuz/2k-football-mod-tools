@@ -1,0 +1,192 @@
+[
+  {
+    "file": "test_2k5_uniform_equipment_export.py",
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 /usr/bin/python3 tests/mod_editor/test_2k5_uniform_equipment_export.py",
+    "returncode": 1,
+    "seconds": 3.078,
+    "tests": 13,
+    "log": "reports/b69_j1/tests/test_2k5_uniform_equipment_export.py.log",
+    "tail": "ent_export.py\", line 397, in setUp\n    catalog = load_nfl2k5_extended_visual_catalog()\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/noah/2k-worktrees/astra-b69-j1/mod_editor/core/nfl2k5_extended_visual_catalog.py\", line 1113, in load_nfl2k5_extended_visual_catalog\n    key = metadata_cache.source_key(\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/noah/2k-worktrees/astra-b69-j1/mod_editor/core/metadata_cache.py\", line 17, in source_key\n    with path.open(\"rb\") as stream:\n         ^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/pathlib.py\", line 1015, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-j1/reports/assets/nfl2k5_player_portrait_compatibility.json'\n\n----------------------------------------------------------------------\nRan 13 tests in 1.561s\n\nFAILED (errors=6, skipped=2)\n"
+  },
+  {
+    "file": "test_b661_kit_build.py",
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 /usr/bin/python3 tests/mod_editor/test_b661_kit_build.py",
+    "returncode": 0,
+    "seconds": 4.784,
+    "tests": 2,
+    "log": "reports/b69_j1/tests/test_b661_kit_build.py.log",
+    "tail": "..\n----------------------------------------------------------------------\nRan 2 tests in 4.068s\n\nOK\nNFL2K5_BUILD_PHASE source_validation seconds=0.001655\nNFL2K5_COMPILE_CACHE hits=0 misses=2\nNFL2K5_BUILD_PHASE compile seconds=1.926758\nNFL2K5_BUILD_PHASE bind_source seconds=0.003877\nNFL2K5_BUILD_PHASE copy seconds=0.000289\nNFL2K5_BUILD_PHASE write_spans seconds=0.001170\nNFL2K5_BUILD_PHASE artifacts_and_directory seconds=0.020807\nNFL2K5_BUILD_PHASE full_identity_check seconds=0.004652\nNFL2K5_VISUAL_MOD_BUILD_PASS edits=2 changed=2701 kept_retail=0 sha256=fd59d6db8539da7c1cadb66586635c4064f9eebf0859bdff0cb8bd50077d719f receipt_sha256=cdb17458bcecd6b2472b9ca1e54909ba772a52ce24710aafa9e3ebf971fc3e4b runtime=false\n"
+  },
+  {
+    "file": "test_b68_a1_audit.py",
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 /usr/bin/python3 tests/mod_editor/test_b68_a1_audit.py",
+    "returncode": 0,
+    "seconds": 10.848,
+    "tests": 10,
+    "log": "reports/b69_j1/tests/test_b68_a1_audit.py.log",
+    "tail": "..........\n----------------------------------------------------------------------\nRan 10 tests in 10.336s\n\nOK\n"
+  },
+  {
+    "file": "test_b68_t1_build.py",
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 /usr/bin/python3 tests/mod_editor/test_b68_t1_build.py",
+    "returncode": 0,
+    "seconds": 8.896,
+    "tests": 6,
+    "log": "reports/b69_j1/tests/test_b68_t1_build.py.log",
+    "tail": "......\n----------------------------------------------------------------------\nRan 6 tests in 8.593s\n\nOK\n"
+  },
+  {
+    "file": "test_b69_j1_build.py",
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 /usr/bin/python3 tests/mod_editor/test_b69_j1_build.py",
+    "returncode": 0,
+    "seconds": 4.232,
+    "tests": 5,
+    "log": "reports/b69_j1/tests/test_b69_j1_build.py.log",
+    "tail": ".....\n----------------------------------------------------------------------\nRan 5 tests in 3.910s\n\nOK\nThe modded XISO could not be built. While compiling project edits: Project edit index 0: Equipment / Shoes / team or uniform set SYNTHETIC / texture tset:0:8:0:shoes01: PNG must be exactly 32x32\n"
+  },
+  {
+    "file": "test_b69_j1_fit.py",
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 /usr/bin/python3 tests/mod_editor/test_b69_j1_fit.py",
+    "returncode": 0,
+    "seconds": 8.295,
+    "tests": 5,
+    "log": "reports/b69_j1/tests/test_b69_j1_fit.py.log",
+    "tail": ".....\n----------------------------------------------------------------------\nRan 5 tests in 7.943s\n\nOK\n"
+  },
+  {
+    "file": "test_b69_j1_native.py",
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 /usr/bin/python3 tests/mod_editor/test_b69_j1_native.py",
+    "returncode": 0,
+    "seconds": 2.475,
+    "tests": 1,
+    "log": "reports/b69_j1/tests/test_b69_j1_native.py.log",
+    "tail": ".\n----------------------------------------------------------------------\nRan 1 test in 2.009s\n\nOK\nNative Style 6: order ['AWAY', 'HOME', 'GLOBAL'] clean and mud bind each package; both feet exact; Bears tset:3653:9:4:shoes10\nNative Style 6: order ['HOME', 'AWAY', 'GLOBAL'] clean and mud bind each package; both feet exact; Bears tset:3653:9:4:shoes10\n"
+  },
+  {
+    "file": "test_b69_j1_wiring.py",
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 /usr/bin/python3 tests/mod_editor/test_b69_j1_wiring.py",
+    "returncode": 0,
+    "seconds": 4.206,
+    "tests": 3,
+    "log": "reports/b69_j1/tests/test_b69_j1_wiring.py.log",
+    "tail": "...\n----------------------------------------------------------------------\nRan 3 tests in 4.206s\n\nOK\n",
+    "timing_basis": "unittest reported time"
+  },
+  {
+    "file": "test_beta66_d1_panels.py",
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 /usr/bin/python3 tests/mod_editor/test_beta66_d1_panels.py",
+    "returncode": 0,
+    "seconds": 2.823,
+    "tests": 4,
+    "log": "reports/b69_j1/tests/test_beta66_d1_panels.py.log",
+    "tail": "....\n----------------------------------------------------------------------\nRan 4 tests in 2.284s\n\nOK\n"
+  },
+  {
+    "file": "test_nfl2k5_build_service.py",
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 /usr/bin/python3 tests/mod_editor/test_nfl2k5_build_service.py",
+    "returncode": 0,
+    "seconds": 0.466,
+    "tests": 28,
+    "log": "reports/b69_j1/tests/test_nfl2k5_build_service.py.log",
+    "tail": "n__.WindowsBackendTeardownTests.test_drained_job_is_not_reported_as_a_survivor) ... ok\ntest_observed_survivor_is_reported_and_never_silently_ignored (__main__.WindowsBackendTeardownTests.test_observed_survivor_is_reported_and_never_silently_ignored) ... ok\ntest_posix_launch_and_teardown_keep_their_exact_behaviour (__main__.WindowsBackendTeardownTests.test_posix_launch_and_teardown_keep_their_exact_behaviour) ... ok\ntest_unreadable_accounting_alone_is_not_a_survivor (__main__.WindowsBackendTeardownTests.test_unreadable_accounting_alone_is_not_a_survivor) ... ok\ntest_unreadable_accounting_with_a_live_child_is_a_survivor (__main__.WindowsBackendTeardownTests.test_unreadable_accounting_with_a_live_child_is_a_survivor) ... ok\ntest_without_a_job_the_direct_child_still_decides_the_outcome (__main__.WindowsBackendTeardownTests.test_without_a_job_the_direct_child_still_decides_the_outcome) ... ok\n\n----------------------------------------------------------------------\nRan 28 tests in 0.235s\n\nOK\n"
+  },
+  {
+    "file": "test_nfl2k5_equipment_consumers.py",
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 /usr/bin/python3 tests/mod_editor/test_nfl2k5_equipment_consumers.py",
+    "returncode": 0,
+    "seconds": 50.659,
+    "tests": 19,
+    "log": "reports/b69_j1/tests/test_nfl2k5_equipment_consumers.py.log",
+    "tail": "...................\n----------------------------------------------------------------------\nRan 19 tests in 49.591s\n\nOK\n"
+  },
+  {
+    "file": "test_nfl2k5_equipment_import.py",
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 /usr/bin/python3 tests/mod_editor/test_nfl2k5_equipment_import.py",
+    "returncode": 0,
+    "seconds": 4.028,
+    "tests": 13,
+    "log": "reports/b69_j1/tests/test_nfl2k5_equipment_import.py.log",
+    "tail": ".............\n----------------------------------------------------------------------\nRan 13 tests in 3.173s\n\nOK\n"
+  },
+  {
+    "file": "test_nfl2k5_equipment_import_wiring.py",
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 /usr/bin/python3 tests/mod_editor/test_nfl2k5_equipment_import_wiring.py",
+    "returncode": 0,
+    "seconds": 1.72,
+    "tests": 6,
+    "log": "reports/b69_j1/tests/test_nfl2k5_equipment_import_wiring.py.log",
+    "tail": "......\n----------------------------------------------------------------------\nRan 6 tests in 1.188s\n\nOK\n"
+  },
+  {
+    "file": "test_nfl2k5_equipment_retail_roundtrip.py",
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 /usr/bin/python3 tests/mod_editor/test_nfl2k5_equipment_retail_roundtrip.py",
+    "returncode": 0,
+    "seconds": 25.767,
+    "tests": 2,
+    "log": "reports/b69_j1/tests/test_nfl2k5_equipment_retail_roundtrip.py.log",
+    "tail": "..\n----------------------------------------------------------------------\nRan 2 tests in 25.068s\n\nOK\n"
+  },
+  {
+    "file": "test_nfl2k5_equipment_scope_wiring.py",
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 /usr/bin/python3 tests/mod_editor/test_nfl2k5_equipment_scope_wiring.py",
+    "returncode": 0,
+    "seconds": 4.479,
+    "tests": 3,
+    "log": "reports/b69_j1/tests/test_nfl2k5_equipment_scope_wiring.py.log",
+    "tail": "...\n----------------------------------------------------------------------\nRan 3 tests in 4.221s\n\nOK\n"
+  },
+  {
+    "file": "test_nfl2k5_equipment_texture_chain.py",
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 /usr/bin/python3 tests/mod_editor/test_nfl2k5_equipment_texture_chain.py",
+    "returncode": 0,
+    "seconds": 4.581,
+    "tests": 19,
+    "log": "reports/b69_j1/tests/test_nfl2k5_equipment_texture_chain.py.log",
+    "tail": "...................\n----------------------------------------------------------------------\nRan 19 tests in 4.224s\n\nOK\n"
+  },
+  {
+    "file": "test_nfl2k5_equipment_texture_native.py",
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 /usr/bin/python3 tests/mod_editor/test_nfl2k5_equipment_texture_native.py",
+    "returncode": 0,
+    "seconds": 0.517,
+    "tests": 7,
+    "log": "reports/b69_j1/tests/test_nfl2k5_equipment_texture_native.py.log",
+    "tail": ".......\n----------------------------------------------------------------------\nRan 7 tests in 0.323s\n\nOK\n"
+  },
+  {
+    "file": "test_nfl2k5_extended_visuals.py",
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 /usr/bin/python3 tests/mod_editor/test_nfl2k5_extended_visuals.py",
+    "returncode": 0,
+    "seconds": 0.618,
+    "tests": 9,
+    "log": "reports/b69_j1/tests/test_nfl2k5_extended_visuals.py.log",
+    "tail": ".........\n----------------------------------------------------------------------\nRan 9 tests in 0.222s\n\nOK\n"
+  },
+  {
+    "file": "test_nfl2k5_shoe_relief.py",
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 /usr/bin/python3 tests/mod_editor/test_nfl2k5_shoe_relief.py",
+    "returncode": 0,
+    "seconds": 9.754,
+    "tests": 5,
+    "log": "reports/b69_j1/tests/test_nfl2k5_shoe_relief.py.log",
+    "tail": ".....\n----------------------------------------------------------------------\nRan 5 tests in 9.359s\n\nOK\n"
+  },
+  {
+    "file": "test_provider_integrity.py",
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 /usr/bin/python3 tests/mod_editor/test_provider_integrity.py",
+    "returncode": 0,
+    "seconds": 16.32,
+    "tests": 7,
+    "log": "reports/b69_j1/tests/test_provider_integrity.py.log",
+    "tail": ".......\n----------------------------------------------------------------------\nRan 7 tests in 16.033s\n\nOK\n"
+  },
+  {
+    "file": "test_providers.py",
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 /usr/bin/python3 tests/mod_editor/test_providers.py",
+    "returncode": 0,
+    "seconds": 5.389,
+    "tests": 33,
+    "log": "reports/b69_j1/tests/test_providers.py.log",
+    "tail": ".................................\n----------------------------------------------------------------------\nRan 33 tests in 5.092s\n\nOK\n"
+  }
+]

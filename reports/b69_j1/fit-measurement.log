@@ -1,0 +1,11 @@
+[('00H0', 3613), ('01H0', 3622), ('02H0', 3636), ('03H0', 3640), ('04H0', 3650), ('05H0', 3653), ('06H0', 3660), ('07H0', 3668), ('08H0', 3678), ('09H0', 3685), ('10H0', 3695), ('11H0', 3702), ('12H0', 3710), ('13H0', 3717), ('14H0', 3723), ('15H0', 3734), ('16H0', 3741), ('17H0', 3753), ('18H0', 3762), ('19H0', 3770), ('20H0', 3778), ('21H0', 3783), ('22H0', 3798), ('23H0', 3804), ('24H0', 3817), ('25H0', 3829), ('26H0', 3837), ('27H0', 3842), ('28H0', 3850), ('29H0', 3859), ('30H0', 3869), ('31H0', 3874), ('33H0', 3875), ('34H0', 3876), ('35H0', 3877)]
+TARGET tset:3653:9:4:shoes10 budget 55008 scratch 16
+{'size': 256, 'colors': 256, 'compressed_bytes': 125443, 'by_offset_bits': {12: 125443, 10: 130978, 11: 127708}, 'budget': 55008, 'miss_bytes': 70435}
+{'size': 256, 'colors': 64, 'compressed_bytes': 93995, 'by_offset_bits': {12: 93995, 10: 100466, 11: 96486}, 'budget': 55008, 'miss_bytes': 38987}
+{'size': 256, 'colors': 16, 'compressed_bytes': 77562, 'by_offset_bits': {12: 77562, 10: 81047, 11: 78155}, 'budget': 55008, 'miss_bytes': 22554}
+{'size': 128, 'colors': 256, 'compressed_bytes': 72065, 'by_offset_bits': {12: 72065, 10: 75031, 11: 73092}, 'budget': 55008, 'miss_bytes': 17057}
+{'size': 128, 'colors': 64, 'compressed_bytes': 65615, 'by_offset_bits': {12: 65615, 10: 68693, 11: 66696}, 'budget': 55008, 'miss_bytes': 10607}
+{'size': 128, 'colors': 16, 'compressed_bytes': 60497, 'by_offset_bits': {12: 60497, 10: 63051, 11: 61230}, 'budget': 55008, 'miss_bytes': 5489}
+{'size': 64, 'colors': 256, 'compressed_bytes': 59503, 'by_offset_bits': {12: 59503, 10: 61660, 11: 60148}, 'budget': 55008, 'miss_bytes': 4495}
+{'size': 64, 'colors': 64, 'compressed_bytes': 57672, 'by_offset_bits': {12: 57672, 10: 59891, 11: 58328}, 'budget': 55008, 'miss_bytes': 2664}
+{'size': 64, 'colors': 16, 'compressed_bytes': 56068, 'by_offset_bits': {12: 56068, 10: 58278, 11: 56687}, 'budget': 55008, 'miss_bytes': 1060}

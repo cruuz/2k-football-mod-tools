@@ -12,6 +12,8 @@ from __future__ import annotations
 import argparse
 from collections import Counter
 import contextlib
+import contextvars
+import functools
 import copy
 from dataclasses import asdict, dataclass, field, replace
 import hashlib
@@ -632,6 +634,7 @@ class ProjectFile:
     payload: bytes
     value: dict[str, Any]
     identity: tuple[int, int]
+    equipment_compile_cache: Any = None
 
 
 @dataclass(frozen=True)
@@ -665,6 +668,7 @@ class PreparedEdit:
     import_report_path: Path
     import_report_sha256: str
     preview_paths: list[tuple[str, Path, int, str]]
+    project_labels: tuple[str, ...] = ()
 
 
 @dataclass
@@ -1110,7 +1114,7 @@ def validate_edit_shape(record: object, order: int) -> dict[str, Any]:
     return dict(record)
 
 
-def read_project(path: Path) -> ProjectFile:
+def read_project(path: Path, *, equipment_index: Path | None = None) -> ProjectFile:
     resolved, payload, identity = read_regular_bounded(
         path, MAX_PROJECT_BYTES, "visual-mod project")
     try:
@@ -1123,8 +1127,13 @@ def read_project(path: Path) -> ProjectFile:
             bool(value["purpose"]) and isinstance(value["edits"], list) and
             1 <= len(value["edits"]) <= MAX_EDITS,
             "visual-mod project schema/canonical encoding mismatch")
-    edits = [validate_edit_shape(record, order)
-             for order, record in enumerate(value["edits"])]
+    edits = []
+    for order, record in enumerate(value["edits"]):
+        try:
+            edits.append(validate_edit_shape(record, order))
+        except Exception as exc:
+            label = project_edit_label(record, order) if isinstance(record, dict) else f"Project edit index {order}"
+            raise ProjectError(f"{label}: {exc}") from exc
     model_targets = [edit["target"] for edit in edits if edit["kind"] == model_project.KIND]
     require(len(model_targets) == len(set(model_targets)), "project repeats a model set; keep one checked edit per set")
     identity_teams = [edit["team_index"] for edit in edits
@@ -1267,7 +1276,15 @@ def read_project(path: Path) -> ProjectFile:
             "project repeats one streaming AUSB asset")
     normalized = {"schema": SCHEMA, "purpose": value["purpose"], "edits": edits}
     require(payload == canonical_json(normalized), "project normalization changed encoding")
-    return ProjectFile(resolved, payload, normalized, identity)
+    project = ProjectFile(resolved, payload, normalized, identity)
+    if equipment_index is not None:
+        equipment_cache = uniform_equipment_adapter.EquipmentCompileCache()
+        uniform_equipment_adapter.preflight_project_equipment(equipment_index, [
+            (i, edit["asset_id"], project.path.parent / edit["png"])
+            for i, edit in enumerate(edits) if edit["kind"] == UNIFORM_EQUIPMENT_KIND
+        ], compile_cache=equipment_cache)
+        project = replace(project, equipment_compile_cache=equipment_cache)
+    return project
 
 
 def project_asset_paths(project: ProjectFile) -> list[Path]:
@@ -1308,19 +1325,30 @@ def project_asset_paths(project: ProjectFile) -> list[Path]:
 def pin_project_inputs(project: ProjectFile) -> dict[Path, InputPin]:
     pins: dict[Path, InputPin] = {}
     total = 0
-    for supplied in project_asset_paths(project):
-        resolved, payload, identity = read_regular_bounded(
-            supplied, 64 * 1024 * 1024 + 44, "project media input")
-        if resolved in pins:
-            require(pins[resolved].identity == identity and
-                    pins[resolved].payload == payload,
-                    "one project PNG pathname changed between references")
-            continue
-        total += len(payload)
-        require(total <= MAX_TOTAL_INPUT_BYTES, "project input byte budget exceeded")
-        pins[resolved] = InputPin(
-            resolved, payload, len(payload), digest(payload), identity)
+    for index, edit in enumerate(project.value["edits"]):
+        with _naming_project_edits(project, [index]):
+            for supplied in project_asset_paths(replace(project, value={**project.value, "edits": [edit]})):
+                resolved, payload, identity = read_regular_bounded(
+                    supplied, 64 * 1024 * 1024 + 44, "project media input")
+                if resolved in pins:
+                    require(pins[resolved].identity == identity and
+                            pins[resolved].payload == payload,
+                            "one project PNG pathname changed between references")
+                    continue
+                total += len(payload)
+                require(total <= MAX_TOTAL_INPUT_BYTES, "project input byte budget exceeded")
+                pins[resolved] = InputPin(
+                    resolved, payload, len(payload), digest(payload), identity)
     return pins
+
+
+def project_input_indices(project: ProjectFile) -> dict[Path, list[int]]:
+    """Map shared inputs once; diagnostics must not add quadratic path work."""
+    result: dict[Path, list[int]] = {}
+    for index, edit in enumerate(project.value["edits"]):
+        for path in project_asset_paths(replace(project, value={**project.value, "edits": [edit]})):
+            result.setdefault(path.resolve(), []).append(index)
+    return result
 
 
 def resolve_asset(project: ProjectFile, text: str,
@@ -2499,7 +2527,10 @@ def build_crib_scene_texture_import(
 #: Coordinate fields a user actually chose in the UI, in the order they read.
 #: A uniform edit carries no selector -- it is an asset code, a side and a
 #: variant -- so "pants:" alone is useless when a project holds several.
-_EDIT_COORDINATES = ("asset_code", "team", "side", "variant", "family", "digit", "slot")
+_EDIT_COORDINATES = ("asset_code", "team", "side", "variant", "family", "digit", "slot",
+                     "team_index", "primary_player_index", "player_index", "player_pool",
+                     "resource_outer_index", "portrait_id", "face_id", "logo_code", "weather",
+                     "target_play_index", "target_slot_index", "resolution", "style")
 
 
 def describe_edit(edit: dict[str, Any]) -> str:
@@ -2521,6 +2552,130 @@ def describe_edit(edit: dict[str, Any]) -> str:
         if isinstance(edit.get(field), (str, int)) and str(edit[field]).strip()
     ]
     return f"{kind} ({', '.join(parts)})" if parts else kind
+
+
+@functools.lru_cache(maxsize=1)
+def _equipment_diagnostic_targets():
+    return uniform_equipment_adapter.load_targets()[0]
+
+
+# Original project indices are zero based. Compiled span order is a different
+# namespace because several project edits can share a TSET or scene.
+def project_edit_label(edit: dict[str, Any], index: int | None = None) -> str:
+    kind = str(edit.get("kind", "edit"))
+    page = ("Equipment" if kind == UNIFORM_EQUIPMENT_KIND else
+            "Uniforms" if kind in {"torso", "sleeve", "pants", "live_helmet", "live_number_nameplate", UNIF_COLOR_KIND} else
+            "Audio" if kind in AUDIO_KINDS else
+            "Text & Team Identity" if kind in {"team_identity", UNIVERSAL_FIXED_TEXT_KIND, ROSTER_TEAM_PROVIDER_KIND, ROSTER_PLAYER_PROVIDER_KIND} else
+            "Names, Numbers & Faces" if kind == "player_roster" else
+            "Portraits & Faces" if kind in {"player_portrait", "live_face"} else
+            "The Crib" if kind.startswith("crib_") else
+            "Stadiums" if kind.startswith("stadium_") else
+            "Field Art & Create-Team Art" if kind == "create_team_field_art" else
+            "Presentation" if kind == "scorebug_texture" else
+            "Playbooks" if "play" in kind or "formation" in kind else
+            "Models" if "geometry" in kind or "model" in kind else
+            "All Textures")
+    part = str(edit.get("family") or kind).replace("_", " ")
+    uniform = " / ".join(str(edit[k]) for k in ("asset_code", "side", "variant", "team_index") if k in edit)
+    texture = str(edit.get("asset_id") or edit.get("selector") or edit.get("target") or edit.get("texture") or describe_edit(edit))
+    if kind == UNIFORM_EQUIPMENT_KIND:
+        name = texture.rsplit(":", 1)[-1]
+        part = next((label for prefix, label in (("shoes", "Shoes"), ("glove", "Gloves"), ("socks", "Socks"), ("elbowpad", "Elbow pads"), ("longsleeve", "Long sleeves"), ("wristband", "Wristbands")) if name.startswith(prefix)), part)
+        try:
+            target = _equipment_diagnostic_targets().get(texture)
+            if target is not None:
+                uniform = target.set_selector
+        except (OSError, ValueError):
+            pass  # A missing catalog must not mask the original refusal.
+    prefix = f"Project edit index {index}: " if index is not None else ""
+    return f"{prefix}{page} / {part} / team or uniform set {uniform or 'not applicable'} / texture {texture}"
+
+
+def project_includes(project: ProjectFile) -> list[dict[str, Any]]:
+    """All edits in project order reversed; never use compiled span order."""
+    return [{"project_edit_index": i, "label": project_edit_label(edit, i)}
+            for i, edit in reversed(list(enumerate(project.value["edits"])))]
+
+
+class ProjectEditTimeline:
+    """Presentation order without rewriting the project's original edit indices.
+
+    Old archives contain no creation times. Baseline rows share rank zero;
+    subsequent changes are ranked by observed project revision, not asset name.
+    """
+
+    def __init__(self):
+        self.revision = 0
+        self.rows = {}
+
+    def observe(self, document: dict[str, Any], *, baseline: bool = False) -> list[dict[str, Any]]:
+        if baseline:
+            self.rows = {}
+        self.revision += 1
+        current = {}
+        result = []
+        occurrences = Counter()
+        for index, edit in enumerate(document.get("edits", [])):
+            selection = {key: edit[key] for key in
+                         ("kind", "asset_id", "selector", "target", *_EDIT_COORDINATES)
+                         if key in edit}
+            identity = canonical_json(selection)
+            occurrences[identity] += 1
+            key = (identity, occurrences[identity])
+            stamps = []
+            for field in ("png", "clean_png", "mud_png", "wav", "recipe"):
+                if not edit.get(field):
+                    continue
+                try:
+                    info = Path(edit[field]).stat()
+                    stamps.append((field, info.st_size, info.st_mtime_ns, info.st_ino))
+                except OSError:
+                    stamps.append((field, "missing"))
+            signature = digest(canonical_json([edit, stamps]))
+            old = self.rows.get(key)
+            rank = 0 if baseline else old[1] if old and old[0] == signature else self.revision
+            current[key] = (signature, rank)
+            result.append({"project_edit_index": index, "label": project_edit_label(edit, index),
+                           "revision": rank, "original_order_known": rank != 0})
+        self.rows = current
+        return sorted(result, key=lambda row: (row["revision"], row["project_edit_index"]), reverse=True)
+
+
+@contextlib.contextmanager
+def _naming_project_edits(project: ProjectFile, indices: Iterable[int]):
+    labels = [project_edit_label(project.value["edits"][i], i) for i in indices]
+    try:
+        yield
+    except Exception as exc:
+        raise ProjectError("; ".join(labels) + ": " + str(exc)) from exc
+
+
+_BUILD_PHASE = contextvars.ContextVar("visual_build_phase", default="building the project")
+
+
+def _diagnose_phase(initial):
+    def decorate(function):
+        @functools.wraps(function)
+        def checked(*args, **kwargs):
+            token = _BUILD_PHASE.set(initial)
+            try:
+                return function(*args, **kwargs)
+            except Exception as exc:
+                raise ProjectError(f"While {_BUILD_PHASE.get()}: {exc}") from exc
+            finally:
+                _BUILD_PHASE.reset(token)
+        return checked
+    return decorate
+
+
+@contextlib.contextmanager
+def _naming_prepared_edit(edit: PreparedEdit):
+    try:
+        yield
+    except Exception as exc:
+        labels = edit.project_labels or (describe_edit(edit.project_edit),)
+        raise ProjectError("; ".join(labels) + ": " + str(exc)) from exc
 
 
 @contextlib.contextmanager
@@ -3522,7 +3677,7 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
         equipment_pack_hashes: dict[str, str] = {}
         # A global shoe/glove/pad variant is staged in every uniform package the
         # game can sample it from; identical retail spans compile once per build.
-        equipment_compile_cache = uniform_equipment_adapter.EquipmentCompileCache()
+        equipment_compile_cache = project.equipment_compile_cache or uniform_equipment_adapter.EquipmentCompileCache()
         ausb_pack_hashes: dict[str, str] = {}
         unif_color_pack_hashes: dict[str, str] = {}
         independent_kinds = {"torso", "sleeve", "pants", "live_helmet", "team_select"}
@@ -3534,239 +3689,305 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                 input_pins, report_paths, index_pin.path, inventory_pin.path, output_parent, workers, cache, key_for)
         model_edits = [e for e in project.value["edits"] if e["kind"] == model_project.KIND]
         for edit_index, edit in enumerate(project.value["edits"]):
-            kind = edit["kind"]
-            if kind == model_project.KIND:
-                continue
-            if edit_index in deduplicated_ausb_edits:
-                continue
-            effective_edit = edit
-            effective_input_hashes: dict[str, str | None] | None = None
-            if edit_index in cached_handled:
-                continue
-            dependencies = compile_dependencies(edit_index, project.value["edits"])
-            cache_key = None
-            cached = None
-            if dependencies and cache.root is not None and parallel_imports is None:
-                cache_key = key_for(len(prepared), dependencies)
-                cached = cache.get(cache_key)
-            if isinstance(cached, dict) and set(cached) == {"kept_retail"}:
-                kept_retail.append(cached["kept_retail"])
-                cached_handled.update(dependencies)
-                continue
-            if cached is not None:
-                built, effective_edit, effective_input_hashes, kind = cached
-            else:
-                if kind == CRIB_SCENE_TEXTURE_KIND:
-                    selector_text = str(edit["selector"])
-                    edit_chunk = crib_scene_adapter.TARGETS[selector_text][1]
-                    if edit_chunk in geometry_scene_by_chunk:
-                        continue
-                    if handled_pure_crib_scenes:
-                        continue
-                    handled_pure_crib_scenes = True
-                    staged_crib: list[tuple[str, Path]] = []
-                    for crib_index, row in enumerate(pure_crib_scene_edits):
-                        pin = resolve_asset(project, row["png"], input_pins)
-                        staged = _copy_edit_input(
-                            len(prepared), f"crib_scene_{crib_index:03d}", pin,
-                            temp_root, temp_files,
-                        )
-                        staged_crib.append((str(row["selector"]), staged))
-                    try:
-                        built = crib_scene_adapter.build_unified_crib_scene_texture_imports(
-                            index_pin.path, inventory_pin.path, staged_crib
-                        )
-                    except crib_scene_adapter.CribSceneTextureWriterError as exc:
-                        raise ProjectError(str(exc).replace("Stadium", "Crib")) from exc
-                    effective_edit = {
-                        "kind": CRIB_SCENE_TEXTURE_KIND,
-                        "edits": [
-                            {"target": row["selector"], "png": row["png"]}
-                            for row in pure_crib_scene_edits
-                        ],
-                    }
-                    effective_input_hashes = {
-                        str(row["selector"]): resolve_asset(
-                            project, str(row["png"]), input_pins
-                        ).sha256
-                        for row in pure_crib_scene_edits
-                    }
-                elif kind == CRIB_SCENE_GEOMETRY_KIND:
-                    scene_id = str(edit["target"])
-                    if scene_id in handled_crib_geometry_scenes:
-                        continue
-                    handled_crib_geometry_scenes.add(scene_id)
-                    recipe_pin = resolve_asset(project, edit["recipe"], input_pins)
-                    staged_recipe = _copy_edit_input(
-                        len(prepared), "crib_geometry", recipe_pin,
-                        temp_root, temp_files,
-                    )
-                    scene_edits = crib_textures_by_geometry_scene.get(scene_id, [])
-                    staged_textures: list[tuple[str, Path]] = []
-                    for texture_index, row in enumerate(scene_edits):
-                        png_pin = resolve_asset(project, row["png"], input_pins)
-                        staged_png = _copy_edit_input(
-                            len(prepared), f"crib_geometry_texture_{texture_index:03d}",
-                            png_pin, temp_root, temp_files,
-                        )
-                        staged_textures.append((str(row["selector"]), staged_png))
-                    try:
-                        built = [crib_geometry_adapter.build_unified_crib_geometry_import(
-                            index_pin.path, inventory_pin.path, staged_recipe,
-                            staged_textures,
-                        )]
-                    except crib_geometry_adapter.CribGeometryWriterError as exc:
-                        raise ProjectError(str(exc).replace("Stadium", "Crib")) from exc
-                    effective_edit = {
-                        "kind": CRIB_SCENE_GEOMETRY_KIND,
-                        "target": scene_id,
-                        "recipe": edit["recipe"],
-                        "edits": [
-                            {"target": row["selector"], "png": row["png"]}
-                            for row in scene_edits
-                        ],
-                    }
-                    effective_input_hashes = {
-                        "recipe": recipe_pin.sha256,
-                        **{
+            with _naming_project_edits(project, compile_dependencies(edit_index, project.value["edits"]) or [edit_index]):
+                kind = edit["kind"]
+                if kind == model_project.KIND:
+                    continue
+                if edit_index in deduplicated_ausb_edits:
+                    continue
+                effective_edit = edit
+                effective_input_hashes: dict[str, str | None] | None = None
+                if edit_index in cached_handled:
+                    continue
+                dependencies = compile_dependencies(edit_index, project.value["edits"])
+                cache_key = None
+                cached = None
+                if dependencies and cache.root is not None and parallel_imports is None:
+                    cache_key = key_for(len(prepared), dependencies)
+                    cached = cache.get(cache_key)
+                if isinstance(cached, dict) and set(cached) == {"kept_retail"}:
+                    kept_retail.append(cached["kept_retail"])
+                    cached_handled.update(dependencies)
+                    continue
+                if cached is not None:
+                    built, effective_edit, effective_input_hashes, kind = cached
+                else:
+                    if kind == CRIB_SCENE_TEXTURE_KIND:
+                        selector_text = str(edit["selector"])
+                        edit_chunk = crib_scene_adapter.TARGETS[selector_text][1]
+                        if edit_chunk in geometry_scene_by_chunk:
+                            continue
+                        if handled_pure_crib_scenes:
+                            continue
+                        handled_pure_crib_scenes = True
+                        staged_crib: list[tuple[str, Path]] = []
+                        for crib_index, row in enumerate(pure_crib_scene_edits):
+                            pin = resolve_asset(project, row["png"], input_pins)
+                            staged = _copy_edit_input(
+                                len(prepared), f"crib_scene_{crib_index:03d}", pin,
+                                temp_root, temp_files,
+                            )
+                            staged_crib.append((str(row["selector"]), staged))
+                        try:
+                            built = crib_scene_adapter.build_unified_crib_scene_texture_imports(
+                                index_pin.path, inventory_pin.path, staged_crib
+                            )
+                        except crib_scene_adapter.CribSceneTextureWriterError as exc:
+                            raise ProjectError(str(exc).replace("Stadium", "Crib")) from exc
+                        effective_edit = {
+                            "kind": CRIB_SCENE_TEXTURE_KIND,
+                            "edits": [
+                                {"target": row["selector"], "png": row["png"]}
+                                for row in pure_crib_scene_edits
+                            ],
+                        }
+                        effective_input_hashes = {
                             str(row["selector"]): resolve_asset(
                                 project, str(row["png"]), input_pins
                             ).sha256
-                            for row in scene_edits
-                        },
-                    }
-                elif kind == PLAY_ROUTE_KIND:
-                    asset_id = str(edit["asset_id"])
-                    if asset_id in handled_play_route_books:
-                        continue
-                    handled_play_route_books.add(asset_id)
-                    rows = play_route_groups[asset_id]
-                    requests = [
-                        play_route_adapter.PlayRouteCloneRequest(
-                            asset_id,
-                            int(row["target_play_index"]),
-                            int(row["target_slot_index"]),
-                            int(row["donor_play_index"]),
-                            int(row["donor_slot_index"]),
+                            for row in pure_crib_scene_edits
+                        }
+                    elif kind == CRIB_SCENE_GEOMETRY_KIND:
+                        scene_id = str(edit["target"])
+                        if scene_id in handled_crib_geometry_scenes:
+                            continue
+                        handled_crib_geometry_scenes.add(scene_id)
+                        recipe_pin = resolve_asset(project, edit["recipe"], input_pins)
+                        staged_recipe = _copy_edit_input(
+                            len(prepared), "crib_geometry", recipe_pin,
+                            temp_root, temp_files,
                         )
-                        for row in rows
-                    ]
-                    built = [play_route_adapter.build_unified_play_route_import(
-                        index_pin.path, inventory_pin.path, asset_id, requests
-                    )]
-                    effective_edit = {
-                        "kind": PLAY_ROUTE_KIND,
-                        "asset_id": asset_id,
-                        "edits": [
-                            {
-                                key: row[key] for key in (
-                                    "target_play_index", "target_slot_index",
-                                    "donor_play_index", "donor_slot_index",
-                                )
-                            }
+                        scene_edits = crib_textures_by_geometry_scene.get(scene_id, [])
+                        staged_textures: list[tuple[str, Path]] = []
+                        for texture_index, row in enumerate(scene_edits):
+                            png_pin = resolve_asset(project, row["png"], input_pins)
+                            staged_png = _copy_edit_input(
+                                len(prepared), f"crib_geometry_texture_{texture_index:03d}",
+                                png_pin, temp_root, temp_files,
+                            )
+                            staged_textures.append((str(row["selector"]), staged_png))
+                        try:
+                            built = [crib_geometry_adapter.build_unified_crib_geometry_import(
+                                index_pin.path, inventory_pin.path, staged_recipe,
+                                staged_textures,
+                            )]
+                        except crib_geometry_adapter.CribGeometryWriterError as exc:
+                            raise ProjectError(str(exc).replace("Stadium", "Crib")) from exc
+                        effective_edit = {
+                            "kind": CRIB_SCENE_GEOMETRY_KIND,
+                            "target": scene_id,
+                            "recipe": edit["recipe"],
+                            "edits": [
+                                {"target": row["selector"], "png": row["png"]}
+                                for row in scene_edits
+                            ],
+                        }
+                        effective_input_hashes = {
+                            "recipe": recipe_pin.sha256,
+                            **{
+                                str(row["selector"]): resolve_asset(
+                                    project, str(row["png"]), input_pins
+                                ).sha256
+                                for row in scene_edits
+                            },
+                        }
+                    elif kind == PLAY_ROUTE_KIND:
+                        asset_id = str(edit["asset_id"])
+                        if asset_id in handled_play_route_books:
+                            continue
+                        handled_play_route_books.add(asset_id)
+                        rows = play_route_groups[asset_id]
+                        requests = [
+                            play_route_adapter.PlayRouteCloneRequest(
+                                asset_id,
+                                int(row["target_play_index"]),
+                                int(row["target_slot_index"]),
+                                int(row["donor_play_index"]),
+                                int(row["donor_slot_index"]),
+                            )
                             for row in rows
-                        ],
-                    }
-                    effective_input_hashes = {}
-                elif kind in (FORMATION_CREATE_KIND, PLAY_CREATE_KIND, FORMATION_LINK_KIND):
-                    asset_id = str(edit["asset_id"])
-                    if asset_id in handled_formation_play_books:
-                        continue
-                    handled_formation_play_books.add(asset_id)
-                    f_rows = formation_create_groups.get(asset_id, [])
-                    p_rows = play_create_groups.get(asset_id, [])
-                    l_rows = link_groups.get(asset_id, [])
-                    try:
-                        built = [formation_play_adapter.build_unified_formation_play_import(
-                            index_pin.path, inventory_pin.path, asset_id, f_rows, p_rows,
-                            l_rows,
+                        ]
+                        built = [play_route_adapter.build_unified_play_route_import(
+                            index_pin.path, inventory_pin.path, asset_id, requests
                         )]
-                    except formation_play_adapter.ValidationError as exc:
-                        raise ProjectError(str(exc)) from exc
-                    effective_edit = {
-                        "kind": "formation_play_create",
-                        "asset_id": asset_id,
-                        "formation_donors": [int(r["donor_formation_index"]) for r in f_rows],
-                        "play_donors": [int(r["donor_play_index"]) for r in p_rows],
-                        "links": [
-                            [int(r["formation_index"]), int(r["play_index"])]
-                            for r in l_rows
-                        ],
-                    }
-                    effective_input_hashes = {}
-                elif kind == UNIF_COLOR_KIND:
-                    try:
-                        built = unif_color_adapter.build_unif_color_imports(
+                        effective_edit = {
+                            "kind": PLAY_ROUTE_KIND,
+                            "asset_id": asset_id,
+                            "edits": [
+                                {
+                                    key: row[key] for key in (
+                                        "target_play_index", "target_slot_index",
+                                        "donor_play_index", "donor_slot_index",
+                                    )
+                                }
+                                for row in rows
+                            ],
+                        }
+                        effective_input_hashes = {}
+                    elif kind in (FORMATION_CREATE_KIND, PLAY_CREATE_KIND, FORMATION_LINK_KIND):
+                        asset_id = str(edit["asset_id"])
+                        if asset_id in handled_formation_play_books:
+                            continue
+                        handled_formation_play_books.add(asset_id)
+                        f_rows = formation_create_groups.get(asset_id, [])
+                        p_rows = play_create_groups.get(asset_id, [])
+                        l_rows = link_groups.get(asset_id, [])
+                        try:
+                            built = [formation_play_adapter.build_unified_formation_play_import(
+                                index_pin.path, inventory_pin.path, asset_id, f_rows, p_rows,
+                                l_rows,
+                            )]
+                        except formation_play_adapter.ValidationError as exc:
+                            raise ProjectError(str(exc)) from exc
+                        effective_edit = {
+                            "kind": "formation_play_create",
+                            "asset_id": asset_id,
+                            "formation_donors": [int(r["donor_formation_index"]) for r in f_rows],
+                            "play_donors": [int(r["donor_play_index"]) for r in p_rows],
+                            "links": [
+                                [int(r["formation_index"]), int(r["play_index"])]
+                                for r in l_rows
+                            ],
+                        }
+                        effective_input_hashes = {}
+                    elif kind == UNIF_COLOR_KIND:
+                        try:
+                            built = unif_color_adapter.build_unif_color_imports(
+                                edit,
+                                index_path=index_pin.path,
+                                source_fd=source_fd,
+                                entries=dict(entries),
+                                pack_hashes=unif_color_pack_hashes,
+                            )
+                        except unif_color_adapter.UnifColorWriterError as exc:
+                            raise ProjectError(str(exc)) from exc
+                    elif kind == "team_identity":
+                        built = build_team_identity_imports(edit, report_paths[kind])
+                    elif kind == "player_roster":
+                        built = build_player_roster_imports(edit, report_paths[kind])
+                    elif kind == ROSTER_TEAM_PROVIDER_KIND:
+                        built = build_roster_team_text_imports(
+                            edit, roster_views[int(edit["resource_outer_index"])])
+                    elif kind == ROSTER_PLAYER_PROVIDER_KIND:
+                        built = build_roster_player_text_imports(
+                            edit, roster_views[int(edit["resource_outer_index"])])
+                    elif kind == UNIVERSAL_FIXED_TEXT_KIND:
+                        assert safe_catalog is not None
+                        built = [build_universal_fixed_text_import(
                             edit,
-                            index_path=index_pin.path,
-                            source_fd=source_fd,
-                            entries=dict(entries),
-                            pack_hashes=unif_color_pack_hashes,
+                            safe_catalog,
+                            safe_replacements[str(edit["selector"])],
+                            entries,
+                            safe_pack_hashes,
+                        )]
+                    elif kind == "player_portrait":
+                        built = build_player_portrait_imports(
+                            len(prepared), edit, project, input_pins, report_paths[kind],
+                            index_pin.path, temp_root, temp_files)
+                    elif kind == MENU_BACK_AUDIO_KIND:
+                        assert audio_origin is not None
+                        built = [build_menu_back_audio_import(
+                            edit, project, input_pins, audio_origin
+                        )]
+                    elif kind == AUDO_AUDIO_KIND:
+                        assert audio_origin is not None
+                        built = [build_audo_audio_import(
+                            edit,
+                            project,
+                            input_pins,
+                            audo_slots[edit["asset_id"]],
+                            audio_origin,
+                        )]
+                    elif kind == AUSB_AUDIO_KIND:
+                        assert audio_origin is not None
+                        built = build_ausb_audio_imports(
+                            edit,
+                            project,
+                            input_pins,
+                            ausb_slots_by_edit[edit_index],
+                            audio_origin,
+                            entries,
+                            source_fd,
+                            ausb_pack_hashes,
                         )
-                    except unif_color_adapter.UnifColorWriterError as exc:
-                        raise ProjectError(str(exc)) from exc
-                elif kind == "team_identity":
-                    built = build_team_identity_imports(edit, report_paths[kind])
-                elif kind == "player_roster":
-                    built = build_player_roster_imports(edit, report_paths[kind])
-                elif kind == ROSTER_TEAM_PROVIDER_KIND:
-                    built = build_roster_team_text_imports(
-                        edit, roster_views[int(edit["resource_outer_index"])])
-                elif kind == ROSTER_PLAYER_PROVIDER_KIND:
-                    built = build_roster_player_text_imports(
-                        edit, roster_views[int(edit["resource_outer_index"])])
-                elif kind == UNIVERSAL_FIXED_TEXT_KIND:
-                    assert safe_catalog is not None
-                    built = [build_universal_fixed_text_import(
-                        edit,
-                        safe_catalog,
-                        safe_replacements[str(edit["selector"])],
-                        entries,
-                        safe_pack_hashes,
-                    )]
-                elif kind == "player_portrait":
-                    built = build_player_portrait_imports(
-                        len(prepared), edit, project, input_pins, report_paths[kind],
-                        index_pin.path, temp_root, temp_files)
-                elif kind == MENU_BACK_AUDIO_KIND:
-                    assert audio_origin is not None
-                    built = [build_menu_back_audio_import(
-                        edit, project, input_pins, audio_origin
-                    )]
-                elif kind == AUDO_AUDIO_KIND:
-                    assert audio_origin is not None
-                    built = [build_audo_audio_import(
-                        edit,
-                        project,
-                        input_pins,
-                        audo_slots[edit["asset_id"]],
-                        audio_origin,
-                    )]
-                elif kind == AUSB_AUDIO_KIND:
-                    assert audio_origin is not None
-                    built = build_ausb_audio_imports(
-                        edit,
-                        project,
-                        input_pins,
-                        ausb_slots_by_edit[edit_index],
-                        audio_origin,
-                        entries,
-                        source_fd,
-                        ausb_pack_hashes,
-                    )
-                elif kind == STADIUM_TEXTURE_KIND:
-                    scene_key = str(edit["target"]).rsplit(".texture", 1)[0]
-                    if scene_key in handled_stadium_scenes:
-                        continue
-                    handled_stadium_scenes.add(scene_key)
-                    scene_edits = stadium_groups[scene_key]
-                    if (
-                        scene_key == STADIUM_GEOMETRY_TARGET
-                        and stadium_geometry_edit is not None
-                    ):
+                    elif kind == STADIUM_TEXTURE_KIND:
+                        scene_key = str(edit["target"]).rsplit(".texture", 1)[0]
+                        if scene_key in handled_stadium_scenes:
+                            continue
+                        handled_stadium_scenes.add(scene_key)
+                        scene_edits = stadium_groups[scene_key]
+                        if (
+                            scene_key == STADIUM_GEOMETRY_TARGET
+                            and stadium_geometry_edit is not None
+                        ):
+                            built = [build_stadium_geometry_import(
+                                len(prepared),
+                                stadium_geometry_edit,
+                                scene_edits,
+                                project,
+                                input_pins,
+                                index_pin.path,
+                                inventory_pin.path,
+                                temp_root,
+                                temp_files,
+                            )]
+                            kind = STADIUM_GEOMETRY_KIND
+                            effective_edit = {
+                                "kind": STADIUM_GEOMETRY_KIND,
+                                "target": STADIUM_GEOMETRY_TARGET,
+                                "recipe": stadium_geometry_edit["recipe"],
+                                "edits": [
+                                    {"target": row["target"], "png": row["png"]}
+                                    for row in scene_edits
+                                ],
+                            }
+                            effective_input_hashes = {
+                                "recipe": resolve_asset(
+                                    project,
+                                    str(stadium_geometry_edit["recipe"]),
+                                    input_pins,
+                                ).sha256,
+                                **{
+                                    str(row["target"]): resolve_asset(
+                                        project, str(row["png"]), input_pins
+                                    ).sha256
+                                    for row in scene_edits
+                                },
+                            }
+                        else:
+                            built = [build_stadium_scene_import(
+                                len(prepared),
+                                scene_edits,
+                                project,
+                                input_pins,
+                                index_pin.path,
+                                inventory_pin.path,
+                                temp_root,
+                                temp_files,
+                            )]
+                            effective_edit = {
+                                "kind": STADIUM_TEXTURE_KIND,
+                                "scene": scene_key,
+                                "edits": [
+                                    {"target": row["target"], "png": row["png"]}
+                                    for row in scene_edits
+                                ],
+                            }
+                            effective_input_hashes = {
+                                str(row["target"]): resolve_asset(
+                                    project, str(row["png"]), input_pins
+                                ).sha256
+                                for row in scene_edits
+                            }
+                    elif kind == STADIUM_GEOMETRY_KIND:
+                        scene_key = STADIUM_GEOMETRY_TARGET
+                        if scene_key in handled_stadium_scenes:
+                            continue
+                        handled_stadium_scenes.add(scene_key)
+                        scene_edits = stadium_groups.get(scene_key, [])
                         built = [build_stadium_geometry_import(
                             len(prepared),
-                            stadium_geometry_edit,
+                            edit,
                             scene_edits,
                             project,
                             input_pins,
@@ -3775,11 +3996,10 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                             temp_root,
                             temp_files,
                         )]
-                        kind = STADIUM_GEOMETRY_KIND
                         effective_edit = {
                             "kind": STADIUM_GEOMETRY_KIND,
                             "target": STADIUM_GEOMETRY_TARGET,
-                            "recipe": stadium_geometry_edit["recipe"],
+                            "recipe": edit["recipe"],
                             "edits": [
                                 {"target": row["target"], "png": row["png"]}
                                 for row in scene_edits
@@ -3787,9 +4007,7 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                         }
                         effective_input_hashes = {
                             "recipe": resolve_asset(
-                                project,
-                                str(stadium_geometry_edit["recipe"]),
-                                input_pins,
+                                project, str(edit["recipe"]), input_pins
                             ).sha256,
                             **{
                                 str(row["target"]): resolve_asset(
@@ -3798,236 +4016,175 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                                 for row in scene_edits
                             },
                         }
-                    else:
-                        built = [build_stadium_scene_import(
-                            len(prepared),
-                            scene_edits,
-                            project,
-                            input_pins,
-                            index_pin.path,
-                            inventory_pin.path,
-                            temp_root,
-                            temp_files,
-                        )]
+                    elif kind == P8_TEXTURE_KIND:
+                        png_pin = resolve_asset(project, edit["png"], input_pins)
+                        png = _copy_edit_input(
+                            len(prepared), "input", png_pin, temp_root, temp_files
+                        )
+                        try:
+                            built = p8_texture_adapter.build_unified_p8_texture_imports(
+                                index_pin.path, str(edit["asset_id"]), png
+                            )
+                        except p8_texture_adapter.P8TextureWriterError as exc:
+                            raise ProjectError(str(exc)) from exc
+                    elif kind == CRIB_STANDALONE_TEXTURE_KIND:
+                        built = build_crib_standalone_texture_imports(
+                            len(prepared), edit, project, input_pins,
+                            index_pin.path, temp_root, temp_files,
+                        )
+                    elif kind == UNIFORM_EQUIPMENT_KIND:
+                        parts = str(edit["asset_id"]).split(":", 4)
+                        group_key = (int(parts[1]), int(parts[2]))
+                        if group_key in handled_equipment_groups:
+                            continue
+                        handled_equipment_groups.add(group_key)
+                        equipment_edits = equipment_groups[group_key]
+                        staged_equipment: list[tuple[str, Path]] = []
+                        for equipment_index, row in enumerate(equipment_edits):
+                            pin = resolve_asset(project, row["png"], input_pins)
+                            staged = _copy_edit_input(
+                                len(prepared),
+                                f"equipment_{equipment_index:04d}",
+                                pin,
+                                temp_root,
+                                temp_files,
+                            )
+                            staged_equipment.append((str(row["asset_id"]), staged))
+                        try:
+                            equipment_built = (
+                                uniform_equipment_adapter
+                                .build_unified_uniform_equipment_imports(
+                                    index_pin.path,
+                                    staged_equipment,
+                                    pack_hashes=equipment_pack_hashes,
+                                    compile_cache=equipment_compile_cache,
+                                )
+                            )
+                        except uniform_equipment_adapter.UniformEquipmentWriterError as exc:
+                            raise ProjectError(str(exc)) from exc
+                        built = [equipment_built]
                         effective_edit = {
-                            "kind": STADIUM_TEXTURE_KIND,
-                            "scene": scene_key,
+                            "kind": UNIFORM_EQUIPMENT_KIND,
+                            "tset": (
+                                f"uniform-equipment-tset:{group_key[0]}:{group_key[1]}"
+                            ),
                             "edits": [
-                                {"target": row["target"], "png": row["png"]}
-                                for row in scene_edits
+                                {"target": row["asset_id"], "png": row["png"]}
+                                for row in equipment_edits
                             ],
                         }
                         effective_input_hashes = {
-                            str(row["target"]): resolve_asset(
+                            str(row["asset_id"]): resolve_asset(
                                 project, str(row["png"]), input_pins
                             ).sha256
-                            for row in scene_edits
-                        }
-                elif kind == STADIUM_GEOMETRY_KIND:
-                    scene_key = STADIUM_GEOMETRY_TARGET
-                    if scene_key in handled_stadium_scenes:
-                        continue
-                    handled_stadium_scenes.add(scene_key)
-                    scene_edits = stadium_groups.get(scene_key, [])
-                    built = [build_stadium_geometry_import(
-                        len(prepared),
-                        edit,
-                        scene_edits,
-                        project,
-                        input_pins,
-                        index_pin.path,
-                        inventory_pin.path,
-                        temp_root,
-                        temp_files,
-                    )]
-                    effective_edit = {
-                        "kind": STADIUM_GEOMETRY_KIND,
-                        "target": STADIUM_GEOMETRY_TARGET,
-                        "recipe": edit["recipe"],
-                        "edits": [
-                            {"target": row["target"], "png": row["png"]}
-                            for row in scene_edits
-                        ],
-                    }
-                    effective_input_hashes = {
-                        "recipe": resolve_asset(
-                            project, str(edit["recipe"]), input_pins
-                        ).sha256,
-                        **{
-                            str(row["target"]): resolve_asset(
-                                project, str(row["png"]), input_pins
-                            ).sha256
-                            for row in scene_edits
-                        },
-                    }
-                elif kind == P8_TEXTURE_KIND:
-                    png_pin = resolve_asset(project, edit["png"], input_pins)
-                    png = _copy_edit_input(
-                        len(prepared), "input", png_pin, temp_root, temp_files
-                    )
-                    try:
-                        built = p8_texture_adapter.build_unified_p8_texture_imports(
-                            index_pin.path, str(edit["asset_id"]), png
-                        )
-                    except p8_texture_adapter.P8TextureWriterError as exc:
-                        raise ProjectError(str(exc)) from exc
-                elif kind == CRIB_STANDALONE_TEXTURE_KIND:
-                    built = build_crib_standalone_texture_imports(
-                        len(prepared), edit, project, input_pins,
-                        index_pin.path, temp_root, temp_files,
-                    )
-                elif kind == UNIFORM_EQUIPMENT_KIND:
-                    parts = str(edit["asset_id"]).split(":", 4)
-                    group_key = (int(parts[1]), int(parts[2]))
-                    if group_key in handled_equipment_groups:
-                        continue
-                    handled_equipment_groups.add(group_key)
-                    equipment_edits = equipment_groups[group_key]
-                    staged_equipment: list[tuple[str, Path]] = []
-                    for equipment_index, row in enumerate(equipment_edits):
-                        pin = resolve_asset(project, row["png"], input_pins)
-                        staged = _copy_edit_input(
-                            len(prepared),
-                            f"equipment_{equipment_index:04d}",
-                            pin,
-                            temp_root,
-                            temp_files,
-                        )
-                        staged_equipment.append((str(row["asset_id"]), staged))
-                    try:
-                        equipment_built = (
-                            uniform_equipment_adapter
-                            .build_unified_uniform_equipment_imports(
-                                index_pin.path,
-                                staged_equipment,
-                                pack_hashes=equipment_pack_hashes,
-                                compile_cache=equipment_compile_cache,
-                            )
-                        )
-                    except uniform_equipment_adapter.UniformEquipmentWriterError as exc:
-                        raise ProjectError(str(exc)) from exc
-                    built = [equipment_built]
-                    effective_edit = {
-                        "kind": UNIFORM_EQUIPMENT_KIND,
-                        "tset": (
-                            f"uniform-equipment-tset:{group_key[0]}:{group_key[1]}"
-                        ),
-                        "edits": [
-                            {"target": row["asset_id"], "png": row["png"]}
                             for row in equipment_edits
-                        ],
-                    }
-                    effective_input_hashes = {
-                        str(row["asset_id"]): resolve_asset(
-                            project, str(row["png"]), input_pins
-                        ).sha256
-                        for row in equipment_edits
-                    }
-                else:
-                    historical_import = (
-                        historical_import_reports.get(len(prepared))
-                        if historical_import_reports is not None and not model_edits else None
-                    )
-                    # Whatever an importer refuses, the user has to be told which
-                    # of their edits it was. A build carrying dozens of them once
-                    # reported only "VC-LZ stream needs more than the 34416-byte
-                    # bound", which names no team, no slot, and no image.
-                    staged_before = len(temp_files)
-                    try:
-                        with _naming_the_failing_edit(edit):
-                            built = [next(parallel_imports) if parallel_imports is not None else build_one_import(
-                                len(prepared), edit, project, input_pins, report_paths,
-                                index_pin.path, inventory_pin.path, temp_root, temp_files,
-                                source_fd, historical_import)]
-                    except ProjectError as exc:
-                        # A digit whose art cannot fit its slot at the quality
-                        # floor must never refuse the whole disc (beta-63.1,
-                        # Coach Edwards: "Digit artwork cannot fit its 896-byte
-                        # texture slot"). Keep retail for that ONE slot -- no span
-                        # is written -- and carry the reason into the receipt.
-                        kept = None
-                        if (kind == "live_number_nameplate"
-                                and isinstance(exc.__cause__, QualityBudgetError)):
-                            kept = kept_retail_record(
-                                edit, exc,
-                                resolve_asset(project, edit["png"], input_pins),
-                                report_paths[kind])
-                        if kept is None:
-                            raise
-                        # Release the attempt's private input copy so the next
-                        # span reuses this order number; spans stay contiguous.
-                        leftovers = ownership.cleanup_owned(temp_files[staged_before:], [])
-                        require(not leftovers,
-                                f"kept-retail input copy could not be released: {leftovers}")
-                        del temp_files[staged_before:]
-                        kept_retail.append(kept)
-                        if cache_key is not None:
-                            cache.put(cache_key, {"kept_retail": kept})
-                        continue
-                if cache_key is not None:
-                    cache.put(cache_key, (built, effective_edit, effective_input_hashes, kind))
-            if dependencies:
-                cached_handled.update(dependencies)
-            for replacement, previews, report, selector, target in built:
-                order = len(prepared)
-                key = (kind, selector)
-                require(key not in selectors,
-                        f"project repeats target {kind}:{selector}")
-                selectors.add(key)
-                (pack_path, pack_sector, pack_size, pack_sha, pack_offset,
-                 absolute, retail_sha) = target_proof(kind, target)
-                # Bound to retail bytes before any XISO copy.
-                runs: list[list[int]] = []
-                span_path = temporary / f"{order:05d}_replacement.bin"
-                temp_files.append(exclusive_payload(
-                    span_path, replacement, temp_root))
-                normalized = normalized_import_report(report, effective_edit, kind)
-                if historical_import_reports is not None and not model_edits:
-                    historical_import = historical_import_reports.get(order)
-                    require(historical_import is not None,
-                            f"historical import receipt missing for span {order}")
-                    normalized = replay_historical_import_report(
-                        normalized, historical_import, kind
-                    )
-                import_payload = canonical_json(normalized)
-                import_path = temporary / f"{order:05d}_import.json"
-                temp_files.append(exclusive_payload(
-                    import_path, import_payload, temp_root))
-                preview_records: list[tuple[str, Path, int, str]] = []
-                for preview_order, (name, payload) in enumerate(previews):
-                    final_name = (f"{order:05d}_{safe_name(selector)}_"
-                                  f"{preview_order:02d}_{safe_name(name)}")
-                    preview_path = temporary / final_name
-                    temp_files.append(exclusive_payload(
-                        preview_path, payload, temp_root))
-                    preview_records.append(
-                        (final_name, preview_path, len(payload), digest(payload)))
-                input_hashes: dict[str, str | None] = (
-                    dict(effective_input_hashes)
-                    if effective_input_hashes is not None else {}
-                )
-                if effective_input_hashes is None:
-                    if kind in {"torso", "sleeve", "pants"}:
-                        input_fields = ("clean_png", "mud_png")
-                    elif kind in {"team_identity", "player_roster"} \
-                            | ROSTER_REPORT_FREE_KINDS \
-                            | {UNIVERSAL_FIXED_TEXT_KIND, UNIF_COLOR_KIND}:
-                        # A colour edit carries no file input to hash.
-                        input_fields = ()
-                    elif kind in AUDIO_KINDS:
-                        input_fields = ("wav",)
+                        }
                     else:
-                        input_fields = ("png",)
-                    for field in input_fields:
-                        value = edit[field]
-                        input_hashes[field] = (None if value is None else
-                            resolve_asset(project, value, input_pins).sha256)
-                prepared.append(PreparedEdit(
-                    order, kind, selector, effective_edit, input_hashes, target,
-                    pack_path, pack_sector, pack_size, pack_sha, pack_offset,
-                    absolute, retail_sha, span_path,
-                    len(replacement), digest(replacement), runs, import_path,
-                    digest(import_payload), preview_records))
+                        historical_import = (
+                            historical_import_reports.get(len(prepared))
+                            if historical_import_reports is not None and not model_edits else None
+                        )
+                        # Whatever an importer refuses, the user has to be told which
+                        # of their edits it was. A build carrying dozens of them once
+                        # reported only "VC-LZ stream needs more than the 34416-byte
+                        # bound", which names no team, no slot, and no image.
+                        staged_before = len(temp_files)
+                        try:
+                            with _naming_the_failing_edit(edit):
+                                built = [next(parallel_imports) if parallel_imports is not None else build_one_import(
+                                    len(prepared), edit, project, input_pins, report_paths,
+                                    index_pin.path, inventory_pin.path, temp_root, temp_files,
+                                    source_fd, historical_import)]
+                        except ProjectError as exc:
+                            # A digit whose art cannot fit its slot at the quality
+                            # floor must never refuse the whole disc (beta-63.1,
+                            # Coach Edwards: "Digit artwork cannot fit its 896-byte
+                            # texture slot"). Keep retail for that ONE slot -- no span
+                            # is written -- and carry the reason into the receipt.
+                            kept = None
+                            if (kind == "live_number_nameplate"
+                                    and isinstance(exc.__cause__, QualityBudgetError)):
+                                kept = kept_retail_record(
+                                    edit, exc,
+                                    resolve_asset(project, edit["png"], input_pins),
+                                    report_paths[kind])
+                            if kept is None:
+                                raise
+                            # Release the attempt's private input copy so the next
+                            # span reuses this order number; spans stay contiguous.
+                            leftovers = ownership.cleanup_owned(temp_files[staged_before:], [])
+                            require(not leftovers,
+                                    f"kept-retail input copy could not be released: {leftovers}")
+                            del temp_files[staged_before:]
+                            kept_retail.append(kept)
+                            if cache_key is not None:
+                                cache.put(cache_key, {"kept_retail": kept})
+                            continue
+                    if cache_key is not None:
+                        cache.put(cache_key, (built, effective_edit, effective_input_hashes, kind))
+                if dependencies:
+                    cached_handled.update(dependencies)
+                for replacement, previews, report, selector, target in built:
+                    order = len(prepared)
+                    key = (kind, selector)
+                    require(key not in selectors,
+                            f"project repeats target {kind}:{selector}")
+                    selectors.add(key)
+                    (pack_path, pack_sector, pack_size, pack_sha, pack_offset,
+                     absolute, retail_sha) = target_proof(kind, target)
+                    # Bound to retail bytes before any XISO copy.
+                    runs: list[list[int]] = []
+                    span_path = temporary / f"{order:05d}_replacement.bin"
+                    temp_files.append(exclusive_payload(
+                        span_path, replacement, temp_root))
+                    normalized = normalized_import_report(report, effective_edit, kind)
+                    if historical_import_reports is not None and not model_edits:
+                        historical_import = historical_import_reports.get(order)
+                        require(historical_import is not None,
+                                f"historical import receipt missing for span {order}")
+                        normalized = replay_historical_import_report(
+                            normalized, historical_import, kind
+                        )
+                    import_payload = canonical_json(normalized)
+                    import_path = temporary / f"{order:05d}_import.json"
+                    temp_files.append(exclusive_payload(
+                        import_path, import_payload, temp_root))
+                    preview_records: list[tuple[str, Path, int, str]] = []
+                    for preview_order, (name, payload) in enumerate(previews):
+                        final_name = (f"{order:05d}_{safe_name(selector)}_"
+                                      f"{preview_order:02d}_{safe_name(name)}")
+                        preview_path = temporary / final_name
+                        temp_files.append(exclusive_payload(
+                            preview_path, payload, temp_root))
+                        preview_records.append(
+                            (final_name, preview_path, len(payload), digest(payload)))
+                    input_hashes: dict[str, str | None] = (
+                        dict(effective_input_hashes)
+                        if effective_input_hashes is not None else {}
+                    )
+                    if effective_input_hashes is None:
+                        if kind in {"torso", "sleeve", "pants"}:
+                            input_fields = ("clean_png", "mud_png")
+                        elif kind in {"team_identity", "player_roster"} \
+                                | ROSTER_REPORT_FREE_KINDS \
+                                | {UNIVERSAL_FIXED_TEXT_KIND, UNIF_COLOR_KIND}:
+                            # A colour edit carries no file input to hash.
+                            input_fields = ()
+                        elif kind in AUDIO_KINDS:
+                            input_fields = ("wav",)
+                        else:
+                            input_fields = ("png",)
+                        for field in input_fields:
+                            value = edit[field]
+                            input_hashes[field] = (None if value is None else
+                                resolve_asset(project, value, input_pins).sha256)
+                    prepared.append(PreparedEdit(
+                        order, kind, selector, effective_edit, input_hashes, target,
+                        pack_path, pack_sector, pack_size, pack_sha, pack_offset,
+                        absolute, retail_sha, span_path,
+                        len(replacement), digest(replacement), runs, import_path,
+                        digest(import_payload), preview_records,
+                        tuple(project_edit_label(project.value["edits"][i], i) for i in (dependencies or [edit_index]))))
         model_project.prepare_project_models(sys.modules[__name__], prepared, model_edits,
             project, input_pins, index_pin.path, inventory_pin.path, temp_root, temp_files, source_fd)
         if model_edits and historical_import_reports is not None:
@@ -4658,65 +4815,77 @@ def bind_prepared_to_source(prepared: PreparedProject, source_fd: int,
     pack_hashes: dict[str, str] = {}
     ranges: list[tuple[int, int, str]] = []
     for edit in prepared.edits:
-        pack_key = edit.pack_path.casefold()
-        pack = entries.get(pack_key)
-        # Sector is NOT compared. A sector number is where a particular build
-        # of the image happened to place the file: a pressed disc, an
-        # extract-xiso rebuild and a repack put all 19 files at completely
-        # different sectors while every file is byte-identical. Pinning it meant
-        # no image but the project's own could ever build. Size is compared here
-        # and the pack's CONTENT hash immediately below, which is what actually
-        # matters and is layout-independent.
-        require(pack is not None and pack.size == edit.pack_size,
-                f"source pack extent changed for {edit.kind}:{edit.selector}")
-        assert pack is not None
-        # DERIVE the absolute offset from the pack we just located, rather than
-        # trusting the one recorded in the target. That recorded value was the
-        # byte position in the project's own rebuild; a pressed disc and a
-        # repack put the same pack somewhere else entirely, so every downstream
-        # read would have landed in the wrong place. Everything that matters --
-        # the pack's content hash, the span hash, the wrapper and padding -- is
-        # still verified below, now against the right bytes.
-        edit.absolute = pack.byte_offset + edit.pack_offset
-        if pack_key not in pack_hashes:
-            pack_hashes[pack_key] = common.sha256_fd(
-                source_fd, pack.byte_offset, pack.size)
-        require(pack_hashes[pack_key] == edit.pack_sha256,
-                f"source pack hash changed for {edit.kind}:{edit.selector}")
-        if edit.kind == "team_identity":
-            validate_team_identity_source(edit, source_fd, pack)
-        elif edit.kind == "player_roster":
-            validate_player_roster_source(edit, source_fd, pack)
-        elif edit.kind in ROSTER_REPORT_FREE_KINDS:
-            validate_sparse_roster_source(edit, source_fd, pack)
-        elif edit.kind == UNIVERSAL_FIXED_TEXT_KIND:
-            validate_universal_fixed_text_source(edit, source_fd, pack)
-        elif edit.kind == PLAY_ROUTE_KIND:
-            validate_play_route_source(edit, source_fd, pack)
-        elif edit.kind == MENU_BACK_AUDIO_KIND:
-            validate_menu_back_audio_source(edit, source_fd, pack)
-        elif edit.kind == AUDO_AUDIO_KIND:
-            validate_audo_audio_source(edit, source_fd, pack)
-        elif edit.kind == AUSB_AUDIO_KIND:
-            validate_ausb_audio_source(edit, source_fd, pack)
-        elif edit.kind == CRIB_TEAM_PHOTO_KIND:
-            validate_crib_team_photo_source(edit, source_fd, pack)
-        require(edit.absolute == pack.byte_offset + edit.pack_offset and
-                pack.byte_offset <= edit.absolute and
-                edit.absolute + edit.replacement_size <= pack.byte_offset + pack.size,
-                f"target arithmetic/extent changed for {edit.kind}:{edit.selector}")
-        retail = common.read_exact(source_fd, edit.absolute, edit.replacement_size)
-        require(digest(retail) == edit.retail_span_sha256,
-                f"retail target span changed for {edit.kind}:{edit.selector}")
-        replacement = edit.replacement_path.read_bytes()
-        require(len(replacement) == edit.replacement_size and
-                digest(replacement) == edit.replacement_sha256,
-                f"temporary replacement changed for {edit.kind}:{edit.selector}")
-        edit.relative_runs = difference_runs(retail, replacement)
-        require(edit.kind in {"team_identity", "player_roster"} or edit.relative_runs,
-                f"replacement equals retail for {edit.kind}:{edit.selector}")
-        end = edit.absolute + edit.replacement_size
-        ranges.append((edit.absolute, end, f"{edit.kind}:{edit.selector}"))
+        with _naming_prepared_edit(edit):
+            pack_key = edit.pack_path.casefold()
+            pack = entries.get(pack_key)
+            # Sector is NOT compared. A sector number is where a particular build
+            # of the image happened to place the file: a pressed disc, an
+            # extract-xiso rebuild and a repack put all 19 files at completely
+            # different sectors while every file is byte-identical. Pinning it meant
+            # no image but the project's own could ever build. Size is compared here
+            # and the pack's CONTENT hash immediately below, which is what actually
+            # matters and is layout-independent.
+            require(pack is not None and pack.size == edit.pack_size,
+                    f"source pack extent changed for {edit.kind}:{edit.selector}")
+            assert pack is not None
+            # DERIVE the absolute offset from the pack we just located, rather than
+            # trusting the one recorded in the target. That recorded value was the
+            # byte position in the project's own rebuild; a pressed disc and a
+            # repack put the same pack somewhere else entirely, so every downstream
+            # read would have landed in the wrong place. Everything that matters --
+            # the pack's content hash, the span hash, the wrapper and padding -- is
+            # still verified below, now against the right bytes.
+            edit.absolute = pack.byte_offset + edit.pack_offset
+            if pack_key not in pack_hashes:
+                pack_hashes[pack_key] = common.sha256_fd(
+                    source_fd, pack.byte_offset, pack.size)
+            require(pack_hashes[pack_key] == edit.pack_sha256,
+                    f"source pack hash changed for {edit.kind}:{edit.selector}")
+            if edit.kind == "team_identity":
+                validate_team_identity_source(edit, source_fd, pack)
+            elif edit.kind == "player_roster":
+                validate_player_roster_source(edit, source_fd, pack)
+            elif edit.kind in ROSTER_REPORT_FREE_KINDS:
+                validate_sparse_roster_source(edit, source_fd, pack)
+            elif edit.kind == UNIVERSAL_FIXED_TEXT_KIND:
+                validate_universal_fixed_text_source(edit, source_fd, pack)
+            elif edit.kind == PLAY_ROUTE_KIND:
+                validate_play_route_source(edit, source_fd, pack)
+            elif edit.kind == MENU_BACK_AUDIO_KIND:
+                validate_menu_back_audio_source(edit, source_fd, pack)
+            elif edit.kind == AUDO_AUDIO_KIND:
+                validate_audo_audio_source(edit, source_fd, pack)
+            elif edit.kind == AUSB_AUDIO_KIND:
+                validate_ausb_audio_source(edit, source_fd, pack)
+            elif edit.kind == CRIB_TEAM_PHOTO_KIND:
+                validate_crib_team_photo_source(edit, source_fd, pack)
+            require(edit.absolute == pack.byte_offset + edit.pack_offset and
+                    pack.byte_offset <= edit.absolute and
+                    edit.absolute + edit.replacement_size <= pack.byte_offset + pack.size,
+                    f"target arithmetic/extent changed for {edit.kind}:{edit.selector}")
+            retail = common.read_exact(source_fd, edit.absolute, edit.replacement_size)
+            require(digest(retail) == edit.retail_span_sha256,
+                    f"retail target span changed for {edit.kind}:{edit.selector}")
+            replacement = edit.replacement_path.read_bytes()
+            require(len(replacement) == edit.replacement_size and
+                    digest(replacement) == edit.replacement_sha256,
+                    f"temporary replacement changed for {edit.kind}:{edit.selector}")
+            edit.relative_runs = difference_runs(retail, replacement)
+            if edit.kind == UNIFORM_EQUIPMENT_KIND and not edit.relative_runs:
+                # Beta 68 can reuse an exact retail chain where beta 62 appended
+                # one. The authored intent is valid; source equality is a safe
+                # no-op, not a reason to reject the user's old project.
+                record = {"kind": edit.kind, "selector": edit.selector,
+                          "outcome": "already_matches_source", "reason": "exact_source_bytes",
+                          "message": "; ".join(edit.project_labels) +
+                          ": Already matches the source bytes; kept unchanged.",
+                          "replacement": {"span_sha256": edit.retail_span_sha256}}
+                if record not in prepared.kept_retail:
+                    prepared.kept_retail.append(record)
+            require(edit.kind in {"team_identity", "player_roster", UNIFORM_EQUIPMENT_KIND} or edit.relative_runs,
+                    f"replacement equals retail for {edit.kind}:{edit.selector}")
+            end = edit.absolute + edit.replacement_size
+            ranges.append((edit.absolute, end, f"{edit.kind}:{edit.selector}"))
     validate_p8_physical_groups(prepared.edits, source_fd)
     validate_crib_standalone_physical_groups(prepared.edits, source_fd)
     require_non_overlapping_ranges(ranges)
@@ -4785,20 +4954,21 @@ def verify_union(source_fd: int, output_fd: int, size: int,
         require(edit.absolute >= cursor, "selected spans overlap during final verification")
         stream_pair(source_fd, output_fd, cursor, edit.absolute - cursor,
                     source_hash, output_hash, True)
-        before = common.read_exact(source_fd, edit.absolute, edit.replacement_size)
-        after = common.read_exact(output_fd, edit.absolute, edit.replacement_size)
-        replacement = edit.replacement_path.read_bytes()
-        require(digest(before) == edit.retail_span_sha256 and
-                after == replacement and digest(after) == edit.replacement_sha256,
-                f"selected span readback failed for {edit.kind}:{edit.selector}")
-        source_hash.update(before)
-        output_hash.update(after)
-        actual_runs = difference_runs(before, after)
-        require(actual_runs == edit.relative_runs,
-                f"changed-byte ledger changed for {edit.kind}:{edit.selector}")
-        for offset in iter_run_offsets(actual_runs, edit.absolute):
-            offset_hash.update(struct.pack("<Q", offset))
-            changed_count += 1
+        with _naming_prepared_edit(edit):
+            before = common.read_exact(source_fd, edit.absolute, edit.replacement_size)
+            after = common.read_exact(output_fd, edit.absolute, edit.replacement_size)
+            replacement = edit.replacement_path.read_bytes()
+            require(digest(before) == edit.retail_span_sha256 and
+                    after == replacement and digest(after) == edit.replacement_sha256,
+                    f"selected span readback failed for {edit.kind}:{edit.selector}")
+            source_hash.update(before)
+            output_hash.update(after)
+            actual_runs = difference_runs(before, after)
+            require(actual_runs == edit.relative_runs,
+                    f"changed-byte ledger changed for {edit.kind}:{edit.selector}")
+            for offset in iter_run_offsets(actual_runs, edit.absolute):
+                offset_hash.update(struct.pack("<Q", offset))
+                changed_count += 1
         total_span_bytes += edit.replacement_size
         cursor = edit.absolute + edit.replacement_size
     stream_pair(source_fd, output_fd, cursor, size - cursor,
@@ -5220,8 +5390,10 @@ def verify_prepared_pins(project: ProjectFile, prepared: PreparedProject,
             (*project.identity, len(project.payload)) and
             project.path.read_bytes() == project.payload,
             "project changed during workflow")
+    input_indices = project_input_indices(project)
     for pin in prepared.input_pins.values():
-        verify_input_pin(pin)
+        with _naming_project_edits(project, input_indices.get(pin.path, [])):
+            verify_input_pin(pin)
     for kind, pin in prepared.report_pins.items():
         verify_input_pin(pin)
     ownership.verify_large_pin(index_pin, "canonical extracted pack 0")
@@ -5235,11 +5407,12 @@ def copy_artifacts(prepared: PreparedProject, artifact_dir: Path) \
     files: list[ownership.OwnedPath] = []
     try:
         for edit in prepared.edits:
-            for source in [edit.import_report_path,
-                           *[item[1] for item in edit.preview_paths]]:
-                payload = source.read_bytes()
-                files.append(ownership.exclusive_copy(
-                    artifact_dir / source.name, payload, root))
+            with _naming_prepared_edit(edit):
+                for source in [edit.import_report_path,
+                               *[item[1] for item in edit.preview_paths]]:
+                    payload = source.read_bytes()
+                    files.append(ownership.exclusive_copy(
+                        artifact_dir / source.name, payload, root))
         ownership.assert_owned_tree(root, files, [])
         return root, files
     except Exception:
@@ -5247,6 +5420,7 @@ def copy_artifacts(prepared: PreparedProject, artifact_dir: Path) \
         raise
 
 
+@_diagnose_phase("loading the project")
 def build(project_path: Path, source_path: Path, output_path: Path,
           manifest_path: Path, artifact_dir_path: Path,
           index_path: Path = DEFAULT_INDEX,
@@ -5261,7 +5435,17 @@ def build(project_path: Path, source_path: Path, output_path: Path,
         now = time.monotonic()
         print(f"NFL2K5_BUILD_PHASE {name} seconds={now - started:.6f}", flush=True)
         started = now
+        _BUILD_PHASE.set({
+            "source_validation": "compiling project edits",
+            "compile": "checking edits against the source disc",
+            "bind_source": "copying the source disc",
+            "copy": "writing project edits",
+            "write_spans": "checking the directory and saving receipts",
+            "artifacts_and_directory": "checking all disc bytes",
+            "full_identity_check": "saving the build receipt",
+        }[name])
     project = read_project(project_path)
+    _BUILD_PHASE.set("validating the source and build paths")
     output = common.canonical_new_path(output_path)
     manifest = common.canonical_new_path(manifest_path)
     artifact_dir = artifact_dir_path.parent.resolve(strict=True) / artifact_dir_path.name
@@ -5340,11 +5524,12 @@ def build(project_path: Path, source_path: Path, output_path: Path,
             source_fd, output_owned.descriptor, source_size)
         phase("copy")
         for edit in prepared.edits:
-            replacement = edit.replacement_path.read_bytes()
-            write_all(output_owned.descriptor, edit.absolute, replacement)
-            require(common.read_exact(output_owned.descriptor, edit.absolute,
-                                      edit.replacement_size) == replacement,
-                    f"replacement readback failed for {edit.kind}:{edit.selector}")
+            with _naming_prepared_edit(edit):
+                replacement = edit.replacement_path.read_bytes()
+                write_all(output_owned.descriptor, edit.absolute, replacement)
+                require(common.read_exact(output_owned.descriptor, edit.absolute,
+                                          edit.replacement_size) == replacement,
+                        f"replacement readback failed for {edit.kind}:{edit.selector}")
         os.fsync(output_owned.descriptor)
         phase("write_spans")
         output_entries, output_directory = common.parse_xdvdfs(
@@ -5396,6 +5581,7 @@ def build(project_path: Path, source_path: Path, output_path: Path,
                 "sha256": digest(project.payload),
                 "purpose": project.value["purpose"],
                 "edit_count": len(project.value["edits"]),
+                "includes": project_includes(project),
             },
             "source": {
                 "path": str(source), "size": source_size,
@@ -5632,6 +5818,7 @@ def file_snapshot(fd: int) -> list[int]:
     return [info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns]
 
 
+@_diagnose_phase("checking written edits against the build receipt")
 def verify_written(project_path: Path, source_path: Path, output_path: Path,
                    manifest_path: Path, artifact_dir_path: Path,
                    receipt_sha256: str) -> dict[str, Any]:
@@ -5651,8 +5838,11 @@ def verify_written(project_path: Path, source_path: Path, output_path: Path,
     require(manifest["project"]["sha256"] == digest(project.payload)
             and manifest["project"]["path"] == str(project.path), "project changed after build")
     pins = pin_project_inputs(project)
-    require({str(path): pin.sha256 for path, pin in pins.items()} == receipt["inputs"],
-            "project inputs changed after build")
+    input_indices = project_input_indices(project)
+    require({str(path) for path in pins} == set(receipt["inputs"]), "project input list changed after build")
+    for path, pin in pins.items():
+        with _naming_project_edits(project, input_indices[path]):
+            require(pin.sha256 == receipt["inputs"][str(path)], "project input changed after build")
     artifacts, artifact_identity = verify_artifacts(
         artifact_dir_path, manifest["output"]["artifact_sha256"])
     fds = []
@@ -5683,29 +5873,35 @@ def verify_written(project_path: Path, source_path: Path, output_path: Path,
         changed = 0
         offsets = hashlib.sha256()
         for edit in sorted(manifest["edits"], key=lambda row: row["target"]["absolute_span_offset"]):
-            target, replacement = edit["target"], edit["replacement"]
-            pack = output_entries[target["pack_path"].casefold()]
-            start, size = target["absolute_span_offset"], replacement["span_size"]
-            require(start == pack.byte_offset + target["pack_offset"]
-                    and size > 0 and start >= pack.byte_offset
-                    and start + size <= pack.byte_offset + pack.size,
-                    "written span is outside its pack")
-            ranges.append((start, start + size, edit["selector"]))
-            before = common.read_exact(source_fd, start, size)
-            after = common.read_exact(output_fd, start, size)
-            require(digest(before) == target["retail_span_sha256"]
-                    and digest(after) == replacement["span_sha256"], "written span hash changed")
-            runs = difference_runs(before, after)
-            require(runs == replacement["relative_changed_runs"], "written span change ledger differs")
-            for offset in iter_run_offsets(runs, start):
-                offsets.update(struct.pack("<Q", offset))
-                changed += 1
+            recorded = edit["project_edit"]
+            targets = {row.get("target") for row in recorded.get("edits", [])}
+            indices = [i for i, row in enumerate(project.value["edits"])
+                       if row == recorded or row.get("asset_id", row.get("selector", row.get("target"))) in targets]
+            with _naming_project_edits(project, indices):
+                target, replacement = edit["target"], edit["replacement"]
+                pack = output_entries[target["pack_path"].casefold()]
+                start, size = target["absolute_span_offset"], replacement["span_size"]
+                require(start == pack.byte_offset + target["pack_offset"]
+                        and size > 0 and start >= pack.byte_offset
+                        and start + size <= pack.byte_offset + pack.size,
+                        "written span is outside its pack")
+                ranges.append((start, start + size, edit["selector"]))
+                before = common.read_exact(source_fd, start, size)
+                after = common.read_exact(output_fd, start, size)
+                require(digest(before) == target["retail_span_sha256"]
+                        and digest(after) == replacement["span_sha256"], "written span hash changed")
+                runs = difference_runs(before, after)
+                require(runs == replacement["relative_changed_runs"], "written span change ledger differs")
+                for offset in iter_run_offsets(runs, start):
+                    offsets.update(struct.pack("<Q", offset))
+                    changed += 1
         require_non_overlapping_ranges(ranges)
         require(changed == manifest["patch"]["changed_byte_count"] and
                 offsets.hexdigest() == manifest["patch"]["changed_offsets_u64le_sha256"],
                 "written union ledger differs")
         for pin in pins.values():
-            verify_input_pin(pin)
+            with _naming_project_edits(project, input_indices[pin.path]):
+                verify_input_pin(pin)
         require(file_snapshot(source_fd) == receipt["source_stat"]
                 and file_snapshot(output_fd) == receipt["output_stat"]
                 and common.path_identity(source_path) == common.fd_identity(source_fd)

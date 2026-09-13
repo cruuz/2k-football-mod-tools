@@ -172,9 +172,10 @@ class CacheKeyTests(unittest.TestCase):
             observed = []
             def lookup(edit, *, index=pin, inventory=pin, reports=None):
                 project = tool.ProjectFile(root / 'project.json', b'{}', {'edits': [edit]}, (0, 0))
-                with patch.object(tool, 'CompileCache', ObservedCache), self.assertRaises(StopLookup):
+                with patch.object(tool, 'CompileCache', ObservedCache), self.assertRaises(tool.ProjectError) as stopped:
                     tool.prepare_project(project, index, inventory, reports or {'test': report},
                                          root, -1, {}, parallelism=1)
+                self.assertIsInstance(stopped.exception.__cause__, StopLookup)
                 return observed[-1]
             cache = CompileCache(root / '.nfl2k5-compile-cache')
             # All fields admitted by the cached kinds, including every selector
