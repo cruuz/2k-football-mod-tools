@@ -85,4 +85,4 @@ played reports. Changing art or a CPU book is not an emulator performance fix.
 The related community requests are roadmap/research unless a specific implemented control
 and its scope say otherwise. Browsing audio or a practice remnant does not create a playable
 mode. For 2K5-specific answers about dropped interceptions, MyCareer or Mud's menu-time radio
-request, use the [2K5 FAQ](2k5_mod_studio_faq.md).
+request, use the [2K5 FAQ](https://github.com/cruuz/2k-football-mod-tools/blob/main/docs/mod_editor/2k5_mod_studio_faq.md).
