@@ -72,7 +72,7 @@ class WiringTests(unittest.TestCase):
         self.assertEqual(owner.changes,1)
 
     def test_build_list_method_renders_all_original_indices_and_newest_observed_edit(self):
-        wiring=(ROOT/'WIRING.md').read_text()
+        wiring=(ROOT/'WIRING_B69_J1.md').read_text()
         block=next(block for block in re.findall(r'```python\n(.*?)```',wiring,re.S)
                    if 'def _refresh_build_includes(' in block)
         namespace={}
@@ -95,7 +95,7 @@ class WiringTests(unittest.TestCase):
     def test_load_hook_refuses_real_unfit_group_and_cleans_before_session_mutation(self):
         from mod_editor.studio import session as session_module
         from test_b69_j1_fit import tight_fixture
-        wiring=(ROOT/'WIRING.md').read_text()
+        wiring=(ROOT/'WIRING_B69_J1.md').read_text()
         hook=next(block for block in re.findall(r'```python\n(.*?)```',wiring,re.S)
                   if 'preflight_project_equipment(self.cache.pack0' in block)
         source=textwrap.dedent(inspect.getsource(session_module.StudioSession.load_shareable_project))
