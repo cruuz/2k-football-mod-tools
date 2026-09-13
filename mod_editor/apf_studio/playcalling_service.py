@@ -456,6 +456,24 @@ class PlayCallingService:
         session._modifications = {**session._modifications, SELECTOR: modification}
         return fresh["event"]
 
+    @staticmethod
+    def _restore_masks(events, book, formation):
+        # A clone copies its donor's membership bytes at that event. Follow the
+        # same ancestry backwards so later donor edits cannot change its saved
+        # restore state. This also handles the clone inside a scheme event and
+        # existing saved recipes without changing their receipt format.
+        for event in reversed(events):
+            request = event["request"]
+            if (request["kind"] == "never_call" and request["book"] == book
+                    and request["formation"] == formation):
+                return request["restore_masks"] if request["never"] else None
+            if request["kind"] in {"clones", "scheme"}:
+                donor = next((row["donor_name"] for row in request["assignments"]
+                              if row["clone_name"] == book), None)
+                if donor is not None:
+                    book = donor
+        return None
+
     def context(self, session, team, side):
         state = self.state(session)
         selected = next((t for t in state.teams if t["team_index"] == team), state.teams[0])
@@ -476,9 +494,7 @@ class PlayCallingService:
                                           self.backend.splb.play_rating(book, r.formation_index, e.play_index)) for e in r.entries]})
             masks = [int.from_bytes(other.trailer[4:], 'big') for other in parsed.records
                      if other.populated and other.formation_index == r.formation_index]
-            saved = next((e["request"]["restore_masks"] for e in reversed(self.events(session))
-                          if e["request"]["kind"] == "never_call" and e["request"]["book"] == name
-                          and e["request"]["formation"] == r.formation_index and e["request"]["never"]), None)
+            saved = self._restore_masks(self.events(session), name, r.formation_index)
             formations[-1].update(never_call=not any(masks), restore_masks=masks if all(masks) else saved)
         return {"state": state, "snapshot": self.snapshot(session), "team": selected, "book": name,
                 "sharing": [t["team_name"] for t in state.teams if t["team_index"] != selected["team_index"] and t[side] == name],

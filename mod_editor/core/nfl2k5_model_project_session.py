@@ -208,8 +208,15 @@ class ModelProjectSession(StudioSession):
         with tempfile.TemporaryDirectory(prefix=".model-open-", dir=self.root) as folder:
             base = Path(folder)/"base.2k5mod"
             _copy_archive(source, base, document)
-            count = super().load_shareable_project(base)
-        self._model_records = {r["target"]: copy.deepcopy(r) for r in records}
+            pending = {r["target"]: copy.deepcopy(r) for r in records}
+            # Include models in the base loader's headroom check and atomic
+            # manifest publication. A second write after it commits would leave
+            # artwork loaded and models absent from the manifest on failure.
+            self._model_restore_pending = pending
+            try:
+                count = super().load_shareable_project(base)
+            finally:
+                self._model_restore_pending = None
+        self._model_records = pending
         self.model_source_warnings = tuple(warnings)
-        self._write_manifest()
         return count + len(records)
