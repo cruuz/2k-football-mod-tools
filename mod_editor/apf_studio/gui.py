@@ -8,6 +8,9 @@ assets and does not touch a user's source directly; every operation crosses the
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import plain_error, failure_body
+from mod_editor.gui.polish_qt import polish_controls
+
 from dataclasses import dataclass, replace
 import html
 import json
@@ -1216,7 +1219,7 @@ class _BackgroundTask(QRunnable):
         try:
             result = self.operation(self.signals.progress.emit)
         except BaseException as exc:
-            message = str(exc).strip() or exc.__class__.__name__
+            message = plain_error(exc)
             self.signals.failed.emit(message, traceback.format_exc())
         else:
             self.signals.succeeded.emit(result)
@@ -7820,7 +7823,7 @@ class FieldArtStudioPage(QWidget):
         "selector, and the deferred codecs (field_radiance and "
         "the divot_Grass* weather textures) and the "
         "SCNE/CurveAnim rows have no bounded writer, except the eleven named field material "
-        "alphas of entries 53, 252, 578 and 1333 (Field overlay opacity, beta 66)."
+        "alphas of entries 53, 252, 578 and 1333 (Field overlay opacity)."
     )
 
     def __init__(self, facade: ApfStudioFacade, run_task: TaskRunner):
@@ -14591,7 +14594,7 @@ class InspectorBrowser(QFrame):
             except WaveformCancelled:
                 return "cancelled", None
             except Exception as exc:
-                return "error", str(exc).strip() or exc.__class__.__name__
+                return "error", plain_error(exc)
 
         self.run_task(
             "Preparing selected APF waveform",
@@ -17433,7 +17436,7 @@ class InspectorBrowser(QFrame):
             except Exception as exc:
                 if cancel_event.is_set():
                     return False, ""
-                return False, str(exc).strip() or exc.__class__.__name__
+                return False, plain_error(exc)
             if cancel_event.is_set():
                 return False, ""
             return True, result
@@ -19979,6 +19982,7 @@ class ApfStudioMainWindow(QMainWindow):
         self._update_product_state()
         self._activate_page(0, force=True)
         self._restore_ui_state()
+        polish_controls(self)
         # After the window is up, never during construction: a slow network must
         # not delay the app appearing.
         QTimer.singleShot(1200, self._start_automatic_update_check)
@@ -20831,7 +20835,7 @@ class ApfStudioMainWindow(QMainWindow):
                 on_success(result)
             except BaseException as exc:
                 self._show_error(
-                    str(exc).strip() or exc.__class__.__name__, traceback.format_exc()
+                    plain_error(exc), traceback.format_exc()
                 )
 
         worker.signals.succeeded.connect(dispatch)
@@ -20855,6 +20859,7 @@ class ApfStudioMainWindow(QMainWindow):
             self.progress.setRange(0, 0)
 
     def _task_failed(self, _worker: _BackgroundTask, message: str, detail: str, show_errors: bool = True, on_error: Callable[[str], None] | None = None) -> None:
+        message = plain_error(message)
         on_error(message) if on_error is not None else None; hint = friendly_fix_hint(message); self._last_detail = f"{message} — {hint}" if hint else message; self.operation_status.setText(self._last_detail) if hasattr(self, "operation_status") else None
         if show_errors: self._show_error(message, detail)
 
@@ -20904,14 +20909,10 @@ class ApfStudioMainWindow(QMainWindow):
     def _show_error(self, message: str, detail: str = "") -> None:
         dialog = QMessageBox(self)
         dialog.setIcon(QMessageBox.Critical)
-        dialog.setWindowTitle(f"{PRODUCT_NAME} could not finish that")
-        hint = friendly_fix_hint(message)
-        dialog.setText(message if hint is None else f"{message}\n\n{hint}")
-        dialog.setInformativeText(
-            "The original game was not modified. Correct the item described above and try again."
-        )
+        dialog.setWindowTitle("Couldn't finish that")
+        dialog.setText(failure_body(message, hint=friendly_fix_hint(message)))
         if detail:
-            dialog.setDetailedText(detail)
+            dialog.setDetailedText(plain_error(detail))
         dialog.exec_()
 
     def _activate_page(self, row: int, *, force: bool = False) -> None:
@@ -20920,6 +20921,12 @@ class ApfStudioMainWindow(QMainWindow):
         category = APF_CATEGORY_ORDER[row]
         self.page_title.setText(category.title)
         page = self._pages[category]
+        polish_controls(page)
+        if isinstance(page, StadiumStudioPage):
+            for splitter in page.findChildren(QSplitter):
+                if splitter.count() == 3:
+                    for index, width in enumerate((200, 340, 230)):
+                        splitter.widget(index).setMinimumWidth(width)
         source_key = self.facade.source.source_sha256 if self.facade.source else "not-loaded"
         if not force and self._page_source.get(category) == source_key:
             refresh = getattr(page, "refresh", None)
