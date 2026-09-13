@@ -17,7 +17,7 @@ worktree. **EXPERIMENTAL; every in-game outcome is UNWITNESSED.**
 The editor is `tools/nfl2k5_weather_editor.py`. Both backends are OFF by default.
 Their protected Build captions, all-preset defaults, preflight and write/read-back
 code, GUI connection, **two** complete registry rows and manifest instructions
-are in [WIRING.md](WIRING.md). The protected GUI/Build/registry/allowlist/manifest
+are in [WIRING_B69_J4.md](WIRING_B69_J4.md). The protected GUI/Build/registry/allowlist/manifest
 files were not modified. Registered, rendered and usable are separate claims;
 the standalone editor is implemented, and Build integration remains the
 integrator's required step.
@@ -214,7 +214,7 @@ integration must add it to the shared owner lists and rerun the enlarged union.
 No new game instructions or runtime space were written; `REQUESTS`, `CAVES`
 and `RUNTIME_GLOBALS` are empty. The owned existing `.data` scalar still requires
 manifest registration. **Claude must regenerate the cave manifest after wiring
-the combined stack.** `WIRING.md` supplies those precise changes and the command.
+the combined stack.** `WIRING_B69_J4.md` supplies those precise changes and the command.
 
 `python3 packaging/repin.py --apply` is run as the last writer-related operation
 before each explicit-path commit. Repinning is not a substitute for integrating

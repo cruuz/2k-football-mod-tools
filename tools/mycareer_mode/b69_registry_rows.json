@@ -7,7 +7,7 @@
     },
     "classification": "offline-writer-proved",
     "evidence": [
-      "ASTRA_REPORT.md",
+      "ASTRA_B69_J3_REPORT.md",
       "tests/mod_editor/test_nfl2k5_my_career_playcalling.py",
       "tests/mod_editor/test_nfl2k5_my_career_settings.py",
       "tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py"
@@ -17,7 +17,7 @@
       "default_enabled": false,
       "expose": false,
       "mode": "edit",
-      "reason": "EXPERIMENTAL / UNWITNESSED. Protected MyCareerPanel wiring is supplied in WIRING.md."
+      "reason": "EXPERIMENTAL / UNWITNESSED. Protected MyCareerPanel wiring is supplied in WIRING_B69_J3.md."
     },
     "id": "nfl2k5.mode.my_career_playcalling",
     "input_constraints": [
@@ -27,7 +27,7 @@
       "Default retains beta-68 eligibility, including existing offensive-lineman and K/P exclusions; no default position-mask expansion."
     ],
     "portme": [
-      "Complete the andrethealchemist and THE1WAM witness scripts in ASTRA_REPORT.md."
+      "Complete the andrethealchemist and THE1WAM witness scripts in ASTRA_B69_J3_REPORT.md."
     ],
     "public_distribution": {
       "game_data": "never-bundle-retail-data",
@@ -37,7 +37,7 @@
     },
     "runtime": {
       "evidence": [
-        "ASTRA_REPORT.md",
+        "ASTRA_B69_J3_REPORT.md",
         "tests/mod_editor/test_nfl2k5_my_career_playcalling.py"
       ],
       "scope": "Saved three-value play selection policy and guarded native Fast-forward hand-back. Native selector and execution controller are separate owners. Physical play, menu pixels and audibles remain UNWITNESSED.",
@@ -51,7 +51,7 @@
           "required": true
         }
       ],
-      "notes": "Use the saved career setting or creation tier in MyCareerPanel; exact wiring is in WIRING.md."
+      "notes": "Use the saved career setting or creation tier in MyCareerPanel; exact wiring is in WIRING_B69_J3.md."
     },
     "source_container": {
       "format": "XBE in XDVDFS",
@@ -74,7 +74,7 @@
     },
     "classification": "offline-writer-proved",
     "evidence": [
-      "ASTRA_REPORT.md",
+      "ASTRA_B69_J3_REPORT.md",
       "tests/mod_editor/test_nfl2k5_my_career_prospects.py",
       "tests/mod_editor/test_nfl2k5_my_career_settings.py",
       "tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py"
@@ -84,7 +84,7 @@
       "default_enabled": false,
       "expose": false,
       "mode": "edit",
-      "reason": "EXPERIMENTAL / UNWITNESSED. Protected MyCareerPanel wiring is supplied in WIRING.md."
+      "reason": "EXPERIMENTAL / UNWITNESSED. Protected MyCareerPanel wiring is supplied in WIRING_B69_J3.md."
     },
     "id": "nfl2k5.mode.my_career_prospects",
     "input_constraints": [
@@ -94,7 +94,7 @@
       "Four QB labels alias three existing templates; Gunslinger and Pocket share template 0. Senior Bowl simulation, Combine, Pro Day, earned-points Apply Ratings and Draft Advisory remain unavailable."
     ],
     "portme": [
-      "Complete the andrethealchemist and THE1WAM witness scripts in ASTRA_REPORT.md."
+      "Complete the andrethealchemist and THE1WAM witness scripts in ASTRA_B69_J3_REPORT.md."
     ],
     "public_distribution": {
       "game_data": "never-bundle-retail-data",
@@ -104,7 +104,7 @@
     },
     "runtime": {
       "evidence": [
-        "ASTRA_REPORT.md",
+        "ASTRA_B69_J3_REPORT.md",
         "tests/mod_editor/test_nfl2k5_my_career_prospects.py"
       ],
       "scope": "Native unboosted overall calibration, creation tier placement and persisted goal label. Existing CAP templates are reused. Goals, drills and draft advisory are roadmap, not simulated features.",
@@ -118,7 +118,7 @@
           "required": true
         }
       ],
-      "notes": "Use the saved career setting or creation tier in MyCareerPanel; exact wiring is in WIRING.md."
+      "notes": "Use the saved career setting or creation tier in MyCareerPanel; exact wiring is in WIRING_B69_J3.md."
     },
     "source_container": {
       "format": "XBE in XDVDFS",

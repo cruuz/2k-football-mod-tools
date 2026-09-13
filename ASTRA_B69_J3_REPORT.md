@@ -117,7 +117,7 @@ FPF, Supersim, star and stat-line bits remain intact. The native word is
 a beta-69 reader; older readers correctly reject their formerly reserved bits. Host read/change
 and signed separate-copy export reparse the result, as does native save/load.
 The proposed studio page reads and writes both caller and Supersim together.
-Its exact protected patch and registry rows are in `WIRING.md`. Three offscreen
+Its exact protected patch and registry rows are in `WIRING_B69_J3.md`. Three offscreen
 wiring tests exercise the page controls, signed export and effective Build
 dependencies; the last captures the proposed Build recipe before disc preflight
 and proves it uses the frozen setup without reading the file again.
@@ -308,7 +308,7 @@ The full inherited evidence-file check stops at absent
 The unintegrated provider integrity suite fails its exact import closure
 (`271 != 272`) because the new helper's pin and the count update belong to the
 integration handoff. Applying exactly those two proposed changes in memory
-passes all seven provider tests; `WIRING.md` specifies both.
+passes all seven provider tests; `WIRING_B69_J3.md` specifies both.
 This remains a pending integration check. The in-memory proof retains the
 exact import-closure assertion and source-tampering refusals.
 

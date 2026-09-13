@@ -1520,6 +1520,47 @@ def _music_status(payload):
             "music_state": state["status"]}
 
 
+def _check_installed_runtime_settings(payload, options):
+    """Validate the complete selected plan before any deferred writer pass.
+
+    An intermediate pass does not express removal. Public/final application
+    still rejects changing or disabling any already installed runtime setting.
+    """
+    accelerated_clock = options["accelerated_clock"]
+    accelerated_clock_minimum_seconds = options["accelerated_clock_minimum_seconds"]
+    coin_defer = options["coin_defer"]
+    decided_clock = options["decided_clock"]
+    decided_clock_margin = options["decided_clock_margin"]
+    decided_clock_seconds = options["decided_clock_seconds"]
+    cpu_scrambles = options["cpu_scrambles"]
+    cpu_money_downs = options["cpu_money_downs"]
+    clock_state = accelerated_clock_patch.status(payload)
+    # Synthetic or partial images (test fixtures, foreign discs) report "foreign";
+    # that only matters when the clock is actually requested or already installed.
+    if accelerated_clock:
+        _require(clock_state != "foreign", "Accelerated-clock prerequisites are foreign")
+    if clock_state == "applied":
+        installed_clock = accelerated_clock_patch.verify(payload)
+        _require(installed_clock["enabled"] == accelerated_clock
+                 and installed_clock["minimum_seconds"] == accelerated_clock_minimum_seconds,
+                 "Accelerated-clock options differ; rebuild from a verified base")
+    for selected, module in ((coin_defer, coin_defer_patch),
+                             (decided_clock, decided_clock_patch),
+                             (cpu_scrambles == "modern", cpu_scrambles_patch)):
+        state = module.status(payload)
+        if selected:
+            _require(state != "foreign", f"{module.BUILD_CAPTION}: foreign prerequisites")
+        if state == "applied":
+            _require(selected, f"{module.BUILD_CAPTION} is installed; rebuild from a verified base to turn it off")
+            if module is decided_clock_patch:
+                module.verify(payload, margin=decided_clock_margin,
+                              seconds=decided_clock_seconds)
+    installed_money_downs = cpu_money_downs_patch.read_settings(payload)
+    if installed_money_downs is not None and installed_money_downs["level"] != cpu_money_downs:
+        raise ValueError(f"CPU fourth downs level {installed_money_downs['level']!r} is already installed on this executable; "
+                         f"rebuild from a verified base to select {cpu_money_downs!r}")
+
+
 def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]]] | None,
                catch_slider: bool, accel_ramp: bool = False, draft_ai: bool = False,
                edge_rename: bool = False, returner_fix: bool = False,
@@ -1566,6 +1607,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
     my_career_setup=None,
     crib_reclaim=False,
     modern_naming=False,
+    _defer_runtime_settings=False,
 ) -> tuple[bytes, dict[str, object]]:
     """Curves (if any), the relocated arc-by-distance table (if asked), then the catch-slider,
     acceleration-ramp, draft-AI, EDGE-rename, returner and progression patches (if asked)."""
@@ -1576,31 +1618,8 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
     weekly_prep = r62["weekly_prep"] = bool(weekly_prep or weekly_prep_cpu or weekly_prep_remember)
     if my_career and my_career_setup is None:
         draft_ai = True  # M3's draft reuses the draft-AI ratings/need implementation and receipt
-    clock_state = accelerated_clock_patch.status(payload)
-    # Synthetic or partial images (test fixtures, foreign discs) report "foreign";
-    # that only matters when the clock is actually requested or already installed.
-    if accelerated_clock:
-        _require(clock_state != "foreign", "Accelerated-clock prerequisites are foreign")
-    if clock_state == "applied":
-        installed_clock = accelerated_clock_patch.verify(payload)
-        _require(installed_clock["enabled"] == accelerated_clock
-                 and installed_clock["minimum_seconds"] == accelerated_clock_minimum_seconds,
-                 "Accelerated-clock options differ; rebuild from a verified base")
-    for selected, module in ((coin_defer, coin_defer_patch),
-                             (decided_clock, decided_clock_patch),
-                             (cpu_scrambles == "modern", cpu_scrambles_patch)):
-        state = module.status(payload)
-        if selected:
-            _require(state != "foreign", f"{module.BUILD_CAPTION}: foreign prerequisites")
-        if state == "applied":
-            _require(selected, f"{module.BUILD_CAPTION} is installed; rebuild from a verified base to turn it off")
-            if module is decided_clock_patch:
-                module.verify(payload, margin=decided_clock_margin,
-                              seconds=decided_clock_seconds)
-    installed_money_downs = cpu_money_downs_patch.read_settings(payload)
-    if installed_money_downs is not None and installed_money_downs["level"] != cpu_money_downs:
-        raise ValueError(f"CPU fourth downs level {installed_money_downs['level']!r} is already installed on this executable; "
-                         f"rebuild from a verified base to select {cpu_money_downs!r}")
+    if not _defer_runtime_settings:
+        _check_installed_runtime_settings(payload, r62)
     if my_career and my_career_setup is not None:
         my_career_setup = r62["my_career_setup"] = my_career_patch.read_setup(my_career_setup)
     if reserves_16 or created_teams_extra:
@@ -2120,6 +2139,8 @@ def write_image_copy(
         practice_squad_screen = practice_squad_screen or reserves_16
     momentum_on = momentum > 0 or (momentum_collisions and momentum_collision_level > 0)
     _require(guardian_overlay or guardian_players is None, "Guardian player selections need guardian_overlay")
+    # mod_build preflights its complete plan before invoking its deliberately
+    # partial first pass. Standalone image writes validate their own full plan.
     defer_grown = scorebug_runtime or guardian_overlay or franchise_autosave
     momentum_patch._settings(momentum, momentum_contact, momentum_collisions, momentum_collision_level)
     legacy_disabled = momentum_on and accel_ramp
@@ -2154,13 +2175,17 @@ def write_image_copy(
         _require(len(original) == length, "short read of default.xbe from the source image")
         arc_table = settings is not None and settings.arc_by_distance
         report("Preparing default.xbe patches", 0, 0)
-        patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera and not defer_grown, kick_rules, widescreen, overtime, arc_table=arc_table, flatter_deep_ball=flatter_deep_ball, chop_block_toggle=chop_block_toggle, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks, season_cap=season_cap, xbe_space=xbe_space and not defer_grown, kickoff_relocated=kickoff_relocated and not defer_grown, scorebug_runtime=False, momentum=0 if defer_grown else momentum, momentum_contact=False if defer_grown else momentum_contact, defensive_try=defensive_try and not defer_grown, zone_drop_cap=zone_drop_cap and not defer_grown, all_stadiums=all_stadiums and not defer_grown, coverage_slider=coverage_slider and not defer_grown, scramble_tuning=scramble_tuning and not defer_grown, music_policy=music_policy, music_unlock=music_unlock, music_userlist=music_userlist, music_metadata=None if defer_grown else music_metadata, music_shuffle=music_shuffle and not defer_grown, music_shuffle_selection=None if defer_grown else music_shuffle_selection, practice_squad_screen=practice_squad_screen and not defer_grown, abilities=abilities and not defer_grown, abilities_off_week=None if defer_grown else abilities_off_week, abilities_lock_right_stick=abilities_lock_right_stick, abilities_lock_special_moves=abilities_lock_special_moves, abilities_lock_speedster=abilities_lock_speedster, qb_spy=qb_spy and not defer_grown, qb_spy_intent_table=None if defer_grown else qb_spy_intent_table, calendar_engine=calendar_engine and not defer_grown, **_deferred_r62_options(r62, defer_grown))
+        if not _defer_image_resources:
+            _check_installed_runtime_settings(original, r62)
+        patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera and not defer_grown, kick_rules, widescreen, overtime, arc_table=arc_table, flatter_deep_ball=flatter_deep_ball, chop_block_toggle=chop_block_toggle, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks, season_cap=season_cap, xbe_space=xbe_space and not defer_grown, kickoff_relocated=kickoff_relocated and not defer_grown, scorebug_runtime=False, momentum=0 if defer_grown else momentum, momentum_contact=False if defer_grown else momentum_contact, defensive_try=defensive_try and not defer_grown, zone_drop_cap=zone_drop_cap and not defer_grown, all_stadiums=all_stadiums and not defer_grown, coverage_slider=coverage_slider and not defer_grown, scramble_tuning=scramble_tuning and not defer_grown, music_policy=music_policy, music_unlock=music_unlock, music_userlist=music_userlist, music_metadata=None if defer_grown else music_metadata, music_shuffle=music_shuffle and not defer_grown, music_shuffle_selection=None if defer_grown else music_shuffle_selection, practice_squad_screen=practice_squad_screen and not defer_grown, abilities=abilities and not defer_grown, abilities_off_week=None if defer_grown else abilities_off_week, abilities_lock_right_stick=abilities_lock_right_stick, abilities_lock_special_moves=abilities_lock_special_moves, abilities_lock_speedster=abilities_lock_speedster, qb_spy=qb_spy and not defer_grown, qb_spy_intent_table=None if defer_grown else qb_spy_intent_table, calendar_engine=calendar_engine and not defer_grown, _defer_runtime_settings=bool(_defer_image_resources or defer_grown), **_deferred_r62_options(r62, defer_grown))
         entries: dict[str, object] = {}
         disc_before: dict[str, object] = {}
         if edge_rename:
             entries, _directory = _xdvdfs_module().parse_xdvdfs(src, size)
             disc_before = edge_rename_patch.disc_status(src, entries)
-        _require(defer_grown or reserves_16 or created_teams_extra or crib_reclaim or modern_naming or patched != original or disc_before.get("status") == "retail",
+        # A private build pass can be byte-identical while the final resource
+        # pass still has work. Its complete settings were checked before copy.
+        _require(_defer_image_resources or defer_grown or reserves_16 or created_teams_extra or crib_reclaim or modern_naming or patched != original or disc_before.get("status") == "retail",
                  "nothing to write: the requested curves and patches already match the image")
         _prepare_target(source, target, overwrite)
         if _consume_source:

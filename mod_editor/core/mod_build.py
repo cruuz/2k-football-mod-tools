@@ -1241,6 +1241,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     receipt: dict[str, Any] = {"plan": plan.to_recipe(), "steps": [], "source": str(source), "target": str(target)}
     receipt["legacy_accel_ramp_disabled_by_momentum_profile"] = bool(legacy_disabled)
     is_image = tt.is_disc_image(source)
+    try:
+        installed_xbe = _xbe_bytes(source)
+    except (OSError, ValueError):
+        # The selected writer owns malformed/missing executable refusal.
+        installed_xbe = None
+    if installed_xbe is not None:
+        tt._check_installed_runtime_settings(installed_xbe, r62)
     if (plan.xbe_space or plan.kickoff_relocated) and not is_image:
         raise ValueError("experimental extra patch space needs a disc image")
     naming_digest = None

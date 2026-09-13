@@ -61,6 +61,13 @@ class ProductCatalogTests(unittest.TestCase):
         first = build_nfl2k5_product_catalog(self.registry)
         second = build_nfl2k5_product_catalog(self.registry)
         expected = {
+            'nfl2k5.mode.my_career_prospects',
+            'nfl2k5.mode.my_career_playcalling',
+            'nfl2k5.gameplay.coin_defer',
+            'nfl2k5.gameplay.decided_clock',
+            'nfl2k5.gameplay.cpu_scrambles',
+            'nfl2k5.weather.climate_editor',
+            'nfl2k5.weather.haze_coefficient',
             'nfl2k5.textures.hires_pack',
             'nfl2k5.players_rosters.filled_star',   # beta 65
             'nfl2k5.gameplay.accelerated_clock',    # beta 65

@@ -423,7 +423,7 @@ module imports and the two registry rows. No played outcome is promoted.
       "default_enabled": false,
       "expose": true,
       "mode": "edit",
-      "reason": "EXPERIMENTAL / UNWITNESSED. Both options remain Off in every preset. Build wiring is supplied in WIRING.md."
+      "reason": "EXPERIMENTAL / UNWITNESSED. Both options remain Off in every preset. Build wiring is supplied in WIRING_B69_J4.md."
     },
     "id": "nfl2k5.weather.climate_editor",
     "input_constraints": [
@@ -433,7 +433,7 @@ module imports and the two registry rows. No played outcome is promoted.
       "Source stays read-only in authoring. Build applies to its disposable output. Existing-save adoption and all played outcomes are unproved."
     ],
     "portme": [
-      "Integrate the two protected Build/registry rows from WIRING.md; test the final disposable-disc transaction.",
+      "Integrate the two protected Build/registry rows from WIRING_B69_J4.md; test the final disposable-disc transaction.",
       "Source and pin a modern climate dataset before calling any preset modern NFL climate.",
       "Witness new-franchise weather and existing-save behavior; do not advertise a game-day weather menu."
     ],
@@ -502,7 +502,7 @@ module imports and the two registry rows. No played outcome is promoted.
       "default_enabled": false,
       "expose": true,
       "mode": "edit",
-      "reason": "EXPERIMENTAL / UNWITNESSED. Both options remain Off in every preset. Build wiring is supplied in WIRING.md."
+      "reason": "EXPERIMENTAL / UNWITNESSED. Both options remain Off in every preset. Build wiring is supplied in WIRING_B69_J4.md."
     },
     "id": "nfl2k5.weather.haze_coefficient",
     "input_constraints": [

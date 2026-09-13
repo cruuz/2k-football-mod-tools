@@ -3,7 +3,7 @@
 Implemented three opt-in, owned-space writers with verifiers, a non-overwriting
 CLI, assembly sources and bounded native proofs. **Every in-game outcome is
 UNWITNESSED. All options are EXPERIMENTAL and OFF/Retail in every preset.**
-Build/registry integration is supplied in [WIRING.md](WIRING.md), as requested;
+Build/registry integration is supplied in [WIRING_B69_J5.md](WIRING_B69_J5.md), as requested;
 no protected Build, GUI, registry, packaging-check or production-manifest file
 was edited. Detailed instruction findings and the full witness list are in
 [the research report](docs/research/nfl2k5_b69_rules.md).

@@ -65,7 +65,7 @@ class PanelTests(unittest.TestCase):
         self.assertEqual(self.page.position.count(), career.POSITION_COUNT)
         self.assertEqual(self.page.position.currentData(), 0)
         self.assertEqual([self.page.template.itemText(i) for i in range(self.page.template.count())],
-                         ["Scrambling QB", "Gunslinger QB", "Balanced QB", "Pocket QB"])
+                         ["Scrambling QB", "Gunslinger QB (Pocket template)", "Balanced QB", "Pocket QB"])
         self.assertTrue(self.page.contract.text().startswith("QB: proved"))
         self.page.position.setCurrentIndex(16)
         self.assertEqual(self.page.position.currentText(), "DE (Defensive End)")

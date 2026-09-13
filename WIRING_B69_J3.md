@@ -258,7 +258,7 @@ three native templates. Verify both saved settings can be changed in either
 direction, the tier is passed to `career.prepare_save`, and a tiered setup
 requests the depth-lock companion. Run registry/provider/allowlist checks,
 regenerate the release manifest, rerun the four XBE gates on the integrated
-stack, and complete the reporter witness scripts in `ASTRA_REPORT.md`.
+stack, and complete the reporter witness scripts in `ASTRA_B69_J3_REPORT.md`.
 
 The proposed combined registry passes its schema validator after sorting IDs,
 and every new J3 evidence/module path exists. The full inherited evidence-file

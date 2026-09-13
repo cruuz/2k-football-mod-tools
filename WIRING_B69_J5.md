@@ -373,7 +373,7 @@ proof is bounded native execution, not played gameplay.
     },
     "classification": "offline-writer-proved",
     "evidence": [
-      "ASTRA_REPORT.md",
+      "ASTRA_B69_J5_REPORT.md",
       "docs/research/nfl2k5_b69_rules.md",
       "tests/mod_editor/test_nfl2k5_b69_rules.py",
       "tools/nfl2k5_coin_defer.S"
@@ -383,7 +383,7 @@ proof is bounded native execution, not played gameplay.
       "default_enabled": false,
       "expose": true,
       "mode": "edit",
-      "reason": "EXPERIMENTAL, Off/Retail in every preset. Integrate the exact Build controls in WIRING.md. All in-game outcomes UNWITNESSED."
+      "reason": "EXPERIMENTAL, Off/Retail in every preset. Integrate the exact Build controls in WIRING_B69_J5.md. All in-game outcomes UNWITNESSED."
     },
     "id": "nfl2k5.gameplay.coin_defer",
     "input_constraints": [
@@ -392,7 +392,7 @@ proof is bounded native execution, not played gameplay.
       "Rebuild from a verified base to change the selected union or installed settings."
     ],
     "portme": [
-      "Integrate BuildPlan, XBE dispatcher, Build controls, packaging and these registry rows using WIRING.md; regenerate the protected production cave manifest.",
+      "Integrate BuildPlan, XBE dispatcher, Build controls, packaging and these registry rows using WIRING_B69_J5.md; regenerate the protected production cave manifest.",
       "Complete the player witness cases in docs/research/nfl2k5_b69_rules.md before claiming in-game behavior."
     ],
     "public_distribution": {
@@ -403,7 +403,7 @@ proof is bounded native execution, not played gameplay.
     },
     "runtime": {
       "evidence": [
-        "ASTRA_REPORT.md",
+        "ASTRA_B69_J5_REPORT.md",
         "docs/research/nfl2k5_b69_rules.md",
         "tests/mod_editor/test_nfl2k5_b69_rules.py",
         "tools/nfl2k5_coin_defer.S"
@@ -442,7 +442,7 @@ proof is bounded native execution, not played gameplay.
     },
     "classification": "offline-writer-proved",
     "evidence": [
-      "ASTRA_REPORT.md",
+      "ASTRA_B69_J5_REPORT.md",
       "docs/research/nfl2k5_b69_rules.md",
       "tests/mod_editor/test_nfl2k5_b69_rules.py",
       "tools/nfl2k5_decided_clock.S",
@@ -454,7 +454,7 @@ proof is bounded native execution, not played gameplay.
       "default_enabled": false,
       "expose": true,
       "mode": "edit",
-      "reason": "EXPERIMENTAL, Off/Retail in every preset. Integrate the exact Build controls in WIRING.md. All in-game outcomes UNWITNESSED."
+      "reason": "EXPERIMENTAL, Off/Retail in every preset. Integrate the exact Build controls in WIRING_B69_J5.md. All in-game outcomes UNWITNESSED."
     },
     "id": "nfl2k5.gameplay.decided_clock",
     "input_constraints": [
@@ -463,7 +463,7 @@ proof is bounded native execution, not played gameplay.
       "Rebuild from a verified base to change the selected union or installed settings."
     ],
     "portme": [
-      "Integrate BuildPlan, XBE dispatcher, Build controls, packaging and these registry rows using WIRING.md; regenerate the protected production cave manifest.",
+      "Integrate BuildPlan, XBE dispatcher, Build controls, packaging and these registry rows using WIRING_B69_J5.md; regenerate the protected production cave manifest.",
       "Complete the player witness cases in docs/research/nfl2k5_b69_rules.md before claiming in-game behavior."
     ],
     "public_distribution": {
@@ -474,7 +474,7 @@ proof is bounded native execution, not played gameplay.
     },
     "runtime": {
       "evidence": [
-        "ASTRA_REPORT.md",
+        "ASTRA_B69_J5_REPORT.md",
         "docs/research/nfl2k5_b69_rules.md",
         "tests/mod_editor/test_nfl2k5_b69_rules.py",
         "tools/nfl2k5_decided_clock.S",
@@ -525,7 +525,7 @@ proof is bounded native execution, not played gameplay.
     },
     "classification": "offline-writer-proved",
     "evidence": [
-      "ASTRA_REPORT.md",
+      "ASTRA_B69_J5_REPORT.md",
       "docs/research/nfl2k5_b69_rules.md",
       "tests/mod_editor/test_nfl2k5_b69_rules.py",
       "tools/nfl2k5_cpu_scrambles.S"
@@ -535,7 +535,7 @@ proof is bounded native execution, not played gameplay.
       "default_enabled": false,
       "expose": true,
       "mode": "edit",
-      "reason": "EXPERIMENTAL, Off/Retail in every preset. Integrate the exact Build controls in WIRING.md. All in-game outcomes UNWITNESSED."
+      "reason": "EXPERIMENTAL, Off/Retail in every preset. Integrate the exact Build controls in WIRING_B69_J5.md. All in-game outcomes UNWITNESSED."
     },
     "id": "nfl2k5.gameplay.cpu_scrambles",
     "input_constraints": [
@@ -544,7 +544,7 @@ proof is bounded native execution, not played gameplay.
       "Rebuild from a verified base to change the selected union or installed settings."
     ],
     "portme": [
-      "Integrate BuildPlan, XBE dispatcher, Build controls, packaging and these registry rows using WIRING.md; regenerate the protected production cave manifest.",
+      "Integrate BuildPlan, XBE dispatcher, Build controls, packaging and these registry rows using WIRING_B69_J5.md; regenerate the protected production cave manifest.",
       "Complete the player witness cases in docs/research/nfl2k5_b69_rules.md before claiming in-game behavior."
     ],
     "public_distribution": {
@@ -555,7 +555,7 @@ proof is bounded native execution, not played gameplay.
     },
     "runtime": {
       "evidence": [
-        "ASTRA_REPORT.md",
+        "ASTRA_B69_J5_REPORT.md",
         "docs/research/nfl2k5_b69_rules.md",
         "tests/mod_editor/test_nfl2k5_b69_rules.py",
         "tools/nfl2k5_cpu_scrambles.S"
