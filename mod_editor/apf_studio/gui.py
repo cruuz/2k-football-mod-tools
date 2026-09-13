@@ -21795,24 +21795,31 @@ class ApfStudioMainWindow(QMainWindow):
         reports the regions the writers changed rather than a bare count."""
 
         changed = len(getattr(receipt, "modified_assets", ()))
-        if not changed:
-            return (
-                "Applied 0 edits: nothing was staged, so this folder is a "
-                "plain copy of your game. Stage an edit first, then Build."
-            )
-        lines = [f"Applied {changed} edit{'s' if changed != 1 else ''}."]
         try:
             manifest = Path(getattr(receipt, "manifest", ""))
             document = json.loads(manifest.read_text(encoding="utf-8"))
             rows = document.get("edits") or []
         except (AttributeError, OSError, ValueError, TypeError):
-            rows = []
+            document, rows = {}, []
+        has_books = bool(document.get("playcalling")) or bool(getattr(receipt, "teams_now_own_books", ()))
+        if not changed and not has_books:
+            return (
+                "Applied 0 edits: nothing was staged, so this folder is a "
+                "plain copy of your game. Stage an edit first, then Build."
+            )
+        lines = [f"Applied {changed} edit{'s' if changed != 1 else ''}."] if changed else []
+        if has_books:
+            lines.append("This copy contains CPU Play Calling edits. Gameplay remains UNWITNESSED.")
+        kinds = set()
         maps = 0
         regions = 0
         bytes_changed = 0
         for row in rows:
             if not isinstance(row, dict):
                 continue
+            kind = str(row.get("kind") or "")
+            if kind:
+                kinds.add(kind)
             lines.extend(status for status in row.get("fit_status", ()) if isinstance(status, str))
             maps += len(row.get("package_maps") or ())
             regions += len(row.get("changed_ranges") or ())
@@ -21820,6 +21827,22 @@ class ApfStudioMainWindow(QMainWindow):
                 bytes_changed += int(row.get("changed_byte_count") or 0)
             except (TypeError, ValueError):
                 continue
+        if kinds:
+            descriptions = set()
+            for kind in kinds:
+                if any(word in kind for word in ("play", "splb", "book")):
+                    descriptions.add("playbook edits")
+                elif any(word in kind for word in ("audio", "audo", "ausb", "xma")):
+                    descriptions.add("sound replacements")
+                elif any(word in kind for word in ("roster", "rating", "position")):
+                    descriptions.add("player and roster edits")
+                elif "text" in kind and "texture" not in kind:
+                    descriptions.add("text edits")
+                elif any(word in kind for word in ("texture", "uniform", "helmet", "logo", "field", "stadium", "appearance", "model")):
+                    descriptions.add("artwork and appearance edits")
+                else:
+                    descriptions.add("other project edits")
+            lines.append("This copy contains " + ", ".join(sorted(descriptions)) + ".")
         if maps:
             lines.append(
                 f"{maps} who-lines-up formation map"
@@ -21840,14 +21863,16 @@ class ApfStudioMainWindow(QMainWindow):
             "Teams now owning a book: " + ", ".join(owners) + ". "
             if owners else ""
         )
+        book_note = ("CPU Play Calling changes are recorded in book-content-receipt.json. Gameplay remains UNWITNESSED.\n\n"
+                     if owners or "CPU Play Calling edits" in detail else "")
         self._last_detail = f"Build complete: {output.name}. {ownership}{detail}"
         self._update_product_state()
         QMessageBox.information(
             self,
             "Modded game folder built",
             f"Wrote:\n{output}\n\n"
-            f"{ownership}{detail} The complete output was verified and your source stayed untouched.\n\n"
-            "CPU Play Calling changes are recorded in book-content-receipt.json. Gameplay remains UNWITNESSED.\n\n"
+            f"{ownership}{detail} The complete output was verified. Your original game disc was not changed.\n\n"
+            f"{book_note}"
             "Point Xenia at this folder. Rebuild into the same folder to keep that path.\n\n"
             "This folder contains your retail game data. Do not redistribute it; share the .apf2k8mod project instead.",
         )
