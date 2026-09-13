@@ -9,6 +9,8 @@ refuse is flagged before it is staged.
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import failure_body
+
 import math
 import struct
 from dataclasses import dataclass
@@ -813,7 +815,7 @@ class PlayDesignerDialog(QDialog):
             if edit_defense_assignment(self, design, self.book, self.body, self.current_slot, self.defense_combo.currentData()):
                 self._take_defense_design(design)
         except ValueError as exc:
-            QMessageBox.warning(self, "Defense", str(exc))
+            QMessageBox.warning(self, "Couldn't finish that", failure_body(exc))
 
     def _defense_preset(self, name):
         try:
@@ -824,7 +826,7 @@ class PlayDesignerDialog(QDialog):
                     raise ValueError("Create a separate Double A formation in Create a Play first")
             self._take_defense_design(design)
         except ValueError as exc:
-            QMessageBox.warning(self, "Defense", str(exc))
+            QMessageBox.warning(self, "Couldn't finish that", failure_body(exc))
 
     # -- art + validation
     def _assignments_bytes(self) -> list[tuple[int, list[bytes]]]:
