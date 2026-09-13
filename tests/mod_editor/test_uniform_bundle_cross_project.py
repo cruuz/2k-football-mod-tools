@@ -35,7 +35,7 @@ class CrossProjectTests(unittest.TestCase):
         self.addCleanup(temporary.cleanup)
         self.root = Path(temporary.name).resolve()
         self.cache = SimpleNamespace(source=SimpleNamespace(sha256="a" * 64),
-                                     root=self.root / "cache")
+                                     root=self.root / "cache", pack0=self.root / "cache" / "0")
         self.a = self.session("a")
         self.b = self.session("b")
         self.service_a = TeamKitBundleService(self.catalog, self.a)

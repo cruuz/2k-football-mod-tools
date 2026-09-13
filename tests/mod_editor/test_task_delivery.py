@@ -122,7 +122,8 @@ class BoundReceiverTests(unittest.TestCase):
             alive.load_source(Path("/nowhere/disc.xiso.iso"))
             alive._pool.waitForDone(5000)
             self._drain()
-            self.assertIn("Could not read the disc: OSError: no such disc", alive.status_label.text())
+            self.assertIn("Could not read the disc: no such disc", alive.status_label.text())
+            self.assertNotIn("OSError:", alive.status_label.text())
             sip.delete(alive)
 
             window = QWidget()
