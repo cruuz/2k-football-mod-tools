@@ -55,7 +55,7 @@ Field credit: Flying Finn (Glen Leskinen) and Bad_AL, re-verified against the re
 
 from __future__ import annotations
 
-from mod_editor.gui.ux_text import plain_error
+from mod_editor.gui.ux_text import failure_body, plain_error
 
 import json
 import shutil
@@ -2676,7 +2676,7 @@ class RosterEditorPanel(QWidget):
             field.setToolTip(str(exc))
             self._set_status(str(exc))
             if self.isVisible():        # a modal would block an offscreen or background page
-                QMessageBox.warning(self, "The name pool is full", str(exc))
+                QMessageBox.warning(self, "The name pool is full", failure_body(exc))
             return
 
         def undo(old: str = current) -> None:
@@ -2803,7 +2803,7 @@ class RosterEditorPanel(QWidget):
             self.document.restore_membership(before)
             self._set_status(str(exc))
             if self.isVisible():
-                QMessageBox.warning(self, "Not allowed", str(exc))
+                QMessageBox.warning(self, "Couldn't finish that", failure_body(exc))
             return None
         players = list(involved)
 
@@ -3670,7 +3670,7 @@ class RosterEditorPanel(QWidget):
         try:
             receipt = self.import_player_data_bytes(Path(chosen).read_bytes(), mode)
         except rr.RosterRecordError as exc:
-            QMessageBox.warning(self, "Not a .PlayerData file", str(exc))
+            QMessageBox.warning(self, "Not a .PlayerData file", failure_body(exc))
             return
         if receipt["log"]:
             QMessageBox.information(self, ".PlayerData restore", "\n".join(receipt["log"][:20]))
@@ -3777,7 +3777,7 @@ class RosterEditorPanel(QWidget):
         try:
             result = self.save_roster_to_disc(chosen, save_path=save_path, disc_path=disc_path)
         except Exception as exc:
-            QMessageBox.warning(self, "Save roster export refused", str(exc))
+            QMessageBox.warning(self, "Save roster export refused", failure_body(exc))
             return
         box = QMessageBox(self)
         box.setWindowTitle("Save roster exported for the disc")

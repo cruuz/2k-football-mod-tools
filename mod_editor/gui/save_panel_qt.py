@@ -10,6 +10,8 @@ does not verify are refused upstream by the write-back route.
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import failure_body
+
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -290,7 +292,7 @@ class SavePanel(QWidget):
     def _failed(self, message: str) -> None:
         self._set_status(f"Failed: {message}")
         self.error_raised.emit(message)
-        QMessageBox.warning(self, "Saves & sliders", message)
+        QMessageBox.warning(self, "Couldn't finish that", failure_body(message))
 
     def _choose_xbe(self) -> None:
         chosen, _filter = QFileDialog.getOpenFileName(
