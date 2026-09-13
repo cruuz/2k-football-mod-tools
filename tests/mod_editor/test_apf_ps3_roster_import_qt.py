@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import json
 from pathlib import Path
 import sys
 import tempfile
@@ -63,6 +64,22 @@ class PanelTests(unittest.TestCase):
         self.assertEqual(receipt.output, destination)
         self.assertEqual(destination.read_bytes(), self.fixture.expected())
         self.assertTrue(receipt.receipt_path.is_file())
+        report = json.loads(receipt.receipt_path.read_text())
+        self.assertTrue(report["team_appearance"]["verification"]["verified"])
+        self.assertEqual(report["team_appearance"]["verification"]["selector_records"], 1120)
+        self.assertIn("Refused: custom texture", text)
+
+    def test_new_source_clears_previous_appearance_retention_choice(self) -> None:
+        source = self.root / "USERDATA"
+        source.write_bytes(self.fixture.ps3())
+        baseline = self.root / "Xbox.ROS"
+        baseline.write_bytes(self.fixture.expected())
+        self.panel.load_path(source)
+        self.panel.set_appearance_baseline(baseline)
+        self.assertTrue(self.panel.convert_button.isEnabled())
+        self.panel.load_path(source)
+        self.assertIsNone(self.panel.appearance_baseline)
+        self.assertFalse(self.panel.convert_button.isEnabled())
 
     def test_xbox_layout_file_is_refused_without_writing(self) -> None:
         source = self.root / "Roster.ROS"

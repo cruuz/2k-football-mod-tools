@@ -17,7 +17,9 @@ import apf_save_custom_team_appearance as writer  # type: ignore  # noqa: E402
 SIGNED_SAVE_BOUNDARY = (
     "Xbox 360 STFS package (CON, LIVE, or PIRS) detected. Mod Studio verifies and "
     "reads its Roster.ROS payload, and can write either an exact extracted payload "
-    "or a patched raw handoff. It does not write the signed container. Reinject the "
+    "or a patched raw handoff. This raw-save action does not write the signed container. "
+    "Use Apply my custom team appearance to this roster save for a separate Xenia-only "
+    "rehashed package, with no renewed console signature. For console use, reinject the "
     "new raw file, then rehash/resign with the same external save manager. LIVE/PIRS "
     "retail signatures require Microsoft's unavailable private keys; CON signing "
     "requires the owning console's private keyvault."

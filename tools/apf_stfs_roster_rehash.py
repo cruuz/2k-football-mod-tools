@@ -23,6 +23,9 @@ def _sha(data: bytes) -> str:
 
 def _inventory(source: bytes):
     reader = stfs._StfsReader(source)
+    stfs.require(stfs._u32be(source, 0x344, "content type") == 1
+                 and stfs._u32be(source, 0x360, "title ID") == 0x54540807,
+                 "Package metadata is not an APF saved game; use raw Roster.ROS")
     stfs.require(stfs._u32be(source, 0x39D, "data file count") == 0,
                  "Multi-file STFS packages are unsupported; use an extracted Roster.ROS")
     # This pinned Xenia revision selects the next level at exact thresholds.
@@ -31,6 +34,12 @@ def _inventory(source: bytes):
     stfs.require(reader.sex or not reader.block_separation & 2,
                  "Single-copy STFS package selects a nonexistent secondary table")
     entries = reader.directory_entries()
+    for index, entry in enumerate(entries):
+        # Xenia stops at the first empty row and indexes parents in its packed
+        # vector. Sparse rows or a child preceding its parent are not equivalent.
+        stfs.require(entry.index == index and (
+            entry.parent_index == 0xFFFF or entry.parent_index < index),
+            "STFS directory order disagrees with Xenia traversal; use raw Roster.ROS")
     rosters = [e for e in entries if not e.is_directory
                and PurePosixPath(e.path).name.casefold() == "roster.ros"]
     stfs.require(len(rosters) == 1, "Choose a package containing exactly one Roster.ROS")
@@ -84,6 +93,7 @@ def _replace(source: bytes, payload: bytes) -> tuple[bytes, dict]:
         output[entry:entry + 20] = hashlib.sha1(output[address:address + 4096]).digest()
         changed_blocks.append(block)
         changed_tables.add(leaf)
+    stfs.require(bool(changed_blocks), "Roster.ROS already matches; no rehashed package is needed")
     if reader.top_level == 1:
         for table_index in sorted({block // 170 for block in changed_blocks}):
             leaf = reader.level_zero_address(table_index * 170)

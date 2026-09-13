@@ -25,6 +25,7 @@ populates next pointers because the audited Xenia reader follows those pointers.
 | `0x22C..0x32B` | sixteen licenses, preserved |
 | `0x32C..0x33F` | SHA-1 over metadata from `0x344` to the rounded header end |
 | `0x340..0x343` | big-endian header size, preserved; round up to 4096 for first table |
+| `0x344`, `0x360` | require saved-game content type 1 and APF title ID `54540807`, preserved |
 | `0x379..0x39C` | STFS descriptor; only top hash `0x381..0x394` changes |
 | `0x37B` | bit 0: single table copy; bit 1: active root copy |
 | `0x37C..0x380` | little-endian file-table count and 24-bit start block |
@@ -40,7 +41,7 @@ The extractor previously shifted the accumulated physical address on two-copy
 packages and used a physical value in the higher-level calculation. Both are
 fixed. The writer handles at most two hash levels and 128 MiB packages, refuses
 multi-file containers, overlapping file/directory allocations, bad hashes,
-invalid chains, changed lengths, and ambiguous Xenia level boundaries at
+invalid chains, sparse/out-of-order directories, changed lengths, and ambiguous Xenia level boundaries at
 exactly 170 or 28900 allocated blocks. The raw output route remains available.
 
 Only changed roster blocks have their leaf digest rewritten, then their active

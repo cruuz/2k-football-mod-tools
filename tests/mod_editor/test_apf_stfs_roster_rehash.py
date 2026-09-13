@@ -53,6 +53,45 @@ def xenia_chain_payload(data: bytes) -> bytes:
 
 
 class RehashTests(unittest.TestCase):
+    @staticmethod
+    def repair_single_table_fixture(data):
+        count = int.from_bytes(data[0x395:0x399], "big")
+        for block in range(count):
+            start = 0xB000 + block * 4096
+            entry = 0xA000 + block * 24
+            data[entry:entry + 20] = hashlib.sha1(data[start:start + 4096]).digest()
+        data[0x381:0x395] = hashlib.sha1(data[0xA000:0xB000]).digest()
+        data[0x32C:0x340] = hashlib.sha1(data[0x344:0xA000]).digest()
+        return bytes(data)
+
+    def test_companion_file_preserved_and_sparse_directory_refused(self):
+        package = bytearray(synthetic_stfs(b"a" * 3 * 4096))
+        # Split the generated three-block file into roster (2) and companion (1).
+        package[0xB029:0xB02C] = (2).to_bytes(3, "little")
+        package[0xB02C:0xB02F] = (2).to_bytes(3, "little")
+        struct.pack_into(">I", package, 0xB034, 8192)
+        package[0xA000 + 2 * 24 + 21:0xA000 + 3 * 24] = b"\xff\xff\xff"
+        other = 0xB040
+        package[other:other + 9] = b"Other.bin"
+        package[other + 0x28] = 9 | 0x40
+        package[other + 0x29:other + 0x2C] = (1).to_bytes(3, "little")
+        package[other + 0x2C:other + 0x2F] = (1).to_bytes(3, "little")
+        package[other + 0x2F:other + 0x32] = (3).to_bytes(3, "little")
+        package[other + 0x32:other + 0x34] = b"\xff\xff"
+        struct.pack_into(">I", package, other + 0x34, 4096)
+        source = self.repair_single_table_fixture(package)
+        output, _ = subject.rehash_roster(source, b"b" * 8192)
+        parsed = reader._StfsReader(output)
+        companion = next(e for e in parsed.directory_entries() if e.path == "Other.bin")
+        self.assertEqual(parsed.extract(companion), b"a" * 4096)
+        self.assertEqual(output[0xA048:0xA060], source[0xA048:0xA060])
+        package[0xB0C0:0xB100] = package[other:other + 64]
+        package[other:other + 64] = bytes(64)
+        sparse = self.repair_single_table_fixture(package)
+        self.assertEqual(reader.extract_roster_payload(sparse).payload, b"a" * 8192)
+        with self.assertRaisesRegex(reader.StfsRosterError, "directory order"):
+            subject.rehash_roster(sparse, b"b" * 8192)
+
     def test_known_synthetic_roster_round_trip_all_copies_and_chains(self):
         raw = synthetic_save()
         for copies, active in ((1, 0), (2, 0), (2, 1)):
@@ -95,6 +134,11 @@ class RehashTests(unittest.TestCase):
             subject.verify_rehash(source, output, dict(receipt, data_blocks_rehashed=[]))
         with self.assertRaisesRegex(reader.StfsRosterError, "length"):
             subject.rehash_roster(source, b"short")
+        wrong_title = bytearray(source)
+        wrong_title[0x360:0x364] = b"TEST"
+        wrong_title = self.repair_single_table_fixture(wrong_title)
+        with self.assertRaisesRegex(reader.StfsRosterError, "not an APF saved game"):
+            subject.rehash_roster(wrong_title, b"b" * 6000)
 
     def test_chain_incompatibility_and_shared_directory_are_refused(self):
         source = bytearray(synthetic_stfs(b"a" * 6000))

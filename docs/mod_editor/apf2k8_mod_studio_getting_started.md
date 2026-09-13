@@ -361,6 +361,77 @@ its RSA signature. Reinject, rehash, and resign with an external save manager.
 LIVE/PIRS retail signatures require Microsoft's unavailable private keys; CON
 signing requires the owning console's private keyvault.
 
+### Apply editor uniform codes to a roster save
+
+Aszemple asked, “Next is how do I get the uniforms codes applied that I've
+already done from in the APF editor and on my rosters.” Open **Uniforms &
+Equipment → Custom Team Appearance** and use **Apply my custom team appearance
+to this roster save…**. This action uses the values currently shown, including
+edits you have not staged yet.
+
+1. Load the project containing your appearance, select its custom-team slot,
+   and check HOME and AWAY. You can also start from an appearance opened in
+   **Raw Roster Save**.
+2. Open the new action and choose the destination raw `Roster.ROS`, Xbox 360
+   STFS package, or decrypted PS3 `USERDATA` / roster ZIP. Check the destination
+   team names: user teams 24–31 correspond to ROST slots 32–39. Slots match by
+   number, not by name. **Also apply other staged user-team appearances** is
+   optional and off initially.
+3. Leave **New raw Xbox Roster.ROS** selected for a raw output. A supported STFS
+   source also offers **Xenia only; a real console will reject this package**.
+   That option repairs changed data hashes, active hash-table hashes, and the
+   metadata/header hash. It preserves the old signature bytes and does not
+   create a valid console signature. The pinned Xenia source does not verify
+   RSA signatures (PROVED from source); full package loading remains
+   HYPOTHESIS and UNWITNESSED. Unsupported packages show the reason and retain
+   the raw output option. See the [format audit](../research/apf_stfs_rehash.md).
+4. Choose **Write new roster save and receipt…** and a new filename. Existing
+   files are refused. The result lists the slots changed after reopening the
+   output, and saves `<output>.appearance.json` beside it. Keep the original.
+5. For the raw route, back up a game-created roster save and place the output
+   as `Roster.ROS` in that save's folder under your Xenia content root
+   (`content/.../54540807/00000001/<save name>/`; some builds include a profile
+   folder). Use the folder containing the game's existing `Roster.ROS`.
+   For a rehashed package, use your
+   existing STFS save-loading workflow with the new package. Discovering and
+   loading this output still needs a witness; do not treat a receipt as a
+   game-load result. Load the roster and check the accepted team's HOME and
+   AWAY in team selection and on the field, including the helmet close-up.
+
+The editor-to-save overlay writes exactly the disc writer's bounded fields:
+ten colours per bank and an eight-byte helmet plus eight-byte crest selector
+per bank, at most 112 bytes per selected slot. It preserves palette metadata,
+other teams, players, and the destination's other uniform selectors. It does
+not transfer jersey, shoulder or pants asset choices or artwork from the
+project. davidhbui's saved jersey/shoulder asset choices therefore remain in
+the destination; this action does not claim to replace his whole uniform.
+
+### Keep PS3 roster uniform work during import
+
+Aszemple's September 13 report, “Was able import both the logos and roster files
+from my rpcs3 files”, witnesses the imports. Uniform rendering and in-game
+loading remain UNWITNESSED.
+
+In **Import PS3 roster**, choose the decrypted roster and tick **Also apply team
+appearance (40 teams)** to retain its uniform work. The checkbox starts off;
+leaving it off requires **Keep appearance from Xbox roster…**, which intentionally
+replaces the PS3 appearance with that baseline. Choosing a new source clears
+the previous baseline so it cannot silently supply the wrong uniforms.
+
+The converter carries all 14 eight-byte selector records in each HOME/AWAY
+bank for all 40 teams, including jersey, shoulder, pants, helmet and crest
+codes. It rotates PS3 RGBA palette colours to Xbox ARGB and preserves palette
+metadata. Verification compares every team's selector bytes and colour values
+after conversion. The receipt names carried fields and refusals: texture files
+need a separate PS3 bundle/Team Art import, and opaque selector bytes retain
+their exact values without claiming new meanings. If Xbox appearance was
+chosen, the receipt explicitly says the PS3 values were declined for that reason.
+
+When choosing PS3 directly in **Apply my custom team appearance to this roster
+save**, the converter first carries the PS3 appearance for every team; the
+selected slots then receive the editor's bounded colours and helmet/crest
+codes. One receipt contains both the conversion and the final override.
+
 The raw-save handoff and its receipt prove only the bounded file edit. They do
 not establish emulator consumption, gameplay visibility, or Xbox 360 hardware
 behavior, and the editor does not need to launch an emulator to build or verify
@@ -745,6 +816,19 @@ records and 139 records across all registered game/platform targets. Those numbe
 product capabilities, not the number of logos or editable team slots.
 
 ## APF wave authoring
+
+### Can I create a formation or play?
+
+7ET asked, “Read the release notes, but unclear whether we can create play in
+the 2k8 editor?” **Yes.** Under **Playbooks → Design Plays / Formations**,
+**Design Formation…** and **Design Play…** provide Create formation and Create
+play. They are opt-in, off by default, and target **CPU books only**. Stage the
+design into the project, then Build. These tools have offline validation;
+every in-game outcome is **UNWITNESSED**. The [wave guide](apf_wave_2026_09_09.md)
+lists capacity and build-composition limits.
+
+The beta-67 **CPU Play Calling** editor controls which existing plays get
+called and their weights. Play authoring is on **Design Plays / Formations**.
 
 Playbooks now includes Design Plays / Formations, Coverage Geometry, Book Identity
 and CPU Play Calling. See the [wave guide](apf_wave_2026_09_09.md) for project staging,

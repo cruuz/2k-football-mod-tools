@@ -63,7 +63,7 @@ RECEIPT_SCHEMA = "apf2k8_ps3_roster_convert_receipt/v1"
 PLATFORM_PS3 = "ps3"
 PLATFORM_XBOX360 = "xbox360"
 PLATFORM_UNKNOWN = "unknown"
-RUNTIME_STATUS = "UNWITNESSED: nobody has loaded a converted roster in Xenia or on a console"
+RUNTIME_STATUS = "UNWITNESSED in game: Aszemple witnessed RPCS3 logo and roster imports on 2026-09-13; uniform rendering still needs a witness"
 
 MAX_SOURCE_BYTES = players_reader.MAX_SOURCE_BYTES
 ROSTER_SIZE = 2_715_908
@@ -515,7 +515,9 @@ def team_appearance(data: bytes, structure: RosterStructure | None = None) -> li
                               "record_hex": data[offset:offset + 8].hex()})
             palette = resolve(config + 0x70 + bank * 4, palettes)
             banks.append({"bank": bank, "selectors": slots, "palette_offset": palette,
-                          "palette_sha256": _sha256(data[palette:palette + palettes.stride])})
+                          "palette_sha256": _sha256(data[palette:palette + palettes.stride]),
+                          "colour_words": [data[palette + i * 4:palette + i * 4 + 4].hex() for i in range(10)],
+                          "metadata_hex": data[palette + 40:palette + 48].hex()})
         result.append({"team_index": team, "config_offset": config, "banks": banks})
     return result
 
@@ -560,12 +562,31 @@ def _appearance_receipt(before: bytes, after: bytes) -> list[dict]:
             for a, b in zip(ob["selectors"], nb["selectors"]):
                 changes.append({"bank": ob["bank"], "slot": a["slot"], "family": a["family"],
                                 "before": a["asset_index"], "after": b["asset_index"],
+                                "before_record_hex": a["record_hex"], "after_record_hex": b["record_hex"],
                                 "record_changed": a["record_hex"] != b["record_hex"]})
         result.append({"team_index": old["team_index"], "selectors": changes,
                        "selector_changes": sum(x["record_changed"] for x in changes),
                        "palette_before_sha256": [b["palette_sha256"] for b in old["banks"]],
                        "palette_after_sha256": [b["palette_sha256"] for b in new["banks"]]})
     return result
+
+
+def verify_appearance_carry(source: bytes, output: bytes, *, from_ps3: bool = True) -> dict:
+    """Compare both complete banks through independently resolved source/output graphs."""
+    before, after = team_appearance(source), team_appearance(output)
+    _require(len(before) == len(after), "appearance team count changed")
+    for old, new in zip(before, after):
+        for ob, nb in zip(old["banks"], new["banks"]):
+            label = f"team {old['team_index']} {'HOME' if ob['bank'] == 0 else 'AWAY'}"
+            _require([s["record_hex"] for s in ob["selectors"]] == [s["record_hex"] for s in nb["selectors"]],
+                     f"{label} uniform selector codes changed during conversion")
+            expected = [word[6:8] + word[:6] if from_ps3 else word for word in ob["colour_words"]]
+            _require(expected == nb["colour_words"], f"{label} uniform palette carry differs")
+            _require(ob["metadata_hex"] == nb["metadata_hex"], f"{label} palette metadata changed")
+    return {"verified": True, "teams": len(after), "banks": len(after) * 2,
+            "selector_records": len(after) * 28, "colours": len(after) * 20,
+            "palette_order": "RGBA to ARGB" if from_ps3 else "ARGB retained",
+            "palette_metadata_preserved": True, "runtime_in_game_proved": False}
 
 
 def convert(data: bytes, *, apply_team_appearance: bool = True,
@@ -696,6 +717,8 @@ def convert(data: bytes, *, apply_team_appearance: bool = True,
     if not apply_team_appearance:
         _retain_appearance(edits, data, xbox_appearance)
     output = bytes(edits.output)
+    appearance_verification = verify_appearance_carry(
+        data if apply_team_appearance else xbox_appearance, output, from_ps3=apply_team_appearance)
     expected_appearance = source_appearance if apply_team_appearance else team_appearance(xbox_appearance)
     actual_appearance = team_appearance(output)
     for expected, actual in zip(expected_appearance, actual_appearance):
@@ -752,6 +775,22 @@ def convert(data: bytes, *, apply_team_appearance: bool = True,
             "teams": _appearance_receipt(xbox_appearance if xbox_appearance is not None else data, output),
             "same_selector_layout": True, "selectors_reparsed": True,
             "texture_payloads_imported": False,
+            "verification": appearance_verification,
+            "carried": [
+                {"field": "HOME/AWAY uniform selector codes", "records": len(actual_appearance) * 28,
+                 "bytes_per_record": 8, "policy": "exact bytes; includes opaque selector tails"},
+                {"field": "HOME/AWAY palette colours", "values": len(actual_appearance) * 20,
+                 "policy": "RGBA to ARGB" if apply_team_appearance else "retained Xbox ARGB"},
+                {"field": "palette metadata", "bytes_per_bank": 8, "policy": "preserved"},
+            ],
+            "refused": [
+                {"field": "custom uniform/logo texture payloads",
+                 "reason": "Roster selector codes reference game assets; import artwork separately with PS3 bundle/Team Art"},
+                {"field": "new meanings for opaque selector bytes",
+                 "reason": "bytes are preserved exactly, but their rendering meaning is unproved"},
+                *([] if apply_team_appearance else [{"field": "PS3 appearance values",
+                    "reason": "user chose to retain appearance from the selected Xbox roster"}]),
+            ],
         },
         "repointed_by_kind": repointed,
         "canonical_empty_offset": empty,
@@ -949,6 +988,7 @@ __all__ = [
     "PS3RosterConvertError", "Reference", "RosterStructure", "RUNTIME_STATUS", "SCHEMA",
     "TableSpan", "XBOX_ROOT_RUNTIME_BASE", "convert", "detect_platform", "find_roster_member",
     "inspect_structure", "read_source", "receipt_path_for", "verify_converted", "write_conversion",
+    "team_appearance", "verify_appearance_carry",
 ]
 
 

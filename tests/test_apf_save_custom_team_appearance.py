@@ -147,6 +147,7 @@ def synthetic_stfs(payload: bytes, magic: bytes = b"CON ", *, copies: int = 1,
     data = bytearray(size)
 
     data[:4] = magic
+    struct.pack_into(">IIQ", data, 0x344, 1, 2, len(payload))  # saved game, metadata v2, content size
     struct.pack_into(">I", data, 0x340, first_table)
     data[0x379] = 0x24
     data[0x37B] = (1 if copies == 1 else 0) | active * 2
