@@ -2343,26 +2343,31 @@ class ApfBuildService:
         try:
             with tempfile.TemporaryDirectory(prefix="apf-crest-cache-") as cache_dir:
                 slots = {s.asset_index: s.outer_entry_index for s in apf_team_crests.crest_slots(self.source.index_0a)}
+                requests, destinations = [], set()
                 for modification in modifications:
                     meta = modification.metadata
                     slot, outer = meta["crest_asset_index"], meta["crest_outer_entry_index"]
-                    if slots.get(slot) != outer or outer in entries:
+                    if slots.get(slot) != outer or outer in destinations:
                         raise BuildError(f"The crest package for slot {slot} changed or is selected twice")
+                    destinations.add(outer)
                     detail = self._crest_detail_path(modification)
-                    try:
-                        package = apf_logo_patch.build_patch(self.source.index_0a, modification.replacement_path,
-                            entry_index=outer, png_path_l1=detail, clear_l1=detail is None,
-                            allow_simplification=meta.get("allow_simplification", True))
-                    except (OSError, apf_logo_patch.PatchError) as exc:
-                        raise BuildError(f"Could not compile crest slot {slot}, outer {outer} "
-                                         f"({modification.asset_id}): {exc}") from exc
+                    requests.append((outer, apf_logo_patch._load_png(modification.replacement_path, 512, 512),
+                        apf_logo_patch._load_png(detail, 512, 512) if detail is not None else None,
+                        meta.get('allow_simplification', True)))
+                packages = apf_logo_patch.build_crest_packages(self.source.index_0a, requests, progress,
+                    cancelled=getattr(progress, 'cancelled', lambda: False))
+                for modification in modifications:
+                    meta = modification.metadata
+                    slot, outer = meta['crest_asset_index'], meta['crest_outer_entry_index']
+                    detail = self._crest_detail_path(modification)
+                    package = packages[outer]
                     entries[outer] = package.entry_bytes
                     components.append(package.manifest)
                     if "fit" in package.manifest:
                         progress(package.manifest["fit"]["status"], len(components), len(modifications))
                     cache_l0, cache_l1 = self._fitted_crest_cache_paths(modification, detail, package, cache_dir)
                     specs.append(apf_logocache_patch.CacheLayerSpec(slot, cache_l0, cache_l1, detail is None))
-                cache = apf_logocache_patch.build_cache_patch_many(self.source.index_0a, tuple(specs))
+                cache = apf_logocache_patch.build_cache_patch_many(self.source.index_0a, tuple(specs), progress=progress)
                 for modification in modifications:
                     self._crest_detail_path(modification)
         except (OSError, apf_logo_patch.PatchError, apf_logocache_patch.PatchError) as exc:
@@ -2476,14 +2481,11 @@ class ApfBuildService:
             # art of their own). One supplied mark goes in logo_l0 and the
             # detail layer's masks are cleared, keeping its alpha exactly; a
             # staged two-layer crest writes both regions instead.
-            package = apf_logo_patch.build_patch(
-                self.source.index_0a,
-                modification.replacement_path,
-                entry_index=outer_index,
-                png_path_l1=detail_path,
-                clear_l1=detail_path is None,
-                allow_simplification=metadata.get("allow_simplification", True),
-            )
+            package = apf_logo_patch.build_crest_packages(self.source.index_0a, ((outer_index,
+                apf_logo_patch._load_png(modification.replacement_path, 512, 512),
+                apf_logo_patch._load_png(detail_path, 512, 512) if detail_path is not None else None,
+                metadata.get('allow_simplification', True)),), progress,
+                cancelled=getattr(progress, 'cancelled', lambda: False))[outer_index]
             if "fit" in package.manifest:
                 progress(package.manifest["fit"]["status"], 1, 1)
             with tempfile.TemporaryDirectory(prefix="apf-crest-cache-") as cache_dir:

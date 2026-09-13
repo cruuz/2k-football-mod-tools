@@ -509,8 +509,8 @@ class BuildCompilerTests(unittest.TestCase):
                     SimpleNamespace(asset_index=30, outer_entry_index=1133),
                 ),
             ), mock.patch(
-                "mod_editor.apf_studio.build.apf_logo_patch.build_patch",
-                return_value=package,
+                "mod_editor.apf_studio.build.apf_logo_patch.build_crest_packages",
+                return_value={1133: package},
             ), mock.patch(
                 "mod_editor.apf_studio.build.apf_logocache_patch.build_cache_patch",
                 return_value=cache,

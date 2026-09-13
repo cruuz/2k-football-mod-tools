@@ -21784,14 +21784,10 @@ class ApfStudioMainWindow(QMainWindow):
             if answer != QMessageBox.Yes:
                 return
             replace_existing = True
-        self._run_task(
-            "Building a complete separate APF game folder",
+        from .ps3_texture_bundle_qt import run_crest_task
+        run_crest_task(self, self._run_task, "Building a complete separate APF game folder",
             lambda progress, dest=output, replace=replace_existing: self.facade.build(
-                dest, progress, replace_existing=replace
-            ),
-            self._build_complete,
-            True,
-        )
+                dest, progress, replace_existing=replace), self._build_complete)
 
     @staticmethod
     def _build_edit_detail(receipt: object) -> str:

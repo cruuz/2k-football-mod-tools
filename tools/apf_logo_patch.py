@@ -30,8 +30,12 @@ rather than guessed.
 from __future__ import annotations
 
 import argparse
+from array import array
 from collections import OrderedDict, defaultdict, deque
-from concurrent.futures import Future, ProcessPoolExecutor
+from concurrent.futures import Future, ProcessPoolExecutor, TimeoutError as FutureTimeout
+from contextlib import contextmanager
+from copy import deepcopy
+from functools import lru_cache, wraps
 from dataclasses import dataclass
 import hashlib
 import json
@@ -41,8 +45,9 @@ import os
 from pathlib import Path
 import stat
 import struct
+import subprocess
 import sys
-from threading import Lock
+from threading import Lock, local
 from typing import Callable, Iterable
 import zlib
 
@@ -63,6 +68,109 @@ except ImportError as exc:  # pragma: no cover - exercised by the CLI error path
 import apf_inner  # noqa: E402
 import apf_outer  # noqa: E402
 import apf_xenos_4444_mip_layout as mip4444  # noqa: E402
+
+
+_CREST_CHILD = False
+_POOL_STATE = local()
+
+
+def crest_worker_count(jobs: int) -> int:
+    """Bound CPU work by process affinity/quota and a 256 MiB worker budget."""
+    cpus = os.cpu_count() or 1
+    if hasattr(os, 'sched_getaffinity'):
+        cpus = min(cpus, len(os.sched_getaffinity(0)))
+    try:
+        quota, period = Path('/sys/fs/cgroup/cpu.max').read_text().split()
+        if quota != 'max':
+            cpus = min(cpus, max(1, math.ceil(int(quota) / int(period))))
+    except (OSError, ValueError):
+        pass
+    memory_workers = 4
+    try:
+        available = os.sysconf('SC_AVPHYS_PAGES') * os.sysconf('SC_PAGE_SIZE')
+        memory_workers = max(1, available // (256 << 20))
+    except (OSError, ValueError, AttributeError):
+        pass
+    try:
+        values = dict(line.split(':', 1) for line in Path('/proc/meminfo').read_text().splitlines())
+        available = int(values['MemAvailable'].split()[0]) * 1024
+        memory_workers = max(1, available // (256 << 20))
+    except (OSError, ValueError, KeyError):
+        pass
+    try:
+        limit = Path('/sys/fs/cgroup/memory.max').read_text().strip()
+        used = int(Path('/sys/fs/cgroup/memory.current').read_text())
+        if limit != 'max':
+            memory_workers = min(memory_workers, max(1, (int(limit) - used) // (256 << 20)))
+    except (OSError, ValueError):
+        pass
+    return max(1, min(jobs, 32, memory_workers, cpus - 1 if cpus > 1 else 1))
+
+
+def _crest_child_init():
+    global _CREST_CHILD
+    _CREST_CHILD = True
+
+
+@contextmanager
+def crest_pool(jobs):
+    """One spawn pool per operation; child crests never create nested pools."""
+    if _CREST_CHILD or getattr(_POOL_STATE, 'executor', None) is not None or crest_worker_count(jobs) == 1:
+        yield getattr(_POOL_STATE, 'executor', None)
+        return
+    executor = ProcessPoolExecutor(max_workers=crest_worker_count(jobs),
+        mp_context=multiprocessing.get_context('spawn'), initializer=_crest_child_init)
+    _POOL_STATE.executor = executor
+    try:
+        yield executor
+    finally:
+        _POOL_STATE.executor = None
+        executor.shutdown(wait=True, cancel_futures=True)
+
+
+def ordered_crest_map(function, jobs, *, progress=lambda *_: None, cancelled=lambda: False):
+    """Deterministic results, bounded in-flight work, cancel at crest boundaries."""
+    jobs = tuple(jobs)
+    if not jobs:
+        return
+    def check():
+        if cancelled():
+            raise PatchError('PS3 crest operation cancelled. Your source is unchanged; import or build again when ready.')
+    check()
+    with crest_pool(len(jobs)) as executor:
+        if executor is None or len(jobs) == 1:
+            for i, job in enumerate(jobs):
+                check()
+                result = function(job)
+                check()
+                progress('Completed crest', i + 1, len(jobs))
+                yield result
+            return
+        pending = deque()
+        iterator = iter(enumerate(jobs))
+        try:
+            for _ in range(crest_worker_count(len(jobs))):
+                i, job = next(iterator)
+                pending.append((i, executor.submit(function, job)))
+            while pending:
+                i, future = pending.popleft()
+                while True:
+                    check()
+                    try:
+                        result = future.result(timeout=0.1)
+                        break
+                    except FutureTimeout:
+                        continue
+                check()
+                progress('Completed crest', i + 1, len(jobs))
+                yield result
+                item = next(iterator, None)
+                if item is not None:
+                    check()
+                    pending.append((item[0], executor.submit(function, item[1])))
+        finally:
+            for _, future in pending:
+                future.cancel()
 
 
 SCHEMA = "apf_logo_patch/v1"
@@ -227,18 +335,45 @@ def sha256_bytes(data: bytes) -> str:
 
 
 def _match_length(data: bytes, current: int, candidate: int, maximum: int) -> int:
-    length = 0
-    # Overlapping LZ copies are legal: once the match reaches current, the
-    # decoder reads bytes it just emitted.  Since the full intended output is
-    # already available here, candidate + length names that same byte directly.
-    while length < maximum:
-        if data[current + length] != data[candidate + length]:
-            break
-        length += 1
-    return length
+    # Slice comparisons run in C. Binary search retains the exact first
+    # mismatch while avoiding a Python iteration per matching byte.
+    low, high = 0, maximum
+    while low < high:
+        middle = (low + high + 1) // 2
+        if data[current:current + middle] == data[candidate:candidate + middle]:
+            low = middle
+        else:
+            high = middle - 1
+    return low
 
 
 def compress_h7a(
+    data: bytes, shift: int, *, candidate_limit: int = MAX_H7A_CANDIDATES,
+) -> bytes:
+    """Historical greedy bytes, using the pinned helper when available.
+
+    Optimal is a separate ladder rung. Its bytes must never replace a greedy
+    first fit just because an optimal encoder happens to be installed.
+    """
+    if not 1 <= shift <= 15:
+        raise PatchError(f"invalid H7A shift {shift}")
+    if candidate_limit <= 0:
+        raise PatchError("H7A candidate limit must be positive")
+    import apf_field_art_patch
+    binary = apf_field_art_patch._optimal_binary()
+    if binary is not None and len(data) >= 4096:
+        try:
+            result = subprocess.run([str(binary), str(shift), '--greedy', str(candidate_limit)],
+                                    input=data, capture_output=True, timeout=180)
+            if result.returncode == 0:
+                verify_h7a_stream(result.stdout, data, shift)
+                return result.stdout
+        except (OSError, subprocess.SubprocessError, PatchError, apf_inner.FormatError):
+            pass
+    return _compress_h7a_python(data, shift, candidate_limit=candidate_limit)
+
+
+def _compress_h7a_python(
     data: bytes,
     shift: int,
     *,
@@ -297,7 +432,7 @@ def compress_h7a(
                             data,
                             cursor,
                             candidate,
-                            min(max_length, len(data) - cursor),
+                            min(max_length, len(data) - cursor, distance),
                         )
                         # Never emit a match that reads bytes it is still
                         # writing.  Our decoder copies one byte at a time and
@@ -390,6 +525,13 @@ def _tile_2d(
             "PORTME: TXTR base allocation has padding or mip-tail semantics not "
             f"covered by this writer (0x{allocation_size:x} != 0x{required:x})"
         )
+    if bytes_per_block == 2 and width_blocks == pitch_aligned and height_blocks == height_aligned:
+        # The original mapping is checked as a permutation once per layout.
+        # Array halfwords are only moved, never interpreted or byte-swapped.
+        order = _tile_halfword_order(width_blocks, height_blocks, pitch_aligned)
+        words = array('H')
+        words.frombytes(linear)
+        return array('H', (words[index] for index in order)).tobytes()
     output = bytearray(allocation_size)
     log2_size = bytes_per_block.bit_length() - 1
     visited: set[int] = set()
@@ -408,6 +550,60 @@ def _tile_2d(
     if len(visited) * bytes_per_block != allocation_size:
         raise PatchError("PORTME: Xenos tile mapping does not cover the full allocation")
     return bytes(output)
+
+
+@lru_cache(maxsize=4)
+def _tile_halfword_order(width, height, pitch):
+    inverse = array('i', [-1]) * (width * height)
+    for y in range(height):
+        for x in range(width):
+            destination = apf_inner._tiled_2d_offset(x, y, pitch, 1)
+            if destination % 2 or destination >= len(inverse) * 2 or inverse[destination // 2] != -1:
+                raise PatchError('Xenos tile mapping aliases or exceeds its allocation')
+            inverse[destination // 2] = y * width + x
+    if -1 in inverse:
+        raise PatchError('PORTME: Xenos tile mapping does not cover the full allocation')
+    return inverse
+
+
+@lru_cache(maxsize=4)
+def _untile_halfword_order(width, height, pitch):
+    tiled = _tile_halfword_order(width, height, pitch)
+    inverse = array('i', [0]) * len(tiled)
+    for destination, source in enumerate(tiled):
+        inverse[source] = destination
+    return inverse
+
+
+def _endian_4444(data, mode):
+    if mode != 1:
+        return apf_inner._endian_swap(data, mode)
+    if len(data) % 2:
+        raise apf_inner.FormatError('texture block length is not aligned for endian mode 1')
+    result = bytearray(len(data))
+    result[0::2], result[1::2] = data[1::2], data[0::2]
+    return bytes(result)
+
+
+_PIXEL_CACHE = OrderedDict()
+
+
+def _cached_pixels(function):
+    @wraps(function)
+    def cached(metadata, rgba, *extra):
+        key = (function.__name__, json.dumps(metadata, sort_keys=True), sha256_bytes(rgba),
+               tuple(sha256_bytes(value) for value in extra))
+        with _CACHE_LOCK:
+            if key in _PIXEL_CACHE:
+                _PIXEL_CACHE.move_to_end(key)
+                return _PIXEL_CACHE[key]
+        result = function(metadata, rgba, *extra)
+        with _CACHE_LOCK:
+            _PIXEL_CACHE[key] = result
+            while sum(map(len, _PIXEL_CACHE.values())) > 48 << 20:
+                _PIXEL_CACHE.popitem(last=False)
+        return result
+    return cached
 
 
 def _rgba_metrics(wanted: bytes, decoded: bytes) -> dict[str, object]:
@@ -465,32 +661,32 @@ def _load_png(path: Path, expected_width: int, expected_height: int) -> bytes:
 # inverse (inverse-swizzle -> 8->4-bit quantize -> pack little-endian u16 ->
 # Xenos endian swap -> Xenos 2-byte-per-texel tile).
 # ---------------------------------------------------------------------------
+@_cached_pixels
 def decode_4444_base(metadata: dict[str, object], base: bytes) -> bytes:
     """Decode a tiled Xenos 4_4_4_4 base level to display-order RGBA bytes."""
 
     width = int(metadata["width"])
     height = int(metadata["height"])
-    linear = apf_inner._untile_2d(  # type: ignore[attr-defined]
-        base, width, height, int(metadata["pitch_pixels"]), 1, 1, 2
-    )
-    linear = apf_inner._endian_swap(  # type: ignore[attr-defined]
-        linear, int(metadata["endianness"])
-    )
+    if (width, height, int(metadata['pitch_pixels']), len(base)) == (WIDTH, HEIGHT, PITCH, BASE_LEN):
+        words = array('H')
+        words.frombytes(base)
+        linear = array('H', (words[i] for i in _untile_halfword_order(width, height, PITCH))).tobytes()
+    else:
+        linear = apf_inner._untile_2d(base, width, height, int(metadata['pitch_pixels']), 1, 1, 2)
+    linear = _endian_4444(linear, int(metadata['endianness']))
     selectors = list(metadata["swizzle_components"])
+    low, high = bytes((v & 15) * 17 for v in range(256)), bytes((v >> 4) * 17 for v in range(256))
+    even, odd = linear[0::2], linear[1::2]
+    zero = bytes(width * height)
+    channels = (even.translate(low), even.translate(high), odd.translate(low), odd.translate(high),
+                zero, b'\xff' * (width * height), zero, zero)
     output = bytearray(width * height * 4)
-    for pixel_index in range(width * height):
-        value = int.from_bytes(linear[pixel_index * 2 : pixel_index * 2 + 2], "little")
-        pixel = (
-            (value & 0xF) * 17,
-            ((value >> 4) & 0xF) * 17,
-            ((value >> 8) & 0xF) * 17,
-            ((value >> 12) & 0xF) * 17,
-        )
-        pixel = apf_inner._swizzle_pixel(pixel, selectors)  # type: ignore[attr-defined]
-        output[pixel_index * 4 : pixel_index * 4 + 4] = bytes(pixel)
+    for channel, selector in enumerate(selectors):
+        output[channel::4] = channels[selector]
     return bytes(output)
 
 
+@_cached_pixels
 def encode_4444_base(metadata: dict[str, object], rgba_display: bytes) -> bytes:
     """Encode display-order RGBA bytes into a tiled Xenos 4_4_4_4 base level.
 
@@ -504,22 +700,7 @@ def encode_4444_base(metadata: dict[str, object], rgba_display: bytes) -> bytes:
             f"RGBA buffer is 0x{len(rgba_display):x}, expected "
             f"0x{WIDTH * HEIGHT * 4:x}"
         )
-    raw_pixels = _inverse_swizzle_pixels(
-        rgba_display, metadata["swizzle_components"]  # type: ignore[arg-type]
-    )
-    quantize = lambda value: (value * 15 + 127) // 255  # noqa: E731 - inline, inspectable
-    linear = bytearray(WIDTH * HEIGHT * 2)
-    for index, (raw_r, raw_g, raw_b, raw_a) in enumerate(raw_pixels):
-        packed = (
-            quantize(raw_r)
-            | quantize(raw_g) << 4
-            | quantize(raw_b) << 8
-            | quantize(raw_a) << 12
-        )
-        linear[index * 2 : index * 2 + 2] = packed.to_bytes(2, "little")
-    on_disc = apf_inner._endian_swap(  # type: ignore[attr-defined]
-        bytes(linear), int(metadata["endianness"])
-    )
+    on_disc = encode_4444_linear(metadata, rgba_display, WIDTH * HEIGHT)
     return _tile_2d(on_disc, WIDTH, HEIGHT, PITCH, 1, 1, 2, BASE_LEN)
 
 
@@ -537,24 +718,25 @@ def encode_4444_linear(
         raise PatchError(
             f"RGBA buffer is 0x{len(rgba_display):x}, expected 0x{texels * 4:x}"
         )
-    raw_pixels = _inverse_swizzle_pixels(
-        rgba_display, metadata["swizzle_components"]  # type: ignore[arg-type]
-    )
-    quantize = lambda value: (value * 15 + 127) // 255  # noqa: E731
+    selectors = tuple(metadata['swizzle_components'])
+    if sorted(selectors) != [0, 1, 2, 3]:
+        raise PatchError('PORTME: texture import currently requires a permutation-only RGBA swizzle')
+    table = bytes((value * 15 + 127) // 255 for value in range(256))
+    channels = [rgba_display[selectors.index(raw)::4].translate(table) for raw in range(4)]
     linear = bytearray(texels * 2)
-    for index, (raw_r, raw_g, raw_b, raw_a) in enumerate(raw_pixels):
-        packed = (
-            quantize(raw_r)
-            | quantize(raw_g) << 4
-            | quantize(raw_b) << 8
-            | quantize(raw_a) << 12
-        )
-        linear[index * 2 : index * 2 + 2] = packed.to_bytes(2, "little")
-    return apf_inner._endian_swap(  # type: ignore[attr-defined]
-        bytes(linear), int(metadata["endianness"])
-    )
+    linear[0::2] = bytes(a | (b << 4) for a, b in zip(channels[0], channels[1]))
+    linear[1::2] = bytes(a | (b << 4) for a, b in zip(channels[2], channels[3]))
+    return _endian_4444(bytes(linear), int(metadata['endianness']))
 
 
+def _encode_mip(job):
+    metadata, rgba_base, location = job
+    base = Image.frombytes('RGBA', (int(metadata['width']), int(metadata['height'])), rgba_base)
+    level = base.resize((location.width, location.height), Image.BOX)
+    return encode_4444_linear(metadata, level.tobytes(), location.width * location.height)
+
+
+@_cached_pixels
 def rebuild_mip_tail(
     metadata: dict[str, object], rgba_base: bytes, original_tail: bytes
 ) -> bytes:
@@ -573,19 +755,18 @@ def rebuild_mip_tail(
     if len(original_tail) != int(metadata["vc_mip_data_length"]):
         raise PatchError("mip tail length does not match the descriptor")
 
-    base = Image.frombytes(
-        "RGBA", (int(metadata["width"]), int(metadata["height"])), rgba_base
-    )
     # The payload buffer the layout addresses starts at the base level, so the
     # tail is written through a full-length view and sliced back off at the end.
     payload = bytearray(locations[0].allocation_length) + bytearray(original_tail)
-    for location in locations[1:]:
+    jobs = tuple((metadata, rgba_base, location) for location in locations[1:])
+    executor = getattr(_POOL_STATE, 'executor', None)
+    # A single-crest operation can share its pool across independent mip levels.
+    # In a bundle, each process owns a crest and does its mips locally.
+    encoded = (executor.map(_encode_mip, jobs) if executor is not None and not _CREST_CHILD
+               else map(_encode_mip, jobs))
+    for location, linear in zip(locations[1:], encoded):
         # BOX is an area average, which is what a mip level is; a sharper
         # filter would ring on flat mask edges and quantize to stray nibbles.
-        level = base.resize((location.width, location.height), Image.BOX)
-        linear = encode_4444_linear(
-            metadata, level.tobytes(), location.width * location.height
-        )
         mip4444.write_level(payload, location, linear)
 
     rebuilt = bytes(payload[locations[0].allocation_length:])
@@ -841,12 +1022,71 @@ def compress_h7a_best(data: bytes, shift: int, *, greedy: bytes | None = None) -
     import apf_field_art_patch
     greedy = compress_h7a(data, shift) if greedy is None else greedy
     verify_h7a_stream(greedy, data, shift)
-    candidate = apf_field_art_patch.compress_h7a_best(data, shift, greedy=greedy)
+    if apf_field_art_patch._optimal_binary() is None:
+        candidate = _compress_h7a_optimal_python(data, shift)
+    else:
+        candidate = apf_field_art_patch.compress_h7a_best(data, shift, greedy=greedy)
+    if len(candidate) >= len(greedy):
+        return greedy
     try:
         verify_h7a_stream(candidate, data, shift)
     except (PatchError, apf_inner.FormatError):
         return greedy
     return candidate
+
+
+def _compress_h7a_optimal_python(data: bytes, shift: int) -> bytes:
+    """Portable transcription of the reviewed C parse, including hash collisions.
+
+    Keep its 512-candidate cap, three length trials, and strict cost tie rule.
+    Windows/macOS therefore choose the same fit rung and package bytes.
+    """
+    if not 1 <= shift <= 15:
+        raise PatchError(f"invalid H7A shift {shift}")
+    n = len(data)
+    previous = array('i', [-1]) * n
+    head = array('i', [-1]) * 65536
+    for i in range(n - 2):
+        key = ((int.from_bytes(data[i:i + 3], 'big') * 2654435761) & 0xffffffff) >> 16
+        previous[i], head[key] = head[key], i
+    cost = array('I', [0]) * (n + 1)
+    lengths, distances = array('H', [0]) * n, array('H', [0]) * n
+    max_distance = (1 << shift) - 1
+    max_length = (1 << (16 - shift)) + 2
+    for i in range(n - 1, -1, -1):
+        cheapest = 9 + cost[i + 1]
+        candidate, candidates = previous[i], 0
+        while candidate >= 0 and candidate >= i - max_distance and candidates < 512:
+            distance = i - candidate
+            limit = min(max_length, n - i, distance)
+            if limit >= 3:
+                length = _match_length(data, i, candidate, limit)
+                for trial in (length, length - 1, length // 2):
+                    if trial >= 3:
+                        total = 17 + cost[i + trial]
+                        if total < cheapest:
+                            cheapest = total
+                            lengths[i], distances[i] = trial, distance
+            candidates += 1
+            candidate = previous[candidate]
+        cost[i] = cheapest
+    out, at = bytearray(), 0
+    while at < n:
+        descriptor_at, descriptor = len(out), 0
+        out.append(0)
+        for bit in range(8):
+            if at >= n:
+                break
+            length = lengths[at]
+            if length >= 3:
+                descriptor |= 1 << bit
+                out.extend((((length - 3) << shift) | distances[at]).to_bytes(2, 'big'))
+                at += length
+            else:
+                out.append(data[at])
+                at += 1
+        out[descriptor_at] = descriptor
+    return bytes(out)
 
 
 def _compressed(data: bytes, shift: int, optimal: bool = False) -> bytes:
@@ -962,6 +1202,71 @@ def logo_measurement_templates(index_path: Path, entry_indices, progress=lambda 
 
 
 _MEASUREMENT_CACHE: OrderedDict = OrderedDict()
+_PACKAGE_CACHE: OrderedDict = OrderedDict()
+
+
+def _build_crest_job(job):
+    index_path, entry_index, l0, l1, allow, source_sha = job
+    opened = _open_entry(index_path, entry_index)
+    _, entry, record, raw, blocks, stored = opened
+    if sha256_bytes(raw) != source_sha:
+        raise PatchError(f'Crest source package {entry_index} changed during compilation; reload the game.')
+    indices = resolve_layer_indices(record)
+    layers = tuple(_extract_layer(record, blocks, i, name, pinned_base_sha(entry_index, name))
+                   for i, name in zip(indices, (INNER_NAME, SIBLING_NAME)))
+    if l1 is None:
+        l1 = cleared_detail_rgba(layers[1].rgba)
+    return _build_dual_layer_rgba_opened(index_path, l0, l1, entry_index, *indices,
+        entry, record, raw, blocks, stored, extracted_layers=layers, allow_simplification=allow)
+
+
+def build_crest_packages(index_path, requests, progress=lambda *_: None, *, cancelled=lambda: False):
+    """Compile studio crests in parallel, reusing unchanged verified packages.
+
+    Requests are (outer index, decoded l0, decoded l1 or None, shade policy).
+    Every call rereads current source bytes and hashes both input masks. A cache
+    hit can skip compression only for that exact package, art and policy.
+    """
+    index_path = Path(index_path)
+    requests = tuple(requests)
+    if len({row[0] for row in requests}) != len(requests):
+        raise PatchError('Crest destination selected twice')
+    archive = apf_outer.parse_archive(index_path)
+    results, jobs, pending = {}, [], []
+    with apf_inner.ArchiveReader(archive) as reader:
+        for entry_index, l0, l1, allow in requests:
+            if cancelled():
+                raise PatchError('Crest build cancelled. Build again when ready.')
+            if type(entry_index) is not int or not 0 <= entry_index < len(archive.entries):
+                raise PatchError('Invalid crest destination')
+            entry = archive.entries[entry_index]
+            raw = reader.read(entry, 0, entry.size)
+            digest = sha256_bytes(raw)
+            key = (str(index_path.resolve()), entry, digest, sha256_bytes(l0),
+                   sha256_bytes(l1) if l1 is not None else None, allow,
+                   tuple(sorted(PINNED_ENTRIES.get(entry_index, {}).items())))
+            with _CACHE_LOCK:
+                cached = _PACKAGE_CACHE.get(key)
+                if cached is not None:
+                    _PACKAGE_CACHE.move_to_end(key)
+                    results[entry_index] = deepcopy(cached)
+            if cached is None:
+                jobs.append((index_path, entry_index, bytes(l0), bytes(l1) if l1 is not None else None, allow, digest))
+                pending.append((entry_index, key))
+            else:
+                progress(f'Reused verified crest package {entry_index}', len(results), len(requests))
+    # A lone crest lends a small shared pool to its independent mip levels.
+    with crest_pool(3 if len(jobs) == 1 else len(jobs)):
+        for (entry_index, key), result in zip(pending,
+                ordered_crest_map(_build_crest_job, jobs, cancelled=cancelled)):
+            results[entry_index] = result
+            with _CACHE_LOCK:
+                _PACKAGE_CACHE[key] = deepcopy(result)
+                while sum(len(value.entry_bytes) for value in _PACKAGE_CACHE.values()) > 64 << 20:
+                    _PACKAGE_CACHE.popitem(last=False)
+            progress(result.manifest.get('fit', {}).get('status', f'Compiled crest {entry_index}'),
+                     len(results), len(requests))
+    return {row[0]: results[row[0]] for row in requests}
 
 
 def measure_logo_pair(rgba_l0: bytes, rgba_l1: bytes, template: LogoMeasurementTemplate,
