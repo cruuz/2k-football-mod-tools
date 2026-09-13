@@ -1,0 +1,9 @@
+{
+  "schema": "nfl2k5.weather.composition.v1",
+  "full_owner_union": true,
+  "scaleout": true,
+  "both_orders_equal": true,
+  "off_restores_composed_baseline": true,
+  "xbe_sha256": "4e1c682b14e0a611df876a60496296da99d49715b03526152548178a39b4566a",
+  "runtime_witnessed": false
+}

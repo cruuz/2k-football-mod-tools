@@ -1,0 +1,4 @@
+MOD_CAPABILITY_REGISTRY_VALIDATION_PASS base=161 added=2 merged=163
+Merged structural/domain/coverage checks passed; every new-row evidence/backend/test path exists.
+Full pre-existing file validation is unavailable: baseline row 0 references missing docs/research/apf_audio.md.
+Protected registry unchanged.

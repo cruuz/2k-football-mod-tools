@@ -1,0 +1,478 @@
+{
+  "schema": "nfl2k5.weather.native.v1",
+  "label": "EXPERIMENTAL / UNWITNESSED",
+  "runtime_witnessed": false,
+  "schedule": [
+    {
+      "hour": 0,
+      "tod": 0,
+      "temperature": 32.77245330810547,
+      "precipitation": 0.0,
+      "suffixes": [
+        "d",
+        "d"
+      ]
+    },
+    {
+      "hour": 1,
+      "tod": 0,
+      "temperature": 32.77245330810547,
+      "precipitation": 0.0,
+      "suffixes": [
+        "d",
+        "d"
+      ]
+    },
+    {
+      "hour": 4,
+      "tod": 1,
+      "temperature": 27.772451400756836,
+      "precipitation": 0.0,
+      "suffixes": [
+        "a",
+        "d"
+      ]
+    },
+    {
+      "hour": 6,
+      "tod": 2,
+      "temperature": 17.772451400756836,
+      "precipitation": 0.0,
+      "suffixes": [
+        "n",
+        "d"
+      ]
+    },
+    {
+      "hour": 8,
+      "tod": 2,
+      "temperature": 17.772451400756836,
+      "precipitation": 0.0,
+      "suffixes": [
+        "n",
+        "d"
+      ]
+    },
+    {
+      "hour": 9,
+      "tod": 2,
+      "temperature": 17.772451400756836,
+      "precipitation": 0.0,
+      "suffixes": [
+        "n",
+        "d"
+      ]
+    },
+    {
+      "hour": 10,
+      "tod": 2,
+      "temperature": 17.772451400756836,
+      "precipitation": 0.0,
+      "suffixes": [
+        "n",
+        "d"
+      ]
+    },
+    {
+      "hour": 11,
+      "tod": 0,
+      "temperature": 32.77245330810547,
+      "precipitation": 0.0,
+      "suffixes": [
+        "d",
+        "d"
+      ]
+    },
+    {
+      "hour": 12,
+      "tod": 0,
+      "temperature": 32.77245330810547,
+      "precipitation": 0.0,
+      "suffixes": [
+        "d",
+        "d"
+      ]
+    }
+  ],
+  "climate_samples": [
+    {
+      "month": 8,
+      "tod": 0,
+      "outputs": [
+        85.44109344482422,
+        0.0,
+        61.67750549316406,
+        0.0
+      ]
+    },
+    {
+      "month": 8,
+      "tod": 1,
+      "outputs": [
+        80.44109344482422,
+        0.0,
+        61.67750549316406,
+        0.0
+      ]
+    },
+    {
+      "month": 8,
+      "tod": 2,
+      "outputs": [
+        70.44109344482422,
+        0.0,
+        61.67750549316406,
+        0.0
+      ]
+    },
+    {
+      "month": 9,
+      "tod": 0,
+      "outputs": [
+        78.04109191894531,
+        0.0,
+        69.64594268798828,
+        0.0
+      ]
+    },
+    {
+      "month": 9,
+      "tod": 1,
+      "outputs": [
+        73.04109191894531,
+        0.0,
+        69.64594268798828,
+        0.0
+      ]
+    },
+    {
+      "month": 9,
+      "tod": 2,
+      "outputs": [
+        63.04109573364258,
+        0.0,
+        69.64594268798828,
+        0.0
+      ]
+    },
+    {
+      "month": 10,
+      "tod": 0,
+      "outputs": [
+        66.24109649658203,
+        0.0,
+        72.6285400390625,
+        0.0
+      ]
+    },
+    {
+      "month": 10,
+      "tod": 1,
+      "outputs": [
+        61.24109649658203,
+        0.0,
+        72.6285400390625,
+        0.0
+      ]
+    },
+    {
+      "month": 10,
+      "tod": 2,
+      "outputs": [
+        51.24109649658203,
+        0.0,
+        72.6285400390625,
+        0.0
+      ]
+    },
+    {
+      "month": 11,
+      "tod": 0,
+      "outputs": [
+        53.441097259521484,
+        0.0,
+        90.54640197753906,
+        0.0
+      ]
+    },
+    {
+      "month": 11,
+      "tod": 1,
+      "outputs": [
+        48.441097259521484,
+        0.0,
+        90.54640197753906,
+        0.0
+      ]
+    },
+    {
+      "month": 11,
+      "tod": 2,
+      "outputs": [
+        38.441097259521484,
+        0.0,
+        90.54640197753906,
+        0.0
+      ]
+    },
+    {
+      "month": 12,
+      "tod": 0,
+      "outputs": [
+        40.14109420776367,
+        0.0,
+        92.52738952636719,
+        0.0
+      ]
+    },
+    {
+      "month": 12,
+      "tod": 1,
+      "outputs": [
+        35.14109420776367,
+        0.0,
+        92.52738952636719,
+        0.0
+      ]
+    },
+    {
+      "month": 12,
+      "tod": 2,
+      "outputs": [
+        25.141094207763672,
+        0.0,
+        92.52738952636719,
+        0.0
+      ]
+    },
+    {
+      "month": 1,
+      "tod": 0,
+      "outputs": [
+        34.44109344482422,
+        0.0,
+        97.51322937011719,
+        0.0
+      ]
+    },
+    {
+      "month": 1,
+      "tod": 1,
+      "outputs": [
+        29.44109344482422,
+        0.0,
+        97.51322937011719,
+        0.0
+      ]
+    },
+    {
+      "month": 1,
+      "tod": 2,
+      "outputs": [
+        19.44109344482422,
+        0.0,
+        97.51322937011719,
+        0.0
+      ]
+    },
+    {
+      "month": 2,
+      "tod": 0,
+      "outputs": [
+        34.44109344482422,
+        0.0,
+        97.51322937011719,
+        0.0
+      ]
+    },
+    {
+      "month": 2,
+      "tod": 1,
+      "outputs": [
+        29.44109344482422,
+        0.0,
+        97.51322937011719,
+        0.0
+      ]
+    },
+    {
+      "month": 2,
+      "tod": 2,
+      "outputs": [
+        19.44109344482422,
+        0.0,
+        97.51322937011719,
+        0.0
+      ]
+    }
+  ],
+  "edited_climate": {
+    "values": [
+      2,
+      4.672451019287109,
+      0.3453964591026306,
+      0.0,
+      0.2713469862937927
+    ],
+    "suffixes": [
+      "n",
+      "s"
+    ],
+    "verifier": {
+      "label": "EXPERIMENTAL / UNWITNESSED",
+      "state": "applied",
+      "fields": 3,
+      "resource_sha256": "12b81db24ebb8962e1320e2aa8a2476a0252ec1350cede90a1f78273616baf20",
+      "runtime_witnessed": false,
+      "xbe_changed": false,
+      "already_applied": false
+    }
+  },
+  "haze_cases": [
+    {
+      "temperature": 70,
+      "precipitation": 0,
+      "haze": 0.25,
+      "indoor": false,
+      "retail_camera": [
+        0.20000000298023224,
+        3000.0,
+        6000.0
+      ],
+      "patched_camera": [
+        0.25,
+        3000.0,
+        6000.0
+      ]
+    },
+    {
+      "temperature": 70,
+      "precipitation": 0,
+      "haze": 0,
+      "indoor": false,
+      "retail_camera": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "patched_camera": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "temperature": 70,
+      "precipitation": 0.8,
+      "haze": 0.25,
+      "indoor": false,
+      "retail_camera": [
+        0.824999988079071,
+        3000.0,
+        6000.0
+      ],
+      "patched_camera": [
+        0.824999988079071,
+        3000.0,
+        6000.0
+      ]
+    },
+    {
+      "temperature": 20,
+      "precipitation": 0.8,
+      "haze": 0.25,
+      "indoor": false,
+      "retail_camera": [
+        0.6500000357627869,
+        3000.0,
+        6000.0
+      ],
+      "patched_camera": [
+        0.6500000357627869,
+        3000.0,
+        6000.0
+      ]
+    },
+    {
+      "temperature": 70,
+      "precipitation": 0,
+      "haze": 0.25,
+      "indoor": true,
+      "retail_camera": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "patched_camera": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "haze_verifier": {
+    "state": "applied",
+    "enabled": true,
+    "coefficient": 1.0,
+    "label": "EXPERIMENTAL / UNWITNESSED",
+    "runtime_witnessed": false,
+    "changed_bytes": 23,
+    "edits": [
+      {
+        "va": "0xa867f4",
+        "size": 4
+      }
+    ]
+  },
+  "rating_penalty_cases": [
+    {
+      "temperature": 70,
+      "precipitation": 0,
+      "descriptor_flags": 1,
+      "base": 0.8,
+      "result": 0.800000011920929
+    },
+    {
+      "temperature": 70,
+      "precipitation": 0.5,
+      "descriptor_flags": 1,
+      "base": 0.8,
+      "result": 0.75
+    },
+    {
+      "temperature": 20,
+      "precipitation": 0.5,
+      "descriptor_flags": 1,
+      "base": 0.8,
+      "result": 0.7250000238418579
+    },
+    {
+      "temperature": 20,
+      "precipitation": 0.5,
+      "descriptor_flags": 0,
+      "base": 0.8,
+      "result": 0.800000011920929
+    }
+  ],
+  "contact_weather_cases": [
+    {
+      "temperature": 70,
+      "precipitation": 0,
+      "base": 0.05,
+      "intermediate": 0.05000000074505806
+    },
+    {
+      "temperature": 70,
+      "precipitation": 0.5,
+      "base": 0.05,
+      "intermediate": 0.06499999761581421
+    },
+    {
+      "temperature": 20,
+      "precipitation": 0.5,
+      "base": 0.05,
+      "intermediate": 0.07500000298023224
+    }
+  ],
+  "limits": "Retail RNG with synthetic seeds and stadium rows; native selector and camera field copies. No frontend/controller lifecycle, save reload, GPU submission, rendering or gameplay witness."
+}
