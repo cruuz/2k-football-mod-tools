@@ -1125,6 +1125,8 @@ def read_project(path: Path) -> ProjectFile:
             "visual-mod project schema/canonical encoding mismatch")
     edits = [validate_edit_shape(record, order)
              for order, record in enumerate(value["edits"])]
+    model_targets = [edit["target"] for edit in edits if edit["kind"] == model_project.KIND]
+    require(len(model_targets) == len(set(model_targets)), "project repeats a model set; keep one checked edit per set")
     identity_teams = [edit["team_index"] for edit in edits
                       if edit["kind"] == "team_identity"]
     require(len(identity_teams) == len(set(identity_teams)),
@@ -3924,7 +3926,7 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                 else:
                     historical_import = (
                         historical_import_reports.get(len(prepared))
-                        if historical_import_reports is not None else None
+                        if historical_import_reports is not None and not model_edits else None
                     )
                     # Whatever an importer refuses, the user has to be told which
                     # of their edits it was. A build carrying dozens of them once

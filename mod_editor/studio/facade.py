@@ -769,7 +769,7 @@ class Nfl2k5StudioFacade:
         visual_catalog: Nfl2k5ProductVisualCatalog | None = None,
         source_cache: Nfl2k5SourceCache | None = None,
         build_service: Nfl2k5BuildService | None = None,
-        session_factory: Callable[[SourceCache, Nfl2k5UniformCatalog], StudioSession]
+        session_factory: Callable[[SourceCache, Nfl2k5UniformCatalog], StudioSession] | None
         = None,
         xemu_command: Sequence[str] | None = None,
         process_launcher: Callable[..., object] = subprocess.Popen,

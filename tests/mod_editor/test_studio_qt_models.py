@@ -30,6 +30,10 @@ from mod_editor.gui.text_rosters_panel import TextRosterPanelHost
 class StudioQtViewModelTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        from pathlib import Path
+        report = Path(__file__).resolve().parents[2] / "reports/assets/nfl2k5_team_select_card_inventory.json"
+        if not report.is_file():
+            raise unittest.SkipTest(f"Private uniform catalog audit absent: {report}")
         cls.uniforms = load_nfl2k5_uniform_catalog()
         cls.product = build_nfl2k5_product_catalog(
             CapabilityRegistryLoader().load(

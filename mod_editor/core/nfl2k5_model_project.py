@@ -10,6 +10,9 @@ import base64
 import copy
 import hashlib
 import json
+import math
+import os
+import re
 from pathlib import Path
 from urllib.parse import unquote
 
@@ -75,7 +78,13 @@ def source_files(paths):
         path = Path(supplied).expanduser().resolve()
         names.add(path)
         if path.suffix.lower() == ".gltf":
-            doc = json.loads(path.read_bytes())
+            try:
+                require(path.stat().st_size <= MAX_BYTES, f"Model input is too large: {path}")
+                doc = json.loads(path.read_bytes())
+                require(isinstance(doc, dict) and isinstance(doc.get("buffers", []), list),
+                        f"Invalid glTF document: {path}. Export it again from Blender.")
+            except (OSError, ValueError) as exc:
+                raise ValidationError(f"Cannot check glTF: {path}. Restore it or export it again from Blender.") from exc
             for buffer in doc.get("buffers", []):
                 uri = buffer.get("uri", "")
                 if uri and not uri.startswith("data:"):
@@ -120,6 +129,15 @@ def _resource(source, key):
     return resource
 
 
+def checked_disc_summary(source, compiled):
+    if isinstance(compiled, M.CompiledModelSet) and compiled.skeleton_plan is not None:
+        count = compiled.changed_bytes
+    else:
+        members = compiled.members if isinstance(compiled, M.CompiledModelSet) else [compiled]
+        count = sum(sum(a != b for a,b in zip(source.span(source.resource(m.key)),m.rebuilt_span)) for m in members)
+    return re.sub(r"[\d,]+ bytes change on disc", f"{count:,} bytes change on disc", compiled.summary())
+
+
 def make_record(source, compiled, files, options=None, pinned_sources=None):
     pins = source_files(files) if pinned_sources is None else copy.deepcopy(pinned_sources)
     skeleton = isinstance(compiled, M.CompiledModelSet) and compiled.skeleton_plan is not None
@@ -143,15 +161,26 @@ def make_record(source, compiled, files, options=None, pinned_sources=None):
     # All single-LOD imports of a player belong to one replaceable project set.
     body = any(key in {"o3c113", "o3c114", "o3c115"} for key in keys)
     target = "player-body-o3" if body else "models-" + "-".join(sorted(keys))
+    def check_metadata(value):
+        if isinstance(value, dict):
+            return {key: check_metadata(item) for key, item in value.items()
+                    if key not in {"before_hex", "after_hex"}}
+        if isinstance(value, list):
+            return [check_metadata(item) for item in value]
+        return value
+
     record = {"schema": SCHEMA, "target": target, "mode": "skeleton" if skeleton else "geometry",
               "summary": compiled.summary(), "sources": pins, "options": options or {},
-              "check": compiled.report(), "members": rows,
+              "check": check_metadata(compiled.report()), "members": rows,
               "changed_bytes": sum(sum(len(base64.b64decode(data)) for _, data in row["changes"]) for row in rows),
               "witnessed": False}
+    record["summary"] = re.sub(r"[\d,]+ bytes change on disc", f"{record['changed_bytes']:,} bytes change on disc", record["summary"])
     require(record["changed_bytes"] > 0, "The checked model does not change any disc bytes.")
     problems = recheck_files(record)
     require(not problems, "\n".join(problems))
     validate_record(record)
+    for row in record["members"]:
+        restore_member(source, row, record)
     return record
 
 
@@ -192,7 +221,72 @@ def validate_record(record):
     return record
 
 
-def restore_member(source, row):
+def _validate_model_lanes(source, resource, original, rebuilt, record):
+    """Reparse compiled changes and restrict them to the Models writer's lanes."""
+    key = M.model_key(resource.outer_index, resource.chunk_index)
+    if resource.kind == "SKEL":
+        require(key == "o3c116" and original == rebuilt, "The Models axial gate retains canonical SKEL directions.")
+        return
+    require(resource.kind == "SCNE" and len(original) == len(rebuilt), f"{key}: model resource layout changed.")
+    _, _, scene = source.parse(key)
+    allowed = bytearray(len(original))
+
+    def allow(at, size):
+        require(0 <= at <= at + size <= len(original), f"{key}: model lane exceeds its scene.")
+        allowed[at:at+size] = b'\1' * size
+
+    skeleton = record is not None and record["mode"] == "skeleton" and key in {"o3c113", "o3c114"}
+    for shape in scene["shapes"]:
+        if not int(shape["vertex_count"]):
+            continue
+        lanes = M._shape_lanes(scene, shape, original)
+        if lanes.position_format not in {"NORMSHORT3", "FLOAT3"}:
+            continue
+        base = M._stream_base(scene, shape, lanes.position_stream)
+        for i in range(lanes.vertex_count):
+            allow(base + i*lanes.position_stride + lanes.position_offset,
+                  6 if lanes.position_format == "NORMSHORT3" else 12)
+        if lanes.position_format == "NORMSHORT3":
+            allow(lanes.record_offset + 0x10, 4)
+            allow(lanes.record_offset + 0x20, 12)
+        allow(lanes.record_offset + M.UV_CONSTANT_OFFSET, 16)
+        for lane in (lanes.normal, lanes.texcoord, lanes.colour):
+            if lane is not None:
+                base = M._stream_base(scene, shape, lane[0])
+                for i in range(lanes.vertex_count):
+                    allow(base + i*lane[2] + lane[1], 4)
+        if skeleton:
+            from . import nfl2k5_model_skeleton as S
+            skin = M.decode_skin(original, shape, lanes, scene["submeshes"])
+            changed = record["check"].get("changed_bones", [])
+            require(isinstance(changed, list) and len(changed) <= 1, "A skeleton project supports one checked axial bone length.")
+            bone, scale = None, 1.0
+            if changed:
+                bone = next((b for b in S.BONES if b.name == changed[0].get("bone") and b.kind != "upper_arm"), None)
+                scale = changed[0].get("scale")
+                require(bone is not None and type(scale) in (float,int) and math.isfinite(scale)
+                        and .95 <= scale <= 1.05, "Skeleton project exceeds the checked axial bone gate.")
+            targets = S.target_positions(skin.transforms, bone, scale) if bone else {t['name']:t['absolute'] for t in skin.transforms}
+            bind = M._tools_module("nfl_scne_inventory").resolve_relative(
+                original, lanes.record_offset + 0x64, len(original), "bind transforms")
+            for i in range(lanes.transform_count):
+                allow(bind + i*112 + 0x40, 12)
+                allow(bind + i*112 + 0x50, 12)
+            edited = M.decode_skin(rebuilt, shape, lanes, scene["submeshes"])
+            for transform in edited.transforms:
+                parent = transform['parent']
+                expected = targets[transform['name']]
+                parent_position = targets[edited.transforms[parent]['name']] if parent >= 0 else (0.,0.,0.)
+                require(math.dist(transform['absolute'], expected) <= S.TOLERANCE_CM
+                        and math.dist(transform['local'], tuple(a-b for a,b in zip(expected,parent_position))) <= S.TOLERANCE_CM,
+                        f"{key}: compiled bind does not match the checked paired skeleton.")
+        positions = M.read_positions(rebuilt, shape, M._shape_lanes(scene,shape,rebuilt))
+        require(all(math.isfinite(v) for point in positions for v in point), f"{key}: compiled positions are not finite.")
+    require(all(a == b or allowed[i] for i,(a,b) in enumerate(zip(original, rebuilt))),
+            f"{key}: compiled model changes bytes outside the checked geometry/bind lanes.")
+
+
+def restore_member(source, row, record=None):
     resource = _resource(source, row["key"])
     before = source.span(resource)
     require(len(before) == row["size"] and sha(before) == row["before_sha256"],
@@ -204,6 +298,7 @@ def restore_member(source, row):
     rebuilt, _ = source._probe.decode_resource(after, resource)
     require(sha(rebuilt) == row["decoded_sha256"] and apply_runs(decoded, row["decoded_changes"]) == rebuilt,
             f"{row['key']}: compiled model reparse differs from the checked change.")
+    _validate_model_lanes(source, resource, decoded, rebuilt, record)
     return resource, before, after
 
 
@@ -235,7 +330,7 @@ def prepare_project_models(backend, prepared, edits, project, pins, index, inven
     if not edits:
         return
     source = M.ModelSource(index, inventory)
-    packs = M._xdvdfs_pack_entries(source_fd, __import__('os').fstat(source_fd).st_size)
+    packs = M._xdvdfs_pack_entries(source_fd, os.fstat(source_fd).st_size)
     pack_hashes = {}
     claimed = set()
     for edit in edits:
@@ -247,7 +342,7 @@ def prepare_project_models(backend, prepared, edits, project, pins, index, inven
             key = row["key"]
             require(key not in claimed, f"Two project model edits claim {key}; remove one set.")
             claimed.add(key)
-            resource, before, after = restore_member(source, row)
+            resource, before, after = restore_member(source, row, record)
             total += sum(a != b for a, b in zip(before, after))
             segments = tuple(source.archive_segments(resource))
             consumed = 0
@@ -317,10 +412,10 @@ def plan_rows(session):
 def validate_build_plan(plan, session):
     """Early refusal for later fixed-retail writers; called by protected wiring."""
     keys = {key for row in plan_rows(session) for key in row["resources"]}
-    if getattr(plan, "guardian_cap", False) and keys & {"o3c113", "o3c115"}:
-        raise ValidationError("Guardian cap and the project model both own " + ", ".join(sorted(keys & {"o3c113", "o3c115"}))
-                              + ". Turn off Guardian cap or remove the model edit before building; "
-                              "Guardian cap requires its original low body and head resources.")
+    if (getattr(plan, "guardian_cap", False) or getattr(plan, "guardian_overlay", False)) and keys & {"o3c113", "o3c115"}:
+        raise ValidationError("Guardian cap/overlay and the project model both own " + ", ".join(sorted(keys & {"o3c113", "o3c115"}))
+                              + ". Turn off Guardian cap/overlay or remove the model edit before building; "
+                              "Both Guardian writers require their original low body and head resources.")
     if getattr(plan, "hires_pack", False) and keys:
         from . import nfl2k5_hires_pack as hires
         selected = hires._selection(hires.load_folder(plan.hires_folder, families=plan.hires_families))

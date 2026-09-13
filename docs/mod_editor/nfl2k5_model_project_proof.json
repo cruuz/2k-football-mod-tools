@@ -1,0 +1,138 @@
+{
+  "in_game": "UNWITNESSED",
+  "protected_handoff": "docs/mod_editor/nfl2k5_model_project_wiring.patch",
+  "protected_handoff_sha256": "091c61a9794fc8743c78ff24ef234ef461cdbc4dc2b63d21618020f711b647e2",
+  "roundtrips": [
+    {
+      "changed_bytes": 98644,
+      "disc_size": 854016,
+      "external_buffer_missing_at_build": true,
+      "mode": "geometry",
+      "project_sha256": "7101364eaa209005f2976d71dfca8e8684aea7bf303a5513eece9ebc4f8a354c",
+      "quick_sha256": "7101364eaa209005f2976d71dfca8e8684aea7bf303a5513eece9ebc4f8a354c",
+      "source_sha256": "3395ecbe02db68835b6dbc14602eba3e3e01d595fe800375534feeee26cdaa56",
+      "source_unchanged": true,
+      "witnessed": false
+    },
+    {
+      "changed_bytes": 328771,
+      "disc_size": 854016,
+      "guarded_resources": 4,
+      "historical_receipt_replay": true,
+      "mode": "skeleton",
+      "project_sha256": "61e3fe2c5c95928c807b31ca2e5e0d80a4b7e0cd798e4084b1fda1bb178c1242",
+      "quick_sha256": "61e3fe2c5c95928c807b31ca2e5e0d80a4b7e0cd798e4084b1fda1bb178c1242",
+      "source_sha256": "3395ecbe02db68835b6dbc14602eba3e3e01d595fe800375534feeee26cdaa56",
+      "witnessed": false
+    }
+  ],
+  "schema": "nfl2k5_model_project_proof/v1",
+  "scope": "materialized compact XISO with retail resources; not a full-size retail disc build",
+  "source_sha256": {
+    "mod_editor/core/nfl2k5_build_service.py": "dccceaf45020ba3d2647c23e62004264898b03f7138912d2363254c7cba60da7",
+    "mod_editor/core/nfl2k5_model_project.py": "04371be3e1e86a9a6b3d2499dc0db203d6d5d9241c104c78879a2a414aa05488",
+    "mod_editor/core/nfl2k5_model_project_session.py": "e8a6ddcd824a2fcec0269b2b06f152a8c57c133299f8a29dce6c206a7da195f7",
+    "mod_editor/core/nfl2k5_model_skeleton.py": "feaff8bb682d51d6b62c23cb955ccaf5b9a149f9e2948d7ee4f219200cd7f0ee",
+    "mod_editor/gui/models_panel_qt.py": "88bc198c240eaa4e7d560e60c547ebdcc64574f67b11e701a50b1806d41e1b3e",
+    "mod_editor/studio/facade.py": "2579f275b464874b93822bd6f04c391252814e8e589c77bba7b33930ab3c6af0",
+    "tools/nfl2k5_visual_mod_project.py": "9c09105da648acaa209ed0386e81307d7ffa97bec4c0439fb5f4cd5035f85436"
+  },
+  "tests": [
+    {
+      "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_model_project.py",
+      "log": "reports/b69_j2/tests/model-project.log",
+      "result": [
+        "Ran 10 tests in 45.652s",
+        "OK"
+      ]
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_models_project_wiring.py",
+      "log": "reports/b69_j2/tests/model-wiring.log",
+      "result": [
+        "Ran 2 tests in 11.770s",
+        "OK"
+      ]
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_models_panel_qt.py",
+      "log": "reports/b69_j2/tests/models-panel.log",
+      "result": [
+        "Ran 8 tests in 4.311s",
+        "OK"
+      ]
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_models_skeleton_wiring.py",
+      "log": "reports/b69_j2/tests/skeleton-wiring.log",
+      "result": [
+        "Ran 2 tests in 0.053s",
+        "OK"
+      ]
+    },
+    {
+      "command": "NFL2K5_ANIMATION_INVENTORY=reports/assets/nfl2k5_resource_chunks_v2.json PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_model_skeleton.py",
+      "log": "reports/b69_j2/tests/model-skeleton.log",
+      "result": [
+        "Ran 7 tests in 169.514s",
+        "OK"
+      ]
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_models.py",
+      "log": "reports/b69_j2/tests/models-core.log",
+      "result": [
+        "Ran 37 tests in 54.194s",
+        "OK"
+      ]
+    },
+    {
+      "command": "PYTHONPATH=. python3 tools/test_nfl2k5_visual_mod_project.py",
+      "log": "reports/b69_j2/tests/visual-project.log",
+      "result": [
+        "Ran 46 tests in 2.360s",
+        "OK (skipped=10)"
+      ]
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_studio_qt_models.py",
+      "log": "reports/b69_j2/tests/studio-models.log",
+      "result": [
+        "Ran 0 tests in 0.000s",
+        "OK (skipped=1)"
+      ]
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_studio_facade.py",
+      "log": "reports/b69_j2/tests/facade.log",
+      "result": [
+        "Ran 11 tests in 0.022s",
+        "OK"
+      ]
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_build_service.py",
+      "log": "reports/b69_j2/tests/build-service.log",
+      "result": [
+        "Ran 28 tests in 0.169s",
+        "OK"
+      ]
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_provider_integrity.py",
+      "log": "reports/b69_j2/tests/provider-integrity.log",
+      "result": [
+        "Ran 7 tests in 13.180s",
+        "OK"
+      ]
+    },
+    {
+      "command": "PYTHONPATH=. python3 tests/mod_editor/test_providers.py",
+      "log": "reports/b69_j2/tests/providers.log",
+      "result": [
+        "Ran 33 tests in 4.448s",
+        "OK"
+      ]
+    }
+  ]
+}

@@ -71,6 +71,7 @@ def _read_models(path):
 class ModelProjectSession(StudioSession):
     def __init__(self, *args, **kwargs):
         self._model_records = {}
+        self._model_restore_pending = None
         self.model_source_warnings = ()
         super().__init__(*args, **kwargs)
 
@@ -84,8 +85,9 @@ class ModelProjectSession(StudioSession):
 
     def _manifest_document(self):
         document = super()._manifest_document()
-        if self._model_records:
-            document["model_edits"] = list(self.model_records)
+        records = self._model_restore_pending if self._model_restore_pending is not None else self._model_records
+        if records:
+            document["model_edits"] = [copy.deepcopy(records[k]) for k in sorted(records)]
         return document
 
     def stage_model(self, record):
@@ -109,6 +111,21 @@ class ModelProjectSession(StudioSession):
         return True
 
     def undo(self):
+        if self._undo_order and self._undo_order[-1].source == "models_revert_all":
+            action = self._undo_order[-1]
+            previous, base_action = action.payload
+            P.require(not self.modified_count, "Revert-All undo conflicts with current model changes.")
+            self._model_restore_pending = previous
+            try:
+                if base_action is not None:
+                    self._undo_revert_all_transaction(base_action)
+                else:
+                    self._write_manifest()
+            finally:
+                self._model_restore_pending = None
+            self._model_records = previous
+            self._undo_order.pop()
+            return action.label
         if not self._undo_order or self._undo_order[-1].source != "models":
             return super().undo()
         action = self._undo_order[-1]
@@ -128,16 +145,18 @@ class ModelProjectSession(StudioSession):
 
     def revert_all(self):
         previous = self._model_records
+        if not previous:
+            return super().revert_all()
         self._model_records = {}
         try:
-            # Commit the empty model manifest even for a model-only project.
-            self._write_manifest()
             count = super().revert_all()
+            if not count:
+                self._write_manifest()
         except BaseException:
             self._model_records = previous
-            self._write_manifest()
             raise
-        self._undo_order[:] = [row for row in self._undo_order if row.source != "models"]
+        base_action = self._undo_order.pop() if count else None
+        self._undo_order.append(_SessionUndo("models_revert_all", "Revert all assets", (previous, base_action)))
         self.model_source_warnings = ()
         return count + len(previous)
 
@@ -184,7 +203,7 @@ class ModelProjectSession(StudioSession):
         warnings = []
         for record in records:
             for member in record["members"]:
-                P.restore_member(model_source, member)
+                P.restore_member(model_source, member, record)
             warnings.extend(P.recheck_files(record))
         with tempfile.TemporaryDirectory(prefix=".model-open-", dir=self.root) as folder:
             base = Path(folder)/"base.2k5mod"

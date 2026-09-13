@@ -584,18 +584,18 @@ class ModelsPanel(QWidget):
             compiled = models.compile_import(source, key, edited, write_normals=normals, write_uvs=uvs, allow_rescale=rescale,
                                              write_colours=colours)
             model_project.require(pins == model_project.source_files([edited]), f"{edited}: file changed during the model check. Check it again.")
-            return compiled, pins
+            return compiled, pins, model_project.checked_disc_summary(source, compiled)
 
         def done(result: object) -> None:
-            result, pins = result
+            result, pins, summary = result
             if generation != self._check_generation:
                 return
             assert isinstance(result, models.CompiledModelImport)
             self._checked_sources, self._checked_files = pins, [str(edited)]
             self._checked_options = dict(write_normals=normals, write_uvs=uvs, allow_rescale=rescale, write_colours=colours)
             self._compiled = result
-            self.details.setPlainText(import_report_text(result))
-            self.status_label.setText(f"Ready to write: {result.summary()}")
+            self.details.setPlainText(import_report_text(result).replace(result.summary(), summary, 1))
+            self.status_label.setText(f"Ready to write: {summary}")
             self._refresh()
 
         self._run(operation, done)
@@ -665,10 +665,10 @@ class ModelsPanel(QWidget):
                                                       allow_rescale=rescale, write_colours=colours,
                                                       import_skeleton=import_skeleton)
             model_project.require(pins == model_project.source_files(files), f"{folder}: files changed during the model check. Check them again.")
-            return compiled, pins, files
+            return compiled, pins, files, model_project.checked_disc_summary(source, compiled)
 
         def done(result: object) -> None:
-            result, pins, files = result
+            result, pins, files, summary = result
             if generation != self._check_generation:
                 return
             assert isinstance(result, models.CompiledModelSet)
@@ -676,8 +676,8 @@ class ModelsPanel(QWidget):
             self._checked_options = dict(write_normals=normals, write_uvs=uvs, allow_rescale=rescale,
                                          write_colours=colours, import_skeleton=import_skeleton)
             self._compiled_set = result
-            self.details.setPlainText(set_report_text(result))
-            self.status_label.setText(f"Ready to write: {result.summary()}")
+            self.details.setPlainText(set_report_text(result).replace(result.summary(), summary, 1))
+            self.status_label.setText(f"Ready to write: {summary}")
             self._refresh()
 
         self._run(operation, done)
