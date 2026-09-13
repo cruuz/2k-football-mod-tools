@@ -4,6 +4,9 @@
 
 Beta 69 carries the APF 2K8 changes made after beta 67; bullets are added as each change lands.
 
+- Urianus: “I don't understand this menu”. Error messages now keep the cause without exception class prefixes, and options carry hover help. Stadium actions keep their complete captions at laptop widths. A completed build names its authored contents and distinguishes CPU Play Calling edits from an unchanged copy. The checks are offscreen interface and receipt tests; they do not establish a new in-game result.
+- 7ET asked for an “Offensive Scheme Install Package”. The new FAQ explains that Play Calling decides which plays get called, while Create formation and Create play already exist in the design workspace. Both authoring experiments are off by default, limited to CPU books and UNWITNESSED in-game. Getting Started now lists every current sidebar page in order and links the installation, import and emulator answers.
+
 ## 0.1.0-alpha.89 — beta 68: no APF changes — 2026-09-12
 
 No APF 2K8 changes in beta 68; the version marker moves with the release tag.
