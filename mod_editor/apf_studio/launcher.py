@@ -472,6 +472,37 @@ class XeniaLauncher:
         # Other Xenia patches may need apply_patches; leave that global setting alone.
         return self.pass_fetch_status(kind=kind)
 
+    def _sync_launch_patches(self, storage: Path) -> None:
+        """Xenia constructs PatchDB from storage_root, not its executable cwd.
+
+        Keep the reviewed installation as the source of truth. Synchronize only
+        our two canonical files; removing an installation removes its old launch
+        copy before the next start. Foreign files are never overwritten.
+        """
+        folder = storage / "patches"
+        if folder.is_symlink() or (folder.exists() and not folder.is_dir()):
+            raise LaunchError("The launch patches folder is not a regular directory; move it aside and launch again")
+        for kind in ("pass_fetch", "curves"):
+            filename, validator, _, _ = self._patch_contract(kind)
+            source = self.settings.patches_folder / filename
+            target = folder / filename
+            payload = None
+            if source.exists() or source.is_symlink():
+                self.settings._regular(source, "Installed Studio patch")
+                payload = source.read_bytes()
+                validator(payload)
+            if target.exists() or target.is_symlink():
+                self.settings._regular(target, "Launch Studio patch")
+                validator(target.read_bytes())
+            if payload is None:
+                if target.exists():
+                    target.unlink()
+            else:
+                folder.mkdir(parents=True, exist_ok=True)
+                _atomic_bytes(target, payload)
+                if target.read_bytes() != payload:
+                    raise LaunchError("Studio patch failed launch-folder readback; reinstall it and launch again")
+
     def launch(self, game_root: Path, *, extra_env: Mapping[str, str] | None = None) -> LaunchReceipt:
         if not self.settings.configured or self.settings.xenia_path is None:
             raise LaunchError("Configure Xenia Canary first, then click Launch again")
@@ -493,6 +524,7 @@ class XeniaLauncher:
         logs = run_root / "logs"
         for path in (storage, content, cache, logs):
             path.mkdir(parents=True, exist_ok=True)
+        self._sync_launch_patches(storage)
         if self.settings.title_update_path is not None:
             install_title_update(content, self.settings.title_update_path)
         log_path = logs / "xenia-latest.log"
@@ -550,6 +582,13 @@ class XeniaLauncher:
             config_arg = (self._winepath(wine, config, environment)
                           if xenia.suffix.casefold() == ".exe" and not platform_compat.IS_WINDOWS else str(config))
             command.insert(-1, f"--config={config_arg}")
+            # Xenia versions have registered this cvar in different TOML
+            # sections (the inspected source uses General). Explicit CLI
+            # forwarding makes the Studio's reviewed Memory switch effective
+            # without silently ignoring an existing user's disabled setting.
+            setting = tomllib.loads(config.read_text(encoding="utf-8-sig")).get("Memory", {}).get("apply_patches")
+            if type(setting) is bool:
+                command.insert(-1, "--apply_patches=" + str(setting).lower())
         try:
             # A real non-following open on both platforms.  The previous
             # attempt here -- lstat, then os.open, then inspect the fstat --
@@ -592,7 +631,9 @@ class XeniaLauncher:
                 )
         except OSError as exc:
             raise LaunchError(f"Xenia could not be started: {exc}") from exc
-        return LaunchReceipt(process.pid, log_path, xenia, game, self.pass_fetch_status()["message"])
+        patch_note = self.pass_fetch_status()["message"]
+        patch_note += f" Launch patch directory: {storage / 'patches'}. Check the Xenia log for application to the matching module."
+        return LaunchReceipt(process.pid, log_path, xenia, game, patch_note)
 
     @staticmethod
     def _winepath(wine: Path, path: Path, environment: Mapping[str, str]) -> str:

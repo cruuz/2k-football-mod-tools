@@ -154,8 +154,20 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
             "predicts calls in a worker. Gameplay UNWITNESSED."
         ),
     )
-    for feature in ("cpu_playcalling", "own_team_books", "master_personnel")
+    for feature in ("cpu_playcalling", "own_team_books", "master_personnel",
+                "offensive_schemes", "never_call")
 },
+    "apf2k8.playbooks.scheme_spreadsheet": CapabilityActionBinding(
+        "apf2k8.playbooks.scheme_spreadsheet",
+        "playbooks.cpu_playcalling",
+        _actions(ApfProductAction.PREVIEW, ApfProductAction.EXPORT),
+        product_note=(
+            "CPU Play Calling exports the current staged offense through "
+            "ApfStudioFacade.playcalling_scheme_csv. Twenty-three coaching buckets "
+            "map to representative engine rows; intent and predicted calls remain "
+            "separate. Gameplay UNWITNESSED."
+        ),
+    ),
 "apf2k8.playbooks.personnel_curve_patch": CapabilityActionBinding(
     "apf2k8.playbooks.personnel_curve_patch",
     "playbooks.personnel_curves",

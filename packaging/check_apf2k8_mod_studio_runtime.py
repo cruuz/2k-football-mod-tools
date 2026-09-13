@@ -1332,17 +1332,19 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         check_files=False,
     )
     require(
-        len(registry.capabilities) == 162
-        and len(registry.for_game(core_model.GameId.APF2K8)) == 69,
+        len(registry.capabilities) == 165
+        and len(registry.for_game(core_model.GameId.APF2K8)) == 72,
         "shared/APF capability registry counts changed",
     )
     cards = catalog.build_capability_cards()
-    require(len(cards) == 69 and len({item.capability_id for item in cards}) == 69,
-            "APF capability surface is not exactly 69 unique rows")
+    require(len(cards) == 72 and len({item.capability_id for item in cards}) == 72,
+            "APF capability surface is not exactly 72 unique rows")
     require(len(models.APF_CATEGORY_ORDER) == 14,
             "APF complete sidebar category count changed")
     editable = {item.capability_id for item in cards if item.status is models.ApfStatus.EDITABLE}
     expected_editable = {
+        "apf2k8.playbooks.offensive_schemes",
+        "apf2k8.playbooks.never_call",
         'apf2k8.cpu_ai_draft.play_design.concept_recipes',
         'apf2k8.cpu_ai_draft.play_design.cpu_calls',
         'apf2k8.cpu_ai_draft.play_design.create_formation',

@@ -272,6 +272,9 @@ mod_editor/core/apf2k8_master_writer.py
 mod_editor/core/apf2k8_playcall_curves_patch.py
 mod_editor/core/apf2k8_playcall_model.py
 mod_editor/core/apf2k8_team_tendency.py
+mod_editor/core/apf2k8_offensive_schemes.py
+mod_editor/core/apf2k8_formation_calling.py
+docs/mod_editor/apf_b69_schemes.md
 
 # Beta 67 P4: CPU Play Calling editor.
 docs/mod_editor/apf_b67_play_calling_editor.md

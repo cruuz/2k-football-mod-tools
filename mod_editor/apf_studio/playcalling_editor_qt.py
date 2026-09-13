@@ -1,8 +1,10 @@
 """Team-first CPU Play Calling workspace; all model calls run in shell workers."""
 from __future__ import annotations
 
+from pathlib import Path
+
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
-from PyQt5.QtWidgets import (QAbstractItemView, QComboBox, QDoubleSpinBox, QFormLayout,
+from PyQt5.QtWidgets import (QAbstractItemView, QCheckBox, QComboBox, QDoubleSpinBox, QFileDialog, QFormLayout,
                              QGroupBox, QHBoxLayout, QLabel, QListWidget, QListWidgetItem,
                              QMessageBox, QPushButton, QScrollArea, QSlider, QSpinBox,
                              QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget)
@@ -132,6 +134,32 @@ class ApfPlayCallingEditor(QWidget):
         team_root.addWidget(self.plan_table)
         root.addWidget(self.team_controls)
 
+        from mod_editor.core.apf2k8_offensive_schemes import SCHEMES
+        self.scheme_group = QGroupBox("Scheme")
+        scheme_root = QVBoxLayout(self.scheme_group)
+        self.scheme_picker = explain(QComboBox(), "Choose an authored offensive scheme using this book's existing personnel and ratings.")
+        self.scheme_picker.setAccessibleName("Offensive scheme")
+        for scheme in SCHEMES:
+            self.scheme_picker.addItem(scheme.name, scheme.id)
+        scheme_root.addWidget(self.scheme_picker)
+        self.scheme_note = note(scheme_root, "")
+        def describe_scheme():
+            scheme = SCHEMES[self.scheme_picker.currentIndex()]
+            self.scheme_note.setText(scheme.description + " Preferred personnel: " + ", ".join(scheme.personnel_preference) +
+                                     f". Team run tendency: {scheme.run_percentage}%. Reapplying adds the deltas again; Undo restores the prior edit.")
+        self.scheme_picker.currentIndexChanged.connect(describe_scheme)
+        describe_scheme()
+        note(scheme_root, "ADVANCED, opt-in. Review the team copy and rating changes, then stage and inspect the call preview. "
+             "Row weights feed an optional cache; they do not override the CPU lottery. Per-situation run percentages "
+             "are coaching intent. Tempo, snap count, weather ratio and coin toss have no proved control here.")
+        self.scheme_button = button(scheme_root, "Review scheme for this team", "Review one team scheme, creating its own offensive book when shared; staging records one Undo step.", self.apply_scheme)
+        self.scheme_export = button(scheme_root, "Export play call spreadsheet…", "Export the current staged offense in 7ET's situational buckets, with proxy rows, probabilities and limits.", self.export_scheme)
+        self.scheme_details = table(("Setting", "Before", "After"), "Scheme changes to review")
+        self.scheme_details.setVisible(False)
+        self.scheme_details.setMaximumHeight(280)
+        scheme_root.addWidget(self.scheme_details)
+        root.addWidget(self.scheme_group)
+
         self.preview_group = QGroupBox("Live call preview")
         preview_root = QVBoxLayout(self.preview_group)
         note(preview_root, "The game draws a weighted call from these candidates; percentages describe possible calls, and recent plays or match state can change the result.")
@@ -201,6 +229,12 @@ class ApfPlayCallingEditor(QWidget):
         note(lever_root, "Primary personnel is the formation's main category; checked secondary categories also make it available to the game's personnel selection.")
         self.categories_button = button(lever_root, "Review personnel change", "The game will advertise this formation under the chosen categories after you review the row coverage.", self.stage_categories)
         self.remove_button = button(lever_root, "Remove formation", "The game will lose this formation and its plays from this book after you review the surviving personnel and confirm.", self.remove_formation)
+        self.never_call = explain(QCheckBox("Never call (ordinary CPU lottery)"), "Exclude this ordinary formation without deleting its plays or moving records; explicit user calls and special calls are outside this control.")
+        lever_root.addWidget(self.never_call)
+        self.never_button = button(lever_root, "Review Never call", "Review this formation's CPU exclusion or restore its saved personnel memberships; Undo also restores it.", self.stage_never_call)
+        note(lever_root, "Never call preserves the record and requires another formation for its personnel. "
+             "Special formations 151–162 remain protected: their cached-call path bypasses this switch. "
+             "A saved USER book or global merge can supply another copy. Reload the built book; gameplay is UNWITNESSED.")
         self.retire_picker = explain(QComboBox(), "The game will stop advertising this personnel category anywhere in this book if a valid replacement remains.")
         self.retire_picker.setAccessibleName("Personnel to retire")
         lever_root.addWidget(self.retire_picker)
@@ -328,6 +362,7 @@ class ApfPlayCallingEditor(QWidget):
         ready = bool(getattr(self.facade, "source_ready", False))
         enabled = ready and not self._busy and not self._loading
         self.team_controls.setEnabled(enabled)
+        self.scheme_group.setEnabled(enabled and self._context is not None and self.side_picker.currentData() == "offense")
         self.preview_group.setEnabled(enabled)
         self.levers.setEnabled(enabled and self._context is not None)
         self.master_group.setEnabled(enabled and self._context is not None)
@@ -347,6 +382,7 @@ class ApfPlayCallingEditor(QWidget):
         self._review = None
         self._context = None
         self._custom_timer.stop()
+        self.scheme_details.setVisible(False)
         self.grid.setRowCount(0)
         self.plan_table.setRowCount(0)
         self.plan_table.setVisible(False)
@@ -466,6 +502,9 @@ class ApfPlayCallingEditor(QWidget):
         form = next((f for f in self._context["formations"] if f["id"] == self.formation_picker.currentData()), None)
         if form is None:
             return
+        self.never_call.setChecked(form.get("never_call", False))
+        self.never_call.setEnabled(form["id"] < 151)
+        self.never_button.setEnabled(form["id"] < 151)
         for slider, value in zip(self.ratings, form["ratings"]):
             slider.setValue(value)
         self.play_picker.clear()
@@ -506,6 +545,17 @@ class ApfPlayCallingEditor(QWidget):
             names = review["category_names"]
             fill(self.coverage_table, [(row, ", ".join(names[i] for i in ids) or "None", "Covered" if ids else "No candidate") for row, ids in event["coverage"].items()])
             text = (event["warning"] or "The writer accepted this edit.") + " Retired categories: " + (", ".join(review["retired_names"]) or "none") + "."
+            if request["kind"] == "scheme":
+                receipt = event["after"]["scheme_receipt"]
+                forms = {f["id"]: f["name"] for f in self._context["formations"]}
+                rows = [("Team run %", receipt["run_percentage_before"], receipt["run_percentage_after"])]
+                rows += [(f"{forms.get(r['formation'], r['formation'])} ({r['personnel']} personnel)", r["before"], r["after"]) for r in receipt["formations"]]
+                rows += [(f"Optional row {i} run/pass", [v[i] for v in receipt["row_weights_before"]],
+                          [v[i] for v in receipt["row_weights_after"]]) for i in range(11)]
+                fill(self.scheme_details, rows)
+                self.scheme_details.setVisible(True)
+                missing = ", ".join(receipt["missing_preferred_personnel"]) or "none"
+                text = f"Review {receipt['scheme']['name']} for {event['after']['book']}. Missing preferred personnel: {missing}. " + " ".join(receipt["notes"])
             self.review_label.setText(text)
             self.notice.setText(text)
             if not confirm and not event["warning"]:
@@ -534,6 +584,34 @@ class ApfPlayCallingEditor(QWidget):
             self.review_request(request, True)
         self._task("Plan independent team books", lambda p: self.facade.playcalling_plan(side, team, donor, p), done)
 
+    def apply_scheme(self):
+        if not self._context:
+            return
+        team, scheme_id = self.team_picker.currentData(), self.scheme_picker.currentData()
+        def planned(request):
+            fill(self.plan_table, [(r["team_name"], r["label_id"], r["donor_name"], r["clone_name"]) for r in request["assignments"]])
+            self.plan_table.setVisible(bool(request["assignments"]))
+            self.review_request(request, True)
+        self._task("Plan team scheme", lambda p: self.facade.playcalling_scheme_plan(team, scheme_id, p), planned)
+
+    def export_scheme(self):
+        team = self.team_picker.currentData()
+        snapshot = self.facade.playcalling_snapshot()
+        def ready(payload):
+            if snapshot != self.facade.playcalling_snapshot():
+                self.notice.setText("Project changed while making the spreadsheet; export again.")
+                return
+            path, _ = QFileDialog.getSaveFileName(self, "Export play call spreadsheet", "apf-play-calls.csv", "CSV spreadsheet (*.csv)")
+            if path:
+                from .launcher import _atomic_bytes
+                try:
+                    _atomic_bytes(Path(path), payload)
+                except OSError as exc:
+                    self.notice.setText(f"Could not save the spreadsheet: {exc}. Choose a writable folder and export again.")
+                    return
+                self.notice.setText("Exported current staged play calls to " + path + ". Gameplay is UNWITNESSED.")
+        self._task("Make play call spreadsheet", lambda p: self.facade.playcalling_scheme_csv(team, p), ready)
+
     def stage_ratings(self):
         self.review_request(self._book_request("ratings", formation=self.formation_picker.currentData(), ratings=[s.value() for s in self.ratings]))
 
@@ -547,6 +625,15 @@ class ApfPlayCallingEditor(QWidget):
 
     def remove_formation(self):
         self.review_request(self._book_request("remove", formation=self.formation_picker.currentData()), True)
+
+    def stage_never_call(self):
+        form = next((f for f in self._context["formations"] if f["id"] == self.formation_picker.currentData()), None)
+        if form is None:
+            return
+        if not form.get("restore_masks"):
+            self.notice.setText("This book has no saved membership to restore; use Undo or reopen the original book.")
+            return
+        self.review_request(self._book_request("never_call", formation=form["id"], never=self.never_call.isChecked(), restore_masks=form["restore_masks"]), True)
 
     def retire(self):
         self.review_request(self._book_request("retire", category=self.retire_picker.currentData()), True)
@@ -571,9 +658,11 @@ class ApfPlayCallingEditor(QWidget):
 
     def fix_52(self):
         if self._context:
-            category = next((c.id for c in self._context["categories"] if c.name.replace(" ", "") in {"5-2", "52"}), None)
+            category = next((c.id for c in self._context["categories"] if c.name.replace(" ", "").split(":")[0] in {"5-2", "52"}), None)
             if category is not None:
                 self.review_request({"kind": "master_row", "category": category, "row": 13})
+            else:
+                self.notice.setText("This MASTER has no named 5-2 category; inspect its personnel rows before editing.")
 
     def undo(self):
         def done(_):
