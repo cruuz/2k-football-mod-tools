@@ -51,7 +51,7 @@ def polish_controls(root: QWidget) -> None:
         help_text = widget.accessibleDescription()
         label = _field_label(widget)
         if not help_text and isinstance(widget, QCheckBox):
-            help_text = f"Turn {widget.text().replace('&&', '&')} on or off."
+            help_text = f"Select or clear this option: {widget.text().replace('&&', '&')}."
         elif not help_text and isinstance(widget, QAbstractButton) and widget.text():
             help_text = widget.text().replace('&&', '&').rstrip('…') + '.'
         elif not help_text and isinstance(widget, QComboBox):
