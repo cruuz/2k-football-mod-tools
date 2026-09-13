@@ -180,9 +180,9 @@ class PlaylistPage(QWidget):
         row = QHBoxLayout()
         for text, callback in (("Select all", lambda: self.select_all(True)),
                                ("Clear selection", lambda: self.select_all(False)),
-                               ("Browse library image", self.browse_library),
-                               ("Save playlist choices", self.save_choices),
-                               ("Open playlist choices", self.open_choices)):
+                               ("Browse library…", self.browse_library),
+                               ("Save choices…", self.save_choices),
+                               ("Open choices…", self.open_choices)):
             button = QPushButton(text)
             button.clicked.connect(callback)
             row.addWidget(button)
@@ -363,7 +363,7 @@ class MusicPanel(QWidget):
         self.controls = QWidget()
         controls = QVBoxLayout(self.controls)
         controls.setContentsMargins(0, 0, 0, 0)
-        policy_row = QHBoxLayout()
+        policy_row = QVBoxLayout()
         self.menu_policy = QComboBox()
         self.menu_policy.addItem("Keep source menu policy", "retail")
         self.menu_policy.setToolTip("Retail default: keep the source policy. A source with a music patch already applied keeps that patch.")
@@ -399,7 +399,10 @@ class MusicPanel(QWidget):
              ("Open Music project", self.load_project), ("Build music copy", self.build),
              ("Export .2k5patch", self.patch))):
             line = QHBoxLayout()
-            for caption, callback in specs:
+            for index, (caption, callback) in enumerate(specs):
+                if index and index % 4 == 0:
+                    controls.addLayout(line)
+                    line = QHBoxLayout()
                 button = QPushButton(caption)
                 button.clicked.connect(callback)
                 line.addWidget(button)
