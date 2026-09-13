@@ -4,6 +4,10 @@
 
 Beta 69 adds planned features, answers every ESPN NFL 2K5 report in Discord after beta 68 and polishes both studios; bullets are added as each change lands.
 
+- Coach Edwards: “there is no way to tell specifically what needs to change”. Error dialogs keep the cause, remove exception class names and internal progress records, and give a next step. Build & Share adds Copy Build summary for the selection, result and first error. Disc ready describes the selected contents and preserves warnings about artwork left original. This is an interface change; it does not claim to fix the equipment writer.
+- Long Music actions stay readable on a 1366-pixel window. Options keep their explanations on hover, tabs expose their full captions, and outdated release captions are removed from current help. Both studios' pages are checked offscreen; gameplay is unchanged by this polish pass.
+- MacDog850: “i also had to have chat gpt fix it”. The new FAQ explains reinstalling from the official Setup.exe, rebuilding, and posting the Build summary and first error. It also answers CER's dropped interceptions, Mud's menu radio request and emulator questions. Getting Started follows the current sidebar and button names.
+
 ## v1.0 RC93, beta 68: fixes for the reports after beta 66.1 (2026-09-12)
 
 Beta 68 answers the ESPN NFL 2K5 reports in Discord after beta 66.1; bullets are added as each change lands.
