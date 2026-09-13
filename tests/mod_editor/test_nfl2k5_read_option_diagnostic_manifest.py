@@ -30,6 +30,10 @@ from mod_editor.core import nfl2k5_cave_manifest as builder
 from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage, RETAIL_SHA256
 from tests.mod_editor.test_nfl2k5_read_option_runtime import XBE
 
+# Integration may supply a source-fingerprint projection while the release
+# manifest remains protected, just as the current four XBE gates allow.
+DEFAULT_MANIFEST = Path(os.environ.get('NFL2K5_CAVE_MANIFEST', str(DEFAULT_MANIFEST)))
+
 BASE = '77d1c49f682e380b75f1a7290a806a47845608a9'
 # These changed sources are covered by the observations below. Any other
 # historical fingerprint mismatch requires separate evidence, not a refresh.
@@ -75,7 +79,7 @@ def bounded_projection():
         # current when the diagnostic ran (manifest 26 at beta 62). Once the production manifest is regenerated
         # (27 onward), its Build pin is the current source by construction and the historical comparison no
         # longer applies; the live gates (oracle, cave references, memory writes, pairwise) own that manifest.
-        raise unittest.SkipTest('production manifest regenerated since the diagnostic; historical projection not applicable')
+        raise unittest.SkipTest('selected manifest uses a different Build fingerprint; historical diagnostic projection not applicable')
     trees = [ast.parse(old), ast.parse((ROOT/name).read_text())]
     for function in ('_xbe_bytes', '_write_xbe_bytes'):
         nodes = [next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == function)
