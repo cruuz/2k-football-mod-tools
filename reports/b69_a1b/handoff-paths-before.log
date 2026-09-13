@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_beta69_handoffs_name_the_merged_job_documents (__main__.HandoffPathsTests.test_beta69_handoffs_name_the_merged_job_documents)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_b69_a1b_game_audit.py", line 16, in test_beta69_handoffs_name_the_merged_job_documents
+    self.assertFalse('ASTRA_REPORT.md' in beta69, 'beta-69 notes still point at a generic job report')
+AssertionError: True is not false : beta-69 notes still point at a generic job report
+
+----------------------------------------------------------------------
+Ran 1 test in 0.003s
+
+FAILED (failures=1)

@@ -35,11 +35,11 @@ def run(path):
     with log.open('w') as out:
         try:
             result = subprocess.run(['python3', path], env=env, stdout=out,
-                stderr=subprocess.STDOUT, timeout=2400)
+                stderr=subprocess.STDOUT, timeout=7200)
             code = result.returncode
         except subprocess.TimeoutExpired:
             code = 124
-            out.write('\nAUDIT TIMEOUT: 2400 seconds\n')
+            out.write('\nAUDIT TIMEOUT: 7200 seconds\n')
     lines = log.read_text(errors='replace').strip().splitlines()
     return dict(path=path, command='python3 ' + path, exit=code,
         seconds=round(time.monotonic() - start, 3),

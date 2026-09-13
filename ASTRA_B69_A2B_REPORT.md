@@ -33,7 +33,7 @@ The complete before/after patch is [protected-wiring.patch](reports/b69_a2b/prot
 | `nfl2k5_throw_tuning.py`, mutation ordering | The owner loop installs coin defer, decided clock and CPU scrambles immediately after accelerated clock. The public/final path rejects foreign instructions and changed/off installed settings. A private intermediate pass can defer those checks only after the complete plan preflight. An unchanged private copy pass is allowed so identical full-plan replay completes; final writers still verify. |
 | `mod_editor/core/nfl2k5_build_settings.py` | Adds all seven fields to explicit FEATURE_KEYS so saved plans, restored controls and cache/build identity retain them. Older plans receive safe defaults. |
 | `mod_editor/gui/beta62_options.py` | Adds the two rule booleans using the job's exact captions/help. CPU scrambles remains an enum. |
-| `mod_editor/gui/build_panel_qt.py` | Adds climate path/choose/editor/clear controls and validation/help, a reversible haze control, decided-clock cutoff selectors, and CPU-scramble Retail/Modern selector. Projects all into plan/save/has_work/confirmation text; resets Off defaults on presets; restores and locks installed rule/settings values; confirms haze restoration. |
+| `mod_editor/gui/build_panel_qt.py` | Adds climate path/choose/editor/checkbox controls and validation/help, a reversible haze control, decided-clock cutoff selectors, and CPU-scramble Retail/Modern selector. Projects all into plan/save/has_work/confirmation text; resets Off defaults on presets; restores and locks installed rule/settings values; confirms haze restoration. |
 | `mod_editor/gui/gameplay_patches_panel_qt.py` | Adds both rule checkboxes with exact captions, cutoff selectors and CPU enum; synchronizes selected values/summary/status and preserves installed choices. Adds haze's reversible toggle and climate editor entry. Climate action routes to Build via signal, with standalone dialog fallback. |
 | `mod_editor/gui/gameplay_project_ui.py` | Shared Build/Gameplay link synchronizes margin, seconds and CPU level in both directions and persists weather path/haze with the other settings. |
 | `mod_editor/gui/my_career_panel_qt.py` | Applies J3's exact proposed changes: three saved caller choices; one signed export carries caller and Supersim choices; prospect tiers on creation; four QB prototype aliases with Pocket default; tiered creation disables starter override and passes prospect_tier. Existing source/position behavior retained. |
@@ -68,7 +68,7 @@ The new registry IDs are `nfl2k5.mode.my_career_playcalling`, `nfl2k5.mode.my_ca
 | Release allowlist files | 824 | 840 |
 | Runtime product imports | 231 | 245 |
 | Runtime tool imports | 35 | 35 |
-| Additional B69 runtime pin entries | 0 | 12 |
+| Additional B69 runtime pin entries | 0 | 11 |
 | `space.plan(REQUESTS)` allocation records | 57 | 64 |
 | `space.plan(REQUESTS)` file_size | 12300288 | 12300288 |
 

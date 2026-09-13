@@ -74,6 +74,16 @@ def week_save(*, grown=False, reserves=16):
 
 
 class SaveOwnershipTests(unittest.TestCase):
+    def test_caller_and_tier_bytes_are_owned_settings_not_reserved_zero_storage(self):
+        block = bytearray(block_for(week_save()))
+        block[82], block[83] = 2 << 5, 4
+        career_save.validate(career_save.seal(block))
+        contract = f.persistence_contract()['mycareer']
+        for offset in (82, 83):
+            self.assertFalse(any(start <= offset < end for start, end in contract['reserved_zero_spans']),
+                             f'owned setting byte {offset} is incorrectly described as reserved zero')
+        self.assertEqual(contract['reusable_bytes'], 0)
+
     def test_all_four_save_shapes_are_read_only_and_grant_no_ledger(self):
         for grown in (False, True):
             source = week_save(grown=grown)
@@ -101,13 +111,17 @@ class SaveOwnershipTests(unittest.TestCase):
     def test_resealed_reserved_footer_bytes_are_not_spare_storage(self):
         source = week_save()
         block = block_for(source)
-        # Beta 66: byte 82 carries the five MyCareer Settings bits (0..31; bits 1 and 3 are exclusive); 83 and 88.. stay reserved.
-        for at in (83, *range(88, 128)):
+        # Beta 69 owns caller bits 5..6 and tier byte 83; 88.. stay reserved.
+        for at in range(88, 128):
             bad = bytearray(block)
             bad[at] = 1
             with self.subTest(offset=at), self.assertRaisesRegex(ValueError, 'reserved career bytes'):
                 f.save_ownership_assessment(source + career_save.seal(bad))
-        for value in (32, 10):
+        bad = bytearray(block)
+        bad[83] = 5
+        with self.assertRaisesRegex(ValueError, 'reserved career bytes'):
+            f.save_ownership_assessment(source + career_save.seal(bad))
+        for value in (96, 128, 10):
             unknown = bytearray(block)
             unknown[82] = value
             with self.subTest(offset=82, value=value), self.assertRaisesRegex(ValueError, 'unknown settings'):
@@ -215,12 +229,20 @@ class NativeBoundaryTests(unittest.TestCase):
     def test_native_footer_validator_and_encoder_own_reserved_bytes(self):
         block = block_for(self.grown)
         with Machine(self.payload) as m:
-            # Beta 66: byte 82 is the MyCareer Settings byte (0..31 valid, bits 1 and 3 exclusive); 83 and 88.. stay reserved.
-            for at, value in ((83, 1), (82, 32), (82, 10), *((at, 1) for at in range(88, 128))):
+            # Keep invalid policy/tier and reserved-byte refusals strict.
+            for at, value in ((83, 5), (82, 96), (82, 128), (82, 10), *((at, 1) for at in range(88, 128))):
                 bad = bytearray(block)
                 bad[at] = value
                 m.uc.mem_write(m.SAVE, career_save.seal(bad))
                 self.assertEqual(m.call('inline_valid', ecx=m.SAVE, edx=arena.ARENA_SIZE), 0, at)
+            for caller in range(3):
+                for tier in range(5):
+                    valid = bytearray(block)
+                    valid[82], valid[83] = caller << 5, tier
+                    encoded = career_save.seal(valid)
+                    career_save.validate(encoded)
+                    m.uc.mem_write(m.SAVE, encoded)
+                    self.assertEqual(m.call('inline_valid', ecx=m.SAVE, edx=arena.ARENA_SIZE), 1)
             m.uc.mem_write(m.state, career_save.to_runtime(block))
             m.uc.mem_write(m.OUT, b'\xa5' * 128)
             m.call('inline_encode', ecx=m.OUT)

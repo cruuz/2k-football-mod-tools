@@ -65,6 +65,7 @@
     "mod_editor/core/nfl2k5_cpu_scrambles_code.py",
     "mod_editor/core/nfl2k5_decided_clock.py",
     "mod_editor/core/nfl2k5_decided_clock_code.py",
+    "mod_editor/core/nfl2k5_franchise_2026.py",
     "mod_editor/core/nfl2k5_my_career.py",
     "mod_editor/core/nfl2k5_my_career_mode.py",
     "mod_editor/core/nfl2k5_my_career_mode_code.py",
@@ -133,6 +134,7 @@
       "mod_editor.core.nfl2k5_coin_defer",
       "mod_editor.core.nfl2k5_cpu_scrambles",
       "mod_editor.core.nfl2k5_decided_clock",
+      "mod_editor.core.nfl2k5_franchise_2026",
       "mod_editor.core.nfl2k5_my_career_mode",
       "mod_editor.core.nfl2k5_rules_patch",
       "mod_editor.core.nfl2k5_throw_tuning",
@@ -327,7 +329,8 @@
       "tests.nfl2k5_b69_series"
     ],
     "tests/mod_editor/test_nfl2k5_franchise_2026.py": [
-      "mod_editor.core.nfl2k5_cave_manifest"
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "mod_editor.core.nfl2k5_franchise_2026"
     ],
     "tests/mod_editor/test_b69_a2b_game_wiring.py": [
       "mod_editor.core.mod_build",
@@ -462,6 +465,7 @@
       "mod_editor.core.nfl2k5_my_career_mode"
     ],
     "tests/mod_editor/test_xbe_patch_memory_writes.py": [
+      "mod_editor.core.nfl2k5_franchise_2026",
       "mod_editor.core.nfl2k5_my_career_mode",
       "mod_editor.core.nfl2k5_rules_patch",
       "mod_editor.core.nfl2k5_throw_tuning",
@@ -501,6 +505,9 @@
       "mod_editor.core.nfl2k5_cave_manifest",
       "mod_editor.core.nfl2k5_throw_tuning",
       "tests.mod_editor.test_xbe_patch_memory_writes"
+    ],
+    "tests/mod_editor/test_nfl2k5_franchise_2026_unicorn.py": [
+      "mod_editor.core.nfl2k5_franchise_2026"
     ],
     "tests/mod_editor/test_nfl2k5_position_choices.py": [
       "mod_editor.core.nfl2k5_my_career",
@@ -635,6 +642,7 @@
       "mod_editor.core.nfl2k5_my_career_save"
     ],
     "tests/mod_editor/test_xbe_patch_cave_references.py": [
+      "mod_editor.core.nfl2k5_franchise_2026",
       "mod_editor.core.nfl2k5_my_career_mode",
       "mod_editor.core.nfl2k5_rules_patch",
       "mod_editor.core.nfl2k5_throw_tuning",
@@ -692,6 +700,9 @@
     ],
     "tests/mod_editor/test_nfl2k5_practice_reserves.py": [
       "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_nfl2k5_roster_arena_growth.py": [
+      "mod_editor.core.nfl2k5_franchise_2026"
     ],
     "tests/mod_editor/test_studio_shell_layout_qt.py": [
       "mod_editor.gui.studio_qt"
@@ -885,6 +896,7 @@
       "tests.nfl2k5_allocator_stack"
     ],
     "tests/mod_editor/test_nfl2k5_franchise_2026_runtime.py": [
+      "mod_editor.core.nfl2k5_franchise_2026",
       "mod_editor.core.nfl2k5_my_career_mode",
       "mod_editor.core.nfl2k5_my_career_save"
     ],
@@ -1008,6 +1020,7 @@
     "tests/mod_editor/test_nfl2k5_espn25_integration_qt.py",
     "tests/mod_editor/test_nfl2k5_franchise_2026.py",
     "tests/mod_editor/test_nfl2k5_franchise_2026_runtime.py",
+    "tests/mod_editor/test_nfl2k5_franchise_2026_unicorn.py",
     "tests/mod_editor/test_nfl2k5_franchise_autosave.py",
     "tests/mod_editor/test_nfl2k5_franchise_edit_player.py",
     "tests/mod_editor/test_nfl2k5_franchise_edit_player_unicorn.py",
@@ -1078,6 +1091,7 @@
     "tests/mod_editor/test_nfl2k5_read_option_frames.py",
     "tests/mod_editor/test_nfl2k5_read_option_runtime.py",
     "tests/mod_editor/test_nfl2k5_read_option_screen_hooks_compose.py",
+    "tests/mod_editor/test_nfl2k5_roster_arena_growth.py",
     "tests/mod_editor/test_nfl2k5_roster_arena_image.py",
     "tests/mod_editor/test_nfl2k5_roster_records.py",
     "tests/mod_editor/test_nfl2k5_roster_storage.py",

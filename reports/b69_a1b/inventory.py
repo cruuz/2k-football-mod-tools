@@ -31,8 +31,10 @@ for job, (tip, merge) in jobs.items():
         git('show', '--format=fuller', '--remerge-diff', merge))
 integrated = git('diff', '--name-only', 'b5949335', BASE).splitlines()
 changes.update(p for p in integrated if p.endswith('.py') and not p.startswith(('tests/', 'reports/')))
+audit_changes = git('diff', '--name-only', BASE).splitlines()
+changes.update(p for p in audit_changes if p.endswith('.py') and not p.startswith(('tests/', 'reports/')))
 modules = {p[:-3].replace('/', '.') for p in changes | jobtests |
-           {p for p in integrated if p.startswith('tests/') and p.endswith('.py')}}
+           {p for p in integrated + audit_changes if p.startswith('tests/') and p.endswith('.py')}}
 reasons = {}
 for p in ROOT.glob('tests/**/*.py'):
     matches = set()
@@ -57,6 +59,8 @@ patterns = ['test_nfl2k5_my_career*.py', 'test_nfl2k5_supersim*.py', 'test_nfl2k
 for pattern in patterns:
     selected.update(str(p.relative_to(ROOT)) for p in ROOT.glob('tests/mod_editor/' + pattern))
 selected.update(p for p in integrated if p.startswith('tests/') and
+                Path(p).name.startswith('test_') and p.endswith('.py'))
+selected.update(p for p in audit_changes if p.startswith('tests/') and
                 Path(p).name.startswith('test_') and p.endswith('.py'))
 selected.discard('tests/mod_editor/test_nfl2k5_playbook_pair_manifest.py')
 (OUT / 'inventory.json').write_text(json.dumps(dict(base=BASE, jobs=jobs, identity=identity,
