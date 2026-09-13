@@ -1,0 +1,7 @@
+{
+  "test_nfl2k5_owner_pairwise_composition": 506,
+  "test_xbe_patch_memory_writes": 119,
+  "test_xbe_patch_cave_references": 131,
+  "test_nfl2k5_cave_oracle": 29,
+  "test_nfl2k5_supersim_live": 34
+}
