@@ -151,14 +151,28 @@ class BuildPanel(QWidget):
         title.setObjectName("throwTitle")
         root.addWidget(title)
         intro = QLabel("Choose a preset or select changes, then Make my disc. The source stays unchanged. "
-                       "This uses the selections on this tab; project edits (art, text, audio) use Make disc "
-                       "from project on their own pages. " + XEMU_LINE + " "
+                       "This build includes the selected Build options and every edit listed below from the open project, "
+                       "including staged model, art, text and audio edits. Equipment keeps the game's existing compressed "
+                       "allocation; larger equipment art is not available. Review each import's chosen size and colour-loss report. " + XEMU_LINE + " "
                        "Your disc: ~/2K5 Mod Studio Builds/NFL 2K5 Modded.xiso.iso. "
                        "To play again later: open xemu, then Machine > Load Disc. "
                        "Launch shows the exact file and folder if you saved elsewhere.")
         intro.setObjectName("throwMuted")
         intro.setWordWrap(True)
         root.addWidget(intro)
+        self.project_includes_heading = QLabel("What this build includes")
+        root.addWidget(self.project_includes_heading)
+        self.project_includes_list = QPlainTextEdit()
+        self.project_includes_list.setObjectName("buildProjectIncludes")
+        self.project_includes_list.setReadOnly(True)
+        self.project_includes_list.setMaximumHeight(200)
+        self.project_includes_list.setPlaceholderText("No project edits. Selected Build options are listed below.")
+        root.addWidget(self.project_includes_list)
+        self.project_includes_note = QLabel(
+            "Newest changes in this session first. Older project files do not record original edit times. "
+            "The project edit index identifies the edit if a build refuses it.")
+        self.project_includes_note.setWordWrap(True)
+        root.addWidget(self.project_includes_note)
 
         src = QHBoxLayout()
         self.source_caption = QLabel("Game disc (.iso)")

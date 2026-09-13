@@ -2106,6 +2106,7 @@ class StudioMainWindow(QMainWindow):
                 self._music_panel.set_playlist_options(visible)
         finally:
             self._restoring_music_playlist = False
+        self._refresh_build_includes()
 
     def _build_music_shuffle_changed(self, enabled):
         if self._restoring_music_playlist:
@@ -5612,6 +5613,20 @@ class StudioMainWindow(QMainWindow):
         path = fitted
 
         def success(result: object) -> None:
+            nonlocal equipment_choice
+            from mod_editor.core.nfl2k5_uniform_equipment_writer import EquipmentFitError
+            from mod_editor.gui.equipment_texture_import_dialog import EquipmentFitRetryDialog
+            if isinstance(result, EquipmentFitError):
+                retry = EquipmentFitRetryDialog(asset, result, self)
+                if retry.exec_() == retry.Accepted and retry.scale is not None:
+                    independent, _old_scale, scope = equipment_choice
+                    equipment_choice = (independent, retry.scale, scope)
+                    self._defer_until_blocking_task_finished(lambda: self._start_task(
+                        replace_texture, success, label=f"Checking and replacing {asset.label}",
+                        blocking=True, on_error=failed))
+                else:
+                    failed(str(result))
+                return
             if getattr(result, "changed_asset_ids", None) == ():
                 if pending_master is not None:
                     pending_master.source_image.unlink(missing_ok=True)
@@ -5667,9 +5682,13 @@ class StudioMainWindow(QMainWindow):
         def replace_texture(progress: ProgressSink) -> object:
             if equipment_choice is not None:
                 independent, scale, scope = equipment_choice
-                return self.facade.replace_equipment_texture(
-                    asset, path, progress, independent=independent, scale=scale, scope=scope,
-                )
+                from mod_editor.core.nfl2k5_uniform_equipment_writer import EquipmentFitError
+                try:
+                    return self.facade.replace_equipment_texture(
+                        asset, path, progress, independent=independent, scale=scale, scope=scope,
+                    )
+                except EquipmentFitError as exc:
+                    return exc
             return self.facade.replace_asset(asset, path, progress)
 
         self._start_task(
@@ -7711,12 +7730,14 @@ class StudioMainWindow(QMainWindow):
                 self._load_selected_unif_colors()
 
             self._defer_until_blocking_task_finished(refresh_loaded_project)
+            self._refresh_build_includes(baseline=True)
 
         self._start_task(
             lambda progress: self.facade.load_project(source, progress),
             success,
             label="Opening and validating the project",
             blocking=True,
+            show_errors=False,
         )
 
     def _choose_replacement(self) -> None:
@@ -8625,6 +8646,25 @@ class StudioMainWindow(QMainWindow):
         if self._save_project_action is not None:
             self._save_project_action.setToolTip(save_tip)
 
+    def _refresh_build_includes(self, *, baseline=False):
+        from tools.nfl2k5_visual_mod_project import ProjectEditTimeline
+        session = getattr(self.facade, "_session", None)
+        if getattr(self, "_build_includes_session", None) is not session:
+            self._build_includes_session = session
+            self._build_includes_timeline = ProjectEditTimeline()
+            baseline = bool(session and getattr(session, "modified_count", 0))
+        if not hasattr(self, "_build_includes_timeline"):
+            self._build_includes_timeline = ProjectEditTimeline()
+        try:
+            document = session.canonical_document() if session and session.modified_count else {"edits": []}
+            rows = self._build_includes_timeline.observe(document, baseline=baseline)
+            text = "\n".join(row["label"] for row in rows)
+        except Exception as exc:
+            text = f"The project edit list could not be read: {exc}. Resolve this before building."
+        self._build_includes_text = text
+        if self._build_panel is not None:
+            self._build_panel.project_includes_list.setPlainText(text)
+
     def _refresh_edit_state(self, *, rebuild_components: bool = False) -> None:
         count = int(getattr(self.facade, "modified_count", 0))
         metadata_count = int(getattr(self.facade, "project_metadata_count", 0))
@@ -8656,6 +8696,7 @@ class StudioMainWindow(QMainWindow):
             self._filter_uniforms()
         self._refresh_project_document_state()
         self._refresh_action_states()
+        self._refresh_build_includes()
 
     def _refresh_action_states(self) -> None:
         self._sync_music_service()
@@ -8980,6 +9021,7 @@ class StudioMainWindow(QMainWindow):
         tabs.setAccessibleName("Build and share workspaces")
         self._build_share_page = tabs
         self._build_panel = BuildPanel(self.facade, available=self._available_build_options)
+        self._refresh_build_includes()
         # The MyCareer picker follows the position-pools option (EDGE and LB only
         # when it is on); either panel may be built first.
         self._sync_mycareer_position_scheme()

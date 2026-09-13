@@ -4179,6 +4179,12 @@ class StudioSession:
             private_root=self.root,
         )
         try:
+            from mod_editor.core.nfl2k5_uniform_equipment_writer import preflight_project_equipment
+            preflight_project_equipment(self.cache.pack0, [
+                (None, row.asset.asset_id, row.staged_path)
+                for row in loaded.edits
+                if getattr(row.asset, "kind", None) == "uniform_equipment_texture"
+            ])
             new_play_routes: dict[str, PlayRouteCloneRequest] = {}
             if loaded.play_route_edits:
                 inspector = self.playbook_inspector

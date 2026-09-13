@@ -29,11 +29,10 @@ CONSUMER_SCHEMA = "nfl2k5_equipment_consumer_fanout/v1"
 GLOBAL_RULE = (
     "All teams share this style because the game reads its texture from the most recently loaded uniform package."
 )
-CONTEXT_FIRST_RULE = "The game reads this variant from each team's own uniform package."
-PACKAGE_LOCAL_SHOE_HELP = (
-    "For team-specific shoe artwork, import shoes09 (Style 3) or shoes10 (Style 6) "
-    "in each uniform package you use, and select that style for each player's left and right shoe."
-)
+CONTEXT_FIRST_RULE = (
+    "Native lookup checks the selected HOME/AWAY package, with separate clean and dirty artwork. "
+    "A missing local texture falls back to the newest loaded package. In-game outcome UNWITNESSED.")
+from .nfl2k5_equipment_import_intent import SHOE_ROUTE_HELP as PACKAGE_LOCAL_SHOE_HELP
 ALL_TEAMS = "all-teams"
 SELECTED_PACKAGE = "selected-package"
 
@@ -160,7 +159,7 @@ def stage_equipment_import(session: Any, asset: Any, path: Path, *,
         requested = sorted(current if restoring else [*current, (asset.asset_id, staged)])
         if requested:
             _span, _previews, receipt, _selector, _target = build_unified_uniform_equipment_imports(
-                session.cache.pack0, requested,
+                session.cache.pack0, requested, fit_asset_id=asset.asset_id,
             )
         else:
             receipt = {"schema": "nfl2k5_equipment_import_restore/v1", "asset_id": asset.asset_id,
@@ -186,6 +185,15 @@ def stage_equipment_import(session: Any, asset: Any, path: Path, *,
                 canonical, copy.asset_id, rgba, independent=independent, scale=scale,
             ))
             rows.append((copy_asset, copy_png))
+        from mod_editor.core.nfl2k5_uniform_equipment_writer import preflight_project_equipment
+        incoming = {row_asset.asset_id: row_path for row_asset, row_path in rows}
+        complete = {edit.asset_id: edit.replacement_path for edit in session.iter_edits()
+                    if edit.asset_id in by_id and edit.asset_id not in incoming}
+        if not restoring:
+            complete.update(incoming)
+        preflight_project_equipment(session.cache.pack0, [
+            (None, asset_id, png) for asset_id, png in sorted(complete.items())
+        ])
         result = session.replace_batch(tuple(rows), label="Import equipment texture")
     staged_ids = tuple(row_asset.asset_id for row_asset, _row_path in rows)
     consumer_ids = tuple(item.asset_id for item in consumers)

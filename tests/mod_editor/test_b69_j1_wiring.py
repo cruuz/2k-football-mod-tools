@@ -1,4 +1,4 @@
-"""Execute the complete proposed Studio method with real offscreen dialogs."""
+"""Exercise both the handoff and applied Studio wiring with real offscreen dialogs."""
 import os
 import inspect
 from pathlib import Path
@@ -23,10 +23,28 @@ class WiringTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls): cls.app=QApplication.instance() or QApplication([])
 
+    def equipment_method_source(self):
+        return (ROOT/'reports/b69_j1/studio-equipment-method.py.txt').read_text()
+
+    def build_list_method_source(self):
+        wiring=(ROOT/'WIRING_B69_J1.md').read_text()
+        return next(block for block in re.findall(r'```python\n(.*?)```',wiring,re.S)
+                    if 'def _refresh_build_includes(' in block)
+
+    def load_method_source(self, session_module):
+        wiring=(ROOT/'WIRING_B69_J1.md').read_text()
+        hook=next(block for block in re.findall(r'```python\n(.*?)```',wiring,re.S)
+                  if 'preflight_project_equipment(self.cache.pack0' in block)
+        source=textwrap.dedent(inspect.getsource(session_module.StudioSession.load_shareable_project))
+        # The handoff is idempotent when the protected hook has already landed.
+        if 'preflight_project_equipment(self.cache.pack0' not in source:
+            source=source.replace('    try:\n', '    try:\n'+textwrap.indent(textwrap.dedent(hook),'        '),1)
+        return source
+
     def test_try_that_restarts_after_blocking_task_and_keeps_scope_and_pixels(self):
         namespace={'Path':Path,'ValidationError':ValidationError,
                    '_result_message':lambda result,default:getattr(result,'message',default)}
-        source=(ROOT/'reports/b69_j1/studio-equipment-method.py.txt').read_text()
+        source=self.equipment_method_source()
         exec('from __future__ import annotations\n'+source,namespace)
         calls=[]
         asset=SimpleNamespace(asset_id='tset:3653:9:4:shoes10',label='Bears shoe',
@@ -72,9 +90,7 @@ class WiringTests(unittest.TestCase):
         self.assertEqual(owner.changes,1)
 
     def test_build_list_method_renders_all_original_indices_and_newest_observed_edit(self):
-        wiring=(ROOT/'WIRING_B69_J1.md').read_text()
-        block=next(block for block in re.findall(r'```python\n(.*?)```',wiring,re.S)
-                   if 'def _refresh_build_includes(' in block)
+        block=self.build_list_method_source()
         namespace={}
         exec(textwrap.dedent(block),namespace)
         doc={'edits':[dict(kind='torso',asset_code='02',side='H',variant=0),
@@ -95,11 +111,7 @@ class WiringTests(unittest.TestCase):
     def test_load_hook_refuses_real_unfit_group_and_cleans_before_session_mutation(self):
         from mod_editor.studio import session as session_module
         from test_b69_j1_fit import tight_fixture
-        wiring=(ROOT/'WIRING_B69_J1.md').read_text()
-        hook=next(block for block in re.findall(r'```python\n(.*?)```',wiring,re.S)
-                  if 'preflight_project_equipment(self.cache.pack0' in block)
-        source=textwrap.dedent(inspect.getsource(session_module.StudioSession.load_shareable_project))
-        source=source.replace('    try:\n', '    try:\n'+textwrap.indent(textwrap.dedent(hook),'        '),1)
+        source=self.load_method_source(session_module)
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder).resolve();fixture,rgba=tight_fixture(root)
             asset,png=fixture.png(rgba=rgba)
@@ -116,6 +128,38 @@ class WiringTests(unittest.TestCase):
                 namespace['load_shareable_project'](owner,root/'old.2k5mod')
             cleanup.assert_called_once_with()
             self.assertIs(owner._edits,sentinel)
+
+
+class AppliedWiringTests(WiringTests):
+    """Run the same behavioral contracts against the installed production methods."""
+
+    def equipment_method_source(self):
+        from mod_editor.gui.studio_qt import StudioMainWindow
+        return textwrap.dedent(inspect.getsource(StudioMainWindow._replace_visual_asset))
+
+    def build_list_method_source(self):
+        from mod_editor.gui.studio_qt import StudioMainWindow
+        return textwrap.dedent(inspect.getsource(StudioMainWindow._refresh_build_includes))
+
+    def load_method_source(self, session_module):
+        return textwrap.dedent(inspect.getsource(session_module.StudioSession.load_shareable_project))
+
+    def test_applied_shell_keeps_model_signal_and_inline_load_errors(self):
+        from mod_editor.gui.studio_qt import StudioMainWindow
+        for name in ('_refresh_edit_state', '_build_build_share_page', '_restore_music_build_settings'):
+            self.assertIn('self._refresh_build_includes()', inspect.getsource(getattr(StudioMainWindow,name)))
+        source=inspect.getsource(StudioMainWindow._load_project_path)
+        self.assertIn('_refresh_build_includes(baseline=True)',source)
+        self.assertIn('show_errors=False',source)
+        self.assertIn('project_changed.connect(self._models_project_changed)',inspect.getsource(StudioMainWindow))
+        self.assertTrue(callable(StudioMainWindow._models_project_changed))
+        from mod_editor.core import nfl2k5_equipment_import as imports
+        from mod_editor.core.nfl2k5_equipment_import_intent import SHOE_ROUTE_HELP
+        self.assertEqual(imports.PACKAGE_LOCAL_SHOE_HELP,SHOE_ROUTE_HELP)
+        source=inspect.getsource(imports.stage_equipment_import)
+        self.assertIn('fit_asset_id=asset.asset_id',source)
+        self.assertLess(source.index('preflight_project_equipment(session.cache.pack0'),source.index('session.replace_batch'))
+        self.assertIn('UNWITNESSED',imports.CONTEXT_FIRST_RULE)
 
 
 if __name__=='__main__':unittest.main()
