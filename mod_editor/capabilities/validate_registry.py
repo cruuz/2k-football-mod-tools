@@ -137,7 +137,7 @@ def _command_module(command: str, where: str) -> str | None:
         raise RegistryError(f"{where}: invalid shell-style command: {exc}") from exc
     _require(bool(tokens), f"{where}: empty command")
     for token in tokens:
-        if token.startswith("tools/") or token.startswith("mod_editor/"):
+        if token.startswith(("tools/", "mod_editor/", "packaging/")):
             return token
     # Product modules that use package-relative imports must be launched with
     # ``python -m package.module``.  Resolve that spelling to the same
