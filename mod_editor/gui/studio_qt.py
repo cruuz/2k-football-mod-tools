@@ -13,6 +13,9 @@ uniform browser shows metadata-only monograms generated from catalog labels.
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import plain_error, failure_body
+from mod_editor.gui.polish_qt import polish_controls
+
 from dataclasses import dataclass
 import json
 from pathlib import Path
@@ -1485,7 +1488,7 @@ class _BackgroundTask(QRunnable):
                     self.signals.progress.emit(stage, completed, total)
             result = self.operation(progress)
         except BaseException as exc:  # Qt must receive failures, never lose them.
-            message = str(exc).strip() or exc.__class__.__name__
+            message = plain_error(exc)
             self.signals.error.emit(message)
         else:
             self.signals.result.emit(result)
@@ -1511,7 +1514,8 @@ class _PngDropPreview(QFrame):
         self.image.setWordWrap(True)
         self.image.setObjectName("previewImage")
         self.image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.hint = QLabel("PNG preview  •  drag an edited PNG here to replace")
+        self.hint = QLabel("PNG preview • drop edited artwork here")
+        self.hint.setWordWrap(True)
         self.hint.setAlignment(Qt.AlignCenter)
         self.hint.setObjectName("mutedLabel")
         layout.addWidget(self.image, 1)
@@ -2459,7 +2463,7 @@ class StudioMainWindow(QMainWindow):
             except Exception as exc:
                 self._show_error(
                     "The first operation finished, but its next step could not "
-                    f"start: {str(exc).strip() or exc.__class__.__name__}"
+                    f"start: {plain_error(exc)}"
                 )
 
     def _prompt_recovery_decision(self, candidate: RecoveryCandidate) -> str:
@@ -2584,6 +2588,7 @@ class StudioMainWindow(QMainWindow):
         another.
         """
 
+        polish_controls(page)
         if isinstance(page, QScrollArea):
             page.setWidgetResizable(True)
             page.setMinimumHeight(PAGE_SCROLL_MIN_HEIGHT)
@@ -8583,12 +8588,9 @@ class StudioMainWindow(QMainWindow):
             event.ignore()
 
     def _show_error(self, message: str) -> None:
-        hint = friendly_fix_hint(message)
-        body = message if hint is None else f"{message}\n\n{hint}"
         QMessageBox.warning(
-            self,
-            "Couldn't finish that",
-            body + "\n\nYour original game disc was not changed.",
+            self, "Couldn't finish that",
+            failure_body(message, hint=friendly_fix_hint(message)),
         )
 
     def _refresh_project_document_state(self) -> None:
