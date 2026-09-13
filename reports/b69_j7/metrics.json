@@ -1,0 +1,45 @@
+{
+  "source_literals": {
+    "before": 22667,
+    "after": 22756
+  },
+  "runtime": {
+    "before": [
+      {
+        "studio": "2k5",
+        "pages": 20,
+        "unique_controls": 1528,
+        "missing_help_captions": 317,
+        "clipping_candidates": 15,
+        "seconds": 7.366
+      },
+      {
+        "studio": "apf",
+        "pages": 14,
+        "unique_controls": 676,
+        "missing_help_captions": 77,
+        "clipping_candidates": 28,
+        "seconds": 3.727
+      }
+    ],
+    "after": [
+      {
+        "studio": "2k5",
+        "pages": 20,
+        "unique_controls": 1769,
+        "missing_help_captions": 0,
+        "clipping_candidates": 0,
+        "seconds": 11.158
+      },
+      {
+        "studio": "apf",
+        "pages": 14,
+        "unique_controls": 709,
+        "missing_help_captions": 0,
+        "clipping_candidates": 8,
+        "seconds": 5.696
+      }
+    ]
+  },
+  "late_dialog_boundaries": 66
+}
