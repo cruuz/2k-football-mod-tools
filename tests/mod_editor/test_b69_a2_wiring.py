@@ -13,6 +13,27 @@ from mod_editor.core import mod_build, nfl2k5_espn25_rosters as historic
 
 
 class AppliedIntegrationTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        from PyQt5.QtWidgets import QApplication
+        cls.app = QApplication.instance() or QApplication([])
+
+    def test_build_summary_refresh_does_not_publish_a_build_choice(self):
+        from PyQt5.QtWidgets import QWidget, QPlainTextEdit
+        from mod_editor.gui.gameplay_project_ui import observe_build_choices
+        panel = QWidget()
+        summary = QPlainTextEdit(panel)
+        summary.setReadOnly(True)
+        notes = QPlainTextEdit(panel)
+        changes = []
+        observe_build_choices(panel, lambda: changes.append(notes.toPlainText()))
+        summary.setPlainText('Project edit index 0: Equipment / shoes01')
+        summary.setPlainText('Project edit index 0: Equipment / shoes01')
+        self.assertEqual(changes, [])
+        notes.setPlainText('Authored build notes')
+        self.assertEqual(changes, ['Authored build notes'])
+        panel.deleteLater()
+
     def test_historic_hold_refuses_before_reading_resources_or_creating_output(self):
         with tempfile.TemporaryDirectory() as folder:
             target = Path(folder) / 'copy.iso'

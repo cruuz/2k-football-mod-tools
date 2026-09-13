@@ -157,5 +157,6 @@ def observe_build_choices(panel, changed):
             widget.valueChanged.connect(changed)
         elif isinstance(widget, QLineEdit) and widget not in (panel.source_field, panel.target_field):
             widget.textChanged.connect(changed)
-        elif isinstance(widget, QPlainTextEdit):
+        elif isinstance(widget, QPlainTextEdit) and not widget.isReadOnly():
+            # Build summaries are refreshed by the shell, not authored project choices.
             widget.textChanged.connect(changed)
