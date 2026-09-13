@@ -20,7 +20,7 @@ BUILD_CAPTION = "Use saved stadium climate edits (experimental)"
 HELP_TEXT = (
     "Edits temperature, precipitation chance and wind in the stadium climate data. "
     "Rain or snow follows the game's temperature test; July and August share a slot. "
-    "Applies to franchises created from this disc; existing saves retain their own data. "
+    "Edits the disc roster. Test with a new franchise; existing-save adoption is unproved. "
     "Indoor weather is suppressed by retail. Off in every preset. Gameplay and appearance are unwitnessed."
 )
 DEFAULT_ENABLED = False

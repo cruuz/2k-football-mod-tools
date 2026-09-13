@@ -42,6 +42,22 @@ PINS = (
     (0x1CB7C5, 90, "wind vector candidate"),
     (0x1CBA1E, 95, "second wind vector candidate"),
     (0xAA4020, 896, "28 effective-rating descriptors; precipitation flag bit 0"),
+    (0x25E3D4, 137, "wind display divides native speed by 44.704"),
+    (0x4F267C, 4, "wind units per mph"),
+    (0xE8B490, 60, "wind display format with mph unit"),
+    (0x14C110, 82, "weather menu previous/next callbacks"),
+    (0x2C2CA0, 82, "second weather menu previous/next callbacks"),
+    (0x340410, 82, "third weather menu previous/next callbacks"),
+    (0xF2F90, 112, "menu row disable and event dispatch"),
+    (0x2C1200, 32, "mode filter jump table"),
+    (0x502A38, 32, "quick-game weather menu descriptor"),
+    (0x526BAC, 32, "weather menu descriptor"),
+    (0x526EC4, 32, "alternate weather menu descriptor"),
+    (0x54FCC8, 32, "additional weather menu descriptor"),
+    (0x20CBD0, 160, "ESPN scenario environment loads"),
+    (0x17A6D0, 452, "effective-attribute loop through precipitation block"),
+    (0x1DB968, 124, "weather-dependent rating table blend"),
+    (0xE610A0, 46, "stadium and created-field filename formats"),
 )
 
 
@@ -187,7 +203,7 @@ def native_receipt(source, xbe_path):
         penalty_cases.append(dict(temperature=temperature, precipitation=precipitation,
                                   descriptor_flags=flags, base=.8,
                                   result=machine.readf(machine.STACK+0x10)))
-    return dict(schema="nfl2k5.weather.native.v1", label=weather.LABEL, schedule=schedule,
+    return dict(schema="nfl2k5.weather.native.v1", label=weather.LABEL, runtime_witnessed=False, schedule=schedule,
                 climate_samples=cases, edited_climate=dict(values=selected, suffixes=suffixes, verifier=receipt),
                 haze_cases=haze_cases, haze_verifier=haze_receipt, rating_penalty_cases=penalty_cases,
                 limits="Retail RNG with synthetic seeds and stadium rows; native selector and camera field copies. "
@@ -209,7 +225,20 @@ def main(argv=None):
     sub.add_argument("source", type=Path)
     sub.add_argument("plan", type=Path)
     sub.add_argument("output", type=Path)
+    sub = commands.add_parser("haze", help="Write the optional haze coefficient to a new XBE file")
+    sub.add_argument("source", type=Path)
+    sub.add_argument("output", type=Path)
+    sub.add_argument("--off", action="store_true", help="Restore the recognized retail coefficient")
     args = parser.parse_args(argv)
+    if args.command == "haze":
+        from mod_editor.core import nfl2k5_weather_haze as haze
+        weather.require(args.source.stat().st_size <= 32*1024*1024, "Select a bounded default.xbe")
+        after, receipt = haze.apply(args.source.read_bytes(), enabled=not args.off)
+        with args.output.open("xb") as stream:
+            stream.write(after)
+        haze.verify(args.output.read_bytes(), enabled=not args.off)
+        print(json.dumps(receipt, indent=2))
+        return 0
     if args.command == "apply-resource":
         weather.require(args.source.stat().st_size <= weather.MAX_RESOURCE, "Select an exported ROST resource")
         before = args.source.read_bytes()

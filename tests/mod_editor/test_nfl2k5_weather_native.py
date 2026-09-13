@@ -154,6 +154,22 @@ class NativeWeatherTests(unittest.TestCase):
                 self.assertEqual(reader, camera)
                 self.assertAlmostEqual(camera[0], value, places=6)
 
+    def test_haze_composes_both_orders_with_clock_schedule_and_helmet(self):
+        from tests import nfl2k5_allocator_stack as stack
+        from tests.mod_editor.test_nfl2k5_owner_pairwise_composition import prerequisites
+        from mod_editor.core import nfl2k5_xbe_space as space
+        seed, _ = space.apply(prerequisites(self.payload), stack.REQUESTS, scaleout=True)
+        for owner in (stack.AcceleratedClockOn, stack.franchise_2026, stack.helmet_finish):
+            with self.subTest(owner=owner.OWNER):
+                baseline, _ = owner.apply(seed)
+                left, _ = h.apply(baseline)
+                right, _ = owner.apply(h.apply(seed)[0])
+                self.assertEqual(left, right)
+                self.assertEqual(owner.status(left), "applied")
+                self.assertEqual(h.verify(left)["state"], "applied")
+                self.assertEqual(h.apply(left, enabled=False)[0], baseline)
+                self.assertEqual(space.apply(left, stack.REQUESTS, scaleout=True)[0], left)
+
 
 if __name__ == "__main__":
     unittest.main()

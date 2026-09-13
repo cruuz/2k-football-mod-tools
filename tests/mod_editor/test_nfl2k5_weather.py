@@ -7,6 +7,7 @@ from pathlib import Path
 import struct
 import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -157,6 +158,52 @@ class ClimateTests(unittest.TestCase):
                 p.write_text(text, encoding="utf-8")
                 with self.assertRaises(ValueError):
                     w.read_json(p)
+
+    def test_final_image_pass_resolves_outer_offset_and_refuses_before_mutation(self):
+        # A non-retail outer-container fixture: moved resource, unrelated neighbors.
+        origin = 0x2500
+        backing = bytearray(b"p"*origin + self.data + b"s"*128)
+        entry = SimpleNamespace(virtual_offset=origin, size=len(self.data))
+        writes = []
+
+        class Archive:
+            _fd = None
+            entries = [None]*5 + [entry]
+
+            def __init__(self, *args, **kwargs):
+                pass
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                pass
+
+            def read(self, at, size):
+                return bytes(backing[at:at+size])
+
+            def write(self, at, content):
+                writes.append((at, len(content)))
+                backing[at:at+len(content)] = content
+                return len(content)
+
+        plan = self.plan()
+        with patch.object(w.rr, "_outer_image", return_value=Archive):
+            w.apply_to_image("disposable-image.iso", plan)
+            self.assertEqual(writes, [(origin, len(self.data))])
+            self.assertEqual(backing[:origin], b"p"*origin)
+            self.assertEqual(backing[-128:], b"s"*128)
+            w.verify(w.load_resource("disposable-image.iso"), plan, before=self.data)
+            w.apply_to_image("disposable-image.iso", plan)
+            self.assertEqual(len(writes), 1)
+            stale = copy.deepcopy(plan)
+            stale["changes"][0]["before"] = 16
+            stale["changes"][0]["after"] = 17
+            snapshot = bytes(backing)
+            with self.assertRaises(w.WeatherError):
+                w.apply_to_image("disposable-image.iso", stale)
+            self.assertEqual(bytes(backing), snapshot)
+            self.assertEqual(len(writes), 1)
 
 
 @unittest.skipUnless((RETAIL/"vc_53450030/0").is_file(), "USA retail vc_53450030/0 is absent; set NFL2K5_RETAIL_EXTRACTION")
