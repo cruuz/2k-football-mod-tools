@@ -9412,7 +9412,7 @@
     },
     {
       "backend": {
-        "command": "Python API: export_csv(document), preview_csv(document, text), apply_csv_preview(document, preview)",
+        "command": "Python API: mod_editor/core/nfl2k5_roster_records.py export_csv(document), preview_csv(document, text), apply_csv_preview(document, preview)",
         "module": "mod_editor/core/nfl2k5_roster_records.py",
         "operation": "write"
       },

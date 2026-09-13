@@ -47,6 +47,15 @@ class AppliedIntegrationTests(unittest.TestCase):
                 read.assert_not_called()
             self.assertFalse(target.exists())
 
+    def test_csv_registry_api_identifies_its_real_writer_module(self):
+        import json
+        from mod_editor.capabilities.validate_registry import _command_module
+        root = Path(__file__).resolve().parents[2]
+        registry = json.loads((root / 'mod_editor/capabilities/registry.v1.json').read_text())
+        row = next(row for row in registry['capabilities'] if row['id'] == 'nfl2k5.rosters.player_csv')
+        self.assertEqual(_command_module(row['backend']['command'], row['id']),
+                         'mod_editor/core/nfl2k5_roster_records.py')
+
     def test_applied_scheme_cards_reach_the_real_facade_and_export_stays_export_only(self):
         cards = {card.capability_id: card for card in catalog.build_capability_cards()}
         for feature in ('offensive_schemes', 'never_call'):
