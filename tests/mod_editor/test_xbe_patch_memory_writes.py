@@ -89,6 +89,22 @@ class SectionTableTests(unittest.TestCase):
 class PatchWriteTests(unittest.TestCase):
     """Every absolute memory write in every patch's changed code targets writable memory."""
 
+    def test_beta69_rules_use_owned_permissions_and_verified_code(self):
+        from tests.nfl2k5_allocator_stack import coin_defer, decided_clock, cpu_scrambles
+        from mod_editor.core import nfl2k5_rules_patch as rules
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        image = XbeImage(self.patched)
+        for module in (coin_defer, decided_clock, cpu_scrambles):
+            self.assertEqual(module.verify(self.patched)['status'], 'applied')
+            places = rules.allocations(self.patched, module)
+            for kind, row in places.items():
+                section = image.section(row['va'])
+                self.assertEqual(section.writable, kind == 'data')
+                self.assertEqual(section.executable, kind == 'code')
+            start = places['code']['va']
+            writes = absolute_writes(self.patched, [(start, start+len(module.assembly.CODE))])
+            self.assertTrue(all(w['target'] is None or w['writable'] for w in writes), writes)
+
     def test_accelerated_clock_code_latch_and_options_have_separate_permissions(self):
         from mod_editor.core import nfl2k5_accelerated_clock as patch
         from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes

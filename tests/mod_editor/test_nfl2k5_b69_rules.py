@@ -1,6 +1,10 @@
 """Beta-69 rule writers and bounded USA native proofs; gameplay UNWITNESSED."""
 from pathlib import Path
 import hashlib
+import contextlib
+import io
+import json
+import tempfile
 import itertools
 import struct
 import sys
@@ -60,6 +64,20 @@ class WriterTests(unittest.TestCase):
             writes = absolute_writes(payload, [(start, start+len(owner.assembly.CODE))])
             self.assertTrue(all(w['target'] is None or w['writable'] for w in writes), writes)
 
+    def test_scramble_neighbor_requires_complete_defensive_try_owner(self):
+        from mod_editor.core import nfl2k5_defensive_try as defensive_try
+        seed = space.apply(self.retail, scrambles.REQUESTS+defensive_try.REQUESTS, scaleout=True)[0]
+        for order in ((scrambles, defensive_try), (defensive_try, scrambles)):
+            payload = seed
+            for owner in order:
+                payload = owner.apply(payload)[0]
+            self.assertEqual(scrambles.status(payload), 'applied')
+            self.assertEqual(scrambles.apply(payload)[0], payload)
+        bad = repin_edit(self.payloads[scrambles], 0x2E3786, b'\xcc')
+        self.assertEqual(scrambles.status(bad), 'foreign')
+        with self.assertRaises(ValueError):
+            scrambles.apply(bad)
+
     def test_margin_time_choices_rebuild_and_postcondition(self):
         payload = self.payloads[decided]
         self.assertEqual(decided.verify(payload, margin=17, seconds=60)['settings'], decided.DEFAULTS)
@@ -76,6 +94,32 @@ class WriterTests(unittest.TestCase):
         for margin, seconds in itertools.product(decided.MARGINS, decided.SECONDS):
             content = decided.encode_options(margin=margin, seconds=seconds)
             self.assertEqual(decided.decode_options(content), dict(margin=margin, seconds=seconds))
+
+    def test_cli_selected_union_status_and_exclusive_output(self):
+        from tools.nfl2k5_modern_rules import main
+        from tests.mod_editor.test_nfl2k5_owner_pairwise_composition import XBE
+        with tempfile.TemporaryDirectory(prefix='b69-rules-cli-') as folder:
+            destination = Path(folder).resolve() / 'rules.xbe'
+            output, error = io.StringIO(), io.StringIO()
+            with contextlib.redirect_stdout(output), contextlib.redirect_stderr(error):
+                self.assertEqual(main(['apply', str(XBE), '--output', str(destination),
+                    '--cpu-defer', '--decided-clock', '--modern-scrambles']), 0)
+                installed = destination.read_bytes()
+                for owner in OWNERS:
+                    self.assertEqual(owner.status(installed), 'applied')
+                output.seek(0); output.truncate()
+                self.assertEqual(main(['status', str(destination)]), 0)
+                self.assertTrue(all(v['status'] == 'applied' for v in json.loads(output.getvalue()).values()))
+                self.assertEqual(main(['apply', str(XBE), '--output', str(destination)]), 2)
+                self.assertEqual(destination.read_bytes(), installed)
+                destination.unlink()
+                self.assertEqual(main(['apply', str(XBE), '--output', str(destination)]), 0)
+                self.assertEqual(destination.read_bytes(), self.retail)
+                destination.unlink()
+                foreign = destination.with_name('foreign.xbe')
+                foreign.write_bytes(b'foreign')
+                self.assertEqual(main(['apply', str(foreign), '--output', str(destination), '--cpu-defer']), 2)
+                self.assertFalse(destination.exists())
 
     def test_selected_union_pairwise_and_legacy_neighbors(self):
         from mod_editor.core import nfl2k5_kick_rules as kicks, nfl2k5_overtime as ot
@@ -274,6 +318,34 @@ class ScrambleTests(unittest.TestCase):
             m, p = EscapeMachine(self.retail), EscapeMachine(self.payload)
             self.assertEqual([m.escape(i, **settings) for i in range(100)],
                              [p.escape(i, **settings) for i in range(100)])
+
+    def test_roster_parity_bit_selects_native_animation_record_family(self):
+        # Native selector, rating helper and table interpolation, no AI branch seam.
+        image = XbeImage(self.retail)
+        self.assertEqual(hashlib.sha256(image.read(0x2D9290, 0x300)).hexdigest(),
+                         "a58049e761aae07c7f4fe2cd5b45f344632a08a895086636fab18d39091c477a")
+        records = []
+        for rating in (10, 11):
+            m = Machine(self.retail)
+            player, roster = 0x2008000, 0x2008200
+            for at, value in ((player+0x3C, roster), (player+0x18, 0x2008400),
+                    (player+0x10, 0x2008500), (player+0x14, 0x2008600),
+                    (player+0x38, m.HOME), (0x2008674, 0x2008900),
+                    (0x2008900, 0x2008A00), (m.get(m.HOME+8)+12, 0x5103D0),
+                    (roster+0x30, 0x2008B00), (0x2008B04, 0x2008C00)):
+                m.put(at, value)
+            m.f32(0x2008C04, 1)  # loaded roster condition coefficient
+            m.uc.mem_write(roster+0x34, b'\1')
+            for offset, value in ((0x4F, rating), (0x37, 80), (0x3C, 80)):
+                m.uc.mem_write(roster+offset, bytes([value]))
+            m.f32(0x2008708, 100)  # same target vector for both parity values
+            m.run(0x2D9290, edx=0x2008700, args=(player, 0x2008800))
+            records.append(m.uc.reg_read(x86.UC_X86_REG_EAX))
+            self.assertIn(0x17B010, m.hits)
+            self.assertIn(0x2D92B1, m.hits)
+            self.assertIn(0x2D9589, m.hits)
+            self.assertNotIn(0x197DE0, m.hits)
+        self.assertEqual(records, [0xAD13E8, 0xAD14C8])
 
     def test_native_timer_and_attempt_gates_survive(self):
         p = EscapeMachine(self.payload)

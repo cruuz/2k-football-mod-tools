@@ -29,9 +29,20 @@ GUARDS = (
     (0x48b90, 41, "093cf53c774b31825b84db51c0e070a603606c6f6b4cce2ee7a9381e9e9f004e"),
     (0x198530, 14, "0bea881549322f1a27f9d2797abb2ab06773a3121c0aa00186e0975c94a7d693"),
     (0x198540, 154, "19a02acb3a9aa11f62959327dba672e681420dfcb8bf91ca66f34d39f1a9f87b"),
-    (0x2e36f0, 234, "a25ce6373a7ebc5ae2adeed41699c4b4c145edb25fea4b59020e5c180d3ce3ba"),
+    # Defensive try owns the intervening five-byte call at 0x2E3786.
+    (0x2e36f0, 150, "25c860230ce2276fd5d8eefb18d6e2959f057e013c69305d179d3714499b7371"),
+    (0x2e378b, 79, "62a564fd710e1dfbf70828c3bf68b17ee4bcf8d63e73b2194fdd4ce0764e4fd2"),
     (0x4e696c, 4, "75e253f50979177eba47b2d0805ad36038789108924514d2a761a70de057d16f"),
 )
+
+
+def validate_neighbors(payload, image):
+    # The five-byte call excluded from GUARDS must be retail or the complete
+    # verified defensive-try owner; a plausible branch alone is insufficient.
+    if image.read(0x2E3786, 5) != bytes.fromhex("e805f3ffff"):
+        from . import nfl2k5_defensive_try as defensive_try
+        if defensive_try.status(payload) != "applied":
+            raise ValueError("Foreign defensive-try neighbor at 0x2E3786")
 
 
 def encode_options():

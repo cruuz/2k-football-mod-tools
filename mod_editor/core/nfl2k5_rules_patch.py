@@ -55,6 +55,8 @@ def inspect(payload, module):
                 blob[hook-va:hook-va+len(before)] = before
         space._require(hashlib.sha256(blob).hexdigest() == digest,
                        f"Foreign {module.OWNER} prerequisite at {va:#x}")
+    if hasattr(module, "validate_neighbors"):
+        module.validate_neighbors(payload, image)
     return settings
 
 

@@ -1,0 +1,47 @@
+{
+  "runtime_witnessed": false,
+  "accelerated_clock": "On/20",
+  "cases": [
+    {
+      "situation": "decided",
+      "period": 4,
+      "margin": 17,
+      "live_state": 14,
+      "live_seconds": 59.866668701171875,
+      "dead_ball_state": 18,
+      "dead_ball_seconds": 0.0,
+      "offense_retained": true
+    },
+    {
+      "situation": "undecided",
+      "period": 4,
+      "margin": 16,
+      "live_state": 14,
+      "live_seconds": 59.866668701171875,
+      "dead_ball_state": 18,
+      "dead_ball_seconds": 59.866668701171875,
+      "offense_retained": true
+    },
+    {
+      "situation": "trailing_possession",
+      "period": 4,
+      "margin": -17,
+      "live_state": 14,
+      "live_seconds": 59.866668701171875,
+      "dead_ball_state": 18,
+      "dead_ball_seconds": 59.866668701171875,
+      "offense_retained": true
+    },
+    {
+      "situation": "overtime",
+      "period": 5,
+      "margin": 17,
+      "live_state": 14,
+      "live_seconds": 59.866668701171875,
+      "dead_ball_state": 18,
+      "dead_ball_seconds": 59.866668701171875,
+      "offense_retained": true
+    }
+  ],
+  "boundary": "native selected scene and frame; readiness, snap and dead-ball commands supplied"
+}
