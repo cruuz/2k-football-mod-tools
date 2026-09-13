@@ -43,11 +43,13 @@ class StringHygieneTests(unittest.TestCase):
 
     def test_worker_causes_survive_without_progress_or_class_names(self):
         cases = {
+            'Nfl2k5BuildError: The disc could not be built. NFL2K5_BUILD_PHASE validate_source seconds=0.3': 'The disc could not be built.',
             'ModelsError: Edit both exported files.': 'Edit both exported files.',
             'Nfl2k5BuildError: PermissionError: Choose a writable folder.': 'Choose a writable folder.',
             'NFL2K5_BUILD_PHASE validate_source seconds=0.423\nValueError: Shoe art is too large.': 'Shoe art is too large.',
             'NFL2K5_BUILD_PHASE validate_source seconds=0.423': 'The operation stopped without an explanation.',
             '': 'The operation stopped without an explanation.',
+            'Traceback (most recent call last):\n  File \"writer.py\", line 3\nValueError: Select a source disc.': 'Select a source disc.',
         }
         for value, expected in cases.items():
             with self.subTest(value=value):

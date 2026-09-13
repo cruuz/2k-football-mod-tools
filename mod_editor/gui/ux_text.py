@@ -143,13 +143,18 @@ def fix_hint(message: str) -> str | None:
 
 # These patterns recognize diagnostics coming from workers, never product copy.
 _CLASS_PREFIX = re.compile(r"\b[A-Za-z_][A-Za-z0-9_.]*(?:Error|Exception):\s*")
-_PHASE_LINE = re.compile(r"^\s*(?:NFL2K5_)?BUILD" r"_PHASE\b.*$", re.MULTILINE)
+_PHASE_LINE = re.compile(r"(?:NFL2K5_)?BUILD" r"_PHASE\b[^\n]*")
 
 
 def plain_error(message: object) -> str:
     """Keep the actual cause, excluding worker class names and progress records."""
     text = str(message).strip()
     text = _PHASE_LINE.sub("", text)
+    if "Traceback (most recent call last):" in text:
+        lines = text.splitlines()
+        causes = [i for i, line in enumerate(lines) if _CLASS_PREFIX.match(line)]
+        if causes:
+            text = "\n".join(lines[causes[-1]:])
     text = _CLASS_PREFIX.sub("", text)
     return text.strip() or "The operation stopped without an explanation."
 
