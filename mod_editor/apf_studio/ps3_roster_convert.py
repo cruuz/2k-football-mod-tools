@@ -170,7 +170,8 @@ def find_roster_member(archive: Path) -> str:
         names = [i.filename for i in bundle.infolist() if not i.filename.endswith("/")]
     candidates = [
         name for name in names
-        if name.split("/")[-1] == "USERDATA" and "-ROS" in name.split("/")[-2:-1][0] if len(name.split("/")) >= 2
+        if len(name.split("/")) >= 2
+        and name.split("/")[-1] == "USERDATA" and "-ROS" in name.split("/")[-2]
     ]
     if not candidates:
         candidates = [name for name in names if name.split("/")[-1] == "USERDATA"]
