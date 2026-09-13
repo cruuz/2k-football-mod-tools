@@ -1555,6 +1555,13 @@ class BuildPanel(QWidget):
             return denial
         if self._reading:
             return "Reading disc…"
+        if self._include_session_project():
+            from mod_editor.core.nfl2k5_model_project import validate_build_plan
+            from mod_editor.core.errors import ValidationError
+            try:
+                validate_build_plan(replace(self.plan(), hires_pack=False), self._facade._session)
+            except (ValueError, ValidationError) as exc:
+                return str(exc)
         conflicts = getattr(self, "_playbook_blockers", ())
         if conflicts:
             return " ".join(conflicts)
@@ -2154,6 +2161,8 @@ class BuildPanel(QWidget):
             files.append(f"playbook packs: {len(plan.playbook_packs)}")
         if self._include_session_project():
             files.append("shared project: all current edits, including Music replacements")
+            for model in getattr(self._facade, "model_project_plan", ()):
+                lines.append("Model: " + model["summary"] + " (saved checked bytes; in-game UNWITNESSED)")
         if plan.commentary:
             files.append(f"commentary lines: {len(plan.commentary)}")
         if plan.player_tags:

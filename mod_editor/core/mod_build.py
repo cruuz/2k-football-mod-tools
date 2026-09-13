@@ -988,9 +988,15 @@ def preflight_plan(plan: BuildPlan, progress: ProgressSink | None = None):
 
 def build_with_project(plan, service, cache, session, progress=None):
     """One private project copy, then gameplay, then one final publication."""
+    from .nfl2k5_model_project import plan_rows, validate_build_plan
+    validate_build_plan(plan, session)
+    models = plan_rows(session)
     report = progress or (lambda *_: None)
-    return build(plan, progress, _project_builder=lambda output: service.build(
+    receipt = build(plan, progress, _project_builder=lambda output: service.build(
         cache, session, output, lambda event: report(event.message, event.completed, event.total)))
+    if models:
+        receipt["project_models"] = models
+    return receipt
 
 
 def _preview_play_intents(source, paths):

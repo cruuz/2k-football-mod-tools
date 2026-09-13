@@ -2739,6 +2739,7 @@ class StudioMainWindow(QMainWindow):
         self._roster_editor_panel = _BuildContextRosterPanel(self.facade)
         self.pages.addWidget(self._page_scroll_host(self._roster_editor_panel))
         self._models_panel = ModelsPanel(self.facade)
+        self._models_panel.project_changed.connect(self._models_project_changed)
         self.pages.addWidget(self._page_scroll_host(self._models_panel))
         self._animations_panel = AnimationsPanel(self.facade)
         self.pages.addWidget(self._page_scroll_host(self._animations_panel))
@@ -8379,6 +8380,11 @@ class StudioMainWindow(QMainWindow):
             self._crib_panel.refresh(keep_selection=not reset)
         if reset and self._playbooks_panel is not None:
             self._playbooks_panel.reset_for_source()
+
+    def _models_project_changed(self) -> None:
+        self._mark_workspace_changed()
+        if self._build_panel is not None:
+            self._build_panel._refresh()
 
     def _mark_workspace_changed(self, *, rebuild_components: bool = False) -> None:
         """Mark an authored change and immediately queue a safe autosave."""
