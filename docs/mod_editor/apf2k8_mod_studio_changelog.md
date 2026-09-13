@@ -1,5 +1,9 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.90 — beta 69: the APF 2K8 work after beta 67 — 2026-09-13
+
+Beta 69 carries the APF 2K8 changes made after beta 67; bullets are added as each change lands.
+
 ## 0.1.0-alpha.89 — beta 68: no APF changes — 2026-09-12
 
 No APF 2K8 changes in beta 68; the version marker moves with the release tag.
