@@ -1,8 +1,12 @@
 """The published JSON schema and all shared count contracts accept the registry."""
 import json
+import hashlib
+import os
 from pathlib import Path
 import re
+import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -71,6 +75,35 @@ class RegistryContractsTests(unittest.TestCase):
         ):
             with self.subTest(command=command), self.assertRaises(ValidationRunError):
                 parse_validation_command(command)
+
+    def test_pinned_reader_keeps_crlf_and_control_z_under_windows_text_translation(self):
+        from tools import validate_all_mod_editor_capabilities as runner
+        payload = b"binary\x00\r\nbody\x1atail"
+        native_binary = getattr(os, "O_BINARY", 0)
+        simulated_binary = 1 << 29
+        real_open, real_read = os.open, os.read
+        text_mode = {}
+
+        def crt_open(path, flags):
+            descriptor = real_open(path, (flags & ~simulated_binary) | native_binary)
+            text_mode[descriptor] = not flags & simulated_binary
+            return descriptor
+
+        def crt_read(descriptor, size):
+            data = real_read(descriptor, size)
+            if text_mode.get(descriptor):
+                return data.split(b"\x1a", 1)[0].replace(b"\r\n", b"\n")
+            return data
+
+        with tempfile.TemporaryDirectory() as folder:
+            source = Path(folder).resolve() / "pinned.bin"
+            source.write_bytes(payload)
+            with patch.object(os, "O_BINARY", simulated_binary, create=True), \
+                    patch.object(os, "open", side_effect=crt_open), \
+                    patch.object(os, "read", side_effect=crt_read):
+                snapshot, actual = runner.read_pinned_file(source)
+            self.assertEqual(actual, payload)
+            self.assertEqual(snapshot.sha256, hashlib.sha256(payload).hexdigest())
 
 
 if __name__ == "__main__":
