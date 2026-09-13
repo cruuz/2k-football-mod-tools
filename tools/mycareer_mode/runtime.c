@@ -19,6 +19,9 @@ extern const u16 m3_supersim_off_text[],m3_supersim_skip_text[],m3_supersim_fast
 extern const u16 m3_star_off_text[],m3_star_on_text[],m3_settings_note[];
 extern const u16 m3_stat_on_text[],m3_stat_off_text[];
 extern const u16 m3_fpf_off_text[],m3_fpf_on_text[];
+extern const u16 m3_call_every_text[],m3_call_position_text[],m3_call_coach_text[];
+extern const u16 * const m3_prospect_labels[];
+extern u8 entry_rows[];
 extern const u16 m3_ff_format[],m3_ff_wait_text[];
 extern const u8 m3_settings_menu[];
 extern u32 primary(void);
@@ -35,6 +38,9 @@ static NI void settings_labels(void) {
                               S(2696)?m3_supersim_off_text:m3_supersim_skip_text);
     W(settings_rows,104+4)=(u32)(S(2700)?m3_star_off_text:m3_star_on_text);
     W(settings_rows,156+4)=(u32)(S(2712)?m3_stat_off_text:m3_stat_on_text);
+    W(settings_rows,208+4)=(u32)(S(2736)==2?m3_call_coach_text:
+                               S(2736)?m3_call_position_text:m3_call_every_text);
+    W(entry_rows,208+4)=(u32)m3_prospect_labels[S(2744)];
 }
 static NI void player_star(u8 *p) { p[0x53]=(p[0x53]&0xfe)|!S(2700); }
 extern const u8 menu_template[];
@@ -71,8 +77,8 @@ u32 FC inline_valid(const u8 *b,u32 arena) {
        W(b,68)>0x7f92b1 || B(b,72)>2 || B(b,73) ||
        (B(b,74)>=32 && B(b,74)!=255) || B(b,75) || W(b,76)>0x7f92b1 ||
        (!B(b,72) && (B(b,74)!=255 || W(b,76))) ||
-       B(b,80)>1 || B(b,81)>1 || (B(b,82)&~31U) ||
-       (B(b,82)&10)==10 || B(b,83)) return 0;
+       B(b,80)>1 || B(b,81)>1 || (B(b,82)&128) || (B(b,82)&96)==96 ||
+       (B(b,82)&10)==10 || B(b,83)>4) return 0;
     for(i=16;i<32;i++) token|=b[i];
     for(i=44;i<56;i+=4) if(W(b,i)<0x70 || W(b,i)>=arena) return 0;
     for(i=88;i<128;i++) if(b[i]) return 0;
@@ -89,7 +95,8 @@ void FC inline_encode(u8 *b) {
     W(b,60)&=0x0ffff000;
     B(b,80)=S(180); B(b,81)=S(184);
     S(2704)=G(0xE5FFE4)!=0;
-    B(b,82)=S(2704)|(S(2696)==2?8:S(2696)<<1)|(S(2700)<<2)|(S(2712)<<4);
+    B(b,82)=S(2704)|(S(2696)==2?8:S(2696)<<1)|(S(2700)<<2)|(S(2712)<<4)|(S(2736)<<5);
+    B(b,83)=S(2744);
     W(b,12)=fnv(b+16,112);
 }
 void inline_decode(void) {
@@ -97,6 +104,7 @@ void inline_decode(void) {
     zero(state,200);
     S(2696)=b[82]&8?2:(b[82]>>1)&1; S(2700)=(b[82]>>2)&1; S(2704)=b[82]&1;
     S(2712)=(b[82]>>4)&1; S(2708)=S(2716)=S(2732)=0;
+    S(2736)=(b[82]>>5)&3; S(2740)=0; S(2744)=b[83];
     zero(m3,256); zero(m3+3600,496); init_menus();
     S(4)=0x31303030; S(8)=1280;
     move_bytes(state+40,b+16,16);
@@ -171,9 +179,20 @@ static NI u32 mode_pat_choice(void) {
 u32 FC mode_human(u8 *t) {
     u8 *p; u32 mask;
     if(!inline_active()) return t?W(t,0x30):0;
+    /* This changes play selection only. The binder still owns MyPlayer's
+     * controller, pre-snap commands and the play. ILB is native code 11,
+     * including the one-pool LB label. */
+    if(S(2736)==2 || (S(2736)==1 &&
+       !((state[149]==0 && (u32)t==G(0xE60280)) ||
+         (state[149]==11 && (u32)t==G(0xE60284))))) return 0;
+    /* The native screen can rebuild personnel. Retain this already proved
+     * hand-back side until its new call is accepted; body input stays with
+     * the binder. This transient latch is never a save preference. */
+    if(t && S(2740)==(u32)t && G(0xE602B4)==4) return 1;
     p=(u8 *)mode_unit_present();
     if(mode_pat_choice()==(u32)t && t) return 1;
     if(!p || S(2708) || W(p,0x38)!=(u32)t || G(0xE602B4)!=4) return 0;
+    /* Keep beta 68's position eligibility for the zero/default policy. */
     mask=(u32)t==G(0xE60280)?0x389:((u32)t==G(0xE60284)?0x18c70:0);
     return (mask>>state[149])&1;
 }
@@ -279,6 +298,13 @@ u32 FC mode_ff_ready(u32 manager) {
        phase<11 || phase>21) return 0;
     body=mode_unit_present();
     if(S(24)!=3) return 0;
+    if(S(2740)) {
+        /* Accepting a call precedes native personnel replacement. Keep the
+         * hand-back through that replacement: clearing on bit 8 alone lets
+         * a transient absent body rearm wait and steal the human's snap. */
+        if(phase>=14 || ((W((u8 *)W((u8 *)S(2740),12),36)&8) && mode_ff_settled())) S(2740)=0;
+        return 0;
+    }
     if(mode_pat_choice()) {
         /* Let A11F0 keep the native PAT play-call screen. The saved choice
          * survives; absent CPU units automatically rearm after this phase. */
@@ -293,6 +319,18 @@ u32 FC mode_ff_ready(u32 manager) {
             W((u8 *)G(0xE60294),16)=G(0xE602AC);
             CALL1(0xaf510,G(0xE60294));
             rebind();
+            /* A11F0 selected the formation while this unit was absent.
+             * Its call-complete bit survives personnel becoming present.
+             * Only at the guarded, unsnapped hand-back invalidate this
+             * side's selection and enter the same native screen as A143A.
+             * Coach policy keeps the selected call and live player control. */
+            body=W((u8 *)body,0x38);
+            if(mode_human((u8 *)body)) {
+                S(2740)=body;
+                W((u8 *)W((u8 *)body,12),36)&=~8U;
+                CALL0(0xacb90);
+                CALL0(0x9fbe0);
+            }
             return 0;
         }
         /* Unexpected mid-play membership never gives away a snap. Keep
@@ -416,7 +454,7 @@ static NI void rollback(void) {
 }
 void FC mode_entry(u32 manager) {
     if(!manager || W((u8 *)manager,0x100)>=30 || S(2672)) return;
-    S(0)=0; S(2580)=1; S(2672)=manager; S(2684)=0; zero(m3,4096);
+    S(0)=0; S(2580)=1; S(2672)=manager; S(2684)=S(2744)=0; zero(m3,4096);
     init_menus();
     CALL2(0x6e390,manager,(u32)entry_menu);
 }
@@ -471,6 +509,26 @@ u32 FC mode_created(u32 manager) {
     if(!owner(manager) || S(2680)!=1 || (u32)p!=G(0xCB8B14) || !p || !(p[8]&4)) return 0;
     for(i=0;i<W(ROOT,0x38);i++) if(W((u8 *)W(ROOT,0x3c),4*i)==(u32)p) count++;
     if(count!=1) return 0;
+    if(S(2744)) {
+        extern const u8 m3_fields[];
+        const u8 goals[]={74,70,64,59};
+        u32 goal=goals[S(2744)-1],score,after,k; u8 *v,old;
+        /* Native unboosted overall, one-point bounded skill sweeps. Style
+         * bytes and identity are untouched; exact goals stop the loop. */
+        for(k=0;k<2500;k++) {
+            score=CALL2(0x246d90,p,0);
+            if(score==goal) break;
+            v=p+m3_fields[k%25]; old=*v;
+            if((score<goal && old>=100) || (score>goal && !old)) continue;
+            *v=old+(score<goal?1:-1);
+            after=CALL2(0x246d90,p,0);
+            if((score<goal && after>goal) || (score>goal && after<goal)) *v=old;
+        }
+        if(CALL2(0x246d90,p,0)!=goal) {
+            extern const u16 m3_prospect_error[];
+            rollback(); notice(manager,m3_prospect_error); return 2;
+        }
+    }
     p[0x53]|=1; S(2680)=3; return 1;
 }
 u32 mode_cap_ratings(void) {
@@ -628,20 +686,37 @@ void FC mode_settings_toggle(u32 manager) {
         if(row==1) { S(2696)=S(2696)==2?1:S(2696)==1?0:2; S(2708)=S(2716)=S(2732)=0; }
         if(row==2 && (p=(u8 *)primary())) { S(2700)=!S(2700); player_star(p); }
         if(row==3) S(2712)=!S(2712);
+        if(row==4) S(2736)=(S(2736)+1)%3;
         settings_labels();
         /* Native row construction caches each label pointer. Refresh that
          * cache while retaining the selected row; native scrolling resumes. */
         CALL1(0x14ff80,manager);
     }
 }
+void FC mode_prospect_toggle(u32 manager) {
+    if(owner(manager) && !S(2676) && !inline_active()) {
+        S(2744)=(S(2744)+1)%5; settings_labels();
+        CALL1(0x14ff80,manager);
+    }
+}
+u32 mode_prospect_rank(void) {
+    u8 *p=(u8 *)primary(),*t=team(S(56)); u32 n=0,i,tier=S(2744);
+    if(!tier) return 0;
+    if(tier==4) {
+        for(i=0;i<t[0x11c];i++) if(B((u8 *)W(t,4*i),53)==p[53]) n++;
+        return n>8?7:n?n-1:0;
+    }
+    return p[53]==3 || p[53]==4?tier+1:tier==1?1:2;
+}
 extern void start_player(void);
 void FC mode_start(u32 manager) {
-    if(hub(manager)) start_player();
+    u32 tier=S(2744);
+    if(hub(manager)) { S(2744)=0; start_player(); S(2744)=tier; }
 }
 static NI void capture(u8 *p) {
     u32 i;
     zero(state,200); S(2696)=2;
-    S(2708)=S(2716)=S(2732)=S(2700)=S(2704)=S(2712)=G(0xE5FFE4)=0;
+    S(2708)=S(2716)=S(2732)=S(2736)=S(2740)=S(2700)=S(2704)=S(2712)=G(0xE5FFE4)=0;
     player_star(p); S(4)=0x31303030; S(8)=1280;
     S(24)=3; S(28)=((u32)p-W(ROOT,4))/84; S(56)=S(2684);
     /* Native RNG supplies a new per-career token. It is data, never identity
@@ -771,7 +846,7 @@ void FC mode_save_menu(u32 manager) {
 void FC mode_postgame(u32 manager) {
     /* Preserve the native postgame parent and its complete week processing.
      * It pops itself before committing; only then may Schedule return home. */
-    S(2708)=S(2716)=S(2732)=0;
+    S(2708)=S(2716)=S(2732)=S(2740)=0;
     CALL1(0xc74e0,manager);
     if(hub(manager) && W((u8 *)manager,8*W((u8 *)manager,0x100))==0x522828)
         CALL2(0x6e450,manager,(u32)apartment);
