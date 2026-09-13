@@ -177,6 +177,49 @@ class UndoStack:
         return len(self._done), len(self._undone)
 
 
+class PlayerCsvPreviewDialog(QDialog):
+    """Read-only full diff, including every refused row, before one import command."""
+
+    def __init__(self, preview: rr.CsvPreview, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Preview player CSV import")
+        self.resize(950, 620)
+        layout = QVBoxLayout(self)
+        receipt = preview.receipt
+        summary = QLabel(f"{receipt['changed']} players, {receipt['fields']} fields change; "
+                         f"{len(receipt['refused'])} rows refused. Apply changes to the loaded roster, then "
+                         "use Undo to reverse the whole import.")
+        summary.setWordWrap(True)
+        layout.addWidget(summary)
+        self.table = QTableWidget(0, 6)
+        self.table.setHorizontalHeaderLabels(("CSV row", "Pool + index", "Field", "Before", "After", "Refusal"))
+        self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.table.setAccessibleName("Player CSV changes and refused rows")
+        entries = []
+        for row in receipt['changes']:
+            for field in row['changes']:
+                entries.append((row['row'], f"{row['pool']}:{row['index']}", field['field'],
+                                field['before'], field['after'], ""))
+        for row in receipt['refused']:
+            entries.append((row['row'], f"{row['pool']}:{row['index']}", "", "", "", row['reason']))
+        self.table.setRowCount(len(entries))
+        for i, row in enumerate(entries):
+            for j, value in enumerate(row):
+                self.table.setItem(i, j, QTableWidgetItem(str(value)))
+        self.table.resizeColumnsToContents()
+        layout.addWidget(self.table)
+        help_text = QLabel(rr.CSV_HELP)
+        help_text.setWordWrap(True)
+        layout.addWidget(help_text)
+        self.buttons = QDialogButtonBox(QDialogButtonBox.Apply | QDialogButtonBox.Cancel)
+        apply = self.buttons.button(QDialogButtonBox.Apply)
+        apply.setText("Apply valid rows")
+        apply.setEnabled(preview.before != preview.after)
+        apply.clicked.connect(self.accept)
+        self.buttons.rejected.connect(self.reject)
+        layout.addWidget(self.buttons)
+
+
 # --------------------------------------------------------------------------------------------- cards
 class ValueBar(QWidget):
     """A proportional bar you can click or drag, the way Finn's slider row works.
@@ -1265,7 +1308,9 @@ class RosterEditorPanel(QWidget):
         csv_menu = QMenu(self.csv_button)
         csv_menu.addAction("Export this list…", lambda: self._export_csv(False))
         csv_menu.addAction("Export every player…", lambda: self._export_csv(True))
-        csv_menu.addAction("Import a CSV…", self._import_csv)
+        csv_menu.addAction("Import players from CSV…", self._import_csv)
+        csv_menu.addAction("CSV format and Excel help…",
+                           lambda: QMessageBox.information(self, "Player CSV format", rr.CSV_HELP))
         csv_menu.addSeparator()
         csv_menu.addAction("Export a .PlayerData backup (Finn's format)…", self._export_player_data)
         csv_menu.addAction("Restore from a .PlayerData backup…", lambda: self._import_player_data("all"))
@@ -3579,47 +3624,31 @@ class RosterEditorPanel(QWidget):
         players = None if everything else self.visible_players()
         return rr.export_csv(self.document, players)
 
-    def import_csv_text(self, text: str) -> dict[str, Any]:
+    def preview_csv_text(self, text: str) -> rr.CsvPreview:
         if self.document is None:
-            return {"rows": 0, "changed": 0, "fields": 0, "log": ["no roster loaded"]}
-        snapshot = {(p.pool, p.index): dict(p.record.values) for p in self.document.players}
-        lists_before = self.document.membership_snapshot()
-        receipt = rr.import_csv(self.document, text)
-        lists_after = self.document.membership_snapshot()
-        moved = {(m["pool"], m["index"]) for m in self.document.membership_changes()}
-        for player in self.document.players:
-            key = (player.pool, player.index)
-            if dict(player.record.values) != snapshot[key] or key in moved:
-                self._dirty.add(key)
+            raise rr.RosterRecordError("No roster is loaded; open a disc roster or Xbox save first.")
+        return rr.preview_csv(self.document, text)
 
-        def undo() -> None:
-            assert self.document is not None
-            for player in self.document.players:
-                player.record.values.update(snapshot[(player.pool, player.index)])
-            self.document.restore_membership(lists_before)
-            for key in moved:
-                self._dirty.discard(key)
-            self._refresh_team_labels()
-            self.refresh_grid()
-            self._show_player(self.selected_player())
-
-        def redo() -> None:
-            assert self.document is not None
-            self.document.restore_membership(lists_after)
-            for player in self.document.players:
-                if (player.pool, player.index) in moved:
-                    self._dirty.add((player.pool, player.index))
-            self._refresh_team_labels()
-            self.refresh_grid()
-            self._show_player(self.selected_player())
-
-        self.undo_stack.push(UndoEntry(f"CSV import ({receipt['changed']} players)", undo, redo))
-        self._refresh_team_labels()
-        self.refresh_grid()
-        self._show_player(self.selected_player())
-        self._set_status(f"CSV: {receipt['rows']} rows matched, {receipt['changed']} players, {receipt['fields']} fields"
-                         + (f", {len(receipt['log'])} notes" if receipt["log"] else ""))
+    def apply_csv_preview(self, preview: rr.CsvPreview) -> dict[str, Any]:
+        if self.document is None:
+            raise rr.RosterRecordError("No roster is loaded; open a disc roster or Xbox save first.")
+        receipt = rr.apply_csv_preview(self.document, preview)
+        if preview.before != preview.after:
+            journal = self.franchise_panel._edits[:self.franchise_panel._cursor]
+            def restore(payload):
+                self._restore_composed(payload, journal)
+                self._show_player(self.selected_player())
+            self.undo_stack.push(UndoEntry(f"CSV import ({receipt['changed']} players)",
+                                           lambda: restore(preview.before), lambda: restore(preview.after)))
+            restore(preview.after)
+        self._set_status(f"CSV: {receipt['rows']} rows matched, {receipt['changed']} players, "
+                         f"{receipt['fields']} fields; {len(receipt['refused'])} rows refused. "
+                         "Your source was not changed.")
         return receipt
+
+    def import_csv_text(self, text: str) -> dict[str, Any]:
+        """Programmatic import; the file action displays the same preview first."""
+        return self.apply_csv_preview(self.preview_csv_text(text))
 
     # ------------------------------------------------------------------ .PlayerData
     def export_player_data_bytes(self) -> bytes:
@@ -3679,16 +3708,34 @@ class RosterEditorPanel(QWidget):
         chosen, _f = QFileDialog.getSaveFileName(self, "Export players as CSV", "roster.csv", CSV_FILTER)
         if not chosen:
             return
-        Path(chosen).write_text(self.export_csv_text(everything), encoding="utf-8", newline="")
-        self._set_status(f"Wrote {chosen}")
+        try:
+            target = Path(chosen).resolve()
+            source = self._source_path.resolve() if self._source_path else None
+            if source and (target == source or source.is_dir() and source in target.parents):
+                raise rr.RosterRecordError("Choose a CSV outside your source save or disc path.")
+            target.write_text(self.export_csv_text(everything), encoding="utf-8", newline="")
+        except (OSError, ValueError) as exc:
+            QMessageBox.warning(self, "Could not export players", f"{exc}\nChoose another CSV path and try again.")
+            return
+        self._set_status(f"Wrote {chosen}. UTF-8 CSV; see CSV format and Excel help for protected text cells.")
 
     def _import_csv(self) -> None:
+        if self.document is None:
+            return
         chosen, _f = QFileDialog.getOpenFileName(self, "Import a player CSV", "", CSV_FILTER)
         if not chosen:
             return
-        receipt = self.import_csv_text(Path(chosen).read_text(encoding="utf-8"))
-        if receipt["log"]:
-            QMessageBox.information(self, "CSV import", "\n".join(receipt["log"][:20]))
+        try:
+            with Path(chosen).open("rb") as stream:
+                raw = stream.read(rr.CSV_MAX_BYTES + 1)
+            if len(raw) > rr.CSV_MAX_BYTES:
+                raise rr.RosterRecordError("Player CSV exceeds 16 MiB; export a smaller list.")
+            preview = self.preview_csv_text(raw.decode("utf-8-sig"))
+            dialog = PlayerCsvPreviewDialog(preview, self)
+            if dialog.exec_() == QDialog.Accepted:
+                self.apply_csv_preview(preview)
+        except (OSError, ValueError, csv.Error) as exc:
+            QMessageBox.warning(self, "Could not import players", f"{exc}\nCorrect the CSV and preview it again.")
 
     # ------------------------------------------------------------------ writing
     def edits_document(self) -> dict[str, Any]:

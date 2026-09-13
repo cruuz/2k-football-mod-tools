@@ -36,12 +36,12 @@ HELP_TEXT = (
     "with the nflverse roster base. Short lists still need named reserves from "
     "nearby seasons. Shared teams cannot match every game. Requires the retail position layout. "
     "Build blocked while the Wide Right loading freeze remains unresolved. "
-    "EXPERIMENTAL / UNWITNESSED. See the in-game report."
+    "Native reload and archive-wait checks do not prove a complete scene load. EXPERIMENTAL / UNWITNESSED. See the in-game report."
 )
 DEFAULT_ENABLED = False
 BUILD_BLOCK_REASON = (
     "Historic moment rosters cannot be built: Wide Right has an unresolved loading freeze. "
-    "The native team reload repair still needs gameplay verification."
+    "Native team reload completes with supplied archive completions; the failing game load still needs its archive completion and scene state captured. Keep this option off."
 )
 DATA_DIR = Path(__file__).resolve().parents[2] / "data/nfl2k5_espn25_moment_rosters"
 # Updated deliberately after deterministic offline regeneration; no runtime fetch.

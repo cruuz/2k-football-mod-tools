@@ -138,3 +138,47 @@ class LiveCPU(CPU):
         pointer = self.run(0xE8790, ecx=depth, edx=0,
                            args=(0, 0, 0x23A0100, len(assigned), 0, pool, ordinal))
         return self.person(pointer) if pointer else None
+
+
+class CompletionCPU(LiveCPU):
+    """Execute the native archive wait; model only delivery at the OS boundary.
+
+    The real wait is 432D0..432EE, reached from 2D182E before C1030.
+    A withheld completion stops at the actual back edge after 64 iterations.
+    Delivery tail-calls the native busy setter, never skips the wait branch.
+    This cannot supply the console's real asynchronous I/O/event state.
+    """
+    def __init__(self, *args, **kwargs):
+        self.hold_completion = False
+        self.wait_branches = 0
+        self.wait_callers = []
+        self.deliveries = 0
+        super().__init__(*args, **kwargs)
+
+    def archive_stubs(self):
+        super().archive_stubs()
+        acquire = self.stubs[0x43F50]
+        def queue():
+            acquire()
+            self.w(0xB09584, 1)  # supplied async request, after the resource bytes arrive
+        def pump():
+            if self.hold_completion:
+                self.ret(0)
+            else:
+                from unicorn import x86_const as regs
+                self.deliveries += 1
+                # Native 42FC0 clears busy and returns to 432E5 on the same stack.
+                self.uc.reg_write(regs.UC_X86_REG_ECX, 0)
+                self.uc.reg_write(regs.UC_X86_REG_EIP, 0x42FC0)
+        self.stubs[0x43F50] = queue
+        self.stubs.pop(0x432D0)
+        self.stubs[0x38F50] = pump
+
+    def _hook(self, uc, at, size, data):
+        if at == 0x432D0:
+            self.wait_callers.append(self.r(self.reg('esp')))
+        elif at == 0x432EC:
+            self.wait_branches += 1
+            if self.hold_completion and self.wait_branches >= 64:
+                uc.emu_stop()
+        super()._hook(uc, at, size, data)
