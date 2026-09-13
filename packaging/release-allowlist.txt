@@ -844,3 +844,7 @@ mod_editor/gui/workspace_runtime.py
 mod_editor/core/nfl2k5_compile_cache.py
 tools/nfl2k5_equipment_optimal
 tools/nfl2k5_equipment_optimal.c
+
+# Beta 69 shared UI help and product FAQ
+mod_editor/gui/polish_qt.py
+docs/mod_editor/2k5_mod_studio_faq.md

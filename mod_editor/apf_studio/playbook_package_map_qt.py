@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import failure_body
+
 from typing import Callable
 
 from PyQt5.QtCore import Qt, pyqtSignal
@@ -363,7 +365,7 @@ class ApfPackageMapPanel(QWidget):
         try:
             updated = put_role_in_slot(self._current_map(formation_index), row, role)
         except ValidationError as exc:
-            QMessageBox.information(self, "That swap is not legal", str(exc))
+            QMessageBox.information(self, "That swap is not legal", failure_body(exc))
             return
         self._set_draft(formation_index, updated)
 
@@ -375,7 +377,7 @@ class ApfPackageMapPanel(QWidget):
         try:
             updated = swap_te_and_wr(self._current_map(formation_index))
         except ValidationError as exc:
-            QMessageBox.information(self, "That swap is not legal", str(exc))
+            QMessageBox.information(self, "That swap is not legal", failure_body(exc))
             return
         self._set_draft(formation_index, updated)
 

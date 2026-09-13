@@ -1,6 +1,8 @@
 """APF-owned play/formation designer. Its protected page wiring is in WIRING.md."""
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import failure_body
+
 import copy
 
 from PyQt5.QtCore import pyqtSignal
@@ -147,7 +149,7 @@ class PlayDesignDialog(_RecordDialog):
         try:
             self.chain[self.node.currentData()].with_field(self.field.currentData(), self.value.value())
         except ValueError as exc:
-            QMessageBox.warning(self, "Invalid assignment field", str(exc))
+            QMessageBox.warning(self, "Invalid assignment field", failure_body(exc))
             return
         self.nodes[self.slot.currentData(), self.node.currentData(), self.field.currentData()] = self.value.value()
         self._summary()
@@ -319,7 +321,7 @@ class PlayDesignerPanel(QWidget):
         try:
             compile_design(self.source, draft)
         except ValueError as exc:
-            QMessageBox.warning(self, "Cannot apply design", str(exc))
+            QMessageBox.warning(self, "Cannot apply design", failure_body(exc))
             return False
         self.draft = draft
         self.dirty = True
@@ -342,7 +344,7 @@ class PlayDesignerPanel(QWidget):
             draft["plays"].append(request)
             self._accept(draft)
         except ValueError as exc:
-            QMessageBox.warning(self, "Cannot add concept", str(exc))
+            QMessageBox.warning(self, "Cannot add concept", failure_body(exc))
 
     def _cpu(self):
         body = compile_design(self.source, self.draft).replacement if any(self.draft[k] for k in ("plays", "formations", "cpu_calls")) else self.source

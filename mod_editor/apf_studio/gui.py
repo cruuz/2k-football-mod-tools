@@ -8,6 +8,9 @@ assets and does not touch a user's source directly; every operation crosses the
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import plain_error, failure_body
+from mod_editor.gui.polish_qt import polish_controls
+
 from dataclasses import dataclass, replace
 import html
 import json
@@ -185,7 +188,7 @@ from .project import (
     WorkspaceStateStore,
     project_target_identity,
 )
-from .page_layout import WorkspaceTabs as QTabWidget
+from .page_layout import WorkspaceTabs as QTabWidget, FlowLayout
 from . import apf_theme
 from .apf_theme import CompactLabel as QLabel
 from .product_findings import gameplay_snapshot, presentation_snapshot
@@ -1216,7 +1219,7 @@ class _BackgroundTask(QRunnable):
         try:
             result = self.operation(self.signals.progress.emit)
         except BaseException as exc:
-            message = str(exc).strip() or exc.__class__.__name__
+            message = plain_error(exc)
             self.signals.failed.emit(message, traceback.format_exc())
         else:
             self.signals.succeeded.emit(result)
@@ -1779,7 +1782,7 @@ def fit_slot_image(
             try:
                 chosen_mode = fit_mode_from_label(str(choice))
             except ValidationError as exc:
-                QMessageBox.information(parent, "Invalid fit mode", str(exc))
+                QMessageBox.information(parent, "Invalid fit mode", failure_body(exc))
                 return None
         else:
             chosen_mode = "contain"
@@ -4881,7 +4884,7 @@ class ApfTeamLogoPanel(QFrame):
             QMessageBox.information(
                 self,
                 "Could not stage helmet crest",
-                str(exc),
+                failure_body(exc),
             )
             return False
         self._staged_png = Path(modification.replacement_path)
@@ -5513,7 +5516,7 @@ class ApfTeamLogoPanel(QFrame):
             return None
         except OSError as exc:
             QMessageBox.information(
-                self, "Could not stage the detail layer", str(exc)
+                self, "Could not stage the detail layer", failure_body(exc)
             )
             return None
         return staged
@@ -5571,7 +5574,7 @@ class ApfTeamLogoPanel(QFrame):
         try:
             pixels = fit_image(Path(str(source)), self._WIDTH, self._HEIGHT).rgba
         except ValidationError as exc:
-            QMessageBox.information(self, "Could not open the crest", str(exc))
+            QMessageBox.information(self, "Could not open the crest", failure_body(exc))
             return
 
         edited = edit_texture(
@@ -5711,7 +5714,7 @@ class ApfTeamLogoPanel(QFrame):
                 )
             except Exception as exc:
                 QMessageBox.information(
-                    self, "Could not preserve region-mask source", str(exc)
+                    self, "Could not preserve region-mask source", failure_body(exc)
                 )
                 return False
         try:
@@ -5722,7 +5725,7 @@ class ApfTeamLogoPanel(QFrame):
             QMessageBox.information(
                 self,
                 "Could not place helmet logo",
-                str(exc),
+                failure_body(exc),
             )
             return False
         try:
@@ -5786,7 +5789,7 @@ class ApfTeamLogoPanel(QFrame):
         except (ValidationError, OSError) as exc:
             if private_source is not None:
                 private_source.unlink(missing_ok=True)
-            QMessageBox.information(self, "Could not read normal logo", str(exc))
+            QMessageBox.information(self, "Could not read normal logo", failure_body(exc))
             return False
         assert private_source is not None
         conversion = convert_normal_logo(normalized.rgba, parent=self)
@@ -5950,7 +5953,7 @@ class ApfTeamLogoPanel(QFrame):
                 QMessageBox.information(
                     self,
                     "Could not preserve full-resolution source",
-                    str(exc),
+                    failure_body(exc),
                 )
                 return False
             if self._commit_design(Path(path)):
@@ -6006,7 +6009,7 @@ class ApfTeamLogoPanel(QFrame):
             QMessageBox.information(
                 self,
                 "Could not preserve full-resolution source",
-                str(exc),
+                failure_body(exc),
             )
             return False
         if not self._commit_design(staged):
@@ -7820,7 +7823,7 @@ class FieldArtStudioPage(QWidget):
         "selector, and the deferred codecs (field_radiance and "
         "the divot_Grass* weather textures) and the "
         "SCNE/CurveAnim rows have no bounded writer, except the eleven named field material "
-        "alphas of entries 53, 252, 578 and 1333 (Field overlay opacity, beta 66)."
+        "alphas of entries 53, 252, 578 and 1333 (Field overlay opacity)."
     )
 
     def __init__(self, facade: ApfStudioFacade, run_task: TaskRunner):
@@ -8281,7 +8284,7 @@ class StadiumStudioPage(QWidget):
         scenes_box = QVBoxLayout(scenes_panel)
         scenes_box.setContentsMargins(14, 13, 14, 13)
         scenes_box.setSpacing(8)
-        scenes_heading = QHBoxLayout()
+        scenes_heading = QVBoxLayout()
         scenes_title = QLabel("Stadium scenes")
         scenes_title.setObjectName("panelTitle")
         self.scene_count = QLabel("Load a game")
@@ -8316,11 +8319,12 @@ class StadiumStudioPage(QWidget):
         view_box = QVBoxLayout(view_panel)
         view_box.setContentsMargins(14, 13, 14, 13)
         view_box.setSpacing(8)
-        view_heading = QHBoxLayout()
+        view_heading = QVBoxLayout()
         view_titles = QVBoxLayout()
         view_titles.setSpacing(1)
-        self.scene_title = QLabel("Choose a stadium scene")
+        self.scene_title = QLabel("Choose a scene")
         self.scene_title.setObjectName("panelTitle")
+        self.scene_title.setWordWrap(True)
         self.scene_metadata = QLabel(
             "Drag to orbit • Shift/middle-drag to pan • wheel to zoom • click a surface"
         )
@@ -8366,12 +8370,13 @@ class StadiumStudioPage(QWidget):
         self.mesh_target.addItem("Editable meshes — load a stadium scene", None)
         self.mesh_target.currentIndexChanged.connect(self._mesh_target_chosen)
         self._refresh_mesh_action_buttons()
-        view_heading.addLayout(view_titles, 1)
+        view_heading.addLayout(view_titles)
         view_heading.addWidget(self.mesh_target)
-        view_heading.addWidget(self.reset_view_button)
-        view_heading.addWidget(self.export_scene_button)
-        view_heading.addWidget(self.export_model_button)
-        view_heading.addWidget(self.import_model_button)
+        view_actions = FlowLayout()
+        for button in (self.reset_view_button, self.export_scene_button,
+                       self.export_model_button, self.import_model_button):
+            view_actions.addWidget(button)
+        view_heading.addLayout(view_actions)
         self.viewport = StadiumViewport()
         self.viewport.setMinimumSize(480, 330)
         self.surface_identity = QLabel("No surface selected")
@@ -8405,9 +8410,10 @@ class StadiumStudioPage(QWidget):
         package_box = QVBoxLayout(package_panel)
         package_box.setContentsMargins(14, 13, 14, 13)
         package_box.setSpacing(8)
-        package_heading = QHBoxLayout()
-        self.package_panel_title = QLabel("Owning outer package")
+        package_heading = QVBoxLayout()
+        self.package_panel_title = QLabel("Related package")
         self.package_panel_title.setObjectName("panelTitle")
+        self.package_panel_title.setWordWrap(True)
         self.package_count = QLabel("0 records")
         self.package_count.setObjectName("countPill")
         package_heading.addWidget(self.package_panel_title)
@@ -8435,7 +8441,7 @@ class StadiumStudioPage(QWidget):
         )
         self.package_detail.setObjectName("findingText")
         self.package_detail.setWordWrap(True)
-        package_actions = QHBoxLayout()
+        package_actions = FlowLayout()
         package_actions.setSpacing(7)
         self.export_package_button = QPushButton("Export…")
         self.export_package_button.setObjectName("secondaryButton")
@@ -8755,7 +8761,7 @@ class StadiumStudioPage(QWidget):
         self._model = None
         self._selected_model_target = None
         self.viewport.set_model(None)
-        self.scene_title.setText("Choose a stadium scene")
+        self.scene_title.setText("Choose a scene")
         self.scene_metadata.setText(message)
         self.surface_identity.setText("No surface selected")
         tip = (
@@ -8770,7 +8776,7 @@ class StadiumStudioPage(QWidget):
         self._selected_model_target = None
         self._populate_mesh_targets(None)
         self._refresh_mesh_action_buttons()
-        self.package_panel_title.setText("Owning outer package")
+        self.package_panel_title.setText("Related package")
         self._populate_package(())
 
     def _populate_mesh_targets(self, scene: ApfStadiumScene | None) -> None:
@@ -11781,7 +11787,7 @@ class ExternalXma1EncoderDialog(QDialog):
         try:
             selected_path = self._canonical_tool_path(selected)
         except ValueError as exc:
-            QMessageBox.information(self, "Encoder path is unavailable", str(exc))
+            QMessageBox.information(self, "Encoder path is unavailable", failure_body(exc))
             return
         self.encoder_path.setText(str(selected_path))
         windows_encoder = selected_path.suffix.casefold() == ".exe"
@@ -11809,7 +11815,7 @@ class ExternalXma1EncoderDialog(QDialog):
         try:
             selected_path = self._canonical_tool_path(selected)
         except ValueError as exc:
-            QMessageBox.information(self, "Wine path is unavailable", str(exc))
+            QMessageBox.information(self, "Wine path is unavailable", failure_body(exc))
             return
         self.wine_path.setText(str(selected_path))
 
@@ -12280,7 +12286,7 @@ class Xma1EncoderSetupWizard(QDialog):
         try:
             selected_path = self._canonical_tool_path(selected)
         except ValueError as exc:
-            QMessageBox.information(self, "Encoder path is unavailable", str(exc))
+            QMessageBox.information(self, "Encoder path is unavailable", failure_body(exc))
             return
         self.encoder_path.setText(str(selected_path))
         if selected_path.suffix.casefold() == ".exe":
@@ -12308,7 +12314,7 @@ class Xma1EncoderSetupWizard(QDialog):
         try:
             selected_path = self._canonical_tool_path(selected)
         except ValueError as exc:
-            QMessageBox.information(self, "Wine path is unavailable", str(exc))
+            QMessageBox.information(self, "Wine path is unavailable", failure_body(exc))
             return
         self.wine_path.setText(str(selected_path))
 
@@ -12405,7 +12411,7 @@ class Xma1EncoderSetupWizard(QDialog):
         try:
             executable = self._canonical_tool_path(encoder_value)
         except ValueError as exc:
-            QMessageBox.information(self, "Encoder path is unavailable", str(exc))
+            QMessageBox.information(self, "Encoder path is unavailable", failure_body(exc))
             return None
         wine_executable: Path | None = None
         if self._is_windows_encoder(encoder_value) and self.use_wine_checkbox.isChecked():
@@ -12415,7 +12421,7 @@ class Xma1EncoderSetupWizard(QDialog):
             try:
                 wine_executable = self._canonical_tool_path(wine_value)
             except ValueError as exc:
-                QMessageBox.information(self, "Wine path is unavailable", str(exc))
+                QMessageBox.information(self, "Wine path is unavailable", failure_body(exc))
                 return None
         return executable, self._current_arguments(), wine_executable
 
@@ -14588,7 +14594,7 @@ class InspectorBrowser(QFrame):
             except WaveformCancelled:
                 return "cancelled", None
             except Exception as exc:
-                return "error", str(exc).strip() or exc.__class__.__name__
+                return "error", plain_error(exc)
 
         self.run_task(
             "Preparing selected APF waveform",
@@ -17430,7 +17436,7 @@ class InspectorBrowser(QFrame):
             except Exception as exc:
                 if cancel_event.is_set():
                     return False, ""
-                return False, str(exc).strip() or exc.__class__.__name__
+                return False, plain_error(exc)
             if cancel_event.is_set():
                 return False, ""
             return True, result
@@ -17507,7 +17513,7 @@ class InspectorBrowser(QFrame):
             executable, arguments = _audio_player_command(path)
         except RuntimeError as exc:
             self._update_audio_preview_action()
-            QMessageBox.information(self, "Audio player unavailable", str(exc))
+            QMessageBox.information(self, "Audio player unavailable", failure_body(exc))
             return
         self._stopping_audio = False
         self._playing_audio_request = request
@@ -19976,6 +19982,7 @@ class ApfStudioMainWindow(QMainWindow):
         self._update_product_state()
         self._activate_page(0, force=True)
         self._restore_ui_state()
+        polish_controls(self)
         # After the window is up, never during construction: a slow network must
         # not delay the app appearing.
         QTimer.singleShot(1200, self._start_automatic_update_check)
@@ -20828,7 +20835,7 @@ class ApfStudioMainWindow(QMainWindow):
                 on_success(result)
             except BaseException as exc:
                 self._show_error(
-                    str(exc).strip() or exc.__class__.__name__, traceback.format_exc()
+                    plain_error(exc), traceback.format_exc()
                 )
 
         worker.signals.succeeded.connect(dispatch)
@@ -20852,6 +20859,7 @@ class ApfStudioMainWindow(QMainWindow):
             self.progress.setRange(0, 0)
 
     def _task_failed(self, _worker: _BackgroundTask, message: str, detail: str, show_errors: bool = True, on_error: Callable[[str], None] | None = None) -> None:
+        message = plain_error(message)
         on_error(message) if on_error is not None else None; hint = friendly_fix_hint(message); self._last_detail = f"{message} — {hint}" if hint else message; self.operation_status.setText(self._last_detail) if hasattr(self, "operation_status") else None
         if show_errors: self._show_error(message, detail)
 
@@ -20901,14 +20909,10 @@ class ApfStudioMainWindow(QMainWindow):
     def _show_error(self, message: str, detail: str = "") -> None:
         dialog = QMessageBox(self)
         dialog.setIcon(QMessageBox.Critical)
-        dialog.setWindowTitle(f"{PRODUCT_NAME} could not finish that")
-        hint = friendly_fix_hint(message)
-        dialog.setText(message if hint is None else f"{message}\n\n{hint}")
-        dialog.setInformativeText(
-            "The original game was not modified. Correct the item described above and try again."
-        )
+        dialog.setWindowTitle("Couldn't finish that")
+        dialog.setText(failure_body(message, hint=friendly_fix_hint(message)))
         if detail:
-            dialog.setDetailedText(detail)
+            dialog.setDetailedText(plain_error(detail))
         dialog.exec_()
 
     def _activate_page(self, row: int, *, force: bool = False) -> None:
@@ -20917,6 +20921,12 @@ class ApfStudioMainWindow(QMainWindow):
         category = APF_CATEGORY_ORDER[row]
         self.page_title.setText(category.title)
         page = self._pages[category]
+        polish_controls(page)
+        if isinstance(page, StadiumStudioPage):
+            for splitter in page.findChildren(QSplitter):
+                if splitter.count() == 3:
+                    for index, width in enumerate((200, 340, 230)):
+                        splitter.widget(index).setMinimumWidth(width)
         source_key = self.facade.source.source_sha256 if self.facade.source else "not-loaded"
         if not force and self._page_source.get(category) == source_key:
             refresh = getattr(page, "refresh", None)
@@ -21792,24 +21802,31 @@ class ApfStudioMainWindow(QMainWindow):
         reports the regions the writers changed rather than a bare count."""
 
         changed = len(getattr(receipt, "modified_assets", ()))
-        if not changed:
-            return (
-                "Applied 0 edits: nothing was staged, so this folder is a "
-                "plain copy of your game. Stage an edit first, then Build."
-            )
-        lines = [f"Applied {changed} edit{'s' if changed != 1 else ''}."]
         try:
             manifest = Path(getattr(receipt, "manifest", ""))
             document = json.loads(manifest.read_text(encoding="utf-8"))
             rows = document.get("edits") or []
         except (AttributeError, OSError, ValueError, TypeError):
-            rows = []
+            document, rows = {}, []
+        has_books = bool(document.get("playcalling")) or bool(getattr(receipt, "teams_now_own_books", ()))
+        if not changed and not has_books:
+            return (
+                "Applied 0 edits: nothing was staged, so this folder is a "
+                "plain copy of your game. Stage an edit first, then Build."
+            )
+        lines = [f"Applied {changed} edit{'s' if changed != 1 else ''}."] if changed else []
+        if has_books:
+            lines.append("This copy contains CPU Play Calling edits. Gameplay remains UNWITNESSED.")
+        kinds = set()
         maps = 0
         regions = 0
         bytes_changed = 0
         for row in rows:
             if not isinstance(row, dict):
                 continue
+            kind = str(row.get("kind") or "")
+            if kind:
+                kinds.add(kind)
             lines.extend(status for status in row.get("fit_status", ()) if isinstance(status, str))
             maps += len(row.get("package_maps") or ())
             regions += len(row.get("changed_ranges") or ())
@@ -21817,6 +21834,22 @@ class ApfStudioMainWindow(QMainWindow):
                 bytes_changed += int(row.get("changed_byte_count") or 0)
             except (TypeError, ValueError):
                 continue
+        if kinds:
+            descriptions = set()
+            for kind in kinds:
+                if any(word in kind for word in ("play", "splb", "book")):
+                    descriptions.add("playbook edits")
+                elif any(word in kind for word in ("audio", "audo", "ausb", "xma")):
+                    descriptions.add("sound replacements")
+                elif any(word in kind for word in ("roster", "rating", "position")):
+                    descriptions.add("player and roster edits")
+                elif "text" in kind and "texture" not in kind:
+                    descriptions.add("text edits")
+                elif any(word in kind for word in ("texture", "uniform", "helmet", "logo", "field", "stadium", "appearance", "model")):
+                    descriptions.add("artwork and appearance edits")
+                else:
+                    descriptions.add("other project edits")
+            lines.append("This copy contains " + ", ".join(sorted(descriptions)) + ".")
         if maps:
             lines.append(
                 f"{maps} who-lines-up formation map"
@@ -21837,14 +21870,16 @@ class ApfStudioMainWindow(QMainWindow):
             "Teams now owning a book: " + ", ".join(owners) + ". "
             if owners else ""
         )
+        book_note = ("CPU Play Calling changes are recorded in book-content-receipt.json. Gameplay remains UNWITNESSED.\n\n"
+                     if owners or "CPU Play Calling edits" in detail else "")
         self._last_detail = f"Build complete: {output.name}. {ownership}{detail}"
         self._update_product_state()
         QMessageBox.information(
             self,
             "Modded game folder built",
             f"Wrote:\n{output}\n\n"
-            f"{ownership}{detail} The complete output was verified and your source stayed untouched.\n\n"
-            "CPU Play Calling changes are recorded in book-content-receipt.json. Gameplay remains UNWITNESSED.\n\n"
+            f"{ownership}{detail} The complete output was verified. Your original game disc was not changed.\n\n"
+            f"{book_note}"
             "Point Xenia at this folder. Rebuild into the same folder to keep that path.\n\n"
             "This folder contains your retail game data. Do not redistribute it; share the .apf2k8mod project instead.",
         )

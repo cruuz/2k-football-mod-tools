@@ -13,6 +13,8 @@ the top of this module so they can be exercised without a screen.
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import failure_body
+
 from pathlib import Path
 from typing import Any, Callable, Sequence
 
@@ -265,7 +267,7 @@ class PlaybookPackInstallDialog(QDialog):
                         raise pack_mod.PlaybookPackError(f"{team}: {blocked[0]}")
             result = self.host.install_playbook_pack(self.pack, teams, _quiet)
         except Exception as exc:  # noqa: BLE001
-            QMessageBox.warning(self, "Install Playbook Pack", str(exc))
+            QMessageBox.warning(self, "Couldn't finish that", failure_body(exc))
             return
         self.installed_teams = teams
         self.result_message = str(getattr(result, "message", result))

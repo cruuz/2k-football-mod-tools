@@ -1,6 +1,8 @@
 """Senior Bowl configuration and offline preview. No native launch is exposed."""
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import failure_body
+
 from pathlib import Path
 
 from PyQt5.QtCore import Qt, pyqtSignal
@@ -198,7 +200,7 @@ class SeniorBowlPanel(QWidget):
             _document, players = bowl.read_franchise(path, scheme=self.settings().scheme)
             self.set_players(players, path)
         except (ValueError, OSError) as exc:
-            QMessageBox.warning(self, "Senior Bowl", str(exc))
+            QMessageBox.warning(self, "Couldn't finish that", failure_body(exc))
 
     def save_project(self):
         try:
@@ -208,7 +210,7 @@ class SeniorBowlPanel(QWidget):
                 bowl._require(not self.source.text() or Path(path).resolve() != Path(self.source.text()).resolve(), "choose a separate project file")
                 bowl.atomic_write(path, content)
         except (ValueError, OSError) as exc:
-            QMessageBox.warning(self, "Senior Bowl", str(exc))
+            QMessageBox.warning(self, "Couldn't finish that", failure_body(exc))
 
     def open_project(self):
         path, _ = QFileDialog.getOpenFileName(self, "Open Senior Bowl preview project", "", "Senior Bowl preview (*.2k5senior)")
@@ -217,7 +219,7 @@ class SeniorBowlPanel(QWidget):
         try:
             self.load_project(path)
         except (ValueError, OSError) as exc:
-            QMessageBox.warning(self, "Senior Bowl", str(exc))
+            QMessageBox.warning(self, "Couldn't finish that", failure_body(exc))
 
     def load_project(self, path):
         settings, seed, source, event = bowl.read_project(path)

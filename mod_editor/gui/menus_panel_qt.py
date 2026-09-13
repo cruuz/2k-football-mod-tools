@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import failure_body
+
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Mapping, Protocol, runtime_checkable
@@ -442,7 +444,7 @@ class MenusPanel(QWidget):
             )
         except BaseException as exc:
             message = str(exc).strip() or exc.__class__.__name__
-            QMessageBox.warning(self, "Main Menu report was not exported", message)
+            QMessageBox.warning(self, "Main Menu report was not exported", failure_body(message))
             self.error_raised.emit(message)
             return
         self._set_status(f"Exported {output.name}")

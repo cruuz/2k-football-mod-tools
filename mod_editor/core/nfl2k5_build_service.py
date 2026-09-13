@@ -1313,7 +1313,7 @@ class Nfl2k5BuildService:
             timings["builder"] = time.monotonic() - started
             if built.returncode != 0:
                 raise Nfl2k5BuildError(
-                    "The modded XISO could not be built. " + _last_message(built)
+                    "Could not make the disc copy. " + _last_message(built)
                 )
 
             verify_command = self._command(

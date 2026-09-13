@@ -8000,8 +8000,8 @@
           "tests/nfl2k5_b68_series.py",
           "docs/nfl2k5_b68_t3_validation.json"
         ],
-        "scope": "Existing bounded native creation, draft, signing, played-XP, settings and signed-save proofs remain. The installed Supersim scheduler additionally executes uninterrupted native CPU plays, checks every outer football phase, counts hardware polls/presents, keeps the match RNG cadence, drains muted native audio sources, guards modal prompts, holds CPU snap requests, restores the full play clock, and submits native ticker glyphs. Native chosen personnel cover all 17 positions, actual K/P membership and an injury replacement. Declared clip/model inputs and empty optional overlays bound the renderer proof; no console, rasterizer, display or audio device is run. MyPlayer stat line defaults On in an enabled career; Apartment Settings offers On/Off. Bounded native proof executes one HUD call per presented gameplay frame, excludes menus and both replay channels, checks MyPlayer identity, reads live bank-0 game stats and submits real font4 glyphs. Actual game appearance remains UNWITNESSED.",
-        "status": "not-tested"
+        "scope": "Existing bounded native creation, draft, signing, played-XP, settings and signed-save proofs remain. The installed Supersim scheduler additionally executes uninterrupted native CPU plays, checks every outer football phase, counts hardware polls/presents, keeps the match RNG cadence, drains muted native audio sources, guards modal prompts, holds CPU snap requests, restores the full play clock, and submits native ticker glyphs. Native chosen personnel cover all 17 positions, actual K/P membership and an injury replacement. Declared clip/model inputs and empty optional overlays bound the renderer proof; no console, rasterizer, display or audio device is run. MyPlayer stat line defaults On in an enabled career; Apartment Settings offers On/Off. Bounded native proof executes one HUD call per presented gameplay frame, excludes menus and both replay channels, checks MyPlayer identity, reads live bank-0 game stats and submits real font4 glyphs. Actual game appearance remains UNWITNESSED. andrethealchemist reported on 2026-09-12/13 that the previous Fast forward cancellation, possession, Apartment-setting and PAT fixes work in-game. He separately reported a preselected first play after returning to the field. These reports cover those sequences only; new beta 69 play-calling changes and other positions, saves and mode combinations remain UNWITNESSED.",
+        "status": "partial"
       },
       "selectors": {
         "fields": [
@@ -11029,7 +11029,7 @@
       },
       "runtime": {
         "evidence": [],
-        "scope": "Byte-exact transport is proved on three differently packed dumps of the same game; modified visibility is untested.",
+        "scope": "Byte-exact transport is proved on three differently packed dumps of the same game; modified visibility is untested. maumau78 reported Style 6/shoes10 visible in the Bears Edit Player preview but absent in-game on 2026-09-13. The earlier package-local colour proof is offline evidence and does not establish that played binding; preview visibility is not an in-game success.",
         "status": "not-tested"
       },
       "selectors": {
@@ -11225,7 +11225,7 @@
       },
       "runtime": {
         "evidence": [],
-        "scope": "All supported spans have offline writer proof; only a Detroit away torso target has exact positive runtime proof.",
+        "scope": "All supported spans have offline writer proof; only a Detroit away torso target has exact positive runtime proof. maumau78 reported Style 6/shoes10 visible in the Bears Edit Player preview but absent in-game on 2026-09-13. The earlier package-local colour proof is offline evidence and does not establish that played binding; preview visibility is not an in-game success.",
         "status": "partial"
       },
       "selectors": {

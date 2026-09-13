@@ -1,6 +1,8 @@
 """EXPERIMENTAL / UNWITNESSED animation imports, gated per source and bundle."""
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import plain_error
+
 import json
 from pathlib import Path
 
@@ -71,7 +73,7 @@ class _Task(QRunnable):
         try:
             self.signals.done.emit(self.operation())
         except Exception as exc:
-            self.signals.failed.emit(f'{type(exc).__name__}: {exc}')
+            self.signals.failed.emit(plain_error(exc))
 
 
 class AnimationsPanel(QWidget):

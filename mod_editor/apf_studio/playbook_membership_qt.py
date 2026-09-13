@@ -197,6 +197,8 @@ then selects the repointed record is runtime-unproved; the receipt says so.
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import failure_body
+
 import os
 from .apf_theme import status_style
 
@@ -1539,7 +1541,7 @@ class ApfPlaybookMembershipPanel(QFrame):
                 record_index, result[0], result[1]
             )
         except ValidationError as exc:
-            QMessageBox.information(self, "Could not repoint the record", str(exc))
+            QMessageBox.information(self, "Could not repoint the record", failure_body(exc))
 
     def _first_empty_record(self) -> int | None:
         """The first free record slot after the book's populated run.
@@ -1592,7 +1594,7 @@ class ApfPlaybookMembershipPanel(QFrame):
         try:
             self.stage_record_addition(slot, result[0], result[1], result[2])
         except ValidationError as exc:
-            QMessageBox.information(self, "Could not add the formation", str(exc))
+            QMessageBox.information(self, "Could not add the formation", failure_body(exc))
 
     def _after_stage(self) -> None:
         self._commit_to_project()
@@ -1745,7 +1747,7 @@ class ApfPlaybookMembershipPanel(QFrame):
             self.stage_membership(record.record_index, play_index, wanted, heir)
         except ValidationError as exc:
             self._restore_tick(item, not wanted)
-            QMessageBox.information(self, "That edit was not staged", str(exc))
+            QMessageBox.information(self, "That edit was not staged", failure_body(exc))
 
     def _ask_for_heir(self, record_index: int, play_index: int) -> int | None:
         """Offer to carry the tagged slot onto another play instead of refusing."""
@@ -1843,7 +1845,7 @@ class ApfPlaybookMembershipPanel(QFrame):
         try:
             self.stage_tag_move(record_index, play_index, target)
         except ValidationError as exc:
-            QMessageBox.information(self, "That move was not staged", str(exc))
+            QMessageBox.information(self, "That move was not staged", failure_body(exc))
 
     def _explain_tags(self) -> None:
         QMessageBox.information(self, "Tagged slots", TAG_BOUNDARY)
@@ -1943,7 +1945,7 @@ class ApfPlaybookMembershipPanel(QFrame):
                     (record.record_index, partner.record_index)
                 )
         except ValidationError as exc:
-            QMessageBox.information(self, "That edit was not staged", str(exc))
+            QMessageBox.information(self, "That edit was not staged", failure_body(exc))
 
     # ---------------------------------------------------------------- actions
 

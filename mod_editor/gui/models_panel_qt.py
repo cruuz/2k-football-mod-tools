@@ -12,6 +12,8 @@ Everything heavy runs on one background thread; the widget stays live.
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import failure_body, plain_error
+
 from pathlib import Path
 from typing import Callable
 
@@ -89,7 +91,7 @@ class _Task(QRunnable):
         try:
             self.signals.finished.emit(self._operation())
         except Exception as exc:  # noqa: BLE001 - one message for the status line
-            self.signals.failed.emit(str(exc))
+            self.signals.failed.emit(plain_error(exc))
 
 
 class ModelsPanel(QWidget):
@@ -417,7 +419,7 @@ class ModelsPanel(QWidget):
         self.status_label.setText(message)
         self.details.appendPlainText("\n" + message)
         if self.isVisible():                    # never a modal box for a widget nobody can see (tests, headless)
-            QMessageBox.critical(self, "Couldn't finish that", message)
+            QMessageBox.critical(self, "Couldn't finish that", failure_body(message))
 
     # ------------------------------------------------------------------ catalog
     def reload(self) -> None:

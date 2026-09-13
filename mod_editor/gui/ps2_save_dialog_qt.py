@@ -19,6 +19,8 @@ written into it.
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import failure_body
+
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Iterable, Protocol, runtime_checkable
@@ -901,7 +903,7 @@ class Ps2SaveEditorDialog(QDialog):
         if error is not None:
             self.status_label.setStyleSheet(f"color: {_INVALID_COLOUR};")
             self._status(error)
-            QMessageBox.warning(self, "That save could not be written", error)
+            QMessageBox.warning(self, "That save could not be written", failure_body(error))
             return
         detail = str(getattr(outcome, "detail", ""))
         if getattr(outcome, "verified", False):

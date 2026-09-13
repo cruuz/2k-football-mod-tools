@@ -1,4 +1,6 @@
 """Owned Stadiums workflow card; insertion in studio_qt is in WIRING.md."""
+
+from mod_editor.gui.ux_text import failure_body
 from pathlib import Path
 
 from PyQt5.QtCore import pyqtSignal
@@ -57,6 +59,6 @@ class StadiumBlenderPanel(QGroupBox):
                 target = target.with_suffix('.py')
             Nfl2k5StadiumStudio._write_new_file(target, source.read_bytes())
         except (OSError, ValueError) as exc:
-            QMessageBox.warning(self, "Could not save Blender helper", str(exc))
+            QMessageBox.warning(self, "Could not save Blender helper", failure_body(exc))
             return
         QMessageBox.information(self, "Blender helper saved", f"Open {target.name} in Blender's Text Editor and run it.")

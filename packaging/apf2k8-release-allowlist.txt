@@ -282,3 +282,8 @@ mod_editor/apf_studio/playcalling_build.py
 mod_editor/apf_studio/playcalling_editor_qt.py
 mod_editor/apf_studio/playcalling_patches.py
 mod_editor/apf_studio/playcalling_service.py
+
+# Beta 69 shared UI help and product FAQ
+mod_editor/gui/ux_text.py
+mod_editor/gui/polish_qt.py
+docs/mod_editor/apf2k8_mod_studio_faq.md

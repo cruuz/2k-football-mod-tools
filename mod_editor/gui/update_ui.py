@@ -42,6 +42,7 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.core import self_update, update_check
+from mod_editor.gui.ux_text import plain_error
 
 SETTINGS_ORGANISATION = "2K Football Mod Tools"
 SETTINGS_APPLICATION = "updates"
@@ -285,7 +286,11 @@ class UpdateBanner(QFrame):
 
     def _open_downloads(self) -> None:
         if self._status is not None:
-            QDesktopServices.openUrl(QUrl(self._status.url))
+            if not QDesktopServices.openUrl(QUrl(self._status.url)):
+                self.message.setText(
+                    "Could not open your browser. Open the release page yourself: "
+                    + self._status.url + ". Download the latest Setup.exe on Windows."
+                )
 
     def _dismiss(self) -> None:
         if self._status is not None and self._status.latest_tag:
@@ -324,7 +329,7 @@ class UpdateBanner(QFrame):
             plan = self_update.plan_update(document, self._install, self._product)
         except self_update.SelfUpdateError as exc:
             self.last_error = str(exc)
-            self.message.setText(str(exc))
+            self.message.setText(self._update_failure(exc))
             self.update_button.setVisible(False)
             return False
         if not self.confirm(plan):
@@ -340,6 +345,14 @@ class UpdateBanner(QFrame):
         QThreadPool.globalInstance().start(task)
         return True
 
+    def _update_failure(self, error: object) -> str:
+        return (
+            "The update did not install. " + plain_error(error)
+            + "\n\nTry Get the update to open the release page. On Windows, download and run "
+              "the latest Setup.exe. Save your project before closing the studio. "
+              "Your original game disc was not changed."
+        )
+
     def _on_progress(self, message: str, done: int, total: int) -> None:
         if total > 1 and done <= total:
             self.message.setText(f"{message}… {100 * done // total}%")
@@ -350,7 +363,7 @@ class UpdateBanner(QFrame):
         self._task = None
         if plan is None:
             self.last_error = error
-            self.message.setText(f"The update did not install: {error}")
+            self.message.setText(self._update_failure(error))
             self._set_busy(False)
             return
         self.plan = plan
@@ -413,7 +426,7 @@ def report_manual_check(parent, status: update_check.UpdateStatus, banner: Updat
     box = QMessageBox(parent)
     box.setWindowTitle("Check for Updates")
     box.setIcon(QMessageBox.Information)
-    box.setText(status.headline)
+    box.setText(plain_error(status.headline))
 
     if status.available and status.latest_tag:
         detail = f"You are running {status.current_tag}."
@@ -430,11 +443,26 @@ def report_manual_check(parent, status: update_check.UpdateStatus, banner: Updat
             banner.show_status(status, force=True)
             banner.start_update()
         elif box.clickedButton() is open_button:
-            QDesktopServices.openUrl(QUrl(status.url))
+            if not QDesktopServices.openUrl(QUrl(status.url)):
+                QMessageBox.information(parent, "Could not open the release page",
+                    "Open this address in your browser, then download the latest release:\n" + status.url)
         return
 
+    if not status.checked:
+        box.setInformativeText(
+            plain_error(status.detail) + "\n\nCheck your connection and try Check for Updates again, "
+            "or open the release page with Get the update. Your installed studio is still available."
+        )
+        open_button = box.addButton("Get the update", QMessageBox.ActionRole)
+        box.addButton("Close", QMessageBox.RejectRole)
+        box.exec_()
+        if box.clickedButton() is open_button:
+            if not QDesktopServices.openUrl(QUrl(status.url)):
+                QMessageBox.information(parent, "Could not open the release page",
+                    "Open this address in your browser, then download the latest release:\n" + status.url)
+        return
     if status.detail:
-        box.setInformativeText(status.detail)
+        box.setInformativeText(plain_error(status.detail))
     box.addButton("Close", QMessageBox.RejectRole)
     box.exec_()
 

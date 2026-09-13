@@ -25,9 +25,9 @@ def compare(before, after):
     """Compare freshly measured or independently verified manifest digests."""
     changed = before != after
     return {"status": "changed" if changed else "unchanged", "source": before, "output": after,
-            "message": ("The output differs from the source. Review the build receipt for the selected changes."
-                        if changed else "No changes were written. The output is an unchanged copy of the source. "
-                        "The selected patches may already be installed; review the source and your selections.")}
+            "message": ("The copy differs from your source. Review the Build summary for its selected contents and any edits kept original."
+                        if changed else "No changes were written. This is an unchanged copy of your source. "
+                        "The selected changes may already be installed; review the source and your selections before rebuilding.")}
 
 
 def kept_retail_notes(receipt):
@@ -56,7 +56,7 @@ def completion(receipt):
     elif outcome.get("status") == "changed":
         title, message = "Disc ready", outcome["message"]
     else:
-        title, message = "Copy ready; changes not measured", "This receipt does not establish whether the output differs from the source."
+        title, message = "Copy ready; changes not measured", "The copy was written, but this receipt does not say whether it differs from the source. Review the Build summary before using the copy."
     notes = kept_retail_notes(receipt)
     if notes:
         message += (

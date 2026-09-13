@@ -4,103 +4,43 @@ APF 2K8 Mod Studio works from your own legally dumped USA copy of *All-Pro
 Football 2K8* for Xbox 360. The app ships no game images, textures, audio,
 screenshots, extracted archives, or other retail game data.
 
-The source code and UI identify as **`0.1.0-alpha.90`**, the current retail-free
-release candidate; its mode-`0444` archive is authenticated by the adjacent
-`.sha256` sidecar. Alpha.38 and earlier remain preserved unchanged. Verify
-whichever sealed archive you install with its authoritative adjacent `.sha256`
-sidecar. Packaged guides remain deliberately self-hash-free.
+This guide is for **0.1.0-alpha.90, beta 69**. On Windows, install from the release
+Setup.exe. The studio reads your original game and writes a separate modded folder.
+Share the project, which contains your edits; keep game files and private caches local.
 
-Alpha.62 revalidates the normal ISO recognition, extraction, load, and read-only
-source path against a real USA APF 2K8 image. The image stayed read-only, and no
-private path, image hash, extracted game data, or retail payload is included in
-the app or this guide. Its Linux install and uninstall helpers also suppress
-Python bytecode before importing the installer, so they cannot create an
-undeclared `__pycache__` before the fail-closed release audit.
+## First game: load, edit, build, play
 
-Alpha 32 changes batch audio replacement into a no-surprises two-step flow.
-Choose **Review replacement folder…** or **Review replacement ZIP…** first.
-Mod Studio fully validates every supplied file without changing the project,
-then shows **Supplied**, **Would change**, **Already current**, **Missing and
-intentionally skipped**, **Modified audio now**, and **Modified audio after
-Apply**. Nothing is staged unless you explicitly choose **Apply**; closing or
-cancelling the dialog changes nothing. An unchanged-only pack is a successful
-read-only review with Apply unavailable, not an error.
+1. Use **Load APF Game** to choose the original ISO or a complete extracted USA Xbox 360
+   game folder. Keep all six boot files together. A modded output is not a new source.
+2. Choose the page for your edit. Export a template, edit a copy, then use **Replace** or
+   **Apply** and check the preview. APF has no studio-wide Basic preset. Scheme choices
+   belong to the playbook tools; review their changes before staging them.
+3. Save a **.apf2k8mod** project. Use **Build Game Folder** and choose your output folder.
+   Replacing an earlier build requires confirmation; the original source stays unchanged.
+4. Set **Title Update 1.1…** when needed, configure Xenia, then use **Launch in Xenia**
+   or open the built folder’s **default.xex** in Xenia yourself.
+5. The [APF FAQ](apf2k8_mod_studio_faq.md) explains Create formation, Create play,
+   CPU Play Calling, PS3 imports, installation and emulator questions.
 
-Apply reopens the folder or ZIP and repeats the complete validation. A private
-opaque confirmation token binds the exact authored member hashes and validated
-packet results to the loaded source, loaded session, and current project-audio
-revision. If a payload or project audio changes while the confirmation is
-open, Apply refuses and asks for a fresh review. No extracted ZIP path or audio
-bytes are retained by the dialog, preview-only packet cache is discarded, and
-the confirmation is queued only after its background worker has drained.
+## Pages in sidebar order
 
-Alpha 31 adds **Add all matching (N)** beneath the Audio shortlist controls.
-It collects every new playable sound owned by the currently applied search and
-filters, not only the visible page, while preserving stable catalog order and
-skipping duplicates. One shortlist holds at most 256 sounds. If the full set
-would not fit, Mod Studio shows exact counts and adds nothing; narrow the
-filters or remove selected sounds and try again. Selection-only button updates
-reuse the applied result instead of rescanning all 47,814 rows.
+| Page | What you can do |
+| --- | --- |
+| Getting Started | Load your original game and follow the first-edit workflow. |
+| Uniforms & Equipment | Edit materials, custom-team appearance, team independence, equipment colours and supported models. |
+| Rosters & Players | Edit players and ratings, save players, import a PS3 roster, or use the 53-player Planner. |
+| Team Identity | Browse and edit supported team identity fields. |
+| Logos & Team Art | Edit team art, crests and wordmarks or import PS3 bundles. |
+| Scorebug & Presentation | Inspect presentation and edit the supported score digit mask. |
+| Field Art | Edit supported field art and overlay opacity; inspect ownership limits. |
+| Stadium Studio | Browse stadiums and use supported texture and mesh exports or imports. |
+| Menus & Text | Edit supported menu text and inspect raw assets. |
+| Audio | Browse sounds, export templates and author supported replacements. |
+| Sliders & Gameplay | Inspect gameplay data and the available experimental controls. |
+| Playbooks & Plays | Use CPU Play Calling, Design Plays / Formations, Fine-tune Plays, Save Assignments and other book tools. |
+| Season & Franchise Lab | Inspect season and franchise findings; read each control’s limits. |
+| All Game Assets | Search all cataloged assets and their supported actions. |
 
-Closing Mod Studio or choosing another game while a preview/waveform is still
-decoding now cancels that private request and waits for its worker to finish
-before releasing the loaded session. If several source choices arrive while a
-reader drains, only the latest choice opens. This is automatic—never force-kill
-the app just because a button briefly says **Cancelling…**.
-
-Alpha 30 makes private audio decoding genuinely interruptible. While **Play**
-is preparing a sound it becomes **Cancel preview**; while **Load waveform** is
-decoding it becomes **Cancel waveform**. Pressing either button, selecting a
-different row, or changing the loaded source signals the exact request and
-stops its FFmpeg/ffprobe process group. The control briefly reports
-**Cancelling…**, then becomes available for the current row. Cancelled/stale
-results never play, warn, write a project edit, publish a partial WAV, or erase
-an already verified cached preview.
-
-Alpha 29 makes the large Audio workspace safer during ordinary browsing. A
-search or filter change immediately fences page-wide actions until the new
-table is visible, so an old page cannot be shortlisted, paged, exported, or
-turned into a replacement template under new controls. Selected-row actions
-remain usable because they own an exact row identity. **Clear** on the ordered
-shortlist becomes a one-level **Undo** that restores as many as 256 sounds in
-their exact order until the next real shortlist change or game load. Preview
-preparation is also bound to the exact game/model and selected row: a late
-success or failure cannot start audio or show an error for a newer selection,
-and a current failure returns the button to a retryable **Play** state.
-
-Alpha 28 adds metadata-only folder/ZIP templates for exact PCM16 WAV batch
-authoring across all 47,775 individually editable AUDO/AUSB sounds. A template
-may list the complete surface, while one import accepts at most 256 supplied
-WAVs. Mod Studio privately sends each exact-shape WAV through a separately
-configured external XMA1 encoder, then stages the whole valid set as one Undo
-action. The legacy pre-encoded-XMA1 pack remains the default and byte-compatible;
-import detects either generation automatically. Mod Studio ships no encoder,
-and external output receives no special trust: every final XMA1 still crosses
-the exact-slot, decode, duration, alias, target, and cross-family source-packet
-gates. Selected-sound import accepts WAV, FLAC, MP3, OGG, M4A, and other
-FFmpeg-readable ordinary audio and conforms it before encoding. Folder/ZIP
-packs remain intentionally narrower: pre-encoded XMA1 or exact PCM16 WAV only;
-mixed-format ordinary-audio packs are unsupported. Alpha 28 carries
-forward Alpha 27's selected-sound PCM route, passive slot-43 result
-`path_not_reached`, Position (17), exact 0–99 ratings, pre-build free-space
-refusal, and the honest 42-active-plus-11-project-reserve planner.
-
-Alpha.22 adds the experimental, offline-proved exact-slot XMA1 editor for all
-2,261 standalone `AUDO` sounds. Its completed Xenia spot check proved that the
-one-span build boots and survives repeated triggers without XMA faults; the
-captured audio did not prove that the tested menu cue was actually consumed.
-The UI therefore labels the writer as an advanced exact-slot workflow rather
-than runtime-proved audio replacement. Alpha 27's PCM bridge makes one selected
-PCM16 WAV easier to hand to an encoder the user supplies; the current selected-
-sound route also conforms supported ordinary-audio input before that hand-off.
-Neither route proves that every encoder or cue works.
-
-Alpha.23 extends that advanced route to all 45,514 individually
-addressed AUSB soundtrack, commentary, speech, PA, music, and presentation
-substreams. It also adds a 53-row roster planner for 32 populated teams. That
-planner is intentionally honest: APF still sees the first 42 players at
-runtime, while rows 43–53 are project-only reserve choices that Build does not
-apply.
 
 ## Install or run portable on Linux
 
@@ -187,10 +127,7 @@ error and no source file is changed.
    desktop handler, and an Editable card must have real Replace and Revert
    methods (or a verified copied-volume writer). Unbound semantic findings use
    explicit Proof/Research boundaries instead of borrowing actions from a
-   similarly named raw asset. Across the 52 APF
-   capability records, the current source split is 31 Editable, 9 Preview,
-   3 Export-only, 4 Evidence, and 5 Research. The hidden `jersey_06_runtime` proof alias
-   does not create a duplicate editor in the product.
+   similarly named raw asset.
 5. Select an editable item, export its PNG, edit a copy in GIMP or Photoshop,
    and use **Replace**. The app checks dimensions, color mode, and the special
    channel rules before accepting it.
@@ -199,7 +136,7 @@ error and no source file is changed.
 7. Save a `.apf2k8mod` project if you want to continue later or share the mod.
    The first Save asks for a name. After that, use `Ctrl+S` to update the active
    project or `Ctrl+Shift+S` to save a separate copy.
-8. Choose **Build** and pick the folder Xenia already loads. Confirm
+8. Choose **Build Game Folder** and pick the folder Xenia already loads. Confirm
    replace; the studio writes into that folder and does not create an
    `APF2K8-Mod-TIMESTAMP` child. A copied or studio-built `0A` cannot be
    opened as source — load the retail extract and rebuild into the last
@@ -549,8 +486,8 @@ Selection**, and strict visual review passed both HOME and AWAY. The witness
 proves the coupled accepted-team save + catalog-30 package/cache + emulator
 crest-box patch path in a menu preview. It does not isolate package from cache
 ownership, prove the scorebug or other menu consumers, or establish Xbox 360
-hardware parity. Full receipts are in the
-[custom-team appearance findings note](../research/apf_custom_team_appearance.md).
+hardware parity. See the [logo surface ownership guide](apf2k8_logo_surface_ownership.md) for
+the current mapping and evidence limits.
 
 **Known defect, fix in flight:** in live gameplay the v24 shell currently
 renders semi-transparent/flat (background alpha `0x88`). Until the fix lands
@@ -707,7 +644,7 @@ Alpha.23 adds a separate **53-player roster planner** inside
   those reserve player indices. It never copies the 42 source memberships,
   player records, names, ROST bytes, preimages, or executable bytes.
 
-**Build Modded Game does not apply these reserves.** The planner is useful for
+**Build Game Folder does not apply these reserves.** The planner is useful for
 building complete league concepts and validating that no reserve duplicates an
 active or another reserve assignment. True runtime slots 43–53 require a
 version-pinned XEX accessor/direct-consumer patch plus owned side-table storage.

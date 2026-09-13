@@ -105,7 +105,8 @@ class PanelTests(unittest.TestCase):
         self.panel.keys_field.setText('absent-animation-keys.json')
         self.panel.check_changes()
         self.settle()
-        self.assertIn('FileNotFoundError',self.panel.status_label.text())
+        self.assertIn('absent-animation-keys.json', self.panel.status_label.text())
+        self.assertNotIn('FileNotFoundError:', self.panel.status_label.text())
         self.assertFalse(self.panel.import_button.isEnabled())
 
     def test_source_change_discards_pending_result_and_clears_selection(self):

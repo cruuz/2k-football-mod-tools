@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import failure_body
+
 from pathlib import Path
 from typing import Callable
 
@@ -319,7 +321,7 @@ class SaveRosterPlayersPanel(QWidget):
         try:
             value = field.validate(value)
         except SaveRosterPlayerError as exc:
-            QMessageBox.information(self, "Field not staged", str(exc))
+            QMessageBox.information(self, "Field not staged", failure_body(exc))
             return
         source = self.document.player_values(player)[field.field_id]
         key = (player, field.field_id)

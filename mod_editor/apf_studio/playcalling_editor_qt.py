@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from mod_editor.gui.ux_text import plain_error
 
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from PyQt5.QtWidgets import (QAbstractItemView, QCheckBox, QComboBox, QDoubleSpinBox, QFileDialog, QFormLayout,
@@ -341,7 +342,7 @@ class ApfPlayCallingEditor(QWidget):
             except ValidationError as exc:
                 return None, str(exc)
             except Exception as exc:  # A contract call must never take the window down.
-                return None, f"{label} could not finish: {type(exc).__name__}: {exc}"
+                return None, f"{label} could not finish: {plain_error(exc)}"
         def complete(result):
             if generation != self._generation or source != self._source():
                 return
@@ -354,7 +355,7 @@ class ApfPlayCallingEditor(QWidget):
                     done(value)
                 except Exception as exc:  # Show a broken result instead of crashing.
                     self.notice.setText(f"{label} returned something this page could not show: "
-                                        f"{type(exc).__name__}: {exc}")
+                                        + plain_error(exc))
             self._enable()
         self.run_task(label, work, complete, blocking)
 
@@ -427,7 +428,7 @@ class ApfPlayCallingEditor(QWidget):
         try:
             snapshot = self.facade.playcalling_snapshot()
         except Exception as exc:  # No project state is worth losing the window over.
-            self.notice.setText(f"CPU Play Calling could not read this project: {type(exc).__name__}: {exc}")
+            self.notice.setText(f"CPU Play Calling could not read this project: {plain_error(exc)}")
             return
         def operation(progress):
             context = self.facade.playcalling_context(team, side, progress)

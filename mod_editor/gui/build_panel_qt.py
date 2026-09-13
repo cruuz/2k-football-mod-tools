@@ -8,6 +8,9 @@ thread.  Optional modules that are not present in this build are shown disabled 
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import plain_error
+from mod_editor.core.update_check import BUILD_RELEASE_TAG
+
 from collections.abc import Callable
 from pathlib import Path
 
@@ -93,7 +96,7 @@ class _Task(QRunnable):
                     self.signals.progress.emit(message)
             result = self._operation(progress)
         except BaseException as exc:  # worker failures must always reach Qt
-            self.signals.failed.emit(f"{type(exc).__name__}: {exc}")
+            self.signals.failed.emit(plain_error(exc))
         else:
             self.signals.finished.emit(result)
 
@@ -266,6 +269,14 @@ class BuildPanel(QWidget):
         self.cancel_button.setEnabled(False)
         self.cancel_button.clicked.connect(lambda: self._task.cancelled.set() if self._task else None)
         actions.addWidget(self.cancel_button)
+        self._last_build_summary = ""
+        self._requested_build_summary = ""
+        self._requested_build_labels = []
+        self.copy_summary_button = QPushButton("Copy Build summary")
+        self.copy_summary_button.setToolTip("Copy this build's source, selected changes, result and first error for a help request.")
+        self.copy_summary_button.setEnabled(False)
+        self.copy_summary_button.clicked.connect(self._copy_build_summary)
+        actions.addWidget(self.copy_summary_button)
         self.blocker_label = QLabel("")
         self.blocker_label.setObjectName("throwMuted")
         self.blocker_label.setWordWrap(True)
@@ -996,8 +1007,9 @@ class BuildPanel(QWidget):
         rl.setSpacing(1)
         head = QHBoxLayout()
         head.setSpacing(8)
-        box = QCheckBox(label)
+        box = QCheckBox(tab_title(label))
         box.setAccessibleDescription(helper)
+        box.setToolTip(helper or details or label)
         head.addWidget(box)
         badge_label = QLabel(badge)
         badge_label.setObjectName("optionBadge")
@@ -1141,7 +1153,7 @@ class BuildPanel(QWidget):
                 box.setToolTip("Full disc required (not a bare default.xbe).")
                 self._set_badge(key, "Full disc required")
             else:
-                box.setToolTip("")
+                box.setToolTip(box.accessibleDescription())
                 self._set_badge(key, self._static_badges.get(key, ""))
         self.hires_pack_check.setEnabled(is_image and self._available.get("hires_pack", False))
         self.hires_pack_check.setChecked(False)
@@ -1163,7 +1175,7 @@ class BuildPanel(QWidget):
         # an already-edited roster can take more edits: gate on availability and the container only
         self.roster_edits_check.setEnabled(self._available.get("roster_edits", True) and is_image)
         self.roster_edits_check.setChecked(False)
-        self.roster_edits_check.setToolTip("" if is_image else "Full disc required (not a bare default.xbe).")
+        self.roster_edits_check.setToolTip(self.roster_edits_check.accessibleDescription() if is_image else "Full disc required (not a bare default.xbe).")
         self._set_badge("roster_edits", "" if is_image else "Full disc required")
         # the Anniversary plan is a source-specific resource plan: only an image with the fixed retail
         # scenario / historic-roster layout can take it (the plan itself is checked when chosen and at build)
@@ -1182,7 +1194,7 @@ class BuildPanel(QWidget):
                                               "are not the fixed retail layout, so a saved plan can't be applied here.")
             self._set_badge("espn25_plan", "Unrecognized source data")
         else:
-            self.espn25_plan_check.setToolTip("")
+            self.espn25_plan_check.setToolTip(self.espn25_plan_check.accessibleDescription())
             self._set_badge("espn25_plan", self._static_badges.get("espn25_plan", ""))
         gate(self.kick_rules_check, "kick_rules")
         gate(self.kick_power_check, "kick_power", module="kick_rules")
@@ -2291,6 +2303,10 @@ class BuildPanel(QWidget):
                                       QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
         if answer != QMessageBox.Ok:
             return
+        self._requested_build_summary = f"2K5 Mod Studio {BUILD_RELEASE_TAG}\n" + self.confirmation_text(plan)
+        self._requested_build_labels = self.selected_labels()
+        self._last_build_summary = self._requested_build_summary + "\n\nBuild in progress."
+        self.copy_summary_button.setEnabled(True)
         include_session = self._include_session_project()
         task = _Task(lambda progress: self._build_operation(plan, progress, include_session))
         task.signals.progress.connect(self.progress_label.setText)
@@ -2313,14 +2329,27 @@ class BuildPanel(QWidget):
         assert isinstance(receipt, dict)
         state = receipt.pop("_build_panel_state", receipt.get("result"))
         target = str(receipt.get("target"))
-        steps = ", ".join(str(s.get("step")) for s in receipt.get("steps", []))
         from mod_editor.core.build_feedback import completion
         title, message = completion(receipt)
         if receipt.get("play_intents_summary"):
             message += "\n\n" + receipt["play_intents_summary"]
+        labels = list(self._requested_build_labels)
+        if not labels:
+            names = {key: box.text().replace("&&", "&") for key, box in self._boxes().items()}
+            names.update({"xbe": "gameplay and game settings", "position_pool_filters": "position lists",
+                          "visual_project": "project artwork", "project": "project edits"})
+            labels = list(dict.fromkeys(names.get(str(step.get("step")), "other selected project changes")
+                        for step in receipt.get("steps", ()) if isinstance(step, dict)))
+        contents = "Build selection: " + (", ".join(labels) if labels else "no recorded changes") + "."
+        next_step = "Open this copy in xemu, or use Play latest disc in xemu in the studio."
+        if not tt.is_disc_image(target):
+            next_step = "This is an executable copy. Build from a game disc to make a playable disc image."
+        body = f"{target}\n\n{message}\n\n{contents}\n\nYour original game disc was not changed.\n\n{next_step}"
+        self._last_build_summary = (self._requested_build_summary or f"2K5 Mod Studio {BUILD_RELEASE_TAG}") + f"\n\n{title}\n{body}"
+        self.copy_summary_button.setEnabled(True)
         self.status_label.setText(f"{title}: {target}. {message}")
         self.built.emit(dict(receipt))
-        QMessageBox.information(self, title, f"{target}\n\n{message}\n\nSteps checked: {steps}.")
+        QMessageBox.information(self, title, body)
         try:
             self.apply_state(state)
             hires = next((step for step in receipt.get("steps", []) if step.get("step") == "hires_pack"), None)
@@ -2343,7 +2372,15 @@ class BuildPanel(QWidget):
                 f"Build source is now: {Path(str(receipt.get('target'))).name}. " + self.source_status.text())
         self._refresh()
 
+    def _copy_build_summary(self) -> None:
+        from PyQt5.QtWidgets import QApplication
+        QApplication.clipboard().setText(self._last_build_summary)
+        self.status_label.setText("Build summary copied. Paste it with the first error in your help request.")
+
     def _failed(self, message: str) -> None:
+        message = plain_error(message)
+        self._last_build_summary = (self._requested_build_summary or f"2K5 Mod Studio {BUILD_RELEASE_TAG}") + f"\n\nFirst error: {message}"
+        self.copy_summary_button.setEnabled(True)
         self._heartbeat_timer.stop()
         self._task = None
         self.operation_state_changed.emit(False)
