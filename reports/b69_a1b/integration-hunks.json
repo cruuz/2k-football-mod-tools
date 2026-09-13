@@ -1,0 +1,3392 @@
+[
+  {
+    "id": "H001",
+    "job": "J3/J4/J5",
+    "file": "ASTRA_B69_A2B_REPORT.md",
+    "file_hunk": 1,
+    "diff_line": 6,
+    "hunk": "@@ -0,0 +1,364 @@",
+    "verdict": "wrong",
+    "review": "A2b integration handoff; clear-button claim exceeds actual controls (D5), other results independently checked"
+  },
+  {
+    "id": "H002",
+    "job": "J3/J4/J5",
+    "file": "ASTRA_B69_J3_REPORT.md",
+    "file_hunk": 1,
+    "diff_line": 375,
+    "hunk": "@@ -117,7 +117,7 @@ FPF, Supersim, star and stat-line bits remain intact. The native word is",
+    "verdict": "documented deviation",
+    "review": "Job handoff report/wiring links retargeted after rename; original handoff status retained"
+  },
+  {
+    "id": "H003",
+    "job": "J3/J4/J5",
+    "file": "ASTRA_B69_J3_REPORT.md",
+    "file_hunk": 2,
+    "diff_line": 384,
+    "hunk": "@@ -308,7 +308,7 @@ The full inherited evidence-file check stops at absent",
+    "verdict": "documented deviation",
+    "review": "Job handoff report/wiring links retargeted after rename; original handoff status retained"
+  },
+  {
+    "id": "H004",
+    "job": "J3/J4/J5",
+    "file": "ASTRA_B69_J4_REPORT.md",
+    "file_hunk": 1,
+    "diff_line": 397,
+    "hunk": "@@ -17,7 +17,7 @@ worktree. **EXPERIMENTAL; every in-game outcome is UNWITNESSED.**",
+    "verdict": "documented deviation",
+    "review": "Job handoff report/wiring links retargeted after rename; original handoff status retained"
+  },
+  {
+    "id": "H005",
+    "job": "J3/J4/J5",
+    "file": "ASTRA_B69_J4_REPORT.md",
+    "file_hunk": 2,
+    "diff_line": 406,
+    "hunk": "@@ -214,7 +214,7 @@ integration must add it to the shared owner lists and rerun the enlarged union.",
+    "verdict": "documented deviation",
+    "review": "Job handoff report/wiring links retargeted after rename; original handoff status retained"
+  },
+  {
+    "id": "H006",
+    "job": "J3/J4/J5",
+    "file": "ASTRA_B69_J5_REPORT.md",
+    "file_hunk": 1,
+    "diff_line": 419,
+    "hunk": "@@ -3,7 +3,7 @@",
+    "verdict": "documented deviation",
+    "review": "Job handoff report/wiring links retargeted after rename; original handoff status retained"
+  },
+  {
+    "id": "H007",
+    "job": "J3/J4/J5",
+    "file": "WIRING_B69_J3.md",
+    "file_hunk": 1,
+    "diff_line": 432,
+    "hunk": "@@ -258,7 +258,7 @@ three native templates. Verify both saved settings can be changed in either",
+    "verdict": "documented deviation",
+    "review": "Job handoff report/wiring links retargeted after rename; original handoff status retained"
+  },
+  {
+    "id": "H008",
+    "job": "J3/J4/J5",
+    "file": "WIRING_B69_J4.md",
+    "file_hunk": 1,
+    "diff_line": 445,
+    "hunk": "@@ -423,7 +423,7 @@ module imports and the two registry rows. No played outcome is promoted.",
+    "verdict": "documented deviation",
+    "review": "Job handoff report/wiring links retargeted after rename; original handoff status retained"
+  },
+  {
+    "id": "H009",
+    "job": "J3/J4/J5",
+    "file": "WIRING_B69_J4.md",
+    "file_hunk": 2,
+    "diff_line": 454,
+    "hunk": "@@ -433,7 +433,7 @@ module imports and the two registry rows. No played outcome is promoted.",
+    "verdict": "documented deviation",
+    "review": "Job handoff report/wiring links retargeted after rename; original handoff status retained"
+  },
+  {
+    "id": "H010",
+    "job": "J3/J4/J5",
+    "file": "WIRING_B69_J4.md",
+    "file_hunk": 3,
+    "diff_line": 463,
+    "hunk": "@@ -502,7 +502,7 @@ module imports and the two registry rows. No played outcome is promoted.",
+    "verdict": "documented deviation",
+    "review": "Job handoff report/wiring links retargeted after rename; original handoff status retained"
+  },
+  {
+    "id": "H011",
+    "job": "J3/J4/J5",
+    "file": "WIRING_B69_J5.md",
+    "file_hunk": 1,
+    "diff_line": 476,
+    "hunk": "@@ -373,7 +373,7 @@ proof is bounded native execution, not played gameplay.",
+    "verdict": "documented deviation",
+    "review": "Job handoff report/wiring links retargeted after rename; original handoff status retained"
+  },
+  {
+    "id": "H012",
+    "job": "J3/J4/J5",
+    "file": "WIRING_B69_J5.md",
+    "file_hunk": 2,
+    "diff_line": 485,
+    "hunk": "@@ -383,7 +383,7 @@ proof is bounded native execution, not played gameplay.",
+    "verdict": "documented deviation",
+    "review": "Job handoff report/wiring links retargeted after rename; original handoff status retained"
+  },
+  {
+    "id": "H013",
+    "job": "J3/J4/J5",
+    "file": "WIRING_B69_J5.md",
+    "file_hunk": 3,
+    "diff_line": 494,
+    "hunk": "@@ -392,7 +392,7 @@ proof is bounded native execution, not played gameplay.",
+    "verdict": "documented deviation",
+    "review": "Job handoff report/wiring links retargeted after rename; original handoff status retained"
+  },
+  {
+    "id": "H014",
+    "job": "J3/J4/J5",
+    "file": "WIRING_B69_J5.md",
+    "file_hunk": 4,
+    "diff_line": 503,
+    "hunk": "@@ -403,7 +403,7 @@ proof is bounded native execution, not played gameplay.",
+    "verdict": "documented deviation",
+    "review": "Job handoff report/wiring links retargeted after rename; original handoff status retained"
+  },
+  {
+    "id": "H015",
+    "job": "J3/J4/J5",
+    "file": "WIRING_B69_J5.md",
+    "file_hunk": 5,
+    "diff_line": 512,
+    "hunk": "@@ -442,7 +442,7 @@ proof is bounded native execution, not played gameplay.",
+    "verdict": "documented deviation",
+    "review": "Job handoff report/wiring links retargeted after rename; original handoff status retained"
+  },
+  {
+    "id": "H016",
+    "job": "J3/J4/J5",
+    "file": "WIRING_B69_J5.md",
+    "file_hunk": 6,
+    "diff_line": 521,
+    "hunk": "@@ -454,7 +454,7 @@ proof is bounded native execution, not played gameplay.",
+    "verdict": "documented deviation",
+    "review": "Job handoff report/wiring links retargeted after rename; original handoff status retained"
+  },
+  {
+    "id": "H017",
+    "job": "J3/J4/J5",
+    "file": "WIRING_B69_J5.md",
+    "file_hunk": 7,
+    "diff_line": 530,
+    "hunk": "@@ -463,7 +463,7 @@ proof is bounded native execution, not played gameplay.",
+    "verdict": "documented deviation",
+    "review": "Job handoff report/wiring links retargeted after rename; original handoff status retained"
+  },
+  {
+    "id": "H018",
+    "job": "J3/J4/J5",
+    "file": "WIRING_B69_J5.md",
+    "file_hunk": 8,
+    "diff_line": 539,
+    "hunk": "@@ -474,7 +474,7 @@ proof is bounded native execution, not played gameplay.",
+    "verdict": "documented deviation",
+    "review": "Job handoff report/wiring links retargeted after rename; original handoff status retained"
+  },
+  {
+    "id": "H019",
+    "job": "J3/J4/J5",
+    "file": "WIRING_B69_J5.md",
+    "file_hunk": 9,
+    "diff_line": 548,
+    "hunk": "@@ -525,7 +525,7 @@ proof is bounded native execution, not played gameplay.",
+    "verdict": "documented deviation",
+    "review": "Job handoff report/wiring links retargeted after rename; original handoff status retained"
+  },
+  {
+    "id": "H020",
+    "job": "J3/J4/J5",
+    "file": "WIRING_B69_J5.md",
+    "file_hunk": 10,
+    "diff_line": 557,
+    "hunk": "@@ -535,7 +535,7 @@ proof is bounded native execution, not played gameplay.",
+    "verdict": "documented deviation",
+    "review": "Job handoff report/wiring links retargeted after rename; original handoff status retained"
+  },
+  {
+    "id": "H021",
+    "job": "J3/J4/J5",
+    "file": "WIRING_B69_J5.md",
+    "file_hunk": 11,
+    "diff_line": 566,
+    "hunk": "@@ -544,7 +544,7 @@ proof is bounded native execution, not played gameplay.",
+    "verdict": "documented deviation",
+    "review": "Job handoff report/wiring links retargeted after rename; original handoff status retained"
+  },
+  {
+    "id": "H022",
+    "job": "J3/J4/J5",
+    "file": "WIRING_B69_J5.md",
+    "file_hunk": 12,
+    "diff_line": 575,
+    "hunk": "@@ -555,7 +555,7 @@ proof is bounded native execution, not played gameplay.",
+    "verdict": "documented deviation",
+    "review": "Job handoff report/wiring links retargeted after rename; original handoff status retained"
+  },
+  {
+    "id": "H023",
+    "job": "J3/J4/J5",
+    "file": "mod_editor/capabilities/registry.v1.json",
+    "file_hunk": 1,
+    "diff_line": 588,
+    "hunk": "@@ -6375,6 +6375,74 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 canonical rows and existing MyCareer evidence; exact field differences in registry-deviations.json"
+  },
+  {
+    "id": "H024",
+    "job": "J3/J4/J5",
+    "file": "mod_editor/capabilities/registry.v1.json",
+    "file_hunk": 2,
+    "diff_line": 663,
+    "hunk": "@@ -6578,6 +6646,156 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 canonical rows and existing MyCareer evidence; exact field differences in registry-deviations.json"
+  },
+  {
+    "id": "H025",
+    "job": "J3/J4/J5",
+    "file": "mod_editor/capabilities/registry.v1.json",
+    "file_hunk": 3,
+    "diff_line": 820,
+    "hunk": "@@ -7948,7 +8166,11 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 canonical rows and existing MyCareer evidence; exact field differences in registry-deviations.json"
+  },
+  {
+    "id": "H026",
+    "job": "J3/J4/J5",
+    "file": "mod_editor/capabilities/registry.v1.json",
+    "file_hunk": 4,
+    "diff_line": 833,
+    "hunk": "@@ -7966,7 +8188,8 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 canonical rows and existing MyCareer evidence; exact field differences in registry-deviations.json"
+  },
+  {
+    "id": "H027",
+    "job": "J3/J4/J5",
+    "file": "mod_editor/capabilities/registry.v1.json",
+    "file_hunk": 5,
+    "diff_line": 843,
+    "hunk": "@@ -7998,7 +8221,10 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 canonical rows and existing MyCareer evidence; exact field differences in registry-deviations.json"
+  },
+  {
+    "id": "H028",
+    "job": "J3/J4/J5",
+    "file": "mod_editor/capabilities/registry.v1.json",
+    "file_hunk": 6,
+    "diff_line": 855,
+    "hunk": "@@ -8026,6 +8252,140 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 canonical rows and existing MyCareer evidence; exact field differences in registry-deviations.json"
+  },
+  {
+    "id": "H029",
+    "job": "J3/J4/J5",
+    "file": "mod_editor/capabilities/registry.v1.json",
+    "file_hunk": 7,
+    "diff_line": 996,
+    "hunk": "@@ -11464,6 +11824,158 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 canonical rows and existing MyCareer evidence; exact field differences in registry-deviations.json"
+  },
+  {
+    "id": "H030",
+    "job": "J5",
+    "file": "mod_editor/core/mod_build.py",
+    "file_hunk": 1,
+    "diff_line": 1159,
+    "hunk": "@@ -141,6 +141,11 @@ class BuildPlan:",
+    "verdict": "applied exactly",
+    "review": "J5 five BuildPlan fields, False/17/60/Retail defaults"
+  },
+  {
+    "id": "H031",
+    "job": "J4",
+    "file": "mod_editor/core/mod_build.py",
+    "file_hunk": 2,
+    "diff_line": 1171,
+    "hunk": "@@ -258,6 +263,8 @@ class BuildPlan:",
+    "verdict": "applied exactly",
+    "review": "J4 climate path and haze boolean"
+  },
+  {
+    "id": "H032",
+    "job": "J4/J5",
+    "file": "mod_editor/core/mod_build.py",
+    "file_hunk": 3,
+    "diff_line": 1180,
+    "hunk": "@@ -301,7 +308,7 @@ class BuildPlan:",
+    "verdict": "applied exactly",
+    "review": "J4/J5 wants_xbe_patch: haze/rules, climate data only"
+  },
+  {
+    "id": "H033",
+    "job": "J4/J5",
+    "file": "mod_editor/core/mod_build.py",
+    "file_hunk": 4,
+    "diff_line": 1189,
+    "hunk": "@@ -334,6 +341,10 @@ PRESETS: dict[str, dict[str, Any]] = {",
+    "verdict": "applied exactly",
+    "review": "J4/J5 BASIC explicitly Off/Retail"
+  },
+  {
+    "id": "H034",
+    "job": "J4/J5",
+    "file": "mod_editor/core/mod_build.py",
+    "file_hunk": 5,
+    "diff_line": 1200,
+    "hunk": "@@ -351,6 +362,10 @@ PRESETS: dict[str, dict[str, Any]] = {",
+    "verdict": "applied exactly",
+    "review": "J4/J5 ADVANCED explicitly Off/Retail"
+  },
+  {
+    "id": "H035",
+    "job": "J4/J5",
+    "file": "mod_editor/core/mod_build.py",
+    "file_hunk": 6,
+    "diff_line": 1211,
+    "hunk": "@@ -369,6 +384,10 @@ PRESETS: dict[str, dict[str, Any]] = {",
+    "verdict": "applied exactly",
+    "review": "J4/J5 EXPERIMENTAL explicitly Off/Retail"
+  },
+  {
+    "id": "H036",
+    "job": "J4",
+    "file": "mod_editor/core/mod_build.py",
+    "file_hunk": 7,
+    "diff_line": 1222,
+    "hunk": "@@ -416,6 +435,8 @@ def availability() -> dict[str, bool]:",
+    "verdict": "applied exactly",
+    "review": "J4 module availability"
+  },
+  {
+    "id": "H037",
+    "job": "J5",
+    "file": "mod_editor/core/mod_build.py",
+    "file_hunk": 8,
+    "diff_line": 1231,
+    "hunk": "@@ -428,6 +449,9 @@ def availability() -> dict[str, bool]:",
+    "verdict": "applied exactly",
+    "review": "J5 module/allocator availability"
+  },
+  {
+    "id": "H038",
+    "job": "J5",
+    "file": "mod_editor/core/mod_build.py",
+    "file_hunk": 9,
+    "diff_line": 1241,
+    "hunk": "@@ -570,7 +594,7 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str",
+    "verdict": "applied exactly",
+    "review": "J5 inspect states and installed settings"
+  },
+  {
+    "id": "H039",
+    "job": "J4",
+    "file": "mod_editor/core/mod_build.py",
+    "file_hunk": 10,
+    "diff_line": 1250,
+    "hunk": "@@ -583,6 +607,7 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str",
+    "verdict": "applied exactly",
+    "review": "J4 climate requires image default"
+  },
+  {
+    "id": "H040",
+    "job": "J4",
+    "file": "mod_editor/core/mod_build.py",
+    "file_hunk": 11,
+    "diff_line": 1258,
+    "hunk": "@@ -716,6 +741,15 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str",
+    "verdict": "applied exactly",
+    "review": "J4 bounded ROST inspect"
+  },
+  {
+    "id": "H041",
+    "job": "J4",
+    "file": "mod_editor/core/mod_build.py",
+    "file_hunk": 12,
+    "diff_line": 1274,
+    "hunk": "@@ -736,6 +770,14 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str",
+    "verdict": "applied exactly",
+    "review": "J4 haze status inspect"
+  },
+  {
+    "id": "H042",
+    "job": "J4",
+    "file": "mod_editor/core/mod_build.py",
+    "file_hunk": 13,
+    "diff_line": 1289,
+    "hunk": "@@ -1112,6 +1154,11 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits",
+    "verdict": "applied exactly",
+    "review": "J4 strict weather types and stripped path"
+  },
+  {
+    "id": "H043",
+    "job": "J5",
+    "file": "mod_editor/core/mod_build.py",
+    "file_hunk": 14,
+    "diff_line": 1301,
+    "hunk": "@@ -1159,7 +1206,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits",
+    "verdict": "applied exactly",
+    "review": "J5 preflight allocator predicate"
+  },
+  {
+    "id": "H044",
+    "job": "J3",
+    "file": "mod_editor/core/mod_build.py",
+    "file_hunk": 15,
+    "diff_line": 1310,
+    "hunk": "@@ -1167,7 +1214,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits",
+    "verdict": "applied exactly",
+    "review": "J3 generic/prepared tier enables depth locks"
+  },
+  {
+    "id": "H045",
+    "job": "J5",
+    "file": "mod_editor/core/mod_build.py",
+    "file_hunk": 16,
+    "diff_line": 1325,
+    "hunk": "@@ -1188,6 +1241,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits",
+    "verdict": "documented deviation",
+    "review": "J5 full source settings check before deferred copy/project work"
+  },
+  {
+    "id": "H046",
+    "job": "J4",
+    "file": "mod_editor/core/mod_build.py",
+    "file_hunk": 17,
+    "diff_line": 1339,
+    "hunk": "@@ -1306,6 +1366,27 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits",
+    "verdict": "applied exactly",
+    "review": "J4 climate validation/frozen final-pass document and haze source checks"
+  },
+  {
+    "id": "H047",
+    "job": "J4/J5",
+    "file": "mod_editor/core/mod_build.py",
+    "file_hunk": 18,
+    "diff_line": 1367,
+    "hunk": "@@ -1415,11 +1496,11 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits",
+    "verdict": "applied exactly",
+    "review": "J4/J5 defer haze and allocation-dependent rules in initial pass"
+  },
+  {
+    "id": "H048",
+    "job": "J5",
+    "file": "mod_editor/core/mod_build.py",
+    "file_hunk": 19,
+    "diff_line": 1381,
+    "hunk": "@@ -1784,7 +1865,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits",
+    "verdict": "applied exactly",
+    "review": "J5 final allocator predicate"
+  },
+  {
+    "id": "H049",
+    "job": "J4",
+    "file": "mod_editor/core/mod_build.py",
+    "file_hunk": 20,
+    "diff_line": 1390,
+    "hunk": "@@ -1846,6 +1927,20 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits",
+    "verdict": "applied exactly",
+    "review": "J4 haze after helmet, before composed inspect, Off restores"
+  },
+  {
+    "id": "H050",
+    "job": "J4",
+    "file": "mod_editor/core/mod_build.py",
+    "file_hunk": 21,
+    "diff_line": 1411,
+    "hunk": "@@ -1931,6 +2026,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits",
+    "verdict": "applied exactly",
+    "review": "J4 climate after final ESPN/resource pass; reparse before publication"
+  },
+  {
+    "id": "H051",
+    "job": "J4/J5",
+    "file": "mod_editor/core/nfl2k5_build_settings.py",
+    "file_hunk": 1,
+    "diff_line": 1429,
+    "hunk": "@@ -26,6 +26,8 @@ FEATURE_KEYS += (",
+    "verdict": "documented deviation",
+    "review": "J4/J5 explicit FEATURE_KEYS; actual serializer requires this beyond the J4 dataclass assumption"
+  },
+  {
+    "id": "H052",
+    "job": "J4",
+    "file": "mod_editor/core/nfl2k5_cave_manifest.py",
+    "file_hunk": 1,
+    "diff_line": 1442,
+    "hunk": "@@ -226,6 +226,11 @@ class Recorder:",
+    "verdict": "applied exactly",
+    "review": "J4 reserve all four coefficient bytes including unchanged bytes"
+  },
+  {
+    "id": "H053",
+    "job": "J4/J5",
+    "file": "mod_editor/core/nfl2k5_cave_manifest.py",
+    "file_hunk": 2,
+    "diff_line": 1454,
+    "hunk": "@@ -284,6 +289,10 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None,",
+    "verdict": "applied exactly",
+    "review": "J4/J5 recorder imports"
+  },
+  {
+    "id": "H054",
+    "job": "J4/J5",
+    "file": "mod_editor/core/nfl2k5_cave_manifest.py",
+    "file_hunk": 3,
+    "diff_line": 1465,
+    "hunk": "@@ -292,7 +301,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None,",
+    "verdict": "applied exactly",
+    "review": "J4/J5 recorder module closure"
+  },
+  {
+    "id": "H055",
+    "job": "J5",
+    "file": "mod_editor/core/nfl2k5_cave_manifest.py",
+    "file_hunk": 4,
+    "diff_line": 1474,
+    "hunk": "@@ -306,7 +315,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None,",
+    "verdict": "applied exactly",
+    "review": "J5 dormant complete allocation union"
+  },
+  {
+    "id": "H056",
+    "job": "J4/J5",
+    "file": "mod_editor/core/nfl2k5_cave_manifest.py",
+    "file_hunk": 5,
+    "diff_line": 1483,
+    "hunk": "@@ -379,6 +388,10 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None,",
+    "verdict": "applied exactly",
+    "review": "J4/J5 dormant writer applications"
+  },
+  {
+    "id": "H057",
+    "job": "J4/J5",
+    "file": "mod_editor/core/nfl2k5_cave_manifest.py",
+    "file_hunk": 6,
+    "diff_line": 1494,
+    "hunk": "@@ -428,7 +441,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None,",
+    "verdict": "applied exactly",
+    "review": "J4/J5 synthetic replay list"
+  },
+  {
+    "id": "H058",
+    "job": "J4/J5",
+    "file": "mod_editor/core/nfl2k5_cave_manifest.py",
+    "file_hunk": 7,
+    "diff_line": 1503,
+    "hunk": "@@ -437,7 +450,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None,",
+    "verdict": "applied exactly",
+    "review": "J4/J5 status verification list"
+  },
+  {
+    "id": "H059",
+    "job": "J4/J5",
+    "file": "mod_editor/core/nfl2k5_cave_manifest.py",
+    "file_hunk": 8,
+    "diff_line": 1512,
+    "hunk": "@@ -469,7 +482,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None,",
+    "verdict": "applied exactly",
+    "review": "J4/J5 extra owner list"
+  },
+  {
+    "id": "H060",
+    "job": "J5",
+    "file": "mod_editor/core/nfl2k5_throw_tuning.py",
+    "file_hunk": 1,
+    "diff_line": 1525,
+    "hunk": "@@ -87,6 +87,9 @@ from . import nfl2k5_coverage_trail as coverage_trail_patch",
+    "verdict": "applied exactly",
+    "review": "J5 imports"
+  },
+  {
+    "id": "H061",
+    "job": "J5",
+    "file": "mod_editor/core/nfl2k5_throw_tuning.py",
+    "file_hunk": 2,
+    "diff_line": 1535,
+    "hunk": "@@ -1040,6 +1043,10 @@ R62_SPACE_KEYS = ('momentum_collisions', 'momentum_collision_level', 'read_optio",
+    "verdict": "applied exactly",
+    "review": "J5 three space and five runtime keys"
+  },
+  {
+    "id": "H062",
+    "job": "J5",
+    "file": "mod_editor/core/nfl2k5_throw_tuning.py",
+    "file_hunk": 3,
+    "diff_line": 1546,
+    "hunk": "@@ -1104,11 +1111,12 @@ def _deferred_r62_options(values, defer):",
+    "verdict": "applied exactly",
+    "review": "J5 explicit Retail enum deferral and validator signature"
+  },
+  {
+    "id": "H063",
+    "job": "J5",
+    "file": "mod_editor/core/nfl2k5_throw_tuning.py",
+    "file_hunk": 4,
+    "diff_line": 1560,
+    "hunk": "@@ -1116,6 +1124,11 @@ def _validate_r62_options(*, momentum_collisions=False, momentum_collision_level",
+    "verdict": "applied exactly",
+    "review": "J5 option domains"
+  },
+  {
+    "id": "H064",
+    "job": "J5",
+    "file": "mod_editor/core/nfl2k5_throw_tuning.py",
+    "file_hunk": 5,
+    "diff_line": 1572,
+    "hunk": "@@ -1137,8 +1150,8 @@ def _validate_r62_options(*, momentum_collisions=False, momentum_collision_level",
+    "verdict": "applied exactly",
+    "review": "J5 selection signature and validator forwarding"
+  },
+  {
+    "id": "H065",
+    "job": "J5",
+    "file": "mod_editor/core/nfl2k5_throw_tuning.py",
+    "file_hunk": 6,
+    "diff_line": 1583,
+    "hunk": "@@ -1163,6 +1176,9 @@ def _selected_space_requests(with_kickoff=False, runtime=False, momentum=0, defe",
+    "verdict": "applied exactly",
+    "review": "J5 complete REQUESTS union"
+  },
+  {
+    "id": "H066",
+    "job": "J5",
+    "file": "mod_editor/core/nfl2k5_throw_tuning.py",
+    "file_hunk": 7,
+    "diff_line": 1593,
+    "hunk": "@@ -1173,12 +1189,12 @@ def _selected_space_requests(with_kickoff=False, runtime=False, momentum=0, defe",
+    "verdict": "applied exactly",
+    "review": "J5 allocator adapter signature/forwarding/scaleout"
+  },
+  {
+    "id": "H067",
+    "job": "J5",
+    "file": "mod_editor/core/nfl2k5_throw_tuning.py",
+    "file_hunk": 8,
+    "diff_line": 1609,
+    "hunk": "@@ -1309,6 +1325,28 @@ class _weekly_prep_adapter:",
+    "verdict": "applied exactly",
+    "review": "J5 clock adapter and status/settings helper"
+  },
+  {
+    "id": "H068",
+    "job": "J5",
+    "file": "mod_editor/core/nfl2k5_throw_tuning.py",
+    "file_hunk": 9,
+    "diff_line": 1638,
+    "hunk": "@@ -1420,6 +1458,7 @@ def _grown_status_fields(payload):",
+    "verdict": "applied exactly",
+    "review": "J5 grown status projection"
+  },
+  {
+    "id": "H069",
+    "job": "J5",
+    "file": "mod_editor/core/nfl2k5_throw_tuning.py",
+    "file_hunk": 10,
+    "diff_line": 1646,
+    "hunk": "@@ -1481,6 +1520,47 @@ def _music_status(payload):",
+    "verdict": "documented deviation",
+    "review": "J5 extracted complete-plan installed-settings check"
+  },
+  {
+    "id": "H070",
+    "job": "J5",
+    "file": "mod_editor/core/nfl2k5_throw_tuning.py",
+    "file_hunk": 11,
+    "diff_line": 1694,
+    "hunk": "@@ -1518,7 +1598,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]",
+    "verdict": "applied exactly",
+    "review": "J5 _apply_all settings signature"
+  },
+  {
+    "id": "H071",
+    "job": "J5",
+    "file": "mod_editor/core/nfl2k5_throw_tuning.py",
+    "file_hunk": 12,
+    "diff_line": 1703,
+    "hunk": "@@ -1527,6 +1607,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]",
+    "verdict": "documented deviation",
+    "review": "J5 private deferred-settings flag"
+  },
+  {
+    "id": "H072",
+    "job": "J5",
+    "file": "mod_editor/core/nfl2k5_throw_tuning.py",
+    "file_hunk": 13,
+    "diff_line": 1711,
+    "hunk": "@@ -1537,20 +1618,8 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]",
+    "verdict": "documented deviation",
+    "review": "J5 defer only intermediate installed-setting validation"
+  },
+  {
+    "id": "H073",
+    "job": "J5",
+    "file": "mod_editor/core/nfl2k5_throw_tuning.py",
+    "file_hunk": 14,
+    "diff_line": 1734,
+    "hunk": "@@ -1716,7 +1785,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]",
+    "verdict": "applied exactly",
+    "review": "J5 final allocation predicate"
+  },
+  {
+    "id": "H074",
+    "job": "J5",
+    "file": "mod_editor/core/nfl2k5_throw_tuning.py",
+    "file_hunk": 15,
+    "diff_line": 1743,
+    "hunk": "@@ -1741,6 +1810,11 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]",
+    "verdict": "applied exactly",
+    "review": "J5 install coin, clock, scrambles immediately after accelerated clock"
+  },
+  {
+    "id": "H075",
+    "job": "J5",
+    "file": "mod_editor/core/nfl2k5_throw_tuning.py",
+    "file_hunk": 16,
+    "diff_line": 1755,
+    "hunk": "@@ -1825,7 +1899,7 @@ def write_xbe_copy(",
+    "verdict": "applied exactly",
+    "review": "J5 bare-XBE entrypoint signature"
+  },
+  {
+    "id": "H076",
+    "job": "J5",
+    "file": "mod_editor/core/nfl2k5_throw_tuning.py",
+    "file_hunk": 17,
+    "diff_line": 1764,
+    "hunk": "@@ -1857,7 +1931,7 @@ def write_xbe_copy(",
+    "verdict": "applied exactly",
+    "review": "J5 bare-XBE work predicate"
+  },
+  {
+    "id": "H077",
+    "job": "J5",
+    "file": "mod_editor/core/nfl2k5_throw_tuning.py",
+    "file_hunk": 18,
+    "diff_line": 1773,
+    "hunk": "@@ -2034,7 +2108,7 @@ def write_image_copy(",
+    "verdict": "applied exactly",
+    "review": "J5 image entrypoint signature"
+  },
+  {
+    "id": "H078",
+    "job": "J5",
+    "file": "mod_editor/core/nfl2k5_throw_tuning.py",
+    "file_hunk": 19,
+    "diff_line": 1782,
+    "hunk": "@@ -2065,6 +2139,8 @@ def write_image_copy(",
+    "verdict": "documented deviation",
+    "review": "J5 explain complete-plan preflight before partial pass"
+  },
+  {
+    "id": "H079",
+    "job": "J5",
+    "file": "mod_editor/core/nfl2k5_throw_tuning.py",
+    "file_hunk": 20,
+    "diff_line": 1791,
+    "hunk": "@@ -2079,7 +2155,7 @@ def write_image_copy(",
+    "verdict": "applied exactly",
+    "review": "J5 image work predicate"
+  },
+  {
+    "id": "H080",
+    "job": "J5",
+    "file": "mod_editor/core/nfl2k5_throw_tuning.py",
+    "file_hunk": 21,
+    "diff_line": 1800,
+    "hunk": "@@ -2099,13 +2175,17 @@ def write_image_copy(",
+    "verdict": "documented deviation",
+    "review": "J5 complete-plan preflight and unchanged intermediate replay"
+  },
+  {
+    "id": "H081",
+    "job": "J3/J5",
+    "file": "mod_editor/core/providers.py",
+    "file_hunk": 1,
+    "diff_line": 1824,
+    "hunk": "@@ -513,6 +513,14 @@ class Nfl2k5UnifiedVisualProvider:",
+    "verdict": "applied exactly",
+    "review": "J3/J5 eight added dependency pins"
+  },
+  {
+    "id": "H082",
+    "job": "J5",
+    "file": "mod_editor/core/providers.py",
+    "file_hunk": 2,
+    "diff_line": 1839,
+    "hunk": "@@ -521,7 +529,7 @@ class Nfl2k5UnifiedVisualProvider:",
+    "verdict": "applied exactly",
+    "review": "J5 dispatcher pin"
+  },
+  {
+    "id": "H083",
+    "job": "J4/J5",
+    "file": "mod_editor/core/providers.py",
+    "file_hunk": 3,
+    "diff_line": 1848,
+    "hunk": "@@ -549,7 +557,7 @@ class Nfl2k5UnifiedVisualProvider:",
+    "verdict": "applied exactly",
+    "review": "J4/J5 saved settings pin"
+  },
+  {
+    "id": "H084",
+    "job": "J3/J4/J5",
+    "file": "mod_editor/core/providers.py",
+    "file_hunk": 4,
+    "diff_line": 1857,
+    "hunk": "@@ -708,7 +716,7 @@ class Nfl2k5UnifiedVisualProvider:",
+    "verdict": "applied exactly",
+    "review": "J3/J4/J5 mod_build pin"
+  },
+  {
+    "id": "H085",
+    "job": "J5",
+    "file": "mod_editor/gui/beta62_options.py",
+    "file_hunk": 1,
+    "diff_line": 1870,
+    "hunk": "@@ -72,6 +72,10 @@ OPTIONS = (",
+    "verdict": "applied exactly",
+    "review": "J5 exact two boolean captions/help; CPU scrambles remains an enum"
+  },
+  {
+    "id": "H086",
+    "job": "J5",
+    "file": "mod_editor/gui/build_panel_qt.py",
+    "file_hunk": 1,
+    "diff_line": 1885,
+    "hunk": "@@ -461,6 +461,30 @@ class BuildPanel(QWidget):",
+    "verdict": "applied exactly",
+    "review": "J5 cutoff and Retail/Modern selectors, defaults, accessible labels"
+  },
+  {
+    "id": "H087",
+    "job": "J4",
+    "file": "mod_editor/gui/build_panel_qt.py",
+    "file_hunk": 2,
+    "diff_line": 1916,
+    "hunk": "@@ -742,6 +766,29 @@ class BuildPanel(QWidget):",
+    "verdict": "applied exactly",
+    "review": "J4 climate choose/editor/status and reversible haze controls"
+  },
+  {
+    "id": "H088",
+    "job": "J4",
+    "file": "mod_editor/gui/build_panel_qt.py",
+    "file_hunk": 3,
+    "diff_line": 1946,
+    "hunk": "@@ -1179,6 +1226,21 @@ class BuildPanel(QWidget):",
+    "verdict": "applied exactly",
+    "review": "J4 source gates, climate reset and installed haze projection"
+  },
+  {
+    "id": "H089",
+    "job": "J5",
+    "file": "mod_editor/gui/build_panel_qt.py",
+    "file_hunk": 4,
+    "diff_line": 1968,
+    "hunk": "@@ -1314,6 +1376,14 @@ class BuildPanel(QWidget):",
+    "verdict": "applied exactly",
+    "review": "J5 preset reset of cutoff and scramble selectors"
+  },
+  {
+    "id": "H090",
+    "job": "J4",
+    "file": "mod_editor/gui/build_panel_qt.py",
+    "file_hunk": 5,
+    "diff_line": 1983,
+    "hunk": "@@ -1382,6 +1452,7 @@ class BuildPanel(QWidget):",
+    "verdict": "applied exactly",
+    "review": "J4 boolean/path control map"
+  },
+  {
+    "id": "H091",
+    "job": "J4",
+    "file": "mod_editor/gui/build_panel_qt.py",
+    "file_hunk": 6,
+    "diff_line": 1991,
+    "hunk": "@@ -1479,6 +1550,8 @@ class BuildPanel(QWidget):",
+    "verdict": "applied exactly",
+    "review": "J4 plan path/haze fields"
+  },
+  {
+    "id": "H092",
+    "job": "J5",
+    "file": "mod_editor/gui/build_panel_qt.py",
+    "file_hunk": 7,
+    "diff_line": 2000,
+    "hunk": "@@ -1503,6 +1576,9 @@ class BuildPanel(QWidget):",
+    "verdict": "applied exactly",
+    "review": "J5 plan cutoff/enum values"
+  },
+  {
+    "id": "H093",
+    "job": "J4/J5",
+    "file": "mod_editor/gui/build_panel_qt.py",
+    "file_hunk": 8,
+    "diff_line": 2010,
+    "hunk": "@@ -1520,7 +1596,8 @@ class BuildPanel(QWidget):",
+    "verdict": "applied exactly",
+    "review": "J4/J5 has_work predicates"
+  },
+  {
+    "id": "H094",
+    "job": "J4/J5",
+    "file": "mod_editor/gui/build_panel_qt.py",
+    "file_hunk": 9,
+    "diff_line": 2020,
+    "hunk": "@@ -1560,9 +1637,17 @@ class BuildPanel(QWidget):",
+    "verdict": "applied exactly",
+    "review": "J4/J5 selected labels, cutoff values and explicit haze restoration"
+  },
+  {
+    "id": "H095",
+    "job": "J4",
+    "file": "mod_editor/gui/build_panel_qt.py",
+    "file_hunk": 10,
+    "diff_line": 2038,
+    "hunk": "@@ -1615,6 +1700,10 @@ class BuildPanel(QWidget):",
+    "verdict": "applied exactly",
+    "review": "J4 climate blocker"
+  },
+  {
+    "id": "H096",
+    "job": "J5",
+    "file": "mod_editor/gui/build_panel_qt.py",
+    "file_hunk": 11,
+    "diff_line": 2049,
+    "hunk": "@@ -1727,6 +1816,37 @@ class BuildPanel(QWidget):",
+    "verdict": "wrong",
+    "review": "J5 installed settings lock and enum source gating; source-reset omission D1"
+  },
+  {
+    "id": "H097",
+    "job": "J4",
+    "file": "mod_editor/gui/build_panel_qt.py",
+    "file_hunk": 12,
+    "diff_line": 2087,
+    "hunk": "@@ -1924,6 +2044,47 @@ class BuildPanel(QWidget):",
+    "verdict": "applied exactly",
+    "review": "J4 editor launch/save signal and bounded climate preflight helper"
+  },
+  {
+    "id": "H098",
+    "job": "J4",
+    "file": "mod_editor/gui/build_panel_qt.py",
+    "file_hunk": 13,
+    "diff_line": 2135,
+    "hunk": "@@ -2181,6 +2342,8 @@ class BuildPanel(QWidget):",
+    "verdict": "applied exactly",
+    "review": "J4 confirmation plan basename"
+  },
+  {
+    "id": "H099",
+    "job": "J4/J5",
+    "file": "mod_editor/gui/gameplay_patches_panel_qt.py",
+    "file_hunk": 1,
+    "diff_line": 2148,
+    "hunk": "@@ -259,7 +259,12 @@ PATCHES = (",
+    "verdict": "documented deviation",
+    "review": "J4/J5 rows; climate path and scramble enum are informational, never booleans"
+  },
+  {
+    "id": "H100",
+    "job": "J4/J5",
+    "file": "mod_editor/gui/gameplay_patches_panel_qt.py",
+    "file_hunk": 2,
+    "diff_line": 2162,
+    "hunk": "@@ -326,6 +331,9 @@ LABELS: dict[str, tuple[str, str, str]] = {",
+    "verdict": "documented deviation",
+    "review": "J4/J5 exact captions/help"
+  },
+  {
+    "id": "H101",
+    "job": "J4/J5",
+    "file": "mod_editor/gui/gameplay_patches_panel_qt.py",
+    "file_hunk": 3,
+    "diff_line": 2172,
+    "hunk": "@@ -338,7 +346,7 @@ NEEDS_IMAGE = {\"camera\", \"seven_on_seven\", \"music_shuffle\", \"practice_squad_scre",
+    "verdict": "documented deviation",
+    "review": "J4/J5 full-disc gates"
+  },
+  {
+    "id": "H102",
+    "job": "J4",
+    "file": "mod_editor/gui/gameplay_patches_panel_qt.py",
+    "file_hunk": 4,
+    "diff_line": 2181,
+    "hunk": "@@ -364,6 +372,7 @@ class GameplayPatchesPanel(QWidget):",
+    "verdict": "documented deviation",
+    "review": "J4 weather navigation signal"
+  },
+  {
+    "id": "H103",
+    "job": "J4/J5",
+    "file": "mod_editor/gui/gameplay_patches_panel_qt.py",
+    "file_hunk": 5,
+    "diff_line": 2189,
+    "hunk": "@@ -466,10 +475,24 @@ class GameplayPatchesPanel(QWidget):",
+    "verdict": "documented deviation",
+    "review": "J4/J5 weather editor action and Retail/Modern enum"
+  },
+  {
+    "id": "H104",
+    "job": "J5",
+    "file": "mod_editor/gui/gameplay_patches_panel_qt.py",
+    "file_hunk": 6,
+    "diff_line": 2218,
+    "hunk": "@@ -489,6 +512,23 @@ class GameplayPatchesPanel(QWidget):",
+    "verdict": "documented deviation",
+    "review": "J5 cutoff selectors"
+  },
+  {
+    "id": "H105",
+    "job": "J4",
+    "file": "mod_editor/gui/gameplay_patches_panel_qt.py",
+    "file_hunk": 7,
+    "diff_line": 2242,
+    "hunk": "@@ -622,6 +662,13 @@ class GameplayPatchesPanel(QWidget):",
+    "verdict": "documented deviation",
+    "review": "J4 reversible haze source state"
+  },
+  {
+    "id": "H106",
+    "job": "J5",
+    "file": "mod_editor/gui/gameplay_patches_panel_qt.py",
+    "file_hunk": 8,
+    "diff_line": 2256,
+    "hunk": "@@ -707,6 +754,11 @@ class GameplayPatchesPanel(QWidget):",
+    "verdict": "documented deviation",
+    "review": "J5 plan cutoff/enum projection"
+  },
+  {
+    "id": "H107",
+    "job": "J4/J5",
+    "file": "mod_editor/gui/gameplay_patches_panel_qt.py",
+    "file_hunk": 9,
+    "diff_line": 2268,
+    "hunk": "@@ -865,10 +917,45 @@ class GameplayPatchesPanel(QWidget):",
+    "verdict": "wrong",
+    "review": "J4/J5 installed locks, source gating and has_work; source-reset omission D1"
+  },
+  {
+    "id": "H108",
+    "job": "J4/J5",
+    "file": "mod_editor/gui/gameplay_patches_panel_qt.py",
+    "file_hunk": 10,
+    "diff_line": 2315,
+    "hunk": "@@ -893,6 +980,25 @@ class GameplayPatchesPanel(QWidget):",
+    "verdict": "documented deviation",
+    "review": "J4/J5 selection helpers and standalone weather-editor fallback"
+  },
+  {
+    "id": "H109",
+    "job": "J4/J5",
+    "file": "mod_editor/gui/gameplay_patches_panel_qt.py",
+    "file_hunk": 11,
+    "diff_line": 2341,
+    "hunk": "@@ -905,10 +1011,17 @@ class GameplayPatchesPanel(QWidget):",
+    "verdict": "documented deviation",
+    "review": "J4/J5 actionable selection/confirmation including restoration and cutoff"
+  },
+  {
+    "id": "H110",
+    "job": "J5",
+    "file": "mod_editor/gui/gameplay_project_ui.py",
+    "file_hunk": 1,
+    "diff_line": 2365,
+    "hunk": "@@ -56,6 +56,9 @@ def restore(panel, state):",
+    "verdict": "documented deviation",
+    "review": "J5 restore cutoff/enum"
+  },
+  {
+    "id": "H111",
+    "job": "J4",
+    "file": "mod_editor/gui/gameplay_project_ui.py",
+    "file_hunk": 2,
+    "diff_line": 2375,
+    "hunk": "@@ -65,7 +68,7 @@ def restore(panel, state):",
+    "verdict": "documented deviation",
+    "review": "J4 restore climate path"
+  },
+  {
+    "id": "H112",
+    "job": "J5",
+    "file": "mod_editor/gui/gameplay_project_ui.py",
+    "file_hunk": 3,
+    "diff_line": 2384,
+    "hunk": "@@ -91,7 +94,7 @@ class GameplayBuildLink:",
+    "verdict": "documented deviation",
+    "review": "J5 bidirectional combo signals"
+  },
+  {
+    "id": "H113",
+    "job": "J5",
+    "file": "mod_editor/gui/gameplay_project_ui.py",
+    "file_hunk": 4,
+    "diff_line": 2393,
+    "hunk": "@@ -108,7 +111,7 @@ class GameplayBuildLink:",
+    "verdict": "documented deviation",
+    "review": "J5 bidirectional combo values"
+  },
+  {
+    "id": "H114",
+    "job": "J3",
+    "file": "mod_editor/gui/my_career_panel_qt.py",
+    "file_hunk": 1,
+    "diff_line": 2406,
+    "hunk": "@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QFormLayout, QGr",
+    "verdict": "applied exactly",
+    "review": "J3 prospects import"
+  },
+  {
+    "id": "H115",
+    "job": "J3",
+    "file": "mod_editor/gui/my_career_panel_qt.py",
+    "file_hunk": 2,
+    "diff_line": 2414,
+    "hunk": "@@ -51,7 +52,10 @@ class MyCareerPanel(QWidget):",
+    "verdict": "applied exactly",
+    "review": "J3 honest MyCareer page description"
+  },
+  {
+    "id": "H116",
+    "job": "J3",
+    "file": "mod_editor/gui/my_career_panel_qt.py",
+    "file_hunk": 3,
+    "diff_line": 2426,
+    "hunk": "@@ -85,13 +89,26 @@ class MyCareerPanel(QWidget):",
+    "verdict": "applied exactly",
+    "review": "J3 tier/prototype controls and tier-owned starting depth place"
+  },
+  {
+    "id": "H117",
+    "job": "J3",
+    "file": "mod_editor/gui/my_career_panel_qt.py",
+    "file_hunk": 4,
+    "diff_line": 2454,
+    "hunk": "@@ -130,6 +147,17 @@ class MyCareerPanel(QWidget):",
+    "verdict": "applied exactly",
+    "review": "J3 saved caller choices, retail default and help"
+  },
+  {
+    "id": "H118",
+    "job": "J3",
+    "file": "mod_editor/gui/my_career_panel_qt.py",
+    "file_hunk": 5,
+    "diff_line": 2472,
+    "hunk": "@@ -206,8 +234,10 @@ class MyCareerPanel(QWidget):",
+    "verdict": "applied exactly",
+    "review": "J3 prototype aliases/Pocket default"
+  },
+  {
+    "id": "H119",
+    "job": "J3",
+    "file": "mod_editor/gui/my_career_panel_qt.py",
+    "file_hunk": 6,
+    "diff_line": 2485,
+    "hunk": "@@ -229,15 +259,19 @@ class MyCareerPanel(QWidget):",
+    "verdict": "applied exactly",
+    "review": "J3 load caller and Supersim together"
+  },
+  {
+    "id": "H120",
+    "job": "J3",
+    "file": "mod_editor/gui/my_career_panel_qt.py",
+    "file_hunk": 7,
+    "diff_line": 2508,
+    "hunk": "@@ -246,6 +280,7 @@ class MyCareerPanel(QWidget):",
+    "verdict": "applied exactly",
+    "review": "J3 capture caller on export"
+  },
+  {
+    "id": "H121",
+    "job": "J3",
+    "file": "mod_editor/gui/my_career_panel_qt.py",
+    "file_hunk": 8,
+    "diff_line": 2516,
+    "hunk": "@@ -255,9 +290,10 @@ class MyCareerPanel(QWidget):",
+    "verdict": "applied exactly",
+    "review": "J3 one signed write_settings export"
+  },
+  {
+    "id": "H122",
+    "job": "J3",
+    "file": "mod_editor/gui/my_career_panel_qt.py",
+    "file_hunk": 9,
+    "diff_line": 2529,
+    "hunk": "@@ -281,6 +317,7 @@ class MyCareerPanel(QWidget):",
+    "verdict": "applied exactly",
+    "review": "J3 disable caller while working"
+  },
+  {
+    "id": "H123",
+    "job": "J3",
+    "file": "mod_editor/gui/my_career_panel_qt.py",
+    "file_hunk": 10,
+    "diff_line": 2537,
+    "hunk": "@@ -293,6 +330,7 @@ class MyCareerPanel(QWidget):",
+    "verdict": "applied exactly",
+    "review": "J3 restore caller availability after work"
+  },
+  {
+    "id": "H124",
+    "job": "J3",
+    "file": "mod_editor/gui/my_career_panel_qt.py",
+    "file_hunk": 11,
+    "diff_line": 2545,
+    "hunk": "@@ -312,7 +350,8 @@ class MyCareerPanel(QWidget):",
+    "verdict": "applied exactly",
+    "review": "J3 pass prospect tier to creation"
+  },
+  {
+    "id": "H125",
+    "job": "J4",
+    "file": "mod_editor/gui/studio_qt.py",
+    "file_hunk": 1,
+    "diff_line": 2559,
+    "hunk": "@@ -3099,6 +3099,7 @@ class StudioMainWindow(QMainWindow):",
+    "verdict": "documented deviation",
+    "review": "J4 existing Gameplay weather signal opens Build weather editor"
+  },
+  {
+    "id": "H126",
+    "job": "J4",
+    "file": "mod_editor/gui/studio_qt.py",
+    "file_hunk": 2,
+    "diff_line": 2567,
+    "hunk": "@@ -9132,6 +9133,10 @@ class StudioMainWindow(QMainWindow):",
+    "verdict": "documented deviation",
+    "review": "J4 existing Gameplay weather signal opens Build weather editor"
+  },
+  {
+    "id": "H127",
+    "job": "J4",
+    "file": "packaging/check_2k5_mod_studio_runtime.py",
+    "file_hunk": 1,
+    "diff_line": 2582,
+    "hunk": "@@ -99,7 +99,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {",
+    "verdict": "documented deviation",
+    "review": "J4 studio source pin"
+  },
+  {
+    "id": "H128",
+    "job": "J3/J4/J5",
+    "file": "packaging/check_2k5_mod_studio_runtime.py",
+    "file_hunk": 2,
+    "diff_line": 2591,
+    "hunk": "@@ -112,6 +112,20 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 separate weather/UI/tool runtime pins"
+  },
+  {
+    "id": "H129",
+    "job": "J3/J4/J5",
+    "file": "packaging/check_2k5_mod_studio_runtime.py",
+    "file_hunk": 3,
+    "diff_line": 2612,
+    "hunk": "@@ -149,6 +163,44 @@ REQUIRED_UNIFIED_PROVIDER_CLOSURE = frozenset(",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 executable runtime contract: pins/defaults/controls"
+  },
+  {
+    "id": "H130",
+    "job": "J3/J4/J5",
+    "file": "packaging/check_2k5_mod_studio_runtime.py",
+    "file_hunk": 4,
+    "diff_line": 2657,
+    "hunk": "@@ -1674,6 +1726,21 @@ def main() -> int:",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 fourteen additional imports"
+  },
+  {
+    "id": "H131",
+    "job": "J3/J4/J5",
+    "file": "packaging/check_2k5_mod_studio_runtime.py",
+    "file_hunk": 5,
+    "diff_line": 2679,
+    "hunk": "@@ -1959,6 +2026,7 @@ def main() -> int:",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 execute runtime contract"
+  },
+  {
+    "id": "H132",
+    "job": "J3/J4/J5",
+    "file": "packaging/check_2k5_mod_studio_runtime.py",
+    "file_hunk": 6,
+    "diff_line": 2687,
+    "hunk": "@@ -2100,11 +2168,11 @@ def main() -> int:",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 shared registry 172 and 2K5 catalog 99 assertions"
+  },
+  {
+    "id": "H133",
+    "job": "J3/J4/J5",
+    "file": "packaging/check_2k5_mod_studio_runtime.py",
+    "file_hunk": 7,
+    "diff_line": 2701,
+    "hunk": "@@ -2507,7 +2575,7 @@ def main() -> int:",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 printed shared registry/catalog pins"
+  },
+  {
+    "id": "H134",
+    "job": "J3/J4/J5",
+    "file": "packaging/check_apf2k8_mod_studio_runtime.py",
+    "file_hunk": 1,
+    "diff_line": 2714,
+    "hunk": "@@ -1332,7 +1332,7 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:",
+    "verdict": "applied exactly",
+    "review": "J3/J4/J5 shared registry 172; APF product unchanged"
+  },
+  {
+    "id": "H135",
+    "job": "J3/J4/J5",
+    "file": "packaging/release-allowlist.txt",
+    "file_hunk": 1,
+    "diff_line": 2727,
+    "hunk": "@@ -848,3 +848,21 @@ tools/nfl2k5_equipment_optimal.c",
+    "verdict": "applied exactly",
+    "review": "J3/J4/J5 ten core sources, four tools, two research docs; no compiler/emulator dependency"
+  },
+  {
+    "id": "H136",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/allocation-delta.json",
+    "file_hunk": 1,
+    "diff_line": 2754,
+    "hunk": "@@ -0,0 +1,4784 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H137",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/assembly-mycareer-hooks.log",
+    "file_hunk": 1,
+    "diff_line": 7544,
+    "hunk": "@@ -0,0 +1 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H138",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/assembly-mycareer-runtime.log",
+    "file_hunk": 1,
+    "diff_line": 7551,
+    "hunk": "@@ -0,0 +1 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H139",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/assembly-rules.log",
+    "file_hunk": 1,
+    "diff_line": 7558,
+    "hunk": "@@ -0,0 +1,3 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H140",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/core-repin.log",
+    "file_hunk": 1,
+    "diff_line": 7567,
+    "hunk": "@@ -0,0 +1,8 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H141",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/deferred-repin.log",
+    "file_hunk": 1,
+    "diff_line": 7581,
+    "hunk": "@@ -0,0 +1,8 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H142",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/dispatcher-regressions/test_build_panel_qt.log",
+    "file_hunk": 1,
+    "diff_line": 7595,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H143",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/dispatcher-regressions/test_mod_build.log",
+    "file_hunk": 1,
+    "diff_line": 7606,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H144",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/dispatcher-regressions/test_mod_build_beta62_integration.log",
+    "file_hunk": 1,
+    "diff_line": 7617,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H145",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/dispatcher-regressions/test_mod_build_beta62_integration2.log",
+    "file_hunk": 1,
+    "diff_line": 7628,
+    "hunk": "@@ -0,0 +1 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H146",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/dispatcher-regressions/test_mod_build_beta62_integration3.log",
+    "file_hunk": 1,
+    "diff_line": 7635,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H147",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/dispatcher-regressions/test_nfl2k5_accelerated_clock.log",
+    "file_hunk": 1,
+    "diff_line": 7646,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H148",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/dispatcher-regressions/test_nfl2k5_b69_rules.log",
+    "file_hunk": 1,
+    "diff_line": 7657,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H149",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/dispatcher-regressions/test_nfl2k5_my_career_b69_wiring.log",
+    "file_hunk": 1,
+    "diff_line": 7668,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H150",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/dispatcher-regressions/tests.json",
+    "file_hunk": 1,
+    "diff_line": 7679,
+    "hunk": "@@ -0,0 +1,98 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H151",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/evidence-generation.log",
+    "file_hunk": 1,
+    "diff_line": 7783,
+    "hunk": "@@ -0,0 +1,3 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H152",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-audit.json",
+    "file_hunk": 1,
+    "diff_line": 7792,
+    "hunk": "@@ -0,0 +1,39 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H153",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-dispatcher/test_gameplay_patches_panel_qt.log",
+    "file_hunk": 1,
+    "diff_line": 7837,
+    "hunk": "@@ -0,0 +1,23 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H154",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-dispatcher/test_nfl2k5_accelerated_clock.log",
+    "file_hunk": 1,
+    "diff_line": 7866,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H155",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-dispatcher/test_nfl2k5_b69_rules.log",
+    "file_hunk": 1,
+    "diff_line": 7877,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H156",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-dispatcher/test_nfl2k5_build_service.log",
+    "file_hunk": 1,
+    "diff_line": 7888,
+    "hunk": "@@ -0,0 +1,69 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H157",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-dispatcher/test_nfl2k5_throw_tuning.log",
+    "file_hunk": 1,
+    "diff_line": 7963,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H158",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-dispatcher/test_throw_tuning_panel_qt.log",
+    "file_hunk": 1,
+    "diff_line": 7974,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H159",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-dispatcher/tests.json",
+    "file_hunk": 1,
+    "diff_line": 7985,
+    "hunk": "@@ -0,0 +1,74 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H160",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-gameplay-panel/test_gameplay_patches_panel_qt.log",
+    "file_hunk": 1,
+    "diff_line": 8065,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H161",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-gameplay-panel/tests.json",
+    "file_hunk": 1,
+    "diff_line": 8076,
+    "hunk": "@@ -0,0 +1,14 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H162",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-gates/test_nfl2k5_accelerated_clock_manifest.log",
+    "file_hunk": 1,
+    "diff_line": 8096,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H163",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-gates/test_nfl2k5_cave_oracle.log",
+    "file_hunk": 1,
+    "diff_line": 8107,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H164",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-gates/test_nfl2k5_music_playlist_manifest.log",
+    "file_hunk": 1,
+    "diff_line": 8118,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H165",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-gates/test_nfl2k5_my_career_manifest.log",
+    "file_hunk": 1,
+    "diff_line": 8129,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H166",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-gates/test_nfl2k5_owner_pairwise_composition.log",
+    "file_hunk": 1,
+    "diff_line": 8140,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H167",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-gates/test_xbe_patch_cave_references.log",
+    "file_hunk": 1,
+    "diff_line": 8151,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H168",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-gates/test_xbe_patch_memory_writes.log",
+    "file_hunk": 1,
+    "diff_line": 8162,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H169",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-gates/tests.json",
+    "file_hunk": 1,
+    "diff_line": 8173,
+    "hunk": "@@ -0,0 +1,86 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H170",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-simwin/test_nfl2k5_simulated_windows_build.log",
+    "file_hunk": 1,
+    "diff_line": 8265,
+    "hunk": "@@ -0,0 +1,6 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H171",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-simwin/tests.json",
+    "file_hunk": 1,
+    "diff_line": 8277,
+    "hunk": "@@ -0,0 +1,14 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H172",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-source-fingerprints.json",
+    "file_hunk": 1,
+    "diff_line": 8297,
+    "hunk": "@@ -0,0 +1,333 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H173",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-tests.json",
+    "file_hunk": 1,
+    "diff_line": 8636,
+    "hunk": "@@ -0,0 +1,976 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H174",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-wiring/test_2k5_build_is_explainable.log",
+    "file_hunk": 1,
+    "diff_line": 9618,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H175",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-wiring/test_apf_studio_installer.log",
+    "file_hunk": 1,
+    "diff_line": 9629,
+    "hunk": "@@ -0,0 +1,31 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H176",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-wiring/test_b69_a2b_game_wiring.log",
+    "file_hunk": 1,
+    "diff_line": 9666,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H177",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-wiring/test_beta66_d1_panels.log",
+    "file_hunk": 1,
+    "diff_line": 9677,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H178",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-wiring/test_build_panel_qt.log",
+    "file_hunk": 1,
+    "diff_line": 9688,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H179",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-wiring/test_capability_registry_module_commands.log",
+    "file_hunk": 1,
+    "diff_line": 9699,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H180",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-wiring/test_discord_bugs_1_wiring.log",
+    "file_hunk": 1,
+    "diff_line": 9710,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H181",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-wiring/test_discord_bugs_2_wiring.log",
+    "file_hunk": 1,
+    "diff_line": 9721,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H182",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-wiring/test_mod_build.log",
+    "file_hunk": 1,
+    "diff_line": 9732,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H183",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-wiring/test_mod_build_beta62_integration.log",
+    "file_hunk": 1,
+    "diff_line": 9743,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H184",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-wiring/test_mod_build_beta62_integration3.log",
+    "file_hunk": 1,
+    "diff_line": 9754,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H185",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-wiring/test_nfl2k5_my_career_b69_wiring.log",
+    "file_hunk": 1,
+    "diff_line": 9765,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H186",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-wiring/test_nfl2k5_my_career_panel.log",
+    "file_hunk": 1,
+    "diff_line": 9776,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H187",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-wiring/test_phase1_packaging.log",
+    "file_hunk": 1,
+    "diff_line": 9787,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H188",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-wiring/test_product_catalog.log",
+    "file_hunk": 1,
+    "diff_line": 9798,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H189",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-wiring/test_provider_integrity.log",
+    "file_hunk": 1,
+    "diff_line": 9809,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H190",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-wiring/test_providers.log",
+    "file_hunk": 1,
+    "diff_line": 9820,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H191",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-wiring/test_shipped_tools_posix_only.log",
+    "file_hunk": 1,
+    "diff_line": 9831,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H192",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-wiring/test_validate_all_capabilities.log",
+    "file_hunk": 1,
+    "diff_line": 9842,
+    "hunk": "@@ -0,0 +1,19 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H193",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/final-wiring/tests.json",
+    "file_hunk": 1,
+    "diff_line": 9867,
+    "hunk": "@@ -0,0 +1,230 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H194",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/gate-case-counts.json",
+    "file_hunk": 1,
+    "diff_line": 10103,
+    "hunk": "@@ -0,0 +1,7 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H195",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/gate-manifest-summary.json",
+    "file_hunk": 1,
+    "diff_line": 10116,
+    "hunk": "@@ -0,0 +1,2007 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H196",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/gates/test_nfl2k5_accelerated_clock_manifest.log",
+    "file_hunk": 1,
+    "diff_line": 12129,
+    "hunk": "@@ -0,0 +1,19 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H197",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/gates/test_nfl2k5_cave_oracle.log",
+    "file_hunk": 1,
+    "diff_line": 12154,
+    "hunk": "@@ -0,0 +1,33 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H198",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/gates/test_nfl2k5_music_playlist_manifest.log",
+    "file_hunk": 1,
+    "diff_line": 12193,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H199",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/gates/test_nfl2k5_my_career_manifest.log",
+    "file_hunk": 1,
+    "diff_line": 12204,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H200",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/gates/test_nfl2k5_owner_pairwise_composition.log",
+    "file_hunk": 1,
+    "diff_line": 12215,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H201",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/gates/test_xbe_patch_cave_references.log",
+    "file_hunk": 1,
+    "diff_line": 12226,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H202",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/gates/test_xbe_patch_memory_writes.log",
+    "file_hunk": 1,
+    "diff_line": 12237,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H203",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/gates/tests.json",
+    "file_hunk": 1,
+    "diff_line": 12248,
+    "hunk": "@@ -0,0 +1,86 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H204",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/hydration.json",
+    "file_hunk": 1,
+    "diff_line": 12340,
+    "hunk": "@@ -0,0 +1,122 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H205",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/input-bundle-verification.json",
+    "file_hunk": 1,
+    "diff_line": 12468,
+    "hunk": "@@ -0,0 +1,16 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H206",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/integration-audit.json",
+    "file_hunk": 1,
+    "diff_line": 12490,
+    "hunk": "@@ -0,0 +1,38 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H207",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/integration-complete/test_b69_a2b_game_wiring.log",
+    "file_hunk": 1,
+    "diff_line": 12534,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H208",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/integration-complete/tests.json",
+    "file_hunk": 1,
+    "diff_line": 12545,
+    "hunk": "@@ -0,0 +1,14 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H209",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/integration-final/test_b69_a2b_game_wiring.log",
+    "file_hunk": 1,
+    "diff_line": 12565,
+    "hunk": "@@ -0,0 +1,37 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H210",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/integration-final/tests.json",
+    "file_hunk": 1,
+    "diff_line": 12608,
+    "hunk": "@@ -0,0 +1,14 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H211",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/integration-rerun/test_b69_a2b_game_wiring.log",
+    "file_hunk": 1,
+    "diff_line": 12628,
+    "hunk": "@@ -0,0 +1,49 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H212",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/integration-rerun/test_nfl2k5_my_career_panel.log",
+    "file_hunk": 1,
+    "diff_line": 12683,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H213",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/integration-rerun/tests.json",
+    "file_hunk": 1,
+    "diff_line": 12694,
+    "hunk": "@@ -0,0 +1,26 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H214",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/integration/test_b69_a2b_game_wiring.log",
+    "file_hunk": 1,
+    "diff_line": 12726,
+    "hunk": "@@ -0,0 +1,120 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H215",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/integration/tests.json",
+    "file_hunk": 1,
+    "diff_line": 12852,
+    "hunk": "@@ -0,0 +1,14 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H216",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/job-test-inventory.json",
+    "file_hunk": 1,
+    "diff_line": 12872,
+    "hunk": "@@ -0,0 +1,17 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H217",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/manifest-final.log",
+    "file_hunk": 1,
+    "diff_line": 12895,
+    "hunk": "@@ -0,0 +1,6 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H218",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/manifest-generation-final.log",
+    "file_hunk": 1,
+    "diff_line": 12907,
+    "hunk": "@@ -0,0 +1,6 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H219",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/manifest-generation.log",
+    "file_hunk": 1,
+    "diff_line": 12919,
+    "hunk": "@@ -0,0 +1,14 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H220",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/measure-allocation.py",
+    "file_hunk": 1,
+    "diff_line": 12939,
+    "hunk": "@@ -0,0 +1,12 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H221",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native-code-identity.json",
+    "file_hunk": 1,
+    "diff_line": 12957,
+    "hunk": "@@ -0,0 +1,86 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H222",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_beta66_supersim_wiring.log",
+    "file_hunk": 1,
+    "diff_line": 13049,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H223",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_accelerated_clock.log",
+    "file_hunk": 1,
+    "diff_line": 13060,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H224",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_b661_transition.log",
+    "file_hunk": 1,
+    "diff_line": 13071,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H225",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_b68_game_composition.log",
+    "file_hunk": 1,
+    "diff_line": 13082,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H226",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_b69_rules.log",
+    "file_hunk": 1,
+    "diff_line": 13093,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H227",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_b69_rules_series.log",
+    "file_hunk": 1,
+    "diff_line": 13104,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H228",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career.log",
+    "file_hunk": 1,
+    "diff_line": 13115,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H229",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_b69_wiring.log",
+    "file_hunk": 1,
+    "diff_line": 13126,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H230",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_completion.log",
+    "file_hunk": 1,
+    "diff_line": 13137,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H231",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_control.log",
+    "file_hunk": 1,
+    "diff_line": 13148,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H232",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_cpu_choice.log",
+    "file_hunk": 1,
+    "diff_line": 13159,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H233",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_cpu_frame.log",
+    "file_hunk": 1,
+    "diff_line": 13170,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H234",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_cpu_injury.log",
+    "file_hunk": 1,
+    "diff_line": 13181,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H235",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_cpu_period.log",
+    "file_hunk": 1,
+    "diff_line": 13192,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H236",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_cpu_timeout.log",
+    "file_hunk": 1,
+    "diff_line": 13203,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H237",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_cpu_turnover.log",
+    "file_hunk": 1,
+    "diff_line": 13214,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H238",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_creation_boundary.log",
+    "file_hunk": 1,
+    "diff_line": 13225,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H239",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_draft.log",
+    "file_hunk": 1,
+    "diff_line": 13236,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H240",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_frontend.log",
+    "file_hunk": 1,
+    "diff_line": 13247,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H241",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_generic_build.log",
+    "file_hunk": 1,
+    "diff_line": 13258,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H242",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_inline.log",
+    "file_hunk": 1,
+    "diff_line": 13269,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H243",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_m3_budget.log",
+    "file_hunk": 1,
+    "diff_line": 13280,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H244",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_m3_menus.log",
+    "file_hunk": 1,
+    "diff_line": 13291,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H245",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_mode4.log",
+    "file_hunk": 1,
+    "diff_line": 13302,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H246",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_mode5.log",
+    "file_hunk": 1,
+    "diff_line": 13313,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H247",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_mode_audit.log",
+    "file_hunk": 1,
+    "diff_line": 13324,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H248",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_mode_routes.log",
+    "file_hunk": 1,
+    "diff_line": 13335,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H249",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_panel.log",
+    "file_hunk": 1,
+    "diff_line": 13346,
+    "hunk": "@@ -0,0 +1,22 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H250",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_playcalling.log",
+    "file_hunk": 1,
+    "diff_line": 13374,
+    "hunk": "@@ -0,0 +1,19 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H251",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_played.log",
+    "file_hunk": 1,
+    "diff_line": 13399,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H252",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_position_inputs.log",
+    "file_hunk": 1,
+    "diff_line": 13410,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H253",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_prospects.log",
+    "file_hunk": 1,
+    "diff_line": 13421,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H254",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_season.log",
+    "file_hunk": 1,
+    "diff_line": 13432,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H255",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_settings.log",
+    "file_hunk": 1,
+    "diff_line": 13443,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H256",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_signing.log",
+    "file_hunk": 1,
+    "diff_line": 13454,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H257",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_unicorn.log",
+    "file_hunk": 1,
+    "diff_line": 13465,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H258",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_upgrades.log",
+    "file_hunk": 1,
+    "diff_line": 13476,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H259",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_my_career_week.log",
+    "file_hunk": 1,
+    "diff_line": 13487,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H260",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_practice_reserves.log",
+    "file_hunk": 1,
+    "diff_line": 13498,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H261",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_roster_arena_growth.log",
+    "file_hunk": 1,
+    "diff_line": 13509,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H262",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_supersim.log",
+    "file_hunk": 1,
+    "diff_line": 13520,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H263",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_supersim_live.log",
+    "file_hunk": 1,
+    "diff_line": 13531,
+    "hunk": "@@ -0,0 +1,13 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H264",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_weather.log",
+    "file_hunk": 1,
+    "diff_line": 13550,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H265",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_weather_editor.log",
+    "file_hunk": 1,
+    "diff_line": 13561,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H266",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/test_nfl2k5_weather_native.log",
+    "file_hunk": 1,
+    "diff_line": 13572,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H267",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/native/tests.json",
+    "file_hunk": 1,
+    "diff_line": 13583,
+    "hunk": "@@ -0,0 +1,542 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H268",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/packaging-repin.log",
+    "file_hunk": 1,
+    "diff_line": 14131,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H269",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/packaging-rerun/test_apf_studio_installer.log",
+    "file_hunk": 1,
+    "diff_line": 14142,
+    "hunk": "@@ -0,0 +1,31 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H270",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/packaging-rerun/test_phase1_packaging.log",
+    "file_hunk": 1,
+    "diff_line": 14179,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H271",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/packaging-rerun/test_product_catalog.log",
+    "file_hunk": 1,
+    "diff_line": 14190,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H272",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/packaging-rerun/tests.json",
+    "file_hunk": 1,
+    "diff_line": 14201,
+    "hunk": "@@ -0,0 +1,38 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H273",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/pin-delta.json",
+    "file_hunk": 1,
+    "diff_line": 14245,
+    "hunk": "@@ -0,0 +1,176 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H274",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/protected-wiring.patch",
+    "file_hunk": 1,
+    "diff_line": 14427,
+    "hunk": "@@ -0,0 +1,4494 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H275",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/release-audit-final.log",
+    "file_hunk": 1,
+    "diff_line": 18927,
+    "hunk": "@@ -0,0 +1 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H276",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/release-audit.log",
+    "file_hunk": 1,
+    "diff_line": 18934,
+    "hunk": "@@ -0,0 +1 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H277",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/run-tests.py",
+    "file_hunk": 1,
+    "diff_line": 18941,
+    "hunk": "@@ -0,0 +1,28 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H278",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/runtime-early.log",
+    "file_hunk": 1,
+    "diff_line": 18975,
+    "hunk": "@@ -0,0 +1 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H279",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/runtime-final.log",
+    "file_hunk": 1,
+    "diff_line": 18982,
+    "hunk": "@@ -0,0 +1 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H280",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/runtime-stage.log",
+    "file_hunk": 1,
+    "diff_line": 18989,
+    "hunk": "@@ -0,0 +1 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H281",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/simulated-windows-build.json",
+    "file_hunk": 1,
+    "diff_line": 18996,
+    "hunk": "@@ -0,0 +1,1801 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H282",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/simwin/test_nfl2k5_simulated_windows_build.log",
+    "file_hunk": 1,
+    "diff_line": 20803,
+    "hunk": "@@ -0,0 +1,6 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H283",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/simwin/tests.json",
+    "file_hunk": 1,
+    "diff_line": 20815,
+    "hunk": "@@ -0,0 +1,14 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H284",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/stage-final.log",
+    "file_hunk": 1,
+    "diff_line": 20835,
+    "hunk": "@@ -0,0 +1 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H285",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/stage.log",
+    "file_hunk": 1,
+    "diff_line": 20842,
+    "hunk": "@@ -0,0 +1 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H286",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/test-build-panel-early.log",
+    "file_hunk": 1,
+    "diff_line": 20849,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H287",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/test-discord-wiring-early.log",
+    "file_hunk": 1,
+    "diff_line": 20860,
+    "hunk": "@@ -0,0 +1 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H288",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/test-mycareer-integrated-early.log",
+    "file_hunk": 1,
+    "diff_line": 20867,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H289",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/test-mycareer-proposed.log",
+    "file_hunk": 1,
+    "diff_line": 20878,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H290",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/test-product-catalog-early.log",
+    "file_hunk": 1,
+    "diff_line": 20889,
+    "hunk": "@@ -0,0 +1,94 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H291",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/test-provider-integrity-early.log",
+    "file_hunk": 1,
+    "diff_line": 20989,
+    "hunk": "@@ -0,0 +1,13 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H292",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/ui-repin.log",
+    "file_hunk": 1,
+    "diff_line": 21008,
+    "hunk": "@@ -0,0 +1,8 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H293",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/wiring/test_2k5_build_is_explainable.log",
+    "file_hunk": 1,
+    "diff_line": 21022,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H294",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/wiring/test_apf_studio_installer.log",
+    "file_hunk": 1,
+    "diff_line": 21033,
+    "hunk": "@@ -0,0 +1,44 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H295",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/wiring/test_beta66_d1_panels.log",
+    "file_hunk": 1,
+    "diff_line": 21083,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H296",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/wiring/test_build_panel_qt.log",
+    "file_hunk": 1,
+    "diff_line": 21094,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H297",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/wiring/test_capability_registry_module_commands.log",
+    "file_hunk": 1,
+    "diff_line": 21105,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H298",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/wiring/test_discord_bugs_1_wiring.log",
+    "file_hunk": 1,
+    "diff_line": 21116,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H299",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/wiring/test_discord_bugs_2_wiring.log",
+    "file_hunk": 1,
+    "diff_line": 21127,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H300",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/wiring/test_mod_build.log",
+    "file_hunk": 1,
+    "diff_line": 21138,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H301",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/wiring/test_mod_build_beta62_integration3.log",
+    "file_hunk": 1,
+    "diff_line": 21149,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H302",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/wiring/test_phase1_packaging.log",
+    "file_hunk": 1,
+    "diff_line": 21160,
+    "hunk": "@@ -0,0 +1,20 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H303",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/wiring/test_product_catalog.log",
+    "file_hunk": 1,
+    "diff_line": 21186,
+    "hunk": "@@ -0,0 +1,20 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H304",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/wiring/test_provider_integrity.log",
+    "file_hunk": 1,
+    "diff_line": 21212,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H305",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/wiring/test_providers.log",
+    "file_hunk": 1,
+    "diff_line": 21223,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H306",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/wiring/test_shipped_tools_posix_only.log",
+    "file_hunk": 1,
+    "diff_line": 21234,
+    "hunk": "@@ -0,0 +1,5 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H307",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/wiring/test_validate_all_capabilities.log",
+    "file_hunk": 1,
+    "diff_line": 21245,
+    "hunk": "@@ -0,0 +1,19 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H308",
+    "job": "J3/J4/J5",
+    "file": "reports/b69_a2b/wiring/tests.json",
+    "file_hunk": 1,
+    "diff_line": 21270,
+    "hunk": "@@ -0,0 +1,182 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 generated A2b evidence/log/patch artifact; historical observations, independently rerun by A1b"
+  },
+  {
+    "id": "H309",
+    "job": "J3/J4/J5",
+    "file": "tests/mod_editor/test_apf_studio_installer.py",
+    "file_hunk": 1,
+    "diff_line": 21457,
+    "hunk": "@@ -357,7 +357,7 @@ class ReleaseClosureTests(unittest.TestCase):",
+    "verdict": "applied exactly",
+    "review": "J3/J4/J5 shared registry 172"
+  },
+  {
+    "id": "H310",
+    "job": "J3/J4/J5",
+    "file": "tests/mod_editor/test_b69_a2b_game_wiring.py",
+    "file_hunk": 1,
+    "diff_line": 21471,
+    "hunk": "@@ -0,0 +1,233 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 additional compact image, option, replay, refusal and UI evidence"
+  },
+  {
+    "id": "H311",
+    "job": "J4/J5",
+    "file": "tests/mod_editor/test_gameplay_patches_panel_qt.py",
+    "file_hunk": 1,
+    "diff_line": 21709,
+    "hunk": "@@ -27,10 +27,21 @@ class GameplayPatchesPanelTests(unittest.TestCase):",
+    "verdict": "documented deviation",
+    "review": "J4/J5 align row/caption/foreign-source expectations"
+  },
+  {
+    "id": "H312",
+    "job": "J4/J5",
+    "file": "tests/mod_editor/test_gameplay_patches_panel_qt.py",
+    "file_hunk": 2,
+    "diff_line": 21735,
+    "hunk": "@@ -38,16 +49,17 @@ class GameplayPatchesPanelTests(unittest.TestCase):",
+    "verdict": "documented deviation",
+    "review": "J4/J5 align row/caption/foreign-source expectations"
+  },
+  {
+    "id": "H313",
+    "job": "J3",
+    "file": "tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py",
+    "file_hunk": 1,
+    "diff_line": 21760,
+    "hunk": "@@ -1,4 +1,4 @@",
+    "verdict": "documented deviation",
+    "review": "J3 run integrated panel/build source, preserve original proposed-panel generator"
+  },
+  {
+    "id": "H314",
+    "job": "J3",
+    "file": "tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py",
+    "file_hunk": 2,
+    "diff_line": 21766,
+    "hunk": "@@ -11,7 +11,14 @@ from unittest.mock import patch",
+    "verdict": "documented deviation",
+    "review": "J3 run integrated panel/build source, preserve original proposed-panel generator"
+  },
+  {
+    "id": "H315",
+    "job": "J3",
+    "file": "tests/mod_editor/test_nfl2k5_my_career_panel.py",
+    "file_hunk": 1,
+    "diff_line": 21786,
+    "hunk": "@@ -65,7 +65,7 @@ class PanelTests(unittest.TestCase):",
+    "verdict": "documented deviation",
+    "review": "J3 four QB labels sharing three native styles, Pocket default"
+  },
+  {
+    "id": "H316",
+    "job": "J3",
+    "file": "tests/mod_editor/test_nfl2k5_my_career_panel.py",
+    "file_hunk": 2,
+    "diff_line": 21795,
+    "hunk": "@@ -90,7 +90,7 @@ class PanelTests(unittest.TestCase):",
+    "verdict": "documented deviation",
+    "review": "J3 four QB labels sharing three native styles, Pocket default"
+  },
+  {
+    "id": "H317",
+    "job": "J4",
+    "file": "tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py",
+    "file_hunk": 1,
+    "diff_line": 21808,
+    "hunk": "@@ -31,6 +31,7 @@ XBE = Path(os.environ.get(\"NFL2K5_RETAIL_EXTRACTION\", \"/media/noah/Storage/for c",
+    "verdict": "applied exactly",
+    "review": "J4 haze added to pair matrix"
+  },
+  {
+    "id": "H318",
+    "job": "J5",
+    "file": "tests/mod_editor/test_nfl2k5_playbook_pair_manifest.py",
+    "file_hunk": 1,
+    "diff_line": 21820,
+    "hunk": "@@ -45,7 +45,7 @@ class XbeManifestTests(unittest.TestCase):",
+    "verdict": "documented deviation",
+    "review": "J5 common helper excluded from double attribution; calling owner still recorded"
+  },
+  {
+    "id": "H319",
+    "job": "J3/J4/J5",
+    "file": "tests/mod_editor/test_nfl2k5_simulated_windows_build.py",
+    "file_hunk": 1,
+    "diff_line": 21834,
+    "hunk": "@@ -0,0 +1,69 @@",
+    "verdict": "documented deviation",
+    "review": "J3/J4/J5 additional existing non-POSIX shim/Experimental composition proof"
+  },
+  {
+    "id": "H320",
+    "job": "J3/J4/J5",
+    "file": "tests/mod_editor/test_phase1_packaging.py",
+    "file_hunk": 1,
+    "diff_line": 21908,
+    "hunk": "@@ -568,7 +568,7 @@ class ModStudioPackagingTests(unittest.TestCase):",
+    "verdict": "applied exactly",
+    "review": "J3/J4/J5 shared registry 172 and 2K5 catalog 99"
+  },
+  {
+    "id": "H321",
+    "job": "J3/J4/J5",
+    "file": "tests/mod_editor/test_product_catalog.py",
+    "file_hunk": 1,
+    "diff_line": 21921,
+    "hunk": "@@ -61,6 +61,13 @@ class ProductCatalogTests(unittest.TestCase):",
+    "verdict": "applied exactly",
+    "review": "J3/J4/J5 exact seven new IDs"
+  },
+  {
+    "id": "H322",
+    "job": "J3/J4/J5",
+    "file": "tests/mod_editor/test_product_catalog.py",
+    "file_hunk": 2,
+    "diff_line": 21935,
+    "hunk": "@@ -157,7 +164,7 @@ class ProductCatalogTests(unittest.TestCase):",
+    "verdict": "applied exactly",
+    "review": "J3/J4/J5 99 unique rows"
+  },
+  {
+    "id": "H323",
+    "job": "J3/J4/J5",
+    "file": "tests/mod_editor/test_product_catalog.py",
+    "file_hunk": 3,
+    "diff_line": 21944,
+    "hunk": "@@ -195,12 +202,12 @@ class ProductCatalogTests(unittest.TestCase):",
+    "verdict": "applied exactly",
+    "review": "J3/J4/J5 stadium/menu/gameplay section totals"
+  },
+  {
+    "id": "H324",
+    "job": "J3/J4/J5",
+    "file": "tests/mod_editor/test_product_catalog.py",
+    "file_hunk": 4,
+    "diff_line": 21960,
+    "hunk": "@@ -229,7 +236,7 @@ class ProductCatalogTests(unittest.TestCase):",
+    "verdict": "applied exactly",
+    "review": "J3/J4/J5 total tuple (99,77,8,1,0,10,3)"
+  },
+  {
+    "id": "H325",
+    "job": "J3/J4/J5",
+    "file": "tests/mod_editor/test_product_catalog.py",
+    "file_hunk": 5,
+    "diff_line": 21969,
+    "hunk": "@@ -282,7 +289,7 @@ class ProductCatalogTests(unittest.TestCase):",
+    "verdict": "applied exactly",
+    "review": "J3/J4/J5 provider binding count"
+  },
+  {
+    "id": "H326",
+    "job": "J3/J5",
+    "file": "tests/mod_editor/test_provider_integrity.py",
+    "file_hunk": 1,
+    "diff_line": 21982,
+    "hunk": "@@ -201,7 +201,7 @@ class ProviderIntegrityTests(unittest.TestCase):",
+    "verdict": "applied exactly",
+    "review": "J3/J5 combined exact unified closure 280"
+  },
+  {
+    "id": "H327",
+    "job": "J4",
+    "file": "tests/nfl2k5_allocator_stack.py",
+    "file_hunk": 1,
+    "diff_line": 21995,
+    "hunk": "@@ -36,6 +36,7 @@ from mod_editor.core import nfl2k5_cpu_money_downs as money_downs",
+    "verdict": "applied exactly",
+    "review": "J4 haze import"
+  },
+  {
+    "id": "H328",
+    "job": "J4",
+    "file": "tests/nfl2k5_allocator_stack.py",
+    "file_hunk": 2,
+    "diff_line": 22003,
+    "hunk": "@@ -101,7 +102,7 @@ def owner_calls(*, read_option_diagnostic=False):",
+    "verdict": "applied exactly",
+    "review": "J4 haze composed owner"
+  },
+  {
+    "id": "H329",
+    "job": "J4",
+    "file": "tests/nfl2k5_allocator_stack.py",
+    "file_hunk": 3,
+    "diff_line": 22012,
+    "hunk": "@@ -229,6 +230,13 @@ def manifest_for_allocated_union(manifest, retail, allocated):",
+    "verdict": "applied exactly",
+    "review": "J4 full four-byte reservation only after other-owner overlap refusal"
+  },
+  {
+    "id": "H330",
+    "job": "J3",
+    "file": "tools/mycareer_mode/b69_registry_rows.json",
+    "file_hunk": 1,
+    "diff_line": 22030,
+    "hunk": "@@ -7,7 +7,7 @@",
+    "verdict": "documented deviation",
+    "review": "J3 handoff paths/integration wording match renamed report and applied UI"
+  },
+  {
+    "id": "H331",
+    "job": "J3",
+    "file": "tools/mycareer_mode/b69_registry_rows.json",
+    "file_hunk": 2,
+    "diff_line": 22039,
+    "hunk": "@@ -17,7 +17,7 @@",
+    "verdict": "documented deviation",
+    "review": "J3 handoff paths/integration wording match renamed report and applied UI"
+  },
+  {
+    "id": "H332",
+    "job": "J3",
+    "file": "tools/mycareer_mode/b69_registry_rows.json",
+    "file_hunk": 3,
+    "diff_line": 22048,
+    "hunk": "@@ -27,7 +27,7 @@",
+    "verdict": "documented deviation",
+    "review": "J3 handoff paths/integration wording match renamed report and applied UI"
+  },
+  {
+    "id": "H333",
+    "job": "J3",
+    "file": "tools/mycareer_mode/b69_registry_rows.json",
+    "file_hunk": 4,
+    "diff_line": 22057,
+    "hunk": "@@ -37,7 +37,7 @@",
+    "verdict": "documented deviation",
+    "review": "J3 handoff paths/integration wording match renamed report and applied UI"
+  },
+  {
+    "id": "H334",
+    "job": "J3",
+    "file": "tools/mycareer_mode/b69_registry_rows.json",
+    "file_hunk": 5,
+    "diff_line": 22066,
+    "hunk": "@@ -51,7 +51,7 @@",
+    "verdict": "documented deviation",
+    "review": "J3 handoff paths/integration wording match renamed report and applied UI"
+  },
+  {
+    "id": "H335",
+    "job": "J3",
+    "file": "tools/mycareer_mode/b69_registry_rows.json",
+    "file_hunk": 6,
+    "diff_line": 22075,
+    "hunk": "@@ -74,7 +74,7 @@",
+    "verdict": "documented deviation",
+    "review": "J3 handoff paths/integration wording match renamed report and applied UI"
+  },
+  {
+    "id": "H336",
+    "job": "J3",
+    "file": "tools/mycareer_mode/b69_registry_rows.json",
+    "file_hunk": 7,
+    "diff_line": 22084,
+    "hunk": "@@ -84,7 +84,7 @@",
+    "verdict": "documented deviation",
+    "review": "J3 handoff paths/integration wording match renamed report and applied UI"
+  },
+  {
+    "id": "H337",
+    "job": "J3",
+    "file": "tools/mycareer_mode/b69_registry_rows.json",
+    "file_hunk": 8,
+    "diff_line": 22093,
+    "hunk": "@@ -94,7 +94,7 @@",
+    "verdict": "documented deviation",
+    "review": "J3 handoff paths/integration wording match renamed report and applied UI"
+  },
+  {
+    "id": "H338",
+    "job": "J3",
+    "file": "tools/mycareer_mode/b69_registry_rows.json",
+    "file_hunk": 9,
+    "diff_line": 22102,
+    "hunk": "@@ -104,7 +104,7 @@",
+    "verdict": "documented deviation",
+    "review": "J3 handoff paths/integration wording match renamed report and applied UI"
+  },
+  {
+    "id": "H339",
+    "job": "J3",
+    "file": "tools/mycareer_mode/b69_registry_rows.json",
+    "file_hunk": 10,
+    "diff_line": 22111,
+    "hunk": "@@ -118,7 +118,7 @@",
+    "verdict": "documented deviation",
+    "review": "J3 handoff paths/integration wording match renamed report and applied UI"
+  }
+]

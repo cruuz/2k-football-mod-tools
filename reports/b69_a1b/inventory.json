@@ -1,0 +1,1144 @@
+{
+  "base": "c2489fcadfe412e0ed0afe20d8654bdc3170bba2",
+  "jobs": {
+    "J3": [
+      "68b3818b",
+      "54f5b8c8"
+    ],
+    "J4": [
+      "f0d1ab53",
+      "8cf389e6"
+    ],
+    "J5": [
+      "9afe21c0",
+      "b5949335"
+    ]
+  },
+  "identity": {
+    "J3": {
+      "mod_editor/core/nfl2k5_my_career.py": true,
+      "mod_editor/core/nfl2k5_my_career_mode.py": true,
+      "mod_editor/core/nfl2k5_my_career_mode_code.py": true,
+      "mod_editor/core/nfl2k5_my_career_prospects.py": true,
+      "mod_editor/core/nfl2k5_my_career_save.py": true,
+      "mod_editor/core/providers.py": false,
+      "tools/mycareer_mode/b69_budget.json": true,
+      "tools/mycareer_mode/b69_registry_rows.json": false,
+      "tools/mycareer_mode/b69_validation.json": true,
+      "tools/mycareer_mode/b69_wiring.py": true,
+      "tools/mycareer_mode/record_b69.py": true,
+      "tools/mycareer_mode/refresh_gate_manifest.py": true,
+      "tools/mycareer_mode/reproduce_b69_handback.py": true,
+      "tools/mycareer_mode/runtime.S": true,
+      "tools/mycareer_mode/runtime.c": true,
+      "tools/mycareer_mode/verify_b69_provider_wiring.py": true
+    },
+    "J4": {
+      "mod_editor/core/nfl2k5_weather.py": true,
+      "mod_editor/core/nfl2k5_weather_haze.py": true,
+      "tools/nfl2k5_weather_editor.py": true,
+      "tools/nfl2k5_weather_native_probe.py": true,
+      "tools/nfl2k5_weather_time_of_day.py": true
+    },
+    "J5": {
+      "mod_editor/core/nfl2k5_coin_defer.py": true,
+      "mod_editor/core/nfl2k5_coin_defer_code.py": true,
+      "mod_editor/core/nfl2k5_cpu_scrambles.py": true,
+      "mod_editor/core/nfl2k5_cpu_scrambles_code.py": true,
+      "mod_editor/core/nfl2k5_decided_clock.py": true,
+      "mod_editor/core/nfl2k5_decided_clock_code.py": true,
+      "mod_editor/core/nfl2k5_rules_patch.py": true,
+      "tools/nfl2k5_coin_defer.S": true,
+      "tools/nfl2k5_cpu_scrambles.S": true,
+      "tools/nfl2k5_decided_clock.S": true,
+      "tools/nfl2k5_modern_rules.py": true,
+      "tools/nfl2k5_rules_assemble.py": true
+    }
+  },
+  "changed_modules": [
+    "mod_editor/core/mod_build.py",
+    "mod_editor/core/nfl2k5_build_settings.py",
+    "mod_editor/core/nfl2k5_cave_manifest.py",
+    "mod_editor/core/nfl2k5_coin_defer.py",
+    "mod_editor/core/nfl2k5_coin_defer_code.py",
+    "mod_editor/core/nfl2k5_cpu_scrambles.py",
+    "mod_editor/core/nfl2k5_cpu_scrambles_code.py",
+    "mod_editor/core/nfl2k5_decided_clock.py",
+    "mod_editor/core/nfl2k5_decided_clock_code.py",
+    "mod_editor/core/nfl2k5_my_career.py",
+    "mod_editor/core/nfl2k5_my_career_mode.py",
+    "mod_editor/core/nfl2k5_my_career_mode_code.py",
+    "mod_editor/core/nfl2k5_my_career_prospects.py",
+    "mod_editor/core/nfl2k5_my_career_save.py",
+    "mod_editor/core/nfl2k5_rules_patch.py",
+    "mod_editor/core/nfl2k5_throw_tuning.py",
+    "mod_editor/core/nfl2k5_weather.py",
+    "mod_editor/core/nfl2k5_weather_haze.py",
+    "mod_editor/core/providers.py",
+    "mod_editor/gui/beta62_options.py",
+    "mod_editor/gui/build_panel_qt.py",
+    "mod_editor/gui/gameplay_patches_panel_qt.py",
+    "mod_editor/gui/gameplay_project_ui.py",
+    "mod_editor/gui/my_career_panel_qt.py",
+    "mod_editor/gui/studio_qt.py",
+    "packaging/check_2k5_mod_studio_runtime.py",
+    "packaging/check_apf2k8_mod_studio_runtime.py",
+    "tools/mycareer_mode/b69_wiring.py",
+    "tools/mycareer_mode/record_b69.py",
+    "tools/mycareer_mode/refresh_gate_manifest.py",
+    "tools/mycareer_mode/reproduce_b69_handback.py",
+    "tools/mycareer_mode/verify_b69_provider_wiring.py",
+    "tools/nfl2k5_modern_rules.py",
+    "tools/nfl2k5_rules_assemble.py",
+    "tools/nfl2k5_weather_editor.py",
+    "tools/nfl2k5_weather_native_probe.py",
+    "tools/nfl2k5_weather_time_of_day.py"
+  ],
+  "job_test_files": [
+    "tests/mod_editor/test_beta66_supersim_wiring.py",
+    "tests/mod_editor/test_nfl2k5_b69_rules.py",
+    "tests/mod_editor/test_nfl2k5_b69_rules_series.py",
+    "tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py",
+    "tests/mod_editor/test_nfl2k5_my_career_mode5.py",
+    "tests/mod_editor/test_nfl2k5_my_career_playcalling.py",
+    "tests/mod_editor/test_nfl2k5_my_career_prospects.py",
+    "tests/mod_editor/test_nfl2k5_my_career_settings.py",
+    "tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py",
+    "tests/mod_editor/test_nfl2k5_supersim_live.py",
+    "tests/mod_editor/test_nfl2k5_weather.py",
+    "tests/mod_editor/test_nfl2k5_weather_editor.py",
+    "tests/mod_editor/test_nfl2k5_weather_native.py",
+    "tests/mod_editor/test_xbe_patch_cave_references.py",
+    "tests/mod_editor/test_xbe_patch_memory_writes.py",
+    "tests/nfl2k5_allocator_stack.py",
+    "tests/nfl2k5_b69_rules_native.py",
+    "tests/nfl2k5_b69_series.py"
+  ],
+  "importers": {
+    "tests/nfl2k5_my_career_fixture.py": [
+      "mod_editor.core.nfl2k5_my_career"
+    ],
+    "tests/nfl2k5_b661_transition.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/nfl2k5_my_career_mode_fixture.py": [
+      "mod_editor.core.nfl2k5_my_career_mode"
+    ],
+    "tests/nfl2k5_depth_chart_rows_test.py": [
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/nfl2k5_allocator_stack.py": [
+      "mod_editor.core.nfl2k5_coin_defer",
+      "mod_editor.core.nfl2k5_cpu_scrambles",
+      "mod_editor.core.nfl2k5_decided_clock",
+      "mod_editor.core.nfl2k5_my_career_mode",
+      "mod_editor.core.nfl2k5_rules_patch",
+      "mod_editor.core.nfl2k5_throw_tuning",
+      "mod_editor.core.nfl2k5_weather_haze"
+    ],
+    "tests/nfl2k5_my_career_draft_fixture.py": [
+      "mod_editor.core.nfl2k5_my_career_mode"
+    ],
+    "tests/nfl2k5_scorebug_layout_test.py": [
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/nfl2k5_throw_tuning_test.py": [
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/run_nfl2k5_pairwise.py": [
+      "tests.mod_editor.test_nfl2k5_owner_pairwise_composition"
+    ],
+    "tests/nfl2k5_edge_rename_test.py": [
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_nfl2k5_scorebug_template.py": [
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_startup_performance.py": [
+      "mod_editor.gui.build_panel_qt",
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_allocator_scaleout.py": [
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_simulated_windows_build.py": [
+      "mod_editor.core.nfl2k5_throw_tuning",
+      "mod_editor.core.nfl2k5_weather_haze",
+      "tests.mod_editor.test_nfl2k5_owner_pairwise_composition"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_completion.py": [
+      "mod_editor.core.nfl2k5_my_career_mode"
+    ],
+    "tests/mod_editor/test_mod_build_performance.py": [
+      "mod_editor.core.mod_build"
+    ],
+    "tests/mod_editor/test_nfl2k5_jukebox_list.py": [
+      "mod_editor.core.nfl2k5_cave_manifest"
+    ],
+    "tests/mod_editor/test_beta66_helmet_finish_wiring.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.core.nfl2k5_build_settings",
+      "mod_editor.gui.build_panel_qt",
+      "mod_editor.gui.gameplay_patches_panel_qt",
+      "mod_editor.gui.gameplay_project_ui",
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_momentum_collisions.py": [
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_studio_qt_models.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_roster_records.py": [
+      "mod_editor.core.mod_build"
+    ],
+    "tests/mod_editor/test_nfl2k5_screen_hooks.py": [
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_2k5_check_my_images.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_xbe_space.py": [
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "mod_editor.core.nfl2k5_throw_tuning",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_frontend.py": [
+      "mod_editor.core.nfl2k5_my_career_mode",
+      "mod_editor.core.nfl2k5_my_career_save"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career.py": [
+      "mod_editor.core.nfl2k5_my_career"
+    ],
+    "tests/mod_editor/test_beta62_integration3_qt.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.core.nfl2k5_build_settings",
+      "mod_editor.gui.beta62_options",
+      "mod_editor.gui.build_panel_qt",
+      "mod_editor.gui.gameplay_patches_panel_qt",
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_practice_squad_screen.py": [
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_abilities_v2_manifest.py": [
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "tests.mod_editor.test_xbe_patch_memory_writes"
+    ],
+    "tests/mod_editor/test_nfl2k5_b69_rules_series.py": [
+      "mod_editor.core.nfl2k5_decided_clock",
+      "mod_editor.core.nfl2k5_my_career_mode",
+      "tests.mod_editor.test_nfl2k5_owner_pairwise_composition",
+      "tests.nfl2k5_b69_rules_native"
+    ],
+    "tests/mod_editor/test_2k5_build_is_explainable.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_gui_refusal_wording.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_mod_build_beta62_integration3.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.core.nfl2k5_build_settings",
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_nfl_audio.py": [
+      "mod_editor.core.providers"
+    ],
+    "tests/mod_editor/test_b68_a1_audit.py": [
+      "mod_editor.core.providers"
+    ],
+    "tests/mod_editor/test_no_capability_is_invisible.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_scorebug_ingame.py": [
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_nfl2k5_abilities_v2.py": [
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_music_playlist_manifest.py": [
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_b69_a1b_game_audit.py": [
+      "mod_editor.gui.build_panel_qt",
+      "mod_editor.gui.gameplay_patches_panel_qt",
+      "mod_editor.gui.gameplay_project_ui"
+    ],
+    "tests/mod_editor/test_stadium_editable_discovery.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_b661_transition.py": [
+      "mod_editor.core.mod_build"
+    ],
+    "tests/mod_editor/test_nfl2k5_abilities_runtime.py": [
+      "mod_editor.core.nfl2k5_cave_manifest"
+    ],
+    "tests/mod_editor/test_b661_workspace_qt.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_providers.py": [
+      "mod_editor.core.providers"
+    ],
+    "tests/mod_editor/test_nfl2k5_prospect_names.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.core.nfl2k5_throw_tuning",
+      "mod_editor.gui.build_panel_qt",
+      "mod_editor.gui.gameplay_patches_panel_qt"
+    ],
+    "tests/mod_editor/test_visual_export_and_preview.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_prospects.py": [
+      "mod_editor.core.nfl2k5_my_career",
+      "mod_editor.core.nfl2k5_my_career_mode",
+      "mod_editor.core.nfl2k5_my_career_prospects",
+      "mod_editor.core.nfl2k5_my_career_save"
+    ],
+    "tests/mod_editor/test_presentation_panel_qt.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_provider_integrity.py": [
+      "mod_editor.core.providers"
+    ],
+    "tests/mod_editor/test_music_simple_qt.py": [
+      "mod_editor.gui.build_panel_qt"
+    ],
+    "tests/mod_editor/test_team_kit_product_integration.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_college_check.py": [
+      "mod_editor.core.nfl2k5_my_career_save"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_inline.py": [
+      "mod_editor.core.nfl2k5_my_career",
+      "mod_editor.core.nfl2k5_my_career_mode",
+      "mod_editor.core.nfl2k5_my_career_save"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_playcalling.py": [
+      "mod_editor.core.nfl2k5_my_career_mode",
+      "tests.nfl2k5_b69_series"
+    ],
+    "tests/mod_editor/test_nfl2k5_franchise_2026.py": [
+      "mod_editor.core.nfl2k5_cave_manifest"
+    ],
+    "tests/mod_editor/test_b69_a2b_game_wiring.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.core.nfl2k5_build_settings",
+      "mod_editor.core.nfl2k5_throw_tuning",
+      "mod_editor.core.nfl2k5_weather",
+      "mod_editor.core.nfl2k5_weather_haze",
+      "mod_editor.gui.build_panel_qt",
+      "mod_editor.gui.gameplay_patches_panel_qt",
+      "mod_editor.gui.gameplay_project_ui",
+      "tests.mod_editor.test_nfl2k5_owner_pairwise_composition",
+      "tests.mod_editor.test_nfl2k5_weather"
+    ],
+    "tests/mod_editor/test_music_all_modes_wiring.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.core.nfl2k5_build_settings"
+    ],
+    "tests/mod_editor/test_nfl2k5_weather_native.py": [
+      "mod_editor.core.nfl2k5_weather",
+      "mod_editor.core.nfl2k5_weather_haze",
+      "tests.mod_editor.test_nfl2k5_owner_pairwise_composition",
+      "tests.nfl2k5_allocator_stack",
+      "tools.nfl2k5_weather_native_probe"
+    ],
+    "tests/mod_editor/test_nfl2k5_penalties.py": [
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_nfl2k5_b69_rules.py": [
+      "mod_editor.core.nfl2k5_coin_defer",
+      "mod_editor.core.nfl2k5_cpu_scrambles",
+      "mod_editor.core.nfl2k5_decided_clock",
+      "mod_editor.core.nfl2k5_rules_patch",
+      "tests.mod_editor.test_nfl2k5_owner_pairwise_composition",
+      "tests.nfl2k5_b69_rules_native",
+      "tools.nfl2k5_modern_rules"
+    ],
+    "tests/mod_editor/test_nfl2k5_kick_laces.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_nfl2k5_zone_drop.py": [
+      "mod_editor.core.nfl2k5_cave_manifest"
+    ],
+    "tests/mod_editor/test_beta66_supersim_wiring.py": [
+      "mod_editor.core.nfl2k5_my_career_save",
+      "mod_editor.gui.my_career_panel_qt"
+    ],
+    "tests/mod_editor/test_discord_bugs_1_wiring.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.gui.build_panel_qt",
+      "mod_editor.gui.gameplay_patches_panel_qt",
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_b68_t1_ui.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_cpu_choice.py": [
+      "mod_editor.core.nfl2k5_my_career_mode"
+    ],
+    "tests/mod_editor/test_discord_bugs_2_research.py": [
+      "mod_editor.core.mod_build"
+    ],
+    "tests/mod_editor/test_nfl2k5_weekly_prep.py": [
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_project_document_workflow.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_keyboard_search_polish.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_pack_extent_resolver.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_unif_color_argb_parse.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_read_option_diagnostic_manifest.py": [
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "mod_editor.core.nfl2k5_throw_tuning",
+      "tests.mod_editor.test_xbe_patch_memory_writes",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_screen_hooks_manifest.py": [
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_qb_spy_runtime.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "mod_editor.core.nfl2k5_throw_tuning",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_cpu_turnover.py": [
+      "mod_editor.core.nfl2k5_my_career_mode"
+    ],
+    "tests/mod_editor/test_b66_coach_wiring.py": [
+      "mod_editor.core.providers"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_cpu_period.py": [
+      "mod_editor.core.nfl2k5_my_career_mode"
+    ],
+    "tests/mod_editor/test_nfl2k5_practice_squad.py": [
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py": [
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_models_panel_qt.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_franchise_edit_player_unicorn.py": [
+      "tests.mod_editor.test_nfl2k5_owner_pairwise_composition",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_seven_on_seven.py": [
+      "mod_editor.core.mod_build"
+    ],
+    "tests/mod_editor/test_nfl2k5_defensive_try.py": [
+      "mod_editor.core.nfl2k5_cave_manifest"
+    ],
+    "tests/mod_editor/test_nfl2k5_uniform_choice.py": [
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_nfl2k5_roster_storage.py": [
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_signing.py": [
+      "mod_editor.core.nfl2k5_my_career_mode"
+    ],
+    "tests/mod_editor/test_xbe_patch_memory_writes.py": [
+      "mod_editor.core.nfl2k5_my_career_mode",
+      "mod_editor.core.nfl2k5_rules_patch",
+      "mod_editor.core.nfl2k5_throw_tuning",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_mode5.py": [
+      "mod_editor.core.nfl2k5_my_career_mode"
+    ],
+    "tests/mod_editor/test_nfl2k5_scorebug_versions.py": [
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_mod_build_beta62_integration.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_workspace_recovery.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_beta69_feedback_qt.py": [
+      "mod_editor.gui.build_panel_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_cave_oracle.py": [
+      "mod_editor.core.nfl2k5_cave_manifest"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_unicorn.py": [
+      "mod_editor.core.nfl2k5_my_career"
+    ],
+    "tests/mod_editor/test_number_sheet_quality_wiring.py": [
+      "mod_editor.core.providers",
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_ux_build_plan_coverage_qt.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.gui.build_panel_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_guardian_manifest.py": [
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "mod_editor.core.nfl2k5_throw_tuning",
+      "tests.mod_editor.test_xbe_patch_memory_writes"
+    ],
+    "tests/mod_editor/test_nfl2k5_position_choices.py": [
+      "mod_editor.core.nfl2k5_my_career",
+      "mod_editor.core.nfl2k5_my_career_mode"
+    ],
+    "tests/mod_editor/test_nfl2k5_team_history.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.gui.build_panel_qt"
+    ],
+    "tests/mod_editor/test_music_simple_wiring.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.gui.build_panel_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_playbook_pair.py": [
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_roster_save_to_disc_wiring.py": [
+      "mod_editor.gui.build_panel_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_franchise_edit_player.py": [
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "mod_editor.core.nfl2k5_my_career_mode",
+      "tests.mod_editor.test_nfl2k5_owner_pairwise_composition",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_music_fresh_rip_gui.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_2k5_audio_operation_integration.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_qb_spy_man_rush.py": [
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_accelerated_clock.py": [
+      "tests.mod_editor.test_nfl2k5_owner_pairwise_composition"
+    ],
+    "tests/mod_editor/test_nfl2k5_defensive_try_stats.py": [
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_player_star.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.gui.build_panel_qt"
+    ],
+    "tests/mod_editor/test_mod_build.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_season.py": [
+      "mod_editor.core.nfl2k5_my_career_mode"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_m3_budget.py": [
+      "mod_editor.core.nfl2k5_my_career",
+      "mod_editor.core.nfl2k5_my_career_mode",
+      "tests.mod_editor.test_nfl2k5_owner_pairwise_composition",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_control.py": [
+      "mod_editor.core.nfl2k5_my_career_mode"
+    ],
+    "tests/mod_editor/test_gameplay_patches_panel_qt.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.gui.gameplay_patches_panel_qt"
+    ],
+    "tests/mod_editor/test_security_blockers_remediation.py": [
+      "mod_editor.core.providers"
+    ],
+    "tests/mod_editor/test_nfl2k5_read_option_frames.py": [
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_teamkit_import_wiring.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_commentary_panel_qt.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_position_inputs.py": [
+      "mod_editor.core.nfl2k5_my_career"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py": [
+      "mod_editor.core.nfl2k5_my_career_save"
+    ],
+    "tests/mod_editor/test_beta61_allocator_integration.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.core.nfl2k5_throw_tuning",
+      "mod_editor.gui.build_panel_qt",
+      "mod_editor.gui.gameplay_patches_panel_qt",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_played.py": [
+      "mod_editor.core.nfl2k5_my_career_mode"
+    ],
+    "tests/mod_editor/test_nfl2k5_weather_editor.py": [
+      "mod_editor.core.nfl2k5_weather",
+      "tests.mod_editor.test_nfl2k5_weather",
+      "tools.nfl2k5_weather_editor"
+    ],
+    "tests/mod_editor/test_nfl2k5_player_star_draw.py": [
+      "mod_editor.core.nfl2k5_throw_tuning",
+      "tests.mod_editor.test_nfl2k5_owner_pairwise_composition",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_throw_tuning_panel_qt.py": [
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_nfl2k5_read_option_diagnostic.py": [
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_nfl2k5_calendar_engine.py": [
+      "mod_editor.core.nfl2k5_cave_manifest"
+    ],
+    "tests/mod_editor/test_nfl2k5_crib_reclaim.py": [
+      "mod_editor.core.nfl2k5_my_career"
+    ],
+    "tests/mod_editor/test_ux_open_disc_hook_qt.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_cpu_frame.py": [
+      "mod_editor.core.nfl2k5_my_career_mode"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_mode_routes.py": [
+      "mod_editor.core.nfl2k5_my_career"
+    ],
+    "tests/mod_editor/test_nfl2k5_scorebug_runtime.py": [
+      "mod_editor.core.nfl2k5_cave_manifest"
+    ],
+    "tests/mod_editor/test_nfl2k5_play_intents_build.py": [
+      "mod_editor.core.mod_build"
+    ],
+    "tests/mod_editor/test_nfl2k5_college_check_page_qt.py": [
+      "mod_editor.core.nfl2k5_my_career_save"
+    ],
+    "tests/mod_editor/test_xbe_patch_cave_references.py": [
+      "mod_editor.core.nfl2k5_my_career_mode",
+      "mod_editor.core.nfl2k5_rules_patch",
+      "mod_editor.core.nfl2k5_throw_tuning",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_read_option_runtime.py": [
+      "mod_editor.core.nfl2k5_cave_manifest"
+    ],
+    "tests/mod_editor/test_studio_inspection.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py": [
+      "mod_editor.core.nfl2k5_my_career",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_beta61_integration.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_nfl2k3_2k4_compatibility_boundary.py": [
+      "mod_editor.core.providers"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_panel.py": [
+      "mod_editor.core.nfl2k5_my_career",
+      "mod_editor.gui.my_career_panel_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_myplayer_hud.py": [
+      "mod_editor.core.nfl2k5_my_career_mode",
+      "tests.mod_editor.test_nfl2k5_owner_pairwise_composition"
+    ],
+    "tests/mod_editor/beta69_polish_audit.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_boot_logo.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_nfl2k5_roster_arena_image.py": [
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_espn25_in_game.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_nfl2k5_cpu_money_downs_unicorn.py": [
+      "tests.mod_editor.test_nfl2k5_owner_pairwise_composition"
+    ],
+    "tests/mod_editor/test_nfl2k5_equipment_import_wiring.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_beta66_d1_panels.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.gui.gameplay_project_ui"
+    ],
+    "tests/mod_editor/test_nfl2k5_practice_reserves.py": [
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_studio_shell_layout_qt.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_unif_color_control.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_franchise_autosave.py": [
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_hires_families_retail.py": [
+      "tests.mod_editor.test_xbe_patch_memory_writes"
+    ],
+    "tests/mod_editor/test_product_inspection_panels_qt.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_2k5_import_offers_resize.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_cpu_money_downs_manifest.py": [
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "tests.mod_editor.test_nfl2k5_owner_pairwise_composition",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_upgrades.py": [
+      "mod_editor.core.nfl2k5_my_career_mode"
+    ],
+    "tests/mod_editor/test_nfl2k5_team_column.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_share_panel_qt.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_seven_on_seven_manifest.py": [
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "tests.mod_editor.test_nfl2k5_owner_pairwise_composition"
+    ],
+    "tests/mod_editor/test_nfl2k5_coverage_trail.py": [
+      "tests.mod_editor.test_nfl2k5_owner_pairwise_composition"
+    ],
+    "tests/mod_editor/test_discord_bugs_2_wiring.py": [
+      "mod_editor.core.mod_build"
+    ],
+    "tests/mod_editor/test_nfl2k5_coverage_trail_unicorn.py": [
+      "tests.mod_editor.test_nfl2k5_owner_pairwise_composition"
+    ],
+    "tests/mod_editor/test_nfl2k5_espn25_integration_qt.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.core.nfl2k5_build_settings",
+      "mod_editor.gui.build_panel_qt",
+      "mod_editor.gui.gameplay_patches_panel_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_supersim_live.py": [
+      "mod_editor.core.nfl2k5_my_career_mode",
+      "mod_editor.core.nfl2k5_throw_tuning",
+      "tests.mod_editor.test_nfl2k5_owner_pairwise_composition"
+    ],
+    "tests/mod_editor/test_nfl2k5_gameplay_levers.py": [
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_2k5_uniform_equipment_export.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_disc_identity.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.gui.build_panel_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_weather.py": [
+      "mod_editor.core.nfl2k5_weather"
+    ],
+    "tests/mod_editor/test_nfl2k5_throw_arc.py": [
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_b69_j1_wiring.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_creation_boundary.py": [
+      "mod_editor.core.nfl2k5_my_career"
+    ],
+    "tests/mod_editor/test_nfl2k5_read_option_screen_hooks_compose.py": [
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_draft.py": [
+      "mod_editor.core.nfl2k5_my_career_mode",
+      "mod_editor.core.nfl2k5_my_career_save",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_cpu_injury.py": [
+      "mod_editor.core.nfl2k5_my_career_mode"
+    ],
+    "tests/mod_editor/test_nfl2k5_camera_far.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "mod_editor.core.nfl2k5_my_career",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_build_panel_qt.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.gui.build_panel_qt",
+      "mod_editor.gui.gameplay_patches_panel_qt",
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_beta69_studios_offscreen.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_defensive_try_manifest.py": [
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_kickoff_v3.py": [
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_widescreen_polish.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.core.nfl2k5_cave_manifest"
+    ],
+    "tests/mod_editor/test_b69_a2_wiring.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.gui.gameplay_project_ui"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_cpu_timeout.py": [
+      "mod_editor.core.nfl2k5_my_career_mode"
+    ],
+    "tests/mod_editor/test_b661_kit_build.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_modpack_growth_acceptance.py": [
+      "mod_editor.core.mod_build"
+    ],
+    "tests/mod_editor/test_nfl2k5_position_row_probowl.py": [
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_nfl2k5_cpu_money_downs.py": [
+      "tests.mod_editor.test_nfl2k5_owner_pairwise_composition"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_generic_build.py": [
+      "mod_editor.core.nfl2k5_my_career_mode"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_mode4.py": [
+      "mod_editor.core.nfl2k5_my_career_mode"
+    ],
+    "tests/mod_editor/test_apf_digital_font.py": [
+      "mod_editor.core.providers"
+    ],
+    "tests/mod_editor/test_nfl2k5_kickoff_v2.py": [
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_franchise_practice.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_nfl2k5_camera_broadcast.py": [
+      "mod_editor.core.nfl2k5_my_career_mode",
+      "tests.mod_editor.test_nfl2k5_owner_pairwise_composition"
+    ],
+    "tests/mod_editor/test_nfl2k5_momentum.py": [
+      "mod_editor.core.nfl2k5_cave_manifest"
+    ],
+    "tests/mod_editor/test_roster_editor_panel_qt.py": [
+      "mod_editor.gui.build_panel_qt",
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_product_shell_accessibility_qt.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_sounds_panel_qt.py": [
+      "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_m3_menus.py": [
+      "mod_editor.core.nfl2k5_my_career_mode"
+    ],
+    "tests/mod_editor/test_nfl2k5_deep_zone.py": [
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "tests.mod_editor.test_nfl2k5_owner_pairwise_composition"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_manifest.py": [
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "mod_editor.core.nfl2k5_my_career",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_paired_intent.py": [
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_nfl2k5_playbook_pair_manifest.py": [
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "mod_editor.core.nfl2k5_throw_tuning",
+      "tests.mod_editor.test_xbe_patch_memory_writes",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_franchise_2026_runtime.py": [
+      "mod_editor.core.nfl2k5_my_career_mode",
+      "mod_editor.core.nfl2k5_my_career_save"
+    ],
+    "tests/mod_editor/test_discord_bugs_1.py": [
+      "mod_editor.core.mod_build",
+      "mod_editor.core.nfl2k5_build_settings",
+      "mod_editor.core.nfl2k5_throw_tuning"
+    ],
+    "tests/mod_editor/test_nfl2k5_senior_bowl.py": [
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_settings.py": [
+      "mod_editor.core.nfl2k5_my_career_mode",
+      "mod_editor.core.nfl2k5_my_career_save",
+      "tests.mod_editor.test_nfl2k5_owner_pairwise_composition",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_my_career_week.py": [
+      "mod_editor.core.nfl2k5_my_career_mode"
+    ],
+    "tests/mod_editor/test_nfl2k5_guardian_overlay.py": [
+      "mod_editor.core.nfl2k5_cave_manifest"
+    ],
+    "tests/mod_editor/test_nfl2k5_accelerated_clock_manifest.py": [
+      "mod_editor.core.nfl2k5_cave_manifest",
+      "tests.mod_editor.test_nfl2k5_owner_pairwise_composition",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_seven_on_seven_v2.py": [
+      "mod_editor.core.nfl2k5_throw_tuning",
+      "tests.mod_editor.test_nfl2k5_owner_pairwise_composition",
+      "tests.nfl2k5_allocator_stack"
+    ],
+    "tests/mod_editor/test_nfl2k5_deep_zone_frames.py": [
+      "tests.mod_editor.test_nfl2k5_owner_pairwise_composition"
+    ],
+    "tests/mod_editor/test_nfl2k5_scorebug_exact.py": [
+      "mod_editor.core.mod_build"
+    ],
+    "tests/fixtures/profile_teamkit_import.py": [
+      "mod_editor.gui.studio_qt"
+    ]
+  },
+  "standalone_tests": [
+    "tests/mod_editor/test_2k5_audio_operation_integration.py",
+    "tests/mod_editor/test_2k5_build_is_explainable.py",
+    "tests/mod_editor/test_2k5_check_my_images.py",
+    "tests/mod_editor/test_2k5_import_offers_resize.py",
+    "tests/mod_editor/test_2k5_uniform_equipment_export.py",
+    "tests/mod_editor/test_apf_digital_font.py",
+    "tests/mod_editor/test_apf_studio_installer.py",
+    "tests/mod_editor/test_b661_kit_build.py",
+    "tests/mod_editor/test_b661_workspace_qt.py",
+    "tests/mod_editor/test_b66_coach_wiring.py",
+    "tests/mod_editor/test_b68_a1_audit.py",
+    "tests/mod_editor/test_b68_t1_ui.py",
+    "tests/mod_editor/test_b69_a1b_game_audit.py",
+    "tests/mod_editor/test_b69_a2_wiring.py",
+    "tests/mod_editor/test_b69_a2b_game_wiring.py",
+    "tests/mod_editor/test_b69_j1_wiring.py",
+    "tests/mod_editor/test_beta61_allocator_integration.py",
+    "tests/mod_editor/test_beta61_integration.py",
+    "tests/mod_editor/test_beta62_integration3_qt.py",
+    "tests/mod_editor/test_beta66_d1_panels.py",
+    "tests/mod_editor/test_beta66_helmet_finish_wiring.py",
+    "tests/mod_editor/test_beta66_supersim_wiring.py",
+    "tests/mod_editor/test_beta69_feedback_qt.py",
+    "tests/mod_editor/test_beta69_studios_offscreen.py",
+    "tests/mod_editor/test_build_panel_qt.py",
+    "tests/mod_editor/test_capability_registry_module_commands.py",
+    "tests/mod_editor/test_commentary_panel_qt.py",
+    "tests/mod_editor/test_discord_bugs_1.py",
+    "tests/mod_editor/test_discord_bugs_1_wiring.py",
+    "tests/mod_editor/test_discord_bugs_2_research.py",
+    "tests/mod_editor/test_discord_bugs_2_wiring.py",
+    "tests/mod_editor/test_gameplay_patches_panel_qt.py",
+    "tests/mod_editor/test_gui_refusal_wording.py",
+    "tests/mod_editor/test_keyboard_search_polish.py",
+    "tests/mod_editor/test_mod_build.py",
+    "tests/mod_editor/test_mod_build_beta62_integration.py",
+    "tests/mod_editor/test_mod_build_beta62_integration3.py",
+    "tests/mod_editor/test_mod_build_performance.py",
+    "tests/mod_editor/test_models_panel_qt.py",
+    "tests/mod_editor/test_modpack_growth_acceptance.py",
+    "tests/mod_editor/test_music_all_modes_wiring.py",
+    "tests/mod_editor/test_music_simple_qt.py",
+    "tests/mod_editor/test_music_simple_wiring.py",
+    "tests/mod_editor/test_nfl2k3_2k4_compatibility_boundary.py",
+    "tests/mod_editor/test_nfl2k5_abilities_runtime.py",
+    "tests/mod_editor/test_nfl2k5_abilities_v2.py",
+    "tests/mod_editor/test_nfl2k5_abilities_v2_manifest.py",
+    "tests/mod_editor/test_nfl2k5_accelerated_clock.py",
+    "tests/mod_editor/test_nfl2k5_accelerated_clock_manifest.py",
+    "tests/mod_editor/test_nfl2k5_allocator_scaleout.py",
+    "tests/mod_editor/test_nfl2k5_b661_transition.py",
+    "tests/mod_editor/test_nfl2k5_b68_game_composition.py",
+    "tests/mod_editor/test_nfl2k5_b69_rules.py",
+    "tests/mod_editor/test_nfl2k5_b69_rules_series.py",
+    "tests/mod_editor/test_nfl2k5_boot_logo.py",
+    "tests/mod_editor/test_nfl2k5_calendar_engine.py",
+    "tests/mod_editor/test_nfl2k5_camera_broadcast.py",
+    "tests/mod_editor/test_nfl2k5_camera_far.py",
+    "tests/mod_editor/test_nfl2k5_cave_oracle.py",
+    "tests/mod_editor/test_nfl2k5_college_check.py",
+    "tests/mod_editor/test_nfl2k5_college_check_page_qt.py",
+    "tests/mod_editor/test_nfl2k5_coverage_trail.py",
+    "tests/mod_editor/test_nfl2k5_coverage_trail_unicorn.py",
+    "tests/mod_editor/test_nfl2k5_cpu_money_downs.py",
+    "tests/mod_editor/test_nfl2k5_cpu_money_downs_manifest.py",
+    "tests/mod_editor/test_nfl2k5_cpu_money_downs_unicorn.py",
+    "tests/mod_editor/test_nfl2k5_crib_reclaim.py",
+    "tests/mod_editor/test_nfl2k5_deep_zone.py",
+    "tests/mod_editor/test_nfl2k5_deep_zone_frames.py",
+    "tests/mod_editor/test_nfl2k5_defensive_try.py",
+    "tests/mod_editor/test_nfl2k5_defensive_try_manifest.py",
+    "tests/mod_editor/test_nfl2k5_defensive_try_stats.py",
+    "tests/mod_editor/test_nfl2k5_disc_identity.py",
+    "tests/mod_editor/test_nfl2k5_equipment_import_wiring.py",
+    "tests/mod_editor/test_nfl2k5_espn25_in_game.py",
+    "tests/mod_editor/test_nfl2k5_espn25_integration_qt.py",
+    "tests/mod_editor/test_nfl2k5_franchise_2026.py",
+    "tests/mod_editor/test_nfl2k5_franchise_2026_runtime.py",
+    "tests/mod_editor/test_nfl2k5_franchise_autosave.py",
+    "tests/mod_editor/test_nfl2k5_franchise_edit_player.py",
+    "tests/mod_editor/test_nfl2k5_franchise_edit_player_unicorn.py",
+    "tests/mod_editor/test_nfl2k5_franchise_practice.py",
+    "tests/mod_editor/test_nfl2k5_gameplay_levers.py",
+    "tests/mod_editor/test_nfl2k5_guardian_manifest.py",
+    "tests/mod_editor/test_nfl2k5_guardian_overlay.py",
+    "tests/mod_editor/test_nfl2k5_hires_families_retail.py",
+    "tests/mod_editor/test_nfl2k5_jukebox_list.py",
+    "tests/mod_editor/test_nfl2k5_kick_laces.py",
+    "tests/mod_editor/test_nfl2k5_kickoff_v2.py",
+    "tests/mod_editor/test_nfl2k5_kickoff_v3.py",
+    "tests/mod_editor/test_nfl2k5_momentum.py",
+    "tests/mod_editor/test_nfl2k5_momentum_collisions.py",
+    "tests/mod_editor/test_nfl2k5_music_fresh_rip_gui.py",
+    "tests/mod_editor/test_nfl2k5_music_playlist_manifest.py",
+    "tests/mod_editor/test_nfl2k5_my_career.py",
+    "tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py",
+    "tests/mod_editor/test_nfl2k5_my_career_completion.py",
+    "tests/mod_editor/test_nfl2k5_my_career_control.py",
+    "tests/mod_editor/test_nfl2k5_my_career_cpu_choice.py",
+    "tests/mod_editor/test_nfl2k5_my_career_cpu_frame.py",
+    "tests/mod_editor/test_nfl2k5_my_career_cpu_injury.py",
+    "tests/mod_editor/test_nfl2k5_my_career_cpu_period.py",
+    "tests/mod_editor/test_nfl2k5_my_career_cpu_timeout.py",
+    "tests/mod_editor/test_nfl2k5_my_career_cpu_turnover.py",
+    "tests/mod_editor/test_nfl2k5_my_career_creation_boundary.py",
+    "tests/mod_editor/test_nfl2k5_my_career_draft.py",
+    "tests/mod_editor/test_nfl2k5_my_career_frontend.py",
+    "tests/mod_editor/test_nfl2k5_my_career_generic_build.py",
+    "tests/mod_editor/test_nfl2k5_my_career_inline.py",
+    "tests/mod_editor/test_nfl2k5_my_career_m3_budget.py",
+    "tests/mod_editor/test_nfl2k5_my_career_m3_menus.py",
+    "tests/mod_editor/test_nfl2k5_my_career_manifest.py",
+    "tests/mod_editor/test_nfl2k5_my_career_mode4.py",
+    "tests/mod_editor/test_nfl2k5_my_career_mode5.py",
+    "tests/mod_editor/test_nfl2k5_my_career_mode_audit.py",
+    "tests/mod_editor/test_nfl2k5_my_career_mode_routes.py",
+    "tests/mod_editor/test_nfl2k5_my_career_panel.py",
+    "tests/mod_editor/test_nfl2k5_my_career_playcalling.py",
+    "tests/mod_editor/test_nfl2k5_my_career_played.py",
+    "tests/mod_editor/test_nfl2k5_my_career_position_inputs.py",
+    "tests/mod_editor/test_nfl2k5_my_career_prospects.py",
+    "tests/mod_editor/test_nfl2k5_my_career_season.py",
+    "tests/mod_editor/test_nfl2k5_my_career_settings.py",
+    "tests/mod_editor/test_nfl2k5_my_career_signing.py",
+    "tests/mod_editor/test_nfl2k5_my_career_unicorn.py",
+    "tests/mod_editor/test_nfl2k5_my_career_upgrades.py",
+    "tests/mod_editor/test_nfl2k5_my_career_week.py",
+    "tests/mod_editor/test_nfl2k5_myplayer_hud.py",
+    "tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py",
+    "tests/mod_editor/test_nfl2k5_paired_intent.py",
+    "tests/mod_editor/test_nfl2k5_penalties.py",
+    "tests/mod_editor/test_nfl2k5_play_intents_build.py",
+    "tests/mod_editor/test_nfl2k5_playbook_pair.py",
+    "tests/mod_editor/test_nfl2k5_player_star.py",
+    "tests/mod_editor/test_nfl2k5_player_star_draw.py",
+    "tests/mod_editor/test_nfl2k5_position_choices.py",
+    "tests/mod_editor/test_nfl2k5_position_row_probowl.py",
+    "tests/mod_editor/test_nfl2k5_practice_reserves.py",
+    "tests/mod_editor/test_nfl2k5_practice_squad.py",
+    "tests/mod_editor/test_nfl2k5_practice_squad_screen.py",
+    "tests/mod_editor/test_nfl2k5_prospect_names.py",
+    "tests/mod_editor/test_nfl2k5_qb_spy_man_rush.py",
+    "tests/mod_editor/test_nfl2k5_qb_spy_runtime.py",
+    "tests/mod_editor/test_nfl2k5_read_option_diagnostic.py",
+    "tests/mod_editor/test_nfl2k5_read_option_diagnostic_manifest.py",
+    "tests/mod_editor/test_nfl2k5_read_option_frames.py",
+    "tests/mod_editor/test_nfl2k5_read_option_runtime.py",
+    "tests/mod_editor/test_nfl2k5_read_option_screen_hooks_compose.py",
+    "tests/mod_editor/test_nfl2k5_roster_arena_image.py",
+    "tests/mod_editor/test_nfl2k5_roster_records.py",
+    "tests/mod_editor/test_nfl2k5_roster_storage.py",
+    "tests/mod_editor/test_nfl2k5_scorebug_exact.py",
+    "tests/mod_editor/test_nfl2k5_scorebug_ingame.py",
+    "tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+    "tests/mod_editor/test_nfl2k5_scorebug_template.py",
+    "tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py",
+    "tests/mod_editor/test_nfl2k5_scorebug_versions.py",
+    "tests/mod_editor/test_nfl2k5_screen_hooks.py",
+    "tests/mod_editor/test_nfl2k5_screen_hooks_manifest.py",
+    "tests/mod_editor/test_nfl2k5_senior_bowl.py",
+    "tests/mod_editor/test_nfl2k5_seven_on_seven.py",
+    "tests/mod_editor/test_nfl2k5_seven_on_seven_manifest.py",
+    "tests/mod_editor/test_nfl2k5_seven_on_seven_v2.py",
+    "tests/mod_editor/test_nfl2k5_simulated_windows_build.py",
+    "tests/mod_editor/test_nfl2k5_supersim.py",
+    "tests/mod_editor/test_nfl2k5_supersim_live.py",
+    "tests/mod_editor/test_nfl2k5_team_column.py",
+    "tests/mod_editor/test_nfl2k5_team_history.py",
+    "tests/mod_editor/test_nfl2k5_throw_arc.py",
+    "tests/mod_editor/test_nfl2k5_uniform_choice.py",
+    "tests/mod_editor/test_nfl2k5_weather.py",
+    "tests/mod_editor/test_nfl2k5_weather_editor.py",
+    "tests/mod_editor/test_nfl2k5_weather_native.py",
+    "tests/mod_editor/test_nfl2k5_weekly_prep.py",
+    "tests/mod_editor/test_nfl2k5_widescreen_polish.py",
+    "tests/mod_editor/test_nfl2k5_xbe_space.py",
+    "tests/mod_editor/test_nfl2k5_zone_drop.py",
+    "tests/mod_editor/test_nfl_audio.py",
+    "tests/mod_editor/test_no_capability_is_invisible.py",
+    "tests/mod_editor/test_number_sheet_quality_wiring.py",
+    "tests/mod_editor/test_pack_extent_resolver.py",
+    "tests/mod_editor/test_phase1_packaging.py",
+    "tests/mod_editor/test_presentation_panel_qt.py",
+    "tests/mod_editor/test_product_catalog.py",
+    "tests/mod_editor/test_product_inspection_panels_qt.py",
+    "tests/mod_editor/test_product_shell_accessibility_qt.py",
+    "tests/mod_editor/test_project_document_workflow.py",
+    "tests/mod_editor/test_provider_integrity.py",
+    "tests/mod_editor/test_providers.py",
+    "tests/mod_editor/test_roster_editor_panel_qt.py",
+    "tests/mod_editor/test_roster_save_to_disc_wiring.py",
+    "tests/mod_editor/test_security_blockers_remediation.py",
+    "tests/mod_editor/test_share_panel_qt.py",
+    "tests/mod_editor/test_sounds_panel_qt.py",
+    "tests/mod_editor/test_stadium_editable_discovery.py",
+    "tests/mod_editor/test_startup_performance.py",
+    "tests/mod_editor/test_studio_inspection.py",
+    "tests/mod_editor/test_studio_qt_models.py",
+    "tests/mod_editor/test_studio_shell_layout_qt.py",
+    "tests/mod_editor/test_team_kit_product_integration.py",
+    "tests/mod_editor/test_teamkit_import_wiring.py",
+    "tests/mod_editor/test_throw_tuning_panel_qt.py",
+    "tests/mod_editor/test_unif_color_argb_parse.py",
+    "tests/mod_editor/test_unif_color_control.py",
+    "tests/mod_editor/test_ux_build_plan_coverage_qt.py",
+    "tests/mod_editor/test_ux_open_disc_hook_qt.py",
+    "tests/mod_editor/test_visual_export_and_preview.py",
+    "tests/mod_editor/test_workspace_recovery.py",
+    "tests/mod_editor/test_xbe_patch_cave_references.py",
+    "tests/mod_editor/test_xbe_patch_memory_writes.py"
+  ]
+}

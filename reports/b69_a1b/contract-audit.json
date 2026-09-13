@@ -1,0 +1,190 @@
+{
+  "canonical_registry": true,
+  "shared_rows": 172,
+  "new_rows": [
+    {
+      "id": "nfl2k5.gameplay.coin_defer",
+      "validation": "python3 -m tests.mod_editor.test_nfl2k5_b69_rules",
+      "evidence": {
+        "ASTRA_B69_J5_REPORT.md": true,
+        "docs/research/nfl2k5_b69_rules.md": true,
+        "tests/mod_editor/test_nfl2k5_b69_rules.py": true,
+        "tools/nfl2k5_coin_defer.S": true
+      }
+    },
+    {
+      "id": "nfl2k5.gameplay.cpu_scrambles",
+      "validation": "python3 -m tests.mod_editor.test_nfl2k5_b69_rules",
+      "evidence": {
+        "ASTRA_B69_J5_REPORT.md": true,
+        "docs/research/nfl2k5_b69_rules.md": true,
+        "tests/mod_editor/test_nfl2k5_b69_rules.py": true,
+        "tools/nfl2k5_cpu_scrambles.S": true
+      }
+    },
+    {
+      "id": "nfl2k5.gameplay.decided_clock",
+      "validation": "python3 -m tests.mod_editor.test_nfl2k5_b69_rules",
+      "evidence": {
+        "ASTRA_B69_J5_REPORT.md": true,
+        "docs/research/nfl2k5_b69_rules.md": true,
+        "tests/mod_editor/test_nfl2k5_b69_rules.py": true,
+        "tools/nfl2k5_decided_clock.S": true,
+        "tests/mod_editor/test_nfl2k5_b69_rules_series.py": true,
+        "reports/b69_j5/native_series.json": true
+      }
+    },
+    {
+      "id": "nfl2k5.mode.my_career_playcalling",
+      "validation": "python3 -m tests.mod_editor.test_nfl2k5_my_career_playcalling",
+      "evidence": {
+        "ASTRA_B69_J3_REPORT.md": true,
+        "tests/mod_editor/test_nfl2k5_my_career_playcalling.py": true,
+        "tests/mod_editor/test_nfl2k5_my_career_settings.py": true,
+        "tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py": true
+      }
+    },
+    {
+      "id": "nfl2k5.mode.my_career_prospects",
+      "validation": "python3 -m tests.mod_editor.test_nfl2k5_my_career_prospects",
+      "evidence": {
+        "ASTRA_B69_J3_REPORT.md": true,
+        "tests/mod_editor/test_nfl2k5_my_career_prospects.py": true,
+        "tests/mod_editor/test_nfl2k5_my_career_settings.py": true,
+        "tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py": true
+      }
+    },
+    {
+      "id": "nfl2k5.weather.climate_editor",
+      "validation": "python3 -m tests.mod_editor.test_nfl2k5_weather",
+      "evidence": {
+        "docs/research/nfl2k5_weather_time_of_day.md": true,
+        "reports/b69_j4/weather_audit.json": true,
+        "reports/b69_j4/weather_native.json": true,
+        "tests/mod_editor/test_nfl2k5_weather.py": true,
+        "tests/mod_editor/test_nfl2k5_weather_editor.py": true,
+        "ASTRA_B69_J4_REPORT.md": true
+      }
+    },
+    {
+      "id": "nfl2k5.weather.haze_coefficient",
+      "validation": "python3 -m tests.mod_editor.test_nfl2k5_weather_native",
+      "evidence": {
+        "docs/research/nfl2k5_weather_time_of_day.md": true,
+        "reports/b69_j4/weather_native.json": true,
+        "tests/mod_editor/test_nfl2k5_weather_native.py": true,
+        "ASTRA_B69_J4_REPORT.md": true
+      }
+    }
+  ],
+  "presets": {
+    "weather_plan": "",
+    "weather_haze": false,
+    "coin_defer": false,
+    "decided_clock": false,
+    "decided_clock_margin": 17,
+    "decided_clock_seconds": 60,
+    "cpu_scrambles": "retail"
+  },
+  "R62_SPACE_KEYS": [
+    "momentum_collisions",
+    "momentum_collision_level",
+    "read_option_runtime",
+    "franchise_2026_rules",
+    "senior_bowl",
+    "guardian_overlay",
+    "my_career",
+    "screen_hooks",
+    "reserves_16",
+    "created_teams_extra",
+    "franchise_autosave",
+    "coverage_trail",
+    "franchise_edit_player",
+    "cpu_money_downs",
+    "accelerated_clock",
+    "weekly_prep",
+    "playbook_pair",
+    "deep_zone_facing",
+    "deep_zone_bail",
+    "coin_defer",
+    "decided_clock",
+    "cpu_scrambles"
+  ],
+  "R62_RUNTIME_KEYS": [
+    "momentum_collisions",
+    "momentum_collision_level",
+    "read_option_runtime",
+    "franchise_2026_rules",
+    "senior_bowl",
+    "guardian_overlay",
+    "my_career",
+    "screen_hooks",
+    "reserves_16",
+    "created_teams_extra",
+    "read_option_intent_table",
+    "guardian_everyone_practice",
+    "my_career_setup",
+    "crib_reclaim",
+    "modern_naming",
+    "franchise_autosave",
+    "coverage_trail",
+    "franchise_edit_player",
+    "cpu_money_downs",
+    "accelerated_clock",
+    "accelerated_clock_minimum_seconds",
+    "weekly_prep",
+    "weekly_prep_cpu",
+    "weekly_prep_remember",
+    "playbook_pair",
+    "deep_zone_facing",
+    "deep_zone_bail",
+    "coin_defer",
+    "decided_clock",
+    "decided_clock_margin",
+    "decided_clock_seconds",
+    "cpu_scrambles"
+  ],
+  "climate_requests": [],
+  "haze_requests": [],
+  "provider_pins": 280,
+  "all_provider_hashes_match": true,
+  "allowlist_entries": 840,
+  "product_imports": 245,
+  "tool_imports": 35,
+  "runtime_game_pins": 11,
+  "runtime_game_hashes_match": true,
+  "allocation_records": 64,
+  "allocation_file_size": 12300288,
+  "capacity": {
+    "code": {
+      "pages": 26,
+      "capacity_bytes": 106496,
+      "requested_bytes": 79335,
+      "free_bytes": 27161,
+      "available_bytes": 17728
+    },
+    "data": {
+      "pages": 21,
+      "capacity_bytes": 86016,
+      "requested_bytes": 83762,
+      "free_bytes": 2254,
+      "available_bytes": 0
+    },
+    "read_only": {
+      "pages": 5,
+      "capacity_bytes": 20480,
+      "requested_bytes": 17644,
+      "free_bytes": 2836,
+      "available_bytes": 2824
+    }
+  },
+  "projection": {
+    "path": ".scratch/a2b/gate-manifest.json",
+    "sha256": "dc412377bd71db1514dffffcfb288a483155624690e001139ccf1aab6ede9d6e",
+    "source_hashes": 331,
+    "transactions": 137,
+    "reservations": 12548,
+    "source_fresh": true,
+    "release_manifest": false
+  }
+}
