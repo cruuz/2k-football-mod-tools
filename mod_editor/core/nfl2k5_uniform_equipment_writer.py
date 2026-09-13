@@ -180,7 +180,7 @@ class EquipmentFitError(UniformEquipmentWriterError):
         self.attempts = attempts
         self.suggestion = suggestion
         message = (f"Equipment art cannot fit: it missed the {budget:,}-byte span by {required - budget:,} bytes "
-                   f"({required:,} bytes required at the smallest measured colour attempt). ")
+                   f"({required:,} bytes required at the smallest measured encoding). ")
         if suggestion:
             message += (f"{suggestion['width']} x {suggestion['height']} at "
                         f"{suggestion['colours']} colours would fit for {suggestion['asset_id']}. "
@@ -858,7 +858,7 @@ def _compile_group(
     authored: dict[int, tuple[EquipmentTarget, bytes, bytes, list[Any]]],
     independent: set[int],
     retail: dict[int, tuple[TextureInfo, bytes, bytes, list[Any]]] | None = None,
-    *, suggest_fit: bool = True,
+    *, suggest_fit: bool = True, fit_reference: int | None = None,
 ) -> _CompiledGroup:
     textures, indices = _validate_layout(decoded, chunk, rows)
     retail = retail or {}
@@ -985,7 +985,10 @@ def _compile_group(
             from mod_editor.core.nfl2k5_digit_texture import make_digit_mips
             from mod_editor.core.nfl2k5_equipment_import_intent import with_import_mode
 
-            for reference in sorted(requested_independent - set(retail), reverse=True):
+            references = requested_independent - set(retail)
+            if fit_reference is not None:
+                references &= {fit_reference}
+            for reference in sorted(references, reverse=True):
                 target, payload, rgba, _levels = authored[reference]
                 current_scale = import_settings(payload, target.asset_id, rgba)[1]
                 all_levels = make_digit_mips(rgba, target.width, target.height, target.mip_levels)
@@ -1180,7 +1183,8 @@ def build_unified_uniform_equipment_imports(
     catalog_path: Path = DEFAULT_CATALOG,
     compile_cache: EquipmentCompileCache | None = None,
     preflight_only: bool = False,
-) -> tuple[bytes, list[tuple[str, bytes]], dict[str, Any], str, dict[str, Any]]:
+    fit_asset_id: str | None = None,
+) -> _CompiledGroup | tuple[bytes, list[tuple[str, bytes]], dict[str, Any], str, dict[str, Any]]:
     """Compile logical edits sharing one TSET into one fixed physical span.
 
     ``compile_cache`` lets one build reuse the compiled bytes of a retail span
@@ -1304,7 +1308,9 @@ def build_unified_uniform_equipment_imports(
                          and (source.width, source.height) == (target.width, target.height),
                          "Retail equipment export selector or dimensions are not reviewed")
                 retail[reference] = _retail_artwork(archive, source, groups, rgba)
-        compiled = _compile_group(template_span, chunk, decoded, decode_info, rows, authored, independent, retail)
+        preferred = by_id.get(fit_asset_id) if fit_asset_id is not None else None
+        compiled = _compile_group(template_span, chunk, decoded, decode_info, rows, authored, independent, retail,
+                                  fit_reference=preferred.reference_index if preferred is not None else None)
         if compile_cache is not None:
             compile_cache.compiled[key] = compiled
             compile_cache.misses += 1
@@ -1438,23 +1444,25 @@ __all__ = [
 ]
 
 
-def preflight_project_equipment(index_path: Path, edits: Iterable[tuple[int, str, Path]],
+def preflight_project_equipment(index_path: Path, edits: Iterable[tuple[int | None, str, Path]],
                                 *, compile_cache: EquipmentCompileCache | None = None) -> None:
     """Validate ALL restored equipment groups before publishing a loaded session.
 
     Old PNG-only recolours and npTC/v1 private chains keep their original intent.
     No migration invents mip bytes, silently downsizes art, or drops an edit.
     """
-    groups: dict[tuple[str, str], list[tuple[int, str, Path]]] = {}
+    groups: dict[tuple[str, str], list[tuple[int | None, str, Path]]] = {}
     for number, asset_id, path in edits:
         parts = asset_id.split(":")
-        _require(len(parts) == 5, f"Project edit index {number}: invalid equipment target {asset_id}. Import it again.")
+        prefix = f"Project edit index {number}: " if number is not None else ""
+        _require(len(parts) == 5, f"{prefix}Invalid equipment target {asset_id}. Import it again.")
         groups.setdefault((parts[1], parts[2]), []).append((number, asset_id, path))
     cache = compile_cache or EquipmentCompileCache()
     hashes: dict[str, str] = {}
     by_id, _ = load_targets() if groups else ({}, {})
     for group in groups.values():
-        labels = [f"Project edit index {number}: Equipment / {asset_id.rsplit(':', 1)[-1]} / "
+        labels = [(f"Project edit index {number}: " if number is not None else "")
+                  + f"Equipment / {asset_id.rsplit(':', 1)[-1]} / "
                   f"uniform set {by_id[asset_id].set_selector if asset_id in by_id else 'unknown'} / {asset_id}"
                   for number, asset_id, _ in group]
         try:

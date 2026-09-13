@@ -1122,8 +1122,13 @@ def read_project(path: Path, *, equipment_index: Path | None = None) -> ProjectF
             bool(value["purpose"]) and isinstance(value["edits"], list) and
             1 <= len(value["edits"]) <= MAX_EDITS,
             "visual-mod project schema/canonical encoding mismatch")
-    edits = [validate_edit_shape(record, order)
-             for order, record in enumerate(value["edits"])]
+    edits = []
+    for order, record in enumerate(value["edits"]):
+        try:
+            edits.append(validate_edit_shape(record, order))
+        except Exception as exc:
+            label = project_edit_label(record, order) if isinstance(record, dict) else f"Project edit index {order}"
+            raise ProjectError(f"{label}: {exc}") from exc
     identity_teams = [edit["team_index"] for edit in edits
                       if edit["kind"] == "team_identity"]
     require(len(identity_teams) == len(set(identity_teams)),
@@ -1328,6 +1333,15 @@ def pin_project_inputs(project: ProjectFile) -> dict[Path, InputPin]:
                 pins[resolved] = InputPin(
                     resolved, payload, len(payload), digest(payload), identity)
     return pins
+
+
+def project_input_indices(project: ProjectFile) -> dict[Path, list[int]]:
+    """Map shared inputs once; diagnostics must not add quadratic path work."""
+    result: dict[Path, list[int]] = {}
+    for index, edit in enumerate(project.value["edits"]):
+        for path in project_asset_paths(replace(project, value={**project.value, "edits": [edit]})):
+            result.setdefault(path.resolve(), []).append(index)
+    return result
 
 
 def resolve_asset(project: ProjectFile, text: str,
@@ -2506,7 +2520,10 @@ def build_crib_scene_texture_import(
 #: Coordinate fields a user actually chose in the UI, in the order they read.
 #: A uniform edit carries no selector -- it is an asset code, a side and a
 #: variant -- so "pants:" alone is useless when a project holds several.
-_EDIT_COORDINATES = ("asset_code", "team", "side", "variant", "family", "digit", "slot")
+_EDIT_COORDINATES = ("asset_code", "team", "side", "variant", "family", "digit", "slot",
+                     "team_index", "primary_player_index", "player_index", "player_pool",
+                     "resource_outer_index", "portrait_id", "face_id", "logo_code", "weather",
+                     "target_play_index", "target_slot_index", "resolution", "style")
 
 
 def describe_edit(edit: dict[str, Any]) -> str:
@@ -2542,13 +2559,19 @@ def project_edit_label(edit: dict[str, Any], index: int | None = None) -> str:
     page = ("Equipment" if kind == UNIFORM_EQUIPMENT_KIND else
             "Uniforms" if kind in {"torso", "sleeve", "pants", "live_helmet", "live_number_nameplate", UNIF_COLOR_KIND} else
             "Audio" if kind in AUDIO_KINDS else
-            "Rosters" if "roster" in kind or kind == "team_identity" else
+            "Text & Team Identity" if kind in {"team_identity", UNIVERSAL_FIXED_TEXT_KIND, ROSTER_TEAM_PROVIDER_KIND, ROSTER_PLAYER_PROVIDER_KIND} else
+            "Names, Numbers & Faces" if kind == "player_roster" else
+            "Portraits & Faces" if kind in {"player_portrait", "live_face"} else
+            "The Crib" if kind.startswith("crib_") else
+            "Stadiums" if kind.startswith("stadium_") else
+            "Field Art & Create-Team Art" if kind == "create_team_field_art" else
+            "Presentation" if kind == "scorebug_texture" else
             "Playbooks" if "play" in kind or "formation" in kind else
             "Models" if "geometry" in kind or "model" in kind else
             "All Textures")
     part = str(edit.get("family") or kind).replace("_", " ")
     uniform = " / ".join(str(edit[k]) for k in ("asset_code", "side", "variant", "team_index") if k in edit)
-    texture = str(edit.get("asset_id") or edit.get("selector") or edit.get("target") or edit.get("texture") or part)
+    texture = str(edit.get("asset_id") or edit.get("selector") or edit.get("target") or edit.get("texture") or describe_edit(edit))
     if kind == UNIFORM_EQUIPMENT_KIND:
         name = texture.rsplit(":", 1)[-1]
         part = next((label for prefix, label in (("shoes", "Shoes"), ("glove", "Gloves"), ("socks", "Socks"), ("elbowpad", "Elbow pads"), ("longsleeve", "Long sleeves"), ("wristband", "Wristbands")) if name.startswith(prefix)), part)
@@ -2566,6 +2589,50 @@ def project_includes(project: ProjectFile) -> list[dict[str, Any]]:
     """All edits in project order reversed; never use compiled span order."""
     return [{"project_edit_index": i, "label": project_edit_label(edit, i)}
             for i, edit in reversed(list(enumerate(project.value["edits"])))]
+
+
+class ProjectEditTimeline:
+    """Presentation order without rewriting the project's original edit indices.
+
+    Old archives contain no creation times. Baseline rows share rank zero;
+    subsequent changes are ranked by observed project revision, not asset name.
+    """
+
+    def __init__(self):
+        self.revision = 0
+        self.rows = {}
+
+    def observe(self, document: dict[str, Any], *, baseline: bool = False) -> list[dict[str, Any]]:
+        if baseline:
+            self.rows = {}
+        self.revision += 1
+        current = {}
+        result = []
+        occurrences = Counter()
+        for index, edit in enumerate(document.get("edits", [])):
+            selection = {key: edit[key] for key in
+                         ("kind", "asset_id", "selector", "target", *_EDIT_COORDINATES)
+                         if key in edit}
+            identity = canonical_json(selection)
+            occurrences[identity] += 1
+            key = (identity, occurrences[identity])
+            stamps = []
+            for field in ("png", "clean_png", "mud_png", "wav", "recipe"):
+                if not edit.get(field):
+                    continue
+                try:
+                    info = Path(edit[field]).stat()
+                    stamps.append((field, info.st_size, info.st_mtime_ns, info.st_ino))
+                except OSError:
+                    stamps.append((field, "missing"))
+            signature = digest(canonical_json([edit, stamps]))
+            old = self.rows.get(key)
+            rank = 0 if baseline else old[1] if old and old[0] == signature else self.revision
+            current[key] = (signature, rank)
+            result.append({"project_edit_index": index, "label": project_edit_label(edit, index),
+                           "revision": rank, "original_order_known": rank != 0})
+        self.rows = current
+        return sorted(result, key=lambda row: (row["revision"], row["project_edit_index"]), reverse=True)
 
 
 @contextlib.contextmanager
@@ -4788,7 +4855,18 @@ def bind_prepared_to_source(prepared: PreparedProject, source_fd: int,
                     digest(replacement) == edit.replacement_sha256,
                     f"temporary replacement changed for {edit.kind}:{edit.selector}")
             edit.relative_runs = difference_runs(retail, replacement)
-            require(edit.kind in {"team_identity", "player_roster"} or edit.relative_runs,
+            if edit.kind == UNIFORM_EQUIPMENT_KIND and not edit.relative_runs:
+                # Beta 68 can reuse an exact retail chain where beta 62 appended
+                # one. The authored intent is valid; source equality is a safe
+                # no-op, not a reason to reject the user's old project.
+                record = {"kind": edit.kind, "selector": edit.selector,
+                          "outcome": "already_matches_source", "reason": "exact_source_bytes",
+                          "message": "; ".join(edit.project_labels) +
+                          ": Already matches the source bytes; kept unchanged.",
+                          "replacement": {"span_sha256": edit.retail_span_sha256}}
+                if record not in prepared.kept_retail:
+                    prepared.kept_retail.append(record)
+            require(edit.kind in {"team_identity", "player_roster", UNIFORM_EQUIPMENT_KIND} or edit.relative_runs,
                     f"replacement equals retail for {edit.kind}:{edit.selector}")
             end = edit.absolute + edit.replacement_size
             ranges.append((edit.absolute, end, f"{edit.kind}:{edit.selector}"))
@@ -4860,20 +4938,21 @@ def verify_union(source_fd: int, output_fd: int, size: int,
         require(edit.absolute >= cursor, "selected spans overlap during final verification")
         stream_pair(source_fd, output_fd, cursor, edit.absolute - cursor,
                     source_hash, output_hash, True)
-        before = common.read_exact(source_fd, edit.absolute, edit.replacement_size)
-        after = common.read_exact(output_fd, edit.absolute, edit.replacement_size)
-        replacement = edit.replacement_path.read_bytes()
-        require(digest(before) == edit.retail_span_sha256 and
-                after == replacement and digest(after) == edit.replacement_sha256,
-                f"selected span readback failed for {edit.kind}:{edit.selector}")
-        source_hash.update(before)
-        output_hash.update(after)
-        actual_runs = difference_runs(before, after)
-        require(actual_runs == edit.relative_runs,
-                f"changed-byte ledger changed for {edit.kind}:{edit.selector}")
-        for offset in iter_run_offsets(actual_runs, edit.absolute):
-            offset_hash.update(struct.pack("<Q", offset))
-            changed_count += 1
+        with _naming_prepared_edit(edit):
+            before = common.read_exact(source_fd, edit.absolute, edit.replacement_size)
+            after = common.read_exact(output_fd, edit.absolute, edit.replacement_size)
+            replacement = edit.replacement_path.read_bytes()
+            require(digest(before) == edit.retail_span_sha256 and
+                    after == replacement and digest(after) == edit.replacement_sha256,
+                    f"selected span readback failed for {edit.kind}:{edit.selector}")
+            source_hash.update(before)
+            output_hash.update(after)
+            actual_runs = difference_runs(before, after)
+            require(actual_runs == edit.relative_runs,
+                    f"changed-byte ledger changed for {edit.kind}:{edit.selector}")
+            for offset in iter_run_offsets(actual_runs, edit.absolute):
+                offset_hash.update(struct.pack("<Q", offset))
+                changed_count += 1
         total_span_bytes += edit.replacement_size
         cursor = edit.absolute + edit.replacement_size
     stream_pair(source_fd, output_fd, cursor, size - cursor,
@@ -5295,8 +5374,10 @@ def verify_prepared_pins(project: ProjectFile, prepared: PreparedProject,
             (*project.identity, len(project.payload)) and
             project.path.read_bytes() == project.payload,
             "project changed during workflow")
+    input_indices = project_input_indices(project)
     for pin in prepared.input_pins.values():
-        verify_input_pin(pin)
+        with _naming_project_edits(project, input_indices.get(pin.path, [])):
+            verify_input_pin(pin)
     for kind, pin in prepared.report_pins.items():
         verify_input_pin(pin)
     ownership.verify_large_pin(index_pin, "canonical extracted pack 0")
@@ -5310,11 +5391,12 @@ def copy_artifacts(prepared: PreparedProject, artifact_dir: Path) \
     files: list[ownership.OwnedPath] = []
     try:
         for edit in prepared.edits:
-            for source in [edit.import_report_path,
-                           *[item[1] for item in edit.preview_paths]]:
-                payload = source.read_bytes()
-                files.append(ownership.exclusive_copy(
-                    artifact_dir / source.name, payload, root))
+            with _naming_prepared_edit(edit):
+                for source in [edit.import_report_path,
+                               *[item[1] for item in edit.preview_paths]]:
+                    payload = source.read_bytes()
+                    files.append(ownership.exclusive_copy(
+                        artifact_dir / source.name, payload, root))
         ownership.assert_owned_tree(root, files, [])
         return root, files
     except Exception:
@@ -5740,8 +5822,11 @@ def verify_written(project_path: Path, source_path: Path, output_path: Path,
     require(manifest["project"]["sha256"] == digest(project.payload)
             and manifest["project"]["path"] == str(project.path), "project changed after build")
     pins = pin_project_inputs(project)
-    require({str(path): pin.sha256 for path, pin in pins.items()} == receipt["inputs"],
-            "project inputs changed after build")
+    input_indices = project_input_indices(project)
+    require({str(path) for path in pins} == set(receipt["inputs"]), "project input list changed after build")
+    for path, pin in pins.items():
+        with _naming_project_edits(project, input_indices[path]):
+            require(pin.sha256 == receipt["inputs"][str(path)], "project input changed after build")
     artifacts, artifact_identity = verify_artifacts(
         artifact_dir_path, manifest["output"]["artifact_sha256"])
     fds = []
@@ -5799,7 +5884,8 @@ def verify_written(project_path: Path, source_path: Path, output_path: Path,
                 offsets.hexdigest() == manifest["patch"]["changed_offsets_u64le_sha256"],
                 "written union ledger differs")
         for pin in pins.values():
-            verify_input_pin(pin)
+            with _naming_project_edits(project, input_indices[pin.path]):
+                verify_input_pin(pin)
         require(file_snapshot(source_fd) == receipt["source_stat"]
                 and file_snapshot(output_fd) == receipt["output_stat"]
                 and common.path_identity(source_path) == common.fd_identity(source_fd)

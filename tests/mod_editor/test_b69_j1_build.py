@@ -95,6 +95,30 @@ class BuildDiagnosticsTests(unittest.TestCase):
                 chunk = parse_chunks(data)[0]
                 self.assertEqual(chunk.video_bytes > equipment.chunk.video_bytes, independent)
 
+    def test_legacy_own_copy_recognized_as_retail_is_an_honest_noop_build(self):
+        from mod_editor.core import nfl2k5_uniform_equipment_writer as writer
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder).resolve()
+            equipment, _ = fixture.create(root)
+            tool = backend(); fixture.configure(tool, root)
+            textures, _ = writer._validate_layout(equipment.decoded,equipment.chunk,equipment.rows)
+            rgba = writer.texture_to_rgba(equipment.decoded,equipment.chunk,textures[0])
+            asset = equipment.rows[0].asset_id
+            png = root/'old-own.png';png.write_bytes(legacy_png(asset,rgba))
+            project = root/'old.json'
+            project.write_bytes(tool.canonical_json(dict(schema=tool.SCHEMA,purpose='old unchanged own copy',
+                edits=[dict(kind=tool.UNIFORM_EQUIPMENT_KIND,asset_id=asset,png=str(png))])))
+            tool.read_project(project,equipment_index=root/'0')
+            with contextlib.redirect_stdout(io.StringIO()):
+                result = tool.build(project,root/'source.iso',root/'out.iso',root/'receipt.json',
+                    root/'artifacts',root/'0',root/'inventory.json')
+            self.assertEqual((root/'out.iso').read_bytes(),(root/'source.iso').read_bytes())
+            self.assertEqual(result['patch']['changed_byte_count'],0)
+            self.assertEqual(result['kept_retail'][0]['outcome'],'already_matches_source')
+            self.assertIn('Project edit index 0',result['kept_retail'][0]['message'])
+            self.assertTrue(tool.verify_written(project,root/'source.iso',root/'out.iso',root/'receipt.json',
+                root/'artifacts',tool.file_digest(root/'receipt.json'))['written_spans_verified'])
+
     def test_invalid_legacy_own_art_is_refused_during_project_load(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder).resolve()
@@ -126,6 +150,9 @@ class BuildDiagnosticsTests(unittest.TestCase):
         reason = 'While writing project edits: Project edit index 401: ' + 'x'*700 + ' choose another image'
         result = service.CommandResult((), 1, 'NFL2K5_BUILD_PHASE copy seconds=1.2\n', 'error: '+reason+'\n')
         self.assertEqual(service._last_message(result), reason)
+        multiline = 'error: ' + reason + '\nReimport shoes10 in 05H0.\n'
+        self.assertEqual(service._last_message(service.CommandResult((), 1, result.stdout, multiline)),
+                         reason + '\nReimport shoes10 in 05H0.')
         self.assertNotIn('NFL2K5_', service._last_message(service.CommandResult((), 1,
             'NFL2K5_BUILD_PHASE compile seconds=1\n', '')))
 

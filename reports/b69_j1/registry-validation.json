@@ -1,0 +1,9 @@
+{
+  "schema": "vc_mod_capability_registry/v1",
+  "capabilities": 161,
+  "nfl2k5_rows": 91,
+  "rows_added": 0,
+  "structure_passed": true,
+  "file_checks": false,
+  "note": "Full registry with the two proposed J1 rows substituted; historical missing references remain outside this structural check."
+}

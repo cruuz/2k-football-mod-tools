@@ -1,0 +1,14 @@
+{
+  "virtual_size": 6227718144,
+  "index_table_end": 52032,
+  "first_entry_offset": 53248,
+  "space_after_index_table": 1216,
+  "space_after_last_entry": 0,
+  "largest_inter_entry_gap": 2032,
+  "selected_package_gaps": {
+    "3653": 304,
+    "3734": 48
+  },
+  "entry_count": 4323,
+  "pack_count": 16
+}

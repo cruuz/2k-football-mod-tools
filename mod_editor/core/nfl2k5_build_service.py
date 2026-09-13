@@ -872,8 +872,8 @@ def _last_message(result: CommandResult) -> str:
         lines = [line.strip() for line in stream.splitlines()
                  if line.strip() and not line.strip().startswith("NFL2K5_")]
         if lines:
-            errors = [line for line in lines if line.lower().startswith("error:")]
-            message = errors[-1] if errors else lines[-1]
+            errors = [i for i, line in enumerate(lines) if line.lower().startswith("error:")]
+            message = "\n".join(lines[errors[-1]:]) if errors else lines[-1]
             return message.split(":", 1)[1].strip() if message.lower().startswith("error:") else message
     return "The internal tool did not provide a refusal reason. Save the build log and report this failure."
 

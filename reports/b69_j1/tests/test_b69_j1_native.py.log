@@ -1,0 +1,7 @@
+.
+----------------------------------------------------------------------
+Ran 1 test in 2.009s
+
+OK
+Native Style 6: order ['AWAY', 'HOME', 'GLOBAL'] clean and mud bind each package; both feet exact; Bears tset:3653:9:4:shoes10
+Native Style 6: order ['HOME', 'AWAY', 'GLOBAL'] clean and mud bind each package; both feet exact; Bears tset:3653:9:4:shoes10

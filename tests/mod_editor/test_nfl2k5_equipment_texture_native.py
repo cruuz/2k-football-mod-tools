@@ -205,13 +205,14 @@ class NativeEquipmentTests(unittest.TestCase):
                 bump_name_ptr = self.words(0x4EEDF8 + bump_index * 4)[0]
                 raw = bytes(self.uc.mem_read(bump_name_ptr, 32))
                 self.assertEqual(raw.decode("utf-16le").split("\0")[0], SHOE_STYLE_BUMPS[style])
-                self.put(0xB65428 + (team * 192 + row) * 4, colour)
+                self.put(0xB65428 + (team * 96 + row) * 4, colour)
                 self.uc.reg_write(UC_X86_REG_ESI, bump_name_ptr)
                 relief = self.run_native(0x8E580, eax=1, args=(team,))
                 self.assertEqual(lookups[-2:], [self.words(0x4EEACC + team * 4)[0], 0])
-                self.put(0xB65A28 + bump_index * 4, relief)
+                self.put(0xB65A28 + (team * 28 + bump_index) * 4, relief)
                 self.uc.reg_write(UC_X86_REG_ESI, obj)
-                self.run_native(0x8EF20, eax=team, args=(0, 0, 1, style, 0))
+                # Cache axes are mud * 192 + team * 96; EAX is mud.
+                self.run_native(0x8EF20, eax=0, args=(0, 0, 1, style, team))
                 self.assertEqual(self.words(materials + 0x30)[0], colour)
                 self.assertEqual(self.words(materials + 128 + 0x30)[0], colour)
                 self.assertEqual(self.words(materials + 0x38)[0], relief)

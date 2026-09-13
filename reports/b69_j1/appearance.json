@@ -1,0 +1,37 @@
+{
+  "target": "tset:3653:9:4:shoes10",
+  "results": [
+    {
+      "mode": "palette-only",
+      "dimensions": [
+        256,
+        256
+      ],
+      "palette_entries": 94,
+      "mip_levels": 6,
+      "max_channel_error": 249,
+      "mean_delta_e76": 9.195645118326347,
+      "distinct_colour_merges": 4690,
+      "reason": "to fit the shared retail index artwork; choose its own texture for a new design",
+      "pixel_offset": 0,
+      "shared_retail_shape": true,
+      "outcome": "Decoded pixels only; GPU and game appearance UNWITNESSED"
+    },
+    {
+      "mode": "independent-mip-chain",
+      "dimensions": [
+        64,
+        64
+      ],
+      "palette_entries": 4,
+      "mip_levels": 4,
+      "max_channel_error": 106,
+      "mean_delta_e76": 7.419380700175116,
+      "distinct_colour_merges": 1587,
+      "reason": "to fit the fixed 55,008-byte compressed TSET budget",
+      "pixel_offset": 93568,
+      "shared_retail_shape": false,
+      "outcome": "Decoded pixels only; GPU and game appearance UNWITNESSED"
+    }
+  ]
+}
