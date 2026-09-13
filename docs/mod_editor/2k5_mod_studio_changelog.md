@@ -8,6 +8,8 @@ Beta 69 adds planned features, answers every ESPN NFL 2K5 report in Discord afte
 - Long Music actions stay readable on a 1366-pixel window. Options keep their explanations on hover, tabs expose their full captions, and outdated release captions are removed from current help. Both studios' pages are checked offscreen; gameplay is unchanged by this polish pass.
 - MacDog850: “i also had to have chat gpt fix it”. The new FAQ explains reinstalling from the official Setup.exe, rebuilding, and posting the Build summary and first error. It also answers CER's dropped interceptions, Mud's menu radio request and emulator questions. Getting Started follows the current sidebar and button names.
 
+- maumau78: “shoe slot 10 / style 6 is not show in-game”. The FAQ records the negative Bears result: Edit Player showed the imported design, while the played shoe stayed dark. The previous package-local colour proof was offline and did not establish that played binding. This documentation correction does not claim an equipment fix.
+
 ## v1.0 RC93, beta 68: fixes for the reports after beta 66.1 (2026-09-12)
 
 Beta 68 answers the ESPN NFL 2K5 reports in Discord after beta 66.1; bullets are added as each change lands.
