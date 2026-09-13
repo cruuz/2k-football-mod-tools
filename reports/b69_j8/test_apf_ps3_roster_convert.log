@@ -1,0 +1,6 @@
+QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_ps3_roster_convert.py
+.............
+----------------------------------------------------------------------
+Ran 13 tests in 17.567s
+
+OK

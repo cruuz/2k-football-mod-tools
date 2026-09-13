@@ -1,0 +1,6 @@
+QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/test_apf_save_playbook_assignments.py
+..........
+----------------------------------------------------------------------
+Ran 10 tests in 0.819s
+
+OK

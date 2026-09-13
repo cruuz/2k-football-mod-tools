@@ -1,0 +1,6 @@
+QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_b66_appearance.py
+...
+----------------------------------------------------------------------
+Ran 3 tests in 2.675s
+
+OK

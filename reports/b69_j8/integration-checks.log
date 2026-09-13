@@ -1,0 +1,6 @@
+WIRING_REGISTRY_SCHEMA_PASS total=161 APF=69 updated_rows=2 added_rows=0
+Registry code applied only to a temporary copy; validate_data(check_files=False) passed.
+git diff --check: passed
+python3 packaging/repin.py --apply: applied 0 pin update(s)
+Worktree Git staging blocked after 5a9a2e14: index.lock cannot be created because shared metadata is read-only.
+Remaining explicit-path commits are exported in astra-b69-j8-apf-save.bundle.

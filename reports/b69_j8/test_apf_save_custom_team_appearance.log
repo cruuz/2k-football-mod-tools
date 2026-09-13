@@ -1,0 +1,6 @@
+QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/test_apf_save_custom_team_appearance.py
+............
+----------------------------------------------------------------------
+Ran 12 tests in 2.037s
+
+OK

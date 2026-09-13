@@ -1,0 +1,98 @@
+[
+  {
+    "file": "tests/test_apf_save_custom_team_appearance.py",
+    "exit_code": 0,
+    "tests": 12,
+    "log": "reports/b69_j8/test_apf_save_custom_team_appearance.log"
+  },
+  {
+    "file": "tests/test_apf_save_playbook_assignments.py",
+    "exit_code": 0,
+    "tests": 10,
+    "log": "reports/b69_j8/test_apf_save_playbook_assignments.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_stfs_roster_rehash.py",
+    "exit_code": 0,
+    "tests": 7,
+    "log": "reports/b69_j8/test_apf_stfs_roster_rehash.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_roster_appearance_transfer.py",
+    "exit_code": 0,
+    "tests": 5,
+    "log": "reports/b69_j8/test_apf_roster_appearance_transfer.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_roster_appearance_transfer_qt.py",
+    "exit_code": 0,
+    "tests": 3,
+    "log": "reports/b69_j8/test_apf_roster_appearance_transfer_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_ps3_roster_convert.py",
+    "exit_code": 0,
+    "tests": 13,
+    "log": "reports/b69_j8/test_apf_ps3_roster_convert.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_ps3_roster_import_qt.py",
+    "exit_code": 0,
+    "tests": 3,
+    "log": "reports/b69_j8/test_apf_ps3_roster_import_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_b66_appearance.py",
+    "exit_code": 0,
+    "tests": 3,
+    "log": "reports/b69_j8/test_apf_b66_appearance.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_custom_team_appearance_patch.py",
+    "exit_code": 0,
+    "tests": 8,
+    "log": "reports/b69_j8/test_apf_custom_team_appearance_patch.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_custom_team_appearance_gui.py",
+    "exit_code": 0,
+    "tests": 5,
+    "log": "reports/b69_j8/test_apf_custom_team_appearance_gui.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_save_roster_players.py",
+    "exit_code": 0,
+    "tests": 7,
+    "log": "reports/b69_j8/test_apf_save_roster_players.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_save_roster_players_gui.py",
+    "exit_code": 0,
+    "tests": 4,
+    "log": "reports/b69_j8/test_apf_save_roster_players_gui.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_save_playbook_assignments_gui.py",
+    "exit_code": 0,
+    "tests": 8,
+    "log": "reports/b69_j8/test_apf_save_playbook_assignments_gui.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_capability_action_parity.py",
+    "exit_code": 0,
+    "tests": 11,
+    "log": "reports/b69_j8/test_apf_capability_action_parity.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_studio_core.py",
+    "exit_code": 0,
+    "tests": 9,
+    "log": "reports/b69_j8/test_apf_studio_core.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_ps3_probes.py",
+    "exit_code": 0,
+    "tests": 9,
+    "log": "reports/b69_j8/test_apf_ps3_probes.log"
+  }
+]
