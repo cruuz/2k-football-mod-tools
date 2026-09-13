@@ -32,6 +32,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from mod_editor.core.nfl2k5_compile_cache import CompileCache
+from mod_editor.core import nfl2k5_model_project as model_project
 from mod_editor.core import platform_compat  # noqa: E402
 from mod_editor.core.model import SourceRecord  # noqa: E402
 from mod_editor.core.errors import ModEditorError  # noqa: E402
@@ -367,6 +368,7 @@ ROSTER_REPORT_FREE_KINDS = frozenset({
     ROSTER_PLAYER_PROVIDER_KIND,
 })
 REPORT_FREE_KINDS = ROSTER_REPORT_FREE_KINDS | {
+    model_project.KIND,
     MENU_BACK_AUDIO_KIND,
     AUSB_AUDIO_KIND,
     STADIUM_TEXTURE_KIND,
@@ -731,7 +733,10 @@ def validate_edit_shape(record: object, order: int) -> dict[str, Any]:
     require(isinstance(record, dict) and type(record.get("kind")) is str,
             f"edit {order} must be an object with a string kind")
     kind = record["kind"]
-    if kind in {"torso", "sleeve", "pants"}:
+    if kind == model_project.KIND:
+        require(set(record) == {"kind", "target", "recipe"} and _string(record, "target")
+                and _string(record, "recipe"), f"edit {order} has invalid model fields/types")
+    elif kind in {"torso", "sleeve", "pants"}:
         require(set(record) == TSET_FIELDS and
                 _string(record, "asset_code") and _string(record, "side") and
                 _integer(record, "variant") and _string(record, "clean_png") and
@@ -1284,7 +1289,7 @@ def project_asset_paths(project: ProjectFile) -> list[Path]:
             names = []
         elif edit["kind"] in AUDIO_KINDS:
             names = ["wav"]
-        elif edit["kind"] in {STADIUM_GEOMETRY_KIND, CRIB_SCENE_GEOMETRY_KIND}:
+        elif edit["kind"] in {STADIUM_GEOMETRY_KIND, CRIB_SCENE_GEOMETRY_KIND, model_project.KIND}:
             names = ["recipe"]
         else:
             names = ["png"]
@@ -3525,8 +3530,11 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                 and all(row["kind"] in independent_kinds for row in project.value["edits"])):
             parallel_imports = _parallel_uniform_imports(project.value["edits"], project,
                 input_pins, report_paths, index_pin.path, inventory_pin.path, output_parent, workers, cache, key_for)
+        model_edits = [e for e in project.value["edits"] if e["kind"] == model_project.KIND]
         for edit_index, edit in enumerate(project.value["edits"]):
             kind = edit["kind"]
+            if kind == model_project.KIND:
+                continue
             if edit_index in deduplicated_ausb_edits:
                 continue
             effective_edit = edit
@@ -3972,7 +3980,7 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                 temp_files.append(exclusive_payload(
                     span_path, replacement, temp_root))
                 normalized = normalized_import_report(report, effective_edit, kind)
-                if historical_import_reports is not None:
+                if historical_import_reports is not None and not model_edits:
                     historical_import = historical_import_reports.get(order)
                     require(historical_import is not None,
                             f"historical import receipt missing for span {order}")
@@ -4018,6 +4026,12 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                     absolute, retail_sha, span_path,
                     len(replacement), digest(replacement), runs, import_path,
                     digest(import_payload), preview_records))
+        model_project.prepare_project_models(sys.modules[__name__], prepared, model_edits,
+            project, input_pins, index_pin.path, inventory_pin.path, temp_root, temp_files, source_fd)
+        if model_edits and historical_import_reports is not None:
+            for item in prepared:
+                require(historical_import_reports.get(item.order) == json.loads(item.import_report_path.read_bytes()),
+                        f"model composition receipt changed for {item.selector}")
         if historical_import_reports is not None:
             require(set(historical_import_reports) == set(range(len(prepared))),
                     "historical import receipt orders differ from reconstructed spans")

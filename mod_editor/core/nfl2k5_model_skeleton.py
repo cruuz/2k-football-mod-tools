@@ -353,17 +353,29 @@ def axis_receipt(raw, transforms, targets):
             'reason':'Recomputed axial directions match the canonical SKEL float32 vectors; axis and angular constants retained'}
 
 
+def pair_error(detail):
+    return (detail + '. To import a skeleton, edit both LOD files from one export: '
+            'lo_body and hi_body must come from the same Blender export with Custom Properties kept '
+            '(Blender: File > Export > glTF 2.0 > Include > Data > Custom Properties). '
+            'The two LODs have separate bind records and high-detail derived pivots; changing just one '
+            'would leave different limb lengths when the game changes detail. The shared SKEL stores '
+            'directions, not those lengths. Keep hi_head unchanged alongside the pair. '
+            'For a single LOD mesh edit, choose Geometry only and Check model; it keeps both skeletons '
+            'and the other LOD unchanged. Geometry only does not import bone-length edits.')
+
+
 def compile_set(source, body_set, folder, *, write_normals=True, write_uvs=False, allow_rescale=True, write_colours=True, progress=None):
     require(set(body_set.keys) == {'o3c113','o3c114','o3c115'}, 'non-player skeleton: only outer 3 player body is proved')
     folder = Path(folder)
     files = M.find_body_set_files(body_set,folder)
-    require({'o3c113','o3c114'} <= files.keys(), PAIR_REASON)
+    missing = [M.body_set_file_name(e) for e in body_set.entries if e.key not in files]
+    require(not missing, pair_error('Missing file: ' + ', '.join(str(folder / name) for name in missing)))
     require('o3c115' in files, 'keep hi_head with both LOD files from one export')
     try:
         manifest = json.loads((folder/MANIFEST).read_text(encoding='utf-8'))
     except (OSError,ValueError) as exc:
-        raise M.ModelsError(PAIR_REASON + ': missing skeleton export manifest; export the body set again') from exc
-    require(manifest.get('schema') == SCHEMA and set(manifest.get('members',{})) == set(body_set.keys), PAIR_REASON)
+        raise M.ModelsError(pair_error(f'Missing skeleton export manifest: {folder / MANIFEST}; export the body set again')) from exc
+    require(manifest.get('schema') == SCHEMA and set(manifest.get('members',{})) == set(body_set.keys), pair_error(f'{folder / MANIFEST}: export identity or members differ'))
     parsed, requested, gltfs = {}, {}, {}
     for key in body_set.keys:
         parsed[key] = _skin(source,key)
@@ -374,13 +386,19 @@ def compile_set(source, body_set, folder, *, write_normals=True, write_uvs=False
         gltf = M.GltfFile(files[key])
         gltfs[key] = gltf
         tags = [n.get('extras',{}).get(EXPORT_TAG) for n in gltf.document.get('nodes',[]) if EXPORT_TAG in n.get('extras',{})]
-        require(tags and all(tag == manifest.get('export_id') for tag in tags), PAIR_REASON + ': retain Blender Custom Properties')
+        require(tags and all(tag == manifest.get('export_id') for tag in tags), pair_error(f'{files[key]}: missing or mismatched export Custom Properties'))
         requested[key] = read_bind(gltf,skin.transforms,lanes.name)
     low = parsed['o3c113'][-1].transforms
     high = parsed['o3c114'][-1].transforms
     # A present but untouched second LOD is still a one-LOD edit.
     common = set(requested['o3c113']) & set(requested['o3c114'])
-    require(all(math.dist(requested['o3c113'][n],requested['o3c114'][n]) <= INPUT_TOLERANCE_CM for n in common), PAIR_REASON)
+    if not all(math.dist(requested['o3c113'][n], requested['o3c114'][n]) <= INPUT_TOLERANCE_CM for n in common):
+        unedited = [str(files[key]) for key, transforms in (('o3c113', low), ('o3c114', high))
+                    if all(math.dist(requested[key][t['name']], t['absolute']) <= INPUT_TOLERANCE_CM
+                           for t in transforms)]
+        detail = ('Unedited skeleton in ' + ', '.join(unedited) if unedited else
+                  f'{files["o3c113"]} and {files["o3c114"]}: the LOD skeleton edits disagree')
+        raise M.ModelsError(pair_error(detail))
     bone, scale = infer_edit(low,requested['o3c113'])
     require(bone is None or bone.kind != 'upper_arm',
             f'{bone.name if bone else "upper_arm"}: compressed span cannot fit at the +1%/+5% witnesses; upper-arm import is not enabled')
