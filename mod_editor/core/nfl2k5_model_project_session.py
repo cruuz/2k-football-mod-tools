@@ -168,7 +168,15 @@ class ModelProjectSession(StudioSession):
             document = {"schema": BACKEND_SCHEMA, "purpose": "Built with 2K5 Mod Studio from checked model changes.", "edits": []}
         for number, record in enumerate(self.model_records):
             path = self.replacements / f"model-{number:04d}.json"
-            _replace_atomic(path, P.canonical(record))
+            payload = P.canonical(record)
+            # The Build timeline observes recipe file revisions. Publishing an
+            # unchanged recipe would make a refresh look like a new model edit.
+            try:
+                unchanged = not path.is_symlink() and path.is_file() and path.read_bytes() == payload
+            except OSError:
+                unchanged = False
+            if not unchanged:
+                _replace_atomic(path, payload)
             document["edits"].append({"kind": P.KIND, "target": record["target"], "recipe": str(path)})
         return document
 

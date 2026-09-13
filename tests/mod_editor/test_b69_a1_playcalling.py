@@ -45,6 +45,20 @@ class CloneRetirementTests(unittest.TestCase):
         self.assertTrue(next(row for row in self.facade.playcalling_context()["formations"]
                              if row["id"] == 0)["never_call"])
 
+    def test_explicit_clone_uses_donor_state_at_copy_time(self):
+        self.fixture.stage(self.facade.playcalling_plan("offense", 0, "O-ManBlock"))
+        self.fixture.stage(dict(kind="never_call", book="O-ManBlock", formation=0,
+                                never=False, restore_masks=self.masks))
+        context = self.facade.playcalling_context()
+        formation = next(row for row in context["formations"] if row["id"] == 0)
+        self.assertTrue(formation["never_call"])
+        self.assertEqual(formation["restore_masks"], self.masks)
+        self.fixture.stage(dict(kind="never_call", book=context["book"], formation=0,
+                                never=False, restore_masks=formation["restore_masks"]))
+        state = self.facade.playcalling_context()["state"]
+        for name in (context["book"], "O-ManBlock"):
+            self.assertEqual(calling.membership_masks(state.books[name], 0), tuple(self.masks))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from mod_editor.core import nfl2k5_model_project as model
 from mod_editor.core.nfl2k5_model_project_session import ModelProjectSession
 from tests.mod_editor import test_studio_session as fixtures
+from tools.nfl2k5_visual_mod_project import ProjectEditTimeline
 
 
 class ModelLoadTransactionTests(unittest.TestCase):
@@ -70,6 +71,21 @@ class ModelLoadTransactionTests(unittest.TestCase):
         self.assertEqual(len(documents), 1)
         self.assertEqual(documents[0]["model_edits"], [self.record])
         self.assertEqual(json.loads((self.loaded.root / "session.json").read_bytes())["model_edits"], [self.record])
+
+    def test_build_refresh_preserves_edit_chronology_until_model_changes(self):
+        self.loaded.load_shareable_project(self.project)
+        timeline = ProjectEditTimeline()
+        timeline.observe(self.loaded.canonical_document(), baseline=True)
+        png = self.fixture.root / "newer.png"
+        png.write_bytes(b"USER-B-CONTAINER")
+        self.loaded.replace(self.fixture.asset, png)
+        rows = timeline.observe(self.loaded.canonical_document())
+        self.assertEqual(rows[0]["project_edit_index"], 0, "The new artwork must be first")
+        self.assertEqual(timeline.observe(self.loaded.canonical_document()), rows)
+        changed = dict(self.record, summary="A newer checked model edit")
+        self.loaded.stage_model(changed)
+        rows = timeline.observe(self.loaded.canonical_document())
+        self.assertEqual(rows[0]["project_edit_index"], 1, "A changed model must become first")
 
 
 if __name__ == "__main__":
