@@ -3237,7 +3237,10 @@ def preview_csv(document: RosterDocument, text: str, *, delimiter: str | None = 
         player = by_key[key]
         old = _csv_row(working, player)
         clean = {k: _csv_unprotect(v) if k in CSV_TEXT_COLUMNS else v for k, v in row.items()}
-        edits = {k: v for k, v in clean.items() if k not in CSV_READ_ONLY and v != str(old[k])}
+        # An untouched later row must not undo a prior row's membership/lock
+        # effects. User edits are relative to the initial import snapshot.
+        initial = _csv_row(document, document.by_offset[player.offset])
+        edits = {k: v for k, v in clean.items() if k not in CSV_READ_ONLY and v != str(initial[k])}
         if not edits:
             continue
         # Scalar-only rows need only a record copy. Pool/membership operations can

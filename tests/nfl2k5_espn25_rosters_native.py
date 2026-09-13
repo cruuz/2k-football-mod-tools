@@ -35,7 +35,7 @@ class CPU:
             assert 0x10000 <= va and va + virtual_size <= 0x1610000 and offset + size <= len(payload)
             self.write(va, payload[offset:offset + size])
         self.stubs, self.events = {}, []
-        self.uc.hook_add(UC_HOOK_CODE, self._hook)
+        self._code_hook = self.uc.hook_add(UC_HOOK_CODE, self._hook)
         self.write(self.MAIN, resources[5][32:])
         self.w(0xB72918, self.MAIN + 64)
         self.run(0xC0500, ecx=self.MAIN + 64)

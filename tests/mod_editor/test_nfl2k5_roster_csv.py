@@ -148,6 +148,15 @@ class CsvTests(unittest.TestCase):
         self.assertEqual({r['index'] for r in preview.receipt['changes']}, {1, 2})
         self.assertTrue(self.doc.players[1].record.depth_locks['kr1'])
 
+    def test_full_sheet_unchanged_later_row_does_not_reclaim_a_transferred_lock(self):
+        self.doc.set_depth_lock(self.doc.players[2], 'kr1', True)
+        text = change_csv(rr.export_csv(self.doc), index=1, lock_kr1='1')
+        receipt = rr.import_csv(self.doc, text)
+        self.assertFalse(receipt['refused'])
+        self.assertTrue(self.doc.players[1].record.depth_locks['kr1'])
+        self.assertFalse(self.doc.players[2].record.depth_locks['kr1'])
+        self.assertEqual(receipt['changed'], 2)
+
 
 class GuiCsvTests(unittest.TestCase):
     @classmethod

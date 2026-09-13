@@ -154,6 +154,26 @@ class CompletionCPU(LiveCPU):
         self.wait_callers = []
         self.deliveries = 0
         super().__init__(*args, **kwargs)
+        # Native execution between observed boundaries does not need a Python
+        # callback for every instruction. Keep the same instruction cap and
+        # fail if a future probe introduces an unhooked substitution address.
+        from unicorn import UC_HOOK_CODE
+        self.uc.hook_del(self._code_hook)
+        self._bounded_hooks = {
+            0xC1030, 0x2D1896, 0xC2300, 0xC240F, 0x432D0, 0x432EC,
+            0x43F50, 0x449E0, 0x432F0, 0x38F50, 0xF3210, 0x6E390,
+            0xE3150, 0xF3580, 0x773F0, 0xE9460, 0x10BD60, 0xAF510,
+            0x9CBD0, 0x23F0000,
+        }
+        self._boundary_handles = [self.uc.hook_add(UC_HOOK_CODE, self._hook, begin=at, end=at)
+                                  for at in sorted(self._bounded_hooks)]
+
+    def run(self, at, **registers):
+        if hasattr(self, '_bounded_hooks'):
+            missing = set(self.stubs) - self._bounded_hooks
+            assert not missing, f'unobserved native substitution addresses: {sorted(missing)}'
+        return super().run(at, **registers)
+
 
     def archive_stubs(self):
         super().archive_stubs()
