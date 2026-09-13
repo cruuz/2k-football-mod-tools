@@ -1,8 +1,8 @@
 [
   {
     "backend": {
-      "command": "python3 -c \"from mod_editor.core.nfl2k5_my_career_save import write_settings; write_settings('source.zip', 'output.zip', supersim='Fast forward', playcall='By position')\"",
-      "module": "mod_editor/core/nfl2k5_my_career_save.py",
+      "command": "python3 -m mod_editor.core.nfl2k5_my_career_mode apply source.xbe output.xbe",
+      "module": "mod_editor/core/nfl2k5_my_career_mode.py",
       "operation": "write"
     },
     "classification": "offline-writer-proved",
@@ -36,18 +36,18 @@
       "tooling": "source-and-schemas-only"
     },
     "runtime": {
-      "status": "not-tested",
-      "scope": "Saved three-value play selection policy and guarded native Fast-forward hand-back. Native selector and execution controller are separate owners. Physical play, menu pixels and audibles remain UNWITNESSED.",
       "evidence": [
         "ASTRA_REPORT.md",
         "tests/mod_editor/test_nfl2k5_my_career_playcalling.py"
-      ]
+      ],
+      "scope": "Saved three-value play selection policy and guarded native Fast-forward hand-back. Native selector and execution controller are separate owners. Physical play, menu pixels and audibles remain UNWITNESSED.",
+      "status": "not-tested"
     },
     "selectors": {
       "fields": [
         {
-          "name": "my_career",
           "allowed": "explicit opt-in only; false in every preset",
+          "name": "my_career",
           "required": true
         }
       ],
@@ -103,18 +103,18 @@
       "tooling": "source-and-schemas-only"
     },
     "runtime": {
-      "status": "not-tested",
-      "scope": "Native unboosted overall calibration, creation tier placement and persisted goal label. Existing CAP templates are reused. Goals, drills and draft advisory are roadmap, not simulated features.",
       "evidence": [
         "ASTRA_REPORT.md",
         "tests/mod_editor/test_nfl2k5_my_career_prospects.py"
-      ]
+      ],
+      "scope": "Native unboosted overall calibration, creation tier placement and persisted goal label. Existing CAP templates are reused. Goals, drills and draft advisory are roadmap, not simulated features.",
+      "status": "not-tested"
     },
     "selectors": {
       "fields": [
         {
-          "name": "my_career",
           "allowed": "explicit opt-in only; false in every preset",
+          "name": "my_career",
           "required": true
         }
       ],

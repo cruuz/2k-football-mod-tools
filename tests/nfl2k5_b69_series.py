@@ -87,6 +87,9 @@ def policy_probe(payload, position, policy, *, drives=5):
                 # personnel change after a menu selection, without calling
                 # the binder ourselves to make the assertion pass.
                 m.presented_frame()
+                pre_snap = m.get(0xE602B8)
+                if pre_snap != 13:
+                    raise AssertionError(f'hand-back snapped before human execution control: {pre_snap}')
                 body = m.call('mode_unit_present')
                 if not body or m.get(m.get(body + 12)) != 0 or m.get(0xBE4D60) != body:
                     raise AssertionError(f'human execution controller not restored: body={body:#x}, '
@@ -95,7 +98,8 @@ def policy_probe(payload, position, policy, *, drives=5):
                 if m.get(m.state + 2708) or m.get(m.state + 2716):
                     raise AssertionError('hand-back retained Fast forward')
                 rows.append(dict(drive=drive, menu=human, controller_port=0,
-                                 selected=True, position=position, policy=policy))
+                                 selected=True, position=position, policy=policy,
+                                 pre_snap_state=pre_snap))
             else:
                 m.presented_frame()
             snap_input(m)
