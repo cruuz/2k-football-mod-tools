@@ -1782,7 +1782,7 @@ def fit_slot_image(
             try:
                 chosen_mode = fit_mode_from_label(str(choice))
             except ValidationError as exc:
-                QMessageBox.information(parent, "Invalid fit mode", str(exc))
+                QMessageBox.information(parent, "Invalid fit mode", failure_body(exc))
                 return None
         else:
             chosen_mode = "contain"
@@ -4884,7 +4884,7 @@ class ApfTeamLogoPanel(QFrame):
             QMessageBox.information(
                 self,
                 "Could not stage helmet crest",
-                str(exc),
+                failure_body(exc),
             )
             return False
         self._staged_png = Path(modification.replacement_path)
@@ -5516,7 +5516,7 @@ class ApfTeamLogoPanel(QFrame):
             return None
         except OSError as exc:
             QMessageBox.information(
-                self, "Could not stage the detail layer", str(exc)
+                self, "Could not stage the detail layer", failure_body(exc)
             )
             return None
         return staged
@@ -5574,7 +5574,7 @@ class ApfTeamLogoPanel(QFrame):
         try:
             pixels = fit_image(Path(str(source)), self._WIDTH, self._HEIGHT).rgba
         except ValidationError as exc:
-            QMessageBox.information(self, "Could not open the crest", str(exc))
+            QMessageBox.information(self, "Could not open the crest", failure_body(exc))
             return
 
         edited = edit_texture(
@@ -5714,7 +5714,7 @@ class ApfTeamLogoPanel(QFrame):
                 )
             except Exception as exc:
                 QMessageBox.information(
-                    self, "Could not preserve region-mask source", str(exc)
+                    self, "Could not preserve region-mask source", failure_body(exc)
                 )
                 return False
         try:
@@ -5725,7 +5725,7 @@ class ApfTeamLogoPanel(QFrame):
             QMessageBox.information(
                 self,
                 "Could not place helmet logo",
-                str(exc),
+                failure_body(exc),
             )
             return False
         try:
@@ -5789,7 +5789,7 @@ class ApfTeamLogoPanel(QFrame):
         except (ValidationError, OSError) as exc:
             if private_source is not None:
                 private_source.unlink(missing_ok=True)
-            QMessageBox.information(self, "Could not read normal logo", str(exc))
+            QMessageBox.information(self, "Could not read normal logo", failure_body(exc))
             return False
         assert private_source is not None
         conversion = convert_normal_logo(normalized.rgba, parent=self)
@@ -5953,7 +5953,7 @@ class ApfTeamLogoPanel(QFrame):
                 QMessageBox.information(
                     self,
                     "Could not preserve full-resolution source",
-                    str(exc),
+                    failure_body(exc),
                 )
                 return False
             if self._commit_design(Path(path)):
@@ -6009,7 +6009,7 @@ class ApfTeamLogoPanel(QFrame):
             QMessageBox.information(
                 self,
                 "Could not preserve full-resolution source",
-                str(exc),
+                failure_body(exc),
             )
             return False
         if not self._commit_design(staged):
@@ -11787,7 +11787,7 @@ class ExternalXma1EncoderDialog(QDialog):
         try:
             selected_path = self._canonical_tool_path(selected)
         except ValueError as exc:
-            QMessageBox.information(self, "Encoder path is unavailable", str(exc))
+            QMessageBox.information(self, "Encoder path is unavailable", failure_body(exc))
             return
         self.encoder_path.setText(str(selected_path))
         windows_encoder = selected_path.suffix.casefold() == ".exe"
@@ -11815,7 +11815,7 @@ class ExternalXma1EncoderDialog(QDialog):
         try:
             selected_path = self._canonical_tool_path(selected)
         except ValueError as exc:
-            QMessageBox.information(self, "Wine path is unavailable", str(exc))
+            QMessageBox.information(self, "Wine path is unavailable", failure_body(exc))
             return
         self.wine_path.setText(str(selected_path))
 
@@ -12286,7 +12286,7 @@ class Xma1EncoderSetupWizard(QDialog):
         try:
             selected_path = self._canonical_tool_path(selected)
         except ValueError as exc:
-            QMessageBox.information(self, "Encoder path is unavailable", str(exc))
+            QMessageBox.information(self, "Encoder path is unavailable", failure_body(exc))
             return
         self.encoder_path.setText(str(selected_path))
         if selected_path.suffix.casefold() == ".exe":
@@ -12314,7 +12314,7 @@ class Xma1EncoderSetupWizard(QDialog):
         try:
             selected_path = self._canonical_tool_path(selected)
         except ValueError as exc:
-            QMessageBox.information(self, "Wine path is unavailable", str(exc))
+            QMessageBox.information(self, "Wine path is unavailable", failure_body(exc))
             return
         self.wine_path.setText(str(selected_path))
 
@@ -12411,7 +12411,7 @@ class Xma1EncoderSetupWizard(QDialog):
         try:
             executable = self._canonical_tool_path(encoder_value)
         except ValueError as exc:
-            QMessageBox.information(self, "Encoder path is unavailable", str(exc))
+            QMessageBox.information(self, "Encoder path is unavailable", failure_body(exc))
             return None
         wine_executable: Path | None = None
         if self._is_windows_encoder(encoder_value) and self.use_wine_checkbox.isChecked():
@@ -12421,7 +12421,7 @@ class Xma1EncoderSetupWizard(QDialog):
             try:
                 wine_executable = self._canonical_tool_path(wine_value)
             except ValueError as exc:
-                QMessageBox.information(self, "Wine path is unavailable", str(exc))
+                QMessageBox.information(self, "Wine path is unavailable", failure_body(exc))
                 return None
         return executable, self._current_arguments(), wine_executable
 
@@ -17513,7 +17513,7 @@ class InspectorBrowser(QFrame):
             executable, arguments = _audio_player_command(path)
         except RuntimeError as exc:
             self._update_audio_preview_action()
-            QMessageBox.information(self, "Audio player unavailable", str(exc))
+            QMessageBox.information(self, "Audio player unavailable", failure_body(exc))
             return
         self._stopping_audio = False
         self._playing_audio_request = request
