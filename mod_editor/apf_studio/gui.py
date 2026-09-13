@@ -185,7 +185,7 @@ from .project import (
     WorkspaceStateStore,
     project_target_identity,
 )
-from .page_layout import WorkspaceTabs as QTabWidget
+from .page_layout import WorkspaceTabs as QTabWidget, FlowLayout
 from . import apf_theme
 from .apf_theme import CompactLabel as QLabel
 from .product_findings import gameplay_snapshot, presentation_snapshot
@@ -8281,7 +8281,7 @@ class StadiumStudioPage(QWidget):
         scenes_box = QVBoxLayout(scenes_panel)
         scenes_box.setContentsMargins(14, 13, 14, 13)
         scenes_box.setSpacing(8)
-        scenes_heading = QHBoxLayout()
+        scenes_heading = QVBoxLayout()
         scenes_title = QLabel("Stadium scenes")
         scenes_title.setObjectName("panelTitle")
         self.scene_count = QLabel("Load a game")
@@ -8316,11 +8316,12 @@ class StadiumStudioPage(QWidget):
         view_box = QVBoxLayout(view_panel)
         view_box.setContentsMargins(14, 13, 14, 13)
         view_box.setSpacing(8)
-        view_heading = QHBoxLayout()
+        view_heading = QVBoxLayout()
         view_titles = QVBoxLayout()
         view_titles.setSpacing(1)
-        self.scene_title = QLabel("Choose a stadium scene")
+        self.scene_title = QLabel("Choose a scene")
         self.scene_title.setObjectName("panelTitle")
+        self.scene_title.setWordWrap(True)
         self.scene_metadata = QLabel(
             "Drag to orbit • Shift/middle-drag to pan • wheel to zoom • click a surface"
         )
@@ -8366,12 +8367,13 @@ class StadiumStudioPage(QWidget):
         self.mesh_target.addItem("Editable meshes — load a stadium scene", None)
         self.mesh_target.currentIndexChanged.connect(self._mesh_target_chosen)
         self._refresh_mesh_action_buttons()
-        view_heading.addLayout(view_titles, 1)
+        view_heading.addLayout(view_titles)
         view_heading.addWidget(self.mesh_target)
-        view_heading.addWidget(self.reset_view_button)
-        view_heading.addWidget(self.export_scene_button)
-        view_heading.addWidget(self.export_model_button)
-        view_heading.addWidget(self.import_model_button)
+        view_actions = FlowLayout()
+        for button in (self.reset_view_button, self.export_scene_button,
+                       self.export_model_button, self.import_model_button):
+            view_actions.addWidget(button)
+        view_heading.addLayout(view_actions)
         self.viewport = StadiumViewport()
         self.viewport.setMinimumSize(480, 330)
         self.surface_identity = QLabel("No surface selected")
@@ -8405,9 +8407,10 @@ class StadiumStudioPage(QWidget):
         package_box = QVBoxLayout(package_panel)
         package_box.setContentsMargins(14, 13, 14, 13)
         package_box.setSpacing(8)
-        package_heading = QHBoxLayout()
-        self.package_panel_title = QLabel("Owning outer package")
+        package_heading = QVBoxLayout()
+        self.package_panel_title = QLabel("Related package")
         self.package_panel_title.setObjectName("panelTitle")
+        self.package_panel_title.setWordWrap(True)
         self.package_count = QLabel("0 records")
         self.package_count.setObjectName("countPill")
         package_heading.addWidget(self.package_panel_title)
@@ -8435,7 +8438,7 @@ class StadiumStudioPage(QWidget):
         )
         self.package_detail.setObjectName("findingText")
         self.package_detail.setWordWrap(True)
-        package_actions = QHBoxLayout()
+        package_actions = FlowLayout()
         package_actions.setSpacing(7)
         self.export_package_button = QPushButton("Export…")
         self.export_package_button.setObjectName("secondaryButton")
@@ -8755,7 +8758,7 @@ class StadiumStudioPage(QWidget):
         self._model = None
         self._selected_model_target = None
         self.viewport.set_model(None)
-        self.scene_title.setText("Choose a stadium scene")
+        self.scene_title.setText("Choose a scene")
         self.scene_metadata.setText(message)
         self.surface_identity.setText("No surface selected")
         tip = (
@@ -8770,7 +8773,7 @@ class StadiumStudioPage(QWidget):
         self._selected_model_target = None
         self._populate_mesh_targets(None)
         self._refresh_mesh_action_buttons()
-        self.package_panel_title.setText("Owning outer package")
+        self.package_panel_title.setText("Related package")
         self._populate_package(())
 
     def _populate_mesh_targets(self, scene: ApfStadiumScene | None) -> None:
