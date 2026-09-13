@@ -113,6 +113,8 @@ def validate_request(request):
         "tendency": {"team", "value"}, "master_row": {"category", "row"},
         "master_roles": {"category", "roles"}, "audibles": {"book"},
         "clones": {"side", "assignments"},
+        "scheme": {"team", "book", "scheme", "assignments"},
+        "never_call": {"book", "formation", "never", "restore_masks"},
     }
     kind = request.get("kind")
     if kind not in fields or set(request) != fields[kind] | {"kind"}:
@@ -149,6 +151,22 @@ def validate_request(request):
                     raise ValidationError("Own-book plan names changed")
         if len({r["team_index"] for r in rows}) != len(rows) or len({r["clone_name"] for r in rows}) != len(rows):
             raise ValidationError("Own-book plan repeats a team or clone")
+    if kind == "never_call":
+        if type(request["never"]) is not bool or not isinstance(request["restore_masks"], list) or not 1 <= len(request["restore_masks"]) <= 176:
+            raise ValidationError("Review this formation's original memberships before changing Never call")
+        for mask in request["restore_masks"]:
+            _integer(mask, 1, (1 << 28)-1)
+    if kind == "scheme":
+        _integer(request["team"], 0, 23)
+        from mod_editor.core.apf2k8_offensive_schemes import get_scheme
+        get_scheme(request["scheme"])
+        rows = request["assignments"]
+        if not isinstance(rows, list) or len(rows) > 1:
+            raise ValidationError("A scheme applies to one team's offensive book")
+        if rows:
+            validate_request({"kind": "clones", "side": "offense", "assignments": rows})
+            if rows[0]["team_index"] != request["team"] or rows[0]["donor_name"] != request["book"]:
+                raise ValidationError("The scheme's own-book plan belongs to another team or book")
     return request
 
 
@@ -260,9 +278,29 @@ class PlayCallingService:
         return next((r for r in self.backend.splb.parse_book(book, 0).records
                      if r.populated and r.formation_index == formation), None)
 
+    def scheme_plan(self, session, team, scheme_id):
+        context = self.context(session, team, "offense")
+        assignments = (self.plan(session, "offense", team, context["book"])["assignments"]
+                       if context["sharing"] else [])
+        return validate_request({"kind": "scheme", "team": team, "book": context["book"],
+                                 "scheme": scheme_id, "assignments": assignments})
+
+    def scheme_csv(self, session, team):
+        from mod_editor.core.apf2k8_offensive_schemes import spreadsheet
+        context = self.context(session, team, "offense")
+        selected = next((e["request"]["scheme"] for e in reversed(context["events"])
+                         if e["request"]["kind"] == "scheme" and e["request"]["team"] == team), None)
+        state = context["state"]
+        return spreadsheet(state.books[context["book"]], state.master, context["tendency"],
+                           team_name=context["team"]["team_name"], scheme_id=selected)
+
     def facts(self, state, request):
         b = self.backend
         kind = request["kind"]
+        if kind == "scheme":
+            team = next(t for t in state.teams if t["team_index"] == request["team"])
+            return {"book": team["offense"], "book_sha256": digest(state.books[team["offense"]]),
+                    "rost_sha256": digest(state.rost)}
         if kind == "clones":
             return [{"team_index": r["team_index"], "book": next(t[request["side"]] for t in state.teams
                      if t["team_index"] == r["team_index"])} for r in request["assignments"]]
@@ -274,6 +312,9 @@ class PlayCallingService:
         if request["book"] not in state.books:
             raise ValidationError("This named book is missing; select a team and review its book again")
         book = state.books[request["book"]]
+        if kind == "never_call":
+            from mod_editor.core.apf2k8_formation_calling import membership_masks
+            return list(membership_masks(book, request["formation"]))
         if kind == "ratings":
             return list(b.splb.formation_ratings(book, request["formation"]))
         if kind == "play_rating":
@@ -293,7 +334,22 @@ class PlayCallingService:
         b, kind = self.backend, request["kind"]
         before = self.facts(state, request)
         coverage, retired, warning = {}, [], ""
-        if kind == "clones":
+        scheme_receipt = None
+        if kind == "scheme":
+            from mod_editor.core.apf2k8_offensive_schemes import apply_scheme
+            team = next(t for t in state.teams if t["team_index"] == request["team"])
+            if team["offense"] != request["book"]:
+                raise ValidationError("The team's book changed; review the scheme again")
+            if request["assignments"]:
+                state, _ = self.apply(state, {"kind": "clones", "side": "offense",
+                                             "assignments": request["assignments"]}, index)
+            team = next(t for t in state.teams if t["team_index"] == request["team"])
+            name = team["offense"]
+            if any(t["team_index"] != request["team"] and t["offense"] == name for t in state.teams):
+                raise ValidationError("Give this team its own book before applying a scheme")
+            state.books[name], state.rost, scheme_receipt = apply_scheme(
+                state.books[name], state.master, state.rost, request["team"], request["scheme"])
+        elif kind == "clones":
             side = request["side"]
             available = {r.team_index: assignment_row(r) for r in b.clone.own_book_plan(index, state.rost, side)}
             for row in request["assignments"]:
@@ -341,6 +397,9 @@ class PlayCallingService:
                     raise ValidationError("Automatic run/pass audibles need an offensive book")
                 parsed = replace(b.splb.parse_book(book, 0), name="USER-o")
                 book = b.audibles.plan_audibles(parsed, b.audibles.play_catalog(state.master)).replacement
+            elif kind == "never_call":
+                from mod_editor.core.apf2k8_formation_calling import set_never_call
+                book = set_never_call(book, request["formation"], request["never"], tuple(request["restore_masks"]))
             state.books[name] = book
             if kind in {"remove", "retire", "categories"}:
                 coverage = {str(k): list(v) for k, v in b.splb.row_coverage(book, state.master).items()}
@@ -350,8 +409,11 @@ class PlayCallingService:
                     warning += ("P3 classifies its callers as non-CPU; review the lineup risk before staging."
                                 if b.lineup_callers == "non_cpu" else
                                 "Cannot safely retire: CPU reachability is present or still unclassified; keep a nearby personnel category.")
+        after = self.facts(state, request)
+        if scheme_receipt is not None:
+            after["scheme_receipt"] = scheme_receipt
         return state, {"request": json.loads(json_bytes(request)), "before": before,
-                       "after": self.facts(state, request), "coverage": coverage,
+                       "after": after, "coverage": coverage,
                        "retired": retired, "warning": warning}
 
     def review(self, session, request):
@@ -412,6 +474,12 @@ class PlayCallingService:
                                **self.facts(state, {"kind": "categories", "book": name, "formation": r.formation_index}),
                                "plays": [(e.play_index, play_names.get(e.play_index, f"Play {e.play_index}"),
                                           self.backend.splb.play_rating(book, r.formation_index, e.play_index)) for e in r.entries]})
+            masks = [int.from_bytes(other.trailer[4:], 'big') for other in parsed.records
+                     if other.populated and other.formation_index == r.formation_index]
+            saved = next((e["request"]["restore_masks"] for e in reversed(self.events(session))
+                          if e["request"]["kind"] == "never_call" and e["request"]["book"] == name
+                          and e["request"]["formation"] == r.formation_index and e["request"]["never"]), None)
+            formations[-1].update(never_call=not any(masks), restore_masks=masks if all(masks) else saved)
         return {"state": state, "snapshot": self.snapshot(session), "team": selected, "book": name,
                 "sharing": [t["team_name"] for t in state.teams if t["team_index"] != selected["team_index"] and t[side] == name],
                 "donors": sorted(n for n in state.books if state.sides.get(n) == side), "formations": formations,
@@ -447,11 +515,18 @@ def main(argv=None):
     parser.add_argument("--game-folder", type=Path, required=True)
     parser.add_argument("--project", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--spreadsheet-team", type=int, choices=range(24), metavar="0..23",
+                        help="Export this team's current staged calls as CSV instead of building a game copy")
     args = parser.parse_args(argv)
     facade = ApfStudioFacade()
     try:
         facade.load_source(args.game_folder)
         facade.load_project(args.project)
+        if args.spreadsheet_team is not None:
+            from .launcher import _atomic_bytes
+            _atomic_bytes(args.output, facade.playcalling_scheme_csv(args.spreadsheet_team))
+            print("Exported play call spreadsheet", args.output)
+            return 0
         receipt = facade.build(args.output)
         print("Built", receipt.output_game)
         if receipt.teams_now_own_books:

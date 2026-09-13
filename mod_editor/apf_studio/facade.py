@@ -194,6 +194,14 @@ class ApfStudioFacade:
         with self._session_lock:
             return self._playcalling.review(self.require_session(), request)
 
+    def playcalling_scheme_plan(self, team, scheme_id, progress: Progress = _noop):
+        with self._session_lock:
+            return self._playcalling.scheme_plan(self.require_session(), team, scheme_id)
+
+    def playcalling_scheme_csv(self, team, progress: Progress = _noop):
+        with self._session_lock:
+            return self._playcalling.scheme_csv(self.require_session(), team)
+
     def stage_playcalling(self, review, progress: Progress = _noop):
         with self._session_lock:
             result = self._playcalling.stage(self.require_session(), review)
