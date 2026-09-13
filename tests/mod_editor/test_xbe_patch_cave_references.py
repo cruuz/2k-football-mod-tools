@@ -43,6 +43,19 @@ def sections(xbe: bytes):
 
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
 class CaveReferenceTests(unittest.TestCase):
+    def test_beta69_rules_have_exclusive_live_hooks_and_owned_children(self):
+        from tests.nfl2k5_allocator_stack import coin_defer, decided_clock, cpu_scrambles
+        from mod_editor.core import nfl2k5_rules_patch as rules
+        for module in (coin_defer, decided_clock, cpu_scrambles):
+            self.assertEqual(module.verify(self.patched)['status'], 'applied')
+            places = rules.allocations(self.patched, module)
+            for name, va, before, _ in module.sites(places):
+                self.assertTrue(self.manifest.overlaps(va, va+len(before)), name)
+                self.assertEqual(self.manifest.overlaps(va, va+len(before), exclude_owner=module.OWNER), [], name)
+            for row in places.values():
+                self.assertTrue(any(r.detail.startswith(module.OWNER+':')
+                                    for r in self.manifest.overlaps(row['va'], row['va']+row['size'])))
+
     def test_accelerated_clock_hooks_and_owned_children_are_reserved(self):
         from mod_editor.core import nfl2k5_accelerated_clock as patch
         from mod_editor.core.nfl2k5_cave_oracle import XbeImage
