@@ -26,7 +26,8 @@ class SimulatedWindowsBuildTests(unittest.TestCase):
     def test_everything_experimental_has_identical_posix_and_nonposix_writers(self):
         retail=retail_xbe()
         plan=replace(plan_for('everything'),coin_defer=True,decided_clock=True,
-            decided_clock_margin=25,decided_clock_seconds=90,cpu_scrambles='modern',weather_haze=True)
+            decided_clock_margin=25,decided_clock_seconds=90,cpu_scrambles='modern',weather_haze=True,
+            kickoff_relocated=True)
         def build_xbe():
             payload,receipt=compose(retail,plan)
             # The fixture predates this final data-only pass. Execute the real
@@ -51,6 +52,14 @@ class SimulatedWindowsBuildTests(unittest.TestCase):
         receipt.update(xbe_sha256=hashlib.sha256(simulated).hexdigest(),
             allocator_layout=tt.xbe_space_patch.layout(simulated),
             runtime_witnessed=False,full_disc_built=False,
+            exclusions={
+                'franchise_2026_rules/senior_bowl': 'native runtime unavailable; public validation refuses',
+                'kick_power': 'modern dynamic kickoff requires full kick_rules instead',
+                'accel_ramp': 'momentum replaces this legacy implementation',
+                'flatter_deep_ball': 'mutually exclusive with selected distance/realistic flight',
+                'guardian_cap/static_scorebug': 'runtime Guardian and scorebug variants selected',
+                'weather_plan': 'v17 climate cannot compose with selected v18 reserves/created-team growth; compact-disc suite covers all new options with v17',
+                'archive/art/audio imports': 'external inputs and resource transport outside this XBE fixture'},
             scope='BuildPlan executable passes and native PLAY intent compilation; archive/resource transport excluded')
         if destination:=os.environ.get('NFL2K5_A2B_SIMWIN_TRACE'):
             Path(destination).write_bytes((json.dumps(receipt,indent=2)+'\n').encode())
