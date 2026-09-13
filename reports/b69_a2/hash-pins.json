@@ -1,0 +1,56 @@
+[
+  {
+    "file": "mod_editor/core/providers.py",
+    "pin": "mod_editor/core/build_feedback.py",
+    "before": "56c078f5cecf5a2d37349b15b964a6f5350341db3f55f6808a60fc3b205abf76",
+    "after": "2bcd6e65809444c593f66edac20a9e0d3fff43bf969da2454b8d088571e71535"
+  },
+  {
+    "file": "mod_editor/core/providers.py",
+    "pin": "mod_editor/core/mod_build.py",
+    "before": "f80a5fa664d9a7d3328172bfb069f667b5b464cf621ba8976bc59dff0ca93815",
+    "after": "d9a8f64d252044acd777456d5747a74e6b8d35ffc30ca80affee771f86150102"
+  },
+  {
+    "file": "mod_editor/core/providers.py",
+    "pin": "mod_editor/core/nfl2k5_build_service.py",
+    "before": "9cc6af709a961ee731a90f329f1012b13d40ca16bbee7b21429f1fb2947213b7",
+    "after": "8185c350ebd2ebb97160b1709f2f7f960c57c5ea9344bf1b57e4a6c2c662eb50"
+  },
+  {
+    "file": "mod_editor/core/providers.py",
+    "pin": "mod_editor/core/nfl2k5_espn25_rosters.py",
+    "before": "3cfe17df38d5d6d42bf31972848644ed32b7a0462f979b0380ad5c69e384c036",
+    "after": "f5378d1d490d1e1432716d1879f14aeadc2f4f0878e3658a7761682393d5d82c"
+  },
+  {
+    "file": "mod_editor/core/providers.py",
+    "pin": "mod_editor/core/nfl2k5_roster_records.py",
+    "before": "dcbbf5da41d8cae027ec89669a87f70703069fba3753e9ce8848b0e1029b9340",
+    "after": "60754ad5765832e9b9856c59e4835aa8d10f94fc4daa941c59d243040d459137"
+  },
+  {
+    "file": "mod_editor/core/providers.py",
+    "pin": "mod_editor/studio/session.py",
+    "before": "665ab4888cfdf5999eb7aeeb50ef870bfbed759c7d42f945a9fe054404779715",
+    "after": "a2d52608660eae69c9cf384f2f42248daf73397a49b80ca1f622f24e1082abf0"
+  },
+  {
+    "file": "packaging/check_2k5_mod_studio_runtime.py",
+    "pin": "mod_editor/gui/audio_panel_qt.py",
+    "before": "64ac47e2f3d28c374d4b0b8d44e5eba16b69ce5d70bbbeb6288ddadeb2be10ed",
+    "after": "dd3529836c4ebdc5ddf344de19edca38191f918ca341248953cb289b56c5e42e"
+  },
+  {
+    "file": "packaging/check_2k5_mod_studio_runtime.py",
+    "pin": "mod_editor/gui/studio_qt.py",
+    "before": "3b81d497bd50523562abae7f66b56be120ac8de959be4158562c6e3b654e4a4c",
+    "after": "919f494c9be1fa8e0cefa1f552b4950b1bb3d5a34d03f3a156ee6d316afe0393"
+  },
+  {
+    "file": "packaging/check_2k5_mod_studio_runtime.py",
+    "pin": "mod_editor/studio/session.py",
+    "before": "665ab4888cfdf5999eb7aeeb50ef870bfbed759c7d42f945a9fe054404779715",
+    "after": "a2d52608660eae69c9cf384f2f42248daf73397a49b80ca1f622f24e1082abf0"
+  }
+]

@@ -1,0 +1,842 @@
+[
+  {
+    "path": "tests/mod_editor/test_2k5_bounded_vclz_palette.py",
+    "command": "python3 tests/mod_editor/test_2k5_bounded_vclz_palette.py",
+    "returncode": 0,
+    "seconds": 5.371,
+    "result": "OK (skipped=2)",
+    "final_line": "OK (skipped=2)",
+    "summary": [
+      "Ran 7 tests in 5.236s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_2k5_bounded_vclz_palette.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_2k5_build_is_explainable.py",
+    "command": "python3 tests/mod_editor/test_2k5_build_is_explainable.py",
+    "returncode": 0,
+    "seconds": 1.314,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 16 tests in 0.026s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_2k5_build_is_explainable.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_2k5_bump_retail_probe.py",
+    "command": "python3 tests/mod_editor/test_2k5_bump_retail_probe.py",
+    "returncode": 0,
+    "seconds": 0.381,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 7 tests in 0.007s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_2k5_bump_retail_probe.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_2k5_check_my_images.py",
+    "command": "python3 tests/mod_editor/test_2k5_check_my_images.py",
+    "returncode": 0,
+    "seconds": 29.79,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 21 tests in 23.001s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_2k5_check_my_images.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_2k5_import_offers_resize.py",
+    "command": "python3 tests/mod_editor/test_2k5_import_offers_resize.py",
+    "returncode": 0,
+    "seconds": 26.713,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 11 tests in 24.310s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_2k5_import_offers_resize.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_2k5_stale_original_cache.py",
+    "command": "python3 tests/mod_editor/test_2k5_stale_original_cache.py",
+    "returncode": 0,
+    "seconds": 0.302,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 10 tests in 0.025s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_2k5_stale_original_cache.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_2k5_uniform_equipment_export.py",
+    "command": "python3 tests/mod_editor/test_2k5_uniform_equipment_export.py",
+    "returncode": 0,
+    "seconds": 39.953,
+    "result": "OK (skipped=2)",
+    "final_line": "OK (skipped=2)",
+    "summary": [
+      "Ran 16 tests in 37.903s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_2k5_uniform_equipment_export.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_2k5_vclz_bounded_importers.py",
+    "command": "python3 tests/mod_editor/test_2k5_vclz_bounded_importers.py",
+    "returncode": 0,
+    "seconds": 1.287,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 16 tests in 0.740s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_2k5_vclz_bounded_importers.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_all_textures_workspace.py",
+    "command": "python3 tests/mod_editor/test_all_textures_workspace.py",
+    "returncode": 1,
+    "seconds": 14.088,
+    "result": "FAILED (errors=2)",
+    "final_line": "FAILED (errors=2)",
+    "summary": [
+      "Ran 23 tests in 13.418s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_all_textures_workspace.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_animations_panel_qt.py",
+    "command": "python3 tests/mod_editor/test_animations_panel_qt.py",
+    "returncode": 0,
+    "seconds": 1.219,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 12 tests in 0.927s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_animations_panel_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf2k8_playbook_route_writer.py",
+    "command": "python3 tests/mod_editor/test_apf2k8_playbook_route_writer.py",
+    "returncode": 0,
+    "seconds": 0.756,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 12 tests in 0.281s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf2k8_playbook_route_writer.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_all_crest_slots.py",
+    "command": "python3 tests/mod_editor/test_apf_all_crest_slots.py",
+    "returncode": 0,
+    "seconds": 1.226,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 15 tests in 1.007s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_all_crest_slots.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_annotation_facade.py",
+    "command": "python3 tests/mod_editor/test_apf_audio_annotation_facade.py",
+    "returncode": 0,
+    "seconds": 0.59,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 4 tests in 0.015s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_audio_annotation_facade.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_annotations.py",
+    "command": "python3 tests/mod_editor/test_apf_audio_annotations.py",
+    "returncode": 0,
+    "seconds": 0.488,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 11 tests in 0.016s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_audio_annotations.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_batch_facade.py",
+    "command": "python3 tests/mod_editor/test_apf_audio_batch_facade.py",
+    "returncode": 0,
+    "seconds": 0.587,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 3 tests in 0.011s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_audio_batch_facade.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_batch_gui.py",
+    "command": "python3 tests/mod_editor/test_apf_audio_batch_gui.py",
+    "returncode": 0,
+    "seconds": 1.38,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 7 tests in 0.513s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_audio_batch_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_decode_cancellation.py",
+    "command": "python3 tests/mod_editor/test_apf_audio_decode_cancellation.py",
+    "returncode": 0,
+    "seconds": 1.66,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 7 tests in 1.421s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_audio_decode_cancellation.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_drop_zone_gui.py",
+    "command": "python3 tests/mod_editor/test_apf_audio_drop_zone_gui.py",
+    "returncode": 0,
+    "seconds": 1.143,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 9 tests in 0.252s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_audio_drop_zone_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_encoder_gui.py",
+    "command": "python3 tests/mod_editor/test_apf_audio_encoder_gui.py",
+    "returncode": 0,
+    "seconds": 1.221,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 8 tests in 0.258s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_audio_encoder_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_encoding.py",
+    "command": "python3 tests/mod_editor/test_apf_audio_encoding.py",
+    "returncode": 0,
+    "seconds": 17.285,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 21 tests in 17.023s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_audio_encoding.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_import_idle_barrier.py",
+    "command": "python3 tests/mod_editor/test_apf_audio_import_idle_barrier.py",
+    "returncode": 0,
+    "seconds": 6.309,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 1 test in 5.140s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_audio_import_idle_barrier.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_pcm_product_backend.py",
+    "command": "python3 tests/mod_editor/test_apf_audio_pcm_product_backend.py",
+    "returncode": 0,
+    "seconds": 1.897,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 11 tests in 1.241s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_audio_pcm_product_backend.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_replacement_pack.py",
+    "command": "python3 tests/mod_editor/test_apf_audio_replacement_pack.py",
+    "returncode": 0,
+    "seconds": 1.057,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 57 tests in 0.423s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_audio_replacement_pack.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_waveform_qt.py",
+    "command": "python3 tests/mod_editor/test_apf_audio_waveform_qt.py",
+    "returncode": 0,
+    "seconds": 1.271,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 9 tests in 0.314s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_audio_waveform_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audo_product_backend.py",
+    "command": "python3 tests/mod_editor/test_apf_audo_product_backend.py",
+    "returncode": 0,
+    "seconds": 0.6,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 3 tests in 0.030s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_audo_product_backend.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audo_project.py",
+    "command": "python3 tests/mod_editor/test_apf_audo_project.py",
+    "returncode": 0,
+    "seconds": 0.346,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 3 tests in 0.007s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_audo_project.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_ausb_product_backend.py",
+    "command": "python3 tests/mod_editor/test_apf_ausb_product_backend.py",
+    "returncode": 0,
+    "seconds": 0.631,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 7 tests in 0.061s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_ausb_product_backend.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b661_book_content.py",
+    "command": "python3 tests/mod_editor/test_apf_b661_book_content.py",
+    "returncode": 0,
+    "seconds": 41.216,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 5 tests in 40.811s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_b661_book_content.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b67_books_qt.py",
+    "command": "python3 tests/mod_editor/test_apf_b67_books_qt.py",
+    "returncode": 0,
+    "seconds": 101.934,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 3 tests in 101.437s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_b67_books_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b67_xenia_patch.py",
+    "command": "python3 tests/mod_editor/test_apf_b67_xenia_patch.py",
+    "returncode": 0,
+    "seconds": 0.488,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 3 tests in 0.192s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_b67_xenia_patch.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_build.py",
+    "command": "python3 tests/mod_editor/test_apf_b69_build.py",
+    "returncode": 0,
+    "seconds": 44.496,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 1 test in 43.918s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_b69_build.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_control_audit.py",
+    "command": "python3 tests/mod_editor/test_apf_b69_control_audit.py",
+    "returncode": 0,
+    "seconds": 0.488,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 1 test in 0.296s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_b69_control_audit.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_editor_qt.py",
+    "command": "python3 tests/mod_editor/test_apf_b69_editor_qt.py",
+    "returncode": 0,
+    "seconds": 132.216,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 4 tests in 131.426s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_b69_editor_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_formation_calling.py",
+    "command": "python3 tests/mod_editor/test_apf_b69_formation_calling.py",
+    "returncode": 0,
+    "seconds": 0.836,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 2 tests in 0.158s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_b69_formation_calling.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_launch_patches.py",
+    "command": "python3 tests/mod_editor/test_apf_b69_launch_patches.py",
+    "returncode": 0,
+    "seconds": 0.674,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 5 tests in 0.333s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_b69_launch_patches.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_retirement_native.py",
+    "command": "python3 tests/mod_editor/test_apf_b69_retirement_native.py",
+    "returncode": 0,
+    "seconds": 115.631,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 3 tests in 115.290s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_b69_retirement_native.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_schemes.py",
+    "command": "python3 tests/mod_editor/test_apf_b69_schemes.py",
+    "returncode": 0,
+    "seconds": 63.829,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 5 tests in 63.216s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_b69_schemes.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_wiring.py",
+    "command": "python3 tests/mod_editor/test_apf_b69_wiring.py",
+    "returncode": 0,
+    "seconds": 0.7,
+    "result": "OK",
+    "final_line": "Exported play call spreadsheet /tmp/tmp_5lkk9q2/calls.csv",
+    "summary": [
+      "Ran 2 tests in 0.097s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_b69_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_browser_workspace_handoff.py",
+    "command": "python3 tests/mod_editor/test_apf_browser_workspace_handoff.py",
+    "returncode": 0,
+    "seconds": 1.155,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 20 tests in 0.717s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_browser_workspace_handoff.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_build_ausb_overlays.py",
+    "command": "python3 tests/mod_editor/test_apf_build_ausb_overlays.py",
+    "returncode": 0,
+    "seconds": 0.533,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 5 tests in 0.056s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_build_ausb_overlays.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_build_raw_span_overlays.py",
+    "command": "python3 tests/mod_editor/test_apf_build_raw_span_overlays.py",
+    "returncode": 0,
+    "seconds": 0.59,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 7 tests in 0.070s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_build_raw_span_overlays.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_capability_action_parity.py",
+    "command": "python3 tests/mod_editor/test_apf_capability_action_parity.py",
+    "returncode": 0,
+    "seconds": 0.725,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 11 tests in 0.194s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_capability_action_parity.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_cpu_audibles.py",
+    "command": "python3 tests/mod_editor/test_apf_cpu_audibles.py",
+    "returncode": 0,
+    "seconds": 5.495,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 18 tests in 5.187s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_cpu_audibles.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_crest_budget_import.py",
+    "command": "python3 tests/mod_editor/test_apf_crest_budget_import.py",
+    "returncode": 0,
+    "seconds": 1.451,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 12 tests in 0.738s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_crest_budget_import.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_cross_domain_audio_safety.py",
+    "command": "python3 tests/mod_editor/test_apf_cross_domain_audio_safety.py",
+    "returncode": 0,
+    "seconds": 0.527,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 4 tests in 0.001s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_cross_domain_audio_safety.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_cubemap_face0_preview.py",
+    "command": "python3 tests/mod_editor/test_apf_cubemap_face0_preview.py",
+    "returncode": 0,
+    "seconds": 31.335,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 4 tests in 31.042s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_cubemap_face0_preview.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_custom_team_appearance_gui.py",
+    "command": "python3 tests/mod_editor/test_apf_custom_team_appearance_gui.py",
+    "returncode": 0,
+    "seconds": 0.507,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 5 tests in 0.190s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_custom_team_appearance_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_custom_team_appearance_patch.py",
+    "command": "python3 tests/mod_editor/test_apf_custom_team_appearance_patch.py",
+    "returncode": 0,
+    "seconds": 9.83,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 8 tests in 9.544s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_custom_team_appearance_patch.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_digital_font.py",
+    "command": "python3 tests/mod_editor/test_apf_digital_font.py",
+    "returncode": 0,
+    "seconds": 0.406,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 14 tests in 0.230s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_digital_font.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_dxn_base_only_namefont.py",
+    "command": "python3 tests/mod_editor/test_apf_dxn_base_only_namefont.py",
+    "returncode": 0,
+    "seconds": 14.773,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 4 tests in 14.580s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_dxn_base_only_namefont.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_dxt5a_general_preview.py",
+    "command": "python3 tests/mod_editor/test_apf_dxt5a_general_preview.py",
+    "returncode": 0,
+    "seconds": 35.118,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 3 tests in 34.864s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_dxt5a_general_preview.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_endzone_dxt5a.py",
+    "command": "python3 tests/mod_editor/test_apf_endzone_dxt5a.py",
+    "returncode": 0,
+    "seconds": 59.795,
+    "result": "OK (skipped=1)",
+    "final_line": "OK (skipped=1)",
+    "summary": [
+      "Ran 10 tests in 59.419s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_endzone_dxt5a.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_external_audio_bank_bundle.py",
+    "command": "python3 tests/mod_editor/test_apf_external_audio_bank_bundle.py",
+    "returncode": 0,
+    "seconds": 0.62,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 8 tests in 0.023s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_external_audio_bank_bundle.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_field_art.py",
+    "command": "python3 tests/mod_editor/test_apf_field_art.py",
+    "returncode": 0,
+    "seconds": 0.329,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 6 tests in 0.021s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_field_art.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_field_art_gui.py",
+    "command": "python3 tests/mod_editor/test_apf_field_art_gui.py",
+    "returncode": 0,
+    "seconds": 1.589,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 17 tests in 0.594s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_field_art_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_field_art_stock_label.py",
+    "command": "python3 tests/mod_editor/test_apf_field_art_stock_label.py",
+    "returncode": 0,
+    "seconds": 0.889,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 13 tests in 0.007s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_field_art_stock_label.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_field_material_project.py",
+    "command": "python3 tests/mod_editor/test_apf_field_material_project.py",
+    "returncode": 0,
+    "seconds": 0.859,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 4 tests in 0.367s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_field_material_project.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_g12_surfaces.py",
+    "command": "python3 tests/mod_editor/test_apf_g12_surfaces.py",
+    "returncode": 0,
+    "seconds": 0.763,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 12 tests in 0.491s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_g12_surfaces.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_helmet_crest_design_product.py",
+    "command": "python3 tests/mod_editor/test_apf_helmet_crest_design_product.py",
+    "returncode": 0,
+    "seconds": 2.346,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 13 tests in 1.795s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_helmet_crest_design_product.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_helmet_logo_placement.py",
+    "command": "python3 tests/mod_editor/test_apf_helmet_logo_placement.py",
+    "returncode": 0,
+    "seconds": 9.14,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 15 tests in 8.198s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_helmet_logo_placement.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_import_offers_resize.py",
+    "command": "python3 tests/mod_editor/test_apf_import_offers_resize.py",
+    "returncode": 0,
+    "seconds": 0.814,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 5 tests in 0.653s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_import_offers_resize.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_logo_patch.py",
+    "command": "python3 tests/mod_editor/test_apf_logo_patch.py",
+    "returncode": 0,
+    "seconds": 129.927,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 18 tests in 129.714s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_logo_patch.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_logo_surface_ownership.py",
+    "command": "python3 tests/mod_editor/test_apf_logo_surface_ownership.py",
+    "returncode": 0,
+    "seconds": 96.301,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 4 tests in 96.199s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_logo_surface_ownership.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_model_export_gui.py",
+    "command": "python3 tests/mod_editor/test_apf_model_export_gui.py",
+    "returncode": 0,
+    "seconds": 4.263,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 5 tests in 3.821s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_model_export_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_package_map_writer.py",
+    "command": "python3 tests/mod_editor/test_apf_package_map_writer.py",
+    "returncode": 0,
+    "seconds": 2.204,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 40 tests in 1.877s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_package_map_writer.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_pass_fetch_export_qt.py",
+    "command": "python3 tests/mod_editor/test_apf_pass_fetch_export_qt.py",
+    "returncode": 0,
+    "seconds": 0.877,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 7 tests in 0.479s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_pass_fetch_export_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_play_designer_project.py",
+    "command": "python3 tests/mod_editor/test_apf_play_designer_project.py",
+    "returncode": 0,
+    "seconds": 0.794,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 5 tests in 0.231s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_play_designer_project.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_play_designer_qt.py",
+    "command": "python3 tests/mod_editor/test_apf_play_designer_qt.py",
+    "returncode": 0,
+    "seconds": 0.572,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 5 tests in 0.225s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_play_designer_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_playbook_route_gui.py",
+    "command": "python3 tests/mod_editor/test_apf_playbook_route_gui.py",
+    "returncode": 0,
+    "seconds": 0.43,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 7 tests in 0.087s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_apf_playbook_route_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_cave_oracle.py",
+    "command": "python3 tests/mod_editor/test_nfl2k5_cave_oracle.py",
+    "returncode": 0,
+    "seconds": 488.363,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 29 tests in 479.361s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/final/tests__mod_editor__test_nfl2k5_cave_oracle.py.log"
+  }
+]

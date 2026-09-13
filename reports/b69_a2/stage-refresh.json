@@ -1,0 +1,16 @@
+[
+  {
+    "product": "2k5",
+    "stage": "/tmp/astra-a2-stage-2k5",
+    "refreshed": [
+      "mod_editor/capabilities/registry.v1.json"
+    ]
+  },
+  {
+    "product": "apf",
+    "stage": "/tmp/astra-a2-stage-apf",
+    "refreshed": [
+      "mod_editor/capabilities/registry.v1.json"
+    ]
+  }
+]

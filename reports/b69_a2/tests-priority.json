@@ -1,0 +1,158 @@
+[
+  {
+    "path": "tests/mod_editor/test_apf_b69_wiring.py",
+    "command": "python3 tests/mod_editor/test_apf_b69_wiring.py",
+    "returncode": 0,
+    "seconds": 0.772,
+    "result": "OK",
+    "final_line": "Exported play call spreadsheet /tmp/tmp37rjxrop/calls.csv",
+    "summary": [
+      "Ran 2 tests in 0.116s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/priority/tests__mod_editor__test_apf_b69_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_studio_installer.py",
+    "command": "python3 tests/mod_editor/test_apf_studio_installer.py",
+    "returncode": 1,
+    "seconds": 0.532,
+    "result": "FAILED (errors=3)",
+    "final_line": "FAILED (errors=3)",
+    "summary": [
+      "Ran 16 tests in 0.248s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/priority/tests__mod_editor__test_apf_studio_installer.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b69_j1_build.py",
+    "command": "python3 tests/mod_editor/test_b69_j1_build.py",
+    "returncode": 0,
+    "seconds": 4.398,
+    "result": "OK",
+    "final_line": "Could not make the disc copy. While compiling project edits: Project edit index 0: Equipment / Shoes / team or uniform set SYNTHETIC / texture tset:0:8:0:shoes01: PNG must be exactly 32x32",
+    "summary": [
+      "Ran 5 tests in 4.043s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/priority/tests__mod_editor__test_b69_j1_build.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b69_j1_fit.py",
+    "command": "python3 tests/mod_editor/test_b69_j1_fit.py",
+    "returncode": 0,
+    "seconds": 8.941,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 5 tests in 8.599s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/priority/tests__mod_editor__test_b69_j1_fit.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_beta69_feedback_qt.py",
+    "command": "python3 tests/mod_editor/test_beta69_feedback_qt.py",
+    "returncode": 0,
+    "seconds": 1.871,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 5 tests in 0.584s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/priority/tests__mod_editor__test_beta69_feedback_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_equipment_import.py",
+    "command": "python3 tests/mod_editor/test_nfl2k5_equipment_import.py",
+    "returncode": 1,
+    "seconds": 8.009,
+    "result": "FAILED (errors=3)",
+    "final_line": "FAILED (errors=3)",
+    "summary": [
+      "Ran 13 tests in 7.191s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/priority/tests__mod_editor__test_nfl2k5_equipment_import.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_equipment_import_wiring.py",
+    "command": "python3 tests/mod_editor/test_nfl2k5_equipment_import_wiring.py",
+    "returncode": 0,
+    "seconds": 1.455,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 6 tests in 1.060s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/priority/tests__mod_editor__test_nfl2k5_equipment_import_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_equipment_scope_wiring.py",
+    "command": "python3 tests/mod_editor/test_nfl2k5_equipment_scope_wiring.py",
+    "returncode": 0,
+    "seconds": 3.822,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 3 tests in 3.589s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/priority/tests__mod_editor__test_nfl2k5_equipment_scope_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_phase1_packaging.py",
+    "command": "python3 tests/mod_editor/test_phase1_packaging.py",
+    "returncode": 0,
+    "seconds": 3.961,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 23 tests in 3.821s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/priority/tests__mod_editor__test_phase1_packaging.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_product_catalog.py",
+    "command": "python3 tests/mod_editor/test_product_catalog.py",
+    "returncode": 0,
+    "seconds": 0.29,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 9 tests in 0.086s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/priority/tests__mod_editor__test_product_catalog.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_provider_integrity.py",
+    "command": "python3 tests/mod_editor/test_provider_integrity.py",
+    "returncode": 0,
+    "seconds": 18.073,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 7 tests in 17.743s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/priority/tests__mod_editor__test_provider_integrity.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_providers.py",
+    "command": "python3 tests/mod_editor/test_providers.py",
+    "returncode": 0,
+    "seconds": 5.616,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 33 tests in 5.261s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/priority/tests__mod_editor__test_providers.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_validate_all_capabilities.py",
+    "command": "python3 tests/mod_editor/test_validate_all_capabilities.py",
+    "returncode": 1,
+    "seconds": 1.269,
+    "result": "FAILED (failures=1, skipped=1)",
+    "final_line": "FAILED (failures=1, skipped=1)",
+    "summary": [
+      "Ran 36 tests in 0.998s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/priority/tests__mod_editor__test_validate_all_capabilities.py.log"
+  }
+]

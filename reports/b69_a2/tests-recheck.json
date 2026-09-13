@@ -1,0 +1,134 @@
+[
+  {
+    "path": "tests/mod_editor/test_apf_b69_wiring.py",
+    "command": "python3 tests/mod_editor/test_apf_b69_wiring.py",
+    "returncode": 0,
+    "seconds": 0.503,
+    "result": "OK",
+    "final_line": "Exported play call spreadsheet /tmp/tmphyra3gg8/calls.csv",
+    "summary": [
+      "Ran 2 tests in 0.069s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/recheck/tests__mod_editor__test_apf_b69_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_capability_action_parity.py",
+    "command": "python3 tests/mod_editor/test_apf_capability_action_parity.py",
+    "returncode": 0,
+    "seconds": 1.002,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 11 tests in 0.134s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/recheck/tests__mod_editor__test_apf_capability_action_parity.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b68_a1_audit.py",
+    "command": "python3 tests/mod_editor/test_b68_a1_audit.py",
+    "returncode": 0,
+    "seconds": 9.006,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 10 tests in 8.323s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/recheck/tests__mod_editor__test_b68_a1_audit.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b69_a2_wiring.py",
+    "command": "python3 tests/mod_editor/test_b69_a2_wiring.py",
+    "returncode": 0,
+    "seconds": 1.003,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 4 tests in 0.142s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/recheck/tests__mod_editor__test_b69_a2_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_capability_registry_module_commands.py",
+    "command": "python3 tests/mod_editor/test_capability_registry_module_commands.py",
+    "returncode": 0,
+    "seconds": 0.502,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 3 tests in 0.001s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/recheck/tests__mod_editor__test_capability_registry_module_commands.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_read_option_diagnostic_manifest.py",
+    "command": "python3 tests/mod_editor/test_nfl2k5_read_option_diagnostic_manifest.py",
+    "returncode": 0,
+    "seconds": 0.502,
+    "result": "OK (skipped=1)",
+    "final_line": "OK (skipped=1)",
+    "summary": [
+      "Ran 0 tests in 0.254s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/recheck/tests__mod_editor__test_nfl2k5_read_option_diagnostic_manifest.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_product_catalog.py",
+    "command": "python3 tests/mod_editor/test_product_catalog.py",
+    "returncode": 0,
+    "seconds": 0.502,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 9 tests in 0.045s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/recheck/tests__mod_editor__test_product_catalog.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_provider_integrity.py",
+    "command": "python3 tests/mod_editor/test_provider_integrity.py",
+    "returncode": 0,
+    "seconds": 11.505,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 7 tests in 11.087s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/recheck/tests__mod_editor__test_provider_integrity.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_providers.py",
+    "command": "python3 tests/mod_editor/test_providers.py",
+    "returncode": 0,
+    "seconds": 4.502,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 33 tests in 4.203s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/recheck/tests__mod_editor__test_providers.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_task_delivery.py",
+    "command": "python3 tests/mod_editor/test_task_delivery.py",
+    "returncode": 0,
+    "seconds": 0.502,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 4 tests in 0.052s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/recheck/tests__mod_editor__test_task_delivery.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_uniform_bundle_cross_project.py",
+    "command": "python3 tests/mod_editor/test_uniform_bundle_cross_project.py",
+    "returncode": 0,
+    "seconds": 3.503,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 8 tests in 2.742s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/recheck/tests__mod_editor__test_uniform_bundle_cross_project.py.log"
+  }
+]

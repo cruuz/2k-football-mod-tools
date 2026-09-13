@@ -1,0 +1,86 @@
+[
+  {
+    "path": "tests/mod_editor/test_audio_annotations.py",
+    "command": "python3 tests/mod_editor/test_audio_annotations.py",
+    "returncode": 0,
+    "seconds": 1.506,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 16 tests in 0.380s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/fixes/tests__mod_editor__test_audio_annotations.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b68_a1_audit.py",
+    "command": "python3 tests/mod_editor/test_b68_a1_audit.py",
+    "returncode": 1,
+    "seconds": 11.519,
+    "result": "FAILED (failures=1)",
+    "final_line": "FAILED (failures=1)",
+    "summary": [
+      "Ran 10 tests in 10.728s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/fixes/tests__mod_editor__test_b68_a1_audit.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_beta66_d1_panels.py",
+    "command": "python3 tests/mod_editor/test_beta66_d1_panels.py",
+    "returncode": 0,
+    "seconds": 5.013,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 4 tests in 4.170s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/fixes/tests__mod_editor__test_beta66_d1_panels.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_beta69_doc_links.py",
+    "command": "python3 tests/mod_editor/test_beta69_doc_links.py",
+    "returncode": 0,
+    "seconds": 0.506,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 3 tests in 0.031s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/fixes/tests__mod_editor__test_beta69_doc_links.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_hotfix63_digit_budget.py",
+    "command": "python3 tests/mod_editor/test_hotfix63_digit_budget.py",
+    "returncode": 0,
+    "seconds": 38.539,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 14 tests in 34.459s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/fixes/tests__mod_editor__test_hotfix63_digit_budget.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_local_windows_ci.py",
+    "command": "python3 tests/mod_editor/test_local_windows_ci.py",
+    "returncode": 0,
+    "seconds": 3.509,
+    "result": "OK (skipped=1)",
+    "final_line": "OK (skipped=1)",
+    "summary": [
+      "Ran 51 tests in 2.790s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/fixes/tests__mod_editor__test_local_windows_ci.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_music_all_modes_wiring.py",
+    "command": "python3 tests/mod_editor/test_music_all_modes_wiring.py",
+    "returncode": 0,
+    "seconds": 4.006,
+    "result": "OK",
+    "final_line": "OK",
+    "summary": [
+      "Ran 4 tests in 2.373s"
+    ],
+    "log": "/tmp/astra-a2-tests-logs/fixes/tests__mod_editor__test_music_all_modes_wiring.py.log"
+  }
+]

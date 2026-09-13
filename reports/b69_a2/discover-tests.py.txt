@@ -1,0 +1,20 @@
+import json,re,subprocess
+from pathlib import Path
+root=Path.cwd();refs=['5d63ee07','refs/astra/b69-j6','refs/astra/b69-j9','refs/astra/b69-j7']
+changed=set()
+for ref in refs:
+ changed.update(subprocess.check_output(['git','diff','--name-only','922c009d...'+ref],text=True).splitlines())
+changed.update(subprocess.check_output(['git','diff','--name-only','7678df20'],text=True).splitlines())
+modules=sorted({Path(p).stem for p in changed if p.endswith('.py') and p.startswith(('mod_editor/','tools/','tests/'))})
+Path('/tmp/astra-a2-module-patterns.txt').write_text('\n'.join(r'\b'+m+r'\b' for m in modules)+'\n')
+# A deliberate superset: grep each changed module name anywhere in a test,
+# covering multiline imports, dynamic imports and string-based contract checks.
+hits=subprocess.check_output(['rg','-l','-f','/tmp/astra-a2-module-patterns.txt','tests','-g','test_*.py'],text=True).splitlines()
+selected={p for p in changed if p.startswith('tests/') and p.endswith('.py') and Path(p).name.startswith('test_')}
+selected.update(hits)
+extra=['test_nfl2k5_model_project','test_models_project_wiring','test_apf_stfs_roster_rehash','test_capability_registry_module_commands','test_product_catalog','test_phase1_packaging','test_provider_integrity','test_providers','test_2k5_build_is_explainable','test_beta66_d1_panels','test_beta69_studios_offscreen','test_apf_studio_installer','test_validate_all_capabilities','test_xbe_patch_memory_writes','test_xbe_patch_cave_references','test_nfl2k5_cave_oracle','test_nfl2k5_owner_pairwise_composition']
+selected.update('tests/mod_editor/'+n+'.py' for n in extra)
+selected.update(str(p) for p in Path('tests/mod_editor').glob('test_apf_roster_appearance_transfer*.py'))
+selected={p for p in selected if Path(p).is_file()}
+Path('/tmp/astra-a2-tests.json').write_text(json.dumps(sorted(selected),indent=2)+'\n')
+print(len(selected),'standalone suites;',len(modules),'changed-module search terms')
