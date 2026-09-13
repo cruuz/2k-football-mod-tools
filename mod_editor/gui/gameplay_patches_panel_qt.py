@@ -7,6 +7,8 @@ one receipt.  The throw curve tables keep their own richer editor (Throw Distanc
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import plain_error
+
 from collections.abc import Callable
 from pathlib import Path
 
@@ -108,10 +110,10 @@ PATCHES = (
      "downed in the end zone puts the ball on the 20, a kick straight into the end zone is a touchback to the 35 (30 for the 2024 "
      "spot), short of the landing zone or out of bounds is the 40; the CPU kicker aims for the landing zone 90 % of the time and the "
      "CPU returner takes the touchback 90 % of the time. Your own kicks and returns stay in your hands; onside and safety kicks are "
-     "untouched. Switches on the modern kick spots and the dynamic line-up with it. Beta 62: held players keep an idle "
+     "untouched. Switches on the modern kick spots and the dynamic line-up with it. Held players keep an idle "
      "pose facing the kick and release on contact, a ball fielded inside the landing zone is never a touchback, and the "
      "return blockers take close assignments (drive blocks in the setup zone, a lead block from the deep non-carrier). "
-     "Noah saw the 2024 rule play in beta 60; the beta-62 corrections are unwitnessed. Rebuild from retail."),
+     "The original 2024 rule has an in-game report; the stance and blocking corrections remain unwitnessed. Rebuild from retail."),
     ("overtime", "Modern overtime: both teams get a possession, 10 minutes with ties, playoffs to a winner",
      "Retail overtime is sudden death for the quarter length: any score ends it, even a first-possession "
      "touchdown, and the regular season ties after one period. Patch (the 2025 NFL rule): each team is "
@@ -277,7 +279,7 @@ class _Task(QRunnable):
         try:
             result = self._operation(lambda msg, _a, _b: self.signals.progress.emit(msg))
         except Exception as exc:  # noqa: BLE001
-            self.signals.failed.emit(f"{type(exc).__name__}: {exc}")
+            self.signals.failed.emit(plain_error(exc))
         else:
             self.signals.finished.emit(result)
 
@@ -471,6 +473,7 @@ class GameplayPatchesPanel(QWidget):
             else:
                 check = QCheckBox(tab_title(short))
                 check.setAccessibleDescription(helper or label)
+                check.setToolTip(helper or label)
                 check.toggled.connect(lambda _c: self._refresh())
                 head.addWidget(check)
             if key in r62_ui.CHILDREN:
@@ -625,7 +628,7 @@ class GameplayPatchesPanel(QWidget):
                 self.helmet_finish_combo.setEnabled(enabled)
                 check.setChecked(value == "applied")
                 self.helmet_finish_combo.setCurrentIndex(1 if value == "applied" else 0)
-                check.setToolTip("" if enabled else "Not recognised: the bytes at this change's sites are neither retail nor this patch "
+                check.setToolTip(check.accessibleDescription() if enabled else "Not recognised: the bytes at this change's sites are neither retail nor this patch "
                                  "(changed by another tool), so it can't be added here.")
                 self.badges[key].setText("ADVANCED / UNWITNESSED" if enabled else "Unrecognized source data")
                 self.badges[key].setVisible(True)
