@@ -1,0 +1,6 @@
+nfl2k5_model_project_session
+playcalling_service
+check_2k5_mod_studio_runtime
+check_apf2k8_mod_studio_runtime
+registry.schema
+apf2k8-release-allowlist

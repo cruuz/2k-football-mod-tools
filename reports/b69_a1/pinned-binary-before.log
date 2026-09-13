@@ -1,0 +1,16 @@
+..E....
+======================================================================
+ERROR: test_pinned_reader_keeps_crlf_and_control_z_under_windows_text_translation (__main__.RegistryContractsTests.test_pinned_reader_keeps_crlf_and_control_z_under_windows_text_translation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_registry.py", line 104, in test_pinned_reader_keeps_crlf_and_control_z_under_windows_text_translation
+    snapshot, actual = runner.read_pinned_file(source)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1/tools/validate_all_mod_editor_capabilities.py", line 435, in read_pinned_file
+    raise ValidationRunError(f"short read from local file: {path}")
+tools.validate_all_mod_editor_capabilities.ValidationRunError: short read from local file: /tmp/tmpk763uzh4/pinned.bin
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.070s
+
+FAILED (errors=1)

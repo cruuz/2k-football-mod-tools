@@ -1,0 +1,15 @@
+import concurrent.futures,json,os,subprocess,time,re
+from pathlib import Path
+root=Path('reports/b69_a1');logs=root/'recheck-test-logs';logs.mkdir(exist_ok=True)
+env=os.environ.copy();env.update(PYTHONPATH='.',QT_QPA_PLATFORM='offscreen',MOD_STUDIO_NO_UPDATE_CHECK='1',PYTHONHASHSEED='0',NFL2K5_MODEL_INVENTORY='/home/noah/.cache/2k5-mod-studio/7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9/indexes/nfl2k5_resource_chunks_v2.json')
+def run(p):
+ log=logs/(p.replace('/','__')+'.log');start=time.monotonic()
+ with log.open('w') as stream:
+  try:r=subprocess.run(['python3',p],env=env,stdout=stream,stderr=subprocess.STDOUT,timeout=5400);code=r.returncode
+  except subprocess.TimeoutExpired:code='TIMEOUT'
+ text=log.read_text(errors='replace');summary=re.findall(r'^(?:Ran .*|OK.*|FAILED.*|.*Error:.*)$',text,re.M)
+ return dict(path=p,returncode=code,seconds=round(time.monotonic()-start,3),summary=summary[-5:],log=str(log))
+results=[]
+with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:
+ for future in concurrent.futures.as_completed([pool.submit(run,p) for p in json.loads((root/'recheck-test-selection.json').read_text())]):
+  r=future.result();results.append(r);(root/'recheck-tests.json').write_text(json.dumps(results,indent=2)+'\n');print(len(results),r['returncode'],r['path'],r['summary'][-1:],flush=True)

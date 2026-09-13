@@ -1,0 +1,2 @@
+ab07a4e748b1bab6e94129d717b4214e584a3f9c Add reviewed team schemes, reversible CPU exclusion, and Xenia launch patch delivery
+8e77c8630d42656669ff9b30e491742a4093f255 Prove APF scheme and formation controls; document native limits and beta-69 wiring

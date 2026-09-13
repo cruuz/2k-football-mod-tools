@@ -1,0 +1,2 @@
+cc61e59d8eb2121268dc53a0744b851aaeef2970 Name refused project edits, validate restored equipment, and measure fit retries
+5d63ee07e5a0e2f4a07dbac57a9ddc323f0cf71f Complete legacy equipment receipts, native fit proofs, and protected UI handoff

@@ -1,0 +1,78 @@
+{
+  "complete": true,
+  "selected_files": 396,
+  "completed_files": 396,
+  "completed_run_receipts": 474,
+  "exit_zero": 390,
+  "red": 6,
+  "files_with_declared_skips": 30,
+  "pending_runs": {},
+  "failures": [
+    {
+      "path": "tests/mod_editor/test_all_textures_workspace.py",
+      "returncode": 1,
+      "summary": [
+        "mod_editor.core.errors.RegistryError: Cannot read capability registry: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md",
+        "mod_editor.capabilities.validate_registry.RegistryError: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md",
+        "mod_editor.core.errors.RegistryError: Cannot read capability registry: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md",
+        "Ran 23 tests in 11.603s",
+        "FAILED (errors=2)"
+      ],
+      "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_all_textures_workspace.py.log"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_cave_oracle.py",
+      "returncode": 1,
+      "summary": [
+        "mod_editor.core.nfl2k5_cave_oracle.OracleError: stale reservation source: mod_editor/core/mod_build.py; regenerate manifest",
+        "mod_editor.core.nfl2k5_cave_oracle.OracleError: stale reservation source: mod_editor/core/mod_build.py; regenerate manifest",
+        "Ran 29 tests in 431.932s",
+        "FAILED (errors=2)"
+      ],
+      "log": "reports/b69_a1/gate-test-logs/tests__mod_editor__test_nfl2k5_cave_oracle.py.log"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_crib_geometry_writer.py",
+      "returncode": 1,
+      "summary": [
+        "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/assets/intermediate/nfl2k5/models/4248_0105_phone.gltf'",
+        "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/assets/intermediate/nfl2k5/models/4248_0105_phone.gltf'",
+        "Ran 4 tests in 2.974s",
+        "FAILED (errors=2)"
+      ],
+      "log": "reports/b69_a1/recheck-test-logs/tests__mod_editor__test_nfl2k5_crib_geometry_writer.py.log"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_face_shield_registry.py",
+      "returncode": 1,
+      "summary": [
+        "mod_editor.capabilities.validate_registry.RegistryError: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md",
+        "Ran 2 tests in 0.006s",
+        "FAILED (errors=1)"
+      ],
+      "log": "reports/b69_a1/final-test-logs/tests__mod_editor__test_nfl2k5_face_shield_registry.py.log"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_read_option_diagnostic_manifest.py",
+      "returncode": 5,
+      "summary": [
+        "AssertionError: unobserved source drift: ['mod_editor/core/nfl2k5_roster_records.py']",
+        "Ran 0 tests in 0.281s",
+        "FAILED (errors=1)"
+      ],
+      "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_read_option_diagnostic_manifest.py.log"
+    },
+    {
+      "path": "tests/mod_editor/test_no_capability_is_invisible.py",
+      "returncode": 1,
+      "summary": [
+        "mod_editor.core.errors.RegistryError: Cannot read capability registry: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md",
+        "mod_editor.capabilities.validate_registry.RegistryError: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md",
+        "mod_editor.core.errors.RegistryError: Cannot read capability registry: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md",
+        "Ran 2 tests in 0.016s",
+        "FAILED (errors=2)"
+      ],
+      "log": "reports/b69_a1/test-logs/tests__mod_editor__test_no_capability_is_invisible.py.log"
+    }
+  ]
+}

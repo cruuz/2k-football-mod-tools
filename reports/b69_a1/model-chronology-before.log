@@ -1,0 +1,13 @@
+F..
+======================================================================
+FAIL: test_build_refresh_preserves_edit_chronology_until_model_changes (__main__.ModelLoadTransactionTests.test_build_refresh_preserves_edit_chronology_until_model_changes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_model_session.py", line 83, in test_build_refresh_preserves_edit_chronology_until_model_changes
+    self.assertEqual(rows[0]["project_edit_index"], 0, "The new artwork must be first")
+AssertionError: 1 != 0 : The new artwork must be first
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.194s
+
+FAILED (failures=1)

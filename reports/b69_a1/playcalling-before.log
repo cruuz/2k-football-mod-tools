@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_scheme_clone_retains_restore_masks_across_save_reopen (__main__.CloneRetirementTests.test_scheme_clone_retains_restore_masks_across_save_reopen)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_playcalling.py", line 38, in test_scheme_clone_retains_restore_masks_across_save_reopen
+    self.assertEqual(formation["restore_masks"], self.masks)
+AssertionError: None != [8]
+
+----------------------------------------------------------------------
+Ran 1 test in 20.959s
+
+FAILED (failures=1)

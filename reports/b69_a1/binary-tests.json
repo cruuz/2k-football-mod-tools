@@ -1,0 +1,22 @@
+[
+  {
+    "path": "tests/mod_editor/test_b69_a1_registry.py",
+    "returncode": 0,
+    "seconds": 0.191,
+    "summary": [
+      "Ran 7 tests in 0.079s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/binary-test-logs/tests__mod_editor__test_b69_a1_registry.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_validate_all_capabilities.py",
+    "returncode": 0,
+    "seconds": 0.948,
+    "summary": [
+      "Ran 36 tests in 0.756s",
+      "OK (skipped=1)"
+    ],
+    "log": "reports/b69_a1/binary-test-logs/tests__mod_editor__test_validate_all_capabilities.py.log"
+  }
+]

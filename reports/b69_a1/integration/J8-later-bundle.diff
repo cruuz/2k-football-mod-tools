@@ -1,0 +1,537 @@
+diff --git a/ASTRA_REPORT.md b/ASTRA_REPORT.md
+index 23933419..6ff3f0d3 100644
+--- a/ASTRA_REPORT.md
++++ b/ASTRA_REPORT.md
+@@ -30,7 +30,9 @@ created. The verifier reparses the actual output, checks the full allowed-byte
+ set and reports **the slots that actually changed**.
+ 
+ PS3 raw `USERDATA`, PS3-layout `.ROS`, and the bounded selected member of a
+-roster ZIP pass through the existing converter before the overlay. Its full
++roster ZIP pass through the existing converter before the overlay. ZIP member
++selection accepts `USERDATA` at the archive root as well as in a save folder;
++the root case previously raised IndexError before reaching its fallback. Its full
+ conversion receipt is nested beside the appearance-patch receipt. For STFS,
+ the package receipt additionally verifies allocation, hashes and unchanged
+ signature bytes. These are private output receipts, never project payloads.
+@@ -74,7 +76,8 @@ used the wrong intermediate value near its boundary. Both are corrected.
+ 
+ The package writer refuses shared file/directory blocks, corrupt hashes,
+ sparse or out-of-order directories, incompatible next-pointer chains,
+-changed roster length, multi-file containers, non-APF save metadata and
++changed roster length, multi-file containers, non-APF save metadata, nonexistent
++secondary root/leaf selections in single-copy packages, and
+ unsupported hash-tree bounds. Exactly 170/28900 allocated blocks are refused
+ for package output because the audited Xenia level-selection boundary differs.
+ Extractable packages retain the raw route. No scans for embedded roster magic
+@@ -122,6 +125,9 @@ If the user selects an Xbox appearance baseline, the receipt explicitly says
+ PS3 appearance values were declined because the user chose that baseline.
+ Choosing another PS3 source clears the previous baseline and requires review
+ again, preventing accidental retention of an unrelated roster's uniforms.
++The existing optional Xbox before/after comparison remains supported when PS3
++appearance is carried. Receipts now explicitly name `carried_from` and
++`comparison_source` so those two roles cannot be confused.
+ 
+ The editor overlay still copies only the bounded colours and helmet/crest
+ selectors. It does not copy jersey/shoulder/pants choices from the project.
+@@ -187,7 +193,7 @@ on this branch, so the guide has the requested short question/answer section.
+ Every command below ran standalone with
+ `QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 <path>`. Complete output is in
+ `reports/b69_j8/<test filename stem>.log`; `test-results.json` lists counts and
+-exit codes. Final result: **16 files, 117 tests, all suites OK, one pre-existing
++exit codes. Final result: **16 files, 121 tests, all suites OK, one pre-existing
+ skip** for missing gitignored extract-xiso release binaries in Studio core.
+ The optional private-input regression and local Xenia-source pin checks ran;
+ new tests use synthetic inputs only.
+@@ -196,11 +202,11 @@ new tests use synthetic inputs only.
+ |---|---:|---|
+ | `tests/test_apf_save_custom_team_appearance.py` | 12 | OK |
+ | `tests/test_apf_save_playbook_assignments.py` | 10 | OK |
+-| `tests/mod_editor/test_apf_stfs_roster_rehash.py` | 7 | OK |
++| `tests/mod_editor/test_apf_stfs_roster_rehash.py` | 8 | OK |
+ | `tests/mod_editor/test_apf_roster_appearance_transfer.py` | 5 | OK |
+ | `tests/mod_editor/test_apf_roster_appearance_transfer_qt.py` | 3 | OK |
+-| `tests/mod_editor/test_apf_ps3_roster_convert.py` | 13 | OK |
+-| `tests/mod_editor/test_apf_ps3_roster_import_qt.py` | 3 | OK |
++| `tests/mod_editor/test_apf_ps3_roster_convert.py` | 15 | OK |
++| `tests/mod_editor/test_apf_ps3_roster_import_qt.py` | 4 | OK |
+ | `tests/mod_editor/test_apf_b66_appearance.py` | 3 | OK |
+ | `tests/mod_editor/test_apf_custom_team_appearance_patch.py` | 8 | OK |
+ | `tests/mod_editor/test_apf_custom_team_appearance_gui.py` | 5 | OK |
+@@ -224,7 +230,11 @@ the integrator after the protected allowlist/registry edits.
+   synthetic fixture and round-trip tests.
+ - `a9d2879e`: studio transfer, PS3 carry verification, final STFS guards and
+   the getting-started/changelog updates.
+-- The final report commit contains this report, `WIRING.md` and the test logs.
++- `d2b66126`: initial report, wiring instructions and validation logs.
++- `daa19a17`: root-level USERDATA ZIP fix, explicit PS3 appearance/comparison
++  provenance, invalid single-copy STFS table refusal and four new tests.
++- The final report commit refreshes this report, `WIRING.md` and all 16 test
++  logs. 120 tests passed; the remaining test has the existing release-binary skip.
+ 
+ **Git metadata restriction:** the first commit landed normally. At the next
+ commit, two attempts to stage files failed with `Unable to create
+@@ -234,7 +244,7 @@ were escalated and no other checkout was edited. The remaining explicit-path
+ commits were created under the same branch name in a temporary writable Git
+ metadata store, reusing the existing objects read-only and this same worktree.
+ They are delivered in `reports/b69_j8/astra-b69-j8-apf-save.bundle`, including
+-all three J8 commits above base `922c009d65e35f8195762c31106789bb353fb43c`.
++all five J8 commits above base `922c009d65e35f8195762c31106789bb353fb43c`.
+ The normal worktree branch ref consequently remains at `5a9a2e14`; it must not
+ be mistaken for the full delivery. Fetch/cherry-pick the bundle using the
+ instructions in WIRING. The bundle is a separate local deliverable, not a
+diff --git a/WIRING.md b/WIRING.md
+index 74a1ab11..1402d76f 100644
+--- a/WIRING.md
++++ b/WIRING.md
+@@ -155,7 +155,7 @@ file. The later commits were created with explicit paths in a writable
+ temporary Git store using this same worktree. No protected metadata permissions
+ were changed. The original branch ref still points at `5a9a2e14`.
+ 
+-The complete three-commit series is in this bundle, based on `922c009d`:
++The complete five-commit series is in this bundle, based on `922c009d`:
+ 
+ ```text
+ reports/b69_j8/astra-b69-j8-apf-save.bundle
+@@ -170,7 +170,10 @@ git cherry-pick 922c009d65e35f8195762c31106789bb353fb43c..refs/remotes/handoff/b
+ 
+ If `5a9a2e14` is already integrated, cherry-pick the range starting at
+ `5a9a2e14035c9e431ded855ea78e632f5b4fcfa2` instead of `922c009d`. The next
+-implementation commit is `a9d2879e`; the final commit adds the report and
+-validation logs. The bundle is exported after that final commit, so it is
++implementation commit is `a9d2879e`; `d2b66126` adds the initial report and
++validation logs, and `daa19a17` handles root USERDATA ZIPs, receipt provenance
++and invalid STFS secondary-table selections. The final commit refreshes the
++report and all test logs: 121 tests, 120 passed and one existing skip.
++The bundle is exported after that final commit, so it is
+ delivered beside the logs and is not committed into itself. Its contents are
+ code/docs/synthetic-test receipts, with the existing base as a prerequisite.
+diff --git a/docs/mod_editor/apf2k8_mod_studio_changelog.md b/docs/mod_editor/apf2k8_mod_studio_changelog.md
+index 2a5d17f5..d2ee51bd 100644
+--- a/docs/mod_editor/apf2k8_mod_studio_changelog.md
++++ b/docs/mod_editor/apf2k8_mod_studio_changelog.md
+@@ -8,6 +8,7 @@ Beta 69 carries the APF 2K8 changes made after beta 67; bullets are added as eac
+ - Aszemple asked whether the editor could take “a .Ros file or PS3 roster file and update the uniforms and players”. The appearance transfer now has an explicit “Xenia only; a real console will reject this package” output for supported STFS saves. PROVED offline: changed data-block and active hash-table SHA-1 repair, metadata/header hash repair, unchanged signature bytes, and synthetic extraction round trips. The pinned local Xenia reader does not check the console signature. Full package loading remains HYPOTHESIS and UNWITNESSED; no console signing key is supplied. Fixed STFS data offsets for duplicate hash tables and higher-level boundaries. Raw output remains available when package output is refused.
+ - davidhbui: “pick an in-game asset that fit my art, switch to that one in game, save, and then copy that uniform into my roster in the editor”. PS3 import now verifies all 40 teams' HOME/AWAY uniform selector records and converted colours, with exact selector before/after values and named carried/refused fields in the receipt. Jersey and shoulder codes survive conversion; custom artwork still needs its separate import. Editor-to-save overlays preserve those destination codes while changing only colours and helmet/crest selectors. Choosing a new PS3 source clears the previous Xbox appearance baseline.
+ - Aszemple: “Was able import both the logos and roster files from my rpcs3 files”. This September 13 witness confirms the import workflow. It does not establish uniform rendering, roster loading in game, or the still-needed helmet close-up; those outcomes remain UNWITNESSED.
++- PS3 roster ZIPs now accept USERDATA at the archive root as well as in the save folder. Appearance receipts identify the carried source separately from an optional Xbox comparison baseline. STFS package output explicitly refuses secondary-table selectors when the package has only one table copy.
+ - 7ET: “Read the release notes, but unclear whether we can create play in the 2k8 editor?” The getting-started guide now answers yes: Playbooks → Design Plays / Formations provides Create formation and Create play, off by default, CPU books only, offline validated and UNWITNESSED in game. Beta 67's CPU Play Calling editor controls which plays get called; authoring uses the design page.
+ 
+ ## 0.1.0-alpha.89 — beta 68: no APF changes — 2026-09-12
+diff --git a/docs/mod_editor/apf2k8_mod_studio_getting_started.md b/docs/mod_editor/apf2k8_mod_studio_getting_started.md
+index c34bae56..68fab963 100644
+--- a/docs/mod_editor/apf2k8_mod_studio_getting_started.md
++++ b/docs/mod_editor/apf2k8_mod_studio_getting_started.md
+@@ -426,6 +426,9 @@ after conversion. The receipt names carried fields and refusals: texture files
+ need a separate PS3 bundle/Team Art import, and opaque selector bytes retain
+ their exact values without claiming new meanings. If Xbox appearance was
+ chosen, the receipt explicitly says the PS3 values were declined for that reason.
++If an Xbox baseline was reviewed while PS3 appearance is selected, the receipt
++keeps that comparison and names both the carried source and comparison source.
++Roster ZIPs may contain `USERDATA` at the archive root or in the PS3 save folder.
+ 
+ When choosing PS3 directly in **Apply my custom team appearance to this roster
+ save**, the converter first carries the PS3 appearance for every team; the
+diff --git a/docs/research/apf_stfs_rehash.md b/docs/research/apf_stfs_rehash.md
+index b4e302f9..464e46df 100644
+--- a/docs/research/apf_stfs_rehash.md
++++ b/docs/research/apf_stfs_rehash.md
+@@ -41,7 +41,8 @@ The extractor previously shifted the accumulated physical address on two-copy
+ packages and used a physical value in the higher-level calculation. Both are
+ fixed. The writer handles at most two hash levels and 128 MiB packages, refuses
+ multi-file containers, overlapping file/directory allocations, bad hashes,
+-invalid chains, sparse/out-of-order directories, changed lengths, and ambiguous Xenia level boundaries at
++invalid chains, sparse/out-of-order directories, secondary-table selectors in
++single-copy packages, changed lengths, and ambiguous Xenia level boundaries at
+ exactly 170 or 28900 allocated blocks. The raw output route remains available.
+ 
+ Only changed roster blocks have their leaf digest rewritten, then their active
+diff --git a/mod_editor/apf_studio/ps3_roster_convert.py b/mod_editor/apf_studio/ps3_roster_convert.py
+index 4e381ecf..0553dc9e 100644
+--- a/mod_editor/apf_studio/ps3_roster_convert.py
++++ b/mod_editor/apf_studio/ps3_roster_convert.py
+@@ -170,7 +170,8 @@ def find_roster_member(archive: Path) -> str:
+         names = [i.filename for i in bundle.infolist() if not i.filename.endswith("/")]
+     candidates = [
+         name for name in names
+-        if name.split("/")[-1] == "USERDATA" and "-ROS" in name.split("/")[-2:-1][0] if len(name.split("/")) >= 2
++        if len(name.split("/")) >= 2
++        and name.split("/")[-1] == "USERDATA" and "-ROS" in name.split("/")[-2]
+     ]
+     if not candidates:
+         candidates = [name for name in names if name.split("/")[-1] == "USERDATA"]
+@@ -771,6 +772,8 @@ def convert(data: bytes, *, apply_team_appearance: bool = True,
+         },
+         "team_appearance": {
+             "applied_from_ps3": apply_team_appearance,
++            "carried_from": "ps3_source" if apply_team_appearance else "xbox_baseline",
++            "comparison_source": "xbox_baseline" if xbox_appearance is not None else "ps3_source",
+             "baseline_sha256": _sha256(xbox_appearance) if xbox_appearance is not None else None,
+             "teams": _appearance_receipt(xbox_appearance if xbox_appearance is not None else data, output),
+             "same_selector_layout": True, "selectors_reparsed": True,
+diff --git a/reports/b69_j8/integration-checks.log b/reports/b69_j8/integration-checks.log
+index a37fff0d..3c2a4655 100644
+--- a/reports/b69_j8/integration-checks.log
++++ b/reports/b69_j8/integration-checks.log
+@@ -4,3 +4,7 @@ git diff --check: passed
+ python3 packaging/repin.py --apply: applied 0 pin update(s)
+ Worktree Git staging blocked after 5a9a2e14: index.lock cannot be created because shared metadata is read-only.
+ Remaining explicit-path commits are exported in astra-b69-j8-apf-save.bundle.
++Final review: 16 standalone suites, 121 tests, 120 passed, one pre-existing release-binary skip.
++WIRING registry temporary-copy validation repeated: total=161 APF=69, +0 rows.
++Repin repeated after final writer edit: applied 0 pin update(s).
++Final explicit-path series includes daa19a17 plus refreshed reports in the handoff bundle.
+diff --git a/reports/b69_j8/test-results.json b/reports/b69_j8/test-results.json
+index ca9c72fb..0a583c13 100644
+--- a/reports/b69_j8/test-results.json
++++ b/reports/b69_j8/test-results.json
+@@ -14,7 +14,7 @@
+   {
+     "file": "tests/mod_editor/test_apf_stfs_roster_rehash.py",
+     "exit_code": 0,
+-    "tests": 7,
++    "tests": 8,
+     "log": "reports/b69_j8/test_apf_stfs_roster_rehash.log"
+   },
+   {
+@@ -32,13 +32,13 @@
+   {
+     "file": "tests/mod_editor/test_apf_ps3_roster_convert.py",
+     "exit_code": 0,
+-    "tests": 13,
++    "tests": 15,
+     "log": "reports/b69_j8/test_apf_ps3_roster_convert.log"
+   },
+   {
+     "file": "tests/mod_editor/test_apf_ps3_roster_import_qt.py",
+     "exit_code": 0,
+-    "tests": 3,
++    "tests": 4,
+     "log": "reports/b69_j8/test_apf_ps3_roster_import_qt.log"
+   },
+   {
+diff --git a/reports/b69_j8/test_apf_b66_appearance.log b/reports/b69_j8/test_apf_b66_appearance.log
+index 875d6d9c..fee5d13b 100644
+--- a/reports/b69_j8/test_apf_b66_appearance.log
++++ b/reports/b69_j8/test_apf_b66_appearance.log
+@@ -1,6 +1,6 @@
+-QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_b66_appearance.py
++$ QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_b66_appearance.py
+ ...
+ ----------------------------------------------------------------------
+-Ran 3 tests in 2.675s
++Ran 3 tests in 2.689s
+ 
+ OK
+diff --git a/reports/b69_j8/test_apf_capability_action_parity.log b/reports/b69_j8/test_apf_capability_action_parity.log
+index 6d1c2a52..4c61c38f 100644
+--- a/reports/b69_j8/test_apf_capability_action_parity.log
++++ b/reports/b69_j8/test_apf_capability_action_parity.log
+@@ -1,6 +1,6 @@
+-QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_capability_action_parity.py
++$ QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_capability_action_parity.py
+ ...........
+ ----------------------------------------------------------------------
+-Ran 11 tests in 0.129s
++Ran 11 tests in 0.122s
+ 
+ OK
+diff --git a/reports/b69_j8/test_apf_custom_team_appearance_gui.log b/reports/b69_j8/test_apf_custom_team_appearance_gui.log
+index 1ebfc661..4ca5db28 100644
+--- a/reports/b69_j8/test_apf_custom_team_appearance_gui.log
++++ b/reports/b69_j8/test_apf_custom_team_appearance_gui.log
+@@ -1,6 +1,6 @@
+-QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_custom_team_appearance_gui.py
++$ QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_custom_team_appearance_gui.py
+ .....
+ ----------------------------------------------------------------------
+-Ran 5 tests in 0.128s
++Ran 5 tests in 0.156s
+ 
+ OK
+diff --git a/reports/b69_j8/test_apf_custom_team_appearance_patch.log b/reports/b69_j8/test_apf_custom_team_appearance_patch.log
+index d02827d2..e6b1081d 100644
+--- a/reports/b69_j8/test_apf_custom_team_appearance_patch.log
++++ b/reports/b69_j8/test_apf_custom_team_appearance_patch.log
+@@ -1,6 +1,6 @@
+-QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_custom_team_appearance_patch.py
++$ QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_custom_team_appearance_patch.py
+ ........
+ ----------------------------------------------------------------------
+-Ran 8 tests in 7.291s
++Ran 8 tests in 9.180s
+ 
+ OK
+diff --git a/reports/b69_j8/test_apf_ps3_probes.log b/reports/b69_j8/test_apf_ps3_probes.log
+index 5ecb18f7..ed93e894 100644
+--- a/reports/b69_j8/test_apf_ps3_probes.log
++++ b/reports/b69_j8/test_apf_ps3_probes.log
+@@ -1,6 +1,6 @@
+-QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_ps3_probes.py
++$ QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_ps3_probes.py
+ .........
+ ----------------------------------------------------------------------
+-Ran 9 tests in 0.980s
++Ran 9 tests in 1.533s
+ 
+ OK
+diff --git a/reports/b69_j8/test_apf_ps3_roster_convert.log b/reports/b69_j8/test_apf_ps3_roster_convert.log
+index c5f90537..cb6cb57f 100644
+--- a/reports/b69_j8/test_apf_ps3_roster_convert.log
++++ b/reports/b69_j8/test_apf_ps3_roster_convert.log
+@@ -1,6 +1,6 @@
+-QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_ps3_roster_convert.py
+-.............
++$ QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_ps3_roster_convert.py
++...............
+ ----------------------------------------------------------------------
+-Ran 13 tests in 17.567s
++Ran 15 tests in 22.683s
+ 
+ OK
+diff --git a/reports/b69_j8/test_apf_ps3_roster_import_qt.log b/reports/b69_j8/test_apf_ps3_roster_import_qt.log
+index 86a71fd3..022a9875 100644
+--- a/reports/b69_j8/test_apf_ps3_roster_import_qt.log
++++ b/reports/b69_j8/test_apf_ps3_roster_import_qt.log
+@@ -1,6 +1,6 @@
+-QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_ps3_roster_import_qt.py
+-...
++$ QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_ps3_roster_import_qt.py
++....
+ ----------------------------------------------------------------------
+-Ran 3 tests in 1.559s
++Ran 4 tests in 3.719s
+ 
+ OK
+diff --git a/reports/b69_j8/test_apf_roster_appearance_transfer.log b/reports/b69_j8/test_apf_roster_appearance_transfer.log
+index 6c6ddc4b..64227ce4 100644
+--- a/reports/b69_j8/test_apf_roster_appearance_transfer.log
++++ b/reports/b69_j8/test_apf_roster_appearance_transfer.log
+@@ -1,6 +1,6 @@
+-QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_roster_appearance_transfer.py
++$ QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_roster_appearance_transfer.py
+ .....
+ ----------------------------------------------------------------------
+-Ran 5 tests in 9.107s
++Ran 5 tests in 8.880s
+ 
+ OK
+diff --git a/reports/b69_j8/test_apf_roster_appearance_transfer_qt.log b/reports/b69_j8/test_apf_roster_appearance_transfer_qt.log
+index fb27df53..30c06864 100644
+--- a/reports/b69_j8/test_apf_roster_appearance_transfer_qt.log
++++ b/reports/b69_j8/test_apf_roster_appearance_transfer_qt.log
+@@ -1,6 +1,6 @@
+-QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_roster_appearance_transfer_qt.py
++$ QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_roster_appearance_transfer_qt.py
+ ...
+ ----------------------------------------------------------------------
+-Ran 3 tests in 5.324s
++Ran 3 tests in 5.279s
+ 
+ OK
+diff --git a/reports/b69_j8/test_apf_save_custom_team_appearance.log b/reports/b69_j8/test_apf_save_custom_team_appearance.log
+index 72653168..be74de75 100644
+--- a/reports/b69_j8/test_apf_save_custom_team_appearance.log
++++ b/reports/b69_j8/test_apf_save_custom_team_appearance.log
+@@ -1,6 +1,6 @@
+-QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/test_apf_save_custom_team_appearance.py
++$ QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/test_apf_save_custom_team_appearance.py
+ ............
+ ----------------------------------------------------------------------
+-Ran 12 tests in 2.037s
++Ran 12 tests in 2.569s
+ 
+ OK
+diff --git a/reports/b69_j8/test_apf_save_playbook_assignments.log b/reports/b69_j8/test_apf_save_playbook_assignments.log
+index 46a5ab51..01fe0edd 100644
+--- a/reports/b69_j8/test_apf_save_playbook_assignments.log
++++ b/reports/b69_j8/test_apf_save_playbook_assignments.log
+@@ -1,6 +1,6 @@
+-QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/test_apf_save_playbook_assignments.py
++$ QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/test_apf_save_playbook_assignments.py
+ ..........
+ ----------------------------------------------------------------------
+-Ran 10 tests in 0.819s
++Ran 10 tests in 1.242s
+ 
+ OK
+diff --git a/reports/b69_j8/test_apf_save_playbook_assignments_gui.log b/reports/b69_j8/test_apf_save_playbook_assignments_gui.log
+index adec3975..446712e6 100644
+--- a/reports/b69_j8/test_apf_save_playbook_assignments_gui.log
++++ b/reports/b69_j8/test_apf_save_playbook_assignments_gui.log
+@@ -1,6 +1,6 @@
+-QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_save_playbook_assignments_gui.py
++$ QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_save_playbook_assignments_gui.py
+ ........
+ ----------------------------------------------------------------------
+-Ran 8 tests in 1.160s
++Ran 8 tests in 1.087s
+ 
+ OK
+diff --git a/reports/b69_j8/test_apf_save_roster_players.log b/reports/b69_j8/test_apf_save_roster_players.log
+index 512c94c5..be17c1ed 100644
+--- a/reports/b69_j8/test_apf_save_roster_players.log
++++ b/reports/b69_j8/test_apf_save_roster_players.log
+@@ -1,6 +1,6 @@
+-QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_save_roster_players.py
++$ QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_save_roster_players.py
+ .......
+ ----------------------------------------------------------------------
+-Ran 7 tests in 4.675s
++Ran 7 tests in 4.557s
+ 
+ OK
+diff --git a/reports/b69_j8/test_apf_save_roster_players_gui.log b/reports/b69_j8/test_apf_save_roster_players_gui.log
+index 45e25ddd..e250767e 100644
+--- a/reports/b69_j8/test_apf_save_roster_players_gui.log
++++ b/reports/b69_j8/test_apf_save_roster_players_gui.log
+@@ -1,6 +1,6 @@
+-QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_save_roster_players_gui.py
++$ QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_save_roster_players_gui.py
+ ....
+ ----------------------------------------------------------------------
+-Ran 4 tests in 0.617s
++Ran 4 tests in 0.608s
+ 
+ OK
+diff --git a/reports/b69_j8/test_apf_stfs_roster_rehash.log b/reports/b69_j8/test_apf_stfs_roster_rehash.log
+index 314c4e4d..c76542d3 100644
+--- a/reports/b69_j8/test_apf_stfs_roster_rehash.log
++++ b/reports/b69_j8/test_apf_stfs_roster_rehash.log
+@@ -1,6 +1,6 @@
+-QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_stfs_roster_rehash.py
+-.......
++$ QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_stfs_roster_rehash.py
++........
+ ----------------------------------------------------------------------
+-Ran 7 tests in 0.588s
++Ran 8 tests in 0.619s
+ 
+ OK
+diff --git a/reports/b69_j8/test_apf_studio_core.log b/reports/b69_j8/test_apf_studio_core.log
+index c7c5b192..9e528614 100644
+--- a/reports/b69_j8/test_apf_studio_core.log
++++ b/reports/b69_j8/test_apf_studio_core.log
+@@ -1,6 +1,6 @@
+-QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_studio_core.py
++$ QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_studio_core.py
+ s........
+ ----------------------------------------------------------------------
+-Ran 9 tests in 0.036s
++Ran 9 tests in 0.029s
+ 
+ OK (skipped=1)
+diff --git a/tests/mod_editor/test_apf_ps3_roster_convert.py b/tests/mod_editor/test_apf_ps3_roster_convert.py
+index 74fcc2ac..f88fc726 100644
+--- a/tests/mod_editor/test_apf_ps3_roster_convert.py
++++ b/tests/mod_editor/test_apf_ps3_roster_convert.py
+@@ -252,6 +252,19 @@ class SyntheticConversionTests(unittest.TestCase):
+         self.assertTrue(subject.verify_appearance_carry(bytes(baseline), output, from_ps3=False)["verified"])
+         self.assertIn("PS3 appearance values", [row["field"] for row in receipt["team_appearance"]["refused"]])
+ 
++    def test_ps3_carry_receipt_distinguishes_source_from_comparison_baseline(self) -> None:
++        baseline = bytearray(self.output)
++        selector = subject.team_appearance(self.output)[32]["banks"][0]["selectors"][4]["offset"]
++        baseline[selector] = 71
++        output, receipt = subject.convert(self.source, xbox_appearance=bytes(baseline))
++        self.assertEqual(output, self.output)
++        self.assertEqual(receipt["team_appearance"]["carried_from"], "ps3_source")
++        self.assertEqual(receipt["team_appearance"]["comparison_source"], "xbox_baseline")
++        row = receipt["team_appearance"]["teams"][32]["selectors"][4]
++        self.assertEqual(row["before_record_hex"], baseline[selector:selector + 8].hex())
++        self.assertEqual(row["after_record_hex"], self.source[selector:selector + 8].hex())
++        self.assertTrue(row["record_changed"])
++
+     def test_round_trip_edit_through_the_roster_writer(self) -> None:
+         document = players.inspect_bytes(self.output)
+         patched, manifest = players.make_patch(
+@@ -277,6 +290,19 @@ class SyntheticConversionTests(unittest.TestCase):
+ 
+ 
+ class FileTests(unittest.TestCase):
++    def test_root_userdata_zip_converts(self) -> None:
++        fixture = Fixture()
++        with tempfile.TemporaryDirectory() as temporary:
++            root = Path(temporary)
++            archive = root / "roster.zip"
++            with zipfile.ZipFile(archive, "w") as bundle:
++                bundle.writestr("USERDATA", fixture.ps3())
++            self.assertEqual(subject.find_roster_member(archive), "USERDATA")
++            output = root / "Roster.ROS"
++            receipt = subject.write_conversion(archive, output)
++            self.assertEqual(output.read_bytes(), fixture.expected())
++            self.assertEqual(receipt.member, "USERDATA")
++
+     def test_zip_member_detection_write_receipt_and_no_overwrite(self) -> None:
+         fixture = Fixture()
+         with tempfile.TemporaryDirectory() as temporary:
+diff --git a/tests/mod_editor/test_apf_ps3_roster_import_qt.py b/tests/mod_editor/test_apf_ps3_roster_import_qt.py
+index 88671eea..4d262d00 100644
+--- a/tests/mod_editor/test_apf_ps3_roster_import_qt.py
++++ b/tests/mod_editor/test_apf_ps3_roster_import_qt.py
+@@ -8,6 +8,7 @@ from pathlib import Path
+ import sys
+ import tempfile
+ import unittest
++import zipfile
+ from unittest import mock
+ 
+ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+@@ -81,6 +82,24 @@ class PanelTests(unittest.TestCase):
+         self.assertIsNone(self.panel.appearance_baseline)
+         self.assertFalse(self.panel.convert_button.isEnabled())
+ 
++    def test_root_zip_and_switch_from_xbox_retention_to_ps3_uniforms(self) -> None:
++        source = self.root / "roster.zip"
++        with zipfile.ZipFile(source, "w") as archive:
++            archive.writestr("USERDATA", self.fixture.ps3())
++        baseline = self.root / "Xbox.ROS"
++        baseline.write_bytes(self.fixture.expected())
++        self.panel.load_path(source)
++        self.panel.set_appearance_baseline(baseline)
++        self.panel.apply_appearance.setChecked(True)
++        destination = self.root / "Roster.ROS"
++        with mock.patch.object(QMessageBox, "information"):
++            self.panel.convert_to(destination)
++        self.assertEqual(destination.read_bytes(), self.fixture.expected())
++        report = json.loads(self.panel.last_receipt.receipt_path.read_text())
++        self.assertEqual(report["team_appearance"]["carried_from"], "ps3_source")
++        self.assertEqual(report["team_appearance"]["comparison_source"], "xbox_baseline")
++        self.assertTrue(report["team_appearance"]["applied_from_ps3"])
++
+     def test_xbox_layout_file_is_refused_without_writing(self) -> None:
+         source = self.root / "Roster.ROS"
+         source.write_bytes(self.fixture.expected())
+diff --git a/tests/mod_editor/test_apf_stfs_roster_rehash.py b/tests/mod_editor/test_apf_stfs_roster_rehash.py
+index 42d059c3..5f9e3086 100644
+--- a/tests/mod_editor/test_apf_stfs_roster_rehash.py
++++ b/tests/mod_editor/test_apf_stfs_roster_rehash.py
+@@ -165,6 +165,15 @@ class RehashTests(unittest.TestCase):
+                 expected = block + (block // 170 + 1) * copies + (copies if block >= 170 else 0)
+                 self.assertEqual(r._data_backing_block(block), expected)
+ 
++    def test_single_copy_cannot_select_secondary_leaf(self):
++        source = bytearray(synthetic_stfs(b"a" * 170 * 4096))
++        top = 0xA000 + 0xAB * 4096
++        source[top + 24 + 20] |= 0x40
++        source[0x381:0x395] = hashlib.sha1(source[top:top + 4096]).digest()
++        source[0x32C:0x340] = hashlib.sha1(source[0x344:0xA000]).digest()
++        with self.assertRaisesRegex(reader.StfsRosterError, "nonexistent secondary leaf"):
++            subject.rehash_roster(bytes(source), b"b" * 170 * 4096)
++
+ 
+ class LocalXeniaAuditTests(unittest.TestCase):
+     def test_pinned_source_has_no_signature_verification(self):
+diff --git a/tools/apf_stfs_roster_rehash.py b/tools/apf_stfs_roster_rehash.py
+index 5683c533..4b101f25 100644
+--- a/tools/apf_stfs_roster_rehash.py
++++ b/tools/apf_stfs_roster_rehash.py
+@@ -33,6 +33,9 @@ def _inventory(source: bytes):
+                  "Xenia hash-level boundary is ambiguous for this allocation; use raw Roster.ROS")
+     stfs.require(reader.sex or not reader.block_separation & 2,
+                  "Single-copy STFS package selects a nonexistent secondary table")
++    stfs.require(reader.sex or reader.top_level == 0
++                 or all(not entry.status & 0x40 for entry in reader.top_entries),
++                 "Single-copy STFS package selects a nonexistent secondary leaf table; use raw Roster.ROS")
+     entries = reader.directory_entries()
+     for index, entry in enumerate(entries):
+         # Xenia stops at the first empty row and indexes parents in its packed

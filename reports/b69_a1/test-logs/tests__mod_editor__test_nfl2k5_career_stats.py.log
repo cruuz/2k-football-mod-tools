@@ -1,0 +1,30 @@
+CAREER_STATS_REFUSED: output already exists: /tmp/career-cli-vn60dssa/body.bin
+CAREER_STATS_REFUSED: output already exists: /tmp/career-cli-vn60dssa/receipt.json
+..................
+----------------------------------------------------------------------
+Ran 18 tests in 9.856s
+
+OK
+{"output": "/tmp/career-cli-vn60dssa/stats.csv", "schema": "nfl2k5_career_stats/v1", "source_unchanged": true}
+{
+  "schema": "nfl2k5_career_stats/v1",
+  "base_year": 2004,
+  "source_body_sha256": "2a8ebd7891f750e7bc51b42463e97e44303c103a8370f39b7831816af12f6314",
+  "output_body_sha256": "2a8ebd7891f750e7bc51b42463e97e44303c103a8370f39b7831816af12f6314",
+  "pool_capacity": 50000,
+  "reserved_tail_words": 0,
+  "usable_capacity": 50000,
+  "used_before": 5,
+  "used_after": 5,
+  "free_after": 49995,
+  "added": 0,
+  "replaced": 0,
+  "unchanged": 4,
+  "source_missing": 0,
+  "no_xbe_change": true,
+  "roundtrip_verified": true,
+  "csv_sha256": "90661af700413ae810e759b1972454f0cd4a500e2d60762cc8dc85a04f37f7dc",
+  "output": "/tmp/career-cli-vn60dssa/result.bin",
+  "source_unchanged": true,
+  "format": "body"
+}

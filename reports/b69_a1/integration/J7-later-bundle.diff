@@ -1,0 +1,1759 @@
+diff --git a/ASTRA_REPORT.md b/ASTRA_REPORT.md
+index 13ca2a48..64ffe758 100644
+--- a/ASTRA_REPORT.md
++++ b/ASTRA_REPORT.md
+@@ -9,7 +9,7 @@ in this worktree. No remote, shared index or other job's branch was changed.
+ ## Before and after
+ 
+ [POLISH_AUDIT.md](POLISH_AUDIT.md) was committed before implementation and retains the
+-13-item before/after list. It links the complete static strings and constructed control
++16-item before/after list. It links the complete static strings and constructed control
+ inventories, recorded at 1480×920 and 1366×768.
+ 
+ | Before | After |
+@@ -18,13 +18,15 @@ inventories, recorded at 1480×920 and 1366×768.
+ | Disc ready listed receipt step keys; no retained copyable first-error summary. | Named build selections, measured result, retained-art warnings, original-disc assurance and next play action; Copy Build summary retains the first error. |
+ | APF completion mentioned CPU calling for unrelated builds. | Authored categories described in words; CPU book edits detected from the manifest, including book-only builds. |
+ | Updater exposed raw failures and ignored a browser-open failure. | Cause and recovery wording, including manual release-page recovery. |
++| Seven Help/export-folder actions ignored failed desktop handoffs. | A failed click leaves the exact address or path and a manual next step; successful handoffs add no dialog. |
+ | 394 distinct option/action captions lacked hover help. | Zero in the constructed page/tab inventory; existing specific help is retained. |
+ | 43 raw geometry clipping candidates. | Eight explained audit artifacts/intentional compact prose; zero clipped action captions. Music, Franchise and Stadium layouts corrected. |
+ | Two current GUI fields named stale betas; guides named old controls. | No prohibited release captions in GUI literals; both beta 69 guides match current sidebar and first-run controls. |
+ | No current per-studio FAQ. | Two linked FAQs fold the public beta-68 answers and beta-69 reports. |
++| APF status described an earlier wave and obsolete counts; packaged help retained private handoff wording. | Current beta 69 status links the guides and FAQ; PS3 import headings and Play Calling comparisons use public wording. |
+ | No single fast all-pages/string/doc gate. | Four standalone polish test files plus a reproducible full-catalog walker. |
+ 
+-Counts: **71 → 72 GUI modules**, **22,667 → 22,756 source string literals**,
++Counts: **71 → 72 GUI modules**, **22,667 → 22,760 source string literals**,
+ **2,204 → 2,478 distinct control/string/tooltip combinations**, **34 sidebar pages**.
+ Source counts include identifiers and filters; runtime counts distinguish text/help variants
+ and are not a claim of 2,478 separate visible buttons. Registry rows remain **161**, with
+@@ -56,19 +58,22 @@ claimed. MyCareer reporter evidence is kept bounded to the reported sequences.
+ 
+ ## Validation and practical limits
+ 
+-**49 of 50 standalone test files pass**: the passing files contain **548 cases**, including
++**49 of 50 standalone test files pass**: the passing files contain **551 cases**, including
+ **one skipped case**. The remaining existing registry-wide file has two setup errors due
+ to absent `docs/research/apf_audio.md`; its two runnable tests pass. The complete file list,
+ timings and logs are in [test_results.json](reports/b69_j7/test_results.json).
++The [standalone commands](reports/b69_j7/test_commands.txt) reproduce each complete file.
+ No failing assertion is being suppressed. The missing evidence gate needs an integration rerun.
+ 
+ The new all-pages test opens **34 pages**, visits **216 tabs** at two sizes and checks
+-**3,908 controls** in **11.488 seconds**; its child timeout is 55 seconds. The final walker
+-using hydrated release metadata takes **16.854 seconds**, with no modal dialogs or uncaught
++**3,908 controls** in **9.021 seconds**; its child timeout is 55 seconds. The final walker
++using hydrated release metadata takes **15.435 seconds**, with no modal dialogs or uncaught
+ slot exceptions. String hygiene rejects stale beta/RC captions, protocol/class text and
+ raw exception-object dialog bodies. Feedback tests cover failed builds, copied summaries,
+ unchanged and retained-art outcomes, APF book-only receipts and a failed browser handoff.
+-The local doc-link gate checks the two guides and two FAQs. Existing GUI subject files and
++The local doc-link gate checks the two guides, two FAQs, three related APF help pages and
++the current APF status introduction. Historical status entries retain their original wording.
++Existing GUI subject files and
+ the two adjusted legacy test files were run independently as required.
+ 
+ Two 1366-pixel screenshots were inspected. The eight residual geometry candidates are
+@@ -100,8 +105,8 @@ No retail bytes are included in the changes, reports or bundle.
+ - Restoring the missing registry evidence metadata and rerunning its existing standalone gate.
+ 
+ No core/tool writer, mod_build, build service, registry, J2 model-edit integration or
+-skeleton-pair explanation, or J1 equipment-fit refusal was edited. Generic Models worker
+-and failure-dialog formatting are the only Models changes. No writer repin or cave-manifest
++skeleton-pair explanation, or J1 equipment-fit refusal was edited. The Models changes cover
++generic worker/dialog formatting and reporting a failed export-folder handoff. No writer repin or cave-manifest
+ regeneration is required. The bundle and audit assets are development deliverables and
+ must not enter either product package.
+ 
+diff --git a/POLISH_AUDIT.md b/POLISH_AUDIT.md
+index 18c0d491..fd9e41b3 100644
+--- a/POLISH_AUDIT.md
++++ b/POLISH_AUDIT.md
+@@ -30,6 +30,9 @@ preserve the simpler-words pass.
+ | P11 | Getting-started docs retain obsolete release captions, internal WIRING/ASTRA instructions and no complete current sidebar map. | Beta 69 overview and every page in current navigation order, followed by existing tutorials. Remove internal handoff instructions. | Fixed |
+ | P12 | No dedicated current product FAQ. | Two linked FAQs fold the beta-68 answers and MacDog850, CER, Mud, lt9608 and 7ET answers from beta 69, with current evidence limits. | Fixed |
+ | P13 | No single fast regression gate covers all pages, their strings and current guide links. | Standalone string-hygiene, offscreen page/tab smoke and doc-link tests. | Added and passing |
++| P14 | Final action review found seven unchecked desktop handoffs: both studios' Discord/download links, the 2K5 guide, and Models/Stadium export folders. A missing browser or file handler makes these clicks silently do nothing. | Report a failed handoff and leave the exact address/path with a manual next step; test both success and failure without opening external applications. | Fixed and checked |
++| P15 | The current APF status introduction still calls alpha.90 an unreleased earlier wave and gives obsolete registry counts. The packaged PS3 import guide uses old beta numbers as current help headings. | Update the status introduction to beta 69 and use release-neutral import headings, preserving historical release records. | Fixed and checked |
++| P16 | The packaged CPU Play Calling guides retain a personal witness heading for Noah and internal P2/P3/brief references. | Keep the public comparison workflow and its evidence limits, remove private handoff language, and include these active help pages in the doc gate. | Fixed and checked |
+ 
+ Writer ownership: no core/tool writer, build service, model integration, equipment-fit
+ refusal or registry mutation is included in J7. Changes required there are recorded as
+@@ -41,12 +44,13 @@ historical version numbers. Counts and the before/after result are appended afte
+ | Measure | Before | After |
+ | --- | ---: | ---: |
+ | GUI modules inventoried | 71 | 72 |
+-| Non-docstring source string literals, including identifiers and filters | 22,667 | 22,756 |
++| Non-docstring source string literals, including identifiers and filters | 22,667 | 22,760 |
+ | Constructed sidebar pages, both studios | 34 | 34 |
+ | Distinct control/string/tooltip combinations | 2,204 | 2,478 |
+ | Distinct option/action captions lacking hover help | 394 | 0 |
+ | Raw geometry clipping candidates | 43 | 8 |
+-| Stale beta captions/help fields identified | 2 | 0 |
++| Stale GUI beta captions/help fields identified | 2 | 0 |
++| Unchecked browser/file-manager handoffs | 7 | 0 |
+ | New capabilities | 0 | 0 |
+ 
+ The remaining eight geometry candidates are **not truncated action captions**. Seven
+@@ -77,6 +81,14 @@ in words while retaining changed/unchanged/unmeasured outcomes and kept-original
+ APF completion describes authored asset categories and only describes CPU book edits when
+ present, including a book-only manifest with zero ordinary asset edits.
+ 
++The follow-up action sweep checks seven previously silent desktop handoffs in both Help
++menus and the 2K5 guide/Models/Stadium exports. Failed handoffs now retain the exact path or
++address with a manual next step. Tests trigger both studios' real menu actions with a failed
++desktop handler, and exercise local paths with spaces and successful handoffs separately.
++The APF status introduction now describes beta 69 without stale registry counts. Packaged
++PS3 import help uses release-neutral headings, and CPU Play Calling guides retain public
++comparison instructions without private P2/P3/brief or personal witness assignments.
++
+ ## Navigation, actions and evidence
+ 
+ The fast standalone gate opens **20 2K5 pages and 14 APF pages**, visits **216 tabs** across
+@@ -102,6 +114,7 @@ APF formation/play authoring and CPU Play Calling retain their stated unwitnesse
+ - [Music at 1366 px](reports/b69_j7/2k5_music_1366.png)
+ - [APF Stadium at 1366 px](reports/b69_j7/apf_stadium_1366.png)
+ - [Standalone test results and log paths](reports/b69_j7/test_results.json)
++- [Exact standalone commands](reports/b69_j7/test_commands.txt)
+ 
+ ```sh
+ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/beta69_polish_audit.py /tmp/j7-audit.json.gz
+@@ -111,9 +124,9 @@ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 test
+ QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_beta69_doc_links.py
+ ```
+ 
+-The final full-catalog walk took **16.854 seconds**. The smaller standalone all-pages gate
+-took **11.488 seconds**, with a 55-second subprocess timeout. Across **50 standalone test
+-files**, **49 pass** (548 test cases, including one skipped case). The existing registry-wide
++The final full-catalog walk took **15.435 seconds**. The smaller standalone all-pages gate
++took **9.021 seconds**, with a 55-second subprocess timeout. Across **50 standalone test
++files**, **49 pass** (551 test cases, including one skipped case). The existing registry-wide
+ `test_no_capability_is_invisible.py` runs two tests but has two setup errors because
+ `docs/research/apf_audio.md` is absent in this lean worktree. Its checks were not weakened;
+ restore the reviewed metadata and rerun during integration. See WIRING for the exact scope.
+diff --git a/WIRING.md b/WIRING.md
+index 8d7e2c1b..a04d0eeb 100644
+--- a/WIRING.md
++++ b/WIRING.md
+@@ -5,6 +5,11 @@ No core/tool writer, service, registry, model-project integration or equipment-f
+ was changed. No writer repin or cave-manifest regeneration is needed for J7. **Zero new
+ capabilities.** Existing count pins do not change.
+ 
++The Models follow-up only reports a failed **Open folder** handoff; it does not touch J2's
++import-pair checks or model-project integration. The new shared desktop helper uses the same
++`polish_qt.py` package entry listed below. The updated APF status and import/Play Calling
++guides already have package entries; their filenames are unchanged.
++
+ ## Required package entries
+ 
+ Both release allowlists are protected. Add these exact lines, once each, beside their
+diff --git a/docs/mod_editor/2k5_mod_studio_changelog.md b/docs/mod_editor/2k5_mod_studio_changelog.md
+index f1c0f49b..0f2a0398 100644
+--- a/docs/mod_editor/2k5_mod_studio_changelog.md
++++ b/docs/mod_editor/2k5_mod_studio_changelog.md
+@@ -6,6 +6,7 @@ Beta 69 adds planned features, answers every ESPN NFL 2K5 report in Discord afte
+ 
+ - Coach Edwards: “there is no way to tell specifically what needs to change”. Error dialogs keep the cause, remove exception class names and internal progress records, and give a next step. Build & Share adds Copy Build summary for the selection, result and first error. Disc ready describes the selected contents and preserves warnings about artwork left original. This is an interface change; it does not claim to fix the equipment writer.
+ - Long Music actions stay readable on a 1366-pixel window. Options keep their explanations on hover, tabs expose their full captions, and outdated release captions are removed from current help. Both studios' pages are checked offscreen; gameplay is unchanged by this polish pass.
++- Help links and exported model folders explain when your computer cannot open them, with the address or path to open yourself.
+ - MacDog850: “i also had to have chat gpt fix it”. The new FAQ explains reinstalling from the official Setup.exe, rebuilding, and posting the Build summary and first error. It also answers CER's dropped interceptions, Mud's menu radio request and emulator questions. Getting Started follows the current sidebar and button names.
+ 
+ - maumau78: “shoe slot 10 / style 6 is not show in-game”. The FAQ records the negative Bears result: Edit Player showed the imported design, while the played shoe stayed dark. The previous package-local colour proof was offline and did not establish that played binding. This documentation correction does not claim an equipment fix.
+diff --git a/docs/mod_editor/APF2K8_STATUS.md b/docs/mod_editor/APF2K8_STATUS.md
+index 29bfa56f..2d247b69 100644
+--- a/docs/mod_editor/APF2K8_STATUS.md
++++ b/docs/mod_editor/APF2K8_STATUS.md
+@@ -2,14 +2,18 @@
+ 
+ > **Product identity (source/UI): `0.1.0-alpha.90`.** Historical sealed packages below retain prior alpha numbers.
+ 
+-## Unreleased APF wave — 2026-09-09
+-
+-Source/UI alpha.90 carries beta 66 on top of alpha.85, which integrates bounded Play Design, shared Coverage Geometry,
+-Book Identity and final CPU-book cloning, three scheme presets, CPU audibles
+-and personnel guards, emulator-only pass-fetch patch export, and paired PS3
+-texture-bundle import. The registry now has 139 total records, including 52 APF
+-records: 31 Editable, 9 Preview, 3 Export-only, 4 Evidence and 5 Research.
+-All new gameplay is UNWITNESSED; see the [wave guide](apf_wave_2026_09_09.md).
++## Beta 69 — 2026-09-13
++
++Source/UI alpha.90 includes CPU Play Calling, bounded Create formation and Create play,
++Book Identity, CPU-book copies, shared Coverage Geometry, CPU audibles, personnel checks,
++pass-fetch patch export and supported PS3 roster and artwork imports. Read each control's
++scope; new gameplay remains UNWITNESSED. Editable means the tool can write the supported
++data, not that every in-game result has been tested.
++
++The [Getting Started guide](apf2k8_mod_studio_getting_started.md) follows every page in the
++current sidebar. The [FAQ](apf2k8_mod_studio_faq.md) answers installation, imports, Play
++Calling and play-design questions. See the [changelog](apf2k8_mod_studio_changelog.md)
++for this release's changes and evidence limits.
+ Historical counts and package identities below describe their original releases.
+ 
+ ## 0.1.0-alpha.84 — maintenance identity (beta-53)
+diff --git a/docs/mod_editor/apf2k8_mod_studio_changelog.md b/docs/mod_editor/apf2k8_mod_studio_changelog.md
+index d17e6dd2..e3d207b1 100644
+--- a/docs/mod_editor/apf2k8_mod_studio_changelog.md
++++ b/docs/mod_editor/apf2k8_mod_studio_changelog.md
+@@ -5,6 +5,7 @@
+ Beta 69 carries the APF 2K8 changes made after beta 67; bullets are added as each change lands.
+ 
+ - Urianus: “I don't understand this menu”. Error messages now keep the cause without exception class prefixes, and options carry hover help. Stadium actions keep their complete captions at laptop widths. A completed build names its authored contents and distinguishes CPU Play Calling edits from an unchanged copy. The checks are offscreen interface and receipt tests; they do not establish a new in-game result.
++- Community and download links explain when your computer cannot open the browser, with the address to open yourself.
+ - 7ET asked for an “Offensive Scheme Install Package”. The new FAQ explains that Play Calling decides which plays get called, while Create formation and Create play already exist in the design workspace. Both authoring experiments are off by default, limited to CPU books and UNWITNESSED in-game. Getting Started now lists every current sidebar page in order and links the installation, import and emulator answers.
+ 
+ ## 0.1.0-alpha.89 — beta 68: no APF changes — 2026-09-12
+diff --git a/docs/mod_editor/apf_b67_play_calling.md b/docs/mod_editor/apf_b67_play_calling.md
+index 27b31835..43fd0805 100644
+--- a/docs/mod_editor/apf_b67_play_calling.md
++++ b/docs/mod_editor/apf_b67_play_calling.md
+@@ -1,4 +1,4 @@
+-# Authoring CPU play calling in beta 67
++# Authoring CPU Play Calling
+ 
+ Each team chooses a book by name. Teams assigned the same book share its
+ formations, plays and ratings. Give a team its own copy before changing only
+@@ -54,12 +54,12 @@ then 1, 2, 3 and 4. Values 4 through 7 share the low endpoint. X does not
+ change the four Y audible assignments. The run/pass tendency, play suitability,
+ history and player skills can alter the final result.
+ 
+-## Goal-line witness for Urianus and Noah
++## Compare goal-line play choices
+ 
+ 1. Start from an owned retail folder and a fresh project. Assign one team its
+    own offensive book, using O-Singleback3WR as the donor. Add Jacks or Jokers
+    with ordinary plays from O-Shotgun if absent.
+-2. Run the requested **negative control**: give the heavy formation raw
++2. Start with this comparison: give the heavy formation raw
+    **7/7/7** and every Ace formation raw **0/0/0**. Build, assign the CPU team,
+    and use first-and-goal at the one. Record the actual loaded book and calls.
+    Those raw values favor Ace. A guaranteed heavy call is not the expected
+@@ -68,7 +68,7 @@ history and player skills can alter the final result.
+ 3. Reverse the raw values: heavy **0/0/0**, every Ace **7/7/7**. Build a new
+    folder and reload the match without a saved USER-book override. Repeat
+    first-and-goal at the one over several fresh calls. A heavy goal-line call
+-   is the intended positive witness. Selection remains a lottery.
++   is the intended result of this comparison. Selection remains a lottery.
+ 4. Record the book name, team, build identity, BASE or TU 1.1, situation,
+    formation and visible TE count. Remove the test formation, rebuild and
+    reload; confirm that it stays absent. Check both sides if authoring defense.
+diff --git a/docs/mod_editor/apf_b67_play_calling_editor.md b/docs/mod_editor/apf_b67_play_calling_editor.md
+index 4d296b0b..b4667769 100644
+--- a/docs/mod_editor/apf_b67_play_calling_editor.md
++++ b/docs/mod_editor/apf_b67_play_calling_editor.md
+@@ -1,6 +1,6 @@
+ # CPU Play Calling
+ 
+-Open **Playbooks → CPU Play Calling**. Choose a team, then offense or defense.
++Open **Playbooks & Plays → CPU Play Calling**. Choose a team, then offense or defense.
+ The page shows the book it uses now and every other team sharing that book.
+ For example: “O-ManBlock, shared with Beasts, Rollers, Top Guns and Wasps.”
+ Changing that book changes the calls available to all those teams.
+@@ -78,16 +78,16 @@ ratings and urgency changes that calculation. A zero raw rating does not disable
+ formation; remove it to exclude it from this book. A category averages its
+ applicable formations' weights before the category lottery, so edit all relevant
+ records of one personnel when trying to change that category's weight. The
+-brief's heavy 7/7/7 goal-line recipe therefore favours the *other* formations: use
++heavy 7/7/7 goal-line recipe therefore favours the *other* formations: use
+ raw 0/0/0 on the heavy set and 7/7/7 on the sets you want called less.
+-These are P3's measured values from `docs/mod_editor/apf_b67_play_calling.md`.
++See [Authoring CPU Play Calling](apf_b67_play_calling.md) for the measured values.
+ 
+ For removals and personnel changes, **Review before staging** names retired
+ categories and lists every requested row with its remaining candidates.
+ When the research classifies the lineup resolver's callers as non-CPU, an
+ uncovered row is a warning that you can confirm. If a CPU caller reaches it,
+ or classification is still unknown, the page refuses the unsafe change and
+-keeps the coverage visible so you can retain a nearby category. Beta 67's
++keeps the coverage visible so you can retain a nearby category. The
+ static audit found exactly two direct callers, both inside a routine that
+ supplies both team managers, and no direct caller of that routine, so the
+ classification stays unknown and the page still refuses. A writer that
+@@ -151,7 +151,7 @@ file. **Check personnel curve patch status** reads installation and config
+ state. **Remove personnel curve patch** removes only that Studio file. Restart
+ Xenia after changing patches.
+ 
+-The retained P2 actions are **Install TE bias for last-resort fetch…**,
++The pass-fetch actions are **Install TE bias for last-resort fetch…**,
+ **Install an exported pass-fetch patch…**, **Remove Studio pass-fetch patch**,
+ **Choose Xenia config…**, and **Check patch status**. Choose the game folder
+ and, when needed, **Choose Title Update 1.1…**; **Detect installed update**
+@@ -161,5 +161,5 @@ patch to the game Xenia will run.
+ 
+ The pass-fetch patch affects last-resort fetches at every down, including
+ user calls. **This is not a CPU play-calling fix.** The ordinary successful
+-weighted picker uses another path. Its installation uses the same explicit
+-P2 consent flow. Neither experiment has an in-game witness.
++weighted picker uses another path. Installation names the destination and asks
++before enabling patches. Neither experiment has an in-game witness.
+diff --git a/docs/mod_editor/ps3_bundle_import.md b/docs/mod_editor/ps3_bundle_import.md
+index 64463310..e42e8fd9 100644
+--- a/docs/mod_editor/ps3_bundle_import.md
++++ b/docs/mod_editor/ps3_bundle_import.md
+@@ -5,7 +5,7 @@ Team Logo and Field Art edits. It transfers decoded pixels, never PS3 archive
+ offsets, GTF containers, or PS3 compression. The mapping dialog is available through the studio's Import PS3 bundle action;
+ the core API and receipt CLI are also available.
+ 
+-## Beta 66.1 crest budgets
++## Crest import budgets
+ 
+ Equal DDS dimensions do not imply equal compressed size. Each crest package
+ has its own fixed budget for both mask layers and their regenerated mips.
+@@ -180,7 +180,7 @@ alone is insufficient for console safety. Other Field Art families retain
+ their existing base-only limitation. The imported art's in-game appearance
+ is **UNWITNESSED**.
+ 
+-## Beta 64 endzone coverage and format proof
++## Endzone coverage and format proof
+ 
+ The supplied collection still has **55 valid pairs**. There are now **117
+ writer-supported complete endzone destinations**, up from 78. The 39 newly
+diff --git a/mod_editor/apf_studio/gui.py b/mod_editor/apf_studio/gui.py
+index 85c92316..d91514e5 100644
+--- a/mod_editor/apf_studio/gui.py
++++ b/mod_editor/apf_studio/gui.py
+@@ -9,7 +9,7 @@ assets and does not touch a user's source directly; every operation crosses the
+ from __future__ import annotations
+ 
+ from mod_editor.gui.ux_text import plain_error, failure_body
+-from mod_editor.gui.polish_qt import polish_controls
++from mod_editor.gui.polish_qt import open_in_desktop, polish_controls
+ 
+ from dataclasses import dataclass, replace
+ import html
+@@ -44,7 +44,6 @@ from PyQt5.QtGui import (
+     QBrush,
+     QCloseEvent,
+     QColor,
+-    QDesktopServices,
+     QIcon,
+     QKeySequence,
+     QPainter,
+@@ -20175,11 +20174,11 @@ class ApfStudioMainWindow(QMainWindow):
+         discord_action = help_menu.addAction("Join the Discord…")
+         discord_action.setToolTip("Opens the community Discord invite in your browser.")
+         discord_action.triggered.connect(
+-            lambda: QDesktopServices.openUrl(QUrl(update_check.COMMUNITY_DISCORD))
++            lambda: open_in_desktop(self, QUrl(update_check.COMMUNITY_DISCORD))
+         )
+         releases_action = help_menu.addAction("Downloads and release notes…")
+         releases_action.triggered.connect(
+-            lambda: QDesktopServices.openUrl(QUrl(update_check.RELEASES_PAGE))
++            lambda: open_in_desktop(self, QUrl(update_check.RELEASES_PAGE))
+         )
+ 
+     def _check_for_updates_now(self) -> None:
+diff --git a/mod_editor/gui/models_panel_qt.py b/mod_editor/gui/models_panel_qt.py
+index 7c58441b..3337e996 100644
+--- a/mod_editor/gui/models_panel_qt.py
++++ b/mod_editor/gui/models_panel_qt.py
+@@ -13,12 +13,12 @@ Everything heavy runs on one background thread; the widget stays live.
+ from __future__ import annotations
+ 
+ from mod_editor.gui.ux_text import failure_body, plain_error
++from mod_editor.gui.polish_qt import open_in_desktop
+ 
+ from pathlib import Path
+ from typing import Callable
+ 
+ from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, QUrl, pyqtSignal
+-from PyQt5.QtGui import QDesktopServices
+ from PyQt5.QtWidgets import (
+     QCheckBox,
+     QComboBox,
+@@ -523,7 +523,7 @@ class ModelsPanel(QWidget):
+ 
+     def _open_export_folder(self) -> None:
+         if self._last_export is not None:
+-            QDesktopServices.openUrl(QUrl.fromLocalFile(str(self._last_export.gltf_path.parent)))
++            open_in_desktop(self, QUrl.fromLocalFile(str(self._last_export.gltf_path.parent)))
+ 
+     # ------------------------------------------------------------------ import
+     def _choose_edited(self) -> None:
+diff --git a/mod_editor/gui/polish_qt.py b/mod_editor/gui/polish_qt.py
+index e938078b..7b5dcd6e 100644
+--- a/mod_editor/gui/polish_qt.py
++++ b/mod_editor/gui/polish_qt.py
+@@ -4,11 +4,35 @@ Specific page help always wins. These defaults expose existing labels and help
+ on keyboard controls too, and keep text buttons readable inside scrolling pages.
+ """
+ from __future__ import annotations
++from PyQt5.QtCore import QUrl
++from PyQt5.QtGui import QDesktopServices
+ from PyQt5.QtWidgets import (
+     QAbstractButton, QAbstractSpinBox, QCheckBox, QComboBox, QFormLayout,
+-    QGridLayout, QLabel, QLineEdit, QPushButton, QToolButton, QTabWidget, QWidget,
++    QGridLayout, QLabel, QLineEdit, QMessageBox, QPushButton, QToolButton, QTabWidget, QWidget,
+ )
+ 
++
++def open_in_desktop(parent: QWidget | None, url: QUrl) -> bool:
++    """Leave a usable address when the browser or file handler cannot open it."""
++    if QDesktopServices.openUrl(url):
++        return True
++    if url.isLocalFile():
++        title = "Could not open the file or folder"
++        message = (
++            "Your computer did not open this location. Copy the path below into "
++            "your file manager, then open the file or folder there:\n\n"
++            + url.toLocalFile()
++        )
++    else:
++        title = "Could not open the web page"
++        message = (
++            "Your computer did not open this address. Copy it into your browser "
++            "to continue:\n\n" + url.toString()
++        )
++    QMessageBox.information(parent, title, message)
++    return False
++
++
+ def _field_label(widget: QWidget) -> str:
+     if widget.accessibleName():
+         return widget.accessibleName()
+diff --git a/mod_editor/gui/studio_qt.py b/mod_editor/gui/studio_qt.py
+index 5baf549e..0ab9a6c4 100644
+--- a/mod_editor/gui/studio_qt.py
++++ b/mod_editor/gui/studio_qt.py
+@@ -14,7 +14,7 @@ uniform browser shows metadata-only monograms generated from catalog labels.
+ from __future__ import annotations
+ 
+ from mod_editor.gui.ux_text import plain_error, failure_body
+-from mod_editor.gui.polish_qt import polish_controls
++from mod_editor.gui.polish_qt import open_in_desktop, polish_controls
+ 
+ from dataclasses import dataclass
+ import json
+@@ -29,7 +29,7 @@ from PyQt5.QtCore import (
+     QObject, QRunnable, QSize, Qt, QThreadPool, QTimer, QUrl, pyqtSignal, QAbstractListModel, QModelIndex,
+ )
+ from PyQt5.QtGui import (
+-    QColor, QCloseEvent, QDesktopServices, QFont, QIcon, QImageReader,
++    QColor, QCloseEvent, QFont, QIcon, QImageReader,
+     QKeySequence, QPainter, QPixmap,
+ )
+ from PyQt5.QtWidgets import (
+@@ -1910,7 +1910,7 @@ class StudioMainWindow(QMainWindow):
+         discord_action = help_menu.addAction("Join the Discord…")
+         discord_action.setToolTip("Opens the community Discord invite in your browser.")
+         discord_action.triggered.connect(
+-            lambda: QDesktopServices.openUrl(QUrl(update_check.COMMUNITY_DISCORD))
++            lambda: open_in_desktop(self, QUrl(update_check.COMMUNITY_DISCORD))
+         )
+         guide = _getting_started_document()
+         guide_action = help_menu.addAction("Getting started guide…")
+@@ -1920,7 +1920,7 @@ class StudioMainWindow(QMainWindow):
+         else:
+             guide_action.setToolTip(str(guide))
+             guide_action.triggered.connect(
+-                lambda _checked=False, path=guide: QDesktopServices.openUrl(QUrl.fromLocalFile(str(path)))
++                lambda _checked=False, path=guide: open_in_desktop(self, QUrl.fromLocalFile(str(path)))
+             )
+         help_menu.addSeparator()
+         check_action = help_menu.addAction("Check for Updates…")
+@@ -1938,9 +1938,7 @@ class StudioMainWindow(QMainWindow):
+         help_menu.addSeparator()
+         releases_action = help_menu.addAction("Downloads and release notes…")
+         releases_action.triggered.connect(
+-            lambda: QDesktopServices.openUrl(
+-                QUrl(update_check.RELEASES_PAGE)
+-            )
++            lambda: open_in_desktop(self, QUrl(update_check.RELEASES_PAGE))
+         )
+ 
+     def _check_for_updates_now(self) -> None:
+@@ -6561,9 +6559,7 @@ class StudioMainWindow(QMainWindow):
+             box.addButton("Close", QMessageBox.RejectRole)
+             box.exec_()
+             if box.clickedButton() is open_button:
+-                QDesktopServices.openUrl(
+-                    QUrl.fromLocalFile(str(gltf_path.parent))
+-                )
++                open_in_desktop(self, QUrl.fromLocalFile(str(gltf_path.parent)))
+ 
+         self._start_task(
+             lambda progress: self.facade.export_stadium_scene_gltf(
+diff --git a/reports/b69_j7/after.json.gz b/reports/b69_j7/after.json.gz
+index 94027909..cca5d466 100644
+Binary files a/reports/b69_j7/after.json.gz and b/reports/b69_j7/after.json.gz differ
+diff --git a/reports/b69_j7/audit_after.log b/reports/b69_j7/audit_after.log
+index 43a99bfc..78907654 100644
+--- a/reports/b69_j7/audit_after.log
++++ b/reports/b69_j7/audit_after.log
+@@ -39,8 +39,8 @@ This plugin does not support propagateSizeHints()
+ This plugin does not support propagateSizeHints()
+ This plugin does not support propagateSizeHints()
+ This plugin does not support propagateSizeHints()
+-2k5 11.158 seconds 1769 unique strings/controls 0 missing help 0 clipping candidates
++2k5 10.249 seconds 1769 unique strings/controls 0 missing help 0 clipping candidates
+ ['  Getting Started', '  Uniforms & Equipment', '  Names, Numbers & Faces', '  Text & Team Identity', '  Field Art & Create-Team Art', '  Stadiums', '  Presentation', '  Menus & UI', '  The Crib', '  Audio', '  Gameplay', '  Playbooks & Plays', '  All Textures', '  ★ Rosters', '  ★ Models', '  Animations', '  ★ Create a Play', '  MyCareer', '  Scorebar', '  ★ Build & Share']
+-apf 5.696 seconds 709 unique strings/controls 0 missing help 8 clipping candidates
++apf 5.186 seconds 709 unique strings/controls 0 missing help 8 clipping candidates
+ ['Getting Started', 'Uniforms & Equipment', 'Rosters & Players', 'Team Identity', 'Logos & Team Art', 'Scorebug & Presentation', 'Field Art', 'Stadium Studio', 'Menus & Text', 'Audio', 'Sliders & Gameplay', 'Playbooks & Plays', 'Season & Franchise Lab', 'All Game Assets']
+ dialogs [] crashes []
+diff --git a/reports/b69_j7/implementation_commits.txt b/reports/b69_j7/implementation_commits.txt
+index 706f19ab..3090359c 100644
+--- a/reports/b69_j7/implementation_commits.txt
++++ b/reports/b69_j7/implementation_commits.txt
+@@ -1,4 +1,4 @@
+-Implementation commits before the final audit and handoff commits:
++J7 commits before the final handoff refresh:
+ f445ad36 docs: record beta 69 studio polish audit before fixes
+ 9e9f1341 fix: show plain causes instead of exception class names
+ b25bb4a0 fix: explain update failures and failed browser handoffs
+@@ -23,3 +23,19 @@ caf9594d fix(apf): explain playbook editor failures
+ b2afa609 fix(apf): explain roster and save failures
+ b1da8293 fix(apf): give art and encoder dialogs a next step
+ e0572e85 docs(2k5): record the negative Style 6 played report
++b7ffa59d docs: record final offscreen audit and standalone validation
++b4b188a9 docs: hand off beta 69 polish and protected integration wiring
++fe137047 docs: record remaining silent desktop actions before fixing them
++c2fe8405 fix(gui): explain failed browser and file-manager handoffs
++0524d488 fix(2k5): keep help links and stadium folders actionable
++f43d8632 fix(models): explain when the export folder cannot open
++670f94ee fix(apf): report failed help-link handoffs
++45f033f9 test: exercise failed desktop handoffs in both studio menus
++ad452f50 docs: audit stale APF status and import-guide headings
++cbac7ca9 docs: audit private handoff language in packaged APF help
++6c225881 docs(apf): bring the current product status to beta 69
++ee35c7a0 docs(apf): remove stale release headings from PS3 import help
++1586bd77 docs(apf): make packaged play-calling comparisons public-facing
++f1a334bf docs(2k5): note recovery for desktop handoff failures
++24a2de89 docs(apf): note recovery for browser handoff failures
++2f9af2eb docs: refresh final polish inventories and standalone test evidence
+diff --git a/reports/b69_j7/metrics.json b/reports/b69_j7/metrics.json
+index ec7e1fba..76cf3e96 100644
+--- a/reports/b69_j7/metrics.json
++++ b/reports/b69_j7/metrics.json
+@@ -1,7 +1,7 @@
+ {
+   "source_literals": {
+     "before": 22667,
+-    "after": 22756
++    "after": 22760
+   },
+   "runtime": {
+     "before": [
+@@ -29,7 +29,7 @@
+         "unique_controls": 1769,
+         "missing_help_captions": 0,
+         "clipping_candidates": 0,
+-        "seconds": 11.158
++        "seconds": 10.249
+       },
+       {
+         "studio": "apf",
+@@ -37,9 +37,10 @@
+         "unique_controls": 709,
+         "missing_help_captions": 0,
+         "clipping_candidates": 8,
+-        "seconds": 5.696
++        "seconds": 5.186
+       }
+     ]
+   },
+-  "late_dialog_boundaries": 66
++  "late_dialog_boundaries": 66,
++  "desktop_handoffs_fixed": 7
+ }
+diff --git a/reports/b69_j7/source_strings_after.json.gz b/reports/b69_j7/source_strings_after.json.gz
+index d8ac75f1..64a3d76f 100644
+Binary files a/reports/b69_j7/source_strings_after.json.gz and b/reports/b69_j7/source_strings_after.json.gz differ
+diff --git a/reports/b69_j7/test_2k5_bump_retail_probe.log b/reports/b69_j7/test_2k5_bump_retail_probe.log
+index 652f2fcf..2d8580d7 100644
+--- a/reports/b69_j7/test_2k5_bump_retail_probe.log
++++ b/reports/b69_j7/test_2k5_bump_retail_probe.log
+@@ -1,5 +1,5 @@
+ .......
+ ----------------------------------------------------------------------
+-Ran 7 tests in 0.010s
++Ran 7 tests in 0.006s
+ 
+ OK
+diff --git a/reports/b69_j7/test_animations_panel_qt.log b/reports/b69_j7/test_animations_panel_qt.log
+index ad4b9b72..1444500f 100644
+--- a/reports/b69_j7/test_animations_panel_qt.log
++++ b/reports/b69_j7/test_animations_panel_qt.log
+@@ -1,5 +1,5 @@
+ ............
+ ----------------------------------------------------------------------
+-Ran 12 tests in 0.854s
++Ran 12 tests in 0.631s
+ 
+ OK
+diff --git a/reports/b69_j7/test_apf_audio_encoder_gui.log b/reports/b69_j7/test_apf_audio_encoder_gui.log
+index 4d95a621..af007abd 100644
+--- a/reports/b69_j7/test_apf_audio_encoder_gui.log
++++ b/reports/b69_j7/test_apf_audio_encoder_gui.log
+@@ -6,6 +6,6 @@
+ .This plugin does not support propagateSizeHints()
+ ..
+ ----------------------------------------------------------------------
+-Ran 8 tests in 0.280s
++Ran 8 tests in 0.155s
+ 
+ OK
+diff --git a/reports/b69_j7/test_apf_crest_budget_import.log b/reports/b69_j7/test_apf_crest_budget_import.log
+index 5c40a2ea..d60c1e05 100644
+--- a/reports/b69_j7/test_apf_crest_budget_import.log
++++ b/reports/b69_j7/test_apf_crest_budget_import.log
+@@ -1,5 +1,5 @@
+ ............
+ ----------------------------------------------------------------------
+-Ran 12 tests in 0.514s
++Ran 12 tests in 0.542s
+ 
+ OK
+diff --git a/reports/b69_j7/test_apf_package_map_writer.log b/reports/b69_j7/test_apf_package_map_writer.log
+index 54d3f72f..d6d71e3f 100644
+--- a/reports/b69_j7/test_apf_package_map_writer.log
++++ b/reports/b69_j7/test_apf_package_map_writer.log
+@@ -1,5 +1,5 @@
+ ........................................
+ ----------------------------------------------------------------------
+-Ran 40 tests in 2.040s
++Ran 40 tests in 1.261s
+ 
+ OK
+diff --git a/reports/b69_j7/test_apf_play_designer_qt.log b/reports/b69_j7/test_apf_play_designer_qt.log
+index f1d1b0df..1290d3fe 100644
+--- a/reports/b69_j7/test_apf_play_designer_qt.log
++++ b/reports/b69_j7/test_apf_play_designer_qt.log
+@@ -1,5 +1,5 @@
+ .....
+ ----------------------------------------------------------------------
+-Ran 5 tests in 0.287s
++Ran 5 tests in 0.136s
+ 
+ OK
+diff --git a/reports/b69_j7/test_apf_playbook_route_gui.log b/reports/b69_j7/test_apf_playbook_route_gui.log
+index 65ebe64b..a9ef7f70 100644
+--- a/reports/b69_j7/test_apf_playbook_route_gui.log
++++ b/reports/b69_j7/test_apf_playbook_route_gui.log
+@@ -1,5 +1,5 @@
+ .......
+ ----------------------------------------------------------------------
+-Ran 7 tests in 0.111s
++Ran 7 tests in 0.071s
+ 
+ OK
+diff --git a/reports/b69_j7/test_apf_playcalling_editor_qt.log b/reports/b69_j7/test_apf_playcalling_editor_qt.log
+index 5f9c9223..9e197af1 100644
+--- a/reports/b69_j7/test_apf_playcalling_editor_qt.log
++++ b/reports/b69_j7/test_apf_playcalling_editor_qt.log
+@@ -1,5 +1,5 @@
+ ..........
+ ----------------------------------------------------------------------
+-Ran 10 tests in 3.728s
++Ran 10 tests in 4.026s
+ 
+ OK
+diff --git a/reports/b69_j7/test_apf_product_findings_gui.log b/reports/b69_j7/test_apf_product_findings_gui.log
+index 134915dd..b06bc597 100644
+--- a/reports/b69_j7/test_apf_product_findings_gui.log
++++ b/reports/b69_j7/test_apf_product_findings_gui.log
+@@ -1,5 +1,5 @@
+ ..
+ ----------------------------------------------------------------------
+-Ran 2 tests in 0.095s
++Ran 2 tests in 0.113s
+ 
+ OK
+diff --git a/reports/b69_j7/test_apf_public_docs_registry_current.log b/reports/b69_j7/test_apf_public_docs_registry_current.log
+index 17903942..377c09ae 100644
+--- a/reports/b69_j7/test_apf_public_docs_registry_current.log
++++ b/reports/b69_j7/test_apf_public_docs_registry_current.log
+@@ -1,5 +1,5 @@
+ .....
+ ----------------------------------------------------------------------
+-Ran 5 tests in 0.129s
++Ran 5 tests in 0.205s
+ 
+ OK
+diff --git a/reports/b69_j7/test_apf_roster_workspace_gui.log b/reports/b69_j7/test_apf_roster_workspace_gui.log
+index dd2f35a1..6f288ff1 100644
+--- a/reports/b69_j7/test_apf_roster_workspace_gui.log
++++ b/reports/b69_j7/test_apf_roster_workspace_gui.log
+@@ -1,5 +1,5 @@
+ .
+ ----------------------------------------------------------------------
+-Ran 1 test in 0.037s
++Ran 1 test in 0.024s
+ 
+ OK
+diff --git a/reports/b69_j7/test_apf_save_playbook_assignments_gui.log b/reports/b69_j7/test_apf_save_playbook_assignments_gui.log
+index 7ee0db23..c3c0751b 100644
+--- a/reports/b69_j7/test_apf_save_playbook_assignments_gui.log
++++ b/reports/b69_j7/test_apf_save_playbook_assignments_gui.log
+@@ -1,5 +1,5 @@
+ ........
+ ----------------------------------------------------------------------
+-Ran 8 tests in 1.783s
++Ran 8 tests in 1.467s
+ 
+ OK
+diff --git a/reports/b69_j7/test_apf_save_roster_players_gui.log b/reports/b69_j7/test_apf_save_roster_players_gui.log
+index ab57b1e1..42054c18 100644
+--- a/reports/b69_j7/test_apf_save_roster_players_gui.log
++++ b/reports/b69_j7/test_apf_save_roster_players_gui.log
+@@ -1,5 +1,5 @@
+ ....
+ ----------------------------------------------------------------------
+-Ran 4 tests in 0.996s
++Ran 4 tests in 0.698s
+ 
+ OK
+diff --git a/reports/b69_j7/test_apf_splb_writer.log b/reports/b69_j7/test_apf_splb_writer.log
+index d293c15f..130197f1 100644
+--- a/reports/b69_j7/test_apf_splb_writer.log
++++ b/reports/b69_j7/test_apf_splb_writer.log
+@@ -1,5 +1,5 @@
+ ......................
+ ----------------------------------------------------------------------
+-Ran 22 tests in 0.447s
++Ran 22 tests in 0.223s
+ 
+ OK
+diff --git a/reports/b69_j7/test_apf_stadium_studio_gui.log b/reports/b69_j7/test_apf_stadium_studio_gui.log
+index 78573115..9d82fe11 100644
+--- a/reports/b69_j7/test_apf_stadium_studio_gui.log
++++ b/reports/b69_j7/test_apf_stadium_studio_gui.log
+@@ -1,5 +1,5 @@
+ ..
+ ----------------------------------------------------------------------
+-Ran 2 tests in 0.072s
++Ran 2 tests in 0.069s
+ 
+ OK
+diff --git a/reports/b69_j7/test_apf_team_logo_gui.log b/reports/b69_j7/test_apf_team_logo_gui.log
+index d009dd40..63cb029a 100644
+--- a/reports/b69_j7/test_apf_team_logo_gui.log
++++ b/reports/b69_j7/test_apf_team_logo_gui.log
+@@ -1,5 +1,5 @@
+ .......................
+ ----------------------------------------------------------------------
+-Ran 23 tests in 2.383s
++Ran 23 tests in 2.275s
+ 
+ OK
+diff --git a/reports/b69_j7/test_audio_panel_qt.log b/reports/b69_j7/test_audio_panel_qt.log
+index a863c8a9..a03a9c77 100644
+--- a/reports/b69_j7/test_audio_panel_qt.log
++++ b/reports/b69_j7/test_audio_panel_qt.log
+@@ -31,6 +31,6 @@ This plugin does not support propagateSizeHints()
+ This plugin does not support propagateSizeHints()
+ ..................
+ ----------------------------------------------------------------------
+-Ran 50 tests in 6.540s
++Ran 50 tests in 3.741s
+ 
+ OK
+diff --git a/reports/b69_j7/test_beta69_doc_links.log b/reports/b69_j7/test_beta69_doc_links.log
+index e089f624..8fae212c 100644
+--- a/reports/b69_j7/test_beta69_doc_links.log
++++ b/reports/b69_j7/test_beta69_doc_links.log
+@@ -1,5 +1,5 @@
+ ...
+ ----------------------------------------------------------------------
+-Ran 3 tests in 0.015s
++Ran 3 tests in 0.045s
+ 
+ OK
+diff --git a/reports/b69_j7/test_beta69_feedback_qt.log b/reports/b69_j7/test_beta69_feedback_qt.log
+index 59e06c0a..d1274e81 100644
+--- a/reports/b69_j7/test_beta69_feedback_qt.log
++++ b/reports/b69_j7/test_beta69_feedback_qt.log
+@@ -1,5 +1,5 @@
+-.....
++.......
+ ----------------------------------------------------------------------
+-Ran 5 tests in 0.574s
++Ran 7 tests in 0.365s
+ 
+ OK
+diff --git a/reports/b69_j7/test_beta69_string_hygiene.log b/reports/b69_j7/test_beta69_string_hygiene.log
+index 0fd65e9d..c365720b 100644
+--- a/reports/b69_j7/test_beta69_string_hygiene.log
++++ b/reports/b69_j7/test_beta69_string_hygiene.log
+@@ -1,5 +1,5 @@
+-....
++.....
+ ----------------------------------------------------------------------
+-Ran 4 tests in 5.503s
++Ran 5 tests in 4.095s
+ 
+ OK
+diff --git a/reports/b69_j7/test_beta69_studios_offscreen.log b/reports/b69_j7/test_beta69_studios_offscreen.log
+index 4433b679..fbcf429e 100644
+--- a/reports/b69_j7/test_beta69_studios_offscreen.log
++++ b/reports/b69_j7/test_beta69_studios_offscreen.log
+@@ -1,6 +1,6 @@
+ .
+ ----------------------------------------------------------------------
+-Ran 1 test in 11.488s
++Ran 1 test in 9.021s
+ 
+ OK
+ Opened 34 pages; 216 tab visits at two sizes; checked 3908 controls. No dialogs or slot exceptions.
+diff --git a/reports/b69_j7/test_build_panel_qt.log b/reports/b69_j7/test_build_panel_qt.log
+index a9232a8a..b7070983 100644
+--- a/reports/b69_j7/test_build_panel_qt.log
++++ b/reports/b69_j7/test_build_panel_qt.log
+@@ -1,5 +1,5 @@
+ .............
+ ----------------------------------------------------------------------
+-Ran 13 tests in 2.195s
++Ran 13 tests in 1.925s
+ 
+ OK
+diff --git a/reports/b69_j7/test_commands.txt b/reports/b69_j7/test_commands.txt
+new file mode 100644
+index 00000000..dffc31b6
+--- /dev/null
++++ b/reports/b69_j7/test_commands.txt
+@@ -0,0 +1,50 @@
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_2k5_bump_retail_probe.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_animations_panel_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_apf_audio_encoder_gui.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_apf_crest_budget_import.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_apf_package_map_writer.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_apf_play_designer_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_apf_playbook_route_gui.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_apf_playcalling_editor_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_apf_product_findings_gui.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_apf_public_docs_registry_current.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_apf_roster_workspace_gui.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_apf_save_playbook_assignments_gui.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_apf_save_roster_players_gui.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_apf_splb_writer.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_apf_stadium_studio_gui.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_apf_team_logo_gui.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_audio_panel_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_beta69_doc_links.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_beta69_feedback_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_beta69_string_hygiene.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_beta69_studios_offscreen.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_build_panel_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_commentary_panel_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_crib_panel_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_franchise_panel_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_gameplay_patches_panel_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_gui_refusal_wording.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_models_panel_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_music_panel_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_music_simple_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_create_play_wizard_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_defense_play_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_match_coverage_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_play_designer_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_stadium_blender_panel.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_no_capability_is_invisible.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_playbooks_panel_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_presentation_panel_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_product_inspection_panels_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_ps2_save_dialog_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_roster_editor_panel_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_self_update.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_self_update_manual_layout.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_senior_bowl_panel_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_share_panel_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_sounds_panel_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_studio_shell_layout_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_update_check.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_ux_build_plan_coverage_qt.py
++QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_ux_open_disc_hook_qt.py
+diff --git a/reports/b69_j7/test_commentary_panel_qt.log b/reports/b69_j7/test_commentary_panel_qt.log
+index ac132342..bb1bb6cb 100644
+--- a/reports/b69_j7/test_commentary_panel_qt.log
++++ b/reports/b69_j7/test_commentary_panel_qt.log
+@@ -1,5 +1,5 @@
+ ...
+ ----------------------------------------------------------------------
+-Ran 3 tests in 6.687s
++Ran 3 tests in 7.548s
+ 
+ OK
+diff --git a/reports/b69_j7/test_crib_panel_qt.log b/reports/b69_j7/test_crib_panel_qt.log
+index a2d3c93e..5c7d395c 100644
+--- a/reports/b69_j7/test_crib_panel_qt.log
++++ b/reports/b69_j7/test_crib_panel_qt.log
+@@ -1,5 +1,5 @@
+ ......
+ ----------------------------------------------------------------------
+-Ran 6 tests in 0.187s
++Ran 6 tests in 0.089s
+ 
+ OK
+diff --git a/reports/b69_j7/test_franchise_panel_qt.log b/reports/b69_j7/test_franchise_panel_qt.log
+index 75284f12..8b4abce8 100644
+--- a/reports/b69_j7/test_franchise_panel_qt.log
++++ b/reports/b69_j7/test_franchise_panel_qt.log
+@@ -1,5 +1,5 @@
+ ................
+ ----------------------------------------------------------------------
+-Ran 16 tests in 34.634s
++Ran 16 tests in 31.701s
+ 
+ OK
+diff --git a/reports/b69_j7/test_gameplay_patches_panel_qt.log b/reports/b69_j7/test_gameplay_patches_panel_qt.log
+index fbc606a2..ffa8af9b 100644
+--- a/reports/b69_j7/test_gameplay_patches_panel_qt.log
++++ b/reports/b69_j7/test_gameplay_patches_panel_qt.log
+@@ -1,5 +1,5 @@
+ .
+ ----------------------------------------------------------------------
+-Ran 1 test in 0.419s
++Ran 1 test in 0.353s
+ 
+ OK
+diff --git a/reports/b69_j7/test_gui_refusal_wording.log b/reports/b69_j7/test_gui_refusal_wording.log
+index 3ac41c5a..44612166 100644
+--- a/reports/b69_j7/test_gui_refusal_wording.log
++++ b/reports/b69_j7/test_gui_refusal_wording.log
+@@ -1,5 +1,5 @@
+ .......................
+ ----------------------------------------------------------------------
+-Ran 23 tests in 0.826s
++Ran 23 tests in 0.679s
+ 
+ OK
+diff --git a/reports/b69_j7/test_models_panel_qt.log b/reports/b69_j7/test_models_panel_qt.log
+index 769da5de..9b0b1856 100644
+--- a/reports/b69_j7/test_models_panel_qt.log
++++ b/reports/b69_j7/test_models_panel_qt.log
+@@ -1,5 +1,5 @@
+ s.......
+ ----------------------------------------------------------------------
+-Ran 8 tests in 11.111s
++Ran 8 tests in 8.779s
+ 
+ OK (skipped=1)
+diff --git a/reports/b69_j7/test_music_panel_qt.log b/reports/b69_j7/test_music_panel_qt.log
+index 66e751c2..8e78ad9e 100644
+--- a/reports/b69_j7/test_music_panel_qt.log
++++ b/reports/b69_j7/test_music_panel_qt.log
+@@ -1,5 +1,5 @@
+ .........
+ ----------------------------------------------------------------------
+-Ran 9 tests in 2.669s
++Ran 9 tests in 3.324s
+ 
+ OK
+diff --git a/reports/b69_j7/test_music_simple_qt.log b/reports/b69_j7/test_music_simple_qt.log
+index 42f7dcc3..7b35d961 100644
+--- a/reports/b69_j7/test_music_simple_qt.log
++++ b/reports/b69_j7/test_music_simple_qt.log
+@@ -39,6 +39,6 @@ This plugin does not support propagateSizeHints()
+ This plugin does not support propagateSizeHints()
+ .
+ ----------------------------------------------------------------------
+-Ran 9 tests in 4.282s
++Ran 9 tests in 5.050s
+ 
+ OK
+diff --git a/reports/b69_j7/test_nfl2k5_create_play_wizard_qt.log b/reports/b69_j7/test_nfl2k5_create_play_wizard_qt.log
+index f18636aa..d984b81d 100644
+--- a/reports/b69_j7/test_nfl2k5_create_play_wizard_qt.log
++++ b/reports/b69_j7/test_nfl2k5_create_play_wizard_qt.log
+@@ -1,5 +1,5 @@
+ ..
+ ----------------------------------------------------------------------
+-Ran 2 tests in 59.246s
++Ran 2 tests in 50.707s
+ 
+ OK
+diff --git a/reports/b69_j7/test_nfl2k5_defense_play_qt.log b/reports/b69_j7/test_nfl2k5_defense_play_qt.log
+index 63472e2e..8527f997 100644
+--- a/reports/b69_j7/test_nfl2k5_defense_play_qt.log
++++ b/reports/b69_j7/test_nfl2k5_defense_play_qt.log
+@@ -1,5 +1,5 @@
+ ....
+ ----------------------------------------------------------------------
+-Ran 4 tests in 3.681s
++Ran 4 tests in 3.397s
+ 
+ OK
+diff --git a/reports/b69_j7/test_nfl2k5_match_coverage_qt.log b/reports/b69_j7/test_nfl2k5_match_coverage_qt.log
+index 3a825a4a..6351d22d 100644
+--- a/reports/b69_j7/test_nfl2k5_match_coverage_qt.log
++++ b/reports/b69_j7/test_nfl2k5_match_coverage_qt.log
+@@ -1,5 +1,5 @@
+ ....
+ ----------------------------------------------------------------------
+-Ran 4 tests in 9.333s
++Ran 4 tests in 7.507s
+ 
+ OK
+diff --git a/reports/b69_j7/test_nfl2k5_play_designer_qt.log b/reports/b69_j7/test_nfl2k5_play_designer_qt.log
+index 7ec9e077..7bde1267 100644
+--- a/reports/b69_j7/test_nfl2k5_play_designer_qt.log
++++ b/reports/b69_j7/test_nfl2k5_play_designer_qt.log
+@@ -1,5 +1,5 @@
+ ....
+ ----------------------------------------------------------------------
+-Ran 4 tests in 0.422s
++Ran 4 tests in 0.263s
+ 
+ OK
+diff --git a/reports/b69_j7/test_nfl2k5_stadium_blender_panel.log b/reports/b69_j7/test_nfl2k5_stadium_blender_panel.log
+index 0930dc2c..e6903daa 100644
+--- a/reports/b69_j7/test_nfl2k5_stadium_blender_panel.log
++++ b/reports/b69_j7/test_nfl2k5_stadium_blender_panel.log
+@@ -1,5 +1,5 @@
+ ..
+ ----------------------------------------------------------------------
+-Ran 2 tests in 0.055s
++Ran 2 tests in 0.029s
+ 
+ OK
+diff --git a/reports/b69_j7/test_no_capability_is_invisible.log b/reports/b69_j7/test_no_capability_is_invisible.log
+index bc71a444..66dcb83f 100644
+--- a/reports/b69_j7/test_no_capability_is_invisible.log
++++ b/reports/b69_j7/test_no_capability_is_invisible.log
+@@ -54,6 +54,6 @@ Traceback (most recent call last):
+ mod_editor.core.errors.RegistryError: Cannot read capability registry: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md
+ 
+ ----------------------------------------------------------------------
+-Ran 2 tests in 0.013s
++Ran 2 tests in 0.018s
+ 
+ FAILED (errors=2)
+diff --git a/reports/b69_j7/test_playbooks_panel_qt.log b/reports/b69_j7/test_playbooks_panel_qt.log
+index 898a5c31..45ab9761 100644
+--- a/reports/b69_j7/test_playbooks_panel_qt.log
++++ b/reports/b69_j7/test_playbooks_panel_qt.log
+@@ -1,5 +1,5 @@
+ ........
+ ----------------------------------------------------------------------
+-Ran 8 tests in 0.567s
++Ran 8 tests in 0.217s
+ 
+ OK
+diff --git a/reports/b69_j7/test_presentation_panel_qt.log b/reports/b69_j7/test_presentation_panel_qt.log
+index ea4c287f..284ec500 100644
+--- a/reports/b69_j7/test_presentation_panel_qt.log
++++ b/reports/b69_j7/test_presentation_panel_qt.log
+@@ -1,5 +1,5 @@
+ ..
+ ----------------------------------------------------------------------
+-Ran 2 tests in 6.281s
++Ran 2 tests in 9.073s
+ 
+ OK
+diff --git a/reports/b69_j7/test_product_inspection_panels_qt.log b/reports/b69_j7/test_product_inspection_panels_qt.log
+index e42b3cac..68010bc1 100644
+--- a/reports/b69_j7/test_product_inspection_panels_qt.log
++++ b/reports/b69_j7/test_product_inspection_panels_qt.log
+@@ -1,5 +1,5 @@
+ .......
+ ----------------------------------------------------------------------
+-Ran 7 tests in 10.202s
++Ran 7 tests in 7.708s
+ 
+ OK
+diff --git a/reports/b69_j7/test_ps2_save_dialog_qt.log b/reports/b69_j7/test_ps2_save_dialog_qt.log
+index 67672eef..45333be2 100644
+--- a/reports/b69_j7/test_ps2_save_dialog_qt.log
++++ b/reports/b69_j7/test_ps2_save_dialog_qt.log
+@@ -1,5 +1,5 @@
+ ............................................
+ ----------------------------------------------------------------------
+-Ran 44 tests in 0.684s
++Ran 44 tests in 0.651s
+ 
+ OK
+diff --git a/reports/b69_j7/test_results.json b/reports/b69_j7/test_results.json
+index 1fc8ec20..ad6a9e10 100644
+--- a/reports/b69_j7/test_results.json
++++ b/reports/b69_j7/test_results.json
+@@ -3,7 +3,7 @@
+     "file": "tests/mod_editor/test_2k5_bump_retail_probe.py",
+     "status": "passed",
+     "tests_run": 7,
+-    "seconds": 0.01,
++    "seconds": 0.006,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_2k5_bump_retail_probe.log"
+   },
+@@ -11,7 +11,7 @@
+     "file": "tests/mod_editor/test_animations_panel_qt.py",
+     "status": "passed",
+     "tests_run": 12,
+-    "seconds": 0.854,
++    "seconds": 0.631,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_animations_panel_qt.log"
+   },
+@@ -19,7 +19,7 @@
+     "file": "tests/mod_editor/test_apf_audio_encoder_gui.py",
+     "status": "passed",
+     "tests_run": 8,
+-    "seconds": 0.28,
++    "seconds": 0.155,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_apf_audio_encoder_gui.log"
+   },
+@@ -27,7 +27,7 @@
+     "file": "tests/mod_editor/test_apf_crest_budget_import.py",
+     "status": "passed",
+     "tests_run": 12,
+-    "seconds": 0.514,
++    "seconds": 0.542,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_apf_crest_budget_import.log"
+   },
+@@ -35,7 +35,7 @@
+     "file": "tests/mod_editor/test_apf_package_map_writer.py",
+     "status": "passed",
+     "tests_run": 40,
+-    "seconds": 2.04,
++    "seconds": 1.261,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_apf_package_map_writer.log"
+   },
+@@ -43,7 +43,7 @@
+     "file": "tests/mod_editor/test_apf_play_designer_qt.py",
+     "status": "passed",
+     "tests_run": 5,
+-    "seconds": 0.287,
++    "seconds": 0.136,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_apf_play_designer_qt.log"
+   },
+@@ -51,7 +51,7 @@
+     "file": "tests/mod_editor/test_apf_playbook_route_gui.py",
+     "status": "passed",
+     "tests_run": 7,
+-    "seconds": 0.111,
++    "seconds": 0.071,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_apf_playbook_route_gui.log"
+   },
+@@ -59,7 +59,7 @@
+     "file": "tests/mod_editor/test_apf_playcalling_editor_qt.py",
+     "status": "passed",
+     "tests_run": 10,
+-    "seconds": 3.728,
++    "seconds": 4.026,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_apf_playcalling_editor_qt.log"
+   },
+@@ -67,7 +67,7 @@
+     "file": "tests/mod_editor/test_apf_product_findings_gui.py",
+     "status": "passed",
+     "tests_run": 2,
+-    "seconds": 0.095,
++    "seconds": 0.113,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_apf_product_findings_gui.log"
+   },
+@@ -75,7 +75,7 @@
+     "file": "tests/mod_editor/test_apf_public_docs_registry_current.py",
+     "status": "passed",
+     "tests_run": 5,
+-    "seconds": 0.129,
++    "seconds": 0.205,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_apf_public_docs_registry_current.log"
+   },
+@@ -83,7 +83,7 @@
+     "file": "tests/mod_editor/test_apf_roster_workspace_gui.py",
+     "status": "passed",
+     "tests_run": 1,
+-    "seconds": 0.037,
++    "seconds": 0.024,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_apf_roster_workspace_gui.log"
+   },
+@@ -91,7 +91,7 @@
+     "file": "tests/mod_editor/test_apf_save_playbook_assignments_gui.py",
+     "status": "passed",
+     "tests_run": 8,
+-    "seconds": 1.783,
++    "seconds": 1.467,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_apf_save_playbook_assignments_gui.log"
+   },
+@@ -99,7 +99,7 @@
+     "file": "tests/mod_editor/test_apf_save_roster_players_gui.py",
+     "status": "passed",
+     "tests_run": 4,
+-    "seconds": 0.996,
++    "seconds": 0.698,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_apf_save_roster_players_gui.log"
+   },
+@@ -107,7 +107,7 @@
+     "file": "tests/mod_editor/test_apf_splb_writer.py",
+     "status": "passed",
+     "tests_run": 22,
+-    "seconds": 0.447,
++    "seconds": 0.223,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_apf_splb_writer.log"
+   },
+@@ -115,7 +115,7 @@
+     "file": "tests/mod_editor/test_apf_stadium_studio_gui.py",
+     "status": "passed",
+     "tests_run": 2,
+-    "seconds": 0.072,
++    "seconds": 0.069,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_apf_stadium_studio_gui.log"
+   },
+@@ -123,7 +123,7 @@
+     "file": "tests/mod_editor/test_apf_team_logo_gui.py",
+     "status": "passed",
+     "tests_run": 23,
+-    "seconds": 2.383,
++    "seconds": 2.275,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_apf_team_logo_gui.log"
+   },
+@@ -131,7 +131,7 @@
+     "file": "tests/mod_editor/test_audio_panel_qt.py",
+     "status": "passed",
+     "tests_run": 50,
+-    "seconds": 6.54,
++    "seconds": 3.741,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_audio_panel_qt.log"
+   },
+@@ -139,23 +139,23 @@
+     "file": "tests/mod_editor/test_beta69_doc_links.py",
+     "status": "passed",
+     "tests_run": 3,
+-    "seconds": 0.015,
++    "seconds": 0.045,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_beta69_doc_links.log"
+   },
+   {
+     "file": "tests/mod_editor/test_beta69_feedback_qt.py",
+     "status": "passed",
+-    "tests_run": 5,
+-    "seconds": 0.574,
++    "tests_run": 7,
++    "seconds": 0.365,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_beta69_feedback_qt.log"
+   },
+   {
+     "file": "tests/mod_editor/test_beta69_string_hygiene.py",
+     "status": "passed",
+-    "tests_run": 4,
+-    "seconds": 5.503,
++    "tests_run": 5,
++    "seconds": 4.095,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_beta69_string_hygiene.log"
+   },
+@@ -163,7 +163,7 @@
+     "file": "tests/mod_editor/test_beta69_studios_offscreen.py",
+     "status": "passed",
+     "tests_run": 1,
+-    "seconds": 11.488,
++    "seconds": 9.021,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_beta69_studios_offscreen.log"
+   },
+@@ -171,7 +171,7 @@
+     "file": "tests/mod_editor/test_build_panel_qt.py",
+     "status": "passed",
+     "tests_run": 13,
+-    "seconds": 2.195,
++    "seconds": 1.925,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_build_panel_qt.log"
+   },
+@@ -179,7 +179,7 @@
+     "file": "tests/mod_editor/test_commentary_panel_qt.py",
+     "status": "passed",
+     "tests_run": 3,
+-    "seconds": 6.687,
++    "seconds": 7.548,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_commentary_panel_qt.log"
+   },
+@@ -187,7 +187,7 @@
+     "file": "tests/mod_editor/test_crib_panel_qt.py",
+     "status": "passed",
+     "tests_run": 6,
+-    "seconds": 0.187,
++    "seconds": 0.089,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_crib_panel_qt.log"
+   },
+@@ -195,7 +195,7 @@
+     "file": "tests/mod_editor/test_franchise_panel_qt.py",
+     "status": "passed",
+     "tests_run": 16,
+-    "seconds": 34.634,
++    "seconds": 31.701,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_franchise_panel_qt.log"
+   },
+@@ -203,7 +203,7 @@
+     "file": "tests/mod_editor/test_gameplay_patches_panel_qt.py",
+     "status": "passed",
+     "tests_run": 1,
+-    "seconds": 0.419,
++    "seconds": 0.353,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_gameplay_patches_panel_qt.log"
+   },
+@@ -211,7 +211,7 @@
+     "file": "tests/mod_editor/test_gui_refusal_wording.py",
+     "status": "passed",
+     "tests_run": 23,
+-    "seconds": 0.826,
++    "seconds": 0.679,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_gui_refusal_wording.log"
+   },
+@@ -219,7 +219,7 @@
+     "file": "tests/mod_editor/test_models_panel_qt.py",
+     "status": "passed",
+     "tests_run": 8,
+-    "seconds": 11.111,
++    "seconds": 8.779,
+     "skipped": 1,
+     "log": "reports/b69_j7/test_models_panel_qt.log"
+   },
+@@ -227,7 +227,7 @@
+     "file": "tests/mod_editor/test_music_panel_qt.py",
+     "status": "passed",
+     "tests_run": 9,
+-    "seconds": 2.669,
++    "seconds": 3.324,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_music_panel_qt.log"
+   },
+@@ -235,7 +235,7 @@
+     "file": "tests/mod_editor/test_music_simple_qt.py",
+     "status": "passed",
+     "tests_run": 9,
+-    "seconds": 4.282,
++    "seconds": 5.05,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_music_simple_qt.log"
+   },
+@@ -243,7 +243,7 @@
+     "file": "tests/mod_editor/test_nfl2k5_create_play_wizard_qt.py",
+     "status": "passed",
+     "tests_run": 2,
+-    "seconds": 59.246,
++    "seconds": 50.707,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_nfl2k5_create_play_wizard_qt.log"
+   },
+@@ -251,7 +251,7 @@
+     "file": "tests/mod_editor/test_nfl2k5_defense_play_qt.py",
+     "status": "passed",
+     "tests_run": 4,
+-    "seconds": 3.681,
++    "seconds": 3.397,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_nfl2k5_defense_play_qt.log"
+   },
+@@ -259,7 +259,7 @@
+     "file": "tests/mod_editor/test_nfl2k5_match_coverage_qt.py",
+     "status": "passed",
+     "tests_run": 4,
+-    "seconds": 9.333,
++    "seconds": 7.507,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_nfl2k5_match_coverage_qt.log"
+   },
+@@ -267,7 +267,7 @@
+     "file": "tests/mod_editor/test_nfl2k5_play_designer_qt.py",
+     "status": "passed",
+     "tests_run": 4,
+-    "seconds": 0.422,
++    "seconds": 0.263,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_nfl2k5_play_designer_qt.log"
+   },
+@@ -275,15 +275,15 @@
+     "file": "tests/mod_editor/test_nfl2k5_stadium_blender_panel.py",
+     "status": "passed",
+     "tests_run": 2,
+-    "seconds": 0.055,
++    "seconds": 0.029,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_nfl2k5_stadium_blender_panel.log"
+   },
+   {
+     "file": "tests/mod_editor/test_no_capability_is_invisible.py",
+-    "status": "blocked",
++    "status": "failed",
+     "tests_run": 2,
+-    "seconds": 0.013,
++    "seconds": 0.018,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_no_capability_is_invisible.log"
+   },
+@@ -291,7 +291,7 @@
+     "file": "tests/mod_editor/test_playbooks_panel_qt.py",
+     "status": "passed",
+     "tests_run": 8,
+-    "seconds": 0.567,
++    "seconds": 0.217,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_playbooks_panel_qt.log"
+   },
+@@ -299,7 +299,7 @@
+     "file": "tests/mod_editor/test_presentation_panel_qt.py",
+     "status": "passed",
+     "tests_run": 2,
+-    "seconds": 6.281,
++    "seconds": 9.073,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_presentation_panel_qt.log"
+   },
+@@ -307,7 +307,7 @@
+     "file": "tests/mod_editor/test_product_inspection_panels_qt.py",
+     "status": "passed",
+     "tests_run": 7,
+-    "seconds": 10.202,
++    "seconds": 7.708,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_product_inspection_panels_qt.log"
+   },
+@@ -315,7 +315,7 @@
+     "file": "tests/mod_editor/test_ps2_save_dialog_qt.py",
+     "status": "passed",
+     "tests_run": 44,
+-    "seconds": 0.684,
++    "seconds": 0.651,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_ps2_save_dialog_qt.log"
+   },
+@@ -323,7 +323,7 @@
+     "file": "tests/mod_editor/test_roster_editor_panel_qt.py",
+     "status": "passed",
+     "tests_run": 50,
+-    "seconds": 18.125,
++    "seconds": 14.277,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_roster_editor_panel_qt.log"
+   },
+@@ -331,7 +331,7 @@
+     "file": "tests/mod_editor/test_self_update.py",
+     "status": "passed",
+     "tests_run": 26,
+-    "seconds": 1.408,
++    "seconds": 1.444,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_self_update.log"
+   },
+@@ -347,7 +347,7 @@
+     "file": "tests/mod_editor/test_senior_bowl_panel_qt.py",
+     "status": "passed",
+     "tests_run": 5,
+-    "seconds": 0.121,
++    "seconds": 0.112,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_senior_bowl_panel_qt.log"
+   },
+@@ -355,7 +355,7 @@
+     "file": "tests/mod_editor/test_share_panel_qt.py",
+     "status": "passed",
+     "tests_run": 7,
+-    "seconds": 6.303,
++    "seconds": 9.334,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_share_panel_qt.log"
+   },
+@@ -363,7 +363,7 @@
+     "file": "tests/mod_editor/test_sounds_panel_qt.py",
+     "status": "passed",
+     "tests_run": 10,
+-    "seconds": 7.39,
++    "seconds": 11.029,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_sounds_panel_qt.log"
+   },
+@@ -371,7 +371,7 @@
+     "file": "tests/mod_editor/test_studio_shell_layout_qt.py",
+     "status": "passed",
+     "tests_run": 18,
+-    "seconds": 41.718,
++    "seconds": 50.105,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_studio_shell_layout_qt.log"
+   },
+@@ -379,7 +379,7 @@
+     "file": "tests/mod_editor/test_update_check.py",
+     "status": "passed",
+     "tests_run": 21,
+-    "seconds": 0.006,
++    "seconds": 0.005,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_update_check.log"
+   },
+@@ -387,7 +387,7 @@
+     "file": "tests/mod_editor/test_ux_build_plan_coverage_qt.py",
+     "status": "passed",
+     "tests_run": 7,
+-    "seconds": 1.694,
++    "seconds": 1.637,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_ux_build_plan_coverage_qt.log"
+   },
+@@ -395,7 +395,7 @@
+     "file": "tests/mod_editor/test_ux_open_disc_hook_qt.py",
+     "status": "passed",
+     "tests_run": 7,
+-    "seconds": 14.422,
++    "seconds": 15.621,
+     "skipped": 0,
+     "log": "reports/b69_j7/test_ux_open_disc_hook_qt.log"
+   }
+diff --git a/reports/b69_j7/test_roster_editor_panel_qt.log b/reports/b69_j7/test_roster_editor_panel_qt.log
+index 3998f1af..3359824e 100644
+--- a/reports/b69_j7/test_roster_editor_panel_qt.log
++++ b/reports/b69_j7/test_roster_editor_panel_qt.log
+@@ -1,5 +1,5 @@
+ ..................................................
+ ----------------------------------------------------------------------
+-Ran 50 tests in 18.125s
++Ran 50 tests in 14.277s
+ 
+ OK
+diff --git a/reports/b69_j7/test_self_update.log b/reports/b69_j7/test_self_update.log
+index 81c26fea..b5cb6f98 100644
+--- a/reports/b69_j7/test_self_update.log
++++ b/reports/b69_j7/test_self_update.log
+@@ -10,6 +10,6 @@ This plugin does not support propagateSizeHints()
+ This plugin does not support propagateSizeHints()
+ .......................
+ ----------------------------------------------------------------------
+-Ran 26 tests in 1.408s
++Ran 26 tests in 1.444s
+ 
+ OK
+diff --git a/reports/b69_j7/test_senior_bowl_panel_qt.log b/reports/b69_j7/test_senior_bowl_panel_qt.log
+index 9115b206..5fa9bb7b 100644
+--- a/reports/b69_j7/test_senior_bowl_panel_qt.log
++++ b/reports/b69_j7/test_senior_bowl_panel_qt.log
+@@ -1,5 +1,5 @@
+ .....
+ ----------------------------------------------------------------------
+-Ran 5 tests in 0.121s
++Ran 5 tests in 0.112s
+ 
+ OK
+diff --git a/reports/b69_j7/test_share_panel_qt.log b/reports/b69_j7/test_share_panel_qt.log
+index 77a43c1f..6ae10fde 100644
+--- a/reports/b69_j7/test_share_panel_qt.log
++++ b/reports/b69_j7/test_share_panel_qt.log
+@@ -1,5 +1,5 @@
+ .......
+ ----------------------------------------------------------------------
+-Ran 7 tests in 6.303s
++Ran 7 tests in 9.334s
+ 
+ OK
+diff --git a/reports/b69_j7/test_sounds_panel_qt.log b/reports/b69_j7/test_sounds_panel_qt.log
+index 03a8fb93..8bf87760 100644
+--- a/reports/b69_j7/test_sounds_panel_qt.log
++++ b/reports/b69_j7/test_sounds_panel_qt.log
+@@ -1,5 +1,5 @@
+ ..........
+ ----------------------------------------------------------------------
+-Ran 10 tests in 7.390s
++Ran 10 tests in 11.029s
+ 
+ OK
+diff --git a/reports/b69_j7/test_studio_shell_layout_qt.log b/reports/b69_j7/test_studio_shell_layout_qt.log
+index b3e349da..41a5a87b 100644
+--- a/reports/b69_j7/test_studio_shell_layout_qt.log
++++ b/reports/b69_j7/test_studio_shell_layout_qt.log
+@@ -1,5 +1,5 @@
+ ..................
+ ----------------------------------------------------------------------
+-Ran 18 tests in 41.718s
++Ran 18 tests in 50.105s
+ 
+ OK
+diff --git a/reports/b69_j7/test_update_check.log b/reports/b69_j7/test_update_check.log
+index 44963000..10d7d061 100644
+--- a/reports/b69_j7/test_update_check.log
++++ b/reports/b69_j7/test_update_check.log
+@@ -1,5 +1,5 @@
+ .....................
+ ----------------------------------------------------------------------
+-Ran 21 tests in 0.006s
++Ran 21 tests in 0.005s
+ 
+ OK
+diff --git a/reports/b69_j7/test_ux_build_plan_coverage_qt.log b/reports/b69_j7/test_ux_build_plan_coverage_qt.log
+index f48393fa..a0864ad3 100644
+--- a/reports/b69_j7/test_ux_build_plan_coverage_qt.log
++++ b/reports/b69_j7/test_ux_build_plan_coverage_qt.log
+@@ -1,5 +1,5 @@
+ .......
+ ----------------------------------------------------------------------
+-Ran 7 tests in 1.694s
++Ran 7 tests in 1.637s
+ 
+ OK
+diff --git a/reports/b69_j7/test_ux_open_disc_hook_qt.log b/reports/b69_j7/test_ux_open_disc_hook_qt.log
+index 47a69ee0..343d5766 100644
+--- a/reports/b69_j7/test_ux_open_disc_hook_qt.log
++++ b/reports/b69_j7/test_ux_open_disc_hook_qt.log
+@@ -1,5 +1,5 @@
+ .......
+ ----------------------------------------------------------------------
+-Ran 7 tests in 14.422s
++Ran 7 tests in 15.621s
+ 
+ OK
+diff --git a/tests/mod_editor/test_beta69_doc_links.py b/tests/mod_editor/test_beta69_doc_links.py
+index 7327566c..38a42116 100644
+--- a/tests/mod_editor/test_beta69_doc_links.py
++++ b/tests/mod_editor/test_beta69_doc_links.py
+@@ -8,13 +8,19 @@ from urllib.parse import unquote, urlsplit
+ ROOT = Path(__file__).resolve().parents[2]
+ DOCS = [ROOT / 'docs/mod_editor' / (product + '_mod_studio_' + kind + '.md')
+         for product in ('2k5', 'apf2k8') for kind in ('getting_started', 'faq')]
++CURRENT_HELP = [ROOT / 'docs/mod_editor' / name for name in (
++    'ps3_bundle_import.md', 'apf_b67_play_calling.md', 'apf_b67_play_calling_editor.md')]
++STATUS = ROOT / 'docs/mod_editor/APF2K8_STATUS.md'
+ LINK = re.compile(r'(?<!!)\[[^\]]+\]\(([^)]+)\)')
+ 
+ class DocLinkTests(unittest.TestCase):
+     def test_current_guides_and_faqs_have_no_broken_local_links(self):
+         failures = []
+-        for doc in DOCS:
+-            for raw in LINK.findall(doc.read_text(encoding='utf-8')):
++        for doc in DOCS + CURRENT_HELP + [STATUS]:
++            text = doc.read_text(encoding='utf-8')
++            if doc == STATUS:
++                text = text.split('\n## 0.1.0-alpha.84', 1)[0]
++            for raw in LINK.findall(text):
+                 target = raw.strip().split(' "')[0].strip('<>')
+                 parsed = urlsplit(target)
+                 if parsed.scheme or target.startswith('#'):
+@@ -25,14 +31,18 @@ class DocLinkTests(unittest.TestCase):
+         self.assertEqual(failures, [])
+ 
+     def test_active_instructions_use_current_release_and_public_voice(self):
+-        for doc in DOCS:
++        for doc in DOCS + CURRENT_HELP + [STATUS]:
+             text = doc.read_text(encoding='utf-8')
++            if doc == STATUS:
++                text = text.split('\n## 0.1.0-alpha.84', 1)[0]
+             with self.subTest(doc=doc.name):
+-                self.assertIn('beta 69', text)
++                if doc in DOCS:
++                    self.assertIn('beta 69', text)
+                 self.assertNotRegex(text, r'\b[Bb]eta[ -]6[0-8]\b|\bRC8[0-9]\b')
+                 self.assertNotIn('WIRING.md', text)
+                 self.assertNotIn('ASTRA_REPORT.md', text)
+                 self.assertNotRegex(text, r'Noah (?:must|needs to|should)')
++                self.assertNotRegex(text, r'(?i)witness for .*Noah|\bP[1-9] (?:actions|consent)|\bP[1-9][’\']s measured|brief[’\']s')
+ 
+     def test_guides_link_their_own_faq_and_faqs_return_to_the_guide(self):
+         for product in ('2k5', 'apf2k8'):
+diff --git a/tests/mod_editor/test_beta69_feedback_qt.py b/tests/mod_editor/test_beta69_feedback_qt.py
+index ccb57615..9dc294c8 100644
+--- a/tests/mod_editor/test_beta69_feedback_qt.py
++++ b/tests/mod_editor/test_beta69_feedback_qt.py
+@@ -11,9 +11,11 @@ from unittest.mock import patch
+ os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
+ os.environ['MOD_STUDIO_NO_UPDATE_CHECK'] = '1'
+ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
++from PyQt5.QtCore import QUrl
+ from PyQt5.QtWidgets import QApplication, QMessageBox
+ from mod_editor.gui.build_panel_qt import BuildPanel
+ from mod_editor.gui.update_ui import UpdateBanner, report_manual_check
++from mod_editor.gui.polish_qt import open_in_desktop
+ from mod_editor.core.update_check import UpdateStatus
+ from mod_editor.apf_studio.gui import ApfStudioMainWindow
+ 
+@@ -90,5 +92,28 @@ class FeedbackTests(unittest.TestCase):
+         self.assertIn('https://github.com/', banner.message.text())
+         banner.deleteLater()
+ 
++    def test_failed_desktop_handoffs_keep_the_address_or_file_path(self):
++        with tempfile.TemporaryDirectory() as folder:
++            path = Path(folder) / 'My Models' / 'body.gltf'
++            cases = (
++                (QUrl.fromLocalFile(str(path)), str(path), 'file manager'),
++                (QUrl('https://example.invalid/help'), 'https://example.invalid/help', 'browser'),
++            )
++            for url, destination, next_step in cases:
++                with self.subTest(destination=destination), patch(
++                    'mod_editor.gui.polish_qt.QDesktopServices.openUrl', return_value=False
++                ) as open_url, patch.object(QMessageBox, 'information') as dialog:
++                    self.assertFalse(open_in_desktop(None, url))
++                    open_url.assert_called_once_with(url)
++                    self.assertIn(destination, dialog.call_args.args[2])
++                    self.assertIn(next_step, dialog.call_args.args[2])
++
++    def test_successful_desktop_handoff_needs_no_extra_dialog(self):
++        with patch('mod_editor.gui.polish_qt.QDesktopServices.openUrl', return_value=True), patch.object(
++            QMessageBox, 'information'
++        ) as dialog:
++            self.assertTrue(open_in_desktop(None, QUrl('https://example.invalid/help')))
++            dialog.assert_not_called()
++
+ if __name__ == '__main__':
+     unittest.main()
+diff --git a/tests/mod_editor/test_beta69_string_hygiene.py b/tests/mod_editor/test_beta69_string_hygiene.py
+index 101307d7..5a21443a 100644
+--- a/tests/mod_editor/test_beta69_string_hygiene.py
++++ b/tests/mod_editor/test_beta69_string_hygiene.py
+@@ -52,6 +52,17 @@ class StringHygieneTests(unittest.TestCase):
+                     failures.append(f'{path.relative_to(ROOT)}:{node.lineno}')
+         self.assertEqual(failures, [], 'Use the shared cause and next-step formatter.')
+ 
++    def test_browser_and_file_handoffs_do_not_ignore_failure(self):
++        failures = []
++        for path in gui_paths():
++            for node in ast.walk(ast.parse(path.read_text(encoding='utf-8'))):
++                call = node.value if isinstance(node, ast.Expr) else node.body if isinstance(node, ast.Lambda) else None
++                if (isinstance(call, ast.Call) and isinstance(call.func, ast.Attribute)
++                        and isinstance(call.func.value, ast.Name)
++                        and call.func.value.id == 'QDesktopServices' and call.func.attr == 'openUrl'):
++                    failures.append(f'{path.relative_to(ROOT)}:{node.lineno}')
++        self.assertEqual(failures, [], 'Explain a failed browser or file-manager handoff.')
++
+     def test_worker_causes_survive_without_progress_or_class_names(self):
+         cases = {
+             'Nfl2k5BuildError: The disc could not be built. NFL2K5_BUILD_PHASE validate_source seconds=0.3': 'The disc could not be built.',
+diff --git a/tests/mod_editor/test_beta69_studios_offscreen.py b/tests/mod_editor/test_beta69_studios_offscreen.py
+index 6a198024..d9541404 100644
+--- a/tests/mod_editor/test_beta69_studios_offscreen.py
++++ b/tests/mod_editor/test_beta69_studios_offscreen.py
+@@ -21,7 +21,7 @@ os.environ['MOD_STUDIO_NO_UPDATE_CHECK'] = '1'
+ def replay():
+     from unittest.mock import patch
+     from PyQt5.QtCore import Qt, QCoreApplication, QEvent, QSettings
+-    from PyQt5.QtWidgets import QApplication, QLabel, QAbstractButton, QAbstractSpinBox, QComboBox, QTabWidget, QMessageBox, QFileDialog, QPushButton
++    from PyQt5.QtWidgets import QAction, QApplication, QLabel, QAbstractButton, QAbstractSpinBox, QComboBox, QTabWidget, QMessageBox, QFileDialog, QPushButton
+     from mod_editor.gui.studio_qt import StudioMainWindow, BrowseOnlyFacade
+     from mod_editor.apf_studio.gui import ApfStudioMainWindow
+     from mod_editor.apf_studio.facade import ApfStudioFacade
+@@ -118,6 +118,19 @@ def replay():
+                         actions[0].trigger(); app.processEvents(); assert choose.called
+                     assert not window.build_button.isEnabled()
+                     assert window.build_button.toolTip()
++                # Connected menu signals must explain a failed browser/file handoff.
++                links = [action for action in window.menuBar().findChildren(QAction)
++                         if action.isEnabled() and action.text() in
++                         ('Join the Discord…', 'Downloads and release notes…', 'Getting started guide…')]
++                assert len(links) >= 2, name
++                for action in links:
++                    with patch('mod_editor.gui.polish_qt.QDesktopServices.openUrl', return_value=False) as handoff, patch.object(
++                        QMessageBox, 'information'
++                    ) as explanation:
++                        action.trigger(); app.processEvents()
++                        assert handoff.called, (name, action.text())
++                        assert explanation.called, (name, action.text())
++                        assert 'Copy' in explanation.call_args.args[2], (name, action.text())
+                 window._allow_close = True
+                 window.close(); window.deleteLater()
+                 QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)

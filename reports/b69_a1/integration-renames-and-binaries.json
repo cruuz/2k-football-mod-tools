@@ -1,0 +1,77 @@
+[
+  {
+    "diff": "reports/b69_a1/integration/05d3f0b5.diff",
+    "header": "a/ASTRA_REPORT.md b/ASTRA_B69_A2_REPORT.md",
+    "details": "similarity index 100%\nrename from ASTRA_REPORT.md\nrename to ASTRA_B69_A2_REPORT.md"
+  },
+  {
+    "diff": "reports/b69_a1/integration/29ba9093.diff",
+    "header": "a/ASTRA_REPORT.md b/ASTRA_B69_J2_REPORT.md",
+    "details": "similarity index 100%\nrename from ASTRA_REPORT.md\nrename to ASTRA_B69_J2_REPORT.md"
+  },
+  {
+    "diff": "reports/b69_a1/integration/29ba9093.diff",
+    "header": "a/WIRING.md b/WIRING_B69_J2.md",
+    "details": "similarity index 100%\nrename from WIRING.md\nrename to WIRING_B69_J2.md"
+  },
+  {
+    "diff": "reports/b69_a1/integration/5f06037a.diff",
+    "header": "a/ASTRA_REPORT.md b/ASTRA_B69_J8_REPORT.md",
+    "details": "similarity index 100%\nrename from ASTRA_REPORT.md\nrename to ASTRA_B69_J8_REPORT.md"
+  },
+  {
+    "diff": "reports/b69_a1/integration/5f06037a.diff",
+    "header": "a/WIRING.md b/WIRING_B69_J8.md",
+    "details": "similarity index 100%\nrename from WIRING.md\nrename to WIRING_B69_J8.md"
+  },
+  {
+    "diff": "reports/b69_a1/integration/7926feb2.diff",
+    "header": "a/reports/b69_a2/polish-audit.json.gz b/reports/b69_a2/polish-audit.json.gz",
+    "details": "new file mode 100644\nindex 00000000..70e83f2d\nBinary files /dev/null and b/reports/b69_a2/polish-audit.json.gz differ"
+  },
+  {
+    "diff": "reports/b69_a1/integration/7926feb2.diff",
+    "header": "a/reports/b69_a2/test-logs.json.gz b/reports/b69_a2/test-logs.json.gz",
+    "details": "new file mode 100644\nindex 00000000..2c4277ea\nBinary files /dev/null and b/reports/b69_a2/test-logs.json.gz differ"
+  },
+  {
+    "diff": "reports/b69_a1/integration/J1-automatic-merge.diff",
+    "header": "a/ASTRA_REPORT.md b/ASTRA_B69_J1_REPORT.md",
+    "details": "similarity index 100%\nrename from ASTRA_REPORT.md\nrename to ASTRA_B69_J1_REPORT.md"
+  },
+  {
+    "diff": "reports/b69_a1/integration/J1-automatic-merge.diff",
+    "header": "a/WIRING.md b/WIRING_B69_J1.md",
+    "details": "similarity index 100%\nrename from WIRING.md\nrename to WIRING_B69_J1.md"
+  },
+  {
+    "diff": "reports/b69_a1/integration/J6-automatic-merge.diff",
+    "header": "a/ASTRA_REPORT.md b/ASTRA_B69_J6_REPORT.md",
+    "details": "similarity index 100%\nrename from ASTRA_REPORT.md\nrename to ASTRA_B69_J6_REPORT.md"
+  },
+  {
+    "diff": "reports/b69_a1/integration/J6-automatic-merge.diff",
+    "header": "a/WIRING.md b/WIRING_B69_J6.md",
+    "details": "similarity index 100%\nrename from WIRING.md\nrename to WIRING_B69_J6.md"
+  },
+  {
+    "diff": "reports/b69_a1/integration/J7-automatic-merge.diff",
+    "header": "a/ASTRA_REPORT.md b/ASTRA_B69_J7_REPORT.md",
+    "details": "similarity index 100%\nrename from ASTRA_REPORT.md\nrename to ASTRA_B69_J7_REPORT.md"
+  },
+  {
+    "diff": "reports/b69_a1/integration/J7-automatic-merge.diff",
+    "header": "a/WIRING.md b/WIRING_B69_J7.md",
+    "details": "similarity index 100%\nrename from WIRING.md\nrename to WIRING_B69_J7.md"
+  },
+  {
+    "diff": "reports/b69_a1/integration/J9-automatic-merge.diff",
+    "header": "a/ASTRA_REPORT.md b/ASTRA_B69_J9_REPORT.md",
+    "details": "similarity index 100%\nrename from ASTRA_REPORT.md\nrename to ASTRA_B69_J9_REPORT.md"
+  },
+  {
+    "diff": "reports/b69_a1/integration/J9-automatic-merge.diff",
+    "header": "a/WIRING.md b/WIRING_B69_J9.md",
+    "details": "similarity index 100%\nrename from WIRING.md\nrename to WIRING_B69_J9.md"
+  }
+]

@@ -1,0 +1,87 @@
+[
+  {
+    "id": "apf2k8.cpu_ai_draft.play_design.concept_recipes",
+    "before": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "after": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
+  },
+  {
+    "id": "apf2k8.cpu_ai_draft.play_design.cpu_calls",
+    "before": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "after": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
+  },
+  {
+    "id": "apf2k8.cpu_ai_draft.play_design.create_formation",
+    "before": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "after": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
+  },
+  {
+    "id": "apf2k8.cpu_ai_draft.play_design.create_play",
+    "before": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "after": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
+  },
+  {
+    "id": "apf2k8.cpu_ai_draft.play_design.defensive_assignments",
+    "before": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "after": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
+  },
+  {
+    "id": "apf2k8.cpu_ai_draft.play_design.edit_play",
+    "before": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "after": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
+  },
+  {
+    "id": "apf2k8.cpu_ai_draft.play_design.five_step_drop",
+    "before": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "after": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
+  },
+  {
+    "id": "apf2k8.cpu_ai_draft.play_design.spy",
+    "before": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "after": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
+  },
+  {
+    "id": "apf2k8.field_art.material_opacity",
+    "before": "python3 -m mod_editor.core.apf_field_material_writer --index <0A> --entry 53 --alpha graphic_overlay_4=0.25 --manifest <report.json>",
+    "after": "python3 -m tests.mod_editor.test_apf_field_material_writer"
+  },
+  {
+    "id": "apf2k8.gameplay_tuning_sliders.coverage_geometry",
+    "before": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "after": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
+  },
+  {
+    "id": "apf2k8.logos_cards.ps3_texture_bundle",
+    "before": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "after": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
+  },
+  {
+    "id": "apf2k8.playbooks.clone",
+    "before": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "after": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
+  },
+  {
+    "id": "apf2k8.playbooks.cpu_audibles",
+    "before": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "after": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
+  },
+  {
+    "id": "apf2k8.playbooks.identity",
+    "before": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "after": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
+  },
+  {
+    "id": "apf2k8.playbooks.scheme_presets",
+    "before": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "after": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
+  },
+  {
+    "id": "apf2k8.players_rosters.ps3_roster_import",
+    "before": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "after": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
+  },
+  {
+    "id": "nfl2k5.espn25.scenarios_rosters",
+    "before": "python3 -m mod_editor.core.nfl2k5_espn25_scenarios status source.iso espn25-plan.json",
+    "after": "python3 -m tests.mod_editor.test_nfl2k5_espn25_scenarios"
+  }
+]

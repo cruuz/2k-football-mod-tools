@@ -1,0 +1,62 @@
+[
+  {
+    "path": "tests/mod_editor/test_apf_ps3_roster_import_qt.py",
+    "returncode": 0,
+    "seconds": 2.928,
+    "summary": [
+      "Ran 3 tests in 2.571s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/save-test-logs/tests__mod_editor__test_apf_ps3_roster_import_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b66_appearance.py",
+    "returncode": 0,
+    "seconds": 4.529,
+    "summary": [
+      "Ran 3 tests in 4.221s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/save-test-logs/tests__mod_editor__test_apf_b66_appearance.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_roster_appearance_transfer_qt.py",
+    "returncode": 0,
+    "seconds": 8.34,
+    "summary": [
+      "Ran 3 tests in 7.984s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/save-test-logs/tests__mod_editor__test_apf_roster_appearance_transfer_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b69_a1_save_boundaries.py",
+    "returncode": 0,
+    "seconds": 1.869,
+    "summary": [
+      "Ran 2 tests in 1.589s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/save-test-logs/tests__mod_editor__test_b69_a1_save_boundaries.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_roster_appearance_transfer.py",
+    "returncode": 0,
+    "seconds": 13.997,
+    "summary": [
+      "Ran 5 tests in 13.679s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/save-test-logs/tests__mod_editor__test_apf_roster_appearance_transfer.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_ps3_roster_convert.py",
+    "returncode": 0,
+    "seconds": 28.892,
+    "summary": [
+      "Ran 13 tests in 28.582s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/save-test-logs/tests__mod_editor__test_apf_ps3_roster_convert.py.log"
+  }
+]

@@ -1,0 +1,21 @@
+FF
+======================================================================
+FAIL: test_2k5_probe_imports_both_model_project_modules (__main__.RuntimeImportsTests.test_2k5_probe_imports_both_model_project_modules)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_runtime_imports.py", line 26, in test_2k5_probe_imports_both_model_project_modules
+    self.assertTrue({"mod_editor.core.nfl2k5_model_project",
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_apf_probe_imports_both_lazy_scheme_writers (__main__.RuntimeImportsTests.test_apf_probe_imports_both_lazy_scheme_writers)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_runtime_imports.py", line 21, in test_apf_probe_imports_both_lazy_scheme_writers
+    self.assertTrue({"mod_editor.core.apf2k8_offensive_schemes",
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.056s
+
+FAILED (failures=2)

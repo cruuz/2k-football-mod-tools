@@ -1,0 +1,20 @@
+.E
+======================================================================
+ERROR: test_registry_remains_structurally_valid (__main__.Nfl2k5FaceShieldRegistryTests.test_registry_remains_structurally_valid)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_nfl2k5_face_shield_registry.py", line 26, in test_registry_remains_structurally_valid
+    self.assertIs(validate_data(self.document, check_files=True), self.document)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/capabilities/validate_registry.py", line 216, in validate_data
+    _local_path(evidence_path, f"{where}.evidence[{evidence_index}]")
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/capabilities/validate_registry.py", line 129, in _local_path
+    _require(path.is_file(), f"{where}: missing local file {path_text}")
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/capabilities/validate_registry.py", line 107, in _require
+    raise RegistryError(message)
+mod_editor.capabilities.validate_registry.RegistryError: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.006s
+
+FAILED (errors=1)

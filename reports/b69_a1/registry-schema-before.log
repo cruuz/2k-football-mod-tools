@@ -1,0 +1,50 @@
+.FFFF
+======================================================================
+FAIL: test_schema_games_cardinality_accepts_all_supported_games (__main__.RegistryContractsTests.test_schema_games_cardinality_accepts_all_supported_games)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_registry.py", line 19, in test_schema_games_cardinality_accepts_all_supported_games
+    self.assertGreaterEqual(games["maxItems"], len(self.registry["games"]))
+AssertionError: 2 not greater than or equal to 3
+
+======================================================================
+FAIL: test_schema_surfaces_cardinality_and_enums_accept_texture_lane (__main__.RegistryContractsTests.test_schema_surfaces_cardinality_and_enums_accept_texture_lane) (contract='cardinality')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_registry.py", line 24, in test_schema_surfaces_cardinality_and_enums_accept_texture_lane
+    self.assertEqual((surfaces["minItems"], surfaces["maxItems"]),
+AssertionError: Tuples differ: (20, 20) != (21, 21)
+
+First differing element 0:
+20
+21
+
+- (20, 20)
+?   ^   ^
+
++ (21, 21)
+?   ^   ^
+
+
+======================================================================
+FAIL: test_schema_surfaces_cardinality_and_enums_accept_texture_lane (__main__.RegistryContractsTests.test_schema_surfaces_cardinality_and_enums_accept_texture_lane) (contract='top-level enum')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_registry.py", line 27, in test_schema_surfaces_cardinality_and_enums_accept_texture_lane
+    self.assertEqual(set(surfaces["items"]["enum"]), set(self.registry["surfaces"]))
+AssertionError: Items in the second set but not the first:
+'textures'
+
+======================================================================
+FAIL: test_schema_surfaces_cardinality_and_enums_accept_texture_lane (__main__.RegistryContractsTests.test_schema_surfaces_cardinality_and_enums_accept_texture_lane) (contract='capability enum')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_registry.py", line 30, in test_schema_surfaces_cardinality_and_enums_accept_texture_lane
+    self.assertEqual(set(allowed), set(self.registry["surfaces"]))
+AssertionError: Items in the second set but not the first:
+'textures'
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.007s
+
+FAILED (failures=4)

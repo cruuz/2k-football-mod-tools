@@ -1,0 +1,27 @@
+diff --git a/tests/mod_editor/test_task_delivery.py b/tests/mod_editor/test_task_delivery.py
+index 0afd3ae8..0af33061 100644
+--- a/tests/mod_editor/test_task_delivery.py
++++ b/tests/mod_editor/test_task_delivery.py
+@@ -122,7 +122,8 @@ class BoundReceiverTests(unittest.TestCase):
+             alive.load_source(Path("/nowhere/disc.xiso.iso"))
+             alive._pool.waitForDone(5000)
+             self._drain()
+-            self.assertIn("Could not read the disc: OSError: no such disc", alive.status_label.text())
++            self.assertIn("Could not read the disc: no such disc", alive.status_label.text())
++            self.assertNotIn("OSError:", alive.status_label.text())
+             sip.delete(alive)
+ 
+             window = QWidget()
+diff --git a/tests/mod_editor/test_uniform_bundle_cross_project.py b/tests/mod_editor/test_uniform_bundle_cross_project.py
+index a3ad983d..6959dc74 100644
+--- a/tests/mod_editor/test_uniform_bundle_cross_project.py
++++ b/tests/mod_editor/test_uniform_bundle_cross_project.py
+@@ -35,7 +35,7 @@ class CrossProjectTests(unittest.TestCase):
+         self.addCleanup(temporary.cleanup)
+         self.root = Path(temporary.name).resolve()
+         self.cache = SimpleNamespace(source=SimpleNamespace(sha256="a" * 64),
+-                                     root=self.root / "cache")
++                                     root=self.root / "cache", pack0=self.root / "cache" / "0")
+         self.a = self.session("a")
+         self.b = self.session("b")
+         self.service_a = TeamKitBundleService(self.catalog, self.a)

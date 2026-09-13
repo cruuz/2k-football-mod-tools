@@ -1,0 +1,65 @@
+"""Combine standalone receipts without dropping red or input-dependent results."""
+import json
+from pathlib import Path
+import re
+
+ROOT = Path(__file__).resolve().parent
+GROUPS = ("", "fix-", "final-", "recheck-", "save-", "gate-", "binary-", "input-")
+latest = {}
+expected = set()
+pending_runs = {}
+run_count = 0
+for group in GROUPS:
+    selection = json.loads((ROOT / (group + "test-selection.json")).read_text())
+    expected.update(selection)
+    path = ROOT / (group + "tests.json")
+    rows = json.loads(path.read_text()) if path.exists() else []
+    completed = {row["path"] for row in rows}
+    assert len(completed) == len(rows), path
+    assert completed <= set(selection), path
+    if set(selection) != completed:
+        pending_runs[group or "broad"] = sorted(set(selection) - completed)
+    for row in rows:
+        record = dict(row, command="python3 " + row["path"], last_run=group.rstrip("-") or "broad")
+        record["environment"] = dict(PYTHONPATH=".", QT_QPA_PLATFORM="offscreen",
+                                     MOD_STUDIO_NO_UPDATE_CHECK="1", PYTHONHASHSEED="0")
+        if group and group != "binary-":
+            record["environment"]["NFL2K5_MODEL_INVENTORY"] = (
+                "/home/noah/.cache/2k5-mod-studio/"
+                "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9/"
+                "indexes/nfl2k5_resource_chunks_v2.json")
+        latest[row["path"]] = record
+    run_count += len(rows)
+
+# This is the same installer suite with its two missing native dependencies
+# explicitly provisioned. Keep the original host result alongside that outcome.
+installer = "tests/mod_editor/test_apf_studio_installer.py"
+provisioned_log = ROOT / "apf-installer-provisioned.log"
+text = provisioned_log.read_text()
+assert re.search(r"^OK$", text, re.M), "Provisioned installer run did not pass"
+if installer in latest:
+    previous = latest[installer]
+    latest[installer] = dict(previous, returncode=0, seconds=None,
+                            summary=re.findall(r"^(?:Ran .*|OK.*)$", text, re.M),
+                            log="reports/b69_a1/apf-installer-provisioned.log",
+                            last_run="provisioned-runtime", original_host_result=previous,
+                            dependency_environment="/tmp/astra-b69-a1-runtime-env",
+                            additional_environment={"PATH": "/tmp/astra-b69-a1-runtime-env/bin:<original PATH>"})
+    run_count += 1
+
+records = [latest[path] for path in sorted(latest)]
+summary = dict(
+    complete=not pending_runs and set(latest) == expected,
+    selected_files=len(expected), completed_files=len(latest), completed_run_receipts=run_count,
+    exit_zero=sum(row["returncode"] == 0 for row in records),
+    red=sum(row["returncode"] != 0 for row in records),
+    files_with_declared_skips=sum(any("skipped=" in line for line in row["summary"]) for row in records),
+    pending_runs=pending_runs,
+    failures=[dict(path=row["path"], returncode=row["returncode"], summary=row["summary"], log=row["log"])
+              for row in records if row["returncode"] != 0],
+)
+(ROOT / "tests-consolidated.json").write_text(json.dumps(records, indent=2) + "\n")
+(ROOT / "verification-summary.json").write_text(json.dumps(summary, indent=2) + "\n")
+print(json.dumps({key: value for key, value in summary.items() if key not in ("pending_runs", "failures")}, indent=2))
+for failure in summary["failures"]:
+    print(failure["path"], failure["returncode"], failure["summary"][-1:])

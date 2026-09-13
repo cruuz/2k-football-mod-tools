@@ -1,0 +1,26 @@
+[
+  {
+    "path": "tools/vendor/extract-xiso/build/extract-xiso",
+    "source": "/home/noah/Desktop/2K5-8 Editors/builds/apf2k8-mod-studio-0.1.0-alpha.69/tools/vendor/extract-xiso/build/extract-xiso",
+    "sha256": "222e7763df8f16d9b252c625fac5ef551cd25cdf031a785b3ec73c6e53c5d7f2",
+    "bytes": 51336
+  },
+  {
+    "path": "tools/vendor/extract-xiso/build/extract-xiso.exe",
+    "source": "/home/noah/Desktop/2K5-8 Editors/builds/apf2k8-mod-studio-0.1.0-alpha.69/tools/vendor/extract-xiso/build/extract-xiso.exe",
+    "sha256": "e9567fe31b168b226531ed532714b3e1cc9070cdfac0c102fb881e2825aee68d",
+    "bytes": 293273
+  },
+  {
+    "path": "tools/vendor/extract-xiso/LICENSE.TXT",
+    "source": "/home/noah/Desktop/2K5-8 Editors/builds/apf2k8-mod-studio-0.1.0-alpha.69/tools/vendor/extract-xiso/LICENSE.TXT",
+    "sha256": "719d9e9a12c470a20d9f1988a03108fd99bb0b07a5340c6bbf3caf524b7adf01",
+    "bytes": 3115
+  },
+  {
+    "path": "tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md",
+    "source": "/home/noah/Desktop/2K5-8 Editors/builds/apf2k8-mod-studio-0.1.0-alpha.69/tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md",
+    "sha256": "bf282b33027de33658edff1da34779cc14704c879dbf3472bdd48676f3b38adc",
+    "bytes": 3426
+  }
+]

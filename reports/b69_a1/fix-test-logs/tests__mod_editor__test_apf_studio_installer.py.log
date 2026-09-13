@@ -1,0 +1,44 @@
+EE........E.....
+======================================================================
+ERROR: test_install_update_and_authenticated_uninstall (__main__.PerUserLifecycleTests.test_install_update_and_authenticated_uninstall)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_apf_studio_installer.py", line 424, in setUp
+    _stage_release(self.release)
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_apf_studio_installer.py", line 41, in _stage_release
+    shutil.copyfile(source, target, follow_symlinks=False)
+  File "/usr/lib/python3.12/shutil.py", line 260, in copyfile
+    with open(src, 'rb') as fsrc:
+         ^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md'
+
+======================================================================
+ERROR: test_unowned_command_collision_is_preserved (__main__.PerUserLifecycleTests.test_unowned_command_collision_is_preserved)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_apf_studio_installer.py", line 424, in setUp
+    _stage_release(self.release)
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_apf_studio_installer.py", line 41, in _stage_release
+    shutil.copyfile(source, target, follow_symlinks=False)
+  File "/usr/lib/python3.12/shutil.py", line 260, in copyfile
+    with open(src, 'rb') as fsrc:
+         ^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md'
+
+======================================================================
+ERROR: test_clean_allowlist_stage_passes_the_alpha32_runtime_gate (__main__.ReleaseClosureTests.test_clean_allowlist_stage_passes_the_alpha32_runtime_gate)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_apf_studio_installer.py", line 298, in test_clean_allowlist_stage_passes_the_alpha32_runtime_gate
+    _stage_release(stage)
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_apf_studio_installer.py", line 41, in _stage_release
+    shutil.copyfile(source, target, follow_symlinks=False)
+  File "/usr/lib/python3.12/shutil.py", line 260, in copyfile
+    with open(src, 'rb') as fsrc:
+         ^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md'
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.117s
+
+FAILED (errors=3)

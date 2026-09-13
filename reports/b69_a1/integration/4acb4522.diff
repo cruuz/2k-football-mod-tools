@@ -1,0 +1,206 @@
+diff --git a/mod_editor/capabilities/registry.v1.json b/mod_editor/capabilities/registry.v1.json
+index d77b1059..3d2777cb 100644
+--- a/mod_editor/capabilities/registry.v1.json
++++ b/mod_editor/capabilities/registry.v1.json
+@@ -7954,53 +7954,60 @@
+       },
+       "classification": "offline-writer-proved",
+       "evidence": [
++        "docs/mod_editor/nfl2k5_model_project_proof.json",
++        "docs/mod_editor/nfl2k5_model_skeleton.md",
++        "docs/mod_editor/nfl2k5_model_skeleton_proof.json",
+         "docs/research/nfl_group36_geometry_xiso_transport.md",
+         "docs/research/nfl_group36_xemu_runtime_result_v2.md",
+         "docs/research/nfl_stadium_catalog_position_writeback.md",
+         "docs/research/nfl_stadium_static_target_catalog.md",
+-        "docs/research/nfl_static_position_writeback.md",
+         "docs/research/nfl_static_gltf.md",
++        "docs/research/nfl_static_position_writeback.md",
+         "docs/research/nfl_upper_deck_changed_count_boundary.md",
+         "docs/research/nfl_upper_deck_source_subset_writeback.md",
++        "mod_editor/core/nfl2k5_crib_geometry_writer.py",
++        "mod_editor/core/nfl2k5_model_skeleton.py",
++        "mod_editor/core/nfl2k5_models.py",
++        "mod_editor/core/nfl2k5_stadium_texture_writer.py",
++        "mod_editor/gui/models_panel_qt.py",
++        "reports/assets/nfl2k5_group36_s42_xemu_runtime_positive.v2.json",
++        "reports/assets/nfl2k5_scne_inventory.json",
+         "reports/assets/nfl_stadium_catalog_position_patch_roundtrip.v2.json",
+         "reports/assets/nfl_stadium_group36_position_patch_roundtrip.json",
+         "reports/assets/nfl_stadium_upper_deck_source_subset_roundtrip.v1.json",
+-        "reports/assets/nfl2k5_group36_s42_xemu_runtime_positive.v2.json",
+-        "reports/assets/nfl2k5_scne_inventory.json",
+         "reports/specs/nfl2k5_catalog_static_position_recipe.v2.schema.json",
++        "reports/specs/nfl2k5_crib_static_position_targets.v1.json",
+         "reports/specs/nfl2k5_group36_geometry_xiso_transport.v1.json",
+         "reports/specs/nfl2k5_stadium_static_target_catalog.v1.json",
+         "reports/specs/nfl2k5_upper_deck_changed_count_boundary.v1.json",
+         "reports/specs/nfl2k5_upper_deck_source_subset_writeback_closure.v1.json",
+-        "reports/specs/nfl2k5_crib_static_position_targets.v1.json",
+-        "mod_editor/core/nfl2k5_crib_geometry_writer.py",
+-        "mod_editor/core/nfl2k5_stadium_texture_writer.py",
+-        "mod_editor/core/nfl2k5_models.py",
+-        "mod_editor/gui/models_panel_qt.py",
++        "reports/specs/nfl2k5_xbox_static_scne.v1.json",
++        "tests/mod_editor/test_models_project_wiring.py",
++        "tests/mod_editor/test_models_skeleton_wiring.py",
+         "tests/mod_editor/test_nfl2k5_crib_geometry_writer.py",
++        "tests/mod_editor/test_nfl2k5_model_project.py",
++        "tests/mod_editor/test_nfl2k5_model_skeleton.py",
+         "tests/mod_editor/test_nfl2k5_models.py",
+-        "reports/specs/nfl2k5_xbox_static_scne.v1.json",
+-        "mod_editor/core/nfl2k5_model_skeleton.py",
+-        "tools/nfl2k5_model_skeleton_validate.py",
+         "tools/nfl2k5_model_skeleton_blender_witness.py",
+-        "tests/mod_editor/test_nfl2k5_model_skeleton.py",
+-        "tests/mod_editor/test_models_skeleton_wiring.py",
+-        "docs/mod_editor/nfl2k5_model_skeleton.md",
+-        "docs/mod_editor/nfl2k5_model_skeleton_proof.json"
++        "tools/nfl2k5_model_skeleton_validate.py"
+       ],
+       "game": "nfl2k5_xbox",
+       "gui": {
+         "default_enabled": true,
+         "expose": true,
+         "mode": "edit",
+-        "reason": "Models > Import edited .gltf/.glb defaults to Geometry only. Geometry and skeleton checks the complete sibling lo_body/hi_body/hi_head export set, reports every changed bind length in centimetres, and writes a new disc copy after all four native resources pass preflight. The GUI is exposed only after applying the complete H4 WIRING blocks."
++        "reason": "Models > Check model / Check all three > Add model edit to project. The set is counted, saved, undoable and listed in Build & Share. Make disc with this model remains the quick path using the same fixed-span model writer."
+       },
+       "id": "nfl2k5.models.scne_gltf",
+       "input_constraints": [
+         "Geometry only retains the existing fitted vertex import: native vertex count, triangles, skeleton and weights stay authored; matched position, normal, UV and colour lanes can be re-encoded within a fixed compressed span.",
+         "Geometry and skeleton requires pinned player SCNE 3/113 and 3/114, the pinned head 3/115, SKEL 3/116, all three model files and their manifest from one export, unchanged joint names/parents, and translations only. A missing or unedited second LOD refuses with edit both LOD files from one export.",
+         "One axial length per import, 95%-105%: left/right forearm (both elbow-wrist and wrist-hand segments together), thigh, shin or foot. Distal primary positions must agree across LODs. High derived pivots are regenerated. Upper arms are disabled because the tested refits exceed their allocations. Hand tips, spine/neck/head, direction changes, rotations/scales, animation, topology/name changes, and multiple lengths are refused.",
+-        "Blender unit conversions are accepted within 0.001 cm; serialized canonical binds reparse within 0.0001 cm. Recomputed normalized directions must match canonical SKEL within 2e-6 per component. Head bind, weights, morph records, counts and angular muscle constants stay authored. Every resource must fit its original compressed span and scratch wrapper; the whole set is published together."
++        "Blender unit conversions are accepted within 0.001 cm; serialized canonical binds reparse within 0.0001 cm. Recomputed normalized directions must match canonical SKEL within 2e-6 per component. Head bind, weights, morph records, counts and angular muscle constants stay authored. Every resource must fit its original compressed span and scratch wrapper; the whole set is published together.",
++        "The project stores glTF/GLB and external-buffer paths, hashes and a checked sparse compiled change. Reopening rechecks those files; missing or changed files refuse rechecking with the path, while saved compiled bytes remain buildable.",
++        "One staged edit per model set; adding another check for that set replaces its previous checked set and Undo restores it. Geometry only accepts a single LOD and retains the other LOD and both skeletons.",
++        "Both skeleton LODs must come from one export with Custom Properties kept: Blender: File > Export > glTF 2.0 > Include > Data > Custom Properties. Separate native bind records make a single-LOD bone-length import unsafe.",
++        "Project writers sharing an exact SCNE span compose disjoint decoded byte changes, refit once and reparse; conflicting or partial overlaps refuse. Guardian cap/overlay and selected hi-res resources that require the same retail model resources must be deselected before building."
+       ],
+       "portme": [
+         "Direction edits need a proved update of the fixed angular muscle graph. Hand terminal lengths and spine/neck/head need a proved endpoint/frame and attachment mapping.",
+@@ -8039,10 +8046,10 @@
+         "resource": "4,616 SCNE resources",
+         "retail_file": "ESPN NFL 2K5 (USA).xiso.iso"
+       },
+-      "summary": "Export every NFL 2K5 SCNE as glTF and import fitted geometry into a disc copy. Player outer 3 additionally accepts one paired axial forearm, thigh, shin or foot bind-length edit within +/-5%, with regenerated high pivots, coordinated mesh/normals, recomputed and checked canonical SKEL directions, and a guarded low/high/head/SKEL transaction. EXPERIMENTAL / UNWITNESSED.",
++      "summary": "Export and check model geometry or bounded paired skeleton changes, then add one checked set to the project. Sparse compiled changes build with other project resources; all in-game outcomes remain UNWITNESSED.",
+       "surface": "models_shap_scne",
+       "title": "NFL 2K5 bounded SCNE glTF editing",
+-      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_model_skeleton"
++      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_model_project"
+     },
+     {
+       "backend": {
+diff --git a/mod_editor/core/mod_build.py b/mod_editor/core/mod_build.py
+index ca9d7d67..b325bc6b 100644
+--- a/mod_editor/core/mod_build.py
++++ b/mod_editor/core/mod_build.py
+@@ -988,9 +988,15 @@ def preflight_plan(plan: BuildPlan, progress: ProgressSink | None = None):
+ 
+ def build_with_project(plan, service, cache, session, progress=None):
+     """One private project copy, then gameplay, then one final publication."""
++    from .nfl2k5_model_project import plan_rows, validate_build_plan
++    validate_build_plan(plan, session)
++    models = plan_rows(session)
+     report = progress or (lambda *_: None)
+-    return build(plan, progress, _project_builder=lambda output: service.build(
++    receipt = build(plan, progress, _project_builder=lambda output: service.build(
+         cache, session, output, lambda event: report(event.message, event.completed, event.total)))
++    if models:
++        receipt["project_models"] = models
++    return receipt
+ 
+ 
+ def _preview_play_intents(source, paths):
+diff --git a/mod_editor/core/providers.py b/mod_editor/core/providers.py
+index 102eaffb..a3d4e58e 100644
+--- a/mod_editor/core/providers.py
++++ b/mod_editor/core/providers.py
+@@ -521,7 +521,7 @@ class Nfl2k5UnifiedVisualProvider:
+         "mod_editor/core/image_use.py": "78794c08fcf52debcb24d54cf62c8b1936463aedbe74929cdb5037f117b9c14d",
+         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
+         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
+-        "mod_editor/core/mod_build.py": "71463608ba01afee4eca17528c42562c1d8d5e64274ef0f7b0a7fcc759b3a4fd",
++        "mod_editor/core/mod_build.py": "f80a5fa664d9a7d3328172bfb069f667b5b464cf621ba8976bc59dff0ca93815",
+         "mod_editor/core/model.py": "292f0c5444e32f5cea000fd3cabd6963d7d805a5434dcbc364a36ca2c0f0d228",
+         "mod_editor/core/modpack.py": "7524c5de4d03c23997f88355c6888f1e013e5d5e62a995d07e8b963d1be9fd2a",
+         "mod_editor/core/modpack_ops.py": "897f364a0cfe42bb8fbd33f8bc97166ea25520a379a612431f00d8aefca8e5c5",
+diff --git a/mod_editor/gui/build_panel_qt.py b/mod_editor/gui/build_panel_qt.py
+index ac77b66d..bb609711 100644
+--- a/mod_editor/gui/build_panel_qt.py
++++ b/mod_editor/gui/build_panel_qt.py
+@@ -1555,6 +1555,13 @@ class BuildPanel(QWidget):
+             return denial
+         if self._reading:
+             return "Reading disc…"
++        if self._include_session_project():
++            from mod_editor.core.nfl2k5_model_project import validate_build_plan
++            from mod_editor.core.errors import ValidationError
++            try:
++                validate_build_plan(replace(self.plan(), hires_pack=False), self._facade._session)
++            except (ValueError, ValidationError) as exc:
++                return str(exc)
+         conflicts = getattr(self, "_playbook_blockers", ())
+         if conflicts:
+             return " ".join(conflicts)
+@@ -2154,6 +2161,8 @@ class BuildPanel(QWidget):
+             files.append(f"playbook packs: {len(plan.playbook_packs)}")
+         if self._include_session_project():
+             files.append("shared project: all current edits, including Music replacements")
++            for model in getattr(self._facade, "model_project_plan", ()):
++                lines.append("Model: " + model["summary"] + " (saved checked bytes; in-game UNWITNESSED)")
+         if plan.commentary:
+             files.append(f"commentary lines: {len(plan.commentary)}")
+         if plan.player_tags:
+diff --git a/mod_editor/gui/studio_qt.py b/mod_editor/gui/studio_qt.py
+index f7cfd3a7..32489f80 100644
+--- a/mod_editor/gui/studio_qt.py
++++ b/mod_editor/gui/studio_qt.py
+@@ -2739,6 +2739,7 @@ class StudioMainWindow(QMainWindow):
+         self._roster_editor_panel = _BuildContextRosterPanel(self.facade)
+         self.pages.addWidget(self._page_scroll_host(self._roster_editor_panel))
+         self._models_panel = ModelsPanel(self.facade)
++        self._models_panel.project_changed.connect(self._models_project_changed)
+         self.pages.addWidget(self._page_scroll_host(self._models_panel))
+         self._animations_panel = AnimationsPanel(self.facade)
+         self.pages.addWidget(self._page_scroll_host(self._animations_panel))
+@@ -8380,6 +8381,11 @@ class StudioMainWindow(QMainWindow):
+         if reset and self._playbooks_panel is not None:
+             self._playbooks_panel.reset_for_source()
+ 
++    def _models_project_changed(self) -> None:
++        self._mark_workspace_changed()
++        if self._build_panel is not None:
++            self._build_panel._refresh()
++
+     def _mark_workspace_changed(self, *, rebuild_components: bool = False) -> None:
+         """Mark an authored change and immediately queue a safe autosave."""
+ 
+diff --git a/packaging/check_2k5_mod_studio_runtime.py b/packaging/check_2k5_mod_studio_runtime.py
+index a17f34c1..f81a0b48 100644
+--- a/packaging/check_2k5_mod_studio_runtime.py
++++ b/packaging/check_2k5_mod_studio_runtime.py
+@@ -99,7 +99,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
+     "mod_editor/gui/audio_panel_qt.py":
+         "64ac47e2f3d28c374d4b0b8d44e5eba16b69ce5d70bbbeb6288ddadeb2be10ed",
+     "mod_editor/gui/studio_qt.py":
+-        "d098a2cdfe3d968efd3fdad6ddc155c3cbe149a13f858add76db13431c38e1a2",
++        "3b81d497bd50523562abae7f66b56be120ac8de959be4158562c6e3b654e4a4c",
+     "mod_editor/studio/audio_annotations.py":
+         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
+     "mod_editor/studio/audio_replacement_pack.py":
+diff --git a/packaging/release-allowlist.txt b/packaging/release-allowlist.txt
+index 6c8fb50e..5f634a1f 100644
+--- a/packaging/release-allowlist.txt
++++ b/packaging/release-allowlist.txt
+@@ -81,6 +81,8 @@ mod_editor/core/nfl2k5_crib.py
+ mod_editor/core/nfl2k5_crib_electronics_targets.py
+ mod_editor/core/nfl2k5_crib_geometry_writer.py
+ mod_editor/core/nfl2k5_models.py
++mod_editor/core/nfl2k5_model_project.py
++mod_editor/core/nfl2k5_model_project_session.py
+ mod_editor/core/nfl2k5_model_skeleton.py
+ mod_editor/core/nfl2k5_crib_scene_texture_writer.py
+ mod_editor/core/nfl2k5_crib_standalone_texture_writer.py

@@ -1,0 +1,8 @@
+test_csv_command_loads_reviewed_project_and_exports_without_build (__main__.WiringTests.test_csv_command_loads_reviewed_project_and_exports_without_build) ... ok
+test_proposed_rows_and_bindings_render_with_real_facade_closure (__main__.WiringTests.test_proposed_rows_and_bindings_render_with_real_facade_closure) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.098s
+
+OK
+Exported play call spreadsheet /tmp/tmp99vszw1f/calls.csv

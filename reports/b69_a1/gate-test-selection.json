@@ -1,0 +1,4 @@
+[
+  "tests/mod_editor/test_nfl2k5_cave_oracle.py",
+  "tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py"
+]

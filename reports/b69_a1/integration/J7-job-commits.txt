@@ -1,0 +1,26 @@
+f445ad36d932b9d509a49425015d69c685451a32 docs: record beta 69 studio polish audit before fixes
+9e9f1341f464e4a4a275886590706bb6281c9518 fix: show plain causes instead of exception class names
+b25bb4a028188bb0d54aa4c6c7266719ef1638d9 fix: explain update failures and failed browser handoffs
+f5f257d2728d7831d97e72aca76e2b4cf5a89b5c docs: refresh 2K5 beta 69 first steps and community FAQ
+a186680e78c6ae1293785a9628efed7240eca8b3 docs: refresh APF beta 69 first steps and community FAQ
+49975a57d7cf76af033bab58b5c9b0f57e4dcc77 fix: describe disc contents and retain a copyable Build summary
+8e69772ef2097704ed860ef3c31a0e40eecb13e6 fix: keep Music actions readable in narrow windows
+169d6ec342b40b83d7fb746b7916ec603e5631cd fix: wrap franchise check guidance and simplify its error
+e4f4547f4600620259513936e15bf6a2a750235e fix: retain Game Fixes hover help without old beta captions
+8241693389baa8b33f390893ee584c5cb5c9e325 fix: expose control help and full captions in the studio shell
+08357579b56c5c45d6c37cb1af1fd4f974685596 fix: wrap APF Stadium actions and headings at laptop widths
+5e30560ccc81b7dfbcd1e424d1ab53066f6e3cb1 fix: describe APF artwork and Play Calling build results
+bd3394cc7241ba618f05c773060363b173c653c1 fix: bring APF shell errors and hover help into the shared voice
+313d58f19e10dcb4b7efc8274ff2fd1fcfa375bf fix: recover the cause from tracebacks and embedded build markers
+2be6988b9e2b56f64f42734e32d3e4ba648ab273 test: audit both studios and current guides offline
+5f110502309224c194838f53d148586175f05ca7 docs: keep the APF FAQ cross-product link portable
+118da4a0474b28c0c60094e5045ce4c28624e871 fix(gui): normalize remaining exception dialog causes
+f081bbfcf8ef7a13fe44ca02169961b937b1d062 fix(2k5): add next steps to asset editor failures
+369154b63061d2c392c8257c2624baff54c83c97 fix(2k5): explain playbook dialog failures
+8319f75ea4de2c51e1b885f3510dc5163ed5a6d4 fix(2k5): explain save and roster dialog failures
+caf9594d47dd9a714831dabcc8eb7fb89ca15a6c fix(apf): explain playbook editor failures
+b2afa609d61cf91c372a4322bcdd1a1a56de09c9 fix(apf): explain roster and save failures
+b1da82937c24e949ec5ce2f96c52b39bc2f1b998 fix(apf): give art and encoder dialogs a next step
+e0572e850523790860f6dfd300e296be4391b40f docs(2k5): record the negative Style 6 played report
+b7ffa59dd45e1ef11497fc7331238b9156a9feda docs: record final offscreen audit and standalone validation
+b4b188a9b30ab24cdfd3c88ea0b552310030384a docs: hand off beta 69 polish and protected integration wiring

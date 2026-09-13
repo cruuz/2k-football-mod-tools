@@ -1,0 +1,27 @@
+import concurrent.futures, json, os, re, subprocess, time
+from pathlib import Path
+ROOT=Path.cwd(); OUT=ROOT/'reports/b69_a1'; LOGS=OUT/'test-logs'; LOGS.mkdir(exist_ok=True)
+changed=subprocess.check_output(['git','diff','--name-only','922c009d..HEAD'],text=True).splitlines()
+modules=sorted({Path(p).stem for p in changed if p.endswith('.py') and p.startswith(('mod_editor/','tools/'))})
+patterns=OUT/'module-search-patterns.txt';patterns.write_text('\n'.join(r'\b'+m+r'\b' for m in modules)+'\n')
+hits=subprocess.check_output(['rg','-l','-f',str(patterns),'tests','tools','-g','test_*.py'],text=True).splitlines()
+selected=set(hits)|{p for p in changed if p.endswith('.py') and Path(p).name.startswith('test_')}
+selected.update('tests/mod_editor/'+n+'.py' for n in ['test_product_catalog','test_provider_integrity','test_phase1_packaging','test_apf_studio_installer','test_b69_a2_wiring','test_b69_j1_wiring','test_models_project_wiring','test_validate_all_capabilities','test_stage_release'])
+selected={p for p in selected if Path(p).is_file()}
+(OUT/'test-selection.json').write_text(json.dumps(sorted(selected),indent=2)+'\n')
+env=os.environ.copy();env.update(PYTHONPATH='.',QT_QPA_PLATFORM='offscreen',MOD_STUDIO_NO_UPDATE_CHECK='1',PYTHONHASHSEED='0')
+# No substitute manifest: report the state of this exact stack and its available inputs.
+results=[]
+def run(path):
+ start=time.monotonic();log=LOGS/(path.replace('/','__')+'.log')
+ with log.open('w') as stream:
+  try:r=subprocess.run(['python3',path],env=env,stdout=stream,stderr=subprocess.STDOUT,timeout=5400);code=r.returncode
+  except subprocess.TimeoutExpired:code='TIMEOUT'
+ text=log.read_text(errors='replace');summary=re.findall(r'^(?:Ran .*|OK.*|FAILED.*|.*Error:.*)$',text,re.M)
+ return dict(path=path,returncode=code,seconds=round(time.monotonic()-start,3),summary=summary[-5:],log=str(log.relative_to(ROOT)))
+priority=lambda p:(not any(n in p for n in ['b69','beta69','model_project','models_project','roster_csv','stfs_roster','provider_integrity','product_catalog']),p)
+print('Selected',len(selected),'standalone processes from',len(modules),'changed modules',flush=True)
+with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:
+ for result in pool.map(run,sorted(selected,key=priority)):
+  results.append(result);(OUT/'tests.json').write_text(json.dumps(results,indent=2)+'\n')
+  print(len(results),result['returncode'],result['path'],result['summary'][-1:] or '',flush=True)

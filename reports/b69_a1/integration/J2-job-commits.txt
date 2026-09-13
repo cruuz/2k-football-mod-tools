@@ -1,0 +1,3 @@
+d6f8cfba9755e391de3863b2a742d34a70437734 Models: stage checked sparse changes in project sessions and explain paired skeleton imports
+9fa0b137db3ab58814b10a8e98ea291edc643ccc Models: verify project round trips, shared history and protected build wiring
+b6411b41d687d1c31cec2ed0f73ce6b04b0f0880 Docs: record J2 delivery commits and final model proof audit

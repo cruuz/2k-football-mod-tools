@@ -1,0 +1,204 @@
+.EEEEEEEEEEEEEEEEE..F
+======================================================================
+ERROR: test_every_published_validation_command_has_a_runnable_local_entrypoint (__main__.RegistryContractsTests.test_every_published_validation_command_has_a_runnable_local_entrypoint) (capability='apf2k8.cpu_ai_draft.play_design.concept_recipes')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_registry.py", line 52, in test_every_published_validation_command_has_a_runnable_local_entrypoint
+    parse_validation_command(row["validation_command"])
+  File "/home/noah/2k-worktrees/astra-b69-a1/tools/validate_all_mod_editor_capabilities.py", line 838, in parse_validation_command
+    raise ValidationRunError("validation module must be a local dotted module")
+tools.validate_all_mod_editor_capabilities.ValidationRunError: validation module must be a local dotted module
+
+======================================================================
+ERROR: test_every_published_validation_command_has_a_runnable_local_entrypoint (__main__.RegistryContractsTests.test_every_published_validation_command_has_a_runnable_local_entrypoint) (capability='apf2k8.cpu_ai_draft.play_design.cpu_calls')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_registry.py", line 52, in test_every_published_validation_command_has_a_runnable_local_entrypoint
+    parse_validation_command(row["validation_command"])
+  File "/home/noah/2k-worktrees/astra-b69-a1/tools/validate_all_mod_editor_capabilities.py", line 838, in parse_validation_command
+    raise ValidationRunError("validation module must be a local dotted module")
+tools.validate_all_mod_editor_capabilities.ValidationRunError: validation module must be a local dotted module
+
+======================================================================
+ERROR: test_every_published_validation_command_has_a_runnable_local_entrypoint (__main__.RegistryContractsTests.test_every_published_validation_command_has_a_runnable_local_entrypoint) (capability='apf2k8.cpu_ai_draft.play_design.create_formation')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_registry.py", line 52, in test_every_published_validation_command_has_a_runnable_local_entrypoint
+    parse_validation_command(row["validation_command"])
+  File "/home/noah/2k-worktrees/astra-b69-a1/tools/validate_all_mod_editor_capabilities.py", line 838, in parse_validation_command
+    raise ValidationRunError("validation module must be a local dotted module")
+tools.validate_all_mod_editor_capabilities.ValidationRunError: validation module must be a local dotted module
+
+======================================================================
+ERROR: test_every_published_validation_command_has_a_runnable_local_entrypoint (__main__.RegistryContractsTests.test_every_published_validation_command_has_a_runnable_local_entrypoint) (capability='apf2k8.cpu_ai_draft.play_design.create_play')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_registry.py", line 52, in test_every_published_validation_command_has_a_runnable_local_entrypoint
+    parse_validation_command(row["validation_command"])
+  File "/home/noah/2k-worktrees/astra-b69-a1/tools/validate_all_mod_editor_capabilities.py", line 838, in parse_validation_command
+    raise ValidationRunError("validation module must be a local dotted module")
+tools.validate_all_mod_editor_capabilities.ValidationRunError: validation module must be a local dotted module
+
+======================================================================
+ERROR: test_every_published_validation_command_has_a_runnable_local_entrypoint (__main__.RegistryContractsTests.test_every_published_validation_command_has_a_runnable_local_entrypoint) (capability='apf2k8.cpu_ai_draft.play_design.defensive_assignments')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_registry.py", line 52, in test_every_published_validation_command_has_a_runnable_local_entrypoint
+    parse_validation_command(row["validation_command"])
+  File "/home/noah/2k-worktrees/astra-b69-a1/tools/validate_all_mod_editor_capabilities.py", line 838, in parse_validation_command
+    raise ValidationRunError("validation module must be a local dotted module")
+tools.validate_all_mod_editor_capabilities.ValidationRunError: validation module must be a local dotted module
+
+======================================================================
+ERROR: test_every_published_validation_command_has_a_runnable_local_entrypoint (__main__.RegistryContractsTests.test_every_published_validation_command_has_a_runnable_local_entrypoint) (capability='apf2k8.cpu_ai_draft.play_design.edit_play')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_registry.py", line 52, in test_every_published_validation_command_has_a_runnable_local_entrypoint
+    parse_validation_command(row["validation_command"])
+  File "/home/noah/2k-worktrees/astra-b69-a1/tools/validate_all_mod_editor_capabilities.py", line 838, in parse_validation_command
+    raise ValidationRunError("validation module must be a local dotted module")
+tools.validate_all_mod_editor_capabilities.ValidationRunError: validation module must be a local dotted module
+
+======================================================================
+ERROR: test_every_published_validation_command_has_a_runnable_local_entrypoint (__main__.RegistryContractsTests.test_every_published_validation_command_has_a_runnable_local_entrypoint) (capability='apf2k8.cpu_ai_draft.play_design.five_step_drop')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_registry.py", line 52, in test_every_published_validation_command_has_a_runnable_local_entrypoint
+    parse_validation_command(row["validation_command"])
+  File "/home/noah/2k-worktrees/astra-b69-a1/tools/validate_all_mod_editor_capabilities.py", line 838, in parse_validation_command
+    raise ValidationRunError("validation module must be a local dotted module")
+tools.validate_all_mod_editor_capabilities.ValidationRunError: validation module must be a local dotted module
+
+======================================================================
+ERROR: test_every_published_validation_command_has_a_runnable_local_entrypoint (__main__.RegistryContractsTests.test_every_published_validation_command_has_a_runnable_local_entrypoint) (capability='apf2k8.cpu_ai_draft.play_design.spy')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_registry.py", line 52, in test_every_published_validation_command_has_a_runnable_local_entrypoint
+    parse_validation_command(row["validation_command"])
+  File "/home/noah/2k-worktrees/astra-b69-a1/tools/validate_all_mod_editor_capabilities.py", line 838, in parse_validation_command
+    raise ValidationRunError("validation module must be a local dotted module")
+tools.validate_all_mod_editor_capabilities.ValidationRunError: validation module must be a local dotted module
+
+======================================================================
+ERROR: test_every_published_validation_command_has_a_runnable_local_entrypoint (__main__.RegistryContractsTests.test_every_published_validation_command_has_a_runnable_local_entrypoint) (capability='apf2k8.field_art.material_opacity')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_registry.py", line 52, in test_every_published_validation_command_has_a_runnable_local_entrypoint
+    parse_validation_command(row["validation_command"])
+  File "/home/noah/2k-worktrees/astra-b69-a1/tools/validate_all_mod_editor_capabilities.py", line 840, in parse_validation_command
+    raise ValidationRunError("unreviewed validation module arguments")
+tools.validate_all_mod_editor_capabilities.ValidationRunError: unreviewed validation module arguments
+
+======================================================================
+ERROR: test_every_published_validation_command_has_a_runnable_local_entrypoint (__main__.RegistryContractsTests.test_every_published_validation_command_has_a_runnable_local_entrypoint) (capability='apf2k8.gameplay_tuning_sliders.coverage_geometry')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_registry.py", line 52, in test_every_published_validation_command_has_a_runnable_local_entrypoint
+    parse_validation_command(row["validation_command"])
+  File "/home/noah/2k-worktrees/astra-b69-a1/tools/validate_all_mod_editor_capabilities.py", line 838, in parse_validation_command
+    raise ValidationRunError("validation module must be a local dotted module")
+tools.validate_all_mod_editor_capabilities.ValidationRunError: validation module must be a local dotted module
+
+======================================================================
+ERROR: test_every_published_validation_command_has_a_runnable_local_entrypoint (__main__.RegistryContractsTests.test_every_published_validation_command_has_a_runnable_local_entrypoint) (capability='apf2k8.logos_cards.ps3_texture_bundle')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_registry.py", line 52, in test_every_published_validation_command_has_a_runnable_local_entrypoint
+    parse_validation_command(row["validation_command"])
+  File "/home/noah/2k-worktrees/astra-b69-a1/tools/validate_all_mod_editor_capabilities.py", line 838, in parse_validation_command
+    raise ValidationRunError("validation module must be a local dotted module")
+tools.validate_all_mod_editor_capabilities.ValidationRunError: validation module must be a local dotted module
+
+======================================================================
+ERROR: test_every_published_validation_command_has_a_runnable_local_entrypoint (__main__.RegistryContractsTests.test_every_published_validation_command_has_a_runnable_local_entrypoint) (capability='apf2k8.playbooks.clone')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_registry.py", line 52, in test_every_published_validation_command_has_a_runnable_local_entrypoint
+    parse_validation_command(row["validation_command"])
+  File "/home/noah/2k-worktrees/astra-b69-a1/tools/validate_all_mod_editor_capabilities.py", line 838, in parse_validation_command
+    raise ValidationRunError("validation module must be a local dotted module")
+tools.validate_all_mod_editor_capabilities.ValidationRunError: validation module must be a local dotted module
+
+======================================================================
+ERROR: test_every_published_validation_command_has_a_runnable_local_entrypoint (__main__.RegistryContractsTests.test_every_published_validation_command_has_a_runnable_local_entrypoint) (capability='apf2k8.playbooks.cpu_audibles')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_registry.py", line 52, in test_every_published_validation_command_has_a_runnable_local_entrypoint
+    parse_validation_command(row["validation_command"])
+  File "/home/noah/2k-worktrees/astra-b69-a1/tools/validate_all_mod_editor_capabilities.py", line 838, in parse_validation_command
+    raise ValidationRunError("validation module must be a local dotted module")
+tools.validate_all_mod_editor_capabilities.ValidationRunError: validation module must be a local dotted module
+
+======================================================================
+ERROR: test_every_published_validation_command_has_a_runnable_local_entrypoint (__main__.RegistryContractsTests.test_every_published_validation_command_has_a_runnable_local_entrypoint) (capability='apf2k8.playbooks.identity')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_registry.py", line 52, in test_every_published_validation_command_has_a_runnable_local_entrypoint
+    parse_validation_command(row["validation_command"])
+  File "/home/noah/2k-worktrees/astra-b69-a1/tools/validate_all_mod_editor_capabilities.py", line 838, in parse_validation_command
+    raise ValidationRunError("validation module must be a local dotted module")
+tools.validate_all_mod_editor_capabilities.ValidationRunError: validation module must be a local dotted module
+
+======================================================================
+ERROR: test_every_published_validation_command_has_a_runnable_local_entrypoint (__main__.RegistryContractsTests.test_every_published_validation_command_has_a_runnable_local_entrypoint) (capability='apf2k8.playbooks.scheme_presets')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_registry.py", line 52, in test_every_published_validation_command_has_a_runnable_local_entrypoint
+    parse_validation_command(row["validation_command"])
+  File "/home/noah/2k-worktrees/astra-b69-a1/tools/validate_all_mod_editor_capabilities.py", line 838, in parse_validation_command
+    raise ValidationRunError("validation module must be a local dotted module")
+tools.validate_all_mod_editor_capabilities.ValidationRunError: validation module must be a local dotted module
+
+======================================================================
+ERROR: test_every_published_validation_command_has_a_runnable_local_entrypoint (__main__.RegistryContractsTests.test_every_published_validation_command_has_a_runnable_local_entrypoint) (capability='apf2k8.players_rosters.ps3_roster_import')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_registry.py", line 52, in test_every_published_validation_command_has_a_runnable_local_entrypoint
+    parse_validation_command(row["validation_command"])
+  File "/home/noah/2k-worktrees/astra-b69-a1/tools/validate_all_mod_editor_capabilities.py", line 838, in parse_validation_command
+    raise ValidationRunError("validation module must be a local dotted module")
+tools.validate_all_mod_editor_capabilities.ValidationRunError: validation module must be a local dotted module
+
+======================================================================
+ERROR: test_every_published_validation_command_has_a_runnable_local_entrypoint (__main__.RegistryContractsTests.test_every_published_validation_command_has_a_runnable_local_entrypoint) (capability='nfl2k5.espn25.scenarios_rosters')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_registry.py", line 52, in test_every_published_validation_command_has_a_runnable_local_entrypoint
+    parse_validation_command(row["validation_command"])
+  File "/home/noah/2k-worktrees/astra-b69-a1/tools/validate_all_mod_editor_capabilities.py", line 840, in parse_validation_command
+    raise ValidationRunError("unreviewed validation module arguments")
+tools.validate_all_mod_editor_capabilities.ValidationRunError: unreviewed validation module arguments
+
+======================================================================
+FAIL: test_validation_plan_counts_cover_the_current_registry (__main__.RegistryContractsTests.test_validation_plan_counts_cover_the_current_registry)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_registry.py", line 59, in test_validation_plan_counts_cover_the_current_registry
+    self.assertEqual((runner.EXPECTED_CAPABILITIES, runner.EXPECTED_COVERED_CAPABILITIES,
+AssertionError: Tuples differ: (108, 103, 5, 83, ('apf2k8.catching_drops.b[161 chars]rt')) != (165, 160, 5, 120, ('apf2k8.catching_drops.[162 chars]rt'))
+
+First differing element 0:
+108
+165
+
+- (108,
++ (165,
+-  103,
+?    -
+
++  160,
+?   +
+
+   5,
+-  83,
++  120,
+   ('apf2k8.catching_drops.behavior',
+    'apf2k8.franchise_restoration_cross_title.mode',
+    'apf2k8.saves.profile',
+    'nfl2k5.catching_drops.behavior',
+    'nfl2k5.franchise_restoration_cross_title.port'))
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.106s
+
+FAILED (failures=1, errors=17)

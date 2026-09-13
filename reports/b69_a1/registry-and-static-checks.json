@@ -1,0 +1,1463 @@
+{
+  "counts": {
+    "apf2k8_xbox360": 72,
+    "nfl2k5_xbox": 92,
+    "nfl2k5_ps2": 1
+  },
+  "total": 165,
+  "added": [
+    "apf2k8.playbooks.never_call",
+    "apf2k8.playbooks.offensive_schemes",
+    "apf2k8.playbooks.scheme_spreadsheet",
+    "nfl2k5.rosters.player_csv"
+  ],
+  "changed_rows": {
+    "apf2k8.colors.uniform_selector_appearance_custom_team": [
+      "evidence",
+      "gui",
+      "input_constraints",
+      "summary"
+    ],
+    "apf2k8.playbooks.pass_fetch_te_bias": [
+      "evidence",
+      "gui",
+      "input_constraints"
+    ],
+    "apf2k8.playbooks.master_personnel": [
+      "evidence",
+      "runtime",
+      "summary"
+    ],
+    "nfl2k5.models.scne_gltf": [
+      "evidence",
+      "gui",
+      "input_constraints",
+      "summary",
+      "validation_command"
+    ],
+    "apf2k8.players_rosters.ps3_roster_import": [
+      "evidence",
+      "gui",
+      "input_constraints",
+      "runtime"
+    ],
+    "nfl2k5.uniforms.all_visual": [
+      "evidence",
+      "input_constraints",
+      "runtime",
+      "validation_command"
+    ],
+    "nfl2k5.rosters.espn25_real_rosters": [
+      "evidence",
+      "gui",
+      "portme",
+      "runtime",
+      "selectors",
+      "source_container"
+    ],
+    "nfl2k5.mode.my_career_inline": [
+      "runtime"
+    ],
+    "nfl2k5.textures.all_p8": [
+      "evidence",
+      "input_constraints",
+      "runtime",
+      "validation_command"
+    ]
+  },
+  "canonical_without_file_check": true,
+  "missing_evidence": {
+    "ASTRA_REPORT.md": {
+      "rows": [
+        "nfl2k5.gameplay.accelerated_clock"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_assassins_helmet_selector_checkpoint.md": {
+      "rows": [
+        "apf2k8.colors.uniform_selector_all_family_capacity"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_audio.md": {
+      "rows": [
+        "apf2k8.audio.ausb_xma_export",
+        "apf2k8.audio.xma_export"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_custom_team_appearance.md": {
+      "rows": [
+        "apf2k8.colors.uniform_selector_appearance_custom_team",
+        "apf2k8.colors.uniform_selector_appearance_custom_team",
+        "apf2k8.logos_cards.team_logo",
+        "apf2k8.logos_cards.team_logo_cache"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_digital_font_patch.md": {
+      "rows": [
+        "apf2k8.scorebug_presentation.digital_font"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_franchise_mod_feasibility.md": {
+      "rows": [
+        "apf2k8.franchise_restoration_cross_title.mode",
+        "apf2k8.schedules_franchise.retained"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_franchise_runtime_ownership.md": {
+      "rows": [
+        "apf2k8.cpu_ai_draft.logic",
+        "apf2k8.franchise_restoration_cross_title.mode",
+        "apf2k8.saves.profile",
+        "apf2k8.schedules_franchise.retained",
+        "nfl2k5.franchise_restoration_cross_title.port"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_helmet_family_patch.md": {
+      "rows": [
+        "apf2k8.uniforms.catalog",
+        "apf2k8.uniforms.helmet_color_00_23"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_jersey_family_patch.md": {
+      "rows": [
+        "apf2k8.uniforms.jersey_00_23"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_jersey_selector_writeback.md": {
+      "rows": [
+        "apf2k8.colors.uniform_selector_jersey_dealias"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_nfl_cut_content_lineage.md": {
+      "rows": [
+        "apf2k8.franchise_restoration_cross_title.mode"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_pants_family_patch.md": {
+      "rows": [
+        "apf2k8.uniforms.catalog",
+        "apf2k8.uniforms.pants_color_00_23"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_roster.md": {
+      "rows": [
+        "apf2k8.catching_drops.behavior",
+        "apf2k8.cpu_ai_draft.logic",
+        "apf2k8.gameplay_tuning_sliders.roster_view",
+        "apf2k8.players.roster",
+        "apf2k8.saves.profile"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_scene.md": {
+      "rows": [
+        "apf2k8.portraits_faces.hi_head",
+        "apf2k8.scorebug_presentation.inventory"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_scne_draw_topology_writeback.md": {
+      "rows": [
+        "apf2k8.models.scne_gltf",
+        "apf2k8.models.scne_same_footprint_topology",
+        "apf2k8.stadiums.geometry"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_scne_static_serializer_spec.md": {
+      "rows": [
+        "apf2k8.models.scne_gltf",
+        "apf2k8.models.scne_same_count_position",
+        "apf2k8.models.scne_same_footprint_topology",
+        "apf2k8.stadiums.geometry"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_shoulder_family_patch.md": {
+      "rows": [
+        "apf2k8.uniforms.catalog",
+        "apf2k8.uniforms.shoulder_color_00_23"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_stadium_catalog_position_writeback.md": {
+      "rows": [
+        "apf2k8.models.scne_gltf",
+        "apf2k8.models.scne_same_count_position",
+        "apf2k8.stadiums.geometry"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_stadium_static_position_writeback.md": {
+      "rows": [
+        "apf2k8.models.scne_gltf",
+        "apf2k8.stadiums.geometry"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_stadium_static_target_catalog.md": {
+      "rows": [
+        "apf2k8.models.scne_gltf",
+        "apf2k8.models.scne_same_count_position",
+        "apf2k8.stadiums.geometry"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_static_gltf.md": {
+      "rows": [
+        "apf2k8.cross_title_model_conversion.nfl_to_apf",
+        "apf2k8.models.scne_gltf",
+        "apf2k8.stadiums.geometry",
+        "nfl2k5.cross_title_model_conversion.to_apf"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_texture_roundtrip.md": {
+      "rows": [
+        "apf2k8.logos_cards.draft_logo"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_uniform_selector_allocation.md": {
+      "rows": [
+        "apf2k8.colors.uniform_selector_all_family_capacity"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_uniform_selector_mod_release.md": {
+      "rows": [
+        "apf2k8.colors.uniform_selector_all_family_capacity"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_uniform_selector_writeback.md": {
+      "rows": [
+        "apf2k8.colors.uniform_selector_all_family_capacity"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_uniform_xenia_runtime.md": {
+      "rows": [
+        "apf2k8.uniforms.jersey_06_runtime",
+        "apf2k8.uniforms.jersey_06_runtime"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_uniforms.md": {
+      "rows": [
+        "apf2k8.colors.uniform_selector_bytes",
+        "apf2k8.logos_cards.uniform_catalog",
+        "apf2k8.uniforms.catalog"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_xenia_patch_runtime.md": {
+      "rows": [
+        "apf2k8.logos_cards.draft_logo",
+        "apf2k8.logos_cards.draft_logo"
+      ],
+      "preexisting": true
+    },
+    "docs/research/apf_xenia_season_coachdesk_experiment.md": {
+      "rows": [
+        "apf2k8.schedules_franchise.retained",
+        "apf2k8.schedules_franchise.retained"
+      ],
+      "preexisting": true
+    },
+    "docs/research/audio_modding_compatibility.md": {
+      "rows": [
+        "apf2k8.audio.ausb_xma_export",
+        "apf2k8.audio.xma_export",
+        "nfl2k5.audio.audo_wav",
+        "nfl2k5.audio.menu_back_wav"
+      ],
+      "preexisting": true
+    },
+    "docs/research/cross_title_model_compatibility.md": {
+      "rows": [
+        "apf2k8.cross_title_model_conversion.nfl_to_apf",
+        "nfl2k5.cross_title_model_conversion.to_apf"
+      ],
+      "preexisting": true
+    },
+    "docs/research/director_format.md": {
+      "rows": [
+        "apf2k8.scripts.director_playbook",
+        "nfl2k5.scripts.director_playbook"
+      ],
+      "preexisting": true
+    },
+    "docs/research/gameplay_tuning_ai_draft_modding.md": {
+      "rows": [
+        "apf2k8.catching_drops.behavior",
+        "apf2k8.cpu_ai_draft.logic",
+        "apf2k8.gameplay_tuning_sliders.roster_view",
+        "nfl2k5.catching_drops.behavior",
+        "nfl2k5.cpu_ai_draft.logic",
+        "nfl2k5.gameplay_tuning_sliders.rating_view"
+      ],
+      "preexisting": true
+    },
+    "docs/research/layout_format.md": {
+      "rows": [
+        "apf2k8.menus.layouts",
+        "apf2k8.scorebug_presentation.inventory",
+        "nfl2k5.menus.layouts",
+        "nfl2k5.scorebug_presentation.inventory"
+      ],
+      "preexisting": true
+    },
+    "docs/research/main_menu_label_patch.md": {
+      "rows": [
+        "apf2k8.menus.layouts",
+        "nfl2k5.menus.layouts"
+      ],
+      "preexisting": true
+    },
+    "docs/research/main_menu_named_inspector.md": {
+      "rows": [
+        "apf2k8.menus.layouts",
+        "apf2k8.mode_state_routing.state_graph",
+        "nfl2k5.menus.layouts",
+        "nfl2k5.mode_state_routing.state_graph"
+      ],
+      "preexisting": true
+    },
+    "docs/research/menu_state_trace_closure_v2.md": {
+      "rows": [
+        "apf2k8.menus.layouts",
+        "apf2k8.mode_state_routing.state_graph",
+        "nfl2k5.mode_state_routing.state_graph"
+      ],
+      "preexisting": true
+    },
+    "docs/research/mod_editor_gameplay_franchise_inspection.md": {
+      "rows": [
+        "apf2k8.cpu_ai_draft.logic",
+        "apf2k8.gameplay_tuning_sliders.roster_view",
+        "nfl2k5.cpu_ai_draft.logic",
+        "nfl2k5.gameplay_tuning_sliders.rating_view",
+        "nfl2k5.schedules_franchise.database"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl2k5_all_texture_replacement.md": {
+      "rows": [
+        "nfl2k5.textures.all_p8"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl2k5_crib_electronics_model_swap_spike.md": {
+      "rows": [
+        "nfl2k5.crib.assets"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl2k5_ps2_fixture_protocol.md": {
+      "rows": [
+        "nfl2k5.cpu_ai_draft.logic",
+        "nfl2k5.schedules_franchise.database",
+        "nfl2k5.uniforms.all_visual"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl2k5_unified_visual_mod_project.md": {
+      "rows": [
+        "nfl2k5.crib.assets",
+        "nfl2k5.logos.team_select_cards",
+        "nfl2k5.uniforms.all_visual"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl2k5_xbox_save_inventory.md": {
+      "rows": [
+        "nfl2k5.catching_drops.behavior",
+        "nfl2k5.gameplay_tuning_sliders.rating_view",
+        "nfl2k5.saves.dashboard",
+        "nfl2k5.schedules_franchise.database"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl_actual_jersey_binding_away_loader_safe_xemu_runtime.md": {
+      "rows": [
+        "nfl2k5.uniforms.detroit_away_runtime",
+        "nfl2k5.uniforms.detroit_away_runtime"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl_create_team_field_art_pipeline.md": {
+      "rows": [
+        "nfl2k5.stadiums.create_team_field_art"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl_decompilation.md": {
+      "rows": [
+        "nfl2k5.catching_drops.behavior"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl_draft_weight_xbe_integrity_probe.md": {
+      "rows": [
+        "nfl2k5.cpu_ai_draft.logic"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl_franchise_limit_feasibility.md": {
+      "rows": [
+        "nfl2k5.cpu_ai_draft.logic",
+        "nfl2k5.schedules_franchise.database"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl_group36_geometry_xiso_transport.md": {
+      "rows": [
+        "nfl2k5.models.scne_gltf",
+        "nfl2k5.models.scne_same_footprint_geometry",
+        "nfl2k5.stadiums.geometry"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl_group36_same_footprint_geometry_writeback.md": {
+      "rows": [
+        "nfl2k5.models.scne_same_footprint_geometry"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl_group36_xemu_runtime_result_v2.md": {
+      "rows": [
+        "nfl2k5.models.scne_gltf",
+        "nfl2k5.models.scne_gltf",
+        "nfl2k5.models.scne_same_footprint_geometry",
+        "nfl2k5.models.scne_same_footprint_geometry",
+        "nfl2k5.stadiums.geometry",
+        "nfl2k5.stadiums.geometry"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl_live_face_texture_compatibility.md": {
+      "rows": [
+        "nfl2k5.portraits_faces.live_textures"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl_main_menu_live_state.md": {
+      "rows": [
+        "nfl2k5.menus.layouts"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl_player_portrait_pipeline.md": {
+      "rows": [
+        "nfl2k5.portraits_faces.roster_portraits",
+        "nfl2k5.uniforms.all_visual"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl_player_roster_modding.md": {
+      "rows": [
+        "nfl2k5.catching_drops.behavior",
+        "nfl2k5.cpu_ai_draft.logic",
+        "nfl2k5.franchise_restoration_cross_title.port",
+        "nfl2k5.gameplay_tuning_sliders.rating_view",
+        "nfl2k5.players.disc_roster",
+        "nfl2k5.saves.dashboard",
+        "nfl2k5.schedules_franchise.database",
+        "nfl2k5.uniforms.all_visual"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl_scene_audio_assets.md": {
+      "rows": [
+        "nfl2k5.audio.audo_wav"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl_scne_embedded_texture_png.md": {
+      "rows": [
+        "nfl2k5.scorebug_presentation.inventory"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl_scorebug_font_xemu_runtime.md": {
+      "rows": [
+        "nfl2k5.scorebug_presentation.inventory"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl_scorebug_shield_xemu_runtime.md": {
+      "rows": [
+        "nfl2k5.scorebug_presentation.inventory",
+        "nfl2k5.scorebug_presentation.shield_espn_runtime"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl_scorebug_xemu_runtime.md": {
+      "rows": [
+        "nfl2k5.scorebug_presentation.inventory",
+        "nfl2k5.scorebug_presentation.score_buga_runtime"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl_stadium_catalog_position_writeback.md": {
+      "rows": [
+        "nfl2k5.models.scne_gltf",
+        "nfl2k5.models.scne_same_count_position",
+        "nfl2k5.stadiums.geometry"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl_stadium_static_target_catalog.md": {
+      "rows": [
+        "nfl2k5.models.scne_gltf",
+        "nfl2k5.models.scne_same_count_position",
+        "nfl2k5.stadiums.geometry"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl_static_gltf.md": {
+      "rows": [
+        "apf2k8.cross_title_model_conversion.nfl_to_apf",
+        "nfl2k5.cross_title_model_conversion.to_apf",
+        "nfl2k5.models.scne_gltf",
+        "nfl2k5.stadiums.geometry"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl_static_position_writeback.md": {
+      "rows": [
+        "nfl2k5.models.scne_gltf",
+        "nfl2k5.stadiums.geometry"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl_team_identity_modding.md": {
+      "rows": [
+        "nfl2k5.saves.dashboard"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl_team_select_card_pipeline.md": {
+      "rows": [
+        "nfl2k5.logos.team_select_cards"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl_uniform_color_xiso.md": {
+      "rows": [
+        "nfl2k5.colors.unif_words"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl_upper_deck_changed_count_boundary.md": {
+      "rows": [
+        "nfl2k5.models.scne_gltf",
+        "nfl2k5.models.scne_same_count_position",
+        "nfl2k5.models.scne_same_footprint_geometry",
+        "nfl2k5.models.scne_upper_deck_source_subset",
+        "nfl2k5.stadiums.geometry"
+      ],
+      "preexisting": true
+    },
+    "docs/research/nfl_upper_deck_source_subset_writeback.md": {
+      "rows": [
+        "nfl2k5.models.scne_gltf",
+        "nfl2k5.models.scne_same_count_position",
+        "nfl2k5.models.scne_same_footprint_geometry",
+        "nfl2k5.models.scne_upper_deck_source_subset"
+      ],
+      "preexisting": true
+    },
+    "docs/research/playbook_format.md": {
+      "rows": [
+        "apf2k8.scripts.director_playbook",
+        "nfl2k5.cpu_ai_draft.logic",
+        "nfl2k5.schedules_franchise.database",
+        "nfl2k5.scripts.director_playbook"
+      ],
+      "preexisting": true
+    },
+    "docs/research/scorebug_presentation_modding.md": {
+      "rows": [
+        "apf2k8.scorebug_presentation.inventory",
+        "nfl2k5.scorebug_presentation.inventory",
+        "nfl2k5.scorebug_presentation.score_buga_runtime",
+        "nfl2k5.scorebug_presentation.shield_espn_runtime"
+      ],
+      "preexisting": true
+    },
+    "docs/research/static_topology_conformance_gap.md": {
+      "rows": [
+        "apf2k8.models.scne_same_footprint_topology",
+        "nfl2k5.models.scne_same_footprint_geometry"
+      ],
+      "preexisting": true
+    },
+    "docs/research/uniform_texture_sharing.md": {
+      "rows": [
+        "apf2k8.uniforms.jersey_00_23",
+        "nfl2k5.uniforms.all_visual"
+      ],
+      "preexisting": true
+    },
+    "reports/asset_samples/apf/audio/ausb_halftime_0/report.json": {
+      "rows": [
+        "apf2k8.audio.ausb_xma_export"
+      ],
+      "preexisting": true
+    },
+    "reports/asset_samples/apf_roster/uniform_all_families_built_in_capacity.v1.json": {
+      "rows": [
+        "apf2k8.colors.uniform_selector_all_family_capacity"
+      ],
+      "preexisting": true
+    },
+    "reports/asset_samples/nfl_static_gltf/3161_0006_stadium.gltf": {
+      "rows": [
+        "nfl2k5.stadiums.geometry"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_assassins_helmet_selector_checkpoint.v1.json": {
+      "rows": [
+        "apf2k8.colors.uniform_selector_all_family_capacity"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_audio_inventory.json": {
+      "rows": [
+        "apf2k8.audio.xma_export"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_ausb_inventory.json": {
+      "rows": [
+        "apf2k8.audio.ausb_xma_export"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_digital_font_layout.json": {
+      "rows": [
+        "apf2k8.scorebug_presentation.digital_font"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_digital_font_patch_roundtrip.json": {
+      "rows": [
+        "apf2k8.scorebug_presentation.digital_font"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_field_art_roundtrip.json": {
+      "rows": [
+        "apf2k8.field_art.base_texture"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_franchise_mod_feasibility.json": {
+      "rows": [
+        "apf2k8.franchise_restoration_cross_title.mode",
+        "apf2k8.schedules_franchise.retained"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_franchise_runtime_ownership.json": {
+      "rows": [
+        "apf2k8.schedules_franchise.retained"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_helmet_family_layout.json": {
+      "rows": [
+        "apf2k8.uniforms.catalog",
+        "apf2k8.uniforms.helmet_color_00_23"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_helmet_family_layout.tsv": {
+      "rows": [
+        "apf2k8.uniforms.helmet_color_00_23"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_helmet_family_patch_roundtrip.json": {
+      "rows": [
+        "apf2k8.uniforms.helmet_color_00_23"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_jersey_family_patch_roundtrip.json": {
+      "rows": [
+        "apf2k8.uniforms.jersey_00_23"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_jersey_selector_writeback_roundtrip.v1.json": {
+      "rows": [
+        "apf2k8.colors.uniform_selector_jersey_dealias"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_logo_roundtrip.json": {
+      "rows": [
+        "apf2k8.logos_cards.team_logo"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_logocache_roundtrip.json": {
+      "rows": [
+        "apf2k8.logos_cards.team_logo_cache"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_pants_family_layout.json": {
+      "rows": [
+        "apf2k8.uniforms.catalog",
+        "apf2k8.uniforms.pants_color_00_23"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_pants_family_layout.tsv": {
+      "rows": [
+        "apf2k8.uniforms.pants_color_00_23"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_pants_family_patch_roundtrip.json": {
+      "rows": [
+        "apf2k8.uniforms.pants_color_00_23"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_roster_inventory.json": {
+      "rows": [
+        "apf2k8.players.roster"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_roster_players.tsv": {
+      "rows": [
+        "apf2k8.gameplay_tuning_sliders.roster_view"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_roster_stadiums.tsv": {
+      "rows": [
+        "apf2k8.stadiums.geometry"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_scene_hi_head_probe.json": {
+      "rows": [
+        "apf2k8.portraits_faces.hi_head"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_scene_inventory.json": {
+      "rows": [
+        "apf2k8.models.scne_gltf"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_scne_catalog_position_roundtrip.json": {
+      "rows": [
+        "apf2k8.models.scne_gltf",
+        "apf2k8.models.scne_same_count_position",
+        "apf2k8.stadiums.geometry"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_scne_draw_topology_corpus.v1.json": {
+      "rows": [
+        "apf2k8.models.scne_same_footprint_topology"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_scne_same_count_position_roundtrip.json": {
+      "rows": [
+        "apf2k8.models.scne_gltf",
+        "apf2k8.stadiums.geometry"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_shoulder_family_layout.json": {
+      "rows": [
+        "apf2k8.uniforms.catalog",
+        "apf2k8.uniforms.shoulder_color_00_23"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_shoulder_family_layout.tsv": {
+      "rows": [
+        "apf2k8.uniforms.shoulder_color_00_23"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_shoulder_family_patch_roundtrip.json": {
+      "rows": [
+        "apf2k8.uniforms.shoulder_color_00_23"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_stadium_node17_same_footprint_topology_roundtrip.json": {
+      "rows": [
+        "apf2k8.models.scne_gltf",
+        "apf2k8.models.scne_same_footprint_topology",
+        "apf2k8.stadiums.geometry"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_texture_roundtrip.json": {
+      "rows": [
+        "apf2k8.logos_cards.draft_logo"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_uniform_inventory.json": {
+      "rows": [
+        "apf2k8.uniforms.catalog"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_uniform_logo_cache.tsv": {
+      "rows": [
+        "apf2k8.logos_cards.uniform_catalog"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_uniform_selector_mod_release.v1.json": {
+      "rows": [
+        "apf2k8.colors.uniform_selector_all_family_capacity"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_uniform_selector_writeback_roundtrip.v1.json": {
+      "rows": [
+        "apf2k8.colors.uniform_selector_all_family_capacity"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_uniform_selector_xenia_runtime.json": {
+      "rows": [
+        "apf2k8.colors.uniform_selector_all_family_capacity",
+        "apf2k8.colors.uniform_selector_bytes"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_uniform_team_assets.tsv": {
+      "rows": [
+        "apf2k8.colors.uniform_selector_bytes"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_uniform_xenia_runtime.json": {
+      "rows": [
+        "apf2k8.uniforms.jersey_06_runtime",
+        "apf2k8.uniforms.jersey_06_runtime"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_xenia_patch_runtime.json": {
+      "rows": [
+        "apf2k8.logos_cards.draft_logo",
+        "apf2k8.logos_cards.draft_logo"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/apf_xenia_season_coachdesk_experiment.json": {
+      "rows": [
+        "apf2k8.schedules_franchise.retained",
+        "apf2k8.schedules_franchise.retained"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/audio_modding_compatibility.json": {
+      "rows": [
+        "apf2k8.audio.ausb_xma_export",
+        "apf2k8.audio.xma_export",
+        "nfl2k5.audio.audo_wav",
+        "nfl2k5.audio.menu_back_wav"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/cross_title_model_compatibility.json": {
+      "rows": [
+        "apf2k8.cross_title_model_conversion.nfl_to_apf",
+        "nfl2k5.cross_title_model_conversion.to_apf"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/menu_state_trace_closure_v2.json": {
+      "rows": [
+        "apf2k8.mode_state_routing.state_graph",
+        "nfl2k5.mode_state_routing.state_graph"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl2k5_actual_jersey_binding_away_loader_safe_xemu_runtime.json": {
+      "rows": [
+        "nfl2k5.uniforms.detroit_away_runtime",
+        "nfl2k5.uniforms.detroit_away_runtime"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl2k5_all_txtr_inventory_v2.json": {
+      "rows": [
+        "nfl2k5.textures.all_p8"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl2k5_audo_import_capacity.json": {
+      "rows": [
+        "nfl2k5.audio.audo_wav",
+        "nfl2k5.audio.fixed_audo_wav"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl2k5_audo_import_capacity.tsv": {
+      "rows": [
+        "nfl2k5.audio.audo_wav"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl2k5_audo_wav_all.json": {
+      "rows": [
+        "nfl2k5.audio.audo_wav"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl2k5_create_team_field_art_inventory.json": {
+      "rows": [
+        "nfl2k5.stadiums.create_team_field_art"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl2k5_group36_s42_xemu_runtime_positive.v2.json": {
+      "rows": [
+        "nfl2k5.models.scne_gltf",
+        "nfl2k5.models.scne_gltf",
+        "nfl2k5.models.scne_same_footprint_geometry",
+        "nfl2k5.models.scne_same_footprint_geometry",
+        "nfl2k5.stadiums.geometry",
+        "nfl2k5.stadiums.geometry"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl2k5_live_face_texture_compatibility.json": {
+      "rows": [
+        "nfl2k5.portraits_faces.live_textures"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl2k5_p8_texture_inventory.json": {
+      "rows": [
+        "nfl2k5.textures.all_p8"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl2k5_player_portrait_compatibility.json": {
+      "rows": [
+        "nfl2k5.portraits_faces.roster_portraits"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl2k5_player_rating_ui_bindings.tsv": {
+      "rows": [
+        "nfl2k5.gameplay_tuning_sliders.rating_view"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl2k5_player_roster_audit.json": {
+      "rows": [
+        "nfl2k5.players.disc_roster"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl2k5_scne_inventory.json": {
+      "rows": [
+        "nfl2k5.models.scne_gltf"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl2k5_scorebug_font_xemu_runtime.json": {
+      "rows": [
+        "nfl2k5.scorebug_presentation.inventory",
+        "nfl2k5.scorebug_presentation.inventory"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl2k5_scorebug_font_xemu_runtime/digital-font-magenta-not-visible-demo.png": {
+      "rows": [
+        "nfl2k5.scorebug_presentation.inventory"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl2k5_scorebug_mod_project.schema.json": {
+      "rows": [
+        "nfl2k5.scorebug_presentation.inventory"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl2k5_scorebug_shield_xemu_runtime.json": {
+      "rows": [
+        "nfl2k5.scorebug_presentation.inventory",
+        "nfl2k5.scorebug_presentation.inventory",
+        "nfl2k5.scorebug_presentation.shield_espn_runtime",
+        "nfl2k5.scorebug_presentation.shield_espn_runtime"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl2k5_scorebug_shield_xemu_runtime/shield-cyan-demo.png": {
+      "rows": [
+        "nfl2k5.scorebug_presentation.inventory",
+        "nfl2k5.scorebug_presentation.shield_espn_runtime"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl2k5_scorebug_xemu_runtime.json": {
+      "rows": [
+        "nfl2k5.scorebug_presentation.inventory",
+        "nfl2k5.scorebug_presentation.inventory",
+        "nfl2k5.scorebug_presentation.score_buga_runtime",
+        "nfl2k5.scorebug_presentation.score_buga_runtime"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl2k5_scorebug_xemu_runtime/score_buga-magenta-demo.png": {
+      "rows": [
+        "nfl2k5.scorebug_presentation.inventory",
+        "nfl2k5.scorebug_presentation.score_buga_runtime"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl2k5_unif_color_ownership.json": {
+      "rows": [
+        "nfl2k5.colors.unif_words"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl2k5_unif_color_ownership_ghidra/pseudo_c.c": {
+      "rows": [
+        "nfl2k5.players.disc_roster"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl2k5_uniform_inventory.json": {
+      "rows": [
+        "nfl2k5.uniforms.all_visual"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl_actual_jersey_binding_ghidra/nfl_actual_jersey_binding_trace.txt": {
+      "rows": [
+        "nfl2k5.players.disc_roster"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl_stadium_catalog_position_patch_roundtrip.v2.json": {
+      "rows": [
+        "nfl2k5.models.scne_gltf",
+        "nfl2k5.models.scne_same_count_position",
+        "nfl2k5.stadiums.geometry"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl_stadium_group36_position_patch_roundtrip.json": {
+      "rows": [
+        "nfl2k5.models.scne_gltf",
+        "nfl2k5.stadiums.geometry"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl_stadium_group36_same_footprint_geometry_roundtrip.json": {
+      "rows": [
+        "nfl2k5.models.scne_same_footprint_geometry"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/nfl_stadium_upper_deck_source_subset_roundtrip.v1.json": {
+      "rows": [
+        "nfl2k5.models.scne_gltf",
+        "nfl2k5.models.scne_same_count_position",
+        "nfl2k5.models.scne_upper_deck_source_subset"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/scorebug_presentation_audit.json": {
+      "rows": [
+        "apf2k8.scorebug_presentation.inventory",
+        "nfl2k5.scorebug_presentation.inventory"
+      ],
+      "preexisting": true
+    },
+    "reports/assets/uniform_texture_sharing.v2.json": {
+      "rows": [
+        "apf2k8.uniforms.jersey_00_23",
+        "nfl2k5.uniforms.all_visual"
+      ],
+      "preexisting": true
+    }
+  },
+  "windows_calls": [
+    {
+      "path": "mod_editor/apf_studio/gui.py",
+      "line": 518,
+      "call": "os.open(destination, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, 'O_CLOEXEC', 0) | getattr(os, 'O_BINARY', 0), 420)"
+    },
+    {
+      "path": "mod_editor/apf_studio/launcher.py",
+      "line": 110,
+      "call": "os.replace(temporary, destination)"
+    },
+    {
+      "path": "mod_editor/apf_studio/launcher.py",
+      "line": 318,
+      "call": "os.replace(temporary, path)"
+    },
+    {
+      "path": "mod_editor/apf_studio/launcher.py",
+      "line": 285,
+      "call": "os.replace(temporary, self.config_path)"
+    },
+    {
+      "path": "mod_editor/apf_studio/playbook_membership_qt.py",
+      "line": 2216,
+      "call": "os.replace(write_to, destination)"
+    },
+    {
+      "path": "mod_editor/apf_studio/playcalling_build.py",
+      "line": 65,
+      "call": "os.replace(path, index.parent / path.name)"
+    },
+    {
+      "path": "mod_editor/apf_studio/ps3_roster_convert.py",
+      "line": 901,
+      "call": "os.open(path, flags, platform_compat.private_file_mode())"
+    },
+    {
+      "path": "mod_editor/apf_studio/ps3_roster_convert.py",
+      "line": 198,
+      "call": "os.open(path, flags)"
+    },
+    {
+      "path": "mod_editor/core/mod_build.py",
+      "line": 752,
+      "call": "os.open(source, os.O_RDONLY | getattr(os, 'O_BINARY', 0))"
+    },
+    {
+      "path": "mod_editor/core/mod_build.py",
+      "line": 777,
+      "call": "os.open(target, os.O_RDWR | getattr(os, 'O_BINARY', 0))"
+    },
+    {
+      "path": "mod_editor/core/mod_build.py",
+      "line": 1612,
+      "call": "os.open(target, os.O_RDWR | getattr(os, 'O_BINARY', 0))"
+    },
+    {
+      "path": "mod_editor/core/mod_build.py",
+      "line": 1452,
+      "call": "os.replace(source, target)"
+    },
+    {
+      "path": "mod_editor/core/mod_build.py",
+      "line": 1742,
+      "call": "os.replace(destination, target)"
+    },
+    {
+      "path": "mod_editor/core/mod_build.py",
+      "line": 1828,
+      "call": "os.replace(destination, target)"
+    },
+    {
+      "path": "mod_editor/core/mod_build.py",
+      "line": 1859,
+      "call": "os.replace(destination, target)"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_build_service.py",
+      "line": 661,
+      "call": "os.open(resolved, flags | getattr(os, 'O_BINARY', 0))"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_build_service.py",
+      "line": 743,
+      "call": "os.open(path, flags | getattr(os, 'O_BINARY', 0), 384)"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_espn25_rosters.py",
+      "line": 545,
+      "call": "os.replace(staged_receipt, receipt_output)"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_espn25_rosters.py",
+      "line": 547,
+      "call": "os.replace(staged, output)"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_uniform_equipment_writer.py",
+      "line": 208,
+      "call": "os.open(path, os.O_RDONLY | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_CLOEXEC', 0) | getattr(os, 'O_BINARY', 0))"
+    },
+    {
+      "path": "mod_editor/core/providers.py",
+      "line": 270,
+      "call": "os.open(path, os.O_RDONLY | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_CLOEXEC', 0) | getattr(os, 'O_BINARY', 0))"
+    },
+    {
+      "path": "mod_editor/core/providers.py",
+      "line": 324,
+      "call": "os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_CLOEXEC', 0) | getattr(os, 'O_BINARY', 0), 256)"
+    },
+    {
+      "path": "mod_editor/core/providers.py",
+      "line": 367,
+      "call": "os.open(path, os.O_RDONLY | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_CLOEXEC', 0) | getattr(os, 'O_BINARY', 0))"
+    },
+    {
+      "path": "mod_editor/core/providers.py",
+      "line": 1079,
+      "call": "os.open(resolved, os.O_RDONLY | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_CLOEXEC', 0) | getattr(os, 'O_BINARY', 0))"
+    },
+    {
+      "path": "mod_editor/core/providers.py",
+      "line": 1257,
+      "call": "os.open(path, os.O_RDONLY | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_CLOEXEC', 0) | getattr(os, 'O_BINARY', 0))"
+    },
+    {
+      "path": "mod_editor/core/providers.py",
+      "line": 1562,
+      "call": "os.open(resolved, os.O_RDONLY | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_CLOEXEC', 0) | getattr(os, 'O_BINARY', 0))"
+    },
+    {
+      "path": "mod_editor/core/providers.py",
+      "line": 2039,
+      "call": "os.open(resolved, os.O_RDONLY | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_CLOEXEC', 0) | getattr(os, 'O_BINARY', 0))"
+    },
+    {
+      "path": "mod_editor/core/providers.py",
+      "line": 2158,
+      "call": "os.open(path, os.O_RDONLY | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_CLOEXEC', 0) | getattr(os, 'O_BINARY', 0))"
+    },
+    {
+      "path": "mod_editor/core/providers.py",
+      "line": 1657,
+      "call": "os.open(resolved, os.O_RDONLY | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_CLOEXEC', 0) | getattr(os, 'O_BINARY', 0))"
+    },
+    {
+      "path": "mod_editor/gui/audio_panel_qt.py",
+      "line": 517,
+      "call": "os.open(source, os.O_RDONLY | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_CLOEXEC', 0) | getattr(os, 'O_BINARY', 0))"
+    },
+    {
+      "path": "mod_editor/gui/audio_panel_qt.py",
+      "line": 530,
+      "call": "os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_CLOEXEC', 0) | getattr(os, 'O_BINARY', 0), 384)"
+    },
+    {
+      "path": "mod_editor/gui/audio_panel_qt.py",
+      "line": 555,
+      "call": "os.replace(temporary, destination)"
+    },
+    {
+      "path": "mod_editor/gui/audio_panel_qt.py",
+      "line": 581,
+      "call": "os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_CLOEXEC', 0) | getattr(os, 'O_BINARY', 0), 384)"
+    },
+    {
+      "path": "mod_editor/gui/audio_panel_qt.py",
+      "line": 596,
+      "call": "os.replace(temporary, destination)"
+    },
+    {
+      "path": "mod_editor/gui/music_panel_qt.py",
+      "line": 317,
+      "call": "os.replace(temporary, destination)"
+    },
+    {
+      "path": "mod_editor/studio/facade.py",
+      "line": 238,
+      "call": "os.open(path, os.O_RDONLY | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_CLOEXEC', 0) | getattr(os, 'O_BINARY', 0))"
+    },
+    {
+      "path": "mod_editor/studio/facade.py",
+      "line": 741,
+      "call": "os.replace(temporary, settings)"
+    },
+    {
+      "path": "mod_editor/studio/facade.py",
+      "line": 184,
+      "call": "os.open(requested, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_BINARY', 0), 384)"
+    },
+    {
+      "path": "mod_editor/studio/session.py",
+      "line": 145,
+      "call": "os.open(platform_compat.long_path(temporary), os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_BINARY', 0), 384)"
+    },
+    {
+      "path": "mod_editor/studio/session.py",
+      "line": 170,
+      "call": "os.open(platform_compat.long_path(temporary), os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_BINARY', 0), 384)"
+    },
+    {
+      "path": "mod_editor/studio/session.py",
+      "line": 180,
+      "call": "os.replace(platform_compat.long_path(temporary), platform_compat.long_path(path))"
+    },
+    {
+      "path": "mod_editor/studio/session.py",
+      "line": 1603,
+      "call": "os.replace(platform_compat.long_path(staged), platform_compat.long_path(destination))"
+    },
+    {
+      "path": "mod_editor/studio/session.py",
+      "line": 3099,
+      "call": "os.replace(platform_compat.long_path(staged), platform_compat.long_path(destination))"
+    },
+    {
+      "path": "mod_editor/studio/session.py",
+      "line": 3565,
+      "call": "os.replace(platform_compat.long_path(stages[row.state_id]), platform_compat.long_path(destination))"
+    },
+    {
+      "path": "mod_editor/studio/session.py",
+      "line": 3765,
+      "call": "os.replace(platform_compat.long_path(restore), platform_compat.long_path(destination))"
+    },
+    {
+      "path": "mod_editor/studio/session.py",
+      "line": 3916,
+      "call": "os.replace(platform_compat.long_path(restore_stages[item.asset_id]), platform_compat.long_path(destination))"
+    },
+    {
+      "path": "mod_editor/studio/session.py",
+      "line": 4492,
+      "call": "os.replace(platform_compat.long_path(staged_path), platform_compat.long_path(destination))"
+    },
+    {
+      "path": "mod_editor/studio/session.py",
+      "line": 4498,
+      "call": "os.replace(platform_compat.long_path(staged_path), platform_compat.long_path(authored))"
+    },
+    {
+      "path": "tools/apf_save_custom_team_appearance.py",
+      "line": 408,
+      "call": "os.open(path, flags)"
+    },
+    {
+      "path": "tools/apf_save_custom_team_appearance.py",
+      "line": 817,
+      "call": "os.open(path, flags, 384)"
+    },
+    {
+      "path": "tools/nfl2k5_visual_mod_project.py",
+      "line": 706,
+      "call": "os.open(resolved, os.O_RDONLY | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_CLOEXEC', 0) | getattr(os, 'O_BINARY', 0))"
+    },
+    {
+      "path": "tools/nfl2k5_visual_mod_project.py",
+      "line": 1364,
+      "call": "os.open(pin.path, os.O_RDONLY | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_CLOEXEC', 0) | getattr(os, 'O_BINARY', 0))"
+    },
+    {
+      "path": "tools/nfl2k5_visual_mod_project.py",
+      "line": 2976,
+      "call": "os.open(path, os.O_RDONLY | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_CLOEXEC', 0) | getattr(os, 'O_BINARY', 0))"
+    },
+    {
+      "path": "tools/nfl2k5_visual_mod_project.py",
+      "line": 4216,
+      "call": "os.open(source, os.O_RDONLY | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_CLOEXEC', 0) | getattr(os, 'O_BINARY', 0))"
+    },
+    {
+      "path": "tools/nfl2k5_visual_mod_project.py",
+      "line": 5856,
+      "call": "os.open(path, os.O_RDONLY | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_CLOEXEC', 0) | getattr(os, 'O_BINARY', 0))"
+    },
+    {
+      "path": "tools/nfl2k5_visual_mod_project.py",
+      "line": 5972,
+      "call": "os.open(output, os.O_RDONLY | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_CLOEXEC', 0) | getattr(os, 'O_BINARY', 0))"
+    },
+    {
+      "path": "tools/test_nfl2k5_visual_mod_project.py",
+      "line": 284,
+      "call": "os.open(source, os.O_RDONLY)"
+    },
+    {
+      "path": "tools/test_nfl2k5_visual_mod_project.py",
+      "line": 749,
+      "call": "os.open(source, os.O_RDONLY)"
+    },
+    {
+      "path": "tools/test_nfl2k5_visual_mod_project.py",
+      "line": 750,
+      "call": "os.open(output, os.O_RDONLY)"
+    },
+    {
+      "path": "tools/test_nfl2k5_visual_mod_project.py",
+      "line": 789,
+      "call": "os.open(source, os.O_RDONLY)"
+    },
+    {
+      "path": "tools/test_nfl2k5_visual_mod_project.py",
+      "line": 790,
+      "call": "os.open(output, os.O_RDONLY)"
+    },
+    {
+      "path": "tools/test_nfl2k5_visual_mod_project.py",
+      "line": 814,
+      "call": "os.open(source, os.O_RDONLY)"
+    },
+    {
+      "path": "tools/test_nfl2k5_visual_mod_project.py",
+      "line": 833,
+      "call": "os.open(source, os.O_RDONLY)"
+    },
+    {
+      "path": "tools/test_nfl2k5_visual_mod_project.py",
+      "line": 931,
+      "call": "os.open(source, os.O_RDONLY)"
+    },
+    {
+      "path": "tools/test_nfl2k5_visual_mod_project.py",
+      "line": 932,
+      "call": "os.open(output, os.O_RDONLY)"
+    },
+    {
+      "path": "tools/test_nfl2k5_visual_mod_project.py",
+      "line": 956,
+      "call": "os.open(source, os.O_RDONLY)"
+    },
+    {
+      "path": "tools/test_nfl2k5_visual_mod_project.py",
+      "line": 957,
+      "call": "os.open(output, os.O_RDONLY)"
+    }
+  ],
+  "deleted_paths": [],
+  "new_runtime_paths": [
+    "mod_editor/apf_studio/roster_appearance_transfer.py",
+    "mod_editor/apf_studio/roster_appearance_transfer_qt.py",
+    "mod_editor/core/apf2k8_formation_calling.py",
+    "mod_editor/core/apf2k8_offensive_schemes.py",
+    "mod_editor/core/nfl2k5_model_project.py",
+    "mod_editor/core/nfl2k5_model_project_session.py",
+    "mod_editor/gui/polish_qt.py",
+    "tools/apf_b69_playcalling_audit.py",
+    "tools/apf_stfs_roster_rehash.py",
+    "tools/nfl2k5_b69_equipment_probe.py"
+  ]
+}

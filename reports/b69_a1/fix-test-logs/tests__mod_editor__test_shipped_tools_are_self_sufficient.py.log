@@ -1,0 +1,23 @@
+.F.
+======================================================================
+FAIL: test_each_imports_without_its_own_directory_on_sys_path (__main__.ShippedToolSelfSufficiencyTests.test_each_imports_without_its_own_directory_on_sys_path)
+The exact condition the embeddable runtime creates.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_shipped_tools_are_self_sufficient.py", line 116, in test_each_imports_without_its_own_directory_on_sys_path
+    self.assertEqual(
+AssertionError: Lists differ: ["apf_stfs_roster_rehash.py: ModuleNotFoun[46 chars]ct'"] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+"apf_stfs_roster_rehash.py: ModuleNotFoundError: No module named 'apf_stfs_roster_extract'"
+
++ []
+- ['apf_stfs_roster_rehash.py: ModuleNotFoundError: No module named '
+-  "'apf_stfs_roster_extract'"] : Shipped tools cannot import with their own directory off sys.path, which is exactly how the installed Windows runtime launches them:
+  apf_stfs_roster_rehash.py: ModuleNotFoundError: No module named 'apf_stfs_roster_extract'
+
+----------------------------------------------------------------------
+Ran 3 tests in 13.868s
+
+FAILED (failures=1)

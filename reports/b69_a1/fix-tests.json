@@ -1,0 +1,340 @@
+[
+  {
+    "path": "tests/mod_editor/test_apf_b69_build.py",
+    "returncode": 0,
+    "seconds": 31.784,
+    "summary": [
+      "Ran 1 test in 31.228s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_apf_b69_build.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_wiring.py",
+    "returncode": 0,
+    "seconds": 0.466,
+    "summary": [
+      "Ran 2 tests in 0.098s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_apf_b69_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_helmet_crest_design_product.py",
+    "returncode": 0,
+    "seconds": 2.219,
+    "summary": [
+      "Ran 13 tests in 1.829s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_apf_helmet_crest_design_product.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_model_export_gui.py",
+    "returncode": 0,
+    "seconds": 3.071,
+    "summary": [
+      "Ran 5 tests in 2.804s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_apf_model_export_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_package_map_writer.py",
+    "returncode": 0,
+    "seconds": 1.768,
+    "summary": [
+      "Ran 40 tests in 1.499s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_apf_package_map_writer.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_schemes.py",
+    "returncode": 0,
+    "seconds": 41.704,
+    "summary": [
+      "Ran 5 tests in 41.127s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_apf_b69_schemes.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_playcalling_editor_facade.py",
+    "returncode": 0,
+    "seconds": 5.075,
+    "summary": [
+      "Ran 7 tests in 4.480s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_apf_playcalling_editor_facade.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_playcalling_editor_patches.py",
+    "returncode": 0,
+    "seconds": 0.566,
+    "summary": [
+      "Ran 3 tests in 0.202s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_apf_playcalling_editor_patches.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_playcalling_editor_qt.py",
+    "returncode": 0,
+    "seconds": 4.726,
+    "summary": [
+      "Ran 10 tests in 4.251s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_apf_playcalling_editor_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_save_playbook_assignments_gui.py",
+    "returncode": 0,
+    "seconds": 1.417,
+    "summary": [
+      "Ran 8 tests in 1.071s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_apf_save_playbook_assignments_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_save_roster_players_gui.py",
+    "returncode": 0,
+    "seconds": 0.766,
+    "summary": [
+      "Ran 4 tests in 0.530s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_apf_save_roster_players_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_studio_installer.py",
+    "returncode": 1,
+    "seconds": 0.265,
+    "summary": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md'",
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md'",
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md'",
+      "Ran 16 tests in 0.117s",
+      "FAILED (errors=3)"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_apf_studio_installer.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b66_coach_wiring.py",
+    "returncode": 0,
+    "seconds": 1.067,
+    "summary": [
+      "Ran 5 tests in 0.826s",
+      "OK (skipped=2)"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_b66_coach_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b68_a1_audit.py",
+    "returncode": 0,
+    "seconds": 8.88,
+    "summary": [
+      "Ran 10 tests in 8.666s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_b68_a1_audit.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b69_a1_model_session.py",
+    "returncode": 0,
+    "seconds": 0.716,
+    "summary": [
+      "Ran 2 tests in 0.287s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_b69_a1_model_session.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b69_a1_playcalling.py",
+    "returncode": 0,
+    "seconds": 24.714,
+    "summary": [
+      "Ran 1 test in 24.204s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_b69_a1_playcalling.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b69_a1_registry.py",
+    "returncode": 0,
+    "seconds": 0.065,
+    "summary": [
+      "Ran 3 tests in 0.006s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_b69_a1_registry.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b69_a1_runtime_imports.py",
+    "returncode": 0,
+    "seconds": 0.115,
+    "summary": [
+      "Ran 3 tests in 0.046s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_b69_a1_runtime_imports.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_directory_publishes_are_portable.py",
+    "returncode": 0,
+    "seconds": 0.265,
+    "summary": [
+      "Ran 5 tests in 0.177s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_directory_publishes_are_portable.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_editor_qt.py",
+    "returncode": 0,
+    "seconds": 91.356,
+    "summary": [
+      "Ran 4 tests in 90.874s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_apf_b69_editor_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_generated_artifacts_are_lf.py",
+    "returncode": 0,
+    "seconds": 4.975,
+    "summary": [
+      "Ran 4 tests in 4.875s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_generated_artifacts_are_lf.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_college_check_page_qt.py",
+    "returncode": 0,
+    "seconds": 1.969,
+    "summary": [
+      "Ran 11 tests in 1.665s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_nfl2k5_college_check_page_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_calendar_engine_delivery.py",
+    "returncode": 0,
+    "seconds": 6.827,
+    "summary": [
+      "Ran 6 tests in 6.641s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_nfl2k5_calendar_engine_delivery.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_equipment_scope_wiring.py",
+    "returncode": 0,
+    "seconds": 1.919,
+    "summary": [
+      "Ran 3 tests in 1.779s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_nfl2k5_equipment_scope_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_number_sheet_quality_wiring.py",
+    "returncode": 0,
+    "seconds": 0.867,
+    "summary": [
+      "Ran 6 tests in 0.636s",
+      "OK (skipped=2)"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_number_sheet_quality_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_phase1_packaging.py",
+    "returncode": 1,
+    "seconds": 0.165,
+    "summary": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/reports/assets/menu_state_trace.json'",
+      "Ran 23 tests in 0.075s",
+      "FAILED (errors=1)"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_phase1_packaging.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_provider_integrity.py",
+    "returncode": 0,
+    "seconds": 8.532,
+    "summary": [
+      "Ran 7 tests in 8.389s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_provider_integrity.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_shipped_tools_are_self_sufficient.py",
+    "returncode": 1,
+    "seconds": 13.945,
+    "summary": [
+      "\"apf_stfs_roster_rehash.py: ModuleNotFoundError: No module named 'apf_stfs_roster_extract'\"",
+      "- ['apf_stfs_roster_rehash.py: ModuleNotFoundError: No module named '",
+      "  apf_stfs_roster_rehash.py: ModuleNotFoundError: No module named 'apf_stfs_roster_extract'",
+      "Ran 3 tests in 13.868s",
+      "FAILED (failures=1)"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_shipped_tools_are_self_sufficient.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_playcalling_editor_build.py",
+    "returncode": 0,
+    "seconds": 83.637,
+    "summary": [
+      "Ran 3 tests in 83.115s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_apf_playcalling_editor_build.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_stage_release.py",
+    "returncode": 0,
+    "seconds": 0.216,
+    "summary": [
+      "Ran 10 tests in 0.113s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_stage_release.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_validate_all_capabilities.py",
+    "returncode": 1,
+    "seconds": 1.167,
+    "summary": [
+      "tools.validate_all_mod_editor_capabilities.ValidationRunError: unreviewed validation module arguments",
+      "Ran 36 tests in 0.947s",
+      "FAILED (errors=1, skipped=1)"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_validate_all_capabilities.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_model_project.py",
+    "returncode": 0,
+    "seconds": 41.198,
+    "summary": [
+      "Ran 10 tests in 40.422s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_nfl2k5_model_project.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_shipped_tools_posix_only.py",
+    "returncode": 0,
+    "seconds": 17.152,
+    "summary": [
+      "Ran 13 tests in 17.062s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/fix-test-logs/tests__mod_editor__test_shipped_tools_posix_only.py.log"
+  }
+]
