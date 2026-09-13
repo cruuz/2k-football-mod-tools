@@ -19,6 +19,8 @@ export-only.
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import failure_body
+
 from dataclasses import dataclass
 import hashlib
 import html
@@ -2247,7 +2249,7 @@ if PYQT5_AVAILABLE:
                 self._audio_process_failed
             )
             self.error_raised.connect(
-                lambda message: QMessageBox.warning(self, "Audio", message)
+                lambda message: QMessageBox.warning(self, "Couldn't finish that", failure_body(message))
             )
 
         def _populate_family_filter(self) -> None:

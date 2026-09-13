@@ -11,6 +11,8 @@ refuses to treat a source as its own target.
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import failure_body
+
 from collections import OrderedDict
 from collections.abc import Callable
 from pathlib import Path
@@ -451,7 +453,7 @@ class BumpPanel(QWidget):
         if getattr(self, "_quiet_failure", False):
             self._quiet_failure = False
             return
-        QMessageBox.warning(self, "Bump map editor", message)
+        QMessageBox.warning(self, "Couldn't finish that", failure_body(message))
 
     def _refresh_controls(self) -> None:
         ready = not self._busy

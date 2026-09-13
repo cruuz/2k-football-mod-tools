@@ -13,6 +13,8 @@ position editing for ten meshes.
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import failure_body
+
 from dataclasses import dataclass
 from pathlib import Path
 import tempfile
@@ -811,7 +813,7 @@ class CribPanel(QWidget):
         self.model_import_button.clicked.connect(self._import_model)
         self.model_revert_button.clicked.connect(self._revert_model)
         self.error_raised.connect(
-            lambda message: QMessageBox.warning(self, "The Crib", message)
+            lambda message: QMessageBox.warning(self, "Couldn't finish that", failure_body(message))
         )
 
     def refresh(self, *, keep_selection: bool = True) -> None:

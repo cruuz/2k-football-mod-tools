@@ -12,7 +12,7 @@ Everything heavy runs on one background thread; the widget stays live.
 
 from __future__ import annotations
 
-from mod_editor.gui.ux_text import plain_error
+from mod_editor.gui.ux_text import failure_body, plain_error
 
 from pathlib import Path
 from typing import Callable
@@ -402,7 +402,7 @@ class ModelsPanel(QWidget):
         self.status_label.setText(message)
         self.details.appendPlainText("\n" + message)
         if self.isVisible():                    # never a modal box for a widget nobody can see (tests, headless)
-            QMessageBox.critical(self, "Couldn't finish that", message)
+            QMessageBox.critical(self, "Couldn't finish that", failure_body(message))
 
     # ------------------------------------------------------------------ catalog
     def reload(self) -> None:
