@@ -3,7 +3,7 @@
 Development fallback for the 100 GB free-space floor. This is a conservative
 incremental manifest, NOT a regenerated release/disc manifest. Every unchanged
 parent source pin must match. Changed sources must match the parent manifest
-at the pinned base revision, and be exactly the two MyCareer mode Python modules. Fresh native
+at the pinned base revision, and be owned MyCareer Python modules. Fresh native
 hook reservations come from the oracle Recorder observing the actual writer.
 Existing parent allocations and reservations are retained; none is freed.
 """
@@ -37,9 +37,13 @@ def refresh(xbe, output, base_revision=BASE_REVISION):
     base_revision = subprocess.check_output(
         ['git', 'rev-parse', '--verify', base_revision + '^{commit}'], cwd=ROOT,
         text=True).strip()
-    allowed = {'mod_editor/core/nfl2k5_my_career_mode.py',
+    allowed = {'mod_editor/core/nfl2k5_my_career.py',
+               'mod_editor/core/nfl2k5_my_career_save.py',
+               'mod_editor/core/nfl2k5_my_career_mode.py',
                'mod_editor/core/nfl2k5_my_career_mode_code.py'}
     fingerprints = oracle.source_fingerprints()
+    # The release manifest contains used sources, not every analysis helper.
+    added_sources = {'mod_editor/core/nfl2k5_my_career_prospects.py'} - set(document['source_sha256'])
     changed = []
     for path, digest in document['source_sha256'].items():
         if fingerprints.get(path) == digest:
@@ -63,6 +67,7 @@ def refresh(xbe, output, base_revision=BASE_REVISION):
     document['spans'].extend(added)
     document['steps'].extend(recorder.steps)
     document['source_sha256'].update({p: fingerprints[p] for p in changed})
+    document['source_sha256'].update({p: fingerprints[p] for p in added_sources})
     document['model'] = ('BOUNDED XBE PROJECTION: unchanged parent reservations plus '
                          'observed MyCareer mode 5 writes; no new disc build')
     document['mycareer_incremental_proof'] = dict(
@@ -70,10 +75,11 @@ def refresh(xbe, output, base_revision=BASE_REVISION):
         parent_source_revision=base_revision,
         parent_disc_fields_are_historical=True, disc_built=False,
         release_manifest=False, changed_sources=sorted(changed),
+        added_sources=sorted(added_sources),
         added_retail_reservations=len(added), observed_probe=recorder.steps,
         fixed_rx=mode.CODE_SIZE,
         fixed_rw=sum(size for _, kind, size, _ in mode.REQUESTS if kind == 'data'),
-        reason='A full disc copy would violate the 100 GB free-space floor.')
+        reason='Bounded writer projection only; the integrator must regenerate the release manifest.')
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_bytes((json.dumps(document, indent=2) + '\n').encode('utf-8'))
     return document['mycareer_incremental_proof']

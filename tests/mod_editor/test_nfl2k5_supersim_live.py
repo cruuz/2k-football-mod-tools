@@ -323,6 +323,10 @@ class RuntimeTests(unittest.TestCase):
             for away in (False, True):
                 with self.subTest(position=position,away=away), SchedulerMachine(self.payload) as m:
                     m.setup(position,away); m.absent()
+                    # This synthetic fixture has no play-call scene. Preserve
+                    # its readiness/clock/control matrix using Coach; the beta
+                    # 69 uninterrupted series proves the native human menu.
+                    m.put(m.state+2736,2)
                     def update():
                         step=m.counts['updates']
                         if step == 2:
@@ -708,7 +712,17 @@ class NativeSeriesTests(unittest.TestCase):
 
     def test_three_native_plays_grouped_cadence_and_animated_handoffs(self):
         from tools.nfl2k5_supersim_live_probe import series_probe
-        result = series_probe(self.payload)
+        from tests.nfl2k5_supersim_series import Machine as SeriesMachine
+        from unittest.mock import patch
+        adopt = SeriesMachine.adopt_native_player
+        def coach(m, actor):
+            position = adopt(m, actor)
+            m.put(m.state+2736,2)
+            return position
+        # Retain this proof's settled personnel/clock/render contract. Native
+        # human play-call reentry has its own beta 69 series and input boundary.
+        with patch.object(SeriesMachine, 'adopt_native_player', coach):
+            result = series_probe(self.payload)
         self.assertGreaterEqual(result['plays'],3)
         self.assertEqual(result['updates'],8*result['presented_frames'])
         self.assertEqual(result['polls'],result['presented_frames'])
