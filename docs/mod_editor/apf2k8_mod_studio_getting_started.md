@@ -764,7 +764,7 @@ design into the project, then Build. These tools have offline validation;
 every in-game outcome is **UNWITNESSED**. The [wave guide](apf_wave_2026_09_09.md)
 lists capacity and build-composition limits.
 
-The beta-67 **CPU Play Calling** editor controls which existing plays get
+The **CPU Play Calling** editor controls which existing plays get
 called and their weights. Play authoring is on **Design Plays / Formations**.
 
 Playbooks now includes Design Plays / Formations, Coverage Geometry, Book Identity

@@ -168,6 +168,7 @@ class AudioAnnotationSessionTests(unittest.TestCase):
         self.root = Path(self.temporary.name)
         cache = SimpleNamespace(
             source=SimpleNamespace(sha256="a" * 64),
+            pack0=self.root / "private-cache" / "0",
             root=self.root / "private-cache",
         )
         self.patcher = mock.patch(
@@ -349,6 +350,7 @@ class AudioAnnotationSessionTests(unittest.TestCase):
 
         cache = SimpleNamespace(
             source=SimpleNamespace(sha256="a" * 64),
+            pack0=self.root / "private-cache" / "0",
             root=self.root / "private-cache",
         )
         target = StudioSession(
@@ -391,6 +393,7 @@ class AudioAnnotationSessionTests(unittest.TestCase):
     def test_disposable_uuid_session_removes_only_its_exact_private_root(self) -> None:
         cache = SimpleNamespace(
             source=SimpleNamespace(sha256="a" * 64),
+            pack0=self.root / "private-cache" / "0",
             root=self.root / "private-cache",
         )
         candidate = StudioSession(
@@ -452,6 +455,7 @@ class AudioAnnotationSessionTests(unittest.TestCase):
 
         cache = SimpleNamespace(
             source=SimpleNamespace(sha256="a" * 64),
+            pack0=self.root / "private-cache" / "0",
             root=self.root / "private-cache",
         )
         loaded = StudioSession(

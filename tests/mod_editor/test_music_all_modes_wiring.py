@@ -97,7 +97,8 @@ class WidgetHandoffTests(unittest.TestCase):
         exec(compile(sources['mod_editor/gui/build_panel_qt.py'], module.__file__, 'exec'), vars(module))
         cls.BuildPanel = module.BuildPanel
         methods = {'_music_playlist_changed', '_capture_music_build_settings', '_restore_music_build_settings',
-                   '_build_music_shuffle_changed', '_music_library_preview_ready', '_music_changed'}
+                   '_build_music_shuffle_changed', '_music_library_preview_ready', '_music_changed',
+                   '_refresh_build_includes'}
         namespace = {}
         exec(functions(sources['mod_editor/gui/studio_qt.py'], methods), namespace)
         cls.Host = type('Host', (), {name:namespace[name] for name in methods})
