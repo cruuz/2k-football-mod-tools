@@ -29,7 +29,9 @@ row 3 computes menu `+45C` at `1BE1FD`, then **`1BE219: mov [edi],edx` overwrite
 the controller field**. The test executes that exact overwrite. A fourth choice
 is outside the same object. This is why the user-authorized CPU-only fallback
 ships, with the explicit caption `Coin toss: CPU defer (modern, experimental; CPU winners only)`.
-Human Defer needs generic menu relocation and input/render/caller proofs.
+Human Defer needs generic menu relocation and input/render/caller proofs. The
+deferrer word is runtime-only; game save/load persistence is not implemented
+or proved.
 
 ## Instruction-level conclusions
 
@@ -108,9 +110,9 @@ Final logs are in `reports/b69_j5/`.
 | `python3 tests/mod_editor/test_nfl2k5_accelerated_clock.py` | 40 tests, OK (47.533s). |
 | `python3 tools/nfl2k5_rules_assemble.py --check` | All three templates verified. |
 | Proposed registry (in memory) | 164-row schema/semantics OK; all three new rows' commands and evidence files checked. Whole-registry file check stops on pre-existing missing `docs/research/apf_audio.md`. |
-| `python3 tests/mod_editor/test_xbe_patch_memory_writes.py` | Final result recorded below before commit. |
-| `python3 tests/mod_editor/test_xbe_patch_cave_references.py` | Final result recorded below before commit. |
-| `python3 tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py` | Final result recorded below before commit. |
+| `python3 tests/mod_editor/test_xbe_patch_memory_writes.py` | 119 tests, OK (1787.272s). |
+| `python3 tests/mod_editor/test_xbe_patch_cave_references.py` | 131 tests, OK (2045.808s). |
+| `python3 tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py` | 475 tests, OK (3235.993s). |
 | `python3 tests/mod_editor/test_nfl2k5_cave_oracle.py` | 29 tests, OK (423.534s), normal protected manifest; no scratch-manifest override. |
 
 Focused pairs include all new owners, accelerated clock, kick rules, overtime and
@@ -119,6 +121,10 @@ Slow-QB acceleration. The complete matrix adds all three owners to the existing
 replay. Native clock results: ordinary 600 ->580/20 paired game/play clocks;
 final-minute undecided 60/40; decided 0/40. The series's live timer is
 59.866668701171875 in all four cases, and only decided Q4 zeroes at dead ball.
+
+All four required XBE gates are green before the final commit: **754 tests, OK**.
+The seven standalone suites total **811 tests, OK**, without skips.
+Final repin output is recorded in `reports/b69_j5/repin.log`.
 
 ## Required player witness and roadmap
 
@@ -145,7 +151,7 @@ Approval is unavailable. No other checkout or shared Git metadata was modified.
 Commits therefore use a separate writable Git directory under the system temp
 directory, with this worktree and read-only alternates to the base object store.
 Its path is recorded in the local `ASTRA_GIT_DIR.txt`. Branch
-`astra/b69-j5-rules` starts at `922c009d`; implementation commit `f17fc38d` is
+`astra/b69-j5-rules` starts at `922c009d`; implementation commit `f17fc38d` and proof/handoff commit `8d6db047` are
 already preserved there. The final delivery includes **ASTRA_J5.bundle**, containing
 the branch's commits after that base. The ordinary worktree HEAD stays at the
 base because its shared metadata could not be written.

@@ -193,7 +193,7 @@ In the module-availability table used by source inspection, after accelerated cl
 ("cpu_scrambles", "nfl2k5_cpu_scrambles"),
 ```
 
-In `_state_from_report`'s report-key projection (the tuple currently containing
+In `inspect()`'s report-key projection (the tuple currently containing
 `accelerated_clock_settings`), append:
 
 ```python

@@ -29,19 +29,21 @@ advertise a human Defer option or recommend ADVANCED yet.
 | `B82B0`, `E602F0` | Kick/receive callback records opening kicker; `B82F0`, `E602F4` record direction. |
 | `B8200`, `E9460` | Finish toss and establish first kickoff possession/defense/direction. |
 | `B8B30`, `B88C0`, `B8910` | End-of-Q2, halftime, advance to Q3 and native kickoff initialization. |
-| `158643..15864C` | Retail second-half kickoff negates opening direction and selects the opponent of the opening kicker. It has no independent deferrer state. |
+| `158643..15864C` (entry `158620`, direct caller `B894B`) | Retail second-half kickoff negates opening direction and selects the opponent of the opening kicker. It has no independent deferrer state. |
 | `25EAF0` | Boolean toss-result consumer comparing called face/result. |
 
 The owner hooks `25E7B5` (7 bytes), `25E81F` (5), `15864C` (5), and
 `25EAF0` (6). It retains the real winner, records the CPU deferrer in its own
 four-byte RW allocation, and transfers first-half kick/receive choice to the loser.
-The menu notice becomes “CPU deferred. Choose for the first half.” A parity change
+The menu notice becomes “CPU deferred. Choose for the first half.” The native
+header at `E8B43C` is “Coin Toss”, not a false winner announcement. A parity change
 lets existing direction/choice callbacks follow the loser; the result wrapper
 restores the original winner interpretation for `25EAF0`.
 
 At halftime the deferring CPU chooses Receive, even if the first-half chooser
 chose Kick. Direction and kickoff spot still use native initialization. The owned
-state clears at each toss-menu initialization, including OT; only period 1,
+state is runtime-only; persistence through game save/load is not implemented or
+proved. It clears at each toss-menu initialization, including OT; only period 1,
 phase 0 can set it. OT's possession-seen state and modified scoring rules are
 untouched. Native kickoff has phase 2; PAT phase 3 and modern kick-rule spot
 operands remain under the existing kick-rules owner.
@@ -99,7 +101,7 @@ The game must be active (`A83A18 == 3`), period exactly 4, phase 4 (scrimmage),
 state 12 (huddle) or 18 (dead ball), and the canonical possession/defense teams
 must be opponents. Score words come from `[team+8]`; the possessing team must
 lead by the selected margin. The positive finite countdown is `[E6028C]+10`.
-Paused/count-up timers, malformed scores, other phases, live state 14, ready
+Paused/count-up timers, scores outside 0..255, other phases, live state 14, ready
 state 13, trailing possession and every OT period bypass the writer.
 
 ### PROVED hooks and composition
