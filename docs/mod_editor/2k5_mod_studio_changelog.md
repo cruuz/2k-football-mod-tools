@@ -2,6 +2,9 @@
 
 ## v1.0 RC94, beta 69: new features, the reports after beta 68, and a polish pass (2026-09-13)
 
+- **Player CSV edits now have a complete preview and one Undo.** MacDog850 asked, "id recommend also adding a csv roster import/export for the extension too... makes player editing easier". On ★ Rosters, CSV exports every player or the visible list with the loaded position labels, all attribute cards, ratings, appearance, styles, contracts and exact pool/index identities. Import previews changed fields and refused rows, applies valid rows together, and restores the complete edit through Undo and Redo. UTF-8 text protects leading zeros, long numeric names and formula prefixes with a reversible apostrophe; the CSV menu explains Excel handling. Disc, Xbox-save and franchise-layout round trips pass on synthetic documents; source files stay unchanged and in-game results remain UNWITNESSED.
+- **Historic moments: real rosters remains blocked pending the actual failing load state.** heaven asked, "Will we be able to have every player with names on them, currently in 2k5's 25th anniversary mode it's WR CB etc". The native archive wait now has a bounded reproduction: withholding completion stops at its exact loop instruction, and supplying completion resumes the same Wide Right selection. All 25 selections and return visits pass that wait, team import, scenario setup and roster export with the existing 12-byte repair on retail and Practice Squad configurations. This does not reproduce the reported music freeze or prove a complete scene load; the failing archive/scene state is still needed. The all-moments option stays EXPERIMENTAL, blocked, OFF in every preset and UNWITNESSED in game.
+
 Beta 69 adds planned features, answers every ESPN NFL 2K5 report in Discord after beta 68 and polishes both studios; bullets are added as each change lands.
 
 ## v1.0 RC93, beta 68: fixes for the reports after beta 66.1 (2026-09-12)
