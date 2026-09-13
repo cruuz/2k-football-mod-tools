@@ -99,7 +99,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "64ac47e2f3d28c374d4b0b8d44e5eba16b69ce5d70bbbeb6288ddadeb2be10ed",
     "mod_editor/gui/studio_qt.py":
-        "3b81d497bd50523562abae7f66b56be120ac8de959be4158562c6e3b654e4a4c",
+        "3b60f0e4b991686561c60a7586289c325a10a3e5aa8f79055584dd51477904f2",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
@@ -109,7 +109,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/studio/project_archive.py":
         "3556062a7cf178ef416706543e71270783d04439494420810fb7a10ca7f01479",
     "mod_editor/studio/session.py":
-        "665ab4888cfdf5999eb7aeeb50ef870bfbed759c7d42f945a9fe054404779715",
+        "a2d52608660eae69c9cf384f2f42248daf73397a49b80ca1f622f24e1082abf0",
 }
 
 REQUIRED_UNIFIED_PROVIDER_CLOSURE = frozenset(
@@ -2100,11 +2100,11 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 161,
+    require(len(registry.capabilities) == 162,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
-    require(len(product_catalog.capabilities) == 91,
+    require(len(product_catalog.capabilities) == 92,
             "NFL 2K5 product capability count changed")
     _exercise_default_provider_controller(
         modules["mod_editor.core.controller"],
@@ -2507,7 +2507,7 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=161 sections=12 nfl2k5_capabilities=91 "
+        "registry=162 sections=12 nfl2k5_capabilities=92 "
         "reports=16 reviewed_metadata=24 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "

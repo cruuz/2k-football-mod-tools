@@ -9146,14 +9146,16 @@
         "tests/mod_editor/test_nfl2k5_espn25_rosters_native.py",
         "docs/mod_editor/nfl2k5_espn25_inventory.json",
         "ASTRA_ESPN25_EXACT_LINEUPS_REPORT.md",
-        "tests/mod_editor/test_nfl2k5_espn25_exact_lineups.py"
+        "tests/mod_editor/test_nfl2k5_espn25_exact_lineups.py",
+        "ASTRA_B69_J6_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_espn25_loading_wait.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "EXPERIMENTAL / UNWITNESSED. All presets off. Chosen-side box-score starters are established; shared files, incomplete bench lists and snap-specific players remain limited."
+        "reason": "Historic moment rosters cannot be built: Wide Right has an unresolved loading freeze. Native team reload completes with supplied archive completions; the failing game load still needs its archive completion and scene state captured. Keep this option off. EXPERIMENTAL / UNWITNESSED."
       },
       "id": "nfl2k5.rosters.espn25_real_rosters",
       "input_constraints": [
@@ -9162,8 +9164,7 @@
         "Season rosters are incomplete: named same-franchise nearby-season role fillers and retained unknown numbers are disclosed per player."
       ],
       "portme": [
-        "The existing Build option is wired; keep it off in every preset and retain the image/layout compatibility checks.",
-        "Noah must load each of the 25 moments and check on-field and pause-menu identities, numbers, formations and gameplay."
+        "Retain the build block until the failing game's archive completion and scene state are captured and diagnosed; do not infer scene readiness from native roster import/export."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -9173,33 +9174,104 @@
       },
       "runtime": {
         "evidence": [
-          "ASTRA_ESPN25_ROSTERS_REPORT.md"
+          "ASTRA_ESPN25_IN_GAME_REPORT.md",
+          "ASTRA_B69_J6_REPORT.md",
+          "tests/mod_editor/test_nfl2k5_espn25_loading_wait.py"
         ],
-        "scope": "Bounded native selection/import/setup traces for all 25 moments; substituted archive I/O, controller, weather and presentation. No game played.",
+        "scope": "Native team import, archive wait with supplied completion, scenario setup and export. Complete scene/graphics/audio load and the reported music freeze remain unproved.",
         "status": "not-tested"
       },
       "selectors": {
         "fields": [
           {
-            "allowed": "boolean; false in Basic, Advanced and Experimental; opt-in only",
+            "allowed": "false in every preset; build is blocked even when explicitly selected",
             "name": "espn25_rosters",
             "required": true
           }
         ],
-        "notes": "Retail: position-name placeholders. Patch: box-score starters and season numbers for each chosen shared file, with every shared-season and incomplete-data exception recorded."
+        "notes": "Historic moment rosters cannot be built: Wide Right has an unresolved loading freeze. Native team reload completes with supplied archive completions; the failing game load still needs its archive completion and scene state captured. Keep this option off."
       },
       "source_container": {
         "format": "uncompressed ROST resources in XDVDFS outer archive",
         "hash_pins": [
           "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
         ],
-        "resource": "35 whole-resource pins in data/nfl2k5_espn25_moment_rosters/manifest.json; no XBE edit",
+        "resource": "35 pinned historic roster resources plus the existing guarded 12-byte native team-release repair at C2319; no cave or allocation.",
         "retail_file": "user-owned NFL 2K5 USA disc or extraction"
       },
       "summary": "Replace the 35 shared Anniversary rosters with 53 real identities each, using explicitly documented season and reserve approximations.",
       "surface": "players_rosters",
       "title": "Historic moments: real rosters (experimental, unwitnessed)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_espn25_rosters"
+    },
+    {
+      "backend": {
+        "command": "Python API: export_csv(document), preview_csv(document, text), apply_csv_preview(document, preview)",
+        "module": "mod_editor/core/nfl2k5_roster_records.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_B69_J6_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_roster_csv.py",
+        "tests/mod_editor/test_nfl2k5_roster_records.py",
+        "tests/mod_editor/test_roster_editor_panel_qt.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Explicit CSV action on the loaded Rosters document. Preview before apply; source unchanged; one Undo. In-game outcomes UNWITNESSED."
+      },
+      "id": "nfl2k5.rosters.player_csv",
+      "input_constraints": [
+        "Loaded disc ROST, verified Xbox save or franchise document; UTF-8 CSV, at most 16 MiB and 100,000 rows.",
+        "Every row needs pool + index. Duplicate or unknown identities refuse; never match by name. Fields use the loaded scheme and editor bounds. Unknown/duplicate headers refuse the sheet.",
+        "An invalid row is refused whole. Unchanged out-of-range stored fields are preserved. Name pool and team membership constraints still apply."
+      ],
+      "portme": [
+        "Witness Excel open/edit/save with leading-zero and long numeric text.",
+        "Witness copied disc/save/franchise edits, including contracts and one Undo/Redo."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_B69_J6_REPORT.md"
+        ],
+        "scope": "Synthetic document and offscreen page checks; no played disc/save/franchise result.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "Exact player identity in the loaded document",
+            "name": "pool + index",
+            "required": true
+          },
+          {
+            "allowed": "CSV_COLUMNS in nfl2k5_roster_records; loaded scheme position labels; card bounds",
+            "name": "player columns",
+            "required": true
+          }
+        ],
+        "notes": "CSV menu on \u2605 Rosters; export every player or this list, import with preview. Numeric contract_value is in $10,000 units."
+      },
+      "source_container": {
+        "format": "ROST/save body",
+        "hash_pins": [],
+        "resource": "Loaded RosterDocument, all pools; 0x54 player records, name pools and team lists",
+        "retail_file": "User-owned disc roster or verified signed save"
+      },
+      "summary": "Export player fields and preview exact pool/index imports with per-row refusals and one complete Undo/Redo action.",
+      "surface": "players_rosters",
+      "title": "Player CSV export and import",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_roster_csv"
     },
     {
       "backend": {

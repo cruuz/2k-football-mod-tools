@@ -38,7 +38,7 @@ class StylesTests(unittest.TestCase):
         self.assertEqual(other.to_body(), doc.to_body())
         before = other.to_body()
         receipt = rr.import_csv(other, "pool,index,power_run_style,scramble,kicking_style\nprimary,0,-1,256,nope\n")
-        self.assertEqual(len(receipt["log"]), 3)
+        self.assertEqual(len(receipt["refused"]), 1)  # the entire invalid row refuses
         self.assertEqual(other.to_body(), before)
         for field in (*rr.STYLE_RATINGS, "throw_style", "power_run_style_bucket"):
             for value in (1.1, True, "1"):

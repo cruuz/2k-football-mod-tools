@@ -1232,6 +1232,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         module = _core_module("nfl2k5_espn25_rosters")
         if module is None:
             raise RuntimeError("Historic moment rosters are unavailable in this build")
+        module.require_build_ready()
         _, roster_preview = module.apply(module.read_resources(source))
         receipt["espn25_rosters_preflight"] = roster_preview
     if plan.team_names_2026:
@@ -1911,7 +1912,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         else:
             receipt["result"] = inspect(target, screen_timing=plan.screen_timing)
     if plan.espn25_rosters:
-        # data-only pass on the copy after every relocation pass; the option excludes a saved Anniversary plan
+        # Historic resource pass plus the guarded native reload repair, on the copy after relocations.
         progress("Applying historic moment rosters", 0, 0)
         module = _core_module("nfl2k5_espn25_rosters")
         historic_receipt = module.apply_to_image(target)
