@@ -18,7 +18,9 @@ def _field_label(widget: QWidget) -> str:
     for label in parent.findChildren(QLabel):
         if label.buddy() is widget:
             return label.text().rstrip(':')
-    layout = parent.layout()
+    # Unbound call: a page may keep its own box in an attribute named `layout`, which shadows the
+    # method on the instance (a TypeError that aborts the process on macOS).
+    layout = QWidget.layout(parent)
     if isinstance(layout, QFormLayout):
         label = layout.labelForField(widget)
         if isinstance(label, QLabel):
