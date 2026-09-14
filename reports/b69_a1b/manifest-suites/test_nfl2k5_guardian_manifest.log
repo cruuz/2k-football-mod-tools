@@ -1,0 +1,14 @@
+F
+======================================================================
+FAIL: test_observed_complete_owner_union_and_private_manifest (__main__.ManifestTests.test_observed_complete_owner_union_and_private_manifest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_nfl2k5_guardian_manifest.py", line 75, in test_observed_complete_owner_union_and_private_manifest
+    self.assertEqual(fingerprints,cm.source_fingerprints())
+AssertionError: {'mod[9009 chars]y': '1951dd3a20b35cec58814fcda757f2cda7a322005[27778 chars]ae8'} != {'mod[9009 chars]y': 'e72fe54827d646a2d15107abaf4069b3460a61948[27778 chars]ae8'}
+Diff is 37951 characters long. Set self.maxDiff to None to see it.
+
+----------------------------------------------------------------------
+Ran 1 test in 329.061s
+
+FAILED (failures=1)

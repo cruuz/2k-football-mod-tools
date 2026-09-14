@@ -1,0 +1,375 @@
+[
+  {
+    "job": "J3",
+    "id": "nfl2k5.mode.my_career_playcalling",
+    "differences": [
+      {
+        "field": "/evidence",
+        "proposed": [
+          "ASTRA_REPORT.md",
+          "tests/mod_editor/test_nfl2k5_my_career_playcalling.py",
+          "tests/mod_editor/test_nfl2k5_my_career_settings.py",
+          "tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py"
+        ],
+        "integrated": [
+          "ASTRA_B69_J3_REPORT.md",
+          "tests/mod_editor/test_nfl2k5_my_career_playcalling.py",
+          "tests/mod_editor/test_nfl2k5_my_career_settings.py",
+          "tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py"
+        ]
+      },
+      {
+        "field": "/gui/reason",
+        "proposed": "EXPERIMENTAL / UNWITNESSED. Protected MyCareerPanel wiring is supplied in WIRING.md.",
+        "integrated": "EXPERIMENTAL / UNWITNESSED. Integrated using WIRING_B69_J3.md; Off/Retail in every preset."
+      },
+      {
+        "field": "/portme",
+        "proposed": [
+          "Complete the andrethealchemist and THE1WAM witness scripts in ASTRA_REPORT.md."
+        ],
+        "integrated": [
+          "Complete the andrethealchemist and THE1WAM witness scripts in ASTRA_B69_J3_REPORT.md."
+        ]
+      },
+      {
+        "field": "/runtime/evidence",
+        "proposed": [
+          "ASTRA_REPORT.md",
+          "tests/mod_editor/test_nfl2k5_my_career_playcalling.py"
+        ],
+        "integrated": [
+          "ASTRA_B69_J3_REPORT.md",
+          "tests/mod_editor/test_nfl2k5_my_career_playcalling.py"
+        ]
+      },
+      {
+        "field": "/selectors/notes",
+        "proposed": "Use the saved career setting or creation tier in MyCareerPanel; exact wiring is in WIRING.md.",
+        "integrated": "Use the saved career setting or creation tier in MyCareerPanel; exact wiring is in WIRING_B69_J3.md."
+      }
+    ]
+  },
+  {
+    "job": "J3",
+    "id": "nfl2k5.mode.my_career_prospects",
+    "differences": [
+      {
+        "field": "/evidence",
+        "proposed": [
+          "ASTRA_REPORT.md",
+          "tests/mod_editor/test_nfl2k5_my_career_prospects.py",
+          "tests/mod_editor/test_nfl2k5_my_career_settings.py",
+          "tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py"
+        ],
+        "integrated": [
+          "ASTRA_B69_J3_REPORT.md",
+          "tests/mod_editor/test_nfl2k5_my_career_prospects.py",
+          "tests/mod_editor/test_nfl2k5_my_career_settings.py",
+          "tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py"
+        ]
+      },
+      {
+        "field": "/gui/reason",
+        "proposed": "EXPERIMENTAL / UNWITNESSED. Protected MyCareerPanel wiring is supplied in WIRING.md.",
+        "integrated": "EXPERIMENTAL / UNWITNESSED. Integrated using WIRING_B69_J3.md; Off/Retail in every preset."
+      },
+      {
+        "field": "/portme",
+        "proposed": [
+          "Complete the andrethealchemist and THE1WAM witness scripts in ASTRA_REPORT.md."
+        ],
+        "integrated": [
+          "Complete the andrethealchemist and THE1WAM witness scripts in ASTRA_B69_J3_REPORT.md."
+        ]
+      },
+      {
+        "field": "/runtime/evidence",
+        "proposed": [
+          "ASTRA_REPORT.md",
+          "tests/mod_editor/test_nfl2k5_my_career_prospects.py"
+        ],
+        "integrated": [
+          "ASTRA_B69_J3_REPORT.md",
+          "tests/mod_editor/test_nfl2k5_my_career_prospects.py"
+        ]
+      },
+      {
+        "field": "/selectors/notes",
+        "proposed": "Use the saved career setting or creation tier in MyCareerPanel; exact wiring is in WIRING.md.",
+        "integrated": "Use the saved career setting or creation tier in MyCareerPanel; exact wiring is in WIRING_B69_J3.md."
+      }
+    ]
+  },
+  {
+    "job": "J4",
+    "id": "nfl2k5.weather.climate_editor",
+    "differences": [
+      {
+        "field": "/evidence",
+        "proposed": [
+          "docs/research/nfl2k5_weather_time_of_day.md",
+          "reports/b69_j4/weather_audit.json",
+          "reports/b69_j4/weather_native.json",
+          "tests/mod_editor/test_nfl2k5_weather.py",
+          "tests/mod_editor/test_nfl2k5_weather_editor.py"
+        ],
+        "integrated": [
+          "docs/research/nfl2k5_weather_time_of_day.md",
+          "reports/b69_j4/weather_audit.json",
+          "reports/b69_j4/weather_native.json",
+          "tests/mod_editor/test_nfl2k5_weather.py",
+          "tests/mod_editor/test_nfl2k5_weather_editor.py",
+          "ASTRA_B69_J4_REPORT.md"
+        ]
+      },
+      {
+        "field": "/gui/reason",
+        "proposed": "EXPERIMENTAL / UNWITNESSED. Both options remain Off in every preset. Build wiring is supplied in WIRING.md.",
+        "integrated": "EXPERIMENTAL / UNWITNESSED. Integrated using WIRING_B69_J4.md; Off/Retail in every preset."
+      },
+      {
+        "field": "/portme",
+        "proposed": [
+          "Integrate the two protected Build/registry rows from WIRING.md; test the final disposable-disc transaction.",
+          "Source and pin a modern climate dataset before calling any preset modern NFL climate.",
+          "Witness new-franchise weather and existing-save behavior; do not advertise a game-day weather menu."
+        ],
+        "integrated": [
+          "Source and pin a modern climate dataset before calling any preset modern NFL climate.",
+          "Witness new-franchise weather and existing-save behavior; do not advertise a game-day weather menu."
+        ]
+      },
+      {
+        "field": "/runtime/evidence",
+        "proposed": [
+          "reports/b69_j4/weather_native.json",
+          "docs/research/nfl2k5_weather_time_of_day.md"
+        ],
+        "integrated": [
+          "reports/b69_j4/weather_native.json",
+          "docs/research/nfl2k5_weather_time_of_day.md",
+          "ASTRA_B69_J4_REPORT.md"
+        ]
+      },
+      {
+        "field": "/validation_command",
+        "proposed": "python3 tests/mod_editor/test_nfl2k5_weather.py",
+        "integrated": "python3 -m tests.mod_editor.test_nfl2k5_weather"
+      }
+    ]
+  },
+  {
+    "job": "J4",
+    "id": "nfl2k5.weather.haze_coefficient",
+    "differences": [
+      {
+        "field": "/evidence",
+        "proposed": [
+          "docs/research/nfl2k5_weather_time_of_day.md",
+          "reports/b69_j4/weather_native.json",
+          "tests/mod_editor/test_nfl2k5_weather_native.py"
+        ],
+        "integrated": [
+          "docs/research/nfl2k5_weather_time_of_day.md",
+          "reports/b69_j4/weather_native.json",
+          "tests/mod_editor/test_nfl2k5_weather_native.py",
+          "ASTRA_B69_J4_REPORT.md"
+        ]
+      },
+      {
+        "field": "/gui/reason",
+        "proposed": "EXPERIMENTAL / UNWITNESSED. Both options remain Off in every preset. Build wiring is supplied in WIRING.md.",
+        "integrated": "EXPERIMENTAL / UNWITNESSED. Integrated using WIRING_B69_J4.md; Off/Retail in every preset."
+      },
+      {
+        "field": "/portme",
+        "proposed": [
+          "Register existing-data ownership and regenerate the combined cave manifest after Build integration.",
+          "Witness dry outdoor Off/On comparisons with controlled nonzero haze and indoor/rain/snow controls."
+        ],
+        "integrated": [
+          "Witness dry outdoor Off/On comparisons with controlled nonzero haze and indoor/rain/snow controls."
+        ]
+      },
+      {
+        "field": "/runtime/evidence",
+        "proposed": [
+          "reports/b69_j4/weather_native.json",
+          "docs/research/nfl2k5_weather_time_of_day.md"
+        ],
+        "integrated": [
+          "reports/b69_j4/weather_native.json",
+          "docs/research/nfl2k5_weather_time_of_day.md",
+          "ASTRA_B69_J4_REPORT.md"
+        ]
+      },
+      {
+        "field": "/validation_command",
+        "proposed": "python3 tests/mod_editor/test_nfl2k5_weather_native.py",
+        "integrated": "python3 -m tests.mod_editor.test_nfl2k5_weather_native"
+      }
+    ]
+  },
+  {
+    "job": "J5",
+    "id": "nfl2k5.gameplay.coin_defer",
+    "differences": [
+      {
+        "field": "/evidence",
+        "proposed": [
+          "ASTRA_REPORT.md",
+          "docs/research/nfl2k5_b69_rules.md",
+          "tests/mod_editor/test_nfl2k5_b69_rules.py",
+          "tools/nfl2k5_coin_defer.S"
+        ],
+        "integrated": [
+          "ASTRA_B69_J5_REPORT.md",
+          "docs/research/nfl2k5_b69_rules.md",
+          "tests/mod_editor/test_nfl2k5_b69_rules.py",
+          "tools/nfl2k5_coin_defer.S"
+        ]
+      },
+      {
+        "field": "/gui/reason",
+        "proposed": "EXPERIMENTAL, Off/Retail in every preset. Integrate the exact Build controls in WIRING.md. All in-game outcomes UNWITNESSED.",
+        "integrated": "EXPERIMENTAL / UNWITNESSED. Integrated using WIRING_B69_J5.md; Off/Retail in every preset."
+      },
+      {
+        "field": "/portme",
+        "proposed": [
+          "Integrate BuildPlan, XBE dispatcher, Build controls, packaging and these registry rows using WIRING.md; regenerate the protected production cave manifest.",
+          "Complete the player witness cases in docs/research/nfl2k5_b69_rules.md before claiming in-game behavior."
+        ],
+        "integrated": [
+          "Complete the player witness cases in docs/research/nfl2k5_b69_rules.md before claiming in-game behavior."
+        ]
+      },
+      {
+        "field": "/runtime/evidence",
+        "proposed": [
+          "ASTRA_REPORT.md",
+          "docs/research/nfl2k5_b69_rules.md",
+          "tests/mod_editor/test_nfl2k5_b69_rules.py",
+          "tools/nfl2k5_coin_defer.S"
+        ],
+        "integrated": [
+          "ASTRA_B69_J5_REPORT.md",
+          "docs/research/nfl2k5_b69_rules.md",
+          "tests/mod_editor/test_nfl2k5_b69_rules.py",
+          "tools/nfl2k5_coin_defer.S"
+        ]
+      }
+    ]
+  },
+  {
+    "job": "J5",
+    "id": "nfl2k5.gameplay.decided_clock",
+    "differences": [
+      {
+        "field": "/evidence",
+        "proposed": [
+          "ASTRA_REPORT.md",
+          "docs/research/nfl2k5_b69_rules.md",
+          "tests/mod_editor/test_nfl2k5_b69_rules.py",
+          "tools/nfl2k5_decided_clock.S",
+          "tests/mod_editor/test_nfl2k5_b69_rules_series.py",
+          "reports/b69_j5/native_series.json"
+        ],
+        "integrated": [
+          "ASTRA_B69_J5_REPORT.md",
+          "docs/research/nfl2k5_b69_rules.md",
+          "tests/mod_editor/test_nfl2k5_b69_rules.py",
+          "tools/nfl2k5_decided_clock.S",
+          "tests/mod_editor/test_nfl2k5_b69_rules_series.py",
+          "reports/b69_j5/native_series.json"
+        ]
+      },
+      {
+        "field": "/gui/reason",
+        "proposed": "EXPERIMENTAL, Off/Retail in every preset. Integrate the exact Build controls in WIRING.md. All in-game outcomes UNWITNESSED.",
+        "integrated": "EXPERIMENTAL / UNWITNESSED. Integrated using WIRING_B69_J5.md; Off/Retail in every preset."
+      },
+      {
+        "field": "/portme",
+        "proposed": [
+          "Integrate BuildPlan, XBE dispatcher, Build controls, packaging and these registry rows using WIRING.md; regenerate the protected production cave manifest.",
+          "Complete the player witness cases in docs/research/nfl2k5_b69_rules.md before claiming in-game behavior."
+        ],
+        "integrated": [
+          "Complete the player witness cases in docs/research/nfl2k5_b69_rules.md before claiming in-game behavior."
+        ]
+      },
+      {
+        "field": "/runtime/evidence",
+        "proposed": [
+          "ASTRA_REPORT.md",
+          "docs/research/nfl2k5_b69_rules.md",
+          "tests/mod_editor/test_nfl2k5_b69_rules.py",
+          "tools/nfl2k5_decided_clock.S",
+          "tests/mod_editor/test_nfl2k5_b69_rules_series.py",
+          "reports/b69_j5/native_series.json"
+        ],
+        "integrated": [
+          "ASTRA_B69_J5_REPORT.md",
+          "docs/research/nfl2k5_b69_rules.md",
+          "tests/mod_editor/test_nfl2k5_b69_rules.py",
+          "tools/nfl2k5_decided_clock.S",
+          "tests/mod_editor/test_nfl2k5_b69_rules_series.py",
+          "reports/b69_j5/native_series.json"
+        ]
+      }
+    ]
+  },
+  {
+    "job": "J5",
+    "id": "nfl2k5.gameplay.cpu_scrambles",
+    "differences": [
+      {
+        "field": "/evidence",
+        "proposed": [
+          "ASTRA_REPORT.md",
+          "docs/research/nfl2k5_b69_rules.md",
+          "tests/mod_editor/test_nfl2k5_b69_rules.py",
+          "tools/nfl2k5_cpu_scrambles.S"
+        ],
+        "integrated": [
+          "ASTRA_B69_J5_REPORT.md",
+          "docs/research/nfl2k5_b69_rules.md",
+          "tests/mod_editor/test_nfl2k5_b69_rules.py",
+          "tools/nfl2k5_cpu_scrambles.S"
+        ]
+      },
+      {
+        "field": "/gui/reason",
+        "proposed": "EXPERIMENTAL, Off/Retail in every preset. Integrate the exact Build controls in WIRING.md. All in-game outcomes UNWITNESSED.",
+        "integrated": "EXPERIMENTAL / UNWITNESSED. Integrated using WIRING_B69_J5.md; Off/Retail in every preset."
+      },
+      {
+        "field": "/portme",
+        "proposed": [
+          "Integrate BuildPlan, XBE dispatcher, Build controls, packaging and these registry rows using WIRING.md; regenerate the protected production cave manifest.",
+          "Complete the player witness cases in docs/research/nfl2k5_b69_rules.md before claiming in-game behavior."
+        ],
+        "integrated": [
+          "Complete the player witness cases in docs/research/nfl2k5_b69_rules.md before claiming in-game behavior."
+        ]
+      },
+      {
+        "field": "/runtime/evidence",
+        "proposed": [
+          "ASTRA_REPORT.md",
+          "docs/research/nfl2k5_b69_rules.md",
+          "tests/mod_editor/test_nfl2k5_b69_rules.py",
+          "tools/nfl2k5_cpu_scrambles.S"
+        ],
+        "integrated": [
+          "ASTRA_B69_J5_REPORT.md",
+          "docs/research/nfl2k5_b69_rules.md",
+          "tests/mod_editor/test_nfl2k5_b69_rules.py",
+          "tools/nfl2k5_cpu_scrambles.S"
+        ]
+      }
+    ]
+  }
+]

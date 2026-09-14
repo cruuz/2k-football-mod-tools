@@ -1,0 +1,5 @@
+tests/mod_editor/test_xbe_patch_memory_writes.py 0 Ran 119 tests in 1611.991s OK
+tests/mod_editor/test_xbe_patch_cave_references.py 0 Ran 131 tests in 1821.605s OK
+tests/mod_editor/test_nfl2k5_cave_oracle.py 0 Ran 29 tests in 380.106s OK (skipped=1)
+tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py 124  AUDIT TIMEOUT: 2400 seconds
+COMPLETED 4 FAILED 1

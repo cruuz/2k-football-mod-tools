@@ -1,0 +1,29 @@
+...F.....FF
+======================================================================
+FAIL: test_native_footer_validator_and_encoder_own_reserved_bytes (__main__.NativeBoundaryTests.test_native_footer_validator_and_encoder_own_reserved_bytes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_nfl2k5_franchise_2026_runtime.py", line 223, in test_native_footer_validator_and_encoder_own_reserved_bytes
+    self.assertEqual(m.call('inline_valid', ecx=m.SAVE, edx=arena.ARENA_SIZE), 0, at)
+AssertionError: 1 != 0 : 83
+
+======================================================================
+FAIL: test_resealed_reserved_footer_bytes_are_not_spare_storage (__main__.SaveOwnershipTests.test_resealed_reserved_footer_bytes_are_not_spare_storage) (offset=83)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_nfl2k5_franchise_2026_runtime.py", line 108, in test_resealed_reserved_footer_bytes_are_not_spare_storage
+    with self.subTest(offset=at), self.assertRaisesRegex(ValueError, 'reserved career bytes'):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_resealed_reserved_footer_bytes_are_not_spare_storage (__main__.SaveOwnershipTests.test_resealed_reserved_footer_bytes_are_not_spare_storage) (offset=82, value=32)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_nfl2k5_franchise_2026_runtime.py", line 113, in test_resealed_reserved_footer_bytes_are_not_spare_storage
+    with self.subTest(offset=82, value=value), self.assertRaisesRegex(ValueError, 'unknown settings'):
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 10 tests in 66.240s
+
+FAILED (failures=3)

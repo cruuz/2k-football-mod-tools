@@ -1,0 +1,179 @@
+tests/mod_editor/test_2k5_build_is_explainable.py 0 Ran 16 tests in 0.015s OK
+tests/mod_editor/test_2k5_check_my_images.py 1 Ran 21 tests in 1.240s FAILED (errors=6, skipped=5)
+tests/mod_editor/test_2k5_import_offers_resize.py 1 Ran 11 tests in 1.697s FAILED (errors=5)
+tests/mod_editor/test_apf_digital_font.py 0 Ran 14 tests in 0.185s OK
+tests/mod_editor/test_2k5_uniform_equipment_export.py 1 Ran 13 tests in 0.888s FAILED (errors=6, skipped=2)
+tests/mod_editor/test_2k5_audio_operation_integration.py 1 Ran 17 tests in 2.607s FAILED (errors=13)
+tests/mod_editor/test_apf_studio_installer.py 1 Ran 16 tests in 0.127s FAILED (errors=3)
+tests/mod_editor/test_b66_coach_wiring.py 0 Ran 5 tests in 0.811s OK (skipped=2)
+tests/mod_editor/test_b661_kit_build.py 0 Ran 2 tests in 2.390s OK
+tests/mod_editor/test_b661_workspace_qt.py 0 Ran 7 tests in 3.023s OK
+tests/mod_editor/test_b68_t1_ui.py 0 Ran 2 tests in 0.680s OK
+tests/mod_editor/test_b69_a2_wiring.py 0 Ran 4 tests in 0.125s OK
+tests/mod_editor/test_b68_a1_audit.py 1 Ran 10 tests in 6.411s FAILED (failures=1)
+tests/mod_editor/test_b69_j1_wiring.py 0 Ran 7 tests in 5.272s OK
+tests/mod_editor/test_beta61_integration.py 0 Ran 5 tests in 10.068s OK
+tests/mod_editor/test_beta62_integration3_qt.py 1 Ran 8 tests in 1.499s FAILED (failures=1)
+tests/mod_editor/test_beta66_d1_panels.py 0 Ran 4 tests in 1.521s OK
+tests/mod_editor/test_beta66_helmet_finish_wiring.py 1 Ran 8 tests in 9.162s FAILED (errors=1)
+tests/mod_editor/test_beta66_supersim_wiring.py 0 Ran 3 tests in 0.262s OK
+tests/mod_editor/test_beta69_feedback_qt.py 0 Ran 5 tests in 0.327s OK
+tests/mod_editor/test_beta69_studios_offscreen.py 0 Ran 1 test in 8.401s OK
+tests/mod_editor/test_build_panel_qt.py 0 Ran 13 tests in 1.870s OK
+tests/mod_editor/test_capability_registry_module_commands.py 0 Ran 3 tests in 0.001s OK
+tests/mod_editor/test_commentary_panel_qt.py 1 Ran 3 tests in 0.873s FAILED (errors=1)
+tests/mod_editor/test_discord_bugs_1.py 0 Ran 17 tests in 1.012s OK
+tests/mod_editor/test_discord_bugs_1_wiring.py 0 Ran 10 tests in 2.263s OK
+tests/mod_editor/test_discord_bugs_2_research.py 0 Ran 4 tests in 0.211s OK
+tests/mod_editor/test_discord_bugs_2_wiring.py 0 Ran 6 tests in 0.774s OK (skipped=2)
+tests/mod_editor/test_gameplay_patches_panel_qt.py 0 Ran 1 test in 0.298s OK
+tests/mod_editor/test_gui_refusal_wording.py 0 Ran 23 tests in 0.481s OK
+tests/mod_editor/test_keyboard_search_polish.py 0 Ran 4 tests in 1.239s OK
+tests/mod_editor/test_mod_build.py 0 Ran 11 tests in 1.483s OK
+tests/mod_editor/test_b69_a2b_game_wiring.py 0 Ran 8 tests in 84.483s OK
+tests/mod_editor/test_mod_build_beta62_integration3.py 0 Ran 11 tests in 160.245s OK
+tests/mod_editor/test_mod_build_beta62_integration.py 0 Ran 8 tests in 193.323s OK
+tests/mod_editor/test_models_panel_qt.py 0 Ran 8 tests in 0.770s OK (skipped=1)
+tests/mod_editor/test_modpack_growth_acceptance.py 0 Ran 1 test in 0.000s OK (skipped=1)
+tests/mod_editor/test_music_all_modes_wiring.py 0 Ran 4 tests in 0.990s OK
+tests/mod_editor/test_mod_build_performance.py 0 Ran 6 tests in 6.661s OK
+tests/mod_editor/test_music_simple_wiring.py 0 Ran 3 tests in 0.482s OK
+tests/mod_editor/test_nfl2k3_2k4_compatibility_boundary.py 0 Ran 4 tests in 0.001s OK
+tests/mod_editor/test_music_simple_qt.py 0 Ran 9 tests in 3.874s OK
+tests/mod_editor/test_beta61_allocator_integration.py 1 Ran 7 tests in 256.650s FAILED (failures=1)
+tests/mod_editor/test_nfl2k5_abilities_runtime.py 0 Ran 12 tests in 24.402s OK
+tests/mod_editor/test_nfl2k5_b68_game_composition.py 0 Ran 3 tests in 411.890s OK
+tests/mod_editor/test_nfl2k5_b661_transition.py 0 Ran 11 tests in 460.318s OK
+tests/mod_editor/test_nfl2k5_b69_rules_series.py 0 Ran 1 test in 59.073s OK
+tests/mod_editor/test_nfl2k5_boot_logo.py 0 Ran 7 tests in 1.838s OK
+tests/mod_editor/test_nfl2k5_calendar_engine.py 0 Ran 9 tests in 12.882s OK
+tests/mod_editor/test_nfl2k5_b69_rules.py 0 Ran 16 tests in 123.944s OK
+tests/mod_editor/test_nfl2k5_camera_broadcast.py 0 Ran 9 tests in 31.468s OK
+tests/mod_editor/test_nfl2k5_college_check.py 0 Ran 17 tests in 6.998s OK
+tests/mod_editor/test_nfl2k5_college_check_page_qt.py 0 Ran 11 tests in 1.902s OK
+tests/mod_editor/test_nfl2k5_crib_reclaim.py 0 Ran 6 tests in 5.253s OK
+tests/mod_editor/test_nfl2k5_camera_far.py 0 Ran 16 tests in 94.869s OK
+tests/mod_editor/test_nfl2k5_defensive_try.py 0 Ran 23 tests in 52.820s OK
+tests/mod_editor/test_nfl2k5_disc_identity.py 0 Ran 29 tests in 0.594s OK
+tests/mod_editor/test_nfl2k5_equipment_import_wiring.py 0 Ran 6 tests in 0.665s OK
+tests/mod_editor/test_nfl2k5_espn25_in_game.py 0 Ran 4 tests in 2.818s OK (skipped=1)
+tests/mod_editor/test_nfl2k5_espn25_integration_qt.py 1 Ran 13 tests in 17.190s FAILED (failures=1)
+tests/mod_editor/test_nfl2k5_franchise_2026.py 0 Ran 20 tests in 6.034s OK
+tests/mod_editor/test_nfl2k5_deep_zone.py 0 Ran 10 tests in 166.975s OK
+tests/mod_editor/test_nfl2k5_franchise_autosave.py 0 Ran 7 tests in 9.277s OK
+tests/mod_editor/test_nfl2k5_franchise_edit_player.py 1 Ran 12 tests in 35.089s FAILED (failures=1)
+tests/mod_editor/test_nfl2k5_franchise_2026_runtime.py 1 Ran 10 tests in 66.240s FAILED (failures=3)
+tests/mod_editor/test_nfl2k5_franchise_practice.py 0 Ran 22 tests in 13.293s OK
+tests/mod_editor/test_nfl2k5_gameplay_levers.py 0 Ran 12 tests in 11.932s OK
+tests/mod_editor/test_nfl2k5_guardian_overlay.py 0 Ran 6 tests in 7.276s OK
+tests/mod_editor/test_nfl2k5_kick_laces.py 0 Ran 18 tests in 10.752s OK
+tests/mod_editor/test_nfl2k5_allocator_scaleout.py 1 Ran 23 tests in 832.135s FAILED (failures=2)
+tests/mod_editor/test_nfl2k5_jukebox_list.py 0 Ran 6 tests in 30.534s OK
+tests/mod_editor/test_nfl2k5_music_fresh_rip_gui.py 0 Ran 1 test in 0.000s OK (skipped=1)
+tests/mod_editor/test_nfl2k5_momentum.py 0 Ran 23 tests in 27.600s OK
+tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py 0 Ran 3 tests in 0.346s OK
+tests/mod_editor/test_nfl2k5_my_career.py 0 Ran 13 tests in 20.373s OK
+tests/mod_editor/test_nfl2k5_momentum_collisions.py 0 Ran 16 tests in 37.135s OK
+tests/mod_editor/test_nfl2k5_my_career_control.py 0 Ran 2 tests in 15.728s OK
+tests/mod_editor/test_nfl2k5_my_career_cpu_choice.py 0 Ran 1 test in 18.577s OK
+tests/mod_editor/test_nfl2k5_my_career_completion.py 0 Ran 6 tests in 32.283s OK
+tests/mod_editor/test_nfl2k5_my_career_cpu_injury.py 0 Ran 1 test in 24.193s OK
+tests/mod_editor/test_nfl2k5_my_career_cpu_period.py 0 Ran 2 tests in 36.756s OK
+tests/mod_editor/test_nfl2k5_my_career_cpu_timeout.py 0 Ran 1 test in 18.426s OK
+tests/mod_editor/test_nfl2k5_my_career_creation_boundary.py 0 Ran 4 tests in 2.255s OK
+tests/mod_editor/test_nfl2k5_my_career_cpu_frame.py 0 Ran 1 test in 57.355s OK
+tests/mod_editor/test_nfl2k5_my_career_cpu_turnover.py 0 Ran 3 tests in 65.226s OK
+tests/mod_editor/test_nfl2k5_my_career_frontend.py 0 Ran 7 tests in 61.556s OK
+tests/mod_editor/test_nfl2k5_my_career_generic_build.py 0 Ran 5 tests in 11.013s OK (skipped=1)
+tests/mod_editor/test_nfl2k5_my_career_m3_budget.py 0 Ran 5 tests in 4.441s OK
+tests/mod_editor/test_nfl2k5_my_career_inline.py 0 Ran 8 tests in 13.620s OK
+tests/mod_editor/test_nfl2k5_my_career_m3_menus.py 0 Ran 4 tests in 39.262s OK
+tests/mod_editor/test_nfl2k5_my_career_mode5.py 0 Ran 4 tests in 292.450s OK
+tests/mod_editor/test_nfl2k5_my_career_mode_audit.py 0 Ran 6 tests in 0.061s OK
+tests/mod_editor/test_nfl2k5_my_career_mode_routes.py 0 Ran 7 tests in 2.677s OK
+tests/mod_editor/test_nfl2k5_my_career_panel.py 0 Ran 4 tests in 0.174s OK
+tests/mod_editor/test_nfl2k5_my_career_mode4.py 0 Ran 8 tests in 435.181s OK
+tests/mod_editor/test_nfl2k5_my_career_played.py 0 Ran 4 tests in 60.375s OK
+tests/mod_editor/test_nfl2k5_my_career_position_inputs.py 0 Ran 9 tests in 17.490s OK
+tests/mod_editor/test_nfl2k5_my_career_prospects.py 0 Ran 5 tests in 293.993s OK
+tests/mod_editor/test_nfl2k5_my_career_season.py 0 Ran 1 test in 182.004s OK
+tests/mod_editor/test_nfl2k5_my_career_settings.py 0 Ran 10 tests in 28.539s OK
+tests/mod_editor/test_nfl2k5_my_career_draft.py 0 Ran 6 tests in 1140.964s OK
+tests/mod_editor/test_nfl2k5_my_career_signing.py 0 Ran 6 tests in 51.586s OK
+tests/mod_editor/test_nfl2k5_my_career_unicorn.py 0 Ran 18 tests in 12.565s OK
+tests/mod_editor/test_nfl2k5_my_career_playcalling.py 0 Ran 3 tests in 772.901s OK
+tests/mod_editor/test_nfl2k5_myplayer_hud.py 0 Ran 5 tests in 40.846s OK
+tests/mod_editor/test_nfl2k5_paired_intent.py 0 Ran 5 tests in 31.210s OK
+tests/mod_editor/test_nfl2k5_penalties.py 0 Ran 18 tests in 7.582s OK
+tests/mod_editor/test_nfl2k5_play_intents_build.py 0 Ran 5 tests in 19.604s OK (skipped=2)
+tests/mod_editor/test_nfl2k5_playbook_pair.py 0 Ran 7 tests in 7.238s OK
+tests/mod_editor/test_nfl2k5_player_star.py 0 Ran 14 tests in 1.776s OK
+tests/mod_editor/test_nfl2k5_my_career_upgrades.py 0 Ran 4 tests in 249.921s OK
+tests/mod_editor/test_nfl2k5_position_choices.py 0 Ran 11 tests in 12.302s OK
+tests/mod_editor/test_nfl2k5_position_row_probowl.py 0 Ran 7 tests in 3.890s OK
+tests/mod_editor/test_nfl2k5_practice_reserves.py 0 Ran 9 tests in 20.831s OK
+tests/mod_editor/test_nfl2k5_practice_squad.py 0 Ran 27 tests in 23.208s OK
+tests/mod_editor/test_nfl2k5_my_career_week.py 0 Ran 1 test in 328.613s OK
+tests/mod_editor/test_nfl2k5_prospect_names.py 0 Ran 21 tests in 10.226s OK
+tests/mod_editor/test_nfl2k5_player_star_draw.py 0 Ran 19 tests in 208.849s OK
+tests/mod_editor/test_nfl2k5_read_option_diagnostic.py 0 Ran 17 tests in 27.601s OK (skipped=4)
+tests/mod_editor/test_nfl2k5_read_option_runtime.py 0 Ran 13 tests in 48.735s OK
+tests/mod_editor/test_nfl2k5_roster_records.py 0 Ran 108 tests in 14.431s OK (skipped=1)
+tests/mod_editor/test_nfl2k5_practice_squad_screen.py 0 Ran 10 tests in 441.241s OK
+tests/mod_editor/test_nfl2k5_qb_spy_runtime.py 0 Ran 13 tests in 455.261s OK
+tests/mod_editor/test_nfl2k5_scorebug_exact.py 0 Ran 8 tests in 51.728s OK
+tests/mod_editor/test_nfl2k5_scorebug_ingame.py 0 Ran 11 tests in 10.325s OK
+tests/mod_editor/test_nfl2k5_scorebug_template.py 0 Ran 19 tests in 9.794s OK
+tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py 0 Ran 11 tests in 9.216s OK
+tests/mod_editor/test_nfl2k5_scorebug_versions.py 0 Ran 4 tests in 6.662s OK
+tests/mod_editor/test_nfl2k5_senior_bowl.py 0 Ran 26 tests in 4.598s OK
+tests/mod_editor/test_nfl2k5_seven_on_seven.py 0 Ran 19 tests in 3.308s OK
+tests/mod_editor/test_nfl2k5_roster_storage.py 0 Ran 11 tests in 409.756s OK
+tests/mod_editor/test_nfl2k5_scorebug_runtime.py 0 Ran 12 tests in 100.427s OK
+tests/mod_editor/test_nfl2k5_supersim.py 0 Ran 12 tests in 8.223s OK
+tests/mod_editor/test_nfl2k5_seven_on_seven_v2.py 0 Ran 74 tests in 160.351s OK
+tests/mod_editor/test_nfl2k5_team_column.py 0 Ran 13 tests in 5.787s OK
+tests/mod_editor/test_nfl2k5_team_history.py 0 Ran 19 tests in 4.878s OK
+tests/mod_editor/test_nfl2k5_throw_arc.py 0 Ran 10 tests in 3.646s OK
+tests/mod_editor/test_nfl2k5_uniform_choice.py 0 Ran 18 tests in 8.885s OK
+tests/mod_editor/test_nfl2k5_weather.py 0 Ran 12 tests in 0.224s OK
+tests/mod_editor/test_nfl2k5_weather_editor.py 0 Ran 2 tests in 0.056s OK
+tests/mod_editor/test_nfl2k5_weather_native.py 0 Ran 10 tests in 18.691s OK
+tests/mod_editor/test_nfl2k5_weekly_prep.py 0 Ran 11 tests in 12.980s OK
+tests/mod_editor/test_nfl2k5_widescreen_polish.py 0 Ran 13 tests in 8.138s OK
+tests/mod_editor/test_nfl2k5_simulated_windows_build.py 0 Ran 1 test in 225.044s OK
+tests/mod_editor/test_nfl2k5_xbe_space.py 0 Ran 13 tests in 35.093s OK (skipped=1)
+tests/mod_editor/test_nfl2k5_zone_drop.py 0 Ran 9 tests in 25.173s OK
+tests/mod_editor/test_no_capability_is_invisible.py 1 Ran 2 tests in 0.013s FAILED (errors=2)
+tests/mod_editor/test_nfl_audio.py 0 Ran 18 tests in 0.646s OK
+tests/mod_editor/test_number_sheet_quality_wiring.py 0 Ran 6 tests in 0.650s OK (skipped=2)
+tests/mod_editor/test_phase1_packaging.py 1 Ran 23 tests in 0.080s FAILED (errors=1)
+tests/mod_editor/test_pack_extent_resolver.py 0 Ran 6 tests in 1.082s OK
+tests/mod_editor/test_product_catalog.py 0 Ran 9 tests in 0.047s OK
+tests/mod_editor/test_presentation_panel_qt.py 1 Ran 2 tests in 0.526s FAILED (errors=1)
+tests/mod_editor/test_product_inspection_panels_qt.py 1 Ran 7 tests in 0.245s FAILED (errors=1)
+tests/mod_editor/test_product_shell_accessibility_qt.py 1 Ran 6 tests in 1.150s FAILED (errors=6)
+tests/mod_editor/test_project_document_workflow.py 1 Ran 13 tests in 1.165s FAILED (errors=6)
+tests/mod_editor/test_providers.py 0 Ran 33 tests in 3.658s OK
+tests/mod_editor/test_roster_editor_panel_qt.py 0 Ran 50 tests in 3.704s OK (skipped=1)
+tests/mod_editor/test_provider_integrity.py 0 Ran 7 tests in 8.515s OK
+tests/mod_editor/test_security_blockers_remediation.py 0 Ran 11 tests in 0.007s OK
+tests/mod_editor/test_share_panel_qt.py 1 Ran 7 tests in 0.770s FAILED (errors=1)
+tests/mod_editor/test_roster_save_to_disc_wiring.py 0 Ran 6 tests in 1.529s OK
+tests/mod_editor/test_stadium_editable_discovery.py 0 Ran 2 tests in 0.425s OK (skipped=1)
+tests/mod_editor/test_sounds_panel_qt.py 1 Ran 10 tests in 1.845s FAILED (errors=1)
+tests/mod_editor/test_studio_inspection.py 0 Ran 2 tests in 0.309s OK
+tests/mod_editor/test_studio_qt_models.py 0 Ran 0 tests in 0.000s OK (skipped=1)
+tests/mod_editor/test_startup_performance.py 0 Ran 8 tests in 1.928s OK
+tests/mod_editor/test_team_kit_product_integration.py 1 Ran 6 tests in 1.135s FAILED (errors=7)
+tests/mod_editor/test_teamkit_import_wiring.py 0 Ran 3 tests in 0.317s OK
+tests/mod_editor/test_throw_tuning_panel_qt.py 0 Ran 13 tests in 1.578s OK
+tests/mod_editor/test_studio_shell_layout_qt.py 1 Ran 18 tests in 3.532s FAILED (errors=18)
+tests/mod_editor/test_unif_color_argb_parse.py 0 Ran 2 tests in 0.005s OK
+tests/mod_editor/test_unif_color_control.py 1 Ran 11 tests in 0.273s FAILED (errors=3, skipped=2)
+tests/mod_editor/test_ux_build_plan_coverage_qt.py 1 Ran 7 tests in 1.503s FAILED (failures=2)
+tests/mod_editor/test_ux_open_disc_hook_qt.py 1 Ran 7 tests in 0.835s FAILED (errors=4)
+tests/mod_editor/test_visual_export_and_preview.py 1 Ran 11 tests in 0.003s FAILED (errors=2)
+tests/mod_editor/test_workspace_recovery.py 0 Ran 7 tests in 0.033s OK
+tests/mod_editor/test_nfl2k5_supersim_live.py 124  AUDIT TIMEOUT: 2400 seconds
+COMPLETED 178 FAILED 29

@@ -1,0 +1,87 @@
+{
+  "D1": {
+    "before": [
+      "reports/b69_a1b/source-transition-before.log"
+    ],
+    "after": [
+      "reports/b69_a1b/final-contract-tests/test_b69_a1b_game_audit.log"
+    ]
+  },
+  "D2": {
+    "before": [
+      "reports/b69_a1b/baseline/test_b68_a1_audit.log"
+    ],
+    "after": [
+      "reports/b69_a1b/final-stability/test_b68_a1_audit.log"
+    ]
+  },
+  "D3": {
+    "before": [
+      "reports/b69_a1b/baseline/test_beta62_integration3_qt.log"
+    ],
+    "after": [
+      "reports/b69_a1b/fixes-verified/test_beta62_integration3_qt.log"
+    ]
+  },
+  "D4": {
+    "before": [
+      "reports/b69_a1b/baseline/test_beta61_allocator_integration.log",
+      "reports/b69_a1b/allocator-scaleout-before.log",
+      "reports/b69_a1b/baseline/test_nfl2k5_franchise_edit_player.log"
+    ],
+    "after": [
+      "reports/b69_a1b/allocator-fixes/test_beta61_allocator_integration.log",
+      "reports/b69_a1b/allocator-fixes/test_nfl2k5_allocator_scaleout.log",
+      "reports/b69_a1b/footer-fixes/test_nfl2k5_franchise_edit_player.log"
+    ]
+  },
+  "D5": {
+    "before": [
+      "reports/b69_a1b/report-contract-before.log"
+    ],
+    "after": [
+      "reports/b69_a1b/final-contract-tests/test_b69_a1b_game_audit.log"
+    ]
+  },
+  "D6": {
+    "before": [
+      "reports/b69_a1b/handoff-paths-before.log"
+    ],
+    "after": [
+      "reports/b69_a1b/final-contract-tests/test_b69_a1b_game_audit.log"
+    ]
+  },
+  "D7": {
+    "before": [
+      "reports/b69_a1b/footer-contract-before.log",
+      "reports/b69_a1b/baseline/test_nfl2k5_franchise_2026_runtime.log"
+    ],
+    "after": [
+      "reports/b69_a1b/final-stability/test_nfl2k5_franchise_2026_runtime.log"
+    ]
+  },
+  "D8": {
+    "before": [
+      "reports/b69_a1b/baseline/test_nfl2k5_espn25_integration_qt.log"
+    ],
+    "after": [
+      "reports/b69_a1b/footer-fixes/test_nfl2k5_espn25_integration_qt.log"
+    ]
+  },
+  "D9": {
+    "before": [
+      "reports/b69_a1b/before-weather-integer-verified.log"
+    ],
+    "after": [
+      "reports/b69_a1b/climate-final/test_nfl2k5_weather.log"
+    ]
+  },
+  "D10": {
+    "before": [
+      "reports/b69_a1b/baseline/test_ux_build_plan_coverage_qt.log"
+    ],
+    "after": [
+      "reports/b69_a1b/ux-coverage-final/test_ux_build_plan_coverage_qt.log"
+    ]
+  }
+}

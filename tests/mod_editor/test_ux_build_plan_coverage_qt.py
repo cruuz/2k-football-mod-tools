@@ -88,6 +88,7 @@ class BuildPlanCoverageTests(unittest.TestCase):
             "max_deep_yards", "arc", "player_tags", "team_history", "career_stats", "prospect_names",
             "roster_edits", "commentary", "playbook_packs", "name", "author", "notes",
             "accelerated_clock_minimum_seconds",  # the Minimum Play Clock Time combo beside the clock check box
+            "decided_clock_margin", "decided_clock_seconds", "cpu_scrambles",
         }
         self.assertEqual(fields - bound, set(), "BuildPlan fields with no control on the Build tab")
         self.assertEqual(bound - fields, set(), "controls that name a field BuildPlan no longer has")
@@ -104,12 +105,17 @@ class BuildPlanCoverageTests(unittest.TestCase):
         panel.notes_field.setPlainText("first try")
         panel.set_commentary([mod_build.CommentarySwap("cutsceneaudio:3", "/tmp/line.wav")])
         panel.set_playbook_packs(["/tmp/one.2k5book", "/tmp/two.2k5book"])
+        panel.decided_clock_margin.setCurrentIndex(panel.decided_clock_margin.findData(25))
+        panel.decided_clock_seconds.setCurrentIndex(panel.decided_clock_seconds.findData(90))
+        panel.cpu_scrambles_level.setCurrentIndex(panel.cpu_scrambles_level.findData("modern"))
         plan = panel.plan()
         self.assertAlmostEqual(plan.arc, 0.40)
         self.assertEqual(plan.max_deep_yards, 75.0)
         self.assertEqual((plan.name, plan.author, plan.notes), ("My mod", "me", "first try"))
         self.assertEqual(plan.commentary[0].stream, "cutsceneaudio:3")
         self.assertEqual(plan.playbook_packs, ("/tmp/one.2k5book", "/tmp/two.2k5book"))
+        self.assertEqual((plan.decided_clock_margin, plan.decided_clock_seconds,
+                          plan.cpu_scrambles), (25, 90, "modern"))
         self.assertIn("commentary lines (1)", panel.selected_labels())
         self.assertIn("playbook packs (2)", panel.selected_labels())
         # the manual arc only applies while realistic flight is off
@@ -162,7 +168,11 @@ class BuildPlanCoverageTests(unittest.TestCase):
 
     def test_every_check_box_keeps_a_short_caption(self) -> None:
         for box in self.panel.findChildren(QCheckBox):
-            self.assertLessEqual(len(box.text()), 60, box.text())
+            if box is self.panel.coin_defer_check:
+                self.assertEqual(box.text(), mod_build.tt.coin_defer_patch.BUILD_CAPTION)
+                self.assertIn("CPU winners only", box.text())
+            else:
+                self.assertLessEqual(len(box.text()), 60, box.text())
             self.assertTrue(box.text().strip(), "a nameless check box has no accessible name")
 
     def test_source_and_output_as_the_same_file_is_blocked_with_a_fix(self) -> None:

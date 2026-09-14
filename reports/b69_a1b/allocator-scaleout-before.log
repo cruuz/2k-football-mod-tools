@@ -1,0 +1,32 @@
+..F.F
+======================================================================
+FAIL: test_documented_beta62_owner_budget_table_fits (__main__.PlannerTests.test_documented_beta62_owner_budget_table_fits)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_nfl2k5_allocator_scaleout.py", line 51, in test_documented_beta62_owner_budget_table_fits
+    self.assertIn(list(request), requests)
+AssertionError: ['nfl2k5_coin_defer', 'code', 384, 16] not found in [['nfl2k5_dynamic_kickoff_relocated', 'code', 1939, 16], ['nfl2k5_dynamic_kickoff_relocated', 'data', 10, 4], ['nfl2k5_scorebug_runtime', 'code', 1408, 16], ['nfl2k5_scorebug_runtime', 'data', 128, 16], ['nfl2k5_momentum', 'code', 1408, 16], ['nfl2k5_momentum', 'data', 2064, 16], ['nfl2k5_defensive_try', 'code', 1440, 16], ['nfl2k5_defensive_try', 'data', 1040, 16], ['nfl2k5_zone_drop', 'code', 80, 16], ['nfl2k5_roster_storage', 'code', 82, 16], ['nfl2k5_coverage_slider', 'code', 16, 16], ['nfl2k5_scramble_tuning', 'code', 160, 16], ['nfl2k5_music_playlist', 'code', 2048, 16], ['nfl2k5_music_playlist', 'data', 512, 16], ['nfl2k5_music_playlist', 'read_only', 1024, 16], ['nfl2k5_practice_squad_screen', 'code', 4096, 16], ['nfl2k5_practice_squad_screen', 'data', 256, 16], ['nfl2k5_abilities_runtime', 'code', 1344, 16], ['nfl2k5_qb_spy', 'code', 2048, 16], ['nfl2k5_qb_spy', 'data', 768, 16], ['nfl2k5_qb_spy', 'read_only', 512, 16], ['nfl2k5_calendar', 'code', 1024, 16], ['nfl2k5_calendar', 'read_only', 2048, 16], ['nfl2k5_defensive_try_stats', 'code', 2048, 16], ['nfl2k5_defensive_try_stats', 'read_only', 4096, 16], ['nfl2k5_read_option_runtime', 'code', 2048, 16], ['nfl2k5_read_option_runtime', 'data', 256, 16], ['nfl2k5_read_option_runtime', 'read_only', 88, 16], ['nfl2k5_franchise_2026', 'code', 5120, 16], ['nfl2k5_franchise_2026', 'data', 4096, 16], ['nfl2k5_senior_bowl', 'code', 4096, 16], ['nfl2k5_senior_bowl', 'data', 65536, 4096], ['nfl2k5_guardian_overlay', 'code', 496, 16], ['nfl2k5_my_career', 'code', 20480, 16], ['nfl2k5_my_career', 'data', 4096, 16], ['nfl2k5_screen_hooks', 'code', 640, 16], ['nfl2k5_roster_arena_growth', 'code', 8192, 16], ['nfl2k5_guardian_cap_overlay', 'code', 2048, 16], ['nfl2k5_guardian_cap_overlay', 'data', 336, 16], ['nfl2k5_camera', 'code', 512, 16], ['nfl2k5_camera', 'read_only', 320, 16], ['nfl2k5_franchise_autosave', 'code', 1536, 16], ['nfl2k5_franchise_autosave', 'data', 128, 16], ['nfl2k5_franchise_autosave', 'read_only', 512, 16], ['nfl2k5_coverage_trail', 'code', 640, 16], ['nfl2k5_my_career_m3', 'data', 4096, 16], ['nfl2k5_deep_zone', 'code', 2048, 16], ['nfl2k5_deep_zone', 'data', 256, 16], ['nfl2k5_playbook_pair', 'code', 8192, 16], ['nfl2k5_playbook_pair', 'data', 512, 16], ['nfl2k5_playbook_pair', 'read_only', 4096, 16], ['nfl2k5_weekly_prep', 'code', 1536, 16], ['nfl2k5_cpu_money_downs', 'code', 2048, 16], ['nfl2k5_franchise_edit_player', 'read_only', 704, 16], ['nfl2k5_accelerated_clock', 'code', 1024, 16], ['nfl2k5_accelerated_clock', 'data', 4, 4], ['nfl2k5_accelerated_clock', 'read_only', 8, 4]]
+
+======================================================================
+FAIL: test_large_owner_fits_and_legacy_owner_addresses_stay_exact (__main__.PlannerTests.test_large_owner_fits_and_legacy_owner_addresses_stay_exact)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_nfl2k5_allocator_scaleout.py", line 40, in test_large_owner_fits_and_legacy_owner_addresses_stay_exact
+    self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
+AssertionError: Lists differ: [0, 0, 1792] != [0, 0, 1936]
+
+First differing element 2:
+1792
+1936
+
+- [0, 0, 1792]
+?         - ^
+
++ [0, 0, 1936]
+?          ^^
+
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.330s
+
+FAILED (failures=2)

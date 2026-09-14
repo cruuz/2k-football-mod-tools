@@ -1,0 +1,167 @@
+...EEEEEEEEEE........
+======================================================================
+ERROR: test_large_json_integers_refuse_with_climate_validation_error (__main__.ClimateTests.test_large_json_integers_refuse_with_climate_validation_error) (field='temperature_f', sign=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_nfl2k5_weather.py", line 97, in test_large_json_integers_refuse_with_climate_validation_error
+    self.draft.set_value(5, 12, field, value)
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 204, in set_value
+    scalar_bytes(field, value)
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 80, in scalar_bytes
+    require(type(value) in (int, float) and math.isfinite(value) and low <= value <= high,
+                                            ^^^^^^^^^^^^^^^^^^^^
+OverflowError: int too large to convert to float
+
+======================================================================
+ERROR: test_large_json_integers_refuse_with_climate_validation_error (__main__.ClimateTests.test_large_json_integers_refuse_with_climate_validation_error) (field='temperature_f', sign=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_nfl2k5_weather.py", line 97, in test_large_json_integers_refuse_with_climate_validation_error
+    self.draft.set_value(5, 12, field, value)
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 204, in set_value
+    scalar_bytes(field, value)
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 80, in scalar_bytes
+    require(type(value) in (int, float) and math.isfinite(value) and low <= value <= high,
+                                            ^^^^^^^^^^^^^^^^^^^^
+OverflowError: int too large to convert to float
+
+======================================================================
+ERROR: test_large_json_integers_refuse_with_climate_validation_error (__main__.ClimateTests.test_large_json_integers_refuse_with_climate_validation_error) (field='precipitation_pct', sign=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_nfl2k5_weather.py", line 97, in test_large_json_integers_refuse_with_climate_validation_error
+    self.draft.set_value(5, 12, field, value)
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 204, in set_value
+    scalar_bytes(field, value)
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 80, in scalar_bytes
+    require(type(value) in (int, float) and math.isfinite(value) and low <= value <= high,
+                                            ^^^^^^^^^^^^^^^^^^^^
+OverflowError: int too large to convert to float
+
+======================================================================
+ERROR: test_large_json_integers_refuse_with_climate_validation_error (__main__.ClimateTests.test_large_json_integers_refuse_with_climate_validation_error) (field='precipitation_pct', sign=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_nfl2k5_weather.py", line 97, in test_large_json_integers_refuse_with_climate_validation_error
+    self.draft.set_value(5, 12, field, value)
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 204, in set_value
+    scalar_bytes(field, value)
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 80, in scalar_bytes
+    require(type(value) in (int, float) and math.isfinite(value) and low <= value <= high,
+                                            ^^^^^^^^^^^^^^^^^^^^
+OverflowError: int too large to convert to float
+
+======================================================================
+ERROR: test_large_json_integers_refuse_with_climate_validation_error (__main__.ClimateTests.test_large_json_integers_refuse_with_climate_validation_error) (field='wind_mph', sign=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_nfl2k5_weather.py", line 97, in test_large_json_integers_refuse_with_climate_validation_error
+    self.draft.set_value(5, 12, field, value)
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 204, in set_value
+    scalar_bytes(field, value)
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 80, in scalar_bytes
+    require(type(value) in (int, float) and math.isfinite(value) and low <= value <= high,
+                                            ^^^^^^^^^^^^^^^^^^^^
+OverflowError: int too large to convert to float
+
+======================================================================
+ERROR: test_large_json_integers_refuse_with_climate_validation_error (__main__.ClimateTests.test_large_json_integers_refuse_with_climate_validation_error) (field='wind_mph', sign=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_nfl2k5_weather.py", line 97, in test_large_json_integers_refuse_with_climate_validation_error
+    self.draft.set_value(5, 12, field, value)
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 204, in set_value
+    scalar_bytes(field, value)
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 80, in scalar_bytes
+    require(type(value) in (int, float) and math.isfinite(value) and low <= value <= high,
+                                            ^^^^^^^^^^^^^^^^^^^^
+OverflowError: int too large to convert to float
+
+======================================================================
+ERROR: test_large_json_integers_refuse_with_climate_validation_error (__main__.ClimateTests.test_large_json_integers_refuse_with_climate_validation_error) (member='before', sign=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_nfl2k5_weather.py", line 104, in test_large_json_integers_refuse_with_climate_validation_error
+    self.assertEqual(w.status(self.data, plan), "foreign")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 162, in status
+    return _changes(data, plan)[1]
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 150, in _changes
+    old, new = (scalar_bytes(field, change[key]) for key in ("before", "after"))
+    ^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 150, in <genexpr>
+    old, new = (scalar_bytes(field, change[key]) for key in ("before", "after"))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 80, in scalar_bytes
+    require(type(value) in (int, float) and math.isfinite(value) and low <= value <= high,
+                                            ^^^^^^^^^^^^^^^^^^^^
+OverflowError: int too large to convert to float
+
+======================================================================
+ERROR: test_large_json_integers_refuse_with_climate_validation_error (__main__.ClimateTests.test_large_json_integers_refuse_with_climate_validation_error) (member='before', sign=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_nfl2k5_weather.py", line 104, in test_large_json_integers_refuse_with_climate_validation_error
+    self.assertEqual(w.status(self.data, plan), "foreign")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 162, in status
+    return _changes(data, plan)[1]
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 150, in _changes
+    old, new = (scalar_bytes(field, change[key]) for key in ("before", "after"))
+    ^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 150, in <genexpr>
+    old, new = (scalar_bytes(field, change[key]) for key in ("before", "after"))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 80, in scalar_bytes
+    require(type(value) in (int, float) and math.isfinite(value) and low <= value <= high,
+                                            ^^^^^^^^^^^^^^^^^^^^
+OverflowError: int too large to convert to float
+
+======================================================================
+ERROR: test_large_json_integers_refuse_with_climate_validation_error (__main__.ClimateTests.test_large_json_integers_refuse_with_climate_validation_error) (member='after', sign=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_nfl2k5_weather.py", line 104, in test_large_json_integers_refuse_with_climate_validation_error
+    self.assertEqual(w.status(self.data, plan), "foreign")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 162, in status
+    return _changes(data, plan)[1]
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 150, in _changes
+    old, new = (scalar_bytes(field, change[key]) for key in ("before", "after"))
+    ^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 150, in <genexpr>
+    old, new = (scalar_bytes(field, change[key]) for key in ("before", "after"))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 80, in scalar_bytes
+    require(type(value) in (int, float) and math.isfinite(value) and low <= value <= high,
+                                            ^^^^^^^^^^^^^^^^^^^^
+OverflowError: int too large to convert to float
+
+======================================================================
+ERROR: test_large_json_integers_refuse_with_climate_validation_error (__main__.ClimateTests.test_large_json_integers_refuse_with_climate_validation_error) (member='after', sign=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_nfl2k5_weather.py", line 104, in test_large_json_integers_refuse_with_climate_validation_error
+    self.assertEqual(w.status(self.data, plan), "foreign")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 162, in status
+    return _changes(data, plan)[1]
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 150, in _changes
+    old, new = (scalar_bytes(field, change[key]) for key in ("before", "after"))
+    ^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 150, in <genexpr>
+    old, new = (scalar_bytes(field, change[key]) for key in ("before", "after"))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_weather.py", line 80, in scalar_bytes
+    require(type(value) in (int, float) and math.isfinite(value) and low <= value <= high,
+                                            ^^^^^^^^^^^^^^^^^^^^
+OverflowError: int too large to convert to float
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.210s
+
+FAILED (errors=10)

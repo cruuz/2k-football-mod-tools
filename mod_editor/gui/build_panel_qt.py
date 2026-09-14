@@ -1127,6 +1127,12 @@ class BuildPanel(QWidget):
             details = mod_build.inspect_screen_timing(state["path"], combo.currentText())
             state = {**state, "screen_timing": details["status"], "screen_timing_details": details}
         self._state = state
+        # Source inspection starts a new selection; installed choices are
+        # projected from this disc, then saved project choices can be restored.
+        self.cpu_scrambles_level.blockSignals(True)
+        self.cpu_scrambles_level.setCurrentIndex(self.cpu_scrambles_level.findData(
+            "modern" if state.get("cpu_scrambles") == "applied" else "retail"))
+        self.cpu_scrambles_level.blockSignals(False)
         self._reading = False
         self.source_field.setText(str(state.get("path", "")))
         is_image = state.get("container") == "xiso"

@@ -1,0 +1,8 @@
+..........
+B68_SUPERSIM_RECEIPT {"apartment_label": "Supersim: Fast forward", "cadence": {"complete_updates": 27, "match_rng_draws": 1393, "polls": 6, "presents": 6, "updates": 27}, "drives": [{"drive": 0, "next_offense": "0xe5fc60", "offense": "0xe5fc20", "plays": 1, "saved_supersim": 2}, {"drive": 1, "next_offense": "0xe5fc20", "offense": "0xe5fc60", "plays": 2, "saved_supersim": 2}, {"drive": 2, "next_offense": "0xe5fc60", "offense": "0xe5fc20", "plays": 3, "saved_supersim": 2}], "postgame_word": 2, "save_supersim_bits": 8}
+.
+B68_PAT_RECEIPT {"choices": [{"approach_state": 14, "cadence": {"complete_updates": 8, "match_rng_draws": 452, "polls": 1, "presents": 1, "updates": 8}, "choice": "two points", "kickoff_phase": 2, "ready_state": 13, "saved_supersim": 2, "spot_cm": 4389.1201171875}, {"approach_state": 14, "cadence": {"complete_updates": 8, "match_rng_draws": 452, "polls": 1, "presents": 1, "updates": 8}, "choice": "kick", "kickoff_phase": 2, "ready_state": 13, "saved_supersim": 2, "spot_cm": 4389.1201171875}], "modern_kick_rules_and_clock": false}
+
+B68_PAT_RECEIPT {"choices": [{"approach_state": 14, "cadence": {"complete_updates": 8, "match_rng_draws": 452, "polls": 1, "presents": 1, "updates": 8}, "choice": "two points", "kickoff_phase": 2, "ready_state": 13, "saved_supersim": 2, "spot_cm": 4389.1201171875}, {"approach_state": 14, "cadence": {"complete_updates": 8, "match_rng_draws": 452, "polls": 1, "presents": 1, "updates": 8}, "choice": "kick", "kickoff_phase": 2, "ready_state": 13, "saved_supersim": 2, "spot_cm": 3200.39990234375}], "modern_kick_rules_and_clock": true}
+.
+AUDIT TIMEOUT: 2400 seconds

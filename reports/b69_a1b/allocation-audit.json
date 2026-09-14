@@ -1,0 +1,714 @@
+{
+  "before_count": 57,
+  "after_count": 64,
+  "before_extent": 12300288,
+  "after_extent": 12300288,
+  "added": [
+    {
+      "owner": "nfl2k5_coin_defer",
+      "kind": "code",
+      "size": 384,
+      "align": 16,
+      "va": 21868352,
+      "raw": 12103488,
+      "owner_offset": 0
+    },
+    {
+      "owner": "nfl2k5_coin_defer",
+      "kind": "data",
+      "size": 4,
+      "align": 4,
+      "va": 21962756,
+      "raw": 12197892,
+      "owner_offset": 0
+    },
+    {
+      "owner": "nfl2k5_coin_defer",
+      "kind": "read_only",
+      "size": 128,
+      "align": 4,
+      "va": 22051152,
+      "raw": 12286288,
+      "owner_offset": 0
+    },
+    {
+      "owner": "nfl2k5_cpu_scrambles",
+      "kind": "code",
+      "size": 128,
+      "align": 16,
+      "va": 21871440,
+      "raw": 12106576,
+      "owner_offset": 0
+    },
+    {
+      "owner": "nfl2k5_cpu_scrambles",
+      "kind": "read_only",
+      "size": 4,
+      "align": 4,
+      "va": 22051280,
+      "raw": 12286416,
+      "owner_offset": 0
+    },
+    {
+      "owner": "nfl2k5_decided_clock",
+      "kind": "code",
+      "size": 384,
+      "align": 16,
+      "va": 21871568,
+      "raw": 12106704,
+      "owner_offset": 0
+    },
+    {
+      "owner": "nfl2k5_decided_clock",
+      "kind": "read_only",
+      "size": 8,
+      "align": 4,
+      "va": 22051284,
+      "raw": 12286420,
+      "owner_offset": 0
+    }
+  ],
+  "moved": [
+    {
+      "owner": "nfl2k5_coverage_slider",
+      "kind": "code",
+      "before": {
+        "owner": "nfl2k5_coverage_slider",
+        "kind": "code",
+        "size": 16,
+        "align": 16,
+        "va": 21868352,
+        "raw": 12103488,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_coverage_slider",
+        "kind": "code",
+        "size": 16,
+        "align": 16,
+        "va": 21868736,
+        "raw": 12103872,
+        "owner_offset": 0
+      }
+    },
+    {
+      "owner": "nfl2k5_coverage_trail",
+      "kind": "code",
+      "before": {
+        "owner": "nfl2k5_coverage_trail",
+        "kind": "code",
+        "size": 640,
+        "align": 16,
+        "va": 21868368,
+        "raw": 12103504,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_coverage_trail",
+        "kind": "code",
+        "size": 640,
+        "align": 16,
+        "va": 21868752,
+        "raw": 12103888,
+        "owner_offset": 0
+      }
+    },
+    {
+      "owner": "nfl2k5_cpu_money_downs",
+      "kind": "code",
+      "before": {
+        "owner": "nfl2k5_cpu_money_downs",
+        "kind": "code",
+        "size": 2048,
+        "align": 16,
+        "va": 21869008,
+        "raw": 12104144,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_cpu_money_downs",
+        "kind": "code",
+        "size": 2048,
+        "align": 16,
+        "va": 21869392,
+        "raw": 12104528,
+        "owner_offset": 0
+      }
+    },
+    {
+      "owner": "nfl2k5_deep_zone",
+      "kind": "code",
+      "before": {
+        "owner": "nfl2k5_deep_zone",
+        "kind": "code",
+        "size": 2048,
+        "align": 16,
+        "va": 21871056,
+        "raw": 12106192,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_deep_zone",
+        "kind": "code",
+        "size": 2048,
+        "align": 16,
+        "va": 21871952,
+        "raw": 12107088,
+        "owner_offset": 0
+      }
+    },
+    {
+      "owner": "nfl2k5_defensive_try_stats",
+      "kind": "code",
+      "before": {
+        "owner": "nfl2k5_defensive_try_stats",
+        "kind": "code",
+        "size": 2048,
+        "align": 16,
+        "va": 21873104,
+        "raw": 12108240,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_defensive_try_stats",
+        "kind": "code",
+        "size": 2048,
+        "align": 16,
+        "va": 21874000,
+        "raw": 12109136,
+        "owner_offset": 0
+      }
+    },
+    {
+      "owner": "nfl2k5_defensive_try_stats",
+      "kind": "read_only",
+      "before": {
+        "owner": "nfl2k5_defensive_try_stats",
+        "kind": "read_only",
+        "size": 4096,
+        "align": 16,
+        "va": 22051152,
+        "raw": 12286288,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_defensive_try_stats",
+        "kind": "read_only",
+        "size": 4096,
+        "align": 16,
+        "va": 22051296,
+        "raw": 12286432,
+        "owner_offset": 0
+      }
+    },
+    {
+      "owner": "nfl2k5_franchise_2026",
+      "kind": "code",
+      "before": {
+        "owner": "nfl2k5_franchise_2026",
+        "kind": "code",
+        "size": 5120,
+        "align": 16,
+        "va": 21875152,
+        "raw": 12110288,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_franchise_2026",
+        "kind": "code",
+        "size": 5120,
+        "align": 16,
+        "va": 21876048,
+        "raw": 12111184,
+        "owner_offset": 0
+      }
+    },
+    {
+      "owner": "nfl2k5_franchise_autosave",
+      "kind": "code",
+      "before": {
+        "owner": "nfl2k5_franchise_autosave",
+        "kind": "code",
+        "size": 1536,
+        "align": 16,
+        "va": 21880272,
+        "raw": 12115408,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_franchise_autosave",
+        "kind": "code",
+        "size": 1536,
+        "align": 16,
+        "va": 21881168,
+        "raw": 12116304,
+        "owner_offset": 0
+      }
+    },
+    {
+      "owner": "nfl2k5_franchise_autosave",
+      "kind": "read_only",
+      "before": {
+        "owner": "nfl2k5_franchise_autosave",
+        "kind": "read_only",
+        "size": 512,
+        "align": 16,
+        "va": 22055248,
+        "raw": 12290384,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_franchise_autosave",
+        "kind": "read_only",
+        "size": 512,
+        "align": 16,
+        "va": 22055392,
+        "raw": 12290528,
+        "owner_offset": 0
+      }
+    },
+    {
+      "owner": "nfl2k5_franchise_edit_player",
+      "kind": "read_only",
+      "before": {
+        "owner": "nfl2k5_franchise_edit_player",
+        "kind": "read_only",
+        "size": 704,
+        "align": 16,
+        "va": 22055760,
+        "raw": 12290896,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_franchise_edit_player",
+        "kind": "read_only",
+        "size": 704,
+        "align": 16,
+        "va": 22055904,
+        "raw": 12291040,
+        "owner_offset": 0
+      }
+    },
+    {
+      "owner": "nfl2k5_guardian_overlay",
+      "kind": "code",
+      "before": {
+        "owner": "nfl2k5_guardian_overlay",
+        "kind": "code",
+        "size": 496,
+        "align": 16,
+        "va": 21881808,
+        "raw": 12116944,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_guardian_overlay",
+        "kind": "code",
+        "size": 496,
+        "align": 16,
+        "va": 21882704,
+        "raw": 12117840,
+        "owner_offset": 0
+      }
+    },
+    {
+      "owner": "nfl2k5_music_playlist",
+      "kind": "code",
+      "before": {
+        "owner": "nfl2k5_music_playlist",
+        "kind": "code",
+        "size": 2048,
+        "align": 16,
+        "va": 21882304,
+        "raw": 12117440,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_music_playlist",
+        "kind": "code",
+        "size": 2048,
+        "align": 16,
+        "va": 21883200,
+        "raw": 12118336,
+        "owner_offset": 0
+      }
+    },
+    {
+      "owner": "nfl2k5_music_playlist",
+      "kind": "read_only",
+      "before": {
+        "owner": "nfl2k5_music_playlist",
+        "kind": "read_only",
+        "size": 1024,
+        "align": 16,
+        "va": 22056464,
+        "raw": 12291600,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_music_playlist",
+        "kind": "read_only",
+        "size": 1024,
+        "align": 16,
+        "va": 22056608,
+        "raw": 12291744,
+        "owner_offset": 0
+      }
+    },
+    {
+      "owner": "nfl2k5_playbook_pair",
+      "kind": "code",
+      "before": {
+        "owner": "nfl2k5_playbook_pair",
+        "kind": "code",
+        "size": 8192,
+        "align": 16,
+        "va": 21892544,
+        "raw": 12127680,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_playbook_pair",
+        "kind": "code",
+        "size": 8192,
+        "align": 16,
+        "va": 21893440,
+        "raw": 12128576,
+        "owner_offset": 0
+      }
+    },
+    {
+      "owner": "nfl2k5_playbook_pair",
+      "kind": "read_only",
+      "before": {
+        "owner": "nfl2k5_playbook_pair",
+        "kind": "read_only",
+        "size": 4096,
+        "align": 16,
+        "va": 22057488,
+        "raw": 12292624,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_playbook_pair",
+        "kind": "read_only",
+        "size": 4096,
+        "align": 16,
+        "va": 22057632,
+        "raw": 12292768,
+        "owner_offset": 0
+      }
+    },
+    {
+      "owner": "nfl2k5_practice_squad_screen",
+      "kind": "code",
+      "before": {
+        "owner": "nfl2k5_practice_squad_screen",
+        "kind": "code",
+        "size": 4096,
+        "align": 16,
+        "va": 21900736,
+        "raw": 12135872,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_practice_squad_screen",
+        "kind": "code",
+        "size": 4096,
+        "align": 16,
+        "va": 21901632,
+        "raw": 12136768,
+        "owner_offset": 0
+      }
+    },
+    {
+      "owner": "nfl2k5_qb_spy",
+      "kind": "code",
+      "before": {
+        "owner": "nfl2k5_qb_spy",
+        "kind": "code",
+        "size": 2048,
+        "align": 16,
+        "va": 21904832,
+        "raw": 12139968,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_qb_spy",
+        "kind": "code",
+        "size": 2048,
+        "align": 16,
+        "va": 21905728,
+        "raw": 12140864,
+        "owner_offset": 0
+      }
+    },
+    {
+      "owner": "nfl2k5_qb_spy",
+      "kind": "read_only",
+      "before": {
+        "owner": "nfl2k5_qb_spy",
+        "kind": "read_only",
+        "size": 512,
+        "align": 16,
+        "va": 22061584,
+        "raw": 12296720,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_qb_spy",
+        "kind": "read_only",
+        "size": 512,
+        "align": 16,
+        "va": 22061728,
+        "raw": 12296864,
+        "owner_offset": 0
+      }
+    },
+    {
+      "owner": "nfl2k5_read_option_runtime",
+      "kind": "code",
+      "before": {
+        "owner": "nfl2k5_read_option_runtime",
+        "kind": "code",
+        "size": 2048,
+        "align": 16,
+        "va": 21906880,
+        "raw": 12142016,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_read_option_runtime",
+        "kind": "code",
+        "size": 2048,
+        "align": 16,
+        "va": 21907776,
+        "raw": 12142912,
+        "owner_offset": 0
+      }
+    },
+    {
+      "owner": "nfl2k5_read_option_runtime",
+      "kind": "read_only",
+      "before": {
+        "owner": "nfl2k5_read_option_runtime",
+        "kind": "read_only",
+        "size": 88,
+        "align": 16,
+        "va": 22062096,
+        "raw": 12297232,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_read_option_runtime",
+        "kind": "read_only",
+        "size": 88,
+        "align": 16,
+        "va": 22062240,
+        "raw": 12297376,
+        "owner_offset": 0
+      }
+    },
+    {
+      "owner": "nfl2k5_roster_storage",
+      "kind": "code",
+      "before": {
+        "owner": "nfl2k5_roster_storage",
+        "kind": "code",
+        "size": 82,
+        "align": 16,
+        "va": 21908928,
+        "raw": 12144064,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_roster_storage",
+        "kind": "code",
+        "size": 82,
+        "align": 16,
+        "va": 21909824,
+        "raw": 12144960,
+        "owner_offset": 0
+      }
+    },
+    {
+      "owner": "nfl2k5_scramble_tuning",
+      "kind": "code",
+      "before": {
+        "owner": "nfl2k5_scramble_tuning",
+        "kind": "code",
+        "size": 160,
+        "align": 16,
+        "va": 21909024,
+        "raw": 12144160,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_scramble_tuning",
+        "kind": "code",
+        "size": 160,
+        "align": 16,
+        "va": 21909920,
+        "raw": 12145056,
+        "owner_offset": 0
+      }
+    },
+    {
+      "owner": "nfl2k5_screen_hooks",
+      "kind": "code",
+      "before": {
+        "owner": "nfl2k5_screen_hooks",
+        "kind": "code",
+        "size": 640,
+        "align": 16,
+        "va": 21909184,
+        "raw": 12144320,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_screen_hooks",
+        "kind": "code",
+        "size": 640,
+        "align": 16,
+        "va": 21910080,
+        "raw": 12145216,
+        "owner_offset": 0
+      }
+    },
+    {
+      "owner": "nfl2k5_senior_bowl",
+      "kind": "code",
+      "before": {
+        "owner": "nfl2k5_senior_bowl",
+        "kind": "code",
+        "size": 4096,
+        "align": 16,
+        "va": 21909824,
+        "raw": 12144960,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_senior_bowl",
+        "kind": "code",
+        "size": 4096,
+        "align": 16,
+        "va": 21910720,
+        "raw": 12145856,
+        "owner_offset": 0
+      }
+    },
+    {
+      "owner": "nfl2k5_weekly_prep",
+      "kind": "code",
+      "before": {
+        "owner": "nfl2k5_weekly_prep",
+        "kind": "code",
+        "size": 1536,
+        "align": 16,
+        "va": 21913920,
+        "raw": 12149056,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_weekly_prep",
+        "kind": "code",
+        "size": 1536,
+        "align": 16,
+        "va": 21914816,
+        "raw": 12149952,
+        "owner_offset": 0
+      }
+    },
+    {
+      "owner": "nfl2k5_roster_arena_growth",
+      "kind": "code",
+      "before": {
+        "owner": "nfl2k5_roster_arena_growth",
+        "kind": "code",
+        "size": 8192,
+        "align": 16,
+        "va": 21915456,
+        "raw": 12150592,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_roster_arena_growth",
+        "kind": "code",
+        "size": 8192,
+        "align": 16,
+        "va": 21916352,
+        "raw": 12151488,
+        "owner_offset": 0
+      }
+    },
+    {
+      "owner": "nfl2k5_my_career",
+      "kind": "code",
+      "before": {
+        "owner": "nfl2k5_my_career",
+        "kind": "code",
+        "size": 20480,
+        "align": 16,
+        "va": 21923648,
+        "raw": 12158784,
+        "owner_offset": 0
+      },
+      "after": {
+        "owner": "nfl2k5_my_career",
+        "kind": "code",
+        "size": 20480,
+        "align": 16,
+        "va": 21924544,
+        "raw": 12159680,
+        "owner_offset": 0
+      }
+    }
+  ],
+  "unchanged_old_sizes_and_alignments": true,
+  "before_capacity": {
+    "code": {
+      "pages": 26,
+      "capacity_bytes": 106496,
+      "requested_bytes": 78439,
+      "free_bytes": 28057,
+      "available_bytes": 18624
+    },
+    "data": {
+      "pages": 21,
+      "capacity_bytes": 86016,
+      "requested_bytes": 83758,
+      "free_bytes": 2258,
+      "available_bytes": 0
+    },
+    "read_only": {
+      "pages": 5,
+      "capacity_bytes": 20480,
+      "requested_bytes": 17504,
+      "free_bytes": 2976,
+      "available_bytes": 2968
+    }
+  },
+  "after_capacity": {
+    "code": {
+      "pages": 26,
+      "capacity_bytes": 106496,
+      "requested_bytes": 79335,
+      "free_bytes": 27161,
+      "available_bytes": 17728
+    },
+    "data": {
+      "pages": 21,
+      "capacity_bytes": 86016,
+      "requested_bytes": 83762,
+      "free_bytes": 2254,
+      "available_bytes": 0
+    },
+    "read_only": {
+      "pages": 5,
+      "capacity_bytes": 20480,
+      "requested_bytes": 17644,
+      "free_bytes": 2836,
+      "available_bytes": 2824
+    }
+  }
+}

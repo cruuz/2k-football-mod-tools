@@ -96,8 +96,18 @@ class IntegrationQtTests(unittest.TestCase):
 
     def test_all_new_patch_help_is_actionable_and_short(self):
         for key,caption,help in ui.OPTIONS:
-            self.assertLessEqual(len(caption),60)
-            self.assertIn('Retail',help);self.assertIn('Patch',help)
+            if key in ('coin_defer', 'decided_clock'):
+                module = getattr(mod_build.tt, key + '_patch')
+                self.assertEqual(caption, module.BUILD_CAPTION)
+                self.assertEqual(help, module.HELP_TEXT)
+                self.assertIn('Off in every preset', help)
+                self.assertIn('UNWITNESSED', help)
+                if key == 'coin_defer':
+                    self.assertIn('CPU winners only', caption)
+                    self.assertIn('Human winners keep the retail menu', help)
+            else:
+                self.assertLessEqual(len(caption),60)
+                self.assertIn('Retail',help);self.assertIn('Patch',help)
             self.assertIn(key,dict((key,label) for key,label,_ in PATCHES))
 
     def test_guardian_bulk_undo_restores_exact_records_and_checkbox(self):

@@ -1,0 +1,15 @@
+.....F.......
+======================================================================
+FAIL: test_gameplay_row_is_informational_image_only_and_opens_rosters (__main__.PanelTests.test_gameplay_row_is_informational_image_only_and_opens_rosters)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_nfl2k5_espn25_integration_qt.py", line 321, in test_gameplay_row_is_informational_image_only_and_opens_rosters
+    self.assertEqual(INFORMATIONAL, {"espn25_plan"})
+AssertionError: Items in the first set but not the second:
+'weather_plan'
+'cpu_scrambles'
+
+----------------------------------------------------------------------
+Ran 13 tests in 17.190s
+
+FAILED (failures=1)

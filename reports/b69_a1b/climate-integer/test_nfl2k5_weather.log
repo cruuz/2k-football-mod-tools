@@ -1,0 +1,41 @@
+...EEEE........
+======================================================================
+ERROR: test_large_json_integers_refuse_with_climate_validation_error (__main__.ClimateTests.test_large_json_integers_refuse_with_climate_validation_error) (member='before', sign=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_nfl2k5_weather.py", line 102, in test_large_json_integers_refuse_with_climate_validation_error
+    plan = json.loads(json.dumps(plan))
+           ^^^^
+NameError: name 'json' is not defined. Did you forget to import 'json'
+
+======================================================================
+ERROR: test_large_json_integers_refuse_with_climate_validation_error (__main__.ClimateTests.test_large_json_integers_refuse_with_climate_validation_error) (member='before', sign=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_nfl2k5_weather.py", line 102, in test_large_json_integers_refuse_with_climate_validation_error
+    plan = json.loads(json.dumps(plan))
+           ^^^^
+NameError: name 'json' is not defined. Did you forget to import 'json'
+
+======================================================================
+ERROR: test_large_json_integers_refuse_with_climate_validation_error (__main__.ClimateTests.test_large_json_integers_refuse_with_climate_validation_error) (member='after', sign=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_nfl2k5_weather.py", line 102, in test_large_json_integers_refuse_with_climate_validation_error
+    plan = json.loads(json.dumps(plan))
+           ^^^^
+NameError: name 'json' is not defined. Did you forget to import 'json'
+
+======================================================================
+ERROR: test_large_json_integers_refuse_with_climate_validation_error (__main__.ClimateTests.test_large_json_integers_refuse_with_climate_validation_error) (member='after', sign=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_nfl2k5_weather.py", line 102, in test_large_json_integers_refuse_with_climate_validation_error
+    plan = json.loads(json.dumps(plan))
+           ^^^^
+NameError: name 'json' is not defined. Did you forget to import 'json'
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.208s
+
+FAILED (errors=4)

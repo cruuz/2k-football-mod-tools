@@ -318,7 +318,7 @@ class PanelTests(unittest.TestCase):
     def test_gameplay_row_is_informational_image_only_and_opens_rosters(self):
         keys = [key for key, _l, _e in PATCHES]
         self.assertIn("espn25_plan", keys)
-        self.assertEqual(INFORMATIONAL, {"espn25_plan"})
+        self.assertEqual(INFORMATIONAL, {"espn25_plan", "weather_plan", "cpu_scrambles"})
         self.assertIn("espn25_plan", NEEDS_IMAGE)
         text = dict((key, explanation) for key, _l, explanation in PATCHES)["espn25_plan"]
         self.assertEqual(text, "Retail uses 25 moments and shared historic teams. Patch applies your saved Anniversary "

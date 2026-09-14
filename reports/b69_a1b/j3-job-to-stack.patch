@@ -1,0 +1,321 @@
+diff --git a/ASTRA_REPORT.md b/ASTRA_B69_J3_REPORT.md
+similarity index 99%
+rename from ASTRA_REPORT.md
+rename to ASTRA_B69_J3_REPORT.md
+index ee10357c..b9f1ce16 100644
+--- a/ASTRA_REPORT.md
++++ b/ASTRA_B69_J3_REPORT.md
+@@ -117,7 +117,7 @@ FPF, Supersim, star and stat-line bits remain intact. The native word is
+ a beta-69 reader; older readers correctly reject their formerly reserved bits. Host read/change
+ and signed separate-copy export reparse the result, as does native save/load.
+ The proposed studio page reads and writes both caller and Supersim together.
+-Its exact protected patch and registry rows are in `WIRING.md`. Three offscreen
++Its exact protected patch and registry rows are in `WIRING_B69_J3.md`. Three offscreen
+ wiring tests exercise the page controls, signed export and effective Build
+ dependencies; the last captures the proposed Build recipe before disc preflight
+ and proves it uses the frozen setup without reading the file again.
+@@ -308,7 +308,7 @@ The full inherited evidence-file check stops at absent
+ The unintegrated provider integrity suite fails its exact import closure
+ (`271 != 272`) because the new helper's pin and the count update belong to the
+ integration handoff. Applying exactly those two proposed changes in memory
+-passes all seven provider tests; `WIRING.md` specifies both.
++passes all seven provider tests; `WIRING_B69_J3.md` specifies both.
+ This remains a pending integration check. The in-memory proof retains the
+ exact import-closure assertion and source-tampering refusals.
+ 
+diff --git a/WIRING.md b/WIRING_B69_J3.md
+similarity index 99%
+rename from WIRING.md
+rename to WIRING_B69_J3.md
+index 1d7ba91f..4fa40705 100644
+--- a/WIRING.md
++++ b/WIRING_B69_J3.md
+@@ -258,7 +258,7 @@ three native templates. Verify both saved settings can be changed in either
+ direction, the tier is passed to `career.prepare_save`, and a tiered setup
+ requests the depth-lock companion. Run registry/provider/allowlist checks,
+ regenerate the release manifest, rerun the four XBE gates on the integrated
+-stack, and complete the reporter witness scripts in `ASTRA_REPORT.md`.
++stack, and complete the reporter witness scripts in `ASTRA_B69_J3_REPORT.md`.
+ 
+ The proposed combined registry passes its schema validator after sorting IDs,
+ and every new J3 evidence/module path exists. The full inherited evidence-file
+diff --git a/docs/mod_editor/2k5_mod_studio_changelog.md b/docs/mod_editor/2k5_mod_studio_changelog.md
+index 45ef1c9c..735e91d7 100644
+--- a/docs/mod_editor/2k5_mod_studio_changelog.md
++++ b/docs/mod_editor/2k5_mod_studio_changelog.md
+@@ -2,11 +2,33 @@
+ 
+ ## v1.0 RC94, beta 69: new features, the reports after beta 68, and a polish pass (2026-09-13)
+ 
++- **Build failures identify the edit and the cause (Coach Edwards).** “The era is not descriptive as to what exact texture I should change or remove” exposed a timing marker replacing the actual refusal. Failures now name the active phase and the project's original edit index, page, part, uniform set and texture. The Build list shows every project edit, with changes observed in this session newest first; old files do not record their original edit times. This addresses “there is no way to tell specifically what needs to change” without asking players to keep a separate list.
++- **Valid older shoe and glove records stay usable (Coach Edwards).** “shoes that I'd imported from a much older release (maybe release 49)” prompted a history-based reconstruction. One proved regression was an older own-texture copy that beta 68 correctly recognized as retail, then wrongly refused because it changed no bytes. That copy now builds and is named as unchanged in the receipt. Project-load preflight checks restored equipment groups and names any part that must be reimported or removed. The exact cause in Coach Edwards' unavailable project remains unresolved; this is not a claim to have reproduced his file.
++- **Equipment fit errors give numbers and a checked retry (maumau78).** “if i use 128x128 or 256x256 I got this error” is a real allocation limit. The import reports how many bytes it missed by and offers Try that when a smaller image actually passes the full group check. His orange atlas stand-in still misses a 58,432-byte slot by 1,089 bytes at 64x64 with 16 colours. Lower shades can fit but lose detail. A grown chunk passed bounded native allocation, decode and descriptor checks; archive relocation has not passed the disc proof, so Larger equipment art is not offered.
++- **The Style 6 claim is narrower (maumau78).** “Using shoe slot 10 the texture was replaced correctly” described Edit Player; “shoe slot 10 / style 6 is not show in-game” described a Bears game. The new test executes the real cache fill and field selector, rather than filling the cache by hand. Clean shoes10 and shoes10_mud bind separately through HOME/AWAY; missing local names fall back to the newest package. The orange stand-in became four-colour 64x64 art in Bears 05H0; palette-only mode kept the retail shape. This explains two measured sources of distortion, without claiming to explain the dark shoe in his game. That report remains unresolved and all current in-game outcomes remain UNWITNESSED.
++- **Player CSV edits now have a complete preview and one Undo.** MacDog850 asked, "id recommend also adding a csv roster import/export for the extension too... makes player editing easier". On ★ Rosters, CSV exports every player or the visible list with the loaded position labels, all attribute cards, ratings, appearance, styles, contracts and exact pool/index identities. Import previews changed fields and refused rows, applies valid rows together, and restores the complete edit through Undo and Redo. UTF-8 text protects leading zeros, long numeric names and formula prefixes with a reversible apostrophe; the CSV menu explains Excel handling. Disc, Xbox-save and franchise-layout round trips pass on synthetic documents; source files stay unchanged and in-game results remain UNWITNESSED.
++- **Historic moments: real rosters remains blocked pending the actual failing load state.** heaven asked, "Will we be able to have every player with names on them, currently in 2k5's 25th anniversary mode it's WR CB etc". The native archive wait now has a bounded reproduction: withholding completion stops at its exact loop instruction, and supplying completion resumes the same Wide Right selection. All 25 selections and return visits pass that wait, team import, scenario setup and roster export with the existing 12-byte repair on retail and Practice Squad configurations. This does not reproduce the reported music freeze or prove a complete scene load; the failing archive/scene state is still needed. The all-moments option stays EXPERIMENTAL, blocked, OFF in every preset and UNWITNESSED in game.
++
+ Beta 69 adds planned features, answers every ESPN NFL 2K5 report in Discord after beta 68 and polishes both studios; bullets are added as each change lands.
+ 
++- **Checked model edits belong to the project.** maumau78 reported "there is no way to save into project and make a disc if I edit 3d models" and privately asked "so \"make my disc\" is the correct way to apply all the edits right?" Models now offers Add model edit to project. One checked set counts as one project edit, saves its source paths, hashes, check and compiled byte changes in the .2k5mod, and participates in Undo and Revert All. Make disc from project includes the saved model changes with the other project edits and gameplay passes. The quick Make disc with this model path uses the same model writer. Missing or changed authoring files are named when re-checking; the saved checked bytes remain buildable. Overlapping Guardian cap choices are refused before building. PROVED with compact disc round trips and an offscreen replay of the shell/build handoff; all in-game outcomes remain UNWITNESSED.
++- **Skeleton pair refusals name the file and the next step.** maumau78 reported "Try also re-import skeleton but keep getting this error...." The message now names the missing, unedited or mismatched LOD file, gives Blender's File > Export > glTF 2.0 > Include > Data > Custom Properties path, and explains when Geometry only accepts a single LOD. Low and high bind records are separate, so a bone-length edit still requires the coordinated pair; the shared SKEL direction table cannot update the other LOD's length. The ModelsError class prefix is removed. The paired native pose gate still passes; in-game outcomes remain UNWITNESSED.
++- **A second player witnessed beta 68's faster builds.** maumau78 built "gameplay mods and 3D model edit" in "just few minutes compared to 50 minutes of the previuos build". This is a build-time witness alongside Coach Edwards' "5 minutes or less", not an in-game model witness. Every in-game outcome from these changes remains UNWITNESSED.
++- Coach Edwards: “there is no way to tell specifically what needs to change”. Error dialogs keep the cause, remove exception class names and internal progress records, and give a next step. Build & Share adds Copy Build summary for the selection, result and first error. Disc ready describes the selected contents and preserves warnings about artwork left original. This is an interface change; it does not claim to fix the equipment writer.
++- Long Music actions stay readable on a 1366-pixel window. Options keep their explanations on hover, tabs expose their full captions, and outdated release captions are removed from current help. Both studios' pages are checked offscreen; gameplay is unchanged by this polish pass.
++- MacDog850: “i also had to have chat gpt fix it”. The new FAQ explains reinstalling from the official Setup.exe, rebuilding, and posting the Build summary and first error. It also answers CER's dropped interceptions, Mud's menu radio request and emulator questions. Getting Started follows the current sidebar and button names.
++
++- maumau78: “shoe slot 10 / style 6 is not show in-game”. The FAQ records the negative Bears result: Edit Player showed the imported design, while the played shoe stayed dark. The previous package-local colour proof was offline and did not establish that played binding. This documentation correction does not claim an equipment fix.
++- **Stadium climate authoring answers part of BigTimeEmpire's weather request.** "Choosing the temperature and wind speed" now has a bounded data writer, a small Weather editor, saved build edits and Undo. The 82 stadium rows have seven seasonal slots for temperature, precipitation chance and wind; rain or snow follows the native temperature test. The authored +2 °F example is a sensitivity preset, not measured modern NFL climate. The writer reparses every change and refuses stale plans. Build integration is supplied in `WIRING.md`; the option is Off in every preset. A franchise game-day weather menu, separate rain/snow probabilities and snow footprints are not implemented. EXPERIMENTAL / UNWITNESSED.
++- **maumau78's "Is dynamic weather / sunset possible? liek a game that start at 6PM become darker?" now has a pinned schedule trace.** Retail 2K5 already selects day, afternoon and night from the kickoff hour, and all 272 entries in the 2026 template run through that native selector. The earlier claim that the selector never picks the shipped variants came from APF research. No enabling toggle or dynamic sunset is claimed. The eight-byte schedule has no AM/PM flag, so hour 9 also selects night for a 9:30 AM entry; that limitation is documented. Stadium selection, lighting and played results remain UNWITNESSED.
++- **BigTimeEmpire's "Overcast or cloudy weather, as well as fog" has one existing renderer parameter to test.** A separate optional dry-weather haze coefficient changes from 0.8 to 1.0, with a reparsing verifier and exact Off restoration. Bounded native execution reaches the camera field; it does not prove an image. The archive audit maps 477 stadium bundles and their 324 sky textures, with no separately named overcast, fog or dusk texture in that bounded inventory. This option does not force fog or add artwork. Build wiring is supplied separately; Off in every preset, EXPERIMENTAL / UNWITNESSED.
++- **Retail weather already affects intermediate player attributes.** newerest asked for "The weather impacting gameplay is a real thing that if we can actually implement correctly will change everything" and said "I don't think any football video game really captures the insanity that weather can bring". Coach Edwards replied, "I think APF 2K8 does a pretty good job. The heavy rain games are insane to play. Lots of fun." This 2K5 research proves rain/snow penalties for speed, agility, catching, pass accuracy, kick accuracy and holding onto the ball, and maps further ball-contact and wind consumers. Final traction, fumble, catch and yardage outcomes remain UNWITNESSED. No gameplay penalty changes ship in this job.
+ - **MyCareer returns to play calling after Fast forward.** andrethealchemist confirmed “Wow! Everything I asked for was fixed in beta 68!” and then reported “my 1st down play is already selected for me.” The absent unit's CPU choice survived the hand-back. The owned runtime now clears that choice for a human caller at the guarded pre-snap return and opens the native play-call screen with its controller mapping. The saved Fast forward choice and beta-68 rearming remain intact. Bounded native series checks are separate from the new in-game outcome, which remains UNWITNESSED.
+ - **Choose who calls MyCareer plays.** THE1WAM said “I lowkey don't think we should be able to pick the plays in MyCareer imo”; Noah replied “Depends on position. QB should. But I can make it an option where you never choose you just execute”; THE1WAM added “Yea make it only for QBs and ILBs”. Apartment Settings adds You call every play as the default, By position for the QB and defensive ILB/LB, and Coach calls the plays. The native coach selector supplies the call while MyPlayer keeps execution control. The choice saves with the career; exact studio page/export wiring is supplied for integration. EXPERIMENTAL, with in-game menu/control behavior UNWITNESSED.
+ - **THE1WAM's creation tiers use the existing player writer.** His template asks to “Select Prospect” and start at 74, 70, 64 or 59 overall. Explicit 1st Day, 2nd Day, 3rd Day and Undrafted choices calibrate native overall, set the template's starting depth place and carry its career-goal label in the record. Original creation remains the default. Four QB prototype labels reuse three native styles, with Gunslinger sharing Pocket. The in-game entry uses an available list row; studio wiring is supplied. Senior Bowl performance goals, Combine drills and the 40-time table, Pro Day, earned-point Apply Ratings and Draft Advisory remain roadmap items with native prerequisites documented in ASTRA_REPORT.md. All played outcomes remain UNWITNESSED.
++- **CPU winners can defer the opening toss (experimental, Off).** BigTimeEmpire asked for "The ability to defer your choice on the coin toss to the second half with logic that makes it occur as often as it does in the NFL." CPU winners now have a bounded writer using the published 2023 count of 240 deferrals in 272 games (88.24%); the loser chooses for the first half and the CPU receives in the second. The retail menu's third row overwrites its controller field, so a human Defer choice is not shipped; the caption says CPU winners only. Native toss, choices and both kickoff transitions are PROVED. Menus, physical kickoffs and gameplay remain UNWITNESSED.
++- **Optional clock cutoff at the next dead ball (experimental, Off).** CER asked "Is it doable to add the thing where the clock just auto goes to triple 0 in the 4th if the game isnt winnable like in one of the recent college football games?" The new writer uses a selectable lead/time cutoff, defaulting to 17 points with 60 seconds left, only when the leading team possesses the ball in the fourth quarter. This is a convenience cutoff, not mathematical elimination. Live plays, trailing possession and overtime bypass it; accelerated clock keeps its final-two-minute exclusions. Native decided/undecided series checks are PROVED; scorebug, postgame flow and every played outcome are UNWITNESSED.
++- **One CPU QB scramble decision is now tunable (experimental, Retail).** BigTimeEmpire asked "And to get the CPU QB to scramble at NFL averages". Modern doubles one existing timer/pressure-gated escape lottery factor from .25 to .50, producing 41 branch hits against retail's 21 under the same 100 native inputs. That is not an NFL-average calibration. The observed roster Scramble bit consumer selects animation families; Slow-QB acceleration still changes carried-ball acceleration, not the leave-pocket decision. Native writer/branch proofs pass; actual scramble rates and animations remain UNWITNESSED.
+ 
+ ## v1.0 RC93, beta 68: fixes for the reports after beta 66.1 (2026-09-12)
+ 
+@@ -16,7 +38,7 @@ Beta 68 answers the ESPN NFL 2K5 reports in Discord after beta 66.1; bullets are
+ - **The Equipment button opens All Textures on the first visit.** maumau78 reported "if open uniform editor and select socks / equipment the first time you got this error" and that visiting "All Texture" first worked around it. The button now constructs the lazy browser before filtering the selected uniform set. PROVED from a fresh offscreen window with 45 synthetic equipment records; reporter retest remains UNWITNESSED.
+ - **Team Kit import names changed files and files identical to the project.** Coach Edwards' photo showed "Imported: 0. Skipped unchanged: 78" and "No project pixels changed". Import now compares incoming pixels with the current project before deciding what changed, distinguishes untouched export files that preserve a later project edit, and reports this import's counts instead of replaying an earlier receipt. PROVED: export a staged kit, edit one PNG on disk, import exactly one component, then import again with zero changes. The number-sheet and cross-project merge safeguards remain in place; in-game appearance remains UNWITNESSED.
+ - **Designed socks can keep their own artwork (Coach Edwards).** "Only thing is that the designer socks (no the solids) are still coming through blurry in game." Socks and their separate dirty version now support their own texture instead of forcing a new design onto the retail shared image. The full-size 64x64 sock and every distance image decode back to the imported pixels in the retail package proof. The separate sock fabric map stays unchanged. Experimental; in-game sharpness still needs Coach Edwards' retest.
+-- **Shoe imports state their actual team scope (maumau78).** "even If i select to import to specific team will be replaced as shared one for all the teams" describes the game's global shoe styles. Those rows offer All teams only and refuse an explicit per-team request with the same explanation. For team-specific colour artwork, shoes09 and shoes10 use each team's selected uniform package; choose Style 3 or Style 6 for the player's left and right shoe. Native lookup and material binding are proved; both teams still need a played comparison.
++- **Shoe imports state their actual team scope (maumau78).** "even If i select to import to specific team will be replaced as shared one for all the teams" describes the game's global shoe styles. Those rows offer All teams only and refuse an explicit per-team request with the same explanation. For team-specific colour artwork, shoes09 and shoes10 use each team's selected uniform package; choose Style 3 or Style 6 for the player's left and right shoe. Beta-69 clarification: the original native fixture manually filled the cache. The stronger cache-fill/field-selector proof and the unresolved Bears game report are documented above; both teams still need a played comparison.
+ - **Unchanged retail shoe exports preserve their palette and distance images (maumau78).** "this texture was just exported then imported into another slot but still glitched in-game" now has a regression test through Export PNG and the package compiler. Original-size copies preserve the retail palette and all mip bytes; the same-slot result is the original span, and a compatible other slot reuses its shared image without growing memory. An incompatible slot must fit the exact artwork or refuse. Half or quarter size deliberately removes detail, new art can merge colours to fit P8 or the compressed slot, and palette-only mode keeps the retail shape; the import summary explains these losses. The reported in-game smear remains unwitnessed after this change.
+ - **The shoe relief maps are now mapped and editable (maumau78).** "there's be a shoe normal texture to edit too" was correct: GLOBAL.IFF carries seven shoe relief maps outside the four uniform fabric maps. Bump Maps exposes them with their shared scope; Styles 3 and 6 share relief map 7 even though their colour artwork is local. The writer preserves the fixed span and loader scratch word, refuses lossy normal-colour reduction, and verifies every authored distance image. The raised swoosh and stitching still need an in-game retest. Experimental / unwitnessed.
+ - **MyCareer preserves Fast forward after B.** andrethealchemist reported that Supersim "stops working completely after first possession or if you press 'b'" and "defaults to 'off' in apartment settings." The live runtime was writing Off to the saved preference, including when B was a human receiver input. B now cancels the current CPU sequence until the next CPU snap; controller disconnect suspends acceleration without changing the setting. Native checks cover possession changes, cancellation and the postgame Apartment word. In-game behavior remains UNWITNESSED.
+diff --git a/mod_editor/core/providers.py b/mod_editor/core/providers.py
+index 7af613ec..4ddb04c7 100644
+--- a/mod_editor/core/providers.py
++++ b/mod_editor/core/providers.py
+@@ -511,17 +511,25 @@ class Nfl2k5UnifiedVisualProvider:
+         "--source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> "
+         "--manifest <manifest.json> --artifact-dir <artifact-dir>"
+     )
+-    backend_module_sha256 = "46e7bce175f22d181b231191296cd3558845ee37052e0f083706345994149ea8"
++    backend_module_sha256 = "9ab6a1a04ebc05b292086f8eb18cdd42fe5089077f1f1c0e26f7ab3b8c7537ba"
+     module_pins: Mapping[str, str] = {
++        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
++        "mod_editor/core/nfl2k5_rules_patch.py": "fa055e93835ad7c49196d361c7e0c9cfdec6fb620067ab7a0524e8a3cddcd15a",
++        "mod_editor/core/nfl2k5_coin_defer.py": "403dddd1c40718d1284f008ac52222a0e2cbf0b9109941d8f16949739f6be5e0",
++        "mod_editor/core/nfl2k5_coin_defer_code.py": "9eefd8074b0fec01375cd266339ca0810e660af91dffbe275acaf0e5b927b0a2",
++        "mod_editor/core/nfl2k5_decided_clock.py": "cf27be38419bf9443c50fbed9de5c5deb08c620613af84869e60683f1b135a5b",
++        "mod_editor/core/nfl2k5_decided_clock_code.py": "83d7961b291a0fe08d3ac1518ec7b97ab4489f830c20c04bdd99626344d53c58",
++        "mod_editor/core/nfl2k5_cpu_scrambles.py": "6a5b913f4c6407b64548e979ff59e1f66b2688f9ddccc20c4ed887e3209d5576",
++        "mod_editor/core/nfl2k5_cpu_scrambles_code.py": "6519b049d4f570dc92c58ede831a521ebface07ce23fb8406eb42318bbf52a92",
+         "mod_editor/core/audio_conform.py": "db40b6f28dedf1deea7fad6306fe0afebf842a5ee113d5067f6b5b7721686c0f",
+-        "mod_editor/core/build_feedback.py": "56c078f5cecf5a2d37349b15b964a6f5350341db3f55f6808a60fc3b205abf76",
++        "mod_editor/core/build_feedback.py": "2bcd6e65809444c593f66edac20a9e0d3fff43bf969da2454b8d088571e71535",
+         "mod_editor/core/build_io.py": "bb5bf2cf27bea644fa7f7ef694ff5a9368a076a04d59379fcdb568ace6167744",
+         "mod_editor/core/equipment_palette.py": "0272af0ed054919fd21624a4a2adbeec97959f78036dd5932de3ef5211b8f844",
+         "mod_editor/core/errors.py": "4624e80f063f1e7db69ec6c20d2703f01eec49728b02c88792ccb309bd742de0",
+         "mod_editor/core/image_use.py": "78794c08fcf52debcb24d54cf62c8b1936463aedbe74929cdb5037f117b9c14d",
+         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
+         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
+-        "mod_editor/core/mod_build.py": "71463608ba01afee4eca17528c42562c1d8d5e64274ef0f7b0a7fcc759b3a4fd",
++        "mod_editor/core/mod_build.py": "6955b82aa7f95fda834a8673efa3f31a0961473c9635f9ed308e3dc464fd60c0",
+         "mod_editor/core/model.py": "292f0c5444e32f5cea000fd3cabd6963d7d805a5434dcbc364a36ca2c0f0d228",
+         "mod_editor/core/modpack.py": "7524c5de4d03c23997f88355c6888f1e013e5d5e62a995d07e8b963d1be9fd2a",
+         "mod_editor/core/modpack_ops.py": "897f364a0cfe42bb8fbd33f8bc97166ea25520a379a612431f00d8aefca8e5c5",
+@@ -548,8 +556,8 @@ class Nfl2k5UnifiedVisualProvider:
+         "mod_editor/core/nfl2k5_ausb_build_adapter.py": "138eccfa097da8005dca74d43c0a10808558c4a4f1702c31e8f009cc49a7ecc7",
+         "mod_editor/core/nfl2k5_ausb_fixed_slots.py": "56a39ad842d3552dd26e2089d3c859cba8b59fd61701e63f2f9265db20422d4a",
+         "mod_editor/core/nfl2k5_boot_logo.py": "c767db7cdcc7dcf363a3a78547bcc251004980bc696300b3a8a3d283482fbdaa",
+-        "mod_editor/core/nfl2k5_build_service.py": "dccceaf45020ba3d2647c23e62004264898b03f7138912d2363254c7cba60da7",
+-        "mod_editor/core/nfl2k5_build_settings.py": "aa50ce8b583ad074f689033cfc4b7b68e5a68455f805950289bd110de484abcc",
++        "mod_editor/core/nfl2k5_build_service.py": "8185c350ebd2ebb97160b1709f2f7f960c57c5ea9344bf1b57e4a6c2c662eb50",
++        "mod_editor/core/nfl2k5_build_settings.py": "f6f81f7146e65cfb409025b0162d7b21ad52add1434d279c8bb85ced16aa78c9",
+         "mod_editor/core/nfl2k5_bump_strength.py": "79f9264fbe0813db9be66f22e35f8944e35b92ae415132d819eda50920e41bb0",
+         "mod_editor/core/nfl2k5_calendar_engine.py": "796246b2248eddda3a0e57ed791b53cc1446fe3a3128ad39397ababe873ab841",
+         "mod_editor/core/nfl2k5_calendar_engine_code.py": "9b43e835f1df76f85ecb13e7ef593d2eee884a1fa82fe41ea3d813186445ca22",
+@@ -576,7 +584,7 @@ class Nfl2k5UnifiedVisualProvider:
+         "mod_editor/core/nfl2k5_depth_chart_storage.py": "acb37c1fbb13e327880574df1142d6cb1262e97b307bfd182a167647d0892a1e",
+         "mod_editor/core/nfl2k5_depth_locks.py": "39a0948c3fc26721f15495acd66a3a48c8db1cb6bcda6e4911b07d353bffd61c",
+         "mod_editor/core/nfl2k5_depth_roles.py": "92a11e038973a1c421fe7f3162064bb62a9fd8cefd6bfb4bd9cc5765d3f3a19d",
+-        "mod_editor/core/nfl2k5_equipment_import_intent.py": "23e0fad4aabf6d0f5db883ae371ceb5cc2f5ecd25f0f6f9053850d1b3deac389",
++        "mod_editor/core/nfl2k5_equipment_import_intent.py": "f32b9316507ea4865872c699927c7d0ebf689dd2fb74ef5884f40e87bd068ca1",
+         "mod_editor/core/nfl2k5_equipment_lz.py": "3a0a3594115c227bafa2890153522c4d7be5377e013a15d56d57d4b71353b5a9",
+         "mod_editor/core/nfl2k5_digit_art.py": "607220b6b173e25bd69e0d625828aa21a9c60f246de2ae00738513b52600d4cc",
+         "mod_editor/core/nfl2k5_digit_texture.py": "38112506a194aae7b0e229cdb0d40d0fbbba52bf7ac5e3e81c7a67743352e79c",
+@@ -585,7 +593,7 @@ class Nfl2k5UnifiedVisualProvider:
+         "mod_editor/core/nfl2k5_dynamic_kickoff.py": "0f2a618ce8ad2443a472145fa69a7d06e0f78af1e9f7ce211ed9b35b00e6a6e7",
+         "mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py": "211063695451178000aa7088245ddef8c31973f08fad490341a378bf6e8a6b4f",
+         "mod_editor/core/nfl2k5_edge_rename.py": "8d07169164719fff6121c36b07f90ac8af0d350ea39cb2dcaee83a3ab4e3fc0d",
+-        "mod_editor/core/nfl2k5_espn25_rosters.py": "3cfe17df38d5d6d42bf31972848644ed32b7a0462f979b0380ad5c69e384c036",
++        "mod_editor/core/nfl2k5_espn25_rosters.py": "f5378d1d490d1e1432716d1879f14aeadc2f4f0878e3658a7761682393d5d82c",
+         "mod_editor/core/nfl2k5_extended_visual_catalog.py": "6576fc522bec39f163b851471ab9105db5080a5085681f3f27e626c6e50011f3",
+         "mod_editor/core/nfl2k5_extended_visual_io.py": "928a8367c3faf4f37adeb9fa11164529457d79a9bb03fb0f0ecaa0082863975b",
+         "mod_editor/core/nfl2k5_formation_play_writer.py": "fb09bdd724874d0a03488e12a046d8107221e99b52c77df21c04a7181d3508bf",
+@@ -612,7 +620,8 @@ class Nfl2k5UnifiedVisualProvider:
+         "mod_editor/core/nfl2k5_kick_laces.py": "a495864f35b60f335855b17f8a12ec304f78ecf3c363a597bb0e519e64790754",
+         "mod_editor/core/nfl2k5_kick_rules.py": "09023a7bf09146877c2bc7ba3ea7c7f9e5037e0090a70394262537192519c8d5",
+         "mod_editor/core/nfl2k5_match_coverage.py": "d9c1a93508a25a17d389b1dfa628ab8d0ac2da25d99bcc64a347b98f4447cfa2",
+-        "mod_editor/core/nfl2k5_model_skeleton.py": "4c868c8e15742f15cb7f9d725f70d525d57e3d9d2a614cdc90e46bbc9d95ac95",
++        "mod_editor/core/nfl2k5_model_project.py": "04371be3e1e86a9a6b3d2499dc0db203d6d5d9241c104c78879a2a414aa05488",
++        "mod_editor/core/nfl2k5_model_skeleton.py": "feaff8bb682d51d6b62c23cb955ccaf5b9a149f9e2948d7ee4f219200cd7f0ee",
+         "mod_editor/core/nfl2k5_models.py": "8b2e86bd0e6f2ba8d192bcdb452bc8e45fc38a4a0af8a95350a0e2f816bc6176",
+         "mod_editor/core/nfl2k5_modern_naming.py": "517f44b88799817d5c036605cbd3cf1a4baa06cbfa50ed4ee706c0a38b80701f",
+         "mod_editor/core/nfl2k5_modern_positions.py": "f2bbb8ca3dcc78c6a16e1f70b3cb4858e95383daf817333dc2d37ac3d624c8e5",
+@@ -674,7 +683,7 @@ class Nfl2k5UnifiedVisualProvider:
+         "mod_editor/core/nfl2k5_roster_arena_code.py": "23a661e5f3bf87d23d1769d5866f6e464d6dfb092afdc34c57b8cd5b8a07ef1d",
+         "mod_editor/core/nfl2k5_roster_arena_growth.py": "b8c291abe201e1296f21626fae29bea47bb4571aeb6cb60dd0eacd972fbe839d",
+         "mod_editor/core/nfl2k5_roster_arena_image.py": "3d3344b53d40c017d921c91fbf3d8579f12f5cbee6ec9e112bd68b7d18345b7d",
+-        "mod_editor/core/nfl2k5_roster_records.py": "dcbbf5da41d8cae027ec89669a87f70703069fba3753e9ce8848b0e1029b9340",
++        "mod_editor/core/nfl2k5_roster_records.py": "60754ad5765832e9b9856c59e4835aa8d10f94fc4daa941c59d243040d459137",
+         "mod_editor/core/nfl2k5_roster_storage.py": "b2bed5fb92dedd9d1c4312a7e9344ca1558225d9ed12977e4fe69f4ca9d85bb6",
+         "mod_editor/core/nfl2k5_safe_text_banks.py": "c7ea4288611615204f53c40f5da06728bd9e5511eec5ae06711145e509461d48",
+         "mod_editor/core/nfl2k5_save_rost.py": "2440e0796000f08bff319e5967675fc0b4df09ad7534733562fbbb22d8fbdac2",
+@@ -707,11 +716,11 @@ class Nfl2k5UnifiedVisualProvider:
+         "mod_editor/core/nfl2k5_team_history.py": "e8620bb41a4e76b7b84e10f1f8f4abce4052061507089a97503339e3b4b1b5ae",
+         "mod_editor/core/nfl2k5_text_catalog.py": "514706a38b28a4c7189f49e7601813cd55e16f1b9e81c9c8aa3e92c072e962c9",
+         "mod_editor/core/nfl2k5_throw_arc.py": "0fbf33d12fe27a0f940fb7e13f375390b88701c4ccb7e89a1de895d8f66b9c3c",
+-        "mod_editor/core/nfl2k5_throw_tuning.py": "ffdc3859c0b9892ade179679d9b943a46d86b1bf284cfebbeedf54b05b2153cd",
++        "mod_editor/core/nfl2k5_throw_tuning.py": "4f951f25922bb9e61349d29ebaffa7009d7fadbdfe0b98b44aa0b8fef0b0d121",
+         "mod_editor/core/nfl2k5_unif_color_writer.py": "5e950cc404e25c1fbeff7ee5aa2a3fad235115aeddd743e95be6862677a88324",
+         "mod_editor/core/nfl2k5_uniform_catalog.py": "342964f000624ce7dcbc552fce01810a93704dca6bc62559cc7a73b89f8c59a1",
+         "mod_editor/core/nfl2k5_uniform_choice.py": "485a0b64855836d03573381281b079a9cdab814996fa83b894046d8b29f93d6a",
+-        "mod_editor/core/nfl2k5_uniform_equipment_writer.py": "cb6fb1363d8316d84fa7a58dc5a66579d2f1c0fc396f95eb948617bf24b382d3",
++        "mod_editor/core/nfl2k5_uniform_equipment_writer.py": "574a1a610a7733b0a71b494a3604599510b0ec6cf069fdde1c5e3cc255d7cb71",
+         "mod_editor/core/nfl2k5_universal_asset_index.py": "9df3c0a754abcb60fa4db3afd0f9b8af364f60551014d259e2713f5387491421",
+         "mod_editor/core/nfl2k5_weekly_prep.py": "5b3b9847f24246b33be5d63d141908f7241ea3da7a62a8d9736c0964b0bff933",
+         "mod_editor/core/nfl2k5_weekly_prep_code.py": "554fb7018dd0d2d5c59bd230cffd64d3be1cbc910df6410e40920cd3c08e97f8",
+@@ -728,7 +737,7 @@ class Nfl2k5UnifiedVisualProvider:
+         "mod_editor/studio/audio_bundle.py": "fafc659024246d1cff782ab07f6c744c97a563f64fedca8a288f3126fbeb4604",
+         "mod_editor/studio/music_service.py": "594e9e51859e1387c887da8f5f7a2299bd3657ef44443936d23b4e80d1838a04",
+         "mod_editor/studio/project_archive.py": "3556062a7cf178ef416706543e71270783d04439494420810fb7a10ca7f01479",
+-        "mod_editor/studio/session.py": "665ab4888cfdf5999eb7aeeb50ef870bfbed759c7d42f945a9fe054404779715",
++        "mod_editor/studio/session.py": "a2d52608660eae69c9cf384f2f42248daf73397a49b80ca1f622f24e1082abf0",
+         "tools/apf_inner.py": "4175688c9df2cb8d8253f5b4d08570a3a3486cb9856d000a4146e5a952982847",
+         "tools/apf_outer.py": "e9ce600393f9c9f6b372bb385e9486a655167bf6cc9ef256cc96c8439957cd31",
+         "tools/game_audio_convert.py": "3ba3f1f4c2aa452198a12e65d8e93e8d690988d0a6a88c80d7c5de91c1e5a983",
+@@ -739,7 +748,7 @@ class Nfl2k5UnifiedVisualProvider:
+         "tools/nfl2k5_scorebug_layout.py": "63ee159943a6494de331339e7460cb674955698c1d0d6a3aa8057e024967dcc5",
+         "tools/nfl2k5_scorebug_position_patch.py": "eb2b913bd4d0620dcefc4f280db1f6d73e4a5c348b0483a246bbf587506cdbff",
+         "tools/nfl2k5_scorebug_reference.py": "32ef741eb84bdf022de8cae357895eea891e6265c025e57afd4d49a37a6f4444",
+-        "tools/nfl2k5_visual_mod_project.py": "46e7bce175f22d181b231191296cd3558845ee37052e0f083706345994149ea8",
++        "tools/nfl2k5_visual_mod_project.py": "9ab6a1a04ebc05b292086f8eb18cdd42fe5089077f1f1c0e26f7ab3b8c7537ba",
+         "tools/nfl_all_texture_xiso_workflow.py": "61d0574ae5320cb7b12b96f1be0b34dcf1fdef363091b00de0fd0fac7130bd91",
+         "tools/nfl_audo_wav_xiso_workflow.py": "d684cbe7b30f77caf808bcef3d0219777b333336ae5bee4837d10f69cc1d13c6",
+         "tools/nfl_create_team_field_art_inventory.py": "da59018f1417871516b75769ea53a351a1d2b03ed855f985c1f88ac333b42489",
+diff --git a/tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py b/tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py
+index 49555074..d0a76847 100644
+--- a/tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py
++++ b/tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py
+@@ -1,4 +1,4 @@
+-"""Execute the proposed protected panel in memory; do not edit protected files."""
++"""Exercise the integrated MyCareer page, signed exports and Build dependencies."""
+ from pathlib import Path
+ import importlib.util
+ import os
+@@ -11,7 +11,14 @@ from unittest.mock import patch
+ ROOT = Path(__file__).resolve().parents[2]
+ sys.path.insert(0, str(ROOT))
+ os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
+-from tools.mycareer_mode.b69_wiring import panel_source, build_source
++def panel_source():
++    source = (ROOT / 'mod_editor/gui/my_career_panel_qt.py').read_text()
++    return source, source
++
++
++def build_source():
++    source = (ROOT / 'mod_editor/core/mod_build.py').read_text()
++    return source, source
+ 
+ 
+ @unittest.skipUnless(importlib.util.find_spec('PyQt5'), 'PyQt5 required for the proposed panel')
+diff --git a/tools/mycareer_mode/b69_registry_rows.json b/tools/mycareer_mode/b69_registry_rows.json
+index 176b735e..89b19fa4 100644
+--- a/tools/mycareer_mode/b69_registry_rows.json
++++ b/tools/mycareer_mode/b69_registry_rows.json
+@@ -7,7 +7,7 @@
+     },
+     "classification": "offline-writer-proved",
+     "evidence": [
+-      "ASTRA_REPORT.md",
++      "ASTRA_B69_J3_REPORT.md",
+       "tests/mod_editor/test_nfl2k5_my_career_playcalling.py",
+       "tests/mod_editor/test_nfl2k5_my_career_settings.py",
+       "tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py"
+@@ -17,7 +17,7 @@
+       "default_enabled": false,
+       "expose": false,
+       "mode": "edit",
+-      "reason": "EXPERIMENTAL / UNWITNESSED. Protected MyCareerPanel wiring is supplied in WIRING.md."
++      "reason": "EXPERIMENTAL / UNWITNESSED. Protected MyCareerPanel wiring is supplied in WIRING_B69_J3.md."
+     },
+     "id": "nfl2k5.mode.my_career_playcalling",
+     "input_constraints": [
+@@ -27,7 +27,7 @@
+       "Default retains beta-68 eligibility, including existing offensive-lineman and K/P exclusions; no default position-mask expansion."
+     ],
+     "portme": [
+-      "Complete the andrethealchemist and THE1WAM witness scripts in ASTRA_REPORT.md."
++      "Complete the andrethealchemist and THE1WAM witness scripts in ASTRA_B69_J3_REPORT.md."
+     ],
+     "public_distribution": {
+       "game_data": "never-bundle-retail-data",
+@@ -37,7 +37,7 @@
+     },
+     "runtime": {
+       "evidence": [
+-        "ASTRA_REPORT.md",
++        "ASTRA_B69_J3_REPORT.md",
+         "tests/mod_editor/test_nfl2k5_my_career_playcalling.py"
+       ],
+       "scope": "Saved three-value play selection policy and guarded native Fast-forward hand-back. Native selector and execution controller are separate owners. Physical play, menu pixels and audibles remain UNWITNESSED.",
+@@ -51,7 +51,7 @@
+           "required": true
+         }
+       ],
+-      "notes": "Use the saved career setting or creation tier in MyCareerPanel; exact wiring is in WIRING.md."
++      "notes": "Use the saved career setting or creation tier in MyCareerPanel; exact wiring is in WIRING_B69_J3.md."
+     },
+     "source_container": {
+       "format": "XBE in XDVDFS",
+@@ -74,7 +74,7 @@
+     },
+     "classification": "offline-writer-proved",
+     "evidence": [
+-      "ASTRA_REPORT.md",
++      "ASTRA_B69_J3_REPORT.md",
+       "tests/mod_editor/test_nfl2k5_my_career_prospects.py",
+       "tests/mod_editor/test_nfl2k5_my_career_settings.py",
+       "tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py"
+@@ -84,7 +84,7 @@
+       "default_enabled": false,
+       "expose": false,
+       "mode": "edit",
+-      "reason": "EXPERIMENTAL / UNWITNESSED. Protected MyCareerPanel wiring is supplied in WIRING.md."
++      "reason": "EXPERIMENTAL / UNWITNESSED. Protected MyCareerPanel wiring is supplied in WIRING_B69_J3.md."
+     },
+     "id": "nfl2k5.mode.my_career_prospects",
+     "input_constraints": [
+@@ -94,7 +94,7 @@
+       "Four QB labels alias three existing templates; Gunslinger and Pocket share template 0. Senior Bowl simulation, Combine, Pro Day, earned-points Apply Ratings and Draft Advisory remain unavailable."
+     ],
+     "portme": [
+-      "Complete the andrethealchemist and THE1WAM witness scripts in ASTRA_REPORT.md."
++      "Complete the andrethealchemist and THE1WAM witness scripts in ASTRA_B69_J3_REPORT.md."
+     ],
+     "public_distribution": {
+       "game_data": "never-bundle-retail-data",
+@@ -104,7 +104,7 @@
+     },
+     "runtime": {
+       "evidence": [
+-        "ASTRA_REPORT.md",
++        "ASTRA_B69_J3_REPORT.md",
+         "tests/mod_editor/test_nfl2k5_my_career_prospects.py"
+       ],
+       "scope": "Native unboosted overall calibration, creation tier placement and persisted goal label. Existing CAP templates are reused. Goals, drills and draft advisory are roadmap, not simulated features.",
+@@ -118,7 +118,7 @@
+           "required": true
+         }
+       ],
+-      "notes": "Use the saved career setting or creation tier in MyCareerPanel; exact wiring is in WIRING.md."
++      "notes": "Use the saved career setting or creation tier in MyCareerPanel; exact wiring is in WIRING_B69_J3.md."
+     },
+     "source_container": {
+       "format": "XBE in XDVDFS",

@@ -1,0 +1,19 @@
+[
+  "tests/mod_editor/test_nfl2k5_abilities_v2.py",
+  "tests/mod_editor/test_nfl2k5_accelerated_clock.py",
+  "tests/mod_editor/test_nfl2k5_coverage_trail.py",
+  "tests/mod_editor/test_nfl2k5_coverage_trail_unicorn.py",
+  "tests/mod_editor/test_nfl2k5_cpu_money_downs.py",
+  "tests/mod_editor/test_nfl2k5_cpu_money_downs_unicorn.py",
+  "tests/mod_editor/test_nfl2k5_deep_zone_frames.py",
+  "tests/mod_editor/test_nfl2k5_defensive_try_stats.py",
+  "tests/mod_editor/test_nfl2k5_franchise_edit_player_unicorn.py",
+  "tests/mod_editor/test_nfl2k5_hires_families_retail.py",
+  "tests/mod_editor/test_nfl2k5_kickoff_v2.py",
+  "tests/mod_editor/test_nfl2k5_kickoff_v3.py",
+  "tests/mod_editor/test_nfl2k5_qb_spy_man_rush.py",
+  "tests/mod_editor/test_nfl2k5_read_option_frames.py",
+  "tests/mod_editor/test_nfl2k5_read_option_screen_hooks_compose.py",
+  "tests/mod_editor/test_nfl2k5_roster_arena_image.py",
+  "tests/mod_editor/test_nfl2k5_screen_hooks.py"
+]

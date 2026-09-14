@@ -16,7 +16,7 @@ weather penalties to six effective player attributes.
 This job supplies a small climate editor, its saved-plan writer and reparsing
 verifier, plus a separate optional edit to one existing dry-weather haze
 coefficient. Both are OFF by default, EXPERIMENTAL. The protected Build and
-registry integration is supplied in [WIRING.md](../../WIRING.md). The independent
+registry integration is supplied in [WIRING_B69_J4.md](../../WIRING_B69_J4.md). The independent
 editor and CLI work without that integration. No game instructions, hooks,
 runtime globals, caves, sky art, gameplay penalties or saves are added or changed.
 

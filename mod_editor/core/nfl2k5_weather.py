@@ -77,7 +77,7 @@ def text_at(data, at):
 def scalar_bytes(field, value):
     require(field in FIELDS, "Unknown climate field")
     _, low, high = FIELDS[field]
-    require(type(value) in (int, float) and math.isfinite(value) and low <= value <= high,
+    require(type(value) in (int, float) and low <= value <= high and math.isfinite(value),
             f"{field}: enter a finite value from {low} to {high}")
     if field == "wind_mph":
         value *= CM_PER_SECOND_PER_MPH

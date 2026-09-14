@@ -1,0 +1,5 @@
+tests/mod_editor/test_nfl2k5_cave_oracle.py 0 Ran 29 tests in 384.291s OK (skipped=1)
+tests/mod_editor/test_xbe_patch_memory_writes.py 0 Ran 119 tests in 1620.746s OK
+tests/mod_editor/test_xbe_patch_cave_references.py 0 Ran 131 tests in 1824.677s OK
+tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py 0 Ran 506 tests in 2816.465s OK
+COMPLETED 4 FAILED 0

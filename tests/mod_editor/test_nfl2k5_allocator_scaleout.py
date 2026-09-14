@@ -38,7 +38,7 @@ class PlannerTests(unittest.TestCase):
         self.assertEqual([report['capacity'][k]['capacity_bytes'] for k in ('code', 'data', 'read_only')],
                          [106496, 86016, 20480])
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [0, 0, 1936])  # beta 66: camera v6 adds 352 RX / 240 RO and MyCareer M3 4,096 RX; the 16 KiB synthetic RX fills the remaining code pages
+                         [0, 0, 1792])  # beta 69: J5 adds 140 RO bytes plus alignment; the synthetic RX still fills the code pages
         self.assertEqual(len(report['pages']), 52)
         for a in report['allocations']:
             self.assertEqual(a['va'] % a['align'], 0)
@@ -51,7 +51,7 @@ class PlannerTests(unittest.TestCase):
             self.assertIn(list(request), requests)
         report = space.plan(requests)
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [16576, 0, 2968])  # complete beta-66 union incl. MyCareer M3 at 20,480 RX (Supersim); the M3 HUD stays within those reservations
+                         [15680, 0, 2824])  # beta 69: J5 adds 896 RX, 4 RW and 140 RO bytes; MyCareer remains 20,480 RX
 
     def test_every_kind_exact_capacity_alignment_and_overflow(self):
         for kind, capacity in [('code', 98304), ('data', 81920), ('read_only', 16384)]:
