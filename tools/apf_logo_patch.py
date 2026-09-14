@@ -160,6 +160,11 @@ def ordered_crest_map(function, jobs, *, progress=lambda *_: None, cancelled=lam
                         result = future.result(timeout=0.1)
                         break
                     except FutureTimeout:
+                        if future.done():
+                            # A job may itself raise TimeoutError. Propagate it
+                            # instead of polling a completed failed future forever.
+                            result = future.result()
+                            break
                         continue
                 check()
                 progress('Completed crest', i + 1, len(jobs))
@@ -1018,14 +1023,23 @@ def verify_h7a_stream(stream: bytes, data: bytes, shift: int) -> None:
 
 
 def compress_h7a_best(data: bytes, shift: int, *, greedy: bytes | None = None) -> bytes:
-    """Use the field writer's reviewed binary predicate and verified fallback."""
+    """Use the reviewed helper or its exact portable parse, with the same bytes."""
     import apf_field_art_patch
     greedy = compress_h7a(data, shift) if greedy is None else greedy
     verify_h7a_stream(greedy, data, shift)
-    if apf_field_art_patch._optimal_binary() is None:
+    binary = apf_field_art_patch._optimal_binary()
+    candidate = None
+    if binary is not None:
+        try:
+            result = subprocess.run([str(binary), str(shift)], input=data,
+                                    capture_output=True, timeout=180)
+            if result.returncode == 0:
+                verify_h7a_stream(result.stdout, data, shift)
+                candidate = result.stdout
+        except (OSError, subprocess.SubprocessError, PatchError, apf_inner.FormatError):
+            pass
+    if candidate is None:
         candidate = _compress_h7a_optimal_python(data, shift)
-    else:
-        candidate = apf_field_art_patch.compress_h7a_best(data, shift, greedy=greedy)
     if len(candidate) >= len(greedy):
         return greedy
     try:

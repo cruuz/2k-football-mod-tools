@@ -1,0 +1,9 @@
+{
+  "platform": "Linux-6.8.0-134-generic-x86_64-with-glibc2.39",
+  "cpu": "AMD Ryzen 9 3950X 16-Core Processor",
+  "logical_cpus": 32,
+  "affinity_cpus": 32,
+  "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]",
+  "pillow": "10.2.0",
+  "note": "Shared development host; timings are observed single runs, not isolated-host distributions."
+}

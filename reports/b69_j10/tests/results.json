@@ -1,0 +1,170 @@
+[
+  {
+    "command": "PYTHONPATH=.:tools QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_ps3_speed.py",
+    "exit_code": 0,
+    "log": "reports/b69_j10/tests/test_apf_ps3_speed.log",
+    "tests": 13,
+    "test_seconds": 4.059,
+    "result": "OK"
+  },
+  {
+    "command": "PYTHONPATH=.:tools QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_ps3_texture_bundle.py",
+    "exit_code": 0,
+    "log": "reports/b69_j10/tests/test_apf_ps3_texture_bundle.log",
+    "tests": 28,
+    "test_seconds": 33.816,
+    "result": "OK"
+  },
+  {
+    "command": "PYTHONPATH=.:tools QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_ps3_texture_bundle_qt.py",
+    "exit_code": 0,
+    "log": "reports/b69_j10/tests/test_apf_ps3_texture_bundle_qt.log",
+    "tests": 4,
+    "test_seconds": 0.241,
+    "result": "OK"
+  },
+  {
+    "command": "PYTHONPATH=.:tools QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_crest_budget_import.py",
+    "exit_code": 0,
+    "log": "reports/b69_j10/tests/test_apf_crest_budget_import.log",
+    "tests": 12,
+    "test_seconds": 0.449,
+    "result": "OK"
+  },
+  {
+    "command": "PYTHONPATH=.:tools QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_logo_patch.py",
+    "exit_code": 0,
+    "log": "reports/b69_j10/tests/test_apf_logo_patch.log",
+    "tests": 18,
+    "test_seconds": 15.055,
+    "result": "OK"
+  },
+  {
+    "command": "PYTHONPATH=.:tools QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_helmet_crest_design_product.py",
+    "exit_code": 0,
+    "log": "reports/b69_j10/tests/test_apf_helmet_crest_design_product.log",
+    "tests": 13,
+    "test_seconds": 1.372,
+    "result": "OK"
+  },
+  {
+    "command": "PYTHONPATH=.:tools QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_logocache_patch.py",
+    "exit_code": 0,
+    "log": "reports/b69_j10/tests/test_apf_logocache_patch.log",
+    "tests": 14,
+    "test_seconds": 50.358,
+    "result": "OK"
+  },
+  {
+    "command": "PYTHONPATH=.:tools QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_team_art_qt.py",
+    "exit_code": 0,
+    "log": "reports/b69_j10/tests/test_apf_team_art_qt.log",
+    "tests": 6,
+    "test_seconds": 0.182,
+    "result": "OK"
+  },
+  {
+    "command": "PYTHONPATH=.:tools QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_team_logo_gui.py",
+    "exit_code": 0,
+    "log": "reports/b69_j10/tests/test_apf_team_logo_gui.log",
+    "tests": 23,
+    "test_seconds": 1.758,
+    "result": "OK"
+  },
+  {
+    "command": "PYTHONPATH=.:tools QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_team_art.py",
+    "exit_code": 0,
+    "log": "reports/b69_j10/tests/test_apf_team_art.log",
+    "tests": 10,
+    "test_seconds": 11.145,
+    "result": "OK"
+  },
+  {
+    "command": "PYTHONPATH=.:tools QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_helmet_logo_regions.py",
+    "exit_code": 0,
+    "log": "reports/b69_j10/tests/test_apf_helmet_logo_regions.log",
+    "tests": 12,
+    "test_seconds": 4.093,
+    "result": "OK"
+  },
+  {
+    "command": "PYTHONPATH=.:tools QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_package_map_writer.py",
+    "exit_code": 0,
+    "log": "reports/b69_j10/tests/test_apf_package_map_writer.log",
+    "tests": 40,
+    "test_seconds": 1.273,
+    "result": "OK"
+  },
+  {
+    "command": "PYTHONPATH=.:tools QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_all_crest_slots.py",
+    "exit_code": 0,
+    "log": "reports/b69_j10/tests/test_apf_all_crest_slots.log",
+    "tests": 15,
+    "test_seconds": 0.646,
+    "result": "OK"
+  },
+  {
+    "command": "PYTHONPATH=.:tools QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_crest_fit.py",
+    "exit_code": 0,
+    "log": "reports/b69_j10/tests/test_apf_crest_fit.log",
+    "tests": 10,
+    "test_seconds": 32.358,
+    "result": "OK"
+  },
+  {
+    "command": "PYTHONPATH=.:tools QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_studio_core.py",
+    "exit_code": 0,
+    "log": "reports/b69_j10/tests/test_apf_studio_core.log",
+    "tests": 9,
+    "test_seconds": 0.035,
+    "result": "OK (skipped=1)"
+  },
+  {
+    "command": "PYTHONPATH=.:tools QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_b69_build.py",
+    "exit_code": 0,
+    "log": "reports/b69_j10/tests/test_apf_b69_build.log",
+    "tests": 1,
+    "test_seconds": 29.133,
+    "result": "OK"
+  },
+  {
+    "command": "PYTHONPATH=.:tools QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_studio_safety.py",
+    "exit_code": 0,
+    "log": "reports/b69_j10/tests/test_apf_studio_safety.log",
+    "tests": 27,
+    "test_seconds": 0.141,
+    "result": "OK"
+  },
+  {
+    "command": "PYTHONPATH=.:tools QT_QPA_PLATFORM=offscreen python3 tests/apf_h7a_no_overlap_test.py",
+    "exit_code": 0,
+    "log": "reports/b69_j10/tests/apf_h7a_no_overlap_test.log",
+    "tests": 4,
+    "test_seconds": 16.01,
+    "result": "OK"
+  },
+  {
+    "command": "PYTHONPATH=.:tools QT_QPA_PLATFORM=offscreen python3 tests/apf_h7a_optimal_is_bounded_test.py",
+    "exit_code": 0,
+    "log": "reports/b69_j10/tests/apf_h7a_optimal_is_bounded_test.log",
+    "tests": 4,
+    "test_seconds": 19.575,
+    "result": "OK"
+  },
+  {
+    "command": "PYTHONPATH=.:tools QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_field_art_patch.py",
+    "exit_code": 0,
+    "log": "reports/b69_j10/tests/test_apf_field_art_patch.log",
+    "tests": 26,
+    "test_seconds": 322.299,
+    "result": "OK (skipped=2)"
+  },
+  {
+    "command": "PYTHONPATH=.:tools QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_apf_ps3_speed_packages.py",
+    "exit_code": 0,
+    "log": "reports/b69_j10/tests/test_apf_ps3_speed_packages.log",
+    "tests": 6,
+    "test_seconds": 10.789,
+    "result": "OK"
+  }
+]

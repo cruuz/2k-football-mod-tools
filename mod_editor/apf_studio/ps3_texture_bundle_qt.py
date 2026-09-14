@@ -42,7 +42,7 @@ def run_crest_task(parent, run_task, label, operation, completed):
     def work(progress):
         def report(message, done, total):
             if cancelled.is_set():
-                raise BundleError('Crest operation cancelled. Import or build again when ready.')
+                raise BundleError('Operation cancelled. Import or build again when ready.')
             progress(message, done, total)
             signals.progress.emit(message, done, total)
         report.cancelled = cancelled.is_set

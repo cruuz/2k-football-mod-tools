@@ -29,6 +29,10 @@ def process_identity(value):
     return value, os.getpid(), writer._CREST_CHILD
 
 
+def process_timeout(value):
+    raise TimeoutError('crest source timed out')
+
+
 class EncoderTests(unittest.TestCase):
     def test_native_greedy_preserves_candidate_limits_ties_and_all_shifts(self):
         binary = field._optimal_binary()
@@ -84,8 +88,26 @@ class EncoderTests(unittest.TestCase):
             with patch.object(field, '_OPTIMAL_BINARY', path):
                 self.assertIsNone(field._optimal_binary())
 
+    def test_optimal_timeout_and_bad_output_keep_portable_bytes(self):
+        data = bytes(random.Random(69).choices(range(4), k=512))
+        greedy = writer._compress_h7a_python(data, 8)
+        optimal = writer._compress_h7a_optimal_python(data, 8)
+        expected = optimal if len(optimal) < len(greedy) else greedy
+        for failure in (subprocess.TimeoutExpired('encoder', 180), OSError('cannot execute')):
+            with patch.object(field, '_optimal_binary', return_value=Path('not-executed')), \
+                 patch.object(writer.subprocess, 'run', side_effect=failure):
+                self.assertEqual(writer.compress_h7a_best(data, 8, greedy=greedy), expected)
+        with patch.object(field, '_optimal_binary', return_value=Path('not-executed')), \
+             patch.object(writer.subprocess, 'run', return_value=subprocess.CompletedProcess([], 0, b'bad')):
+            self.assertEqual(writer.compress_h7a_best(data, 8, greedy=greedy), expected)
+
 
 class CacheAndWorkerTests(unittest.TestCase):
+    def test_worker_timeout_is_propagated_without_polling_forever(self):
+        with patch.object(writer, 'crest_worker_count', return_value=2):
+            with self.assertRaisesRegex(TimeoutError, 'crest source timed out'):
+                list(writer.ordered_crest_map(process_timeout, (1, 2)))
+
     def test_pixel_transport_matches_independent_untile_with_all_endian_modes(self):
         from test_apf_crest_fit import synthetic_package
         metadata = dict(synthetic_package()[-1][0].metadata)

@@ -17,6 +17,7 @@ from pathlib import Path, PurePosixPath
 import re
 import stat
 import tempfile
+from threading import Lock
 from typing import Iterable, Mapping
 import unicodedata
 import zipfile
@@ -336,6 +337,7 @@ def destination_slots(index_0a: Path) -> tuple[DestinationSlot, ...]:
 
 
 _BUNDLE_MEASUREMENTS = OrderedDict()
+_BUNDLE_CACHE_LOCK = Lock()
 
 
 def _measure_crest_job(job):
@@ -370,9 +372,13 @@ def measure_bundle_logos(bundle, slots, index_0a, progress=lambda *_: None, *, c
         images = tuple(layer.image.tobytes() for layer in pair.layers)
         hashes = tuple(hashlib.sha256(image).hexdigest() for image in images)
         key = (hashes, layout_key)
-        if key in _BUNDLE_MEASUREMENTS:
-            _BUNDLE_MEASUREMENTS.move_to_end(key)
-            profiles = deepcopy(_BUNDLE_MEASUREMENTS[key])
+        with _BUNDLE_CACHE_LOCK:
+            cached = _BUNDLE_MEASUREMENTS.get(key)
+            if cached is not None:
+                _BUNDLE_MEASUREMENTS.move_to_end(key)
+                cached = deepcopy(cached)
+        if cached is not None:
+            profiles = cached
             results[pair.pair_id] = {"pixel_hashes": hashes,
                 "destinations": {slot.slot_id: profiles[identities[slot.outer_index]] for slot in destinations}}
             progress(f'Measured {pair.team} (reused verified sizes)', len(results), len(logos))
@@ -381,9 +387,10 @@ def measure_bundle_logos(bundle, slots, index_0a, progress=lambda *_: None, *, c
             jobs.append((images, template_jobs))
     for (pair, hashes, key), profiles in zip(pending,
             writer.ordered_crest_map(_measure_crest_job, jobs, cancelled=cancelled)):
-        _BUNDLE_MEASUREMENTS[key] = deepcopy(profiles)
-        while len(_BUNDLE_MEASUREMENTS) > 64:
-            _BUNDLE_MEASUREMENTS.popitem(last=False)
+        with _BUNDLE_CACHE_LOCK:
+            _BUNDLE_MEASUREMENTS[key] = deepcopy(profiles)
+            while len(_BUNDLE_MEASUREMENTS) > 64:
+                _BUNDLE_MEASUREMENTS.popitem(last=False)
         results[pair.pair_id] = {"pixel_hashes": hashes,
             "destinations": {slot.slot_id: profiles[identities[slot.outer_index]] for slot in destinations}}
         progress(f"Measured {pair.team}", len(results), len(logos))

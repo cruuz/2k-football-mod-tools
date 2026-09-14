@@ -1,0 +1,291 @@
+{
+  "schema": "apf_logo_roundtrip_validation/v1",
+  "scope": {
+    "outer_entry_index": 36,
+    "outer_name": "uniform_logo_01.iff",
+    "inner_file_index": 1,
+    "inner_name": "logo_l0",
+    "sibling_layer": "logo_l1",
+    "descriptor": {
+      "vc_file_id": "0xe8fe75e2",
+      "vc_width": 512,
+      "vc_height": 512,
+      "vc_base_data_length": 524288,
+      "vc_mip_data_length": 180224,
+      "fetch_offset": 148,
+      "fetch_dwords": [
+        "0x84000002",
+        "0x0000004f",
+        "0x003fe1ff",
+        "0x00a80c14",
+        "0x00000243",
+        "0x00080a00"
+      ],
+      "fetch_type": 2,
+      "pitch_pixels": 512,
+      "tiled": true,
+      "format": 15,
+      "format_name": "4_4_4_4",
+      "endianness": 1,
+      "endianness_name": "8in16",
+      "request_size": 0,
+      "stacked": false,
+      "base_address_pages": 0,
+      "width": 512,
+      "height": 512,
+      "stack_depth_minus_one": 0,
+      "swizzle": 1546,
+      "swizzle_components": [
+        2,
+        1,
+        0,
+        3
+      ],
+      "mip_min_level": 0,
+      "mip_max_level": 9,
+      "dimension": 1,
+      "dimension_name": "2D_or_stacked",
+      "packed_mips": true,
+      "mip_address_pages": 128,
+      "warnings": []
+    },
+    "note": "logo_l0 is the shared team-logo/helmet-crest base texture; this writer rewrites the base level, regenerates its packed mip tail, and byte-preserves the sibling logo_l1 layer"
+  },
+  "source": {
+    "volume": "extracted/All-Pro Football 2K8 (USA)/0A",
+    "entry_sha256": "5683eb73e670d9ece595f707f15d9302522a5243b7fb872f70e3cd31a5632287",
+    "base_sha256": "5683fb638cf72e4532149f757ac49d702a6d158043faa930c58745a1b81f9037",
+    "mip_tail_sha256": "61bef1e525d4207f40ec18de6941a33f12f3fe0f4bf3ad299b15ddfd9bb78fcd"
+  },
+  "transport": {
+    "format": "Xenos 4_4_4_4 (16-bit RGBA, one nibble per channel)",
+    "decode_encode_bit_exact": true
+  },
+  "no_op": {
+    "entry_sha256_before": "5683eb73e670d9ece595f707f15d9302522a5243b7fb872f70e3cd31a5632287",
+    "entry_sha256_after": "5683eb73e670d9ece595f707f15d9302522a5243b7fb872f70e3cd31a5632287",
+    "entry_bit_exact": true
+  },
+  "controlled_edit_fixture": {
+    "operation": "replace the full 512x512 RGBA image with opaque magenta",
+    "contains_pixels": false,
+    "reason": "255 and 0 are exact 4-bit nibble multiples of 17, so the magenta base has a zero-error decode-back oracle"
+  },
+  "patched": {
+    "schema": "apf_logo_patch/v1",
+    "mode": "patched",
+    "fit": {
+      "budget_bytes": 83425,
+      "compressed_art_bytes": 39261,
+      "shades_per_region": 16,
+      "encoder": "greedy H7A",
+      "allow_simplification": false,
+      "changed_layers": [
+        "logo_l0"
+      ],
+      "alpha_preserved": true,
+      "mips_regenerated": true,
+      "attempts": [
+        {
+          "shades_per_region": 16,
+          "encoder": "greedy H7A",
+          "compressed_art_bytes": 39261,
+          "fits": true
+        }
+      ],
+      "status": "Logo slot 1: art unchanged using greedy H7A to fit 83,425 bytes; 39,261 used"
+    },
+    "source": {
+      "archive_index": "/home/noah/2k-worktrees/astra-b69-j10/extracted/All-Pro Football 2K8 (USA)/0A",
+      "physical_volume": "0A",
+      "outer_entry_index": 36,
+      "outer_name": "uniform_logo_01.iff",
+      "inner_file_index": 1,
+      "inner_name": "logo_l0",
+      "entry_sha256": "5683eb73e670d9ece595f707f15d9302522a5243b7fb872f70e3cd31a5632287",
+      "base_sha256": "5683fb638cf72e4532149f757ac49d702a6d158043faa930c58745a1b81f9037",
+      "png_rgba_sha256": "ac186984bed07205ac7ad9ffdf5df77745cd92d09bd59f5195b21912ae498713"
+    },
+    "target": {
+      "name": "logo_l0",
+      "type": "TXTR",
+      "txtr": {
+        "vc_file_id": "0xe8fe75e2",
+        "vc_width": 512,
+        "vc_height": 512,
+        "vc_base_data_length": 524288,
+        "vc_mip_data_length": 180224,
+        "fetch_offset": 148,
+        "fetch_dwords": [
+          "0x84000002",
+          "0x0000004f",
+          "0x003fe1ff",
+          "0x00a80c14",
+          "0x00000243",
+          "0x00080a00"
+        ],
+        "fetch_type": 2,
+        "pitch_pixels": 512,
+        "tiled": true,
+        "format": 15,
+        "format_name": "4_4_4_4",
+        "endianness": 1,
+        "endianness_name": "8in16",
+        "request_size": 0,
+        "stacked": false,
+        "base_address_pages": 0,
+        "width": 512,
+        "height": 512,
+        "stack_depth_minus_one": 0,
+        "swizzle": 1546,
+        "swizzle_components": [
+          2,
+          1,
+          0,
+          3
+        ],
+        "mip_min_level": 0,
+        "mip_max_level": 9,
+        "dimension": 1,
+        "dimension_name": "2D_or_stacked",
+        "packed_mips": true,
+        "mip_address_pages": 128,
+        "warnings": []
+      },
+      "sibling_layer": "logo_l1"
+    },
+    "base_data": {
+      "length": 524288,
+      "sha256_before": "5683fb638cf72e4532149f757ac49d702a6d158043faa930c58745a1b81f9037",
+      "sha256_after": "cd873a9fa4edff08f1180514a3499cdd3e38de9b52e4a0d5c4a0892cf899de54",
+      "decoded_rgba_sha256_before": "4132e5cedbb0f0c352c7c01269771fc75a1d55640c9150d892eb2d18757275c2",
+      "decoded_rgba_sha256_after": "ac186984bed07205ac7ad9ffdf5df77745cd92d09bd59f5195b21912ae498713",
+      "decode_back_metrics": {
+        "compared_components": 1048576,
+        "different_components": 0,
+        "maximum_absolute_error": 0,
+        "mean_absolute_error": 0.0,
+        "rmse": 0.0,
+        "psnr_db": null
+      }
+    },
+    "mip_tail": {
+      "length": 180224,
+      "sha256": "61bef1e525d4207f40ec18de6941a33f12f3fe0f4bf3ad299b15ddfd9bb78fcd",
+      "sha256_after": "d337dfd70a940154b696795f649f8ab823fc413993716676271f8e21e060a257",
+      "bit_exact": false,
+      "regenerated": true
+    },
+    "iff": {
+      "allocation_size": 83968,
+      "file_length_before": 82314,
+      "file_length_after": 39544,
+      "allocation_slack_after": 44164,
+      "h7a_shift": 8,
+      "footer_sha256_before": "4d55c5fb35afb5a0aa535cad2bbc4551a26c95639f22a6793303ca48b25e95ce",
+      "footer_sha256_after": "4d55c5fb35afb5a0aa535cad2bbc4551a26c95639f22a6793303ca48b25e95ce",
+      "footer_bit_exact": true,
+      "blocks": [
+        {
+          "index": 0,
+          "start_before": 144,
+          "start_after": 144,
+          "stored_length_before": 119,
+          "stored_length_after": 119,
+          "stored_sha256_before": "97bfdc3e17fa32af6775cbbeb96b368825b0f25af30912e3c016b0c83d962400",
+          "stored_sha256_after": "97bfdc3e17fa32af6775cbbeb96b368825b0f25af30912e3c016b0c83d962400",
+          "decoded_sha256_before": "4e8876bbf24091fe8962245c7d18f36746d27b850a74d3abcce0c1b380cd17bb",
+          "decoded_sha256_after": "4e8876bbf24091fe8962245c7d18f36746d27b850a74d3abcce0c1b380cd17bb"
+        },
+        {
+          "index": 1,
+          "start_before": 263,
+          "start_after": 263,
+          "stored_length_before": 82051,
+          "stored_length_after": 39281,
+          "stored_sha256_before": "7db0c458e863405747192a314413e5dfcc022aa2d68967ec8f7560d85c6cb97a",
+          "stored_sha256_after": "7c344bc2829fc0e61c7617c388f7b9d839f4bb61c903bb693fc1e07a8aa96f36",
+          "decoded_sha256_before": "a3fe42445dfc2bcbfabf0e254b9b470a194f4224c891fa0c925c0a6f91f96b2c",
+          "decoded_sha256_after": "34727e159d05a67f64aa718938a4ba392843acc8b818a59479a6e1efdd3f819f"
+        }
+      ]
+    },
+    "binary_patch_manifest": {
+      "physical_volume": "0A",
+      "physical_offset": 179759104,
+      "replacement_length": 83968,
+      "original_sha256": "5683eb73e670d9ece595f707f15d9302522a5243b7fb872f70e3cd31a5632287",
+      "replacement_sha256": "3429327f826e2029bb16a0a883b6449dabb9e02363fe3a6b95cb79d5170a765a",
+      "changed_byte_count": 77190,
+      "first_changed_offset": 9,
+      "last_changed_offset": 82570,
+      "contains_replacement_bytes": false
+    },
+    "validation": {
+      "xenos_transport_bit_exact": true,
+      "h7a_decode_encode_decode_exact": true,
+      "rebuilt_iff_reparsed": true,
+      "footer_bit_exact": true,
+      "mip_tail_preserved": false,
+      "mip_tail_regenerated": true,
+      "other_level_l1_preserved": true,
+      "unrelated_inner_part_count": 3,
+      "unrelated_inner_parts_preserved": true,
+      "changed_inner_parts": [
+        {
+          "file_index": 1,
+          "part_index": 1,
+          "block_index": 1
+        }
+      ],
+      "fixed_outer_allocation": true,
+      "source_opened_read_only": true
+    },
+    "backend": {
+      "png": "Pillow 10.2.0",
+      "encoder": "exact 4_4_4_4 nibble pack (uncompressed, lossless for retail; PNG->4bit quantized)",
+      "encoder_caveat": "The 4_4_4_4 encoder is lossless for retail data (nibbles are exact multiples of 17); an arbitrary PNG is quantized to 4 bits per channel, so inspect the reported decode-back error before broad release.",
+      "h7a": "greedy H7A"
+    },
+    "portme": [
+      "validate this changed copied volume in Xenia and on user-owned hardware before describing any in-game/runtime effect as proved",
+      "resolve which runtime surface (frontend team-select grid, in-game scorebug, helmet crest) samples this package texture vs the uniform_logocache aggregate; the cache is separately writable via tools/apf_logocache_patch.py and the package-vs-cache-vs-both Xenia differential closes which source each surface reads",
+      "The 4_4_4_4 encoder is lossless for retail data (nibbles are exact multiples of 17); an arbitrary PNG is quantized to 4 bits per channel, so inspect the reported decode-back error before broad release."
+    ]
+  },
+  "copied_volume": null,
+  "dual_layer_copied_volume": null,
+  "safety_validation": {
+    "retail_source_modified": false,
+    "source_path_as_output_refused": true,
+    "existing_output_refused": true,
+    "wrong_dimensions_refused": true,
+    "fixed_outer_allocation": true,
+    "mip_tail_regenerated": true,
+    "sibling_logo_l1_preserved": true,
+    "footer_preserved": true,
+    "dual_layer_changed_only_two_payload_spans": false,
+    "replacement_bytes_embedded_in_report": false
+  },
+  "artifacts": {
+    "writer": "tools/apf_logo_patch.py",
+    "writer_sha256": "c2429f4f84c69cedcd1795729bba87b359e7f51f95c2408cafa359e4d77ec18f",
+    "test": "tests/apf_logo_patch_test.py",
+    "test_sha256": "60cfa3d372fd9d6184af6cb8203578d17fb146677cd5938bf97a0b64c5c14e6e"
+  },
+  "conclusion": {
+    "offline_base_level_write_proved": true,
+    "copy_only_writer_exposed": true,
+    "controlled_edit_decoded_back_exactly": true,
+    "copied_volume_roundtrip_proved": false,
+    "xenia_runtime_validation": false,
+    "hardware_runtime_validation": false,
+    "scorebug_runtime_binding_proved": false,
+    "mip_regeneration_implemented": true
+  },
+  "portme": [
+    "validate this changed copied volume in Xenia and on user-owned hardware before describing any in-game/runtime effect as proved",
+    "resolve which runtime surface (frontend team-select grid, in-game scorebug, helmet crest) samples this package texture vs the uniform_logocache aggregate; the cache is separately writable via tools/apf_logocache_patch.py and the package-vs-cache-vs-both Xenia differential closes which source each surface reads",
+    "The 4_4_4_4 encoder is lossless for retail data (nibbles are exact multiples of 17); an arbitrary PNG is quantized to 4 bits per channel, so inspect the reported decode-back error before broad release."
+  ]
+}

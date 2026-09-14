@@ -10,8 +10,10 @@ import hashlib
 import importlib.util
 import json
 import os
+import random
 from pathlib import Path
 import sys
+import subprocess
 import tempfile
 import time
 from unittest.mock import patch
@@ -38,10 +40,40 @@ def main():
     parser.add_argument('--reference-cache', type=Path, required=True)
     parser.add_argument('--reference-helper', type=Path, required=True)
     parser.add_argument('--report', type=Path, required=True)
+    parser.add_argument('--native-only', action='store_true')
     args = parser.parse_args()
     index = Path(os.environ.get('APF_RETAIL_0A', ROOT / 'extracted/All-Pro Football 2K8 (USA)/0A'))
     report = {'retail_index': str(index), 'reference_writer_sha256': hashlib.sha256(args.reference_writer.read_bytes()).hexdigest(), 'packages': []}
-    if not index.is_file():
+    if args.native_only:
+        reference = load('apf_logo_reference', args.reference_writer)
+        binary = field._optimal_binary()
+        if binary is None:
+            report['skip'] = 'reviewed Linux x86-64 helper absent; native comparison unavailable'
+        else:
+            rng = random.Random(69010)
+            samples = (bytes(1024), b'abcabcabzabc' * 95, rng.randbytes(1024))
+            greedy_cases = optimal_cases = 0
+            for shift in range(1, 16):
+                for data in samples:
+                    old = subprocess.run([str(args.reference_helper), str(shift)], input=data,
+                        capture_output=True, timeout=20, check=True).stdout
+                    new = subprocess.run([str(binary), str(shift)], input=data,
+                        capture_output=True, timeout=20, check=True).stdout
+                    assert old == new
+                    optimal_cases += 1
+                    for limit in (1, 64, 128):
+                        old = reference.compress_h7a(data, shift, candidate_limit=limit)
+                        new = subprocess.run([str(binary), str(shift), '--greedy', str(limit)],
+                            input=data, capture_output=True, timeout=20, check=True).stdout
+                        assert old == new
+                        writer.verify_h7a_stream(new, data, shift)
+                        greedy_cases += 1
+            report['native_equivalence'] = {'optimal_original_helper_cases': optimal_cases,
+                'greedy_original_python_cases': greedy_cases, 'all_byte_identical': True,
+                'helper_sha256': hashlib.sha256(binary.read_bytes()).hexdigest(),
+                'reference_helper_sha256': hashlib.sha256(args.reference_helper.read_bytes()).hexdigest()}
+            print(f'Native equivalence: {optimal_cases} optimal + {greedy_cases} greedy cases', flush=True)
+    elif not index.is_file():
         report['skip'] = f'APF retail 0A absent at {index}'
     else:
         reference = load('apf_logo_reference', args.reference_writer)
