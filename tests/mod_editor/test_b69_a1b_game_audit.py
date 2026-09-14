@@ -12,8 +12,8 @@ os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 
 class HandoffPathsTests(unittest.TestCase):
     def test_a2b_report_describes_actual_runtime_pin_block_and_climate_controls(self):
-        report = (ROOT / 'ASTRA_B69_A2B_REPORT.md').read_text()
-        tree = ast.parse((ROOT / 'packaging/check_2k5_mod_studio_runtime.py').read_text())
+        report = (ROOT / 'ASTRA_B69_A2B_REPORT.md').read_text(encoding='utf-8')
+        tree = ast.parse((ROOT / 'packaging/check_2k5_mod_studio_runtime.py').read_text(encoding='utf-8'))
         pins = next(ast.literal_eval(n.value) for n in tree.body if isinstance(n, ast.Assign)
                     and any(isinstance(t, ast.Name) and t.id == 'B69_GAME_RUNTIME_PINS' for t in n.targets))
         with self.subTest(contract='pin count'):
@@ -24,12 +24,12 @@ class HandoffPathsTests(unittest.TestCase):
                              'A2b describes a separate climate Clear control that does not exist')
 
     def test_beta69_handoffs_name_the_merged_job_documents(self):
-        changelog = (ROOT / 'docs/mod_editor/2k5_mod_studio_changelog.md').read_text()
+        changelog = (ROOT / 'docs/mod_editor/2k5_mod_studio_changelog.md').read_text(encoding='utf-8')
         beta69 = changelog.split('## v1.0 RC94', 1)[1].split('\n## ', 1)[0]
         self.assertFalse('ASTRA_REPORT.md' in beta69, 'beta-69 notes still point at a generic job report')
         self.assertFalse('`WIRING.md`' in beta69, 'beta-69 notes still point at generic wiring')
         self.assertIn('ASTRA_B69_J3_REPORT.md', beta69)
-        weather = (ROOT / 'docs/research/nfl2k5_weather_time_of_day.md').read_text()
+        weather = (ROOT / 'docs/research/nfl2k5_weather_time_of_day.md').read_text(encoding='utf-8')
         self.assertIn('(../../WIRING_B69_J4.md)', weather)
         self.assertNotIn('(../../WIRING.md)', weather)
         self.assertTrue((ROOT / 'ASTRA_B69_J3_REPORT.md').is_file())

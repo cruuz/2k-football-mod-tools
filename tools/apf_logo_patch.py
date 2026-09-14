@@ -32,6 +32,7 @@ from __future__ import annotations
 import argparse
 from array import array
 from collections import OrderedDict, defaultdict, deque
+import atexit
 from concurrent.futures import Future, ProcessPoolExecutor, TimeoutError as FutureTimeout
 from contextlib import contextmanager
 from copy import deepcopy
@@ -112,20 +113,50 @@ def _crest_child_init():
     _CREST_CHILD = True
 
 
+_SHARED_POOL = {'executor': None, 'workers': 0}
+
+
+def _shared_executor(workers):
+    """One spawn pool per process, grown on demand: a spawn start (Windows, macOS) re-imports every module,
+    so paying it once per operation made a Windows crest build many times slower than the work itself."""
+    executor = _SHARED_POOL['executor']
+    if executor is not None and not getattr(executor, '_broken', False) and _SHARED_POOL['workers'] >= workers:
+        return executor
+    if executor is not None:
+        executor.shutdown(wait=False, cancel_futures=True)
+    workers = max(workers, _SHARED_POOL['workers'])
+    executor = ProcessPoolExecutor(max_workers=workers,
+        mp_context=multiprocessing.get_context('spawn'), initializer=_crest_child_init)
+    _SHARED_POOL.update(executor=executor, workers=workers)
+    return executor
+
+
+def _shutdown_shared_executor():
+    executor = _SHARED_POOL['executor']
+    if executor is not None:
+        _SHARED_POOL.update(executor=None, workers=0)
+        executor.shutdown(wait=False, cancel_futures=True)
+
+
+atexit.register(_shutdown_shared_executor)
+
+
 @contextmanager
 def crest_pool(jobs):
-    """One spawn pool per operation; child crests never create nested pools."""
+    """The process-wide spawn pool for one operation; child crests never create nested pools."""
     if _CREST_CHILD or getattr(_POOL_STATE, 'executor', None) is not None or crest_worker_count(jobs) == 1:
         yield getattr(_POOL_STATE, 'executor', None)
         return
-    executor = ProcessPoolExecutor(max_workers=crest_worker_count(jobs),
-        mp_context=multiprocessing.get_context('spawn'), initializer=_crest_child_init)
+    executor = _shared_executor(crest_worker_count(jobs))
     _POOL_STATE.executor = executor
     try:
         yield executor
+    except BaseException:
+        if getattr(executor, '_broken', False):
+            _shutdown_shared_executor()
+        raise
     finally:
         _POOL_STATE.executor = None
-        executor.shutdown(wait=True, cancel_futures=True)
 
 
 def ordered_crest_map(function, jobs, *, progress=lambda *_: None, cancelled=lambda: False):

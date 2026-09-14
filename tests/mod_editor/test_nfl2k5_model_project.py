@@ -74,9 +74,13 @@ class RecordTests(unittest.TestCase):
             record = {'sources': P.source_files([path])}
             self.assertFalse(P.recheck_files(record))
             binary.write_bytes(b'y')
-            self.assertIn(str(binary), '\n'.join(P.recheck_files(record)))
+            def names(target, messages):
+                # the refusal names the file by its recorded path, which may be the resolved form (Windows 8.3 temp names, macOS /private/var)
+                joined = '\n'.join(messages)
+                return str(target) in joined or str(target.resolve()) in joined
+            self.assertTrue(names(binary, P.recheck_files(record)))
             path.unlink()
-            self.assertIn(str(path), '\n'.join(P.recheck_files(record)))
+            self.assertTrue(names(path, P.recheck_files(record)))
 
     def test_guardian_conflict_is_early_and_names_the_shared_resources(self):
         session = SimpleNamespace(model_records=({'target':'body', 'summary':'body', 'mode':'geometry',

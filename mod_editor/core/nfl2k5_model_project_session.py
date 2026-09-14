@@ -31,7 +31,8 @@ def _copy_archive(source, target, document, model_payload=None):
         new.writestr(archive._zip_info("project.json"), P.canonical(document))
         if model_payload is not None:
             new.writestr(archive._zip_info(MEMBER), model_payload)
-    with open(target, "rb") as stream:
+    # "r+b": Windows refuses fsync on a read-only handle (EBADF); read/write keeps the archive intact.
+    with open(target, "r+b") as stream:
         os.fsync(stream.fileno())
 
 

@@ -17,7 +17,7 @@ import re
 from pathlib import Path
 import tempfile
 
-from PyQt5.QtCore import QEvent, QObject, Qt
+from PyQt5.QtCore import QCoreApplication, QEvent, QObject, Qt
 from PyQt5.QtGui import QColor, QFont, QPalette, QPainter, QTextDocument
 from PyQt5.QtWidgets import (
     QAbstractItemView, QApplication, QBoxLayout, QComboBox, QDialog, QDialogButtonBox,
@@ -374,5 +374,8 @@ def install_theme(app=None):
                             f'<polyline points="{points}" fill="none" stroke="{color(token)}" stroke-width="2"/></svg>',
                             encoding="utf-8", newline="\n")
             app._apf_theme_icon_paths[name] = path.as_posix()
+    # Widgets scheduled for deletion must go before the palette propagates to every live widget
+    # (a pending deleteLater during propagation crashed the process on Python 3.11 runners).
+    QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
     app.setPalette(palette())
     app.setStyleSheet(stylesheet(app._apf_theme_icon_paths))
