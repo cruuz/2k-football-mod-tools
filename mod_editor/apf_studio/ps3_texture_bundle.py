@@ -7,8 +7,9 @@ interpreted as l0/l1. Alternative exports stay explicit variants.
 from __future__ import annotations
 
 import argparse
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from contextlib import contextmanager
+from copy import deepcopy
 from dataclasses import dataclass
 import hashlib
 import json
@@ -16,13 +17,14 @@ from pathlib import Path, PurePosixPath
 import re
 import stat
 import tempfile
+from threading import Lock
 from typing import Iterable, Mapping
 import unicodedata
 import zipfile
 
 from PIL import Image
 
-from .ps3_texture_codec import MAX_TEXTURE_BYTES, decode_dds, decode_gtf
+from .ps3_texture_codec import MAX_TEXTURE_BYTES, decode_dds, decode_gtf, decode_source
 
 SCHEMA = "apf2k8_ps3_texture_bundle/v1"
 STATUS = "PS3 bundle staging verified offline; build allocation checks required; in-game UNWITNESSED"
@@ -249,7 +251,7 @@ def read_bundle(source: Path) -> TextureBundle:
             if total > MAX_BUNDLE_BYTES:
                 raise BundleError("Bundle exceeds decoded-input byte budget")
             try:
-                image = decode_dds(data) if extension == "dds" else decode_gtf(data)
+                image = decode_source(data, extension)
             except ValueError as exc:
                 raise BundleError(f"Cannot decode {name}: {exc}") from exc
             if image.size != LAYER_SIZE[kind]:
@@ -334,42 +336,75 @@ def destination_slots(index_0a: Path) -> tuple[DestinationSlot, ...]:
     return tuple(slots)
 
 
-def measure_bundle_logos(bundle, slots, index_0a, progress=lambda *_: None):
+_BUNDLE_MEASUREMENTS = OrderedDict()
+_BUNDLE_CACHE_LOCK = Lock()
+
+
+def _measure_crest_job(job):
+    from .backend import ensure_tools_importable
+    ensure_tools_importable()
+    import apf_logo_patch as writer
+    images, templates = job
+    return {key: writer.measure_logo_pair(*images, template, minimum_budget=budget)
+            for key, template, budget in templates}
+
+
+def measure_bundle_logos(bundle, slots, index_0a, progress=lambda *_: None, *, cancelled=None):
     """Expensive writer-owned preflight. Invoke only on a worker, never in Qt callbacks."""
     from .backend import ensure_tools_importable
     ensure_tools_importable()
     import apf_logo_patch as writer
+    cancelled = cancelled or getattr(progress, 'cancelled', lambda: False)
     logos = [pair for pair in bundle.pairs if pair.kind == "logo"]
     destinations = [slot for slot in slots if slot.kind == "logo" and slot.writable]
     if not logos or not destinations:
         return {}
     identities, templates = writer.logo_measurement_templates(index_0a,
         [slot.outer_index for slot in destinations], progress)
-    results = {}
-    for ordinal, pair in enumerate(logos):
+    template_jobs = tuple((key, template, min(slot.compressed_art_budget for slot in destinations
+        if identities[slot.outer_index] == key)) for key, template in templates.items())
+    # Identities include every preserved byte, layer offset, descriptor and shift.
+    layout_key = tuple((key, budget) for key, _, budget in template_jobs)
+    results, pending, jobs = {}, [], []
+    for pair in logos:
+        if cancelled():
+            raise BundleError('PS3 bundle import cancelled. Import the bundle again when ready.')
         images = tuple(layer.image.tobytes() for layer in pair.layers)
-        profiles = {}
-        for key, template in templates.items():
-            budget = min(slot.compressed_art_budget for slot in destinations
-                         if identities[slot.outer_index] == key)
-            def update(message, _done, _total):
-                progress(f"{pair.team}: {message} ({ordinal + 1}/{len(logos)})", ordinal, len(logos))
-            profiles[key] = writer.measure_logo_pair(*images, template,
-                                                    minimum_budget=budget, progress=update)
-        results[pair.pair_id] = {"pixel_hashes": tuple(hashlib.sha256(image).hexdigest() for image in images),
+        hashes = tuple(hashlib.sha256(image).hexdigest() for image in images)
+        key = (hashes, layout_key)
+        with _BUNDLE_CACHE_LOCK:
+            cached = _BUNDLE_MEASUREMENTS.get(key)
+            if cached is not None:
+                _BUNDLE_MEASUREMENTS.move_to_end(key)
+                cached = deepcopy(cached)
+        if cached is not None:
+            profiles = cached
+            results[pair.pair_id] = {"pixel_hashes": hashes,
+                "destinations": {slot.slot_id: profiles[identities[slot.outer_index]] for slot in destinations}}
+            progress(f'Measured {pair.team} (reused verified sizes)', len(results), len(logos))
+        else:
+            pending.append((pair, hashes, key))
+            jobs.append((images, template_jobs))
+    for (pair, hashes, key), profiles in zip(pending,
+            writer.ordered_crest_map(_measure_crest_job, jobs, cancelled=cancelled)):
+        with _BUNDLE_CACHE_LOCK:
+            _BUNDLE_MEASUREMENTS[key] = deepcopy(profiles)
+            while len(_BUNDLE_MEASUREMENTS) > 64:
+                _BUNDLE_MEASUREMENTS.popitem(last=False)
+        results[pair.pair_id] = {"pixel_hashes": hashes,
             "destinations": {slot.slot_id: profiles[identities[slot.outer_index]] for slot in destinations}}
-        progress(f"Measured {pair.team}", ordinal + 1, len(logos))
+        progress(f"Measured {pair.team}", len(results), len(logos))
     return results
 
 
-def logo_fit_row(pair, slot, slots, measurements, *, allow_simplification=True):
+def logo_fit_row(pair, slot, slots, measurements, *, allow_simplification=True, pixel_hashes=None):
     """A cheap comparison of measured streams with the explicitly chosen slot."""
     if pair.kind != "logo":
         return {"status": "allocation checked during endzone build", "fits": None}
     measurement = measurements.get(pair.pair_id) if measurements is not None else None
     if slot.compressed_art_budget is None or measurement is None:
         return {"status": "crest budget measurement required", "fits": None}
-    hashes = tuple(hashlib.sha256(layer.image.tobytes()).hexdigest() for layer in pair.layers)
+    hashes = pixel_hashes or tuple(hashlib.sha256(layer.image.tobytes()).hexdigest() for layer in pair.layers)
     if hashes != tuple(measurement["pixel_hashes"]):
         raise BundleError("Logo pixels changed since budget measurement")
     def permitted(target):
@@ -518,7 +553,7 @@ def team_mapping(bundle: TextureBundle, slots: Iterable[DestinationSlot], table:
     return tuple(result)
 
 
-def stage_plan(session, plan: StagingPlan) -> tuple:
+def stage_plan(session, plan: StagingPlan, *, progress=lambda *_: None, cancelled=None) -> tuple:
     """Feed the existing session writers; temporary PNGs are decoded/reparsed.
 
     Each successful operation creates one existing session undo snapshot;
@@ -526,6 +561,7 @@ def stage_plan(session, plan: StagingPlan) -> tuple:
     The immutable input bundle and all retail volumes remain read-only.
     """
     from .helmet_crest_design import RETAIL_CREST_PROFILE
+    cancelled = cancelled or getattr(progress, 'cancelled', lambda: False)
     verify_plan(plan)
     # Rebind the plan to the selected live source; do not trust stale slot IDs.
     live = {s.slot_id: s for s in destination_slots(session.source.index_0a)}
@@ -537,7 +573,8 @@ def stage_plan(session, plan: StagingPlan) -> tuple:
         raise BundleError("Crest simplification setting changed")
     if any(pair.kind == "logo" and slot.compressed_art_budget is not None for pair, slot in plan.assignments):
         selected_bundle = TextureBundle(plan.receipt["source"], tuple(p for p, _ in plan.assignments), ())
-        measurements = measure_bundle_logos(selected_bundle, tuple(live.values()), session.source.index_0a)
+        measurements = measure_bundle_logos(selected_bundle, tuple(live.values()), session.source.index_0a,
+                                           progress, cancelled=cancelled)
         for pair, slot in plan.assignments:
             if pair.kind == "logo":
                 fit = logo_fit_row(pair, slot, tuple(live.values()), measurements,
@@ -550,6 +587,8 @@ def stage_plan(session, plan: StagingPlan) -> tuple:
     try:
         with tempfile.TemporaryDirectory(prefix="apf-ps3-stage-") as directory:
             for ordinal, (pair, slot) in enumerate(plan.assignments):
+                if cancelled():
+                    raise BundleError('PS3 bundle staging cancelled. Import the bundle again when ready.')
                 paths = []
                 for index, layer in enumerate(pair.layers):
                     path = Path(directory) / f"{ordinal}-{index}.png"
@@ -567,6 +606,9 @@ def stage_plan(session, plan: StagingPlan) -> tuple:
                     for index, path in enumerate(paths):
                         modifications.append(session.replace_field_art((slot.outer_index, slot.inner_indices[index]), path))
                         count += 1
+                progress(f'Staged {pair.team}', ordinal + 1, len(plan.assignments))
+            if cancelled():
+                raise BundleError('PS3 bundle staging cancelled. Import the bundle again when ready.')
     except BaseException:
         for _ in range(count):
             session.undo()

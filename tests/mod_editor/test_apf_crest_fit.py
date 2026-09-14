@@ -228,7 +228,10 @@ class SafetyTests(unittest.TestCase):
     def test_best_reuses_reviewed_binary_predicate_and_rejects_overlap(self):
         data = b'abcabcabc'
         greedy = writer.compress_h7a(data, 8)
-        with patch.object(field, 'compress_h7a_best', return_value=b'\x08abc' + ((3 << 8) | 3).to_bytes(2, 'big')):
+        import subprocess
+        unsafe = subprocess.CompletedProcess([], 0, b'\x08abc' + ((3 << 8) | 3).to_bytes(2, 'big'))
+        with patch.object(field, '_optimal_binary', return_value=Path('not-executed')), \
+             patch.object(writer.subprocess, 'run', return_value=unsafe):
             self.assertEqual(writer.compress_h7a_best(data, 8, greedy=greedy), greedy)
         with patch.object(field, '_optimal_binary', return_value=None):
             self.assertEqual(writer.compress_h7a_best(data, 8, greedy=greedy), greedy)

@@ -1,0 +1,18 @@
+{
+  "comparisons": [
+    {
+      "count": 1,
+      "package_hashes_and_fit_receipts_identical": true,
+      "full_synthetic_0A_identical": true,
+      "linked_cache_directory_and_payload_identical": true,
+      "speedup": 4.099692659855298
+    },
+    {
+      "count": 32,
+      "package_hashes_and_fit_receipts_identical": true,
+      "full_synthetic_0A_identical": true,
+      "linked_cache_directory_and_payload_identical": true,
+      "speedup": 19.597478330549254
+    }
+  ]
+}

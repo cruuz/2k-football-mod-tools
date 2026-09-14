@@ -2,17 +2,67 @@
 from __future__ import annotations
 
 from pathlib import Path
+import hashlib
+import threading
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QObject, pyqtSignal
 from PyQt5.QtWidgets import (
     QCheckBox, QComboBox, QDialog, QDialogButtonBox, QHeaderView, QLabel,
-    QTableWidget, QTableWidgetItem, QVBoxLayout, QHBoxLayout, QFileDialog, QMenu, QMessageBox, QPushButton,
+    QTableWidget, QTableWidgetItem, QVBoxLayout, QHBoxLayout, QFileDialog, QMenu, QMessageBox, QPushButton, QProgressDialog,
 )
 
 from .ps3_texture_bundle import (Assignment, BundleError, build_plan, destination_slots, read_bundle,
                                  stage_plan, measure_bundle_logos, logo_fit_row)
 from .helmet_crest_design import CREST_SIMPLIFICATION_HELP
 from .apf_theme import fit_dialog
+
+
+class _CrestTaskSignals(QObject):
+    progress = pyqtSignal(str, int, int)
+    finished = pyqtSignal()
+
+
+def run_crest_task(parent, run_task, label, operation, completed):
+    """Qt objects stay on the main thread; workers see an Event and signals."""
+    cancelled = threading.Event()
+    signals = _CrestTaskSignals(parent)
+    dialog = QProgressDialog(label, 'Cancel', 0, 0, parent)
+    dialog.setWindowTitle(label)
+    dialog.setWindowModality(Qt.NonModal)
+    dialog.setAutoClose(False)
+    dialog.setMinimumDuration(0)
+    dialog.canceled.connect(cancelled.set)
+    def update(message, done, total):
+        dialog.setLabelText(message)
+        dialog.setRange(0, total)
+        dialog.setValue(done)
+    signals.progress.connect(update)
+    signals.finished.connect(dialog.close)
+    sentinel = object()
+    def work(progress):
+        def report(message, done, total):
+            if cancelled.is_set():
+                raise BundleError('Operation cancelled. Import or build again when ready.')
+            progress(message, done, total)
+            signals.progress.emit(message, done, total)
+        report.cancelled = cancelled.is_set
+        try:
+            if cancelled.is_set():
+                return sentinel
+            return operation(report)
+        except Exception:
+            if cancelled.is_set():
+                return sentinel
+            raise
+        finally:
+            signals.finished.emit()
+    def success(result):
+        if result is not sentinel:
+            completed(result)
+    accepted = run_task(label, work, success, True)
+    if accepted is False:
+        dialog.close()
+    return accepted
 
 
 class Ps3BundleMappingDialog(QDialog):
@@ -29,6 +79,10 @@ class Ps3BundleMappingDialog(QDialog):
         self.slots = tuple(slots)
         self.plan = None
         self.measurements = measurements or {}
+        # Read-only display snapshot. Accept/staging independently hash the
+        # actual images again before changing any project state.
+        self.pixel_hashes = {pair.pair_id: tuple(hashlib.sha256(layer.image.tobytes()).hexdigest()
+            for layer in pair.layers) for pair in bundle.pairs}
         self.setWindowTitle("Import PS3 bundle — assign teams")
         self.resize(1060, 600)
         layout = QVBoxLayout(self)
@@ -174,6 +228,7 @@ class Ps3BundleMappingDialog(QDialog):
             candidates.sort(key=lambda slot: (-slot.compressed_art_budget, slot.crest_asset_index))
             for slot in candidates:
                 fit = logo_fit_row(pair, slot, self.slots, self.measurements,
+                                   pixel_hashes=self.pixel_hashes[pair.pair_id],
                                    allow_simplification=self.allow_simplification.isChecked())
                 if fit["fits"] is True:
                     choices.setCurrentIndex(choices.findData(slot.slot_id))
@@ -192,6 +247,7 @@ class Ps3BundleMappingDialog(QDialog):
                 continue
             try:
                 fit = logo_fit_row(pair, slot, self.slots, self.measurements,
+                                   pixel_hashes=self.pixel_hashes[pair.pair_id],
                                    allow_simplification=self.allow_simplification.isChecked())
                 item.setText(fit["status"])
                 rooms = fit.get("packages_with_room", ())
@@ -272,7 +328,7 @@ def import_button(parent, facade, run_task, on_staged, *, kind=None):
                     if facade.require_session() is not session:
                         raise BundleError("Game source changed during bundle review")
                     progress("Staging PS3 texture pairs", 0, 1)
-                    modifications = stage_plan(session, plan)
+                    modifications = stage_plan(session, plan, progress=progress)
                     for modification in modifications:
                         if modification.kind == "helmet_crest_design":
                             facade._staged_team_logo_png = modification.replacement_path
@@ -285,8 +341,8 @@ def import_button(parent, facade, run_task, on_staged, *, kind=None):
             def staged(modifications):
                 if facade.session is session:
                     on_staged(plan, modifications)
-            run_task("Staging PS3 bundle", stage, staged, True)
-        run_task("Reading PS3 bundle", inspect, review, True)
+            run_crest_task(parent, run_task, "Staging PS3 bundle", stage, staged)
+        run_crest_task(parent, run_task, "Reading PS3 bundle", inspect, review)
 
     menu.addAction("Choose ZIP…", lambda: choose(False))
     menu.addAction("Choose folder…", lambda: choose(True))
