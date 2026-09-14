@@ -56,9 +56,9 @@ REVIEWED_WINDOWS_BINARY_SHA256 = (
     "e9567fe31b168b226531ed532714b3e1cc9070cdfac0c102fb881e2825aee68d"
 )
 REVIEWED_H7A_BINARY = "tools/apf_h7a_optimal"
-REVIEWED_H7A_BINARY_SIZE = 14_472
+REVIEWED_H7A_BINARY_SIZE = 18_568
 REVIEWED_H7A_BINARY_SHA256 = (
-    "9061866e31f1a2930eceaa4fb8652ef1b7aa9b04cbce0174cc0eae125f8e49ab"
+    "d081d19c0078f768d2cb935732c910945c55d372dd9e1cc2b3e16ef9cfcf86a0"
 )
 # The application icon Windows puts on the Start Menu shortcut, and the only
 # image in the closure.  Icons are the classic hiding place for a renamed
