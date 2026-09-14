@@ -1054,7 +1054,12 @@ def verify_h7a_stream(stream: bytes, data: bytes, shift: int) -> None:
 
 
 def compress_h7a_best(data: bytes, shift: int, *, greedy: bytes | None = None) -> bytes:
-    """Use the reviewed helper or its exact portable parse, with the same bytes."""
+    """The smaller of the verified greedy parse and the reviewed helper's optimal parse.
+
+    Without the reviewed Linux helper the ladder keeps beta 68's greedy result: the portable
+    optimal parse (`_compress_h7a_optimal_python`) is exact but takes minutes per 512x512 block in
+    pure Python, so it runs only when APF_H7A_PYTHON_OPTIMAL=1 asks for it (the parity tests do).
+    """
     import apf_field_art_patch
     greedy = compress_h7a(data, shift) if greedy is None else greedy
     verify_h7a_stream(greedy, data, shift)
@@ -1070,6 +1075,8 @@ def compress_h7a_best(data: bytes, shift: int, *, greedy: bytes | None = None) -
         except (OSError, subprocess.SubprocessError, PatchError, apf_inner.FormatError):
             pass
     if candidate is None:
+        if os.environ.get('APF_H7A_PYTHON_OPTIMAL') != '1':
+            return greedy
         candidate = _compress_h7a_optimal_python(data, shift)
     if len(candidate) >= len(greedy):
         return greedy

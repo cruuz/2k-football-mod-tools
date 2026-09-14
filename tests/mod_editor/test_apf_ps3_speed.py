@@ -63,8 +63,12 @@ class EncoderTests(unittest.TestCase):
                     self.assertEqual(native, expected)
                 greedy = writer._compress_h7a_python(data, shift)
                 with patch.object(field, '_optimal_binary', return_value=None):
-                    self.assertEqual(writer.compress_h7a_best(data, shift, greedy=greedy),
-                                     expected if len(expected) < len(greedy) else greedy)
+                    # Without the reviewed helper the ladder keeps beta 68's greedy bytes ...
+                    self.assertEqual(writer.compress_h7a_best(data, shift, greedy=greedy), greedy)
+                    # ... unless the portable optimal parse is asked for explicitly (parity checks).
+                    with patch.dict(os.environ, {'APF_H7A_PYTHON_OPTIMAL': '1'}):
+                        self.assertEqual(writer.compress_h7a_best(data, shift, greedy=greedy),
+                                         expected if len(expected) < len(greedy) else greedy)
 
     def test_missing_failed_and_unsafe_helpers_use_identical_python_greedy(self):
         data = b'abc' * 2000
@@ -96,9 +100,12 @@ class EncoderTests(unittest.TestCase):
         for failure in (subprocess.TimeoutExpired('encoder', 180), OSError('cannot execute')):
             with patch.object(field, '_optimal_binary', return_value=Path('not-executed')), \
                  patch.object(writer.subprocess, 'run', side_effect=failure):
-                self.assertEqual(writer.compress_h7a_best(data, 8, greedy=greedy), expected)
+                self.assertEqual(writer.compress_h7a_best(data, 8, greedy=greedy), greedy)
+                with patch.dict(os.environ, {'APF_H7A_PYTHON_OPTIMAL': '1'}):
+                    self.assertEqual(writer.compress_h7a_best(data, 8, greedy=greedy), expected)
         with patch.object(field, '_optimal_binary', return_value=Path('not-executed')), \
-             patch.object(writer.subprocess, 'run', return_value=subprocess.CompletedProcess([], 0, b'bad')):
+             patch.object(writer.subprocess, 'run', return_value=subprocess.CompletedProcess([], 0, b'bad')), \
+             patch.dict(os.environ, {'APF_H7A_PYTHON_OPTIMAL': '1'}):
             self.assertEqual(writer.compress_h7a_best(data, 8, greedy=greedy), expected)
 
 
